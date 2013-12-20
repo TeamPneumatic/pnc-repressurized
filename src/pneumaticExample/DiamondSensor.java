@@ -3,12 +3,18 @@ package pneumaticExample;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
+
+import org.lwjgl.util.Rectangle;
+
 import pneumaticCraft.api.universalSensor.EntityPollSensor;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class DiamondSensor extends EntityPollSensor{
     @Override
@@ -41,6 +47,15 @@ public class DiamondSensor extends EntityPollSensor{
             if(stack.itemID == Item.diamond.itemID) diamonds += stack.stackSize;
         }
         return Math.min(15, diamonds);
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void drawAdditionalInfo(FontRenderer fontRenderer){}
+
+    @Override
+    public Rectangle needsSlot(){
+        return null;
     }
 
 }

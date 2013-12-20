@@ -7,7 +7,9 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 /**
- * With this class you can retrieve new instances of the PneumaticCraft's IGuiAnimatedStat implementation.
+ * With this class you can retrieve new instances of the PneumaticCraft's IGuiAnimatedStat implementation. You can use these in Gui's as 
+ * well as anywhere you like. When you use these in Gui's you need to pass a valid GuiContainer instance, if you don't you can just pass
+ * null.
  */
 public class GuiAnimatedStatSupplier{
     private static Class animatedStatClass;

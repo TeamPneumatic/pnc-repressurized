@@ -2,8 +2,14 @@ package pneumaticCraft.api.universalSensor;
 
 import java.util.List;
 
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.event.Event;
+
+import org.lwjgl.util.Rectangle;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public interface IBlockAndCoordinateEventSensor{
     /**
@@ -37,8 +43,20 @@ public interface IBlockAndCoordinateEventSensor{
     public boolean needsTextBox();
 
     /**
+     * See {@link ISensorSetting#needsSlot()}
+     */
+    public Rectangle needsSlot();
+
+    /**
      * See {@link ISensorSetting#getDescription()}
      * @return
      */
     public List<String> getDescription();
+
+    /**
+     * Called by GuiScreen#drawScreen this method can be used to render additional things like status/info text.
+     * @param fontRenderer
+     */
+    @SideOnly(Side.CLIENT)
+    public void drawAdditionalInfo(FontRenderer fontRenderer);
 }

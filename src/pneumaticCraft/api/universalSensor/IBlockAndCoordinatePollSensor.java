@@ -2,7 +2,13 @@ package pneumaticCraft.api.universalSensor;
 
 import java.util.List;
 
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.world.World;
+
+import org.lwjgl.util.Rectangle;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public interface IBlockAndCoordinatePollSensor{
     /**
@@ -16,6 +22,12 @@ public interface IBlockAndCoordinatePollSensor{
      * @return
      */
     public boolean needsTextBox();
+
+    /**
+     * See {@link ISensorSetting#needsSlot()}
+     * @return
+     */
+    public Rectangle needsSlot();
 
     /**
      * See {@link ISensorSetting#getDescription()}
@@ -44,5 +56,12 @@ public interface IBlockAndCoordinatePollSensor{
      * @return
      */
     public int getPollFrequency();
+
+    /**
+     * Called by GuiScreen#drawScreen this method can be used to render additional things like status/info text.
+     * @param fontRenderer
+     */
+    @SideOnly(Side.CLIENT)
+    public void drawAdditionalInfo(FontRenderer fontRenderer);
 
 }

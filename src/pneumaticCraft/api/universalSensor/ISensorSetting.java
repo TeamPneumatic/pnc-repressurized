@@ -2,6 +2,13 @@ package pneumaticCraft.api.universalSensor;
 
 import java.util.List;
 
+import net.minecraft.client.gui.FontRenderer;
+
+import org.lwjgl.util.Rectangle;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 public interface ISensorSetting{
     /**
      * Should return the button path the player has to follow in which this setting is stored.
@@ -33,9 +40,24 @@ public interface ISensorSetting{
     public boolean needsTextBox();
 
     /**
+     * Called by GuiScreen#drawScreen this method can be used to render additional things like status/info text.
+     * @param fontRenderer
+     */
+    @SideOnly(Side.CLIENT)
+    public void drawAdditionalInfo(FontRenderer fontRenderer);
+
+    /**
      * Should return the description of this sensor displayed in the GUI stat. Information should at least include
      * when this sensor emits redstone and how (analog (1 through 15), or digital).
      * @return
      */
     public List<String> getDescription();
+
+    /**
+     * Not being used at the moment, I recommend returning null for now. It is going to be used to allow sensors to decide their
+     * status on a item which can be inserted in a slot in the GUI if this method returns a rectangle with the coordinates of
+     * the slot.
+     * @return
+     */
+    public Rectangle needsSlot();
 }
