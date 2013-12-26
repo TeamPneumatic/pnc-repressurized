@@ -2,14 +2,11 @@ package pneumaticCraft.api.client.pneumaticHelmet;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 /**
  * The Option Page is the page you see when you press 'F' (by default) with a Pneumatic Helmet equipped. You can register this class
  * by returning a new instance of this class at {@link IUpgradeRenderHandler#getGuiOptionsPage()}
  */
-@SideOnly(Side.CLIENT)
 public interface IOptionPage{
 
     /**

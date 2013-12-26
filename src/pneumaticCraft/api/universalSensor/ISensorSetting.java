@@ -6,9 +6,6 @@ import net.minecraft.client.gui.FontRenderer;
 
 import org.lwjgl.util.Rectangle;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
 public interface ISensorSetting{
     /**
      * Should return the button path the player has to follow in which this setting is stored.
@@ -43,7 +40,6 @@ public interface ISensorSetting{
      * Called by GuiScreen#drawScreen this method can be used to render additional things like status/info text.
      * @param fontRenderer
      */
-    @SideOnly(Side.CLIENT)
     public void drawAdditionalInfo(FontRenderer fontRenderer);
 
     /**

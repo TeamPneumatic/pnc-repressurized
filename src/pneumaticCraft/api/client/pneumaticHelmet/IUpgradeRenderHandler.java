@@ -4,8 +4,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.Configuration;
 import pneumaticCraft.api.client.IGuiAnimatedStat;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 /**
  * To add upgrades for in the Pneumatic Helmet implement this interface. You can add members to this class, however these can only 
@@ -20,7 +18,6 @@ public interface IUpgradeRenderHandler{
      * initialization of the helmet.
      * @return
      */
-    @SideOnly(Side.CLIENT)
     public String getUpgradeName();
 
     /**
@@ -34,7 +31,6 @@ public interface IUpgradeRenderHandler{
      * PneumaticCraft's config file, save a reference of it somewhere in this class when the config gets passed in the
      * initConfig() method (this always will be called first).
      */
-    @SideOnly(Side.CLIENT)
     public void saveToConfig();
 
     /**
@@ -42,14 +38,12 @@ public interface IUpgradeRenderHandler{
      * @param player
      * @param rangeUpgrades amount of range upgrades installed in the helmet.
      */
-    @SideOnly(Side.CLIENT)
     public void update(EntityPlayer player, int rangeUpgrades);
 
     /**
      * Called in the 3D render stage (renderWorldLastEvent)
      * @param partialTicks
      */
-    @SideOnly(Side.CLIENT)
     public void render3D(float partialTicks);
 
     /**
@@ -58,7 +52,6 @@ public interface IUpgradeRenderHandler{
      * @param helmetEnabled is true when isEnabled() returned true earlier. Can be used to close AnimatedStats for instance.
      * However this is already handled if you return an AnimatedStat in getAnimatedStat().
      */
-    @SideOnly(Side.CLIENT)
     public void render2D(float partialTicks, boolean helmetEnabled);
 
     /**
@@ -66,7 +59,6 @@ public interface IUpgradeRenderHandler{
      * the stat when needed. The GuiMoveStat uses this method to retrieve the to be moved stat.
      * @return null if no stat used.
      */
-    @SideOnly(Side.CLIENT)
     public IGuiAnimatedStat getAnimatedStat();
 
     /**
@@ -88,7 +80,6 @@ public interface IUpgradeRenderHandler{
      * Called when (re-)equipped the helmet this method should be used to clear information like current tracked entities.
      * So clearing lists and other references as this handler should re-acquire when reinstalled.
      */
-    @SideOnly(Side.CLIENT)
     public void reset();
 
     /**
@@ -97,6 +88,5 @@ public interface IUpgradeRenderHandler{
      * options GUI when this upgrade returns true when calling isEnabled(). Returning null is valid.
      * @return
      */
-    @SideOnly(Side.CLIENT)
     public IOptionPage getGuiOptionsPage();
 }

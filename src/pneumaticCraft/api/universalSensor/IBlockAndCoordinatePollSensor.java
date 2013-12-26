@@ -7,9 +7,6 @@ import net.minecraft.world.World;
 
 import org.lwjgl.util.Rectangle;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
 public interface IBlockAndCoordinatePollSensor{
     /**
      * See {@link ISensorSetting#getSensorPath()}
@@ -61,7 +58,6 @@ public interface IBlockAndCoordinatePollSensor{
      * Called by GuiScreen#drawScreen this method can be used to render additional things like status/info text.
      * @param fontRenderer
      */
-    @SideOnly(Side.CLIENT)
     public void drawAdditionalInfo(FontRenderer fontRenderer);
 
 }

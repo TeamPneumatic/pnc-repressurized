@@ -4,8 +4,6 @@ import java.awt.Rectangle;
 import java.util.List;
 
 import net.minecraft.client.gui.FontRenderer;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 /**
  * This interface doesn't have to be implemented. In PneumaticCraft there already is one class which implements this interface
@@ -15,7 +13,6 @@ import cpw.mods.fml.relauncher.SideOnly;
  * if you implement it correctly.
  */
 
-@SideOnly(Side.CLIENT)
 public interface IGuiAnimatedStat{
 
     /**
