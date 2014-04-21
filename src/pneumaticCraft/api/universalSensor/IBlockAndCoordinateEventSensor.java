@@ -4,9 +4,10 @@ import java.util.List;
 
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.event.Event;
 
 import org.lwjgl.util.Rectangle;
+
+import cpw.mods.fml.common.eventhandler.Event;
 
 public interface IBlockAndCoordinateEventSensor{
     /**

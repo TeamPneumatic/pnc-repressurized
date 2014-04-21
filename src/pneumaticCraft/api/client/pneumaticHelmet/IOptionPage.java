@@ -20,7 +20,7 @@ public interface IOptionPage{
      * will be used as selection buttons for other option pages in the main GuiScreen.
      * @param gui
      */
-    public void initGui(GuiScreen gui);
+    public void initGui(IGuiScreen gui);
 
     /**
      * Same as GuiScreen#actionPerformed(GuiButton).

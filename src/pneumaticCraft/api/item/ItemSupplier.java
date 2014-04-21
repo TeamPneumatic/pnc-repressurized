@@ -1,18 +1,11 @@
 package pneumaticCraft.api.item;
 
 import net.minecraft.item.Item;
+import cpw.mods.fml.common.registry.GameRegistry;
 
 public class ItemSupplier{
-    private static Class itemClass;
-
     public static Item getItem(String itemName){
-        try {
-            if(itemClass == null) itemClass = Class.forName("pneumaticCraft.common.item.Items");
-            return (Item)itemClass.getField(itemName).get(null);
-        } catch(Exception e) {
-            System.err.println("[PneumaticCraft API] Block supply failed for block: " + itemName);
-            return null;
-        }
+        return GameRegistry.findItem("PneumaticCraft", itemName);
     }
 
     /*
@@ -29,7 +22,7 @@ public class ItemSupplier{
         plastic                   damage value = plastic type. Mapped the same as Vanilla dye in terms of color.
         airCanister               implements IPressurizable
         vortexCannon              implements IPressurizable
-        pneumaticCilinder
+        pneumaticCylinder
         pneumaticHelmet           implements IPressurizable
         manometer                 implements IPressurizable
         turbineRotor

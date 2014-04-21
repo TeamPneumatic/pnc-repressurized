@@ -1,18 +1,24 @@
 package pneumaticCraft.api.block;
 
 import net.minecraft.block.Block;
+import cpw.mods.fml.common.registry.GameRegistry;
 
 public class BlockSupplier{
-    private static Class blockClass;
+    // private static Class blockClass;
 
+    /**
+     * @param blockName
+     * @return
+     */
     public static Block getBlock(String blockName){
-        try {
-            if(blockClass == null) blockClass = Class.forName("pneumaticCraft.common.block.Blocks");
+        return GameRegistry.findBlock("PneumaticCraft", blockName);
+        /*try {
+            if(blockClass == null) blockClass = Class.forName("pneumaticCraft.common.block.Blockss");
             return (Block)blockClass.getField(blockName).get(null);
         } catch(Exception e) {
             System.err.println("[PneumaticCraft API] Block supply failed for block: " + blockName);
             return null;
-        }
+        }*/
     }
 
     /*

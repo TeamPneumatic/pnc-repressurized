@@ -1,6 +1,6 @@
 package pneumaticCraft.api.tileentity;
 
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public interface IPneumaticMachine{
 

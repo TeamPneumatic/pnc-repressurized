@@ -2,7 +2,7 @@ package pneumaticCraft.api.block;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 
 /**
  * Should be implemented by any block that allows to be rotated by a Pneumatic Wrench. It uses almost the same

@@ -1,6 +1,6 @@
 package pneumaticCraft.api.client;
 
-import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.ItemStack;
 
 /**
@@ -11,8 +11,8 @@ import net.minecraft.item.ItemStack;
 public class GuiAnimatedStatSupplier{
     private static Class animatedStatClass;
 
-    public static IGuiAnimatedStat getAnimatedStat(GuiContainer gui, int backgroundColor){
-        return getAnimatedStat(new Class[]{GuiContainer.class, int.class}, gui, backgroundColor);
+    public static IGuiAnimatedStat getAnimatedStat(GuiScreen gui, int backgroundColor){
+        return getAnimatedStat(new Class[]{GuiScreen.class, int.class}, gui, backgroundColor);
     }
 
     /**
@@ -22,19 +22,19 @@ public class GuiAnimatedStatSupplier{
      * @param backgroundColor
      * @return
      */
-    public static IGuiAnimatedStat getAnimatedStat(GuiContainer gui, ItemStack iconStack, int backgroundColor){
-        return getAnimatedStat(new Class[]{GuiContainer.class, int.class, ItemStack.class}, gui, backgroundColor, iconStack);
+    public static IGuiAnimatedStat getAnimatedStat(GuiScreen gui, ItemStack iconStack, int backgroundColor){
+        return getAnimatedStat(new Class[]{GuiScreen.class, int.class, ItemStack.class}, gui, backgroundColor, iconStack);
     }
 
     /**
      * Returns a GuiAnimatedStat which uses a texture location as statistic icon.
      * @param gui
-     * @param iconTexture
+     * @param iconTexture / text
      * @param backgroundColor
      * @return
      */
-    public static IGuiAnimatedStat getAnimatedStat(GuiContainer gui, String iconTexture, int backgroundColor){
-        return getAnimatedStat(new Class[]{GuiContainer.class, int.class, String.class}, gui, backgroundColor, iconTexture);
+    public static IGuiAnimatedStat getAnimatedStat(GuiScreen gui, String iconTexture, int backgroundColor){
+        return getAnimatedStat(new Class[]{GuiScreen.class, int.class, String.class}, gui, backgroundColor, iconTexture);
     }
 
     private static IGuiAnimatedStat getAnimatedStat(Class[] constructorClasses, Object... constructorParameters){
@@ -42,7 +42,7 @@ public class GuiAnimatedStatSupplier{
             if(animatedStatClass == null) animatedStatClass = Class.forName("pneumaticCraft.client.gui.GuiAnimatedStat");
             return (IGuiAnimatedStat)animatedStatClass.getConstructor(constructorClasses).newInstance(constructorParameters);
         } catch(Exception e) {
-            System.err.println("Failed to retrieve an GuiAnimatedStat intance of PneumaticCraft.");
+            System.err.println("Failed to retrieve an GuiAnimatedStat instance from PneumaticCraft.");
         }
         return null;
     }

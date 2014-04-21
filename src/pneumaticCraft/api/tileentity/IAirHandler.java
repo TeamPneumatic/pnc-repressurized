@@ -4,15 +4,15 @@ import java.util.List;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public interface IAirHandler extends IManoMeasurable{
 
     /**
-     * -----------Needs to be forwarded by the implementing TileEntity's onUpdate() method.
+     * -----------Needs to be forwarded by the implementing TileEntity's updateEntity() method.
      * Updates the pneumatic machine's logic like air dispersion and checking if it needs to explode.
      */
-    public void update();
+    public void updateEntity();
 
     /**
      * -----------Needs to be forwarded by the implementing TileEntity.

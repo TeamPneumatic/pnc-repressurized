@@ -13,7 +13,6 @@ public class AirHandlerSupplier{
      * {@link net.minecraft.tileentity.TileEntity#writeToNBT(net.minecraft.nbt.NBTTagCompound)}
      * {@link net.minecraft.tileentity.TileEntity#readFromNBT(net.minecraft.nbt.NBTTagCompound)}
      * {@link net.minecraft.tileentity.TileEntity#validate()}
-     * @param parent TileEntity which is keeping the reference of this air handler.
      * @param dangerPressure minimal pressure on which this machine can explode (the yellow to red transition)
      * @param criticalPressure the absolute maximum pressure the machine can take 7 bar in tier 1 machines.
      * @param maxFlow maximum mL/tick that this machine can disperse. Tier one machines do 50mL/tick while Tier two have 200mL/tick.
