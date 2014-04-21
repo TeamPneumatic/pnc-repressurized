@@ -2,7 +2,7 @@ package pneumaticExample;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.api.tileentity.AirHandlerSupplier;
 import pneumaticCraft.api.tileentity.IAirHandler;
 import pneumaticCraft.api.tileentity.IPneumaticMachine;
@@ -23,25 +23,25 @@ public class TileEntityPneumaticDiamond extends TileEntity implements IPneumatic
 
     @Override
     public void updateEntity(){
-        getAirHandler().update();
+        getAirHandler().updateEntityI();
     }
 
     @Override
     public void writeToNBT(NBTTagCompound tag){
         super.writeToNBT(tag);
-        getAirHandler().writeToNBT(tag);
+        getAirHandler().writeToNBTI(tag);
     }
 
     @Override
     public void readFromNBT(NBTTagCompound tag){
         super.readFromNBT(tag);
-        getAirHandler().readFromNBT(tag);
+        getAirHandler().readFromNBTI(tag);
     }
 
     @Override
     public void validate(){
         super.validate();
-        getAirHandler().validate(this);
+        getAirHandler().validateI(this);
     }
 
 }

@@ -6,11 +6,13 @@ import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import pneumaticCraft.api.block.BlockSupplier;
 import pneumaticCraft.api.client.pneumaticHelmet.RenderHandlerRegistry;
 import pneumaticCraft.api.item.ItemSupplier;
 import pneumaticCraft.api.recipe.AssemblyRecipe;
+import pneumaticCraft.api.tileentity.IPneumaticMachine;
 import pneumaticCraft.api.universalSensor.SensorRegistrator;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
@@ -20,11 +22,10 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.common.registry.LanguageRegistry;
 
-@Mod(modid = "Minemaarten_PneumaticExample", name = "PneumaticExample", dependencies = "required-after:Minemaarten_PneumaticCraft@1.0.0", version = "1.0.0")
+@Mod(modid = "PneumaticExample", name = "PneumaticExample", dependencies = "required-after:PneumaticCraft@1.1.3", version = "1.0.1")
 public class PneumaticExample{
-    @Instance("Minemaarten_PneumaticExample")
+    @Instance("PneumaticExample")
     public static PneumaticExample instance;
 
     @SidedProxy(clientSide = "pneumaticExample.ClientProxy", serverSide = "pneumaticExample.CommonProxy")
@@ -36,18 +37,21 @@ public class PneumaticExample{
     public void preInit(FMLPreInitializationEvent event){
         proxy.doClientOnlyStuff();
 
-        pneumaticDiamondBlock = new BlockContainer(1000, Material.iron){
+        pneumaticDiamondBlock = new BlockContainer(Material.iron){
             @Override
-            public TileEntity createNewTileEntity(World world){
+            public TileEntity createNewTileEntity(World world, int meta){
                 return new TileEntityPneumaticDiamond();
             }
+
+            @Override
+            public void onNeighborChange(IBlockAccess world, int x, int y, int z, int tileX, int tileY, int tileZ){
+                ((IPneumaticMachine)world.getTileEntity(x, y, z)).getAirHandler().onNeighborChange();
+            }
         };
-        pneumaticDiamondBlock.setTextureName("diamond_block").setCreativeTab(CreativeTabs.tabBlock);
+        pneumaticDiamondBlock.setBlockName("diamond_block").setCreativeTab(CreativeTabs.tabBlock);
 
         GameRegistry.registerBlock(pneumaticDiamondBlock, "pneumaticDiamond");
         GameRegistry.registerTileEntity(TileEntityPneumaticDiamond.class, "pneumaticDiamond");
-
-        LanguageRegistry.addName(pneumaticDiamondBlock, "Pneumatic Diamond Block");
     }
 
     @EventHandler

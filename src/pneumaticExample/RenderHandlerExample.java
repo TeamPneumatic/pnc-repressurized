@@ -1,9 +1,9 @@
 package pneumaticExample;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.common.Configuration;
+import net.minecraftforge.common.config.Configuration;
 import pneumaticCraft.api.client.GuiAnimatedStatSupplier;
 import pneumaticCraft.api.client.IGuiAnimatedStat;
 import pneumaticCraft.api.client.pneumaticHelmet.IOptionPage;
@@ -44,7 +44,7 @@ public class RenderHandlerExample implements IUpgradeRenderHandler{
     @SideOnly(Side.CLIENT)
     public IGuiAnimatedStat getAnimatedStat(){
         if(stat == null) {
-            stat = GuiAnimatedStatSupplier.getAnimatedStat(null, new ItemStack(Item.diamond), 0xFFAAAAFF);
+            stat = GuiAnimatedStatSupplier.getAnimatedStat(null, new ItemStack(Items.diamond), 0xFFAAAAFF);
             stat.setBaseX(30);
             stat.setBaseY(30);
             stat.setTitle("Example");

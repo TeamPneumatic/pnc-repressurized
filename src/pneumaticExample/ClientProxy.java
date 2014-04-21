@@ -8,6 +8,6 @@ public class ClientProxy extends CommonProxy{
     public void doClientOnlyStuff(){
 
         //register a Assembly render override
-        AssemblyRenderOverriding.renderOverrides.put(ItemSupplier.getItem("plasticPlant").itemID, new AssemblyRenderOverrideExample());
+        AssemblyRenderOverriding.addRenderOverride(ItemSupplier.getItem("plasticPlant"), new AssemblyRenderOverrideExample());
     }
 }

@@ -12,25 +12,25 @@ public interface IAirHandler extends IManoMeasurable{
      * -----------Needs to be forwarded by the implementing TileEntity's updateEntity() method.
      * Updates the pneumatic machine's logic like air dispersion and checking if it needs to explode.
      */
-    public void updateEntity();
+    public void updateEntityI();
 
     /**
      * -----------Needs to be forwarded by the implementing TileEntity.
      * @param nbt
      */
-    public void readFromNBT(NBTTagCompound nbt);
+    public void readFromNBTI(NBTTagCompound nbt);
 
     /**
      * -----------Needs to be forwarded by the implementing TileEntity.
      * @param nbt
      */
-    public void writeToNBT(NBTTagCompound nbt);
+    public void writeToNBTI(NBTTagCompound nbt);
 
     /**
      * -----------Needs to be forwarded by the implementing TileEntity with itself as parameter.
      * @param parent TileEntity that is referencing this air handler.
      */
-    public void validate(TileEntity parent);
+    public void validateI(TileEntity parent);
 
     /**
      * Method to release air in the air. It takes air from a specific side, plays a sound effect, and spawns smoke particles.
@@ -72,7 +72,7 @@ public interface IAirHandler extends IManoMeasurable{
 
     /**
      * When you're TileEntity is implementing IInventory and has slots that accept PneumaticCraft upgrades, register these slots
-     * to the air handler by calling this method once on initialization of the TileEntity.
+     * to the air handler by calling this method once on initialization of the TileEntity. Then they'll automatically be used to get Volume/Security upgrades.
      * @param upgradeSlots all upgrade slots stored in an array.
      */
     public void setUpgradeSlots(int[] upgradeSlots);
@@ -84,5 +84,10 @@ public interface IAirHandler extends IManoMeasurable{
     public int getYCoord();
 
     public int getZCoord();
+
+    /**
+     * Needs to be forwarded from the implementing _Block_! Forward the Block's "onNeighborChange" method to this handler.
+     */
+    public void onNeighborChange();
 
 }

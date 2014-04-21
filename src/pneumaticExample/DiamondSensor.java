@@ -6,7 +6,7 @@ import java.util.List;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.item.Item;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 
@@ -44,7 +44,7 @@ public class DiamondSensor extends EntityPollSensor{
         int diamonds = 0;
         for(Entity item : entities) {
             ItemStack stack = ((EntityItem)item).getEntityItem();
-            if(stack.itemID == Item.diamond.itemID) diamonds += stack.stackSize;
+            if(stack.getItem() == Items.diamond) diamonds += stack.stackSize;
         }
         return Math.min(15, diamonds);
     }

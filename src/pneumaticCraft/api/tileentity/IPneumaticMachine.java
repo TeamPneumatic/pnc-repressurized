@@ -15,6 +15,8 @@ public interface IPneumaticMachine{
      * {@link net.minecraft.tileentity.TileEntity#readFromNBT(net.minecraft.nbt.NBTTagCompound)} and
      * {@link net.minecraft.tileentity.TileEntity#validate()} (with the implementing TileEntity as additional parameter)
      * to the IAirHandler.
+     * Apart from that you'll need to forward {@link net.minecraft.block.Block#onNeighborChange(net.minecraft.world.IBlockAccess, int, int, int, int, int, int)}
+     * from the implementing block to the IAirHandler.
      * @return
      */
     public IAirHandler getAirHandler();

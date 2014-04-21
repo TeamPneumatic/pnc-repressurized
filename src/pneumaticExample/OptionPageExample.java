@@ -1,7 +1,7 @@
 package pneumaticExample;
 
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
+import pneumaticCraft.api.client.pneumaticHelmet.IGuiScreen;
 import pneumaticCraft.api.client.pneumaticHelmet.IOptionPage;
 
 public class OptionPageExample implements IOptionPage{
@@ -12,7 +12,7 @@ public class OptionPageExample implements IOptionPage{
     }
 
     @Override
-    public void initGui(GuiScreen gui){}
+    public void initGui(IGuiScreen gui){}
 
     @Override
     public void actionPerformed(GuiButton button){}
