@@ -6,6 +6,11 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 
+/**
+ * A way for you to access about everything you need from a pneumatic machine.
+ * DO NOT IMPLEMENT THIS YOURSELF! Use AirHandlerSupplier to get an instance for your TileEntity, and implement IPneumaticMachine instead.
+ */
+
 public interface IAirHandler extends IManoMeasurable{
 
     /**

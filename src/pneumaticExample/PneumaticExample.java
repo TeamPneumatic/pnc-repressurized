@@ -3,6 +3,7 @@ package pneumaticExample;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -23,7 +24,7 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid = "PneumaticExample", name = "PneumaticExample", dependencies = "required-after:PneumaticCraft@1.1.7", version = "1.0.2")
+@Mod(modid = "PneumaticExample", name = "PneumaticExample", dependencies = "required-after:PneumaticCraft@1.1.7", version = "1.0.3")
 public class PneumaticExample{
     @Instance("PneumaticExample")
     public static PneumaticExample instance;
@@ -47,6 +48,9 @@ public class PneumaticExample{
             public void onNeighborChange(IBlockAccess world, int x, int y, int z, int tileX, int tileY, int tileZ){
                 ((IPneumaticMachine)world.getTileEntity(x, y, z)).getAirHandler().onNeighborChange();
             }
+
+            @Override
+            public void registerBlockIcons(IIconRegister par1IconRegister){}
         };
         pneumaticDiamondBlock.setBlockName("diamond_block").setCreativeTab(CreativeTabs.tabBlock);
 

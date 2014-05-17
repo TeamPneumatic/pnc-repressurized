@@ -11,5 +11,5 @@ import net.minecraft.client.gui.FontRenderer;
 public interface IGuiScreen{
     public List getButtonList();
 
-    public FontRenderer getFontRenderer();//TODO 1.7 check for obfuscation problems
+    public FontRenderer getFontRenderer();
 }
