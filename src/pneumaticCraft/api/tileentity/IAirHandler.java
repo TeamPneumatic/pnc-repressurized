@@ -1,6 +1,7 @@
 package pneumaticCraft.api.tileentity;
 
 import java.util.List;
+import java.util.Map;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -46,26 +47,38 @@ public interface IAirHandler extends IManoMeasurable{
 
     /**
      * Returns a list of all the connecting pneumatics. It takes sides in account.
+     * Deprecated: Use getConnectedPneumatics now.
      * @return
      */
+    @Deprecated
     public List<IPneumaticMachine> getSurroundingPneumatics();
+
+    public Map<ForgeDirection, IPneumaticMachine> getConnectedPneumatics();
 
     /**
      * Adds air to the tank of the given side of this TE. It also updates clients where needed (when they have a GUI opened).
+     * Deprecated: use the version with the integer parameter now.
      * @param amount
      * @param side
      */
+    @Deprecated
     public void addAir(float amount, ForgeDirection side);
+
+    public void addAir(int amount, ForgeDirection side);
 
     /**
      * Sets the volume of this TE's air tank. When the volume decreases the pressure will remain the same, meaning air will
      * be lost. When the volume increases, the air remains the same, meaning the pressure will drop.
      * Used in the Volume Upgrade calculations.
+     * Deprecated: use the version with the integer parameter now.
      * @param newVolume
      */
+    @Deprecated
     public void setVolume(float newVolume);
 
-    public float getVolume();
+    public void setVolume(int newVolume);
+
+    public int getVolume();
 
     /**
      * Returns the pressure at which this TE will explode.
@@ -74,6 +87,13 @@ public interface IAirHandler extends IManoMeasurable{
     public float getMaxPressure();
 
     public float getPressure(ForgeDirection sideRequested);
+
+    /**
+     * Returns the amount of air (that has a relation to the pressure: air = pressure * volume)
+     * @param sideRequested
+     * @return
+     */
+    public int getCurrentAir(ForgeDirection sideRequested);
 
     /**
      * When you're TileEntity is implementing IInventory and has slots that accept PneumaticCraft upgrades, register these slots

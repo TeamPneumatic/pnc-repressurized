@@ -21,17 +21,4 @@ public class PressureChamberRecipe{
         this.outputAsBlock = outputAsBlock;
     }
 
-    public boolean canBeCompressed(ItemStack[] items){
-        for(ItemStack in : input) {
-            if(in != null) {
-                int amount = 0;
-                for(ItemStack item : items) {
-                    if(item != null && item.isItemEqual(in)) amount += item.stackSize;
-                }
-                if(amount < in.stackSize) return false;
-            }
-        }
-
-        return true;
-    }
 }

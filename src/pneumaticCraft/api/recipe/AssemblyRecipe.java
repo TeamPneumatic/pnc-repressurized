@@ -20,10 +20,6 @@ public class AssemblyRecipe{
         this.output = output;
     }
 
-    public boolean isValidInput(ItemStack input){
-        return input != null && input.isItemEqual(this.input) && input.stackSize == this.input.stackSize;
-    }
-
     public ItemStack getInput(){
         return input;
     }
@@ -48,20 +44,6 @@ public class AssemblyRecipe{
         } else {
             return (ItemStack)object;
         }
-    }
-
-    public static ItemStack getDrilledOutputForItem(ItemStack input){
-        for(AssemblyRecipe recipe : drillRecipes) {
-            if(recipe.isValidInput(input)) return recipe.getOutput().copy();
-        }
-        return null;
-    }
-
-    public static ItemStack getLaseredOutputForItem(ItemStack input){
-        for(AssemblyRecipe recipe : laserRecipes) {
-            if(recipe.isValidInput(input)) return recipe.getOutput().copy();
-        }
-        return null;
     }
 
 }
