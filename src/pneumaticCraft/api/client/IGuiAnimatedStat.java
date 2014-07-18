@@ -55,16 +55,18 @@ public interface IGuiAnimatedStat{
      * EnumChatFormattings will be respected. When you call this method, Too long lines will be divided into multiple shorter ones
      * to fit in the GUI.
      * @param text
+     * @return this, so you can chain calls.
      */
-    public void setText(List<String> text);
+    public IGuiAnimatedStat setText(List<String> text);
 
     /**
      * Sets the line to a single line. Upon rendering,
      * EnumChatFormattings will be respected. When you call this method, Too long lines will be divided into multiple shorter ones
      * to fit in the GUI.
      * @param text
+     * @return this, so you can chain calls.
      */
-    public void setText(String text);
+    public IGuiAnimatedStat setText(String text);
 
     /**
      * Sets the main text of this stat. Every line should be stored in a seperate list element. Upon rendering,
