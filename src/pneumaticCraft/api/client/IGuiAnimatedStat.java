@@ -138,6 +138,8 @@ public interface IGuiAnimatedStat{
      */
     public int getWidth();
 
+    public Rectangle getDimensions();
+
     /**
      * This method should be called every game tick to update the logic of the stat (expanding of the stat).
      * NOTE!! PneumaticCraft's version of GuiAnimatedStat registers the stat when it creates an instance to automatically invoke the
@@ -186,4 +188,6 @@ public interface IGuiAnimatedStat{
      * @param y
      */
     public void onMouseHovering(FontRenderer fontRenderer, int x, int y);
+
+
 }

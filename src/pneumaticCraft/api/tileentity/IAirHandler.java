@@ -1,11 +1,12 @@
 package pneumaticCraft.api.tileentity;
 
 import java.util.List;
-import java.util.Map;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
+
+import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * A way for you to access about everything you need from a pneumatic machine.
@@ -47,13 +48,8 @@ public interface IAirHandler extends IManoMeasurable{
 
     /**
      * Returns a list of all the connecting pneumatics. It takes sides in account.
-     * Deprecated: Use getConnectedPneumatics now.
-     * @return
      */
-    @Deprecated
-    public List<IPneumaticMachine> getSurroundingPneumatics();
-
-    public Map<ForgeDirection, IPneumaticMachine> getConnectedPneumatics();
+    public List<Pair<ForgeDirection, IPneumaticMachine>> getConnectedPneumatics();
 
     /**
      * Adds air to the tank of the given side of this TE. It also updates clients where needed (when they have a GUI opened).

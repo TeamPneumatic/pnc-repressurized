@@ -10,6 +10,8 @@ import pneumaticCraft.api.client.pneumaticHelmet.IEntityTrackEntry;
 import pneumaticCraft.api.client.pneumaticHelmet.IHackableBlock;
 import pneumaticCraft.api.client.pneumaticHelmet.IHackableEntity;
 import pneumaticCraft.api.drone.IPathfindHandler;
+import pneumaticCraft.api.item.IInventoryItem;
+import pneumaticCraft.api.client.pneumaticHelmet.IBlockTrackEntry;
 
 /**
  * This class can be used to register and access various things to and from the mod.
@@ -17,16 +19,28 @@ import pneumaticCraft.api.drone.IPathfindHandler;
 public class PneumaticRegistry{
     /**
      * This field, which is initialized in PneumaticCraft's preInit, will give you access to various registration and access options.
+     * @deprecated This field isn't going to be removed, but it'll be marked private. use getInstance().
      */
+    @Deprecated
     public static IPneumaticCraftInterface instance;
+
+    public static IPneumaticCraftInterface getInstance(){
+        return instance;
+    }
+
+    public static void init(IPneumaticCraftInterface inter){
+        if(instance == null) instance = inter;//only allow initialization once; by PneumaticCraft
+    }
 
     public static interface IPneumaticCraftInterface{
 
         /*
-         * ------------- Hacking --------------
+         * ------------- Pneumatic Helmet --------------
          */
 
         public void registerEntityTrackEntry(Class<? extends IEntityTrackEntry> entry);
+
+        public void registerBlockTrackEntry(IBlockTrackEntry entry);
 
         public void addHackable(Class<? extends Entity> entityClazz, Class<? extends IHackableEntity> iHackable);
 
@@ -53,6 +67,19 @@ public class PneumaticRegistry{
          */
         public void addPathfindableBlock(Block block, IPathfindHandler handler);
 
+        /*
+         * --------------- Items -------------------
+         */
+        /**
+         * See {@link pneumaticCraft.api.item.IInventoryItem}
+         * @param handler
+         */
+        public void registerInventoryItem(IInventoryItem handler);
+
+        /*
+         * --------------- Misc -------------------
+         */
+
         /**
          * Returns the amount of Security Stations that disallow interaction with the given coordinate for the given player.
          * Usually you'd disallow interaction when this returns > 0.
@@ -66,5 +93,6 @@ public class PneumaticRegistry{
          * This method throws an IllegalArgumentException when tried to be called from the client side!
          */
         public int getProtectingSecurityStations(World world, int x, int y, int z, EntityPlayer player, boolean showRangeLines);
+
     }
 }
