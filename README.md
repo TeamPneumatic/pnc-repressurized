@@ -22,10 +22,10 @@ In your build.gradle, add:
 
 	dependencies{
 		//If you want to load the whole source, use this line
-		compile "pneumaticCraft:PneumaticCraft-1.7.10:1.2.6-5:userdev"
+		compile "pneumaticCraft:PneumaticCraft-1.7.10:1.2.6-6:userdev"
 		
 		//If you want to load the PneumaticCraft API only, use this line
-		compile "pneumaticCraft:PneumaticCraft-1.7.10:1.2.6-5:api"
+		compile "pneumaticCraft:PneumaticCraft-1.7.10:1.2.6-6:api"
 	}
 
 It should be clear that the version number used in the 'compile' is an example, to see which versions you can use, go to http://maven.k-4u.nl/pneumaticCraft/PneumaticCraft-1.7.10/

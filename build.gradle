@@ -161,7 +161,7 @@ task userdevJar(type: Jar) {
 // Create API library zip
 task apiZip(type: Zip) {
     from(sourceSets.main.java) {
-        include 'com/bluepowermod/api/**'
+        include 'pneumaticCraft/api/**'
         appendix = "${project.ext.mcVersion}"
         classifier = "api"
     }
