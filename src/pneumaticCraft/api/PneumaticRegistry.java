@@ -6,12 +6,12 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
+import pneumaticCraft.api.client.pneumaticHelmet.IBlockTrackEntry;
 import pneumaticCraft.api.client.pneumaticHelmet.IEntityTrackEntry;
 import pneumaticCraft.api.client.pneumaticHelmet.IHackableBlock;
 import pneumaticCraft.api.client.pneumaticHelmet.IHackableEntity;
 import pneumaticCraft.api.drone.IPathfindHandler;
 import pneumaticCraft.api.item.IInventoryItem;
-import pneumaticCraft.api.client.pneumaticHelmet.IBlockTrackEntry;
 
 /**
  * This class can be used to register and access various things to and from the mod.
@@ -93,6 +93,12 @@ public class PneumaticRegistry{
          * This method throws an IllegalArgumentException when tried to be called from the client side!
          */
         public int getProtectingSecurityStations(World world, int x, int y, int z, EntityPlayer player, boolean showRangeLines);
+
+        /**
+         * Use this to register ISimpleBlockRenderHandler render id's of full blocks, those of which should be able to be used for the Pneumatic Door Base camouflage.
+         * @param id
+         */
+        public void registerConcealableRenderId(int id);
 
     }
 }
