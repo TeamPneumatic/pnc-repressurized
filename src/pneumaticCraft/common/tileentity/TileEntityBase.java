@@ -11,11 +11,13 @@ import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeModContainer;
 import pneumaticCraft.api.tileentity.IPneumaticMachine;
+import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.PacketSendNBTPacket;
 import pneumaticCraft.lib.Log;
 import pneumaticCraft.lib.ModIds;
+import pneumaticCraft.lib.PneumaticValues;
 import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
@@ -149,6 +151,14 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
             }
         }
         return upgrades;
+    }
+
+    public float getSpeedMultiplierFromUpgrades(int[] upgradeSlots){
+        return (float)Math.pow(PneumaticValues.SPEED_UPGRADE_MULTIPLIER, Math.min(10, getUpgrades(ItemMachineUpgrade.UPGRADE_SPEED_DAMAGE, upgradeSlots)));
+    }
+
+    protected float getSpeedUsageMultiplierFromUpgrades(int[] upgradeSlots){
+        return (float)Math.pow(PneumaticValues.SPEED_UPGRADE_USAGE_MULTIPLIER, Math.min(10, getUpgrades(ItemMachineUpgrade.UPGRADE_SPEED_DAMAGE, upgradeSlots)));
     }
 
     @Optional.Method(modid = ModIds.INDUSTRIALCRAFT)

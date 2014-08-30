@@ -119,7 +119,8 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler{
     }
 
     public static AxisAlignedBB getAABBFromRange(EntityPlayer player, int rangeUpgrades){
-        double entityTrackRange = ENTITY_TRACKING_RANGE + rangeUpgrades * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE;
+        double entityTrackRange = ENTITY_TRACKING_RANGE + Math.min(10, rangeUpgrades) * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE;
+
         return AxisAlignedBB.getBoundingBox(player.posX - entityTrackRange, player.posY - entityTrackRange, player.posZ - entityTrackRange, player.posX + entityTrackRange, player.posY + entityTrackRange, player.posZ + entityTrackRange);
     }
 
@@ -162,7 +163,7 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler{
 
     @Override
     public float getEnergyUsage(int rangeUpgrades, EntityPlayer player){
-        return PneumaticValues.USAGE_ENTITY_TRACKER * (1 + (float)rangeUpgrades * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE / ENTITY_TRACKING_RANGE) * CommonHUDHandler.getHandlerForPlayer(player).getSpeedFromUpgrades();
+        return PneumaticValues.USAGE_ENTITY_TRACKER * (1 + (float)Math.min(10, rangeUpgrades) * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE / ENTITY_TRACKING_RANGE) * CommonHUDHandler.getHandlerForPlayer(player).getSpeedFromUpgrades();
     }
 
     @Override

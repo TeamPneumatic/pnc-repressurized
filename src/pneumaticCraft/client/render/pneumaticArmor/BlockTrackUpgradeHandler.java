@@ -67,7 +67,7 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler{
 
         SearchUpgradeHandler searchHandler = (SearchUpgradeHandler)HUDHandler.instance().getSpecificRenderer(SearchUpgradeHandler.class);
 
-        int blockTrackRange = BLOCK_TRACKING_RANGE + rangeUpgrades * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE;
+        int blockTrackRange = BLOCK_TRACKING_RANGE + Math.min(rangeUpgrades, 5) * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE;
         int baseX = (int)Math.floor(player.posX) - blockTrackRange;
         int baseY = (int)Math.floor(player.posY) - blockTrackRange + blockTrackRange * (ticksExisted % 20) / 10;
         int maxY = (int)Math.floor(player.posY) - blockTrackRange + blockTrackRange * (ticksExisted % 20 + 1) / 10;
@@ -202,7 +202,7 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler{
 
     @Override
     public float getEnergyUsage(int rangeUpgrades, EntityPlayer player){
-        return PneumaticValues.USAGE_BLOCK_TRACKER * (1 + (float)rangeUpgrades * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE / BLOCK_TRACKING_RANGE) * CommonHUDHandler.getHandlerForPlayer(player).getSpeedFromUpgrades();
+        return PneumaticValues.USAGE_BLOCK_TRACKER * (1 + (float)Math.min(5, rangeUpgrades) * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE / BLOCK_TRACKING_RANGE) * CommonHUDHandler.getHandlerForPlayer(player).getSpeedFromUpgrades();
     }
 
     @Override

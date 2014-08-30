@@ -14,7 +14,6 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Facing;
 import net.minecraftforge.common.util.ForgeDirection;
-import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.GuiConstants;
 import pneumaticCraft.lib.Names;
@@ -436,10 +435,6 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
             if(redstoneMode > 2) redstoneMode = 0;
         }
         sendDescriptionPacket();
-    }
-
-    private float getSpeedMultiplierFromUpgrades(int[] upgradeSlots){
-        return (float)Math.pow(PneumaticValues.SPEED_UPGRADE_MULTIPLIER, getUpgrades(ItemMachineUpgrade.UPGRADE_SPEED_DAMAGE, upgradeSlots));
     }
 
     @Override

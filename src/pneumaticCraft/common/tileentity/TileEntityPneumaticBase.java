@@ -319,14 +319,6 @@ public class TileEntityPneumaticBase extends TileEntityBase implements IManoMeas
         return getUpgrades(ItemMachineUpgrade.UPGRADE_VOLUME_DAMAGE, upgradeSlots) * PneumaticValues.VOLUME_VOLUME_UPGRADE;
     }
 
-    public float getSpeedMultiplierFromUpgrades(int[] upgradeSlots){
-        return (float)Math.pow(PneumaticValues.SPEED_UPGRADE_MULTIPLIER, getUpgrades(ItemMachineUpgrade.UPGRADE_SPEED_DAMAGE, upgradeSlots));
-    }
-
-    protected float getSpeedUsageMultiplierFromUpgrades(int[] upgradeSlots){
-        return (float)Math.pow(PneumaticValues.SPEED_UPGRADE_USAGE_MULTIPLIER, getUpgrades(ItemMachineUpgrade.UPGRADE_SPEED_DAMAGE, upgradeSlots));
-    }
-
     @Override
     public void printManometerMessage(EntityPlayer player, List<String> curInfo){
         curInfo.add(EnumChatFormatting.GREEN + "Current pressure: " + PneumaticCraftUtils.roundNumberTo(getPressure(ForgeDirection.UNKNOWN), 1) + " bar.");
