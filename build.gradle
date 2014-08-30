@@ -158,6 +158,16 @@ task userdevJar(type: Jar) {
     classifier = "userdev"
 }
 
+// Create API library zip
+task apiZip(type: Zip) {
+    from(sourceSets.main.java) {
+        include 'com/bluepowermod/api/**'
+        appendix = "${project.ext.mcVersion}"
+        classifier = "api"
+    }
+}
+
 artifacts {
     archives userdevJar
+	archives apiZip
 }
