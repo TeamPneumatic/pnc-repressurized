@@ -1,0 +1,3 @@
+Crafting component
+
+[pressureChamber{190, 40, item/capacitor}]

@@ -1,0 +1,61 @@
+[prefix{l}]Programmer [prefix{}]
+
+The Programmer is a block used to program [link{item/drone}]Drones [link{}]. This is done in a rather natural way: With puzzle pieces.
+[crafting{200,70,key=block/programmer}]
+
+
+
+
+
+
+
+
+
+
+
+When you open up the interface of the Programmer you'll see something like the following:
+[image{200,200,0.35,igwmod:textures/ProgrammerInterface.png}]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+On the right you can see a list of all available puzzle pieces. There are multiple pages of these. To begin, drag a 'Start' puzzle piece to somewhere on the screen. This is where every program starts. As you can see in the image, you can connect puzzle pieces. Let's explain what happens here:
+-The program starts at the 'Start' piece.
+-The program will perform the 'Inv-I' (Inventory Import) program. It has an 'Area' puzzle piece connected to it, which specifies where it should import items from.
+-The program will perform the 'Place' program. The connected 'Area' piece specifies where to place.
+
+So vertically placed pieces are executed sequentially. Whether the Drone should execute the current program or move on to the next is dependent upon one condition: When the current running program is done. For every puzzle piece this is different, this will be explained.
+
+Horizontally placed pieces are parameters for the 'main' pieces (pieces that have a vertical input/output). These can be things like area's, item filters or texts. When each of these are placed on the right, this means it'll be added, whitelisted, to the piece. When placed on the left it will be blacklisted. for instance, if you have a Drone that you want to have attack every player but yourself, you could place a 'Text' piece on the right with '@player' (meaning every player). Then you place a 'Text' piece on the left with your player name. So every player will be added (on the right), and you will be substracted (from the left).
+
+The following is a list of all the different Programming Puzzles:
+[link{item/programmingPuzzle_start}]-Start (start) [link{}]
+[link{item/programmingPuzzle_Inv-E}]-Export to inventory (Inv-E) [link{}]
+[link{item/programmingPuzzle_Inv-I}]-Import from inventory (Inv-I) [link{}]
+[link{item/programmingPuzzle_I-pick}]-Pick up items (I-pick) [link{}]
+[link{item/programmingPuzzle_dig}]-Dig Blocks (dig) [link{}]
+[link{item/programmingPuzzle_place}]-Place blocks (place) [link{}]
+[link{item/programmingPuzzle_goto}]-Go To Location (goto) [link{}]
+[link{item/programmingPuzzle_attk}]-Entity Attack (attk) [link{}]
+[link{item/programmingPuzzle_I-ftr}]-Item Filter (I-ftr) [link{}]
+[link{item/programmingPuzzle_area}]-Area (area) [link{}]
+[link{item/programmingPuzzle_text}]-Text (text) [link{}]
+
+There is a trick to speed up certain programming: Middle-click a puzzle piece to copy the piece along with its properties (so a copied 'area' piece will contain the area of the copied piece).
+

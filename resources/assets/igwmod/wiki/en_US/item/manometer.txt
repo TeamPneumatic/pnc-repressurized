@@ -1,0 +1,3 @@
+With a Manometer you can measure pressures on a pneumatic network. Additionally, some pneumatic machines/tubes have some special information about them. For instance, the [link{item/safetyTubeModule}]Safety Valve Tube Module[link{}] displays at which threshold pressure it's currently at. So if you aren't feeling confortable with redstone or math, this is the tool for you.
+
+[crafting{200, 100, key=item/manometer}]

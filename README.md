@@ -1,6 +1,7 @@
-PneumaticCraft-API
+PneumaticCraft
 ==================
 
-Giving you the tools to create pneumatic content. This also adds an example of how to use the API.
+This is the source of PneumaticCraft. It's licenced under GPLv3, so have fun. Also have fun learning from the code where possible!
+I'm open to pull requests.
 
-This is also the place to report bugs/suggestions for PneumaticCraft!
+I know parts of the code still need refactoring, notably TileEntity rendering.

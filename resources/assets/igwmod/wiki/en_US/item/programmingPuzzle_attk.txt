@@ -1,0 +1,7 @@
+Programming Puzzles are used in [link{block/programmer}]programmers [link{}].
+
+[prefix{l}]The 'attk' (Entity Attack) piece [prefix{}]
+The Drone will attack every living creature within the area. Keep in mind that the 'Area' pieces connected to an 'I-pick' piece always will be interpreted with cuboid mode, regardless of the 'Area' piece's area mode. It's possible to create strange shapes though by using whitelisting/blacklisting of areas.
+
+You can specify which creatures are allowed to be attacked by using 'Text' pieces as Entity Filter. So if you want the Drone to attack all players, connect a 'Text' piece to the right of the 'attk' piece containing '@player'. If you don't want to be attacked, connect up a 'Text' piece on the left containing your player name.
+This follows the rules of an [link{misc/entityFilter}]entity filter[link{}].

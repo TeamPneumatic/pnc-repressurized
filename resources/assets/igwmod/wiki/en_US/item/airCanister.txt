@@ -1,0 +1,3 @@
+The Air Canister is the battery for each of the pneumatically chargeable items. It also can be used as stand-alone battery. It can be charged and discharged in a [link{block/chargingStation}]Charging Station[link{}]. The Air Canister has a volume of 1500mL and can be charged to 10 bar (it won't explode). When you craft anything with an Air Canister in it, it will retain its pressure.
+
+[crafting{200, 100, key=item/airCanister}]

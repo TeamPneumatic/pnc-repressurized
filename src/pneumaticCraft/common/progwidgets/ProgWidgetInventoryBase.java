@@ -1,0 +1,94 @@
+package pneumaticCraft.common.progwidgets;
+
+import java.util.List;
+
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.common.util.ForgeDirection;
+import pneumaticCraft.client.gui.GuiProgrammer;
+import pneumaticCraft.client.gui.programmer.GuiProgWidgetImportExport;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
+public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase implements ISidedWidget{
+    public boolean[] accessingSides = new boolean[]{true, true, true, true, true, true};
+
+    @Override
+    public void setSides(boolean[] sides){
+        accessingSides = sides;
+    }
+
+    @Override
+    public boolean[] getSides(){
+        return accessingSides;
+    }
+
+    @Override
+    public void getTooltip(List<String> curTooltip){
+        super.getTooltip(curTooltip);
+        curTooltip.add("Accessing sides:");
+        boolean allSides = true;
+        boolean noSides = true;
+        for(boolean bool : accessingSides) {
+            if(bool) {
+                noSides = false;
+            } else {
+                allSides = false;
+            }
+        }
+        if(allSides) {
+            curTooltip.add("All sides");
+        } else if(noSides) {
+            curTooltip.add("No Sides");
+        } else {
+            String tip = "";
+            for(int i = 0; i < 6; i++) {
+                if(accessingSides[i]) {
+                    switch(ForgeDirection.getOrientation(i)){
+                        case UP:
+                            tip += "top, ";
+                            break;
+                        case DOWN:
+                            tip += "bottom, ";
+                            break;
+                        case NORTH:
+                            tip += "north, ";
+                            break;
+                        case SOUTH:
+                            tip += "south, ";
+                            break;
+                        case EAST:
+                            tip += "east, ";
+                            break;
+                        case WEST:
+                            tip += "west, ";
+                            break;
+                    }
+                }
+            }
+            curTooltip.add(tip.substring(0, tip.length() - 2));
+        }
+    }
+
+    @Override
+    public void writeToNBT(NBTTagCompound tag){
+        super.writeToNBT(tag);
+        for(int i = 0; i < 6; i++) {
+            tag.setBoolean(ForgeDirection.getOrientation(i).name(), accessingSides[i]);
+        }
+    }
+
+    @Override
+    public void readFromNBT(NBTTagCompound tag){
+        super.readFromNBT(tag);
+        for(int i = 0; i < 6; i++) {
+            accessingSides[i] = tag.getBoolean(ForgeDirection.getOrientation(i).name());
+        }
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public GuiScreen getOptionWindow(GuiProgrammer guiProgrammer){
+        return new GuiProgWidgetImportExport(this, guiProgrammer);
+    }
+}

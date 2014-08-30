@@ -1,0 +1,163 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            name = "forge"
+            url = "http://files.minecraftforge.net/maven"
+        }
+        maven {
+            name = "sonatype"
+            url = "https://oss.sonatype.org/content/repositories/snapshots/"
+        }
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
+    }
+}
+
+repositories {
+		maven { // The repo from which to get waila
+			name "Mobius Repo"
+			url "http://mobiusstrip.eu/maven"
+		}
+		maven { // the repo from which to get NEI and stuff 
+			name 'CB Repo'
+			url "http://chickenbones.net/maven/"
+		}
+		maven {
+			name = "ic2"
+			url = "http://maven.ic2.player.to/"
+		}
+		maven {
+			name = "IGW"
+			url = "http://maven.k-4u.nl/"
+		}
+}
+
+apply plugin: 'forge'
+
+project.ext {
+	massive = "1"
+    major = "2"
+    minor = "6"
+    mcVersion = "1.7.10"
+}
+
+version = "${project.ext.massive}.${project.ext.major}.${project.minor}"
+group= "pneumaticCraft" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+archivesBaseName = "PneumaticCraft"
+
+if (System.getenv().BUILD_NUMBER != null) {
+    version += "-${System.getenv().BUILD_NUMBER}"
+} else {
+    version += " - err"
+}
+
+def grabDep(url) {
+    ant.get(src: url, dest: 'dep')
+	compile files("dep/" + url.substring(url.lastIndexOf("/")));
+}
+
+dependencies {
+ 
+	println("  Adding dependencies!")
+
+	compile "codechicken:CodeChickenLib:1.7.10-1.1.1.95:dev"
+	compile "codechicken:CodeChickenCore:1.7.10-1.0.2.11:dev"
+	compile "codechicken:NotEnoughItems:1.7.10-1.0.2.26:dev"
+	compile "codechicken:ForgeMultipart:1.7.10-1.1.0.297:dev"
+	compile "mcp.mobius.waila:Waila:1.5.3_1.7.10"
+    compile 'com.mod-buildcraft:buildcraft:6.0.8:dev'
+    compile 'net.industrial-craft:industrialcraft-2:2.2.504-experimental:api'
+	compile "igwmod:IGW-Mod-1.7.10:1.1.0-13:userdev"
+
+	println("  Finished adding dependencies!")
+}
+
+minecraft {
+    version = "${project.ext.mcVersion}-10.13.0.1208"
+    runDir = "minecraft/assets"
+
+    // replacing stuff in the source
+	replace '@MASSIVE@', project.massive
+    replace '@MAJOR@', project.major
+    replace '@MINOR@', project.minor
+    replace '@MC_VERSION@', version
+    if (System.getenv("BUILD_NUMBER") != null) {
+        replace '@BUILD_NUMBER@', System.getenv("BUILD_NUMBER")
+    } else {
+        replace '@BUILD_NUMBER@', 0
+    }
+}
+// configure the source folders
+sourceSets {
+    main {
+        java {
+            srcDir 'src'
+            // exclude 'some exclusion'
+            // include 'some inclusion'
+        }
+        resources {
+            srcDir 'resources'
+            exclude '**/.md' // exclude readme from localization repo
+			exclude 'Models'
+			exclude 'unused resources'
+			exclude '**/.txt'
+			exclude '**/.docx'
+            // exclude 'some exclusion'
+            // include 'some inclusion'
+        }
+    }
+	
+	api {
+    java {
+        srcDir 'api'
+    }
+}
+}
+
+processResources
+{
+    // replace stuff in mcmod.info, nothing else
+    from(sourceSets.main.resources.srcDirs) {
+        include 'mcmod.info'
+                
+        // replace version and mcversion
+        expand 'version':project.version, 'mcversion':project.minecraft.version
+    }
+        
+    // copy everything else, thats not the mcmod.info
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'mcmod.info'
+    }
+}
+
+task("uploadJars", dependsOn:"reobf") {
+    description = "uploads JARs"
+    if (System.getenv("local_maven") != null) {
+        apply plugin: 'maven'
+        uploadArchives {
+            repositories {
+                mavenDeployer {
+                    repository(url: "file://" + System.getenv("local_maven"))
+                }
+            }
+        }
+    }
+}
+
+jar {
+    appendix = "${project.ext.mcVersion}"
+    classifier = "universal"
+}
+
+task userdevJar(type: Jar) {
+    from(sourceSets.main.output)
+	from(sourceSets.main.allSource)
+    appendix = "${project.ext.mcVersion}"
+    classifier = "userdev"
+}
+
+artifacts {
+    archives userdevJar
+}

@@ -23,4 +23,4 @@ environment.properties
 /eclipse
 .gradle/
 .settings/
-build.gradle
+/sounds

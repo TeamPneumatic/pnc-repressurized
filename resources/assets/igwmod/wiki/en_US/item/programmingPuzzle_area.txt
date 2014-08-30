@@ -1,0 +1,196 @@
+Programming Puzzles are used in [link{block/programmer}]programmers [link{}].
+
+[prefix{l}]The 'I-ftr' (Item Filter) piece [prefix{}]
+The Item Filter is a piece solely used as parameter for other pieces. To start, you need at least one (but preferably two) GPS-Tools. Select a coordinate with the GPS-Tool. Then, right click the 'Area' piece, and enter the GPS-Tool's coordinate by clicking 'Select GPS 1...'. Select the GPS tool from your inventory. Repeat this for the second coordinate.
+
+Now you've selected two points and you can create different shaped areas with these. The following is a visual representation of all of them. The Gold Blocks represent the two selected coordinates with the GPS Tool.
+
+[prefix{l}]Filled [prefix{}]
+Takes the two coordinates and creates a cuboid from them and fills it in.
+[image{200,220,0.48,igwmod:textures/ProgrammingPuzzleAreaFilled.png}]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[prefix{l}]Frame [prefix{}]
+Takes the two coordinates and creates a cuboid from them. It takes the blocks on the edges.
+[image{200,530,0.55,igwmod:textures/ProgrammingPuzzleAreaFrame.png}]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[prefix{l}]Wall [prefix{}]
+Takes the two coordinates and creates a cuboid from them. It fills in the sides of the cuboid.
+[image{200,840,0.30,igwmod:textures/ProgrammingPuzzleAreaWall.png}]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[prefix{l}]Sphere [prefix{}]
+The first coordinate is the center of the sphere. The second coordinate is one of the points laying on the outside of the sphere (thus specifying the diameter).
+[image{200,1160,0.40,igwmod:textures/ProgrammingPuzzleAreaSphere.png}]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[prefix{l}]Line [prefix{}]
+A line is drawn between the first and second coordinate.
+[image{200,1470,0.70,igwmod:textures/ProgrammingPuzzleAreaLine.png}]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[prefix{l}]X- and Z-Wall [prefix{}]
+A stair-shaped wall is drawn between the first and second coordinate.
+[image{200,1780,0.55,igwmod:textures/ProgrammingPuzzleAreaXWall.png}]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[prefix{l}]Y-Wall [prefix{}]
+A vertical wall is drawn between the first and second coordinate.
+[image{200,2090,0.35,igwmod:textures/ProgrammingPuzzleAreaYWall.png}]

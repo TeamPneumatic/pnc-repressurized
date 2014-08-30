@@ -1,0 +1,730 @@
+package pneumaticCraft.common;
+
+import ic2.api.item.IC2Items;
+
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
+import java.util.StringTokenizer;
+
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockLiquid;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.item.EntityMinecart;
+import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.passive.EntityAnimal;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.ISidedInventory;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.pathfinding.PathPoint;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityHopper;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.Vec3;
+import net.minecraft.world.ChunkPosition;
+import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.IFluidBlock;
+import net.minecraftforge.oredict.OreDictionary;
+
+import org.lwjgl.opengl.GL11;
+
+import pneumaticCraft.api.item.IInventoryItem;
+import pneumaticCraft.common.thirdparty.ModInteractionUtils;
+import pneumaticCraft.common.tileentity.TileEntitySecurityStation;
+import pneumaticCraft.lib.Log;
+import pneumaticCraft.lib.ModIds;
+import buildcraft.api.power.IPowerReceptor;
+import cpw.mods.fml.common.Optional;
+import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.common.registry.GameRegistry.UniqueIdentifier;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
+public class PneumaticCraftUtils{
+
+    private static Random rand = new Random();
+
+    /**
+     * Returns the ForgeDirection of the facing of the entity given.
+     * @param entity
+     * @param includeUpAndDown false when UP/DOWN should not be included.
+     * @return
+     */
+    public static ForgeDirection getDirectionFacing(EntityLivingBase entity, boolean includeUpAndDown){
+        double yaw = entity.rotationYaw;
+        while(yaw < 0)
+            yaw += 360;
+        yaw = yaw % 360;
+        if(includeUpAndDown) {
+            if(entity.rotationPitch > 45) return ForgeDirection.DOWN;
+            else if(entity.rotationPitch < -45) return ForgeDirection.UP;
+        }
+        if(yaw < 45) return ForgeDirection.SOUTH;
+        else if(yaw < 135) return ForgeDirection.WEST;
+        else if(yaw < 225) return ForgeDirection.NORTH;
+        else if(yaw < 315) return ForgeDirection.EAST;
+
+        else return ForgeDirection.SOUTH;
+    }
+
+    /**
+     * Rotates the render matrix dependant on the given metadata of a block. Used in the render methods of many PneumaticCraft TileEntities.
+     * @param metadata
+     * @return
+     */
+    @SideOnly(Side.CLIENT)
+    public static double rotateMatrixByMetadata(int metadata){
+        ForgeDirection facing = ForgeDirection.getOrientation(metadata & 7);
+        double metaRotation;
+        switch(facing){
+            case UP:
+                metaRotation = 0;
+                GL11.glRotated(90, 1, 0, 0);
+                GL11.glTranslated(0, -1, -1);
+                break;
+            case DOWN:
+                metaRotation = 0;
+                GL11.glRotated(-90, 1, 0, 0);
+                GL11.glTranslated(0, -1, 1);
+                break;
+            case NORTH:
+                metaRotation = 0;
+                break;
+            case EAST:
+                metaRotation = 90;
+                break;
+            case SOUTH:
+                metaRotation = 180;
+                break;
+            default:
+                metaRotation = 270;
+                break;
+        }
+        GL11.glRotated(metaRotation, 0, 1, 0);
+        return metaRotation;
+    }
+
+    public static double[] sin;
+    public static double[] cos;
+    public static double[] tan;
+    public static final int circlePoints = 500;
+
+    /**
+     * Initializes the sin,cos and tan variables, so that they can't be used without having to calculate them every time (render tick).
+     */
+    static {
+        sin = new double[circlePoints];
+        cos = new double[circlePoints];
+        tan = new double[circlePoints];
+
+        for(int i = 0; i < circlePoints; i++) {
+            double angle = 2 * Math.PI * i / circlePoints;
+            sin[i] = Math.sin(angle);
+            cos[i] = Math.cos(angle);
+            tan[i] = Math.tan(angle);
+        }
+    }
+
+    /** this method takes one very long string, and cuts it into lines which have
+     a maxCharPerLine and returns it in a String list.
+     it also preserves color formats. \n can be used to force a carriage
+     return.
+     */
+    public static List<String> convertStringIntoList(String text, int maxCharPerLine){
+        StringTokenizer tok = new StringTokenizer(text, " ");
+        StringBuilder output = new StringBuilder(text.length());
+        List<String> textList = new ArrayList<String>();
+        String color = "";
+        int lineLen = 0;
+        while(tok.hasMoreTokens()) {
+            String word = tok.nextToken();
+            if(word.contains("\u00a7")) {// if there is a text formatter
+                                         // present.
+                for(int i = 0; i < word.length() - 1; i++)
+                    if(word.substring(i, i + 2).contains("\u00a7")) color = word.substring(i, i + 2); // retrieve
+                                                                                                      // the
+                                                                                                      // color
+                                                                                                      // format.
+                lineLen -= 2;// don't count a color formatter with the line
+                             // length.
+            }
+            if(lineLen + word.length() > maxCharPerLine || word.contains("\n")) {
+                word = word.replace("\n", "");
+                textList.add(output.toString());
+                output.delete(0, output.length());
+                output.append(color);
+                lineLen = 0;
+            } else if(lineLen > 0) {
+                output.append(" ");
+                lineLen++;
+            }
+            output.append(word);
+            lineLen += word.length();
+        }
+        textList.add(output.toString());
+        return textList;
+    }
+
+    /**
+     * Takes in the amount of ticks, and converts it into a time notation. 40 ticks will become "2s", while 2400 will result in "2m".
+     * @param ticks
+     * @param fraction When true, 30 ticks will show as '1.5s' instead of '1s'.
+     * @return
+     */
+    public static String convertTicksToMinutesAndSeconds(int ticks, boolean fraction){
+        String part = ticks % 20 * 5 + "";
+        if(part.length() < 2) part = "0" + part;
+        ticks /= 20;// first convert to seconds.
+        if(ticks < 60) {
+            return ticks + (fraction ? "." + part : "") + "s";
+        } else {
+            return ticks / 60 + "m";
+        }
+    }
+
+    /**
+     * Takes in any integer, and converts it into a string with a additional postfix if needed. 2300 will convert into 2k for instance.
+     * @param amount
+     * @return
+     */
+    public static String convertAmountToString(int amount){
+        if(amount < 1000) {
+            return amount + "";
+        } else {
+            return amount / 1000 + "k";
+        }
+    }
+
+    /**
+     * Rounds numbers down at the given decimal. 1.234 with decimal 1 will result in a string holding "1.2"
+     * @param value
+     * @param decimals
+     * @return
+     */
+    public static String roundNumberTo(double value, int decimals){
+        return "" + Math.round(value * Math.pow(10, decimals)) / Math.pow(10, decimals);
+    }
+
+    /**
+     * Rounds numbers down at the given decimal. 1.234 with decimal 1 will result in a string holding "1.2"
+     * @param value
+     * @param decimals
+     * @return
+     */
+    public static String roundNumberTo(float value, int decimals){
+        return "" + Math.round(value * Math.pow(10, decimals)) / Math.pow(10, decimals);
+    }
+
+    /**
+     * used to compare two floats which are tested for having (almost) the same value
+     */
+    public static boolean areFloatsEqual(float f1, float f2){
+        return areFloatsEqual(f1, f2, 0.001F);
+    }
+
+    public static boolean areFloatsEqual(float f1, float f2, float maxDifference){
+        return Math.abs(f1 - f2) < maxDifference;
+    }
+
+    /**
+     * Returns a part of a string, dependant on the progress. When progress is 20, and maxProgress is 100, 1/5th of the string will be returned.
+     * Used to nicely display HUD messages.
+     * @param string
+     * @param progress
+     * @param maxProgress
+     * @return
+     */
+    public static String getPartOfString(String string, int progress, int maxProgress){
+        if(progress > maxProgress) return string;
+        return string.substring(0, string.length() * progress / maxProgress);
+    }
+
+    /**
+     * Returns the maximum length of characters that an item name has of all the stacks given. Used to know on how many to sort on
+     * bubblesorting the names.
+     * @param inventoryStacks
+     * @return
+     */
+    public static int getMaxItemNameLength(ItemStack[] inventoryStacks){
+        int maxLength = 0;
+        for(ItemStack iStack : inventoryStacks) {
+            if(iStack != null) maxLength = Math.max(maxLength, iStack.getDisplayName().length());
+        }
+        return maxLength;
+    }
+
+    /**
+     * Bubblesorts the itemstacks alphabetical, on the given charIndex. when the index is 2 for example, the stack with an item name
+     * that has a 'B' as second letter will sort in front of a name with a 'D' as second letter.
+     * @param stackArray
+     * @param charIndex
+     */
+    public static void bubbleSortOnCharIndex(ItemStack[] stackArray, int charIndex){
+        for(int i = 0; i < stackArray.length - 1; i++) {
+            for(int j = 1; j < stackArray.length - i; j++) {
+                boolean higherStackTooShort = stackArray[j - 1] != null ? stackArray[j - 1].getDisplayName().length() <= charIndex : true;
+                boolean lowerStackTooShort = stackArray[j] != null ? stackArray[j].getDisplayName().length() <= charIndex : true;
+                if(stackArray[j - 1] == null || stackArray[j] != null && (lowerStackTooShort || higherStackTooShort || stackArray[j - 1].getDisplayName().charAt(charIndex) > stackArray[j].getDisplayName().charAt(charIndex))) {
+                    ItemStack temp = stackArray[j - 1];
+                    stackArray[j - 1] = stackArray[j];
+                    stackArray[j] = temp;
+                }
+            }
+        }
+    }
+
+    public static void sortStringArrayAlphabetically(String[] strings){
+        int j;
+        boolean notDone = true; // will determine when the sort is finished
+        String temp;
+        while(notDone) {
+            notDone = false;
+            for(j = 0; j < strings.length - 1; j++) {
+                if(strings[j].compareToIgnoreCase(strings[j + 1]) > 0) { // ascending sort
+                    temp = strings[j];
+                    strings[j] = strings[j + 1]; // swapping
+                    strings[j + 1] = temp;
+                    notDone = true;
+                }
+            }
+        }
+    }
+
+    /**
+     * Sorts the stacks given alphabetically, combines them (so 2x64 will become 1x128), and adds the strings into the given string list.
+     * @param textList
+     * @param stacks
+     */
+    public static void sortCombineItemStacksAndToString(List<String> textList, ItemStack[] originalStacks){
+        ItemStack[] stacks = new ItemStack[originalStacks.length];
+        for(int i = 0; i < originalStacks.length; i++) {
+            if(originalStacks[i] != null) stacks[i] = originalStacks[i].copy();
+        }
+
+        int maxItemNameLength = getMaxItemNameLength(stacks);
+        for(int i = maxItemNameLength - 1; i >= 0; i--)
+            bubbleSortOnCharIndex(stacks, i);
+        int itemCount = 0;
+        ItemStack oldItemStack = null;
+        List<ItemStack> oldInventoryItems = null;
+        for(ItemStack stack : stacks) {
+            if(stack != null) {
+                if(oldItemStack == null || !stack.isItemEqual(oldItemStack) || oldInventoryItems != null && oldInventoryItems.size() > 0) {
+                    if(oldItemStack != null) textList.add("-" + PneumaticCraftUtils.convertAmountToString(itemCount) + " " + oldItemStack.getDisplayName());
+                    if(oldInventoryItems != null) {
+                        int oldSize = textList.size();
+                        sortCombineItemStacksAndToString(textList, oldInventoryItems.toArray(new ItemStack[oldInventoryItems.size()]));
+                        for(int i = oldSize; i < textList.size(); i++) {
+                            textList.set(i, ">> " + textList.get(i));
+                        }
+                    }
+                    oldItemStack = stack;
+                    itemCount = stack.stackSize;
+                } else {
+                    itemCount += stack.stackSize;
+                }
+                oldInventoryItems = getStacksInItem(stack);
+            }
+        }
+        if(itemCount > 0 && oldItemStack != null) {
+            textList.add("-" + PneumaticCraftUtils.convertAmountToString(itemCount) + " " + oldItemStack.getDisplayName());
+            if(oldInventoryItems != null) {
+                int oldSize = textList.size();
+                sortCombineItemStacksAndToString(textList, oldInventoryItems.toArray(new ItemStack[oldInventoryItems.size()]));
+                for(int i = oldSize; i < textList.size(); i++) {
+                    textList.set(i, ">> " + textList.get(i));
+                }
+            }
+        }
+    }
+
+    public static List<ItemStack> getStacksInItem(ItemStack item){
+        List<ItemStack> items = new ArrayList<ItemStack>();
+        if(item.getItem() instanceof IInventoryItem) {
+            ((IInventoryItem)item.getItem()).getStacksInItem(item, items);
+        } else {
+            Iterator<IInventoryItem> iterator = PneumaticCraftAPIHandler.getInstance().inventoryItems.iterator();
+            while(iterator.hasNext()) {
+                try {
+                    iterator.next().getStacksInItem(item, items);
+                } catch(Throwable e) {
+                    Log.error("An InventoryItem crashed:");
+                    e.printStackTrace();
+                    iterator.remove();
+                }
+            }
+        }
+        return items;
+    }
+
+    /**
+     * Returns the redstone level at the given coordinate. Useful when triggering on analog levels. When for example a redstone torch is attached, normally getBlockPowerInput() would return 0.
+     * @param world
+     * @param x
+     * @param y
+     * @param z
+     * @return
+     */
+    public static int getRedstoneLevel(World world, int x, int y, int z){
+        int analogLevel = world.getBlockPowerInput(x, y, z);
+        if(analogLevel == 0) {
+            if(world.isBlockIndirectlyGettingPowered(x, y, z)) return 15;
+        }
+        return analogLevel;
+    }
+
+    /**
+     * This will return true if the given item ID is the same as the item id that can be retrieved from IC2's item key.
+     * @param id
+     * @param ic2ItemKey
+     * @return
+     */
+    @Optional.Method(modid = ModIds.INDUSTRIALCRAFT)
+    public static boolean isIC2Item(Item id, String ic2ItemKey){
+        ItemStack ic2Item = IC2Items.getItem(ic2ItemKey);
+        return ic2Item != null && ic2Item.getItem() == id;
+    }
+
+    /**
+     * Returns true if the given item ID is a IC2 upgrade.
+     * @param id
+     * @return
+     */
+    @Optional.Method(modid = ModIds.INDUSTRIALCRAFT)
+    public static boolean isIC2Upgrade(Item id){
+        return isIC2Item(id, "overclockerUpgrade") || isIC2Item(id, "transformerUpgrade") || isIC2Item(id, "energyStorageUpgrade");
+    }
+
+    public static boolean rotateBuildcraftBlock(World world, int x, int y, int z, boolean everyPowerPipe){
+        ForgeDirection orientation = ForgeDirection.getOrientation(world.getBlockMetadata(x, y, z)).getOpposite();
+        for(int i = orientation.ordinal() + 1; i <= orientation.ordinal() + 6; ++i) {
+            ForgeDirection o = ForgeDirection.VALID_DIRECTIONS[i % 6];
+
+            TileEntity tile = world.getTileEntity(x + o.offsetX, y + o.offsetY, z + o.offsetZ);
+
+            if(isPoweredTile(tile, o, everyPowerPipe)) {
+                world.setBlockMetadataWithNotify(x, y, z, o.getOpposite().ordinal(), 3);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Optional.Method(modid = ModIds.BUILDCRAFT)
+    private static boolean isPoweredTile(TileEntity tile, ForgeDirection side, boolean everyPowerPipe){
+        return tile instanceof IPowerReceptor && (everyPowerPipe || ((IPowerReceptor)tile).getPowerReceiver(side.getOpposite()) != null);
+    }
+
+    public enum EnumBuildcraftModule{
+        BUILDERS, CORE, ENERGY, FACTORY, SILICON, TRANSPORT
+    }
+
+    public static ItemStack getBuildcraftItemStack(EnumBuildcraftModule module, String itemName){
+
+        try {
+            Class buildcraftItems = Class.forName(getItemClassForModule(module));
+
+            Object ret = buildcraftItems.getField(itemName).get(null);
+
+            if(ret instanceof Item) {
+                return new ItemStack((Item)ret);
+            } else if(ret instanceof Block) {
+                return new ItemStack((Block)ret);
+            } else {
+                return null;
+            }
+        } catch(Exception e) {
+            Log.warning("Tried to retrieve a Buildcraft item which failed. Tried to retrieve: " + itemName + ", from module " + getItemClassForModule(module));
+
+            return null;
+        }
+    }
+
+    private static String getItemClassForModule(EnumBuildcraftModule module){
+        switch(module){
+            case BUILDERS:
+                return "buildcraft.BuildCraftBuilders";
+            case CORE:
+                return "buildcraft.BuildCraftCore";
+            case ENERGY:
+                return "buildcraft.BuildCraftEnergy";
+            case FACTORY:
+                return "buildcraft.BuildCraftFactory";
+            case SILICON:
+                return "buildcraft.BuildCraftSilicon";
+            case TRANSPORT:
+                return "buildcraft.BuildCraftTransport";
+        }
+        return "";
+    }
+
+    public static boolean isRenderIDCamo(int renderID){
+        return PneumaticCraftAPIHandler.getInstance().concealableRenderIds.contains(renderID);
+    }
+
+    public static int getProtectingSecurityStations(World world, int x, int y, int z, EntityPlayer player, boolean showRangeLines){
+        int blockingStations = 0;
+        for(TileEntity te : (List<TileEntity>)world.loadedTileEntityList) {
+            if(te instanceof TileEntitySecurityStation) {
+                TileEntitySecurityStation station = (TileEntitySecurityStation)te;
+                if(station.hasValidNetwork()) {
+                    if(Math.abs(station.xCoord - x) <= station.getSecurityRange() && Math.abs(station.yCoord - y) <= station.getSecurityRange() && Math.abs(station.zCoord - z) <= station.getSecurityRange()) {
+                        if(!station.doesAllowPlayer(player)) {
+                            blockingStations++;
+                            if(showRangeLines) station.showRangeLines();
+                        }
+                    }
+                }
+            }
+        }
+        return blockingStations;
+    }
+
+    public static MovingObjectPosition getEntityLookedObject(EntityLivingBase entity){
+        return getEntityLookedObject(entity, 4.5F);
+    }
+
+    public static MovingObjectPosition getEntityLookedObject(EntityLivingBase entity, float maxDistance){
+        Vec3 entityVec;
+        if(entity.worldObj.isRemote && entity instanceof EntityPlayer) {
+            entityVec = Vec3.createVectorHelper(entity.posX, entity.posY + 1.6200000000000001D - entity.yOffset, entity.posZ);
+        } else {
+            entityVec = Vec3.createVectorHelper(entity.posX, entity.posY + entity.getEyeHeight() - entity.yOffset - (entity.isSneaking() ? 0.08 : 0), entity.posZ);
+        }
+        Vec3 entityLookVec = entity.getLook(1.0F);
+        Vec3 maxDistVec = entityVec.addVector(entityLookVec.xCoord * maxDistance, entityLookVec.yCoord * maxDistance, entityLookVec.zCoord * maxDistance);
+        return entity.worldObj.rayTraceBlocks(entityVec, maxDistVec);
+    }
+
+    public static ChunkPosition getEntityLookedBlock(EntityLivingBase entity, float maxDistance){
+        MovingObjectPosition hit = getEntityLookedObject(entity, maxDistance);
+        if(hit == null || hit.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK) {
+            return null;
+        }
+        return new ChunkPosition(hit.blockX, hit.blockY, hit.blockZ);
+    }
+
+    public static boolean isEntityValidForFilter(String filter, Entity entity){
+        if(filter.equals("")) {
+            return true;
+        } else if(filter.startsWith("@")) {//entity type selection
+            filter = filter.substring(1); //cut off the '@'.
+            Class typeClass = null;
+            if(filter.equals("mob")) {
+                typeClass = EntityMob.class;
+            } else if(filter.equals("animal")) {
+                typeClass = EntityAnimal.class;
+            } else if(filter.equals("living")) {
+                typeClass = EntityLivingBase.class;
+            } else if(filter.equals("player")) {
+                typeClass = EntityPlayer.class;
+            } else if(filter.equals("item")) {
+                typeClass = EntityItem.class;
+            } else if(filter.equals("minecart")) {
+                typeClass = EntityMinecart.class;
+            }
+            if(typeClass != null) {
+                return typeClass.isAssignableFrom(entity.getClass());
+            }
+        } else {
+            return entity.getCommandSenderName().toLowerCase().equals(filter.toLowerCase());//TODO when player, check if entity is tamed by the player (see EntityAIAvoidEntity for example)
+        }
+        return false;
+    }
+
+    public static Method getDeclaredMethodIncludingSupertype(Class clazz, String methodName, Class... methodParms){
+        while(!clazz.equals(Object.class)) {
+            try {
+                Method method = clazz.getDeclaredMethod(methodName, methodParms);
+                return method;
+            } catch(Exception e) {
+
+            }
+            clazz = clazz.getSuperclass();
+        }
+        return null;
+    }
+
+    /**
+     * Transfers the given stack to the given inventory. The returned stack is the leftover if there is any.
+     * @param inv
+     * @param stack
+     * @return
+     */
+    public static ItemStack exportStackToInventory(IInventory inv, ItemStack stack, ForgeDirection side){
+        return TileEntityHopper.func_145889_a(inv, stack, side.ordinal());
+    }
+
+    public static ItemStack exportStackToInventory(TileEntity te, ItemStack stack, ForgeDirection side){
+        if(te instanceof IInventory) {
+            return TileEntityHopper.func_145889_a((IInventory)te, stack, side.ordinal());
+        } else {
+            stack = ModInteractionUtils.getInstance().exportStackToTEPipe(te, stack, side);
+            stack = ModInteractionUtils.getInstance().exportStackToBCPipe(te, stack, side);
+            return stack;
+        }
+    }
+
+    public static boolean isOutputInventory(TileEntity te){
+        return te instanceof IInventory || ModInteractionUtils.getInstance().isBCPipe(te) || ModInteractionUtils.getInstance().isTEPipe(te);
+    }
+
+    /**
+     * Returns a set of integers of slots that are accessible for the given sides.
+     * @param inventory
+     * @param accessibleSides a boolean[6], representing for each of the sides if it is accessible or not.
+     * @return
+     */
+    public static Set<Integer> getAccessibleSlotsForInventoryAndSides(IInventory inventory, boolean[] accessibleSides){
+        Set<Integer> slots = new HashSet<Integer>();
+        if(inventory instanceof ISidedInventory) {
+            for(int i = 0; i < accessibleSides.length; i++) {
+                if(accessibleSides[i]) {
+                    int[] accessibleSlots = ((ISidedInventory)inventory).getAccessibleSlotsFromSide(i);
+                    for(int accessibleSlot : accessibleSlots) {
+                        slots.add(accessibleSlot);
+                    }
+                }
+            }
+        } else {
+            for(boolean bool : accessibleSides) {
+                if(bool) {
+                    for(int i = 0; i < inventory.getSizeInventory(); i++) {
+                        slots.add(i);
+                    }
+                    break;
+                }
+            }
+        }
+        return slots;
+    }
+
+    /**
+     * Same as entity.getNavigator().tryMoveToXYZ, however this will only return true if the given entity can actually can get to the final point.
+     * @param entity
+     * @param x
+     * @param y
+     * @param z
+     * @param speed
+     * @return
+     */
+    public static boolean tryNavigateToXYZ(EntityLiving entity, double x, double y, double z, double speed){
+        if(entity.getNavigator().tryMoveToXYZ(x, y, z, speed)) {
+            PathPoint dest = entity.getNavigator().getPath().getFinalPathPoint();
+            return distBetween(x, y, z, dest.xCoord + 0.5, dest.yCoord + 0.5, dest.zCoord + 0.5) < 2;
+        } else {
+            return false;
+        }
+    }
+
+    public static double distBetween(double x1, double y1, double z1, double x2, double y2, double z2){
+        return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2) + Math.pow(z1 - z2, 2));
+    }
+
+    public static double distBetween(ChunkPosition pos, double x, double y, double z){
+        return distBetween(pos.chunkPosX + 0.5, pos.chunkPosY + 0.5, pos.chunkPosZ + 0.5, x, y, z);
+    }
+
+    public static double distBetween(ChunkPosition pos1, ChunkPosition pos2){
+        return distBetween(pos1, pos2.chunkPosX + 0.5, pos2.chunkPosY + 0.5, pos2.chunkPosZ + 0.5);
+    }
+
+    public static double distBetween(Vec3 vec, double x, double y, double z){
+        return distBetween(vec.xCoord, vec.yCoord, vec.zCoord, x, y, z);
+    }
+
+    public static double distBetween(Vec3 vec1, Vec3 vec2){
+        return distBetween(vec1, vec2.xCoord, vec2.yCoord, vec2.zCoord);
+    }
+
+    public static boolean areStacksEqual(ItemStack stack1, ItemStack stack2, boolean checkMeta, boolean checkNBT, boolean checkOreDict, boolean checkModSimilarity){
+        if(stack1 == null && stack2 == null) return true;
+        if(stack1 == null && stack2 != null || stack1 != null && stack2 == null) return false;
+
+        if(checkModSimilarity) {
+            UniqueIdentifier id1 = GameRegistry.findUniqueIdentifierFor(stack1.getItem());
+            if(id1 == null || id1.modId == null) return false;
+            String modId1 = id1.modId;
+            UniqueIdentifier id2 = GameRegistry.findUniqueIdentifierFor(stack2.getItem());
+            if(id2 == null || id2.modId == null) return false;
+            String modId2 = id2.modId;
+            return modId1.equals(modId2);
+        }
+        if(checkOreDict) {
+            return isSameOreDictStack(stack1, stack2);
+        }
+
+        if(stack1.getItem() != stack2.getItem()) return false;
+
+        boolean metaSame = stack1.getItemDamage() == stack2.getItemDamage();
+        boolean nbtSame = stack1.hasTagCompound() ? stack1.getTagCompound().equals(stack2.getTagCompound()) : !stack2.hasTagCompound();
+
+        return (!checkMeta || metaSame) && (!checkNBT || nbtSame);
+    }
+
+    public static boolean isSameOreDictStack(ItemStack stack1, ItemStack stack2){
+        int[] oredictIds = OreDictionary.getOreIDs(stack1);
+        for(int oredictId : oredictIds) {
+            List<ItemStack> oreDictStacks = OreDictionary.getOres(OreDictionary.getOreName(oredictId));//TODO confirm working
+            for(ItemStack oreDictStack : oreDictStacks) {
+                if(OreDictionary.itemMatches(oreDictStack, stack2, false)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public static boolean isBlockLiquid(Block block){
+        return block instanceof BlockLiquid || block instanceof IFluidBlock;
+    }
+
+    public static String getOrientationName(ForgeDirection dir){
+        switch(dir){
+            case UP:
+                return "Top";
+            case DOWN:
+                return "Bottom";
+            case NORTH:
+                return "North";
+            case SOUTH:
+                return "South";
+            case EAST:
+                return "East";
+            case WEST:
+                return "West";
+            default:
+                return "Unknown";
+        }
+    }
+
+    public static void dropItemOnGround(ItemStack stack, World world, double x, double y, double z){
+        float dX = rand.nextFloat() * 0.8F + 0.1F;
+        float dY = rand.nextFloat() * 0.8F + 0.1F;
+        float dZ = rand.nextFloat() * 0.8F + 0.1F;
+
+        EntityItem entityItem = new EntityItem(world, x + dX, y + dY, z + dZ, new ItemStack(stack.getItem(), stack.stackSize, stack.getItemDamage()));
+
+        if(stack.hasTagCompound()) {
+            entityItem.getEntityItem().setTagCompound((NBTTagCompound)stack.getTagCompound().copy());
+        }
+
+        float factor = 0.05F;
+        entityItem.motionX = rand.nextGaussian() * factor;
+        entityItem.motionY = rand.nextGaussian() * factor + 0.2F;
+        entityItem.motionZ = rand.nextGaussian() * factor;
+        world.spawnEntityInWorld(entityItem);
+        stack.stackSize = 0;
+    }
+}

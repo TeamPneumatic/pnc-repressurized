@@ -1,0 +1,284 @@
+# Blocks
+tile.pressureTube.name=Pressure Tube
+tile.airCompressor.name=Air Compressor
+tile.airCannon.name=Air Cannon
+tile.pressureWall.wall.name=Pressure Chamber Wall
+tile.pressureWall.window.name=Pressure Chamber Window
+tile.pressureChamberValve.name=Pressure Chamber Valve
+tile.slimePlant.name=Slime Plant
+tile.creeperPlant.name=Creeper Plant
+tile.squidPlant.name=Squid Plant
+tile.fireFlower.name=Fire Flower
+tile.rainPlant.name=Rain Plant
+tile.enderPlant.name=Ender Plant
+tile.lightningPlant.name=Lightning Plant
+tile.burstPlant.name=Burst Plant
+tile.potionPlant.name=Potion Plant
+tile.heliumPlant.name=Helium Plant
+tile.propulsionPlant.name=Propulsion Plant
+tile.repulsionPlant.name=Repulsion Plant
+tile.flyingFlower.name=Flying Flower
+tile.chopperPlant.name=Chopper Plant
+tile.chargingStation.name=Charging Station
+tile.elevatorBase.name=Elevator Base
+tile.elevatorFrame.name=Elevator Frame
+tile.pressureChamberInterface.name=Pressure Chamber Interface
+tile.vacuumPump.name=Vacuum Pump
+tile.pneumaticDoorBase.name=Pneumatic Door Base
+tile.pneumaticDoor.name=Pneumatic Door
+tile.assemblyIOUnit.name=Assembly IO Unit
+tile.assemblyPlatform.name=Assembly Platform
+tile.assemblyDrill.name=Assembly Drill
+tile.assemblyLaser.name=Assembly Laser
+tile.assemblyController.name=Assembly Controller
+tile.advancedPressureTube.name=Advanced Pressure Tube
+tile.compressedIronBlock.name=Block of Compressed Iron
+tile.uvLightBox.name=UV Light Box
+tile.securityStation.name=Security Station
+tile.universalSensor.name=Universal Sensor
+tile.pneumaticGenerator.name=Pneumatic Generator
+tile.electricCompressor.name=Electric Compressor
+tile.pneumaticEngine.name=Pneumatic Engine
+tile.kineticCompressor.name=Kinetic Compressor
+tile.aerialInterface.name=Aerial Interface
+tile.electrostaticCompressor.name=Electrostatic Compressor
+tile.aphorismTile.name=Aphorism Tile
+tile.omnidirectionalHopper.name=Omnidirectional Hopper
+tile.elevatorCaller.name=Elevator Caller
+tile.programmer.name=Programmer
+tile.droneInterface.name=Drone Interface
+tile.creativeCompressor.name=Creative Compressor
+tile.wheatHarvester.plasticPlants.name=Plastic Plants Harvester Dolley
+
+tile.monsterStoneEgg.name=Silverfish
+
+# Items
+item.gpsTool.name=GPS Tool
+item.machineUpgrade.name=Machine Upgrade
+item.ingotIronCompressed.name=Compressed Iron Ingot
+item.pressureGauge.name=Pressure Gauge
+item.stoneBase.name=Stone Base
+item.cannonBarrel.name=Cannon Barrel
+item.turbineBlade.name=Turbine Blade
+item.plasticPlant.name=Plastic Plant
+item.plastic.name=Plastic
+item.airCanister.name=Air Canister
+item.vortexCannon.name=Vortex Cannon
+item.pneumaticCilinder.name=Pneumatic Cylinder
+item.pneumaticHelmet.name=Pneumatic Helmet
+item.manometer.name=Manometer
+item.turbineRotor.name=Turbine Rotor
+item.assemblyProgram.name=Assembly Program
+item.emptyPCB.name=Empty PCB
+item.unassembledPCB.name=Unassembled PCB
+item.pcbBlueprint.name=PCB Blueprint
+item.etchingAcidBucket.name=Etching Acid Bucket
+item.transistor.name=Transistor
+item.capacitor.name=Capacitor
+item.printedCircuitBoard.name=Printed Circuit Board
+item.failedPCB.name=Failed PCB
+item.networkComponent.name=Network Component
+item.stopWorm.name=STOP! -Worm
+item.nukeVirus.name=Nuke Virus
+item.compressedIronGear.name=Compressed Iron Gear
+item.pneumaticWrench.name=Pneumatic Wrench
+item.drone.name=Drone
+item.programmingPuzzle.name=Programming Puzzle
+item.advancedPCB.name=Advanced PCB
+
+item.plasticPlant0.name=Squid Plant Seeds
+item.plasticPlant1.name=Fire Flower Seeds
+item.plasticPlant2.name=Creeper Plant Seeds
+item.plasticPlant3.name=Slime Plant Seeds
+item.plasticPlant4.name=Rain Plant Seeds
+item.plasticPlant5.name=Ender Plant Seeds
+item.plasticPlant6.name=Lightning Plant Seeds
+item.plasticPlant7.name=Adrenaline Plant Seeds
+item.plasticPlant8.name=Burst Plant Seeds
+item.plasticPlant9.name=Potion Plant Seeds
+item.plasticPlant10.name=Repulsion Plant Seeds
+item.plasticPlant11.name=Helium Plant Seeds
+item.plasticPlant12.name=Chopper Plant Seeds
+item.plasticPlant13.name=Music Plant Seeds
+item.plasticPlant14.name=Propulsion Plant Seeds
+item.plasticPlant15.name=Flying Flower Seeds
+
+item.machineUpgrade0.name=Machine Upgrade: Volume
+item.machineUpgrade1.name=Machine Upgrade: Dispenser
+item.machineUpgrade2.name=Machine Upgrade: Item Life
+item.machineUpgrade3.name=Machine Upgrade: Entity Tracker
+item.machineUpgrade4.name=Machine Upgrade: Block Tracker
+item.machineUpgrade5.name=Machine Upgrade: Speed
+item.machineUpgrade6.name=Machine Upgrade: Item Search
+item.machineUpgrade7.name=Machine Upgrade: Coordinate Tracker
+item.machineUpgrade8.name=Machine Upgrade: Range
+item.machineUpgrade9.name=Machine Upgrade: Security
+
+item.assemblyProgram0.name=Assembly Program: Drill
+item.assemblyProgram1.name=Assembly Program: Laser
+item.assemblyProgram2.name=Assembly Program: Drill & Laser
+
+item.networkComponent0.name=Diagnostic Subroutine
+item.networkComponent1.name=Network API
+item.networkComponent2.name=Network Data Storage
+item.networkComponent3.name=Network IO Port
+item.networkComponent4.name=Network Registry
+item.networkComponent5.name=Network Node
+
+# Tube Modules
+item.safetyTubeModule.name=Safety Tube Module
+item.pressureGaugeModule.name=Pressure Gauge Tube Module
+item.flowDetectorModule.name=Flow Detector Tube Module
+item.airGrateModule.name=Air Grate Tube Module
+item.regulatorTubeModule.name=Regulator Tube Module [Model WIP]
+
+# Programming Puzzles
+programmingPuzzle.start.name=Start
+programmingPuzzle.entityAttack.name=Entity Attack
+programmingPuzzle.area.name=Area
+programmingPuzzle.text.name=Text
+programmingPuzzle.itemFilter.name=Item Filter
+programmingPuzzle.dig.name=Dig Area
+programmingPuzzle.pickupItem.name=Pick up Items
+programmingPuzzle.inventoryExport.name=Export to Inventory
+programmingPuzzle.inventoryImport.name=Import from Inventory
+programmingPuzzle.goto.name=Go to location
+programmingPuzzle.place.name=Place
+programmingPuzzle.computerCraft.name=ComputerCraft Control
+
+# entities
+entity.PneumaticCraft.Drone.name=Drone
+
+# Helmet hacking
+pneumaticHelmet.hacking.hacking=Hacking...
+
+pneumaticHelmet.hacking.result.disarm=Hack to disarm
+pneumaticHelmet.hacking.result.neutralize=Hack to neutralize
+pneumaticHelmet.hacking.result.explode=Hack to explode
+pneumaticHelmet.hacking.result.dispense=Hack to dispense
+pneumaticHelmet.hacking.result.open=Hack to open
+pneumaticHelmet.hacking.result.close=Hack to close
+pneumaticHelmet.hacking.result.activate=Hack to activate
+pneumaticHelmet.hacking.result.deactivate=Hack to deactivate
+pneumaticHelmet.hacking.result.silence=Hack to silence
+pneumaticHelmet.hacking.result.makeSound=Hack to ploink
+pneumaticHelmet.hacking.result.access=Hack to access
+pneumaticHelmet.hacking.result.tame=Hack to tame
+pneumaticHelmet.hacking.result.fungiInfuse=Hack to infuse with fungi genes
+pneumaticHelmet.hacking.result.disable=Hack to disable
+pneumaticHelmet.hacking.result.stopTeleport=Hack to prevent teleporting
+pneumaticHelmet.hacking.result.callBack=Hack to call back
+pneumaticHelmet.hacking.result.resumeTasks=Hack to resume tasks
+
+pneumaticHelmet.hacking.finished.disarmed=Disarmed
+pneumaticHelmet.hacking.finished.neutralized=Neutralized
+pneumaticHelmet.hacking.finished.exploded=Exploded
+pneumaticHelmet.hacking.finished.dispensed=Dispensed
+pneumaticHelmet.hacking.finished.opened=Opened
+pneumaticHelmet.hacking.finished.closed=Closed
+pneumaticHelmet.hacking.finished.activated=Activated
+pneumaticHelmet.hacking.finished.deactivated=Deactivated
+pneumaticHelmet.hacking.finished.silenced=Silenced
+pneumaticHelmet.hacking.finished.makingSound=Ploinking
+pneumaticHelmet.hacking.finished.accessed=Access granted
+pneumaticHelmet.hacking.finished.tamed=Tamed
+pneumaticHelmet.hacking.finished.fungiInfusion=Infused with fungi genes
+pneumaticHelmet.hacking.finished.disabled=Disabled
+pneumaticHelmet.hacking.finished.stopTeleporting=Preventing teleports
+pneumaticHelmet.hacking.finished.calledBack=Called back
+pneumaticHelmet.hacking.finished.resumedTasks=Resumed tasks
+
+########## GUI tabs
+
+# Info
+gui.tab.info=Information
+gui.tab.info.tubeModule=In this interface you can exactly define how a module should behave dependent on the redstone signal. You can define a formula.
+
+# Problems
+gui.tab.problems.redstoneDisallows=Redstone disallows this machine to function.
+
+# Universal Sensor descriptions
+gui.universalSensor.desc.userSetSensor=This is a 'sensor' you can use to emit a constant redstone value. The value emitted is the numeric value inserted into the textbox.
+
+# GUI strings
+gui.entityFilter=Entity filter ('Pig', or '@mob')
+gui.redstone=Redstone
+gui.threshold=Threshold(bar)
+gui.keybindBoundKey=Currently bound to '%s'
+gui.keybindRightClickToSet=Right click to bind key
+gui.setKeybind=Press key to bind
+gui.enableModule=Enable %s
+
+key.pneumaticcraft.category=PneumaticCraft
+# gui.enableModule.coreComponents=Enable Helmet
+
+# Pneumatic Helmet upgrades
+pneumaticHelmet.upgrade.blockTracker=Block Tracker
+pneumaticHelmet.upgrade.entityTracker=Entity Tracker
+pneumaticHelmet.upgrade.itemSearcher=Item Search Upgrade
+pneumaticHelmet.upgrade.coordinateTracker=Coordinate Tracker
+pneumaticHelmet.upgrade.hackingUpgrade=Hacking Upgrade
+pneumaticHelmet.upgrade.coreComponents=Helmet
+
+pneumaticHelmet.message.enableSetting=%s Enabled
+pneumaticHelmet.message.disableSetting=%s Disabled
+
+blockTracker.module.hackables=Hackables
+blockTracker.module.inventories=Inventories
+blockTracker.module.misc=Miscellaneous Blocks
+blockTracker.module.bcEnergy=BuildCraft Energy Blocks
+blockTracker.module.hydraulicraft=Hydraulicraft Power Blocks
+blockTracker.module.ic2=IC2 Power Blocks
+blockTracker.module.thaumcraft=Thaumcraft Aspect Blocks
+
+blockTracker.info.bcEnergy=BuildCraft Energy Block
+blockTracker.info.hydraulicraft=Hydraulicraft Power Block
+blockTracker.info.ic2=IC2 Power Block
+blockTracker.info.thaumcraft=Containing Aspects:
+blockTracker.info.thaumcraft.nodetype=Node Type:
+blockTracker.info.thaumcraft.nodeModifier=Node Modifier:
+
+blockTracker.info.peripheral.title=ComputerCraft Peripheral
+blockTracker.info.peripheral.availableMethods=Available Methods:
+
+blockTracker.message.stopSpam=Stopped spam on %s
+
+# Tooltips
+gui.tooltip.plasticPlant=Origin: %s
+
+# Misc
+itemGroup.tabPneumaticCraft=PneumaticCraft
+
+# Death Messages
+death.attack.pressure1=%1$s is as flat as a pancake!
+death.attack.pressure2=%1$s was compressed to death!
+death.attack.acid1=%1$s was etched to death!
+death.attack.acid2=%1$s turned into a PCB!
+
+# IGW pages
+igwtab.entry.worldgen=Worldgen
+igwtab.entry.baseConcepts=Base Concepts
+igwtab.entry.machineUpgrades=Machine Upgrades
+igwtab.entry.generatingPressure=Generating Pressure
+igwtab.entry.pressureTubes=Tubes & Modules
+igwtab.entry.pressureChamber=Pressure Chamber
+igwtab.entry.elevator=Elevator
+igwtab.entry.pneumaticDoor=Pneumatic Door
+igwtab.entry.printedCircuitBoards=Printed Circuit Boards
+igwtab.entry.assemblyMachines=Assembly Machines
+igwtab.entry.ic2Integration=IC2 Integration
+igwtab.entry.bcIntegration=Buildcraft Integration
+igwtab.entry.ccIntegration=Computercraft Integration
+igwmod.pressureChamber.requiredPressure=Required Pressure
+
+item.programmingPuzzle_start.name=Programming Puzzle: Start
+item.programmingPuzzle_Inv-E.name=Programming Puzzle: Inventory Export
+item.programmingPuzzle_Inv-I.name=Programming Puzzle: Inventory Import
+item.programmingPuzzle_I-pick.name=Programming Puzzle: Pick up Items
+item.programmingPuzzle_dig.name=Programming Puzzle: Dig Blocks
+item.programmingPuzzle_place.name=Programming Puzzle: Place Blocks
+item.programmingPuzzle_goto.name=Programming Puzzle: Go To Location
+item.programmingPuzzle_attk.name=Programming Puzzle: Attack Entity
+item.programmingPuzzle_I-ftr.name=Programming Puzzle: Item Filter
+item.programmingPuzzle_area.name=Programming Puzzle: Area
+item.programmingPuzzle_text.name=Programming Puzzle: Text

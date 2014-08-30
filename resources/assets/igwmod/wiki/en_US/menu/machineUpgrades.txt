@@ -1,0 +1,11 @@
+Most machines in PneumaticCraft have upgrade slots. The sole purpose of these slots is to put in Machine Upgrades. It differs per machine what an upgrade does. To see which upgrades can be put in which machine and what the upgrade does open the Upgrade Tab in the machine. The following is a list of all upgrades with their recipes. Click on the upgrade to navigate to its respective page.
+[crafting{200,110,key=item/machineUpgrade0}]
+[crafting{200,230,key=item/machineUpgrade1}]
+[crafting{200,350,key=item/machineUpgrade2}]
+[crafting{200,470,key=item/machineUpgrade3}]
+[crafting{200,590,key=item/machineUpgrade4}]
+[crafting{200,710,key=item/machineUpgrade5}]
+[crafting{200,830,key=item/machineUpgrade6}]
+[crafting{200,950,key=item/machineUpgrade7}]
+[crafting{200,1070,key=item/machineUpgrade8}]
+[crafting{200,1190,key=item/machineUpgrade9}]

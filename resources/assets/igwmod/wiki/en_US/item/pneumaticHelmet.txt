@@ -1,0 +1,54 @@
+[image{200, 20,0.9, igwmod:textures/pneumaticHelmet.png}]
+What if you mix PneumaticCraft with the HUD from Iron Man? You get a Pneumatic Helmet. With this helmet you can, provided that the correct upgrades are installed, track entities and certain blocks. Although this armor has a connection with Tony Stark's toy, it doesn't mean it's invincible in any way: The armor has the same protection and durability as an iron helmet. To use upgrades installed in the helmet, you'll need to charge the helmet in a [link{block/chargingStation}]Charging Station[link{}].
+[crafting{200, 270, key=item/pneumaticHelmet}]
+
+
+
+
+
+
+
+
+
+
+
+
+
+When you equip the helmet, it will initialize. You can press 'F' (by default) to open up a GUI. This GUI allows you to alter various things. These are module specific, and with more modules installed more options open up. Note that all checkboxes can be toggled, and you can even bind a keybind to them as a shortcut.
+
+Upgrades need to be installed by putting the Helmet in a Charging Station and by clicking on the 'inv.' button. You can now put in the following upgrades:
+
+[image{350, 500, 0.4, igwmod:textures/entityTracker.png}]
+[prefix{l}]Entity Tracker[prefix{}]
+Any living creatures within a range of 16 blocks will automatically be tracked. This works through walls. When this entity is an aggressive mob you'll get a warning. This allows you to prepare for battle (or escape). You can filter which entities need to be tracked in the GUI. This follows the [link{misc/entityFilter}]entity filter[link{}] standard.
+
+[image{200, 600, 0.9, igwmod:textures/blockTracker.png}]
+[prefix{l}]Block Tracker[prefix{}]
+Any special block within 30 blocks will be tracked. The Block Tracker tracks the following list of blocks, of which some have special information about them when you aim your crosshair at the block:
+
+-Inventories, which show their inventory contents. These contents are sorted alphabetical and stacks are  merged together (1k Cobblestone rather than  16 lines of 64 Cobblestone).
+-Mob Spawners, which show the time remaining before another spawn occurs and what mob type the spawner is.
+-Silverfish Blocks
+-End Portal Frames, which displays if an Ender Eye is inserted or not.
+-TNT
+-Tripwire Hooks
+
+As some of these blocks are quite common (chests in a player's house, Silverfish Blocks in a Fortress), the HUD automatically will stop displaying the label if a certain amount of blocks of a certain type is reached. You're still able to get information about a tracked block though, by hovering over it with your crosshair. You can also specify which of the blocks you want to track by unchecking them in the configuration GUI.
+
+[image{350, 1030, 0.4, igwmod:textures/itemSearcher.png}]
+[prefix{l}]Item Search Upgrade[prefix{}]
+Do you know the problem of trying to find a certain item in your base, which has many many chests? You know you have the item, just not in which chest. Well if you know the problem, this upgrade is made for you. You can search for an item in the GUI (shown right). It looks much Creative Mode like, though it won't allow you to spawn in items. You can either browse your way to the item you're looking for by using the scrollbar, or you can type the item name in the search box, which behaves the same Creative Mode search works. When you've found the item, put it in the Target slot. In the example on the right Apples are selected as to be found.
+
+[image{200, 1230, 0.9, igwmod:textures/itemSearcher2.png}]
+The size of the green glow is dependent on the ratio of found items. The leftmost glow is one Apple lying on the ground. The chest in the middle has one Apple in it, and the chest on the right has 62 Apples in it (and therefore has the biggest glow).
+When you now close this GUI, any Apples that are lying on the ground or existing in any inventory (modded/Vanilla) in a range of 16 blocks will get a green glow. The size of this glow is dependent on the ratio of the item at the location and the total found items. Take a look at the picture on the right for an example.
+
+Note that the visibility of the green glow is dependent on whether you have an Entity Tracker and Block Tracker upgrade in your helmet. When you have an Entity Tracker in you are able to search items that are lying on the ground. Having a Block Tracker upgrade in will allow you to search for items that are in inventories.
+
+[image{200, 1522, 0.9, igwmod:textures/coordinateTracker.png}]
+
+[prefix{l}]Coordinate Tracker Upgrade[prefix{}]
+This upgrade will calculate the shortest path to a given location. It uses Minecraft's pathfinding that is used in entities to accomplish this. This is very useful when you're lost in a cave and want to get out. Just open up the options menu and press “Navigate to surface…”. You can also control how much of the path is displayed by switching between X-ray on/off (on means you can see through walls). The color of the lines/tiles are green when you're close to the destination and become more red the further you are from the target.
+
+[prefix{l}]Security Upgrade[prefix{}]
+This upgrade allows you to hack [link{block/securityStation}]Security Stations[link{}]. It has a second functionality: It allows you to hack your surroundings. If you're familiar with the game Watch Dogs that's exactly what you can expect. Lots of things can be hacked: Levers, Mob Spawners, Tripwires, Dispensers, Creepers, Ghasts, etcetera. This can all be done remotely. As soon as soon as the object is withing the Block/Entity Tracker's range you can hack it. A good thing to note is to be able to hack Entities you need an Entity Tracker, and for blocks a Block Tracker.

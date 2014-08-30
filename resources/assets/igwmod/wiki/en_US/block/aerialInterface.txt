@@ -1,0 +1,5 @@
+[image{320, 20, 0.5, igwmod:textures/aerialInterface.png}]
+The Aerial Interface uses a very high-tech technology to transmit items from and to a player. This player is set to the player who placed the Aerial Interface. Then, when enough pressure is applied, this block can be interacted with just like any other inventory (like Chests). You can use hoppers to insert items for example. Instead of landing in the block,  it gets sent directly to the player who placed the block. You can pump items in and out of player inventories directly with this block. You can keep a player supplied with 64 torches with a Applied Energistics Import Bus connected to the Aerial Interface for example.
+
+Note that upgrades for the Aerial Interface can be pumped in/out the top, main inventory (hotbar + inventory) can be accessed from the sides and the armor slots from the bottom.
+[crafting{200, 300, key=block/aerialInterface}]
