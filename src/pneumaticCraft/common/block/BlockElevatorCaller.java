@@ -9,9 +9,9 @@ import net.minecraft.util.Vec3;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-import pneumaticCraft.common.PneumaticCraftUtils;
 import pneumaticCraft.common.tileentity.TileEntityElevatorBase;
 import pneumaticCraft.common.tileentity.TileEntityElevatorCaller;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.Textures;
 
 public class BlockElevatorCaller extends BlockPneumaticCraft{

@@ -15,12 +15,12 @@ import net.minecraft.util.StatCollector;
 import org.lwjgl.opengl.GL11;
 
 import pneumaticCraft.client.gui.widget.GuiAnimatedStat;
-import pneumaticCraft.common.PneumaticCraftUtils;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.inventory.ContainerOmnidirectionalHopper;
 import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.PacketGuiButton;
 import pneumaticCraft.common.tileentity.TileEntityOmnidirectionalHopper;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.GuiConstants;
 import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.relauncher.Side;
@@ -118,8 +118,13 @@ public class GuiOmnidirectionalHopper extends GuiPneumaticContainerBase{
     private List<String> getStatus(){
         List<String> textList = new ArrayList<String>();
         textList.add(EnumChatFormatting.GRAY + "Item transfer speed:");
-        int transferInterval = te.getItemTransferInterval(8);
-        textList.add(EnumChatFormatting.BLACK.toString() + (transferInterval == 0 ? "20" : PneumaticCraftUtils.roundNumberTo(20F / transferInterval, 1)) + " items/s");
+        int itemsPer = te.getMaxItems();
+        if(itemsPer > 1) {
+            textList.add(EnumChatFormatting.BLACK.toString() + itemsPer + " items/tick");
+        } else {
+            int transferInterval = te.getItemTransferInterval();
+            textList.add(EnumChatFormatting.BLACK.toString() + (transferInterval == 0 ? "20" : PneumaticCraftUtils.roundNumberTo(20F / transferInterval, 1)) + " items/s");
+        }
         return textList;
     }
 

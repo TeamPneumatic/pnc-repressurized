@@ -26,10 +26,10 @@ import pneumaticCraft.api.recipe.PressureChamberRecipe;
 import pneumaticCraft.api.tileentity.IPneumaticMachine;
 import pneumaticCraft.common.Config;
 import pneumaticCraft.common.DamageSourcePneumaticCraft;
-import pneumaticCraft.common.PneumaticCraftUtils;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.Itemss;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.Names;
 import pneumaticCraft.lib.PneumaticValues;
 

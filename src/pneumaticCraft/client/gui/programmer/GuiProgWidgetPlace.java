@@ -7,9 +7,9 @@ import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.client.gui.widget.GuiRadioButton;
 import pneumaticCraft.client.gui.widget.IGuiWidget;
-import pneumaticCraft.common.PneumaticCraftUtils;
 import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetPlace;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 
 public class GuiProgWidgetPlace extends GuiProgWidgetDigAndPlace{
 

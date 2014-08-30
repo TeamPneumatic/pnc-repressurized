@@ -16,13 +16,13 @@ import net.minecraftforge.common.util.ForgeDirection;
 import org.lwjgl.opengl.GL11;
 
 import pneumaticCraft.client.gui.widget.GuiAnimatedStat;
-import pneumaticCraft.common.PneumaticCraftUtils;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.inventory.Container4UpgradeSlots;
 import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.PacketGuiButton;
 import pneumaticCraft.common.network.PacketUpdateTextfield;
 import pneumaticCraft.common.tileentity.TileEntityElevatorBase;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.GuiConstants;
 import pneumaticCraft.lib.PneumaticValues;
 import pneumaticCraft.lib.Textures;

@@ -13,11 +13,11 @@ import net.minecraftforge.common.util.ForgeDirection;
 import org.lwjgl.opengl.GL11;
 
 import pneumaticCraft.client.model.IBaseModel;
-import pneumaticCraft.common.PneumaticCraftUtils;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.PacketOpenTubeModuleGui;
 import pneumaticCraft.common.thirdparty.ModInteractionUtils;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.BBConstants;
 import pneumaticCraft.lib.ModIds;
 import codechicken.lib.data.MCDataInput;

@@ -51,7 +51,6 @@ import pneumaticCraft.client.render.RenderLaser;
 import pneumaticCraft.client.render.RenderProgressingLine;
 import pneumaticCraft.common.Config;
 import pneumaticCraft.common.PneumaticCraftAPIHandler;
-import pneumaticCraft.common.PneumaticCraftUtils;
 import pneumaticCraft.common.ai.DroneAIManager;
 import pneumaticCraft.common.ai.DroneAIManager.EntityAITaskEntry;
 import pneumaticCraft.common.ai.DroneGoToChargingStation;
@@ -68,6 +67,7 @@ import pneumaticCraft.common.network.PacketShowWireframe;
 import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetGoToLocation;
 import pneumaticCraft.common.tileentity.TileEntityProgrammer;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.PneumaticValues;
 
 import com.mojang.authlib.GameProfile;

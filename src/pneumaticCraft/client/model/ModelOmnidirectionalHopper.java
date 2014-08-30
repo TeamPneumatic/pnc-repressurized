@@ -9,8 +9,8 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import org.lwjgl.opengl.GL11;
 
-import pneumaticCraft.common.PneumaticCraftUtils;
 import pneumaticCraft.common.tileentity.TileEntityOmnidirectionalHopper;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.Textures;
 
 public class ModelOmnidirectionalHopper extends ModelBase implements IBaseModel{

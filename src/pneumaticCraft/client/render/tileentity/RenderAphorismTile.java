@@ -10,8 +10,8 @@ import net.minecraft.util.EnumChatFormatting;
 import org.lwjgl.opengl.GL11;
 
 import pneumaticCraft.client.gui.GuiAphorismTile;
-import pneumaticCraft.common.PneumaticCraftUtils;
 import pneumaticCraft.common.tileentity.TileEntityAphorismTile;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.BBConstants;
 import cpw.mods.fml.client.FMLClientHandler;
 

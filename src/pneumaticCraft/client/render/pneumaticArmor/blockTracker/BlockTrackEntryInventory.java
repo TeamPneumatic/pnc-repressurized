@@ -11,7 +11,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import pneumaticCraft.api.client.pneumaticHelmet.IBlockTrackEntry;
 import pneumaticCraft.client.render.pneumaticArmor.HUDHandler;
-import pneumaticCraft.common.PneumaticCraftUtils;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.Log;
 import cpw.mods.fml.relauncher.ReflectionHelper;
 

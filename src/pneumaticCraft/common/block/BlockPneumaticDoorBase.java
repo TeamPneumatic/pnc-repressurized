@@ -9,9 +9,9 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.PneumaticCraft;
-import pneumaticCraft.common.PneumaticCraftUtils;
 import pneumaticCraft.common.tileentity.TileEntityPneumaticDoor;
 import pneumaticCraft.common.tileentity.TileEntityPneumaticDoorBase;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.proxy.CommonProxy;
 
 public class BlockPneumaticDoorBase extends BlockPneumaticCraftModeled{

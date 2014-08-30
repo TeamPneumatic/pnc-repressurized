@@ -16,7 +16,7 @@ import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.api.item.IPressurizable;
 import pneumaticCraft.client.render.pneumaticArmor.RenderCoordWireframe;
 import pneumaticCraft.common.NBTUtil;
-import pneumaticCraft.common.PneumaticCraftUtils;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.ModIds;
 import pneumaticCraft.lib.PneumaticValues;
 import pneumaticCraft.lib.Textures;

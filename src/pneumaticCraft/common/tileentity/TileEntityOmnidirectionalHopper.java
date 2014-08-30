@@ -1,9 +1,9 @@
 package pneumaticCraft.common.tileentity;
 
-import net.minecraft.block.BlockHopper;
+import java.util.List;
+
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -11,19 +11,114 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
-import net.minecraft.tileentity.IHopper;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityHopper;
-import net.minecraft.util.Facing;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.util.ForgeDirection;
-import pneumaticCraft.common.PneumaticCraftUtils;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.Itemss;
+import pneumaticCraft.common.util.IOHelper;
 
-public class TileEntityOmnidirectionalHopper extends TileEntityHopper implements IGUIButtonSensitive, ISidedInventory{
+public class TileEntityOmnidirectionalHopper extends TileEntity implements IGUIButtonSensitive, ISidedInventory{
     private ForgeDirection inputDir = ForgeDirection.UNKNOWN;
-    private ItemStack[] upgradeInventory = new ItemStack[4];
+    private ItemStack[] inventory = new ItemStack[9];
     public int redstoneMode;
+    private int cooldown;
+
+    @Override
+    public void updateEntity(){
+        if(!getWorldObj().isRemote && --cooldown <= 0 && redstoneAllows()) {
+            int maxItems = getMaxItems();
+            boolean success = suckInItem(maxItems);
+            success |= exportItem(maxItems);
+
+            if(!success) {
+                cooldown = 8;//When insertion failed, do a long cooldown as penalty for performance.
+            } else {
+                cooldown = getItemTransferInterval();
+            }
+        }
+    }
+
+    private boolean exportItem(int maxItems){
+        ForgeDirection dir = ForgeDirection.getOrientation(getBlockMetadata());
+        TileEntity neighbor = IOHelper.getNeighbor(this, dir);
+        for(int i = 0; i < 5; i++) {
+            ItemStack stack = inventory[i];
+            if(stack != null) {
+                ItemStack exportedStack = stack.copy();
+                if(exportedStack.stackSize > maxItems) exportedStack.stackSize = maxItems;
+                int count = exportedStack.stackSize;
+
+                ItemStack remainder = IOHelper.insert(neighbor, exportedStack, dir.getOpposite(), false);
+                int exportedItems = count - (remainder == null ? 0 : remainder.stackSize);
+
+                stack.stackSize -= exportedItems;
+                if(stack.stackSize <= 0) {
+                    setInventorySlotContents(i, null);
+                }
+                maxItems -= exportedItems;
+                if(maxItems <= 0) return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean suckInItem(int maxItems){
+        TileEntity inputInv = IOHelper.getNeighbor(this, inputDir);
+        boolean success = false;
+
+        //Suck from input inventory.
+        for(int i = 0; i < maxItems; i++) {
+            ItemStack extracted = IOHelper.extractOneItem(inputInv, inputDir.getOpposite(), true);//simulate extraction from the neighbor.
+            if(extracted != null) {
+                ItemStack inserted = IOHelper.insert(this, extracted, ForgeDirection.UNKNOWN, false);//if we can insert the item in this hopper.
+                if(inserted == null) {
+                    IOHelper.extractOneItem(inputInv, inputDir.getOpposite(), false); //actually retrieve it from the neighbor.
+                    success = true;
+                } else {
+                    break;
+                }
+            } else {
+                break;
+            }
+        }
+
+        AxisAlignedBB box = AxisAlignedBB.getBoundingBox(xCoord + inputDir.offsetX, yCoord + inputDir.offsetY, zCoord + inputDir.offsetZ, xCoord + inputDir.offsetX + 1, yCoord + inputDir.offsetY + 1, zCoord + inputDir.offsetZ + 1);
+        for(EntityItem entity : (List<EntityItem>)worldObj.getEntitiesWithinAABB(EntityItem.class, box)) {
+            if(!entity.isDead) {
+                ItemStack remainder = IOHelper.insert(this, entity.getEntityItem(), ForgeDirection.UNKNOWN, false);
+                if(remainder == null) {
+                    entity.setDead();
+                    success = true;//Don't set true when the stack could not be fully consumes, as that means next insertion there won't be any room.
+                }
+            }
+        }
+
+        return success;
+    }
+
+    public int getMaxItems(){
+        int upgrades = getUpgrades(ItemMachineUpgrade.UPGRADE_SPEED_DAMAGE, 5, 8);
+        if(upgrades > 5) {
+            return Math.min((int)Math.pow(2, upgrades - 5), 256);
+        } else {
+            return 1;
+        }
+    }
+
+    public int getItemTransferInterval(){
+        return 8 / (1 + getUpgrades(ItemMachineUpgrade.UPGRADE_SPEED_DAMAGE, 5, 8));
+    }
+
+    protected int getUpgrades(int upgradeDamage, int startSlot, int endSlot){
+        int upgrades = 0;
+        for(int i = startSlot; i <= endSlot; i++) {
+            if(getStackInSlot(i) != null && getStackInSlot(i).getItem() == Itemss.machineUpgrade && getStackInSlot(i).getItemDamage() == upgradeDamage) {
+                upgrades += getStackInSlot(i).stackSize;
+            }
+        }
+        return upgrades;
+    }
 
     public void setDirection(ForgeDirection dir){
         inputDir = dir;
@@ -40,15 +135,15 @@ public class TileEntityOmnidirectionalHopper extends TileEntityHopper implements
         tag.setInteger("redstoneMode", redstoneMode);
 
         NBTTagList tagList = new NBTTagList();
-        for(int currentIndex = 0; currentIndex < upgradeInventory.length; ++currentIndex) {
-            if(upgradeInventory[currentIndex] != null) {
+        for(int currentIndex = 0; currentIndex < inventory.length; ++currentIndex) {
+            if(inventory[currentIndex] != null) {
                 NBTTagCompound tagCompound = new NBTTagCompound();
                 tagCompound.setByte("Slot", (byte)currentIndex);
-                upgradeInventory[currentIndex].writeToNBT(tagCompound);
+                inventory[currentIndex].writeToNBT(tagCompound);
                 tagList.appendTag(tagCompound);
             }
         }
-        tag.setTag("Upgrades", tagList);
+        tag.setTag("Inventory", tagList);
     }
 
     @Override
@@ -57,13 +152,13 @@ public class TileEntityOmnidirectionalHopper extends TileEntityHopper implements
         inputDir = ForgeDirection.getOrientation(tag.getInteger("inputDir"));
         redstoneMode = tag.getInteger("redstoneMode");
 
-        NBTTagList tagList = tag.getTagList("Upgrades", 10);
-        upgradeInventory = new ItemStack[4];
+        NBTTagList tagList = tag.getTagList("Inventory", 10);
+        inventory = new ItemStack[9];
         for(int i = 0; i < tagList.tagCount(); ++i) {
             NBTTagCompound tagCompound = tagList.getCompoundTagAt(i);
             byte slot = tagCompound.getByte("Slot");
-            if(slot >= 0 && slot < 4) {
-                upgradeInventory[slot] = ItemStack.loadItemStackFromNBT(tagCompound);
+            if(slot >= 0 && slot < 9) {
+                inventory[slot] = ItemStack.loadItemStackFromNBT(tagCompound);
             }
         }
     }
@@ -93,7 +188,7 @@ public class TileEntityOmnidirectionalHopper extends TileEntityHopper implements
      */
     @Override
     public int getSizeInventory(){
-        return super.getSizeInventory() + 4;
+        return inventory.length;
     }
 
     /**
@@ -101,33 +196,27 @@ public class TileEntityOmnidirectionalHopper extends TileEntityHopper implements
      */
     @Override
     public ItemStack getStackInSlot(int par1){
-        return par1 < super.getSizeInventory() ? super.getStackInSlot(par1) : upgradeInventory[par1 - super.getSizeInventory()];
+        return inventory[par1];
     }
 
     @Override
     public ItemStack decrStackSize(int slot, int amount){
-        int invSize = super.getSizeInventory();
-        if(slot < invSize) {
-            return super.decrStackSize(slot, amount);
-        } else {
-            ItemStack itemStack = getStackInSlot(slot);
-            if(itemStack != null) {
-                if(itemStack.stackSize <= amount) {
+        ItemStack itemStack = getStackInSlot(slot);
+        if(itemStack != null) {
+            if(itemStack.stackSize <= amount) {
+                setInventorySlotContents(slot, null);
+            } else {
+                itemStack = itemStack.splitStack(amount);
+                if(itemStack.stackSize == 0) {
                     setInventorySlotContents(slot, null);
-                } else {
-                    itemStack = itemStack.splitStack(amount);
-                    if(itemStack.stackSize == 0) {
-                        setInventorySlotContents(slot, null);
-                    }
                 }
             }
-            return itemStack;
         }
+        return itemStack;
     }
 
     @Override
     public ItemStack getStackInSlotOnClosing(int slot){
-
         ItemStack itemStack = getStackInSlot(slot);
         if(itemStack != null) {
             setInventorySlotContents(slot, null);
@@ -137,33 +226,9 @@ public class TileEntityOmnidirectionalHopper extends TileEntityHopper implements
 
     @Override
     public void setInventorySlotContents(int slot, ItemStack itemStack){
-        if(slot < super.getSizeInventory()) {
-            super.setInventorySlotContents(slot, itemStack);
-        } else {
-            upgradeInventory[slot - super.getSizeInventory()] = itemStack;
-            if(itemStack != null && itemStack.stackSize > getInventoryStackLimit()) {
-                itemStack.stackSize = getInventoryStackLimit();
-            }
-        }
-    }
-
-    @Override
-    public boolean func_145887_i(){//updateHopper
-        if(worldObj != null && !worldObj.isRemote) {
-            if(!func_145888_j() && redstoneAllows()) {//isCoolingDown
-                boolean flag = insertItemToInventory();
-                flag = suckItemIntoHopper(this) || flag;
-
-                if(flag) {
-                    func_145896_c(8);//setTransferCooldown
-                    markDirty();
-                    return true;
-                }
-            }
-
-            return false;
-        } else {
-            return false;
+        inventory[slot] = itemStack;
+        if(itemStack != null && itemStack.stackSize > getInventoryStackLimit()) {
+            itemStack.stackSize = getInventoryStackLimit();
         }
     }
 
@@ -194,143 +259,6 @@ public class TileEntityOmnidirectionalHopper extends TileEntityHopper implements
     }
 
     @Override
-    public void func_145896_c(int par1){//setTransferCooldown
-        super.func_145896_c(par1 > 0 ? getItemTransferInterval(par1) : 0);
-    }
-
-    public int getItemTransferInterval(int baseValue){
-        return baseValue / (1 + getUpgrades(ItemMachineUpgrade.UPGRADE_SPEED_DAMAGE, 5, 8));
-    }
-
-    protected int getUpgrades(int upgradeDamage, int startSlot, int endSlot){
-        int upgrades = 0;
-        for(int i = startSlot; i <= endSlot; i++) {
-            if(getStackInSlot(i) != null && getStackInSlot(i).getItem() == Itemss.machineUpgrade && getStackInSlot(i).getItemDamage() == upgradeDamage) {
-                upgrades += getStackInSlot(i).stackSize;
-            }
-        }
-        return upgrades;
-    }
-
-    /**
-     * Inserts one item from the hopper into the inventory the hopper is pointing at.
-     */
-    private boolean insertItemToInventory(){
-        IInventory iinventory = getOutputInventory();
-        TileEntity te = null;
-        ForgeDirection side = ForgeDirection.getOrientation(BlockHopper.getDirectionFromMetadata(getBlockMetadata()));
-        if(iinventory == null) {
-            te = worldObj.getTileEntity(xCoord + side.offsetX, yCoord + side.offsetY, zCoord + side.offsetZ);
-        }
-        side = side.getOpposite();
-        if(iinventory != null || te != null) {
-            for(int i = 0; i < 5; ++i) {
-                if(getStackInSlot(i) != null) {
-                    ItemStack itemstack = getStackInSlot(i).copy();
-                    itemstack.stackSize = 1;
-
-                    ItemStack itemstack1 = null;
-                    if(iinventory != null) {
-                        itemstack1 = func_145889_a(iinventory, itemstack, side.ordinal());//insertStack
-                    } else {
-                        itemstack1 = PneumaticCraftUtils.exportStackToInventory(te, itemstack, side);
-                    }
-
-                    if(itemstack1 == null || itemstack1.stackSize == 0) {
-                        decrStackSize(i, 1);
-                        if(iinventory != null) {
-                            iinventory.markDirty();
-                        } else {
-                            te.markDirty();
-                        }
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Gets the inventory the hopper is pointing at.
-     */
-    private IInventory getOutputInventory(){
-        int i = BlockHopper.getDirectionFromMetadata(getBlockMetadata());
-        return func_145893_b(getWorldObj(), xCoord + Facing.offsetsXForSide[i], yCoord + Facing.offsetsYForSide[i], zCoord + Facing.offsetsZForSide[i]);//getInventoryAtLocation
-    }
-
-    public static boolean suckItemsIntoHopper(IHopper hopper){
-        return ((TileEntityOmnidirectionalHopper)hopper).suckItemIntoHopper(hopper);
-    }
-
-    /**
-     * Sucks one item into the given hopper from an inventory or EntityItem above it.
-     */
-    public boolean suckItemIntoHopper(IHopper par0Hopper){
-        IInventory iinventory = getInventory(par0Hopper);
-
-        if(iinventory != null) {
-            byte b0 = (byte)inputDir.getOpposite().ordinal();
-
-            if(iinventory instanceof ISidedInventory && b0 > -1) {
-                ISidedInventory isidedinventory = (ISidedInventory)iinventory;
-                int[] aint = isidedinventory.getAccessibleSlotsFromSide(b0);
-
-                for(int element : aint) {
-                    if(insertStackFromInventory(par0Hopper, iinventory, element, b0)) {
-                        return true;
-                    }
-                }
-            } else {
-                int j = iinventory.getSizeInventory();
-
-                for(int k = 0; k < j; ++k) {
-                    if(insertStackFromInventory(par0Hopper, iinventory, k, b0)) {
-                        return true;
-                    }
-                }
-            }
-        } else {
-            EntityItem entityitem = func_145897_a(par0Hopper.getWorldObj(), par0Hopper.getXPos() + inputDir.offsetX, par0Hopper.getYPos() + inputDir.offsetY, par0Hopper.getZPos() + inputDir.offsetZ);
-
-            if(entityitem != null) {
-                return func_145898_a(par0Hopper, entityitem);
-            }
-        }
-
-        return false;
-    }
-
-    /**
-    * Looks for anything, that can hold items (like chests, furnaces, etc.) one block above the given hopper.
-    */
-    public IInventory getInventory(IHopper par0Hopper){
-        return func_145893_b(par0Hopper.getWorldObj(), par0Hopper.getXPos() + inputDir.offsetX, par0Hopper.getYPos() + inputDir.offsetY, par0Hopper.getZPos() + inputDir.offsetZ);
-    }
-
-    private static boolean insertStackFromInventory(IHopper par0Hopper, IInventory par1IInventory, int par2, int par3){
-        ItemStack itemstack = par1IInventory.getStackInSlot(par2);
-
-        if(itemstack != null && canExtractItemFromInventory(par1IInventory, itemstack, par2, par3)) {
-            ItemStack itemstack1 = itemstack.copy();
-            ItemStack itemstack2 = func_145889_a(par0Hopper, par1IInventory.decrStackSize(par2, 1), -1);
-
-            if(itemstack2 == null || itemstack2.stackSize == 0) {
-                par1IInventory.markDirty();
-                return true;
-            }
-
-            par1IInventory.setInventorySlotContents(par2, itemstack1);
-        }
-
-        return false;
-    }
-
-    private static boolean canExtractItemFromInventory(IInventory par0IInventory, ItemStack par1ItemStack, int par2, int par3){
-        return !(par0IInventory instanceof ISidedInventory) || ((ISidedInventory)par0IInventory).canExtractItem(par2, par1ItemStack, par3);
-    }
-
-    @Override
     public boolean isItemValidForSlot(int par1, ItemStack par2ItemStack){
         return par1 < 5;
     }
@@ -351,4 +279,25 @@ public class TileEntityOmnidirectionalHopper extends TileEntityHopper implements
     public boolean canExtractItem(int var1, ItemStack var2, int var3){
         return var1 < 5;
     }
+
+    @Override
+    public boolean hasCustomInventoryName(){
+        return false;
+    }
+
+    @Override
+    public int getInventoryStackLimit(){
+        return 64;
+    }
+
+    @Override
+    public boolean isUseableByPlayer(EntityPlayer p_70300_1_){
+        return true;
+    }
+
+    @Override
+    public void openInventory(){}
+
+    @Override
+    public void closeInventory(){}
 }

@@ -16,7 +16,7 @@ import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.World;
 import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.client.gui.programmer.GuiProgWidgetArea;
-import pneumaticCraft.common.PneumaticCraftUtils;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;

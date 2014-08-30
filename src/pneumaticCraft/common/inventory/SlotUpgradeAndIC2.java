@@ -4,8 +4,8 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import pneumaticCraft.common.PneumaticCraftUtils;
 import pneumaticCraft.common.item.Itemss;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 
 class SlotUpgradeAndIC2 extends Slot{
 

@@ -13,7 +13,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.common.IShearable;
 import net.minecraftforge.common.util.ForgeDirection;
-import pneumaticCraft.common.PneumaticCraftUtils;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 
 public class EntityVortex extends EntityThrowable{
 

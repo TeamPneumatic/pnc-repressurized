@@ -4,7 +4,7 @@ import net.minecraft.client.renderer.Tessellator;
 
 import org.lwjgl.opengl.GL11;
 
-import pneumaticCraft.common.PneumaticCraftUtils;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

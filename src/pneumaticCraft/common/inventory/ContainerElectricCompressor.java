@@ -6,9 +6,9 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import pneumaticCraft.common.PneumaticCraftUtils;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.tileentity.TileEntityPneumaticBase;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 
 public class ContainerElectricCompressor extends Container{
     IInventory te;

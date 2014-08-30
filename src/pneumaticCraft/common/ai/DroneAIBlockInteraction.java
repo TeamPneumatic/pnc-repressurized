@@ -9,13 +9,13 @@ import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.util.ForgeDirection;
-import pneumaticCraft.common.PneumaticCraftUtils;
 import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.progwidgets.IBlockOrdered;
 import pneumaticCraft.common.progwidgets.IBlockOrdered.EnumOrder;
 import pneumaticCraft.common.progwidgets.ProgWidgetAreaItemBase;
 import pneumaticCraft.common.progwidgets.ProgWidgetDigAndPlace;
 import pneumaticCraft.common.progwidgets.ProgWidgetPlace;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 
 public abstract class DroneAIBlockInteraction extends EntityAIBase{
     protected final EntityDrone drone;

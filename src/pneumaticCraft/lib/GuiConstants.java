@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import net.minecraft.util.EnumChatFormatting;
-import pneumaticCraft.common.PneumaticCraftUtils;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

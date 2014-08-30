@@ -10,7 +10,7 @@ import net.minecraft.util.EnumChatFormatting;
 import org.lwjgl.util.Rectangle;
 
 import pneumaticCraft.api.universalSensor.EntityPollSensor;
-import pneumaticCraft.common.PneumaticCraftUtils;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

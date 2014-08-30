@@ -18,7 +18,6 @@ import org.lwjgl.opengl.GL11;
 
 import pneumaticCraft.api.universalSensor.ISensorSetting;
 import pneumaticCraft.client.gui.widget.GuiAnimatedStat;
-import pneumaticCraft.common.PneumaticCraftUtils;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.inventory.ContainerUniversalSensor;
 import pneumaticCraft.common.item.Itemss;
@@ -27,6 +26,7 @@ import pneumaticCraft.common.network.PacketGuiButton;
 import pneumaticCraft.common.network.PacketUpdateTextfield;
 import pneumaticCraft.common.sensor.SensorHandler;
 import pneumaticCraft.common.tileentity.TileEntityUniversalSensor;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.GuiConstants;
 import pneumaticCraft.lib.PneumaticValues;
 import pneumaticCraft.lib.Textures;

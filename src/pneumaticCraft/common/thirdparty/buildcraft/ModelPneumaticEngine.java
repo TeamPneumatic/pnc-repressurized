@@ -17,7 +17,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import org.lwjgl.opengl.GL11;
 
 import pneumaticCraft.client.model.IBaseModel;
-import pneumaticCraft.common.PneumaticCraftUtils;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.client.FMLClientHandler;
 

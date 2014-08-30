@@ -6,12 +6,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
 import pneumaticCraft.api.recipe.AssemblyRecipe;
-import pneumaticCraft.common.PneumaticCraftUtils;
 import pneumaticCraft.common.tileentity.TileEntityAssemblyController;
 import pneumaticCraft.common.tileentity.TileEntityAssemblyDrill;
 import pneumaticCraft.common.tileentity.TileEntityAssemblyIOUnit;
 import pneumaticCraft.common.tileentity.TileEntityAssemblyLaser;
 import pneumaticCraft.common.tileentity.TileEntityAssemblyPlatform;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.GuiConstants;
 
 public abstract class AssemblyProgram{

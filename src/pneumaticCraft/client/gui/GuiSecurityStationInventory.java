@@ -16,7 +16,6 @@ import net.minecraft.util.StatCollector;
 import org.lwjgl.opengl.GL11;
 
 import pneumaticCraft.client.gui.widget.GuiAnimatedStat;
-import pneumaticCraft.common.PneumaticCraftUtils;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.inventory.ContainerSecurityStationInventory;
 import pneumaticCraft.common.network.NetworkHandler;
@@ -24,6 +23,7 @@ import pneumaticCraft.common.network.PacketGuiButton;
 import pneumaticCraft.common.network.PacketSecurityStationAddUser;
 import pneumaticCraft.common.network.PacketUpdateTextfield;
 import pneumaticCraft.common.tileentity.TileEntitySecurityStation;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.GuiConstants;
 import pneumaticCraft.lib.Textures;
 

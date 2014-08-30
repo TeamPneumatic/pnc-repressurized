@@ -16,12 +16,12 @@ import net.minecraftforge.common.util.ForgeDirection;
 import org.lwjgl.opengl.GL11;
 
 import pneumaticCraft.client.gui.widget.GuiAnimatedStat;
-import pneumaticCraft.common.PneumaticCraftUtils;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.inventory.ContainerPneumaticDoor;
 import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.PacketGuiButton;
 import pneumaticCraft.common.tileentity.TileEntityPneumaticDoorBase;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.GuiConstants;
 import pneumaticCraft.lib.PneumaticValues;
 import pneumaticCraft.lib.Textures;

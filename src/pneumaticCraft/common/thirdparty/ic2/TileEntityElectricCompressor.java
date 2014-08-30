@@ -13,9 +13,9 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.common.Config;
-import pneumaticCraft.common.PneumaticCraftUtils;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.tileentity.TileEntityPneumaticBase;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.Names;
 import pneumaticCraft.lib.PneumaticValues;
 

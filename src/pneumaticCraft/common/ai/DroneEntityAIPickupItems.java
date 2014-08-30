@@ -13,9 +13,9 @@ import net.minecraft.util.MathHelper;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import pneumaticCraft.common.EventHandlerPneumaticCraft;
-import pneumaticCraft.common.PneumaticCraftUtils;
 import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.progwidgets.ProgWidgetAreaItemBase;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 
 public class DroneEntityAIPickupItems extends EntityAIBase{
     private final EntityDrone drone;

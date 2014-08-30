@@ -10,8 +10,8 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-import pneumaticCraft.common.PneumaticCraftUtils;
 import pneumaticCraft.common.tileentity.TileEntityOmnidirectionalHopper;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.proxy.CommonProxy;
 
 public class BlockOmnidirectionalHopper extends BlockPneumaticCraftModeled{

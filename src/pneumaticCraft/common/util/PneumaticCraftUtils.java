@@ -1,4 +1,4 @@
-package pneumaticCraft.common;
+package pneumaticCraft.common.util;
 
 import ic2.api.item.IC2Items;
 
@@ -40,6 +40,7 @@ import net.minecraftforge.oredict.OreDictionary;
 import org.lwjgl.opengl.GL11;
 
 import pneumaticCraft.api.item.IInventoryItem;
+import pneumaticCraft.common.PneumaticCraftAPIHandler;
 import pneumaticCraft.common.thirdparty.ModInteractionUtils;
 import pneumaticCraft.common.tileentity.TileEntitySecurityStation;
 import pneumaticCraft.lib.Log;

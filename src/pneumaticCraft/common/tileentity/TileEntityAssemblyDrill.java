@@ -5,8 +5,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.api.recipe.AssemblyRecipe;
-import pneumaticCraft.common.PneumaticCraftUtils;
 import pneumaticCraft.common.recipes.programs.AssemblyProgram;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.TileEntityConstants;
 
 public class TileEntityAssemblyDrill extends TileEntityAssemblyRobot{

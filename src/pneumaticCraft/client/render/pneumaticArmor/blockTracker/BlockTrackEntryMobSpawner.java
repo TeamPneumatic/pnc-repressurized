@@ -10,7 +10,7 @@ import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import pneumaticCraft.api.client.pneumaticHelmet.IBlockTrackEntry;
 import pneumaticCraft.client.render.pneumaticArmor.hacking.block.HackableMobSpawner;
-import pneumaticCraft.common.PneumaticCraftUtils;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 
 public class BlockTrackEntryMobSpawner implements IBlockTrackEntry {
 

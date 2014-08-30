@@ -6,8 +6,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-import pneumaticCraft.common.PneumaticCraftUtils;
 import pneumaticCraft.common.block.BlockPneumaticCraftModeled;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.proxy.CommonProxy;
 
 public class BlockPneumaticEngine extends BlockPneumaticCraftModeled{

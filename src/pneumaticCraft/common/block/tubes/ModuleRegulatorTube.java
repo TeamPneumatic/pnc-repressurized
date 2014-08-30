@@ -11,7 +11,7 @@ import pneumaticCraft.api.tileentity.IAirHandler;
 import pneumaticCraft.api.tileentity.IPneumaticMachine;
 import pneumaticCraft.client.model.IBaseModel;
 import pneumaticCraft.client.model.ModelSafetyValve;
-import pneumaticCraft.common.PneumaticCraftUtils;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.Names;
 
 public class ModuleRegulatorTube extends TubeModuleRedstoneReceiving implements IInfluenceDispersing{

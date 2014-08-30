@@ -5,9 +5,9 @@ import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.client.gui.widget.GuiCheckBox;
 import pneumaticCraft.client.gui.widget.IGuiWidget;
-import pneumaticCraft.common.PneumaticCraftUtils;
 import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetInventoryBase;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 
 public class GuiProgWidgetImportExport extends GuiProgWidgetOptionBase{
 

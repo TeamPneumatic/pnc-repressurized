@@ -25,7 +25,7 @@ import pneumaticCraft.api.client.IGuiAnimatedStat;
 import pneumaticCraft.client.ClientTickHandler;
 import pneumaticCraft.client.gui.GuiPneumaticContainerBase;
 import pneumaticCraft.client.gui.INeedTickUpdate;
-import pneumaticCraft.common.PneumaticCraftUtils;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.GuiConstants;
 import pneumaticCraft.lib.Log;
 import pneumaticCraft.lib.Textures;

@@ -15,8 +15,8 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import pneumaticCraft.api.tileentity.IAirHandler;
 import pneumaticCraft.api.tileentity.IPneumaticMachine;
-import pneumaticCraft.common.PneumaticCraftUtils;
 import pneumaticCraft.common.item.Itemss;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.Names;
 import pneumaticCraft.lib.PneumaticValues;
 import cpw.mods.fml.relauncher.Side;

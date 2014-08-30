@@ -6,8 +6,8 @@ import net.minecraft.tileentity.TileEntity;
 
 import org.lwjgl.opengl.GL11;
 
-import pneumaticCraft.common.PneumaticCraftUtils;
 import pneumaticCraft.common.tileentity.TileEntityElevatorCaller;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 
 public class RenderElevatorCaller extends TileEntitySpecialRenderer{
 

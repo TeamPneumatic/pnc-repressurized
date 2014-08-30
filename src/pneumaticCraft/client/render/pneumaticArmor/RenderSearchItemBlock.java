@@ -10,8 +10,8 @@ import net.minecraft.world.World;
 
 import org.lwjgl.opengl.GL11;
 
-import pneumaticCraft.common.PneumaticCraftUtils;
 import pneumaticCraft.common.item.ItemPneumaticArmor;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 import cpw.mods.fml.client.FMLClientHandler;
 
 public class RenderSearchItemBlock{

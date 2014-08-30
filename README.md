@@ -4,7 +4,9 @@ PneumaticCraft
 This is the source of PneumaticCraft. It's licenced under GPLv3, so have fun. Also have fun learning from the code where possible!
 I'm open to pull requests.
 
-I know parts of the code still need refactoring, notably TileEntity rendering.
+If you have any questions about the source, you can bug me on IRC, in #PneumaticCraft on Espernet.
+
+I know parts of the code still need refactoring, notably TileEntity rendering and container syncing.
 
 =======
 Developping with PneumaticCraft

@@ -7,8 +7,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 import pneumaticCraft.PneumaticCraft;
-import pneumaticCraft.common.PneumaticCraftUtils;
 import pneumaticCraft.common.tileentity.TileEntityPneumaticDoorBase;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
 public class RenderPneumaticDoorCamo implements ISimpleBlockRenderingHandler{

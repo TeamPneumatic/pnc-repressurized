@@ -12,8 +12,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import pneumaticCraft.api.tileentity.IPneumaticMachine;
-import pneumaticCraft.common.PneumaticCraftUtils;
 import pneumaticCraft.common.tileentity.TileEntityPneumaticBase;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 
 public class WailaHandler implements IWailaDataProvider{
 

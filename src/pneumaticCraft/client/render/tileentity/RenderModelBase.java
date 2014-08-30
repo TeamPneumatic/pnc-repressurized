@@ -8,7 +8,7 @@ import net.minecraftforge.client.IItemRenderer;
 import org.lwjgl.opengl.GL11;
 
 import pneumaticCraft.client.model.IBaseModel;
-import pneumaticCraft.common.PneumaticCraftUtils;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 import cpw.mods.fml.client.FMLClientHandler;
 
 public class RenderModelBase extends TileEntitySpecialRenderer implements IItemRenderer{

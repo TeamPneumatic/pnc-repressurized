@@ -6,7 +6,7 @@ import java.util.List;
 
 import net.minecraft.command.IEntitySelector;
 import net.minecraft.entity.Entity;
-import pneumaticCraft.common.PneumaticCraftUtils;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 
 public class StringFilterEntitySelector implements IEntitySelector{
 

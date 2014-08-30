@@ -18,12 +18,12 @@ import net.minecraftforge.common.util.ForgeDirection;
 import org.apache.commons.lang3.tuple.Pair;
 
 import pneumaticCraft.api.tileentity.IPneumaticMachine;
-import pneumaticCraft.common.PneumaticCraftUtils;
 import pneumaticCraft.common.block.BlockElevatorBase;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.thirdparty.computercraft.LuaConstant;
 import pneumaticCraft.common.thirdparty.computercraft.LuaMethod;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.Log;
 import pneumaticCraft.lib.ModIds;
 import pneumaticCraft.lib.Names;

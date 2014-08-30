@@ -18,6 +18,7 @@ import pneumaticCraft.api.drone.IPathfindHandler;
 import pneumaticCraft.api.item.IInventoryItem;
 import pneumaticCraft.client.render.pneumaticArmor.blockTracker.BlockTrackEntryList;
 import pneumaticCraft.client.render.pneumaticArmor.hacking.HackableHandler.HackingEntityProperties;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.Log;
 
 /**

@@ -6,7 +6,7 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.client.model.IBaseModel;
 import pneumaticCraft.client.model.ModelSafetyValve;
-import pneumaticCraft.common.PneumaticCraftUtils;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.Names;
 
 public class ModuleSafetyValve extends TubeModuleRedstoneReceiving{

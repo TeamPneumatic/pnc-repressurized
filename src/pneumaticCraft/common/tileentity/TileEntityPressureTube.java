@@ -13,7 +13,6 @@ import net.minecraftforge.common.util.ForgeDirection;
 import org.apache.commons.lang3.tuple.Pair;
 
 import pneumaticCraft.api.tileentity.IPneumaticMachine;
-import pneumaticCraft.common.PneumaticCraftUtils;
 import pneumaticCraft.common.block.tubes.IInfluenceDispersing;
 import pneumaticCraft.common.block.tubes.ModuleAirGrate;
 import pneumaticCraft.common.block.tubes.ModuleFlowDetector;
@@ -23,6 +22,7 @@ import pneumaticCraft.common.block.tubes.ModuleRegulatorTube;
 import pneumaticCraft.common.block.tubes.ModuleSafetyValve;
 import pneumaticCraft.common.block.tubes.TubeModule;
 import pneumaticCraft.common.thirdparty.ModInteractionUtils;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.Log;
 import pneumaticCraft.lib.PneumaticValues;
 import cpw.mods.fml.relauncher.Side;

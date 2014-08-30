@@ -3,10 +3,10 @@ package pneumaticCraft.client.gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.ForgeDirection;
-import pneumaticCraft.common.PneumaticCraftUtils;
 import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.PacketGuiButton;
 import pneumaticCraft.common.tileentity.TileEntityCreativeCompressor;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 
 public class GuiCreativeCompressor extends GuiPneumaticScreenBase{
 

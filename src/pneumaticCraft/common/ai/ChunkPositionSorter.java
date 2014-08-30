@@ -4,7 +4,7 @@ import java.util.Comparator;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.world.ChunkPosition;
-import pneumaticCraft.common.PneumaticCraftUtils;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 
 public class ChunkPositionSorter implements Comparator{
 

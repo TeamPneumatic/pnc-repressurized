@@ -13,10 +13,10 @@ import org.lwjgl.opengl.GL11;
 
 import pneumaticCraft.client.gui.widget.GuiAnimatedStat;
 import pneumaticCraft.client.gui.widget.WidgetTooltipArea;
-import pneumaticCraft.common.PneumaticCraftUtils;
 import pneumaticCraft.common.block.tubes.TubeModuleRedstoneReceiving;
 import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.PacketUpdatePressureModule;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.client.FMLClientHandler;
 
