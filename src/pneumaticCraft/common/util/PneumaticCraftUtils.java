@@ -55,6 +55,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class PneumaticCraftUtils{
 
     private static Random rand = new Random();
+    private static final List<Item> inventoryItemBlacklist = new ArrayList<Item>();
 
     /**
      * Returns the ForgeDirection of the facing of the entity given.
@@ -352,8 +353,14 @@ public class PneumaticCraftUtils{
 
     public static List<ItemStack> getStacksInItem(ItemStack item){
         List<ItemStack> items = new ArrayList<ItemStack>();
-        if(item.getItem() instanceof IInventoryItem) {
-            ((IInventoryItem)item.getItem()).getStacksInItem(item, items);
+        if(item.getItem() instanceof IInventoryItem && !inventoryItemBlacklist.contains(item.getItem())) {
+            try {
+                ((IInventoryItem)item.getItem()).getStacksInItem(item, items);
+            } catch(Throwable e) {
+                Log.error("An InventoryItem crashed:");
+                e.printStackTrace();
+                inventoryItemBlacklist.add(item.getItem());
+            }
         } else {
             Iterator<IInventoryItem> iterator = PneumaticCraftAPIHandler.getInstance().inventoryItems.iterator();
             while(iterator.hasNext()) {
