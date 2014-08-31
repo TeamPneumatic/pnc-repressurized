@@ -129,6 +129,8 @@ public class ClientProxy extends CommonProxy{
     public void registerRenders(){
         SPECIAL_RENDER_TYPE_VALUE = RenderingRegistry.getNextAvailableRenderId();
         CAMO_RENDER_ID = RenderingRegistry.getNextAvailableRenderId();
+
+        RenderingRegistry.registerBlockHandler(new RenderModelBase());
         // RenderingRegistry.registerBlockHandler(new RendererSpecialBlock());
         registerBaseModelRenderer(Blockss.airCompressor, TileEntityAirCompressor.class, new ModelAirCompressor());
         registerBaseModelRenderer(Blockss.assemblyController, TileEntityAssemblyController.class, new ModelAssemblyController());

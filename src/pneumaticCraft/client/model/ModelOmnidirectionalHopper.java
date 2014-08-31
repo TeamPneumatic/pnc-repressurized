@@ -99,7 +99,7 @@ public class ModelOmnidirectionalHopper extends ModelBase implements IBaseModel{
     }
 
     @Override
-    public void renderModel(float size, TileEntity tile, float partialTicks){
+    public void renderStatic(float size, TileEntity tile){
         GL11.glPushMatrix();
         TileEntityOmnidirectionalHopper te = null;
         if(tile instanceof TileEntityOmnidirectionalHopper) {
@@ -131,5 +131,10 @@ public class ModelOmnidirectionalHopper extends ModelBase implements IBaseModel{
     @Override
     public boolean rotateModelBasedOnBlockMeta(){
         return false;
+    }
+
+    @Override
+    public void renderDynamic(float size, TileEntity te, float partialTicks){
+
     }
 }

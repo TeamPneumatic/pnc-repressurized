@@ -400,13 +400,8 @@ public class ModelElevatorBase extends ModelBase implements IBaseModel{
     }
 
     @Override
-    public void renderModel(float size, TileEntity te, float partialTicks){
-        if(te instanceof TileEntityElevatorBase) {
-            TileEntityElevatorBase tile = (TileEntityElevatorBase)te;
-            renderModel(1 / 16F, tile.oldExtension + (tile.extension - tile.oldExtension) * partialTicks, tile.sidesConnected);
-        } else {
-            renderModel(1 / 16F, 0, new boolean[]{false, false, false, false, false, false});
-        }
+    public void renderStatic(float size, TileEntity te){
+
     }
 
     @Override
@@ -417,6 +412,16 @@ public class ModelElevatorBase extends ModelBase implements IBaseModel{
     @Override
     public boolean rotateModelBasedOnBlockMeta(){
         return false;
+    }
+
+    @Override
+    public void renderDynamic(float size, TileEntity te, float partialTicks){
+        if(te instanceof TileEntityElevatorBase) {
+            TileEntityElevatorBase tile = (TileEntityElevatorBase)te;
+            renderModel(1 / 16F, tile.oldExtension + (tile.extension - tile.oldExtension) * partialTicks, tile.sidesConnected);
+        } else {
+            renderModel(1 / 16F, 0, new boolean[]{false, false, false, false, false, false});
+        }
     }
 
 }

@@ -149,7 +149,12 @@ public class ModelAssemblyIOUnit extends ModelBase implements IBaseModel{
     }
 
     @Override
-    public void renderModel(float size, TileEntity te, float partialTicks){
+    public void renderStatic(float size, TileEntity te){
+
+    }
+
+    @Override
+    public void renderDynamic(float size, TileEntity te, float partialTicks){
         FMLClientHandler.instance().getClient().getTextureManager().bindTexture(te != null && te.getBlockMetadata() == 0 ? Textures.MODEL_ASSEMBLY_ROBOT_BLUE : Textures.MODEL_ASSEMBLY_ROBOT_ORANGE);
         if(te instanceof TileEntityAssemblyIOUnit) {
             TileEntityAssemblyIOUnit tile = (TileEntityAssemblyIOUnit)te;

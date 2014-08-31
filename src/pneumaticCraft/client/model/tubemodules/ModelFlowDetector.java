@@ -77,16 +77,8 @@ public class ModelFlowDetector extends ModelBase implements IBaseModel{
     }
 
     @Override
-    public void renderModel(float size, TileEntity tile, float partialTicks){
-        Back1.render(size);
-        Back2.render(size);
-        Back3.render(size);
-        Back4.render(size);
-        int parts = 9;
-        for(int i = 0; i < parts; i++) {
-            Shape1.rotateAngleZ = (float)i / parts * 2 * (float)Math.PI + (flowDetector != null ? flowDetector.oldRotation + (flowDetector.rotation - flowDetector.oldRotation) * partialTicks : 0);
-            Shape1.render(size);
-        }
+    public void renderStatic(float size, TileEntity tile){
+
     }
 
     @Override
@@ -97,6 +89,19 @@ public class ModelFlowDetector extends ModelBase implements IBaseModel{
     @Override
     public boolean rotateModelBasedOnBlockMeta(){
         return false;
+    }
+
+    @Override
+    public void renderDynamic(float size, TileEntity te, float partialTicks){
+        Back1.render(size);
+        Back2.render(size);
+        Back3.render(size);
+        Back4.render(size);
+        int parts = 9;
+        for(int i = 0; i < parts; i++) {
+            Shape1.rotateAngleZ = (float)i / parts * 2 * (float)Math.PI + (flowDetector != null ? flowDetector.oldRotation + (flowDetector.rotation - flowDetector.oldRotation) * partialTicks : 0);
+            Shape1.render(size);
+        }
     }
 
 }

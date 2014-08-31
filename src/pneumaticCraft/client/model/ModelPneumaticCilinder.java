@@ -55,7 +55,7 @@ public class ModelPneumaticCilinder extends ModelBase implements IBaseModel{
     }
 
     @Override
-    public void renderModel(float size, TileEntity tile, float partialTicks){
+    public void renderStatic(float size, TileEntity tile){
         renderModel(size);
     }
 
@@ -80,6 +80,11 @@ public class ModelPneumaticCilinder extends ModelBase implements IBaseModel{
     @Override
     public boolean rotateModelBasedOnBlockMeta(){
         return false;
+    }
+
+    @Override
+    public void renderDynamic(float size, TileEntity te, float partialTicks){
+
     }
 
 }

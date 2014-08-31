@@ -195,7 +195,7 @@ public class ModelThirdPartyCompressor extends ModelBase implements IBaseModel{
     }
 
     @Override
-    public void renderModel(float size, TileEntity tile, float partialTicks){
+    public void renderStatic(float size, TileEntity tile){
         if(type == Type.RF) TopRF.render(size);
         else if(type == Type.EU) TopEU.render(size);
         else if(type == Type.MJ) TopMJ.render(size);
@@ -226,6 +226,12 @@ public class ModelThirdPartyCompressor extends ModelBase implements IBaseModel{
     @Override
     public boolean rotateModelBasedOnBlockMeta(){
         return true;
+    }
+
+    @Override
+    public void renderDynamic(float size, TileEntity te, float partialTicks){
+        // TODO Auto-generated method stub
+
     }
 
 }

@@ -140,7 +140,7 @@ public abstract class TubeModule implements ISidedPart{
             FMLClientHandler.instance().getClient().getTextureManager().bindTexture(getModel().getModelTexture());
 
             PneumaticCraftUtils.rotateMatrixByMetadata(dir.ordinal());
-            getModel().renderModel(0.0625F, null, partialTicks);
+            getModel().renderStatic(0.0625F, null);
             GL11.glPopMatrix();
         }
     }

@@ -108,22 +108,8 @@ public class ModelAssemblyPlatform extends ModelBase implements IBaseModel{
     }
 
     @Override
-    public void renderModel(float size, TileEntity te, float partialTicks){
-        if(te instanceof TileEntityAssemblyPlatform) {
-            TileEntityAssemblyPlatform tile = (TileEntityAssemblyPlatform)te;
-            EntityItem ghostEntityItem = null;
-            if(tile.getHeldStack() != null) {
-                ghostEntityItem = new EntityItem(tile.getWorldObj());
-                ghostEntityItem.hoverStart = 0.0F;
-                ghostEntityItem.setEntityItemStack(tile.getHeldStack());
-            }
-            boolean fancySetting = RenderManager.instance.options.fancyGraphics;
-            RenderManager.instance.options.fancyGraphics = true;
-            renderModel(size, tile.oldClawProgress + (tile.clawProgress - tile.oldClawProgress) * partialTicks, ghostEntityItem);
-            RenderManager.instance.options.fancyGraphics = fancySetting;
-        } else {
-            renderModel(size, 0, null);
-        }
+    public void renderStatic(float size, TileEntity te){
+
     }
 
     public void renderModel(float size, float progress, EntityItem carriedItem){
@@ -185,6 +171,25 @@ public class ModelAssemblyPlatform extends ModelBase implements IBaseModel{
     @Override
     public boolean rotateModelBasedOnBlockMeta(){
         return false;
+    }
+
+    @Override
+    public void renderDynamic(float size, TileEntity te, float partialTicks){
+        if(te instanceof TileEntityAssemblyPlatform) {
+            TileEntityAssemblyPlatform tile = (TileEntityAssemblyPlatform)te;
+            EntityItem ghostEntityItem = null;
+            if(tile.getHeldStack() != null) {
+                ghostEntityItem = new EntityItem(tile.getWorldObj());
+                ghostEntityItem.hoverStart = 0.0F;
+                ghostEntityItem.setEntityItemStack(tile.getHeldStack());
+            }
+            boolean fancySetting = RenderManager.instance.options.fancyGraphics;
+            RenderManager.instance.options.fancyGraphics = true;
+            renderModel(size, tile.oldClawProgress + (tile.clawProgress - tile.oldClawProgress) * partialTicks, ghostEntityItem);
+            RenderManager.instance.options.fancyGraphics = fancySetting;
+        } else {
+            renderModel(size, 0, null);
+        }
     }
 
 }

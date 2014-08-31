@@ -112,7 +112,7 @@ public class ModelPneumaticGenerator extends ModelBase implements IBaseModel{
     }
 
     @Override
-    public void renderModel(float size, TileEntity tile, float partialTicks){
+    public void renderStatic(float size, TileEntity tile){
         base1.render(size);
         base2.render(size);
         front.render(size);
@@ -122,5 +122,11 @@ public class ModelPneumaticGenerator extends ModelBase implements IBaseModel{
         cyl3.render(size);
         cyl4.render(size);
         cyl5.render(size);
+    }
+
+    @Override
+    public void renderDynamic(float size, TileEntity te, float partialTicks){
+        // TODO Auto-generated method stub
+
     }
 }

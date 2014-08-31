@@ -187,7 +187,7 @@ public class ModelChargingStation extends ModelBase implements IBaseModel{
     }
 
     @Override
-    public void renderModel(float size, TileEntity te, float partialTicks){
+    public void renderStatic(float size, TileEntity te){
         renderModel(size);
         if(te instanceof TileEntityChargingStation) {
             TileEntityChargingStation tile = (TileEntityChargingStation)te;
@@ -211,6 +211,11 @@ public class ModelChargingStation extends ModelBase implements IBaseModel{
                 RenderManager.instance.options.fancyGraphics = fancySetting;
             }
         }
+    }
+
+    @Override
+    public void renderDynamic(float size, TileEntity te, float partialTicks){
+
     }
 
     public void renderModel(float size){

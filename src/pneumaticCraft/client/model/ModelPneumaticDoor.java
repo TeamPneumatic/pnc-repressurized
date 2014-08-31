@@ -117,7 +117,22 @@ public class ModelPneumaticDoor extends ModelBase implements IBaseModel{
     }
 
     @Override
-    public void renderModel(float size, TileEntity tile, float partialTicks){
+    public void renderStatic(float size, TileEntity tile){
+
+    }
+
+    @Override
+    public ResourceLocation getModelTexture(){
+        return Textures.MODEL_PNEUMATIC_DOOR;
+    }
+
+    @Override
+    public boolean rotateModelBasedOnBlockMeta(){
+        return true;
+    }
+
+    @Override
+    public void renderDynamic(float size, TileEntity tile, float partialTicks){
         if(tile instanceof TileEntityPneumaticDoor) {
             float rotation = ((TileEntityPneumaticDoor)tile).oldRotation + (((TileEntityPneumaticDoor)tile).rotation - ((TileEntityPneumaticDoor)tile).oldRotation) * partialTicks;
             boolean rightGoing = ((TileEntityPneumaticDoor)tile).rightGoing;
@@ -130,17 +145,6 @@ public class ModelPneumaticDoor extends ModelBase implements IBaseModel{
             GL11.glScalef(0.5F, 0.5F, 0.5F);
             renderModel(size);
         }
-
-    }
-
-    @Override
-    public ResourceLocation getModelTexture(){
-        return Textures.MODEL_PNEUMATIC_DOOR;
-    }
-
-    @Override
-    public boolean rotateModelBasedOnBlockMeta(){
-        return true;
     }
 
 }

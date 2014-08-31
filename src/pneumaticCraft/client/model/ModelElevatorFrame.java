@@ -77,7 +77,7 @@ public class ModelElevatorFrame extends ModelBase implements IBaseModel{
     }
 
     @Override
-    public void renderModel(float size, TileEntity tile, float partialTicks){
+    public void renderStatic(float size, TileEntity tile){
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         GL11.glColor4d(0.5D, 0.5D, 0.5D, 1);
         if(tile != null) {
@@ -108,6 +108,11 @@ public class ModelElevatorFrame extends ModelBase implements IBaseModel{
     @Override
     public boolean rotateModelBasedOnBlockMeta(){
         return false;
+    }
+
+    @Override
+    public void renderDynamic(float size, TileEntity te, float partialTicks){
+
     }
 
 }
