@@ -127,6 +127,7 @@ public class RenderModelBase extends TileEntitySpecialRenderer implements IItemR
         GL11.glTranslatef(x, y, z);
         GL11.glRotatef(-90F, 1F, 0, 0);
         if(model.getModelTexture() != null) FMLClientHandler.instance().getClient().getTextureManager().bindTexture(model.getModelTexture());
+        model.renderDynamic(0.0625F, null, 0);
         model.renderStatic(1F / 16F, null);
         GL11.glPopMatrix();
     }

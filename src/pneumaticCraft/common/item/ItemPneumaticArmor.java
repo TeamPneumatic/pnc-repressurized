@@ -2,9 +2,13 @@ package pneumaticCraft.common.item;
 
 import java.util.List;
 
+import net.minecraft.client.model.ModelBiped;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
@@ -12,12 +16,19 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraftforge.client.model.AdvancedModelLoader;
+import net.minecraftforge.client.model.IModelCustom;
+
+import org.lwjgl.opengl.GL11;
+
 import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.api.item.IPressurizable;
+import pneumaticCraft.client.ClientEventHandler;
 import pneumaticCraft.client.render.pneumaticArmor.RenderCoordWireframe;
 import pneumaticCraft.common.NBTUtil;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.ModIds;
+import pneumaticCraft.lib.Models;
 import pneumaticCraft.lib.PneumaticValues;
 import pneumaticCraft.lib.Textures;
 import pneumaticCraft.proxy.CommonProxy;
@@ -31,6 +42,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class ItemPneumaticArmor extends ItemArmor implements IPressurizable, IChargingStationGUIHolderItem, IRepairable{
     private final String textureLocation;
     private final int volume;
+    private IModelCustom helmetModel;
 
     public ItemPneumaticArmor(String textureLocation, ItemArmor.ArmorMaterial par2EnumArmorMaterial, int par3,
             int par4, int volume, int maxAir){
@@ -188,4 +200,44 @@ public class ItemPneumaticArmor extends ItemArmor implements IPressurizable, ICh
     public int getGuiID(){
         return CommonProxy.GUI_ID_PNEUMATIC_HELMET;
     }
+
+    /**
+     * Override this method to have an item handle its own armor rendering.
+     * 
+     * @param  entityLiving  The entity wearing the armor 
+     * @param  itemStack  The itemStack to render the model of 
+     * @param  armorSlot  0=head, 1=torso, 2=legs, 3=feet
+     * 
+     * @return  A ModelBiped to render instead of the default
+     */
+    @Override
+    @SideOnly(Side.CLIENT)
+    public ModelBiped getArmorModel(EntityLivingBase entityLiving, ItemStack itemStack, int armorSlot){
+        if(armorSlot == 0) {
+            if(helmetModel == null) {
+                helmetModel = AdvancedModelLoader.loadModel(Models.PNEUMATIC_HELMET);
+            }
+
+            GL11.glDisable(GL11.GL_TEXTURE_2D);
+            GL11.glColor4d(1, 1, 1, 1);
+            GL11.glPushMatrix();
+            float rot1 = entityLiving.prevRotationYawHead + (entityLiving.rotationYawHead - entityLiving.prevRotationYawHead) * ClientEventHandler.playerRenderPartialTick;
+            float rot2 = entityLiving.prevRenderYawOffset + (entityLiving.renderYawOffset - entityLiving.prevRenderYawOffset) * ClientEventHandler.playerRenderPartialTick;
+            GL11.glRotated(rot1 - rot2, 0, 1, 0);
+            GL11.glRotated(entityLiving.prevRotationPitch + (entityLiving.rotationPitch - entityLiving.prevRotationPitch) * ClientEventHandler.playerRenderPartialTick, 1, 0, 0);
+            GL11.glTranslated(-0.08, 0.02, -0.4);
+            double scale = 1.5 / 16D;
+            GL11.glScaled(scale, -scale, -scale);
+            helmetModel.renderAll();
+            GL11.glPopMatrix();
+            GL11.glEnable(GL11.GL_TEXTURE_2D);
+
+            RenderPlayer render = (RenderPlayer)RenderManager.instance.entityRenderMap.get(EntityPlayer.class);
+            ModelBiped model = armorSlot == 2 ? render.modelArmor : render.modelArmorChestplate;
+            model.bipedHead.showModel = false;
+            return model;
+        }
+        return null;
+    }
+
 }
