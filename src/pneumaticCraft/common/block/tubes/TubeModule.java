@@ -141,6 +141,7 @@ public abstract class TubeModule implements ISidedPart{
 
             PneumaticCraftUtils.rotateMatrixByMetadata(dir.ordinal());
             getModel().renderStatic(0.0625F, null);
+            getModel().renderDynamic(0.0625F, null, partialTicks);
             GL11.glPopMatrix();
         }
     }
