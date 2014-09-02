@@ -219,13 +219,13 @@ public class ItemPneumaticArmor extends ItemArmor implements IPressurizable, ICh
             }
 
             GL11.glDisable(GL11.GL_TEXTURE_2D);
-            GL11.glColor4d(1, 1, 1, 1);
+            GL11.glColor4d(1, 0.2, 0.2, 1);
             GL11.glPushMatrix();
             float rot1 = entityLiving.prevRotationYawHead + (entityLiving.rotationYawHead - entityLiving.prevRotationYawHead) * ClientEventHandler.playerRenderPartialTick;
             float rot2 = entityLiving.prevRenderYawOffset + (entityLiving.renderYawOffset - entityLiving.prevRenderYawOffset) * ClientEventHandler.playerRenderPartialTick;
             GL11.glRotated(rot1 - rot2, 0, 1, 0);
             GL11.glRotated(entityLiving.prevRotationPitch + (entityLiving.rotationPitch - entityLiving.prevRotationPitch) * ClientEventHandler.playerRenderPartialTick, 1, 0, 0);
-            GL11.glTranslated(-0.08, 0.02, -0.4);
+            GL11.glTranslated(-0.08, 0.1, -0.4);
             double scale = 1.5 / 16D;
             GL11.glScaled(scale, -scale, -scale);
             helmetModel.renderAll();
