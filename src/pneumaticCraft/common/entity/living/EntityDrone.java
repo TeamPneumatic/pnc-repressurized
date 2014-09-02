@@ -209,7 +209,6 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
         if(firstTick) {
             firstTick = false;
             volume = PneumaticValues.DRONE_VOLUME + getUpgrades(ItemMachineUpgrade.UPGRADE_VOLUME_DAMAGE) * PneumaticValues.VOLUME_VOLUME_UPGRADE;
-            inventory = new InventoryDrone("Drone Inventory", true, 1 + getUpgrades(ItemMachineUpgrade.UPGRADE_DISPENSER_DAMAGE));
             hasLiquidImmunity = getUpgrades(ItemMachineUpgrade.UPGRADE_SECURITY) > 0;
             if(hasLiquidImmunity) {
                 ((EntityPathNavigateDrone)getNavigator()).pathThroughLiquid = true;
@@ -576,14 +575,6 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
         NBTTagCompound inv = tag.getCompoundTag("Inventory");
         if(inv != null) {
             NBTTagList tagList = inv.getTagList("Inv", 10);
-            inventory = new InventoryBasic("Drone Inventory", true, inventory.getSizeInventory());
-            for(int i = 0; i < tagList.tagCount(); ++i) {
-                NBTTagCompound tagCompound = tagList.getCompoundTagAt(i);
-                byte slot = tagCompound.getByte("Slot");
-                if(slot >= 0 && slot < inventory.getSizeInventory()) {
-                    inventory.setInventorySlotContents(slot, ItemStack.loadItemStackFromNBT(tagCompound));
-                }
-            }
 
             upgradeInventory = new ItemStack[9];
             NBTTagList upgradeList = inv.getTagList("Items", 10);
@@ -593,6 +584,15 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
 
                 if(j >= 0 && j < 9) {
                     upgradeInventory[j] = ItemStack.loadItemStackFromNBT(slotEntry);
+                }
+            }
+
+            inventory = new InventoryDrone("Drone Inventory", true, 1 + getUpgrades(ItemMachineUpgrade.UPGRADE_DISPENSER_DAMAGE));
+            for(int i = 0; i < tagList.tagCount(); ++i) {
+                NBTTagCompound tagCompound = tagList.getCompoundTagAt(i);
+                byte slot = tagCompound.getByte("Slot");
+                if(slot >= 0 && slot < inventory.getSizeInventory()) {
+                    inventory.setInventorySlotContents(slot, ItemStack.loadItemStackFromNBT(tagCompound));
                 }
             }
         }
