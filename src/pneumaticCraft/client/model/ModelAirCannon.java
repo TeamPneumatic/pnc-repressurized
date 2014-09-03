@@ -186,8 +186,13 @@ public class ModelAirCannon extends ModelBase implements IBaseModel{
     }
 
     @Override
-    public void renderModel(float size, TileEntity tile, float partialTicks){
+    public void renderStatic(float size, TileEntity tile){
         renderModel(size, 0, 0, false, false);
+    }
+
+    @Override
+    public void renderDynamic(float size, TileEntity te, float partialTicks){
+
     }
 
     public void renderModel(float size, float rotationAngle, float heightAngle, boolean onlyRenderCannon, boolean onlyRenderBase){

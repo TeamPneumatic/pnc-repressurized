@@ -124,7 +124,7 @@ public class ModelPressureChamberWindow extends ModelBase implements IBaseModel{
     }
 
     @Override
-    public void renderModel(float size, TileEntity tile, float partialTicks){
+    public void renderStatic(float size, TileEntity tile){
         if(tile != null) {
             renderModel(size, tile.getBlockMetadata() >= 6);
         } else {
@@ -140,6 +140,12 @@ public class ModelPressureChamberWindow extends ModelBase implements IBaseModel{
     @Override
     public boolean rotateModelBasedOnBlockMeta(){
         return true;
+    }
+
+    @Override
+    public void renderDynamic(float size, TileEntity te, float partialTicks){
+        // TODO Auto-generated method stub
+
     }
 
 }

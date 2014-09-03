@@ -108,7 +108,12 @@ public class ModelAssemblyLaser extends ModelBase implements IBaseModel{
     }
 
     @Override
-    public void renderModel(float size, TileEntity te, float partialTicks){
+    public void renderStatic(float size, TileEntity te){
+
+    }
+
+    @Override
+    public void renderDynamic(float size, TileEntity te, float partialTicks){
         if(te instanceof TileEntityAssemblyLaser) {
             TileEntityAssemblyLaser tile = (TileEntityAssemblyLaser)te;
             float[] renderAngles = new float[5];

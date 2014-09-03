@@ -1,6 +1,7 @@
 package pneumaticCraft.common.tileentity;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
@@ -74,12 +75,14 @@ public class TileEntitySecurityStation extends TileEntityBase implements ISidedI
                     }
                 }
             } else {
-                for(RenderProgressingLine line : rangeLines) {
+                Iterator<RenderProgressingLine> iterator = rangeLines.iterator();
+                while(iterator.hasNext()) {
+                    RenderProgressingLine line = iterator.next();
                     if(line.getProgress() > 0.005F) {
                         line.incProgress(0.01F);
                     }
                     if(worldObj.rand.nextInt(10) == 0) {
-                        line.incProgress(-1F);
+                        iterator.remove();
                     }
                 }
             }
@@ -209,6 +212,7 @@ public class TileEntitySecurityStation extends TileEntityBase implements ISidedI
     @Override
     @SideOnly(Side.CLIENT)
     public AxisAlignedBB getRenderBoundingBox(){
+        if(rangeLines == null || rangeLines.size() == 0) return super.getRenderBoundingBox();
         int range = getSecurityRange();
         return AxisAlignedBB.getBoundingBox(xCoord - range, yCoord - range, zCoord - range, xCoord + 1 + range, yCoord + 1 + range, zCoord + 1 + range);
     }

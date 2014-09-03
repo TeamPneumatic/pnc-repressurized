@@ -307,7 +307,7 @@ public class ModelUVLightBox extends ModelBase implements IBaseModel{
     }
 
     @Override
-    public void renderModel(float size, TileEntity te, float partialTicks){
+    public void renderStatic(float size, TileEntity te){
         if(te instanceof TileEntityUVLightBox) {
             TileEntityUVLightBox tile = (TileEntityUVLightBox)te;
             renderModel(size, tile.leftConnected, tile.rightConnected, tile.areLightsOn);
@@ -354,6 +354,12 @@ public class ModelUVLightBox extends ModelBase implements IBaseModel{
     @Override
     public boolean rotateModelBasedOnBlockMeta(){
         return true;
+    }
+
+    @Override
+    public void renderDynamic(float size, TileEntity te, float partialTicks){
+        // TODO Auto-generated method stub
+
     }
 
 }

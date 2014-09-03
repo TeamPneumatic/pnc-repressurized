@@ -147,7 +147,22 @@ public class ModelPressureChamberInterface extends ModelBase implements IBaseMod
     }
 
     @Override
-    public void renderModel(float size, TileEntity te, float partialTicks){
+    public void renderStatic(float size, TileEntity te){
+
+    }
+
+    @Override
+    public ResourceLocation getModelTexture(){
+        return Textures.MODEL_PRESSURE_CHAMBER_INTERFACE;
+    }
+
+    @Override
+    public boolean rotateModelBasedOnBlockMeta(){
+        return true;
+    }
+
+    @Override
+    public void renderDynamic(float size, TileEntity te, float partialTicks){
         if(te instanceof TileEntityPressureChamberInterface) {
             TileEntityPressureChamberInterface tile = (TileEntityPressureChamberInterface)te;
             float renderInputProgress = tile.oldInputProgress + (tile.inputProgress - tile.oldInputProgress) * partialTicks;
@@ -167,16 +182,6 @@ public class ModelPressureChamberInterface extends ModelBase implements IBaseMod
         } else {
             renderModel(size, 0, 0);
         }
-    }
-
-    @Override
-    public ResourceLocation getModelTexture(){
-        return Textures.MODEL_PRESSURE_CHAMBER_INTERFACE;
-    }
-
-    @Override
-    public boolean rotateModelBasedOnBlockMeta(){
-        return true;
     }
 
 }

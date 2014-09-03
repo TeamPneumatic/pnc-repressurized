@@ -9,9 +9,10 @@ public interface IBaseModel{
      * Main render method
      * @param size
      * @param tile TileEntity that is being rendered. Warning: This can be null (in itemrendering for example)
-     * @param partialTicks is 0 when item rendering.
      */
-    public void renderModel(float size, TileEntity tile, float partialTicks);
+    public void renderStatic(float size, TileEntity te);
+
+    public void renderDynamic(float size, TileEntity te, float partialTicks);
 
     public ResourceLocation getModelTexture();
 

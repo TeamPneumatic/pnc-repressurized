@@ -192,14 +192,8 @@ public class ModelUniversalSensor extends ModelBase implements IBaseModel{
     }
 
     @Override
-    public void renderModel(float size, TileEntity te, float partialTicks){
-        if(te instanceof TileEntityUniversalSensor) {
-            TileEntityUniversalSensor tile = (TileEntityUniversalSensor)te;
-            renderModel(size, tile.oldDishRotation + (tile.dishRotation - tile.oldDishRotation) * partialTicks);
-            tile.renderRangeLines();
-        } else {
-            renderModel(size, 0);
-        }
+    public void renderStatic(float size, TileEntity te){
+
     }
 
     @Override
@@ -210,6 +204,17 @@ public class ModelUniversalSensor extends ModelBase implements IBaseModel{
     @Override
     public boolean rotateModelBasedOnBlockMeta(){
         return false;
+    }
+
+    @Override
+    public void renderDynamic(float size, TileEntity te, float partialTicks){
+        if(te instanceof TileEntityUniversalSensor) {
+            TileEntityUniversalSensor tile = (TileEntityUniversalSensor)te;
+            renderModel(size, tile.oldDishRotation + (tile.dishRotation - tile.oldDishRotation) * partialTicks);
+            tile.renderRangeLines();
+        } else {
+            renderModel(size, 0);
+        }
     }
 
 }

@@ -58,6 +58,7 @@ import pneumaticCraft.client.render.entity.RenderEntityVortex;
 import pneumaticCraft.client.render.item.RenderItemCannonParts;
 import pneumaticCraft.client.render.item.RenderItemDrone;
 import pneumaticCraft.client.render.item.RenderItemPneumaticCilinder;
+import pneumaticCraft.client.render.item.RenderItemPneumaticHelmet;
 import pneumaticCraft.client.render.item.RenderItemProgrammingPuzzle;
 import pneumaticCraft.client.render.item.RenderItemVortexCannon;
 import pneumaticCraft.client.render.itemblock.RenderItemPressureChamberWall;
@@ -129,6 +130,8 @@ public class ClientProxy extends CommonProxy{
     public void registerRenders(){
         SPECIAL_RENDER_TYPE_VALUE = RenderingRegistry.getNextAvailableRenderId();
         CAMO_RENDER_ID = RenderingRegistry.getNextAvailableRenderId();
+
+        RenderingRegistry.registerBlockHandler(new RenderModelBase());
         // RenderingRegistry.registerBlockHandler(new RendererSpecialBlock());
         registerBaseModelRenderer(Blockss.airCompressor, TileEntityAirCompressor.class, new ModelAirCompressor());
         registerBaseModelRenderer(Blockss.assemblyController, TileEntityAssemblyController.class, new ModelAssemblyController());
@@ -173,6 +176,7 @@ public class ClientProxy extends CommonProxy{
         //   MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(Blockss.advancedPressureTube), new RenderItemAdvancedPressureTube());
         MinecraftForgeClient.registerItemRenderer(Itemss.drone, new RenderItemDrone());
         MinecraftForgeClient.registerItemRenderer(Itemss.programmingPuzzle, new RenderItemProgrammingPuzzle());
+        MinecraftForgeClient.registerItemRenderer(Itemss.pneumaticHelmet, new RenderItemPneumaticHelmet());
 
         RenderingRegistry.registerEntityRenderingHandler(EntityVortex.class, new RenderEntityVortex());
         RenderingRegistry.registerEntityRenderingHandler(EntityItemSpecial.class, new RenderItem());

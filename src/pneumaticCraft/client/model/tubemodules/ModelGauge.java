@@ -61,7 +61,22 @@ public class ModelGauge extends ModelBase implements IBaseModel{
     }
 
     @Override
-    public void renderModel(float size, TileEntity tile, float partialTicks){
+    public void renderStatic(float size, TileEntity tile){
+
+    }
+
+    @Override
+    public ResourceLocation getModelTexture(){
+        return Textures.MODEL_GAUGE;
+    }
+
+    @Override
+    public boolean rotateModelBasedOnBlockMeta(){
+        return false;
+    }
+
+    @Override
+    public void renderDynamic(float size, TileEntity te, float partialTicks){
         Shape1.render(size);
         Shape2.render(size);
 
@@ -81,16 +96,6 @@ public class ModelGauge extends ModelBase implements IBaseModel{
         GL11.glDisable(GL11.GL_LIGHTING);
         GuiUtils.drawPressureGauge(FMLClientHandler.instance().getClient().fontRenderer, -1, critPressure, dangerPressure, -1, pressure, 0, 0, 0);
         GL11.glEnable(GL11.GL_LIGHTING);
-    }
-
-    @Override
-    public ResourceLocation getModelTexture(){
-        return Textures.MODEL_GAUGE;
-    }
-
-    @Override
-    public boolean rotateModelBasedOnBlockMeta(){
-        return false;
     }
 
 }

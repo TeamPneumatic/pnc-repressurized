@@ -2,9 +2,13 @@ package pneumaticCraft.common.item;
 
 import java.util.List;
 
+import net.minecraft.client.model.ModelBiped;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
@@ -14,6 +18,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumChatFormatting;
 import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.api.item.IPressurizable;
+import pneumaticCraft.client.render.item.RenderItemPneumaticHelmet;
 import pneumaticCraft.client.render.pneumaticArmor.RenderCoordWireframe;
 import pneumaticCraft.common.NBTUtil;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
@@ -188,4 +193,28 @@ public class ItemPneumaticArmor extends ItemArmor implements IPressurizable, ICh
     public int getGuiID(){
         return CommonProxy.GUI_ID_PNEUMATIC_HELMET;
     }
+
+    /**
+     * Override this method to have an item handle its own armor rendering.
+     * 
+     * @param  entityLiving  The entity wearing the armor 
+     * @param  itemStack  The itemStack to render the model of 
+     * @param  armorSlot  0=head, 1=torso, 2=legs, 3=feet
+     * 
+     * @return  A ModelBiped to render instead of the default
+     */
+    @Override
+    @SideOnly(Side.CLIENT)
+    public ModelBiped getArmorModel(EntityLivingBase entityLiving, ItemStack itemStack, int armorSlot){
+        if(armorSlot == 0) {
+            RenderItemPneumaticHelmet.INSTANCE.render(entityLiving);
+
+            RenderPlayer render = (RenderPlayer)RenderManager.instance.entityRenderMap.get(EntityPlayer.class);
+            ModelBiped model = armorSlot == 2 ? render.modelArmor : render.modelArmorChestplate;
+            model.bipedHead.showModel = false;
+            return model;
+        }
+        return null;
+    }
+
 }

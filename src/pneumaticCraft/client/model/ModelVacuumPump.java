@@ -270,14 +270,8 @@ public class ModelVacuumPump extends ModelBase implements IBaseModel{
     }
 
     @Override
-    public void renderModel(float size, TileEntity te, float partialTicks){
-        if(te instanceof TileEntityVacuumPump) {
-            GL11.glRotated(-90, 0, 1, 0);
-            TileEntityVacuumPump tile = (TileEntityVacuumPump)te;
-            renderModel(size, tile.oldRotation + (tile.rotation - tile.oldRotation) * partialTicks);
-        } else {
-            renderModel(size, 0);
-        }
+    public void renderStatic(float size, TileEntity te){
+
     }
 
     @Override
@@ -288,6 +282,17 @@ public class ModelVacuumPump extends ModelBase implements IBaseModel{
     @Override
     public boolean rotateModelBasedOnBlockMeta(){
         return true;
+    }
+
+    @Override
+    public void renderDynamic(float size, TileEntity te, float partialTicks){
+        if(te instanceof TileEntityVacuumPump) {
+            GL11.glRotated(-90, 0, 1, 0);
+            TileEntityVacuumPump tile = (TileEntityVacuumPump)te;
+            renderModel(size, tile.oldRotation + (tile.rotation - tile.oldRotation) * partialTicks);
+        } else {
+            renderModel(size, 0);
+        }
     }
 
 }

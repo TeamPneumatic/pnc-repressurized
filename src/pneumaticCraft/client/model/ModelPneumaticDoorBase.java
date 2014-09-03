@@ -116,7 +116,22 @@ public class ModelPneumaticDoorBase extends ModelBase implements IBaseModel{
     }
 
     @Override
-    public void renderModel(float size, TileEntity tile, float partialTicks){
+    public void renderStatic(float size, TileEntity tile){
+
+    }
+
+    @Override
+    public ResourceLocation getModelTexture(){
+        return Textures.MODEL_PNEUMATIC_DOOR_BASE;
+    }
+
+    @Override
+    public boolean rotateModelBasedOnBlockMeta(){
+        return false;
+    }
+
+    @Override
+    public void renderDynamic(float size, TileEntity tile, float partialTicks){
         if(tile instanceof TileEntityPneumaticDoorBase) {
             TileEntityPneumaticDoorBase door = (TileEntityPneumaticDoorBase)tile;
             ItemStack camoStack = door.getStackInSlot(TileEntityPneumaticDoorBase.CAMO_SLOT);
@@ -130,16 +145,6 @@ public class ModelPneumaticDoorBase extends ModelBase implements IBaseModel{
         } else {
             renderModel(size, 1, true, false);
         }
-    }
-
-    @Override
-    public ResourceLocation getModelTexture(){
-        return Textures.MODEL_PNEUMATIC_DOOR_BASE;
-    }
-
-    @Override
-    public boolean rotateModelBasedOnBlockMeta(){
-        return false;
     }
 
 }

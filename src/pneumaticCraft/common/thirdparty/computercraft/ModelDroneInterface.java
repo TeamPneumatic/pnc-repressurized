@@ -162,13 +162,8 @@ public class ModelDroneInterface extends ModelBase implements IBaseModel{
     }
 
     @Override
-    public void renderModel(float size, TileEntity tile, float partialTicks){
-        if(tile instanceof TileEntityDroneInterface) {
-            TileEntityDroneInterface inter = (TileEntityDroneInterface)tile;
-            render(null, inter.rotationPitch, inter.rotationYaw, 0, 0, 0, 1 / 16F);
-        } else {
-            render(null, (float)Math.toRadians(-42), 0, 0, 0, 0, 1 / 16F);
-        }
+    public void renderStatic(float size, TileEntity tile){
+
     }
 
     @Override
@@ -179,5 +174,15 @@ public class ModelDroneInterface extends ModelBase implements IBaseModel{
     @Override
     public boolean rotateModelBasedOnBlockMeta(){
         return false;
+    }
+
+    @Override
+    public void renderDynamic(float size, TileEntity tile, float partialTicks){
+        if(tile instanceof TileEntityDroneInterface) {
+            TileEntityDroneInterface inter = (TileEntityDroneInterface)tile;
+            render(null, inter.rotationPitch, inter.rotationYaw, 0, 0, 0, 1 / 16F);
+        } else {
+            render(null, (float)Math.toRadians(-42), 0, 0, 0, 0, 1 / 16F);
+        }
     }
 }

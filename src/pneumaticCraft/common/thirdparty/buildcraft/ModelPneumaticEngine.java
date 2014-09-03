@@ -67,7 +67,22 @@ public class ModelPneumaticEngine extends ModelBase implements IBaseModel{
     }
 
     @Override
-    public void renderModel(float size, TileEntity tile, float partialTicks){
+    public void renderStatic(float size, TileEntity tile){
+
+    }
+
+    @Override
+    public ResourceLocation getModelTexture(){
+        return Textures.MODEL_PNEUMATIC_ENGINE_BLUE;
+    }
+
+    @Override
+    public boolean rotateModelBasedOnBlockMeta(){
+        return true;
+    }
+
+    @Override
+    public void renderDynamic(float size, TileEntity tile, float partialTicks){
         float cilinderProgress = 0;
         if(tile instanceof TileEntityPneumaticEngine) {
             TileEntityPneumaticEngine tePe = (TileEntityPneumaticEngine)tile;
@@ -95,16 +110,6 @@ public class ModelPneumaticEngine extends ModelBase implements IBaseModel{
         Axil.render(size);
         GL11.glTranslated(0, 0, -cilinderProgress * (8 / 16F - 0.01F));//0.01 to prevent z-fighting.
         Cilinder.render(size);
-    }
-
-    @Override
-    public ResourceLocation getModelTexture(){
-        return Textures.MODEL_PNEUMATIC_ENGINE_BLUE;
-    }
-
-    @Override
-    public boolean rotateModelBasedOnBlockMeta(){
-        return true;
     }
 
 }

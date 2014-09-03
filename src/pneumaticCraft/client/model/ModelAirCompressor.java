@@ -111,7 +111,7 @@ public class ModelAirCompressor extends ModelBase implements IBaseModel{
     }
 
     @Override
-    public void renderModel(float size, TileEntity tile, float partialTicks){
+    public void renderStatic(float size, TileEntity tile){
         Output1.render(size);
         Output2.render(size);
         Output3.render(size);
@@ -123,6 +123,11 @@ public class ModelAirCompressor extends ModelBase implements IBaseModel{
         Right.render(size);
         Top2.render(size);
         Top1.render(size);
+    }
+
+    @Override
+    public void renderDynamic(float size, TileEntity te, float partialTicks){
+
     }
 
     private void setRotation(ModelRenderer model, float x, float y, float z){

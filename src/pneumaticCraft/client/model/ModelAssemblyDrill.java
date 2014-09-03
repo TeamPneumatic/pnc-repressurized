@@ -107,7 +107,10 @@ public class ModelAssemblyDrill extends ModelBase implements IBaseModel{
     }
 
     @Override
-    public void renderModel(float size, TileEntity te, float partialTicks){
+    public void renderStatic(float size, TileEntity te){}
+
+    @Override
+    public void renderDynamic(float size, TileEntity te, float partialTicks){
         if(te instanceof TileEntityAssemblyDrill) {
             TileEntityAssemblyDrill tile = (TileEntityAssemblyDrill)te;
             float[] renderAngles = new float[5];
