@@ -22,6 +22,7 @@ public class Config{
     public static double[] configPlantGenerationChance = new double[16];
 
     public static int configCompressedIngotLossRate;
+    public static int elevatorBaseBlocksPerBase;
     public static boolean rotateUseEnergy;
 
     public static boolean enableUpdateChecker;
@@ -104,6 +105,8 @@ public class Config{
         property = config.get("machine_properties", "Pneumatic Pump (PneumaticCraft --> Hydraulicraft) efficiency", 40);
         property.comment = "Changing this value will alter the hydraulic bar production of the Pneumatic Pump. The input, air, will stay the same.";
         pneumaticPumpEfficiency = property.getInt();
+
+        elevatorBaseBlocksPerBase = config.getInt("Height per Elevator Base", "machine_properties", 4, 1, 256, "The max height of an elevator per stacked Elevator Base.");
 
         property = config.get(Configuration.CATEGORY_GENERAL, "Block rotate use energy", true);
         property.comment = "When set to false rotating PneumaticCraft blocks doesn't use any energy. This means that the Pneumatic Wrench doesn't use air and that all blocks can be rotated with a Buildcraft Wrench.";

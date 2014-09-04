@@ -18,6 +18,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import org.apache.commons.lang3.tuple.Pair;
 
 import pneumaticCraft.api.tileentity.IPneumaticMachine;
+import pneumaticCraft.common.Config;
 import pneumaticCraft.common.block.BlockElevatorBase;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.Itemss;
@@ -198,7 +199,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
             elevatorBases++;
         } while(worldObj.getBlock(xCoord, yCoord - elevatorBases, zCoord) == Blockss.elevatorBase);
 
-        maxFloorHeight = Math.min(i, elevatorBases * 4);
+        maxFloorHeight = Math.min(i, elevatorBases * Config.elevatorBaseBlocksPerBase);
     }
 
     // NBT methods-----------------------------------------------
