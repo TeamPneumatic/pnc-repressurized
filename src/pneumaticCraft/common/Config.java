@@ -24,6 +24,7 @@ public class Config{
     public static int configCompressedIngotLossRate;
     public static int elevatorBaseBlocksPerBase;
     public static boolean rotateUseEnergy;
+    public static boolean useHelmetModel;
 
     public static boolean enableUpdateChecker;
     public static boolean convertMultipartsToBlocks;
@@ -60,7 +61,7 @@ public class Config{
 
     public static void init(File configFile){
         if(configFile != null) {
-            File oldConfig = new File(configFile.getAbsolutePath().replace("PneumaticCraft", "Minemaarten_PneumaticCraft"));
+            File oldConfig = new File(configFile.getAbsolutePath().replace("PneumaticCraft", "Minemaarten_PneumaticCraft"));//TODO remove legacy.
             if(oldConfig.exists()) configFile = oldConfig;
 
             config = new Configuration(configFile);
@@ -81,6 +82,8 @@ public class Config{
         Property property = config.get(Configuration.CATEGORY_GENERAL, "Compressed Iron Loss Percentage", 20);
         property.comment = "Loss percentage (on average) of Compressed Iron ingots/blocks when exposed to an explosion.";
         configCompressedIngotLossRate = property.getInt();
+
+        useHelmetModel = config.getBoolean("Use Pneumatic Helmet model", Configuration.CATEGORY_GENERAL, false, "When true, the Pneumatic Helmet will be a model. Warning: this model looks far too good to be in MC");
 
         property = config.get(Configuration.CATEGORY_GENERAL, "Villager Mechanic ID", 125);
         property.comment = "Villager ID used for the Mechanic Villager. Change when ID collides with an other mod which adds villagers.";

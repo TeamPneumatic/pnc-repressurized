@@ -2,13 +2,16 @@ package pneumaticCraft.client.render.item;
 
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ChatComponentTranslation;
 import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.client.model.AdvancedModelLoader;
 import net.minecraftforge.client.model.IModelCustom;
 
 import org.lwjgl.opengl.GL11;
 
+import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.client.ClientEventHandler;
+import pneumaticCraft.common.Config;
 import pneumaticCraft.lib.Models;
 
 public class RenderItemPneumaticHelmet implements IItemRenderer{
@@ -34,6 +37,9 @@ public class RenderItemPneumaticHelmet implements IItemRenderer{
             helmetModel = AdvancedModelLoader.loadModel(Models.PNEUMATIC_HELMET);
             eyesModel = AdvancedModelLoader.loadModel(Models.PNEUMATIC_HELMET_EYES);
             faceModel = AdvancedModelLoader.loadModel(Models.PNEUMATIC_HELMET_FACE);
+            if(!Config.useHelmetModel) {
+                PneumaticCraft.proxy.getPlayer().addChatComponentMessage(new ChatComponentTranslation("message.date.ironman"));
+            }
         }
 
         GL11.glDisable(GL11.GL_TEXTURE_2D);

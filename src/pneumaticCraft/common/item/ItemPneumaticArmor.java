@@ -20,6 +20,8 @@ import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.api.item.IPressurizable;
 import pneumaticCraft.client.render.item.RenderItemPneumaticHelmet;
 import pneumaticCraft.client.render.pneumaticArmor.RenderCoordWireframe;
+import pneumaticCraft.common.Config;
+import pneumaticCraft.common.DateEventHandler;
 import pneumaticCraft.common.NBTUtil;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.ModIds;
@@ -206,7 +208,7 @@ public class ItemPneumaticArmor extends ItemArmor implements IPressurizable, ICh
     @Override
     @SideOnly(Side.CLIENT)
     public ModelBiped getArmorModel(EntityLivingBase entityLiving, ItemStack itemStack, int armorSlot){
-        if(armorSlot == 0) {
+        if(armorSlot == 0 && (Config.useHelmetModel || DateEventHandler.isIronManEvent())) {
             RenderItemPneumaticHelmet.INSTANCE.render(entityLiving);
 
             RenderPlayer render = (RenderPlayer)RenderManager.instance.entityRenderMap.get(EntityPlayer.class);

@@ -14,6 +14,8 @@ import net.minecraft.world.World;
 
 public class DateEventHandler{
     private static Random rand = new Random();
+    private static boolean initialized;
+    private static boolean isIronManEvent;
 
     public static boolean isEvent(){
         Calendar calendar = Calendar.getInstance();
@@ -27,6 +29,23 @@ public class DateEventHandler{
             return true;
         }
         return false;
+    }
+
+    public static boolean isIronManEvent(){
+        if(!initialized) {
+            Calendar calendar = Calendar.getInstance();
+            if(calendar.get(2) + 1 == 4 && calendar.get(5) == 14) {//Iron Man (1) premiere
+                isIronManEvent = true;
+            } else if(calendar.get(2) + 1 == 4 && calendar.get(5) == 26) {//Iron Man 2 premiere
+                isIronManEvent = true;
+            } else if(calendar.get(2) + 1 == 4 && calendar.get(5) == 18) {//Iron Man 3 premiere
+                isIronManEvent = true;
+            } else if(calendar.get(2) + 1 == 4 && calendar.get(5) == 11) {//Avengers premiere
+                isIronManEvent = true;
+            }
+            initialized = true;
+        }
+        return isIronManEvent;
     }
 
     public static void spawnFirework(World world, double x, double y, double z){

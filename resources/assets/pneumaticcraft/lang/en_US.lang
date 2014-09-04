@@ -248,6 +248,7 @@ gui.tooltip.plasticPlant=Origin: %s
 
 # Misc
 itemGroup.tabPneumaticCraft=PneumaticCraft
+message.date.ironman=Today an Iron Man movie went in premiere!
 
 # Death Messages
 death.attack.pressure1=%1$s is as flat as a pancake!

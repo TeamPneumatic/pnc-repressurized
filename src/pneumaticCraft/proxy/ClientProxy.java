@@ -176,7 +176,7 @@ public class ClientProxy extends CommonProxy{
         //   MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(Blockss.advancedPressureTube), new RenderItemAdvancedPressureTube());
         MinecraftForgeClient.registerItemRenderer(Itemss.drone, new RenderItemDrone());
         MinecraftForgeClient.registerItemRenderer(Itemss.programmingPuzzle, new RenderItemProgrammingPuzzle());
-        MinecraftForgeClient.registerItemRenderer(Itemss.pneumaticHelmet, new RenderItemPneumaticHelmet());
+        if(Config.useHelmetModel) MinecraftForgeClient.registerItemRenderer(Itemss.pneumaticHelmet, new RenderItemPneumaticHelmet());
 
         RenderingRegistry.registerEntityRenderingHandler(EntityVortex.class, new RenderEntityVortex());
         RenderingRegistry.registerEntityRenderingHandler(EntityItemSpecial.class, new RenderItem());

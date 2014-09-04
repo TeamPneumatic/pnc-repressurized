@@ -2,10 +2,17 @@ package pneumaticCraft.client;
 
 import java.util.Map;
 
+import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.renderer.entity.RenderBiped;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import pneumaticCraft.api.item.IProgrammable;
+import pneumaticCraft.common.Config;
+import pneumaticCraft.common.DateEventHandler;
 import pneumaticCraft.common.Fluids;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.ItemProgrammingPuzzle;
@@ -35,14 +42,28 @@ public class ClientEventHandler{
     }
 
     @SubscribeEvent
-    public void onPlayerRender(RenderPlayerEvent.Specials.Pre event){
-        //      event.renderHelmet = false;
+    public void onLivingRender(RenderLivingEvent.Pre event){
+        setRenderHead(event.entity, false);
+    }
+
+    @SubscribeEvent
+    public void onLivingRender(RenderLivingEvent.Post event){
+        setRenderHead(event.entity, true);
+    }
+
+    private void setRenderHead(EntityLivingBase entity, boolean setRender){
+        if(entity.getEquipmentInSlot(4) != null && entity.getEquipmentInSlot(4).getItem() == Itemss.pneumaticHelmet && (Config.useHelmetModel || DateEventHandler.isIronManEvent())) {
+            Render renderer = RenderManager.instance.getEntityRenderObject(entity);
+            if(renderer instanceof RenderBiped) {
+                ((RenderBiped)renderer).modelBipedMain.bipedHead.showModel = setRender;
+            }
+        }
     }
 
     @SubscribeEvent
     public void onPlayerRender(RenderPlayerEvent.Pre event){
         playerRenderPartialTick = event.partialRenderTick;
-        if(event.entityPlayer.getCurrentArmor(3) == null || event.entityPlayer.getCurrentArmor(3).getItem() != Itemss.pneumaticHelmet) return;
+        if(!Config.useHelmetModel && !DateEventHandler.isIronManEvent() || event.entityPlayer.getCurrentArmor(3) == null || event.entityPlayer.getCurrentArmor(3).getItem() != Itemss.pneumaticHelmet) return;
         event.renderer.modelBipedMain.bipedHead.showModel = false;
     }
 
