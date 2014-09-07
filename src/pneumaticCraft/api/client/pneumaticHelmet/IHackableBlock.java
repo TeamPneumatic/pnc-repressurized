@@ -3,6 +3,7 @@ package pneumaticCraft.api.client.pneumaticHelmet;
 import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 /**
@@ -24,7 +25,7 @@ public interface IHackableBlock{
     /**
         Returning true will allow the player to hack this block. This can be used to only allow hacking on certain conditions.
     */
-    public boolean canHack(World world, int x, int y, int z, EntityPlayer player);
+    public boolean canHack(IBlockAccess world, int x, int y, int z, EntityPlayer player);
 
     /**
         Add info that is displayed on the tracker tooltip here. Text like "Hack to explode" can be added.
@@ -46,7 +47,7 @@ public interface IHackableBlock{
     /**
         Return the time it takes to hack this block in ticks. For more powerful hacks, a longer required hacking time is adviced.
     */
-    public int getHackTime(World world, int x, int y, int z, EntityPlayer player);
+    public int getHackTime(IBlockAccess world, int x, int y, int z, EntityPlayer player);
 
     /**
         When the player hacked the block for getHackTime(World, int, int, int) ticks this will be called on both server and client side.

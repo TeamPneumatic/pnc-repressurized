@@ -5,6 +5,7 @@ import java.util.Map;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import pneumaticCraft.api.client.pneumaticHelmet.IBlockTrackEntry;
 import thaumcraft.api.aspects.Aspect;
@@ -17,7 +18,7 @@ import thaumcraft.api.nodes.INode;
  */
 public class BlockTrackEntryThaumcraft implements IBlockTrackEntry{
     @Override
-    public boolean shouldTrackWithThisEntry(World world, int x, int y, int z, Block block){
+    public boolean shouldTrackWithThisEntry(IBlockAccess world, int x, int y, int z, Block block){
         return world.getTileEntity(x, y, z) instanceof IAspectContainer;
     }
 

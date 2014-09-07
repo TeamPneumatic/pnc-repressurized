@@ -21,6 +21,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.IExtendedEntityProperties;
 import pneumaticCraft.PneumaticCraft;
@@ -32,7 +33,16 @@ import pneumaticCraft.client.render.pneumaticArmor.EntityTrackUpgradeHandler;
 import pneumaticCraft.client.render.pneumaticArmor.HUDHandler;
 import pneumaticCraft.client.render.pneumaticArmor.RenderBlockTarget;
 import pneumaticCraft.client.render.pneumaticArmor.RenderTarget;
-import pneumaticCraft.client.render.pneumaticArmor.hacking.block.*;
+import pneumaticCraft.client.render.pneumaticArmor.hacking.block.HackableButton;
+import pneumaticCraft.client.render.pneumaticArmor.hacking.block.HackableDispenser;
+import pneumaticCraft.client.render.pneumaticArmor.hacking.block.HackableDoor;
+import pneumaticCraft.client.render.pneumaticArmor.hacking.block.HackableJukebox;
+import pneumaticCraft.client.render.pneumaticArmor.hacking.block.HackableLever;
+import pneumaticCraft.client.render.pneumaticArmor.hacking.block.HackableMobSpawner;
+import pneumaticCraft.client.render.pneumaticArmor.hacking.block.HackableNoteblock;
+import pneumaticCraft.client.render.pneumaticArmor.hacking.block.HackableSecurityStation;
+import pneumaticCraft.client.render.pneumaticArmor.hacking.block.HackableTNT;
+import pneumaticCraft.client.render.pneumaticArmor.hacking.block.HackableTripwire;
 import pneumaticCraft.client.render.pneumaticArmor.hacking.entity.HackableBlaze;
 import pneumaticCraft.client.render.pneumaticArmor.hacking.entity.HackableCaveSpider;
 import pneumaticCraft.client.render.pneumaticArmor.hacking.entity.HackableCow;
@@ -125,7 +135,7 @@ public class HackableHandler{
         return getHackableForCoord(coord.world, coord.x, coord.y, coord.z, player);
     }
 
-    public static IHackableBlock getHackableForCoord(World world, int x, int y, int z, EntityPlayer player){
+    public static IHackableBlock getHackableForCoord(IBlockAccess world, int x, int y, int z, EntityPlayer player){
         //clean up the map
         Iterator<Map.Entry<WorldAndCoord, IHackableBlock>> iterator = getInstance().trackedHackableBlocks.entrySet().iterator();
         while(iterator.hasNext()) {
@@ -154,8 +164,8 @@ public class HackableHandler{
         return hackable;
     }
 
-    private static boolean isInDisplayCooldown(IHackableBlock hackableBlock, World world, int x, int y, int z, EntityPlayer player){
-        if(world.isRemote) {
+    private static boolean isInDisplayCooldown(IHackableBlock hackableBlock, IBlockAccess world, int x, int y, int z, EntityPlayer player){
+        if(player.worldObj.isRemote) {
             RenderBlockTarget target = ((BlockTrackUpgradeHandler)HUDHandler.instance().getSpecificRenderer(BlockTrackUpgradeHandler.class)).getTargetForCoord(x, y, z);
             int requiredHackTime = hackableBlock.getHackTime(world, x, y, z, player);
             return target != null && target.getHackTime() >= requiredHackTime && target.getHackTime() <= requiredHackTime + 20;

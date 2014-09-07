@@ -86,7 +86,7 @@ public class CommonHUDHandler{
                 if(++hackTime >= hackableBlock.getHackTime(hackedBlock.world, hackedBlock.x, hackedBlock.y, hackedBlock.z, player)) {
                     hackableBlock.onHackFinished(player.worldObj, hackedBlock.x, hackedBlock.y, hackedBlock.z, player);
                     PneumaticCraft.proxy.getHackTickHandler().trackBlock(hackedBlock, hackableBlock);
-                    NetworkHandler.sendToAllAround(new PacketHackingBlockFinish(hackedBlock), hackedBlock.world);
+                    NetworkHandler.sendToAllAround(new PacketHackingBlockFinish(hackedBlock), player.worldObj);
                     setHackedBlock(null);
                 }
             } else {

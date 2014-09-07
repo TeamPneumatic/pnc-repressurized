@@ -3,6 +3,7 @@ package pneumaticCraft.api.client.pneumaticHelmet;
 import java.util.List;
 
 import net.minecraft.block.Block;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 public interface IBlockTrackEntry{
@@ -24,7 +25,7 @@ public interface IBlockTrackEntry{
      *            call to World.getBlock().
      * @return true if the coordinate should be tracked by this BlockTrackEntry.
      */
-    public boolean shouldTrackWithThisEntry(World world, int x, int y, int z, Block block);
+    public boolean shouldTrackWithThisEntry(IBlockAccess world, int x, int y, int z, Block block);
 
     /**
      * This method defines if the block should be updated by the server (each 5

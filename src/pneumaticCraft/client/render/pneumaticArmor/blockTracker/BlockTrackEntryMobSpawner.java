@@ -7,15 +7,16 @@ import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.MobSpawnerBaseLogic;
 import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.util.StatCollector;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import pneumaticCraft.api.client.pneumaticHelmet.IBlockTrackEntry;
 import pneumaticCraft.client.render.pneumaticArmor.hacking.block.HackableMobSpawner;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 
-public class BlockTrackEntryMobSpawner implements IBlockTrackEntry {
+public class BlockTrackEntryMobSpawner implements IBlockTrackEntry{
 
     @Override
-    public boolean shouldTrackWithThisEntry(World world, int x, int y, int z, Block block){
+    public boolean shouldTrackWithThisEntry(IBlockAccess world, int x, int y, int z, Block block){
         return block == Blocks.mob_spawner;
     }
 
@@ -45,6 +46,6 @@ public class BlockTrackEntryMobSpawner implements IBlockTrackEntry {
 
     @Override
     public String getEntryName(){
-        return Blocks.mob_spawner.getUnlocalizedName()+".name";
+        return Blocks.mob_spawner.getUnlocalizedName() + ".name";
     }
 }

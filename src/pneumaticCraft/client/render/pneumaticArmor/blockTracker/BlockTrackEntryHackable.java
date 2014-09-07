@@ -4,6 +4,7 @@ import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.api.client.pneumaticHelmet.IBlockTrackEntry;
@@ -13,10 +14,10 @@ import pneumaticCraft.client.render.pneumaticArmor.HUDHandler;
 import pneumaticCraft.client.render.pneumaticArmor.HackUpgradeRenderHandler;
 import pneumaticCraft.client.render.pneumaticArmor.hacking.HackableHandler;
 
-public class BlockTrackEntryHackable implements IBlockTrackEntry {
+public class BlockTrackEntryHackable implements IBlockTrackEntry{
 
     @Override
-    public boolean shouldTrackWithThisEntry(World world, int x, int y, int z, Block block){
+    public boolean shouldTrackWithThisEntry(IBlockAccess world, int x, int y, int z, Block block){
         return HackUpgradeRenderHandler.enabledForPlayer(PneumaticCraft.proxy.getPlayer()) && HackableHandler.getHackableForCoord(world, x, y, z, PneumaticCraft.proxy.getPlayer()) != null;
     }
 

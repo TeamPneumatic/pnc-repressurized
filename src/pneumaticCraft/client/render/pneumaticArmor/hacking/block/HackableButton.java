@@ -1,6 +1,7 @@
 package pneumaticCraft.client.render.pneumaticArmor.hacking.block;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import pneumaticCraft.api.client.pneumaticHelmet.IHackableBlock;
 
@@ -13,7 +14,7 @@ public class HackableButton implements IHackableBlock{
     }
 
     @Override
-    public boolean canHack(World world, int x, int y, int z, EntityPlayer player){
+    public boolean canHack(IBlockAccess world, int x, int y, int z, EntityPlayer player){
         return true;
     }
 
@@ -28,7 +29,7 @@ public class HackableButton implements IHackableBlock{
     }
 
     @Override
-    public int getHackTime(World world, int x, int y, int z, EntityPlayer player){
+    public int getHackTime(IBlockAccess world, int x, int y, int z, EntityPlayer player){
         return 20;
     }
 

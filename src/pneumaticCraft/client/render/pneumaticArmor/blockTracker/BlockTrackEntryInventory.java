@@ -8,6 +8,7 @@ import net.minecraft.block.Block;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import pneumaticCraft.api.client.pneumaticHelmet.IBlockTrackEntry;
 import pneumaticCraft.client.render.pneumaticArmor.HUDHandler;
@@ -15,7 +16,7 @@ import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.Log;
 import cpw.mods.fml.relauncher.ReflectionHelper;
 
-public class BlockTrackEntryInventory implements IBlockTrackEntry {
+public class BlockTrackEntryInventory implements IBlockTrackEntry{
 
     public static Map tileEntityClassToNameMapping;
     private static List<String> invBlackList = new ArrayList<String>();// list of all inventories that could have crashed the helmet.
@@ -28,7 +29,7 @@ public class BlockTrackEntryInventory implements IBlockTrackEntry {
     }
 
     @Override
-    public boolean shouldTrackWithThisEntry(World world, int x, int y, int z, Block block){
+    public boolean shouldTrackWithThisEntry(IBlockAccess world, int x, int y, int z, Block block){
         if(tileEntityClassToNameMapping == null) {
             try {
                 tileEntityClassToNameMapping = (Map)ReflectionHelper.findField(TileEntity.class, "field_145853_j", "classToNameMap").get(null);

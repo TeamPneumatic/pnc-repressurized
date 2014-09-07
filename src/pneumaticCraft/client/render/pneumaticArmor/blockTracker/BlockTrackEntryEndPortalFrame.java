@@ -5,13 +5,14 @@ import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEndPortalFrame;
 import net.minecraft.init.Blocks;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import pneumaticCraft.api.client.pneumaticHelmet.IBlockTrackEntry;
 
-public class BlockTrackEntryEndPortalFrame implements IBlockTrackEntry {
+public class BlockTrackEntryEndPortalFrame implements IBlockTrackEntry{
 
     @Override
-    public boolean shouldTrackWithThisEntry(World world, int x, int y, int z, Block block){
+    public boolean shouldTrackWithThisEntry(IBlockAccess world, int x, int y, int z, Block block){
         return block == Blocks.end_portal_frame;
     }
 
