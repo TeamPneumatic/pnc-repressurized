@@ -28,9 +28,9 @@ import pneumaticCraft.client.AreaShowManager;
 import pneumaticCraft.client.ClientEventHandler;
 import pneumaticCraft.client.ClientTickHandler;
 import pneumaticCraft.client.gui.pneumaticHelmet.GuiHelmetMainScreen;
+import pneumaticCraft.client.model.BaseModel;
 import pneumaticCraft.client.model.IBaseModel;
 import pneumaticCraft.client.model.ModelAirCannon;
-import pneumaticCraft.client.model.ModelAirCompressor;
 import pneumaticCraft.client.model.ModelAssemblyController;
 import pneumaticCraft.client.model.ModelAssemblyDrill;
 import pneumaticCraft.client.model.ModelAssemblyIOUnit;
@@ -133,7 +133,7 @@ public class ClientProxy extends CommonProxy{
 
         RenderingRegistry.registerBlockHandler(new RenderModelBase());
         // RenderingRegistry.registerBlockHandler(new RendererSpecialBlock());
-        registerBaseModelRenderer(Blockss.airCompressor, TileEntityAirCompressor.class, new ModelAirCompressor());
+        registerBaseModelRenderer(Blockss.airCompressor, TileEntityAirCompressor.class, new BaseModel("airCompressor.tcn"));
         registerBaseModelRenderer(Blockss.assemblyController, TileEntityAssemblyController.class, new ModelAssemblyController());
         registerBaseModelRenderer(Blockss.assemblyDrill, TileEntityAssemblyDrill.class, new ModelAssemblyDrill());
         registerBaseModelRenderer(Blockss.assemblyIOUnit, TileEntityAssemblyIOUnit.class, new ModelAssemblyIOUnit());
