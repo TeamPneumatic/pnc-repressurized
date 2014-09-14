@@ -8,7 +8,7 @@ import pneumaticCraft.client.gui.GuiCreativeCompressor;
 import pneumaticCraft.common.tileentity.TileEntityCreativeCompressor;
 import cpw.mods.fml.common.FMLCommonHandler;
 
-public class BlockCreativeCompressor extends BlockPneumaticCraft{
+public class BlockCreativeCompressor extends BlockPneumaticCraftModeled{
 
     protected BlockCreativeCompressor(Material par2Material){
         super(par2Material);

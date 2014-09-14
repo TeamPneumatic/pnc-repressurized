@@ -94,6 +94,7 @@ import pneumaticCraft.common.tileentity.TileEntityAssemblyIOUnit;
 import pneumaticCraft.common.tileentity.TileEntityAssemblyLaser;
 import pneumaticCraft.common.tileentity.TileEntityAssemblyPlatform;
 import pneumaticCraft.common.tileentity.TileEntityChargingStation;
+import pneumaticCraft.common.tileentity.TileEntityCreativeCompressor;
 import pneumaticCraft.common.tileentity.TileEntityElevatorBase;
 import pneumaticCraft.common.tileentity.TileEntityElevatorCaller;
 import pneumaticCraft.common.tileentity.TileEntityElevatorFrame;
@@ -135,6 +136,7 @@ public class ClientProxy extends CommonProxy{
         registerBaseModelRenderer(Blockss.assemblyLaser, TileEntityAssemblyLaser.class, new ModelAssemblyLaser());
         registerBaseModelRenderer(Blockss.assemblyPlatform, TileEntityAssemblyPlatform.class, new ModelAssemblyPlatform());
         registerBaseModelRenderer(Blockss.chargingStation, TileEntityChargingStation.class, new ModelChargingStation());
+        registerBaseModelRenderer(Blockss.creativeCompressor, TileEntityCreativeCompressor.class, new BaseModel("creativeCompressor.obj"));
         registerBaseModelRenderer(Blockss.elevatorBase, TileEntityElevatorBase.class, new ModelElevatorBase());
         registerBaseModelRenderer(Blockss.elevatorFrame, TileEntityElevatorFrame.class, new ModelElevatorFrame());
         registerBaseModelRenderer(Blockss.pneumaticDoor, TileEntityPneumaticDoor.class, new ModelPneumaticDoor());

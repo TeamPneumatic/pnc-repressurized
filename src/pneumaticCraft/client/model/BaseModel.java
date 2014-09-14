@@ -4,6 +4,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.AdvancedModelLoader;
 import net.minecraftforge.client.model.IModelCustom;
+import net.minecraftforge.client.model.obj.WavefrontObject;
 
 import org.lwjgl.opengl.GL11;
 
@@ -33,11 +34,16 @@ public class BaseModel implements IBaseModel{
 
     @Override
     public void renderStatic(float size, TileEntity te){
+        GL11.glPushMatrix();
+        if(model instanceof WavefrontObject) {
+            GL11.glTranslated(-8, -16, 8);
+        }
         if(staticParts != null) {
             model.renderOnly(staticParts);
         } else {
             model.renderAll();
         }
+        GL11.glPopMatrix();
     }
 
     @Override
