@@ -2,17 +2,25 @@ package pneumaticCraft.common.block;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.IIcon;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.common.tileentity.TileEntityPressureChamberValve;
+import pneumaticCraft.lib.Textures;
 import pneumaticCraft.proxy.CommonProxy;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
-public class BlockPressureChamberValve extends BlockPneumaticCraftModeled{
+public class BlockPressureChamberValve extends BlockPneumaticCraft{
+
+    private IIcon[] textures;
 
     public BlockPressureChamberValve(Material par2Material){
         super(par2Material);
@@ -21,6 +29,35 @@ public class BlockPressureChamberValve extends BlockPneumaticCraftModeled{
     @Override
     protected Class<? extends TileEntity> getTileEntityClass(){
         return TileEntityPressureChamberValve.class;
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void registerBlockIcons(IIconRegister register){
+        textures = new IIcon[4];
+        String s = Textures.ICON_LOCATION + "pressureChamber/";
+        textures[0] = register.registerIcon(s + "valve");
+        textures[1] = register.registerIcon(s + "valve_formed");
+        textures[2] = register.registerIcon(s + "valve_side");
+        textures[3] = register.registerIcon(s + "center");
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public IIcon getIcon(IBlockAccess world, int x, int y, int z, int side){
+        TileEntityPressureChamberValve valve = (TileEntityPressureChamberValve)world.getTileEntity(x, y, z);
+        boolean formed = valve.accessoryValves != null && valve.accessoryValves.size() > 0;
+        if((world.getBlockMetadata(x, y, z) | 1) == (side | 1)) {
+            return textures[formed ? 1 : 0];
+        } else {
+            return textures[formed ? 3 : 2];
+        }
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public IIcon getIcon(int side, int meta){
+        return side == 2 || side == 3 ? textures[0] : textures[2];
     }
 
     /**

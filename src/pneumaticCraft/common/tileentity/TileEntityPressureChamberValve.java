@@ -110,6 +110,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
                     accessoryValves.add((TileEntityPressureChamberValve)te);
                 }
             }
+            if(worldObj.isRemote) worldObj.markBlockRangeForRenderUpdate(xCoord, yCoord, zCoord, xCoord, yCoord, zCoord);
         }
 
         if(!worldObj.isRemote) {
@@ -461,6 +462,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
 
         // Read in the accessory valves from NBT
         NBTTagList tagList2 = tag.getTagList("Valves", 10);
+        nbtValveList.clear();
         for(int i = 0; i < tagList2.tagCount(); ++i) {
             NBTTagCompound tagCompound = tagList2.getCompoundTagAt(i);
             if(tagCompound != null) {
@@ -560,7 +562,10 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
         if(accessoryValves != null) {
             for(TileEntityPressureChamberValve valve : accessoryValves) {
                 valve.setMultiBlockCoords(0, 0, 0, 0);
-                if(valve != this) valve.accessoryValves.clear();
+                if(valve != this) {
+                    valve.accessoryValves.clear();
+                    valve.sendDescriptionPacket();
+                }
             }
             accessoryValves.clear();
         }
@@ -664,6 +669,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
         // TE's.
         for(TileEntityPressureChamberValve valve : valveList) {
             valve.accessoryValves = new ArrayList<TileEntityPressureChamberValve>(valveList);
+            valve.sendDescriptionPacket();
         }
 
         // set the redirections of right clicking and breaking a wall block to
