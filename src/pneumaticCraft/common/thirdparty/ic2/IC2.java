@@ -11,6 +11,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import pneumaticCraft.api.PneumaticRegistry;
+import pneumaticCraft.client.model.BaseModel;
 import pneumaticCraft.client.model.ModelThirdPartyCompressor;
 import pneumaticCraft.common.Config;
 import pneumaticCraft.common.block.Blockss;
@@ -76,7 +77,7 @@ public class IC2 implements IThirdParty{
     @Override
     public void clientSide(){
         ClientProxy.registerBaseModelRenderer(electricCompressor, TileEntityElectricCompressor.class, new ModelThirdPartyCompressor(ModelThirdPartyCompressor.Type.EU));
-        ClientProxy.registerBaseModelRenderer(pneumaticGenerator, TileEntityPneumaticGenerator.class, new ModelElectricCompressor());
+        ClientProxy.registerBaseModelRenderer(pneumaticGenerator, TileEntityPneumaticGenerator.class, new BaseModel("electricCompressor.obj"));
     }
 
 }

@@ -76,7 +76,7 @@ public abstract class BlockPneumaticCraft extends BlockContainer implements IPne
         }
     }
 
-    protected boolean isRotatable(){
+    public boolean isRotatable(){
         return false;
     }
 

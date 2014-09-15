@@ -42,7 +42,7 @@ public class BlockChargingStation extends BlockPneumaticCraftModeled{
     }
 
     @Override
-    protected boolean isRotatable(){
+    public boolean isRotatable(){
         return true;
     }
 

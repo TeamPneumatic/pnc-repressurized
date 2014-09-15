@@ -50,7 +50,11 @@ public class RenderModelBase extends TileEntitySpecialRenderer implements IItemR
             if(model.getModelTexture() != null) FMLClientHandler.instance().getClient().getTextureManager().bindTexture(model.getModelTexture());
             GL11.glTranslatef((float)d + 0.5F, (float)d1 + 1.5F, (float)d2 + 0.5F);
             GL11.glScalef(1.0F, -1F, -1F);
-            if(model.rotateModelBasedOnBlockMeta()) PneumaticCraftUtils.rotateMatrixByMetadata(tile.getBlockMetadata() % 6);
+            if(model.rotateModelBasedOnBlockMeta()) {
+                PneumaticCraftUtils.rotateMatrixByMetadata(tile.getBlockMetadata() % 6);
+            } else {
+                PneumaticCraftUtils.rotateMatrixByMetadata(2);
+            }
 
             //TODO refactor when all models are converted:
             if(model instanceof BaseModel) {

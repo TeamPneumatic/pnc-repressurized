@@ -75,7 +75,7 @@ public class BlockAphorismTile extends BlockPneumaticCraft{
     }
 
     @Override
-    protected boolean isRotatable(){
+    public boolean isRotatable(){
         return true;
     }
 

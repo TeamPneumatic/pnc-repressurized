@@ -74,6 +74,7 @@ import pneumaticCraft.common.CommonHUDHandler;
 import pneumaticCraft.common.Config;
 import pneumaticCraft.common.HackTickHandler;
 import pneumaticCraft.common.UpdateChecker;
+import pneumaticCraft.common.block.BlockPneumaticCraft;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.block.tubes.ModuleRegistrator;
 import pneumaticCraft.common.block.tubes.TubeModule;
@@ -95,6 +96,7 @@ import pneumaticCraft.common.tileentity.TileEntityAssemblyLaser;
 import pneumaticCraft.common.tileentity.TileEntityAssemblyPlatform;
 import pneumaticCraft.common.tileentity.TileEntityChargingStation;
 import pneumaticCraft.common.tileentity.TileEntityCreativeCompressor;
+import pneumaticCraft.common.tileentity.TileEntityElectrostaticCompressor;
 import pneumaticCraft.common.tileentity.TileEntityElevatorBase;
 import pneumaticCraft.common.tileentity.TileEntityElevatorCaller;
 import pneumaticCraft.common.tileentity.TileEntityElevatorFrame;
@@ -137,6 +139,7 @@ public class ClientProxy extends CommonProxy{
         registerBaseModelRenderer(Blockss.assemblyPlatform, TileEntityAssemblyPlatform.class, new ModelAssemblyPlatform());
         registerBaseModelRenderer(Blockss.chargingStation, TileEntityChargingStation.class, new ModelChargingStation());
         registerBaseModelRenderer(Blockss.creativeCompressor, TileEntityCreativeCompressor.class, new BaseModel("creativeCompressor.obj"));
+        registerBaseModelRenderer(Blockss.electrostaticCompressor, TileEntityElectrostaticCompressor.class, new BaseModel("electrostaticCompressor.obj"));
         registerBaseModelRenderer(Blockss.elevatorBase, TileEntityElevatorBase.class, new ModelElevatorBase());
         registerBaseModelRenderer(Blockss.elevatorFrame, TileEntityElevatorFrame.class, new ModelElevatorFrame());
         registerBaseModelRenderer(Blockss.pneumaticDoor, TileEntityPneumaticDoor.class, new ModelPneumaticDoor());
@@ -186,6 +189,9 @@ public class ClientProxy extends CommonProxy{
     }
 
     public static void registerBaseModelRenderer(Block block, Class<? extends TileEntity> tileEntityClass, IBaseModel model){
+        if(model instanceof BaseModel) {
+            ((BaseModel)model).rotatable = ((BlockPneumaticCraft)block).isRotatable();
+        }
         registerBaseModelRenderer(Item.getItemFromBlock(block), tileEntityClass, model);
     }
 

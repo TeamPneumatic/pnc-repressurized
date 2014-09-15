@@ -16,6 +16,7 @@ public class BaseModel implements IBaseModel{
     protected final IModelCustom model;
     protected String[] staticParts, dynamicParts;
     private final ResourceLocation resLoc;
+    public boolean rotatable;
 
     public BaseModel(String name){
         this(name, null);
@@ -36,7 +37,15 @@ public class BaseModel implements IBaseModel{
     public void renderStatic(float size, TileEntity te){
         GL11.glPushMatrix();
         if(model instanceof WavefrontObject) {
-            GL11.glTranslated(-8, -16, 8);
+            if(te != null) {
+                GL11.glRotated(180, 1, 0, 0);
+                GL11.glRotated(90, 0, -1, 0);
+                GL11.glTranslated(-8, 0, 8);
+            } else {
+                GL11.glRotated(180, -1, 0, 0);
+                GL11.glTranslated(-8, 0, 8);
+            }
+
         }
         if(staticParts != null) {
             model.renderOnly(staticParts);
@@ -63,6 +72,6 @@ public class BaseModel implements IBaseModel{
 
     @Override
     public boolean rotateModelBasedOnBlockMeta(){
-        return true;
+        return rotatable;
     }
 }

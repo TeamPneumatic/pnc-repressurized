@@ -53,7 +53,7 @@ public class BlockAirCannon extends BlockPneumaticCraftModeled{
     }
 
     @Override
-    protected boolean isRotatable(){
+    public boolean isRotatable(){
         return true;
     }
 

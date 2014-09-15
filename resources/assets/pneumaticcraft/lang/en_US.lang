@@ -49,6 +49,8 @@ tile.programmer.name=Programmer
 tile.droneInterface.name=Drone Interface
 tile.creativeCompressor.name=Creative Compressor
 tile.wheatHarvester.plasticPlants.name=Plastic Plants Harvester Dolley
+tile.pressureChamberWall.wall.name=Pressure Chamber Wall
+tile.pressureChamberWall.window.name=Pressure Chamber Window
 
 tile.monsterStoneEgg.name=Silverfish
 

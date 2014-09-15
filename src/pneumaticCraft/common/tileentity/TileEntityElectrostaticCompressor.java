@@ -53,6 +53,11 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase i
 
     }
 
+    @Override
+    public boolean isConnectedTo(ForgeDirection dir){
+        return dir != ForgeDirection.UP;
+    }
+
     public boolean shouldEmitRedstone(){
         switch(redstoneMode){
             case 0:

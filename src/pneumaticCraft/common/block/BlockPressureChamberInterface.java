@@ -71,7 +71,7 @@ public class BlockPressureChamberInterface extends BlockPressureChamberWall{
     }
 
     @Override
-    protected boolean isRotatable(){
+    public boolean isRotatable(){
         return true;
     }
 
