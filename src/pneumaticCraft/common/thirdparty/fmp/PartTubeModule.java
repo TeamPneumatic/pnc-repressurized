@@ -115,7 +115,7 @@ public class PartTubeModule extends JCuboidPart implements JNormalOcclusion, ISi
     @SideOnly(Side.CLIENT)
     @Override
     public void renderDynamic(Vector3 pos, float partialTicks, int renderPass){
-        module.renderDynamic(pos.x, pos.y, pos.z, partialTicks, renderPass);
+        module.renderDynamic(pos.x, pos.y, pos.z, partialTicks, renderPass, false);
     }
 
     @Override

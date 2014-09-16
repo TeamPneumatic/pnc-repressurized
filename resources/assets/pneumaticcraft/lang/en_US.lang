@@ -132,7 +132,7 @@ item.safetyTubeModule.name=Safety Tube Module
 item.pressureGaugeModule.name=Pressure Gauge Tube Module
 item.flowDetectorModule.name=Flow Detector Tube Module
 item.airGrateModule.name=Air Grate Tube Module
-item.regulatorTubeModule.name=Regulator Tube Module [Model WIP]
+item.regulatorTubeModule.name=Regulator Tube Module
 
 # Programming Puzzles
 programmingPuzzle.start.name=Start

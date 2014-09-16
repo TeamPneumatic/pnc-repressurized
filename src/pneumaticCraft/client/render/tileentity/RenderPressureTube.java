@@ -1,5 +1,7 @@
 package pneumaticCraft.client.render.tileentity;
 
+import java.util.Arrays;
+
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
 
@@ -36,15 +38,19 @@ public class RenderPressureTube extends TileEntitySpecialRenderer{
         GL11.glTranslatef((float)d + 0.5F, (float)d1 + 1.5F, (float)d2 + 0.5F); // size
         GL11.glRotatef(0, 0.0F, 1.0F, 0.0F);
 
-        GL11.glScalef(1.0F, -1F, -1F); // to make your block have a normal
-                                       // positioning. comment out to see what
-                                       // happens
-        model.renderModel(0.0625F, tile.sidesConnected);
+        GL11.glScalef(1.0F, -1F, -1F);
+        boolean[] renderSides = Arrays.copyOf(tile.sidesConnected, tile.sidesConnected.length);
+        for(int i = 0; i < 6; i++) {
+            if(tile.modules[i] != null && tile.modules[i].isInline()) {
+                renderSides[i] = true;
+            }
+        }
+        model.renderModel(0.0625F, renderSides);
         // GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glPopMatrix(); // end
 
         for(TubeModule module : tile.modules) {
-            if(module != null) module.renderDynamic(d, d1, d2, f, 0);
+            if(module != null) module.renderDynamic(d, d1, d2, f, 0, false);
         }
     }
 

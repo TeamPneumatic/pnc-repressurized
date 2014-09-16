@@ -7,7 +7,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import pneumaticCraft.api.PneumaticRegistry;
-import pneumaticCraft.client.model.ModelThirdPartyCompressor;
+import pneumaticCraft.client.model.BaseModel;
 import pneumaticCraft.common.Config;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.Itemss;
@@ -52,7 +52,7 @@ public class BuildCraft implements IThirdParty{
 
     @Override
     public void clientSide(){
-        ClientProxy.registerBaseModelRenderer(kineticCompressor, TileEntityKineticCompressor.class, new ModelThirdPartyCompressor(ModelThirdPartyCompressor.Type.MJ));
+        ClientProxy.registerBaseModelRenderer(kineticCompressor, TileEntityKineticCompressor.class, new BaseModel("kineticCompressor.tcn"));
         ClientProxy.registerBaseModelRenderer(pneumaticEngine, TileEntityPneumaticEngine.class, new ModelPneumaticEngine());
     }
 
