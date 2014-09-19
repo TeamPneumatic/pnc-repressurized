@@ -74,21 +74,21 @@ public class RenderModelBase extends TileEntitySpecialRenderer implements IItemR
             }
 
             //Rerender onto the list if necessary
-            if(tilesRequiringRerender.contains(tile)) {
-                tilesRequiringRerender.remove(tile);
-                GL11.glNewList(renderList, GL11.GL_COMPILE);
-                GL11.glPushMatrix();
-                {
-                    model.renderStatic(0.0625F, tile);
-                }
-                GL11.glPopMatrix();
-                GL11.glEndList();
+            /* if(tilesRequiringRerender.contains(tile)) {
+                 tilesRequiringRerender.remove(tile);
+                 GL11.glNewList(renderList, GL11.GL_COMPILE);*/
+            GL11.glPushMatrix();
+            {
+                model.renderStatic(0.0625F, tile);
+            }
+            GL11.glPopMatrix();
+            /*  GL11.glEndList();
             }
 
             //and actually render the static render
             GL11.glPushMatrix();
             GL11.glCallList(renderList);
-            GL11.glPopMatrix();
+            GL11.glPopMatrix();*/
         }
         GL11.glPopMatrix();
     }

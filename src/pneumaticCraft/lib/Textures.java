@@ -44,7 +44,7 @@ public class Textures{
     public static final ResourceLocation MODEL_PNEUMATIC_ENGINE_GREEN = new ResourceLocation(MODEL_LOCATION + "PneumaticEngineGreen.png");
     public static final ResourceLocation MODEL_PNEUMATIC_ENGINE_YELLOW = new ResourceLocation(MODEL_LOCATION + "PneumaticEngineYellow.png");
     public static final ResourceLocation MODEL_PNEUMATIC_ENGINE_RED = new ResourceLocation(MODEL_LOCATION + "PneumaticEngineRed.png");
-    public static final ResourceLocation MODEL_OMNIDIRECTIONAL_HOPPER = new ResourceLocation(MODEL_LOCATION + "OmnidirectionalHopper.png");
+    public static final ResourceLocation MODEL_OMNIDIRECTIONAL_HOPPER = new ResourceLocation(MODEL_LOCATION + "omnidirectionalHopper.png");
     public static final ResourceLocation MODEL_PROGRAMMER = new ResourceLocation(MODEL_LOCATION + "programmer.png");
     public static final ResourceLocation MODEL_DRONE_INTERFACE = new ResourceLocation(MODEL_LOCATION + "droneInterface.png");
     public static final ResourceLocation MODEL_THIRD_PARTY_COMPRESSOR = new ResourceLocation(MODEL_LOCATION + "ThirdPartyCompressor.png");
