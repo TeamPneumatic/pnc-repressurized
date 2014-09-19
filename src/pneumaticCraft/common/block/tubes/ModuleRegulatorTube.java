@@ -2,20 +2,31 @@ package pneumaticCraft.common.block.tubes;
 
 import java.util.List;
 
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
 
 import pneumaticCraft.api.tileentity.IAirHandler;
 import pneumaticCraft.api.tileentity.IPneumaticMachine;
+import pneumaticCraft.client.model.BaseModel;
 import pneumaticCraft.client.model.IBaseModel;
-import pneumaticCraft.client.model.ModelSafetyValve;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.Names;
 
 public class ModuleRegulatorTube extends TubeModuleRedstoneReceiving implements IInfluenceDispersing{
-    private final IBaseModel model = new ModelSafetyValve();
+    private boolean renderItem;
+
+    private IBaseModel model;
+
+    @Override
+    public void renderDynamic(double x, double y, double z, float partialTicks, int renderPass, boolean itemRender){
+        renderItem = itemRender;
+        super.renderDynamic(x, y, z, partialTicks, renderPass, itemRender);
+    }
 
     @Override
     public String getType(){
@@ -24,6 +35,24 @@ public class ModuleRegulatorTube extends TubeModuleRedstoneReceiving implements 
 
     @Override
     public IBaseModel getModel(){
+        if(model == null) {
+            model = new BaseModel("regulatorTubeModule.obj"){
+                @Override
+                public void renderStatic(float size, TileEntity te){
+                    GL11.glPushMatrix();
+                    GL11.glRotated(90, 0, -1, 0);
+                    GL11.glTranslated(10 / 16D, 24 / 16D, 0);
+                    if(renderItem) {
+                        GL11.glTranslated(1 / 16D, -1 / 16D, 3 / 16D);
+                    }
+                    float scale = 1 / 16F;
+                    GL11.glScalef(scale, scale, scale);
+                    GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+                    super.renderStatic(size, te);
+                    GL11.glPopMatrix();
+                }
+            };
+        }
         return model;
     }
 

@@ -28,9 +28,9 @@ import pneumaticCraft.client.AreaShowManager;
 import pneumaticCraft.client.ClientEventHandler;
 import pneumaticCraft.client.ClientTickHandler;
 import pneumaticCraft.client.gui.pneumaticHelmet.GuiHelmetMainScreen;
+import pneumaticCraft.client.model.BaseModel;
 import pneumaticCraft.client.model.IBaseModel;
 import pneumaticCraft.client.model.ModelAirCannon;
-import pneumaticCraft.client.model.ModelAirCompressor;
 import pneumaticCraft.client.model.ModelAssemblyController;
 import pneumaticCraft.client.model.ModelAssemblyDrill;
 import pneumaticCraft.client.model.ModelAssemblyIOUnit;
@@ -44,8 +44,6 @@ import pneumaticCraft.client.model.ModelOmnidirectionalHopper;
 import pneumaticCraft.client.model.ModelPneumaticDoor;
 import pneumaticCraft.client.model.ModelPneumaticDoorBase;
 import pneumaticCraft.client.model.ModelPressureChamberInterface;
-import pneumaticCraft.client.model.ModelPressureChamberValve;
-import pneumaticCraft.client.model.ModelPressureChamberWindow;
 import pneumaticCraft.client.model.ModelUVLightBox;
 import pneumaticCraft.client.model.ModelUniversalSensor;
 import pneumaticCraft.client.model.ModelVacuumPump;
@@ -61,7 +59,6 @@ import pneumaticCraft.client.render.item.RenderItemPneumaticCilinder;
 import pneumaticCraft.client.render.item.RenderItemPneumaticHelmet;
 import pneumaticCraft.client.render.item.RenderItemProgrammingPuzzle;
 import pneumaticCraft.client.render.item.RenderItemVortexCannon;
-import pneumaticCraft.client.render.itemblock.RenderItemPressureChamberWall;
 import pneumaticCraft.client.render.itemblock.RenderItemPressureTube;
 import pneumaticCraft.client.render.itemblock.RenderItemTubeModule;
 import pneumaticCraft.client.render.pneumaticArmor.CoordTrackUpgradeHandler;
@@ -76,7 +73,7 @@ import pneumaticCraft.client.render.tileentity.RenderPressureTube;
 import pneumaticCraft.common.CommonHUDHandler;
 import pneumaticCraft.common.Config;
 import pneumaticCraft.common.HackTickHandler;
-import pneumaticCraft.common.UpdateChecker;
+import pneumaticCraft.common.block.BlockPneumaticCraft;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.block.tubes.ModuleRegistrator;
 import pneumaticCraft.common.block.tubes.TubeModule;
@@ -97,6 +94,8 @@ import pneumaticCraft.common.tileentity.TileEntityAssemblyIOUnit;
 import pneumaticCraft.common.tileentity.TileEntityAssemblyLaser;
 import pneumaticCraft.common.tileentity.TileEntityAssemblyPlatform;
 import pneumaticCraft.common.tileentity.TileEntityChargingStation;
+import pneumaticCraft.common.tileentity.TileEntityCreativeCompressor;
+import pneumaticCraft.common.tileentity.TileEntityElectrostaticCompressor;
 import pneumaticCraft.common.tileentity.TileEntityElevatorBase;
 import pneumaticCraft.common.tileentity.TileEntityElevatorCaller;
 import pneumaticCraft.common.tileentity.TileEntityElevatorFrame;
@@ -104,8 +103,6 @@ import pneumaticCraft.common.tileentity.TileEntityOmnidirectionalHopper;
 import pneumaticCraft.common.tileentity.TileEntityPneumaticDoor;
 import pneumaticCraft.common.tileentity.TileEntityPneumaticDoorBase;
 import pneumaticCraft.common.tileentity.TileEntityPressureChamberInterface;
-import pneumaticCraft.common.tileentity.TileEntityPressureChamberValve;
-import pneumaticCraft.common.tileentity.TileEntityPressureChamberWall;
 import pneumaticCraft.common.tileentity.TileEntityPressureTube;
 import pneumaticCraft.common.tileentity.TileEntityProgrammer;
 import pneumaticCraft.common.tileentity.TileEntitySecurityStation;
@@ -133,19 +130,20 @@ public class ClientProxy extends CommonProxy{
 
         RenderingRegistry.registerBlockHandler(new RenderModelBase());
         // RenderingRegistry.registerBlockHandler(new RendererSpecialBlock());
-        registerBaseModelRenderer(Blockss.airCompressor, TileEntityAirCompressor.class, new ModelAirCompressor());
+        registerBaseModelRenderer(Blockss.airCompressor, TileEntityAirCompressor.class, new BaseModel("airCompressor.tcn"));
         registerBaseModelRenderer(Blockss.assemblyController, TileEntityAssemblyController.class, new ModelAssemblyController());
         registerBaseModelRenderer(Blockss.assemblyDrill, TileEntityAssemblyDrill.class, new ModelAssemblyDrill());
         registerBaseModelRenderer(Blockss.assemblyIOUnit, TileEntityAssemblyIOUnit.class, new ModelAssemblyIOUnit());
         registerBaseModelRenderer(Blockss.assemblyLaser, TileEntityAssemblyLaser.class, new ModelAssemblyLaser());
         registerBaseModelRenderer(Blockss.assemblyPlatform, TileEntityAssemblyPlatform.class, new ModelAssemblyPlatform());
         registerBaseModelRenderer(Blockss.chargingStation, TileEntityChargingStation.class, new ModelChargingStation());
+        registerBaseModelRenderer(Blockss.creativeCompressor, TileEntityCreativeCompressor.class, new BaseModel("creativeCompressor.obj"));
+        registerBaseModelRenderer(Blockss.electrostaticCompressor, TileEntityElectrostaticCompressor.class, new BaseModel("electrostaticCompressor.obj"));
         registerBaseModelRenderer(Blockss.elevatorBase, TileEntityElevatorBase.class, new ModelElevatorBase());
         registerBaseModelRenderer(Blockss.elevatorFrame, TileEntityElevatorFrame.class, new ModelElevatorFrame());
         registerBaseModelRenderer(Blockss.pneumaticDoor, TileEntityPneumaticDoor.class, new ModelPneumaticDoor());
         registerBaseModelRenderer(Blockss.pneumaticDoorBase, TileEntityPneumaticDoorBase.class, new ModelPneumaticDoorBase());
         registerBaseModelRenderer(Blockss.pressureChamberInterface, TileEntityPressureChamberInterface.class, new ModelPressureChamberInterface());
-        registerBaseModelRenderer(Blockss.pressureChamberValve, TileEntityPressureChamberValve.class, new ModelPressureChamberValve());
         registerBaseModelRenderer(Blockss.securityStation, TileEntitySecurityStation.class, new ModelComputer(Textures.MODEL_SECURITY_STATION));
         registerBaseModelRenderer(Blockss.universalSensor, TileEntityUniversalSensor.class, new ModelUniversalSensor());
         registerBaseModelRenderer(Blockss.uvLightBox, TileEntityUVLightBox.class, new ModelUVLightBox());
@@ -156,7 +154,6 @@ public class ClientProxy extends CommonProxy{
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPressureTube.class, new RenderPressureTube());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAirCannon.class, new RenderAirCannon());
         // ClientRegistry.bindTileEntitySpecialRenderer(TileEntityElevatorBase.class, new RenderElevatorBase());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPressureChamberWall.class, new RenderModelBase(new ModelPressureChamberWindow()));
         // ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAdvancedPressureTube.class, new RenderAdvancedPressureTube());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAphorismTile.class, new RenderAphorismTile());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityElevatorCaller.class, new RenderElevatorCaller());
@@ -167,7 +164,6 @@ public class ClientProxy extends CommonProxy{
         MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(Blockss.advancedPressureTube), new RenderItemPressureTube(true));
 
         MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(Blockss.airCannon), new RenderModelBase(new ModelAirCannon()));
-        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(Blockss.pressureChamberWall), new RenderItemPressureChamberWall());
         MinecraftForgeClient.registerItemRenderer(Itemss.vortexCannon, new RenderItemVortexCannon());
         // MinecraftForgeClient.registerItemRenderer(Blocks.elevatorBase, new RenderItemElevatorBase());
         MinecraftForgeClient.registerItemRenderer(Itemss.cannonBarrel, new RenderItemCannonParts(false));
@@ -192,6 +188,9 @@ public class ClientProxy extends CommonProxy{
     }
 
     public static void registerBaseModelRenderer(Block block, Class<? extends TileEntity> tileEntityClass, IBaseModel model){
+        if(model instanceof BaseModel) {
+            ((BaseModel)model).rotatable = ((BlockPneumaticCraft)block).isRotatable();
+        }
         registerBaseModelRenderer(Item.getItemFromBlock(block), tileEntityClass, model);
     }
 
@@ -226,10 +225,10 @@ public class ClientProxy extends CommonProxy{
 
         ThirdPartyManager.instance().clientSide();
 
-        if(Config.enableUpdateChecker) {
-            UpdateChecker.instance().start();
-            FMLCommonHandler.instance().bus().register(UpdateChecker.instance());
-        }
+        /*  if(Config.enableUpdateChecker) {
+              UpdateChecker.instance().start();
+              FMLCommonHandler.instance().bus().register(UpdateChecker.instance());
+          }*/
         EntityTrackHandler.registerDefaultEntries();
         getAllKeybindsFromOptionsFile();
     }

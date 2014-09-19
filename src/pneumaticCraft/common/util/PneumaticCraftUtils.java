@@ -684,7 +684,7 @@ public class PneumaticCraftUtils{
     public static boolean isSameOreDictStack(ItemStack stack1, ItemStack stack2){
         int[] oredictIds = OreDictionary.getOreIDs(stack1);
         for(int oredictId : oredictIds) {
-            List<ItemStack> oreDictStacks = OreDictionary.getOres(OreDictionary.getOreName(oredictId));//TODO confirm working
+            List<ItemStack> oreDictStacks = OreDictionary.getOres(OreDictionary.getOreName(oredictId));
             for(ItemStack oreDictStack : oreDictStacks) {
                 if(OreDictionary.itemMatches(oreDictStack, stack2, false)) {
                     return true;

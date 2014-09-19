@@ -4,7 +4,6 @@ import java.util.List;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
@@ -14,8 +13,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.common.tileentity.TileEntityPressureChamberInterface;
-import pneumaticCraft.common.tileentity.TileEntityPressureChamberValve;
-import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.proxy.CommonProxy;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -24,6 +21,21 @@ public class BlockPressureChamberInterface extends BlockPressureChamberWall{
 
     public BlockPressureChamberInterface(Material par2Material){
         super(par2Material);
+    }
+
+    @Override
+    public int getRenderType(){
+        return PneumaticCraft.proxy.SPECIAL_RENDER_TYPE_VALUE;
+    }
+
+    @Override
+    public boolean renderAsNormalBlock(){
+        return false;
+    }
+
+    @Override
+    public boolean isOpaqueCube(){
+        return false;
     }
 
     @Override
@@ -58,14 +70,14 @@ public class BlockPressureChamberInterface extends BlockPressureChamberWall{
         }
     }
 
-    /**
-     * Called when the block is placed in the world.
-     */
     @Override
-    public void onBlockPlacedBy(World par1World, int par2, int par3, int par4, EntityLivingBase par5EntityLiving, ItemStack iStack){
-        int l = PneumaticCraftUtils.getDirectionFacing(par5EntityLiving, true).ordinal();
-        par1World.setBlockMetadataWithNotify(par2, par3, par4, l, 3);
-        TileEntityPressureChamberValve.checkIfProperlyFormed(par1World, par2, par3, par4);
+    public boolean isRotatable(){
+        return true;
+    }
+
+    @Override
+    protected boolean canRotateToTopOrBottom(){
+        return true;
     }
 
     @Override

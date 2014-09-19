@@ -4,13 +4,11 @@ import net.minecraft.block.material.Material;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 import pneumaticCraft.common.tileentity.TileEntityElectrostaticCompressor;
-import pneumaticCraft.lib.Textures;
 import pneumaticCraft.proxy.CommonProxy;
 
-public class BlockElectrostaticCompressor extends BlockPneumaticCraft{
+public class BlockElectrostaticCompressor extends BlockPneumaticCraftModeled{
     public BlockElectrostaticCompressor(Material par2Material){
         super(par2Material);
-        setBlockTextureName(Textures.BLOCK_ELECTROSTATIC_COMPRESSOR);
     }
 
     @Override
@@ -62,6 +60,11 @@ public class BlockElectrostaticCompressor extends BlockPneumaticCraft{
      */
     @Override
     public boolean shouldCheckWeakPower(IBlockAccess world, int x, int y, int z, int side){
+        return true;
+    }
+
+    @Override
+    public boolean func_149730_j(){
         return true;
     }
 }

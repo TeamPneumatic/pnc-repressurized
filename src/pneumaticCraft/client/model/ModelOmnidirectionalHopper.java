@@ -22,60 +22,53 @@ public class ModelOmnidirectionalHopper extends ModelBase implements IBaseModel{
     ModelRenderer Funnel;
     ModelRenderer Funnel2;
     ModelRenderer InserterBottom;
-    ModelRenderer InserterSide;
 
     public ModelOmnidirectionalHopper(){
         textureWidth = 64;
-        textureHeight = 32;
+        textureHeight = 64;
 
-        Wall1 = new ModelRenderer(this, 0, 0);
+        Wall1 = new ModelRenderer(this, 48, 0);
         Wall1.addBox(0F, 0F, 0F, 2, 16, 5);
         Wall1.setRotationPoint(-8F, 8F, -8F);
-        Wall1.setTextureSize(64, 32);
+        Wall1.setTextureSize(64, 64);
         Wall1.mirror = true;
         setRotation(Wall1, 0F, 0F, 0F);
-        Wall2 = new ModelRenderer(this, 0, 0);
+        Wall2 = new ModelRenderer(this, 34, 0);
         Wall2.addBox(0F, 0F, 0F, 2, 16, 5);
         Wall2.setRotationPoint(6F, 8F, -8F);
-        Wall2.setTextureSize(64, 32);
+        Wall2.setTextureSize(64, 64);
         Wall2.mirror = true;
         setRotation(Wall2, 0F, 0F, 0F);
-        Wall3 = new ModelRenderer(this, 0, 0);
+        Wall3 = new ModelRenderer(this, 0, 24);
         Wall3.addBox(0F, 0F, 0F, 12, 2, 5);
         Wall3.setRotationPoint(-6F, 8F, -8F);
-        Wall3.setTextureSize(64, 32);
+        Wall3.setTextureSize(64, 64);
         Wall3.mirror = true;
         setRotation(Wall3, 0F, 0F, 0F);
-        Wall4 = new ModelRenderer(this, 0, 0);
+        Wall4 = new ModelRenderer(this, 0, 17);
         Wall4.addBox(0F, 0F, 0F, 12, 2, 5);
         Wall4.setRotationPoint(-6F, 22F, -8F);
-        Wall4.setTextureSize(64, 32);
+        Wall4.setTextureSize(64, 64);
         Wall4.mirror = true;
         setRotation(Wall4, 0F, 0F, 0F);
-        Funnel = new ModelRenderer(this, 30, 15);
+        Funnel = new ModelRenderer(this, 0, 0);
         Funnel.addBox(0F, 0F, 0F, 16, 16, 1);
         Funnel.setRotationPoint(-8F, 8F, -3F);
-        Funnel.setTextureSize(64, 32);
+        Funnel.setTextureSize(64, 64);
         Funnel.mirror = true;
         setRotation(Funnel, 0F, 0F, 0F);
-        Funnel2 = new ModelRenderer(this, 36, 0);
+        Funnel2 = new ModelRenderer(this, 0, 31);
         Funnel2.addBox(0F, 0F, 0F, 8, 8, 6);
         Funnel2.setRotationPoint(-4F, 12F, -2F);
-        Funnel2.setTextureSize(64, 32);
+        Funnel2.setTextureSize(64, 64);
         Funnel2.mirror = true;
         setRotation(Funnel2, 0F, 0F, 0F);
-        InserterBottom = new ModelRenderer(this, 0, 24);
+        InserterBottom = new ModelRenderer(this, 34, 29);
         InserterBottom.addBox(0F, 0F, 0F, 4, 4, 4);
         InserterBottom.setRotationPoint(-2F, 14F, 4F);
-        InserterBottom.setTextureSize(64, 32);
+        InserterBottom.setTextureSize(64, 64);
         InserterBottom.mirror = true;
         setRotation(InserterBottom, 0F, 0F, 0F);
-        InserterSide = new ModelRenderer(this, 0, 24);
-        InserterSide.addBox(0F, 0F, 0F, 4, 4, 4);
-        InserterSide.setRotationPoint(-2F, 8F, 0F);
-        InserterSide.setTextureSize(64, 32);
-        InserterSide.mirror = true;
-        setRotation(InserterSide, 0F, 0F, 0F);
     }
 
     @Override
@@ -89,7 +82,6 @@ public class ModelOmnidirectionalHopper extends ModelBase implements IBaseModel{
         Funnel.render(f5);
         Funnel2.render(f5);
         InserterBottom.render(f5);
-        InserterSide.render(f5);
     }
 
     private void setRotation(ModelRenderer model, float x, float y, float z){
@@ -102,12 +94,14 @@ public class ModelOmnidirectionalHopper extends ModelBase implements IBaseModel{
     public void renderStatic(float size, TileEntity tile){
         GL11.glPushMatrix();
         TileEntityOmnidirectionalHopper te = null;
+
         if(tile instanceof TileEntityOmnidirectionalHopper) {
             te = (TileEntityOmnidirectionalHopper)tile;
             PneumaticCraftUtils.rotateMatrixByMetadata(te.getDirection().getOpposite().ordinal());
         } else {
             PneumaticCraftUtils.rotateMatrixByMetadata(ForgeDirection.DOWN.ordinal());
         }
+
         Wall1.render(size);
         Wall2.render(size);
         Wall3.render(size);
@@ -115,6 +109,7 @@ public class ModelOmnidirectionalHopper extends ModelBase implements IBaseModel{
         Funnel.render(size);
         Funnel2.render(size);
         GL11.glPopMatrix();
+
         if(te != null) {
             PneumaticCraftUtils.rotateMatrixByMetadata(te.getBlockMetadata());
         } else {
@@ -124,8 +119,13 @@ public class ModelOmnidirectionalHopper extends ModelBase implements IBaseModel{
     }
 
     @Override
+    public void renderDynamic(float size, TileEntity te, float partialTicks){
+
+    }
+
+    @Override
     public ResourceLocation getModelTexture(){
-        return Textures.MODEL_GREY_TEXTURE;
+        return Textures.MODEL_OMNIDIRECTIONAL_HOPPER;
     }
 
     @Override
@@ -133,8 +133,4 @@ public class ModelOmnidirectionalHopper extends ModelBase implements IBaseModel{
         return false;
     }
 
-    @Override
-    public void renderDynamic(float size, TileEntity te, float partialTicks){
-
-    }
 }

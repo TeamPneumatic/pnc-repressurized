@@ -3,6 +3,7 @@ package pneumaticCraft.client.render.pneumaticArmor.hacking.block;
 import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import pneumaticCraft.api.client.pneumaticHelmet.IHackableBlock;
 import pneumaticCraft.common.tileentity.TileEntitySecurityStation;
@@ -14,7 +15,7 @@ public class HackableSecurityStation implements IHackableBlock{
     }
 
     @Override
-    public boolean canHack(World world, int x, int y, int z, EntityPlayer player){
+    public boolean canHack(IBlockAccess world, int x, int y, int z, EntityPlayer player){
         TileEntitySecurityStation te = (TileEntitySecurityStation)world.getTileEntity(x, y, z);
         return !te.doesAllowPlayer(player);
     }
@@ -30,7 +31,7 @@ public class HackableSecurityStation implements IHackableBlock{
     }
 
     @Override
-    public int getHackTime(World world, int x, int y, int z, EntityPlayer player){
+    public int getHackTime(IBlockAccess world, int x, int y, int z, EntityPlayer player){
         return 100;
     }
 

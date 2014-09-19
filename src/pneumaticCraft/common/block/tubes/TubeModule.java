@@ -122,7 +122,7 @@ public abstract class TubeModule implements ISidedPart{
      */
     public abstract String getType();
 
-    public void renderDynamic(double x, double y, double z, float partialTicks, int renderPass){
+    public void renderDynamic(double x, double y, double z, float partialTicks, int renderPass, boolean itemRender){
         if(renderPass == 0) {
             GL11.glPushMatrix(); // start
             // GL11.glDisable(GL11.GL_TEXTURE_2D);

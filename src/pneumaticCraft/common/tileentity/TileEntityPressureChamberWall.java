@@ -17,11 +17,8 @@ public class TileEntityPressureChamberWall extends TileEntityBase implements IMa
     public TileEntityPressureChamberWall(){}
 
     public TileEntityPressureChamberValve getCore(){
-        // System.out.println("client = " + worldObj.isRemote +
-        // " valve is null: " + (teValve == null) + ", valve coords: " + valveX
-        // + ", " + valveY + ", " + valveZ);
         if(teValve == null) {// when the saved TE equals null, check if we can
-                             // retrieve the TE from the NBT save coords.
+                             // retrieve the TE from the NBT saved coords.
 
             TileEntity te = worldObj.getTileEntity(valveX, valveY, valveZ);
             if(te instanceof TileEntityPressureChamberValve) {
@@ -51,7 +48,7 @@ public class TileEntityPressureChamberWall extends TileEntityBase implements IMa
             valveY = 0;
             valveZ = 0;
         }
-
+        worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
     }
 
     /**
@@ -63,6 +60,11 @@ public class TileEntityPressureChamberWall extends TileEntityBase implements IMa
         valveX = tag.getInteger("valveX");
         valveY = tag.getInteger("valveY");
         valveZ = tag.getInteger("valveZ");
+        teValve = null;
+
+        if(worldObj != null && worldObj.isRemote) {
+            worldObj.markBlockRangeForRenderUpdate(xCoord, yCoord, zCoord, xCoord, yCoord, zCoord);
+        }
     }
 
     @Override

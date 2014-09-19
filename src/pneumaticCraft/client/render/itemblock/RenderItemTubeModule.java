@@ -65,7 +65,7 @@ public class RenderItemTubeModule implements IItemRenderer{
         scale *= 0.2 * (1 / module.getWidth());
         GL11.glScalef(scale, scale, scale);
         GL11.glDisable(GL11.GL_CULL_FACE);
-        module.renderDynamic(x, y, z, 0, 0);
+        module.renderDynamic(x, y, z, 0, 0, true);
         GL11.glEnable(GL11.GL_CULL_FACE);
         GL11.glPopMatrix();
     }

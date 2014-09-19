@@ -1,9 +1,6 @@
 package pneumaticCraft;
 
-import igwmod.lib.Constants;
-import net.minecraft.command.ServerCommandManager;
 import net.minecraft.item.ItemStack;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.common.MinecraftForge;
@@ -17,7 +14,6 @@ import pneumaticCraft.common.EventHandlerUniversalSensor;
 import pneumaticCraft.common.Fluids;
 import pneumaticCraft.common.PneumaticCraftAPIHandler;
 import pneumaticCraft.common.TickHandlerPneumaticCraft;
-import pneumaticCraft.common.UpdateChecker;
 import pneumaticCraft.common.VillagerHandler;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.block.tubes.ModuleRegistrator;
@@ -32,6 +28,7 @@ import pneumaticCraft.common.tileentity.TileEntityRegistrator;
 import pneumaticCraft.common.worldgen.WorldGeneratorPneumaticCraft;
 import pneumaticCraft.lib.ModIds;
 import pneumaticCraft.lib.Names;
+import pneumaticCraft.lib.Versions;
 import pneumaticCraft.proxy.CommonProxy;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Loader;
@@ -61,7 +58,7 @@ public class PneumaticCraft{
 
     @EventHandler
     public void PreInit(FMLPreInitializationEvent event){
-        event.getModMetadata().version = Constants.fullVersionString();
+        event.getModMetadata().version = Versions.fullVersionString();
         isNEIInstalled = Loader.isModLoaded(ModIds.NEI);
 
         PneumaticRegistry.init(PneumaticCraftAPIHandler.getInstance());
@@ -122,8 +119,8 @@ public class PneumaticCraft{
 
     @EventHandler
     public void onServerStart(FMLServerStartingEvent event){
-        ServerCommandManager comManager = (ServerCommandManager)MinecraftServer.getServer().getCommandManager();
-        comManager.registerCommand(new UpdateChecker.CommandChangelog());
+        /*      ServerCommandManager comManager = (ServerCommandManager)MinecraftServer.getServer().getCommandManager();
+              comManager.registerCommand(new UpdateChecker.CommandChangelog());*/
     }
 
     @EventHandler

@@ -7,6 +7,7 @@ import java.util.Map;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
+import net.minecraft.world.World;
 import pneumaticCraft.api.client.pneumaticHelmet.IHackableBlock;
 import pneumaticCraft.api.client.pneumaticHelmet.IHackableEntity;
 import pneumaticCraft.client.render.pneumaticArmor.hacking.HackableHandler.HackingEntityProperties;
@@ -31,7 +32,7 @@ public class HackTickHandler{
                 for(Map.Entry<Block, Class<? extends IHackableBlock>> registeredEntry : PneumaticCraftAPIHandler.getInstance().hackableBlocks.entrySet()) {
                     if(hackableBlock.getClass() == registeredEntry.getValue()) {
                         if(hackedBlock.getBlock() == registeredEntry.getKey()) {
-                            if(!hackableBlock.afterHackTick(hackedBlock.world, hackedBlock.x, hackedBlock.y, hackedBlock.z)) {
+                            if(!hackableBlock.afterHackTick((World)hackedBlock.world, hackedBlock.x, hackedBlock.y, hackedBlock.z)) {
                                 blockIterator.remove();
                             }
                             found = true;

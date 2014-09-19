@@ -10,6 +10,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.ChunkCache;
+import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.config.Configuration;
 
 import org.lwjgl.opengl.GL11;
@@ -35,6 +38,10 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler{
     private boolean statLeftSided;
     public int[] blockTypeCount;
     private int ticksExisted;
+    private int updateInterval = 20;
+    private static final int MAX_TIME = 10;
+
+    private long accTime;
 
     @Override
     public String getUpgradeName(){
@@ -67,20 +74,31 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler{
 
         SearchUpgradeHandler searchHandler = (SearchUpgradeHandler)HUDHandler.instance().getSpecificRenderer(SearchUpgradeHandler.class);
 
+        if(ticksExisted % updateInterval == 0) {
+            int timeTaken = (int)accTime / updateInterval;
+            updateInterval = updateInterval * timeTaken / MAX_TIME;
+            if(updateInterval <= 1) updateInterval = 2;
+            accTime = 0;
+            ticksExisted = 0;
+        }
+        accTime -= System.currentTimeMillis();
         int blockTrackRange = BLOCK_TRACKING_RANGE + Math.min(rangeUpgrades, 5) * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE;
         int baseX = (int)Math.floor(player.posX) - blockTrackRange;
-        int baseY = (int)Math.floor(player.posY) - blockTrackRange + blockTrackRange * (ticksExisted % 20) / 10;
-        int maxY = (int)Math.floor(player.posY) - blockTrackRange + blockTrackRange * (ticksExisted % 20 + 1) / 10;
+        int baseY = (int)Math.floor(player.posY) - blockTrackRange + blockTrackRange * (ticksExisted % updateInterval) / (updateInterval / 2);
+        int maxY = (int)Math.floor(player.posY) - blockTrackRange + blockTrackRange * (ticksExisted % updateInterval + 1) / (updateInterval / 2);
+        baseY = MathHelper.clamp_int(baseY, 0, 255);
+        maxY = MathHelper.clamp_int(maxY, 0, 255);
         int baseZ = (int)Math.floor(player.posZ) - blockTrackRange;
+        IBlockAccess chunkCache = new ChunkCache(player.worldObj, baseX, baseY, baseZ, baseX + 2 * blockTrackRange, maxY, baseZ + 2 * blockTrackRange, 0);
         for(int i = baseX; i <= baseX + 2 * blockTrackRange; i++) {
             for(int j = baseY; j < maxY; j++) {
                 for(int k = baseZ; k <= baseZ + 2 * blockTrackRange; k++) {
                     if(player.getDistance(i, j, k) > blockTrackRange) continue;
-                    TileEntity te = player.worldObj.getTileEntity(i, j, k);
+                    TileEntity te = chunkCache.getTileEntity(i, j, k);
                     if(searchHandler != null && te instanceof IInventory) {
                         searchHandler.checkInventoryForItems(te);
                     }
-                    List<IBlockTrackEntry> entries = BlockTrackEntryList.instance.getEntriesForCoordinate(player.worldObj, i, j, k);
+                    List<IBlockTrackEntry> entries = BlockTrackEntryList.instance.getEntriesForCoordinate(chunkCache, i, j, k);
                     if(entries.isEmpty()) continue;
                     boolean inList = false;
                     for(int l = 0; l < blockTargets.size(); l++) {
@@ -101,6 +119,8 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler{
                 }
             }
         }
+
+        accTime += System.currentTimeMillis();
         for(int i = 0; i < blockTargets.size(); i++) {
             RenderBlockTarget blockTarget = blockTargets.get(i);
 

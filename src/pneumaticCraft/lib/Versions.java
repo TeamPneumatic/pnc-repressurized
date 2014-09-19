@@ -1,8 +1,6 @@
 package pneumaticCraft.lib;
 
 public class Versions{
-    // TODO increase version
-
     private static final String MASSIVE = "@MASSIVE@";
     private static final String MAJOR = "@MAJOR@";
     private static final String MINOR = "@MINOR@";
