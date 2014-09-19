@@ -92,7 +92,7 @@ minecraft {
 }
 
 curse {
-    apiKey = project.curseforge_key // saved in my gradle.properties file.  http://minecraft.curseforge.com/my-api-tokens
+    apiKey = curseforge_key // saved in my gradle.properties file.  http://minecraft.curseforge.com/my-api-tokens
     projectId = "224125" // my project url is http://minecraft.curseforge.com/mc-mods/59652-seretroomsmod/
     changelog = new File('changelog.txt').text
     releaseType = "release"
