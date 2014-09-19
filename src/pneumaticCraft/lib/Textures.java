@@ -38,9 +38,8 @@ public class Textures{
     public static final ResourceLocation MODEL_TEST_TEXTURE = new ResourceLocation(MODEL_LOCATION + "testTexture.png");
     public static final ResourceLocation MODEL_SECURITY_STATION = new ResourceLocation(MODEL_LOCATION + "securityStation.png");
     public static final ResourceLocation MODEL_UNIVERSAL_SENSOR = new ResourceLocation(MODEL_LOCATION + "UniversalSensor.png");
-    public static final ResourceLocation MODEL_PNEUMATIC_GENERATOR = new ResourceLocation(MODEL_LOCATION + "PneumaticGenerator.png");
-    public static final ResourceLocation MODEL_ELECTRIC_COMPRESSOR = new ResourceLocation(MODEL_LOCATION + "ElectricCompressor.png");
     public static final ResourceLocation MODEL_PNEUMATIC_ENGINE_BLUE = new ResourceLocation(MODEL_LOCATION + "PneumaticEngineBlue.png");
+    public static final ResourceLocation MODEL_PNEUMATIC_GENERATOR = new ResourceLocation(MODEL_LOCATION + "pneumaticGenerator.png");
     public static final ResourceLocation MODEL_PNEUMATIC_ENGINE_GREEN = new ResourceLocation(MODEL_LOCATION + "PneumaticEngineGreen.png");
     public static final ResourceLocation MODEL_PNEUMATIC_ENGINE_YELLOW = new ResourceLocation(MODEL_LOCATION + "PneumaticEngineYellow.png");
     public static final ResourceLocation MODEL_PNEUMATIC_ENGINE_RED = new ResourceLocation(MODEL_LOCATION + "PneumaticEngineRed.png");
