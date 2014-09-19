@@ -34,7 +34,6 @@ repositories {
 		}
 }
 
-apply plugin: "curseforge"
 apply plugin: 'forge'
 
 project.ext {
@@ -89,20 +88,6 @@ minecraft {
     } else {
         replace '@BUILD_NUMBER@', 0
     }
-}
-
-curse {
-    apiKey = curseforge_key // saved in my gradle.properties file.  http://minecraft.curseforge.com/my-api-tokens
-    projectId = "224125" // my project url is http://minecraft.curseforge.com/mc-mods/59652-seretroomsmod/
-    changelog = new File('changelog.txt').text
-    releaseType = "release"
-
-    // the default obfuscated jar is uploaded by default
-    // artifact = project.file("some/jar/to/upload.jar")
-
-    // allows you to add extra compatible MC versions. The one specified in the minecraft{} block is used by default.
-    // addGameVersion "1.7.1"
-    // addGameversion "1.7.0", "1.7.4"
 }
 
 // configure the source folders
