@@ -73,7 +73,6 @@ import pneumaticCraft.client.render.tileentity.RenderPressureTube;
 import pneumaticCraft.common.CommonHUDHandler;
 import pneumaticCraft.common.Config;
 import pneumaticCraft.common.HackTickHandler;
-import pneumaticCraft.common.UpdateChecker;
 import pneumaticCraft.common.block.BlockPneumaticCraft;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.block.tubes.ModuleRegistrator;
@@ -226,10 +225,10 @@ public class ClientProxy extends CommonProxy{
 
         ThirdPartyManager.instance().clientSide();
 
-        if(Config.enableUpdateChecker) {
-            UpdateChecker.instance().start();
-            FMLCommonHandler.instance().bus().register(UpdateChecker.instance());
-        }
+        /*  if(Config.enableUpdateChecker) {
+              UpdateChecker.instance().start();
+              FMLCommonHandler.instance().bus().register(UpdateChecker.instance());
+          }*/
         EntityTrackHandler.registerDefaultEntries();
         getAllKeybindsFromOptionsFile();
     }

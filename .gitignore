@@ -24,3 +24,5 @@ environment.properties
 .gradle/
 .settings/
 /sounds
+gradle.properties
+changelog.txt
