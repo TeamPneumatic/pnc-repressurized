@@ -152,7 +152,7 @@ public class ModelPressureChamberInterface extends ModelBase implements IBaseMod
     }
 
     @Override
-    public ResourceLocation getModelTexture(){
+    public ResourceLocation getModelTexture(TileEntity tile){
         return Textures.MODEL_PRESSURE_CHAMBER_INTERFACE;
     }
 

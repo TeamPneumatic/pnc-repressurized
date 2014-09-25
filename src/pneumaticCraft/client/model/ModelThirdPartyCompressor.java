@@ -219,7 +219,7 @@ public class ModelThirdPartyCompressor extends ModelBase implements IBaseModel{
     }
 
     @Override
-    public ResourceLocation getModelTexture(){
+    public ResourceLocation getModelTexture(TileEntity tile){
         return Textures.MODEL_THIRD_PARTY_COMPRESSOR;
     }
 

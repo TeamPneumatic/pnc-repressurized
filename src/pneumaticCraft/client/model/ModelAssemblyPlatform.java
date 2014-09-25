@@ -164,7 +164,7 @@ public class ModelAssemblyPlatform extends ModelBase implements IBaseModel{
     }
 
     @Override
-    public ResourceLocation getModelTexture(){
+    public ResourceLocation getModelTexture(TileEntity tile){
         return Textures.MODEL_ASSEMBLY_PLATFORM;
     }
 

@@ -253,7 +253,7 @@ public class ModelAssemblyIOUnit extends ModelBase implements IBaseModel{
     }
 
     @Override
-    public ResourceLocation getModelTexture(){
+    public ResourceLocation getModelTexture(TileEntity tile){
         return null;
     }
 

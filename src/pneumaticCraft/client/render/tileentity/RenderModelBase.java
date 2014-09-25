@@ -47,7 +47,7 @@ public class RenderModelBase extends TileEntitySpecialRenderer implements IItemR
     public void renderModelAt(TileEntity tile, double d, double d1, double d2, float f){
         GL11.glPushMatrix();
         {
-            if(model.getModelTexture() != null) FMLClientHandler.instance().getClient().getTextureManager().bindTexture(model.getModelTexture());
+            if(model.getModelTexture(tile) != null) FMLClientHandler.instance().getClient().getTextureManager().bindTexture(model.getModelTexture(tile));
             GL11.glTranslatef((float)d + 0.5F, (float)d1 + 1.5F, (float)d2 + 0.5F);
             GL11.glScalef(1.0F, -1F, -1F);
             if(model.rotateModelBasedOnBlockMeta()) {
@@ -140,12 +140,13 @@ public class RenderModelBase extends TileEntitySpecialRenderer implements IItemR
         GL11.glScalef(scale, scale, scale);
         GL11.glTranslatef(x, y, z);
         GL11.glRotatef(-90F, 1F, 0, 0);
-        if(model.getModelTexture() != null) FMLClientHandler.instance().getClient().getTextureManager().bindTexture(model.getModelTexture());
+        if(model.getModelTexture(null) != null) FMLClientHandler.instance().getClient().getTextureManager().bindTexture(model.getModelTexture(null));
         //TODO refactor when all models are converted:
         if(model instanceof BaseModel) {
             GL11.glTranslated(0, 24 / 16D, 0);
             GL11.glScalef(0.0625F, 0.0625F, 0.0625F);
         }
+        model.rotateModelBasedOnBlockMeta();
         model.renderDynamic(0.0625F, null, 0);
         model.renderStatic(1F / 16F, null);
         GL11.glPopMatrix();

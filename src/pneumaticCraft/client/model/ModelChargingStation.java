@@ -246,7 +246,7 @@ public class ModelChargingStation extends ModelBase implements IBaseModel{
     }
 
     @Override
-    public ResourceLocation getModelTexture(){
+    public ResourceLocation getModelTexture(TileEntity tile){
         return Textures.MODEL_CHARGING_STATION;
     }
 

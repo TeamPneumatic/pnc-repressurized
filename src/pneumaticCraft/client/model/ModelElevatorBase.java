@@ -405,7 +405,7 @@ public class ModelElevatorBase extends ModelBase implements IBaseModel{
     }
 
     @Override
-    public ResourceLocation getModelTexture(){
+    public ResourceLocation getModelTexture(TileEntity tile){
         return Textures.MODEL_ELEVATOR;
     }
 
