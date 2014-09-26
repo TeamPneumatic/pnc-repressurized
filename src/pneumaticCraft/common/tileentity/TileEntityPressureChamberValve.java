@@ -628,6 +628,8 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
                         ForgeDirection facing = ForgeDirection.getOrientation(world.getBlockMetadata(x + baseX, y + baseY, z + baseZ));
                         if(xMid && yMid && (facing == ForgeDirection.NORTH || facing == ForgeDirection.SOUTH) || xMid && zMid && (facing == ForgeDirection.UP || facing == ForgeDirection.DOWN) || yMid && zMid && (facing == ForgeDirection.EAST || facing == ForgeDirection.WEST)) {
                             validValveFound = true;
+                        } else {
+                            return false;
                         }
                     } else {// when blockID == wall/interface
                         TileEntity te = world.getTileEntity(x + baseX, y + baseY, z + baseZ);
