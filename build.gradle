@@ -53,6 +53,8 @@ if (System.getenv().BUILD_NUMBER != null) {
     version += " - err"
 }
 
+new File('Version.txt') << archivesBaseName + "-" + version + "-universal.jar"
+
 def grabDep(url) {
     ant.get(src: url, dest: 'dep')
 	compile files("dep/" + url.substring(url.lastIndexOf("/")));
