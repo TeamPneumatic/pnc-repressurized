@@ -240,7 +240,7 @@ public abstract class BlockPneumaticPlantBase extends BlockFlower{
                                                               // x, y, z,
                                                               // metadata,
                                                               // fortune);
-        int seedDamage = getSeedDamage() + 16;
+        int seedDamage = getSeedDamage();
         ret.add(new ItemStack(Itemss.plasticPlant, 1, seedDamage));
         if(metadata == 6 || metadata == 13) {
             ret.add(new ItemStack(Itemss.plasticPlant, world.rand.nextInt(2) + 1, seedDamage));
