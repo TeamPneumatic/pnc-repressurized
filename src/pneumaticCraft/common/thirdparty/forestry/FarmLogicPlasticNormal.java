@@ -41,4 +41,9 @@ public abstract class FarmLogicPlasticNormal extends FarmLogicWrapper{
         }
         return icon;
     }
+
+    @Override
+    public String getName(){
+        return new ItemStack(Itemss.plasticPlant, 1, FarmablePlastic.getItemMetaForBlock(getBlock())).getDisplayName();
+    }
 }

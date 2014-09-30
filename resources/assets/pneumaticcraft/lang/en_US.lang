@@ -122,6 +122,23 @@ item.plasticElectronTube13.name=Music Plant Electron Tube
 item.plasticElectronTube14.name=Propulsion Plant Electron Tube
 item.plasticElectronTube15.name=Flying Flower Electron Tube
 
+for.circuit.plasticPlant0= Managed Squid Plant Farm
+for.circuit.plasticPlant1= Managed Fire Flower Farm
+for.circuit.plasticPlant2= Managed Creeper Plant Farm
+for.circuit.plasticPlant3= Managed Slime Plant Farm
+for.circuit.plasticPlant4= Managed Rain Plant Farm
+for.circuit.plasticPlant5= Managed Ender Plant Farm
+for.circuit.plasticPlant6= Managed Lightning Plant Farm
+for.circuit.plasticPlant7= Managed Adrenaline Plant Farm
+for.circuit.plasticPlant8= Managed Burst Plant Farm
+for.circuit.plasticPlant9= Managed Potion Plant Farm
+for.circuit.plasticPlant10= Managed Repulsion Plant Farm
+for.circuit.plasticPlant11= Managed Helium Plant Farm
+for.circuit.plasticPlant12= Managed Chopper Plant Farm
+for.circuit.plasticPlant13= Managed Music Plant Farm
+for.circuit.plasticPlant14= Managed Propulsion Plant Farm
+for.circuit.plasticPlant15= Managed Flying Flower Farm
+
 item.machineUpgrade0.name=Machine Upgrade: Volume
 item.machineUpgrade1.name=Machine Upgrade: Dispenser
 item.machineUpgrade2.name=Machine Upgrade: Item Life

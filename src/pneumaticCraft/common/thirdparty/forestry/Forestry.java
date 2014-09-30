@@ -27,7 +27,7 @@ public class Forestry implements IThirdParty{
 
     public static HashSet<Block> farmStructureBlocks;
     public static Item plasticElectronTube;
-    private static Class[] logics = new Class[]{FarmLogicSquid.class, FarmLogicFire.class, FarmLogicCreeper.class, FarmLogicSlime.class, FarmLogicRain.class, null, FarmLogicLightning.class, null, FarmLogicBurst.class, FarmLogicPotion.class, FarmLogicRepulsion.class, null, FarmLogicChopper.class, null, FarmLogicPropulsion.class, FarmLogicFlying.class};
+    private static Class[] logics = new Class[]{FarmLogicSquid.class, FarmLogicFire.class, FarmLogicCreeper.class, FarmLogicSlime.class, FarmLogicRain.class, FarmLogicEnder.class, FarmLogicLightning.class, null, FarmLogicBurst.class, FarmLogicPotion.class, FarmLogicRepulsion.class, FarmLogicHelium.class, FarmLogicChopper.class, null, FarmLogicPropulsion.class, FarmLogicFlying.class};
 
     @Override
     public void preInit(){
@@ -140,6 +140,22 @@ public class Forestry implements IThirdParty{
             return Blockss.rainPlant;
         }
 
+    }
+
+    public static class FarmLogicEnder extends FarmLogicPlasticCustomEarth{
+        public FarmLogicEnder(IFarmHousing housing) throws Throwable{
+            super(housing);
+        }
+
+        @Override
+        protected Block getBlock(){
+            return Blockss.enderPlant;
+        }
+
+        @Override
+        protected ItemStack[] getEarth(){
+            return new ItemStack[]{new ItemStack(Blocks.end_stone)};
+        }
     }
 
     public static class FarmLogicLightning extends FarmLogicPlasticNormal{

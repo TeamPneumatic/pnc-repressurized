@@ -2,7 +2,9 @@ package pneumaticCraft.common.thirdparty.forestry;
 
 import java.lang.reflect.Constructor;
 
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import forestry.api.farming.IFarmHousing;
 import forestry.api.farming.IFarmLogic;
 import forestry.api.farming.IFarmable;
@@ -22,4 +24,8 @@ public abstract class FarmLogicPlasticCustomEarth extends FarmLogicPlasticNormal
 
     protected abstract ItemStack[] getEarth();
 
+    @Override
+    public ResourceLocation getSpriteSheet(){
+        return TextureMap.locationItemsTexture;
+    }
 }
