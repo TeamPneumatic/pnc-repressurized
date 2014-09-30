@@ -137,7 +137,7 @@ public abstract class TubeModule implements ISidedPart{
                                            // positioning. comment out to see what
                                            // happens
 
-            FMLClientHandler.instance().getClient().getTextureManager().bindTexture(getModel().getModelTexture());
+            FMLClientHandler.instance().getClient().getTextureManager().bindTexture(getModel().getModelTexture(null));
 
             PneumaticCraftUtils.rotateMatrixByMetadata(dir.ordinal());
             getModel().renderStatic(0.0625F, null);

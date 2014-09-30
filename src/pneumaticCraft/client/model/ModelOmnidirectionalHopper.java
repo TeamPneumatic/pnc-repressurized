@@ -124,7 +124,7 @@ public class ModelOmnidirectionalHopper extends ModelBase implements IBaseModel{
     }
 
     @Override
-    public ResourceLocation getModelTexture(){
+    public ResourceLocation getModelTexture(TileEntity tile){
         return Textures.MODEL_OMNIDIRECTIONAL_HOPPER;
     }
 

@@ -6,7 +6,6 @@ import ic2.api.recipe.IRecipeInput;
 import ic2.api.recipe.Recipes;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -27,9 +26,9 @@ public class IC2 implements IThirdParty{
     public static Block pneumaticGenerator;
 
     @Override
-    public void preInit(CreativeTabs pneumaticCraftTab){
-        pneumaticGenerator = new BlockPneumaticGenerator(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("pneumaticGenerator").setCreativeTab(pneumaticCraftTab);
-        electricCompressor = new BlockElectricCompressor(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("electricCompressor").setCreativeTab(pneumaticCraftTab);
+    public void preInit(){
+        pneumaticGenerator = new BlockPneumaticGenerator(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("pneumaticGenerator");
+        electricCompressor = new BlockElectricCompressor(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("electricCompressor");
         Blockss.registerBlock(pneumaticGenerator);
         Blockss.registerBlock(electricCompressor);
         GameRegistry.registerTileEntity(TileEntityPneumaticGenerator.class, "TileEntityPneumaticGenerator");

@@ -43,7 +43,7 @@ import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid = Names.MOD_ID, name = "PneumaticCraft", guiFactory = "pneumaticCraft.client.GuiConfigHandler", dependencies = "required-after:Forge@[10.13.0.1179,)")
+@Mod(modid = Names.MOD_ID, name = "PneumaticCraft", guiFactory = "pneumaticCraft.client.GuiConfigHandler", dependencies = "required-after:Forge@[10.13.0.1179,);" + "after:Forestry")
 public class PneumaticCraft{
 
     @SidedProxy(clientSide = "pneumaticCraft.proxy.ClientProxy", serverSide = "pneumaticCraft.proxy.CommonProxy")
@@ -53,6 +53,7 @@ public class PneumaticCraft{
     public static PneumaticCraft instance;
 
     public static TickHandlerPneumaticCraft tickHandler;
+    public static CreativeTabPneumaticCraft tabPneumaticCraft;
 
     public static boolean isNEIInstalled;
 
@@ -68,13 +69,13 @@ public class PneumaticCraft{
         ThirdPartyManager.instance().index();
 
         NetworkRegistry.INSTANCE.registerGuiHandler(instance, proxy);
-        CreativeTabPneumaticCraft tabPneumaticCraft = new CreativeTabPneumaticCraft("tabPneumaticCraft");
+        tabPneumaticCraft = new CreativeTabPneumaticCraft("tabPneumaticCraft");
         Fluids.initFluids();
-        Blockss.init(tabPneumaticCraft);
-        Itemss.init(tabPneumaticCraft);
+        Blockss.init();
+        Itemss.init();
         HackableHandler.addDefaultEntries();
-        ModuleRegistrator.init(tabPneumaticCraft);
-        ThirdPartyManager.instance().preInit(tabPneumaticCraft);
+        ModuleRegistrator.init();
+        ThirdPartyManager.instance().preInit();
         TileEntityRegistrator.init();
         EntityRegistrator.init();
         CraftingRegistrator.init();

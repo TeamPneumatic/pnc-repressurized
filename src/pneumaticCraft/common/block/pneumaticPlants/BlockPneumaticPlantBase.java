@@ -79,7 +79,7 @@ public abstract class BlockPneumaticPlantBase extends BlockFlower{
     public void executeFullGrownEffect(World world, int x, int y, int z, Random rand){}
 
     // make this method public
-    public boolean canPlantGrowOnThisBlock(Block block){
+    public boolean canPlantGrowOnThisBlock(Block block, World world, int x, int y, int z){
         return canPlaceBlockOn(block);
     }
 
@@ -93,7 +93,7 @@ public abstract class BlockPneumaticPlantBase extends BlockFlower{
         if(!world.isRemote) {
             float var7 = getGrowthRate(world, x, y, z);
 
-            if(canGrowWithLightValue(world.getBlockLightValue(x, y + (isPlantHanging() ? -1 : 1), z)) && rand.nextInt((int)(25.0F / var7) + 1) == 0 || skipGrowthCheck(world, x, y, z)) {
+            if(canGrowWithLightValue(world.getBlockLightValue(x, y + (isPlantHanging() ? -1 : 1), z)) /*&& rand.nextInt((int)(25.0F / var7) + 1) == 0 || skipGrowthCheck(world, x, y, z)*/) {
                 int meta = world.getBlockMetadata(x, y, z);
                 if(meta < 13) {
                     if(meta != 6) {//let world generated full-grown plants not grow.
@@ -145,7 +145,7 @@ public abstract class BlockPneumaticPlantBase extends BlockFlower{
     @Override
     public boolean canBlockStay(World par1World, int par2, int par3, int par4){
         Block soil = par1World.getBlock(par2, par3 - (isPlantHanging() ? -1 : 1), par4);
-        return canGrowWithLightValue(par1World.getFullBlockLightValue(par2, par3, par4)) && soil != null && canPlantGrowOnThisBlock(soil);
+        return canGrowWithLightValue(par1World.getFullBlockLightValue(par2, par3, par4)) && soil != null && canPlantGrowOnThisBlock(soil, par1World, par2, par3, par4);
     }
 
     /**
@@ -240,7 +240,7 @@ public abstract class BlockPneumaticPlantBase extends BlockFlower{
                                                               // x, y, z,
                                                               // metadata,
                                                               // fortune);
-        int seedDamage = getSeedDamage() + 16;
+        int seedDamage = getSeedDamage();
         ret.add(new ItemStack(Itemss.plasticPlant, 1, seedDamage));
         if(metadata == 6 || metadata == 13) {
             ret.add(new ItemStack(Itemss.plasticPlant, world.rand.nextInt(2) + 1, seedDamage));

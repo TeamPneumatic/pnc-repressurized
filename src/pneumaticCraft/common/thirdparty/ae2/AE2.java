@@ -1,13 +1,12 @@
 package pneumaticCraft.common.thirdparty.ae2;
 
-import net.minecraft.creativetab.CreativeTabs;
 import pneumaticCraft.api.PneumaticRegistry;
 import pneumaticCraft.common.thirdparty.IThirdParty;
 
 public class AE2 implements IThirdParty{
 
     @Override
-    public void preInit(CreativeTabs pneumaticCraftTab){}
+    public void preInit(){}
 
     @Override
     public void init(){

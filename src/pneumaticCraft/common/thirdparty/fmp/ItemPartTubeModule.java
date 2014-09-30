@@ -5,6 +5,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.World;
+import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.common.block.Blockss;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Vector3;
@@ -15,6 +16,7 @@ public class ItemPartTubeModule extends ItemPart{
 
     public ItemPartTubeModule(String partName){
         super(partName);
+        setCreativeTab(PneumaticCraft.tabPneumaticCraft);
     }
 
     @Override

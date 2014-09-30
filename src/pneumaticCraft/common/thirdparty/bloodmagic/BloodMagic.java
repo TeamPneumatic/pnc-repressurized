@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.block.Block;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
@@ -17,7 +16,7 @@ import WayofTime.alchemicalWizardry.api.harvest.IHarvestHandler;
 public class BloodMagic implements IThirdParty{
 
     @Override
-    public void preInit(CreativeTabs pneumaticCraftTab){
+    public void preInit(){
         HarvestRegistry.registerHarvestHandler(new IHarvestHandler(){
             @Override
             public boolean harvestAndPlant(World world, int xCoord, int yCoord, int zCoord, Block block, int meta){

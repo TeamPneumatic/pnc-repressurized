@@ -10,7 +10,7 @@ import net.minecraft.item.ItemStack;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ItemPlastic extends Item{
+public class ItemPlastic extends ItemPneumatic{
 
     public ItemPlastic(){
         setTextureName("paper");//load up the paper texture;

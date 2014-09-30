@@ -2,7 +2,6 @@ package pneumaticCraft.common.thirdparty.buildcraft;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.ShapedOreRecipe;
@@ -24,9 +23,9 @@ public class BuildCraft implements IThirdParty{
     public static Block kineticCompressor;
 
     @Override
-    public void preInit(CreativeTabs pneumaticCraftTab){
-        pneumaticEngine = new BlockPneumaticEngine(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("pneumaticEngine").setCreativeTab(pneumaticCraftTab);
-        kineticCompressor = new BlockKineticCompressor(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("kineticCompressor").setCreativeTab(pneumaticCraftTab);
+    public void preInit(){
+        pneumaticEngine = new BlockPneumaticEngine(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("pneumaticEngine");
+        kineticCompressor = new BlockKineticCompressor(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("kineticCompressor");
         Blockss.registerBlock(pneumaticEngine);
         Blockss.registerBlock(kineticCompressor);
         GameRegistry.registerTileEntity(TileEntityPneumaticEngine.class, "TileEntityPneumaticEngine");

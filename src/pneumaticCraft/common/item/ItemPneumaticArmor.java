@@ -45,6 +45,7 @@ public class ItemPneumaticArmor extends ItemArmor implements IPressurizable, ICh
         this.textureLocation = textureLocation;
         this.volume = volume;
         setMaxDamage(maxAir);
+        setCreativeTab(PneumaticCraft.tabPneumaticCraft);
     }
 
     @Override

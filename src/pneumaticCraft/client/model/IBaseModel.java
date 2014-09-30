@@ -14,7 +14,7 @@ public interface IBaseModel{
 
     public void renderDynamic(float size, TileEntity te, float partialTicks);
 
-    public ResourceLocation getModelTexture();
+    public ResourceLocation getModelTexture(TileEntity tile);
 
     public boolean rotateModelBasedOnBlockMeta();
 }

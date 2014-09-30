@@ -15,7 +15,7 @@ public class BaseModel implements IBaseModel{
 
     protected final IModelCustom model;
     protected String[] staticParts, dynamicParts;
-    private final ResourceLocation resLoc;
+    protected final ResourceLocation resLoc;
     public boolean rotatable;
 
     public BaseModel(String name){
@@ -66,7 +66,7 @@ public class BaseModel implements IBaseModel{
     }
 
     @Override
-    public ResourceLocation getModelTexture(){
+    public ResourceLocation getModelTexture(TileEntity tile){
         return resLoc;
     }
 

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.block.Block;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import pneumaticCraft.api.PneumaticRegistry;
@@ -24,7 +23,7 @@ public class Thaumcraft implements IThirdParty, IRegistryListener{
     private final List<Block> pcBlocks = new ArrayList<Block>();
 
     @Override
-    public void preInit(CreativeTabs pneumaticCraftTab){
+    public void preInit(){
         for(int i = 0; i < 16; i++) {
             Block plantBlock = ItemPlasticPlants.getPlantBlockIDFromSeed(i);
             if(plantBlock != null) {

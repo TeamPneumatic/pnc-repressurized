@@ -1,13 +1,12 @@
 package pneumaticCraft.common.thirdparty.igwmod;
 
-import net.minecraft.creativetab.CreativeTabs;
 import pneumaticCraft.common.thirdparty.IThirdParty;
 import cpw.mods.fml.common.event.FMLInterModComms;
 
 public class IGWMod implements IThirdParty{
 
     @Override
-    public void preInit(CreativeTabs pneumaticCraftTab){}
+    public void preInit(){}
 
     @Override
     public void init(){}

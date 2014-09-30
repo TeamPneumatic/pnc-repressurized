@@ -7,10 +7,6 @@ public class BBConstants{
     public static final float ADVANCED_PRESSURE_PIPE_MIN_POS = 5 / 16F;
     public static final float ADVANCED_PRESSURE_PIPE_MAX_POS = 11 / 16F;
 
-    public static final float AIR_COMPRESSOR_MIN_POS = 0.1875F;
-    public static final float AIR_COMPRESSOR_MAX_POS = 0.8125F;
-    public static final float AIR_COMPRESSOR_MAX_POS_TOP = 0.9375F;
-
     public static final float AIR_CANNON_MIN_POS_SIDE = 0.0625F;
     public static final float AIR_CANNON_MAX_POS_SIDE = 0.9375F;
     public static final float AIR_CANNON_MAX_POS_TOP = 0.625F;

@@ -2,7 +2,6 @@ package pneumaticCraft.common.thirdparty.hydraulicraft;
 
 import k4unl.minecraft.Hydraulicraft.api.IHydraulicraftRegistrar;
 import net.minecraft.block.Block;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import pneumaticCraft.api.PneumaticRegistry;
@@ -18,7 +17,7 @@ public class Hydraulicraft implements IThirdParty{
     public static Block pneumaticPump;
 
     @Override
-    public void preInit(CreativeTabs pneumaticCraftTab){
+    public void preInit(){
         FMLInterModComms.sendMessage(ModIds.HC, "pneumaticCraft.common.thirdparty.hydraulicraft.Hydraulicraft", "registrarHandling");
         //pneumaticPump = new BlockPneumaticPump(Material.iron).setCreativeTab(pneumaticCraftTab).setBlockName("pneumaticPump").setHardness(3.0F).setResistance(3.0F);
         //Blockss.registerBlock(pneumaticPump);

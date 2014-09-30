@@ -22,7 +22,7 @@ import pneumaticCraft.proxy.CommonProxy;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ItemDrone extends Item implements IPressurizable, IChargingStationGUIHolderItem, IProgrammable{
+public class ItemDrone extends ItemPneumatic implements IPressurizable, IChargingStationGUIHolderItem, IProgrammable{
 
     public ItemDrone(){
         setMaxStackSize(1);

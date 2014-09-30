@@ -1,7 +1,6 @@
 package pneumaticCraft.common.thirdparty.waila;
 
 import mcp.mobius.waila.api.IWailaRegistrar;
-import net.minecraft.creativetab.CreativeTabs;
 import pneumaticCraft.api.tileentity.IPneumaticMachine;
 import pneumaticCraft.common.thirdparty.IThirdParty;
 import pneumaticCraft.common.tileentity.TileEntityPressureTube;
@@ -10,7 +9,7 @@ import cpw.mods.fml.common.event.FMLInterModComms;
 public class Waila implements IThirdParty{
 
     @Override
-    public void preInit(CreativeTabs pneumaticCraftTab){}
+    public void preInit(){}
 
     @Override
     public void init(){

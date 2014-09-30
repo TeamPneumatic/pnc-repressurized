@@ -92,7 +92,7 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
         float f = xCoord + 0.5F;
         float f1 = yCoord + 0.0F + rand.nextFloat() * 6.0F / 16.0F;
         float f2 = zCoord + 0.5F;
-        float f3 = 0.4F;
+        float f3 = 0.5F;
         float f4 = rand.nextFloat() * 0.4F - 0.2F;
         switch(ForgeDirection.getOrientation(getBlockMetadata())){
             case EAST:
