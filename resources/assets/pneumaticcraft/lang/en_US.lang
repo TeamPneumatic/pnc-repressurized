@@ -105,6 +105,23 @@ item.plasticPlant13.name=Music Plant Seeds
 item.plasticPlant14.name=Propulsion Plant Seeds
 item.plasticPlant15.name=Flying Flower Seeds
 
+item.plasticElectronTube0.name=Squid Plant Electron Tube
+item.plasticElectronTube1.name=Fire Flower Electron Tube
+item.plasticElectronTube2.name=Creeper Plant Electron Tube
+item.plasticElectronTube3.name=Slime Plant Electron Tube
+item.plasticElectronTube4.name=Rain Plant Electron Tube
+item.plasticElectronTube5.name=Ender Plant Electron Tube
+item.plasticElectronTube6.name=Lightning Plant Electron Tube
+item.plasticElectronTube7.name=Adrenaline Plant Electron Tube
+item.plasticElectronTube8.name=Burst Plant Electron Tube
+item.plasticElectronTube9.name=Potion Plant Electron Tube
+item.plasticElectronTube10.name=Repulsion Plant Electron Tube
+item.plasticElectronTube11.name=Helium Plant Electron Tube
+item.plasticElectronTube12.name=Chopper Plant Electron Tube
+item.plasticElectronTube13.name=Music Plant Electron Tube
+item.plasticElectronTube14.name=Propulsion Plant Electron Tube
+item.plasticElectronTube15.name=Flying Flower Electron Tube
+
 item.machineUpgrade0.name=Machine Upgrade: Volume
 item.machineUpgrade1.name=Machine Upgrade: Dispenser
 item.machineUpgrade2.name=Machine Upgrade: Item Life

@@ -1,7 +1,1 @@
--Added various new models (even more to come later), thanks to Morton00000!
--Added Pneumatic Helmet model, thanks to trade12. As it looks too good (you read that right), it is turned off by default.
--Improved the Block Tracker so it never will lag the client again.
--Capped the maximum upgrades in all machines to prevent TPS issues.
-
--Bugfix: Block Tracker + AE2 alpha version crashes.
--Bugfix: Omnidirectional Hopper eats items from a Jabba barrel.
+-Changed Air Compressor model.
