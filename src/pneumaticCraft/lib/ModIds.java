@@ -15,4 +15,5 @@ public class ModIds{
     public static final String AE2 = "appliedenergistics2";
     public static final String CHISEL = "chisel";
     public static final String FORESTRY = "Forestry";
+    public static final String MFR = "MineFactoryReloaded";
 }

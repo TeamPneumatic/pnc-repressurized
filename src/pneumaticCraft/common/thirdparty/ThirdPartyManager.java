@@ -17,6 +17,7 @@ import pneumaticCraft.common.thirdparty.forestry.Forestry;
 import pneumaticCraft.common.thirdparty.hydraulicraft.Hydraulicraft;
 import pneumaticCraft.common.thirdparty.ic2.IC2;
 import pneumaticCraft.common.thirdparty.igwmod.IGWMod;
+import pneumaticCraft.common.thirdparty.mfr.MFR;
 import pneumaticCraft.common.thirdparty.thaumcraft.Thaumcraft;
 import pneumaticCraft.common.thirdparty.waila.Waila;
 import pneumaticCraft.lib.Log;
@@ -49,6 +50,7 @@ public class ThirdPartyManager{
         thirdPartyClasses.put(ModIds.AE2, AE2.class);
         thirdPartyClasses.put(ModIds.CHISEL, Chisel.class);
         thirdPartyClasses.put(ModIds.FORESTRY, Forestry.class);
+        thirdPartyClasses.put(ModIds.MFR, MFR.class);
         DramaSplash.newDrama();
 
         List<String> enabledThirdParty = new ArrayList<String>();
