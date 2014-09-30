@@ -17,7 +17,7 @@ import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ItemAssemblyProgram extends Item{
+public class ItemAssemblyProgram extends ItemPneumatic{
     public static final int PROGRAMS_AMOUNT = 3;
 
     public static final int DRILL_DAMAGE = 0;

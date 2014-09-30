@@ -106,7 +106,7 @@ public class TickHandlerPneumaticCraft{
         int y = (int)Math.floor(entity.posY) + heightOffset;
         int z = (int)Math.floor(entity.posZ);
         Block soil = world.getBlock(x, y - 1, z);
-        if(((BlockPneumaticPlantBase)plantBlock).canPlantGrowOnThisBlock(soil) && world.isAirBlock(x, y, z)) {
+        if(((BlockPneumaticPlantBase)plantBlock).canPlantGrowOnThisBlock(soil, world, x, y - 1, z) && world.isAirBlock(x, y, z)) {
             world.setBlock(x, y, z, plantBlock, 0, 3);
         }
     }

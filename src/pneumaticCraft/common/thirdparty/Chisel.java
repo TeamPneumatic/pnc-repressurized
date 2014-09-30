@@ -1,6 +1,5 @@
 package pneumaticCraft.common.thirdparty;
 
-import net.minecraft.creativetab.CreativeTabs;
 import pneumaticCraft.api.PneumaticRegistry;
 import pneumaticCraft.lib.Log;
 import cpw.mods.fml.relauncher.ReflectionHelper;
@@ -8,7 +7,7 @@ import cpw.mods.fml.relauncher.ReflectionHelper;
 public class Chisel implements IThirdParty{
 
     @Override
-    public void preInit(CreativeTabs pneumaticCraftTab){
+    public void preInit(){
 
     }
 

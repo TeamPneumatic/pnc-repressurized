@@ -30,7 +30,7 @@ public class BlockHeliumPlant extends BlockPneumaticPlantBase{
     }
 
     @Override
-    public boolean canPlantGrowOnThisBlock(Block block){
+    public boolean canPlantGrowOnThisBlock(Block block, World world, int x, int y, int z){
         return block == Blocks.netherrack;
     }
 

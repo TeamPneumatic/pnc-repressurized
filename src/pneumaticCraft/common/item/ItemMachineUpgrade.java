@@ -14,7 +14,7 @@ import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ItemMachineUpgrade extends Item{
+public class ItemMachineUpgrade extends ItemPneumatic{
     public static final int UPGRADES_AMOUNT = 10;
 
     public static final int UPGRADE_VOLUME_DAMAGE = 0;

@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import net.minecraft.block.Block;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.IBlockAccess;
@@ -29,7 +28,7 @@ public class FMP implements IThirdParty, IPartFactory, IPartConverter{
     private final Map<String, Class<? extends TMultiPart>> multiparts = new HashMap<String, Class<? extends TMultiPart>>();
 
     @Override
-    public void preInit(CreativeTabs pneumaticCraftTab){
+    public void preInit(){
         multiparts.put("tile.pressureTube", PartPressureTube.class);
         multiparts.put("tile.advancedPressureTube", PartAdvancedPressureTube.class);
 

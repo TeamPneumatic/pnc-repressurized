@@ -2,7 +2,6 @@ package pneumaticCraft.common.block.tubes;
 
 import java.util.HashMap;
 
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.thirdparty.ModInteractionUtils;
@@ -12,16 +11,12 @@ public class ModuleRegistrator{
     public static HashMap<String, Class<? extends TubeModule>> modules = new HashMap<String, Class<? extends TubeModule>>();
     public static HashMap<String, Item> moduleItems = new HashMap<String, Item>();
 
-    public static void init(CreativeTabs pcTab){
+    public static void init(){
         registerModule(ModuleSafetyValve.class);
         registerModule(ModulePressureGauge.class);
         registerModule(ModuleFlowDetector.class);
         registerModule(ModuleAirGrate.class);
         registerModule(ModuleRegulatorTube.class);
-
-        for(Item item : moduleItems.values()) {
-            item.setCreativeTab(pcTab);
-        }
     }
 
     public static void registerModule(Class<? extends TubeModule> moduleClass){
@@ -54,9 +49,9 @@ public class ModuleRegistrator{
         } catch(InstantiationException e) {//shouldn't happen anyways, we tested it in the method above.
             e.printStackTrace();
             return null;
-        }catch( IllegalAccessException e){
-        	e.printStackTrace();
-        	return null;
+        } catch(IllegalAccessException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 

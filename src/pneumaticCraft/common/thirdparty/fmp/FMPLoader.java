@@ -1,6 +1,5 @@
 package pneumaticCraft.common.thirdparty.fmp;
 
-import net.minecraft.creativetab.CreativeTabs;
 import pneumaticCraft.common.thirdparty.IThirdParty;
 
 public class FMPLoader implements IThirdParty {
@@ -8,8 +7,8 @@ public class FMPLoader implements IThirdParty {
 	public FMP fmp = new FMP();
 	
 	@Override
-	public void preInit(CreativeTabs pneumaticCraftTab) {
-		fmp.preInit(pneumaticCraftTab);
+	public void preInit() {
+		fmp.preInit();
 	}
 
 	@Override

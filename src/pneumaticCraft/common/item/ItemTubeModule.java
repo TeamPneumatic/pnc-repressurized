@@ -3,7 +3,6 @@ package pneumaticCraft.common.item;
 import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import pneumaticCraft.common.block.tubes.ModuleRegistrator;
@@ -11,7 +10,7 @@ import pneumaticCraft.common.block.tubes.TubeModule;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ItemTubeModule extends Item{
+public class ItemTubeModule extends ItemPneumatic{
     public final String moduleName;
 
     public ItemTubeModule(String moduleName){

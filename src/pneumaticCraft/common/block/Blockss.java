@@ -2,7 +2,6 @@ package pneumaticCraft.common.block;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemBlock;
 import net.minecraftforge.oredict.OreDictionary;
 import pneumaticCraft.common.block.pneumaticPlants.BlockBurstPlant;
@@ -77,13 +76,13 @@ public class Blockss{
     public static Block programmer;
     public static Block creativeCompressor;
 
-    public static void init(CreativeTabs tabPneumaticCraft){
-        pressureTube = new BlockPressureTube(Material.iron, PneumaticValues.DANGER_PRESSURE_PRESSURE_TUBE, PneumaticValues.MAX_PRESSURE_PRESSURE_TUBE, PneumaticValues.VOLUME_PRESSURE_TUBE).setHardness(3.0F).setResistance(3.0F).setBlockName("pressureTube").setCreativeTab(tabPneumaticCraft);
-        advancedPressureTube = new BlockPressureTube(Material.iron, PneumaticValues.DANGER_PRESSURE_ADVANCED_PRESSURE_TUBE, PneumaticValues.MAX_PRESSURE_ADVANCED_PRESSURE_TUBE, PneumaticValues.VOLUME_ADVANCED_PRESSURE_TUBE).setHardness(3.0F).setResistance(3.0F).setBlockName("advancedPressureTube").setCreativeTab(tabPneumaticCraft);
-        airCompressor = new BlockAirCompressor(Material.iron).setHardness(3.0F).setResistance(3.0F).setBlockName("airCompressor").setCreativeTab(tabPneumaticCraft);
-        airCannon = new BlockAirCannon(Material.iron).setHardness(3.0F).setResistance(3.0F).setBlockName("airCannon").setCreativeTab(tabPneumaticCraft);
-        pressureChamberWall = new BlockPressureChamberWall(Material.iron).setHardness(10.0F).setResistance(2000.0F).setBlockName("pressureChamberWall").setCreativeTab(tabPneumaticCraft);
-        pressureChamberValve = new BlockPressureChamberValve(Material.iron).setHardness(10.0F).setResistance(2000.0F).setBlockName("pressureChamberValve").setCreativeTab(tabPneumaticCraft);
+    public static void init(){
+        pressureTube = new BlockPressureTube(Material.iron, PneumaticValues.DANGER_PRESSURE_PRESSURE_TUBE, PneumaticValues.MAX_PRESSURE_PRESSURE_TUBE, PneumaticValues.VOLUME_PRESSURE_TUBE).setHardness(3.0F).setResistance(3.0F).setBlockName("pressureTube");
+        advancedPressureTube = new BlockPressureTube(Material.iron, PneumaticValues.DANGER_PRESSURE_ADVANCED_PRESSURE_TUBE, PneumaticValues.MAX_PRESSURE_ADVANCED_PRESSURE_TUBE, PneumaticValues.VOLUME_ADVANCED_PRESSURE_TUBE).setHardness(3.0F).setResistance(3.0F).setBlockName("advancedPressureTube");
+        airCompressor = new BlockAirCompressor(Material.iron).setHardness(3.0F).setResistance(3.0F).setBlockName("airCompressor");
+        airCannon = new BlockAirCannon(Material.iron).setHardness(3.0F).setResistance(3.0F).setBlockName("airCannon");
+        pressureChamberWall = new BlockPressureChamberWall(Material.iron).setHardness(10.0F).setResistance(2000.0F).setBlockName("pressureChamberWall");
+        pressureChamberValve = new BlockPressureChamberValve(Material.iron).setHardness(10.0F).setResistance(2000.0F).setBlockName("pressureChamberValve");
         slimePlant = new BlockSlimePlant().setBlockName("slimePlant");
         creeperPlant = new BlockCreeperPlant().setBlockName("creeperPlant");
         squidPlant = new BlockSquidPlant().setBlockName("squidPlant");
@@ -98,30 +97,30 @@ public class Blockss{
         repulsionPlant = new BlockRepulsionPlant().setBlockName("repulsionPlant");
         flyingFlower = new BlockFlyingFlower().setBlockName("flyingFlower");
         chopperPlant = new BlockChopperPlant().setBlockName("chopperPlant");
-        chargingStation = new BlockChargingStation(Material.iron).setBlockName("chargingStation").setHardness(3.0F).setResistance(3.0F).setCreativeTab(tabPneumaticCraft);
-        elevatorBase = new BlockElevatorBase(Material.iron).setBlockName("elevatorBase").setHardness(3.0F).setResistance(3.0F).setCreativeTab(tabPneumaticCraft);
-        elevatorFrame = new BlockElevatorFrame(Material.iron).setBlockName("elevatorFrame").setHardness(3.0F).setResistance(3.0F).setCreativeTab(tabPneumaticCraft);
-        pressureChamberInterface = new BlockPressureChamberInterface(Material.iron).setHardness(10.0F).setResistance(2000.0F).setBlockName("pressureChamberInterface").setCreativeTab(tabPneumaticCraft);
-        vacuumPump = new BlockVacuumPump(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("vacuumPump").setCreativeTab(tabPneumaticCraft);
-        pneumaticDoorBase = new BlockPneumaticDoorBase(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("pneumaticDoorBase").setCreativeTab(tabPneumaticCraft);
-        pneumaticDoor = new BlockPneumaticDoor(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("pneumaticDoor").setCreativeTab(tabPneumaticCraft);
-        assemblyIOUnit = new BlockAssemblyIOUnit(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("assemblyIOUnit").setCreativeTab(tabPneumaticCraft);
-        assemblyPlatform = new BlockAssemblyPlatform(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("assemblyPlatform").setCreativeTab(tabPneumaticCraft);
-        assemblyDrill = new BlockAssemblyDrill(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("assemblyDrill").setCreativeTab(tabPneumaticCraft);
-        assemblyLaser = new BlockAssemblyLaser(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("assemblyLaser").setCreativeTab(tabPneumaticCraft);
-        assemblyController = new BlockAssemblyController(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("assemblyController").setCreativeTab(tabPneumaticCraft);
-        compressedIron = new HelperBlock(Material.iron).setBlockTextureName(Textures.BLOCK_COMPRESSED_IRON).setStepSound(Block.soundTypeMetal).setHardness(3.0F).setResistance(10.0F).setBlockName("compressedIronBlock").setCreativeTab(tabPneumaticCraft);
-        uvLightBox = new BlockUVLightBox(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("uvLightBox").setCreativeTab(tabPneumaticCraft);
+        chargingStation = new BlockChargingStation(Material.iron).setBlockName("chargingStation").setHardness(3.0F).setResistance(3.0F);
+        elevatorBase = new BlockElevatorBase(Material.iron).setBlockName("elevatorBase").setHardness(3.0F).setResistance(3.0F);
+        elevatorFrame = new BlockElevatorFrame(Material.iron).setBlockName("elevatorFrame").setHardness(3.0F).setResistance(3.0F);
+        pressureChamberInterface = new BlockPressureChamberInterface(Material.iron).setHardness(10.0F).setResistance(2000.0F).setBlockName("pressureChamberInterface");
+        vacuumPump = new BlockVacuumPump(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("vacuumPump");
+        pneumaticDoorBase = new BlockPneumaticDoorBase(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("pneumaticDoorBase");
+        pneumaticDoor = new BlockPneumaticDoor(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("pneumaticDoor");
+        assemblyIOUnit = new BlockAssemblyIOUnit(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("assemblyIOUnit");
+        assemblyPlatform = new BlockAssemblyPlatform(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("assemblyPlatform");
+        assemblyDrill = new BlockAssemblyDrill(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("assemblyDrill");
+        assemblyLaser = new BlockAssemblyLaser(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("assemblyLaser");
+        assemblyController = new BlockAssemblyController(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("assemblyController");
+        compressedIron = new HelperBlock(Material.iron).setBlockTextureName(Textures.BLOCK_COMPRESSED_IRON).setStepSound(Block.soundTypeMetal).setHardness(3.0F).setResistance(10.0F).setBlockName("compressedIronBlock");
+        uvLightBox = new BlockUVLightBox(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("uvLightBox");
         etchingAcid = new BlockFluidEtchingAcid().setBlockName("etchingAcid");
-        securityStation = new BlockSecurityStation(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("securityStation").setCreativeTab(tabPneumaticCraft);
-        universalSensor = new BlockUniversalSensor(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("universalSensor").setCreativeTab(tabPneumaticCraft);
-        aerialInterface = new BlockAerialInterface(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("aerialInterface").setCreativeTab(tabPneumaticCraft);
-        electrostaticCompressor = new BlockElectrostaticCompressor(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("electrostaticCompressor").setCreativeTab(tabPneumaticCraft);
-        aphorismTile = new BlockAphorismTile(Material.rock).setHardness(1.5F).setResistance(4.0F).setBlockName("aphorismTile").setCreativeTab(tabPneumaticCraft);
-        omnidirectionalHopper = new BlockOmnidirectionalHopper(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("omnidirectionalHopper").setCreativeTab(tabPneumaticCraft);
-        elevatorCaller = new BlockElevatorCaller(Material.iron).setHardness(3.0F).setResistance(10F).setBlockName("elevatorCaller").setCreativeTab(tabPneumaticCraft);
-        programmer = new BlockProgrammer(Material.iron).setHardness(3.0F).setResistance(10F).setBlockName("programmer").setCreativeTab(tabPneumaticCraft);
-        creativeCompressor = new BlockCreativeCompressor(Material.iron).setHardness(3.0F).setResistance(10F).setBlockName("creativeCompressor").setCreativeTab(tabPneumaticCraft);
+        securityStation = new BlockSecurityStation(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("securityStation");
+        universalSensor = new BlockUniversalSensor(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("universalSensor");
+        aerialInterface = new BlockAerialInterface(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("aerialInterface");
+        electrostaticCompressor = new BlockElectrostaticCompressor(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("electrostaticCompressor");
+        aphorismTile = new BlockAphorismTile(Material.rock).setHardness(1.5F).setResistance(4.0F).setBlockName("aphorismTile");
+        omnidirectionalHopper = new BlockOmnidirectionalHopper(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("omnidirectionalHopper");
+        elevatorCaller = new BlockElevatorCaller(Material.iron).setHardness(3.0F).setResistance(10F).setBlockName("elevatorCaller");
+        programmer = new BlockProgrammer(Material.iron).setHardness(3.0F).setResistance(10F).setBlockName("programmer");
+        creativeCompressor = new BlockCreativeCompressor(Material.iron).setHardness(3.0F).setResistance(10F).setBlockName("creativeCompressor");
 
         registerBlocks();
 

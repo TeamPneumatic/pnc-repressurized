@@ -34,6 +34,7 @@ public abstract class BlockPneumaticCraft extends BlockContainer implements IPne
     protected BlockPneumaticCraft(Material par2Material){
         super(par2Material);
         setBlockTextureName(Textures.BLOCK_PRESSURE_TUBE); //registering an icon to render for the block breaking animation
+        setCreativeTab(PneumaticCraft.tabPneumaticCraft);
     }
 
     @Override

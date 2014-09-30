@@ -13,7 +13,7 @@ import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ItemNetworkComponents extends Item implements IProgrammable{
+public class ItemNetworkComponents extends ItemPneumatic implements IProgrammable{
     public static final int COMPONENT_AMOUNT = 6;
 
     public static final int DIAGNOSTIC_SUBROUTINE = 0;

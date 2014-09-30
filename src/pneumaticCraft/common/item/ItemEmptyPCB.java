@@ -16,7 +16,7 @@ import pneumaticCraft.lib.TileEntityConstants;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ItemEmptyPCB extends Item{
+public class ItemEmptyPCB extends ItemPneumatic{
     private static Random rand = new Random();
 
     public ItemEmptyPCB(){

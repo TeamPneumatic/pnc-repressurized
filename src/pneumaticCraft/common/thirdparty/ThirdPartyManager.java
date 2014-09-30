@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import net.minecraft.block.Block;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import pneumaticCraft.common.Config;
 import pneumaticCraft.common.thirdparty.ae2.AE2;
@@ -14,6 +13,7 @@ import pneumaticCraft.common.thirdparty.bloodmagic.BloodMagic;
 import pneumaticCraft.common.thirdparty.buildcraft.BuildCraft;
 import pneumaticCraft.common.thirdparty.computercraft.ComputerCraft;
 import pneumaticCraft.common.thirdparty.fmp.FMPLoader;
+import pneumaticCraft.common.thirdparty.forestry.Forestry;
 import pneumaticCraft.common.thirdparty.hydraulicraft.Hydraulicraft;
 import pneumaticCraft.common.thirdparty.ic2.IC2;
 import pneumaticCraft.common.thirdparty.igwmod.IGWMod;
@@ -48,6 +48,7 @@ public class ThirdPartyManager{
         thirdPartyClasses.put(ModIds.BLOOD_MAGIC, BloodMagic.class);
         thirdPartyClasses.put(ModIds.AE2, AE2.class);
         thirdPartyClasses.put(ModIds.CHISEL, Chisel.class);
+        thirdPartyClasses.put(ModIds.FORESTRY, Forestry.class);
         DramaSplash.newDrama();
 
         List<String> enabledThirdParty = new ArrayList<String>();
@@ -83,10 +84,10 @@ public class ThirdPartyManager{
         }
     }
 
-    public void preInit(CreativeTabs pneumaticCraftTab){
+    public void preInit(){
         for(IThirdParty thirdParty : thirdPartyMods) {
             try {
-                thirdParty.preInit(pneumaticCraftTab);
+                thirdParty.preInit();
             } catch(Exception e) {
                 Log.error("PneumaticCraft wasn't able to load third party content from the third party class " + thirdParty.getClass() + " in the PreInit phase!");
                 e.printStackTrace();

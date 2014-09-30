@@ -24,7 +24,7 @@ import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ItemPlasticPlants extends Item{
+public class ItemPlasticPlants extends ItemPneumatic{
 
     public static final int SQUID_PLANT_DAMAGE = 0;
     public static final int FIRE_FLOWER_DAMAGE = 1;
@@ -133,7 +133,7 @@ public class ItemPlasticPlants extends Item{
     }
 
     public static Block getPlantBlockIDFromSeed(int seedMetadata){
-        switch(seedMetadata){
+        switch(seedMetadata % 16){
             case 0:
                 return Blockss.squidPlant;
             case 1:

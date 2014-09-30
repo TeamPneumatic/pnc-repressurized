@@ -26,7 +26,7 @@ public class BlockEnderPlant extends BlockPneumaticPlantBase{
     }
 
     @Override
-    public boolean canPlantGrowOnThisBlock(Block blockID){
+    public boolean canPlantGrowOnThisBlock(Block blockID, World world, int x, int y, int z){
         return blockID == Blocks.end_stone;
     }
 

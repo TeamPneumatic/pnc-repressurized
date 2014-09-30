@@ -17,7 +17,7 @@ import pneumaticCraft.lib.Log;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ItemProgrammingPuzzle extends Item{
+public class ItemProgrammingPuzzle extends ItemPneumatic{
 
     public ItemProgrammingPuzzle(){
         hasSubtypes = true;

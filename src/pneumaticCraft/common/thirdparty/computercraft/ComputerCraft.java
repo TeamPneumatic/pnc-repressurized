@@ -2,7 +2,6 @@ package pneumaticCraft.common.thirdparty.computercraft;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -29,9 +28,9 @@ public class ComputerCraft implements IThirdParty, IRegistryListener{
     public Block droneInterface;
 
     @Override
-    public void preInit(CreativeTabs pneumaticCraftTab){
+    public void preInit(){
         ThirdPartyManager.computerCraftLoaded = true;
-        droneInterface = new BlockDroneInterface(Material.iron).setCreativeTab(pneumaticCraftTab).setBlockName("droneInterface");
+        droneInterface = new BlockDroneInterface(Material.iron).setBlockName("droneInterface");
         Blockss.registerBlock(droneInterface);
         GameRegistry.registerTileEntity(TileEntityDroneInterface.class, "droneInterface");
         TileEntityProgrammer.registeredWidgets.add(new ProgWidgetCC());

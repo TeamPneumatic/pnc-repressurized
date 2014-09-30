@@ -43,7 +43,7 @@ public class WorldGeneratorPneumaticCraft implements IWorldGenerator{
                     int x = chunkX + rand.nextInt(20);//in an area of 20x20
                     int z = chunkZ + rand.nextInt(20);
                     int y = world.getHeightValue(x, z);
-                    if(y > 0 && ((BlockPneumaticPlantBase)ItemPlasticPlants.getPlantBlockIDFromSeed(j)).canPlantGrowOnThisBlock(world.getBlock(x, y - 1, z))) {
+                    if(y > 0 && ((BlockPneumaticPlantBase)ItemPlasticPlants.getPlantBlockIDFromSeed(j)).canPlantGrowOnThisBlock(world.getBlock(x, y - 1, z), world, x, y - 1, z)) {
                         world.setBlock(x, y, z, ItemPlasticPlants.getPlantBlockIDFromSeed(j), rand.nextInt(5), 2);
                     }
                 }
@@ -79,7 +79,7 @@ public class WorldGeneratorPneumaticCraft implements IWorldGenerator{
                         } else {
                             y = baseY - 4 + rand.nextInt(8);
                         }
-                        if(world.isAirBlock(x, y, z) && ((BlockPneumaticPlantBase)Blockss.fireFlower).canPlantGrowOnThisBlock(world.getBlock(x, y - 1, z))) {
+                        if(world.isAirBlock(x, y, z) && ((BlockPneumaticPlantBase)Blockss.fireFlower).canPlantGrowOnThisBlock(world.getBlock(x, y - 1, z), world, x, y - 1, z)) {
                             world.setBlock(x, y, z, Blockss.fireFlower, rand.nextInt(5), 2);
                             if(baseY == 0) baseY = y;
                             break;
