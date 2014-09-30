@@ -53,9 +53,8 @@ if (System.getenv().BUILD_NUMBER != null) {
     version += " - err"
 }
 
-def f = new File('Version.txt')
-f.delete
-f << "build/libs/" + archivesBaseName + "-" + project.ext.mcVersion + "-" + version + "-universal.jar"
+delete 'Version.txt'
+new File('Version.txt') << "build/libs/" + archivesBaseName + "-" + project.ext.mcVersion + "-" + version + "-universal.jar"
 
 def grabDep(url) {
     ant.get(src: url, dest: 'dep')
