@@ -1,4 +1,4 @@
-package pneumaticCraft.common;
+package pneumaticCraft.common.fluid;
 
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
@@ -6,8 +6,10 @@ import pneumaticCraft.common.block.Blockss;
 
 public class Fluids{
     public static Fluid EtchAcid;
+    public static Fluid plastic;
 
     public static void initFluids(){
+        plastic = new FluidPlastic("plastic");
         EtchAcid = new Fluid("EtchAcid"){
             @Override
             public int getColor(){
@@ -16,5 +18,6 @@ public class Fluids{
         };
 
         FluidRegistry.registerFluid(EtchAcid);
+        FluidRegistry.registerFluid(plastic);
     }
 }

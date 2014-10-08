@@ -31,6 +31,7 @@ public class TileEntityRegistrator{
         GameRegistry.registerTileEntity(TileEntityElevatorCaller.class, "TileEntityElevatorCaller");
         GameRegistry.registerTileEntity(TileEntityProgrammer.class, "TileEntityProgrammer");
         GameRegistry.registerTileEntity(TileEntityCreativeCompressor.class, "TileEntityCreativeCompressor");
+        GameRegistry.registerTileEntity(TileEntityPlasticMixer.class, "PneumaticCraft_plasticMixer");
     }
 
 }

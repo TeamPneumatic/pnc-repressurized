@@ -1,5 +1,6 @@
 package pneumaticCraft.lib;
 
+
 public class PneumaticValues{
 
     // danger pressures (bar)
@@ -138,4 +139,10 @@ public class PneumaticValues{
     public static final float SPEED_UPGRADE_USAGE_MULTIPLIER = 1.8F;
 
     public static final int RANGE_UPGRADE_HELMET_RANGE_INCREASE = 5;
+    public static final double PLASTIC_MIX_RATIO = 0.1;
+    public static final int PLASTIC_MIXER_TANK_CAPACITY = 16000;
+    public static final int PLASTIC_MIXER_HEAT_RATIO = 1;
+    public static final int PLASTIC_MIXER_MELTING_TEMP = 150 + 273;//150 C
+    public static final int PLASTIC_MIXER_MAX_DRAIN = 100;
+
 }

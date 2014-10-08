@@ -1,4 +1,1 @@
--Changed Air Compressor model.
--Added Forestry and MFR farm compatibility for the plastic seeds.
-
--Bugfix: Using an invalidly placed Valve, a Pressure Chamber can be disassembled without the chamber knowing.
+-Added IGW-Mod absence notifier.

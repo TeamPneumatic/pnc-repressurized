@@ -9,7 +9,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.BlockFluidClassic;
 import pneumaticCraft.common.DamageSourcePneumaticCraft;
-import pneumaticCraft.common.Fluids;
+import pneumaticCraft.common.fluid.Fluids;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

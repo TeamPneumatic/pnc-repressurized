@@ -5,6 +5,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
@@ -30,6 +31,12 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
     public int numUsingPlayers;
     private int[] upgradeSlots;
     private boolean descriptionPacketScheduled;
+
+    public TileEntityBase(){}
+
+    public TileEntityBase(int... upgradeSlots){
+        this.upgradeSlots = upgradeSlots;
+    }
 
     @Override
     public Packet getDescriptionPacket(){
@@ -193,4 +200,58 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
     }
 
     protected void addLuaMethods(){}
+
+    public static void saveInventory(ItemStack[] inventory, NBTTagCompound tag, String tagName){
+        NBTTagList tagList = new NBTTagList();
+        for(int i = 0; i < inventory.length; ++i) {
+            if(inventory[i] != null) {
+                NBTTagCompound tagCompound = new NBTTagCompound();
+                tagCompound.setByte("Slot", (byte)i);
+                inventory[i].writeToNBT(tagCompound);
+                tagList.appendTag(tagCompound);
+            }
+        }
+        tag.setTag(tagName, tagList);
+    }
+
+    public static void loadInventory(ItemStack[] inventory, NBTTagCompound tag, String tagName){
+        for(int i = 0; i < inventory.length; i++)
+            inventory[i] = null;
+
+        NBTTagList tagList = tag.getTagList(tagName, 10);
+        for(int i = 0; i < tagList.tagCount(); ++i) {
+            NBTTagCompound tagCompound = tagList.getCompoundTagAt(i);
+            byte slot = tagCompound.getByte("Slot");
+            if(slot >= 0 && slot < inventory.length) {
+                inventory[slot] = ItemStack.loadItemStackFromNBT(tagCompound);
+            }
+        }
+    }
+
+    public static void saveInventory(IInventory inventory, NBTTagCompound tag, String tagName){
+        NBTTagList tagList = new NBTTagList();
+        for(int i = 0; i < inventory.getSizeInventory(); ++i) {
+            if(inventory.getStackInSlot(i) != null) {
+                NBTTagCompound tagCompound = new NBTTagCompound();
+                tagCompound.setByte("Slot", (byte)i);
+                inventory.getStackInSlot(i).writeToNBT(tagCompound);
+                tagList.appendTag(tagCompound);
+            }
+        }
+        tag.setTag(tagName, tagList);
+    }
+
+    public static void loadInventory(IInventory inventory, NBTTagCompound tag, String tagName){
+        for(int i = 0; i < inventory.getSizeInventory(); i++)
+            inventory.setInventorySlotContents(i, null);
+
+        NBTTagList tagList = tag.getTagList(tagName, 10);
+        for(int i = 0; i < tagList.tagCount(); ++i) {
+            NBTTagCompound tagCompound = tagList.getCompoundTagAt(i);
+            byte slot = tagCompound.getByte("Slot");
+            if(slot >= 0 && slot < inventory.getSizeInventory()) {
+                inventory.setInventorySlotContents(i, ItemStack.loadItemStackFromNBT(tagCompound));
+            }
+        }
+    }
 }

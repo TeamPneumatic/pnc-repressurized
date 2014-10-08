@@ -75,6 +75,7 @@ public class Blockss{
     public static Block elevatorCaller;
     public static Block programmer;
     public static Block creativeCompressor;
+    public static Block plasticMixer;
 
     public static void init(){
         pressureTube = new BlockPressureTube(Material.iron, PneumaticValues.DANGER_PRESSURE_PRESSURE_TUBE, PneumaticValues.MAX_PRESSURE_PRESSURE_TUBE, PneumaticValues.VOLUME_PRESSURE_TUBE).setHardness(3.0F).setResistance(3.0F).setBlockName("pressureTube");
@@ -121,6 +122,7 @@ public class Blockss{
         elevatorCaller = new BlockElevatorCaller(Material.iron).setHardness(3.0F).setResistance(10F).setBlockName("elevatorCaller");
         programmer = new BlockProgrammer(Material.iron).setHardness(3.0F).setResistance(10F).setBlockName("programmer");
         creativeCompressor = new BlockCreativeCompressor(Material.iron).setHardness(3.0F).setResistance(10F).setBlockName("creativeCompressor");
+        plasticMixer = new BlockPlasticMixer(Material.iron).setHardness(3.0F).setResistance(10F).setBlockName("plasticMixer");
 
         registerBlocks();
 
@@ -178,6 +180,7 @@ public class Blockss{
         registerBlock(elevatorCaller);
         registerBlock(programmer);
         registerBlock(creativeCompressor);
+        registerBlock(plasticMixer);
     }
 
     public static void registerBlock(Block block){
@@ -187,6 +190,5 @@ public class Blockss{
     private static void registerBlock(Block block, Class<? extends ItemBlock> itemBlockClass){
         GameRegistry.registerBlock(block, itemBlockClass, block.getUnlocalizedName().substring("tile.".length()));
         ThirdPartyManager.instance().onBlockRegistry(block);
-
     }
 }
