@@ -12,91 +12,201 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
-import pneumaticCraft.api.tileentity.IHeatAcceptor;
+import net.minecraftforge.fluids.IFluidTank;
+import pneumaticCraft.api.IHeatExchangerLogic;
+import pneumaticCraft.api.PneumaticRegistry;
+import pneumaticCraft.api.tileentity.IHeatExchanger;
 import pneumaticCraft.common.fluid.FluidPlastic;
 import pneumaticCraft.common.fluid.Fluids;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.lib.Names;
 import pneumaticCraft.lib.PneumaticValues;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHandler, IInventory, IHeatAcceptor{
+public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHandler, IInventory, IHeatExchanger{
     private final FluidTank tank = new FluidTank(PneumaticValues.PLASTIC_MIXER_TANK_CAPACITY);
     private final ItemStack[] inventory = new ItemStack[6];
     private int lastTickInventoryStacksize;
-    private int itemTemperature = BASE_TEMPERATURE;
     private static int BASE_TEMPERATURE = Fluids.plastic.getTemperature();
+    private final IHeatExchangerLogic hullLogic = PneumaticRegistry.getInstance().getHeatExchangerLogic();
+    private final IHeatExchangerLogic itemLogic = PneumaticRegistry.getInstance().getHeatExchangerLogic();
+    private final IHeatExchangerLogic liquidLogic = PneumaticRegistry.getInstance().getHeatExchangerLogic();
 
     public TileEntityPlasticMixer(){
         super(0, 1, 2, 3);
+        hullLogic.addConnectedExchanger(itemLogic);
+        hullLogic.addConnectedExchanger(liquidLogic);
+        itemLogic.addConnectedExchanger(liquidLogic);
+
+        hullLogic.setThermalCapacity(100);
     }
 
-    @Override
-    public void addHeat(int amount){
-        if(tank.getFluid() != null) {
-            tank.getFluid().tag.setInteger("temperature", Fluids.plastic.getTemperature(tank.getFluid()) + amount * PneumaticValues.PLASTIC_MIXER_HEAT_RATIO / tank.getFluidAmount());
+    public int getTemperature(int index){
+        switch(index){
+            case 0:
+                return (int)hullLogic.getTemperature();
+            case 1:
+                return (int)itemLogic.getTemperature();
+            case 2:
+                return (int)liquidLogic.getTemperature();
         }
+        throw new IllegalArgumentException("Invalid index: " + index);
+    }
+
+    @SideOnly(Side.CLIENT)
+    public void setTemperature(int temperature, int index){
+        switch(index){
+            case 0:
+                hullLogic.setTemperature(temperature);
+                return;
+            case 1:
+                itemLogic.setTemperature(temperature);
+                return;
+            case 2:
+                liquidLogic.setTemperature(temperature);
+                return;
+        }
+        throw new IllegalArgumentException("Invalid index: " + index);
+    }
+
+    @SideOnly(Side.CLIENT)
+    public IHeatExchangerLogic getLogic(int index){
+        switch(index){
+            case 0:
+                return hullLogic;
+            case 1:
+                return itemLogic;
+            case 2:
+                return liquidLogic;
+        }
+        throw new IllegalArgumentException("Invalid index: " + index);
+    }
+
+    @SideOnly(Side.CLIENT)
+    public IFluidTank getFluidTank(){
+        return tank;
     }
 
     @Override
     public void updateEntity(){
-        if(!worldObj.isRemote && worldObj.getWorldTime() % 20 == 0) {//We don't need to run _that_ often.
-            if(inventory[4] != null && inventory[4].stackSize > lastTickInventoryStacksize) {
-                int stackIncrease = inventory[4].stackSize - lastTickInventoryStacksize;
-                double ratio = (double)inventory[4].stackSize / (inventory[4].stackSize + stackIncrease);
-                itemTemperature = (int)(ratio * itemTemperature + (1 - ratio) * BASE_TEMPERATURE);
-                itemTemperature = 1000;
-            } else if(inventory[4] == null) {
-                itemTemperature = BASE_TEMPERATURE;
+        super.updateEntity();
+        if(!worldObj.isRemote) {
+
+            hullLogic.update();
+            itemLogic.update();
+            liquidLogic.update();
+            if(tank.getFluid() != null) {
+                //  tank.getFluid().tag.setInteger("temperature", 500/*(int)liquidLogic.getTemperature()*/);
             }
 
-            if(itemTemperature >= PneumaticValues.PLASTIC_MIXER_MELTING_TEMP) {
-                NBTTagCompound tag = new NBTTagCompound();
-                tag.setInteger("temperature", itemTemperature);
-                tag.setInteger("color", ItemDye.field_150922_c[inventory[4].getItemDamage()]);
-                FluidStack moltenPlastic = new FluidStack(Fluids.plastic.getID(), inventory[4].stackSize * 1000, tag);
-                int maxFill = fill(ForgeDirection.UNKNOWN, moltenPlastic, false) / 1000;
-                if(maxFill > 0) {
-                    inventory[4].stackSize -= maxFill;
-                    if(inventory[4].stackSize <= 0) inventory[4] = null;
-                    fill(ForgeDirection.UNKNOWN, new FluidStack(moltenPlastic, maxFill * 1000), true);
+            if(worldObj.getWorldTime() % 20 == 0) {//We don't need to run _that_ often.
+                if(inventory[4] != null && inventory[4].stackSize > lastTickInventoryStacksize) {
+                    int stackIncrease = inventory[4].stackSize - lastTickInventoryStacksize;
+                    double ratio = (double)inventory[4].stackSize / (inventory[4].stackSize + stackIncrease);
+                    itemLogic.setTemperature((int)(ratio * itemLogic.getTemperature() + (1 - ratio) * BASE_TEMPERATURE));
+                } else if(inventory[4] == null) {
+                    itemLogic.setTemperature(BASE_TEMPERATURE);
                 }
-            }
-            if(tank.getFluid() != null && Fluids.plastic.getTemperature(tank.getFluid()) < PneumaticValues.PLASTIC_MIXER_MELTING_TEMP) {
-                ItemStack solidifiedStack = new ItemStack(Itemss.plastic, tank.getFluid().amount / 1000, FluidPlastic.getPlasticMeta(tank.getFluid()));
-                if(inventory[4] == null) {
-                    inventory[4] = solidifiedStack;
-                    itemTemperature = Fluids.plastic.getTemperature(tank.getFluid());
-                    drain(ForgeDirection.UNKNOWN, inventory[4].stackSize * 1000, true);
-                } else if(solidifiedStack.isItemEqual(inventory[4])) {
-                    int solidifiedItems = Math.min(64 - inventory[4].stackSize, solidifiedStack.stackSize);
-                    double ratio = (double)inventory[4].stackSize / (inventory[4].stackSize + solidifiedItems);
-                    itemTemperature = (int)(ratio * itemTemperature + (1 - ratio) * FluidPlastic.getTemperatureS(tank.getFluid()));
-                    inventory[4].stackSize += solidifiedItems;
-                    drain(ForgeDirection.UNKNOWN, solidifiedItems * 1000, true);
+
+                if(itemLogic.getTemperature() >= PneumaticValues.PLASTIC_MIXER_MELTING_TEMP) {
+                    NBTTagCompound tag = new NBTTagCompound();
+                    //tag.setInteger("temperature", (int)itemLogic.getTemperature());
+                    tag.setInteger("color", ItemDye.field_150922_c[inventory[4].getItemDamage()]);
+                    FluidStack moltenPlastic = new FluidStack(Fluids.plastic.getID(), inventory[4].stackSize * 1000, tag);
+                    int maxFill = fill(ForgeDirection.UNKNOWN, moltenPlastic, false) / 1000;
+                    if(maxFill > 0) {
+                        inventory[4].stackSize -= maxFill;
+                        if(inventory[4].stackSize <= 0) inventory[4] = null;
+                        int oldAmount = tank.getFluidAmount();
+                        fill(ForgeDirection.UNKNOWN, new FluidStack(moltenPlastic, maxFill * 1000), true);
+                        double ratio = (double)oldAmount / (oldAmount + maxFill * 1000);
+
+                        liquidLogic.setTemperature(ratio * liquidLogic.getTemperature() + (1 - ratio) * FluidPlastic.getTemperatureS(tank.getFluid()));
+                    }
                 }
+                if(tank.getFluid() != null && liquidLogic.getTemperature() < PneumaticValues.PLASTIC_MIXER_MELTING_TEMP) {
+                    ItemStack solidifiedStack = new ItemStack(Itemss.plastic, tank.getFluid().amount / 1000, FluidPlastic.getPlasticMeta(tank.getFluid()));
+                    if(solidifiedStack.stackSize > 0) {
+                        if(inventory[4] == null) {
+                            inventory[4] = solidifiedStack;
+                            itemLogic.setTemperature(liquidLogic.getTemperature());
+                            tank.drain(inventory[4].stackSize * 1000, true);
+                            sendDescriptionPacket();
+                        } else if(solidifiedStack.isItemEqual(inventory[4])) {
+                            int solidifiedItems = Math.min(64 - inventory[4].stackSize, solidifiedStack.stackSize);
+                            double ratio = (double)inventory[4].stackSize / (inventory[4].stackSize + solidifiedItems);
+                            itemLogic.setTemperature((int)(ratio * itemLogic.getTemperature() + (1 - ratio) * liquidLogic.getTemperature()));
+                            inventory[4].stackSize += solidifiedItems;
+                            tank.drain(solidifiedItems * 1000, true);
+                            sendDescriptionPacket();
+                        }
+                    }
+                } else if(tank.getFluid() != null && inventory[5] != null) {
+                    while(inventory[5] != null) {
+                        FluidPlastic.addDye(tank.getFluid(), inventory[5].getItemDamage());
+                        inventory[5].stackSize--;
+                        if(inventory[5].stackSize <= 0) inventory[5] = null;
+                    }
+                    sendDescriptionPacket();
+                }
+                lastTickInventoryStacksize = inventory[4] != null ? inventory[4].stackSize : 0;
+
+                itemLogic.setThermalCapacity(inventory[4] == null ? 0 : inventory[4].stackSize);
+                liquidLogic.setThermalCapacity(tank.getFluid() == null ? 0 : tank.getFluid().amount / 1000D);
             }
-            lastTickInventoryStacksize = inventory[4] != null ? inventory[4].stackSize : 0;
         }
+    }
+
+    @Override
+    protected void onFirstServerUpdate(){
+        hullLogic.initializeAsHull(worldObj, xCoord, yCoord, zCoord);
+    }
+
+    @Override
+    public void onNeighborBlockUpdate(){
+        onFirstServerUpdate();
+    }
+
+    @Override
+    public void onNeighborTileUpdate(){
+        onFirstServerUpdate();
     }
 
     @Override
     public void readFromNBT(NBTTagCompound tag){
         super.readFromNBT(tag);
-        itemTemperature = tag.getInteger("itemTemperature");
         loadInventory(inventory, tag, "Items");
+        tank.setFluid(null);
         tank.readFromNBT(tag.getCompoundTag("fluid"));
         lastTickInventoryStacksize = tag.getInteger("lastTickInventoryStacksize");
+
+        hullLogic.readFromNBT(tag.getCompoundTag("hullLogic"));
+        itemLogic.readFromNBT(tag.getCompoundTag("itemLogic"));
+        liquidLogic.readFromNBT(tag.getCompoundTag("liquidLogic"));
     }
 
     @Override
     public void writeToNBT(NBTTagCompound tag){
         super.writeToNBT(tag);
-        tag.setInteger("itemTemperature", itemTemperature);
         saveInventory(inventory, tag, "Items");
         NBTTagCompound tankTag = new NBTTagCompound();
         tank.writeToNBT(tankTag);
         tag.setTag("fluid", tankTag);
         tag.setInteger("lastTickInventoryStacksize", lastTickInventoryStacksize);
+
+        NBTTagCompound heatTag = new NBTTagCompound();
+        hullLogic.writeToNBT(heatTag);
+        tag.setTag("hullLogic", heatTag);
+
+        heatTag = new NBTTagCompound();
+        itemLogic.writeToNBT(heatTag);
+        tag.setTag("itemLogic", heatTag);
+
+        heatTag = new NBTTagCompound();
+        liquidLogic.writeToNBT(heatTag);
+        tag.setTag("liquidLogic", heatTag);
+
     }
 
     /******************* Tank methods *******************/
@@ -107,6 +217,7 @@ public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHand
         int fillingAmount = Math.min(tank.getCapacity() - tank.getFluidAmount(), resource.amount);
         if(doFill) {
             tank.setFluid(FluidPlastic.mixFluid(tank.getFluid(), new FluidStack(resource, fillingAmount)));
+            liquidLogic.setTemperature(FluidPlastic.getTemperatureS(tank.getFluid()));
             sendDescriptionPacket();
         }
         return fillingAmount;
@@ -223,5 +334,10 @@ public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHand
     @Override
     public boolean isUseableByPlayer(EntityPlayer var1){
         return isGuiUseableByPlayer(var1);
+    }
+
+    @Override
+    public IHeatExchangerLogic getHeatExchangerLogic(ForgeDirection side){
+        return hullLogic;
     }
 }

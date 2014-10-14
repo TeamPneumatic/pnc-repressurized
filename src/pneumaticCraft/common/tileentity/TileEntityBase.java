@@ -119,6 +119,10 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
          */
     }
 
+    public void onNeighborBlockUpdate(){}
+
+    public void onNeighborTileUpdate(){}
+
     /**
      * When returned true, the serversided TE will send an update (description) packet the first time updateEntity() invokes.
      * @return

@@ -13,9 +13,9 @@ import net.minecraftforge.fluids.FluidTankInfo;
 import org.lwjgl.opengl.GL11;
 
 import pneumaticCraft.client.util.RenderUtils;
+import pneumaticCraft.client.util.RenderUtils.RenderInfo;
 import pneumaticCraft.common.tileentity.TileEntityPlasticMixer;
 import pneumaticCraft.lib.Textures;
-import buildcraft.core.render.RenderEntityBlock;
 import cpw.mods.fml.client.FMLClientHandler;
 
 public class ModelPlasticMixer extends ModelBase implements IBaseModel{
@@ -101,7 +101,7 @@ public class ModelPlasticMixer extends ModelBase implements IBaseModel{
             FluidTankInfo info = mixer.getTankInfo(null)[0];
             if(info.fluid != null && info.fluid.amount > 10) {
                 float percentageFull = (float)info.fluid.amount / info.capacity;
-                RenderEntityBlock.RenderInfo renderInfo = new RenderEntityBlock.RenderInfo(-6 / 16F + 0.01F, 22 / 16F - percentageFull * 13.999F / 16F, -6 / 16F + 0.01F, 6 / 16F - 0.01F, 22 / 16F, 6 / 16F - 0.01F);
+                RenderInfo renderInfo = new RenderInfo(-6 / 16F + 0.01F, 22 / 16F - percentageFull * 13.999F / 16F, -6 / 16F + 0.01F, 6 / 16F - 0.01F, 22 / 16F, 6 / 16F - 0.01F);
 
                 if(info.fluid.getFluid().getBlock() != null) {
                     renderInfo.baseBlock = info.fluid.getFluid().getBlock();

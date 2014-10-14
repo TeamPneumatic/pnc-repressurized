@@ -77,6 +77,13 @@ public class PneumaticRegistry{
         public void registerInventoryItem(IInventoryItem handler);
 
         /*
+         * ----------------- Heat System --------------
+         */
+        public IHeatExchangerLogic getHeatExchangerLogic();
+
+        public void registerBlockExchanger(Block block, double temperature, double thermalResistance);
+
+        /*
          * --------------- Misc -------------------
          */
 

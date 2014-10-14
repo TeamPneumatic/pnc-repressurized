@@ -228,10 +228,21 @@ pneumaticHelmet.hacking.finished.resumedTasks=Resumed tasks
 
 # Info
 gui.tab.info=Information
-gui.tab.info.tubeModule=In this interface you can exactly define how a module should behave dependent on the redstone signal. You can define a formula.
+gui.tab.info.tubeModule=In this interface you can exactly define how a module should behave dependent on the redstone signal. You can define a formula. Lower bound is what the threshold is at redstone level 0, higher bound at level 15.
+gui.tab.info.plasticMixer=The Plastic Mixer is used to melt down Plastic into liquid plastic. It then can be mixed with other colors of plastic or Dye to create other colored Plastic. See other tabs for more info.
+gui.tab.info.heat=This machine requires heat. Heat can be applied by placing a block that generates heat next to this machine. Think of a Vortex Tube (fast, but requires power), but also Lava (slow) and Torches (very slow). To cool down a machine, remove the heat sources and/or speed up the process by placing down Ice.
+gui.tab.info.items=Add plastic in the bottom slot. In this slot plastic also will be put when it cools down into plastic. Add dye in the top slot. Note that when mixing dye with plastic, dye has a much lower effect than mixing another color of Plastic.
+
+# Upgrades
+gui.tab.upgrade=Upgrades
+gui.tab.upgrade.volumeCapacity=7Volume Upgrade \n 0Increases the heat capacity of this machine. It will heat up slower, but it also will cool down slower.
 
 # Problems
+gui.tab.problems=Problems
 gui.tab.problems.redstoneDisallows=Redstone disallows this machine to function.
+
+# Redstone Behaviour
+gui.tab.redstoneBehaviour=Redstone Behaviour
 
 # Universal Sensor descriptions
 gui.universalSensor.desc.userSetSensor=This is a 'sensor' you can use to emit a constant redstone value. The value emitted is the numeric value inserted into the textbox.

@@ -29,7 +29,7 @@ public abstract class GuiPneumaticScreenBase extends GuiScreen implements IWidge
      * Any GuiAnimatedStat added to this list will be tracked for mouseclicks, tooltip renders, rendering,updating (resolution and expansion).
      */
     protected List<IGuiAnimatedStat> animatedStatList = new ArrayList<IGuiAnimatedStat>();
-    protected final List<IGuiWidget> widgetList = new ArrayList<IGuiWidget>();
+    private final List<IGuiWidget> widgetList = new ArrayList<IGuiWidget>();
     public int guiLeft, guiTop, xSize, ySize;
 
     @Override
@@ -182,10 +182,11 @@ public abstract class GuiPneumaticScreenBase extends GuiScreen implements IWidge
         }
     }
 
+    @Override
     protected void keyTyped(char key, int keyCode){
         if(keyCode == 1) {
             super.keyTyped(key, keyCode);
-        }else{
+        } else {
             for(IGuiWidget widget : widgetList) {
                 widget.onKey(key, keyCode);
             }

@@ -1,12 +1,16 @@
 package pneumaticCraft.client.util;
 
+import java.util.Arrays;
+
+import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.entity.Entity;
+import net.minecraft.init.Blocks;
+import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.IBlockAccess;
-import buildcraft.core.render.RenderEntityBlock.RenderInfo;
 
 public class RenderUtils extends Render{
     public static RenderUtils INSTANCE = new RenderUtils();
@@ -20,6 +24,20 @@ public class RenderUtils extends Render{
         renderBlock(info, blockAccess, x, y, z, x, y, z, doLight, doTessellating);
     }
 
+    /**
+     * This method is derived from BuildCraft's RenderEntityBlock.java, found at https://github.com/BuildCraft/BuildCraft/blob/6.1.x/common/buildcraft/core/render/RenderEntityBlock.java
+     * This is edited by @author MineMaarten.
+     * @param info
+     * @param blockAccess
+     * @param x
+     * @param y
+     * @param z
+     * @param lightX
+     * @param lightY
+     * @param lightZ
+     * @param doLight
+     * @param doTessellating
+     */
     public void renderBlock(RenderInfo info, IBlockAccess blockAccess, double x, double y, double z, int lightX, int lightY, int lightZ, boolean doLight, boolean doTessellating){
         float lightBottom = 0.5F;
         float lightTop = 1.0F;
@@ -34,9 +52,6 @@ public class RenderUtils extends Render{
             realDoLight = false;
         }
 
-        // TODO: needs to cancel the test because the variable is now private... May need to
-        // duplicate the tessellator code.
-        //if (doTessellating && !tessellator.isDrawing)
         tessellator.startDrawingQuads();
 
         float light = 0;
@@ -108,9 +123,6 @@ public class RenderUtils extends Render{
             renderBlocks.renderFaceXPos(info.baseBlock, x, y, z, info.getBlockTextureFromSide(5));
         }
 
-        // TODO: needs to cancel the test because the variable is now private... May need to
-        // duplicate the tessellator code.
-        //if (doTessellating && tessellator.isDrawing)
         tessellator.draw();
     }
 
@@ -123,4 +135,112 @@ public class RenderUtils extends Render{
     protected ResourceLocation getEntityTexture(Entity p_110775_1_){
         return null;
     }
+
+    /**
+     * This class is derived from BuildCraft's RenderEntityBlock.java, found at https://github.com/BuildCraft/BuildCraft/blob/6.1.x/common/buildcraft/core/render/RenderEntityBlock.java
+     * This is edited by @author MineMaarten.
+     * @param info
+     * @param blockAccess
+     * @param x
+     * @param y
+     * @param z
+     * @param lightX
+     * @param lightY
+     * @param lightZ
+     * @param doLight
+     * @param doTessellating
+     */
+    public static class RenderInfo{
+
+        public double minX;
+        public double minY;
+        public double minZ;
+        public double maxX;
+        public double maxY;
+        public double maxZ;
+        public Block baseBlock = Blocks.sand;
+        public IIcon texture = null;
+        public IIcon[] textureArray = null;
+        public boolean[] renderSide = new boolean[6];
+        public float light = -1f;
+        public int brightness = -1;
+
+        public RenderInfo(){
+            setRenderAllSides();
+        }
+
+        public RenderInfo(Block template, IIcon[] texture){
+            this();
+            baseBlock = template;
+            textureArray = texture;
+        }
+
+        public RenderInfo(float minX, float minY, float minZ, float maxX, float maxY, float maxZ){
+            this();
+            setBounds(minX, minY, minZ, maxX, maxY, maxZ);
+        }
+
+        public float getBlockBrightness(IBlockAccess iblockaccess, int i, int j, int k){
+            return baseBlock.getMixedBrightnessForBlock(iblockaccess, i, j, k);
+        }
+
+        public final void setBounds(double minX, double minY, double minZ, double maxX, double maxY, double maxZ){
+            this.minX = minX;
+            this.minY = minY;
+            this.minZ = minZ;
+            this.maxX = maxX;
+            this.maxY = maxY;
+            this.maxZ = maxZ;
+        }
+
+        public final void setRenderSingleSide(int side){
+            Arrays.fill(renderSide, false);
+            renderSide[side] = true;
+        }
+
+        public final void setRenderAllSides(){
+            Arrays.fill(renderSide, true);
+        }
+
+        public void rotate(){
+            double temp = minX;
+            minX = minZ;
+            minZ = temp;
+
+            temp = maxX;
+            maxX = maxZ;
+            maxZ = temp;
+        }
+
+        public void reverseX(){
+            double temp = minX;
+            minX = 1 - maxX;
+            maxX = 1 - temp;
+        }
+
+        public void reverseZ(){
+            double temp = minZ;
+            minZ = 1 - maxZ;
+            maxZ = 1 - temp;
+        }
+
+        public IIcon getBlockTextureFromSide(int i){
+            if(texture != null) {
+                return texture;
+            }
+
+            int index = i;
+
+            if(textureArray == null || textureArray.length == 0) {
+                return baseBlock.getBlockTextureFromSide(index);
+            } else {
+                if(index >= textureArray.length) {
+                    index = 0;
+                }
+
+                return textureArray[index];
+            }
+        }
+    }
+
 }

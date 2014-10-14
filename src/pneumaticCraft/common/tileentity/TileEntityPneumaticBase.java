@@ -359,6 +359,7 @@ public class TileEntityPneumaticBase extends TileEntityBase implements IManoMeas
         return zCoord;
     }
 
+    @Override
     public void onNeighborTileUpdate(){
         for(TileEntityCache cache : getTileCache()) {
             cache.update();

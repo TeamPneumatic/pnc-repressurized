@@ -18,6 +18,7 @@ import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.block.tubes.ModuleRegistrator;
 import pneumaticCraft.common.entity.EntityRegistrator;
 import pneumaticCraft.common.fluid.Fluids;
+import pneumaticCraft.common.heat.HeatExchangerManager;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.recipes.CraftingHandler;
@@ -130,6 +131,7 @@ public class PneumaticCraft{
         //Add these later so we include other mod's storage recipes.
         // CraftingRegistrator.addPressureChamberStorageBlockRecipes();
         CraftingRegistrator.addAssemblyCombinedRecipes();
+        HeatExchangerManager.getInstance().init();
 
         ThirdPartyManager.instance().postInit();
         proxy.postInit();

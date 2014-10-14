@@ -1,16 +1,22 @@
 package pneumaticCraft.common.inventory;
 
+import java.util.List;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.Container;
+import net.minecraft.inventory.ICrafting;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.tileentity.TileEntityPlasticMixer;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class ContainerPlasticMixer extends Container{
     TileEntityPlasticMixer te;
+    private final int[] lastTemperatures = {-1, -1, -1};
 
     public ContainerPlasticMixer(InventoryPlayer inventoryPlayer, TileEntityPlasticMixer te){
         this.te = te;
@@ -43,6 +49,30 @@ public class ContainerPlasticMixer extends Container{
     public boolean canInteractWith(EntityPlayer player){
 
         return te.isGuiUseableByPlayer(player);
+    }
+
+    /**
+     * Looks for changes made in the container, sends them to every listener.
+     */
+    @Override
+    public void detectAndSendChanges(){
+        super.detectAndSendChanges();
+
+        for(int i = 0; i < 3; i++) {
+            if(lastTemperatures[i] != te.getTemperature(i)) {
+                lastTemperatures[i] = te.getTemperature(i);
+                for(ICrafting crafter : (List<ICrafting>)crafters) {
+                    crafter.sendProgressBarUpdate(this, i, te.getTemperature(i));
+                }
+            }
+        }
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void updateProgressBar(int id, int value){
+        super.updateProgressBar(id, value);
+        te.setTemperature(value, id);
     }
 
     /**

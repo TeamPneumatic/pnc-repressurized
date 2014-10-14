@@ -10,11 +10,17 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
+
+import org.apache.commons.lang3.text.WordUtils;
+
+import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.api.client.IGuiAnimatedStat;
 import pneumaticCraft.client.gui.widget.GuiAnimatedStat;
-import pneumaticCraft.client.gui.widget.GuiCheckBox;
+import pneumaticCraft.client.gui.widget.IGuiWidget;
+import pneumaticCraft.client.gui.widget.IWidgetListener;
 import pneumaticCraft.lib.ModIds;
 import codechicken.nei.VisiblityData;
 import codechicken.nei.api.INEIGuiHandler;
@@ -25,16 +31,27 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 @Optional.Interface(iface = "codechicken.nei.api.INEIGuiHandler", modid = ModIds.NEI)
-public class GuiPneumaticContainerBase extends GuiContainer implements INEIGuiHandler{
+public class GuiPneumaticContainerBase extends GuiContainer implements INEIGuiHandler, IWidgetListener{
     /**
      * Any GuiAnimatedStat added to this list will be tracked for mouseclicks, tooltip renders, rendering,updating (resolution and expansion).
      */
     protected final List<IGuiAnimatedStat> animatedStatList = new ArrayList<IGuiAnimatedStat>();
-    protected List<GuiCheckBox> checkBoxList = new ArrayList<GuiCheckBox>();
+    private final List<IGuiWidget> widgetList = new ArrayList<IGuiWidget>();
     private IGuiAnimatedStat lastLeftStat, lastRightStat;
 
     public GuiPneumaticContainerBase(Container par1Container){
         super(par1Container);
+    }
+
+    @Override
+    public void initGui(){
+        super.initGui();
+        widgetList.clear();
+    }
+
+    protected void addWidget(IGuiWidget widget){
+        widgetList.add(widget);
+        widget.setListener(this);
     }
 
     protected GuiAnimatedStat addAnimatedStat(String title, ItemStack icon, int color, boolean leftSided){
@@ -70,6 +87,9 @@ public class GuiPneumaticContainerBase extends GuiContainer implements INEIGuiHa
         for(IGuiAnimatedStat stat : animatedStatList) {
             stat.render(fontRendererObj, zLevel, partialTicks);
         }
+        for(IGuiWidget widget : widgetList) {
+            widget.render(i, j);
+        }
     }
 
     @Override
@@ -78,9 +98,7 @@ public class GuiPneumaticContainerBase extends GuiContainer implements INEIGuiHa
         for(IGuiAnimatedStat stat : animatedStatList) {
             stat.onMouseHovering(fontRendererObj, x, y);
         }
-        for(GuiCheckBox checkBox : checkBoxList) {
-            checkBox.render(x, y);
-        }
+
         List<String> tooltip = new ArrayList<String>();
         for(Object obj : buttonList) {
             if(obj instanceof GuiButtonSpecial) {
@@ -92,6 +110,23 @@ public class GuiPneumaticContainerBase extends GuiContainer implements INEIGuiHa
         }
         if(tooltip.size() > 0) {
             drawHoveringString(tooltip, x, y, fontRendererObj);
+            tooltip.clear();
+        }
+
+        boolean shift = PneumaticCraft.proxy.isSneakingInGui();
+        for(IGuiWidget widget : widgetList) {
+            if(widget.getBounds().contains(x, y)) widget.addTooltip(tooltip, shift);
+        }
+        if(!tooltip.isEmpty()) {
+            List<String> localizedTooltip = new ArrayList<String>();
+            for(String line : tooltip) {
+                String localizedLine = I18n.format(line);
+                String[] lines = WordUtils.wrap(localizedLine, 50).split(System.getProperty("line.separator"));
+                for(String locLine : lines) {
+                    localizedTooltip.add(locLine);
+                }
+            }
+            drawHoveringText(localizedTooltip, x, y, fontRendererObj);
         }
     }
 
@@ -107,15 +142,29 @@ public class GuiPneumaticContainerBase extends GuiContainer implements INEIGuiHa
                 }
             }
         }
-        for(GuiCheckBox checkBox : checkBoxList) {
-            checkBox.render(par1, par2);
+        for(IGuiWidget widget : widgetList) {
+            widget.onMouseClicked(par1, par2, par3);
         }
     }
 
     @Override
+    protected void keyTyped(char key, int keyCode){
+        if(keyCode == 1) {
+            super.keyTyped(key, keyCode);
+        } else {
+            for(IGuiWidget widget : widgetList) {
+                widget.onKey(key, keyCode);
+            }
+        }
+    }
+
+    @Override
+    public void actionPerformed(IGuiWidget widget){}
+
+    @Override
     public void setWorldAndResolution(Minecraft par1Minecraft, int par2, int par3){
         animatedStatList.clear();
-        checkBoxList.clear();
+        widgetList.clear();
         super.setWorldAndResolution(par1Minecraft, par2, par3);
     }
 

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -12,10 +13,11 @@ import net.minecraft.util.StatCollector;
 import org.lwjgl.opengl.GL11;
 
 import pneumaticCraft.client.gui.widget.GuiAnimatedStat;
-import pneumaticCraft.common.block.Blockss;
+import pneumaticCraft.client.gui.widget.WidgetTank;
+import pneumaticCraft.client.gui.widget.WidgetTemperature;
 import pneumaticCraft.common.inventory.ContainerPlasticMixer;
 import pneumaticCraft.common.tileentity.TileEntityPlasticMixer;
-import pneumaticCraft.lib.GuiConstants;
+import pneumaticCraft.lib.PneumaticValues;
 import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -24,17 +26,14 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class GuiPlasticMixer extends GuiPneumaticContainerBase{
     private static final ResourceLocation guiTexture = new ResourceLocation(Textures.GUI_PLASTIC_MIXER);
     private final TileEntityPlasticMixer te;
-    private GuiAnimatedStat pressureStat;
     private GuiAnimatedStat problemStat;
     private GuiAnimatedStat redstoneBehaviourStat;
-    private GuiAnimatedStat infoStat;
-    private GuiAnimatedStat upgradeStat;
 
-    public GuiPlasticMixer(InventoryPlayer player, TileEntityPlasticMixer teLightBox){
+    public GuiPlasticMixer(InventoryPlayer player, TileEntityPlasticMixer te){
 
-        super(new ContainerPlasticMixer(player, teLightBox));
+        super(new ContainerPlasticMixer(player, te));
         ySize = 176;
-        te = teLightBox;
+        this.te = te;
 
     }
 
@@ -44,21 +43,17 @@ public class GuiPlasticMixer extends GuiPneumaticContainerBase{
 
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
-
-        pressureStat = new GuiAnimatedStat(this, "Pressure", new ItemStack(Blockss.pressureTube), xStart + xSize, yStart + 5, 0xFF00AA00, null, false);
-        problemStat = new GuiAnimatedStat(this, "Problems", Textures.GUI_PROBLEMS_TEXTURE, xStart + xSize, 3, 0xFFFF0000, pressureStat, false);
-        redstoneBehaviourStat = new GuiAnimatedStat(this, "Redstone Behaviour", new ItemStack(Items.redstone), xStart, yStart + 5, 0xFFCC0000, null, true);
-        infoStat = new GuiAnimatedStat(this, "Information", Textures.GUI_INFO_LOCATION, xStart, 3, 0xFF8888FF, redstoneBehaviourStat, true);
-        upgradeStat = new GuiAnimatedStat(this, "Upgrades", Textures.GUI_UPGRADES_LOCATION, xStart, 3, 0xFF0000FF, infoStat, true);
-        animatedStatList.add(pressureStat);
-        animatedStatList.add(problemStat);
-        animatedStatList.add(redstoneBehaviourStat);
-        animatedStatList.add(infoStat);
-        animatedStatList.add(upgradeStat);
-        infoStat.setText(GuiConstants.INFO_LIGHT_BOX);
-        upgradeStat.setText(GuiConstants.UPGRADES_LIGHT_BOX);
+        addAnimatedStat("gui.tab.info", Textures.GUI_INFO_LOCATION, 0xFF8888FF, true).setText("gui.tab.info.plasticMixer");
+        problemStat = addAnimatedStat("gui.tab.problems", Textures.GUI_PROBLEMS_TEXTURE, 0xFFFF0000, false);
+        addAnimatedStat("gui.tab.heat", new ItemStack(Blocks.fire), 0xFFFF5500, false).setText("gui.tab.info.heat");
+        redstoneBehaviourStat = addAnimatedStat("gui.tab.redstoneBehaviour", new ItemStack(Items.redstone), 0xFFCC0000, true);
+        addAnimatedStat("gui.tab.upgrade", Textures.GUI_UPGRADES_LOCATION, 0xFF0000FF, true).setText("gui.tab.upgrade.volumeCapacity");
         redstoneBehaviourStat.setTextWithoutCuttingString(getRedstoneBehaviour());
 
+        addWidget(new WidgetTemperature(0, guiLeft + 55, guiTop + 25, 295, 500, te.getLogic(0)));
+        addWidget(new WidgetTemperature(1, guiLeft + 82, guiTop + 25, 295, 500, te.getLogic(1), PneumaticValues.PLASTIC_MIXER_MELTING_TEMP));
+        addWidget(new WidgetTemperature(2, guiLeft + 128, guiTop + 29, 295, 500, te.getLogic(2), PneumaticValues.PLASTIC_MIXER_MELTING_TEMP));
+        addWidget(new WidgetTank(3, guiLeft + 145, guiTop + 14, te.getFluidTank()));
     }
 
     @Override
@@ -76,7 +71,7 @@ public class GuiPlasticMixer extends GuiPneumaticContainerBase{
 
     @Override
     protected void drawGuiContainerBackgroundLayer(float opacity, int x, int y){
-        super.drawGuiContainerBackgroundLayer(opacity, x, y);
+
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
         mc.getTextureManager().bindTexture(guiTexture);
@@ -84,6 +79,7 @@ public class GuiPlasticMixer extends GuiPneumaticContainerBase{
         int yStart = (height - ySize) / 2;
         drawTexturedModalRect(xStart, yStart, 0, 0, xSize, ySize);
 
+        super.drawGuiContainerBackgroundLayer(opacity, x, y);
         // pressureStat.setText(getPressureStats());
         problemStat.setText(getProblems());
 

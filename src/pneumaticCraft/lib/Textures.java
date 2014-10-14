@@ -8,6 +8,7 @@ public class Textures{
     public static final String MODEL_LOCATION = ICON_LOCATION + "textures/model/";
     public static final String TUBE_MODULE_MODEL_LOCATION = MODEL_LOCATION + "tubemodules/";
     public static final String GUI_LOCATION = ICON_LOCATION + "textures/gui/";
+    public static final String WIDGET_LOCATION = GUI_LOCATION + "widget/";
     public static final String UPGRADE_LOCATION = ICON_LOCATION + "upgrades/";
     public static final String PROGRAM_LOCATION = ICON_LOCATION + "programs/";
     public static final String PLANT_LOCATION = ICON_LOCATION + "plants/";
@@ -186,6 +187,8 @@ public class Textures{
     public static final ResourceLocation GUI_INVENTORY_SEARCHER = new ResourceLocation(GUI_LOCATION + "GuiInventorySearcher.png");
     public static final ResourceLocation GUI_TUBE_MODULE = new ResourceLocation(GUI_LOCATION + "GuiTubeModule.png");
     public static final ResourceLocation GUI_TEXT_WIDGET = new ResourceLocation(GUI_LOCATION + "GuiTextWidget.png");
+    public static final ResourceLocation WIDGET_TEMPERATURE = new ResourceLocation(WIDGET_LOCATION + "WidgetTemperature.png");
+    public static final ResourceLocation WIDGET_TANK = new ResourceLocation(WIDGET_LOCATION + "WidgetTank.png");
 
     public static final String VANILLA_ITEM_TEXTURE_SHEET = "/gui/items.png";
     public static final String VANILLA_BLOCK_TEXTURE_SHEET = "/terrain.png";

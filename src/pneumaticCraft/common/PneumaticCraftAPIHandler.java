@@ -9,6 +9,7 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
+import pneumaticCraft.api.IHeatExchangerLogic;
 import pneumaticCraft.api.PneumaticRegistry.IPneumaticCraftInterface;
 import pneumaticCraft.api.client.pneumaticHelmet.IBlockTrackEntry;
 import pneumaticCraft.api.client.pneumaticHelmet.IEntityTrackEntry;
@@ -16,8 +17,13 @@ import pneumaticCraft.api.client.pneumaticHelmet.IHackableBlock;
 import pneumaticCraft.api.client.pneumaticHelmet.IHackableEntity;
 import pneumaticCraft.api.drone.IPathfindHandler;
 import pneumaticCraft.api.item.IInventoryItem;
+import pneumaticCraft.api.tileentity.IHeatExchanger;
 import pneumaticCraft.client.render.pneumaticArmor.blockTracker.BlockTrackEntryList;
 import pneumaticCraft.client.render.pneumaticArmor.hacking.HackableHandler.HackingEntityProperties;
+import pneumaticCraft.common.heat.HeatExchangerLogic;
+import pneumaticCraft.common.heat.HeatExchangerLogicConstant;
+import pneumaticCraft.common.heat.HeatExchangerManager;
+import pneumaticCraft.common.heat.SimpleHeatExchanger;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.Log;
 
@@ -135,6 +141,24 @@ public class PneumaticCraftAPIHandler implements IPneumaticCraftInterface{
     @Override
     public void registerConcealableRenderId(int id){
         concealableRenderIds.add(id);
+    }
+
+    @Override
+    public IHeatExchangerLogic getHeatExchangerLogic(){
+        return new HeatExchangerLogic();
+    }
+
+    public void registerBlockExchanger(Block block, IHeatExchanger heatExchanger){
+        HeatExchangerManager.getInstance().registerBlockExchanger(block, heatExchanger);
+    }
+
+    public void registerBlockExchanger(Block block, IHeatExchangerLogic heatExchangerLogic){
+        registerBlockExchanger(block, new SimpleHeatExchanger(heatExchangerLogic));
+    }
+
+    @Override
+    public void registerBlockExchanger(Block block, double temperature, double thermalResistance){
+        registerBlockExchanger(block, new HeatExchangerLogicConstant(temperature, thermalResistance));
     }
 
 }
