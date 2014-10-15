@@ -1,5 +1,6 @@
 -Hackers who fail to hack a Security Station now get hurt 9.5 hearts of damage.
 -Added German localization (incomplete), thanks Cakestory!
+-Drones now will teleport to a location if they can't reach it flying. This costs time and a lot of pressure, and is more a last resort against lag. This fixes various bugs.
 
 -Bugfix: Assembly IO Unit tries to extract items from inventories that have ghost items only (like locked Jabba barrels).
 -Bugfix: Log errors when using Steve's Production's crafting.

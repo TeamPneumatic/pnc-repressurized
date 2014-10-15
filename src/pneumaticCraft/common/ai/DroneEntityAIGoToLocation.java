@@ -10,7 +10,6 @@ import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.progwidgets.IAreaProvider;
 import pneumaticCraft.common.progwidgets.IGotoWidget;
 import pneumaticCraft.common.progwidgets.ProgWidget;
-import pneumaticCraft.common.util.PneumaticCraftUtils;
 
 public class DroneEntityAIGoToLocation extends EntityAIBase{
     private final EntityDrone drone;
@@ -36,11 +35,11 @@ public class DroneEntityAIGoToLocation extends EntityAIBase{
         Collections.sort(validArea, positionSorter);
         for(ChunkPosition c : validArea) {
             if(drone.getDistanceSq(c.chunkPosX + 0.5, c.chunkPosY + 0.5, c.chunkPosZ + 0.5) < 0.50) return false;
-            if(drone.isBlockValidPathfindBlock(c.chunkPosX, c.chunkPosY, c.chunkPosZ) && PneumaticCraftUtils.tryNavigateToXYZ(drone, c.chunkPosX, c.chunkPosY, c.chunkPosZ, speed)) {
+            if(drone.getNavigator().tryMoveToXYZ(c.chunkPosX, c.chunkPosY, c.chunkPosZ, speed)) {
                 return !((IGotoWidget)gotoWidget).doneWhenDeparting();
             }
         }
-        return false;
+        return ((EntityPathNavigateDrone)drone.getNavigator()).isGoingToTeleport();
 
     }
 

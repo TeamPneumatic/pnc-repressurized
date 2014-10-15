@@ -9,7 +9,6 @@ import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.MathHelper;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import pneumaticCraft.common.EventHandlerPneumaticCraft;
@@ -51,10 +50,7 @@ public class DroneEntityAIPickupItems extends EntityAIBase{
                 for(int i = 0; i < drone.getInventory().getSizeInventory(); i++) {
                     ItemStack droneStack = drone.getInventory().getStackInSlot(i);
                     if(droneStack == null || droneStack.isItemEqual(stack) && droneStack.stackSize < droneStack.getMaxStackSize()) {
-                        int x = MathHelper.floor_double(ent.posX);
-                        int y = MathHelper.floor_double(ent.posY);
-                        int z = MathHelper.floor_double(ent.posZ);
-                        if(drone.isBlockValidPathfindBlock(x, y, z) && drone.getNavigator().tryMoveToEntityLiving(ent, speed)) {
+                        if(drone.getNavigator().tryMoveToEntityLiving(ent, speed) || ((EntityPathNavigateDrone)drone.getNavigator()).isGoingToTeleport()) {
                             curPickingUpEntity = (EntityItem)ent;
                             return true;
                         }
