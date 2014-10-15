@@ -249,7 +249,7 @@ public class GuiSecurityStationHacking extends GuiSecurityStationBase{
 
     @Override
     public void onGuiClosed(){
-        if(aiBridges.isTracing()) NetworkHandler.sendToServer(new PacketSecurityStationFailedHack());
+        if(aiBridges.isTracing() && !hackerBridges.hackedSuccessfully) NetworkHandler.sendToServer(new PacketSecurityStationFailedHack());
         removeUpdatesOnConnectionHandlers();
         super.onGuiClosed();
     }

@@ -1,10 +1,8 @@
 package pneumaticCraft.client.gui;
 
-import igwmod.network.NetworkHandler;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumChatFormatting;
 import pneumaticCraft.common.item.ItemNetworkComponents;
-import pneumaticCraft.common.network.PacketSecurityStationFailedHack;
 import pneumaticCraft.common.tileentity.TileEntitySecurityStation;
 import pneumaticCraft.lib.TileEntityConstants;
 import cpw.mods.fml.client.FMLClientHandler;
@@ -91,7 +89,6 @@ public class NetworkConnectionAIHandler extends NetworkConnectionHandler{
         if(!simulating && station.getStackInSlot(slot) != null && station.getStackInSlot(slot).getItemDamage() == ItemNetworkComponents.NETWORK_IO_PORT) {
             FMLClientHandler.instance().getClient().thePlayer.closeScreen();
             FMLClientHandler.instance().getClient().thePlayer.addChatComponentMessage(new ChatComponentTranslation(EnumChatFormatting.RED + "Hacking unsuccessful! The Diagnostic Subroutine traced to your location!"));
-            NetworkHandler.sendToServer(new PacketSecurityStationFailedHack());
             if(gui instanceof GuiSecurityStationHacking) ((GuiSecurityStationHacking)gui).removeUpdatesOnConnectionHandlers();
         }
     }
