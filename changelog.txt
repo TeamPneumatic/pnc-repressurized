@@ -1,4 +1,1 @@
--Added ru_RU localization (Adaptivity).
--Updated zh_CN localization (thanks Mrkwtkr and sb023612).
-
--Bugfix: Slime/Squid plants can take over the world.
+-Bugfix: Assembly IO Unit tries to extract items from inventories that have ghost items only (like locked Jabba barrels).
