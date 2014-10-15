@@ -1,1 +1,2 @@
 -Bugfix: Assembly IO Unit tries to extract items from inventories that have ghost items only (like locked Jabba barrels).
+-Bugfix: Log errors when using Steve's Production's crafting.
