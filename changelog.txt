@@ -1,3 +1,4 @@
+-Hackers who fail to hack a Security Station now get hurt 9.5 hearts of damage.
 -Added German localization (incomplete), thanks Cakestory!
 
 -Bugfix: Assembly IO Unit tries to extract items from inventories that have ghost items only (like locked Jabba barrels).

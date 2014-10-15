@@ -9,6 +9,7 @@ import net.minecraft.util.StatCollector;
 public class DamageSourcePneumaticCraft extends DamageSource{
     public static final DamageSourcePneumaticCraft pressure = (DamageSourcePneumaticCraft)new DamageSourcePneumaticCraft("pressure", 2).setDamageBypassesArmor();
     public static final DamageSourcePneumaticCraft etchingAcid = new DamageSourcePneumaticCraft("acid", 2);
+    public static final DamageSourcePneumaticCraft securityStation = (DamageSourcePneumaticCraft)new DamageSourcePneumaticCraft("securityStation").setDamageBypassesArmor();
 
     private int deathMessages = 0;
 

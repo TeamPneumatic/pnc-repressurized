@@ -44,6 +44,7 @@ public class NetworkHandler{
         INSTANCE.registerMessage(PacketRenderRangeLines.class, PacketRenderRangeLines.class, discriminant++, Side.CLIENT);
         INSTANCE.registerMessage(PacketSecurityStationAddHacker.class, PacketSecurityStationAddHacker.class, discriminant++, Side.SERVER);
         INSTANCE.registerMessage(PacketSecurityStationAddUser.class, PacketSecurityStationAddUser.class, discriminant++, Side.SERVER);
+        INSTANCE.registerMessage(PacketSecurityStationFailedHack.class, PacketSecurityStationFailedHack.class, discriminant++, Side.SERVER);
         INSTANCE.registerMessage(PacketSendNBTPacket.class, PacketSendNBTPacket.class, discriminant++, Side.CLIENT);
         INSTANCE.registerMessage(PacketSetMobTarget.class, PacketSetMobTarget.class, discriminant++, Side.CLIENT);
         INSTANCE.registerMessage(PacketShowWireframe.class, PacketShowWireframe.class, discriminant++, Side.CLIENT);

@@ -18,6 +18,7 @@ import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.inventory.ContainerSecurityStationHacking;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.network.NetworkHandler;
+import pneumaticCraft.common.network.PacketSecurityStationFailedHack;
 import pneumaticCraft.common.network.PacketUseItem;
 import pneumaticCraft.common.tileentity.TileEntitySecurityStation;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
@@ -248,6 +249,7 @@ public class GuiSecurityStationHacking extends GuiSecurityStationBase{
 
     @Override
     public void onGuiClosed(){
+        if(aiBridges.isTracing()) NetworkHandler.sendToServer(new PacketSecurityStationFailedHack());
         removeUpdatesOnConnectionHandlers();
         super.onGuiClosed();
     }
