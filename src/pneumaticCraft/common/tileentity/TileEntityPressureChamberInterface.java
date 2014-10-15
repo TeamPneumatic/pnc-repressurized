@@ -373,11 +373,11 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
                 return filterEmpty;
             case CREATIVE_TAB:
                 try {
-                    int itemCreativeTabIndex = iStack.getItem().getCreativeTab().getTabIndex();
+                    int itemCreativeTabIndex = iStack.getItem().getCreativeTab() != null ? iStack.getItem().getCreativeTab().getTabIndex() : -1;
                     if(itemCreativeTabIndex == creativeTabID) {
                         return true;
                     }
-                } catch(NoSuchMethodError e) {//when we are SMP getCreativeTab() is client only.
+                } catch(Throwable e) {//when we are SMP getCreativeTab() is client only.
                     filterMode = EnumFilterMode.NAME_BEGINS;
                 }
                 return false;
