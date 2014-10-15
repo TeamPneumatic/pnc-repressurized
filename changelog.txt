@@ -1,3 +1,5 @@
+-Added German localization (incomplete), thanks Cakestory!
+
 -Bugfix: Assembly IO Unit tries to extract items from inventories that have ghost items only (like locked Jabba barrels).
 -Bugfix: Log errors when using Steve's Production's crafting.
 -Bugfix: Pressure Chamber interface crashes when in Creative Tab filter mode and an item without a Creative Tab tries to be filtered.
