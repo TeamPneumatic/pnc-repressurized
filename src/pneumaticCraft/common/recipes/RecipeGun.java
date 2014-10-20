@@ -18,7 +18,7 @@ public class RecipeGun implements IRecipe{
 
     @Override
     public boolean matches(InventoryCrafting inventory, World world){
-
+        if(inventory.getSizeInventory() < 9) return false;
         for(int i = 0; i < inventory.getSizeInventory(); i++) {
             if(i != 4 && i != 5) {
                 if(inventory.getStackInSlot(i) == null) return false;
