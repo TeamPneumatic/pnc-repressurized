@@ -129,4 +129,9 @@ public class FarmLogicHelium implements IFarmLogic{
         return new ItemStack(Itemss.plasticPlant, 1, ItemPlasticPlants.HELIUM_PLANT_DAMAGE).getDisplayName();
     }
 
+    @Override
+    public IFarmLogic setManual(boolean manual){
+        return this;
+    }
+
 }

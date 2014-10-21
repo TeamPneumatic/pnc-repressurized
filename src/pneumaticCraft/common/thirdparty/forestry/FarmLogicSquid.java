@@ -152,4 +152,9 @@ public class FarmLogicSquid implements IFarmLogic{
         return new ItemStack(Itemss.plasticPlant, 1, ItemPlasticPlants.SQUID_PLANT_DAMAGE).getDisplayName();
     }
 
+    @Override
+    public IFarmLogic setManual(boolean manual){
+        return this;
+    }
+
 }

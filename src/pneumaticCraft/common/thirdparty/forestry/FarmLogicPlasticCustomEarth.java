@@ -17,12 +17,12 @@ public abstract class FarmLogicPlasticCustomEarth extends FarmLogicPlasticNormal
 
     @Override
     protected IFarmLogic getFarmLogic(IFarmHousing housing) throws Throwable{
-        ItemStack[] resources = getEarth();
-        Constructor c = getLogicClass("FarmLogicArboreal").getConstructor(IFarmHousing.class, ItemStack[].class, ItemStack[].class, ItemStack[].class, IFarmable[].class);
-        return (IFarmLogic)c.newInstance(housing, resources, resources, new ItemStack[0], new IFarmable[]{new FarmablePlastic(getBlock())});
+        ItemStack[] resources = new ItemStack[]{getEarth()};
+        Constructor c = getLogicClass("FarmLogicArboreal").getConstructor(IFarmHousing.class, ItemStack[].class, ItemStack.class, IFarmable[].class);
+        return (IFarmLogic)c.newInstance(housing, resources, resources[0], new IFarmable[]{new FarmablePlastic(getBlock())});
     }
 
-    protected abstract ItemStack[] getEarth();
+    protected abstract ItemStack getEarth();
 
     @Override
     public ResourceLocation getSpriteSheet(){
