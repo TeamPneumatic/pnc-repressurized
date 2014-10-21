@@ -26,6 +26,7 @@ public class BeeManager {
 	 * 
 	 * see {@link IMutation} for template format
 	 */
+	@Deprecated // Deprecated since 3.1. Use HiveManager instead
 	public static ArrayList<IHiveDrop>[] hiveDrops;
 
 	/**

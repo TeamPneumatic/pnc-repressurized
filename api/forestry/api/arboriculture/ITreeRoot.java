@@ -63,6 +63,10 @@ public interface ITreeRoot extends ISpeciesRoot {
 
 	boolean plantSapling(World world, ITree tree, GameProfile owner, int x, int y, int z);
 
+	// decorative=true for creative and player-placed leaves. No decay, pollination, or drops.
+	boolean setLeaves(World world, IIndividual tree, GameProfile owner, int x, int y, int z, boolean decorative);
+
+	// set normal leaves created as worldgen
 	boolean setLeaves(World world, IIndividual tree, GameProfile owner, int x, int y, int z);
 
 	@Override
