@@ -21,13 +21,13 @@ public class MFR implements IThirdParty{
         ((ItemPlasticPlants)Itemss.plasticPlant).addSubItems(seeds);
         for(ItemStack seed : seeds) {
             Block plantBlock = ItemPlasticPlants.getPlantBlockIDFromSeed(seed.getItemDamage());
-            FMLInterModComms.sendMessage(ModIds.MFR, "registerHarvestable_Standard", GameData.getBlockRegistry().getNameForObject(plantBlock));
+            FMLInterModComms.sendMessage(ModIds.MFR, "registerHarvestable_Crop", new ItemStack(plantBlock, 1, 6));
 
             NBTTagCompound tag = new NBTTagCompound();
             tag.setString("seed", GameData.getItemRegistry().getNameForObject(seed.getItem()));
             tag.setInteger("meta", seed.getItemDamage());
             tag.setString("crop", GameData.getBlockRegistry().getNameForObject(plantBlock));
-            FMLInterModComms.sendMessage(ModIds.MFR, "registerPlantable_Standard", tag);
+            FMLInterModComms.sendMessage(ModIds.MFR, "registerPlantable_Crop", tag);
         }
 
     }
