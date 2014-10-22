@@ -8,7 +8,6 @@ import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.common.item.ItemPlasticPlants;
-import pneumaticCraft.lib.Log;
 import pneumaticCraft.lib.Names;
 import cpw.mods.fml.client.event.ConfigChangedEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -53,7 +52,6 @@ public class Config{
 
     @SubscribeEvent
     public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent eventArgs){
-        Log.info(eventArgs.modID);
         if(eventArgs.modID.equals(Names.MOD_ID)) {
             init(null);
         }
