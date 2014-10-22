@@ -7,11 +7,14 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemArmor;
+import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.event.ForgeEventFactory;
+import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.lib.Log;
 import pneumaticCraft.lib.Names;
@@ -34,6 +37,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
     private boolean oldRedstoneStatus;
     private boolean updateNeighbours;
     public boolean isConnectedToPlayer;
+    private boolean dispenserUpgradeInserted;
 
     public TileEntityAerialInterface(){
         super(PneumaticValues.DANGER_PRESSURE_AERIAL_INTERFACE, PneumaticValues.MAX_PRESSURE_AERIAL_INTERFACE, PneumaticValues.VOLUME_AERIAL_INTERFACE);
@@ -55,12 +59,12 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
     public void updateEntity(){
         if(!worldObj.isRemote && updateNeighbours) {
             updateNeighbours = false;
-            //System.out.println("UPDATING NEIGHBOURS");
             updateNeighbours();
         }
         if(!worldObj.isRemote) {
             if(getPressure(ForgeDirection.UNKNOWN) > PneumaticValues.MIN_PRESSURE_AERIAL_INTERFACE && isConnectedToPlayer) {
                 addAir(-PneumaticValues.USAGE_AERIAL_INTERFACE, ForgeDirection.UNKNOWN);
+                if(worldObj.getWorldTime() % 40 == 0) dispenserUpgradeInserted = getUpgrades(ItemMachineUpgrade.UPGRADE_DISPENSER_DAMAGE) > 0;
             }
             if(numUsingPlayers > 0) {
                 boolean wasConnected = isConnectedToPlayer;
@@ -76,7 +80,6 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
             updateNeighbours = true;
         }
 
-        // if(!worldObj.isRemote) System.out.println("player: " + playerName);
         super.updateEntity();
 
     }
@@ -107,6 +110,11 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
     }
 
     private InventoryPlayer getPlayerInventory(){
+        EntityPlayer player = getPlayer();
+        return player != null ? player.inventory : null;
+    }
+
+    private EntityPlayer getPlayer(){
         if(worldObj != null && !worldObj.isRemote) {
             EntityPlayer player = null;
             for(EntityPlayer checkingPlayer : (List<EntityPlayer>)MinecraftServer.getServer().getConfigurationManager().playerEntityList) {
@@ -128,7 +136,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
                     playerUUID = player.getGameProfile().getId().toString();
                     Log.info("Legacy conversion: Aerial Interface username '" + player.getCommandSenderName() + "' is now using UUID '" + playerUUID + "'.");
                 }
-                return player.inventory;
+                return player;
             }
         }
         return null;
@@ -145,7 +153,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
     @Override
     public int getSizeInventory(){
         InventoryPlayer inventoryPlayer = getPlayerInventory();
-        return inventory.length + (inventoryPlayer != null ? inventoryPlayer.getSizeInventory() : 0);
+        return inventory.length + (inventoryPlayer != null ? inventoryPlayer.getSizeInventory() + (dispenserUpgradeInserted ? 1 : 0) : 0);
     }
 
     /**
@@ -157,7 +165,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
             return inventory[slot];
         } else {
             InventoryPlayer inventoryPlayer = getPlayerInventory();
-            return inventoryPlayer != null ? inventoryPlayer.getStackInSlot(slot - 4) : null;
+            return inventoryPlayer != null ? slot == inventory.length + inventoryPlayer.getSizeInventory() ? null : inventoryPlayer.getStackInSlot(slot - 4) : null;
         }
     }
 
@@ -205,12 +213,29 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
                 itemStack.stackSize = getInventoryStackLimit();
             }
         } else {
-            InventoryPlayer inventoryPlayer = getPlayerInventory();
-            if(inventoryPlayer != null) {
-                inventoryPlayer.setInventorySlotContents(slot - 4, itemStack);
-            } else if(worldObj != null && !worldObj.isRemote) {
-                EntityItem item = new EntityItem(worldObj, xCoord, yCoord, zCoord, itemStack);
-                worldObj.spawnEntityInWorld(item);
+            EntityPlayer player = getPlayer();
+            if(dispenserUpgradeInserted) {
+                if(itemStack != null) {
+                    int startValue = itemStack.stackSize;
+                    while(itemStack.stackSize > 0) {
+                        ItemStack remainingItem = itemStack.onFoodEaten(player.worldObj, player);
+                        remainingItem = ForgeEventFactory.onItemUseFinish(player, itemStack, 0, remainingItem);
+                        if(remainingItem != null && remainingItem.stackSize > 0 && (remainingItem != itemStack || remainingItem.stackSize != startValue)) {
+                            if(!player.inventory.addItemStackToInventory(remainingItem)) {
+                                player.dropPlayerItemWithRandomChoice(remainingItem, false);
+                            }
+                        }
+                        if(itemStack.stackSize == startValue) break;
+                    }
+                }
+            } else {
+                InventoryPlayer inventoryPlayer = player != null ? player.inventory : null;
+                if(inventoryPlayer != null) {
+                    inventoryPlayer.setInventorySlotContents(slot - 4, itemStack);
+                } else if(worldObj != null && !worldObj.isRemote) {
+                    EntityItem item = new EntityItem(worldObj, xCoord, yCoord, zCoord, itemStack);
+                    worldObj.spawnEntityInWorld(item);
+                }
             }
         }
 
@@ -284,6 +309,8 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
             return new int[0];
         } else if(ForgeDirection.getOrientation(var1) == ForgeDirection.DOWN) {
             return new int[]{40, 41, 42, 43};
+        } else if(dispenserUpgradeInserted) {
+            return new int[]{44};
         } else {
             int[] mainInv = new int[36];
             for(int i = 0; i < 36; i++) {
@@ -297,9 +324,20 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
     @Override
     public boolean canInsertItem(int i, ItemStack itemstack, int j){
         if(i < 4) return true;
-        if(getPlayerInventory() == null) return false;
+        EntityPlayer player = getPlayer();
+        if(player == null) return false;
         if(getPressure(ForgeDirection.UNKNOWN) > PneumaticValues.MIN_PRESSURE_AERIAL_INTERFACE) {
-            return i < 40 || itemstack != null && itemstack.getItem() instanceof ItemArmor && ((ItemArmor)itemstack.getItem()).armorType == 43 - i;
+            if(!dispenserUpgradeInserted || i >= 40 && i <= 43) {
+                return i < 40 || itemstack != null && itemstack.getItem() instanceof ItemArmor && ((ItemArmor)itemstack.getItem()).armorType == 43 - i;
+            } else {
+                if(i == 4 + player.inventory.getSizeInventory() && getFoodValue(itemstack) > 0) {
+                    int curFoodLevel = player.getFoodStats().getFoodLevel();
+                    if(20 - curFoodLevel >= getFoodValue(itemstack) * itemstack.stackSize) {
+                        return true;
+                    }
+                }
+                return false;
+            }
         } else {
             return false;
         }
@@ -320,4 +358,8 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
 
     @Override
     public void closeInventory(){}
+
+    private int getFoodValue(ItemStack item){
+        return item != null && item.getItem() instanceof ItemFood ? ((ItemFood)item.getItem()).func_150905_g(item) : 0;
+    }
 }

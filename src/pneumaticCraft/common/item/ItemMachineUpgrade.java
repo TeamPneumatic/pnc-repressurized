@@ -87,6 +87,7 @@ public class ItemMachineUpgrade extends ItemPneumatic{
                 infoList.add("-" + Names.AIR_CANNON);
                 infoList.add("-" + Names.CHARGING_STATION);
                 infoList.add("-" + Names.UNIVERSAL_SENSOR);
+                infoList.add("-" + Names.AERIAL_INTERFACE);
                 infoList.add("-Drone");
                 return;
             case 2:

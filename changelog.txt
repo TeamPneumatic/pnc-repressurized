@@ -1,3 +1,4 @@
+-Added Aerial Interface auto-feeding behaviour when a Dispenser Upgrade is inserted.
 -The Pneumatic Helmet's air usage is now dependent on the enabled modules.
 -Pneumatic Helmet now accepts Volume Upgrades.
 -Added In-Game Wiki mod support notifier.

@@ -29,7 +29,7 @@ public class ItemManometer extends ItemPressurizable{
     @Override
     public boolean onItemUse(ItemStack iStack, EntityPlayer player, World world, int x, int y, int z, int side, float par8, float par9, float par10){
         if(world.isRemote) return true;
-        player.addChatComponentMessage(new ChatComponentTranslation("meta: " + world.getFullBlockLightValue(x, y, z)));
+        player.getFoodStats().setFoodLevel(player.getFoodStats().getFoodLevel() - 1);
         if(((IPressurizable)iStack.getItem()).getPressure(iStack) > 0F) {
             TileEntity te = world.getTileEntity(x, y, z);
             IPneumaticMachine machine = ModInteractionUtils.getInstance().getMachine(te);

@@ -3,3 +3,20 @@ The Aerial Interface uses a very high-tech technology to transmit items from and
 
 Note that upgrades for the Aerial Interface can be pumped in/out the top, main inventory (hotbar + inventory) can be accessed from the sides and the armor slots from the bottom.
 [crafting{200, 300, key=block/aerialInterface}]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[prefix{l}]Auto-feeding [prefix{}]
+By inserting a Dispenser Upgrade you can make the Aerial Interface act like a remote auto-feeder. Only food items will be accepted through the Aerial Interface, and only when the player is hungry enough to fully utilize the provided meal. Note that when an inventory offers a stack of >1, the Interface waits until the player can consume that amount. To make sure the smallest amount of food can be utilized use slow inserting inventories like [link{block/hopper}]Hoppers [link{}].
