@@ -1,6 +1,5 @@
 package pneumaticCraft.common.network;
 
-import igwmod.network.AbstractPacket;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import pneumaticCraft.common.CommonHUDHandler;
