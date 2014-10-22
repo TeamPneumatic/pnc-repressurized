@@ -22,6 +22,8 @@ import pneumaticCraft.client.gui.widget.GuiKeybindCheckBox;
 import pneumaticCraft.client.render.RenderProgressBar;
 import pneumaticCraft.common.CommonHUDHandler;
 import pneumaticCraft.common.item.Itemss;
+import pneumaticCraft.common.network.NetworkHandler;
+import pneumaticCraft.common.network.PacketToggleHelmetFeature;
 import pneumaticCraft.lib.Names;
 import pneumaticCraft.lib.Sounds;
 import cpw.mods.fml.client.FMLClientHandler;
@@ -77,7 +79,7 @@ public class HUDHandler{
                     GL11.glDisable(GL11.GL_TEXTURE_2D);
 
                     for(int i = 0; i < UpgradeRenderHandlerList.instance().upgradeRenderers.size(); i++) {
-                        if(comHudHandler.upgradeRenderersEnabled[i] && GuiKeybindCheckBox.trackedCheckboxes.get("pneumaticHelmet.upgrade." + UpgradeRenderHandlerList.instance().upgradeRenderers.get(i).getUpgradeName()).checked) UpgradeRenderHandlerList.instance().upgradeRenderers.get(i).render3D(event.partialTicks);
+                        if(comHudHandler.upgradeRenderersInserted[i] && GuiKeybindCheckBox.trackedCheckboxes.get("pneumaticHelmet.upgrade." + UpgradeRenderHandlerList.instance().upgradeRenderers.get(i).getUpgradeName()).checked) UpgradeRenderHandlerList.instance().upgradeRenderers.get(i).render3D(event.partialTicks);
                     }
 
                     GL11.glEnable(GL11.GL_TEXTURE_2D);
@@ -147,7 +149,7 @@ public class HUDHandler{
                 if(GuiKeybindCheckBox.trackedCheckboxes.get("pneumaticHelmet.upgrade.coreComponents").checked) {
                     for(int i = 0; i < UpgradeRenderHandlerList.instance().upgradeRenderers.size(); i++) {
                         IUpgradeRenderHandler upgradeRenderHandler = UpgradeRenderHandlerList.instance().upgradeRenderers.get(i);
-                        if(comHudHandler.upgradeRenderersEnabled[i] && GuiKeybindCheckBox.trackedCheckboxes.get("pneumaticHelmet.upgrade." + upgradeRenderHandler.getUpgradeName()).checked) {
+                        if(comHudHandler.upgradeRenderersInserted[i] && GuiKeybindCheckBox.trackedCheckboxes.get("pneumaticHelmet.upgrade." + upgradeRenderHandler.getUpgradeName()).checked) {
                             IGuiAnimatedStat stat = upgradeRenderHandler.getAnimatedStat();
                             if(stat != null) {
                                 stat.render(minecraft.fontRenderer, 0, partialTicks);
@@ -175,15 +177,19 @@ public class HUDHandler{
 
     private void update(EntityPlayer player){
         CommonHUDHandler comHudHandler = CommonHUDHandler.getHandlerForPlayer(player);
+        boolean helmetEnabled = GuiKeybindCheckBox.trackedCheckboxes.get("pneumaticHelmet.upgrade.coreComponents").checked;
         if(comHudHandler.ticksExisted == 1) {
             for(IUpgradeRenderHandler handler : UpgradeRenderHandlerList.instance().upgradeRenderers) {
                 handler.reset();
             }
+            for(int i = 0; i < comHudHandler.upgradeRenderersEnabled.length; i++) {
+                NetworkHandler.sendToServer(new PacketToggleHelmetFeature((byte)i, helmetEnabled && GuiKeybindCheckBox.trackedCheckboxes.get("pneumaticHelmet.upgrade." + UpgradeRenderHandlerList.instance().upgradeRenderers.get(i).getUpgradeName()).checked));
+            }
         }
-        if(comHudHandler.ticksExisted > comHudHandler.getStartupTime() && GuiKeybindCheckBox.trackedCheckboxes.get("pneumaticHelmet.upgrade.coreComponents").checked) {
+        if(comHudHandler.ticksExisted > comHudHandler.getStartupTime() && helmetEnabled) {
             for(int i = 0; i < UpgradeRenderHandlerList.instance().upgradeRenderers.size(); i++) {
                 IUpgradeRenderHandler upgradeRenderHandler = UpgradeRenderHandlerList.instance().upgradeRenderers.get(i);
-                if(comHudHandler.upgradeRenderersEnabled[i] && GuiKeybindCheckBox.trackedCheckboxes.get("pneumaticHelmet.upgrade." + upgradeRenderHandler.getUpgradeName()).checked) {
+                if(comHudHandler.upgradeRenderersInserted[i] && GuiKeybindCheckBox.trackedCheckboxes.get("pneumaticHelmet.upgrade." + upgradeRenderHandler.getUpgradeName()).checked) {
                     IGuiAnimatedStat stat = upgradeRenderHandler.getAnimatedStat();
                     if(stat != null) {
                         if(comHudHandler.helmetPressure > 0F) {
@@ -208,7 +214,7 @@ public class HUDHandler{
         for(int i = 0; i < UpgradeRenderHandlerList.instance().upgradeRenderers.size(); i++) {
             if(comHudHandler.ticksExisted == comHudHandler.getStartupTime() / (UpgradeRenderHandlerList.instance().upgradeRenderers.size() + 2) * (i + 1)) {
                 player.worldObj.playSound(player.posX, player.posY, player.posZ, Sounds.HUD_INIT, 0.1F, 0.5F + (float)(i + 1) / (UpgradeRenderHandlerList.instance().upgradeRenderers.size() + 2) * 0.5F, true);
-                boolean upgradeEnabled = comHudHandler.upgradeRenderersEnabled[i];
+                boolean upgradeEnabled = comHudHandler.upgradeRenderersInserted[i];
                 addMessage(new ArmorMessage(I18n.format("pneumaticHelmet.upgrade." + UpgradeRenderHandlerList.instance().upgradeRenderers.get(i).getUpgradeName()) + " " + (upgradeEnabled ? "found" : "not installed"), new ArrayList<String>(), 50, upgradeEnabled ? 0x7000AA00 : 0x70FF0000));
             }
         }

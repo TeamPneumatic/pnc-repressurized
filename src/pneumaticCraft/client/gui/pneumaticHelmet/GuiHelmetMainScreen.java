@@ -71,7 +71,7 @@ public class GuiHelmetMainScreen extends GuiPneumaticScreenBase implements IGuiS
 
     private void addPages(){
         for(int i = 0; i < UpgradeRenderHandlerList.instance().upgradeRenderers.size(); i++) {
-            if(init || CommonHUDHandler.getHandlerForPlayer().upgradeRenderersEnabled[i]) {
+            if(init || CommonHUDHandler.getHandlerForPlayer().upgradeRenderersInserted[i]) {
                 IUpgradeRenderHandler upgradeRenderHandler = UpgradeRenderHandlerList.instance().upgradeRenderers.get(i);
                 IOptionPage optionPage = upgradeRenderHandler.getGuiOptionsPage();
                 if(optionPage != null) {

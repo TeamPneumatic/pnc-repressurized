@@ -65,6 +65,8 @@ public class NetworkHandler{
         INSTANCE.registerMessage(PacketHackingEntityStart.class, PacketHackingEntityStart.class, discriminant++, Side.CLIENT);
         INSTANCE.registerMessage(PacketHackingEntityFinish.class, PacketHackingEntityFinish.class, discriminant++, Side.CLIENT);
 
+        INSTANCE.registerMessage(PacketToggleHelmetFeature.class, PacketToggleHelmetFeature.class, discriminant++, Side.SERVER);
+
         INSTANCE.registerMessage(PacketOpenTubeModuleGui.class, PacketOpenTubeModuleGui.class, discriminant++, Side.CLIENT);
 
         INSTANCE.registerMessage(PacketSpawnRing.class, PacketSpawnRing.class, discriminant++, Side.CLIENT);

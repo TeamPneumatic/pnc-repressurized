@@ -13,8 +13,12 @@ import net.minecraft.client.settings.KeyBinding;
 import org.lwjgl.input.Keyboard;
 
 import pneumaticCraft.PneumaticCraft;
+import pneumaticCraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
 import pneumaticCraft.client.render.pneumaticArmor.HUDHandler;
+import pneumaticCraft.client.render.pneumaticArmor.UpgradeRenderHandlerList;
 import pneumaticCraft.common.Config;
+import pneumaticCraft.common.network.NetworkHandler;
+import pneumaticCraft.common.network.PacketToggleHelmetFeature;
 import pneumaticCraft.lib.Names;
 import pneumaticCraft.proxy.ClientProxy;
 import cpw.mods.fml.client.FMLClientHandler;
@@ -57,6 +61,18 @@ public class GuiKeybindCheckBox extends GuiCheckBox{
             } else {
                 Config.config.get("pneumatic_helmet_widgetDefaults", keyBindingName, true).set(checked);
                 Config.config.save();
+
+                for(int i = 0; i < UpgradeRenderHandlerList.instance().upgradeRenderers.size(); i++) {
+                    IUpgradeRenderHandler upgradeRenderHandler = UpgradeRenderHandlerList.instance().upgradeRenderers.get(i);
+                    if(("pneumaticHelmet.upgrade." + upgradeRenderHandler.getUpgradeName()).equals(keyBindingName)) {
+                        NetworkHandler.sendToServer(new PacketToggleHelmetFeature((byte)i, GuiKeybindCheckBox.trackedCheckboxes.get("pneumaticHelmet.upgrade.coreComponents").checked && checked));
+                    }
+                }
+                if(keyBindingName.equals("pneumaticHelmet.upgrade.coreComponents")) {
+                    for(int i = 0; i < UpgradeRenderHandlerList.instance().upgradeRenderers.size(); i++) {
+                        NetworkHandler.sendToServer(new PacketToggleHelmetFeature((byte)i, checked && GuiKeybindCheckBox.trackedCheckboxes.get("pneumaticHelmet.upgrade." + UpgradeRenderHandlerList.instance().upgradeRenderers.get(i).getUpgradeName()).checked));
+                    }
+                }
             }
         } else {
             isAwaitingKey = !isAwaitingKey;

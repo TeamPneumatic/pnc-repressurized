@@ -85,11 +85,11 @@ public class GuiPneumaticHelmet extends GuiPneumaticInventoryItem{
         List<String> text = new ArrayList<String>();
 
         text.add("\u00a77Air Usage:");
-        float totalUsage = UpgradeRenderHandlerList.instance().getAirUsage(FMLClientHandler.instance().getClient().thePlayer);
+        float totalUsage = UpgradeRenderHandlerList.instance().getAirUsage(FMLClientHandler.instance().getClient().thePlayer, true);
         if(totalUsage > 0F) {
             EntityPlayer player = FMLClientHandler.instance().getClient().thePlayer;
             for(int i = 0; i < UpgradeRenderHandlerList.instance().upgradeRenderers.size(); i++) {
-                if(CommonHUDHandler.getHandlerForPlayer(player).upgradeRenderersEnabled[i]) {
+                if(CommonHUDHandler.getHandlerForPlayer(player).upgradeRenderersInserted[i]) {
                     IUpgradeRenderHandler handler = UpgradeRenderHandlerList.instance().upgradeRenderers.get(i);
                     float upgradeUsage = handler.getEnergyUsage(CommonHUDHandler.getHandlerForPlayer(player).rangeUpgradesInstalled, player);
                     if(upgradeUsage > 0F) {

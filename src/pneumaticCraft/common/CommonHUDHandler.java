@@ -5,7 +5,6 @@ import java.util.HashMap;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.server.MinecraftServer;
 import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.api.client.pneumaticHelmet.IHackableBlock;
 import pneumaticCraft.api.client.pneumaticHelmet.IHackableEntity;
@@ -30,6 +29,7 @@ public class CommonHUDHandler{
     private final HashMap<String, CommonHUDHandler> playerHudHandlers = new HashMap<String, CommonHUDHandler>();
     public int rangeUpgradesInstalled;
     public int speedUpgradesInstalled;
+    public boolean[] upgradeRenderersInserted = new boolean[UpgradeRenderHandlerList.instance().upgradeRenderers.size()];
     public boolean[] upgradeRenderersEnabled = new boolean[UpgradeRenderHandlerList.instance().upgradeRenderers.size()];
     public int ticksExisted;
     public float helmetPressure;
@@ -65,9 +65,8 @@ public class CommonHUDHandler{
                     }
                     ticksExisted++;
                     if(!player.worldObj.isRemote) {
-                        if(!MinecraftServer.getServer().isDedicatedServer()) ticksExisted--;
                         if(ticksExisted > getStartupTime() && !player.capabilities.isCreativeMode) {
-                            ((IPressurizable)helmetStack.getItem()).addAir(helmetStack, (int)-UpgradeRenderHandlerList.instance().getAirUsage(player));
+                            ((IPressurizable)helmetStack.getItem()).addAir(helmetStack, (int)-UpgradeRenderHandlerList.instance().getAirUsage(player, false));
                         }
                     }
 
@@ -111,9 +110,9 @@ public class CommonHUDHandler{
         ItemStack[] helmetStacks = ItemPneumaticArmor.getUpgradeStacks(helmetStack);
         rangeUpgradesInstalled = ItemPneumaticArmor.getUpgrades(ItemMachineUpgrade.UPGRADE_RANGE, helmetStack);
         speedUpgradesInstalled = ItemPneumaticArmor.getUpgrades(ItemMachineUpgrade.UPGRADE_SPEED_DAMAGE, helmetStack);
-        upgradeRenderersEnabled = new boolean[UpgradeRenderHandlerList.instance().upgradeRenderers.size()];
+        upgradeRenderersInserted = new boolean[UpgradeRenderHandlerList.instance().upgradeRenderers.size()];
         for(int i = 0; i < UpgradeRenderHandlerList.instance().upgradeRenderers.size(); i++) {
-            upgradeRenderersEnabled[i] = UpgradeRenderHandlerList.instance().upgradeRenderers.get(i).isEnabled(helmetStacks);
+            upgradeRenderersInserted[i] = UpgradeRenderHandlerList.instance().upgradeRenderers.get(i).isEnabled(helmetStacks);
         }
     }
 
