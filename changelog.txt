@@ -1,4 +1,5 @@
 -The Pneumatic Helmet's air usage is now dependent on the enabled modules.
+-Pneumatic Helmet now accepts Volume Upgrades.
 -Added In-Game Wiki mod support notifier.
 -Updated to the newer Forestry API.
 

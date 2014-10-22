@@ -14,6 +14,7 @@ import pneumaticCraft.common.CommonHUDHandler;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.inventory.ContainerChargingStationItemInventory;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
+import pneumaticCraft.common.item.ItemPneumaticArmor;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.tileentity.TileEntityChargingStation;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
@@ -71,13 +72,15 @@ public class GuiPneumaticHelmet extends GuiPneumaticInventoryItem{
 
     private List<String> getPressureStats(){
         List<String> pressureStatText = new ArrayList<String>();
+        int volume = ItemPneumaticArmor.getUpgrades(ItemMachineUpgrade.UPGRADE_VOLUME_DAMAGE, te.getStackInSlot(TileEntityChargingStation.CHARGE_INVENTORY_INDEX)) * PneumaticValues.VOLUME_VOLUME_UPGRADE + PneumaticValues.PNEUMATIC_HELMET_VOLUME;
+
         pressureStatText.add("\u00a77Current Pressure:");
         float curPressure = ((IPressurizable)itemStack.getItem()).getPressure(te.getStackInSlot(TileEntityChargingStation.CHARGE_INVENTORY_INDEX));
         pressureStatText.add("\u00a70" + (double)Math.round(curPressure * 10) / 10 + " bar.");
         pressureStatText.add("\u00a77Current Air:");
-        pressureStatText.add("\u00a70" + (double)Math.round(curPressure * PneumaticValues.PNEUMATIC_HELMET_VOLUME) + " mL.");
+        pressureStatText.add("\u00a70" + (double)Math.round(curPressure * volume) + " mL.");
         pressureStatText.add("\u00a77Volume:");
-        pressureStatText.add("\u00a70" + (double)Math.round(PneumaticValues.PNEUMATIC_HELMET_VOLUME) + " mL.");
+        pressureStatText.add("\u00a70" + (double)Math.round(volume) + " mL.");
         return pressureStatText;
     }
 
