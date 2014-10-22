@@ -84,6 +84,7 @@ import pneumaticCraft.common.entity.projectile.EntityPotionCloud;
 import pneumaticCraft.common.entity.projectile.EntityVortex;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.thirdparty.ThirdPartyManager;
+import pneumaticCraft.common.thirdparty.igwmod.IGWSupportNotifier;
 import pneumaticCraft.common.tileentity.TileEntityAirCannon;
 import pneumaticCraft.common.tileentity.TileEntityAirCompressor;
 import pneumaticCraft.common.tileentity.TileEntityAphorismTile;
@@ -230,6 +231,7 @@ public class ClientProxy extends CommonProxy{
           }*/
         EntityTrackHandler.registerDefaultEntries();
         getAllKeybindsFromOptionsFile();
+        new IGWSupportNotifier();
     }
 
     private void getAllKeybindsFromOptionsFile(){

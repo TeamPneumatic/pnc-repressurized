@@ -1,6 +1,8 @@
 -The Pneumatic Helmet's air usage is now dependent on the enabled modules.
+-Added In-Game Wiki mod support notifier.
 -Updated to the newer Forestry API.
 
 -Bugfix: Crash when putting 4 Grey/Yellow plastic in a 2x2 crafting grid.
 -Bugfix: Pneumatic Helmet doesn't use air in singleplayer.
+-Bugfix: Crash in GUI's when not having the 'sneak' key bound to anything.
 -Potential bugfix: Client stalling when placing down Pressure Chamber Walls.
