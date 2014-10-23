@@ -104,7 +104,7 @@ public class EventHandlerPneumaticCraft{
             if(event.entity instanceof EntitySlime && Math.random() < 0.1D) {
                 event.entity.entityDropItem(new ItemStack(Itemss.plasticPlant, 1, ItemPlasticPlants.SLIME_PLANT_DAMAGE + 16), 0);
             } else if(event.entity instanceof EntityCreeper && Math.random() < 0.05D) {
-                event.entity.worldObj.createExplosion(event.entity, event.entity.posX, event.entity.posY + event.entityLiving.height / 2D, event.entity.posZ, 0.5F, event.entity.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
+                if(Config.enableCreeperDropExplosion) event.entity.worldObj.createExplosion(event.entity, event.entity.posX, event.entity.posY + event.entityLiving.height / 2D, event.entity.posZ, 0.5F, event.entity.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
                 int dropAmount = (int)(Math.random() * 3D) + 1;
                 for(int i = 0; i < dropAmount; i++)
                     event.entity.entityDropItem(new ItemStack(Itemss.plasticPlant, 1, ItemPlasticPlants.CREEPER_PLANT_DAMAGE + 16), 0);

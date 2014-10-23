@@ -46,6 +46,7 @@ public class Config{
     public static boolean enableCoalToDiamondsRecipe;
 
     public static boolean enableDroneSuffocationDamage;
+    public static boolean enableCreeperDropExplosion;
 
     public static final String[] CATEGORIES = new String[]{Configuration.CATEGORY_GENERAL, "plant_full-grown_effects", "plant_generation_options", "machine_properties", "advanced", "recipe_enabling", "third_party_enabling"};
     public static List<String> NO_MC_RESTART_CATS = Arrays.asList(new String[]{"plant_full-grown_effects", "plant_generation_options", "machine_properties"});
@@ -120,6 +121,7 @@ public class Config{
         enableUpdateChecker = config.get(Configuration.CATEGORY_GENERAL, "Enable Update Checker", true).getBoolean(true);
 
         enableDroneSuffocationDamage = config.get(Configuration.CATEGORY_GENERAL, "Enable Drone Suffocation Damage", true).getBoolean(true);
+        enableCreeperDropExplosion = config.getBoolean("Enable Creeper Explosions on seed drop", Configuration.CATEGORY_GENERAL, true, "When true, Creepers when dropping a Creeper Plant Seed will create a tiny explosion.");
 
         enableCoalToDiamondsRecipe = config.get("recipe_enabling", "8 Block of Coal --> 1 Diamond (Pressure Chamber)", true).getBoolean(true);
         enableElectricCompressorRecipe = config.get("recipe_enabling", "Electric Compressor", true).getBoolean(true);
