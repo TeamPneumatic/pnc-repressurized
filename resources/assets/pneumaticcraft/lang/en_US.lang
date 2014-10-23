@@ -282,6 +282,11 @@ blockTracker.message.stopSpam=Stopped spam on %s
 # Tooltips
 gui.tooltip.plasticPlant=Origin: %s
 
+# Waila
+hud.msg.state=State
+hud.msg.active=Active
+hud.msg.inactive=Inactive
+
 # Misc
 itemGroup.tabPneumaticCraft=PneumaticCraft
 message.date.ironman=Today an Iron Man movie went in premiere!

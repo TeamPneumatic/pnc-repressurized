@@ -1,6 +1,9 @@
 package pneumaticCraft.common.item;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import net.minecraft.block.Block;
@@ -108,6 +111,16 @@ public class ItemPlasticPlants extends ItemPneumatic{
         }
     }
 
+    public static Map<Block, ItemStack> getBlockToSeedMap(){
+        Map<Block, ItemStack> blockToSeedMap = new HashMap<Block, ItemStack>();
+        List<ItemStack> seeds = new ArrayList<ItemStack>();
+        ((ItemPlasticPlants)Itemss.plasticPlant).addSubItems(seeds);
+        for(ItemStack seed : seeds) {
+            blockToSeedMap.put(getPlantBlockIDFromSeed(seed.getItemDamage()), seed);
+        }
+        return blockToSeedMap;
+    }
+
     @Override
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, EntityPlayer player, List infoList, boolean par4){
@@ -127,9 +140,6 @@ public class ItemPlasticPlants extends ItemPneumatic{
                 break;
         }
         infoList.add("Press 'Q' to plant seed");
-        /*  if(stack.getItemDamage() > 15) {
-              infoList.add("You shouldn't be able to have this seed.. I know, this is a bug (that's being worked on). Throw it on the ground and pick it up to resolve.");
-          }*/
     }
 
     public static Block getPlantBlockIDFromSeed(int seedMetadata){
