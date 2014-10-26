@@ -28,9 +28,10 @@ public class BlockRainPlant extends BlockPneumaticPlantBase{
     @Override
     public void executeFullGrownEffect(World world, int x, int y, int z, Random rand){
         if(!world.isRemote && world.isRaining()) {
-            ItemStack seed = new ItemStack(Itemss.plasticPlant, 1, ItemPlasticPlants.RAIN_PLANT_DAMAGE + 16);
+            ItemStack seed = new ItemStack(Itemss.plasticPlant, 1, ItemPlasticPlants.RAIN_PLANT_DAMAGE);
             EntityItem plant = new EntityItem(world, x + rand.nextInt(16) - 8, 128, z + rand.nextInt(16) - 8, seed);
             plant.lifespan = 300;
+            ItemPlasticPlants.markInactive(plant);
             world.spawnEntityInWorld(plant);
             world.setBlockMetadataWithNotify(x, y, z, world.getBlockMetadata(x, y, z) - 2, 3);
         }

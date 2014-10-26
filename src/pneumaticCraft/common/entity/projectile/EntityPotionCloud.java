@@ -54,8 +54,9 @@ public class EntityPotionCloud extends Entity{
         age++;
         radius -= 0.001D;
         if(radius <= 0.0D && !worldObj.isRemote) {
-            EntityItem seed = new EntityItem(worldObj, posX, posY, posZ, new ItemStack(Itemss.plasticPlant, 1, ItemPlasticPlants.POTION_PLANT_DAMAGE + 16));
+            EntityItem seed = new EntityItem(worldObj, posX, posY, posZ, new ItemStack(Itemss.plasticPlant, 1, ItemPlasticPlants.POTION_PLANT_DAMAGE));
             seed.lifespan = 300;
+            ItemPlasticPlants.markInactive(seed);
             worldObj.spawnEntityInWorld(seed);
             setDead();
         }

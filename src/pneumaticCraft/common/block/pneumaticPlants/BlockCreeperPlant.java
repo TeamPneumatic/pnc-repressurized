@@ -46,11 +46,12 @@ public class BlockCreeperPlant extends BlockPneumaticPlantBase{
         if(world.getBlockMetadata(x, y, z) == 14) {
             if(!world.isRemote) {
                 world.createExplosion(null, x + 0.5D, y + 0.5D, z + 0.5D, 0.5F, false);
-                EntityItem item = new EntityItem(world, x + 0.5D, y + 0.5D, z + 0.5D, new ItemStack(Itemss.plasticPlant, 1, ItemPlasticPlants.CREEPER_PLANT_DAMAGE + 16));
+                EntityItem item = new EntityItem(world, x + 0.5D, y + 0.5D, z + 0.5D, new ItemStack(Itemss.plasticPlant, 1, ItemPlasticPlants.CREEPER_PLANT_DAMAGE));
                 item.motionX = (rand.nextGaussian() - 0.5D) / 2;
                 item.motionY = rand.nextDouble();
                 item.motionZ = (rand.nextGaussian() - 0.5D) / 2;
                 item.lifespan = 300;
+                ItemPlasticPlants.markInactive(item);
                 world.spawnEntityInWorld(item);
                 world.setBlock(x, y, z, this, world.getBlockMetadata(x, y, z) - 2, 3);
             }
