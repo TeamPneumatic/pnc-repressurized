@@ -1,1 +1,3 @@
--Bugfix: Crash in 1.2.12 when there's no IGW-Mod installed #imaderp.
+-Added Waila support for the plants.
+-Added config option that allows disabling of the mini Creeper explosions upon dropping of Creeper seeds.
+-Removed leftover debug code in the Manometer. Fixes a crash in SMP when someone uses the Manometer.
