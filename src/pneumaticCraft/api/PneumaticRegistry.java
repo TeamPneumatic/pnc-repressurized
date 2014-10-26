@@ -6,6 +6,7 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
+import net.minecraftforge.fluids.Fluid;
 import pneumaticCraft.api.client.pneumaticHelmet.IBlockTrackEntry;
 import pneumaticCraft.api.client.pneumaticHelmet.IEntityTrackEntry;
 import pneumaticCraft.api.client.pneumaticHelmet.IHackableBlock;
@@ -99,6 +100,14 @@ public class PneumaticRegistry{
          * @param id
          */
         public void registerConcealableRenderId(int id);
+
+        /**
+         * Used to register a liquid that represents liquid XP (like MFR mob essence, OpenBlocks liquid XP).
+         * This is used in the Aerial Interface to pump XP in/out of the player.
+         * @param fluid
+         * @param liquidToPointRatio The amount of liquid (in mB) used to get one XP point. In OpenBlocks this is 20 (mB/point).
+         */
+        public void registerXPLiquid(Fluid fluid, int liquidToPointRatio);
 
     }
 }

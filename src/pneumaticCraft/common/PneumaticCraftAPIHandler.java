@@ -9,6 +9,7 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
+import net.minecraftforge.fluids.Fluid;
 import pneumaticCraft.api.PneumaticRegistry.IPneumaticCraftInterface;
 import pneumaticCraft.api.client.pneumaticHelmet.IBlockTrackEntry;
 import pneumaticCraft.api.client.pneumaticHelmet.IEntityTrackEntry;
@@ -34,6 +35,7 @@ public class PneumaticCraftAPIHandler implements IPneumaticCraftInterface{
     public final Map<Block, IPathfindHandler> pathfindableBlocks = new HashMap<Block, IPathfindHandler>();
     public final List<IInventoryItem> inventoryItems = new ArrayList<IInventoryItem>();
     public final List<Integer> concealableRenderIds = new ArrayList<Integer>();
+    public final Map<Fluid, Integer> liquidXPs = new HashMap<Fluid, Integer>();
 
     private PneumaticCraftAPIHandler(){
         concealableRenderIds.add(0);
@@ -135,6 +137,13 @@ public class PneumaticCraftAPIHandler implements IPneumaticCraftInterface{
     @Override
     public void registerConcealableRenderId(int id){
         concealableRenderIds.add(id);
+    }
+
+    @Override
+    public void registerXPLiquid(Fluid fluid, int liquidToPointRatio){
+        if(fluid == null) throw new NullPointerException("Fluid can't be null!");
+        if(liquidToPointRatio <= 0) throw new IllegalArgumentException("liquidToPointRatio can't be <= 0");
+        liquidXPs.put(fluid, liquidToPointRatio);
     }
 
 }

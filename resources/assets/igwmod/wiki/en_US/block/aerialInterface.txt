@@ -20,3 +20,7 @@ Note that upgrades for the Aerial Interface can be pumped in/out the top, main i
 
 [prefix{l}]Auto-feeding [prefix{}]
 By inserting a Dispenser Upgrade you can make the Aerial Interface act like a remote auto-feeder. Only food items will be accepted through the Aerial Interface, and only when the player is hungry enough to fully utilize the provided meal. Note that when an inventory offers a stack of >1, the Interface waits until the player can consume that amount. To make sure the smallest amount of food can be utilized use slow inserting inventories like [link{block/hopper}]Hoppers [link{}].
+
+If you've got either OpenBlocks or Minefactory Reloaded installed, the Dispenser Upgrade also allows you to pump Liquid XP or Mob Essence in or out of the Aerial Interface. When multiple types of liquid XP exist in your instance you can pump in a little bit of the desired type into the Aerial Interface to 'learn' the Interface about which one to output.
+
+Note that the Aerial Interface doesn't have an internal liquid buffer. This means that when pumping XP in or out, you need a device that can transport liquids at a rate higher than the amount of liquid XP per XP point. This is 20mB/tick for OpenBlocks' Liquid XP, and 77mB/tick for MFR's Mob Essence.

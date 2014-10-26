@@ -16,4 +16,5 @@ public class ModIds{
     public static final String CHISEL = "chisel";
     public static final String FORESTRY = "Forestry";
     public static final String MFR = "MineFactoryReloaded";
+    public static final String OPEN_BLOCKS = "OpenBlocks";
 }

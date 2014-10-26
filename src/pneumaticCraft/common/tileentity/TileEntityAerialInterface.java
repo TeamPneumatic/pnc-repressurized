@@ -1,5 +1,6 @@
 package pneumaticCraft.common.tileentity;
 
+import java.util.Iterator;
 import java.util.List;
 
 import net.minecraft.entity.item.EntityItem;
@@ -14,6 +15,12 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.ForgeEventFactory;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidTankInfo;
+import net.minecraftforge.fluids.IFluidHandler;
+import pneumaticCraft.common.PneumaticCraftAPIHandler;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.lib.Log;
@@ -22,7 +29,7 @@ import pneumaticCraft.lib.PneumaticValues;
 
 import com.mojang.authlib.GameProfile;
 
-public class TileEntityAerialInterface extends TileEntityPneumaticBase implements ISidedInventory{
+public class TileEntityAerialInterface extends TileEntityPneumaticBase implements ISidedInventory, IFluidHandler{
     private ItemStack[] inventory;
 
     private final int INVENTORY_SIZE = 4;
@@ -32,6 +39,8 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
 
     public String playerName = "";
     public String playerUUID = "";
+
+    private Fluid curXpFluid;
 
     public int redstoneMode;
     private boolean oldRedstoneStatus;
@@ -262,6 +271,8 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
         redstoneMode = nbtTagCompound.getInteger("redstoneMode");
         setPlayer(nbtTagCompound.getString("playerName"), nbtTagCompound.getString("playerUUID"));
         isConnectedToPlayer = nbtTagCompound.getBoolean("connected");
+        if(nbtTagCompound.hasKey("curXpFluid")) curXpFluid = FluidRegistry.getFluid(nbtTagCompound.getString("curXpFluid"));
+
         NBTTagList tagList = nbtTagCompound.getTagList("Items", 10);
         inventory = new ItemStack[4];
         for(int i = 0; i < tagList.tagCount(); ++i) {
@@ -281,6 +292,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
         nbtTagCompound.setInteger("redstoneMode", redstoneMode);
         nbtTagCompound.setString("playerName", playerName);
         nbtTagCompound.setString("playerUUID", playerUUID);
+        if(curXpFluid != null) nbtTagCompound.setString("curXpFluid", curXpFluid.getName());
 
         nbtTagCompound.setBoolean("connected", isConnectedToPlayer);
         NBTTagList tagList = new NBTTagList();
@@ -362,4 +374,139 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
     private int getFoodValue(ItemStack item){
         return item != null && item.getItem() instanceof ItemFood ? ((ItemFood)item.getItem()).func_150905_g(item) : 0;
     }
+
+    /*
+     * 
+     * ------------------------ Liquid XP handling
+     * 
+     */
+
+    @Override
+    public int fill(ForgeDirection from, FluidStack resource, boolean doFill){
+        if(resource != null && canFill(from, resource.getFluid())) {
+            EntityPlayer player = getPlayer();
+            if(player != null) {
+                int liquidToXP = PneumaticCraftAPIHandler.getInstance().liquidXPs.get(resource.getFluid());
+                int xpPoints = resource.amount / liquidToXP;
+                if(doFill) {
+                    player.addExperience(xpPoints);
+                    curXpFluid = resource.getFluid();
+                }
+                return xpPoints * liquidToXP;
+            }
+        }
+        return 0;
+    }
+
+    @Override
+    public FluidStack drain(ForgeDirection from, FluidStack resource, boolean doDrain){
+        if(resource != null && canDrain(from, resource.getFluid())) {
+            EntityPlayer player = getPlayer();
+            if(player != null) {
+                int liquidToXP = PneumaticCraftAPIHandler.getInstance().liquidXPs.get(resource.getFluid());
+                int pointsDrained = Math.min(getPlayerXP(player), resource.amount / liquidToXP);
+                if(doDrain) addPlayerXP(player, -pointsDrained);
+                return new FluidStack(resource.getFluid(), pointsDrained * liquidToXP);
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public FluidStack drain(ForgeDirection from, int maxDrain, boolean doDrain){
+        updateXpFluid();
+        if(curXpFluid == null) return null;
+        return drain(from, new FluidStack(curXpFluid, maxDrain), doDrain);
+    }
+
+    private void updateXpFluid(){
+        if(curXpFluid == null) {
+            Iterator<Fluid> fluids = PneumaticCraftAPIHandler.getInstance().liquidXPs.keySet().iterator();
+            if(fluids.hasNext()) curXpFluid = fluids.next();
+        }
+    }
+
+    @Override
+    public boolean canFill(ForgeDirection from, Fluid fluid){
+        return fluid != null && PneumaticCraftAPIHandler.getInstance().liquidXPs.containsKey(fluid) && getPlayer() != null && getPressure(ForgeDirection.UNKNOWN) > PneumaticValues.MIN_PRESSURE_AERIAL_INTERFACE && dispenserUpgradeInserted;
+    }
+
+    @Override
+    public boolean canDrain(ForgeDirection from, Fluid fluid){
+        return (fluid == null || PneumaticCraftAPIHandler.getInstance().liquidXPs.containsKey(fluid)) && getPlayer() != null && getPressure(ForgeDirection.UNKNOWN) > PneumaticValues.MIN_PRESSURE_AERIAL_INTERFACE && dispenserUpgradeInserted;
+    }
+
+    @Override
+    public FluidTankInfo[] getTankInfo(ForgeDirection from){
+        updateXpFluid();
+        if(curXpFluid != null) {
+            EntityPlayer player = getPlayer();
+            if(player != null) {
+                return new FluidTankInfo[]{new FluidTankInfo(new FluidStack(curXpFluid, getPlayerXP(player) * PneumaticCraftAPIHandler.getInstance().liquidXPs.get(curXpFluid)), Integer.MAX_VALUE)};
+            }
+        }
+        return null;
+    }
+
+    /**
+     * This method is copied from OpenMods' OpenModsLib
+     * https://github.com/OpenMods/OpenModsLib/blob/master/src/main/java/openmods/utils/EnchantmentUtils.java
+     * @param player
+     * @return
+     */
+
+    private static int getPlayerXP(EntityPlayer player){
+        return (int)(getExperienceForLevel(player.experienceLevel) + player.experience * player.xpBarCap());
+    }
+
+    /**
+     * This method is copied from OpenMods' OpenModsLib
+     * https://github.com/OpenMods/OpenModsLib/blob/master/src/main/java/openmods/utils/EnchantmentUtils.java
+     * @param player
+     * @return
+     */
+
+    private static int getExperienceForLevel(int level){
+        if(level == 0) {
+            return 0;
+        }
+        if(level > 0 && level < 16) {
+            return level * 17;
+        } else if(level > 15 && level < 31) {
+            return (int)(1.5 * Math.pow(level, 2) - 29.5 * level + 360);
+        } else {
+            return (int)(3.5 * Math.pow(level, 2) - 151.5 * level + 2220);
+        }
+    }
+
+    /**
+     * This method is copied from OpenMods' OpenModsLib
+     * https://github.com/OpenMods/OpenModsLib/blob/master/src/main/java/openmods/utils/EnchantmentUtils.java
+     * @param player
+     * @return
+     */
+
+    private static void addPlayerXP(EntityPlayer player, int amount){
+        int experience = getPlayerXP(player) + amount;
+        player.experienceTotal = experience;
+        player.experienceLevel = getLevelForExperience(experience);
+        int expForLevel = getExperienceForLevel(player.experienceLevel);
+        player.experience = (float)(experience - expForLevel) / (float)player.xpBarCap();
+    }
+
+    /**
+     * This method is copied from OpenMods' OpenModsLib
+     * https://github.com/OpenMods/OpenModsLib/blob/master/src/main/java/openmods/utils/EnchantmentUtils.java
+     * @param player
+     * @return
+     */
+
+    private static int getLevelForExperience(int experience){
+        int i = 0;
+        while(getExperienceForLevel(i) <= experience) {
+            i++;
+        }
+        return i - 1;
+    }
+
 }

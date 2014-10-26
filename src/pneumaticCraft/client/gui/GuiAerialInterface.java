@@ -12,10 +12,13 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidStack;
 
 import org.lwjgl.opengl.GL11;
 
 import pneumaticCraft.client.gui.widget.GuiAnimatedStat;
+import pneumaticCraft.common.PneumaticCraftAPIHandler;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.inventory.Container4UpgradeSlots;
 import pneumaticCraft.common.network.NetworkHandler;
@@ -58,10 +61,20 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase{
         redstoneBehaviourStat.setText(getRedstoneBehaviour());
         addAnimatedStat("Information", Textures.GUI_INFO_LOCATION, 0xFF8888FF, true).setText(GuiConstants.INFO_AERIAL_INTERFACE);
         addAnimatedStat("Upgrades", Textures.GUI_UPGRADES_LOCATION, 0xFF0000FF, true).setText(GuiConstants.UPGRADES_AERIAL_INTERFACE);
+        if(PneumaticCraftAPIHandler.getInstance().liquidXPs.size() > 0) addAnimatedStat("gui.tab.info.aerialInterface.liquidXp.info.title", new ItemStack(Items.water_bucket), 0xFF55FF55, false).setText(getLiquidXPText());
 
         Rectangle buttonRect = redstoneBehaviourStat.getButtonScaledRectangle(xStart - 118, yStart + 30, 117, 20);
         redstoneButton = getButtonFromRectangle(0, buttonRect, "-");
         buttonList.add(redstoneButton);
+    }
+
+    private List<String> getLiquidXPText(){
+        List<String> liquidXpText = new ArrayList<String>();
+        liquidXpText.add("gui.tab.info.aerialInterface.liquidXp.info");
+        for(Fluid fluid : PneumaticCraftAPIHandler.getInstance().liquidXPs.keySet()) {
+            liquidXpText.add(EnumChatFormatting.DARK_AQUA + new FluidStack(fluid, 1).getLocalizedName() + " (" + fluid.getName() + ")");
+        }
+        return liquidXpText;
     }
 
     @Override

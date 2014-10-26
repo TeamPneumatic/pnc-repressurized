@@ -229,6 +229,8 @@ pneumaticHelmet.hacking.finished.resumedTasks=Resumed tasks
 # Info
 gui.tab.info=Information
 gui.tab.info.tubeModule=In this interface you can exactly define how a module should behave dependent on the redstone signal. You can define a formula.
+gui.tab.info.aerialInterface.liquidXp.info.title=Interfacing XP
+gui.tab.info.aerialInterface.liquidXp.info=§0When you've got a Dispenser Upgrade installed in the Aerial Interface, you can pump liquid XP into or out of the Aerial Interface. When there are multiple options, you can learn the Interface which one to pump out by pumping a bit of the liquid you want in. The supported liquids you can use in your instance are:
 
 # Problems
 gui.tab.problems.redstoneDisallows=Redstone disallows this machine to function.
