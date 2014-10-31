@@ -14,6 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
+import net.minecraftforge.client.event.MouseEvent;
 
 import org.lwjgl.opengl.GL11;
 
@@ -96,6 +97,7 @@ public class RenderBlockTarget{
     }
 
     public void update(){
+        stat.update();
         List<IBlockTrackEntry> applicableTrackEntries = getApplicableEntries();
         if(CommonHUDHandler.getHandlerForPlayer().ticksExisted % 100 == 0) {
             for(IBlockTrackEntry entry : applicableTrackEntries) {
@@ -178,14 +180,14 @@ public class RenderBlockTarget{
             GL11.glColor4d(red, green, blue, alpha);
             if(ticksExisted > 120) {
                 GL11.glScaled(0.02D, 0.02D, 0.02D);
-                stat.render(fontRenderer, 0, partialTicks);
+                stat.render(-1, -1, partialTicks);
             } else if(ticksExisted > 50) {
                 GL11.glScaled(0.02D, 0.02D, 0.02D);
                 fontRenderer.drawString("Acquiring Target...", 0, 0, 0x7F7F7F);
                 fontRenderer.drawString(targetAcquireProgress + "%", 37, 28, 0x002F00);
             } else if(ticksExisted < -30) {
                 GL11.glScaled(0.03D, 0.03D, 0.03D);
-                stat.render(fontRenderer, 0, partialTicks);
+                stat.render(-1, -1, partialTicks);
                 fontRenderer.drawString("Lost Target!", 0, 0, 0xFF0000);
             }
         }
@@ -227,5 +229,12 @@ public class RenderBlockTarget{
 
     public int getHackTime(){
         return hackTime;
+    }
+
+    public boolean scroll(MouseEvent event){
+        if(isInitialized() && isPlayerLookingAtTarget()) {
+            return stat.handleMouseWheel(event.dwheel);
+        }
+        return false;
     }
 }

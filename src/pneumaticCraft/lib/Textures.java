@@ -49,6 +49,8 @@ public class Textures{
     public static final ResourceLocation MODEL_THIRD_PARTY_COMPRESSOR = new ResourceLocation(MODEL_LOCATION + "ThirdPartyCompressor.png");
     public static final ResourceLocation MODEL_PLASTIC_TROLLEY = new ResourceLocation(MODEL_LOCATION + "harvesterPlastic.png");
     public static final ResourceLocation MODEL_KINETIC_COMPRESSOR = new ResourceLocation(MODEL_LOCATION + "kineticCompressor.png");
+    public static final ResourceLocation MODEL_PNEUMATIC_DYNAMO_ON = new ResourceLocation(MODEL_LOCATION + "pneumaticDynamoOn.png");
+    public static final ResourceLocation MODEL_PNEUMATIC_DYNAMO_OFF = new ResourceLocation(MODEL_LOCATION + "pneumaticDynamoOff.png");
 
     public static final ResourceLocation MODEL_FLOW_DETECTOR = new ResourceLocation(TUBE_MODULE_MODEL_LOCATION + "flowDetector.png");
     public static final ResourceLocation MODEL_GAUGE = new ResourceLocation(TUBE_MODULE_MODEL_LOCATION + "gaugeModule.png");
@@ -179,7 +181,7 @@ public class Textures{
     public static final String GUI_PNEUMATIC_DOOR = GUI_LOCATION + "GuiPneumaticDoorBase.png";
     public static final String GUI_BUILDCRAFT_ENERGY = GUI_LOCATION + "GuiBuildcraftEnergy.png";
     public static final String GUI_OMNIDIRECTIONAL_HOPPER = GUI_LOCATION + "GuiOmnidirectionalHopper.png";
-    public static final ResourceLocation GUI_PROGRAMMER = new ResourceLocation(GUI_LOCATION + "GuiProgrammer.png");
+    public static final String GUI_PROGRAMMER = GUI_LOCATION + "GuiProgrammer.png";
     public static final ResourceLocation GUI_WIDGET_OPTIONS = new ResourceLocation(GUI_LOCATION + "GuiWidgetOptions.png");
     public static final ResourceLocation GUI_INVENTORY_SEARCHER = new ResourceLocation(GUI_LOCATION + "GuiInventorySearcher.png");
     public static final ResourceLocation GUI_TUBE_MODULE = new ResourceLocation(GUI_LOCATION + "GuiTubeModule.png");

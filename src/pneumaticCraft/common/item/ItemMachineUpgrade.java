@@ -1,15 +1,17 @@
 package pneumaticCraft.common.item;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
+import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.sensor.SensorHandler;
-import pneumaticCraft.lib.Names;
 import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -77,32 +79,32 @@ public class ItemMachineUpgrade extends ItemPneumatic{
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, EntityPlayer player, List infoList, boolean par4){
         infoList.add("Used in:");
-        SensorHandler.instance().addMachineUpgradeInfo(infoList, stack.getItemDamage());
+
+        List<String> unlocalized = new ArrayList<String>();
+        SensorHandler.instance().addMachineUpgradeInfo(unlocalized, stack.getItemDamage());
         switch(stack.getItemDamage()){
             case 0:
                 infoList.add("Any machine driven by");
                 infoList.add("pneumatic power");
-                return;
+                break;
             case 1:
-                infoList.add("-" + Names.AIR_CANNON);
-                infoList.add("-" + Names.CHARGING_STATION);
-                infoList.add("-" + Names.UNIVERSAL_SENSOR);
-                infoList.add("-" + Names.AERIAL_INTERFACE);
-                infoList.add("-Drone");
-                return;
+                unlocalized.add(Blockss.airCannon.getUnlocalizedName());
+                unlocalized.add(Blockss.chargingStation.getUnlocalizedName());
+                unlocalized.add(Blockss.aerialInterface.getUnlocalizedName());
+                unlocalized.add(Itemss.drone.getUnlocalizedName());
+                break;
             case 2:
-                infoList.add("-" + Names.AIR_CANNON);
-                infoList.add("-" + Names.PRESSURE_CHAMBER);
-                infoList.add("-Drone");
-                return;
+                unlocalized.add(Blockss.airCannon.getUnlocalizedName());
+                infoList.add(I18n.format("gui.pressureChamber"));
+                unlocalized.add(Itemss.drone.getUnlocalizedName());
+                break;
             case 3:
-                infoList.add("-" + Names.SECURITY_STATION);
+                unlocalized.add(Blockss.securityStation.getUnlocalizedName());
             case 4:
-                infoList.add("-" + Names.UNIVERSAL_SENSOR);
             case 6:
             case 7:
-                infoList.add("-" + Names.PNEUMATIC_HELMET);
-                return;
+                unlocalized.add(Itemss.pneumaticHelmet.getUnlocalizedName());
+                break;
             case 5:
                 infoList.add("Most machines");
                 /* infoList.add("-" + Names.AIR_CANNON);
@@ -114,13 +116,13 @@ public class ItemMachineUpgrade extends ItemPneumatic{
                  infoList.add("-" + Names.VACUUM_PUMP);
                  infoList.add("-" + Names.ASSEMBLY_CONTROLLER);
                  infoList.add("-" + Names.UV_LIGHT_BOX);*/
-                return;
+                break;
             case 8:
-                infoList.add("-" + Names.SECURITY_STATION);
-                infoList.add("-" + Names.AIR_CANNON);
-                infoList.add("-" + Names.PNEUMATIC_HELMET);
-                infoList.add("-" + Names.UNIVERSAL_SENSOR);
-                return;
+                unlocalized.add(Blockss.securityStation.getUnlocalizedName());
+                unlocalized.add(Blockss.airCannon.getUnlocalizedName());
+                unlocalized.add(Itemss.pneumaticHelmet.getUnlocalizedName());
+                unlocalized.add(Blockss.universalSensor.getUnlocalizedName());
+                break;
             case 9:
                 infoList.add("All pneumatic machines");
                 /*infoList.add("-" + Names.SECURITY_STATION);
@@ -133,6 +135,10 @@ public class ItemMachineUpgrade extends ItemPneumatic{
                 infoList.add("-" + Names.VACUUM_PUMP);
                 infoList.add("-" + Names.ASSEMBLY_CONTROLLER);
                 infoList.add("-" + Names.UV_LIGHT_BOX);*/
+        }
+
+        for(String unloc : unlocalized) {
+            infoList.add("-" + I18n.format(unloc + ".name"));
         }
     }
 

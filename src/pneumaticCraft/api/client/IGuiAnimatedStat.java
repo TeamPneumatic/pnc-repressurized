@@ -3,8 +3,6 @@ package pneumaticCraft.api.client;
 import java.awt.Rectangle;
 import java.util.List;
 
-import net.minecraft.client.gui.FontRenderer;
-
 /**
  * This interface doesn't have to be implemented. In PneumaticCraft there already is one class which implements this interface
  * which is used many times in PneumaticCraft (GUI stats, Pneumatic Helmet 2D and 3D stats). You can get an instance of this
@@ -138,23 +136,20 @@ public interface IGuiAnimatedStat{
      */
     public int getWidth();
 
-    public Rectangle getDimensions();
+    public Rectangle getBounds();
 
     /**
      * This method should be called every game tick to update the logic of the stat (expanding of the stat).
-     * NOTE!! PneumaticCraft's version of GuiAnimatedStat registers the stat when it creates an instance to automatically invoke the
-     * update() method every tick. This means that if you use GuiAnimatedStatSupplier.getAnimatedStat() you shouldn't call update()
-     * yourself!
      */
     public void update();
 
     /**
      * Should be called every render tick when and where you want to render the stat.
-     * @param fontRenderer
-     * @param zLevel
+     * @param mouseX
+     * @param mouseY
      * @param partialTicks
      */
-    public void render(FontRenderer fontRenderer, float zLevel, float partialTicks);
+    public void render(int mouseX, int mouseY, float partialTicks);
 
     /**
      * This method will handle mouse clicks. This will handle open/closing of the stat when the mouse clicks it.
@@ -163,7 +158,7 @@ public interface IGuiAnimatedStat{
      * @param button
      * @return
      */
-    public boolean mouseClicked(int x, int y, int button);
+    public void onMouseClicked(int x, int y, int button);
 
     /**
      * Forces the stat to close.
@@ -180,14 +175,5 @@ public interface IGuiAnimatedStat{
      * @return
      */
     public boolean isClicked();
-
-    /**
-     * Will handle the tooltip.
-     * @param fontRenderer
-     * @param x
-     * @param y
-     */
-    public void onMouseHovering(FontRenderer fontRenderer, int x, int y);
-
 
 }

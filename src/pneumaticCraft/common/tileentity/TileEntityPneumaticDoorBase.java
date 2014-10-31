@@ -19,7 +19,8 @@ import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.PneumaticValues;
 import pneumaticCraft.lib.TileEntityConstants;
 
-public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase implements IInventory{
+public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase implements IInventory, IRedstoneControl,
+        IMinWorkingPressure{
     private TileEntityPneumaticDoor door;
     public boolean rightGoing;
     public boolean[] sidesConnected = new boolean[6];
@@ -190,9 +191,11 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
 
     @Override
     public void handleGUIButtonPress(int buttonID, EntityPlayer player){
-        redstoneMode++;
-        if(redstoneMode > 2) redstoneMode = 0;
-        sendDescriptionPacket();
+        if(buttonID == 0) {
+            redstoneMode++;
+            if(redstoneMode > 2) redstoneMode = 0;
+            sendDescriptionPacket();
+        }
     }
 
     // INVENTORY METHODS-
@@ -260,7 +263,7 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
 
     @Override
     public String getInventoryName(){
-        return "Pneumatic Door";
+        return Blockss.pneumaticDoor.getUnlocalizedName();
     }
 
     @Override
@@ -276,11 +279,21 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
 
     @Override
     public boolean hasCustomInventoryName(){
-        return true;
+        return false;
     }
 
     @Override
     public boolean isUseableByPlayer(EntityPlayer var1){
         return isGuiUseableByPlayer(var1);
+    }
+
+    @Override
+    public float getMinWorkingPressure(){
+        return PneumaticValues.MIN_PRESSURE_PNEUMATIC_DOOR;
+    }
+
+    @Override
+    public int getRedstoneMode(){
+        return redstoneMode;
     }
 }

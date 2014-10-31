@@ -8,11 +8,11 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
+import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.recipes.programs.AssemblyProgram;
 import pneumaticCraft.common.recipes.programs.ProgramDrill;
 import pneumaticCraft.common.recipes.programs.ProgramDrillLaser;
 import pneumaticCraft.common.recipes.programs.ProgramLaser;
-import pneumaticCraft.lib.Names;
 import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -67,7 +67,7 @@ public class ItemAssemblyProgram extends ItemPneumatic{
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, EntityPlayer player, List infoList, boolean par4){
         infoList.add("Required Machines:");
-        infoList.add("-" + Names.ASSEMBLY_CONTROLLER);
+        infoList.add("-" + Blockss.assemblyController.getLocalizedName());
 
         if(referencePrograms == null) {
             referencePrograms = new AssemblyProgram[PROGRAMS_AMOUNT];
@@ -80,19 +80,19 @@ public class ItemAssemblyProgram extends ItemPneumatic{
         for(AssemblyProgram.EnumMachine machine : requiredMachines) {
             switch(machine){
                 case PLATFORM:
-                    infoList.add("-" + Names.ASSEMBLY_PLATFORM);
+                    infoList.add("-" + Blockss.assemblyPlatform.getLocalizedName());
                     break;
                 case DRILL:
-                    infoList.add("-" + Names.ASSEMBLY_DRILL);
+                    infoList.add("-" + Blockss.assemblyDrill.getLocalizedName());
                     break;
                 case LASER:
-                    infoList.add("-" + Names.ASSEMBLY_LASER);
+                    infoList.add("-" + Blockss.assemblyLaser.getLocalizedName());
                     break;
                 case IO_UNIT_EXPORT:
-                    infoList.add("-" + Names.ASSEMBLY_IO_UNIT + " (export)");
+                    infoList.add("-" + Blockss.assemblyIOUnit.getLocalizedName() + " (export)");//TODO localize
                     break;
                 case IO_UNIT_IMPORT:
-                    infoList.add("-" + Names.ASSEMBLY_IO_UNIT + " (import)");
+                    infoList.add("-" + Blockss.assemblyIOUnit.getLocalizedName() + " (import)");
                     break;
             }
         }

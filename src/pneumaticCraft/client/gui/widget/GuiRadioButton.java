@@ -8,8 +8,8 @@ import java.util.List;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.Tessellator;
-
 import net.minecraft.client.resources.I18n;
+
 import org.lwjgl.opengl.GL11;
 
 import cpw.mods.fml.client.FMLClientHandler;
@@ -44,7 +44,7 @@ public class GuiRadioButton extends Gui implements IGuiWidget{
     }
 
     @Override
-    public void render(int mouseX, int mouseY){
+    public void render(int mouseX, int mouseY, float partialTick){
         // drawRect(x, y, x + BUTTON_WIDTH, y + BUTTON_HEIGHT, enabled ? -6250336 : 0xFF999999);
         // drawRect(x + 1, y + 1, x + BUTTON_WIDTH - 1, y + BUTTON_HEIGHT - 1, enabled ? -16777216 : 0xFFAAAAAA);
 
@@ -108,15 +108,23 @@ public class GuiRadioButton extends Gui implements IGuiWidget{
     }
 
     @Override
-    public void addTooltip(List<String> curTooltip, boolean shiftPressed){
+    public void addTooltip(int mouseX, int mouseY, List<String> curTooltip, boolean shiftPressed){
         curTooltip.addAll(tooltip);
     }
 
     @Override
-    public void onKey(char key, int keyCode) { }
+    public boolean onKey(char key, int keyCode){
+        return false;
+    }
 
     @Override
     public void setListener(IWidgetListener gui){
         listener = gui;
     }
+
+    @Override
+    public void update(){}
+
+    @Override
+    public void handleMouseInput(){}
 }

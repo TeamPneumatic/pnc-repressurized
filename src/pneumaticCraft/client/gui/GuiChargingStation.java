@@ -1,27 +1,19 @@
 package pneumaticCraft.client.gui;
 
-import java.awt.Rectangle;
-import java.util.ArrayList;
+import java.awt.Point;
 import java.util.List;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.lwjgl.opengl.GL11;
 
-import pneumaticCraft.client.gui.widget.GuiAnimatedStat;
-import pneumaticCraft.common.block.Blockss;
+import pneumaticCraft.api.item.IPressurizable;
 import pneumaticCraft.common.inventory.ContainerChargingStation;
 import pneumaticCraft.common.item.IChargingStationGUIHolderItem;
-import pneumaticCraft.common.item.ItemPressurizable;
-import pneumaticCraft.common.network.NetworkHandler;
-import pneumaticCraft.common.network.PacketGuiButton;
 import pneumaticCraft.common.tileentity.TileEntityChargingStation;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.GuiConstants;
@@ -31,23 +23,12 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class GuiChargingStation extends GuiPneumaticContainerBase{
-    private static final ResourceLocation guiTexture = new ResourceLocation(Textures.GUI_CHARGING_STATION_LOCATION);
-    private final TileEntityChargingStation te;
-    private GuiAnimatedStat pressureStat;
-    private GuiAnimatedStat problemStat;
-    private GuiAnimatedStat redstoneBehaviourStat;
-    private GuiAnimatedStat infoStat;
-    private GuiAnimatedStat upgradeStat;
-    private GuiButton redstoneButton;
+public class GuiChargingStation extends GuiPneumaticContainerBase<TileEntityChargingStation>{
     private GuiButton guiSelectButton;
 
-    public GuiChargingStation(InventoryPlayer player, TileEntityChargingStation teChargingStation){
+    public GuiChargingStation(InventoryPlayer player, TileEntityChargingStation te){
 
-        super(new ContainerChargingStation(player, teChargingStation));
-        ySize = 176;
-        te = teChargingStation;
-
+        super(new ContainerChargingStation(player, te), te, Textures.GUI_CHARGING_STATION_LOCATION);
     }
 
     @Override
@@ -58,50 +39,33 @@ public class GuiChargingStation extends GuiPneumaticContainerBase{
         int yStart = (height - ySize) / 2;
         guiSelectButton = new GuiButton(1, xStart + 90, yStart + 15, 25, 20, "inv.");
         buttonList.add(guiSelectButton);
-        pressureStat = new GuiAnimatedStat(this, "Pressure", new ItemStack(Blockss.pressureTube), xStart + xSize, yStart + 5, 0xFF00AA00, null, false);
-        problemStat = new GuiAnimatedStat(this, "Problems", Textures.GUI_PROBLEMS_TEXTURE, xStart + xSize, 3, 0xFFFF0000, pressureStat, false);
-        redstoneBehaviourStat = new GuiAnimatedStat(this, "Redstone Behaviour", new ItemStack(Items.redstone), xStart, yStart + 5, 0xFFCC0000, null, true);
-        infoStat = new GuiAnimatedStat(this, "Information", Textures.GUI_INFO_LOCATION, xStart, 3, 0xFF8888FF, redstoneBehaviourStat, true);
-        upgradeStat = new GuiAnimatedStat(this, "Upgrades", Textures.GUI_UPGRADES_LOCATION, xStart, 3, 0xFF0000FF, infoStat, true);
-        animatedStatList.add(pressureStat);
-        animatedStatList.add(problemStat);
-        animatedStatList.add(redstoneBehaviourStat);
-        animatedStatList.add(infoStat);
-        animatedStatList.add(upgradeStat);
-        redstoneBehaviourStat.setTextWithoutCuttingString(getRedstoneBehaviour());
-        infoStat.setText(GuiConstants.INFO_CHARGING_STATION);
-        upgradeStat.setText(GuiConstants.UPGRADES_CHARGING_STATION);
-
-        Rectangle buttonRect = redstoneBehaviourStat.getButtonScaledRectangle(xStart - 131, yStart + 30, 130, 20);
-        redstoneButton = getButtonFromRectangle(0, buttonRect, "-");
-        buttonList.add(redstoneButton);
     }
 
     @Override
     protected void drawGuiContainerForegroundLayer(int x, int y){
-
-        String containerName = te.hasCustomInventoryName() ? te.getInventoryName() : StatCollector.translateToLocal(te.getInventoryName());
-
-        fontRendererObj.drawString(containerName, xSize / 2 - fontRendererObj.getStringWidth(containerName) / 2, 6, 4210752);
-        fontRendererObj.drawString(StatCollector.translateToLocal("container.inventory"), 28, ySize - 106 + 2, 4210752);
+        super.drawGuiContainerForegroundLayer(x, y);
         fontRendererObj.drawString("Upgr.", 46, 19, 4210752);
+    }
 
-        switch(te.redstoneMode){
+    @Override
+    protected Point getInvTextOffset(){
+        return new Point(20, 0);
+    }
+
+    @Override
+    protected String getRedstoneButtonText(int mode){
+        switch(mode){
             case 0:
-                redstoneButton.displayString = "Never";
-                break;
+                return "gui.tab.redstoneBehaviour.button.never";
             case 1:
-                redstoneButton.displayString = "Done (dis)charging";
-                break;
+                return "gui.tab.redstoneBehaviour.chargingStation.button.doneDischarging";
             case 2:
-                redstoneButton.displayString = "Charging";
-                break;
+                return "gui.tab.redstoneBehaviour.chargingStation.button.charging";
             case 3:
-                redstoneButton.displayString = "Discharging";
-                break;
-        // case 2: redstoneButton.displayString = "Low Redstone Signal";
-        }
+                return "gui.tab.redstoneBehaviour.chargingStation.button.discharging";
 
+        }
+        return "<ERROR>";
     }
 
     @Override
@@ -109,69 +73,48 @@ public class GuiChargingStation extends GuiPneumaticContainerBase{
         super.drawGuiContainerBackgroundLayer(opacity, x, y);
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
-        mc.getTextureManager().bindTexture(guiTexture);
+        renderAir();
+    }
+
+    @Override
+    public void updateScreen(){
+        super.updateScreen();
+        guiSelectButton.enabled = te.getStackInSlot(TileEntityChargingStation.CHARGE_INVENTORY_INDEX) != null && te.getStackInSlot(TileEntityChargingStation.CHARGE_INVENTORY_INDEX).getItem() instanceof IChargingStationGUIHolderItem;
+
+    }
+
+    @Override
+    protected Point getGaugeLocation(){
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
-        drawTexturedModalRect(xStart, yStart, 0, 0, xSize, ySize);
-
-        renderAir();
-        GuiUtils.drawPressureGauge(fontRendererObj, -1, PneumaticValues.MAX_PRESSURE_CHARGING_STATION, PneumaticValues.DANGER_PRESSURE_CHARGING_STATION, -1, te.getPressure(ForgeDirection.UNKNOWN), xStart + xSize * 3 / 4 + 10, yStart + ySize * 1 / 4 + 4, zLevel);
-
-        pressureStat.setText(getPressureStats());
-        problemStat.setText(getProblems());
-        redstoneButton.visible = redstoneBehaviourStat.isDoneExpanding();
-
-        guiSelectButton.enabled = te.getStackInSlot(TileEntityChargingStation.CHARGE_INVENTORY_INDEX) != null && te.getStackInSlot(TileEntityChargingStation.CHARGE_INVENTORY_INDEX).getItem() instanceof IChargingStationGUIHolderItem;
+        return new Point(xStart + xSize * 3 / 4 + 10, yStart + ySize * 1 / 4 + 4);
     }
 
-    private List<String> getRedstoneBehaviour(){
-        List<String> textList = new ArrayList<String>();
-        textList.add("\u00a77Emit redstone if         "); // the spaces are
-                                                          // there to create
-                                                          // space for the
-                                                          // button
-        for(int i = 0; i < 3; i++)
-            textList.add("");// create some space for the button
-        return textList;
-    }
-
-    private List<String> getPressureStats(){
-        List<String> pressureStatText = new ArrayList<String>();
-        pressureStatText.add("\u00a77Current Pressure:");
-        pressureStatText.add("\u00a70" + (double)Math.round(te.getPressure(ForgeDirection.UNKNOWN) * 10) / 10 + " bar.");
-        pressureStatText.add("\u00a77Current Air:");
-        pressureStatText.add("\u00a70" + (double)Math.round(te.currentAir + te.volume) + " mL.");
-        pressureStatText.add("\u00a77Volume:");
-        pressureStatText.add("\u00a70" + (double)Math.round(PneumaticValues.VOLUME_CHARGING_STATION) + " mL.");
-        float pressureLeft = te.volume - PneumaticValues.VOLUME_CHARGING_STATION;
-        if(pressureLeft > 0) {
-            pressureStatText.add("\u00a70" + (double)Math.round(pressureLeft) + " mL. (Volume Upgrades)");
-            pressureStatText.add("\u00a70--------+");
-            pressureStatText.add("\u00a70" + (double)Math.round(te.volume) + " mL.");
-        }
+    @Override
+    protected void addPressureStatInfo(List<String> pressureStatText){
+        super.addPressureStatInfo(pressureStatText);
         if(te.charging || te.disCharging) {
             pressureStatText.add("\u00a77" + (te.charging ? "C" : "Disc") + "harging at");
             pressureStatText.add("\u00a70" + (double)Math.round(PneumaticValues.CHARGING_STATION_CHARGE_RATE * te.getSpeedMultiplierFromUpgrades(te.getUpgradeSlots())) + "mL/tick");
         }
-
-        return pressureStatText;
     }
 
-    private List<String> getProblems(){
-        List<String> textList = new ArrayList<String>();
+    @Override
+    protected void addProblems(List<String> textList){
+        super.addProblems(textList);
         if(te.getStackInSlot(TileEntityChargingStation.CHARGE_INVENTORY_INDEX) == null) {
             textList.add("\u00a77No items to (dis)charge");
             textList.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a70Put a pneumatic item in the charge slot.", GuiConstants.maxCharPerLineLeft));
-        } else if(!(te.getStackInSlot(TileEntityChargingStation.CHARGE_INVENTORY_INDEX).getItem() instanceof ItemPressurizable)) {
+        } else if(!(te.getStackInSlot(TileEntityChargingStation.CHARGE_INVENTORY_INDEX).getItem() instanceof IPressurizable)) {
             textList.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a77The put in item can't be (dis)charged", GuiConstants.maxCharPerLineLeft));
             textList.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a70Put a pneumatic item in the charge slot.", GuiConstants.maxCharPerLineLeft));
         } else {
             ItemStack chargeStack = te.getStackInSlot(TileEntityChargingStation.CHARGE_INVENTORY_INDEX);
-            ItemPressurizable chargeItem = (ItemPressurizable)chargeStack.getItem();
-            if(chargeItem.getPressure(chargeStack) > te.getPressure(ForgeDirection.UNKNOWN) + 0.01F && chargeStack.getItemDamage() == chargeItem.getMaxDamage()) {
+            IPressurizable chargeItem = (IPressurizable)chargeStack.getItem();
+            if(chargeItem.getPressure(chargeStack) > te.getPressure(ForgeDirection.UNKNOWN) + 0.01F && chargeItem.getPressure(chargeStack) <= 0) {
                 textList.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a77The put in item can't be discharged", GuiConstants.maxCharPerLineLeft));
                 textList.add("\u00a70The item is empty.");
-            } else if(chargeItem.getPressure(chargeStack) < te.getPressure(ForgeDirection.UNKNOWN) - 0.01F && chargeStack.getItemDamage() == 0) {
+            } else if(chargeItem.getPressure(chargeStack) < te.getPressure(ForgeDirection.UNKNOWN) - 0.01F && chargeItem.getPressure(chargeStack) >= chargeItem.maxPressure(chargeStack)) {
                 textList.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a77The put in item can't be charged", GuiConstants.maxCharPerLineLeft));
                 textList.add("\u00a70The item is full.");
             } else if(!te.charging && !te.disCharging) {
@@ -179,25 +122,6 @@ public class GuiChargingStation extends GuiPneumaticContainerBase{
                 textList.add("\u00a70The pressures have equalized.");
             }
         }
-        if(textList.size() == 0) {
-            textList.add("\u00a77No problems");
-            textList.add("\u00a70Machine " + (te.charging ? "c" : "disc") + "harging");
-        }
-        return textList;
-    }
-
-    /**
-     * Fired when a control is clicked. This is the equivalent of
-     * ActionListener.actionPerformed(ActionEvent e).
-     */
-    @Override
-    protected void actionPerformed(GuiButton button){
-        switch(button.id){
-            case 0:// redstone button
-                if(redstoneBehaviourStat != null) redstoneBehaviourStat.closeWindow();
-                break;
-        }
-        NetworkHandler.sendToServer(new PacketGuiButton(te, button.id));
     }
 
     private void renderAir(){

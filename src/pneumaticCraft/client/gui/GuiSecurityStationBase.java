@@ -2,11 +2,12 @@ package pneumaticCraft.client.gui;
 
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
+import pneumaticCraft.common.tileentity.TileEntitySecurityStation;
 
-public class GuiSecurityStationBase extends GuiPneumaticContainerBase{
+public class GuiSecurityStationBase extends GuiPneumaticContainerBase<TileEntitySecurityStation>{
 
-    public GuiSecurityStationBase(Container par1Container){
-        super(par1Container);
+    public GuiSecurityStationBase(Container par1Container, TileEntitySecurityStation te, String guiTexture){
+        super(par1Container, te, guiTexture);
     }
 
     /**

@@ -7,11 +7,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.common.util.ForgeDirection;
+import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.Itemss;
-import pneumaticCraft.lib.Names;
 import pneumaticCraft.lib.PneumaticValues;
 
-public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase implements IInventory{
+public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase implements IInventory, IRedstoneControl{
 
     private ItemStack[] inventory;
 
@@ -79,9 +79,11 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase i
 
     @Override
     public void handleGUIButtonPress(int buttonID, EntityPlayer player){
-        redstoneMode++;
-        if(redstoneMode > 1) redstoneMode = 0;
-        sendDescriptionPacket();
+        if(buttonID == 0) {
+            redstoneMode++;
+            if(redstoneMode > 1) redstoneMode = 0;
+            sendDescriptionPacket();
+        }
     }
 
     /**
@@ -142,7 +144,7 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase i
     @Override
     public String getInventoryName(){
 
-        return Names.ELECTROSTATIC_COMPRESSOR;
+        return Blockss.electrostaticCompressor.getUnlocalizedName();
     }
 
     @Override
@@ -200,11 +202,16 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase i
 
     @Override
     public boolean hasCustomInventoryName(){
-        return true;
+        return false;
     }
 
     @Override
     public boolean isUseableByPlayer(EntityPlayer var1){
         return isGuiUseableByPlayer(var1);
+    }
+
+    @Override
+    public int getRedstoneMode(){
+        return redstoneMode;
     }
 }

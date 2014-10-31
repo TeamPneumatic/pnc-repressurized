@@ -9,6 +9,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 
 import org.lwjgl.input.Keyboard;
@@ -152,7 +153,7 @@ public class HUDHandler{
                         if(comHudHandler.upgradeRenderersInserted[i] && GuiKeybindCheckBox.trackedCheckboxes.get("pneumaticHelmet.upgrade." + upgradeRenderHandler.getUpgradeName()).checked) {
                             IGuiAnimatedStat stat = upgradeRenderHandler.getAnimatedStat();
                             if(stat != null) {
-                                stat.render(minecraft.fontRenderer, 0, partialTicks);
+                                stat.render(-1, -1, partialTicks);
                             }
                             upgradeRenderHandler.render2D(partialTicks, comHudHandler.helmetPressure > 0F);
                         }
@@ -176,6 +177,9 @@ public class HUDHandler{
     }
 
     private void update(EntityPlayer player){
+        for(ArmorMessage message : messageList) {
+            message.getStat().update();
+        }
         CommonHUDHandler comHudHandler = CommonHUDHandler.getHandlerForPlayer(player);
         boolean helmetEnabled = GuiKeybindCheckBox.trackedCheckboxes.get("pneumaticHelmet.upgrade.coreComponents").checked;
         if(comHudHandler.ticksExisted == 1) {
@@ -197,6 +201,7 @@ public class HUDHandler{
                         } else {
                             stat.closeWindow();
                         }
+                        stat.update();
                     }
                     upgradeRenderHandler.update(player, comHudHandler.rangeUpgradesInstalled);
                 }
@@ -262,5 +267,13 @@ public class HUDHandler{
         keybindHack = new KeyBinding(DESCRIPTION_HELMET_HACK, Keyboard.KEY_H, Names.PNEUMATIC_KEYBINDING_CATEGORY);
         ClientRegistry.registerKeyBinding(keybindOpenOptions);
         ClientRegistry.registerKeyBinding(keybindHack);
+    }
+
+    @SubscribeEvent
+    public void onMouseEvent(MouseEvent event){
+        boolean isCaptured = false;
+        isCaptured = ((BlockTrackUpgradeHandler)getSpecificRenderer(BlockTrackUpgradeHandler.class)).scroll(event);
+        if(!isCaptured) isCaptured = ((EntityTrackUpgradeHandler)getSpecificRenderer(EntityTrackUpgradeHandler.class)).scroll(event);
+        if(isCaptured) event.setCanceled(true);
     }
 }

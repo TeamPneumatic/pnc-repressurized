@@ -159,8 +159,8 @@ public class PneumaticCraftUtils{
                 lineLen -= 2;// don't count a color formatter with the line
                              // length.
             }
-            if(lineLen + word.length() > maxCharPerLine || word.contains("\n")) {
-                word = word.replace("\n", "");
+            if(lineLen + word.length() > maxCharPerLine || word.contains("\\n")) {
+                word = word.replace("\\n", "");
                 textList.add(output.toString());
                 output.delete(0, output.length());
                 output.append(color);

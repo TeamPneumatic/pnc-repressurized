@@ -8,13 +8,17 @@ public interface IGuiWidget{
 
     public int getID();
 
-    public void render(int mouseX, int mouseY);
+    public void render(int mouseX, int mouseY, float partialTick);
 
     public void onMouseClicked(int mouseX, int mouseY, int button);
 
     public Rectangle getBounds();
 
-    public void addTooltip(List<String> curTooltip, boolean shiftPressed);
+    public void addTooltip(int mouseX, int mouseY, List<String> curTooltip, boolean shiftPressed);
 
-    public void onKey(char key, int keyCode);
+    public boolean onKey(char key, int keyCode);
+
+    public void update();
+
+    public void handleMouseInput();
 }

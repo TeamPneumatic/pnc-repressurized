@@ -14,11 +14,13 @@ import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.util.ForgeDirection;
+import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.util.IOHelper;
 
-public class TileEntityOmnidirectionalHopper extends TileEntity implements IGUIButtonSensitive, ISidedInventory{
+public class TileEntityOmnidirectionalHopper extends TileEntityBase implements IGUIButtonSensitive, ISidedInventory,
+        IRedstoneControlled{
     private ForgeDirection inputDir = ForgeDirection.UNKNOWN;
     private ItemStack[] inventory = new ItemStack[9];
     public int redstoneMode;
@@ -180,7 +182,7 @@ public class TileEntityOmnidirectionalHopper extends TileEntity implements IGUIB
      */
     @Override
     public String getInventoryName(){
-        return "Omnidirectional Hopper";
+        return Blockss.omnidirectionalHopper.getUnlocalizedName();
     }
 
     /**
@@ -232,28 +234,19 @@ public class TileEntityOmnidirectionalHopper extends TileEntity implements IGUIB
         }
     }
 
-    private boolean redstoneAllows(){
-        switch(redstoneMode){
-            case 0:
-                return true;
-            case 1:
-                return !worldObj.isBlockIndirectlyGettingPowered(xCoord, yCoord, zCoord);
-            case 2:
-                return worldObj.isBlockIndirectlyGettingPowered(xCoord, yCoord, zCoord);
-        }
-        return false;
-    }
-
     @Override
     public void handleGUIButtonPress(int buttonID, EntityPlayer player){
-        redstoneMode++;
-        if(redstoneMode > 2) redstoneMode = 0;
-        sendDescriptionPacket();
+        if(buttonID == 0) {
+            redstoneMode++;
+            if(redstoneMode > 2) redstoneMode = 0;
+            sendDescriptionPacket();
+        }
     }
 
     /**
      * Sends the description packet to every client within PACKET_UPDATE_DISTANCE blocks, and in the same dimension.
      */
+    @Override
     public void sendDescriptionPacket(){
         worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
     }
@@ -300,4 +293,9 @@ public class TileEntityOmnidirectionalHopper extends TileEntity implements IGUIB
 
     @Override
     public void closeInventory(){}
+
+    @Override
+    public int getRedstoneMode(){
+        return redstoneMode;
+    }
 }

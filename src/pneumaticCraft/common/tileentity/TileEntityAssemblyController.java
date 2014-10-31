@@ -13,18 +13,19 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.api.tileentity.IPneumaticMachine;
+import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.ItemAssemblyProgram;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.recipes.programs.AssemblyProgram;
 import pneumaticCraft.common.recipes.programs.AssemblyProgram.EnumMachine;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.GuiConstants;
-import pneumaticCraft.lib.Names;
 import pneumaticCraft.lib.PneumaticValues;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityAssemblyController extends TileEntityPneumaticBase implements ISidedInventory, IAssemblyMachine{
+public class TileEntityAssemblyController extends TileEntityPneumaticBase implements ISidedInventory, IAssemblyMachine,
+        IMinWorkingPressure{
     private ItemStack[] inventory;
     public boolean[] sidesConnected = new boolean[6];
     public AssemblyProgram curProgram;
@@ -343,7 +344,7 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
     @Override
     public String getInventoryName(){
 
-        return Names.ASSEMBLY_CONTROLLER;
+        return Blockss.assemblyController.getUnlocalizedName();
     }
 
     @Override
@@ -458,6 +459,11 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
 
     @Override
     public boolean hasCustomInventoryName(){
-        return true;
+        return false;
+    }
+
+    @Override
+    public float getMinWorkingPressure(){
+        return PneumaticValues.MIN_PRESSURE_ASSEMBLY_CONTROLLER;
     }
 }

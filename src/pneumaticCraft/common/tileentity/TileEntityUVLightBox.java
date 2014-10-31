@@ -8,13 +8,14 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.api.tileentity.IPneumaticMachine;
+import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.Itemss;
-import pneumaticCraft.lib.Names;
 import pneumaticCraft.lib.PneumaticValues;
 import pneumaticCraft.lib.TileEntityConstants;
 
-public class TileEntityUVLightBox extends TileEntityPneumaticBase implements ISidedInventory{
+public class TileEntityUVLightBox extends TileEntityPneumaticBase implements ISidedInventory, IMinWorkingPressure,
+        IRedstoneControl{
     public boolean leftConnected;
     public boolean rightConnected;
     public boolean areLightsOn;
@@ -194,7 +195,7 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements ISi
 
     @Override
     public String getInventoryName(){
-        return Names.UV_LIGHT_BOX;
+        return Blockss.uvLightBox.getUnlocalizedName();
     }
 
     @Override
@@ -226,10 +227,12 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements ISi
 
     @Override
     public void handleGUIButtonPress(int buttonID, EntityPlayer player){
-        redstoneMode++;
-        if(redstoneMode > 4) redstoneMode = 0;
-        updateNeighbours();
-        sendDescriptionPacket();
+        if(buttonID == 0) {
+            redstoneMode++;
+            if(redstoneMode > 4) redstoneMode = 0;
+            updateNeighbours();
+            sendDescriptionPacket();
+        }
     }
 
     public boolean shouldEmitRedstone(){
@@ -249,7 +252,7 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements ISi
 
     @Override
     public boolean hasCustomInventoryName(){
-        return true;
+        return false;
     }
 
     @Override
@@ -262,4 +265,14 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements ISi
 
     @Override
     public void closeInventory(){}
+
+    @Override
+    public int getRedstoneMode(){
+        return redstoneMode;
+    }
+
+    @Override
+    public float getMinWorkingPressure(){
+        return PneumaticValues.MIN_PRESSURE_UV_LIGHTBOX;
+    }
 }

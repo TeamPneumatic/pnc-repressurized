@@ -21,6 +21,7 @@ import pneumaticCraft.api.universalSensor.IPollSensorSetting;
 import pneumaticCraft.api.universalSensor.ISensorSetting;
 import pneumaticCraft.client.gui.GuiUniversalSensor;
 import pneumaticCraft.client.render.RenderProgressingLine;
+import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.ItemGPSTool;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.Itemss;
@@ -31,7 +32,6 @@ import pneumaticCraft.common.thirdparty.ThirdPartyManager;
 import pneumaticCraft.common.thirdparty.computercraft.LuaConstant;
 import pneumaticCraft.common.thirdparty.computercraft.LuaMethod;
 import pneumaticCraft.lib.ModIds;
-import pneumaticCraft.lib.Names;
 import pneumaticCraft.lib.PneumaticValues;
 import pneumaticCraft.lib.TileEntityConstants;
 import cpw.mods.fml.common.Optional;
@@ -43,7 +43,7 @@ import dan200.computercraft.api.lua.LuaException;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 
 public class TileEntityUniversalSensor extends TileEntityPneumaticBase implements IInventory, IRangeLineShower,
-        IGUITextFieldSensitive{
+        IGUITextFieldSensitive, IMinWorkingPressure, IRedstoneControl{
 
     private ItemStack[] inventory = new ItemStack[5];
     public static final int UPGRADE_SLOT_1 = 0;
@@ -428,7 +428,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
 
     @Override
     public String getInventoryName(){
-        return Names.UNIVERSAL_SENSOR;
+        return Blockss.universalSensor.getUnlocalizedName();
     }
 
     @Override
@@ -449,7 +449,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
 
     @Override
     public boolean hasCustomInventoryName(){
-        return true;
+        return false;
     }
 
     /*
@@ -615,4 +615,14 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
 
     @Override
     public void closeInventory(){}
+
+    @Override
+    public int getRedstoneMode(){
+        return invertedRedstone ? 1 : 0;
+    }
+
+    @Override
+    public float getMinWorkingPressure(){
+        return PneumaticValues.MIN_PRESSURE_UNIVERSAL_SENSOR;
+    }
 }

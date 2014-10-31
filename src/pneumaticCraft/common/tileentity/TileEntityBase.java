@@ -5,6 +5,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
@@ -30,6 +31,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
     public int numUsingPlayers;
     private int[] upgradeSlots;
     private boolean descriptionPacketScheduled;
+    protected boolean isRedstonePowered;
 
     @Override
     public Packet getDescriptionPacket(){
@@ -78,6 +80,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
         if(firstRun && !worldObj.isRemote) {
             //firstRun = false;
             onFirstServerUpdate();
+            onNeighborTileUpdate();
             firstRunTicks--;
             if(needsFirstRunUpdate() && firstRunTicks == 0) {
                 sendDescriptionPacket();
@@ -153,6 +156,14 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
         return upgrades;
     }
 
+    protected float getSpeedMultiplierFromUpgrades(){
+        return getSpeedMultiplierFromUpgrades(getUpgradeSlots());
+    }
+
+    protected float getSpeedUsageMultiplierFromUpgrades(){
+        return getSpeedUsageMultiplierFromUpgrades(getUpgradeSlots());
+    }
+
     public float getSpeedMultiplierFromUpgrades(int[] upgradeSlots){
         return (float)Math.pow(PneumaticValues.SPEED_UPGRADE_MULTIPLIER, Math.min(10, getUpgrades(ItemMachineUpgrade.UPGRADE_SPEED_DAMAGE, upgradeSlots)));
     }
@@ -184,7 +195,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
         return worldObj.getTileEntity(xCoord, yCoord, zCoord) != this ? false : par1EntityPlayer.getDistanceSq(xCoord + 0.5D, yCoord + 0.5D, zCoord + 0.5D) <= 64.0D;
     }
 
-    public void setUpgradeSlots(int[] upgradeSlots){
+    public void setUpgradeSlots(int... upgradeSlots){
         this.upgradeSlots = upgradeSlots;
     }
 
@@ -193,4 +204,74 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
     }
 
     protected void addLuaMethods(){}
+
+    protected void writeInventoryToNBT(NBTTagCompound tag, ItemStack[] stacks){
+        writeInventoryToNBT(tag, stacks, "Items");
+    }
+
+    protected void writeInventoryToNBT(NBTTagCompound tag, IInventory inventory, String tagName){
+        ItemStack[] stacks = new ItemStack[inventory.getSizeInventory()];
+        for(int i = 0; i < stacks.length; i++) {
+            stacks[i] = inventory.getStackInSlot(i);
+        }
+        writeInventoryToNBT(tag, stacks, tagName);
+    }
+
+    protected void writeInventoryToNBT(NBTTagCompound tag, ItemStack[] stacks, String tagName){
+        NBTTagList tagList = new NBTTagList();
+        for(int i = 0; i < stacks.length; i++) {
+            if(stacks[i] != null) {
+                NBTTagCompound itemTag = new NBTTagCompound();
+                stacks[i].writeToNBT(itemTag);
+                itemTag.setByte("Slot", (byte)i);
+                tagList.appendTag(itemTag);
+            }
+        }
+        tag.setTag(tagName, tagList);
+    }
+
+    protected void readInventoryFromNBT(NBTTagCompound tag, ItemStack[] stacks){
+        readInventoryFromNBT(tag, stacks, "Items");
+    }
+
+    protected void readInventoryFromNBT(NBTTagCompound tag, IInventory inventory, String tagName){
+        ItemStack[] stacks = new ItemStack[inventory.getSizeInventory()];
+        readInventoryFromNBT(tag, stacks, tagName);
+        for(int i = 0; i < stacks.length; i++) {
+            inventory.setInventorySlotContents(i, stacks[i]);
+        }
+    }
+
+    protected void readInventoryFromNBT(NBTTagCompound tag, ItemStack[] stacks, String tagName){
+        for(int i = 0; i < stacks.length; i++) {
+            stacks[i] = null;
+        }
+        NBTTagList tagList = tag.getTagList(tagName, 10);
+        for(int i = 0; i < tagList.tagCount(); i++) {
+            NBTTagCompound itemTag = tagList.getCompoundTagAt(i);
+            int slot = itemTag.getByte("Slot");
+            if(slot >= 0 && slot < stacks.length) {
+                stacks[slot] = ItemStack.loadItemStackFromNBT(itemTag);
+            }
+        }
+    }
+
+    public void onNeighborTileUpdate(){}
+
+    public void onNeighborBlockUpdate(){
+        isRedstonePowered = worldObj.isBlockIndirectlyGettingPowered(xCoord, yCoord, zCoord);
+    }
+
+    public boolean redstoneAllows(){
+        switch(((IRedstoneControl)this).getRedstoneMode()){
+            case 0:
+                return true;
+            case 1:
+                return isRedstonePowered;
+            case 2:
+                return !isRedstonePowered;
+        }
+        return false;
+    }
+
 }

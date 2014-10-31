@@ -51,6 +51,8 @@ tile.creativeCompressor.name=Creative Compressor
 tile.wheatHarvester.plasticPlants.name=Plastic Plants Harvester Dolley
 tile.pressureChamberWall.wall.name=Pressure Chamber Wall
 tile.pressureChamberWall.window.name=Pressure Chamber Window
+tile.fluxCompressor.name=Flux Compressor
+tile.pneumaticDynamo.name=Pneumatic Dynamo
 
 tile.monsterStoneEgg.name=Silverfish
 
@@ -122,33 +124,33 @@ item.plasticElectronTube13.name=Music Plant Electron Tube
 item.plasticElectronTube14.name=Propulsion Plant Electron Tube
 item.plasticElectronTube15.name=Flying Flower Electron Tube
 
-for.circuit.plasticPlant0= Managed Squid Plant Farm
-for.circuit.plasticPlant1= Managed Fire Flower Farm
-for.circuit.plasticPlant2= Managed Creeper Plant Farm
-for.circuit.plasticPlant3= Managed Slime Plant Farm
-for.circuit.plasticPlant4= Managed Rain Plant Farm
-for.circuit.plasticPlant5= Managed Ender Plant Farm
-for.circuit.plasticPlant6= Managed Lightning Plant Farm
-for.circuit.plasticPlant7= Managed Adrenaline Plant Farm
-for.circuit.plasticPlant8= Managed Burst Plant Farm
-for.circuit.plasticPlant9= Managed Potion Plant Farm
-for.circuit.plasticPlant10= Managed Repulsion Plant Farm
-for.circuit.plasticPlant11= Managed Helium Plant Farm
-for.circuit.plasticPlant12= Managed Chopper Plant Farm
-for.circuit.plasticPlant13= Managed Music Plant Farm
-for.circuit.plasticPlant14= Managed Propulsion Plant Farm
-for.circuit.plasticPlant15= Managed Flying Flower Farm
+for.circuit.plasticPlant0=Squid Plant Farm
+for.circuit.plasticPlant1=Fire Flower Farm
+for.circuit.plasticPlant2=Creeper Plant Farm
+for.circuit.plasticPlant3=Slime Plant Farm
+for.circuit.plasticPlant4=Rain Plant Farm
+for.circuit.plasticPlant5=Ender Plant Farm
+for.circuit.plasticPlant6=Lightning Plant Farm
+for.circuit.plasticPlant7=Adrenaline Plant Farm
+for.circuit.plasticPlant8=Burst Plant Farm
+for.circuit.plasticPlant9=Potion Plant Farm
+for.circuit.plasticPlant10=Repulsion Plant Farm
+for.circuit.plasticPlant11=Helium Plant Farm
+for.circuit.plasticPlant12=Chopper Plant Farm
+for.circuit.plasticPlant13=Music Plant Farm
+for.circuit.plasticPlant14=Propulsion Plant Farm
+for.circuit.plasticPlant15=Flying Flower Farm
 
-item.machineUpgrade0.name=Machine Upgrade: Volume
-item.machineUpgrade1.name=Machine Upgrade: Dispenser
-item.machineUpgrade2.name=Machine Upgrade: Item Life
-item.machineUpgrade3.name=Machine Upgrade: Entity Tracker
-item.machineUpgrade4.name=Machine Upgrade: Block Tracker
-item.machineUpgrade5.name=Machine Upgrade: Speed
-item.machineUpgrade6.name=Machine Upgrade: Item Search
-item.machineUpgrade7.name=Machine Upgrade: Coordinate Tracker
-item.machineUpgrade8.name=Machine Upgrade: Range
-item.machineUpgrade9.name=Machine Upgrade: Security
+item.machineUpgrade0.name=Volume Upgrade
+item.machineUpgrade1.name=Dispenser Upgrade
+item.machineUpgrade2.name=Item Life Upgrade
+item.machineUpgrade3.name=Entity Tracker Upgrade
+item.machineUpgrade4.name=Block Tracker Upgrade
+item.machineUpgrade5.name=Speed Upgrade
+item.machineUpgrade6.name=Item Search Upgrade
+item.machineUpgrade7.name=Coordinate Tracker Upgrade
+item.machineUpgrade8.name=Range Upgrade
+item.machineUpgrade9.name=Security Upgrade
 
 item.assemblyProgram0.name=Assembly Program: Drill
 item.assemblyProgram1.name=Assembly Program: Laser
@@ -228,12 +230,109 @@ pneumaticHelmet.hacking.finished.resumedTasks=Resumed tasks
 
 # Info
 gui.tab.info=Information
-gui.tab.info.tubeModule=In this interface you can exactly define how a module should behave dependent on the redstone signal. You can define a formula.
+gui.tab.info.tubeModule=§0In this interface you can exactly define how a module should behave dependent on the redstone signal. You can define a formula.
+gui.tab.info.tile.aerialInterface=§0By using an advanced technology which compresses items so much they become as small as atoms, this machine can use a player's inventory as its own. This means you can hopper items in and out of this machine, and they will be added or removed to the inventory of the player who placed the block. Smarter insertion methods like (the mod) Translocators could be used to keep the player's inventory supplied with 64 torches for example.
+gui.tab.info.tile.airCannon=§0This machine can be used to transport items through the air. To be able to use it you'll have to make a GPS Tool. Once made, right click with it on the block you want the items to travel to, and insert the GPS Tool in the GPS slot.
 gui.tab.info.aerialInterface.liquidXp.info.title=Interfacing XP
 gui.tab.info.aerialInterface.liquidXp.info=§0When you've got a Dispenser Upgrade installed in the Aerial Interface, you can pump liquid XP into or out of the Aerial Interface. When there are multiple options, you can learn the Interface which one to pump out by pumping a bit of the liquid you want in. The supported liquids you can use in your instance are:
 
+gui.tab.info.tile.pressureChamberValve=§0This multi-block structure can be used as air storage. The main feature however is to compress various materials into others. Like coal into diamonds.
+gui.tab.info.tile.airCompressor=§0This machine is used to generate compressed air. To do this insert any item that can burn in a Furnace in the fuel slot.
+gui.tab.info.tile.chargingStation=§0This machine is used to (dis)charge items which operate on pneumatic power, for instance a Vortex Cannon.
+gui.tab.info.tile.elevatorBase=§0This machine is like the name says an elevator. You can use this to transport any entities. For it to work you'll need some air pressure and Elevator Frames on top of this block to support the elevator. To control the height level apply a redstone signal or use Elevator Callers. A redstone strength of 0 equals 0%% extension, a strength of 15 equals 100%% extension.
+gui.tab.info.item.pneumaticHelmet=§0On its own this helmet is as good as an Iron Helmet. However, on this helmet you can install various upgrades.
+gui.tab.info.item.pneumaticHelmet.searchUpgrade=§0The Search Upgrade allows you to search for a specific item in (for example) your base. This upgrade depends on the Block Tracker, to be able to find the item existing in inventories, and on the Entity Tracker, which allows it to find the searched item when it lies on the ground. To experience the full effect of the upgrade you should install both these upgrades.
+gui.tab.info.item.pneumaticHelmet.coordinateTracker=§0The Coordinate Tracker upgrade allows you to track one specific coordinate, which can be used for example when you are tunneling to a certain location, without knowing the exact place this location is at in relation to where you are at that moment. Meant for people that don't like to use F3. As second feature this upgrade will use Minecraft's entity pathfinding to navigate you to wherever you want.
+gui.tab.info.item.pneumaticHelmet.entityTracker=§0With the Entity Tracker upgrade in, the helmet is able to track any living entity within a range of 16 blocks. These entities don't have to be visible, making this upgrade a perfect way to prevent Creepers sneaking up on you.
+gui.tab.info.item.pneumaticHelmet.blockTracker=§0With the Block Tracker you'll be able to track Chests, Mob Spawners, Furnaces, Silverfish Blocks, Tripwires, Dispensers, TNT and End Portal Blocks within a range of 30 blocks. This way Dungeons, Fortresses and temples can easily be found. Inventories even can be remotely explored, as hovering over one of these indicators will show their inventories.
+gui.tab.info.item.drone=§0In this interface you can insert upgrades into the Drone. Open up other tabs to see which enhancements can be done.
+gui.tab.info.item.drone.speedUpgrade=§0Per Speed Upgrade inserted, the moving speed of the Drone will increase by 10%% of it's original moving speed. This can stack up to 10 upgrades, meaning 200%% speed is the max.
+gui.tab.info.item.drone.dispenserUpgrade=§0By default the Drone can transfer one stack of items. For every Dispenser Upgrade inserted, the Drone can transfer one additional stack.
+gui.tab.info.item.drone.itemLifeUpgrade=§0With the Item Life Upgrade inserted, the Drone will be able to auto-repair. It will regen health over time. The more upgrades you insert, the stronger the effect (up to 6 upgrades).
+gui.tab.info.item.drone.securityUpgrade=§0With one of this upgrade inserted, the Drone will be capable of being immune to liquids. Liquids around the Drone will be removed by the Drone's forcefield.
+gui.tab.info.item.drone.volumeUpgrade=§0For each upgrade inserted, the Drone's volume will be increased by 5000mL. This could be used for long travels.
+gui.tab.info.tile.pressureChamberInterface=§0This block can be used to export and import items in and out of a Pressure Chamber. You select whether it's exporting or importing by how you place the block. The 'I' means it's Importing on that side, 'O' means it's Outputting. Use the filter slots to select which items are allowed to be imported/exported.
+gui.tab.info.tile.vacuumPump=§0This machine is used to achieve a vacuum. To do this this machine uses pressurized air. Apply pressurized air at the '+' tube, and when 2 bar is reached, air at the '-' tube will be sucked.
+gui.tab.info.tile.assemblyController=§0This machine is used to control other assembly machines. It can control any connected assembly machine, and the machines connecting these assembly machines, and so on... To start the assembly put a program in the program slot.
+gui.tab.info.tile.uvLightBox=§0With this machine you can expose Empty PCB's to UV light. If this happens in such a way that only a part of the PCB gets exposed, this part will hold it's copper traces when etched in an Etching tank. The longer you expose a PCB, the higher the chance that the PCB will be successfully etched.
+gui.tab.info.tile.securityStation=§0When you want to protect an area from others messing around with your belongings, you can use this block to prevent others from interacting/breaking with every block within its range. You can whitelist players by adding them in the Access Stat. There's no in-game tutorial available just yet for how to set up the network.
+gui.tab.info.tile.securityStation.hacking=§0In here you can hack a Security Station. You start at the IO Port. From there, you can hack Network Nodes by left-clicking on them. Every time you do so, you have a chance to be detected by the Diagnostic Subroutine, which then will initiate a trace. You lose when the Subroutine has found your IO Port. You win when you've either hacked every Subroutine or every Registry.
+gui.tab.info.tile.securityStation.stopWorm=§0With a STOP! Worm you can stop a Diagnostic Subroutine from tracing you for 5 seconds. This software will be used in the process. To use it click on the STOP! Worm icon on the right when you are detected (else it would serve no purpose).
+gui.tab.info.tile.securityStation.nukeVirus=§0The Nuke Virus is a consumable item which can be used to insta-capture (without time loss) a Network Node without any chance of being detected by the Diagnostic Subroutine. This also works with every other Network component. To use it, middle-click a hackable node.
+gui.tab.info.securityStationHacking=§0In here you can hack a Security Station. You start at the IO Port. From there, you can hack Network Nodes by left-clicking on them. Every time you do so, you have a chance to be detected by the Diagnostic Subroutine, which then will initiate a trace. You lose when the Subroutine has found your IO Port. You win when you've either hacked every Subroutine or every Registry.
+gui.tab.info.tile.universalSensor=§0Like the name suggests, you can use this device as sensor in many applications. To select a sensor, put in the right Upgrades and navigate through the folder structure. Sensors are marked with a yellow button text.
+gui.tab.info.tile.pneumaticGenerator=§0This machine is only useful when having IndustrialCraft 2 installed. The machine's sole purpose is to convert compressed air into IC2's EU. You can interact with this machine with an IC2 Wrench just like any other IC2 machine.
+gui.tab.info.tile.electricCompressor=§0This machine is only useful when having IndustrialCraft 2 installed. The machine's sole purpose is to convert IC2's EU into compressed air. You can interact with this machine with an IC2 Wrench just like any other IC2 machine.
+gui.tab.info.tile.pneumaticEngine=§0This machine is only useful when having BuildCraft installed. The machine's sole purpose is to convert compressed air into BuildCraft's MJ. You can interact with this machine with a BuildCraft Wrench just like any other BuildCraft engine.
+gui.tab.info.tile.kineticCompressor=§0This machine is only useful when having BuildCraft installed. The machine's sole purpose is to convert BuildCraft's MJ into compressed air. You can interact with this machine with a BuildCraft Wrench just like any other BuildCraft machine.
+gui.tab.info.tile.electrostaticCompressor=§0In the real world it has been stated it's incredibly difficult to do, in this world it's a reality: creating energy from lightning. When this machine gets hit by lightning, it produces 200000mL instantly. To increase the chance that the machine will be hit, you can make a grid of Iron Bars and attach it to this machine. The bolt will then travel through the bars into the machine.
+gui.tab.info.tile.pneumaticDoor=§0This machine, when placed next to a Pneumatic Door, will automatically open the door when there are players nearby. When the Pneumatic Door Base is within range of a Security Station, the Pneumatic Door Base will only react to players which are allowed by the Security Station. Place any normal block in the camo slot to make the block look like that block.
+gui.tab.info.tile.omnidirectionalHopper=§0Did you ever want to use Hoppers to extract items from an other side than the bottom of an inventory? Or did you wish that the Hopper was transfering items faster? Then this Omnidirectional Hopper is for you. Apart from that you can place it in any direction you want, it can also be upgraded like other PneumaticCraft machines.
+gui.tab.info.tile.programmer=§0With this block you can program Drones. This is done with a simplified way of programming: A puzzle-like flowchart. Drones have only one hard programmed feature in them that overrules any other custom one: When the Drone gets low on air, it'll search for a nearby Charging Station with Dispenser upgrade inserted that has more than 1 bar. \n \nTips: \n-You can copy puzzle pieces by middle clicking them. \n-You can insert Machine Upgrades in the Drones. Put a Drone in a Charging Station to see what's possible and to insert them.
+
+
+# Pressure
+gui.tab.pressure=Pressure
+
 # Problems
-gui.tab.problems.redstoneDisallows=Redstone disallows this machine to function.
+gui.tab.problems=Problems
+gui.tab.problems.redstoneDisallows=§7Redstone disallows this machine to function.
+gui.tab.problems.provideRedstone=§0Provide a redstone signal.
+gui.tab.problems.removeRedstone=§0Remove the redstone signal.
+gui.tab.problems.notEnoughPressure=§7Not enough pressure.
+gui.tab.problems.applyPressure=§0Apply at least %s bar.
+gui.tab.problems.noProblems=§7No Problems.
+gui.tab.problems.aerialInterface.linked=§0Machine linked with %s.
+
+# Upgrades
+gui.tab.upgrades=Upgrades
+gui.tab.upgrades.volume=§7-Volume Upgrade \n§0Adds 1L more air capacity for each upgrade inserted.
+gui.tab.upgrades.security=§7-Security Upgrade \n§0Adds a build-in Safety Valve Tube to the pneumatic machine.
+gui.tab.upgrades.tile.aerialInterface=§7-Dispenser Upgrade \n§0Acts like an auto-feeder. Only food items will be accepted through the Aerial Interface, and only when the player is hungry enough to fully utilize the provided meal. Note that the amount of items offered at once is tried to be consumed.
+gui.tab.upgrades.tile.airCannon=§7-Dispenser Upgrade \n§0Will make the cannon act like a Dispenser. Any item that would act special in a Dispenser, will be handled the same way in here. \n§7-Item Life Upgrade \n§0By default the Air Cannon shoots items which have a lifespan of 60 seconds. For each of this upgrades you put in you get an additional 30 seconds. \n§7-Speed Upgrade (max = 10) \n§0The cannon will turn faster. \n§7-Range Upgrade \n§0The shooting range will increase by about 25 blocks per upgrade, up to 250 blocks.
+gui.tab.upgrades.tile.airCompressor=§7-Speed Upgrade \n§0The Air Compressor will produce more compressed air per tick. However this is at the expense of the efficiency.
+gui.tab.upgrades.tile.assemblyController=§7-Speed Upgrade (max = 10) \n§0All assembly machines that are controlled by this Controller will operate faster.
+gui.tab.upgrades.tile.chargingStation=§7-Speed Upgrade (max = 10) \n§0The Charging Station will be able to (dis)charge items faster. \n§7-Dispenser Upgrade \n§0Adds a charge pad onto the Charging Station, allowing it to (dis)charge any Drones, items, and player inventory items that are on top of the Charging Station.
+gui.tab.upgrades.tile.elevator=§7-Speed Upgrade (max = 10) \n§0The elevator will ascend/descent faster (at a higher energy cost).
+gui.tab.upgrades.tile.omnidirectionalHopper=§7-Speed Upgrade (max = 13) \n§0Increases the speed at which the Hopper transfers items.
+gui.tab.upgrades.tile.pneumaticDoor=§7-Range Upgrade \n§0Increases the player detection range by one block for every upgrade. \n§7Speed Upgrade \n§0Increases the speed at which the door opens/closes.
+gui.tab.upgrades.tile.pressureChamberInterface=§7-Speed Upgrade (max = 10) \n§0The floodgates of the Interface will open/close faster, meaning items can be transported quicker.
+gui.tab.upgrades.tile.pressureChamberValve=§7-Item Life Upgrade \n§0Items in the pressure chamber with this upgrade cannot despawn (their age is paused).
+gui.tab.upgrades.tile.securityStation=§7-Range Upgrade \n§0Increases the (square) range of the Security Station by one for each upgrade (up to 16 blocks). \n§7-Security Upgrade \n§0Increases the Security Station's rating by one for each upgrade, which means that players need more Security Upgrades themselves to be able to hack this Station. \n§7-Entity Tracker \n§0Increases the Intrusion Detection Chance with 20%% per upgrade.
+gui.tab.upgrades.tile.securityStation.hacking=§7-Security Upgrade \n§0Allows higher rated Security Stations to be hacked (one level for each upgrade).
+gui.tab.upgrades.tile.uvLightBox=§7-Speed Upgrade (max = 10) \n§0The UV lights will glow brighter and will expose PCB's quicker.
+gui.tab.upgrades.tile.vacuumPump=§7-Speed Upgrade (max = 10) \n§0The Vacuum Pump will produce more vacuum per tick. However this is at the expense of the efficiency.
+gui.tab.upgrades.tile.pneumaticGenerator=§7-Speed Upgrade (max = 10) \n§0Adjusts the output rate: \n§00 upgrades --> 32 EU/t \n§01 upgrade --> 128 EU/t \n§02 upgrades --> 512 EU/t
+
+# Redstone Behaviour
+gui.tab.redstoneBehaviour=Redstone Behaviour
+gui.tab.redstoneBehaviour.enableOn=§0Enable on
+gui.tab.redstoneBehaviour.emitRedstoneWhen=Emit Redstone When
+gui.tab.redstoneBehaviour.button.anySignal=Any Signal
+gui.tab.redstoneBehaviour.button.highSignal=High Signal
+gui.tab.redstoneBehaviour.button.lowSignal=Low Signal
+gui.tab.redstoneBehaviour.button.never=Never
+gui.tab.redstoneBehaviour.aerialInterface.button.playerConnected=Player Connected
+gui.tab.redstoneBehaviour.airCannon.button.highSignalAndAngle=High Signal And Angle
+gui.tab.redstoneBehaviour.airCannon.fireUpon=Fire Upon
+gui.tab.redstoneBehaviour.chargingStation.button.doneDischarging=Done (dis)charging
+gui.tab.redstoneBehaviour.chargingStation.button.charging=Charging
+gui.tab.redstoneBehaviour.chargingStation.button.discharging=Discharging
+gui.tab.redstoneBehaviour.electrostaticCompressor.button.struckByLightning=Struck by lightning
+gui.tab.redstoneBehaviour.elevator.controlBy=Control the Elevator by
+gui.tab.redstoneBehaviour.elevator.button.redstone=Redstone
+gui.tab.redstoneBehaviour.elevator.button.elevatorCallers=Elevator Callers
+gui.tab.redstoneBehaviour.pneumaticDoor.openWhen=Open when
+gui.tab.redstoneBehaviour.pneumaticDoor.button.playerNearby=Player nearby
+gui.tab.redstoneBehaviour.pneumaticDoor.button.playerNearbyAndLooking=Nearby and looking
+gui.tab.redstoneBehaviour.pneumaticDoor.button.woodenDoor=Wooden Door Behaviour
+gui.tab.redstoneBehaviour.securityStation.button.hacked=Hacked
+gui.tab.redstoneBehaviour.securityStation.button.doneRebooting=Done Rebooting
+gui.tab.redstoneBehaviour.universalSensor.redstoneEmission=Redstone emission:
+gui.tab.redstoneBehaviour.universalSensor.button.inverted=Inverted
+gui.tab.redstoneBehaviour.universalSensor.button.normal=Normal
+gui.tab.redstoneBehaviour.uvLightBox.button.chance=Success Chance
+
 
 # Universal Sensor descriptions
 gui.universalSensor.desc.userSetSensor=This is a 'sensor' you can use to emit a constant redstone value. The value emitted is the numeric value inserted into the textbox.
@@ -246,6 +345,8 @@ gui.keybindBoundKey=Currently bound to '%s'
 gui.keybindRightClickToSet=Right click to bind key
 gui.setKeybind=Press key to bind
 gui.enableModule=Enable %s
+gui.pressureChamber=Pressure Chamber
+gui.pressureChamberTitle=%s Pressure Chamber
 
 key.pneumaticcraft.category=PneumaticCraft
 # gui.enableModule.coreComponents=Enable Helmet
@@ -267,11 +368,13 @@ blockTracker.module.misc=Miscellaneous Blocks
 blockTracker.module.bcEnergy=BuildCraft Energy Blocks
 blockTracker.module.hydraulicraft=Hydraulicraft Power Blocks
 blockTracker.module.ic2=IC2 Power Blocks
+blockTracker.module.rf=RF Power Blocks
 blockTracker.module.thaumcraft=Thaumcraft Aspect Blocks
 
 blockTracker.info.bcEnergy=BuildCraft Energy Block
 blockTracker.info.hydraulicraft=Hydraulicraft Power Block
 blockTracker.info.ic2=IC2 Power Block
+blockTracker.info.rf=RF Power Block
 blockTracker.info.thaumcraft=Containing Aspects:
 blockTracker.info.thaumcraft.nodetype=Node Type:
 blockTracker.info.thaumcraft.nodeModifier=Node Modifier:

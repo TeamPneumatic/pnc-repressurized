@@ -12,6 +12,7 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import pneumaticCraft.client.gui.widget.GuiAnimatedStat;
+import pneumaticCraft.client.gui.widget.IGuiWidget;
 import pneumaticCraft.client.gui.widget.WidgetTooltipArea;
 import pneumaticCraft.common.block.tubes.TubeModuleRedstoneReceiving;
 import pneumaticCraft.common.network.NetworkHandler;
@@ -52,7 +53,7 @@ public class GuiPressureModule extends GuiTubeModule{
         graphRight = guiLeft + 172;
         addWidget(new WidgetTooltipArea(graphLeft - 20, graphHighY, 25, graphLowY - graphHighY, "gui.redstone"));
         addWidget(new WidgetTooltipArea(graphLeft, graphLowY - 5, graphRight - graphLeft, 25, "gui.threshold"));
-        animatedStatList.add(new GuiAnimatedStat(this, "gui.tab.info", Textures.GUI_INFO_LOCATION, xStart, yStart + 5, 0xFF8888FF, null, true).setText("gui.tab.info.tubeModule"));
+        addWidget((IGuiWidget)new GuiAnimatedStat(this, "gui.tab.info", Textures.GUI_INFO_LOCATION, xStart, yStart + 5, 0xFF8888FF, null, true).setText("gui.tab.info.tubeModule"));
     }
 
     @Override

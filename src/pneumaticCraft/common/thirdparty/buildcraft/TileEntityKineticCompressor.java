@@ -9,15 +9,16 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.common.Config;
 import pneumaticCraft.common.item.Itemss;
+import pneumaticCraft.common.tileentity.IRedstoneControlled;
 import pneumaticCraft.common.tileentity.TileEntityPneumaticBase;
-import pneumaticCraft.lib.Names;
 import pneumaticCraft.lib.PneumaticValues;
 import buildcraft.api.power.IPowerReceptor;
 import buildcraft.api.power.PowerHandler;
 import buildcraft.api.power.PowerHandler.PowerReceiver;
 import buildcraft.api.power.PowerHandler.Type;
 
-public class TileEntityKineticCompressor extends TileEntityPneumaticBase implements IPowerReceptor, IInventory{
+public class TileEntityKineticCompressor extends TileEntityPneumaticBase implements IPowerReceptor, IInventory,
+        IRedstoneControlled{
 
     private ItemStack[] inventory;
 
@@ -93,6 +94,7 @@ public class TileEntityKineticCompressor extends TileEntityPneumaticBase impleme
         return powerHandler.getEnergyStored();
     }
 
+    @Override
     public boolean redstoneAllows(){
         switch(redstoneMode){
             case 0:
@@ -120,9 +122,11 @@ public class TileEntityKineticCompressor extends TileEntityPneumaticBase impleme
 
     @Override
     public void handleGUIButtonPress(int buttonID, EntityPlayer player){
-        redstoneMode++;
-        if(redstoneMode > 2) redstoneMode = 0;
-        sendDescriptionPacket();
+        if(buttonID == 0) {
+            redstoneMode++;
+            if(redstoneMode > 2) redstoneMode = 0;
+            sendDescriptionPacket();
+        }
     }
 
     /**
@@ -183,7 +187,7 @@ public class TileEntityKineticCompressor extends TileEntityPneumaticBase impleme
     @Override
     public String getInventoryName(){
 
-        return Names.KINETIC_COMPRESSOR;
+        return BuildCraft.kineticCompressor.getUnlocalizedName();
     }
 
     @Override
@@ -258,7 +262,7 @@ public class TileEntityKineticCompressor extends TileEntityPneumaticBase impleme
 
     @Override
     public boolean hasCustomInventoryName(){
-        return true;
+        return false;
     }
 
     @Override
@@ -271,4 +275,9 @@ public class TileEntityKineticCompressor extends TileEntityPneumaticBase impleme
 
     @Override
     public void closeInventory(){}
+
+    @Override
+    public int getRedstoneMode(){
+        return redstoneMode;
+    }
 }

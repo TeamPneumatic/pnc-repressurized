@@ -86,12 +86,14 @@ public class GuiKeybindCheckBox extends GuiCheckBox{
     }
 
     @Override
-    public void onKey(char key, int keyCode){
+    public boolean onKey(char key, int keyCode){
         if(isAwaitingKey) {
             isAwaitingKey = false;
             keyBinding = setOrAddKeybind(keyBindingName, keyCode);
             text = oldCheckboxText;
+            return true;
         }
+        return false;
     }
 
     @SubscribeEvent
@@ -139,7 +141,7 @@ public class GuiKeybindCheckBox extends GuiCheckBox{
     }
 
     @Override
-    public void addTooltip(List<String> curTooltip, boolean shiftPressed){
+    public void addTooltip(int mouseX, int mouseY, List<String> curTooltip, boolean shiftPressed){
         if(keyBinding != null) {
             curTooltip.add(I18n.format("gui.keybindBoundKey", Keyboard.getKeyName(keyBinding.getKeyCode())));
         } else if(!isAwaitingKey) {

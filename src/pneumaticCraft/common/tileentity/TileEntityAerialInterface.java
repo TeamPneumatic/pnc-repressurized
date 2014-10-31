@@ -21,15 +21,16 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 import pneumaticCraft.common.PneumaticCraftAPIHandler;
+import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.lib.Log;
-import pneumaticCraft.lib.Names;
 import pneumaticCraft.lib.PneumaticValues;
 
 import com.mojang.authlib.GameProfile;
 
-public class TileEntityAerialInterface extends TileEntityPneumaticBase implements ISidedInventory, IFluidHandler{
+public class TileEntityAerialInterface extends TileEntityPneumaticBase implements ISidedInventory, IFluidHandler,
+        IMinWorkingPressure, IRedstoneControl{
     private ItemStack[] inventory;
 
     private final int INVENTORY_SIZE = 4;
@@ -153,7 +154,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
 
     @Override
     public boolean hasCustomInventoryName(){
-        return true;
+        return false;
     }
 
     /**
@@ -253,7 +254,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
     @Override
     public String getInventoryName(){
 
-        return Names.AERIAL_INTERFACE;
+        return Blockss.aerialInterface.getUnlocalizedName();
     }
 
     @Override
@@ -507,6 +508,16 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
             i++;
         }
         return i - 1;
+    }
+
+    @Override
+    public float getMinWorkingPressure(){
+        return PneumaticValues.MIN_PRESSURE_AERIAL_INTERFACE;
+    }
+
+    @Override
+    public int getRedstoneMode(){
+        return redstoneMode;
     }
 
 }

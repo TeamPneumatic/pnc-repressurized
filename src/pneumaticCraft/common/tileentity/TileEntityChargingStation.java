@@ -19,18 +19,17 @@ import org.apache.commons.lang3.tuple.Pair;
 import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.api.item.IPressurizable;
 import pneumaticCraft.api.tileentity.IPneumaticMachine;
+import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.inventory.ContainerChargingStationItemInventory;
 import pneumaticCraft.common.item.IChargingStationGUIHolderItem;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.Itemss;
-import pneumaticCraft.lib.GuiConstants;
-import pneumaticCraft.lib.Names;
 import pneumaticCraft.lib.PneumaticValues;
 import pneumaticCraft.proxy.CommonProxy;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityChargingStation extends TileEntityPneumaticBase implements ISidedInventory{
+public class TileEntityChargingStation extends TileEntityPneumaticBase implements ISidedInventory, IRedstoneControl{
     private ItemStack[] inventory;
 
     private final int INVENTORY_SIZE = 5;
@@ -38,6 +37,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     public static final int CHARGE_INVENTORY_INDEX = 0;
     public static final int UPGRADE_SLOT_START = 1;
     public static final int UPGRADE_SLOT_END = 4;
+    public static final float ANIMATION_AIR_SPEED = 0.001F;
 
     public boolean charging;
     public boolean disCharging;
@@ -95,7 +95,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
                     chargingItem.addAir(chargedItem, -1);
                     addAir(1, ForgeDirection.UNKNOWN);
                     disCharging = true;
-                    renderAirProgress -= GuiConstants.CHARGING_STATION_AIR_SPEED;
+                    renderAirProgress -= ANIMATION_AIR_SPEED;
                     if(renderAirProgress < 0.0F) {
                         renderAirProgress += 1F;
                     }
@@ -103,7 +103,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
                     chargingItem.addAir(chargedItem, 1);
                     addAir(-1, ForgeDirection.UNKNOWN);
                     charging = true;
-                    renderAirProgress += GuiConstants.CHARGING_STATION_AIR_SPEED;
+                    renderAirProgress += ANIMATION_AIR_SPEED;
                     if(renderAirProgress > 1.0F) {
                         renderAirProgress -= 1F;
                     }
@@ -139,7 +139,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
             if(redstoneMode > 3) redstoneMode = 0;
             updateNeighbours();
             sendDescriptionPacket();
-        } else if(inventory[CHARGE_INVENTORY_INDEX] != null && inventory[CHARGE_INVENTORY_INDEX].getItem() instanceof IChargingStationGUIHolderItem) {
+        } else if((buttonID == 1 || buttonID == 2) && inventory[CHARGE_INVENTORY_INDEX] != null && inventory[CHARGE_INVENTORY_INDEX].getItem() instanceof IChargingStationGUIHolderItem) {
             player.openGui(PneumaticCraft.instance, buttonID == 1 ? ((IChargingStationGUIHolderItem)inventory[CHARGE_INVENTORY_INDEX].getItem()).getGuiID() : CommonProxy.GUI_ID_CHARGING_STATION, worldObj, xCoord, yCoord, zCoord);
         }
     }
@@ -239,7 +239,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     @Override
     public String getInventoryName(){
 
-        return Names.CHARGING_STATION;
+        return Blockss.chargingStation.getUnlocalizedName();
     }
 
     @Override
@@ -319,6 +319,11 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
 
     @Override
     public boolean hasCustomInventoryName(){
-        return true;
+        return false;
+    }
+
+    @Override
+    public int getRedstoneMode(){
+        return redstoneMode;
     }
 }

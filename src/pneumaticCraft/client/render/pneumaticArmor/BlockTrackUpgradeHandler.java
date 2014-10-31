@@ -13,6 +13,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.ChunkCache;
 import net.minecraft.world.IBlockAccess;
+import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.common.config.Configuration;
 
 import org.lwjgl.opengl.GL11;
@@ -253,6 +254,16 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler{
             if(target.isSameTarget(null, x, y, z)) return target;
         }
         return null;
+    }
+
+    public boolean scroll(MouseEvent event){
+        for(RenderBlockTarget target : blockTargets) {
+            if(target.scroll(event)) {
+                getAnimatedStat().handleMouseWheel(event.dwheel);
+                return true;
+            }
+        }
+        return false;
     }
 
 }
