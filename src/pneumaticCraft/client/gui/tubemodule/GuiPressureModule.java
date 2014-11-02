@@ -65,6 +65,7 @@ public class GuiPressureModule extends GuiTubeModule{
     public void drawScreen(int mouseX, int mouseY, float partialTicks){
         super.drawScreen(mouseX, mouseY, partialTicks);
 
+        GL11.glDisable(GL11.GL_LIGHTING);
         if(!lowerBoundField.isFocused()) lowerBoundField.setText(PneumaticCraftUtils.roundNumberTo(module.lowerBound, 1));
         if(!higherBoundField.isFocused()) higherBoundField.setText(PneumaticCraftUtils.roundNumberTo(module.higherBound, 1));
 
