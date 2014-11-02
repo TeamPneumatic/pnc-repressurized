@@ -102,14 +102,14 @@ public class EventHandlerPneumaticCraft{
     @SubscribeEvent
     public void onEntityDeath(LivingDeathEvent event){
         if(!event.entity.worldObj.isRemote) {
-            if(event.entity instanceof EntitySlime && Math.random() < 0.1D) {
+            if(Config.enableSlimeSeedDrop && event.entity instanceof EntitySlime && Math.random() < 0.1D) {
                 ItemPlasticPlants.markInactive(event.entity.entityDropItem(new ItemStack(Itemss.plasticPlant, 1, ItemPlasticPlants.SLIME_PLANT_DAMAGE), 0));
-            } else if(event.entity instanceof EntityCreeper && Math.random() < 0.05D) {
+            } else if(Config.enableCreeperSeedDrop && event.entity instanceof EntityCreeper && Math.random() < 0.05D) {
                 if(Config.enableCreeperDropExplosion) event.entity.worldObj.createExplosion(event.entity, event.entity.posX, event.entity.posY + event.entityLiving.height / 2D, event.entity.posZ, 0.5F, event.entity.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"));
                 int dropAmount = (int)(Math.random() * 3D) + 1;
                 for(int i = 0; i < dropAmount; i++)
                     ItemPlasticPlants.markInactive(event.entity.entityDropItem(new ItemStack(Itemss.plasticPlant, 1, ItemPlasticPlants.CREEPER_PLANT_DAMAGE), 0));
-            } else if(event.entity instanceof EntitySquid && Math.random() < 0.05D) {
+            } else if(Config.enableSquidSeedDrop && event.entity instanceof EntitySquid && Math.random() < 0.05D) {
                 ItemPlasticPlants.markInactive(event.entity.entityDropItem(new ItemStack(Itemss.plasticPlant, 1, ItemPlasticPlants.SQUID_PLANT_DAMAGE), 0));
             }
         }
@@ -120,7 +120,7 @@ public class EventHandlerPneumaticCraft{
         if(!HackableEnderman.onEndermanTeleport(event.entity)) {
             event.setCanceled(true);
         } else {
-            if(Math.random() < 0.05D) {
+            if(Config.enableEndermanSeedDrop && Math.random() < 0.05D) {
                 if(!event.entity.worldObj.isRemote) ItemPlasticPlants.markInactive(event.entity.entityDropItem(new ItemStack(Itemss.plasticPlant, 1, ItemPlasticPlants.ENDER_PLANT_DAMAGE), 0));
             }
         }

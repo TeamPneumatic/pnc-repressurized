@@ -49,6 +49,7 @@ public class Config{
 
     public static boolean enableDroneSuffocationDamage;
     public static boolean enableCreeperDropExplosion;
+    public static boolean enableSlimeSeedDrop, enableCreeperSeedDrop, enableSquidSeedDrop, enableEndermanSeedDrop;
 
     public static final String[] CATEGORIES = new String[]{Configuration.CATEGORY_GENERAL, "plant_full-grown_effects", "plant_generation_options", "machine_properties", "advanced", "recipe_enabling", "third_party_enabling"};
     public static List<String> NO_MC_RESTART_CATS = Arrays.asList(new String[]{"plant_full-grown_effects", "plant_generation_options", "machine_properties"});
@@ -132,6 +133,10 @@ public class Config{
 
         enableDroneSuffocationDamage = config.get(Configuration.CATEGORY_GENERAL, "Enable Drone Suffocation Damage", true).getBoolean(true);
         enableCreeperDropExplosion = config.getBoolean("Enable Creeper Explosions on seed drop", Configuration.CATEGORY_GENERAL, true, "When true, Creepers when dropping a Creeper Plant Seed will create a tiny explosion.");
+        enableCreeperSeedDrop = config.get(Configuration.CATEGORY_GENERAL, "Enable Creeper Seed Drops", true).getBoolean(true);
+        enableSlimeSeedDrop = config.get(Configuration.CATEGORY_GENERAL, "Enable Slime Seed Drops", true).getBoolean(true);
+        enableEndermanSeedDrop = config.get(Configuration.CATEGORY_GENERAL, "Enable Enderman Seed Drops", true).getBoolean(true);
+        enableSquidSeedDrop = config.get(Configuration.CATEGORY_GENERAL, "Enable Squid Seed Drops", true).getBoolean(true);
 
         enableCoalToDiamondsRecipe = config.get("recipe_enabling", "8 Block of Coal --> 1 Diamond (Pressure Chamber)", true).getBoolean(true);
         enableElectricCompressorRecipe = config.get("recipe_enabling", "Electric Compressor", true).getBoolean(true);
