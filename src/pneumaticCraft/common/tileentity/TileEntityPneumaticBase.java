@@ -12,6 +12,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
 import pneumaticCraft.api.tileentity.IAirHandler;
@@ -103,68 +104,88 @@ public class TileEntityPneumaticBase extends TileEntityBase implements IManoMeas
 
     private void disperseAir(List<Pair<ForgeDirection, IPneumaticMachine>> teList){
 
-        /*  while(iterator.hasNext()) {
-              Pair<ForgeDirection, IPneumaticMachine> entry = iterator.next();
-              if(entry.getValue().getAirHandler().getPressure(entry.getKey()) >= getPressure(entry.getKey().getOpposite())) {
-                  iterator.remove();
-              }
-          }*/
+        boolean shouldRepeat = false;
+        List<Pair<Integer, Integer>> dispersion = new ArrayList<Pair<Integer, Integer>>();
+        do {
+            shouldRepeat = false;
+            //Add up every volume and air.
+            int totalVolume = getVolume();
+            int totalAir = currentAir;
+            for(Pair<ForgeDirection, IPneumaticMachine> entry : teList) {
+                IAirHandler airHandler = entry.getValue().getAirHandler();
+                totalVolume += airHandler.getVolume();
+                totalAir += airHandler.getCurrentAir(entry.getKey().getOpposite());
+            }
+            //Only go push based, ignore any machines that have a higher pressure than this block.
+            Iterator<Pair<ForgeDirection, IPneumaticMachine>> iterator = teList.iterator();
+            while(iterator.hasNext()) {
+                Pair<ForgeDirection, IPneumaticMachine> entry = iterator.next();
+                IAirHandler airHandler = entry.getValue().getAirHandler();
+                int totalMachineAir = (int)((long)totalAir * airHandler.getVolume() / totalVolume);//Calculate the total air the machine is going to get.
+                int airDispersed = totalMachineAir - airHandler.getCurrentAir(entry.getKey().getOpposite());
+                if(airDispersed < 0) {
+                    iterator.remove();
+                    shouldRepeat = true;
+                    dispersion.clear();
+                    break;
+                } else {
+                    dispersion.add(new MutablePair(getMaxDispersion(entry.getKey()), airDispersed));
+                }
+            }
+        } while(shouldRepeat);
 
-        //Add up every volume and air.
-        int totalVolume = getVolume();
-        int totalAir = currentAir;
-        for(Pair<ForgeDirection, IPneumaticMachine> entry : teList) {
-            IAirHandler airHandler = entry.getValue().getAirHandler();
-            totalVolume += airHandler.getVolume();
-            totalAir += airHandler.getCurrentAir(entry.getKey().getOpposite());
-        }
-        //Only go push based, ignore any machines that have a higher pressure than this block.
-        Iterator<Pair<ForgeDirection, IPneumaticMachine>> iterator = teList.iterator();
-        while(iterator.hasNext()) {
-            Pair<ForgeDirection, IPneumaticMachine> entry = iterator.next();
-            IAirHandler airHandler = entry.getValue().getAirHandler();
-            int totalMachineAir = (int)((long)totalAir * airHandler.getVolume() / totalVolume);//Calculate the total air the machine is going to get.
-            int airDispersed = totalMachineAir - airHandler.getCurrentAir(entry.getKey().getOpposite());
-            if(airDispersed < 0) {
-                iterator.remove();
-                disperseAir(teList);
-                return;
+        int toBeDivided = 0;
+        int receivers = dispersion.size();
+        for(Pair<Integer, Integer> disp : dispersion) {
+            if(disp.getValue() > disp.getKey()) {
+                toBeDivided += disp.getValue() - disp.getKey();//Any air that wants to go to a neighbor, but can't (because of regulator module) gives back its air.
+                disp.setValue(disp.getKey());
+                receivers--;
             }
         }
-        iterator = teList.iterator();
-        while(iterator.hasNext()) {
-            Pair<ForgeDirection, IPneumaticMachine> entry = iterator.next();
-            IAirHandler airHandler = entry.getValue().getAirHandler();
-            int totalMachineAir = (int)((long)totalAir * airHandler.getVolume() / totalVolume);//Calculate the total air the machine is going to get.
-            int airDispersed = totalMachineAir - airHandler.getCurrentAir(entry.getKey().getOpposite());
-            if(airDispersed < 0) {
-                Log.error("airdispersed < 0!");
+
+        while(toBeDivided >= receivers && receivers > 0) {
+            int dividedValue = toBeDivided / receivers; //try to give every receiver an equal part of the to be divided air.
+            for(Pair<Integer, Integer> disp : dispersion) {
+                int maxTransfer = disp.getKey() - disp.getValue();
+                if(maxTransfer > 0) {
+                    if(maxTransfer <= dividedValue) {
+                        receivers--;//next step this receiver won't be able to receive any air.
+                    }
+                    int transfered = Math.min(dividedValue, maxTransfer);//cap it at the max it can have.
+                    disp.setValue(disp.getKey() + transfered);
+                    toBeDivided -= transfered;
+                }
             }
-            int amount = onAirDispersion(airDispersed, entry.getKey());
-            /*    int neighborAmount = -((TileEntityPneumaticBase)airHandler).onAirDispersion(-amount, entry.getKey().getOpposite());
-                if(Math.abs(neighborAmount) < Math.abs(amount)) {
-                    amount = neighborAmount;
-                }*/
-            airHandler.addAir(amount, entry.getKey().getOpposite());//add the difference between what already was stored.
-            addAir(-amount, ForgeDirection.UNKNOWN);
-            if(amount == 0) iterator.remove();
-            if(amount != airDispersed) {
-                disperseAir(teList);
-                return;
-            }
+        }
+
+        for(int i = 0; i < teList.size(); i++) {
+            IPneumaticMachine neighbor = teList.get(i).getValue();
+            int transferedAir = dispersion.get(i).getValue();
+
+            onAirDispersion(transferedAir, teList.get(i).getKey());
+            neighbor.getAirHandler().addAir(transferedAir, teList.get(i).getKey());
+            addAir(-transferedAir, teList.get(i).getKey().getOpposite());
         }
     }
 
     /**
-     * Method fired when air disperses. Overriden in the Flow Detection Tube to calculate the air passed through, or the regulator to prevent air from travelling.
+     * Method fired to get the maximum air allowed to disperse to this side. Used in the regulator tube to prevent air from travelling.
+     * @param key
+     * @return
+     */
+    protected int getMaxDispersion(ForgeDirection side){
+        return Integer.MAX_VALUE;
+    }
+
+    /**
+     * Method fired when air disperses. Overriden in the Flow Detection Tube to calculate the air passed through.
      * return amount that is allowed to be dispersed.
      * @param amount of air being dispersed.
      * @param side
      * @return
      */
-    protected int onAirDispersion(int amount, ForgeDirection side){
-        return amount;
-    }
+    protected void onAirDispersion(int amount, ForgeDirection side){}
 
     /**
      * Method to release air in the air. It takes air from a specific side, plays a sound effect, and spawns smoke particles.
@@ -187,7 +208,7 @@ public class TileEntityPneumaticBase extends TileEntityBase implements IManoMeas
 
             int dispersedAmount = -(int)(getPressure(side) * PneumaticValues.AIR_LEAK_FACTOR) + 20;
             if(getCurrentAir(side) > dispersedAmount) dispersedAmount = -getCurrentAir(side);
-            dispersedAmount = onAirDispersion(dispersedAmount, side);
+            onAirDispersion(dispersedAmount, side);
             addAir(dispersedAmount, side);
         } else {
             double speed = getPressure(side) * 0.1F + 0.1F;
@@ -199,8 +220,8 @@ public class TileEntityPneumaticBase extends TileEntityBase implements IManoMeas
 
             int dispersedAmount = (int)(getPressure(side) * PneumaticValues.AIR_LEAK_FACTOR) + 20;
             if(dispersedAmount > getCurrentAir(side)) dispersedAmount = getCurrentAir(side);
-            dispersedAmount = onAirDispersion(-dispersedAmount, side);
-            addAir(dispersedAmount, side);
+            onAirDispersion(-dispersedAmount, side);
+            addAir(-dispersedAmount, side);
         }
     }
 

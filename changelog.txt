@@ -7,3 +7,5 @@
 Bugfix: GPS Tool doesn't work when either the X, Y or Z is 0.
 Bugfix: Aphorism Tile adds whitespace when characters like Shift are pressed.
 Bugfix: Dupe bug with drones, when breaking a drone holding items, and replacing it.
+Bugfix: World corruption (StackOverFlow) when connecting up many Elevators next to each other.
+Bugfix: Regulator Tube doesn't behave.

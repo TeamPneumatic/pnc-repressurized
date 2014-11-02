@@ -57,7 +57,7 @@ public class ModuleRegulatorTube extends TubeModuleRedstoneReceiving implements 
     }
 
     @Override
-    public int canDisperse(int amount){
+    public int getMaxDispersion(){
         IAirHandler connectedHandler = null;
         for(Pair<ForgeDirection, IPneumaticMachine> entry : pressureTube.getAirHandler().getConnectedPneumatics()) {
             if(entry.getKey().equals(dir)) {
@@ -66,14 +66,13 @@ public class ModuleRegulatorTube extends TubeModuleRedstoneReceiving implements 
             }
         }
         if(connectedHandler == null) return 0;
-        int maxDispersion = (int)((getThreshold() - connectedHandler.getPressure(ForgeDirection.UNKNOWN)) * pressureTube.getAirHandler().getVolume());
+        int maxDispersion = (int)((getThreshold() - connectedHandler.getPressure(ForgeDirection.UNKNOWN)) * connectedHandler.getVolume());
         if(maxDispersion < 0) return 0;
-        if(Math.abs(maxDispersion) < Math.abs(amount)) {
-            return maxDispersion;
-        } else {
-            return amount;
-        }
+        return maxDispersion;
     }
+
+    @Override
+    public void onAirDispersion(int amount){}
 
     @Override
     public void addInfo(List<String> curInfo){

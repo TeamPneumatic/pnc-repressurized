@@ -517,9 +517,8 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
         if(connectedMachines == null) {
             connectedMachines = super.getConnectedPneumatics();
             TileEntity te = getTileCache()[ForgeDirection.DOWN.ordinal()].getTileEntity();
-            while(te instanceof TileEntityElevatorBase) {
+            if(te instanceof TileEntityElevatorBase) {
                 connectedMachines.addAll(((TileEntityElevatorBase)te).getConnectedPneumatics());
-                te = ((TileEntityElevatorBase)te).getTileCache()[ForgeDirection.DOWN.ordinal()].getTileEntity();
             }
         }
         return connectedMachines;
