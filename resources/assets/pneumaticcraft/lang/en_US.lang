@@ -53,6 +53,7 @@ tile.pressureChamberWall.wall.name=Pressure Chamber Wall
 tile.pressureChamberWall.window.name=Pressure Chamber Window
 tile.fluxCompressor.name=Flux Compressor
 tile.pneumaticDynamo.name=Pneumatic Dynamo
+tile.plasticMixer.name=Plastic Mixer
 
 tile.monsterStoneEgg.name=Silverfish
 
@@ -293,7 +294,7 @@ gui.tab.problems.fluxCompressor.noRF=§7The machine is out of RF. \n§0Add more 
 # Upgrades
 gui.tab.upgrades=Upgrades
 gui.tab.upgrades.volume=§7-Volume Upgrade \n§0Adds 1L more air capacity for each upgrade inserted.
-gui.tab.upgrade.volumeCapacity=7Volume Upgrade \n 0Increases the heat capacity of this machine. It will heat up slower, but it also will cool down slower.
+gui.tab.upgrades.volumeCapacity=§7Volume Upgrade \n§0Increases the heat capacity of this machine. It will heat up slower, but it also will cool down slower.
 gui.tab.upgrades.security=§7-Security Upgrade \n§0Adds a build-in Safety Valve Tube to the pneumatic machine.
 gui.tab.upgrades.tile.aerialInterface=§7-Dispenser Upgrade \n§0Acts like an auto-feeder. Only food items will be accepted through the Aerial Interface, and only when the player is hungry enough to fully utilize the provided meal. Note that the amount of items offered at once is tried to be consumed.
 gui.tab.upgrades.tile.airCannon=§7-Dispenser Upgrade \n§0Will make the cannon act like a Dispenser. Any item that would act special in a Dispenser, will be handled the same way in here. \n§7-Item Life Upgrade \n§0By default the Air Cannon shoots items which have a lifespan of 60 seconds. For each of this upgrades you put in you get an additional 30 seconds. \n§7-Speed Upgrade (max = 10) \n§0The cannon will turn faster. \n§7-Range Upgrade \n§0The shooting range will increase by about 25 blocks per upgrade, up to 250 blocks.

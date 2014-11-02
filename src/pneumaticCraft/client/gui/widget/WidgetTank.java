@@ -35,7 +35,7 @@ public class WidgetTank extends WidgetBase{
     }
 
     @Override
-    public void render(int mouseX, int mouseY){
+    public void render(int mouseX, int mouseY, float partialTick){
         GL11.glDisable(GL11.GL_LIGHTING);
 
         Fluid fluid = tank.getFluid() != null ? tank.getFluid().getFluid() : null;
@@ -81,7 +81,7 @@ public class WidgetTank extends WidgetBase{
     }
 
     @Override
-    public void addTooltip(List<String> curTip, boolean shift){
+    public void addTooltip(int mouseX, int mouseY, List<String> curTip, boolean shift){
         Fluid fluid = null;
         int amt = 0;
         int capacity = 0;

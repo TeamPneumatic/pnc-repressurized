@@ -26,7 +26,7 @@ public class WidgetTemperature extends WidgetBase{
     }
 
     @Override
-    public void render(int mouseX, int mouseY){
+    public void render(int mouseX, int mouseY, float partialTick){
         GL11.glDisable(GL11.GL_LIGHTING);
         Minecraft.getMinecraft().getTextureManager().bindTexture(Textures.WIDGET_TEMPERATURE);
         GL11.glColor4d(1, 1, 1, 1);
@@ -43,7 +43,7 @@ public class WidgetTemperature extends WidgetBase{
     }
 
     @Override
-    public void addTooltip(List<String> curTip, boolean shift){
+    public void addTooltip(int mouseX, int mouseY, List<String> curTip, boolean shift){
         curTip.add("Temperature: " + ((int)logic.getTemperature() - 273) + "C");
     }
 }

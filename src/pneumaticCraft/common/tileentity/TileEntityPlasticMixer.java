@@ -16,10 +16,10 @@ import net.minecraftforge.fluids.IFluidTank;
 import pneumaticCraft.api.IHeatExchangerLogic;
 import pneumaticCraft.api.PneumaticRegistry;
 import pneumaticCraft.api.tileentity.IHeatExchanger;
+import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.fluid.FluidPlastic;
 import pneumaticCraft.common.fluid.Fluids;
 import pneumaticCraft.common.item.Itemss;
-import pneumaticCraft.lib.Names;
 import pneumaticCraft.lib.PneumaticValues;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -176,7 +176,7 @@ public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHand
     @Override
     public void readFromNBT(NBTTagCompound tag){
         super.readFromNBT(tag);
-        loadInventory(inventory, tag, "Items");
+        readInventoryFromNBT(tag, inventory, "Items");
         tank.setFluid(null);
         tank.readFromNBT(tag.getCompoundTag("fluid"));
         lastTickInventoryStacksize = tag.getInteger("lastTickInventoryStacksize");
@@ -189,7 +189,7 @@ public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHand
     @Override
     public void writeToNBT(NBTTagCompound tag){
         super.writeToNBT(tag);
-        saveInventory(inventory, tag, "Items");
+        writeInventoryToNBT(tag, inventory, "Items");
         NBTTagCompound tankTag = new NBTTagCompound();
         tank.writeToNBT(tankTag);
         tag.setTag("fluid", tankTag);
@@ -313,7 +313,7 @@ public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHand
 
     @Override
     public String getInventoryName(){
-        return Names.PLASTIC_MIXER;
+        return Blockss.plasticMixer.getUnlocalizedName();
     }
 
     @Override
@@ -328,7 +328,7 @@ public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHand
 
     @Override
     public boolean hasCustomInventoryName(){
-        return true;
+        return false;
     }
 
     @Override

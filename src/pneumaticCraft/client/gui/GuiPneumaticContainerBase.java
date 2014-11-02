@@ -11,6 +11,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
@@ -23,6 +24,7 @@ import org.lwjgl.opengl.GL11;
 
 import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.api.client.IGuiAnimatedStat;
+import pneumaticCraft.api.tileentity.IHeatExchanger;
 import pneumaticCraft.client.gui.widget.GuiAnimatedStat;
 import pneumaticCraft.client.gui.widget.IGuiWidget;
 import pneumaticCraft.client.gui.widget.IWidgetListener;
@@ -67,17 +69,6 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
         super(par1Container);
         this.te = te;
         this.guiTexture = new ResourceLocation(guiTexture);
-    }
-
-    @Override
-    public void initGui(){
-        super.initGui();
-        widgetList.clear();
-    }
-
-    protected void addWidget(IGuiWidget widget){
-        widgetList.add(widget);
-        widget.setListener(this);
     }
 
     protected GuiAnimatedStat addAnimatedStat(String title, ItemStack icon, int color, boolean leftSided){
@@ -142,6 +133,9 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
                     addAnimatedStat("gui.tab.info", Textures.GUI_INFO_LOCATION, 0xFF8888FF, true).setText(info);
                 }
             }
+            if(te instanceof IHeatExchanger) {
+                addAnimatedStat("gui.tab.heat", new ItemStack(Blocks.fire), 0xFFFF5500, false).setText("gui.tab.info.heat");
+            }
             if(shouldAddUpgradeTab()) {
                 String upgrades = "gui.tab.upgrades." + ((IInventory)te).getInventoryName();
                 String translatedUpgrades = I18n.format(upgrades);
@@ -149,6 +143,9 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
                 if(te instanceof TileEntityPneumaticBase) {
                     upgradeText.add("gui.tab.upgrades.volume");
                     upgradeText.add("gui.tab.upgrades.security");
+                }
+                if(te instanceof IHeatExchanger) {
+                    upgradeText.add("gui.tab.upgrades.volumeCapacity");
                 }
                 if(!translatedUpgrades.equals(upgrades)) upgradeText.add(upgrades);
 
@@ -252,21 +249,21 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
             tooltip.clear();
         }
 
-        boolean shift = PneumaticCraft.proxy.isSneakingInGui();
-        for(IGuiWidget widget : widgetList) {
-            if(widget.getBounds().contains(x, y)) widget.addTooltip(tooltip, shift);
-        }
-        if(!tooltip.isEmpty()) {
-            List<String> localizedTooltip = new ArrayList<String>();
-            for(String line : tooltip) {
-                String localizedLine = I18n.format(line);
-                String[] lines = WordUtils.wrap(localizedLine, 50).split(System.getProperty("line.separator"));
-                for(String locLine : lines) {
-                    localizedTooltip.add(locLine);
-                }
-            }
-            drawHoveringText(localizedTooltip, x, y, fontRendererObj);
-        }
+        /* TODO boolean shift = PneumaticCraft.proxy.isSneakingInGui();
+         for(IGuiWidget widget : widgets) {
+             if(widget.getBounds().contains(x, y)) widget.addTooltip(tooltip, shift);
+         }
+         if(!tooltip.isEmpty()) {
+             List<String> localizedTooltip = new ArrayList<String>();
+             for(String line : tooltip) {
+                 String localizedLine = I18n.format(line);
+                 String[] lines = WordUtils.wrap(localizedLine, 50).split(System.getProperty("line.separator"));
+                 for(String locLine : lines) {
+                     localizedTooltip.add(locLine);
+                 }
+             }
+             drawHoveringText(localizedTooltip, x, y, fontRendererObj);
+         }*/
     }
 
     @Override
