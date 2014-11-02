@@ -151,6 +151,11 @@ processResources
     }
 }
 
+task doIRC(type:Exec) {
+  workingDir '/opt/maartenbot/'
+  commandLine 'java -jar MineMaartenBot.jar $(project.version)' //Updates the topic in #pneumaticcraft
+}
+
 task("uploadJars", dependsOn:"reobf") {
     description = "uploads JARs"
     if (System.getenv("local_maven") != null) {
