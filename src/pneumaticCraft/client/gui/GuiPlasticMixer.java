@@ -1,5 +1,7 @@
 package pneumaticCraft.client.gui;
 
+import java.awt.Point;
+
 import net.minecraft.entity.player.InventoryPlayer;
 import pneumaticCraft.client.gui.widget.WidgetTank;
 import pneumaticCraft.client.gui.widget.WidgetTemperature;
@@ -35,5 +37,15 @@ public class GuiPlasticMixer extends GuiPneumaticContainerBase<TileEntityPlastic
         fontRendererObj.drawString("Hull", 56, 16, 4210752);
         fontRendererObj.drawString("Item", 88, 16, 4210752);
         fontRendererObj.drawString("Liquid", 131, 5, 4210752);
+    }
+
+    @Override
+    protected Point getInvNameOffset(){
+        return new Point(0, -1);
+    }
+
+    @Override
+    protected Point getInvTextOffset(){
+        return null;
     }
 }

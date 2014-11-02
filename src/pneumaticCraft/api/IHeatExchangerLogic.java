@@ -17,7 +17,7 @@ public interface IHeatExchangerLogic{
     public void update();
 
     /**
-     * When called (preferably on tile entity load and neighbor tile entity change) this will add all IHeatExchanger neighbor TileEntities as connected heat exchangers.
+     * When called (preferably on tile entity load and neighbor block/tile entity change) this will add all IHeatExchanger neighbor TileEntities as connected heat exchangers.
      * It will also take care of blocks like Lava.
      * 
      * You don't _have_ to call this method, if this heat exchanger is not connected to the outside world (for example the heat of the liquid

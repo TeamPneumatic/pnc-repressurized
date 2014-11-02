@@ -164,6 +164,9 @@ item.networkComponent3.name=Network IO Port
 item.networkComponent4.name=Network Registry
 item.networkComponent5.name=Network Node
 
+# Fluid
+fluid.plastic=Liquid Plastic
+
 # Tube Modules
 item.safetyTubeModule.name=Safety Tube Module
 item.pressureGaugeModule.name=Pressure Gauge Tube Module
