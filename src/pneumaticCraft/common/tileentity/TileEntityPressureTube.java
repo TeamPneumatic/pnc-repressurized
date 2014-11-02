@@ -106,14 +106,24 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase{
     }
 
     @Override
-    protected int onAirDispersion(int amount, ForgeDirection side){
+    protected void onAirDispersion(int amount, ForgeDirection side){
         if(side != ForgeDirection.UNKNOWN) {
             int intSide = side/*.getOpposite()*/.ordinal();
             if(modules[intSide] instanceof IInfluenceDispersing) {
-                amount = ((IInfluenceDispersing)modules[intSide]).canDisperse(amount);
+                ((IInfluenceDispersing)modules[intSide]).onAirDispersion(amount);
             }
         }
-        return amount;
+    }
+
+    @Override
+    protected int getMaxDispersion(ForgeDirection side){
+        if(side != ForgeDirection.UNKNOWN) {
+            int intSide = side/*.getOpposite()*/.ordinal();
+            if(modules[intSide] instanceof IInfluenceDispersing) {
+                return ((IInfluenceDispersing)modules[intSide]).getMaxDispersion();
+            }
+        }
+        return Integer.MAX_VALUE;
     }
 
     //TODO legacy, remove after a while

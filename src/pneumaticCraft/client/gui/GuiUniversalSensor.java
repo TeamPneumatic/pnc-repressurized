@@ -1,6 +1,6 @@
 package pneumaticCraft.client.gui;
 
-import java.awt.Rectangle;
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,50 +10,32 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.StatCollector;
-import net.minecraftforge.common.util.ForgeDirection;
-
-import org.lwjgl.opengl.GL11;
-
 import pneumaticCraft.api.universalSensor.ISensorSetting;
 import pneumaticCraft.client.gui.widget.GuiAnimatedStat;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.inventory.ContainerUniversalSensor;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.network.NetworkHandler;
-import pneumaticCraft.common.network.PacketGuiButton;
 import pneumaticCraft.common.network.PacketUpdateTextfield;
 import pneumaticCraft.common.sensor.SensorHandler;
 import pneumaticCraft.common.tileentity.TileEntityUniversalSensor;
-import pneumaticCraft.common.util.PneumaticCraftUtils;
-import pneumaticCraft.lib.GuiConstants;
 import pneumaticCraft.lib.PneumaticValues;
 import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class GuiUniversalSensor extends GuiPneumaticContainerBase{
-    private static final ResourceLocation guiTexture = new ResourceLocation(Textures.GUI_UNIVERSAL_SENSOR);
-    private final TileEntityUniversalSensor te;
-    private GuiAnimatedStat pressureStat;
-    private GuiAnimatedStat problemStat;
-    private GuiAnimatedStat redstoneBehaviourStat;
-    private GuiAnimatedStat infoStat;
-    private GuiAnimatedStat upgradeStat;
+public class GuiUniversalSensor extends GuiPneumaticContainerBase<TileEntityUniversalSensor>{
     private GuiAnimatedStat sensorInfoStat;
-    private GuiButton redstoneButton;
     private GuiTextField nameFilterField;
     private int page;
     private int maxPage;
     private static final int MAX_SENSORS_PER_PAGE = 4;
     private int ticksExisted;
 
-    public GuiUniversalSensor(InventoryPlayer player, TileEntityUniversalSensor teUniversalSensor){
-        super(new ContainerUniversalSensor(player, teUniversalSensor));
+    public GuiUniversalSensor(InventoryPlayer player, TileEntityUniversalSensor te){
+        super(new ContainerUniversalSensor(player, te), te, Textures.GUI_UNIVERSAL_SENSOR);
         ySize = 239;
-        te = teUniversalSensor;
 
     }
 
@@ -64,40 +46,25 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase{
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
 
-        pressureStat = new GuiAnimatedStat(this, "Pressure", new ItemStack(Blockss.pressureTube), xStart + xSize, yStart + 5, 0xFF00AA00, null, false);
-        problemStat = new GuiAnimatedStat(this, "Problems", Textures.GUI_PROBLEMS_TEXTURE, xStart + xSize, 3, 0xFFFF0000, pressureStat, false);
-        sensorInfoStat = new GuiAnimatedStat(this, "Sensor Info", new ItemStack(Blockss.universalSensor), xStart + xSize, 3, 0xFFFFAA00, problemStat, false);
-        redstoneBehaviourStat = new GuiAnimatedStat(this, "Redstone Behaviour", new ItemStack(net.minecraft.init.Items.redstone), xStart, yStart + 5, 0xFFCC0000, null, true);
-        infoStat = new GuiAnimatedStat(this, "Information", Textures.GUI_INFO_LOCATION, xStart, 3, 0xFF8888FF, redstoneBehaviourStat, true);
-        upgradeStat = new GuiAnimatedStat(this, "Upgrades", Textures.GUI_UPGRADES_LOCATION, xStart, 3, 0xFF0000FF, infoStat, true);
-
-        animatedStatList.add(pressureStat);
-        animatedStatList.add(problemStat);
-        animatedStatList.add(sensorInfoStat);
-        animatedStatList.add(redstoneBehaviourStat);
-        animatedStatList.add(infoStat);
-        animatedStatList.add(upgradeStat);
-        redstoneBehaviourStat.setText(getRedstoneBehaviour());
-        infoStat.setText(GuiConstants.INFO_UNIVERSAL_SENSOR);
-        upgradeStat.setText(getUpgradeText());
+        sensorInfoStat = addAnimatedStat("Sensor Info", new ItemStack(Blockss.universalSensor), 0xFFFFAA00, false);
+        addAnimatedStat("gui.tab.upgrades", Textures.GUI_UPGRADES_LOCATION, 0xFF0000FF, true).setText(getUpgradeText());
 
         nameFilterField = new GuiTextField(fontRendererObj, xStart + 70, yStart + 58, 100, 10);
         nameFilterField.setText(te.getText(0));
 
-        Rectangle buttonRect = redstoneBehaviourStat.getButtonScaledRectangle(xStart - 118, yStart + 30, 117, 20);
-        redstoneButton = getButtonFromRectangle(0, buttonRect, "-");
         updateButtons();//also adds the redstoneButton.
+    }
+
+    @Override
+    protected boolean shouldAddUpgradeTab(){
+        return false;
     }
 
     @Override
     protected void drawGuiContainerForegroundLayer(int x, int y){
 
-        String containerName = te.hasCustomInventoryName() ? te.getInventoryName() : StatCollector.translateToLocal(te.getInventoryName());
-
-        fontRendererObj.drawString(containerName, xSize / 2 - fontRendererObj.getStringWidth(containerName) / 2, 6, 4210752);
-
+        super.drawGuiContainerForegroundLayer(x, y);
         if(maxPage > 1) fontRendererObj.drawString(page + "/" + maxPage, 110, 46 + 22 * MAX_SENSORS_PER_PAGE, 4210752);
-        fontRendererObj.drawString(StatCollector.translateToLocal("container.inventory"), 8, ySize - 92, 4210752);
         fontRendererObj.drawString("Upgr.", 23, 98, 4210752);
 
         String[] folders = te.getSensorSetting().split("/");
@@ -113,27 +80,37 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase{
     }
 
     @Override
+    protected Point getInvTextOffset(){
+        return new Point(0, 2);
+    }
+
+    @Override
     protected void drawGuiContainerBackgroundLayer(float opacity, int x, int y){
         super.drawGuiContainerBackgroundLayer(opacity, x, y);
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
-        mc.getTextureManager().bindTexture(guiTexture);
-        int xStart = (width - xSize) / 2;
-        int yStart = (height - ySize) / 2;
-        drawTexturedModalRect(xStart, yStart, 0, 0, xSize, ySize);
-
-        GuiUtils.drawPressureGauge(fontRendererObj, -1, PneumaticValues.MAX_PRESSURE_UNIVERSAL_SENSOR, PneumaticValues.DANGER_PRESSURE_UNIVERSAL_SENSOR, PneumaticValues.MIN_PRESSURE_UNIVERSAL_SENSOR, te.getPressure(ForgeDirection.UNKNOWN), xStart + 34, yStart + ySize * 1 / 4, zLevel);
-
-        pressureStat.setText(getPressureStats());
-        problemStat.setText(getProblems());
-        redstoneButton.visible = redstoneBehaviourStat.isDoneExpanding();
-        redstoneButton.displayString = te.invertedRedstone ? "Inverted" : "Normal";
         nameFilterField.drawTextBox();
 
         ISensorSetting sensor = SensorHandler.instance().getSensorFromPath(te.getSensorSetting());
         if(sensor != null) {
             sensor.drawAdditionalInfo(fontRendererObj);
         }
+    }
+
+    @Override
+    protected String getRedstoneButtonText(int mode){
+        return te.invertedRedstone ? "gui.tab.redstoneBehaviour.universalSensor.button.inverted" : "gui.tab.redstoneBehaviour.universalSensor.button.normal";
+    }
+
+    @Override
+    protected String getRedstoneString(){
+        return "gui.tab.redstoneBehaviour.universalSensor.redstoneEmission";
+    }
+
+    @Override
+    protected Point getGaugeLocation(){
+        int xStart = (width - xSize) / 2;
+        int yStart = (height - ySize) / 2;
+        return new Point(xStart + 34, yStart + ySize * 1 / 4);
     }
 
     @Override
@@ -210,18 +187,12 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase{
         }
     }
 
-    private List<String> getRedstoneBehaviour(){
-        List<String> textList = new ArrayList<String>();
-        textList.add("\u00a77Redstone emission:     "); // the spaces are there
-                                                        // to create space for
-                                                        // the button
-        for(int i = 0; i < 3; i++)
-            textList.add("");// create some space for the button
-        return textList;
-    }
-
     private List<String> getUpgradeText(){
-        return SensorHandler.instance().getUpgradeInfo();
+        List<String> upgradeInfo = new ArrayList<String>();
+        upgradeInfo.add("gui.tab.upgrades.volume");
+        upgradeInfo.add("gui.tab.upgrades.security");
+        upgradeInfo.addAll(SensorHandler.instance().getUpgradeInfo());
+        return upgradeInfo;
     }
 
     private List<String> getSensorInfo(){
@@ -237,33 +208,18 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase{
         return text;
     }
 
-    private List<String> getPressureStats(){
-        List<String> pressureStatText = new ArrayList<String>();
-        pressureStatText.add("\u00a77Current Pressure:");
-        pressureStatText.add("\u00a70" + PneumaticCraftUtils.roundNumberTo(te.getPressure(ForgeDirection.UNKNOWN), 1) + " bar.");
-        pressureStatText.add("\u00a77Current Air:");
-        pressureStatText.add("\u00a70" + (double)Math.round(te.currentAir + te.volume) + " mL.");
-        pressureStatText.add("\u00a77Volume:");
-        pressureStatText.add("\u00a70" + (double)Math.round(PneumaticValues.VOLUME_UNIVERSAL_SENSOR) + " mL.");
-        float pressureLeft = te.volume - PneumaticValues.VOLUME_UNIVERSAL_SENSOR;
-        if(pressureLeft > 0) {
-            pressureStatText.add("\u00a70" + (double)Math.round(pressureLeft) + " mL. (Volume Upgrades)");
-            pressureStatText.add("\u00a70--------+");
-            pressureStatText.add("\u00a70" + (double)Math.round(te.volume) + " mL.");
-        }
+    @Override
+    protected void addPressureStatInfo(List<String> pressureStatText){
+        super.addPressureStatInfo(pressureStatText);
         if(te.isSensorActive) {
             pressureStatText.add(EnumChatFormatting.GRAY + "Usage:");
-            pressureStatText.add(EnumChatFormatting.BLACK + PneumaticCraftUtils.roundNumberTo(PneumaticValues.USAGE_UNIVERSAL_SENSOR, 1) + "mL/tick");
+            pressureStatText.add(EnumChatFormatting.BLACK.toString() + PneumaticValues.USAGE_UNIVERSAL_SENSOR + "mL/tick");
         }
-        return pressureStatText;
     }
 
-    private List<String> getProblems(){
-        List<String> textList = new ArrayList<String>();
-        if(te.getPressure(ForgeDirection.UNKNOWN) < PneumaticValues.MIN_PRESSURE_UNIVERSAL_SENSOR) {
-            textList.add(EnumChatFormatting.GRAY + "Not enough pressure!");
-            textList.add(EnumChatFormatting.BLACK + "Apply more pressure.");
-        }
+    @Override
+    protected void addProblems(List<String> textList){
+        super.addProblems(textList);
         if(SensorHandler.instance().getSensorFromPath(te.getSensorSetting()) == null) {
             textList.add(EnumChatFormatting.GRAY + "No sensor selected!");
             textList.add(EnumChatFormatting.BLACK + "Insert upgrades and select the desired sensor.");
@@ -292,11 +248,6 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase{
                 break;
             }
         }
-
-        if(textList.size() == 0) {
-            textList.add(EnumChatFormatting.BLACK + "No problems");
-        }
-        return textList;
     }
 
     /**
@@ -305,9 +256,6 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase{
      */
     @Override
     protected void actionPerformed(GuiButton button){
-        if(button.id == 0) {
-            redstoneBehaviourStat.closeWindow();
-        }
         if(button.id == 2) {
             page--;
             if(page <= 0) page = maxPage;
@@ -317,7 +265,7 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase{
             if(page > maxPage) page = 1;
             updateButtons();
         } else {
-            NetworkHandler.sendToServer(new PacketGuiButton(te, button.id));
+            super.actionPerformed(button);
         }
     }
 }

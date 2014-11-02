@@ -98,8 +98,8 @@ public class Forestry implements IThirdParty{
         }
 
         @Override
-        protected ItemStack[] getEarth(){
-            return new ItemStack[]{new ItemStack(Blocks.netherrack)};
+        protected ItemStack getEarth(){
+            return new ItemStack(Blocks.netherrack);
         }
     }
 
@@ -153,8 +153,8 @@ public class Forestry implements IThirdParty{
         }
 
         @Override
-        protected ItemStack[] getEarth(){
-            return new ItemStack[]{new ItemStack(Blocks.end_stone)};
+        protected ItemStack getEarth(){
+            return new ItemStack(Blocks.end_stone);
         }
     }
 

@@ -2,21 +2,18 @@ package pneumaticCraft.client.gui;
 
 import java.awt.Rectangle;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 
 import org.apache.commons.lang3.text.WordUtils;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
 
 import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.api.client.IGuiAnimatedStat;
@@ -25,23 +22,20 @@ import pneumaticCraft.client.gui.widget.IWidgetListener;
 import cpw.mods.fml.client.FMLClientHandler;
 
 public abstract class GuiPneumaticScreenBase extends GuiScreen implements IWidgetListener{
-    /**
-     * Any GuiAnimatedStat added to this list will be tracked for mouseclicks, tooltip renders, rendering,updating (resolution and expansion).
-     */
-    protected List<IGuiAnimatedStat> animatedStatList = new ArrayList<IGuiAnimatedStat>();
-    private final List<IGuiWidget> widgetList = new ArrayList<IGuiWidget>();
+
+    protected final List<IGuiWidget> widgets = new ArrayList<IGuiWidget>();
     public int guiLeft, guiTop, xSize, ySize;
 
     @Override
     public void initGui(){
         super.initGui();
-        widgetList.clear();
+        widgets.clear();
         guiLeft = width / 2 - xSize / 2;
         guiTop = height / 2 - ySize / 2;
     }
 
     public void addWidget(IGuiWidget widget){
-        widgetList.add(widget);
+        widgets.add(widget);
         widget.setListener(this);
     }
 
@@ -55,11 +49,8 @@ public abstract class GuiPneumaticScreenBase extends GuiScreen implements IWidge
         }
         super.drawScreen(x, y, partialTicks);
 
-        for(IGuiWidget checkBox : widgetList) {
-            checkBox.render(x, y);
-        }
-        for(IGuiAnimatedStat stat : animatedStatList) {
-            stat.render(fontRendererObj, zLevel, partialTicks);
+        for(IGuiWidget checkBox : widgets) {
+            checkBox.render(x, y, partialTicks);
         }
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glColor4d(1, 1, 1, 1);
@@ -74,8 +65,8 @@ public abstract class GuiPneumaticScreenBase extends GuiScreen implements IWidge
             }
         }
         boolean shift = PneumaticCraft.proxy.isSneakingInGui();
-        for(IGuiWidget widget : widgetList) {
-            if(widget.getBounds().contains(x, y)) widget.addTooltip(tooltip, shift);
+        for(IGuiWidget widget : widgets) {
+            if(widget.getBounds().contains(x, y)) widget.addTooltip(x, y, tooltip, shift);
         }
         if(!tooltip.isEmpty()) {
             List<String> localizedTooltip = new ArrayList<String>();
@@ -88,96 +79,12 @@ public abstract class GuiPneumaticScreenBase extends GuiScreen implements IWidge
             }
             drawHoveringText(localizedTooltip, x, y, fontRendererObj);
         }
-        for(IGuiAnimatedStat stat : animatedStatList) {
-            stat.onMouseHovering(fontRendererObj, x, y);
-            GL11.glDisable(GL11.GL_LIGHTING);
-        }
-    }
-
-    /**
-     * Copied from GuiContainer#drawHoveringText()
-     * @param tooltip
-     * @param x
-     * @param y
-     */
-    private void drawTooltip(List<String> tooltip, int x, int y){
-        GL11.glDisable(GL12.GL_RESCALE_NORMAL);
-        RenderHelper.disableStandardItemLighting();
-        GL11.glDisable(GL11.GL_LIGHTING);
-        GL11.glDisable(GL11.GL_DEPTH_TEST);
-        int k = 0;
-        Iterator iterator = tooltip.iterator();
-
-        while(iterator.hasNext()) {
-            String s = (String)iterator.next();
-            int l = fontRendererObj.getStringWidth(s);
-
-            if(l > k) {
-                k = l;
-            }
-        }
-
-        int i1 = x + 12;
-        int j1 = y - 12;
-        int k1 = 8;
-
-        if(tooltip.size() > 1) {
-            k1 += 2 + (tooltip.size() - 1) * 10;
-        }
-
-        if(i1 + k > width) {
-            i1 -= 28 + k;
-        }
-
-        if(j1 + k1 + 6 > height) {
-            j1 = height - k1 - 6;
-        }
-
-        zLevel = 300.0F;
-        int l1 = -267386864;
-        drawGradientRect(i1 - 3, j1 - 4, i1 + k + 3, j1 - 3, l1, l1);
-        drawGradientRect(i1 - 3, j1 + k1 + 3, i1 + k + 3, j1 + k1 + 4, l1, l1);
-        drawGradientRect(i1 - 3, j1 - 3, i1 + k + 3, j1 + k1 + 3, l1, l1);
-        drawGradientRect(i1 - 4, j1 - 3, i1 - 3, j1 + k1 + 3, l1, l1);
-        drawGradientRect(i1 + k + 3, j1 - 3, i1 + k + 4, j1 + k1 + 3, l1, l1);
-        int i2 = 1347420415;
-        int j2 = (i2 & 16711422) >> 1 | i2 & -16777216;
-        drawGradientRect(i1 - 3, j1 - 3 + 1, i1 - 3 + 1, j1 + k1 + 3 - 1, i2, j2);
-        drawGradientRect(i1 + k + 2, j1 - 3 + 1, i1 + k + 3, j1 + k1 + 3 - 1, i2, j2);
-        drawGradientRect(i1 - 3, j1 - 3, i1 + k + 3, j1 - 3 + 1, i2, i2);
-        drawGradientRect(i1 - 3, j1 + k1 + 2, i1 + k + 3, j1 + k1 + 3, j2, j2);
-
-        for(int k2 = 0; k2 < tooltip.size(); ++k2) {
-            String s1 = tooltip.get(k2);
-            fontRendererObj.drawStringWithShadow(s1, i1, j1, -1);
-
-            if(k2 == 0) {
-                j1 += 2;
-            }
-
-            j1 += 10;
-        }
-
-        zLevel = 0.0F;
-        GL11.glEnable(GL11.GL_LIGHTING);
-        GL11.glEnable(GL11.GL_DEPTH_TEST);
-        RenderHelper.enableStandardItemLighting();
-        GL11.glEnable(GL12.GL_RESCALE_NORMAL);
     }
 
     @Override
     protected void mouseClicked(int par1, int par2, int par3){
         super.mouseClicked(par1, par2, par3);
-        for(IGuiAnimatedStat stat : animatedStatList) {
-            if(stat.mouseClicked(par1, par2, par3)) {
-                for(IGuiAnimatedStat closingStat : animatedStatList) {
-                    if(stat != closingStat && stat.isLeftSided() == closingStat.isLeftSided()) {//when the stat is on the same side, close it.
-                        closingStat.closeWindow();
-                    }
-                }
-            }
-        }
-        for(IGuiWidget widget : widgetList) {
+        for(IGuiWidget widget : widgets) {
             if(widget.getBounds().contains(par1, par2)) widget.onMouseClicked(par1, par2, par3);
         }
     }
@@ -187,19 +94,33 @@ public abstract class GuiPneumaticScreenBase extends GuiScreen implements IWidge
         if(keyCode == 1) {
             super.keyTyped(key, keyCode);
         } else {
-            for(IGuiWidget widget : widgetList) {
+            for(IGuiWidget widget : widgets) {
                 widget.onKey(key, keyCode);
             }
         }
     }
 
     @Override
-    public void actionPerformed(IGuiWidget widget){}
+    public void actionPerformed(IGuiWidget widget){
+        if(widget instanceof IGuiAnimatedStat) {
+            boolean leftSided = ((IGuiAnimatedStat)widget).isLeftSided();
+            for(IGuiWidget w : widgets) {
+                if(w instanceof IGuiAnimatedStat) {
+                    IGuiAnimatedStat stat = (IGuiAnimatedStat)w;
+                    if(widget != stat && stat.isLeftSided() == leftSided) {//when the stat is on the same side, close it.
+                        stat.closeWindow();
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onKeyTyped(IGuiWidget widget){}
 
     @Override
     public void setWorldAndResolution(Minecraft par1Minecraft, int par2, int par3){
-        animatedStatList.clear();
-        widgetList.clear();
+        widgets.clear();
         super.setWorldAndResolution(par1Minecraft, par2, par3);
     }
 

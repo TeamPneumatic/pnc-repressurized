@@ -59,10 +59,14 @@ public class DroneEntityAIInventoryImport extends EntityAIBase{
                         if(droneStack == null || PneumaticCraftUtils.areStacksEqual(droneStack, stack, true, true, false, false) && droneStack.stackSize < droneStack.getMaxStackSize()) {
                             TileEntity te = (TileEntity)inv;
                             for(ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-                                if(drone.isBlockValidPathfindBlock(te.xCoord + dir.offsetX, te.yCoord + dir.offsetY, te.zCoord + dir.offsetZ) && PneumaticCraftUtils.tryNavigateToXYZ(drone, te.xCoord + dir.offsetX, te.yCoord + dir.offsetY + 0.5, te.zCoord + dir.offsetZ, speed)) {
+                                if(drone.getNavigator().tryMoveToXYZ(te.xCoord + dir.offsetX, te.yCoord + dir.offsetY + 0.5, te.zCoord + dir.offsetZ, speed)) {
                                     targetInventory = te;
                                     return true;
                                 }
+                            }
+                            if(((EntityPathNavigateDrone)drone.getNavigator()).isGoingToTeleport()) {
+                                targetInventory = te;
+                                return true;
                             }
                         }
                     }

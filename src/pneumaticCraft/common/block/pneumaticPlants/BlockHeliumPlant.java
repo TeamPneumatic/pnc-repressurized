@@ -50,12 +50,13 @@ public class BlockHeliumPlant extends BlockPneumaticPlantBase{
     @Override
     public void executeFullGrownEffect(World world, int x, int y, int z, Random rand){
         if(!world.isRemote) {
-            ItemStack seed = new ItemStack(Itemss.plasticPlant, 1, ItemPlasticPlants.HELIUM_PLANT_DAMAGE + 16);
+            ItemStack seed = new ItemStack(Itemss.plasticPlant, 1, ItemPlasticPlants.HELIUM_PLANT_DAMAGE);
             EntityItem plant = new EntityItemSpecial(world, x + 0.5D, y + 0.2D, z + 0.5D, seed);
             plant.motionX = rand.nextFloat() - 0.5F;
             plant.motionY = -1.0F;
             plant.motionZ = rand.nextFloat() - 0.5F;
             plant.lifespan = 300;
+            ItemPlasticPlants.markInactive(plant);
             world.spawnEntityInWorld(plant);
             plant.playSound("mob.newsound.chickenplop", 0.2F, ((rand.nextFloat() - rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
 

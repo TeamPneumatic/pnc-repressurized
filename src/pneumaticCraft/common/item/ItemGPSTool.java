@@ -75,7 +75,7 @@ public class ItemGPSTool extends ItemPneumatic{
         int x = compound.getInteger("x");
         int y = compound.getInteger("y");
         int z = compound.getInteger("z");
-        if(x != 0 && y != 0 && z != 0) {
+        if(x != 0 || y != 0 || z != 0) {
             return new ChunkPosition(x, y, z);
         } else {
             return null;

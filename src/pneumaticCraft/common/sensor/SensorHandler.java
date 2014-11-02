@@ -19,6 +19,7 @@ import pneumaticCraft.api.universalSensor.IPollSensorSetting;
 import pneumaticCraft.api.universalSensor.ISensorSetting;
 import pneumaticCraft.api.universalSensor.SensorRegistrator;
 import pneumaticCraft.api.universalSensor.SensorRegistrator.ISensorRegistrator;
+import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.sensor.eventSensors.BlockInteractSensor;
@@ -40,7 +41,6 @@ import pneumaticCraft.common.sensor.pollSensors.WorldWeatherForecaster;
 import pneumaticCraft.common.sensor.pollSensors.entity.EntityInRangeSensor;
 import pneumaticCraft.common.tileentity.TileEntityUniversalSensor;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
-import pneumaticCraft.lib.Names;
 import cpw.mods.fml.common.eventhandler.Event;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -127,7 +127,7 @@ public class SensorHandler implements ISensorRegistrator{
             ItemStack[] requiredStacks = getRequiredStacksFromText(sensorPath);
             for(ItemStack stack : requiredStacks) {
                 if(stack.getItem() == Itemss.machineUpgrade && stack.getItemDamage() == upgradeMeta) {
-                    tooltip.add("-" + Names.UNIVERSAL_SENSOR);
+                    tooltip.add(Blockss.universalSensor.getUnlocalizedName());
                     return;
                 }
             }

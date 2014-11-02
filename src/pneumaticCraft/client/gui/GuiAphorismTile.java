@@ -9,6 +9,7 @@ import java.util.Random;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.util.ChatAllowedCharacters;
 import net.minecraft.util.ResourceLocation;
 
 import org.apache.commons.io.Charsets;
@@ -63,7 +64,7 @@ public class GuiAphorismTile extends GuiScreen{
                 cursorY--;
                 if(cursorY < 0) cursorY = 0;
             }
-        } else {
+        } else if(ChatAllowedCharacters.isAllowedCharacter(par1)) {
             textLines.set(cursorY, textLines.get(cursorY) + par1);
         }
 

@@ -44,10 +44,11 @@ public class BlockEnderPlant extends BlockPneumaticPlantBase{
                 int randZ = z + rand.nextInt(30) - 15;
                 Block block = world.getBlock(randX, randY, randZ);
                 if(!block.getMaterial().blocksMovement()) {
-                    ItemStack seed = new ItemStack(Itemss.plasticPlant, 1, ItemPlasticPlants.ENDER_PLANT_DAMAGE + 16);
+                    ItemStack seed = new ItemStack(Itemss.plasticPlant, 1, ItemPlasticPlants.ENDER_PLANT_DAMAGE);
                     EntityItem plant = new EntityItem(world, randX + 0.5D, randY + 0.5D, randZ + 0.5D, seed);
                     // plant.motionX = plant.motionY = plant.motionZ = 0;
                     plant.lifespan = 300;
+                    ItemPlasticPlants.markInactive(plant);
                     world.spawnEntityInWorld(plant);
                     plant.playSound("mob.endermen.portal", 0.2F, ((rand.nextFloat() - rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
                     short short1 = 128;

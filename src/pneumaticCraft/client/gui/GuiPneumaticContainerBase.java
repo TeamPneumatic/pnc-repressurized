@@ -1,5 +1,6 @@
 package pneumaticCraft.client.gui;
 
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,21 +8,36 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.init.Items;
 import net.minecraft.inventory.Container;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.StatCollector;
+import net.minecraftforge.common.util.ForgeDirection;
 
-import org.apache.commons.lang3.text.WordUtils;
+import org.lwjgl.opengl.GL11;
 
 import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.api.client.IGuiAnimatedStat;
 import pneumaticCraft.client.gui.widget.GuiAnimatedStat;
 import pneumaticCraft.client.gui.widget.IGuiWidget;
 import pneumaticCraft.client.gui.widget.IWidgetListener;
+import pneumaticCraft.client.gui.widget.WidgetTextField;
+import pneumaticCraft.common.block.Blockss;
+import pneumaticCraft.common.network.NetworkHandler;
+import pneumaticCraft.common.network.PacketGuiButton;
+import pneumaticCraft.common.tileentity.IMinWorkingPressure;
+import pneumaticCraft.common.tileentity.IRedstoneControl;
+import pneumaticCraft.common.tileentity.IRedstoneControlled;
+import pneumaticCraft.common.tileentity.TileEntityBase;
+import pneumaticCraft.common.tileentity.TileEntityPneumaticBase;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.ModIds;
+import pneumaticCraft.lib.Textures;
 import codechicken.nei.VisiblityData;
 import codechicken.nei.api.INEIGuiHandler;
 import codechicken.nei.api.TaggedInventoryArea;
@@ -31,16 +47,26 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 @Optional.Interface(iface = "codechicken.nei.api.INEIGuiHandler", modid = ModIds.NEI)
-public class GuiPneumaticContainerBase extends GuiContainer implements INEIGuiHandler, IWidgetListener{
+public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiContainer implements INEIGuiHandler,
+        IWidgetListener{
+
+    public final Tile te;
+    private final ResourceLocation guiTexture;
     /**
      * Any GuiAnimatedStat added to this list will be tracked for mouseclicks, tooltip renders, rendering,updating (resolution and expansion).
      */
-    protected final List<IGuiAnimatedStat> animatedStatList = new ArrayList<IGuiAnimatedStat>();
-    private final List<IGuiWidget> widgetList = new ArrayList<IGuiWidget>();
+    private final List<IGuiWidget> widgets = new ArrayList<IGuiWidget>();
     private IGuiAnimatedStat lastLeftStat, lastRightStat;
 
-    public GuiPneumaticContainerBase(Container par1Container){
+    private GuiAnimatedStat pressureStat;
+    private GuiAnimatedStat problemTab;
+    private GuiAnimatedStat redstoneTab;
+    protected GuiButtonSpecial redstoneButton;
+
+    public GuiPneumaticContainerBase(Container par1Container, Tile te, String guiTexture){
         super(par1Container);
+        this.te = te;
+        this.guiTexture = new ResourceLocation(guiTexture);
     }
 
     @Override
@@ -59,7 +85,7 @@ public class GuiPneumaticContainerBase extends GuiContainer implements INEIGuiHa
         int yStart = (height - ySize) / 2;
 
         GuiAnimatedStat stat = new GuiAnimatedStat(this, title, icon, xStart + (leftSided ? 0 : xSize), leftSided && lastLeftStat != null || !leftSided && lastRightStat != null ? 3 : yStart + 5, color, leftSided ? lastLeftStat : lastRightStat, leftSided);
-        animatedStatList.add(stat);
+        addWidget(stat);
         if(leftSided) {
             lastLeftStat = stat;
         } else {
@@ -73,7 +99,7 @@ public class GuiPneumaticContainerBase extends GuiContainer implements INEIGuiHa
         int yStart = (height - ySize) / 2;
 
         GuiAnimatedStat stat = new GuiAnimatedStat(this, title, icon, xStart + (leftSided ? 0 : xSize), leftSided && lastLeftStat != null || !leftSided && lastRightStat != null ? 3 : yStart + 5, color, leftSided ? lastLeftStat : lastRightStat, leftSided);
-        animatedStatList.add(stat);
+        addWidget(stat);
         if(leftSided) {
             lastLeftStat = stat;
         } else {
@@ -82,22 +108,128 @@ public class GuiPneumaticContainerBase extends GuiContainer implements INEIGuiHa
         return stat;
     }
 
-    @Override
-    protected void drawGuiContainerBackgroundLayer(float partialTicks, int i, int j){
-        for(IGuiAnimatedStat stat : animatedStatList) {
-            stat.render(fontRendererObj, zLevel, partialTicks);
-        }
-        for(IGuiWidget widget : widgetList) {
-            widget.render(i, j);
-        }
+    protected void addWidget(IGuiWidget widget){
+        widgets.add(widget);
+        widget.setListener(this);
     }
 
     @Override
-    public void drawScreen(int x, int y, float unknown){
-        super.drawScreen(x, y, unknown);
-        for(IGuiAnimatedStat stat : animatedStatList) {
-            stat.onMouseHovering(fontRendererObj, x, y);
+    public void initGui(){
+        super.initGui();
+        lastLeftStat = lastRightStat = null;
+        if(shouldAddPressureTab() && te instanceof TileEntityPneumaticBase) {
+            pressureStat = this.addAnimatedStat("gui.tab.pressure", new ItemStack(Blockss.pressureTube), 0xFF00AA00, false);
         }
+        if(shouldAddProblemTab()) {
+            problemTab = addAnimatedStat("gui.tab.problems", Textures.GUI_PROBLEMS_TEXTURE, 0xFFFF0000, false);
+        }
+        if(shouldAddRedstoneTab() && te instanceof IRedstoneControl) {
+            redstoneTab = addAnimatedStat("gui.tab.redstoneBehaviour", new ItemStack(Items.redstone), 0xFFCC0000, true);
+            List<String> curInfo = new ArrayList<String>();
+            curInfo.add(I18n.format(getRedstoneString()));
+            for(int i = 0; i < 3; i++)
+                curInfo.add("                                      ");// create some space for the button
+            redstoneTab.setTextWithoutCuttingString(curInfo);
+            Rectangle buttonRect = redstoneTab.getButtonScaledRectangle(-170, 24, 170, 20);
+            redstoneButton = new GuiButtonSpecial(0, buttonRect.x, buttonRect.y, buttonRect.width, buttonRect.height, "-");//getButtonFromRectangle(0, buttonRect, "-");
+            redstoneTab.addWidget(redstoneButton);
+        }
+        if(te instanceof IInventory) {
+            if(shouldAddInfoTab()) {
+                String info = "gui.tab.info." + ((IInventory)te).getInventoryName();
+                String translatedInfo = I18n.format(info);
+                if(!translatedInfo.equals(info)) {
+                    addAnimatedStat("gui.tab.info", Textures.GUI_INFO_LOCATION, 0xFF8888FF, true).setText(info);
+                }
+            }
+            if(shouldAddUpgradeTab()) {
+                String upgrades = "gui.tab.upgrades." + ((IInventory)te).getInventoryName();
+                String translatedUpgrades = I18n.format(upgrades);
+                List<String> upgradeText = new ArrayList<String>();
+                if(te instanceof TileEntityPneumaticBase) {
+                    upgradeText.add("gui.tab.upgrades.volume");
+                    upgradeText.add("gui.tab.upgrades.security");
+                }
+                if(!translatedUpgrades.equals(upgrades)) upgradeText.add(upgrades);
+
+                if(upgradeText.size() > 0) addAnimatedStat("gui.tab.upgrades", Textures.GUI_UPGRADES_LOCATION, 0xFF0000FF, true).setText(upgradeText);
+            }
+        }
+    }
+
+    protected boolean shouldAddRedstoneTab(){
+        return true;
+    }
+
+    protected boolean shouldAddPressureTab(){
+        return true;
+    }
+
+    protected boolean shouldAddUpgradeTab(){
+        return true;
+    }
+
+    protected boolean shouldAddInfoTab(){
+        return true;
+    }
+
+    protected boolean shouldAddProblemTab(){
+        return true;
+    }
+
+    @Override
+    protected void drawGuiContainerBackgroundLayer(float partialTicks, int i, int j){
+
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        bindGuiTexture();
+        int xStart = (width - xSize) / 2;
+        int yStart = (height - ySize) / 2;
+        drawTexturedModalRect(xStart, yStart, 0, 0, xSize, ySize);
+
+        GL11.glColor4d(1, 1, 1, 1);
+        GL11.glDisable(GL11.GL_LIGHTING);
+        for(IGuiWidget widget : widgets) {
+            widget.render(i, j, partialTicks);
+        }
+
+        if(pressureStat != null) {
+            TileEntityPneumaticBase pneu = (TileEntityPneumaticBase)te;
+            Point gaugeLocation = getGaugeLocation();
+            if(gaugeLocation != null) GuiUtils.drawPressureGauge(fontRendererObj, -1, pneu.CRITICAL_PRESSURE, pneu.DANGER_PRESSURE, te instanceof IMinWorkingPressure ? ((IMinWorkingPressure)te).getMinWorkingPressure() : -1, pneu.getPressure(ForgeDirection.UNKNOWN), gaugeLocation.x, gaugeLocation.y, zLevel);
+        }
+    }
+
+    protected void bindGuiTexture(){
+        mc.getTextureManager().bindTexture(guiTexture);
+    }
+
+    protected Point getGaugeLocation(){
+        int xStart = (width - xSize) / 2;
+        int yStart = (height - ySize) / 2;
+        return new Point(xStart + xSize * 3 / 4, yStart + ySize * 1 / 4 + 4);
+    }
+
+    @Override
+    protected void drawGuiContainerForegroundLayer(int x, int y){
+        if(getInvNameOffset() != null && te instanceof IInventory) {
+            IInventory inv = (IInventory)te;
+            String containerName = inv.hasCustomInventoryName() ? inv.getInventoryName() : StatCollector.translateToLocal(inv.getInventoryName() + ".name");
+            fontRendererObj.drawString(containerName, xSize / 2 - fontRendererObj.getStringWidth(containerName) / 2 + getInvNameOffset().x, 6 + getInvNameOffset().y, 4210752);
+        }
+        if(getInvTextOffset() != null) fontRendererObj.drawString(StatCollector.translateToLocal("container.inventory"), 8 + getInvTextOffset().x, ySize - 94 + getInvTextOffset().y, 4210752);
+    }
+
+    protected Point getInvNameOffset(){
+        return new Point(0, 0);
+    }
+
+    protected Point getInvTextOffset(){
+        return new Point(0, 0);
+    }
+
+    @Override
+    public void drawScreen(int x, int y, float partialTick){
+        super.drawScreen(x, y, partialTick);
 
         List<String> tooltip = new ArrayList<String>();
         for(Object obj : buttonList) {
@@ -108,6 +240,13 @@ public class GuiPneumaticContainerBase extends GuiContainer implements INEIGuiHa
                 }
             }
         }
+
+        GL11.glColor4d(1, 1, 1, 1);
+        GL11.glDisable(GL11.GL_LIGHTING);
+        for(IGuiWidget widget : widgets) {
+            if(widget.getBounds().contains(x, y)) widget.addTooltip(x, y, tooltip, PneumaticCraft.proxy.isSneakingInGui());
+        }
+
         if(tooltip.size() > 0) {
             drawHoveringString(tooltip, x, y, fontRendererObj);
             tooltip.clear();
@@ -131,40 +270,131 @@ public class GuiPneumaticContainerBase extends GuiContainer implements INEIGuiHa
     }
 
     @Override
+    public void updateScreen(){
+        super.updateScreen();
+
+        for(IGuiWidget widget : widgets)
+            widget.update();
+
+        if(pressureStat != null) {
+            List<String> curInfo = new ArrayList<String>();
+            addPressureStatInfo(curInfo);
+            pressureStat.setText(curInfo);
+        }
+        if(problemTab != null) {
+            List<String> curInfo = new ArrayList<String>();
+            addProblems(curInfo);
+            if(curInfo.size() == 0) {
+                curInfo.add("gui.tab.problems.noProblems");
+            }
+            problemTab.setText(curInfo);
+        }
+        if(redstoneTab != null) {
+            redstoneButton.displayString = I18n.format(getRedstoneButtonText(((IRedstoneControl)te).getRedstoneMode()));
+        }
+    }
+
+    @Override
+    protected void actionPerformed(GuiButton button){
+        NetworkHandler.sendToServer(new PacketGuiButton(te, button.id));
+    }
+
+    protected String getRedstoneButtonText(int mode){
+        switch(mode){
+            case 0:
+                return "gui.tab.redstoneBehaviour.button.anySignal";
+            case 1:
+                return "gui.tab.redstoneBehaviour.button.highSignal";
+            case 2:
+                return "gui.tab.redstoneBehaviour.button.lowSignal";
+        }
+        return "<ERROR>";
+    }
+
+    protected String getRedstoneString(){
+        return te instanceof IRedstoneControlled ? "gui.tab.redstoneBehaviour.enableOn" : "gui.tab.redstoneBehaviour.emitRedstoneWhen";
+    }
+
+    protected void addPressureStatInfo(List<String> pressureStatText){
+        TileEntityPneumaticBase pneumaticTile = (TileEntityPneumaticBase)te;
+        pressureStatText.add("\u00a77Current Pressure:");
+        pressureStatText.add("\u00a70" + PneumaticCraftUtils.roundNumberTo(pneumaticTile.getPressure(ForgeDirection.UNKNOWN), 1) + " bar.");
+        pressureStatText.add("\u00a77Current Air:");
+        pressureStatText.add("\u00a70" + (double)Math.round(pneumaticTile.currentAir + pneumaticTile.volume) + " mL.");
+        pressureStatText.add("\u00a77Volume:");
+        pressureStatText.add("\u00a70" + (double)Math.round(pneumaticTile.DEFAULT_VOLUME) + " mL.");
+        float volumeLeft = pneumaticTile.volume - pneumaticTile.DEFAULT_VOLUME;
+        if(volumeLeft > 0) {
+            pressureStatText.add("\u00a70" + (double)Math.round(volumeLeft) + " mL. (Volume Upgrades)");
+            pressureStatText.add("\u00a70--------+");
+            pressureStatText.add("\u00a70" + (double)Math.round(pneumaticTile.volume) + " mL.");
+        }
+    }
+
+    protected void addProblems(List<String> curInfo){
+        if(te instanceof IRedstoneControlled && !te.redstoneAllows()) {
+            IRedstoneControlled redstoneControlled = (IRedstoneControlled)te;
+            curInfo.add("gui.tab.problems.redstoneDisallows");
+            if(redstoneControlled.getRedstoneMode() == 1) {
+                curInfo.add("gui.tab.problems.provideRedstone");
+            } else {
+                curInfo.add("gui.tab.problems.removeRedstone");
+            }
+        }
+        if(te instanceof IMinWorkingPressure) {
+            IMinWorkingPressure minWork = (IMinWorkingPressure)te;
+            if(((TileEntityPneumaticBase)te).getPressure(ForgeDirection.UNKNOWN) < minWork.getMinWorkingPressure()) {
+                curInfo.add("gui.tab.problems.notEnoughPressure");
+                curInfo.add(I18n.format("gui.tab.problems.applyPressure", minWork.getMinWorkingPressure()));
+            }
+        }
+    }
+
+    @Override
     protected void mouseClicked(int par1, int par2, int par3){
         super.mouseClicked(par1, par2, par3);
-        for(IGuiAnimatedStat stat : animatedStatList) {
-            if(stat.mouseClicked(par1, par2, par3)) {
-                for(IGuiAnimatedStat closingStat : animatedStatList) {
-                    if(stat != closingStat && stat.isLeftSided() == closingStat.isLeftSided()) {//when the stat is on the same side, close it.
-                        closingStat.closeWindow();
+        for(IGuiWidget widget : widgets) {
+            if(widget.getBounds().contains(par1, par2)) {
+                widget.onMouseClicked(par1, par2, par3);
+            }
+        }
+    }
+
+    @Override
+    public void actionPerformed(IGuiWidget widget){
+        if(widget instanceof IGuiAnimatedStat) {
+            boolean leftSided = ((IGuiAnimatedStat)widget).isLeftSided();
+            for(IGuiWidget w : widgets) {
+                if(w instanceof IGuiAnimatedStat) {
+                    IGuiAnimatedStat stat = (IGuiAnimatedStat)w;
+                    if(widget != stat && stat.isLeftSided() == leftSided) {//when the stat is on the same side, close it.
+                        stat.closeWindow();
                     }
                 }
             }
         }
-        for(IGuiWidget widget : widgetList) {
-            widget.onMouseClicked(par1, par2, par3);
+        NetworkHandler.sendToServer(new PacketGuiButton(te, widget.getID()));
+    }
+
+    @Override
+    public void handleMouseInput(){
+        super.handleMouseInput();
+        for(IGuiWidget widget : widgets) {
+            widget.handleMouseInput();
         }
     }
 
     @Override
     protected void keyTyped(char key, int keyCode){
-        if(keyCode == 1) {
-            super.keyTyped(key, keyCode);
-        } else {
-            for(IGuiWidget widget : widgetList) {
-                widget.onKey(key, keyCode);
-            }
+        for(IGuiWidget widget : widgets) {
+            widget.onKey(key, keyCode);
         }
+        super.keyTyped(key, keyCode);
     }
 
     @Override
-    public void actionPerformed(IGuiWidget widget){}
-
-    @Override
     public void setWorldAndResolution(Minecraft par1Minecraft, int par2, int par3){
-        animatedStatList.clear();
-        widgetList.clear();
+        widgets.clear();
         super.setWorldAndResolution(par1Minecraft, par2, par3);
     }
 
@@ -184,16 +414,16 @@ public class GuiPneumaticContainerBase extends GuiContainer implements INEIGuiHa
         // this.drawTexturedModalRect(x, y, 0, 0, 16, 16);
     }
 
-    public GuiButton getButtonFromRectangle(int buttonID, Rectangle buttonSize, String buttonText){
-        return new GuiButton(buttonID, buttonSize.x, buttonSize.y, buttonSize.width, buttonSize.height, buttonText);
+    public GuiButtonSpecial getButtonFromRectangle(int buttonID, Rectangle buttonSize, String buttonText){
+        return new GuiButtonSpecial(buttonID, buttonSize.x, buttonSize.y, buttonSize.width, buttonSize.height, buttonText);
     }
 
     public GuiButtonSpecial getInvisibleButtonFromRectangle(int buttonID, Rectangle buttonSize){
         return new GuiButtonSpecial(buttonID, buttonSize.x, buttonSize.y, buttonSize.width, buttonSize.height, "");
     }
 
-    public GuiTextField getTextFieldFromRectangle(Rectangle textFieldSize){
-        return new GuiTextField(fontRendererObj, textFieldSize.x, textFieldSize.y, textFieldSize.width, textFieldSize.height);
+    public WidgetTextField getTextFieldFromRectangle(Rectangle textFieldSize){
+        return new WidgetTextField(fontRendererObj, textFieldSize.x, textFieldSize.y, textFieldSize.width, textFieldSize.height);
     }
 
     public int getGuiLeft(){
@@ -209,15 +439,18 @@ public class GuiPneumaticContainerBase extends GuiContainer implements INEIGuiHa
     @Override
     @Optional.Method(modid = ModIds.NEI)
     public VisiblityData modifyVisiblity(GuiContainer gui, VisiblityData currentVisibility){
-        for(IGuiAnimatedStat stat : animatedStatList) {
-            if(stat.isLeftSided()) {
-                if(stat.getWidth() > 20) {
-                    currentVisibility.showUtilityButtons = false;
-                    currentVisibility.showStateButtons = false;
-                }
-            } else {
-                if(stat.getAffectedY() < 10) {
-                    currentVisibility.showWidgets = false;
+        for(IGuiWidget w : widgets) {
+            if(w instanceof IGuiAnimatedStat) {
+                IGuiAnimatedStat stat = (IGuiAnimatedStat)w;
+                if(stat.isLeftSided()) {
+                    if(stat.getWidth() > 20) {
+                        currentVisibility.showUtilityButtons = false;
+                        currentVisibility.showStateButtons = false;
+                    }
+                } else {
+                    if(stat.getAffectedY() < 10) {
+                        currentVisibility.showWidgets = false;
+                    }
                 }
             }
         }
@@ -267,10 +500,18 @@ public class GuiPneumaticContainerBase extends GuiContainer implements INEIGuiHa
      */
     @Override
     public boolean hideItemPanelSlot(GuiContainer gui, int x, int y, int w, int h){
-        for(IGuiAnimatedStat stat : animatedStatList) {
-            if(stat.getDimensions().intersects(new Rectangle(x, y, w, h))) return true;
+        for(IGuiWidget widget : widgets) {
+            if(widget instanceof IGuiAnimatedStat) {
+                IGuiAnimatedStat stat = (IGuiAnimatedStat)widget;
+                if(stat.getBounds().intersects(new Rectangle(x, y, w, h))) return true;
+            }
         }
         return false;
+    }
+
+    @Override
+    public void onKeyTyped(IGuiWidget widget){
+
     }
 
 }

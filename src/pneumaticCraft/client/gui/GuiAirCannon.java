@@ -1,117 +1,60 @@
 package pneumaticCraft.client.gui;
 
-import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.lwjgl.opengl.GL11;
 
 import pneumaticCraft.api.tileentity.IPneumaticMachine;
 import pneumaticCraft.client.gui.widget.GuiAnimatedStat;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.inventory.ContainerAirCannon;
-import pneumaticCraft.common.network.NetworkHandler;
-import pneumaticCraft.common.network.PacketGuiButton;
 import pneumaticCraft.common.tileentity.TileEntityAirCannon;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
-import pneumaticCraft.lib.GuiConstants;
-import pneumaticCraft.lib.PneumaticValues;
 import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class GuiAirCannon extends GuiPneumaticContainerBase{
-    private static final ResourceLocation guiTexture = new ResourceLocation(Textures.GUI_AIR_CANNON_LOCATION);
-    private final TileEntityAirCannon te;
-    private GuiAnimatedStat pressureStat;
-    private GuiAnimatedStat problemStat;
+public class GuiAirCannon extends GuiPneumaticContainerBase<TileEntityAirCannon>{
     private GuiAnimatedStat statusStat;
-    private GuiAnimatedStat redstoneBehaviourStat;
-    private GuiAnimatedStat infoStat;
-    private GuiAnimatedStat upgradeStat;
-    private GuiButton redstoneButton;
     private int gpsX;
     private int gpsY;
     private int gpsZ;
 
-    public GuiAirCannon(InventoryPlayer player, TileEntityAirCannon teAirCannon){
+    public GuiAirCannon(InventoryPlayer player, TileEntityAirCannon te){
 
-        super(new ContainerAirCannon(player, teAirCannon));
-        ySize = 176;
-        te = teAirCannon;
-        gpsX = teAirCannon.gpsX;
-        gpsY = teAirCannon.gpsY;
-        gpsZ = teAirCannon.gpsZ;
+        super(new ContainerAirCannon(player, te), te, Textures.GUI_AIR_CANNON_LOCATION);
+        gpsX = te.gpsX;
+        gpsY = te.gpsY;
+        gpsZ = te.gpsZ;
 
     }
 
     @Override
     public void initGui(){
         super.initGui();
-
-        int xStart = (width - xSize) / 2;
-        int yStart = (height - ySize) / 2;
-        pressureStat = new GuiAnimatedStat(this, "Pressure", new ItemStack(Blockss.pressureTube), xStart + xSize, yStart + 5, 0xFF00AA00, null, false);
-        problemStat = new GuiAnimatedStat(this, "Problems", Textures.GUI_PROBLEMS_TEXTURE, xStart + xSize, 3, 0xFFFF0000, pressureStat, false);
-        statusStat = new GuiAnimatedStat(this, "Cannon Status", new ItemStack(Blockss.airCannon), xStart + xSize, 3, 0xFFFFAA00, problemStat, false);
-        redstoneBehaviourStat = new GuiAnimatedStat(this, "Redstone Behaviour", new ItemStack(Items.redstone), xStart, yStart + 5, 0xFFCC0000, null, true);
-        infoStat = new GuiAnimatedStat(this, "Information", Textures.GUI_INFO_LOCATION, xStart, 3, 0xFF8888FF, redstoneBehaviourStat, true);
-        upgradeStat = new GuiAnimatedStat(this, "Upgrades", Textures.GUI_UPGRADES_LOCATION, xStart, 3, 0xFF0000FF, infoStat, true);
-        upgradeStat.scaleTextSize(0.7F);
-        animatedStatList.add(pressureStat);
-        animatedStatList.add(problemStat);
-        animatedStatList.add(statusStat);
-        animatedStatList.add(redstoneBehaviourStat);
-        animatedStatList.add(infoStat);
-        animatedStatList.add(upgradeStat);
-        redstoneBehaviourStat.setTextWithoutCuttingString(getRedstoneBehaviour());
-        infoStat.setText(GuiConstants.INFO_AIR_CANNON);
-        upgradeStat.setText(GuiConstants.UPGRADES_AIR_CANNON);
-
-        Rectangle buttonRect = redstoneBehaviourStat.getButtonScaledRectangle(xStart - 171, yStart + 30, 170, 20);
-        redstoneButton = getButtonFromRectangle(0, buttonRect, "-");
-        buttonList.add(redstoneButton);
+        statusStat = this.addAnimatedStat("Cannon Status", new ItemStack(Blockss.airCannon), 0xFFFFAA00, false);
     }
 
     @Override
     protected void drawGuiContainerForegroundLayer(int x, int y){
 
-        String containerName = te.hasCustomInventoryName() ? te.getInventoryName() : StatCollector.translateToLocal(te.getInventoryName());
-
-        fontRendererObj.drawString(containerName, xSize / 2 - fontRendererObj.getStringWidth(containerName) / 2, 6, 4210752);
+        super.drawGuiContainerForegroundLayer(x, y);
         fontRendererObj.drawString("GPS", 50, 20, 4210752);
         fontRendererObj.drawString("Upgr.", 13, 19, 4210752);
 
-        fontRendererObj.drawString(StatCollector.translateToLocal("container.inventory"), 8, ySize - 106 + 2, 4210752);
-
-        redstoneButton.displayString = "Redstone signal" + (te.fireOnlyOnRightAngle ? " and right angle" : "");
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(float opacity, int x, int y){
-        super.drawGuiContainerBackgroundLayer(opacity, x, y);
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-
-        mc.getTextureManager().bindTexture(guiTexture);
-        int xStart = (width - xSize) / 2;
-        int yStart = (height - ySize) / 2;
-        drawTexturedModalRect(xStart, yStart, 0, 0, xSize, ySize);
-        GuiUtils.drawPressureGauge(fontRendererObj, -1, PneumaticValues.MAX_PRESSURE_AIR_CANNON, PneumaticValues.DANGER_PRESSURE_AIR_CANNON, PneumaticValues.MIN_PRESSURE_AIR_CANNON, te.getPressure(ForgeDirection.UNKNOWN), xStart + xSize * 3 / 4, yStart + ySize * 1 / 4 + 4, zLevel);
-        pressureStat.setText(getPressureStats());
-        problemStat.setText(getProblems());
+    public void updateScreen(){
+        super.updateScreen();
         statusStat.setText(getStatusText());
-        redstoneButton.visible = redstoneBehaviourStat.isDoneExpanding();
 
         if(gpsX != te.gpsX || gpsY != te.gpsY || gpsZ != te.gpsZ) {
             gpsX = te.gpsX;
@@ -121,21 +64,14 @@ public class GuiAirCannon extends GuiPneumaticContainerBase{
         }
     }
 
-    private List<String> getPressureStats(){
-        List<String> pressureStatText = new ArrayList<String>();
-        pressureStatText.add("\u00a77Current Pressure:");
-        pressureStatText.add("\u00a70" + (double)Math.round(te.getPressure(ForgeDirection.UNKNOWN) * 10) / 10 + " bar.");
-        pressureStatText.add("\u00a77Current Air:");
-        pressureStatText.add("\u00a70" + (double)Math.round(te.currentAir + te.volume) + " mL.");
-        pressureStatText.add("\u00a77Volume:");
-        pressureStatText.add("\u00a70" + (double)Math.round(PneumaticValues.VOLUME_AIR_CANNON) + " mL.");
-        float pressureLeft = te.volume - PneumaticValues.VOLUME_AIR_CANNON;
-        if(pressureLeft > 0) {
-            pressureStatText.add("\u00a70" + (double)Math.round(pressureLeft) + " mL. (Volume Upgrades)");
-            pressureStatText.add("\u00a70--------+");
-            pressureStatText.add("\u00a70" + (double)Math.round(te.volume) + " mL.");
-        }
-        return pressureStatText;
+    @Override
+    protected String getRedstoneButtonText(int mode){
+        return te.fireOnlyOnRightAngle ? "gui.tab.redstoneBehaviour.airCannon.button.highSignalAndAngle" : "gui.tab.redstoneBehaviour.button.highSignal";
+    }
+
+    @Override
+    protected String getRedstoneString(){
+        return "gui.tab.redstoneBehaviour.airCannon.fireUpon";
     }
 
     private List<String> getStatusText(){
@@ -155,13 +91,11 @@ public class GuiAirCannon extends GuiPneumaticContainerBase{
         return text;
     }
 
-    private List<String> getProblems(){
-        List<String> textList = new ArrayList<String>();
+    @Override
+    protected void addProblems(List<String> textList){
         List<Pair<ForgeDirection, IPneumaticMachine>> teSurrounding = te.getConnectedPneumatics();
-        if(te.getPressure(ForgeDirection.UNKNOWN) < PneumaticValues.MIN_PRESSURE_AIR_CANNON) {
-            textList.add("\u00a77Not enough pressure");
-            textList.add("\u00a70Add air to the input");
-        }
+        super.addProblems(textList);
+
         if(teSurrounding.isEmpty()) {
             textList.add("\u00a77No air input connected.");
             textList.add("\u00a70Add pipes / machines");
@@ -190,29 +124,5 @@ public class GuiAirCannon extends GuiPneumaticContainerBase{
             textList.add("\u00a70Apply a redstone");
             textList.add("\u00a70signal to fire.");
         }
-        return textList;
     }
-
-    public List<String> getRedstoneBehaviour(){
-        List<String> textList = new ArrayList<String>();
-        textList.add("\u00a77Fire upon                          ");
-        for(int i = 0; i < 3; i++)
-            textList.add("");// create some space for the button
-        return textList;
-    }
-
-    /**
-     * Fired when a control is clicked. This is the equivalent of
-     * ActionListener.actionPerformed(ActionEvent e).
-     */
-    @Override
-    protected void actionPerformed(GuiButton button){
-        switch(button.id){
-            case 0:// redstone button
-                redstoneBehaviourStat.closeWindow();
-                break;
-        }
-        NetworkHandler.sendToServer(new PacketGuiButton(te, button.id));
-    }
-
 }

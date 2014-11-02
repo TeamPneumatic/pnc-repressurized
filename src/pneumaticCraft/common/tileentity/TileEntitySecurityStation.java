@@ -15,12 +15,12 @@ import net.minecraft.util.AxisAlignedBB;
 import org.lwjgl.opengl.GL11;
 
 import pneumaticCraft.client.render.RenderProgressingLine;
+import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.ItemNetworkComponents;
 import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.PacketRenderRangeLines;
 import pneumaticCraft.lib.Log;
-import pneumaticCraft.lib.Names;
 import pneumaticCraft.lib.TileEntityConstants;
 
 import com.mojang.authlib.GameProfile;
@@ -29,7 +29,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntitySecurityStation extends TileEntityBase implements ISidedInventory, IGUITextFieldSensitive,
-        IRangeLineShower{
+        IRangeLineShower, IRedstoneControl{
     private ItemStack[] inventory;
     private final int INVENTORY_SIZE = 39;
     public static final int UPGRADE_SLOT_START = 35;
@@ -154,6 +154,7 @@ public class TileEntitySecurityStation extends TileEntityBase implements ISidedI
         for(RenderProgressingLine line : rangeLines) {
             line.render();
         }
+        GL11.glColor4d(1, 1, 1, 1);
         GL11.glDisable(GL11.GL_BLEND);
         GL11.glEnable(GL11.GL_TEXTURE_2D);
 
@@ -274,7 +275,7 @@ public class TileEntitySecurityStation extends TileEntityBase implements ISidedI
 
     @Override
     public String getInventoryName(){
-        return Names.SECURITY_STATION;
+        return Blockss.securityStation.getUnlocalizedName();
     }
 
     @Override
@@ -504,7 +505,7 @@ public class TileEntitySecurityStation extends TileEntityBase implements ISidedI
 
     @Override
     public boolean hasCustomInventoryName(){
-        return true;
+        return false;
     }
 
     @Override
@@ -522,4 +523,9 @@ public class TileEntitySecurityStation extends TileEntityBase implements ISidedI
 
     @Override
     public void closeInventory(){}
+
+    @Override
+    public int getRedstoneMode(){
+        return redstoneMode;
+    }
 }

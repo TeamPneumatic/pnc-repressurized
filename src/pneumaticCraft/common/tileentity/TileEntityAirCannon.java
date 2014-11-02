@@ -34,6 +34,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import org.apache.commons.lang3.tuple.Pair;
 
 import pneumaticCraft.api.tileentity.IPneumaticMachine;
+import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.network.NetworkHandler;
@@ -42,7 +43,6 @@ import pneumaticCraft.common.network.PacketSpawnParticle;
 import pneumaticCraft.common.thirdparty.computercraft.LuaConstant;
 import pneumaticCraft.common.thirdparty.computercraft.LuaMethod;
 import pneumaticCraft.lib.ModIds;
-import pneumaticCraft.lib.Names;
 import pneumaticCraft.lib.PneumaticValues;
 import pneumaticCraft.lib.Sounds;
 import pneumaticCraft.lib.TileEntityConstants;
@@ -51,7 +51,8 @@ import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.lua.LuaException;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 
-public class TileEntityAirCannon extends TileEntityPneumaticBase implements ISidedInventory, IInventory{
+public class TileEntityAirCannon extends TileEntityPneumaticBase implements ISidedInventory, IInventory,
+        IMinWorkingPressure, IRedstoneControl{
 
     private ItemStack[] inventory;
     private final Random rand = new Random();
@@ -375,7 +376,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements ISid
 
     @Override
     public String getInventoryName(){
-        return Names.AIR_CANNON;
+        return Blockss.airCannon.getUnlocalizedName();
     }
 
     @Override
@@ -469,8 +470,10 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements ISid
 
     @Override
     public void handleGUIButtonPress(int buttonID, EntityPlayer player){
-        fireOnlyOnRightAngle = !fireOnlyOnRightAngle;
-        sendDescriptionPacket();
+        if(buttonID == 0) {
+            fireOnlyOnRightAngle = !fireOnlyOnRightAngle;
+            sendDescriptionPacket();
+        }
     }
 
     public void onNeighbourBlockChange(int x, int y, int z, Block block){
@@ -567,7 +570,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements ISid
 
     @Override
     public boolean hasCustomInventoryName(){
-        return true;
+        return false;
     }
 
     @Override
@@ -662,5 +665,15 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements ISid
                 }
             }
         });
+    }
+
+    @Override
+    public float getMinWorkingPressure(){
+        return PneumaticValues.MIN_PRESSURE_AIR_CANNON;
+    }
+
+    @Override
+    public int getRedstoneMode(){
+        return fireOnlyOnRightAngle ? 0 : 1;
     }
 }

@@ -15,12 +15,13 @@ import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.common.Config;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.Itemss;
+import pneumaticCraft.common.tileentity.IMinWorkingPressure;
+import pneumaticCraft.common.tileentity.IRedstoneControlled;
 import pneumaticCraft.common.tileentity.TileEntityPneumaticBase;
-import pneumaticCraft.lib.Names;
 import pneumaticCraft.lib.PneumaticValues;
 
 public class TileEntityPneumaticGenerator extends TileEntityPneumaticBase implements IEnergySource, IWrenchable,
-        IInventory{
+        IInventory, IRedstoneControlled, IMinWorkingPressure{
 
     private ItemStack[] inventory;
 
@@ -73,6 +74,7 @@ public class TileEntityPneumaticGenerator extends TileEntityPneumaticBase implem
         super.onChunkUnload();
     }
 
+    @Override
     public boolean redstoneAllows(){
         switch(redstoneMode){
             case 0:
@@ -162,7 +164,7 @@ public class TileEntityPneumaticGenerator extends TileEntityPneumaticBase implem
     @Override
     public String getInventoryName(){
 
-        return Names.PNEUMATIC_GENERATOR;
+        return IC2.electricCompressor.getUnlocalizedName();
     }
 
     @Override
@@ -301,4 +303,14 @@ public class TileEntityPneumaticGenerator extends TileEntityPneumaticBase implem
 
     @Override
     public void closeInventory(){}
+
+    @Override
+    public int getRedstoneMode(){
+        return redstoneMode;
+    }
+
+    @Override
+    public float getMinWorkingPressure(){
+        return PneumaticValues.MIN_PRESSURE_PNEUMATIC_GENERATOR;
+    }
 }

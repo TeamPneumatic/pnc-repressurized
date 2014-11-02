@@ -1,5 +1,7 @@
 package pneumaticCraft.common.block.tubes;
 
 public interface IInfluenceDispersing{
-    public int canDisperse(int amount);
+    public int getMaxDispersion();
+
+    public void onAirDispersion(int amount);
 }

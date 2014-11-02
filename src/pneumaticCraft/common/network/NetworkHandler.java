@@ -44,6 +44,7 @@ public class NetworkHandler{
         INSTANCE.registerMessage(PacketRenderRangeLines.class, PacketRenderRangeLines.class, discriminant++, Side.CLIENT);
         INSTANCE.registerMessage(PacketSecurityStationAddHacker.class, PacketSecurityStationAddHacker.class, discriminant++, Side.SERVER);
         INSTANCE.registerMessage(PacketSecurityStationAddUser.class, PacketSecurityStationAddUser.class, discriminant++, Side.SERVER);
+        INSTANCE.registerMessage(PacketSecurityStationFailedHack.class, PacketSecurityStationFailedHack.class, discriminant++, Side.SERVER);
         INSTANCE.registerMessage(PacketSendNBTPacket.class, PacketSendNBTPacket.class, discriminant++, Side.CLIENT);
         INSTANCE.registerMessage(PacketSetMobTarget.class, PacketSetMobTarget.class, discriminant++, Side.CLIENT);
         INSTANCE.registerMessage(PacketShowWireframe.class, PacketShowWireframe.class, discriminant++, Side.CLIENT);
@@ -63,6 +64,8 @@ public class NetworkHandler{
         INSTANCE.registerMessage(PacketHackingEntityStart.class, PacketHackingEntityStart.class, discriminant++, Side.SERVER);
         INSTANCE.registerMessage(PacketHackingEntityStart.class, PacketHackingEntityStart.class, discriminant++, Side.CLIENT);
         INSTANCE.registerMessage(PacketHackingEntityFinish.class, PacketHackingEntityFinish.class, discriminant++, Side.CLIENT);
+
+        INSTANCE.registerMessage(PacketToggleHelmetFeature.class, PacketToggleHelmetFeature.class, discriminant++, Side.SERVER);
 
         INSTANCE.registerMessage(PacketOpenTubeModuleGui.class, PacketOpenTubeModuleGui.class, discriminant++, Side.CLIENT);
 

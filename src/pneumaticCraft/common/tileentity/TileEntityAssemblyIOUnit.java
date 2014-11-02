@@ -321,12 +321,12 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
             int[] slotsInTop = ((ISidedInventory)inventory).getAccessibleSlotsFromSide(ForgeDirection.UP.ordinal());
             for(int slot : slotsInTop) {
                 ItemStack stack = inventory.getStackInSlot(slot);
-                if(stack != null && stack.isItemEqual(searchedItem)) return slot;
+                if(stack != null && stack.stackSize > 0 && stack.isItemEqual(searchedItem) && ((ISidedInventory)inventory).canExtractItem(slot, stack, ForgeDirection.UP.ordinal())) return slot;
             }
         } else {
             for(int slot = 0; slot < inventory.getSizeInventory(); slot++) {
                 ItemStack stack = inventory.getStackInSlot(slot);
-                if(stack != null && stack.isItemEqual(searchedItem)) return slot;
+                if(stack != null && stack.stackSize > 0 && stack.isItemEqual(searchedItem)) return slot;
             }
         }
         return -1;

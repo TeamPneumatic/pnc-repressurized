@@ -1,30 +1,28 @@
 package pneumaticCraft.client.gui;
 
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.StatCollector;
 
 import org.lwjgl.opengl.GL11;
 
 import pneumaticCraft.client.gui.widget.GuiAnimatedStat;
+import pneumaticCraft.client.gui.widget.IGuiWidget;
+import pneumaticCraft.client.gui.widget.WidgetTextField;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.inventory.ContainerSecurityStationInventory;
 import pneumaticCraft.common.network.NetworkHandler;
-import pneumaticCraft.common.network.PacketGuiButton;
 import pneumaticCraft.common.network.PacketSecurityStationAddUser;
 import pneumaticCraft.common.network.PacketUpdateTextfield;
 import pneumaticCraft.common.tileentity.TileEntitySecurityStation;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
-import pneumaticCraft.lib.GuiConstants;
 import pneumaticCraft.lib.Textures;
 
 import com.mojang.authlib.GameProfile;
@@ -35,27 +33,19 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class GuiSecurityStationInventory extends GuiSecurityStationBase{
-    private static final ResourceLocation guiTexture = new ResourceLocation(Textures.GUI_SECURITY_STATION);
-    private final TileEntitySecurityStation te;
-    private GuiAnimatedStat problemStat;
     private GuiAnimatedStat statusStat;
     private GuiAnimatedStat accessStat;
-    private GuiAnimatedStat redstoneBehaviourStat;
-    private GuiAnimatedStat infoStat;
-    private GuiAnimatedStat upgradeStat;
 
-    private GuiButton addButton;
+    private GuiButtonSpecial addButton;
     private GuiButton rebootButton;
-    private GuiButton redstoneButton;
-    private GuiTextField sharedUserTextField;
+    private WidgetTextField sharedUserTextField;
     private List<GuiButtonSpecial> removeUserButtons;
     private NetworkConnectionHandler nodeHandler;
 
-    public GuiSecurityStationInventory(InventoryPlayer player, TileEntitySecurityStation teSecurityStation){
+    public GuiSecurityStationInventory(InventoryPlayer player, TileEntitySecurityStation te){
 
-        super(new ContainerSecurityStationInventory(player, teSecurityStation));
+        super(new ContainerSecurityStationInventory(player, te), te, Textures.GUI_SECURITY_STATION);
         ySize = 239;
-        te = teSecurityStation;
     }
 
     @Override
@@ -65,32 +55,16 @@ public class GuiSecurityStationInventory extends GuiSecurityStationBase{
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
 
-        problemStat = new GuiAnimatedStat(this, "Problems", Textures.GUI_PROBLEMS_TEXTURE, xStart + xSize, yStart + 5, 0xFFFF0000, null, false);
-        statusStat = new GuiAnimatedStat(this, "Security Status", new ItemStack(Blockss.securityStation), xStart + xSize, 3, 0xFFFFAA00, problemStat, false);
-        accessStat = new GuiAnimatedStat(this, "Shared Users", new ItemStack(Items.skull, 1, 3), xStart + xSize, 3, 0xFF005500, statusStat, false);
+        statusStat = addAnimatedStat("Security Status", new ItemStack(Blockss.securityStation), 0xFFFFAA00, false);
+        accessStat = addAnimatedStat("Shared Users", new ItemStack(Items.skull, 1, 3), 0xFF005500, false);
 
-        redstoneBehaviourStat = new GuiAnimatedStat(this, "Redstone Behaviour", new ItemStack(Items.redstone), xStart, yStart + 5, 0xFFCC0000, null, true);
-        infoStat = new GuiAnimatedStat(this, "Information", Textures.GUI_INFO_LOCATION, xStart, 3, 0xFF8888FF, redstoneBehaviourStat, true);
-        upgradeStat = new GuiAnimatedStat(this, "Upgrades", Textures.GUI_UPGRADES_LOCATION, xStart, 3, 0xFF0000FF, infoStat, true);
-
-        animatedStatList.add(problemStat);
-        animatedStatList.add(statusStat);
-        animatedStatList.add(redstoneBehaviourStat);
-        animatedStatList.add(infoStat);
-        animatedStatList.add(upgradeStat);
-        animatedStatList.add(accessStat);
-        redstoneBehaviourStat.setTextWithoutCuttingString(getRedstoneBehaviour());
-        infoStat.setText(GuiConstants.INFO_SECURITY_STATION);
-        upgradeStat.setText(GuiConstants.UPGRADES_SECURITY_STATION);
-
-        Rectangle accessButtonRectangle = accessStat.getButtonScaledRectangle(xStart + 323, yStart + 53, 20, 20);
-        Rectangle redstoneButtonRectangle = redstoneBehaviourStat.getButtonScaledRectangle(xStart - 131, yStart + 30, 130, 20);
+        Rectangle accessButtonRectangle = accessStat.getButtonScaledRectangle(145, 10, 20, 20);
         addButton = getButtonFromRectangle(1, accessButtonRectangle, "+");
         rebootButton = new GuiButton(2, xStart + 110, yStart + 20, 60, 20, "Reboot");
-        sharedUserTextField = getTextFieldFromRectangle(accessStat.getButtonScaledRectangle(xStart + 195, yStart + 58, 120, 10));
-        redstoneButton = getButtonFromRectangle(0, redstoneButtonRectangle, "-");
-        buttonList.add(redstoneButton);
-        buttonList.add(addButton);
+        sharedUserTextField = getTextFieldFromRectangle(accessStat.getButtonScaledRectangle(20, 15, 120, 10));
+        accessStat.addWidget(sharedUserTextField);
+        accessStat.addWidget(addButton);
+
         buttonList.add(rebootButton);
 
         updateUserRemoveButtons();
@@ -100,39 +74,44 @@ public class GuiSecurityStationInventory extends GuiSecurityStationBase{
 
     @Override
     protected void drawGuiContainerForegroundLayer(int x, int y){
-
-        String containerName = te.hasCustomInventoryName() ? te.getInventoryName() : StatCollector.translateToLocal(te.getInventoryName());
-
-        fontRendererObj.drawString(containerName, xSize / 2 - fontRendererObj.getStringWidth(containerName) / 2, 4, 4210752);
+        super.drawGuiContainerForegroundLayer(x, y);
         fontRendererObj.drawString("Network Layout", 15, 12, 4210752);
         fontRendererObj.drawString("Upgr.", 133, 52, 4210752);
+    }
 
-        fontRendererObj.drawString(StatCollector.translateToLocal("container.inventory"), 8, ySize - 106 + 14, 4210752);
+    @Override
+    protected Point getInvTextOffset(){
+        return new Point(0, 2);
+    }
 
-        switch(te.redstoneMode){
+    @Override
+    protected Point getInvNameOffset(){
+        return new Point(0, -2);
+    }
+
+    @Override
+    protected String getRedstoneButtonText(int mode){
+        switch(mode){
             case 0:
-                redstoneButton.displayString = "Never";
-                break;
+                return "gui.tab.redstoneBehaviour.button.never";
             case 1:
-                redstoneButton.displayString = "Hacked";
-                break;
+                return "gui.tab.redstoneBehaviour.securityStation.button.hacked";
             case 2:
-                redstoneButton.displayString = "Done rebooting";
-                break;
+                return "gui.tab.redstoneBehaviour.securityStation.button.doneRebooting";
         }
+        return "<ERROR>";
     }
 
     @Override
     protected void drawGuiContainerBackgroundLayer(float opacity, int x, int y){
         super.drawGuiContainerBackgroundLayer(opacity, x, y);
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        mc.getTextureManager().bindTexture(guiTexture);
+        nodeHandler.render();
+    }
 
-        int xStart = (width - xSize) / 2;
-        int yStart = (height - ySize) / 2;
-        drawTexturedModalRect(xStart, yStart, 0, 0, xSize, ySize);
-
-        problemStat.setText(getProblems());
+    @Override
+    public void updateScreen(){
+        super.updateScreen();
         statusStat.setText(getStatusText());
         accessStat.setTextWithoutCuttingString(getAccessText());
         String rebootButtonString;
@@ -143,8 +122,7 @@ public class GuiSecurityStationInventory extends GuiSecurityStationBase{
         }
 
         rebootButton.displayString = rebootButtonString;
-        if(accessStat.isDoneExpanding()) sharedUserTextField.drawTextBox();
-        redstoneButton.visible = redstoneBehaviourStat.isDoneExpanding();
+
         addButton.visible = accessStat.isDoneExpanding();
         for(GuiButton button : removeUserButtons) {
             button.enabled = accessStat.isDoneExpanding();
@@ -152,23 +130,11 @@ public class GuiSecurityStationInventory extends GuiSecurityStationBase{
         if(removeUserButtons.size() != te.sharedUsers.size()) {
             updateUserRemoveButtons();
         }
-        nodeHandler.render();
-
     }
 
-    private List<String> getRedstoneBehaviour(){
-        List<String> textList = new ArrayList<String>();
-        textList.add("\u00a77Emit redstone if         "); // the spaces are
-                                                          // there to create
-                                                          // space for the
-                                                          // button
-        for(int i = 0; i < 3; i++)
-            textList.add("");// create some space for the button
-        return textList;
-    }
-
-    private List<String> getProblems(){
-        List<String> text = new ArrayList<String>();
+    @Override
+    protected void addProblems(List<String> text){
+        super.addProblems(text);
         if(te.getRebootTime() > 0) {
             text.add(EnumChatFormatting.GRAY + "The Security Station doesn't provide security!");
             text.add(EnumChatFormatting.BLACK + "The station is rebooting (" + PneumaticCraftUtils.convertTicksToMinutesAndSeconds(te.getRebootTime(), false) + ").");
@@ -205,10 +171,6 @@ public class GuiSecurityStationInventory extends GuiSecurityStationBase{
                     break;
             }
         }
-        if(text.size() == 0) {
-            text.add(EnumChatFormatting.BLACK + "There are no problems.");
-        }
-        return text;
     }
 
     private List<String> getStatusText(){
@@ -244,13 +206,9 @@ public class GuiSecurityStationInventory extends GuiSecurityStationBase{
     }
 
     @Override
-    protected void mouseClicked(int par1, int par2, int par3){
-        super.mouseClicked(par1, par2, par3);
-
-        if(accessStat.isDoneExpanding()) sharedUserTextField.mouseClicked(par1, par2, par3);
-        if(sharedUserTextField.isFocused()) {
-            accessStat.openWindow();
-        }
+    public void actionPerformed(IGuiWidget widget){
+        if(widget.getID() == 1 && !sharedUserTextField.getText().equals("")) NetworkHandler.sendToServer(new PacketSecurityStationAddUser(te, sharedUserTextField.getText()));
+        super.actionPerformed(widget);
     }
 
     /**
@@ -260,51 +218,32 @@ public class GuiSecurityStationInventory extends GuiSecurityStationBase{
 
     @Override
     protected void actionPerformed(GuiButton button){
-        switch(button.id){
-            case 0:// redstone button
-                redstoneBehaviourStat.closeWindow();
-                break;
-            case 1:
-                accessStat.closeWindow();
-                NetworkHandler.sendToServer(new PacketSecurityStationAddUser(te, sharedUserTextField.getText()));
-                break;
-            case 2:
-                te.rebootStation();
-                break;
-        }
-        if(button.id > 2) {
-            accessStat.closeWindow();
+        if(button.id == 2) {
+            te.rebootStation();
         }
 
-        NetworkHandler.sendToServer(new PacketGuiButton(te, button.id));
+        super.actionPerformed(button);
     }
 
     @Override
-    protected void keyTyped(char par1, int par2){
-        if(sharedUserTextField.isFocused() && par2 != 1) {
-            sharedUserTextField.textboxKeyTyped(par1, par2);
-            te.setText(0, sharedUserTextField.getText());
-            NetworkHandler.sendToServer(new PacketUpdateTextfield(te, 0));
-        } else {
-            super.keyTyped(par1, par2);
-        }
+    public void onKeyTyped(IGuiWidget widget){
+        te.setText(0, sharedUserTextField.getText());
+        NetworkHandler.sendToServer(new PacketUpdateTextfield(te, 0));
     }
 
     private void updateUserRemoveButtons(){
-        int xStart = (width - xSize) / 2;
-        int yStart = (height - ySize) / 2;
         if(removeUserButtons != null) {
-            for(GuiButton button : removeUserButtons) {
-                buttonList.remove(button);
+            for(GuiButtonSpecial button : removeUserButtons) {
+                accessStat.removeWidget(button);
             }
         }
         removeUserButtons = new ArrayList<GuiButtonSpecial>();
         for(int i = 0; i < te.sharedUsers.size(); i++) {
-            Rectangle rect = accessStat.getButtonScaledRectangle(xStart + 202, yStart + 77 + i * 10, fontRendererObj.getStringWidth("-" + te.sharedUsers.get(i)), 8);
+            Rectangle rect = accessStat.getButtonScaledRectangle(20, 32 + i * 10, fontRendererObj.getStringWidth("-" + te.sharedUsers.get(i).getName()), 8);
             GuiButtonSpecial button = getInvisibleButtonFromRectangle(3 + i, rect);
             button.setInvisibleHoverColor(0x44FF0000);
             button.setVisible(false);
-            buttonList.add(button);
+            accessStat.addWidget(button);
             removeUserButtons.add(button);
             if(te.sharedUsers.get(i).getName().equals(FMLClientHandler.instance().getClient().thePlayer.getGameProfile().getName())) {
                 button.visible = false;

@@ -85,10 +85,14 @@ public abstract class DroneAIBlockInteraction extends EntityAIBase{
         }
         if(bestPos != null) {
             for(ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-                if(drone.isBlockValidPathfindBlock(bestPos.chunkPosX + dir.offsetX, bestPos.chunkPosY + dir.offsetY, bestPos.chunkPosZ + dir.offsetZ) && PneumaticCraftUtils.tryNavigateToXYZ(drone, bestPos.chunkPosX + dir.offsetX, bestPos.chunkPosY + dir.offsetY + 0.5, bestPos.chunkPosZ + dir.offsetZ, speed)) {
+                if(drone.getNavigator().tryMoveToXYZ(bestPos.chunkPosX + dir.offsetX, bestPos.chunkPosY + dir.offsetY + 0.5, bestPos.chunkPosZ + dir.offsetZ, speed)) {
                     curPos = bestPos;
                     return true;
                 }
+            }
+            if(((EntityPathNavigateDrone)drone.getNavigator()).isGoingToTeleport()) {
+                curPos = bestPos;
+                return true;
             }
         }
         blacklist.clear();//clear the list for next time (maybe the blocks/rights have changed by the time there will be dug again).

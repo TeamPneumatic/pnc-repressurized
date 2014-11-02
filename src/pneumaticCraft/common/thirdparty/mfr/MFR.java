@@ -6,6 +6,8 @@ import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.fluids.FluidRegistry;
+import pneumaticCraft.api.PneumaticRegistry;
 import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.thirdparty.IThirdParty;
@@ -27,14 +29,14 @@ public class MFR implements IThirdParty{
             tag.setString("seed", GameData.getItemRegistry().getNameForObject(seed.getItem()));
             tag.setInteger("meta", seed.getItemDamage());
             tag.setString("crop", GameData.getBlockRegistry().getNameForObject(plantBlock));
-            FMLInterModComms.sendMessage(ModIds.MFR, "registerPlantable_Standard", tag);
+            FMLInterModComms.sendMessage(ModIds.MFR, "registerPlantable_Crop", tag);
         }
 
     }
 
     @Override
     public void init(){
-
+        PneumaticRegistry.getInstance().registerXPLiquid(FluidRegistry.getFluid("mobessence"), 77);
     }
 
     @Override

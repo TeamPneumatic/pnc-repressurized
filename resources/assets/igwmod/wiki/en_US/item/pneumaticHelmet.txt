@@ -52,3 +52,9 @@ This upgrade will calculate the shortest path to a given location. It uses Minec
 
 [prefix{l}]Security Upgrade[prefix{}]
 This upgrade allows you to hack [link{block/securityStation}]Security Stations[link{}]. It has a second functionality: It allows you to hack your surroundings. If you're familiar with the game Watch Dogs that's exactly what you can expect. Lots of things can be hacked: Levers, Mob Spawners, Tripwires, Dispensers, Creepers, Ghasts, etcetera. This can all be done remotely. As soon as soon as the object is withing the Block/Entity Tracker's range you can hack it. A good thing to note is to be able to hack Entities you need an Entity Tracker, and for blocks a Block Tracker.
+
+[prefix{l}]Speed Upgrade[prefix{}]
+Increases the speed at which the Pneumatic Helmet initializes, the block tracker tracks, and the entity tracker tracks. There's no real maximum of speed upgrades, but do keep in mind that the air usage also increases with the speed.
+
+[prefix{l}]Range Upgrade[prefix{}]
+Increases the range of the Entity Tracker and Block Tracker with 5 blocks radius per upgrade. For the Entity Tracker there's no limit, for the Block Tracker up to 5 upgrades are accepted. This upgrade increases the air usage of the Block and Entity Tracker.

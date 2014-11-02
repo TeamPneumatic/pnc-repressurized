@@ -30,10 +30,9 @@ import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
-import pneumaticCraft.lib.Names;
 import pneumaticCraft.lib.PneumaticValues;
 
-public class TileEntityPressureChamberValve extends TileEntityPneumaticBase implements IInventory{
+public class TileEntityPressureChamberValve extends TileEntityPneumaticBase implements IInventory, IMinWorkingPressure{
     public int multiBlockX;
     public int multiBlockY;
     public int multiBlockZ;
@@ -769,7 +768,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
     @Override
     public String getInventoryName(){
 
-        return Names.PRESSURE_CHAMBER;
+        return Blockss.pressureChamberValve.getUnlocalizedName();
     }
 
     @Override
@@ -779,7 +778,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
 
     @Override
     public boolean hasCustomInventoryName(){
-        return true;
+        return false;
     }
 
     @Override
@@ -792,5 +791,10 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
 
     @Override
     public void closeInventory(){}
+
+    @Override
+    public float getMinWorkingPressure(){
+        return recipePressure;
+    }
 
 }

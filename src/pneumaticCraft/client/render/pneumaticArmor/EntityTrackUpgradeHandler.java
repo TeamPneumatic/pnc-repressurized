@@ -13,6 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.Vec3;
+import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.common.config.Configuration;
 import pneumaticCraft.api.client.pneumaticHelmet.IOptionPage;
 import pneumaticCraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
@@ -222,6 +223,13 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler{
         for(RenderTarget target : targets) {
             target.hack();
         }
+    }
+
+    public boolean scroll(MouseEvent event){
+        for(RenderTarget target : targets) {
+            if(target.scroll(event)) return true;
+        }
+        return false;
     }
 
 }

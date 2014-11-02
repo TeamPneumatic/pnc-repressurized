@@ -4,20 +4,16 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.StatCollector;
 
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
-import pneumaticCraft.client.gui.widget.GuiAnimatedStat;
 import pneumaticCraft.common.inventory.ContainerProgrammer;
 import pneumaticCraft.common.item.ItemProgrammingPuzzle;
 import pneumaticCraft.common.network.NetworkHandler;
@@ -25,19 +21,14 @@ import pneumaticCraft.common.network.PacketGuiButton;
 import pneumaticCraft.common.network.PacketProgrammerUpdate;
 import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.common.tileentity.TileEntityProgrammer;
-import pneumaticCraft.lib.GuiConstants;
 import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class GuiProgrammer extends GuiPneumaticContainerBase{
-    public final TileEntityProgrammer te;
+public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgrammer>{
     private final EntityPlayer player;
-
-    //    private GuiAnimatedStat redstoneBehaviourStat;
-    private GuiAnimatedStat infoStat;
 
     //  private GuiButton redstoneButton;
     private GuiButtonSpecial importButton;
@@ -55,9 +46,8 @@ public class GuiProgrammer extends GuiPneumaticContainerBase{
 
     public GuiProgrammer(InventoryPlayer player, TileEntityProgrammer te){
 
-        super(new ContainerProgrammer(player, te));
+        super(new ContainerProgrammer(player, te), te, Textures.GUI_PROGRAMMER);
         ySize = 256;
-        this.te = te;
 
         for(IProgWidget widget : TileEntityProgrammer.registeredWidgets) {
             widget.setX(132);
@@ -91,15 +81,6 @@ public class GuiProgrammer extends GuiPneumaticContainerBase{
         }
     }
 
-    /**
-     * Causes the screen to lay out its subcomponents again. This is the equivalent of the Java call
-     * Container.validate()
-     */
-    @Override
-    public void setWorldAndResolution(Minecraft par1Minecraft, int par2, int par3){
-        super.setWorldAndResolution(par1Minecraft, par2, par3);
-    }
-
     @Override
     public void initGui(){
         super.initGui();
@@ -107,15 +88,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase{
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
 
-        infoStat = new GuiAnimatedStat(this, "Information", Textures.GUI_INFO_LOCATION, xStart, yStart + 5, 0xFF8888FF, null, true);
         addProgWidgetTabs(xStart, yStart);
-
-        animatedStatList.add(infoStat);
-        infoStat.setText(GuiConstants.INFO_PROGRAMMER);
-
-        //    Rectangle buttonRect = redstoneBehaviourStat.getButtonScaledRectangle(xStart - 118, yStart + 30, 117, 20);
-        //    redstoneButton = getButtonFromRectangle(0, buttonRect, "-");
-        //    buttonList.add(redstoneButton);
 
         importButton = new GuiButtonSpecial(1, xStart + 127, yStart + 3, 20, 15, "<--");
         importButton.setTooltipText("Import program");
@@ -130,44 +103,27 @@ public class GuiProgrammer extends GuiPneumaticContainerBase{
         updateVisibleProgWidgets();
     }
 
+    @Override
+    protected boolean shouldAddProblemTab(){
+        return false;
+    }
+
     private void addProgWidgetTabs(int xStart, int yStart){
-        GuiAnimatedStat stat = infoStat;
         List<IProgWidget> registeredWidgets = TileEntityProgrammer.registeredWidgets;
         for(int i = 0; i < registeredWidgets.size() / 2; i++) {
             IProgWidget widget = registeredWidgets.get(i);
-            stat = new GuiAnimatedStat(this, I18n.format("programmingPuzzle." + widget.getWidgetString() + ".name"), ItemProgrammingPuzzle.getStackForWidgetKey(widget.getWidgetString()), xStart, 3, widget.getGuiTabColor(), stat, true);
-            stat.setText(widget.getGuiTabText());
-            animatedStatList.add(stat);
+            addAnimatedStat("programmingPuzzle." + widget.getWidgetString() + ".name", ItemProgrammingPuzzle.getStackForWidgetKey(widget.getWidgetString()), widget.getGuiTabColor(), true).setText(widget.getGuiTabText());
         }
-        stat = null;
         for(int i = registeredWidgets.size() / 2; i < registeredWidgets.size(); i++) {
             IProgWidget widget = registeredWidgets.get(i);
-            stat = new GuiAnimatedStat(this, I18n.format("programmingPuzzle." + widget.getWidgetString() + ".name"), ItemProgrammingPuzzle.getStackForWidgetKey(widget.getWidgetString()), xStart + xSize, stat == null ? yStart + 5 : 3, widget.getGuiTabColor(), stat, false);
-            stat.setText(widget.getGuiTabText());
-            animatedStatList.add(stat);
+            addAnimatedStat("programmingPuzzle." + widget.getWidgetString() + ".name", ItemProgrammingPuzzle.getStackForWidgetKey(widget.getWidgetString()), widget.getGuiTabColor(), false).setText(widget.getGuiTabText());
         }
     }
 
     @Override
     protected void drawGuiContainerForegroundLayer(int x, int y){
-
-        String containerName = te.hasCustomInventoryName() ? te.getInventoryName() : StatCollector.translateToLocal(te.getInventoryName());
-
-        fontRendererObj.drawString(containerName, xSize / 2 - fontRendererObj.getStringWidth(containerName) / 2, 6, 4210752);
-        fontRendererObj.drawString(StatCollector.translateToLocal("container.inventory"), 8, ySize - 106 + 2, 4210752);
+        super.drawGuiContainerForegroundLayer(x, y);
         fontRendererObj.drawString(widgetPage + 1 + "/" + (maxPage + 1), 142, 160, 0xFF000000);
-
-        /*    switch(te.redstoneMode){
-                case 0:
-                    redstoneButton.displayString = "Never";
-                    break;
-                case 1:
-                    redstoneButton.displayString = "Redstone applied";
-                    break;
-                case 2:
-                    redstoneButton.displayString = "Redstone not applied";
-                    break;
-            }*/
 
         for(IProgWidget widget : te.progWidgets) {
             if(widget != draggingWidget && x - guiLeft >= widget.getX() && y - guiTop >= widget.getY() && x - guiLeft <= widget.getX() + widget.getWidth() / 2 && y - guiTop <= widget.getY() + widget.getHeight() / 2) {
@@ -190,11 +146,6 @@ public class GuiProgrammer extends GuiPneumaticContainerBase{
     protected void drawGuiContainerBackgroundLayer(float opacity, int x, int y){
         super.drawGuiContainerBackgroundLayer(opacity, x, y);
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-
-        mc.getTextureManager().bindTexture(Textures.GUI_PROGRAMMER);
-        int xStart = (width - xSize) / 2;
-        int yStart = (height - ySize) / 2;
-        drawTexturedModalRect(xStart, yStart, 0, 0, xSize, ySize);
 
         for(IProgWidget widget : te.progWidgets) {
             GL11.glPushMatrix();
@@ -319,11 +270,6 @@ public class GuiProgrammer extends GuiPneumaticContainerBase{
         return true;
     }
 
-    @Override
-    public void drawScreen(int par1, int par2, float par3){
-        super.drawScreen(par1, par2, par3);
-    }
-
     private void handlePuzzleMargins(){
         //Check for connection to the left of the dragged widget.
         Class<? extends IProgWidget> returnValue = draggingWidget.returnType();
@@ -434,16 +380,6 @@ public class GuiProgrammer extends GuiPneumaticContainerBase{
         if(outputWidget != null) deleteConnectingWidgets(outputWidget);
     }
 
-    private List<String> getRedstoneBehaviour(){
-        List<String> textList = new ArrayList<String>();
-        textList.add("\u00a77Stop item transfer when"); // the spaces are there
-                                                        // to create space for
-                                                        // the button
-        for(int i = 0; i < 3; i++)
-            textList.add("");// create some space for the button
-        return textList;
-    }
-
     /**
      * Fired when a control is clicked. This is the equivalent of
      * ActionListener.actionPerformed(ActionEvent e).
@@ -469,6 +405,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase{
 
     @Override
     public void updateScreen(){
+        super.updateScreen();
         boolean isDeviceInserted = te.getStackInSlot(TileEntityProgrammer.PROGRAM_SLOT) != null;
         importButton.enabled = isDeviceInserted;
         exportButton.enabled = isDeviceInserted;
@@ -507,7 +444,6 @@ public class GuiProgrammer extends GuiPneumaticContainerBase{
             exportButtonTooltip.add("No programmable item inserted.");
         }
         exportButton.setTooltipText(exportButtonTooltip);
-        super.updateScreen();
     }
 
     @Override

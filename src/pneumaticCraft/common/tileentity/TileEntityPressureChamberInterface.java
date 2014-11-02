@@ -14,14 +14,14 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Facing;
 import net.minecraftforge.common.util.ForgeDirection;
+import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.GuiConstants;
-import pneumaticCraft.lib.Names;
 import pneumaticCraft.lib.PneumaticValues;
 import pneumaticCraft.lib.Sounds;
 
 public class TileEntityPressureChamberInterface extends TileEntityPressureChamberWall implements ISidedInventory,
-        IGUITextFieldSensitive{
+        IGUITextFieldSensitive, IRedstoneControlled{
     private ItemStack[] inventory = new ItemStack[14];
     public int inputProgress;
     public int oldInputProgress;
@@ -223,6 +223,7 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
         return textList;
     }
 
+    @Override
     public boolean redstoneAllows(){
         switch(redstoneMode){
             case 0:
@@ -346,7 +347,7 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
 
     @Override
     public String getInventoryName(){
-        return Names.PRESSURE_CHAMBER_INTERFACE;
+        return Blockss.pressureChamberInterface.getUnlocalizedName();
     }
 
     @Override
@@ -373,11 +374,11 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
                 return filterEmpty;
             case CREATIVE_TAB:
                 try {
-                    int itemCreativeTabIndex = iStack.getItem().getCreativeTab().getTabIndex();
+                    int itemCreativeTabIndex = iStack.getItem().getCreativeTab() != null ? iStack.getItem().getCreativeTab().getTabIndex() : -1;
                     if(itemCreativeTabIndex == creativeTabID) {
                         return true;
                     }
-                } catch(NoSuchMethodError e) {//when we are SMP getCreativeTab() is client only.
+                } catch(Throwable e) {//when we are SMP getCreativeTab() is client only.
                     filterMode = EnumFilterMode.NAME_BEGINS;
                 }
                 return false;
@@ -416,7 +417,7 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
 
     @Override
     public void handleGUIButtonPress(int guiID, EntityPlayer player){
-        if(guiID == 0) {
+        if(guiID == 1) {
             if(filterMode.ordinal() >= EnumFilterMode.values().length - 1) {
                 filterMode = EnumFilterMode.ITEM;
             } else {
@@ -424,13 +425,13 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
             }
             isItemValidForSlot(0, new ItemStack(Items.stick));//when an SideOnly exception is thrown this method automatically will set the filter mode to Item.
 
-        } else if(guiID == 1) {
+        } else if(guiID == 2) {
             creativeTabID++;
             if(creativeTabID == 5 || creativeTabID == 11) creativeTabID++;
             if(creativeTabID >= CreativeTabs.creativeTabArray.length) {
                 creativeTabID = 0;
             }
-        } else {
+        } else if(guiID == 0) {
             redstoneMode++;
             if(redstoneMode > 2) redstoneMode = 0;
         }
@@ -449,6 +450,11 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
 
     @Override
     public boolean hasCustomInventoryName(){
-        return true;
+        return false;
+    }
+
+    @Override
+    public int getRedstoneMode(){
+        return redstoneMode;
     }
 }

@@ -40,7 +40,7 @@ public class ArmorMessage{
         } else {
             stat.closeWindow();
         }
-        stat.render(fontRenderer, 0, partialTicks);
+        stat.render(-1, -1, partialTicks);
         // PneumaticCraftUtils.getPartOfString(
     }
 }

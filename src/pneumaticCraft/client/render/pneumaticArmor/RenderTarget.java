@@ -12,6 +12,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
+import net.minecraftforge.client.event.MouseEvent;
 
 import org.lwjgl.opengl.GL11;
 
@@ -67,6 +68,7 @@ public class RenderTarget{
     }
 
     public void update(){
+        stat.update();
         if(ticksExisted >= 30 && !didMakeLockSound) {
             didMakeLockSound = true;
             EntityPlayer player = FMLClientHandler.instance().getClient().thePlayer;
@@ -154,7 +156,7 @@ public class RenderTarget{
                 tracker.addInfo(entity, textList);
             }
             stat.setText(textList);
-            stat.render(fontRenderer, 0, partialTicks);
+            stat.render(-1, -1, partialTicks);
         } else if(ticksExisted > 50) {
             fontRenderer.drawString("Acquiring Target...", 0, 0, 0x7F7F7F);
             fontRenderer.drawString(targetAcquireProgress + "%", 37, 28, 0x002F00);
@@ -163,7 +165,7 @@ public class RenderTarget{
 
             //if(stat.getWidth() > stat.getMinWidth() || stat.getHeight() > stat.getMinHeight()) {
             //    stat.setText(new ArrayList<String>());
-            stat.render(fontRenderer, 0, partialTicks);
+            stat.render(-1, -1, partialTicks);
             //            }
             fontRenderer.drawString("Lost Target!", 0, 0, 0xFF0000);
         }
@@ -206,5 +208,12 @@ public class RenderTarget{
 
     public int getHackTime(){
         return hackTime;
+    }
+
+    public boolean scroll(MouseEvent event){
+        if(isInitialized() && isPlayerLookingAtTarget()) {
+            return stat.handleMouseWheel(event.dwheel);
+        }
+        return false;
     }
 }

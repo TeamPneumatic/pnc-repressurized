@@ -13,8 +13,12 @@ import net.minecraft.client.settings.KeyBinding;
 import org.lwjgl.input.Keyboard;
 
 import pneumaticCraft.PneumaticCraft;
+import pneumaticCraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
 import pneumaticCraft.client.render.pneumaticArmor.HUDHandler;
+import pneumaticCraft.client.render.pneumaticArmor.UpgradeRenderHandlerList;
 import pneumaticCraft.common.Config;
+import pneumaticCraft.common.network.NetworkHandler;
+import pneumaticCraft.common.network.PacketToggleHelmetFeature;
 import pneumaticCraft.lib.Names;
 import pneumaticCraft.proxy.ClientProxy;
 import cpw.mods.fml.client.FMLClientHandler;
@@ -57,6 +61,18 @@ public class GuiKeybindCheckBox extends GuiCheckBox{
             } else {
                 Config.config.get("pneumatic_helmet_widgetDefaults", keyBindingName, true).set(checked);
                 Config.config.save();
+
+                for(int i = 0; i < UpgradeRenderHandlerList.instance().upgradeRenderers.size(); i++) {
+                    IUpgradeRenderHandler upgradeRenderHandler = UpgradeRenderHandlerList.instance().upgradeRenderers.get(i);
+                    if(("pneumaticHelmet.upgrade." + upgradeRenderHandler.getUpgradeName()).equals(keyBindingName)) {
+                        NetworkHandler.sendToServer(new PacketToggleHelmetFeature((byte)i, GuiKeybindCheckBox.trackedCheckboxes.get("pneumaticHelmet.upgrade.coreComponents").checked && checked));
+                    }
+                }
+                if(keyBindingName.equals("pneumaticHelmet.upgrade.coreComponents")) {
+                    for(int i = 0; i < UpgradeRenderHandlerList.instance().upgradeRenderers.size(); i++) {
+                        NetworkHandler.sendToServer(new PacketToggleHelmetFeature((byte)i, checked && GuiKeybindCheckBox.trackedCheckboxes.get("pneumaticHelmet.upgrade." + UpgradeRenderHandlerList.instance().upgradeRenderers.get(i).getUpgradeName()).checked));
+                    }
+                }
             }
         } else {
             isAwaitingKey = !isAwaitingKey;
@@ -70,12 +86,14 @@ public class GuiKeybindCheckBox extends GuiCheckBox{
     }
 
     @Override
-    public void onKey(char key, int keyCode){
+    public boolean onKey(char key, int keyCode){
         if(isAwaitingKey) {
             isAwaitingKey = false;
             keyBinding = setOrAddKeybind(keyBindingName, keyCode);
             text = oldCheckboxText;
+            return true;
         }
+        return false;
     }
 
     @SubscribeEvent
@@ -123,7 +141,7 @@ public class GuiKeybindCheckBox extends GuiCheckBox{
     }
 
     @Override
-    public void addTooltip(List<String> curTooltip, boolean shiftPressed){
+    public void addTooltip(int mouseX, int mouseY, List<String> curTooltip, boolean shiftPressed){
         if(keyBinding != null) {
             curTooltip.add(I18n.format("gui.keybindBoundKey", Keyboard.getKeyName(keyBinding.getKeyCode())));
         } else if(!isAwaitingKey) {

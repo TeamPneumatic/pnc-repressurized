@@ -53,7 +53,7 @@ public class DroneGoToChargingStation extends EntityAIBase{
         });
 
         for(TileEntityChargingStation station : validChargingStations) {
-            if(drone.isBlockValidPathfindBlock(station.xCoord, station.yCoord + 1, station.zCoord) && drone.getNavigator().tryMoveToXYZ(station.xCoord, station.yCoord + 1.5, station.zCoord, speed)) {
+            if(drone.getNavigator().tryMoveToXYZ(station.xCoord, station.yCoord + 1.5, station.zCoord, speed) || ((EntityPathNavigateDrone)drone.getNavigator()).isGoingToTeleport()) {
                 isExecuting = true;
                 curCharger = station;
                 return true;

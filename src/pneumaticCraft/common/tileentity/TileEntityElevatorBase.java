@@ -27,7 +27,6 @@ import pneumaticCraft.common.thirdparty.computercraft.LuaMethod;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.Log;
 import pneumaticCraft.lib.ModIds;
-import pneumaticCraft.lib.Names;
 import pneumaticCraft.lib.PneumaticValues;
 import pneumaticCraft.lib.Sounds;
 import pneumaticCraft.lib.TileEntityConstants;
@@ -38,7 +37,8 @@ import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.lua.LuaException;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 
-public class TileEntityElevatorBase extends TileEntityPneumaticBase implements IInventory, IGUITextFieldSensitive{
+public class TileEntityElevatorBase extends TileEntityPneumaticBase implements IInventory, IGUITextFieldSensitive,
+        IRedstoneControlled, IMinWorkingPressure{
     public boolean[] sidesConnected = new boolean[6];
     public float oldExtension;
     public float extension;
@@ -146,18 +146,20 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
 
     @Override
     public void handleGUIButtonPress(int buttonID, EntityPlayer player){
-        redstoneMode++;
-        if(redstoneMode > 1) redstoneMode = 0;
+        if(buttonID == 0) {
+            redstoneMode++;
+            if(redstoneMode > 1) redstoneMode = 0;
 
-        int i = -1;
-        TileEntity te = worldObj.getTileEntity(xCoord, yCoord - 1, zCoord);
-        while(te instanceof TileEntityElevatorBase) {
-            ((TileEntityElevatorBase)te).redstoneMode = redstoneMode;
-            i--;
-            te = worldObj.getTileEntity(xCoord, yCoord + i, zCoord);
+            int i = -1;
+            TileEntity te = worldObj.getTileEntity(xCoord, yCoord - 1, zCoord);
+            while(te instanceof TileEntityElevatorBase) {
+                ((TileEntityElevatorBase)te).redstoneMode = redstoneMode;
+                i--;
+                te = worldObj.getTileEntity(xCoord, yCoord + i, zCoord);
+            }
+
+            sendDescriptionPacket();
         }
-
-        sendDescriptionPacket();
     }
 
     private boolean isControlledByRedstone(){
@@ -437,7 +439,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
 
     @Override
     public String getInventoryName(){
-        return Names.ELEVATOR;
+        return Blockss.elevatorBase.getUnlocalizedName();
     }
 
     @Override
@@ -515,9 +517,8 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
         if(connectedMachines == null) {
             connectedMachines = super.getConnectedPneumatics();
             TileEntity te = getTileCache()[ForgeDirection.DOWN.ordinal()].getTileEntity();
-            while(te instanceof TileEntityElevatorBase) {
+            if(te instanceof TileEntityElevatorBase) {
                 connectedMachines.addAll(((TileEntityElevatorBase)te).getConnectedPneumatics());
-                te = ((TileEntityElevatorBase)te).getTileCache()[ForgeDirection.DOWN.ordinal()].getTileEntity();
             }
         }
         return connectedMachines;
@@ -551,7 +552,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
 
     @Override
     public boolean hasCustomInventoryName(){
-        return true;
+        return false;
     }
 
     /*
@@ -595,5 +596,15 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
                 }
             }
         });
+    }
+
+    @Override
+    public int getRedstoneMode(){
+        return redstoneMode;
+    }
+
+    @Override
+    public float getMinWorkingPressure(){
+        return PneumaticValues.MIN_PRESSURE_ELEVATOR;
     }
 }

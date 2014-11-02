@@ -462,14 +462,11 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
     @Override
     public void onDeath(DamageSource par1DamageSource){
         for(int i = 0; i < inventory.getSizeInventory(); i++) {
-            if(inventory.getStackInSlot(i) != null) entityDropItem(inventory.getStackInSlot(i), 0);
+            if(inventory.getStackInSlot(i) != null) {
+                entityDropItem(inventory.getStackInSlot(i), 0);
+                inventory.setInventorySlotContents(i, null);
+            }
         }
-        if(!worldObj.isRemote) ((FakePlayerItemInWorldManager)fakePlayer.theItemInWorldManager).cancelDigging();
-        super.onDeath(par1DamageSource);
-    }
-
-    @Override
-    protected void dropFewItems(boolean playerRecentlyHit, int lootingLevel){
         if(naturallySpawned) {
 
         } else {
@@ -481,6 +478,8 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
 
             entityDropItem(drone, 0);
         }
+        if(!worldObj.isRemote) ((FakePlayerItemInWorldManager)fakePlayer.theItemInWorldManager).cancelDigging();
+        super.onDeath(par1DamageSource);
     }
 
     @Override

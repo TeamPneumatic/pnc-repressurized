@@ -31,7 +31,7 @@ public enum EnumHumidity {
 	public static EnumHumidity getFromValue(float rawHumidity) {
 		EnumHumidity value = EnumHumidity.ARID;
 		
-		if (rawHumidity >= 0.9f) {
+		if (rawHumidity > 0.85f) { // matches BiomeGenBase.isHighHumidity()
 			value = EnumHumidity.DAMP;
 		}
 		else if (rawHumidity >= 0.3f) {

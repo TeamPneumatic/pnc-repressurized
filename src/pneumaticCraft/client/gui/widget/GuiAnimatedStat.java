@@ -1,8 +1,8 @@
 package pneumaticCraft.client.gui.widget;
 
 import java.awt.Rectangle;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
@@ -17,32 +17,32 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.MathHelper;
 
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
 import pneumaticCraft.api.client.IGuiAnimatedStat;
-import pneumaticCraft.client.ClientTickHandler;
 import pneumaticCraft.client.gui.GuiPneumaticContainerBase;
-import pneumaticCraft.client.gui.INeedTickUpdate;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.GuiConstants;
-import pneumaticCraft.lib.Log;
 import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.relauncher.ReflectionHelper;
 
 /**
  *  IMPORTANT: WHEN CHANGING THE PACKAGE OF THIS CLASS, ALSO EDIT GUIANIMATEDSTATSUPPLIER.JAVA!!
  */
 
-public class GuiAnimatedStat implements INeedTickUpdate, IGuiAnimatedStat{
+public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetListener{
 
+    public static final int ANIMATED_STAT_SPEED = 10;
     private IGuiAnimatedStat affectingStat;
     private ItemStack iStack;
     private String texture = "";
     private final GuiScreen gui;
     private final List<String> textList = new ArrayList<String>();
+    private final List<IGuiWidget> widgets = new ArrayList<IGuiWidget>();
     private int baseX;
     private int baseY;
     private int affectedY;
@@ -64,7 +64,10 @@ public class GuiAnimatedStat implements INeedTickUpdate, IGuiAnimatedStat{
     private RenderItem itemRenderer;
     private float textSize;
     private float textScale = 1F;
-    private static Method drawHoveringStringMethod;
+    private IWidgetListener listener;
+    private int curScroll;
+    private static final int MAX_LINES = 12;
+    private int lastMouseX, lastMouseY;
 
     public GuiAnimatedStat(GuiScreen gui, String title, int xPos, int yPos, int backGroundColor,
             IGuiAnimatedStat affectingStat, boolean leftSided){
@@ -93,7 +96,6 @@ public class GuiAnimatedStat implements INeedTickUpdate, IGuiAnimatedStat{
         if(affectingStat != null) {
             affectedY += affectingStat.getAffectedY() + affectingStat.getHeight();
         }
-        ClientTickHandler.instance().registerUpdatedObject(this);
     }
 
     public GuiAnimatedStat(GuiScreen gui, int backgroundColor){
@@ -127,20 +129,37 @@ public class GuiAnimatedStat implements INeedTickUpdate, IGuiAnimatedStat{
         affectingStat = stat;
     }
 
+    public void addWidget(IGuiWidget widget){
+        widgets.add(widget);
+        widget.setListener(this);
+    }
+
+    public void removeWidget(IGuiWidget widget){
+        widgets.remove(widget);
+    }
+
     @Override
     public Rectangle getButtonScaledRectangle(int origX, int origY, int width, int height){
-        int scaledX = (int)((origX - baseX - (leftSided ? width : 0)) * textSize);
-        int scaledY = (int)((origY - affectedY) * textSize);
+        int scaledX = (int)(origX * textSize);
+        int scaledY = (int)(origY * textSize);
 
         //scaledX = (int)(origX * textSize);
         //scaledY = (int)(origY * textSize);
-        return new Rectangle(scaledX + baseX + (leftSided ? (int)(width * textSize) : 0), scaledY + affectedY, (int)(width * textSize), (int)(height * textSize));
+        return new Rectangle(scaledX, scaledY, (int)(width * textSize), (int)(height * textSize));
     }
 
     @Override
     public void scaleTextSize(float scale){
         textSize *= scale;
         textScale = scale;
+
+        for(IGuiWidget widget : widgets) {
+            if(widget.getID() == -1000) {
+                widgets.remove(widget);
+                break;
+            }
+        }
+        onTextChange();
     }
 
     @Override
@@ -159,6 +178,7 @@ public class GuiAnimatedStat implements INeedTickUpdate, IGuiAnimatedStat{
         for(String line : text) {
             textList.addAll(PneumaticCraftUtils.convertStringIntoList(I18n.format(line), (int)(GuiConstants.maxCharPerLineLeft / textScale)));
         }
+        onTextChange();
         return this;
     }
 
@@ -166,6 +186,7 @@ public class GuiAnimatedStat implements INeedTickUpdate, IGuiAnimatedStat{
     public IGuiAnimatedStat setText(String text){
         textList.clear();
         textList.addAll(PneumaticCraftUtils.convertStringIntoList(I18n.format(text), (int)(GuiConstants.maxCharPerLineLeft / textScale)));
+        onTextChange();
         return this;
     }
 
@@ -173,6 +194,31 @@ public class GuiAnimatedStat implements INeedTickUpdate, IGuiAnimatedStat{
     public void setTextWithoutCuttingString(List<String> text){
         textList.clear();
         textList.addAll(text);
+        onTextChange();
+    }
+
+    public void onTextChange(){
+        if(textList.size() > MAX_LINES) {
+            for(IGuiWidget widget : widgets) {
+                if(widget.getID() == -1000) return;
+            }
+            curScroll = 0;
+            /*Rectangle upRect = getButtonScaledRectangle(2, 24, 20, 20);
+            addWidget(new GuiButtonSpecial(-1000, upRect.x, upRect.y, upRect.width, upRect.height, "^"));
+            Rectangle downRect = getButtonScaledRectangle(2, 44, 20, 20);
+            addWidget(new GuiButtonSpecial(-1001, downRect.x, downRect.y, downRect.width, downRect.height, "V"));
+             */
+            addWidget(new WidgetVerticalScrollbar(-1000, leftSided ? -16 : 2, 20, (int)((MAX_LINES * 10 - 20) * textSize)).setStates(textList.size() - MAX_LINES));
+        } else {
+            Iterator<IGuiWidget> iterator = widgets.iterator();
+            while(iterator.hasNext()) {
+                IGuiWidget widget = iterator.next();
+                if(widget.getID() == -1000) {
+                    iterator.remove();
+                    curScroll = 0;
+                }
+            }
+        }
     }
 
     @Override
@@ -198,7 +244,7 @@ public class GuiAnimatedStat implements INeedTickUpdate, IGuiAnimatedStat{
             int maxWidth = fontRenderer.getStringWidth(title);
             int maxHeight = 12;
             if(textList.size() > 0) {
-                maxHeight += 4 + textList.size() * 10;
+                maxHeight += 4 + Math.min(MAX_LINES, textList.size()) * 10;
             }
             maxHeight = (int)(maxHeight * textSize);
             for(String line : textList) {
@@ -208,7 +254,7 @@ public class GuiAnimatedStat implements INeedTickUpdate, IGuiAnimatedStat{
             maxWidth += 20;
             // expand the box
 
-            for(int i = 0; i < GuiConstants.ANIMATED_STAT_SPEED; i++) {
+            for(int i = 0; i < ANIMATED_STAT_SPEED; i++) {
                 if(width < maxWidth) {
                     width++;
                     doneExpanding = false;
@@ -221,8 +267,16 @@ public class GuiAnimatedStat implements INeedTickUpdate, IGuiAnimatedStat{
                 if(height > maxHeight) height--;
             }
 
+            if(doneExpanding) {
+                for(IGuiWidget widget : widgets) {
+                    if(widget.getID() == -1000) {
+                        curScroll = ((WidgetVerticalScrollbar)widget).getState();
+                    }
+                }
+            }
+
         } else {
-            for(int i = 0; i < GuiConstants.ANIMATED_STAT_SPEED; i++) {
+            for(int i = 0; i < ANIMATED_STAT_SPEED; i++) {
                 if(width > minWidth) width--;
                 if(height > minHeight) height--;
             }
@@ -236,8 +290,11 @@ public class GuiAnimatedStat implements INeedTickUpdate, IGuiAnimatedStat{
     }
 
     @Override
-    public void render(FontRenderer fontRenderer, float zLevel, float partialTicks){
-
+    public void render(int mouseX, int mouseY, float partialTicks){
+        lastMouseX = mouseX;
+        lastMouseY = mouseY;
+        float zLevel = 0;
+        FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
         int renderBaseX = (int)(oldBaseX + (baseX - oldBaseX) * partialTicks);
         int renderAffectedY = (int)(oldAffectedY + (affectedY - oldAffectedY) * partialTicks);
         int renderWidth = (int)(oldWidth + (width - oldWidth) * partialTicks);
@@ -264,15 +321,20 @@ public class GuiAnimatedStat implements INeedTickUpdate, IGuiAnimatedStat{
             GL11.glScaled(textSize, textSize, textSize);
             GL11.glTranslated(-renderBaseX - (leftSided ? -renderWidth : 16), -renderAffectedY, 0);
             fontRenderer.drawStringWithShadow(title, renderBaseX + (leftSided ? -renderWidth + 2 : 18), renderAffectedY + 2, 0xFFFF00);
-            for(int i = 0; i < textList.size(); i++) {
+            for(int i = curScroll; i < textList.size() && i < curScroll + MAX_LINES; i++) {
 
                 if(textList.get(i).contains("\u00a70") || textList.get(i).contains(EnumChatFormatting.DARK_RED.toString())) {
-                    fontRenderer.drawString(textList.get(i), renderBaseX + (leftSided ? -renderWidth + 2 : 18), renderAffectedY + i * 10 + 12, 0xFFFFFF);
+                    fontRenderer.drawString(textList.get(i), renderBaseX + (leftSided ? -renderWidth + 2 : 18), renderAffectedY + (i - curScroll) * 10 + 12, 0xFFFFFF);
                 } else {
-                    fontRenderer.drawStringWithShadow(textList.get(i), renderBaseX + (leftSided ? -renderWidth + 2 : 18), renderAffectedY + i * 10 + 12, 0xFFFFFF);
+                    fontRenderer.drawStringWithShadow(textList.get(i), renderBaseX + (leftSided ? -renderWidth + 2 : 18), renderAffectedY + (i - curScroll) * 10 + 12, 0xFFFFFF);
                 }
             }
+            GL11.glPopMatrix();
 
+            GL11.glPushMatrix();
+            GL11.glTranslated(renderBaseX, renderAffectedY, 0);
+            for(IGuiWidget widget : widgets)
+                widget.render(mouseX - renderBaseX, mouseY - renderAffectedY, partialTicks);
             GL11.glPopMatrix();
         }
         if(renderHeight > 16 && renderWidth > 16) {
@@ -304,11 +366,19 @@ public class GuiAnimatedStat implements INeedTickUpdate, IGuiAnimatedStat{
      * button: 0 = left 1 = right 2 = middle
      */
     @Override
-    public boolean mouseClicked(int x, int y, int button){
-        if(button == 0 && mouseIsHoveringOverStat(x, y)) {
+    public void onMouseClicked(int mouseX, int mouseY, int button){
+        if(button == 0) {
             isClicked = !isClicked;
+            listener.actionPerformed(this);
         }
-        return isClicked;
+        mouseX -= baseX;
+        mouseY -= affectedY;
+        for(IGuiWidget widget : widgets) {
+            if(widget.getBounds().contains(mouseX, mouseY)) {
+                widget.onMouseClicked(mouseX, mouseY, button);
+                isClicked = true;
+            }
+        }
     }
 
     @Override
@@ -324,37 +394,6 @@ public class GuiAnimatedStat implements INeedTickUpdate, IGuiAnimatedStat{
     @Override
     public boolean isClicked(){
         return isClicked;
-    }
-
-    @Override
-    public void onMouseHovering(FontRenderer fontRenderer, int x, int y){
-        if(mouseIsHoveringOverIcon(x, y)) {
-            try {
-                if(drawHoveringStringMethod == null) {
-                    drawHoveringStringMethod = ReflectionHelper.findMethod(GuiScreen.class, null, new String[]{"func_146279_a", "drawCreativeTabHoveringText"}, String.class, int.class, int.class);
-                }
-                drawHoveringStringMethod.invoke(gui, title, x, y);
-            } catch(Exception e) {
-                Log.warning("Error while trying to render a tooltip with GuiAnimatedStat. Reflection should have done the job..");
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private boolean mouseIsHoveringOverIcon(int x, int y){
-        if(leftSided) {
-            return x <= baseX && x >= baseX - 16 && y >= affectedY && y <= affectedY + 16;
-        } else {
-            return x >= baseX && x <= baseX + 16 && y >= affectedY && y <= affectedY + 16;
-        }
-    }
-
-    private boolean mouseIsHoveringOverStat(int x, int y){
-        if(leftSided) {
-            return x <= baseX && x >= baseX - width && y >= affectedY && y <= affectedY + height;
-        } else {
-            return x >= baseX && x <= baseX + width && y >= affectedY && y <= affectedY + height;
-        }
     }
 
     @Override
@@ -407,8 +446,83 @@ public class GuiAnimatedStat implements INeedTickUpdate, IGuiAnimatedStat{
         return title;
     }
 
-    public Rectangle getDimensions(){
+    @Override
+    public Rectangle getBounds(){
         return new Rectangle(baseX - (leftSided ? width : 0), affectedY, width, height);
+    }
+
+    @Override
+    public void setListener(IWidgetListener gui){
+        listener = gui;
+    }
+
+    @Override
+    public int getID(){
+        return -1;
+    }
+
+    @Override
+    public void actionPerformed(IGuiWidget widget){
+        isClicked = !isClicked;
+        listener.actionPerformed(widget);
+    }
+
+    @Override
+    public void onKeyTyped(IGuiWidget widget){
+        listener.onKeyTyped(widget);
+    }
+
+    @Override
+    public void addTooltip(int mouseX, int mouseY, List<String> curTooltip, boolean shiftPressed){
+
+        if(mouseIsHoveringOverIcon(mouseX, mouseY)) {
+            curTooltip.add(title);
+        }
+
+        for(IGuiWidget widget : widgets)
+            if(isMouseOverWidget(widget, mouseX, mouseY)) widget.addTooltip(mouseX, mouseY, curTooltip, shiftPressed);
+    }
+
+    private boolean mouseIsHoveringOverIcon(int x, int y){
+        if(leftSided) {
+            return x <= baseX && x >= baseX - 16 && y >= affectedY && y <= affectedY + 16;
+        } else {
+            return x >= baseX && x <= baseX + 16 && y >= affectedY && y <= affectedY + 16;
+        }
+    }
+
+    @Override
+    public boolean onKey(char key, int keyCode){
+        for(IGuiWidget widget : widgets)
+            if(widget.onKey(key, keyCode)) return true;
+        return false;
+    }
+
+    private boolean isMouseOverWidget(IGuiWidget widget, int mouseX, int mouseY){
+        Rectangle rect = getBounds();
+        mouseX -= rect.x;
+        mouseY -= rect.y;
+        return widget.getBounds().contains(mouseX, mouseY);
+    }
+
+    @Override
+    public void handleMouseInput(){
+        if(getBounds().contains(lastMouseX, lastMouseY)) {
+            handleMouseWheel(Mouse.getDWheel());
+        }
+    }
+
+    public boolean handleMouseWheel(int mouseWheel){
+        for(IGuiWidget widget : widgets) {
+            widget.handleMouseInput();
+            if(widget.getID() == -1000) {
+                int wheel = -mouseWheel;
+                wheel = MathHelper.clamp_int(wheel, -1, 1);
+                ((WidgetVerticalScrollbar)widget).currentScroll += (float)wheel / (textList.size() - MAX_LINES);
+                return true;
+            }
+        }
+        return false;
     }
 
 }

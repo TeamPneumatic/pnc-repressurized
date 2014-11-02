@@ -74,4 +74,9 @@ public abstract class FarmLogicWrapper implements IFarmLogic{
         return logic.getName();
     }
 
+    @Override
+    public IFarmLogic setManual(boolean manual){
+        return logic.setManual(manual);
+    }
+
 }

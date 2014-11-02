@@ -21,14 +21,14 @@ public abstract class AbstractPacket<REQ extends IMessage> implements IMessage, 
 
     /**
      * Handle a packet on the client side. Note this occurs after decoding has completed.
-     * @param message TODO
+     * @param message
      * @param player the player reference
      */
     public abstract void handleClientSide(REQ message, EntityPlayer player);
 
     /**
      * Handle a packet on the server side. Note this occurs after decoding has completed.
-     * @param message TODO
+     * @param message
      * @param player the player reference
      */
     public abstract void handleServerSide(REQ message, EntityPlayer player);

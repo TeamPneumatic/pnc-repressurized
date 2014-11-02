@@ -92,11 +92,11 @@ public interface IAirHandler extends IManoMeasurable{
     public int getCurrentAir(ForgeDirection sideRequested);
 
     /**
-     * When you're TileEntity is implementing IInventory and has slots that accept PneumaticCraft upgrades, register these slots
+     * When your TileEntity is implementing IInventory and has slots that accept PneumaticCraft upgrades, register these slots
      * to the air handler by calling this method once on initialization of the TileEntity. Then they'll automatically be used to get Volume/Security upgrades.
      * @param upgradeSlots all upgrade slots stored in an array.
      */
-    public void setUpgradeSlots(int[] upgradeSlots);
+    public void setUpgradeSlots(int... upgradeSlots);
 
     public int[] getUpgradeSlots();
 

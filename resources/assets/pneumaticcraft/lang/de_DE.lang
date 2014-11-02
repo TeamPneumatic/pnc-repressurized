@@ -1,0 +1,119 @@
+# de_DE localization - PneumaticCraft V. 1.1.7
+# Translated by Cakestory
+# Feel free to extend, change and use this file.
+ 
+# Blocks
+tile.pressureTube.name=Druckröhre
+tile.airCompressor.name=Druckluftkompressor
+tile.airCannon.name=Luftdruckkanone
+tile.pressureWall.name=Druckkammer Wand/Fenster
+tile.pressureChamberValve.name=Druckkammer-Ventil
+tile.slimePlant.name=Schleimpflanze
+tile.creeperPlant.name=Creeperpflanze
+tile.squidPlant.name=Tintenfischpflanze
+tile.fireFlower.name=Feuerpflanze
+tile.rainPlant.name=Regenpflanze
+tile.enderPlant.name=Enderpflanze
+tile.lightningPlant.name=Blitzpflanze
+tile.burstPlant.name=Explosivpflanze
+tile.potionPlant.name=Trankpflanze
+tile.heliumPlant.name=Heliumpflanze
+tile.propulsionPlant.name=Antriebspflanze
+tile.repulsionPlant.name=Rückstoßpflanze
+tile.flyingFlower.name=Fliegende Blume
+tile.chopperPlant.name=Pulsformerpflanze
+tile.chargingStation.name=Ladestation
+tile.elevatorBase.name=Aufzugbasis
+tile.elevatorFrame.name=Aufzugrahmen
+tile.pressureChamberInterface.name=Druckkammer-Schnittstelle
+tile.vacuumPump.name=Vakuum-Pumpe
+tile.pneumaticDoorBase.name=Pneumatische Türbasis
+tile.pneumaticDoor.name=Pneumatische Tür
+tile.etchingAcid.name=Ätzende Säure
+tile.assemblyIOUnit.name=Montage IO Einheit
+tile.assemblyPlatform.name=Montagebühne
+tile.assemblyDrill.name=Montagebohrer
+tile.assemblyLaser.name=Montagelaser
+tile.assemblyController.name=Montagekonsole
+tile.advancedPressureTube.name=Erwiterte Druckröhre
+tile.compressedIronBlock.name=Kompremierter Eisenblock
+tile.uvLightBox.name=UV-Licht-Box
+tile.securityStation.name=Sicherheitsterminal
+tile.universalSensor.name=Universeller Sensor
+tile.pneumaticGenerator.name=Pneumatischer Generator
+tile.electricCompressor.name=Elektischer Kompressor
+tile.pneumaticEngine.name=Pneumatischer Motor
+tile.kineticCompressor.name=Kinetischer Kompressor
+tile.aerialInterface.name=Pneumatische Schnittstelle
+tile.electrostaticCompressor.name=Elektrostatischer Kompressor
+tile.aphorismTile.name=Sinnspruch-Platte
+tile.omnidirectionalHopper.name=Ungerichteter Trichter
+tile.elevatorCaller.name=Aufzugschalter
+tile.programmer.name=Programmierer
+ 
+tile.monsterStoneEgg.name=Silberfisch
+ 
+# Items
+item.gpsTool.name=GPS-Gerät
+item.machineUpgrade.name=Maschienen-Erweiterung
+item.ingotIronCompressed.name=Komprimierter Eisenbarren
+item.pressureGauge.name=Luftdruckmesser
+item.stoneBase.name=Steinbasis
+item.cannonBarrel.name=Kannonenrohr
+item.turbineBlade.name=Turbinenschaufel
+item.plasticPlant.name=Plastikpflanze
+item.plastic.name=Plastik
+item.airCanister.name=Luftdruckkanister
+item.vortexCannon.name=Luftwirbel-Kanone
+item.pneumaticCilinder.name=Pneumatischer Zylinder
+item.pneumaticHelmet.name=Pneumatischer Helm
+item.manometer.name=Manometer
+item.turbineRotor.name=Turbinenrotor
+item.assemblyProgram.name=Montageprogramm
+item.emptyPCB.name=Leerer PCB
+item.unassembledPCB.name=Unbearbeiteter PCB
+item.pcbBlueprint.name=PCB Blaupause
+item.etchingAcidBucket.name=Eimer mit ätzender Säure
+item.transistor.name=Transistor
+item.capacitor.name=Kondensator
+item.printedCircuitBoard.name=Leiterplatine
+item.failedPCB.name=Defekter PCB
+item.networkComponent.name=Netzwerkkomponente
+item.stopWorm.name=STOP! - Wurm
+item.nukeVirus.name=Nuclearwaffen-Virus
+item.compressedIronGear.name=Kompremiertes Eisenzahnrad
+item.pneumaticWrench.name=Druckluftschrauber
+item.drone.name=Drohne
+item.programmingPuzzle.name=Programmier-Puzzle
+ 
+# Programming Puzzles
+programmingPuzzle.start.name=Start
+programmingPuzzle.attk.name=Angriff
+programmingPuzzle.  area.name=Bereich
+programmingPuzzle.text.name=Text
+programmingPuzzle.I-ftr.name=Item-Filter
+programmingPuzzle.dig.name=Ausheben
+programmingPuzzle.I-pick.name=Items aufheben
+programmingPuzzle.Inv-E.name=In Inventar einlagern
+programmingPuzzle.Inv-I.name=Aus Inventar auslagern
+programmingPuzzle.goto.name=Gehe zu Position
+programmingPuzzle.Place.name=Platzieren
+ 
+#Creative Tabs
+itemGroup.tabPneumaticCraft=PneumaticCraft
+ 
+# entities
+entity.PneumaticCraft.Drone.name=Drohne
+ 
+# IGW pages
+item.programmingPuzzle_start.name=Programmier-Puzzle: Start
+item.programmingPuzzle_Inv-E.name=Programmier-Puzzle: Inventar Einlagern
+item.programmingPuzzle_Inv-I.name=Programmier-Puzzle: Inventar Auslagern
+item.programmingPuzzle_I-pick.name=Programmier-Puzzle: Sammle Items
+item.programmingPuzzle_dig.name=Programmier-Puzzle: Blöcke abbauen
+item.programmingPuzzle_place.name=Programmier-Puzzle: Blöcke platzieren
+item.programmingPuzzle_goto.name=Programmier-Puzzle: Gehe zu Position
+item.programmingPuzzle_attk.name=Programmier-Puzzle: Angriff
+item.programmingPuzzle_I-ftr.name=Programmier-Puzzle: Item-Filter
+item.programmingPuzzle_area.name=Programmier-Puzzle: Bereich
+item.programmingPuzzle_text.name=Programmier-Puzzle: Text

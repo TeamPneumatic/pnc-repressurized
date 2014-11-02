@@ -22,6 +22,7 @@ import cpw.mods.fml.client.FMLClientHandler;
 
 public class NetworkConnectionPlayerHandler extends NetworkConnectionHandler{
     private final List<GuiStatBalloon> balloons = new ArrayList<GuiStatBalloon>();
+    public boolean hackedSuccessfully;
 
     public NetworkConnectionPlayerHandler(GuiSecurityStationBase gui, TileEntitySecurityStation station, int baseX,
             int baseY, int nodeSpacing, int color){
@@ -115,6 +116,7 @@ public class NetworkConnectionPlayerHandler extends NetworkConnectionHandler{
             ((GuiSecurityStationHacking)gui).onSlotHack(slot);
         }
         if(station.getStackInSlot(slot) != null && (station.getStackInSlot(slot).getItemDamage() == ItemNetworkComponents.NETWORK_REGISTRY || station.getStackInSlot(slot).getItemDamage() == ItemNetworkComponents.DIAGNOSTIC_SUBROUTINE)) {
+            hackedSuccessfully = true;
             EntityPlayer player = FMLClientHandler.instance().getClient().thePlayer;
             NetworkHandler.sendToServer(new PacketSecurityStationAddHacker(station, player.getCommandSenderName()));
             FMLClientHandler.instance().getClient().thePlayer.closeScreen();

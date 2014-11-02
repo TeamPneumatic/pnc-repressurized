@@ -31,11 +31,12 @@ public class EntityChopperSeeds extends Entity{
         super.onUpdate();
         if(ticksExisted > randExplodeTime && !worldObj.isRemote) {
             int deltaTick = ticksExisted - randExplodeTime;
-            EntityItem seed = new EntityItem(worldObj, posX, posY, posZ, new ItemStack(Itemss.plasticPlant, 1, ItemPlasticPlants.CHOPPER_PLANT_DAMAGE + 16));
+            EntityItem seed = new EntityItem(worldObj, posX, posY, posZ, new ItemStack(Itemss.plasticPlant, 1, ItemPlasticPlants.CHOPPER_PLANT_DAMAGE));
             seed.motionY = motionY;
             seed.motionX = Math.sin(0.5D * Math.PI * deltaTick + ticksExisted * 0.2D);
             seed.motionZ = Math.cos(0.5D * Math.PI * deltaTick + ticksExisted * 0.2D);
             seed.lifespan = 300;
+            ItemPlasticPlants.markInactive(seed);
             worldObj.spawnEntityInWorld(seed);
             if(deltaTick > 3) setDead();
         }

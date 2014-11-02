@@ -43,7 +43,7 @@ public class GuiCheckBox extends Gui implements IGuiWidget{
     }
 
     @Override
-    public void render(int mouseX, int mouseY){
+    public void render(int mouseX, int mouseY, float partialTick){
         drawRect(x, y, x + CHECKBOX_WIDTH, y + CHECKBOX_HEIGHT, enabled ? -6250336 : 0xFF999999);
         drawRect(x + 1, y + 1, x + CHECKBOX_WIDTH - 1, y + CHECKBOX_HEIGHT - 1, enabled ? -16777216 : 0xFFAAAAAA);
         if(checked) {
@@ -87,12 +87,14 @@ public class GuiCheckBox extends Gui implements IGuiWidget{
     }
 
     @Override
-    public void addTooltip(List<String> curTooltip, boolean shiftPressed){
+    public void addTooltip(int mouseX, int mouseY, List<String> curTooltip, boolean shiftPressed){
         curTooltip.addAll(tooltip);
     }
 
     @Override
-    public void onKey(char key, int keyCode){}
+    public boolean onKey(char key, int keyCode){
+        return false;
+    }
 
     @Override
     public void setListener(IWidgetListener gui){
@@ -103,4 +105,10 @@ public class GuiCheckBox extends Gui implements IGuiWidget{
         this.checked = checked;
         return this;
     }
+
+    @Override
+    public void update(){}
+
+    @Override
+    public void handleMouseInput(){}
 }

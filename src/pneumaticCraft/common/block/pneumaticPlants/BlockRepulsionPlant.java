@@ -29,12 +29,13 @@ public class BlockRepulsionPlant extends BlockPneumaticPlantBase{
     @Override
     public void executeFullGrownEffect(World world, int x, int y, int z, Random rand){
         if(!world.isRemote) {
-            ItemStack seed = new ItemStack(Itemss.plasticPlant, 1, ItemPlasticPlants.REPULSION_PLANT_DAMAGE + 16);
+            ItemStack seed = new ItemStack(Itemss.plasticPlant, 1, ItemPlasticPlants.REPULSION_PLANT_DAMAGE);
             EntityItem plant = new EntityItem(world, x + 0.5D, y + 0.8D, z + 0.5D, seed);
             plant.motionX = (rand.nextFloat() - 0.5F) / 2;
             plant.motionY = 0.7F;
             plant.motionZ = (rand.nextFloat() - 0.5F) / 2;
             plant.lifespan = 300;
+            ItemPlasticPlants.markInactive(plant);
             world.spawnEntityInWorld(plant);
             plant.playSound("mob.newsound.chickenplop", 0.2F, ((rand.nextFloat() - rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
 

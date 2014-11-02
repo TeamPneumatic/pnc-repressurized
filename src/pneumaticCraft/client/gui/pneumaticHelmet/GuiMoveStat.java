@@ -45,7 +45,13 @@ public class GuiMoveStat extends GuiScreen{
     public void drawScreen(int x, int y, float partialTicks){
         drawDefaultBackground();
         drawString(fontRendererObj, "Middle mouse click to switch between expansion to the right or left", 5, 5, 0xFFFFFFFF);
-        movedStat.render(fontRendererObj, zLevel, partialTicks);
+        movedStat.render(x, y, partialTicks);
         super.drawScreen(x, y, partialTicks);
+    }
+
+    @Override
+    public void updateScreen(){
+        super.updateScreen();
+        movedStat.update();
     }
 }

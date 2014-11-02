@@ -17,15 +17,11 @@ public class TileEntityPressureChamberWall extends TileEntityBase implements IMa
     public TileEntityPressureChamberWall(){}
 
     public TileEntityPressureChamberValve getCore(){
-        if(teValve == null) {// when the saved TE equals null, check if we can
-                             // retrieve the TE from the NBT saved coords.
+        if(teValve == null && (valveX != 0 || valveY != 0 || valveZ != 0)) {// when the saved TE equals null, check if we can
+            // retrieve the TE from the NBT saved coords.
 
             TileEntity te = worldObj.getTileEntity(valveX, valveY, valveZ);
-            if(te instanceof TileEntityPressureChamberValve) {
-                teValve = (TileEntityPressureChamberValve)te;
-            } else {
-                setCore(null);
-            }
+            setCore(te instanceof TileEntityPressureChamberValve ? (TileEntityPressureChamberValve)te : null);
         }
         return teValve;
     }
@@ -38,7 +34,7 @@ public class TileEntityPressureChamberWall extends TileEntityBase implements IMa
     }
 
     public void setCore(TileEntityPressureChamberValve te){
-        teValve = te;
+
         if(te != null) {
             valveX = te.xCoord;
             valveY = te.yCoord;
@@ -48,7 +44,8 @@ public class TileEntityPressureChamberWall extends TileEntityBase implements IMa
             valveY = 0;
             valveZ = 0;
         }
-        worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+        if(teValve != te) worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+        teValve = te;
     }
 
     /**

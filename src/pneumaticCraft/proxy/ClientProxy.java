@@ -11,6 +11,7 @@ import java.util.Map;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
@@ -19,9 +20,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
-
-import org.lwjgl.input.Keyboard;
-
 import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
 import pneumaticCraft.client.AreaShowManager;
@@ -208,7 +206,7 @@ public class ClientProxy extends CommonProxy{
     @Override
     public boolean isSneakingInGui(){
 
-        return Keyboard.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindSneak.getKeyCode());
+        return GameSettings.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindSneak);
     }
 
     @Override

@@ -15,14 +15,14 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import pneumaticCraft.api.tileentity.IAirHandler;
 import pneumaticCraft.api.tileentity.IPneumaticMachine;
+import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
-import pneumaticCraft.lib.Names;
 import pneumaticCraft.lib.PneumaticValues;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityVacuumPump extends TileEntityPneumaticBase implements IInventory{
+public class TileEntityVacuumPump extends TileEntityPneumaticBase implements IInventory, IRedstoneControlled{
     public int vacuumAir;
     public int rotation;
     public int oldRotation;
@@ -223,11 +223,14 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements IIn
 
     @Override
     public void handleGUIButtonPress(int buttonID, EntityPlayer player){
-        redstoneMode++;
-        if(redstoneMode > 2) redstoneMode = 0;
-        sendDescriptionPacket();
+        if(buttonID == 0) {
+            redstoneMode++;
+            if(redstoneMode > 2) redstoneMode = 0;
+            sendDescriptionPacket();
+        }
     }
 
+    @Override
     public boolean redstoneAllows(){
         switch(redstoneMode){
             case 0:
@@ -312,7 +315,7 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements IIn
     @Override
     public String getInventoryName(){
 
-        return Names.VACUUM_PUMP;
+        return Blockss.vacuumPump.getUnlocalizedName();
     }
 
     @Override
@@ -322,7 +325,7 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements IIn
 
     @Override
     public boolean hasCustomInventoryName(){
-        return true;
+        return false;
     }
 
     @Override
@@ -335,5 +338,10 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements IIn
 
     @Override
     public void closeInventory(){}
+
+    @Override
+    public int getRedstoneMode(){
+        return redstoneMode;
+    }
 
 }

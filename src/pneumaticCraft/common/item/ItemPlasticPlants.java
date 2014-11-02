@@ -1,6 +1,9 @@
 package pneumaticCraft.common.item;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import net.minecraft.block.Block;
@@ -108,6 +111,53 @@ public class ItemPlasticPlants extends ItemPneumatic{
         }
     }
 
+    public static Map<Block, ItemStack> getBlockToSeedMap(){
+        Map<Block, ItemStack> blockToSeedMap = new HashMap<Block, ItemStack>();
+        List<ItemStack> seeds = new ArrayList<ItemStack>();
+        ((ItemPlasticPlants)Itemss.plasticPlant).addSubItems(seeds);
+        for(ItemStack seed : seeds) {
+            blockToSeedMap.put(getPlantBlockIDFromSeed(seed.getItemDamage()), seed);
+        }
+        return blockToSeedMap;
+    }
+
+    public static void onEntityConstruction(Entity entity){
+        if(entity instanceof EntityItem) {
+            if(((EntityItem)entity).getExtendedProperties("PneumaticCraft_Active") == null) entity.registerExtendedProperties("PneumaticCraft_Active", new ActivityProperty(true));
+        }
+    }
+
+    public static boolean isActive(EntityItem entityItem){
+        ActivityProperty prop = (ActivityProperty)entityItem.getExtendedProperties("PneumaticCraft_Active");
+        return prop == null || prop.active;
+    }
+
+    public static void markInactive(EntityItem entityItem){
+        ((ActivityProperty)entityItem.getExtendedProperties("PneumaticCraft_Active")).active = false;
+    }
+
+    public static class ActivityProperty implements IExtendedEntityProperties{
+        public boolean active;
+
+        public ActivityProperty(boolean active){
+            this.active = active;
+        }
+
+        @Override
+        public void saveNBTData(NBTTagCompound compound){
+            if(active) compound.setBoolean("PneumaticCraft_Active", active);
+        }
+
+        @Override
+        public void loadNBTData(NBTTagCompound compound){
+            active = compound.getBoolean("PneumaticCraft_Active");
+        }
+
+        @Override
+        public void init(Entity entity, World world){}
+
+    }
+
     @Override
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, EntityPlayer player, List infoList, boolean par4){
@@ -127,9 +177,6 @@ public class ItemPlasticPlants extends ItemPneumatic{
                 break;
         }
         infoList.add("Press 'Q' to plant seed");
-        /*  if(stack.getItemDamage() > 15) {
-              infoList.add("You shouldn't be able to have this seed.. I know, this is a bug (that's being worked on). Throw it on the ground and pick it up to resolve.");
-          }*/
     }
 
     public static Block getPlantBlockIDFromSeed(int seedMetadata){
@@ -211,7 +258,7 @@ public class ItemPlasticPlants extends ItemPneumatic{
                 if(canSustain && isDelayOver) {
                     if(entityItem.worldObj.isAirBlock(landedBlockX, landedBlockY, landedBlockZ)) {
 
-                        entityItem.worldObj.setBlock(landedBlockX, landedBlockY, landedBlockZ, blockID, itemDamage > 15 ? 0 : 7, 3);
+                        entityItem.worldObj.setBlock(landedBlockX, landedBlockY, landedBlockZ, blockID, itemDamage > 15 || !isActive(entityItem) ? 0 : 7, 3);
 
                         entityItem.playSound("mob.chicken.plop", 1.0F, (rand.nextFloat() - rand.nextFloat()) * 0.2F + 1.0F);
                         for(int i = 0; i < 10; i++) {

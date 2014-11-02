@@ -46,14 +46,22 @@ public class WidgetBase implements IGuiWidget{
     }
 
     @Override
-    public void addTooltip(List<String> curTip, boolean shiftPressed){
+    public void addTooltip(int mouseX, int mouseY, List<String> curTip, boolean shiftPressed){
 
     }
 
     @Override
-    public void onKey(char key, int keyCode) {}
+    public boolean onKey(char key, int keyCode){
+        return false;
+    }
 
     @Override
-    public void render(int mouseX, int mouseY){}
+    public void render(int mouseX, int mouseY, float partialTick){}
+
+    @Override
+    public void update(){}
+
+    @Override
+    public void handleMouseInput(){}
 
 }

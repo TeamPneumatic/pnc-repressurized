@@ -22,6 +22,8 @@ public class PneumaticValues{
     public static final float DANGER_PRESSURE_ELECTRIC_COMPRESSOR = DANGER_PRESSURE_TIER_TWO;
     public static final float DANGER_PRESSURE_PNEUMATIC_ENGINE = DANGER_PRESSURE_TIER_TWO;
     public static final float DANGER_PRESSURE_KINETIC_COMPRESSOR = DANGER_PRESSURE_TIER_TWO;
+    public static final float DANGER_PRESSURE_PNEUMATIC_DYNAMO = DANGER_PRESSURE_TIER_TWO;
+    public static final float DANGER_PRESSURE_FLUX_COMPRESSOR = DANGER_PRESSURE_TIER_TWO;
     public static final float DANGER_PRESSURE_AERIAL_INTERFACE = DANGER_PRESSURE_TIER_TWO;
     public static final float DANGER_PRESSURE_ELECTROSTATIC_COMPRESSOR = DANGER_PRESSURE_TIER_TWO;
     public static final float DANGER_PRESSURE_PNEUMATIC_PUMP = DANGER_PRESSURE_TIER_TWO;
@@ -46,6 +48,8 @@ public class PneumaticValues{
     public static final float MAX_PRESSURE_ELECTRIC_COMPRESSOR = MAX_PRESSURE_TIER_TWO;
     public static final float MAX_PRESSURE_PNEUMATIC_ENGINE = MAX_PRESSURE_TIER_TWO;
     public static final float MAX_PRESSURE_KINETIC_COMPRESSOR = MAX_PRESSURE_TIER_TWO;
+    public static final float MAX_PRESSURE_PNEUMATIC_DYNAMO = MAX_PRESSURE_TIER_TWO;
+    public static final float MAX_PRESSURE_FLUX_COMPRESSOR = MAX_PRESSURE_TIER_TWO;
     public static final float MAX_PRESSURE_AERIAL_INTERFACE = MAX_PRESSURE_TIER_TWO;
     public static final float MAX_PRESSURE_ELECTROSTATIC_COMPRESSOR = MAX_PRESSURE_TIER_TWO;
     public static final float MAX_PRESSURE_PNEUMATIC_PUMP = MAX_PRESSURE_TIER_TWO;
@@ -93,6 +97,8 @@ public class PneumaticValues{
     public static final int VOLUME_ELECTRIC_COMPRESSOR = 10000;
     public static final int VOLUME_PNEUMATIC_ENGINE = 10000;
     public static final int VOLUME_KINETIC_COMPRESSOR = 10000;
+    public static final int VOLUME_PNEUMATIC_DYNAMO = 10000;
+    public static final int VOLUME_FLUX_COMPRESSOR = 10000;
     public static final int VOLUME_AERIAL_INTERFACE = 4000;
     public static final int VOLUME_ELECTROSTATIC_COMPRESSOR = 50000;
     public static final int VOLUME_PNEUMATIC_PUMP = 10000;
@@ -110,6 +116,7 @@ public class PneumaticValues{
     public static final float MIN_PRESSURE_UNIVERSAL_SENSOR = 0.5F;
     public static final float MIN_PRESSURE_PNEUMATIC_GENERATOR = 15F;
     public static final float MIN_PRESSURE_PNEUMATIC_ENGINE = 5F;
+    public static final float MIN_PRESSURE_PNEUMATIC_DYNAMO = 15F;
     public static final float MIN_PRESSURE_PNEUMATIC_PUMP = 5F;
     public static final float MIN_PRESSURE_AERIAL_INTERFACE = 10F;
 

@@ -39,9 +39,13 @@ public class ModuleFlowDetector extends TubeModuleRedstoneEmitting implements II
     }
 
     @Override
-    public int canDisperse(int amount){
+    public int getMaxDispersion(){
+        return Integer.MAX_VALUE;
+    }
+
+    @Override
+    public void onAirDispersion(int amount){
         flow += amount;
-        return amount;
     }
 
     @Override

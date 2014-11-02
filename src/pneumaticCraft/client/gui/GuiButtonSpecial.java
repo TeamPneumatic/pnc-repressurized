@@ -1,5 +1,6 @@
 package pneumaticCraft.client.gui;
 
+import java.awt.Rectangle;
 import java.util.Arrays;
 import java.util.List;
 
@@ -13,19 +14,22 @@ import net.minecraft.item.ItemStack;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
+import pneumaticCraft.client.gui.widget.IGuiWidget;
+import pneumaticCraft.client.gui.widget.IWidgetListener;
 import cpw.mods.fml.client.FMLClientHandler;
 
 /**
  * Extension of GuiButton that allows a invisible clickable field. It can be added in Gui's like buttons (with the buttonList).
  */
 
-public class GuiButtonSpecial extends GuiButton{
+public class GuiButtonSpecial extends GuiButton implements IGuiWidget{
 
     private ItemStack[] renderedStacks;
     private List<String> tooltipText;
     private final RenderItem itemRenderer = new RenderItem();
     private int invisibleHoverColor;
     private boolean thisVisible = true;
+    private IWidgetListener listener;
 
     public GuiButtonSpecial(int buttonID, int startX, int startY, int xSize, int ySize, String buttonText){
         super(buttonID, startX, startY, xSize, ySize, buttonText);
@@ -86,5 +90,51 @@ public class GuiButtonSpecial extends GuiButton{
             }
         }
     }
+
+    @Override
+    public void setListener(IWidgetListener gui){
+        listener = gui;
+    }
+
+    @Override
+    public int getID(){
+        return id;
+    }
+
+    @Override
+    public void render(int mouseX, int mouseY, float partialTick){
+        drawButton(Minecraft.getMinecraft(), mouseX, mouseY);
+    }
+
+    @Override
+    public void onMouseClicked(int mouseX, int mouseY, int button){
+        if(mousePressed(Minecraft.getMinecraft(), mouseX, mouseY)) {
+            func_146113_a(Minecraft.getMinecraft().getSoundHandler());
+            listener.actionPerformed(this);
+        }
+    }
+
+    @Override
+    public Rectangle getBounds(){
+        return new Rectangle(xPosition, yPosition, width, height);
+    }
+
+    @Override
+    public void addTooltip(int mouseX, int mouseY, List<String> curTooltip, boolean shiftPressed){
+
+    }
+
+    @Override
+    public boolean onKey(char key, int keyCode){
+        return false;
+    }
+
+    @Override
+    public void update(){
+
+    }
+
+    @Override
+    public void handleMouseInput(){}
 
 }

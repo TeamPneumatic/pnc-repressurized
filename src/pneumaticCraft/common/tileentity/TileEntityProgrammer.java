@@ -16,6 +16,7 @@ import pneumaticCraft.api.item.IProgrammable;
 import pneumaticCraft.client.AreaShowHandler;
 import pneumaticCraft.client.AreaShowManager;
 import pneumaticCraft.common.NBTUtil;
+import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.ItemProgrammingPuzzle;
 import pneumaticCraft.common.progwidgets.IAreaProvider;
 import pneumaticCraft.common.progwidgets.IProgWidget;
@@ -31,7 +32,6 @@ import pneumaticCraft.common.progwidgets.ProgWidgetPlace;
 import pneumaticCraft.common.progwidgets.ProgWidgetStart;
 import pneumaticCraft.common.progwidgets.ProgWidgetString;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
-import pneumaticCraft.lib.Names;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -382,7 +382,7 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory{
 
     @Override
     public String getInventoryName(){
-        return Names.PROGRAMMER;
+        return Blockss.programmer.getUnlocalizedName();
     }
 
     @Override
@@ -416,7 +416,7 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory{
 
     @Override
     public boolean hasCustomInventoryName(){
-        return true;
+        return false;
     }
 
     @Override

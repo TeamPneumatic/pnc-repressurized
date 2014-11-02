@@ -14,13 +14,13 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.common.Config;
 import pneumaticCraft.common.item.Itemss;
+import pneumaticCraft.common.tileentity.IRedstoneControlled;
 import pneumaticCraft.common.tileentity.TileEntityPneumaticBase;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
-import pneumaticCraft.lib.Names;
 import pneumaticCraft.lib.PneumaticValues;
 
 public class TileEntityElectricCompressor extends TileEntityPneumaticBase implements IEnergySink, IWrenchable,
-        IInventory{
+        IInventory, IRedstoneControlled{
 
     private ItemStack[] inventory;
 
@@ -107,6 +107,7 @@ public class TileEntityElectricCompressor extends TileEntityPneumaticBase implem
         super.onChunkUnload();
     }
 
+    @Override
     public boolean redstoneAllows(){
         switch(redstoneMode){
             case 0:
@@ -195,7 +196,7 @@ public class TileEntityElectricCompressor extends TileEntityPneumaticBase implem
     @Override
     public String getInventoryName(){
 
-        return Names.ELECTRIC_COMPRESSOR;
+        return IC2.electricCompressor.getUnlocalizedName();
     }
 
     @Override
@@ -339,5 +340,10 @@ public class TileEntityElectricCompressor extends TileEntityPneumaticBase implem
 
     @Override
     public void closeInventory(){}
+
+    @Override
+    public int getRedstoneMode(){
+        return redstoneMode;
+    }
 
 }

@@ -30,10 +30,10 @@ public class UpgradeRenderHandlerList{
         upgradeRenderers.add(new CoordTrackUpgradeHandler());
     }
 
-    public float getAirUsage(EntityPlayer player){
+    public float getAirUsage(EntityPlayer player, boolean countDisabled){
         float totalUsage = 0;
         for(int i = 0; i < upgradeRenderers.size(); i++) {
-            if(CommonHUDHandler.getHandlerForPlayer(player).upgradeRenderersEnabled[i]) totalUsage += upgradeRenderers.get(i).getEnergyUsage(CommonHUDHandler.getHandlerForPlayer(player).rangeUpgradesInstalled, player);
+            if(CommonHUDHandler.getHandlerForPlayer(player).upgradeRenderersInserted[i] && (countDisabled || CommonHUDHandler.getHandlerForPlayer(player).upgradeRenderersEnabled[i])) totalUsage += upgradeRenderers.get(i).getEnergyUsage(CommonHUDHandler.getHandlerForPlayer(player).rangeUpgradesInstalled, player);
         }
         return totalUsage;
     }

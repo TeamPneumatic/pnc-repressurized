@@ -1,0 +1,2 @@
+The Flux Compressor converts CoFH's Redstone Flux into compressed air. It consumes 40 RF/tick by default, but can be upgraded with [link{menu/machineUpgrades}]Speed Upgrades[link{}]. The RF input rate of the Flux Compressor is twice the amount of the current usage. This means it's 80 RF/tick by default, but can be increased via Speed Upgrades.
+[crafting{200, 110, key=block/fluxCompressor}]

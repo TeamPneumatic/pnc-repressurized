@@ -10,9 +10,10 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.common.Config;
 import pneumaticCraft.common.item.Itemss;
+import pneumaticCraft.common.tileentity.IMinWorkingPressure;
+import pneumaticCraft.common.tileentity.IRedstoneControlled;
 import pneumaticCraft.common.tileentity.TileEntityPneumaticBase;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
-import pneumaticCraft.lib.Names;
 import pneumaticCraft.lib.PneumaticValues;
 import buildcraft.api.power.IPowerEmitter;
 import buildcraft.api.power.IPowerReceptor;
@@ -21,7 +22,7 @@ import buildcraft.api.power.PowerHandler.PowerReceiver;
 import buildcraft.api.power.PowerHandler.Type;
 
 public class TileEntityPneumaticEngine extends TileEntityPneumaticBase implements IPowerReceptor, IPowerEmitter,
-        IInventory{
+        IInventory, IRedstoneControlled, IMinWorkingPressure{
     public enum EnergyStage{
         BLUE, GREEN, YELLOW, RED, OVERHEAT
     }
@@ -210,6 +211,7 @@ public class TileEntityPneumaticEngine extends TileEntityPneumaticBase implement
         else return EnergyStage.OVERHEAT;
     }
 
+    @Override
     public boolean redstoneAllows(){
         switch(redstoneMode){
             case 0:
@@ -229,9 +231,11 @@ public class TileEntityPneumaticEngine extends TileEntityPneumaticBase implement
 
     @Override
     public void handleGUIButtonPress(int buttonID, EntityPlayer player){
-        redstoneMode++;
-        if(redstoneMode > 2) redstoneMode = 0;
-        sendDescriptionPacket();
+        if(buttonID == 0) {
+            redstoneMode++;
+            if(redstoneMode > 2) redstoneMode = 0;
+            sendDescriptionPacket();
+        }
     }
 
     /**
@@ -292,7 +296,7 @@ public class TileEntityPneumaticEngine extends TileEntityPneumaticBase implement
     @Override
     public String getInventoryName(){
 
-        return Names.PNEUMATIC_ENGINE;
+        return BuildCraft.pneumaticEngine.getUnlocalizedName();
     }
 
     @Override
@@ -369,7 +373,7 @@ public class TileEntityPneumaticEngine extends TileEntityPneumaticBase implement
 
     @Override
     public boolean hasCustomInventoryName(){
-        return true;
+        return false;
     }
 
     @Override
@@ -382,4 +386,14 @@ public class TileEntityPneumaticEngine extends TileEntityPneumaticBase implement
 
     @Override
     public void closeInventory(){}
+
+    @Override
+    public int getRedstoneMode(){
+        return redstoneMode;
+    }
+
+    @Override
+    public float getMinWorkingPressure(){
+        return PneumaticValues.MIN_PRESSURE_PNEUMATIC_ENGINE;
+    }
 }

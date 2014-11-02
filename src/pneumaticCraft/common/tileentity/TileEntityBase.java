@@ -31,6 +31,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
     public int numUsingPlayers;
     private int[] upgradeSlots;
     private boolean descriptionPacketScheduled;
+    protected boolean isRedstonePowered;
 
     public TileEntityBase(){}
 
@@ -85,6 +86,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
         if(firstRun && !worldObj.isRemote) {
             //firstRun = false;
             onFirstServerUpdate();
+            onNeighborTileUpdate();
             firstRunTicks--;
             if(needsFirstRunUpdate() && firstRunTicks == 0) {
                 sendDescriptionPacket();
@@ -164,6 +166,14 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
         return upgrades;
     }
 
+    protected float getSpeedMultiplierFromUpgrades(){
+        return getSpeedMultiplierFromUpgrades(getUpgradeSlots());
+    }
+
+    protected float getSpeedUsageMultiplierFromUpgrades(){
+        return getSpeedUsageMultiplierFromUpgrades(getUpgradeSlots());
+    }
+
     public float getSpeedMultiplierFromUpgrades(int[] upgradeSlots){
         return (float)Math.pow(PneumaticValues.SPEED_UPGRADE_MULTIPLIER, Math.min(10, getUpgrades(ItemMachineUpgrade.UPGRADE_SPEED_DAMAGE, upgradeSlots)));
     }
@@ -195,7 +205,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
         return worldObj.getTileEntity(xCoord, yCoord, zCoord) != this ? false : par1EntityPlayer.getDistanceSq(xCoord + 0.5D, yCoord + 0.5D, zCoord + 0.5D) <= 64.0D;
     }
 
-    public void setUpgradeSlots(int[] upgradeSlots){
+    public void setUpgradeSlots(int... upgradeSlots){
         this.upgradeSlots = upgradeSlots;
     }
 
@@ -205,57 +215,73 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
 
     protected void addLuaMethods(){}
 
-    public static void saveInventory(ItemStack[] inventory, NBTTagCompound tag, String tagName){
+    protected void writeInventoryToNBT(NBTTagCompound tag, ItemStack[] stacks){
+        writeInventoryToNBT(tag, stacks, "Items");
+    }
+
+    protected void writeInventoryToNBT(NBTTagCompound tag, IInventory inventory, String tagName){
+        ItemStack[] stacks = new ItemStack[inventory.getSizeInventory()];
+        for(int i = 0; i < stacks.length; i++) {
+            stacks[i] = inventory.getStackInSlot(i);
+        }
+        writeInventoryToNBT(tag, stacks, tagName);
+    }
+
+    protected void writeInventoryToNBT(NBTTagCompound tag, ItemStack[] stacks, String tagName){
         NBTTagList tagList = new NBTTagList();
-        for(int i = 0; i < inventory.length; ++i) {
-            if(inventory[i] != null) {
-                NBTTagCompound tagCompound = new NBTTagCompound();
-                tagCompound.setByte("Slot", (byte)i);
-                inventory[i].writeToNBT(tagCompound);
-                tagList.appendTag(tagCompound);
+        for(int i = 0; i < stacks.length; i++) {
+            if(stacks[i] != null) {
+                NBTTagCompound itemTag = new NBTTagCompound();
+                stacks[i].writeToNBT(itemTag);
+                itemTag.setByte("Slot", (byte)i);
+                tagList.appendTag(itemTag);
             }
         }
         tag.setTag(tagName, tagList);
     }
 
-    public static void loadInventory(ItemStack[] inventory, NBTTagCompound tag, String tagName){
-        for(int i = 0; i < inventory.length; i++)
-            inventory[i] = null;
+    protected void readInventoryFromNBT(NBTTagCompound tag, ItemStack[] stacks){
+        readInventoryFromNBT(tag, stacks, "Items");
+    }
 
+    protected void readInventoryFromNBT(NBTTagCompound tag, IInventory inventory, String tagName){
+        ItemStack[] stacks = new ItemStack[inventory.getSizeInventory()];
+        readInventoryFromNBT(tag, stacks, tagName);
+        for(int i = 0; i < stacks.length; i++) {
+            inventory.setInventorySlotContents(i, stacks[i]);
+        }
+    }
+
+    protected void readInventoryFromNBT(NBTTagCompound tag, ItemStack[] stacks, String tagName){
+        for(int i = 0; i < stacks.length; i++) {
+            stacks[i] = null;
+        }
         NBTTagList tagList = tag.getTagList(tagName, 10);
-        for(int i = 0; i < tagList.tagCount(); ++i) {
-            NBTTagCompound tagCompound = tagList.getCompoundTagAt(i);
-            byte slot = tagCompound.getByte("Slot");
-            if(slot >= 0 && slot < inventory.length) {
-                inventory[slot] = ItemStack.loadItemStackFromNBT(tagCompound);
+        for(int i = 0; i < tagList.tagCount(); i++) {
+            NBTTagCompound itemTag = tagList.getCompoundTagAt(i);
+            int slot = itemTag.getByte("Slot");
+            if(slot >= 0 && slot < stacks.length) {
+                stacks[slot] = ItemStack.loadItemStackFromNBT(itemTag);
             }
         }
     }
 
-    public static void saveInventory(IInventory inventory, NBTTagCompound tag, String tagName){
-        NBTTagList tagList = new NBTTagList();
-        for(int i = 0; i < inventory.getSizeInventory(); ++i) {
-            if(inventory.getStackInSlot(i) != null) {
-                NBTTagCompound tagCompound = new NBTTagCompound();
-                tagCompound.setByte("Slot", (byte)i);
-                inventory.getStackInSlot(i).writeToNBT(tagCompound);
-                tagList.appendTag(tagCompound);
-            }
-        }
-        tag.setTag(tagName, tagList);
+    public void onNeighborTileUpdate(){}
+
+    public void onNeighborBlockUpdate(){
+        isRedstonePowered = worldObj.isBlockIndirectlyGettingPowered(xCoord, yCoord, zCoord);
     }
 
-    public static void loadInventory(IInventory inventory, NBTTagCompound tag, String tagName){
-        for(int i = 0; i < inventory.getSizeInventory(); i++)
-            inventory.setInventorySlotContents(i, null);
-
-        NBTTagList tagList = tag.getTagList(tagName, 10);
-        for(int i = 0; i < tagList.tagCount(); ++i) {
-            NBTTagCompound tagCompound = tagList.getCompoundTagAt(i);
-            byte slot = tagCompound.getByte("Slot");
-            if(slot >= 0 && slot < inventory.getSizeInventory()) {
-                inventory.setInventorySlotContents(i, ItemStack.loadItemStackFromNBT(tagCompound));
-            }
+    public boolean redstoneAllows(){
+        switch(((IRedstoneControl)this).getRedstoneMode()){
+            case 0:
+                return true;
+            case 1:
+                return isRedstonePowered;
+            case 2:
+                return !isRedstonePowered;
         }
+        return false;
     }
+
 }

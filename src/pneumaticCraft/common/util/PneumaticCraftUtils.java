@@ -14,7 +14,6 @@ import java.util.StringTokenizer;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityMinecart;
@@ -26,7 +25,6 @@ import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityHopper;
 import net.minecraft.util.MovingObjectPosition;
@@ -161,8 +159,8 @@ public class PneumaticCraftUtils{
                 lineLen -= 2;// don't count a color formatter with the line
                              // length.
             }
-            if(lineLen + word.length() > maxCharPerLine || word.contains("\n")) {
-                word = word.replace("\n", "");
+            if(lineLen + word.length() > maxCharPerLine || word.contains("\\n")) {
+                word = word.replace("\\n", "");
                 textList.add(output.toString());
                 output.delete(0, output.length());
                 output.append(color);
@@ -616,24 +614,6 @@ public class PneumaticCraftUtils{
             }
         }
         return slots;
-    }
-
-    /**
-     * Same as entity.getNavigator().tryMoveToXYZ, however this will only return true if the given entity can actually can get to the final point.
-     * @param entity
-     * @param x
-     * @param y
-     * @param z
-     * @param speed
-     * @return
-     */
-    public static boolean tryNavigateToXYZ(EntityLiving entity, double x, double y, double z, double speed){
-        if(entity.getNavigator().tryMoveToXYZ(x, y, z, speed)) {
-            PathPoint dest = entity.getNavigator().getPath().getFinalPathPoint();
-            return distBetween(x, y, z, dest.xCoord + 0.5, dest.yCoord + 0.5, dest.zCoord + 0.5) < 2;
-        } else {
-            return false;
-        }
     }
 
     public static double distBetween(double x1, double y1, double z1, double x2, double y2, double z2){

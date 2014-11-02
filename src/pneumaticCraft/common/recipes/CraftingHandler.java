@@ -10,7 +10,7 @@ public class CraftingHandler{
 
     @SubscribeEvent
     public void onCrafting(PlayerEvent.ItemCraftedEvent event){
-        if(!event.player.worldObj.isRemote && event.crafting != null && (event.crafting.getItem() == Itemss.assemblyProgram && event.crafting.getItemDamage() < 2 || event.crafting.getItem() == Itemss.PCBBlueprint) && ((EntityPlayerMP)event.player).playerNetServerHandler != null) {
+        if(event.player != null && !event.player.worldObj.isRemote && event.crafting != null && (event.crafting.getItem() == Itemss.assemblyProgram && event.crafting.getItemDamage() < 2 || event.crafting.getItem() == Itemss.PCBBlueprint) && ((EntityPlayerMP)event.player).playerNetServerHandler != null) {
             event.player.addChatComponentMessage(new ChatComponentTranslation("[PneumaticCraft] Bear in mind that this crafting recipe is temporary. Once I give Mechanics (PneumaticCraft Villagers)" + " a place to live, I'll remove this crafting recipe and you'll only be able to obtain this item via trading! (Ab)use it while you can."));
         }
     }

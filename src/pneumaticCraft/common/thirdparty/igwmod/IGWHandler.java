@@ -30,8 +30,6 @@ public class IGWHandler{
         WikiRegistry.registerBlockAndItemPageEntry(Blockss.pressureTube, "menu/pressureTubes");
         WikiRegistry.registerBlockAndItemPageEntry(Blockss.advancedPressureTube, "menu/pressureTubes");
 
-        WikiRegistry.registerBlockAndItemPageEntry(Itemss.machineUpgrade, "item/machineUpgrade");
-
         WikiRegistry.registerBlockAndItemPageEntry(Itemss.cannonBarrel, "block/airCannon");
         WikiRegistry.registerBlockAndItemPageEntry(Itemss.stoneBase, "block/airCannon");
 
@@ -54,6 +52,8 @@ public class IGWHandler{
         WikiRegistry.registerBlockAndItemPageEntry(Blockss.assemblyLaser, "menu/assemblyMachines");
         WikiRegistry.registerBlockAndItemPageEntry(Blockss.assemblyPlatform, "menu/assemblyMachines");
         WikiRegistry.registerBlockAndItemPageEntry(Itemss.assemblyProgram, "menu/assemblyMachines");
+
+        WikiRegistry.registerBlockAndItemPageEntry(Itemss.machineUpgrade, "menu/machineUpgrades");
 
         WikiRegistry.registerBlockAndItemPageEntry(Itemss.PCBBlueprint, "menu/printedCircuitBoards");
         WikiRegistry.registerBlockAndItemPageEntry(Itemss.emptyPCB, "menu/printedCircuitBoards");
