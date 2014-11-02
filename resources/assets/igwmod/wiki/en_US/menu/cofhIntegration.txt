@@ -1,0 +1,7 @@
+To convert energy between CoFH's Redstone Flux and PneumaticCraft, PneumaticCraft adds two machines: The Pneumatic Dynamo, which converts compressed air into RF, and the Flux Compressor, which creates compressed air from RF. For both you can select their efficiency (as server owner) in the config. By default it’s set to 40%.
+
+PneumaticCraft air --> CoFH RF conversion:
+[link{block/pneumaticDynamo}]Pneumatic Dynamo[link{}]
+
+CoFH RF --> PneumaticCraft air conversion:
+[link{block/fluxCompressor}]Flux Compressor[link{}]

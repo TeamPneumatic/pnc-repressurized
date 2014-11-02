@@ -33,6 +33,8 @@ public class Config{
     public static int pneumaticEngineEfficiency;
     public static int kineticCompressorEfficiency;
     public static int pneumaticPumpEfficiency;
+    public static int fluxCompressorEfficiency;
+    public static int pneumaticDynamoEfficiency;
     public static boolean enableElectricCompressorRecipe;
     public static boolean enablePneumaticGeneratorRecipe;
     public static boolean enableKineticCompressorRecipe;
@@ -103,6 +105,14 @@ public class Config{
         property = config.get("machine_properties", "Kinetic Compressor (Buildcraft --> PneumaticCraft) efficiency", 40);
         property.comment = "Changing this value will alter the pressurized air production of the Kinetic Compressor. The input, MJ, will stay the same.";
         kineticCompressorEfficiency = property.getInt();
+
+        property = config.get("machine_properties", "Pneumatic Dynamo (PneumaticCraft --> RF) efficiency", 40);
+        property.comment = "Changing this value will alter the pressurized air usage of the Pneumatic Dynamo. The output, RF, will stay the same.";
+        pneumaticDynamoEfficiency = property.getInt();
+
+        property = config.get("machine_properties", "Flux Compressor (RF --> PneumaticCraft) efficiency", 40);
+        property.comment = "Changing this value will alter the pressurized air production of the Flux Compressor. The input, RF, will stay the same.";
+        fluxCompressorEfficiency = property.getInt();
 
         property = config.get("machine_properties", "Pneumatic Pump (PneumaticCraft --> Hydraulicraft) efficiency", 40);
         property.comment = "Changing this value will alter the hydraulic bar production of the Pneumatic Pump. The input, air, will stay the same.";

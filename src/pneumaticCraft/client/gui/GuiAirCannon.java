@@ -39,10 +39,7 @@ public class GuiAirCannon extends GuiPneumaticContainerBase<TileEntityAirCannon>
     @Override
     public void initGui(){
         super.initGui();
-
         statusStat = this.addAnimatedStat("Cannon Status", new ItemStack(Blockss.airCannon), 0xFFFFAA00, false);
-
-        //TODO check scale upgrade stat.
     }
 
     @Override

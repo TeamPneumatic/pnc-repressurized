@@ -1,0 +1,2 @@
+The Pneumatic Dynamo converts compressed air into CoFH's Redstone Flux. It produces 40 RF/tick by default, but can be upgraded with [link{menu/machineUpgrades}]Speed Upgrades[link{}]. The RF output rate of the Flux Compressor is twice the amount of the current production. This means it's 80 RF/tick by default, but can be increased via Speed Upgrades.
+[crafting{200, 110, key=block/pneumaticDynamo}]

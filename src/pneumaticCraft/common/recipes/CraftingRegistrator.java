@@ -139,7 +139,7 @@ public class CraftingRegistrator{
 
         for(int i = 0; i < 16; i++) {
             GameRegistry.addShapelessRecipe(new ItemStack(Items.dye, 1, i), new ItemStack(Itemss.plasticPlant, 1, i));
-            GameRegistry.addShapelessRecipe(new ItemStack(Items.dye, 1, i), new ItemStack(Itemss.plasticPlant, 1, i + 16));//FIXME make it so you can't aqcuire seeds of different meta.
+            GameRegistry.addShapelessRecipe(new ItemStack(Items.dye, 1, i), new ItemStack(Itemss.plasticPlant, 1, i + 16));//TODO remove legacy
         }
         GameRegistry.addRecipe(new ItemStack(Blockss.universalSensor), "plp", "lpl", "pcp", 'p', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.ENDER_PLANT_DAMAGE), 'l', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.CHOPPER_PLANT_DAMAGE), 'c', Itemss.printedCircuitBoard);
         GameRegistry.addRecipe(new ItemStack(Blockss.aerialInterface), "whw", "ese", "wtw", 'w', Blockss.pressureChamberWall, 'h', Blocks.hopper, 'e', Items.ender_pearl, 's', new ItemStack(Items.skull, 1, 1), 't', new ItemStack(Blockss.advancedPressureTube, 1, 0));
@@ -188,7 +188,7 @@ public class CraftingRegistrator{
         // plastic
         for(int i = 0; i < 16; i++) {
             PressureChamberRecipe.chamberRecipes.add(new PressureChamberRecipe(new ItemStack[]{new ItemStack(Itemss.plasticPlant, 1, i)}, 0.5F, new ItemStack[]{new ItemStack(Itemss.plastic, 1, i)}, false));
-            PressureChamberRecipe.chamberRecipes.add(new PressureChamberRecipe(new ItemStack[]{new ItemStack(Itemss.plasticPlant, 1, i + 16)}, 0.5F, new ItemStack[]{new ItemStack(Itemss.plastic, 1, i)}, false));//FIXME make it so you can't aqcuire seeds of different meta.
+            PressureChamberRecipe.chamberRecipes.add(new PressureChamberRecipe(new ItemStack[]{new ItemStack(Itemss.plasticPlant, 1, i + 16)}, 0.5F, new ItemStack[]{new ItemStack(Itemss.plastic, 1, i)}, false));//TODO remove legacy
         }
         // Empty PCB
         PressureChamberRecipe.chamberRecipes.add(new PressureChamberRecipe(new ItemStack[]{new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.CREEPER_PLANT_DAMAGE), new ItemStack(Itemss.ingotIronCompressed, 1, 0)}, 1.5F, new ItemStack[]{new ItemStack(Itemss.emptyPCB, 1, Itemss.emptyPCB.getMaxDamage())}, false));

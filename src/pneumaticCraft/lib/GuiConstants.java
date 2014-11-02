@@ -6,6 +6,6 @@ import cpw.mods.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class GuiConstants{
 
-    public static final int maxCharPerLineLeft = 28;
+    public static final int maxCharPerLineLeft = 26;
 
 }

@@ -1,3 +1,7 @@
--Added Waila support for the plants.
--Added config option that allows disabling of the mini Creeper explosions upon dropping of Creeper seeds.
--Removed leftover debug code in the Manometer. Fixes a crash in SMP when someone uses the Manometer.
+-Added Redstone Flux converters (Pneumatic Dynamo and Flux Compressor).
+-Added liquid XP pumping in/out of the Aerial Interface (works with OpenBlocks' Liquid XP and MFR's Mob Essence).
+-Refactored GUI code (can cause minor derps, bug reports are appreciated!)
+-Finally got rid of all possibilities of getting plastic plant seeds with a weird meta value.
+
+Bugfix: GPS Tool doesn't work when either the X, Y or Z is 0.
+Bugfix: Aphorism Tile adds whitespace when characters like Shift are pressed.

@@ -269,7 +269,8 @@ gui.tab.info.tile.electrostaticCompressor=§0In the real world it has been state
 gui.tab.info.tile.pneumaticDoor=§0This machine, when placed next to a Pneumatic Door, will automatically open the door when there are players nearby. When the Pneumatic Door Base is within range of a Security Station, the Pneumatic Door Base will only react to players which are allowed by the Security Station. Place any normal block in the camo slot to make the block look like that block.
 gui.tab.info.tile.omnidirectionalHopper=§0Did you ever want to use Hoppers to extract items from an other side than the bottom of an inventory? Or did you wish that the Hopper was transfering items faster? Then this Omnidirectional Hopper is for you. Apart from that you can place it in any direction you want, it can also be upgraded like other PneumaticCraft machines.
 gui.tab.info.tile.programmer=§0With this block you can program Drones. This is done with a simplified way of programming: A puzzle-like flowchart. Drones have only one hard programmed feature in them that overrules any other custom one: When the Drone gets low on air, it'll search for a nearby Charging Station with Dispenser upgrade inserted that has more than 1 bar. \n \nTips: \n-You can copy puzzle pieces by middle clicking them. \n-You can insert Machine Upgrades in the Drones. Put a Drone in a Charging Station to see what's possible and to insert them.
-
+gui.tab.info.tile.fluxCompressor=§0This block can convert Redstone Flux into compressed air. By default it has an efficiency of 40%%. The input RF rate is twice the amount of Flux used per tick to generate air.
+gui.tab.info.tile.pneumaticDynamo=§0This block can convert compressed air into Redstone Flux. By default it has an efficiency of 40%%. The output RF rate is twice the amount of Flux created per tick.
 
 # Pressure
 gui.tab.pressure=Pressure
@@ -283,6 +284,7 @@ gui.tab.problems.notEnoughPressure=§7Not enough pressure.
 gui.tab.problems.applyPressure=§0Apply at least %s bar.
 gui.tab.problems.noProblems=§7No Problems.
 gui.tab.problems.aerialInterface.linked=§0Machine linked with %s.
+gui.tab.problems.fluxCompressor.noRF=§7The machine is out of RF. \n§0Add more powah!
 
 # Upgrades
 gui.tab.upgrades=Upgrades
@@ -303,6 +305,8 @@ gui.tab.upgrades.tile.securityStation.hacking=§7-Security Upgrade \n§0Allows h
 gui.tab.upgrades.tile.uvLightBox=§7-Speed Upgrade (max = 10) \n§0The UV lights will glow brighter and will expose PCB's quicker.
 gui.tab.upgrades.tile.vacuumPump=§7-Speed Upgrade (max = 10) \n§0The Vacuum Pump will produce more vacuum per tick. However this is at the expense of the efficiency.
 gui.tab.upgrades.tile.pneumaticGenerator=§7-Speed Upgrade (max = 10) \n§0Adjusts the output rate: \n§00 upgrades --> 32 EU/t \n§01 upgrade --> 128 EU/t \n§02 upgrades --> 512 EU/t
+gui.tab.upgrades.tile.fluxCompressor=§7-Speed Upgrade (max = 10) \n§0Increases the air production rate. It also increases the RF usage in a way that the machine will be more inefficient. Finally it increases the max RF input rate.
+gui.tab.upgrades.tile.pneumaticDynamo=§7-Speed Upgrade (max = 10) \n§0Increases the RF production rate. It also increases the air usage in a way that the machine will be more inefficient. Finally it increases the max RF output rate.
 
 # Redstone Behaviour
 gui.tab.redstoneBehaviour=Redstone Behaviour
@@ -416,6 +420,7 @@ igwtab.entry.printedCircuitBoards=Printed Circuit Boards
 igwtab.entry.assemblyMachines=Assembly Machines
 igwtab.entry.ic2Integration=IC2 Integration
 igwtab.entry.bcIntegration=Buildcraft Integration
+igwtab.entry.cofhIntegration=CoFH Integration
 igwtab.entry.ccIntegration=Computercraft Integration
 igwmod.pressureChamber.requiredPressure=Required Pressure
 
