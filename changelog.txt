@@ -1,3 +1,4 @@
 -Bugfix: Plastic plants are taking over the world.
 -Bugfix: GUI tab in the Regulator Tube is going nuts.
 -Bugfix: IGW notfication config is landing outside the config folder.
+-Bugfix: Crash when trying to access blocks that aren't a peripheral as a peripheral (like the Security Station).

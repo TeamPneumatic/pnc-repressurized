@@ -190,6 +190,7 @@ public abstract class BlockPneumaticCraft extends BlockContainer implements IPne
     @Override
     @Optional.Method(modid = ModIds.COMPUTERCRAFT)
     public IPeripheral getPeripheral(World world, int x, int y, int z, int side){
-        return (IPeripheral)world.getTileEntity(x, y, z);
+        TileEntity te = world.getTileEntity(x, y, z);
+        return te instanceof IPeripheral ? (IPeripheral)te : null;
     }
 }
