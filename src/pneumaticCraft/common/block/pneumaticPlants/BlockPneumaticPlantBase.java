@@ -8,6 +8,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockFlower;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -16,6 +17,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.common.Config;
+import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.PacketSpawnParticle;
@@ -101,7 +103,7 @@ public abstract class BlockPneumaticPlantBase extends BlockFlower{
                         world.setBlockMetadataWithNotify(x, y, z, meta, 3);
                     }
 
-                } else if(meta == 13 && rand.nextInt(20) == 0) {
+                } else if(meta == 13 && rand.nextInt(5) == 0) {
                     world.setBlockMetadataWithNotify(x, y, z, 6, 0);
                 } else {
                     // if the plant is allowed to execute the full grown effect
@@ -225,15 +227,24 @@ public abstract class BlockPneumaticPlantBase extends BlockFlower{
         return Itemss.plasticPlant;
     }
 
-    /**
-     * Drops the block items with a specified chance of dropping the specified
-     * items
-     */
-    /* @Override
-     public void dropBlockAsItemWithChance(World par1World, int par2, int par3, int par4, int par5, float par6, int par7){
-         super.dropBlockAsItemWithChance(par1World, par2, par3, par4, par5, par6, 0);
-     }
-    */
+    @Override
+    protected void dropBlockAsItem(World p_149642_1_, int p_149642_2_, int p_149642_3_, int p_149642_4_, ItemStack p_149642_5_){
+        if(!p_149642_1_.isRemote && p_149642_1_.getGameRules().getGameRuleBooleanValue("doTileDrops")) {
+            if(captureDrops.get()) {
+                capturedDrops.get().add(p_149642_5_);
+                return;
+            }
+            float f = 0.7F;
+            double d0 = p_149642_1_.rand.nextFloat() * f + (1.0F - f) * 0.5D;
+            double d1 = p_149642_1_.rand.nextFloat() * f + (1.0F - f) * 0.5D;
+            double d2 = p_149642_1_.rand.nextFloat() * f + (1.0F - f) * 0.5D;
+            EntityItem entityitem = new EntityItem(p_149642_1_, p_149642_2_ + d0, p_149642_3_ + d1, p_149642_4_ + d2, p_149642_5_);
+            entityitem.delayBeforeCanPickup = 10;
+            p_149642_1_.spawnEntityInWorld(entityitem);
+            ItemPlasticPlants.markInactive(entityitem);
+        }
+    }
+
     @Override
     public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune){
         ArrayList<ItemStack> ret = new ArrayList<ItemStack>();// super.getBlockDropped(world,

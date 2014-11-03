@@ -1,11 +1,3 @@
--Added Redstone Flux converters (Pneumatic Dynamo and Flux Compressor).
--Added liquid XP pumping in/out of the Aerial Interface (works with OpenBlocks' Liquid XP and MFR's Mob Essence).
--Refactored GUI code (can cause minor derps, bug reports are appreciated!)
--Finally got rid of all possibilities of getting plastic plant seeds with a weird meta value.
--Added config option to disable the seed drops of entities.
-
-Bugfix: GPS Tool doesn't work when either the X, Y or Z is 0.
-Bugfix: Aphorism Tile adds whitespace when characters like Shift are pressed.
-Bugfix: Dupe bug with drones, when breaking a drone holding items, and replacing it.
-Bugfix: World corruption (StackOverFlow) when connecting up many Elevators next to each other.
-Bugfix: Regulator Tube doesn't behave.
+-Bugfix: Plastic plants are taking over the world.
+-Bugfix: GUI tab in the Regulator Tube is going nuts.
+-Bugfix: IGW notfication config is landing outside the config folder.
