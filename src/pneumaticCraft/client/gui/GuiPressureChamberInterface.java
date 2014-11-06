@@ -218,6 +218,12 @@ public class GuiPressureChamberInterface extends GuiPneumaticContainerBase<TileE
     }
 
     @Override
+    protected void addProblems(List<String> curInfo){
+        super.addProblems(curInfo);
+        curInfo.addAll(te.getProblemStat());
+    }
+
+    @Override
     protected void keyTyped(char par1, int par2){
         if(nameFilterField.isFocused() && par2 != 1) {
             nameFilterField.textboxKeyTyped(par1, par2);

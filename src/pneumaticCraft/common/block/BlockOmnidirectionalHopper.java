@@ -66,7 +66,6 @@ public class BlockOmnidirectionalHopper extends BlockPneumaticCraftModeled{
                 int newRotation = (teOh.getDirection().ordinal() + 1) % 6;
                 if(newRotation == world.getBlockMetadata(x, y, z)) newRotation = (newRotation + 1) % 6;
                 teOh.setDirection(ForgeDirection.getOrientation(newRotation));
-                teOh.sendDescriptionPacket();
             }
             return true;
         }

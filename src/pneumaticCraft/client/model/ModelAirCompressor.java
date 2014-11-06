@@ -28,7 +28,7 @@ public class ModelAirCompressor extends BaseModel{
         boolean active = false;
         if(tile != null) {
             TileEntityAirCompressor compressor = (TileEntityAirCompressor)tile;
-            active = compressor.burnTime > 0;
+            active = compressor.isActive;
         }
         return active ? activeTexture : resLoc;
     }

@@ -17,6 +17,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import pneumaticCraft.api.tileentity.IPneumaticMachine;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.Itemss;
+import pneumaticCraft.common.network.DescSynced;
+import pneumaticCraft.common.network.GuiSynced;
 import pneumaticCraft.lib.PneumaticValues;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -31,12 +33,16 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
     public static final int UPGRADE_SLOT_START = 1;
     public static final int UPGRADE_SLOT_END = 4;
 
+    @GuiSynced
     public int burnTime;
+    @GuiSynced
     public int maxBurnTime; // in here the total burn time of the current
                             // burning item is stored.
-    private int oldScaledBurnTime;
+    @GuiSynced
     public int redstoneMode = 0; // determines how the compressor responds to
                                  // redstone.
+    @DescSynced
+    public boolean isActive;
 
     public TileEntityAirCompressor(){
         super(PneumaticValues.DANGER_PRESSURE_AIR_COMPRESSOR, PneumaticValues.MAX_PRESSURE_AIR_COMPRESSOR, PneumaticValues.VOLUME_AIR_COMPRESSOR);
@@ -59,16 +65,11 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
         if(burnTime > 0) {
             burnTime = Math.max(burnTime - (int)getSpeedUsageMultiplierFromUpgrades(getUpgradeSlots()), 0);
             if(!worldObj.isRemote) {
-
                 addAir(PneumaticValues.PRODUCTION_COMPRESSOR * (int)getSpeedMultiplierFromUpgrades(getUpgradeSlots()), ForgeDirection.UNKNOWN);
-                if(oldScaledBurnTime != getBurnTimeRemainingScaled(12)) {
-                    sendDescriptionPacket();
-                    oldScaledBurnTime = getBurnTimeRemainingScaled(12);
-                }
-            } else {
-                spawnBurningParticle();
             }
         }
+        if(!worldObj.isRemote) isActive = burnTime > 0;
+        else if(isActive) spawnBurningParticle();
 
         super.updateEntity();
 
@@ -138,7 +139,6 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
         if(buttonID == 0) {
             redstoneMode++;
             if(redstoneMode > 2) redstoneMode = 0;
-            sendDescriptionPacket();
         }
     }
 

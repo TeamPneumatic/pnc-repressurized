@@ -2,25 +2,22 @@ package pneumaticCraft.common.inventory;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.tileentity.TileEntityAssemblyController;
 
-public class ContainerAssemblyController extends Container{
-    TileEntityAssemblyController te;
+public class ContainerAssemblyController extends ContainerPneumaticBase<TileEntityAssemblyController>{
 
-    public ContainerAssemblyController(InventoryPlayer inventoryPlayer, TileEntityAssemblyController teAirCompressor){
-        te = teAirCompressor;
-        te.openGUI();
+    public ContainerAssemblyController(InventoryPlayer inventoryPlayer, TileEntityAssemblyController te){
+        super(te);
         // Add the burn slot.
-        addSlotToContainer(new SlotItemSpecific(teAirCompressor, Itemss.assemblyProgram, 0, 74, 38));
+        addSlotToContainer(new SlotItemSpecific(te, Itemss.assemblyProgram, 0, 74, 38));
 
         // add the upgrade slots
         for(int i = 0; i < 2; i++) {
             for(int j = 0; j < 2; j++) {
-                addSlotToContainer(new SlotUpgrade(teAirCompressor, i * 2 + j + 1, 13 + j * 18, 31 + i * 18));
+                addSlotToContainer(new SlotUpgrade(te, i * 2 + j + 1, 13 + j * 18, 31 + i * 18));
             }
         }
 
@@ -35,12 +32,6 @@ public class ContainerAssemblyController extends Container{
         for(int actionBarSlotIndex = 0; actionBarSlotIndex < 9; ++actionBarSlotIndex) {
             addSlotToContainer(new Slot(inventoryPlayer, actionBarSlotIndex, 8 + actionBarSlotIndex * 18, 142));
         }
-    }
-
-    @Override
-    public boolean canInteractWith(EntityPlayer player){
-
-        return te.isGuiUseableByPlayer(player);
     }
 
     /**
@@ -91,9 +82,4 @@ public class ContainerAssemblyController extends Container{
         return var3;
     }
 
-    @Override
-    public void onContainerClosed(EntityPlayer par1EntityPlayer){
-        super.onContainerClosed(par1EntityPlayer);
-        te.closeGUI();
-    }
 }

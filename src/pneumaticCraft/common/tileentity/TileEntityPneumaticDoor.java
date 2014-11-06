@@ -3,12 +3,17 @@ package pneumaticCraft.common.tileentity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
+import pneumaticCraft.common.network.DescSynced;
+import pneumaticCraft.common.network.LazySynced;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityPneumaticDoor extends TileEntityBase{
+    @DescSynced
+    @LazySynced
     public float rotation;
     public float oldRotation;
+    @DescSynced
     public boolean rightGoing;
 
     public void setRotation(float rotation){

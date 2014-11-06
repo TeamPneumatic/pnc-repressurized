@@ -3,17 +3,22 @@ package pneumaticCraft.common.tileentity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import pneumaticCraft.common.network.DescSynced;
+import pneumaticCraft.common.network.LazySynced;
 import pneumaticCraft.lib.TileEntityConstants;
 
 public class TileEntityAssemblyPlatform extends TileEntityBase implements IAssemblyMachine{
+    @DescSynced
     private boolean shouldClawClose;
+    @DescSynced
+    @LazySynced
     public float clawProgress;
     public float oldClawProgress;
+    @DescSynced
     private ItemStack[] inventory = new ItemStack[1];
     private float speed = 1.0F;
     public boolean hasDrilledStack;
     public boolean hasLaseredStack;
-    private boolean clientNeedsUpdate;
 
     @Override
     public void updateEntity(){
@@ -24,10 +29,6 @@ public class TileEntityAssemblyPlatform extends TileEntityBase implements IAssem
         } else if(shouldClawClose && clawProgress < 1F) {
             clawProgress = Math.min(clawProgress + TileEntityConstants.ASSEMBLY_IO_UNIT_CLAW_SPEED * speed, 1);
         }
-        if(clientNeedsUpdate && !worldObj.isRemote) {
-            clientNeedsUpdate = false;
-            sendDescriptionPacket();
-        }
     }
 
     @Override
@@ -36,14 +37,12 @@ public class TileEntityAssemblyPlatform extends TileEntityBase implements IAssem
     }
 
     public void closeClaw(){
-        if(!shouldClawClose) clientNeedsUpdate = true;
         hasDrilledStack = false;
         hasLaseredStack = false;
         shouldClawClose = true;
     }
 
     public void openClaw(){
-        if(shouldClawClose) clientNeedsUpdate = true;
         shouldClawClose = false;
     }
 
@@ -52,7 +51,6 @@ public class TileEntityAssemblyPlatform extends TileEntityBase implements IAssem
     }
 
     public void setHeldStack(ItemStack stack){
-        clientNeedsUpdate = true;
         if(stack == null) {
             hasDrilledStack = false;
             hasLaseredStack = false;
@@ -102,16 +100,8 @@ public class TileEntityAssemblyPlatform extends TileEntityBase implements IAssem
     }
 
     @Override
-    public boolean needsFirstRunUpdate(){
-        return true;
-    }
-
-    @Override
     public void setSpeed(float speed){
-        if(this.speed != speed) {
-            this.speed = speed;
-            clientNeedsUpdate = true;
-        }
+        this.speed = speed;
     }
 
 }

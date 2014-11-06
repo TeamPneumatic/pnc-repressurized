@@ -25,6 +25,7 @@ import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.ItemGPSTool;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.Itemss;
+import pneumaticCraft.common.network.GuiSynced;
 import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.PacketRenderRangeLines;
 import pneumaticCraft.common.sensor.SensorHandler;
@@ -50,6 +51,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
     public static final int UPGRADE_SLOT_4 = 3;
     public static final int INVENTORY_SIZE = 5;
 
+    @GuiSynced
     private String sensorSetting = "";
     private int ticksExisted;
     public int redstoneStrength;
@@ -57,8 +59,11 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
     public float dishRotation;
     public float oldDishRotation;
     public float dishSpeed;
+    @GuiSynced
     public boolean invertedRedstone;
+    @GuiSynced
     public boolean isSensorActive;
+    @GuiSynced
     private String sensorGuiText = ""; //optional parameter text for sensors.
     private boolean requestPollPullEvent;
 
@@ -110,10 +115,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
             ticksExisted++;
             ISensorSetting sensor = SensorHandler.instance().getSensorFromPath(sensorSetting);
             if(sensor != null && getPressure(ForgeDirection.UNKNOWN) > PneumaticValues.MIN_PRESSURE_UNIVERSAL_SENSOR) {
-                if(!isSensorActive) {
-                    isSensorActive = true;
-                    sendDescriptionPacket();
-                }
+                isSensorActive = true;
                 addAir(-PneumaticValues.USAGE_UNIVERSAL_SENSOR, ForgeDirection.UNKNOWN);
                 if(sensor instanceof IPollSensorSetting) {
                     if(ticksExisted % ((IPollSensorSetting)sensor).getPollFrequency() == 0) {
@@ -138,10 +140,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
                     }
                 }
             } else {
-                if(isSensorActive) {
-                    isSensorActive = false;
-                    sendDescriptionPacket();
-                }
+                isSensorActive = false;
                 if(redstoneStrength != (invertedRedstone ? 15 : 0)) {
                     redstoneStrength = invertedRedstone ? 15 : 0;
                     updateNeighbours();
@@ -258,7 +257,6 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
         super.writeToNBT(tag);
         tag.setString("sensorSetting", sensorSetting);
         tag.setBoolean("invertedRedstone", invertedRedstone);
-        tag.setBoolean("isSensorActive", isSensorActive);
         tag.setFloat("dishSpeed", dishSpeed);
         tag.setString("sensorText", sensorGuiText);
         // Write the ItemStacks in the inventory to NBT
@@ -279,7 +277,6 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
         super.readFromNBT(tag);
         setSensorSetting(tag.getString("sensorSetting"));
         invertedRedstone = tag.getBoolean("invertedRedstone");
-        isSensorActive = tag.getBoolean("isSensorActive");
         dishSpeed = tag.getFloat("dishSpeed");
         sensorGuiText = tag.getString("sensorText");
         // Read in the ItemStacks in the inventory from NBT
@@ -304,7 +301,6 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
                 } else {
                     setSensorSetting(getSensorSetting() + "/" + directories[buttonID / 10 - 1]);
                 }
-                sendDescriptionPacket();
             }
         } else if(buttonID == 1) {//the 'back' button
 
@@ -314,11 +310,9 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
                 newPath = newPath.substring(0, newPath.length() - 1);
             }
             setSensorSetting(newPath);
-            sendDescriptionPacket();
         } else if(buttonID == 0) {
             invertedRedstone = !invertedRedstone;
             redstoneStrength = 15 - redstoneStrength;
-            sendDescriptionPacket();
             updateNeighbours();
         }
     }
@@ -417,7 +411,6 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
         }
         if(!worldObj.isRemote && !getSensorSetting().equals("") && !areGivenUpgradesInserted(SensorHandler.instance().getRequiredStacksFromText(getSensorSetting()))) {
             setSensorSetting("");
-            sendDescriptionPacket();
         }
     }
 

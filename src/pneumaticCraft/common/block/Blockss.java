@@ -4,6 +4,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.item.ItemBlock;
 import net.minecraftforge.oredict.OreDictionary;
+import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.common.block.pneumaticPlants.BlockBurstPlant;
 import pneumaticCraft.common.block.pneumaticPlants.BlockChopperPlant;
 import pneumaticCraft.common.block.pneumaticPlants.BlockCreeperPlant;
@@ -132,6 +133,7 @@ public class Blockss{
     private static class HelperBlock extends Block{//helper class, as the constructor of Block is protected.
         public HelperBlock(Material material){
             super(material);
+            setCreativeTab(PneumaticCraft.tabPneumaticCraft);
         }
     }
 

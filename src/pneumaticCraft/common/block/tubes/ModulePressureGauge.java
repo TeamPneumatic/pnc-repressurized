@@ -3,15 +3,19 @@ package pneumaticCraft.common.block.tubes;
 import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.client.model.IBaseModel;
 import pneumaticCraft.client.model.tubemodules.ModelGauge;
 import pneumaticCraft.lib.Names;
 import pneumaticCraft.proxy.CommonProxy;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class ModulePressureGauge extends TubeModuleRedstoneEmitting{
     private final IBaseModel model = new ModelGauge(this);
+    private float pressure;
 
     public ModulePressureGauge(){
         lowerBound = 0;
@@ -28,6 +32,11 @@ public class ModulePressureGauge extends TubeModuleRedstoneEmitting{
 
     private int getRedstone(float pressure){
         return (int)((pressure - lowerBound) / (higherBound - lowerBound) * 15);
+    }
+
+    @SideOnly(Side.CLIENT)
+    public float getPressure(){
+        return pressure;
     }
 
     @Override
@@ -56,6 +65,20 @@ public class ModulePressureGauge extends TubeModuleRedstoneEmitting{
         curInfo.add("This module emits a redstone signal of which");
         curInfo.add("the strength is dependant on how much pressure");
         curInfo.add("the tube is at.");
+    }
+
+    @Override
+    public void writeToNBT(NBTTagCompound nbt){
+        super.writeToNBT(nbt);
+        if(pressureTube != null && pressureTube.world() != null) {
+            nbt.setFloat("pressure", pressureTube.getAirHandler().getPressure(ForgeDirection.UNKNOWN));
+        }
+    }
+
+    @Override
+    public void readFromNBT(NBTTagCompound nbt){
+        super.readFromNBT(nbt);
+        pressure = nbt.getFloat("pressure");
     }
 
     @Override

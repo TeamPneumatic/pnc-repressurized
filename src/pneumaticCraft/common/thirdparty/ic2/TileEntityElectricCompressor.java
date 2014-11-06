@@ -135,7 +135,6 @@ public class TileEntityElectricCompressor extends TileEntityPneumaticBase implem
     public void handleGUIButtonPress(int buttonID, EntityPlayer player){
         redstoneMode++;
         if(redstoneMode > 2) redstoneMode = 0;
-        sendDescriptionPacket();
     }
 
     /**

@@ -2,25 +2,22 @@ package pneumaticCraft.common.inventory;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import pneumaticCraft.common.item.Itemss;
-import pneumaticCraft.common.tileentity.TileEntityPneumaticBase;
+import pneumaticCraft.common.tileentity.TileEntityBase;
 
-public class Container4UpgradeSlots extends Container{
-    IInventory te;
+public class Container4UpgradeSlots<Tile extends TileEntityBase> extends ContainerPneumaticBase<Tile>{
 
-    public Container4UpgradeSlots(InventoryPlayer inventoryPlayer, IInventory te){
-        this.te = te;
-        ((TileEntityPneumaticBase)te).openGUI();
+    public Container4UpgradeSlots(InventoryPlayer inventoryPlayer, Tile te){
+        super(te);
 
         // add the upgrade slots
-        addSlotToContainer(new SlotUpgrade(te, 0, 48, 29));
-        addSlotToContainer(new SlotUpgrade(te, 1, 66, 29));
-        addSlotToContainer(new SlotUpgrade(te, 2, 48, 47));
-        addSlotToContainer(new SlotUpgrade(te, 3, 66, 47));
+        addSlotToContainer(new SlotUpgrade((IInventory)te, 0, 48, 29));
+        addSlotToContainer(new SlotUpgrade((IInventory)te, 1, 66, 29));
+        addSlotToContainer(new SlotUpgrade((IInventory)te, 2, 48, 47));
+        addSlotToContainer(new SlotUpgrade((IInventory)te, 3, 66, 47));
 
         // Add the player's inventory slots to the container
         for(int inventoryRowIndex = 0; inventoryRowIndex < 3; ++inventoryRowIndex) {
@@ -33,12 +30,6 @@ public class Container4UpgradeSlots extends Container{
         for(int actionBarSlotIndex = 0; actionBarSlotIndex < 9; ++actionBarSlotIndex) {
             addSlotToContainer(new Slot(inventoryPlayer, actionBarSlotIndex, 8 + actionBarSlotIndex * 18, 142));
         }
-    }
-
-    @Override
-    public boolean canInteractWith(EntityPlayer player){
-
-        return ((TileEntityPneumaticBase)te).isGuiUseableByPlayer(player);
     }
 
     /**
@@ -84,12 +75,6 @@ public class Container4UpgradeSlots extends Container{
         }
 
         return var3;
-    }
-
-    @Override
-    public void onContainerClosed(EntityPlayer par1EntityPlayer){
-        super.onContainerClosed(par1EntityPlayer);
-        ((TileEntityPneumaticBase)te).closeGUI();
     }
 
 }

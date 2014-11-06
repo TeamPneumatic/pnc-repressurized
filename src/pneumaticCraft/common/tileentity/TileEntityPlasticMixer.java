@@ -1,7 +1,6 @@
 package pneumaticCraft.common.tileentity;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemDye;
 import net.minecraft.item.ItemStack;
@@ -13,6 +12,7 @@ import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 import net.minecraftforge.fluids.IFluidTank;
+import net.minecraftforge.oredict.OreDictionary;
 import pneumaticCraft.api.IHeatExchangerLogic;
 import pneumaticCraft.api.PneumaticRegistry;
 import pneumaticCraft.api.tileentity.IHeatExchanger;
@@ -20,6 +20,7 @@ import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.fluid.FluidPlastic;
 import pneumaticCraft.common.fluid.Fluids;
 import pneumaticCraft.common.item.Itemss;
+import pneumaticCraft.common.network.GuiSynced;
 import pneumaticCraft.lib.PneumaticValues;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -29,9 +30,14 @@ public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHand
     private final ItemStack[] inventory = new ItemStack[6];
     private int lastTickInventoryStacksize;
     private static int BASE_TEMPERATURE = Fluids.plastic.getTemperature();
+    @GuiSynced
     private final IHeatExchangerLogic hullLogic = PneumaticRegistry.getInstance().getHeatExchangerLogic();
+    @GuiSynced
     private final IHeatExchangerLogic itemLogic = PneumaticRegistry.getInstance().getHeatExchangerLogic();
+    @GuiSynced
     private final IHeatExchangerLogic liquidLogic = PneumaticRegistry.getInstance().getHeatExchangerLogic();
+
+    private static final String[] DYES = {"dyeBlack", "dyeRed", "dyeGreen", "dyeBrown", "dyeBlue", "dyePurple", "dyeCyan", "dyeLightGray", "dyeGray", "dyePink", "dyeLime", "dyeYellow", "dyeLightBlue", "dyeMagenta", "dyeOrange", "dyeWhite"};
 
     public TileEntityPlasticMixer(){
         super(0, 1, 2, 3);
@@ -40,34 +46,6 @@ public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHand
         itemLogic.addConnectedExchanger(liquidLogic);
 
         hullLogic.setThermalCapacity(100);
-    }
-
-    public int getTemperature(int index){
-        switch(index){
-            case 0:
-                return (int)hullLogic.getTemperature();
-            case 1:
-                return (int)itemLogic.getTemperature();
-            case 2:
-                return (int)liquidLogic.getTemperature();
-        }
-        throw new IllegalArgumentException("Invalid index: " + index);
-    }
-
-    @SideOnly(Side.CLIENT)
-    public void setTemperature(int temperature, int index){
-        switch(index){
-            case 0:
-                hullLogic.setTemperature(temperature);
-                return;
-            case 1:
-                itemLogic.setTemperature(temperature);
-                return;
-            case 2:
-                liquidLogic.setTemperature(temperature);
-                return;
-        }
-        throw new IllegalArgumentException("Invalid index: " + index);
     }
 
     @SideOnly(Side.CLIENT)
@@ -144,7 +122,7 @@ public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHand
                     }
                 } else if(tank.getFluid() != null && inventory[5] != null) {
                     while(inventory[5] != null) {
-                        FluidPlastic.addDye(tank.getFluid(), inventory[5].getItemDamage());
+                        FluidPlastic.addDye(tank.getFluid(), getDyeIndex());
                         inventory[5].stackSize--;
                         if(inventory[5].stackSize <= 0) inventory[5] = null;
                     }
@@ -177,8 +155,6 @@ public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHand
     public void readFromNBT(NBTTagCompound tag){
         super.readFromNBT(tag);
         readInventoryFromNBT(tag, inventory, "Items");
-        tank.setFluid(null);
-        tank.readFromNBT(tag.getCompoundTag("fluid"));
         lastTickInventoryStacksize = tag.getInteger("lastTickInventoryStacksize");
 
         hullLogic.readFromNBT(tag.getCompoundTag("hullLogic"));
@@ -190,9 +166,6 @@ public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHand
     public void writeToNBT(NBTTagCompound tag){
         super.writeToNBT(tag);
         writeInventoryToNBT(tag, inventory, "Items");
-        NBTTagCompound tankTag = new NBTTagCompound();
-        tank.writeToNBT(tankTag);
-        tag.setTag("fluid", tankTag);
         tag.setInteger("lastTickInventoryStacksize", lastTickInventoryStacksize);
 
         NBTTagCompound heatTag = new NBTTagCompound();
@@ -206,7 +179,21 @@ public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHand
         heatTag = new NBTTagCompound();
         liquidLogic.writeToNBT(heatTag);
         tag.setTag("liquidLogic", heatTag);
+    }
 
+    @Override
+    public void readFromPacket(NBTTagCompound tag){
+        super.readFromPacket(tag);
+        tank.setFluid(null);
+        tank.readFromNBT(tag.getCompoundTag("fluid"));
+    }
+
+    @Override
+    public void writeToPacket(NBTTagCompound tag){
+        super.writeToPacket(tag);
+        NBTTagCompound tankTag = new NBTTagCompound();
+        tank.writeToNBT(tankTag);
+        tag.setTag("fluid", tankTag);
     }
 
     /******************* Tank methods *******************/
@@ -323,7 +310,7 @@ public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHand
 
     @Override
     public boolean isItemValidForSlot(int i, ItemStack itemstack){
-        return itemstack != null && (i < 4 && itemstack.getItem() == Itemss.machineUpgrade || i == 4 && itemstack.getItem() == Itemss.plastic || i == 5 && itemstack.getItem() == Items.dye);
+        return itemstack != null && (i < 4 && itemstack.getItem() == Itemss.machineUpgrade || i == 4 && itemstack.getItem() == Itemss.plastic || i == 5 && getDyeIndex(itemstack) >= 0);
     }
 
     @Override
@@ -339,5 +326,20 @@ public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHand
     @Override
     public IHeatExchangerLogic getHeatExchangerLogic(ForgeDirection side){
         return hullLogic;
+    }
+
+    private int getDyeIndex(){
+        return getDyeIndex(inventory[5]);
+    }
+
+    private int getDyeIndex(ItemStack stack){
+        int[] ids = OreDictionary.getOreIDs(stack);
+        for(int id : ids) {
+            String name = OreDictionary.getOreName(id);
+            for(int i = 0; i < DYES.length; i++) {
+                if(DYES[i].equals(name)) return i;
+            }
+        }
+        return -1;
     }
 }

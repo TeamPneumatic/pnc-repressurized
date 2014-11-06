@@ -17,18 +17,23 @@ import pneumaticCraft.api.tileentity.IAirHandler;
 import pneumaticCraft.api.tileentity.IPneumaticMachine;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.Itemss;
+import pneumaticCraft.common.network.DescSynced;
+import pneumaticCraft.common.network.GuiSynced;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.PneumaticValues;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityVacuumPump extends TileEntityPneumaticBase implements IInventory, IRedstoneControlled{
+    @GuiSynced
     public int vacuumAir;
     public int rotation;
     public int oldRotation;
     public int turnTimer = -1;
+    @DescSynced
     public boolean turning = false;
     public int rotationSpeed;
+    @GuiSynced
     public int redstoneMode;
 
     private ItemStack[] inventory = new ItemStack[4];
@@ -90,7 +95,6 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements IIn
         if(!worldObj.isRemote && getPressure(getInputSide()) > PneumaticValues.MIN_PRESSURE_VACUUM_PUMP && getPressure(getVacuumSide()) > -1F && redstoneAllows()) {
             if(!worldObj.isRemote && turnTimer == -1) {
                 turning = true;
-                sendDescriptionPacket();
             }
             addAir((int)(-PneumaticValues.PRODUCTION_VACUUM_PUMP * getSpeedMultiplierFromUpgrades(getUpgradeSlots())), getVacuumSide()); // negative because it's pulling a vacuum.
             addAir((int)(-PneumaticValues.USAGE_VACUUM_PUMP * getSpeedUsageMultiplierFromUpgrades(getUpgradeSlots())), getInputSide());
@@ -98,7 +102,6 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements IIn
         }
         if(turnTimer == 0) {
             turning = false;
-            sendDescriptionPacket();
         }
         oldRotation = rotation;
         if(worldObj.isRemote) {
@@ -120,10 +123,6 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements IIn
         }
         if(!inputSideConnected) airLeak(getInputSide());
         if(!vacuumSideConnected) airLeak(getVacuumSide());
-
-        if(!worldObj.isRemote && numUsingPlayers > 0) {
-            sendDescriptionPacket();
-        }
     }
 
     @Override
@@ -226,7 +225,6 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements IIn
         if(buttonID == 0) {
             redstoneMode++;
             if(redstoneMode > 2) redstoneMode = 0;
-            sendDescriptionPacket();
         }
     }
 

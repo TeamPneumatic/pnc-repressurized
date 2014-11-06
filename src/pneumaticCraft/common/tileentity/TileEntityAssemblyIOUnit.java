@@ -10,14 +10,19 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.api.recipe.AssemblyRecipe;
+import pneumaticCraft.common.network.DescSynced;
+import pneumaticCraft.common.network.LazySynced;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.TileEntityConstants;
 
 public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
+    @DescSynced
     public boolean shouldClawClose;
-    private boolean oldShouldClawClose;
+    @DescSynced
+    @LazySynced
     public float clawProgress;
     public float oldClawProgress;
+    @DescSynced
     public ItemStack[] inventory = new ItemStack[1];
     private int pickUpPlatformStackStep;
     public int feedPlatformStep;
@@ -27,10 +32,6 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
 
     @Override
     public void updateEntity(){
-        if(oldShouldClawClose != shouldClawClose) {
-            oldShouldClawClose = shouldClawClose;
-            clientNeedsUpdate = true;
-        }
         super.updateEntity();
         oldClawProgress = clawProgress;
         if(!shouldClawClose && clawProgress > 0F) {

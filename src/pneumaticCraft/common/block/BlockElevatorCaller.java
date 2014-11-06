@@ -43,6 +43,11 @@ public class BlockElevatorCaller extends BlockPneumaticCraft{
     }
 
     @Override
+    public boolean isNormalCube(IBlockAccess world, int x, int y, int z){
+        return true;
+    }
+
+    @Override
     public MovingObjectPosition collisionRayTrace(World world, int x, int y, int z, Vec3 origin, Vec3 direction){
         setBlockBounds(0, 0, 0, 1, 1, 1);
         MovingObjectPosition rayTrace = super.collisionRayTrace(world, x, y, z, origin, direction);

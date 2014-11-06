@@ -8,6 +8,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.common.Config;
 import pneumaticCraft.common.item.Itemss;
+import pneumaticCraft.common.network.DescSynced;
+import pneumaticCraft.common.network.GuiSynced;
 import pneumaticCraft.common.tileentity.IMinWorkingPressure;
 import pneumaticCraft.common.tileentity.IRedstoneControlled;
 import pneumaticCraft.common.tileentity.TileEntityPneumaticBase;
@@ -21,12 +23,16 @@ public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implement
         IInventory, IRedstoneControlled, IRFConverter, IMinWorkingPressure{
 
     private final EnergyStorage energy = new EnergyStorage(100000);
+    @GuiSynced
     private int rfPerTick;
+    @GuiSynced
     private int airPerTick;
+    @DescSynced
     public boolean isEnabled;
 
     private final ItemStack[] inventory = new ItemStack[4];
-    private byte redstoneMode;
+    @GuiSynced
+    private int redstoneMode;
 
     public TileEntityPneumaticDynamo(){
         super(PneumaticValues.DANGER_PRESSURE_PNEUMATIC_DYNAMO, PneumaticValues.MAX_PRESSURE_PNEUMATIC_DYNAMO, PneumaticValues.VOLUME_PNEUMATIC_DYNAMO);
@@ -83,6 +89,7 @@ public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implement
 
     @Override
     public int extractEnergy(ForgeDirection from, int maxExtract, boolean simulate){
+        maxExtract = getRFRate() * 2;
         return energy.extractEnergy(maxExtract, simulate);
     }
 
@@ -130,7 +137,7 @@ public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implement
         super.writeToNBT(tag);
         energy.writeToNBT(tag);
         writeInventoryToNBT(tag, inventory);
-        tag.setByte("redstoneMode", redstoneMode);
+        tag.setInteger("redstoneMode", redstoneMode);
         tag.setBoolean("isEnabled", isEnabled);
     }
 
@@ -139,7 +146,7 @@ public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implement
         super.readFromNBT(tag);
         energy.readFromNBT(tag);
         readInventoryFromNBT(tag, inventory);
-        redstoneMode = tag.getByte("redstoneMode");
+        redstoneMode = tag.getInteger("redstoneMode");
         isEnabled = tag.getBoolean("isEnabled");
     }
 

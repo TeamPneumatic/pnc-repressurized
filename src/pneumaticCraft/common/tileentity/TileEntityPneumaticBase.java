@@ -21,6 +21,7 @@ import pneumaticCraft.api.tileentity.IPneumaticMachine;
 import pneumaticCraft.common.DateEventHandler;
 import pneumaticCraft.common.block.tubes.IPneumaticPosProvider;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
+import pneumaticCraft.common.network.GuiSynced;
 import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.PacketPlaySound;
 import pneumaticCraft.common.network.PacketSpawnParticle;
@@ -44,10 +45,12 @@ import dan200.computercraft.api.peripheral.IPeripheral;
 public class TileEntityPneumaticBase extends TileEntityBase implements IManoMeasurable, IAirHandler,
         IPneumaticPosProvider, IPeripheral{
     public float maxPressure;
+    @GuiSynced
     public int volume;
     public final int DEFAULT_VOLUME;
     public final float DANGER_PRESSURE;
     public final float CRITICAL_PRESSURE;
+    @GuiSynced
     public int currentAir;
     public int soundCounter;
     public TileEntity parentTile;
@@ -70,13 +73,12 @@ public class TileEntityPneumaticBase extends TileEntityBase implements IManoMeas
         // volume calculations
         if(!worldObj.isRemote && getUpgradeSlots() != null) {
             int upgradeVolume = getVolumeFromUpgrades(getUpgradeSlots());
-            int oldVolume = volume;
             setVolume(DEFAULT_VOLUME + upgradeVolume);
-            if(oldVolume != volume) sendDescriptionPacket();
 
-            int securityUpgrades = getUpgrades(ItemMachineUpgrade.UPGRADE_SECURITY, getUpgradeSlots());
-            for(int i = 0; i < securityUpgrades && getPressure(ForgeDirection.UNKNOWN) >= DANGER_PRESSURE; i++) {
-                airLeak(ForgeDirection.DOWN);
+            if(getUpgrades(ItemMachineUpgrade.UPGRADE_SECURITY, getUpgradeSlots()) > 0) {
+                while(getPressure(ForgeDirection.UNKNOWN) >= DANGER_PRESSURE - 0.1) {
+                    airLeak(ForgeDirection.DOWN);
+                }
             }
         }
 
@@ -277,7 +279,6 @@ public class TileEntityPneumaticBase extends TileEntityBase implements IManoMeas
     @Override
     public void addAir(int amount, ForgeDirection side){
         currentAir += amount;
-        if(numUsingPlayers > 0 && !worldObj.isRemote) sendDescriptionPacket();
     }
 
     @Override

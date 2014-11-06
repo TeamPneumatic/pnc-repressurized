@@ -11,16 +11,23 @@ import pneumaticCraft.api.tileentity.IPneumaticMachine;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.Itemss;
+import pneumaticCraft.common.network.DescSynced;
+import pneumaticCraft.common.network.GuiSynced;
 import pneumaticCraft.lib.PneumaticValues;
 import pneumaticCraft.lib.TileEntityConstants;
 
 public class TileEntityUVLightBox extends TileEntityPneumaticBase implements ISidedInventory, IMinWorkingPressure,
         IRedstoneControl{
+    @DescSynced
     public boolean leftConnected;
+    @DescSynced
     public boolean rightConnected;
+    @DescSynced
     public boolean areLightsOn;
+    @GuiSynced
     public int redstoneMode;
-    public ItemStack[] inventory;
+    @DescSynced
+    public ItemStack[] inventory = new ItemStack[INVENTORY_SIZE];
     public int ticksExisted;
     public static final int INVENTORY_SIZE = 5;
     public static final int PCB_INDEX = 0;
@@ -30,16 +37,12 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements ISi
 
     public TileEntityUVLightBox(){
         super(PneumaticValues.DANGER_PRESSURE_UV_LIGHTBOX, PneumaticValues.MAX_PRESSURE_UV_LIGHTBOX, PneumaticValues.VOLUME_UV_LIGHTBOX);
-        inventory = new ItemStack[INVENTORY_SIZE];
         setUpgradeSlots(new int[]{UPGRADE_SLOT_START, 2, 3, UPGRADE_SLOT_END});
     }
 
     @Override
     public void readFromNBT(NBTTagCompound nbt){
         super.readFromNBT(nbt);
-        leftConnected = nbt.getBoolean("leftConnected");
-        rightConnected = nbt.getBoolean("rightConnected");
-        areLightsOn = nbt.getBoolean("areLightsOn");
         redstoneMode = nbt.getInteger("redstoneMode");
 
         // Read in the ItemStacks in the inventory from NBT
@@ -58,9 +61,6 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements ISi
     @Override
     public void writeToNBT(NBTTagCompound nbt){
         super.writeToNBT(nbt);
-        nbt.setBoolean("leftConnected", leftConnected);
-        nbt.setBoolean("rightConnected", rightConnected);
-        nbt.setBoolean("areLightsOn", areLightsOn);
         nbt.setInteger("redstoneMode", redstoneMode);
 
         // Write the ItemStacks in the inventory to NBT
@@ -78,10 +78,8 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements ISi
 
     @Override
     public void updateEntity(){
-        if(firstRun) {
-            updateConnections();
-        }
         ticksExisted++;
+        super.updateEntity();
         if(getPressure(ForgeDirection.UNKNOWN) >= PneumaticValues.MIN_PRESSURE_UV_LIGHTBOX && inventory[0] != null && inventory[0].getItem() == Itemss.emptyPCB && inventory[0].getItemDamage() > 0) {
 
             addAir((int)(-PneumaticValues.USAGE_UV_LIGHTBOX * getSpeedUsageMultiplierFromUpgrades(getUpgradeSlots())), ForgeDirection.UNKNOWN);
@@ -89,7 +87,6 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements ISi
                 if(!areLightsOn) {
                     areLightsOn = true;
                     if(!worldObj.isRemote) {
-                        sendDescriptionPacket();
                         updateNeighbours();
                     }
                 }
@@ -98,7 +95,6 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements ISi
         } else if(areLightsOn) {
             areLightsOn = false;
             if(!worldObj.isRemote) {
-                sendDescriptionPacket();
                 updateNeighbours();
             }
         }
@@ -106,8 +102,6 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements ISi
             oldRedstoneStatus = !oldRedstoneStatus;
             updateNeighbours();
         }
-
-        super.updateEntity();
     }
 
     public int getLightLevel(){
@@ -137,7 +131,6 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements ISi
                 }
             }
         }
-        sendDescriptionPacket();
     }
 
     /**
@@ -231,7 +224,6 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements ISi
             redstoneMode++;
             if(redstoneMode > 4) redstoneMode = 0;
             updateNeighbours();
-            sendDescriptionPacket();
         }
     }
 

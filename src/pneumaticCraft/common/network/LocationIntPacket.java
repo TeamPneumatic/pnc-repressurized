@@ -2,6 +2,7 @@ package pneumaticCraft.common.network;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import pneumaticCraft.lib.TileEntityConstants;
 import cpw.mods.fml.common.network.NetworkRegistry;
@@ -50,5 +51,9 @@ public abstract class LocationIntPacket<REQ extends IMessage> extends AbstractPa
 
     protected Block getBlock(World world){
         return world.getBlock(x, y, z);
+    }
+
+    protected TileEntity getTileEntity(World world){
+        return world.getTileEntity(x, y, z);
     }
 }

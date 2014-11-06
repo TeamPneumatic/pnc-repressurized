@@ -4,6 +4,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.util.ForgeDirection;
+import pneumaticCraft.common.network.DescSynced;
+import pneumaticCraft.common.network.LazySynced;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.TileEntityConstants;
 import cpw.mods.fml.relauncher.Side;
@@ -11,13 +13,16 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public abstract class TileEntityAssemblyRobot extends TileEntityBase implements IAssemblyMachine{
     public float[] oldAngles = new float[5];
+    @DescSynced
+    @LazySynced
     public float[] angles = new float[5];
+    @DescSynced
     public float[] targetAngles = new float[5];
-    private final float[] oldTargetAngles = new float[5];
     public ForgeDirection[] targetDirection = new ForgeDirection[]{ForgeDirection.UNKNOWN, ForgeDirection.UNKNOWN};
+    @DescSynced
     public boolean slowMode; //used for the drill when drilling, the slowmode moves the arm 10x as slow as normal.
+    @DescSynced
     protected float speed = 1.0F;
-    protected boolean clientNeedsUpdate;
 
     protected enum EnumAngles{
         TURN, BASE, MIDDLE, TAIL, HEAD
@@ -28,7 +33,6 @@ public abstract class TileEntityAssemblyRobot extends TileEntityBase implements 
         for(int i = 0; i < 5; i++) {
             angles[i] = targetAngles[i];
             oldAngles[i] = targetAngles[i];
-            oldTargetAngles[i] = targetAngles[i];
         }
     }
 
@@ -43,10 +47,6 @@ public abstract class TileEntityAssemblyRobot extends TileEntityBase implements 
         // 
 
         for(int i = 0; i < 5; i++) {
-            if(oldTargetAngles[i] != targetAngles[i]) {
-                clientNeedsUpdate = true;
-                oldTargetAngles[i] = targetAngles[i];
-            }
             oldAngles[i] = angles[i];
         }
         //move the arms and claw more to their destination
@@ -56,11 +56,6 @@ public abstract class TileEntityAssemblyRobot extends TileEntityBase implements 
             } else if(angles[i] < targetAngles[i]) {
                 angles[i] = Math.min(angles[i] + TileEntityConstants.ASSEMBLY_IO_UNIT_ARM_SPEED * (slowMode ? 0.1F : 1) * speed, targetAngles[i]);
             }
-        }
-
-        if(!worldObj.isRemote && clientNeedsUpdate) {
-            sendDescriptionPacket();
-            clientNeedsUpdate = false;
         }
     }
 
@@ -221,16 +216,8 @@ public abstract class TileEntityAssemblyRobot extends TileEntityBase implements 
     }
 
     @Override
-    public boolean needsFirstRunUpdate(){
-        return true;
-    }
-
-    @Override
     public void setSpeed(float speed){
-        if(this.speed != speed) {
-            this.speed = speed;
-            clientNeedsUpdate = true;
-        }
+        this.speed = speed;
     }
 
 }

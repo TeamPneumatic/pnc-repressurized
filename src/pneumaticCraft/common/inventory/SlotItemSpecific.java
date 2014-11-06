@@ -4,13 +4,20 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.oredict.OreDictionary;
 
 class SlotItemSpecific extends Slot{
-    private final Item itemAllowed;
+    private Item itemAllowed;
+    private int oreDictEntry;
 
     SlotItemSpecific(IInventory par2IInventory, Item itemAllowed, int par3, int par4, int par5){
         super(par2IInventory, par3, par4, par5);
         this.itemAllowed = itemAllowed;
+    }
+
+    SlotItemSpecific(IInventory par2IInventory, String oreDictKeyAllowed, int par3, int par4, int par5){
+        super(par2IInventory, par3, par4, par5);
+        oreDictEntry = OreDictionary.getOreID(oreDictKeyAllowed);
     }
 
     /**
@@ -19,8 +26,16 @@ class SlotItemSpecific extends Slot{
      */
     @Override
     public boolean isItemValid(ItemStack par1ItemStack){
-        Item item = par1ItemStack == null ? null : par1ItemStack.getItem();
-        return item == itemAllowed;
+        if(itemAllowed != null) {
+            Item item = par1ItemStack == null ? null : par1ItemStack.getItem();
+            return item == itemAllowed;
+        } else {
+            int[] ids = OreDictionary.getOreIDs(par1ItemStack);
+            for(int id : ids) {
+                if(id == oreDictEntry) return true;
+            }
+            return false;
+        }
     }
 
 }

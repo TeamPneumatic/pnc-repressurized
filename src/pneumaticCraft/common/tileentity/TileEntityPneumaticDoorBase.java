@@ -15,6 +15,9 @@ import pneumaticCraft.common.block.BlockPneumaticDoor;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.Itemss;
+import pneumaticCraft.common.network.DescSynced;
+import pneumaticCraft.common.network.GuiSynced;
+import pneumaticCraft.common.network.LazySynced;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.PneumaticValues;
 import pneumaticCraft.lib.TileEntityConstants;
@@ -22,14 +25,18 @@ import pneumaticCraft.lib.TileEntityConstants;
 public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase implements IInventory, IRedstoneControl,
         IMinWorkingPressure{
     private TileEntityPneumaticDoor door;
+    @DescSynced
     public boolean rightGoing;
-    public boolean[] sidesConnected = new boolean[6];
     public float oldProgress;
+    @DescSynced
+    @LazySynced
     public float progress;
+    @DescSynced
     private boolean opening;
     public boolean wasPowered;
 
     private ItemStack[] inventory = new ItemStack[5];
+    @GuiSynced
     public int redstoneMode;
     public ForgeDirection orientation = ForgeDirection.UNKNOWN;
     public static final int UPGRADE_SLOT_1 = 0;
@@ -119,10 +126,7 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
     }
 
     public void setOpening(boolean opening){
-        if(this.opening != opening) {
-            this.opening = opening;
-            if(!worldObj.isRemote) sendDescriptionPacket();
-        }
+        this.opening = opening;
     }
 
     public boolean isOpening(){
@@ -194,7 +198,6 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
         if(buttonID == 0) {
             redstoneMode++;
             if(redstoneMode > 2) redstoneMode = 0;
-            sendDescriptionPacket();
         }
     }
 

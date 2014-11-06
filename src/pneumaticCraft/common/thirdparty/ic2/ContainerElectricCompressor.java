@@ -1,21 +1,18 @@
-package pneumaticCraft.common.inventory;
+package pneumaticCraft.common.thirdparty.ic2;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import pneumaticCraft.common.inventory.ContainerPneumaticBase;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.tileentity.TileEntityPneumaticBase;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 
-public class ContainerElectricCompressor extends Container{
-    IInventory te;
+public class ContainerElectricCompressor extends ContainerPneumaticBase<TileEntityElectricCompressor>{
 
-    public ContainerElectricCompressor(InventoryPlayer inventoryPlayer, IInventory te){
-        this.te = te;
-        ((TileEntityPneumaticBase)te).openGUI();
+    public ContainerElectricCompressor(InventoryPlayer inventoryPlayer, TileEntityElectricCompressor te){
+        super(te);
 
         // add the upgrade slots
         addSlotToContainer(new SlotUpgradeAndIC2(te, 0, 48, 29));
@@ -85,12 +82,6 @@ public class ContainerElectricCompressor extends Container{
         }
 
         return var3;
-    }
-
-    @Override
-    public void onContainerClosed(EntityPlayer par1EntityPlayer){
-        super.onContainerClosed(par1EntityPlayer);
-        ((TileEntityPneumaticBase)te).closeGUI();
     }
 
 }

@@ -130,7 +130,6 @@ public class BlockPneumaticDoor extends BlockPneumaticCraftModeled{
             if(te instanceof TileEntityPneumaticDoor) {
                 ((TileEntityPneumaticDoor)te).rightGoing = true;
                 ((TileEntityPneumaticDoor)te).setRotation(0);
-                ((TileEntityPneumaticDoor)te).sendDescriptionPacket();
                 TileEntity topDoor = world.getTileEntity(x, y + 1, z);
                 if(topDoor instanceof TileEntityPneumaticDoor) {
                     ((TileEntityPneumaticDoor)topDoor).sendDescriptionPacket();

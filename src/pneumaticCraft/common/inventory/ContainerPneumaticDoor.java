@@ -2,18 +2,15 @@ package pneumaticCraft.common.inventory;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.tileentity.TileEntityPneumaticDoorBase;
 
-public class ContainerPneumaticDoor extends Container{
-    private final TileEntityPneumaticDoorBase te;
+public class ContainerPneumaticDoor extends ContainerPneumaticBase<TileEntityPneumaticDoorBase>{
 
     public ContainerPneumaticDoor(InventoryPlayer inventoryPlayer, TileEntityPneumaticDoorBase te){
-        this.te = te;
-        te.openGUI();
+        super(te);
 
         // add the upgrade slots
         addSlotToContainer(new SlotUpgrade(te, 0, 23, 29));
@@ -35,12 +32,6 @@ public class ContainerPneumaticDoor extends Container{
         for(int actionBarSlotIndex = 0; actionBarSlotIndex < 9; ++actionBarSlotIndex) {
             addSlotToContainer(new Slot(inventoryPlayer, actionBarSlotIndex, 8 + actionBarSlotIndex * 18, 142));
         }
-    }
-
-    @Override
-    public boolean canInteractWith(EntityPlayer player){
-
-        return te.isGuiUseableByPlayer(player);
     }
 
     /**
@@ -92,9 +83,4 @@ public class ContainerPneumaticDoor extends Container{
         return var3;
     }
 
-    @Override
-    public void onContainerClosed(EntityPlayer par1EntityPlayer){
-        super.onContainerClosed(par1EntityPlayer);
-        te.closeGUI();
-    }
 }

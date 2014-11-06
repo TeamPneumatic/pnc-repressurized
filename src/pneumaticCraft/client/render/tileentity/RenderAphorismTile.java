@@ -1,7 +1,5 @@
 package pneumaticCraft.client.render.tileentity;
 
-import java.util.List;
-
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
@@ -24,9 +22,9 @@ public class RenderAphorismTile extends TileEntitySpecialRenderer{
         GL11.glScalef(1.0F, -1F, -1F);
         PneumaticCraftUtils.rotateMatrixByMetadata(tile.getBlockMetadata());
         GL11.glTranslatef(0, 1, 0.5F - BBConstants.APHORISM_TILE_THICKNESS - 0.01F);
-        List<String> textLines = tile.getTextLines();
+        String[] textLines = tile.getTextLines();
         int lineWidth = getMaxLineWidth(textLines);
-        int lineHeight = 10 * textLines.size();
+        int lineHeight = 10 * textLines.length;
         float textScale = Math.min(14 / 16F / lineWidth, 14 / 16F / lineHeight);
         GL11.glScalef(textScale, textScale, textScale);
         GL11.glRotatef(tile.textRotation * 90, 0, 0, 1);
@@ -38,17 +36,17 @@ public class RenderAphorismTile extends TileEntitySpecialRenderer{
             }
         }
 
-        for(int i = 0; i < textLines.size(); i++) {
-            String textLine = textLines.get(i);
+        for(int i = 0; i < textLines.length; i++) {
+            String textLine = textLines[i];
             if(editedLine == i) textLine = ">" + textLine + "<";
-            RenderManager.instance.getFontRenderer().drawString(EnumChatFormatting.ITALIC + textLine, -RenderManager.instance.getFontRenderer().getStringWidth(textLine) / 2, -(textLines.size() * 10) / 2 + i * 10 + 1, 0xFF000000);
+            RenderManager.instance.getFontRenderer().drawString(EnumChatFormatting.ITALIC + textLine, -RenderManager.instance.getFontRenderer().getStringWidth(textLine) / 2, -(textLines.length * 10) / 2 + i * 10 + 1, 0xFF000000);
         }
 
         GL11.glPopMatrix(); // end
 
     }
 
-    private int getMaxLineWidth(List<String> textList){
+    private int getMaxLineWidth(String[] textList){
         int maxLength = 0;
         for(String string : textList) {
             int stringWidth = RenderManager.instance.getFontRenderer().getStringWidth(string);

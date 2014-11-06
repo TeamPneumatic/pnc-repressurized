@@ -57,6 +57,8 @@ public class NetworkHandler{
         INSTANCE.registerMessage(PacketUpdatePressureModule.class, PacketUpdatePressureModule.class, discriminant++, Side.CLIENT);
         INSTANCE.registerMessage(PacketUpdateAirGrateModule.class, PacketUpdateAirGrateModule.class, discriminant++, Side.SERVER);
         INSTANCE.registerMessage(PacketUpdateAirGrateModule.class, PacketUpdateAirGrateModule.class, discriminant++, Side.CLIENT);
+        INSTANCE.registerMessage(PacketUpdateGui.class, PacketUpdateGui.class, discriminant++, Side.CLIENT);
+        INSTANCE.registerMessage(PacketDescription.class, PacketDescription.class, discriminant++, Side.CLIENT);
 
         INSTANCE.registerMessage(PacketHackingBlockStart.class, PacketHackingBlockStart.class, discriminant++, Side.SERVER);
         INSTANCE.registerMessage(PacketHackingBlockStart.class, PacketHackingBlockStart.class, discriminant++, Side.CLIENT);

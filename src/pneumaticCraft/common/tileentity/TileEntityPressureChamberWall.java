@@ -6,12 +6,16 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import pneumaticCraft.api.tileentity.IManoMeasurable;
+import pneumaticCraft.common.network.DescSynced;
 
 public class TileEntityPressureChamberWall extends TileEntityBase implements IManoMeasurable{
 
     protected TileEntityPressureChamberValve teValve;
+    @DescSynced
     private int valveX;
+    @DescSynced
     private int valveY;
+    @DescSynced
     private int valveZ;
 
     public TileEntityPressureChamberWall(){}
@@ -48,6 +52,12 @@ public class TileEntityPressureChamberWall extends TileEntityBase implements IMa
         teValve = te;
     }
 
+    @Override
+    public void onDescUpdate(){
+        super.onDescUpdate();
+        teValve = null;
+    }
+
     /**
      * Reads a tile entity from NBT.
      */
@@ -58,10 +68,6 @@ public class TileEntityPressureChamberWall extends TileEntityBase implements IMa
         valveY = tag.getInteger("valveY");
         valveZ = tag.getInteger("valveZ");
         teValve = null;
-
-        if(worldObj != null && worldObj.isRemote) {
-            worldObj.markBlockRangeForRenderUpdate(xCoord, yCoord, zCoord, xCoord, yCoord, zCoord);
-        }
     }
 
     @Override
@@ -77,6 +83,11 @@ public class TileEntityPressureChamberWall extends TileEntityBase implements IMa
         if(getCore() != null) {
             teValve.printManometerMessage(player, curInfo);
         }
+    }
+
+    @Override
+    protected boolean shouldRerenderChunkOnDescUpdate(){
+        return true;
     }
 
 }

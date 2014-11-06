@@ -1,1 +1,2 @@
-
+-Any amount of Security Upgrades now will work to secure your network (previously there was a max of air that could be dispersed).
+-Bugfix: You can't place buttons/levers/etcetera on Elevator Callers.

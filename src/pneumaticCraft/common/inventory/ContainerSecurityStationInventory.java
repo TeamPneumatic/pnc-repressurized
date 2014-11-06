@@ -2,31 +2,27 @@ package pneumaticCraft.common.inventory;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.tileentity.TileEntitySecurityStation;
 
-public class ContainerSecurityStationInventory extends Container{
-    TileEntitySecurityStation te;
+public class ContainerSecurityStationInventory extends ContainerPneumaticBase<TileEntitySecurityStation>{
 
-    public ContainerSecurityStationInventory(InventoryPlayer inventoryPlayer,
-            TileEntitySecurityStation teSecurityStation){
-        te = teSecurityStation;
-        te.openGUI();
+    public ContainerSecurityStationInventory(InventoryPlayer inventoryPlayer, TileEntitySecurityStation te){
+        super(te);
 
         //add the network slots
         for(int i = 0; i < 7; i++) {
             for(int j = 0; j < 5; j++) {
-                addSlotToContainer(new SlotItemSpecific(teSecurityStation, Itemss.networkComponent, j + i * 5, 17 + j * 18, 22 + i * 18));
+                addSlotToContainer(new SlotItemSpecific(te, Itemss.networkComponent, j + i * 5, 17 + j * 18, 22 + i * 18));
             }
         }
 
         // add the upgrade slots
         for(int i = 0; i < 2; i++) {
             for(int j = 0; j < 2; j++) {
-                addSlotToContainer(new SlotUpgrade(teSecurityStation, i * 2 + j + TileEntitySecurityStation.UPGRADE_SLOT_START, 128 + j * 18, 62 + i * 18));
+                addSlotToContainer(new SlotUpgrade(te, i * 2 + j + TileEntitySecurityStation.UPGRADE_SLOT_START, 128 + j * 18, 62 + i * 18));
             }
         }
 
@@ -41,12 +37,6 @@ public class ContainerSecurityStationInventory extends Container{
         for(int actionBarSlotIndex = 0; actionBarSlotIndex < 9; ++actionBarSlotIndex) {
             addSlotToContainer(new Slot(inventoryPlayer, actionBarSlotIndex, 8 + actionBarSlotIndex * 18, 215));
         }
-    }
-
-    @Override
-    public boolean canInteractWith(EntityPlayer player){
-
-        return te.isGuiUseableByPlayer(player);
     }
 
     /**
@@ -96,12 +86,6 @@ public class ContainerSecurityStationInventory extends Container{
         }
 
         return var3;
-    }
-
-    @Override
-    public void onContainerClosed(EntityPlayer par1EntityPlayer){
-        super.onContainerClosed(par1EntityPlayer);
-        te.closeGUI();
     }
 
 }

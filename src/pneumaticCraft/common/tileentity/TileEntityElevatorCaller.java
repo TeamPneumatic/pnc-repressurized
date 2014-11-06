@@ -24,9 +24,21 @@ public class TileEntityElevatorCaller extends TileEntityBase{
     @Override
     public void readFromNBT(NBTTagCompound tag){
         super.readFromNBT(tag);
-        int floorAmount = tag.getInteger("floors");
-        thisFloor = tag.getInteger("thisFloor");
         emittingRedstone = tag.getBoolean("emittingRedstone");
+        thisFloor = tag.getInteger("thisFloor");
+    }
+
+    @Override
+    public void writeToNBT(NBTTagCompound tag){
+        super.writeToNBT(tag);
+        tag.setBoolean("emittingRedstone", emittingRedstone);
+        tag.setInteger("thisFloor", thisFloor);
+    }
+
+    @Override
+    public void readFromPacket(NBTTagCompound tag){
+        super.readFromPacket(tag);
+        int floorAmount = tag.getInteger("floors");
         floors = new ElevatorButton[floorAmount];
         for(int i = 0; i < floorAmount; i++) {
             NBTTagCompound buttonTag = tag.getCompoundTag("floor" + i);
@@ -36,11 +48,9 @@ public class TileEntityElevatorCaller extends TileEntityBase{
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound tag){
-        super.writeToNBT(tag);
-        tag.setInteger("thisFloor", thisFloor);
+    public void writeToPacket(NBTTagCompound tag){
+        super.writeToPacket(tag);
         tag.setInteger("floors", floors.length);
-        tag.setBoolean("emittingRedstone", emittingRedstone);
         for(ElevatorButton floor : floors) {
             NBTTagCompound buttonTag = new NBTTagCompound();
             floor.writeToNBT(buttonTag);

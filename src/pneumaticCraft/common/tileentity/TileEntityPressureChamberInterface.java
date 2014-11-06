@@ -15,6 +15,10 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Facing;
 import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.common.block.Blockss;
+import pneumaticCraft.common.network.DescSynced;
+import pneumaticCraft.common.network.FilteredSynced;
+import pneumaticCraft.common.network.GuiSynced;
+import pneumaticCraft.common.network.LazySynced;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.GuiConstants;
 import pneumaticCraft.lib.PneumaticValues;
@@ -22,23 +26,33 @@ import pneumaticCraft.lib.Sounds;
 
 public class TileEntityPressureChamberInterface extends TileEntityPressureChamberWall implements ISidedInventory,
         IGUITextFieldSensitive, IRedstoneControlled{
+    @DescSynced
+    @FilteredSynced(index = 0)
     private ItemStack[] inventory = new ItemStack[14];
+    @DescSynced
+    @LazySynced
     public int inputProgress;
     public int oldInputProgress;
+    @DescSynced
+    @LazySynced
     public int outputProgress;
     public int oldOutputProgress;
     public static final int MAX_PROGRESS = 40;
     private static final int UPGRADE_SLOT_START = 1;
     private static final int UPGRADE_SLOT_END = 4;
+    @GuiSynced
     public EnumInterfaceMode interfaceMode = EnumInterfaceMode.NONE;
-    public int numUsingPlayers;
+    @GuiSynced
     private boolean enoughAir = true;
-    private int firstRunTimer = 20;
+    @GuiSynced
     public EnumFilterMode filterMode = EnumFilterMode.ITEM;
+    @GuiSynced
     public int creativeTabID;
+    @GuiSynced
     public String itemNameFilter = "";
     private boolean isOpeningI;//used to determine sounds.
     private boolean isOpeningO;//used to determine sounds.
+    @GuiSynced
     public int redstoneMode;
 
     public enum EnumInterfaceMode{
@@ -55,20 +69,17 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
 
     @Override
     public void updateEntity(){
+        super.updateEntity();
         boolean wasOpeningI = isOpeningI;
         boolean wasOpeningO = isOpeningO;
         oldInputProgress = inputProgress;
         oldOutputProgress = outputProgress;
         TileEntityPressureChamberValve core = getCore();
         if(!worldObj.isRemote) {
-            EnumInterfaceMode oldMode = interfaceMode;
             interfaceMode = getInterfaceMode(core);
-            if(oldMode != interfaceMode) sendDescriptionPacket();
-            firstRunTimer--;
-            if(firstRunTimer == 0) sendDescriptionPacket();
+            enoughAir = true;
         }
 
-        enoughAir = true;
         int speed = (int)getSpeedMultiplierFromUpgrades(getUpgradeSlots());
         if(interfaceMode == EnumInterfaceMode.IMPORT) { // when the valve is in import mode.
             if(inventory[0] != null) {
@@ -217,8 +228,6 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
         } else if(!enoughAir) {
             textList.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a77There's not enough pressure in the Pressure Chamber to move the items.", GuiConstants.maxCharPerLineLeft));
             textList.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a70Apply more pressure to the Pressure Chamber.", GuiConstants.maxCharPerLineLeft));
-        } else {
-            textList.add("\u00a70No problems.");
         }
         return textList;
     }
@@ -435,7 +444,6 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
             redstoneMode++;
             if(redstoneMode > 2) redstoneMode = 0;
         }
-        sendDescriptionPacket();
     }
 
     @Override

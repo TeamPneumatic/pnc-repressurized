@@ -86,7 +86,6 @@ public class BlockPneumaticDoorBase extends BlockPneumaticCraftModeled{
             int newMeta = (teDb.orientation.ordinal() + 1) % 6;
             if(newMeta == 0) newMeta = 2;
             teDb.orientation = ForgeDirection.getOrientation(newMeta);
-            teDb.sendDescriptionPacket();
             return true;
         }
         return false;

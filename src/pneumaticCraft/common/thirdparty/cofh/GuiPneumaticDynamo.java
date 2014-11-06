@@ -42,9 +42,9 @@ public class GuiPneumaticDynamo extends GuiPneumaticContainerBase<TileEntityPneu
     private List<String> getOutputStat(){
         List<String> textList = new ArrayList<String>();
         textList.add(EnumChatFormatting.GRAY + "Maximum RF production:");
-        textList.add(EnumChatFormatting.BLACK.toString() + container.rfPerTick + " RF/tick");
+        textList.add(EnumChatFormatting.BLACK.toString() + te.getRFRate() + " RF/tick");
         textList.add(EnumChatFormatting.GRAY + "Maximum output rate:");
-        textList.add(EnumChatFormatting.BLACK.toString() + container.rfPerTick * 2 + " RF/tick");
+        textList.add(EnumChatFormatting.BLACK.toString() + te.getRFRate() * 2 + " RF/tick");
         textList.add(EnumChatFormatting.GRAY + "Current stored RF:");
         textList.add(EnumChatFormatting.BLACK.toString() + container.energy + " RF");
         return textList;
@@ -54,7 +54,7 @@ public class GuiPneumaticDynamo extends GuiPneumaticContainerBase<TileEntityPneu
     protected void addPressureStatInfo(List<String> pressureStatText){
         super.addPressureStatInfo(pressureStatText);
         pressureStatText.add("\u00a77Max Usage:");
-        pressureStatText.add("\u00a70" + container.airPerTick + " mL/tick.");
+        pressureStatText.add("\u00a70" + te.getAirRate() + " mL/tick.");
     }
 
 }

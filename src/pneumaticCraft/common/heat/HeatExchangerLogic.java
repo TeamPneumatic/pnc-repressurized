@@ -7,10 +7,12 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.api.IHeatExchangerLogic;
+import pneumaticCraft.common.network.GuiSynced;
 
 public class HeatExchangerLogic implements IHeatExchangerLogic{
     private final List<IHeatExchangerLogic> hullExchangers = new ArrayList<IHeatExchangerLogic>();
     private final List<IHeatExchangerLogic> connectedExchangers = new ArrayList<IHeatExchangerLogic>();
+    @GuiSynced
     private double temperature = 295;//degrees Kelvin, 20 degrees by default.
     private double thermalResistance = 1;
     private double thermalCapacity = 1;

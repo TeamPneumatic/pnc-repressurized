@@ -16,6 +16,8 @@ import pneumaticCraft.api.tileentity.IPneumaticMachine;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.ItemAssemblyProgram;
 import pneumaticCraft.common.item.Itemss;
+import pneumaticCraft.common.network.DescSynced;
+import pneumaticCraft.common.network.GuiSynced;
 import pneumaticCraft.common.recipes.programs.AssemblyProgram;
 import pneumaticCraft.common.recipes.programs.AssemblyProgram.EnumMachine;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
@@ -27,18 +29,21 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class TileEntityAssemblyController extends TileEntityPneumaticBase implements ISidedInventory, IAssemblyMachine,
         IMinWorkingPressure{
     private ItemStack[] inventory;
+    @DescSynced
     public boolean[] sidesConnected = new boolean[6];
     public AssemblyProgram curProgram;
     private final int INVENTORY_SIZE = 5;
+    @GuiSynced
     public boolean foundAllMachines;
+    @GuiSynced
     private boolean foundDuplicateMachine;
     private boolean goingToHomePosition;
-    private String oldDisplayedText = "";
+    @DescSynced
     public String displayedText = "";
     public static final int PROGRAM_INVENTORY_INDEX = 0;
     public static final int UPGRADE_SLOT_START = 1;
     public static final int UPGRADE_SLOT_END = 4;
-    private boolean clientNeedsUpdate = false;
+    @DescSynced
     public boolean hasProblem;
 
     public TileEntityAssemblyController(){
@@ -50,7 +55,6 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
     @Override
     public void updateEntity(){
         if(!worldObj.isRemote) {
-            oldDisplayedText = displayedText;
             if(firstRun) {
                 updateConnections();
             }
@@ -143,13 +147,7 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
                     }
                 }
             }
-            if(hasProblem != hasProblem()) {
-                hasProblem = !hasProblem;
-                clientNeedsUpdate = true;
-            }
-            if(clientNeedsUpdate || !displayedText.equals(oldDisplayedText)) {
-                sendDescriptionPacket();
-            }
+            hasProblem = hasProblem();
         }
         super.updateEntity();
 
@@ -272,7 +270,6 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
                 sidesConnected[direction.ordinal()] = false;
             }
         }
-        sendDescriptionPacket();
     }
 
     @Override
@@ -372,7 +369,6 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
         foundAllMachines = tag.getBoolean("foundAllMachines");
         foundDuplicateMachine = tag.getBoolean("foundDuplicate");
         displayedText = tag.getString("displayedText");
-        hasProblem = tag.getBoolean("hasProblem");
         for(int i = 0; i < 6; i++) {
             sidesConnected[i] = tag.getBoolean("sideConnected" + i);
         }
@@ -400,7 +396,6 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
         tag.setBoolean("foundAllMachines", foundAllMachines);
         tag.setBoolean("foundDuplicate", foundDuplicateMachine);
         tag.setString("displayedText", displayedText);
-        tag.setBoolean("hasProblem", hasProblem);
         if(curProgram != null) curProgram.writeToNBT(tag);
         for(int i = 0; i < 6; i++) {
             tag.setBoolean("sideConnected" + i, sidesConnected[i]);
@@ -447,11 +442,6 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
     @Override
     public boolean isDone(){
         return true;
-    }
-
-    @Override
-    public boolean needsFirstRunUpdate(){
-        return false;
     }
 
     @Override

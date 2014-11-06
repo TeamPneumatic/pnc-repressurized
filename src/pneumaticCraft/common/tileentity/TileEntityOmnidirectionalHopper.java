@@ -8,21 +8,22 @@ import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.Itemss;
+import pneumaticCraft.common.network.DescSynced;
+import pneumaticCraft.common.network.GuiSynced;
 import pneumaticCraft.common.util.IOHelper;
 
 public class TileEntityOmnidirectionalHopper extends TileEntityBase implements IGUIButtonSensitive, ISidedInventory,
         IRedstoneControlled{
+    @DescSynced
     private ForgeDirection inputDir = ForgeDirection.UNKNOWN;
     private ItemStack[] inventory = new ItemStack[9];
+    @GuiSynced
     public int redstoneMode;
     private int cooldown;
 
@@ -165,18 +166,6 @@ public class TileEntityOmnidirectionalHopper extends TileEntityBase implements I
         }
     }
 
-    @Override
-    public Packet getDescriptionPacket(){
-        NBTTagCompound tag = new NBTTagCompound();
-        writeToNBT(tag);
-        return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 0, tag);
-    }
-
-    @Override
-    public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt){
-        readFromNBT(pkt.func_148857_g());
-    }
-
     /**
      * Returns the name of the inventory.
      */
@@ -239,16 +228,7 @@ public class TileEntityOmnidirectionalHopper extends TileEntityBase implements I
         if(buttonID == 0) {
             redstoneMode++;
             if(redstoneMode > 2) redstoneMode = 0;
-            sendDescriptionPacket();
         }
-    }
-
-    /**
-     * Sends the description packet to every client within PACKET_UPDATE_DISTANCE blocks, and in the same dimension.
-     */
-    @Override
-    public void sendDescriptionPacket(){
-        worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
     }
 
     @Override
