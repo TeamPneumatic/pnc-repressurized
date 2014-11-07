@@ -52,7 +52,7 @@ public class GuiVacuumPump extends GuiPneumaticContainerBase<TileEntityVacuumPum
         pressureStatText.add("\u00a77Current Vacuum Pressure:");
         pressureStatText.add("\u00a70" + (double)Math.round(te.getPressure(te.getVacuumSide()) * 10) / 10 + " bar.");
         pressureStatText.add("\u00a77Current Vacuum Air:");
-        pressureStatText.add("\u00a70" + (double)Math.round(te.vacuumAir + te.volume) + " mL.");
+        pressureStatText.add("\u00a70" + (double)Math.round(te.getCurrentAir(te.getVacuumSide()) + te.volume) + " mL.");
         pressureStatText.add("\u00a77Volume:");
         pressureStatText.add("\u00a70" + (double)Math.round(PneumaticValues.VOLUME_VACUUM_PUMP) + " mL.");
         float pressureLeft = te.volume - PneumaticValues.VOLUME_VACUUM_PUMP;
