@@ -143,7 +143,7 @@ public class IOHelper{
             int itemsFound = 0;
             for(int slot : accessibleSlots) {
                 ItemStack stack = inv.getStackInSlot(slot);
-                if(stack != null && stack.isItemEqual(requestedStack) && IOHelper.canExtractItemFromInventory(inv, stack, slot, direction.ordinal())) {
+                if(stack != null && stack.stackSize > 0 && stack.isItemEqual(requestedStack) && IOHelper.canExtractItemFromInventory(inv, stack, slot, direction.ordinal())) {
                     if(!useItemCount) {
                         if(!simulate) {
                             inv.setInventorySlotContents(slot, null);
@@ -192,7 +192,7 @@ public class IOHelper{
             }
             for(int slot : accessibleSlots) {
                 ItemStack stack = inv.getStackInSlot(slot);
-                if(stack != null && IOHelper.canExtractItemFromInventory(inv, stack, slot, dir.ordinal())) {
+                if(stack != null && stack.stackSize > 0 && IOHelper.canExtractItemFromInventory(inv, stack, slot, dir.ordinal())) {
                     if(simulate) {
                         ItemStack ret = stack.copy();
                         ret.stackSize = 1;
