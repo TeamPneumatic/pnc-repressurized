@@ -1,2 +1,5 @@
--Bugfix: Pneumatic Helmet's estimated time doesn't use take Volume Upgrades in account. Fixes #243
+-Bugfix: Pneumatic Helmet's estimated time doesn't use take Volume Upgrades in account.
 -Bugfix: Elevator Floor name tab widgets have a wrong offset.
+-Bugfix: Vacuum Pump is buggy as heck.
+-Bugfix: Omnidirectional Hopper dupe bug with locked barrel.
+-Bugfix: Client crash with Potion Clouds (IndexOutOfBounds).
