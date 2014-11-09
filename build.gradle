@@ -151,9 +151,8 @@ processResources
     }
 }
 
-task doIRC(type:Exec) {
-  workingDir '/opt/maartenbot/'
-  commandLine 'java -jar MineMaartenBot.jar $(project.version)' //Updates the topic in #pneumaticcraft
+task doIRC() {
+    def proc = "java -jar /opt/maartenbot/MineMaartenBot.jar ${version}".execute()
 }
 
 task("uploadJars", dependsOn:"reobf") {
