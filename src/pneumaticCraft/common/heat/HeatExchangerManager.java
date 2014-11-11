@@ -40,6 +40,8 @@ public class HeatExchangerManager{
                 PneumaticRegistry.getInstance().registerBlockExchanger(fluid.getBlock(), fluid.getTemperature(), 1);
             }
         }
+        PneumaticRegistry.getInstance().registerBlockExchanger(Blocks.flowing_water, FluidRegistry.WATER.getTemperature(), 1);
+        PneumaticRegistry.getInstance().registerBlockExchanger(Blocks.flowing_lava, FluidRegistry.LAVA.getTemperature(), 1);
     }
 
     public IHeatExchangerLogic getLogic(World world, int x, int y, int z, ForgeDirection side){
