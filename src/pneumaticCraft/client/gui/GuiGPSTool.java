@@ -3,6 +3,7 @@ package pneumaticCraft.client.gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.ChunkPosition;
 
 import org.apache.commons.lang3.math.NumberUtils;
@@ -63,6 +64,9 @@ public class GuiGPSTool extends GuiScreen{
             case 3:
                 curValue += 10;
                 break;
+        }
+        if(index == 1) {
+            curValue = MathHelper.clamp_int(curValue, 0, 255);
         }
         textFields[index].setText(curValue + "");
     }
