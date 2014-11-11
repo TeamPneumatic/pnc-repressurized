@@ -304,7 +304,7 @@ gui.tab.upgrades.tile.securityStation=§7-Range Upgrade \n§0Increases the (squa
 gui.tab.upgrades.tile.securityStation.hacking=§7-Security Upgrade \n§0Allows higher rated Security Stations to be hacked (one level for each upgrade).
 gui.tab.upgrades.tile.uvLightBox=§7-Speed Upgrade (max = 10) \n§0The UV lights will glow brighter and will expose PCB's quicker.
 gui.tab.upgrades.tile.vacuumPump=§7-Speed Upgrade (max = 10) \n§0The Vacuum Pump will produce more vacuum per tick. However this is at the expense of the efficiency.
-gui.tab.upgrades.tile.pneumaticGenerator=§7-Speed Upgrade (max = 10) \n§0Adjusts the output rate: \n§00 upgrades --> 32 EU/t \n§01 upgrade --> 128 EU/t \n§02 upgrades --> 512 EU/t
+gui.tab.upgrades.tile.pneumaticGenerator=§7-Speed Upgrade (max = 3) \n§0Adjusts the output rate: \n§00 upgrades --> 32 EU/t \n§01 upgrade --> 128 EU/t \n§02 upgrades --> 512 EU/t \n§03 upgrades --> 2048 EU/t
 gui.tab.upgrades.tile.fluxCompressor=§7-Speed Upgrade (max = 10) \n§0Increases the air production rate. It also increases the RF usage in a way that the machine will be more inefficient. Finally it increases the max RF input rate.
 gui.tab.upgrades.tile.pneumaticDynamo=§7-Speed Upgrade (max = 10) \n§0Increases the RF production rate. It also increases the air usage in a way that the machine will be more inefficient. Finally it increases the max RF output rate.
 

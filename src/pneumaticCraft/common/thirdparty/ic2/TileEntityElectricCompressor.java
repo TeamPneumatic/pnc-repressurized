@@ -327,7 +327,7 @@ public class TileEntityElectricCompressor extends TileEntityPneumaticBase implem
 
     @Override
     public boolean hasCustomInventoryName(){
-        return true;
+        return false;
     }
 
     @Override

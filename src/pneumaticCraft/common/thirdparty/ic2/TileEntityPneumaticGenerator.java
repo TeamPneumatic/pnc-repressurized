@@ -164,7 +164,7 @@ public class TileEntityPneumaticGenerator extends TileEntityPneumaticBase implem
     @Override
     public String getInventoryName(){
 
-        return IC2.electricCompressor.getUnlocalizedName();
+        return IC2.pneumaticGenerator.getUnlocalizedName();
     }
 
     @Override
@@ -250,7 +250,7 @@ public class TileEntityPneumaticGenerator extends TileEntityPneumaticBase implem
      */
     public int getEnergyPacketSize(){
         int upgradesInserted = getUpgrades(ItemMachineUpgrade.UPGRADE_SPEED_DAMAGE, getUpgradeSlots());
-        return 32 * (int)Math.pow(4, upgradesInserted);
+        return 32 * (int)Math.pow(4, Math.min(3, upgradesInserted));
     }
 
     @Override
@@ -290,7 +290,7 @@ public class TileEntityPneumaticGenerator extends TileEntityPneumaticBase implem
 
     @Override
     public boolean hasCustomInventoryName(){
-        return true;
+        return false;
     }
 
     @Override
