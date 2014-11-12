@@ -1,0 +1,321 @@
+# Blocks
+tile.pressureTube.name=Tubo de pressão
+tile.airCompressor.name=Compressor de ar
+tile.airCannon.name=Canhão pneumático
+tile.pressureWall.wall.name=Parede da Câmara de pressão
+tile.pressureWall.window.name=Janela da Câmara de pressão
+tile.pressureChamberValve.name=Válvula da Câmara de pressão
+tile.slimePlant.name=Planta de Slime
+tile.creeperPlant.name=Planta explosiva
+tile.squidPlant.name=Planta de Lula
+tile.fireFlower.name=Planta de fogo
+tile.rainPlant.name=Planta de chuva
+tile.enderPlant.name=Planta do Fim
+tile.lightningPlant.name=Planta da tempestade
+tile.burstPlant.name=Planta atiradora
+tile.potionPlant.name=Planta de poção
+tile.heliumPlant.name=Planta de hélio
+tile.propulsionPlant.name=Planta propulsora
+tile.repulsionPlant.name=planta de repulsão
+tile.flyingFlower.name=Planta voadora
+tile.chopperPlant.name=Planta de hélice
+tile.chargingStation.name=Estação de carga
+tile.elevatorBase.name=Base do Elevador
+tile.elevatorFrame.name=Grade do Elevador
+tile.pressureChamberInterface.name=Interface da Câmara de pressão
+tile.vacuumPump.name=Bomba de vácuo
+tile.pneumaticDoorBase.name=Base da Porta Pneumática
+tile.pneumaticDoor.name=Porta Pneumática
+tile.assemblyIOUnit.name=Unidade ES da Montadora
+tile.assemblyPlatform.name=Platforma da Montadora
+tile.assemblyDrill.name=Broca da Montadora
+tile.assemblyLaser.name=Laser da Montadora
+tile.assemblyController.name=Controle da Montadora
+tile.advancedPressureTube.name=Tubo de pressão - Avançado
+tile.compressedIronBlock.name=Bloco de Ferro Compresso
+tile.uvLightBox.name=Irradiador Ultra-Violeta
+tile.securityStation.name=Estação de segurança
+tile.universalSensor.name=Sensor universal
+tile.pneumaticGenerator.name=Gerador pneumático
+tile.electricCompressor.name=Compressor elétrico
+tile.pneumaticEngine.name=Motor pneumático
+tile.kineticCompressor.name=Compressor cinético
+tile.aerialInterface.name=Interface Aéria
+tile.electrostaticCompressor.name=Compressor eletroestático
+tile.aphorismTile.name=Placa de citação
+tile.omnidirectionalHopper.name=Funil omnidirecional
+tile.elevatorCaller.name=Controlador do Elevador
+tile.programmer.name=Programador
+tile.droneInterface.name=Interface do Drone
+tile.creativeCompressor.name=Compressor Criativo
+tile.wheatHarvester.plasticPlants.name=Plastic Plants Harvester Dolley
+tile.pressureChamberWall.wall.name=Parede da Câmara de pressão
+tile.pressureChamberWall.window.name=Janela da Câmara de pressão
+
+tile.monsterStoneEgg.name=Traça
+
+# Items
+item.gpsTool.name=Aparelho de GPS
+item.machineUpgrade.name=Upgrade de máquina
+item.ingotIronCompressed.name=Barra de Ferro Compresso
+item.pressureGauge.name=Medidor de pressão
+item.stoneBase.name=Base de pedra
+item.cannonBarrel.name=Tambor do canhão
+item.turbineBlade.name=Lâmina de turbina
+item.plasticPlant.name=Plástico de planta
+item.plastic.name=Plástico
+item.airCanister.name=Cantil de ar
+item.vortexCannon.name=Canhão de Vortex
+item.pneumaticCilinder.name=Cilíndro pneumático
+item.pneumaticHelmet.name=Capacete pneumático
+item.manometer.name=Manômetro
+item.turbineRotor.name=Rotor de turbina
+item.assemblyProgram.name=Programa da Montadora
+item.emptyPCB.name=Circuito Impresso vazio
+item.unassembledPCB.name=Circuito Impresso preparado
+item.pcbBlueprint.name=Projeto de Circuito
+item.etchingAcidBucket.name=Balde de água-forte
+item.transistor.name=Transistor
+item.capacitor.name=Capacitor
+item.printedCircuitBoard.name=Circuito Impresso
+item.failedPCB.name=Circuito corroído
+item.networkComponent.name=Componente de Rede
+item.stopWorm.name=Vírus - Congelar
+item.nukeVirus.name=Vírus - Nuke
+item.compressedIronGear.name=Engrenagem de Ferro Compresso
+item.pneumaticWrench.name=Desmontador pneumático
+item.drone.name=Drone
+item.programmingPuzzle.name=Peça de programação
+item.advancedPCB.name=Circuito Impresso - Avançado
+
+item.plasticPlant0.name=Semente de Lula
+item.plasticPlant1.name=Semente de fogo
+item.plasticPlant2.name=Semente explosiva
+item.plasticPlant3.name=Semente de Slime
+item.plasticPlant4.name=Semente de chuva
+item.plasticPlant5.name=Semente do Fim
+item.plasticPlant6.name=Semente da tempestade
+item.plasticPlant7.name=Semente de Adrenalina
+item.plasticPlant8.name=Semente atiradora
+item.plasticPlant9.name=Semente de poção
+item.plasticPlant10.name=Semente de repulsão
+item.plasticPlant11.name=Semente de hélio
+item.plasticPlant12.name=Semente de hélice
+item.plasticPlant13.name=Semente musical
+item.plasticPlant14.name=Semente propulsora
+item.plasticPlant15.name=Semente voadora
+
+item.plasticElectronTube0.name=Squid Plant Electron Tube
+item.plasticElectronTube1.name=Fire Flower Electron Tube
+item.plasticElectronTube2.name=Creeper Plant Electron Tube
+item.plasticElectronTube3.name=Slime Plant Electron Tube
+item.plasticElectronTube4.name=Rain Plant Electron Tube
+item.plasticElectronTube5.name=Ender Plant Electron Tube
+item.plasticElectronTube6.name=Lightning Plant Electron Tube
+item.plasticElectronTube7.name=Adrenaline Plant Electron Tube
+item.plasticElectronTube8.name=Burst Plant Electron Tube
+item.plasticElectronTube9.name=Potion Plant Electron Tube
+item.plasticElectronTube10.name=Repulsion Plant Electron Tube
+item.plasticElectronTube11.name=Helium Plant Electron Tube
+item.plasticElectronTube12.name=Chopper Plant Electron Tube
+item.plasticElectronTube13.name=Music Plant Electron Tube
+item.plasticElectronTube14.name=Propulsion Plant Electron Tube
+item.plasticElectronTube15.name=Flying Flower Electron Tube
+
+for.circuit.plasticPlant0= Managed Squid Plant Farm
+for.circuit.plasticPlant1= Managed Fire Flower Farm
+for.circuit.plasticPlant2= Managed Creeper Plant Farm
+for.circuit.plasticPlant3= Managed Slime Plant Farm
+for.circuit.plasticPlant4= Managed Rain Plant Farm
+for.circuit.plasticPlant5= Managed Ender Plant Farm
+for.circuit.plasticPlant6= Managed Lightning Plant Farm
+for.circuit.plasticPlant7= Managed Adrenaline Plant Farm
+for.circuit.plasticPlant8= Managed Burst Plant Farm
+for.circuit.plasticPlant9= Managed Potion Plant Farm
+for.circuit.plasticPlant10= Managed Repulsion Plant Farm
+for.circuit.plasticPlant11= Managed Helium Plant Farm
+for.circuit.plasticPlant12= Managed Chopper Plant Farm
+for.circuit.plasticPlant13= Managed Music Plant Farm
+for.circuit.plasticPlant14= Managed Propulsion Plant Farm
+for.circuit.plasticPlant15= Managed Flying Flower Farm
+
+item.machineUpgrade0.name=Upgrade de máquina: Volume
+item.machineUpgrade1.name=Upgrade de máquina: Ejetor
+item.machineUpgrade2.name=Upgrade de máquina: Preservação de itens
+item.machineUpgrade3.name=Upgrade de máquina: Rastreador de entidades
+item.machineUpgrade4.name=Upgrade de máquina: Rastreador de blocos
+item.machineUpgrade5.name=Upgrade de máquina: Velocidade
+item.machineUpgrade6.name=Upgrade de máquina: Rastreador de itens
+item.machineUpgrade7.name=Upgrade de máquina: Verificador de coordenadas
+item.machineUpgrade8.name=Upgrade de máquina: Alcance
+item.machineUpgrade9.name=Upgrade de máquina: Segurança
+
+item.assemblyProgram0.name=Programa da Montadora: Broca
+item.assemblyProgram1.name=Programa da Montadora: Laser
+item.assemblyProgram2.name=Programa da Montadora: Broca e laser
+
+item.networkComponent0.name=Sub-rotina de diagnóstico
+item.networkComponent1.name=API de Rede
+item.networkComponent2.name=Base de dados da Rede
+item.networkComponent3.name=Porta ES da Rede
+item.networkComponent4.name=Registro da Rede
+item.networkComponent5.name=Nó da Rede
+
+# Tube Modules
+item.safetyTubeModule.name=Módulo - Tubo de segurança
+item.pressureGaugeModule.name=Módulo - Medidor de pressão
+item.flowDetectorModule.name=Módulo - Detector de fluxo
+item.airGrateModule.name=Módulo - Grade de ar
+item.regulatorTubeModule.name=Módulo - Tubo regulador
+
+# Programming Puzzles
+programmingPuzzle.start.name=Início
+programmingPuzzle.entityAttack.name=Atacar entidade
+programmingPuzzle.area.name=Área
+programmingPuzzle.text.name=Texto
+programmingPuzzle.itemFilter.name=Filtro de itens
+programmingPuzzle.dig.name=Cavar área
+programmingPuzzle.pickupItem.name=Coletar itens
+programmingPuzzle.inventoryExport.name=Exportar para o invetário
+programmingPuzzle.inventoryImport.name=Importar do inventário
+programmingPuzzle.goto.name=Ir para a posição
+programmingPuzzle.place.name=Colocar bloco
+programmingPuzzle.computerCraft.name=Comando do ComputerCraft
+
+# entities
+entity.PneumaticCraft.Drone.name=Drone
+
+# Helmet hacking
+pneumaticHelmet.hacking.hacking=Hackeando...
+
+pneumaticHelmet.hacking.result.disarm=Hackeie para desarmar
+pneumaticHelmet.hacking.result.neutralize=Hackeie para neutralizar
+pneumaticHelmet.hacking.result.explode=Hackeie para explodir
+pneumaticHelmet.hacking.result.dispense=Hackeie para disparar
+pneumaticHelmet.hacking.result.open=Hackeie para abrir
+pneumaticHelmet.hacking.result.close=Hackeie para fechar
+pneumaticHelmet.hacking.result.activate=Hackeie para ativar
+pneumaticHelmet.hacking.result.deactivate=Hackeie para desativar
+pneumaticHelmet.hacking.result.silence=Hackeie para silenciar
+pneumaticHelmet.hacking.result.makeSound=Hackeie para emitir som
+pneumaticHelmet.hacking.result.access=Hackeie para accessar
+pneumaticHelmet.hacking.result.tame=Hackeie para domesticar
+pneumaticHelmet.hacking.result.fungiInfuse=Hackeie para causar mutações
+pneumaticHelmet.hacking.result.disable=Hackeie para desativar
+pneumaticHelmet.hacking.result.stopTeleport=Hackeie para impedir teleporte
+pneumaticHelmet.hacking.result.callBack=Hackeie para chamar de volta
+pneumaticHelmet.hacking.result.resumeTasks=Hackeie para continuar as tarefas
+
+pneumaticHelmet.hacking.finished.disarmed=Desarmado
+pneumaticHelmet.hacking.finished.neutralized=Neutralizado
+pneumaticHelmet.hacking.finished.exploded=Explodido
+pneumaticHelmet.hacking.finished.dispensed=Atirado
+pneumaticHelmet.hacking.finished.opened=Aberto
+pneumaticHelmet.hacking.finished.closed=Fechado
+pneumaticHelmet.hacking.finished.activated=Ativado
+pneumaticHelmet.hacking.finished.deactivated=Desativado
+pneumaticHelmet.hacking.finished.silenced=Silenciado
+pneumaticHelmet.hacking.finished.makingSound=Emitindo ruídos
+pneumaticHelmet.hacking.finished.accessed=Accesso permitido
+pneumaticHelmet.hacking.finished.tamed=Domesticado
+pneumaticHelmet.hacking.finished.fungiInfusion=Infusão com genes de fungos
+pneumaticHelmet.hacking.finished.disabled=Desativado
+pneumaticHelmet.hacking.finished.stopTeleporting=Impedindo teleporte
+pneumaticHelmet.hacking.finished.calledBack=Chamado
+pneumaticHelmet.hacking.finished.resumedTasks=Resumindo atividades
+
+########## GUI tabs
+
+# Info
+gui.tab.info=Informação
+gui.tab.info.tubeModule=Nessa interface você pode definir como o módulo deve agir dependendo do sinal de restone aplicado. Você pode definir uma fórmula.
+
+# Problems
+gui.tab.problems.redstoneDisallows=Redstone desativa essa máquina.
+
+# Universal Sensor descriptions
+gui.universalSensor.desc.userSetSensor=Esse é um 'sensor' que você pode usar para emitir um sinal constante de redstone. O valor numérico emitido pode ser escrito na caixa de texto.
+
+# GUI strings
+gui.entityFilter=Filtro de entidades('Pig', ou '@mob')
+gui.redstone=Redstone
+gui.threshold=Limite(bar)
+gui.keybindBoundKey=Assignado para '%s'
+gui.keybindRightClickToSet=Clique com o botão direito para definar um botão.
+gui.setKeybind=Aperte um botão para marcar
+gui.enableModule=Ativa %s
+
+key.pneumaticcraft.category=PneumaticCraft
+# gui.enableModule.coreComponents=Ativar o capacete
+
+# Pneumatic Helmet upgrades
+pneumaticHelmet.upgrade.blockTracker=Rastreador de blocos
+pneumaticHelmet.upgrade.entityTracker=Rastreador de entidades
+pneumaticHelmet.upgrade.itemSearcher=Rastreador de itens
+pneumaticHelmet.upgrade.coordinateTracker=Verificador de coordenadas
+pneumaticHelmet.upgrade.hackingUpgrade=Upgrade de Hack
+pneumaticHelmet.upgrade.coreComponents=Capacete
+
+pneumaticHelmet.message.enableSetting=%s Ativado
+pneumaticHelmet.message.disableSetting=%s Desativado
+
+blockTracker.module.hackables=Hackeável
+blockTracker.module.inventories=Inventários
+blockTracker.module.misc=Blocos
+blockTracker.module.bcEnergy=Blocos com energia do BuildCraft
+blockTracker.module.hydraulicraft=Blocos com energia do Hydraulicraft
+blockTracker.module.ic2=Blocos com energia do IC2
+blockTracker.module.thaumcraft=Blocos com aspectos do Thaumcraft
+
+blockTracker.info.bcEnergy=Bloco com energia do BuildCraft
+blockTracker.info.hydraulicraft=Bloco com energia do Hydraulicraft
+blockTracker.info.ic2=Bloco com energia do IC2
+blockTracker.info.thaumcraft=Contém os aspectos:
+blockTracker.info.thaumcraft.nodetype=Tipo de Aura:
+blockTracker.info.thaumcraft.nodeModifier=Modificante:
+
+blockTracker.info.peripheral.title=ComputerCraft Peripheral
+blockTracker.info.peripheral.availableMethods=Métodos liberados:
+
+blockTracker.message.stopSpam=Spam parado em %s
+
+# Tooltips
+gui.tooltip.plasticPlant=Origem: %s
+
+# Misc
+itemGroup.tabPneumaticCraft=PneumaticCraft
+message.date.ironman=Today an Iron Man movie went in premiere!
+
+# Death Messages
+death.attack.pressure1=%1$s foi amassado feito panqueca!
+death.attack.pressure2=%1$s foi compresso até a morte!
+death.attack.acid1=%1$s foi engravado até a morte!
+death.attack.acid2=%1$s virou um Circuito!
+
+# IGW pages
+igwtab.entry.worldgen=Geração de mundo
+igwtab.entry.baseConcepts=Conceitos básicos
+igwtab.entry.machineUpgrades=Upgrades de máquinas
+igwtab.entry.generatingPressure=Gerando pressão
+igwtab.entry.pressureTubes=Tubos e módulos
+igwtab.entry.pressureChamber=Câmara de Pressão
+igwtab.entry.elevator=Elevador
+igwtab.entry.pneumaticDoor=Porta Pneumática
+igwtab.entry.printedCircuitBoards=Circúitos Impressos
+igwtab.entry.assemblyMachines=Montadora
+igwtab.entry.ic2Integration=Integração com o IC2
+igwtab.entry.bcIntegration=Integração com o Buildcraft
+igwtab.entry.ccIntegration=Integração com o Computercraft
+igwmod.pressureChamber.requiredPressure=Pressão necessária
+
+item.programmingPuzzle_start.name=Peça de programação: Começar
+item.programmingPuzzle_Inv-E.name=Peça de programação: Exportar inventário
+item.programmingPuzzle_Inv-I.name=Peça de programação: Importar inventário
+item.programmingPuzzle_I-pick.name=Peça de programação: Coletar itens
+item.programmingPuzzle_dig.name=Peça de programação: Cavar área
+item.programmingPuzzle_place.name=Peça de programação: Colocar blocos
+item.programmingPuzzle_goto.name=Peça de programação: Ir para a posição
+item.programmingPuzzle_attk.name=Peça de programação: Atacar entidade
+item.programmingPuzzle_I-ftr.name=Peça de programação: Filtro de itens
+item.programmingPuzzle_area.name=Peça de programação: Área
+item.programmingPuzzle_text.name=Peça de programação: Texto
