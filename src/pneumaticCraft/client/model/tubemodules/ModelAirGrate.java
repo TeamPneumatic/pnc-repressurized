@@ -117,7 +117,6 @@ public class ModelAirGrate extends ModelBase implements IBaseModel{
 
     @Override
     public void renderDynamic(float size, TileEntity te, float partialTicks){
-        // TODO Auto-generated method stub
 
     }
 

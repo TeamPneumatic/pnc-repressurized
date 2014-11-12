@@ -1,6 +1,7 @@
 package pneumaticCraft.client.gui;
 
 import java.awt.Point;
+import java.util.List;
 
 import net.minecraft.entity.player.InventoryPlayer;
 import pneumaticCraft.client.gui.widget.WidgetTank;
@@ -47,5 +48,27 @@ public class GuiPlasticMixer extends GuiPneumaticContainerBase<TileEntityPlastic
     @Override
     protected Point getInvTextOffset(){
         return null;
+    }
+
+    @Override
+    protected void addProblems(List<String> curInfo){
+        super.addProblems(curInfo);
+        if(te.getFluidTank().getFluidAmount() == 0) {
+            if(te.getStackInSlot(4) == null) {
+                curInfo.add("gui.tab.problems.plasticMixer.noPlastic");
+            } else {
+                curInfo.add("gui.tab.problems.notEnoughHeat");
+            }
+        } else {
+            if(te.getStackInSlot(4) != null) {
+                if(te.getLogic(1).getTemperature() >= PneumaticValues.PLASTIC_MIXER_MELTING_TEMP && te.getFluidTank().getCapacity() - te.getFluidTank().getFluidAmount() < 1000) {
+                    curInfo.add("gui.tab.problems.plasticMixer.plasticLiquidOverflow");
+                } else if(te.getLogic(2).getTemperature() < PneumaticValues.PLASTIC_MIXER_MELTING_TEMP) {
+                    curInfo.add(te.getStackInSlot(4).stackSize < 64 ? "gui.tab.problems.plasticMixer.plasticOccupied" : "gui.tab.problems.plasticMixer.plasticOverflow");
+                }
+            } else {
+                curInfo.add("gui.tab.problems.plasticMixer.tooMuchHeat");
+            }
+        }
     }
 }

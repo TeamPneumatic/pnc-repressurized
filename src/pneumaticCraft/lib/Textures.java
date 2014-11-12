@@ -52,11 +52,12 @@ public class Textures{
     public static final ResourceLocation MODEL_KINETIC_COMPRESSOR = new ResourceLocation(MODEL_LOCATION + "kineticCompressor.png");
     public static final ResourceLocation MODEL_PNEUMATIC_DYNAMO_ON = new ResourceLocation(MODEL_LOCATION + "pneumaticDynamoOn.png");
     public static final ResourceLocation MODEL_PNEUMATIC_DYNAMO_OFF = new ResourceLocation(MODEL_LOCATION + "pneumaticDynamoOff.png");
-	public static final ResourceLocation MODEL_PLASTIC_MIXER = new ResourceLocation(MODEL_LOCATION + "plasticMixer.png");
+    public static final ResourceLocation MODEL_PLASTIC_MIXER = new ResourceLocation(MODEL_LOCATION + "plasticMixer.png");
 
     public static final ResourceLocation MODEL_FLOW_DETECTOR = new ResourceLocation(TUBE_MODULE_MODEL_LOCATION + "flowDetector.png");
     public static final ResourceLocation MODEL_GAUGE = new ResourceLocation(TUBE_MODULE_MODEL_LOCATION + "gaugeModule.png");
     public static final ResourceLocation MODEL_AIR_GRATE = new ResourceLocation(TUBE_MODULE_MODEL_LOCATION + "airGrate.png");
+    public static final ResourceLocation MODEL_CHARGING_MODULE = new ResourceLocation(TUBE_MODULE_MODEL_LOCATION + "chargingModule.png");
 
     public static final ResourceLocation MODEL_DRONE = new ResourceLocation(ENTITY_LOCATION + "Drone.png");
 
@@ -185,7 +186,7 @@ public class Textures{
     public static final String GUI_OMNIDIRECTIONAL_HOPPER = GUI_LOCATION + "GuiOmnidirectionalHopper.png";
     public static final String GUI_PROGRAMMER = GUI_LOCATION + "GuiProgrammer.png";
     public static final String GUI_PLASTIC_MIXER = GUI_LOCATION + "GuiPlasticMixer.png";
-  	public static final ResourceLocation GUI_WIDGET_OPTIONS = new ResourceLocation(GUI_LOCATION + "GuiWidgetOptions.png");
+    public static final ResourceLocation GUI_WIDGET_OPTIONS = new ResourceLocation(GUI_LOCATION + "GuiWidgetOptions.png");
     public static final ResourceLocation GUI_INVENTORY_SEARCHER = new ResourceLocation(GUI_LOCATION + "GuiInventorySearcher.png");
     public static final ResourceLocation GUI_TUBE_MODULE = new ResourceLocation(GUI_LOCATION + "GuiTubeModule.png");
     public static final ResourceLocation GUI_TEXT_WIDGET = new ResourceLocation(GUI_LOCATION + "GuiTextWidget.png");

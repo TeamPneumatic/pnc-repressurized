@@ -134,7 +134,7 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
                 }
             }
             if(te instanceof IHeatExchanger) {
-                addAnimatedStat("gui.tab.heat.title", new ItemStack(Blocks.fire), 0xFFFF5500, false).setText("gui.tab.heat.info");
+                addAnimatedStat("gui.tab.info.heat.title", new ItemStack(Blocks.fire), 0xFFFF5500, false).setText("gui.tab.info.heat");
             }
             if(shouldAddUpgradeTab()) {
                 String upgrades = "gui.tab.upgrades." + ((IInventory)te).getInventoryName();

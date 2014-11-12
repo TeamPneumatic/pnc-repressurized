@@ -173,6 +173,7 @@ item.pressureGaugeModule.name=Pressure Gauge Tube Module
 item.flowDetectorModule.name=Flow Detector Tube Module
 item.airGrateModule.name=Air Grate Tube Module
 item.regulatorTubeModule.name=Regulator Tube Module
+item.chargingModule.name=Charging Module
 
 # Programming Puzzles
 programmingPuzzle.start.name=Start
@@ -238,6 +239,7 @@ gui.tab.info.tubeModule=§0In this interface you can exactly define how a module
 gui.tab.info.plasticMixer=The Plastic Mixer is used to melt down Plastic into liquid plastic. It then can be mixed with other colors of plastic or Dye to create other colored Plastic. See other tabs for more info.
 gui.tab.info.heat=This machine requires heat. Heat can be applied by placing a block that generates heat next to this machine. Think of a Vortex Tube (fast, but requires power), but also Lava (slow) and Torches (very slow). To cool down a machine, remove the heat sources and/or speed up the process by placing down Ice.
 gui.tab.info.items=Add plastic in the bottom slot. In this slot plastic also will be put when it cools down into plastic. Add dye in the top slot. Note that when mixing dye with plastic, dye has a much lower effect than mixing another color of Plastic.
+gui.tab.info.heat.title=Heat
 
 gui.tab.info.tile.aerialInterface=§0By using an advanced technology which compresses items so much they become as small as atoms, this machine can use a player's inventory as its own. This means you can hopper items in and out of this machine, and they will be added or removed to the inventory of the player who placed the block. Smarter insertion methods like (the mod) Translocators could be used to keep the player's inventory supplied with 64 torches for example.
 gui.tab.info.tile.airCannon=§0This machine can be used to transport items through the air. To be able to use it you'll have to make a GPS Tool. Once made, right click with it on the block you want the items to travel to, and insert the GPS Tool in the GPS slot.
@@ -290,9 +292,15 @@ gui.tab.problems.provideRedstone=§0Provide a redstone signal.
 gui.tab.problems.removeRedstone=§0Remove the redstone signal.
 gui.tab.problems.notEnoughPressure=§7Not enough pressure.
 gui.tab.problems.applyPressure=§0Apply at least %s bar.
+gui.tab.problems.notEnoughHeat=§7Not enough heat. \n§0Apply more heat by adding blocks that generate heat around this machine.
 gui.tab.problems.noProblems=§7No Problems.
 gui.tab.problems.aerialInterface.linked=§0Machine linked with %s.
 gui.tab.problems.fluxCompressor.noRF=§7The machine is out of RF. \n§0Add more powah!
+gui.tab.problems.plasticMixer.noPlastic=§7No plastic to melt down. \n§0Add plastic in the bottom slot of the 'Item' section.
+gui.tab.problems.plasticMixer.tooMuchHeat=§7Too much heat. \n§0Remove heat sources and optionally add blocks that remove heat (like Ice). Then the plastic will cool down into item form.
+gui.tab.problems.plasticMixer.plasticOccupied=§7There's plastic of another color stopping the liquid to freeze into plastic. \n§0Remove the plastic from the bottom slot in the 'Item' section.
+gui.tab.problems.plasticMixer.plasticOverflow=§7There's no inventory space to allow the liquid plastic to freeze into plastic. \n§0Remove the plastic from the bottom slot in the 'Item' section.
+gui.tab.problems.plasticMixer.plasticLiquidOverflow=§7There's no tank space to allow the solid plastic to melt into liquid plastic. \n§0Pump out the liquid plastic.
 
 # Upgrades
 gui.tab.upgrades=Upgrades

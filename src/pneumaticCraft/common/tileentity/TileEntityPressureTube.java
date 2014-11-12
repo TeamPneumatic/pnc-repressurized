@@ -183,7 +183,18 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase{
         return modules[side.ordinal()] == null || modules[side.ordinal()].isInline();
     }
 
-    public void onNeighborBlockChange(){
+    @Override
+    public void onNeighborTileUpdate(){
+        super.onNeighborTileUpdate();
+        updateConnections(worldObj, xCoord, yCoord, zCoord);
+        for(TubeModule module : modules) {
+            if(module != null) module.onNeighborTileUpdate();
+        }
+    }
+
+    @Override
+    public void onNeighborBlockUpdate(){
+        super.onNeighborBlockUpdate();
         updateConnections(worldObj, xCoord, yCoord, zCoord);
         for(TubeModule module : modules) {
             if(module != null) module.onNeighborBlockUpdate();

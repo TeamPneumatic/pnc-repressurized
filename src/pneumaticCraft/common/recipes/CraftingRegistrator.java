@@ -47,6 +47,8 @@ public class CraftingRegistrator{
         GameRegistry.addRecipe(new ItemStack(ModuleRegistrator.getModuleItem(Names.MODULE_REGULATOR)), "sts", 's', ModuleRegistrator.getModuleItem(Names.MODULE_SAFETY_VALVE), 't', new ItemStack(Blockss.pressureTube, 1, 0));
         GameRegistry.addRecipe(new ItemStack(ModuleRegistrator.getModuleItem(Names.MODULE_AIR_GRATE)), " b ", "btb", " b ", 'b', Blocks.iron_bars, 't', new ItemStack(Blockss.pressureTube, 1, 0));
         GameRegistry.addRecipe(new ItemStack(ModuleRegistrator.getModuleItem(Names.MODULE_GAUGE)), " g ", "rtr", 'g', Itemss.pressureGauge, 'r', Items.redstone, 't', new ItemStack(Blockss.pressureTube, 1, 0));
+        GameRegistry.addRecipe(new ItemStack(ModuleRegistrator.getModuleItem(Names.MODULE_CHARGING)), " r ", "rtr", " r ", 'r', Blockss.chargingStation, 't', new ItemStack(Blockss.pressureTube, 1, 0));
+
         // tube addons
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Itemss.pressureGauge), " g ", "gig", " g ", 'g', Items.gold_ingot, 'i', Names.INGOT_IRON_COMPRESSED));
 
