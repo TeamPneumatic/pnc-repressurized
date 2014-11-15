@@ -131,4 +131,9 @@ public class HeatExchangerLogic implements IHeatExchangerLogic{
         return tickingHeatExchangers;
     }
 
+    @Override
+    public void addHeat(double amount){
+        temperature += amount / getThermalCapacity();
+    }
+
 }

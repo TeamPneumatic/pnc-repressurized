@@ -161,6 +161,7 @@ public class Textures{
     public static final String ITEM_STOP_WORM = "networkComponents/stopWorm";
 
     public static final String GUI_AIR_COMPRESSOR_LOCATION = GUI_LOCATION + "GuiAirCompressor.png";
+    public static final String GUI_ADVANCED_AIR_COMPRESSOR_LOCATION = GUI_LOCATION + "GuiAdvancedAirCompressor.png";
     public static final String GUI_AIR_CANNON_LOCATION = GUI_LOCATION + "GuiAirCannon.png";
     public static final String GUI_PROBLEMS_TEXTURE = GUI_LOCATION + "GuiProblem.png";
     public static final String GUI_INFO_LOCATION = GUI_LOCATION + "GuiInfo.png";

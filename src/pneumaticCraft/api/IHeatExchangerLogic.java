@@ -68,4 +68,10 @@ public interface IHeatExchangerLogic{
 
     public void readFromNBT(NBTTagCompound tag);
 
+    /**
+     * Adds heat (= deltaT * Thermal Capacity) to this exchanger. negative values will remove heat.
+     * @param amount
+     */
+    public void addHeat(double amount);
+
 }

@@ -86,6 +86,7 @@ import pneumaticCraft.common.entity.projectile.EntityVortex;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.thirdparty.ThirdPartyManager;
 import pneumaticCraft.common.thirdparty.igwmod.IGWSupportNotifier;
+import pneumaticCraft.common.tileentity.TileEntityAdvancedAirCompressor;
 import pneumaticCraft.common.tileentity.TileEntityAirCannon;
 import pneumaticCraft.common.tileentity.TileEntityAirCompressor;
 import pneumaticCraft.common.tileentity.TileEntityAphorismTile;
@@ -134,6 +135,7 @@ public class ClientProxy extends CommonProxy{
         RenderingRegistry.registerBlockHandler(new RenderModelBase());
         // RenderingRegistry.registerBlockHandler(new RendererSpecialBlock());
         registerBaseModelRenderer(Blockss.airCompressor, TileEntityAirCompressor.class, new ModelAirCompressor());
+        registerBaseModelRenderer(Blockss.advancedAirCompressor, TileEntityAdvancedAirCompressor.class, new ModelAirCompressor());
         registerBaseModelRenderer(Blockss.assemblyController, TileEntityAssemblyController.class, new ModelAssemblyController());
         registerBaseModelRenderer(Blockss.assemblyDrill, TileEntityAssemblyDrill.class, new ModelAssemblyDrill());
         registerBaseModelRenderer(Blockss.assemblyIOUnit, TileEntityAssemblyIOUnit.class, new ModelAssemblyIOUnit());

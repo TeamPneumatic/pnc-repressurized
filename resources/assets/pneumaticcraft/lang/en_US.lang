@@ -1,6 +1,7 @@
 # Blocks
 tile.pressureTube.name=Pressure Tube
 tile.airCompressor.name=Air Compressor
+tile.advancedAirCompressor.name=Advanced Air Compressor
 tile.airCannon.name=Air Cannon
 tile.pressureWall.wall.name=Pressure Chamber Wall
 tile.pressureWall.window.name=Pressure Chamber Window
@@ -237,8 +238,7 @@ pneumaticHelmet.hacking.finished.resumedTasks=Resumed tasks
 # Info
 gui.tab.info=Information
 gui.tab.info.tubeModule=§0In this interface you can exactly define how a module should behave dependent on the redstone signal. You can define a formula.
-gui.tab.info.plasticMixer=The Plastic Mixer is used to melt down Plastic into liquid plastic. It then can be mixed with other colors of plastic or Dye to create other colored Plastic. See other tabs for more info.
-gui.tab.info.heat=This machine requires heat. Heat can be applied by placing a block that generates heat next to this machine. Think of a Vortex Tube (fast, but requires power), but also Lava (slow) and Torches (very slow). To cool down a machine, remove the heat sources and/or speed up the process by placing down Ice.
+gui.tab.info.heat=This machine requires or produces heat. Heat can be applied by placing a block that generates heat next to this machine. Think of a Vortex Tube (fast, but requires power), but also Lava (slow) and Torches (very slow). To cool down a machine, remove the heat sources and/or speed up the process by placing down Ice.
 gui.tab.info.items=Add plastic in the bottom slot. In this slot plastic also will be put when it cools down into plastic. Add dye in the top slot. Note that when mixing dye with plastic, dye has a much lower effect than mixing another color of Plastic.
 gui.tab.info.heat.title=Heat
 gui.tab.liquidCompressor.fuel=Available Fuels
@@ -250,6 +250,7 @@ gui.tab.info.aerialInterface.liquidXp.info=§0When you've got a Dispenser Upgrad
 
 gui.tab.info.tile.pressureChamberValve=§0This multi-block structure can be used as air storage. The main feature however is to compress various materials into others. Like coal into diamonds.
 gui.tab.info.tile.airCompressor=§0This machine is used to generate compressed air. To do this insert any item that can burn in a Furnace in the fuel slot.
+gui.tab.info.tile.advancedAirCompressor=§0This machine is the tier two version of the Air Compressor. Like its less resistant brother it can generate compressed air using any fuel that can burn in a Furnace. However, this one generates at 50mL/tick, and also produces heat. The higher the heat, the lower the efficiency. The bottom arrow in the temperature gauge indicates where the efficiency will start to drop, and the top arrow indicates the 0%% efficiency mark. \n \nUnlike you might expect from this mod, this machine won't explode when the temperature gets too high.
 gui.tab.info.tile.chargingStation=§0This machine is used to (dis)charge items which operate on pneumatic power, for instance a Vortex Cannon.
 gui.tab.info.tile.elevatorBase=§0This machine is like the name says an elevator. You can use this to transport any entities. For it to work you'll need some air pressure and Elevator Frames on top of this block to support the elevator. To control the height level apply a redstone signal or use Elevator Callers. A redstone strength of 0 equals 0%% extension, a strength of 15 equals 100%% extension.
 gui.tab.info.item.pneumaticHelmet=§0On its own this helmet is as good as an Iron Helmet. However, on this helmet you can install various upgrades.
@@ -284,6 +285,7 @@ gui.tab.info.tile.programmer=§0With this block you can program Drones. This is 
 gui.tab.info.tile.fluxCompressor=§0This block can convert Redstone Flux into compressed air. By default it has an efficiency of 40%%. The input RF rate is twice the amount of Flux used per tick to generate air.
 gui.tab.info.tile.pneumaticDynamo=§0This block can convert compressed air into Redstone Flux. By default it has an efficiency of 40%%. The output RF rate is twice the amount of Flux created per tick.
 gui.tab.info.tile.liquidCompressor=§0This machine can generate compressed air using various liquids. To see every possible fuel open up the 'Available Fuels' tab. This tab is ordered from best to worst fuel. \n \nYou can either pump in fuel, right click with a fluid container (like a bucket) on the Liquid Compressor, or put the fluid container in the top slot.
+gui.tab.info.tile.plasticMixer=§0The Plastic Mixer is used to melt down Plastic into liquid plastic. It then can be mixed with other colors of plastic or Dye to create other colored Plastic. See other tabs for more info.
 
 # Pressure
 gui.tab.pressure=Pressure
@@ -304,11 +306,13 @@ gui.tab.problems.plasticMixer.tooMuchHeat=§7Too much heat. \n§0Remove heat sou
 gui.tab.problems.plasticMixer.plasticOccupied=§7There's plastic of another color stopping the liquid to freeze into plastic. \n§0Remove the plastic from the bottom slot in the 'Item' section.
 gui.tab.problems.plasticMixer.plasticOverflow=§7There's no inventory space to allow the liquid plastic to freeze into plastic. \n§0Remove the plastic from the bottom slot in the 'Item' section.
 gui.tab.problems.plasticMixer.plasticLiquidOverflow=§7There's no tank space to allow the solid plastic to melt into liquid plastic. \n§0Pump out the liquid plastic.
+gui.tab.problems.liquidCompressor.noFuel=§7The machine has no fuel. \n§0Add any of the fuels listed in the 'Available Fuels' tab.
+gui.tab.problems.advancedAirCompressor.efficiency=§7The Compressor is running at a suboptimal efficiency. Efficiency: %s \n§0Cool the machine down to under 50 degrees C.
 
 # Upgrades
 gui.tab.upgrades=Upgrades
 gui.tab.upgrades.volume=§7-Volume Upgrade \n§0Adds 1L more air capacity for each upgrade inserted.
-gui.tab.upgrades.volumeCapacity=§7Volume Upgrade \n§0Increases the heat capacity of this machine. It will heat up slower, but it also will cool down slower.
+gui.tab.upgrades.volumeCapacity=§7-Volume Upgrade \n§0Increases the heat capacity of this machine. It will heat up slower, but it also will cool down slower.
 gui.tab.upgrades.security=§7-Security Upgrade \n§0Adds a build-in Safety Valve Tube to the pneumatic machine.
 gui.tab.upgrades.tile.aerialInterface=§7-Dispenser Upgrade \n§0Acts like an auto-feeder. Only food items will be accepted through the Aerial Interface, and only when the player is hungry enough to fully utilize the provided meal. Note that the amount of items offered at once is tried to be consumed.
 gui.tab.upgrades.tile.airCannon=§7-Dispenser Upgrade \n§0Will make the cannon act like a Dispenser. Any item that would act special in a Dispenser, will be handled the same way in here. \n§7-Item Life Upgrade \n§0By default the Air Cannon shoots items which have a lifespan of 60 seconds. For each of this upgrades you put in you get an additional 30 seconds. \n§7-Speed Upgrade (max = 10) \n§0The cannon will turn faster. \n§7-Range Upgrade \n§0The shooting range will increase by about 25 blocks per upgrade, up to 250 blocks.

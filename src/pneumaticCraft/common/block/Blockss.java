@@ -78,11 +78,13 @@ public class Blockss{
     public static Block creativeCompressor;
     public static Block plasticMixer;
     public static Block liquidCompressor;
+    public static Block advancedAirCompressor;
 
     public static void init(){
         pressureTube = new BlockPressureTube(Material.iron, PneumaticValues.DANGER_PRESSURE_PRESSURE_TUBE, PneumaticValues.MAX_PRESSURE_PRESSURE_TUBE, PneumaticValues.VOLUME_PRESSURE_TUBE).setHardness(3.0F).setResistance(3.0F).setBlockName("pressureTube");
         advancedPressureTube = new BlockPressureTube(Material.iron, PneumaticValues.DANGER_PRESSURE_ADVANCED_PRESSURE_TUBE, PneumaticValues.MAX_PRESSURE_ADVANCED_PRESSURE_TUBE, PneumaticValues.VOLUME_ADVANCED_PRESSURE_TUBE).setHardness(3.0F).setResistance(3.0F).setBlockName("advancedPressureTube");
         airCompressor = new BlockAirCompressor(Material.iron).setHardness(3.0F).setResistance(3.0F).setBlockName("airCompressor");
+        advancedAirCompressor = new BlockAdvancedAirCompressor(Material.iron).setHardness(3.0F).setResistance(3.0F).setBlockName("advancedAirCompressor");
         airCannon = new BlockAirCannon(Material.iron).setHardness(3.0F).setResistance(3.0F).setBlockName("airCannon");
         pressureChamberWall = new BlockPressureChamberWall(Material.iron).setHardness(10.0F).setResistance(2000.0F).setBlockName("pressureChamberWall");
         pressureChamberValve = new BlockPressureChamberValve(Material.iron).setHardness(10.0F).setResistance(2000.0F).setBlockName("pressureChamberValve");
@@ -142,6 +144,7 @@ public class Blockss{
     private static void registerBlocks(){
         registerBlock(pressureTube, ItemBlockPressureTube.class);
         registerBlock(airCompressor);
+        registerBlock(advancedAirCompressor);
         registerBlock(airCannon);
         registerBlock(pressureChamberWall, ItemBlockPressureChamberWall.class);//TODO legacy remove item block.
         registerBlock(pressureChamberValve);

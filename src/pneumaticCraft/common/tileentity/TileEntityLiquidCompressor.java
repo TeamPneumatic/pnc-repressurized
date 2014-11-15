@@ -30,6 +30,8 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
     @GuiSynced
     public int redstoneMode;
     private double internalFuelBuffer;
+    @GuiSynced
+    public boolean isProducing;
 
     public TileEntityLiquidCompressor(){
         super(5, 7, 5000);
@@ -118,6 +120,7 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
                 }
             }
 
+            isProducing = false;
             if(redstoneAllows()) {
                 int usageRate = (int)(10 * this.getSpeedUsageMultiplierFromUpgrades());
                 if(internalFuelBuffer < usageRate) {
@@ -129,6 +132,7 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
                     }
                 }
                 if(internalFuelBuffer >= usageRate) {
+                    isProducing = true;
                     internalFuelBuffer -= usageRate;
                     addAir((int)(10 * this.getSpeedMultiplierFromUpgrades()), ForgeDirection.UNKNOWN);
                 }

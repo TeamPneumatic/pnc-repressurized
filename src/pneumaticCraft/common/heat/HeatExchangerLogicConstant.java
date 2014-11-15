@@ -63,4 +63,9 @@ public class HeatExchangerLogicConstant implements IHeatExchangerLogic{
         return 1000;
     }
 
+    @Override
+    public void addHeat(double amount){
+
+    }
+
 }

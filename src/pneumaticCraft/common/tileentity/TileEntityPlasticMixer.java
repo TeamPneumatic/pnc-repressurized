@@ -72,7 +72,6 @@ public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHand
         super.updateEntity();
         if(!worldObj.isRemote) {
 
-            hullLogic.update();
             itemLogic.update();
             liquidLogic.update();
             if(tank.getFluid() != null) {
@@ -138,27 +137,11 @@ public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHand
     }
 
     @Override
-    protected void onFirstServerUpdate(){
-        hullLogic.initializeAsHull(worldObj, xCoord, yCoord, zCoord);
-    }
-
-    @Override
-    public void onNeighborBlockUpdate(){
-        onFirstServerUpdate();
-    }
-
-    @Override
-    public void onNeighborTileUpdate(){
-        onFirstServerUpdate();
-    }
-
-    @Override
     public void readFromNBT(NBTTagCompound tag){
         super.readFromNBT(tag);
         readInventoryFromNBT(tag, inventory, "Items");
         lastTickInventoryStacksize = tag.getInteger("lastTickInventoryStacksize");
 
-        hullLogic.readFromNBT(tag.getCompoundTag("hullLogic"));
         itemLogic.readFromNBT(tag.getCompoundTag("itemLogic"));
         liquidLogic.readFromNBT(tag.getCompoundTag("liquidLogic"));
     }
@@ -170,10 +153,6 @@ public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHand
         tag.setInteger("lastTickInventoryStacksize", lastTickInventoryStacksize);
 
         NBTTagCompound heatTag = new NBTTagCompound();
-        hullLogic.writeToNBT(heatTag);
-        tag.setTag("hullLogic", heatTag);
-
-        heatTag = new NBTTagCompound();
         itemLogic.writeToNBT(heatTag);
         tag.setTag("itemLogic", heatTag);
 

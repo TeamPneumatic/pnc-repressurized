@@ -80,4 +80,12 @@ public class GuiLiquidCompressor extends GuiPneumaticContainerBase<TileEntityLiq
 
         fontRendererObj.drawString("Upgr.", 15, 19, 4210752);
     }
+
+    @Override
+    public void addProblems(List<String> curInfo){
+        super.addProblems(curInfo);
+        if(!te.isProducing && te.getTankInfo(null)[0].fluid == null) {
+            curInfo.add("gui.tab.problems.liquidCompressor.noFuel");
+        }
+    }
 }

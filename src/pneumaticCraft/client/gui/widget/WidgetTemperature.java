@@ -22,7 +22,7 @@ public class WidgetTemperature extends WidgetBase{
         this.scales = scales;
         this.logic = logic;
         this.minTemp = minTemp;
-        this.maxTemp = maxTemp;
+        this.maxTemp = maxTemp - 273;
     }
 
     @Override

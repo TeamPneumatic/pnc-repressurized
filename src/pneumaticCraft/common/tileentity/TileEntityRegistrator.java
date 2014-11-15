@@ -6,6 +6,7 @@ public class TileEntityRegistrator{
     public static void init(){
         GameRegistry.registerTileEntity(TileEntityPressureTube.class, "TileEntityPressureTube");
         GameRegistry.registerTileEntity(TileEntityAirCompressor.class, "TileEntityAirCompressor");
+        GameRegistry.registerTileEntity(TileEntityAdvancedAirCompressor.class, "PneumaticCraft_advancedAirCompressor");
         GameRegistry.registerTileEntity(TileEntityAirCannon.class, "TileEntityAirCannon");
         GameRegistry.registerTileEntity(TileEntityPressureChamberWall.class, "TileEntityPressureChamberWall");
         GameRegistry.registerTileEntity(TileEntityPressureChamberValve.class, "TileEntityPressureChamberValve");

@@ -13,7 +13,7 @@ public class ContainerAirCompressor extends ContainerPneumaticBase<TileEntityAir
     public ContainerAirCompressor(InventoryPlayer inventoryPlayer, TileEntityAirCompressor te){
         super(te);
         // Add the burn slot.
-        addSlotToContainer(new Slot(te, 0, 80, 54));
+        addSlotToContainer(new Slot(te, 0, getFuelSlotXOffset(), 54));
 
         // add the upgrade slots
         addSlotToContainer(new SlotUpgrade(te, 1, 23, 29));
@@ -32,6 +32,10 @@ public class ContainerAirCompressor extends ContainerPneumaticBase<TileEntityAir
         for(int actionBarSlotIndex = 0; actionBarSlotIndex < 9; ++actionBarSlotIndex) {
             addSlotToContainer(new Slot(inventoryPlayer, actionBarSlotIndex, 8 + actionBarSlotIndex * 18, 142));
         }
+    }
+
+    protected int getFuelSlotXOffset(){
+        return 80;
     }
 
     /**

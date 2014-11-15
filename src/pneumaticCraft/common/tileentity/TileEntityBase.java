@@ -11,6 +11,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.Packet;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.util.ForgeDirection;
+import pneumaticCraft.api.tileentity.IHeatExchanger;
 import pneumaticCraft.api.tileentity.IPneumaticMachine;
 import pneumaticCraft.common.inventory.SyncedField;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
@@ -93,6 +95,10 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
         firstRun = false;
 
         if(!worldObj.isRemote) {
+            if(this instanceof IHeatExchanger) {
+                ((IHeatExchanger)this).getHeatExchangerLogic(ForgeDirection.UNKNOWN).update();
+            }
+
             if(descriptionFields == null) descriptionPacketScheduled = true;
             for(SyncedField field : getDescriptionFields()) {
                 if(field.update()) {
@@ -107,7 +113,9 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
         }
     }
 
-    protected void onFirstServerUpdate(){}
+    protected void onFirstServerUpdate(){
+        initializeIfHeatExchanger();
+    }
 
     protected void updateNeighbours(){
         int oldMeta = getBlockMetadata();
@@ -155,12 +163,18 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
     public void writeToNBT(NBTTagCompound tag){
         super.writeToNBT(tag);
         writeToPacket(tag);
+        if(this instanceof IHeatExchanger) {
+            ((IHeatExchanger)this).getHeatExchangerLogic(ForgeDirection.UNKNOWN).writeToNBT(tag);
+        }
     }
 
     @Override
     public void readFromNBT(NBTTagCompound tag){
         super.readFromNBT(tag);
         readFromPacket(tag);
+        if(this instanceof IHeatExchanger) {
+            ((IHeatExchanger)this).getHeatExchangerLogic(ForgeDirection.UNKNOWN).readFromNBT(tag);
+        }
     }
 
     public void onDescUpdate(){
@@ -286,10 +300,13 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
         }
     }
 
-    public void onNeighborTileUpdate(){}
+    public void onNeighborTileUpdate(){
+        initializeIfHeatExchanger();
+    }
 
     public void onNeighborBlockUpdate(){
         isRedstonePowered = worldObj.isBlockIndirectlyGettingPowered(xCoord, yCoord, zCoord);
+        initializeIfHeatExchanger();
     }
 
     public boolean redstoneAllows(){
@@ -304,4 +321,9 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
         return false;
     }
 
+    private void initializeIfHeatExchanger(){
+        if(this instanceof IHeatExchanger) {
+            ((IHeatExchanger)this).getHeatExchangerLogic(ForgeDirection.UNKNOWN).initializeAsHull(worldObj, xCoord, yCoord, zCoord);
+        }
+    }
 }

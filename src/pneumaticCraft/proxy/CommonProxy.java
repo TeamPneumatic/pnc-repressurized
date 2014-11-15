@@ -3,6 +3,7 @@ package pneumaticCraft.proxy;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import net.minecraftforge.common.config.Configuration;
+import pneumaticCraft.client.gui.GuiAdvancedAirCompressor;
 import pneumaticCraft.client.gui.GuiAerialInterface;
 import pneumaticCraft.client.gui.GuiAirCannon;
 import pneumaticCraft.client.gui.GuiAirCompressor;
@@ -30,6 +31,7 @@ import pneumaticCraft.client.gui.tubemodule.GuiPressureModule;
 import pneumaticCraft.common.CommonHUDHandler;
 import pneumaticCraft.common.HackTickHandler;
 import pneumaticCraft.common.inventory.Container4UpgradeSlots;
+import pneumaticCraft.common.inventory.ContainerAdvancedAirCompressor;
 import pneumaticCraft.common.inventory.ContainerAirCannon;
 import pneumaticCraft.common.inventory.ContainerAirCompressor;
 import pneumaticCraft.common.inventory.ContainerAssemblyController;
@@ -63,6 +65,7 @@ import pneumaticCraft.common.thirdparty.ic2.GuiElectricCompressor;
 import pneumaticCraft.common.thirdparty.ic2.GuiPneumaticGenerator;
 import pneumaticCraft.common.thirdparty.ic2.TileEntityElectricCompressor;
 import pneumaticCraft.common.thirdparty.ic2.TileEntityPneumaticGenerator;
+import pneumaticCraft.common.tileentity.TileEntityAdvancedAirCompressor;
 import pneumaticCraft.common.tileentity.TileEntityAerialInterface;
 import pneumaticCraft.common.tileentity.TileEntityAirCannon;
 import pneumaticCraft.common.tileentity.TileEntityAirCompressor;
@@ -125,6 +128,7 @@ public class CommonProxy implements IGuiHandler{
     public static final int GUI_ID_FLUX_COMPRESSOR = 28;
     public static final int GUI_ID_PLASTIC_MIXER = 29;
     public static final int GUI_ID_LIQUID_COMPRESSOR = 30;
+    public static final int GUI_ID_ADVANCED_AIR_COMPRESSOR = 31;
 
     private final HackTickHandler serverHackTickHandler = new HackTickHandler();
 
@@ -166,6 +170,8 @@ public class CommonProxy implements IGuiHandler{
         switch(ID){
             case GUI_ID_AIR_COMPRESSOR:
                 return new ContainerAirCompressor(player.inventory, (TileEntityAirCompressor)world.getTileEntity(x, y, z));
+            case GUI_ID_ADVANCED_AIR_COMPRESSOR:
+                return new ContainerAdvancedAirCompressor(player.inventory, (TileEntityAdvancedAirCompressor)world.getTileEntity(x, y, z));
             case GUI_ID_AIR_CANNON:
                 return new ContainerAirCannon(player.inventory, (TileEntityAirCannon)world.getTileEntity(x, y, z));
             case GUI_ID_PRESSURE_CHAMBER:
@@ -226,6 +232,8 @@ public class CommonProxy implements IGuiHandler{
         switch(ID){
             case GUI_ID_AIR_COMPRESSOR:
                 return new GuiAirCompressor(player.inventory, (TileEntityAirCompressor)world.getTileEntity(x, y, z));
+            case GUI_ID_ADVANCED_AIR_COMPRESSOR:
+                return new GuiAdvancedAirCompressor(player.inventory, (TileEntityAdvancedAirCompressor)world.getTileEntity(x, y, z));
             case GUI_ID_AIR_CANNON:
                 return new GuiAirCannon(player.inventory, (TileEntityAirCannon)world.getTileEntity(x, y, z));
             case GUI_ID_PRESSURE_CHAMBER:

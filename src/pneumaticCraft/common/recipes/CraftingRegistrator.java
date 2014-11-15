@@ -69,6 +69,7 @@ public class CraftingRegistrator{
 
         // compressor
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Blockss.airCompressor), true, "iii", "i t", "ifi", 'i', Names.INGOT_IRON_COMPRESSED, 't', new ItemStack(Blockss.pressureTube, 1, 0), 'f', Blocks.furnace));
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Blockss.advancedAirCompressor), true, "iii", "i t", "ifi", 'i', Names.INGOT_IRON_COMPRESSED, 't', new ItemStack(Blockss.advancedPressureTube, 1, 0), 'f', Blockss.airCompressor));
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Blockss.liquidCompressor), true, "iii", "ibi", "ici", 'i', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.FIRE_FLOWER_DAMAGE), 'b', Items.bucket, 'c', Blockss.airCompressor));
         GameRegistry.addRecipe(new ItemStack(Blockss.electrostaticCompressor), "bpb", "dra", "bcb", 'b', Blocks.iron_bars, 'p', Itemss.printedCircuitBoard, 'd', Items.diamond, 'r', Itemss.turbineRotor, 'a', new ItemStack(Blockss.advancedPressureTube), 'c', Blockss.airCompressor);
 
