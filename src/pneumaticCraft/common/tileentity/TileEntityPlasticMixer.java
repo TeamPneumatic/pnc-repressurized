@@ -7,6 +7,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.FluidTankInfo;
@@ -26,10 +27,10 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHandler, IInventory, IHeatExchanger{
-    private final FluidTank tank = new FluidTank(PneumaticValues.PLASTIC_MIXER_TANK_CAPACITY);
+    private final FluidTank tank = new FluidTank(PneumaticValues.NORMAL_TANK_CAPACITY);
     private final ItemStack[] inventory = new ItemStack[6];
     private int lastTickInventoryStacksize;
-    private static int BASE_TEMPERATURE = Fluids.plastic.getTemperature();
+    private static int BASE_TEMPERATURE = FluidRegistry.WATER.getTemperature();
     @GuiSynced
     private final IHeatExchangerLogic hullLogic = PneumaticRegistry.getInstance().getHeatExchangerLogic();
     @GuiSynced
@@ -212,13 +213,13 @@ public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHand
 
     @Override
     public FluidStack drain(ForgeDirection from, FluidStack resource, boolean doDrain){
-        if(resource == null || resource.getFluid() == Fluids.plastic) return drain(from, PneumaticValues.PLASTIC_MIXER_MAX_DRAIN, doDrain);
+        if(resource == null || resource.getFluid() == Fluids.plastic) return drain(from, PneumaticValues.MAX_DRAIN, doDrain);
         else return null;
     }
 
     @Override
     public FluidStack drain(ForgeDirection from, int maxDrain, boolean doDrain){
-        FluidStack drained = tank.drain(Math.min(PneumaticValues.PLASTIC_MIXER_MAX_DRAIN, maxDrain), doDrain);
+        FluidStack drained = tank.drain(Math.min(PneumaticValues.MAX_DRAIN, maxDrain), doDrain);
         if(doDrain && drained != null && drained.getFluid() != null) sendDescriptionPacket();
         return drained;
     }

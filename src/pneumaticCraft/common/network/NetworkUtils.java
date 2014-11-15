@@ -5,17 +5,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fluids.FluidTank;
 import pneumaticCraft.common.inventory.SyncedField;
 import pneumaticCraft.common.inventory.SyncedField.SyncedBoolean;
 import pneumaticCraft.common.inventory.SyncedField.SyncedDouble;
 import pneumaticCraft.common.inventory.SyncedField.SyncedEnum;
 import pneumaticCraft.common.inventory.SyncedField.SyncedFloat;
+import pneumaticCraft.common.inventory.SyncedField.SyncedFluidTank;
 import pneumaticCraft.common.inventory.SyncedField.SyncedInt;
 import pneumaticCraft.common.inventory.SyncedField.SyncedItemStack;
 import pneumaticCraft.common.inventory.SyncedField.SyncedString;
 import pneumaticCraft.lib.Log;
 
 public class NetworkUtils{
+
+    /*private static Map<Class, List<Field>> extraMarkedFields = new HashMap<Class, List<Field>>();
+
+    public static void addExtraMarkedField(Class clazz, Field field){
+        List<Field> markedFields = extraMarkedFields.get(clazz);
+        if(markedFields == null) {
+            markedFields = new ArrayList<Field>();
+            extraMarkedFields.put(clazz, markedFields);
+        }
+        markedFields.add(field);
+    }*/
 
     public static List<SyncedField> getSyncedFields(Object te, Class searchedAnnotation){
         List<SyncedField> syncedFields = new ArrayList<SyncedField>();
@@ -121,6 +134,17 @@ public class NetworkUtils{
                     }
                     return syncedFields;
                 }
+                if(o instanceof FluidTank[]) {
+                    FluidTank[] array = (FluidTank[])o;
+                    if(filteredIndex >= 0) {
+                        syncedFields.add(new SyncedFluidTank(te, field).setArrayIndex(filteredIndex).setLazy(isLazy));
+                    } else {
+                        for(int i = 0; i < array.length; i++) {
+                            syncedFields.add(new SyncedFluidTank(te, field).setArrayIndex(i).setLazy(isLazy));
+                        }
+                    }
+                    return syncedFields;
+                }
                 if(field.getType().isArray()) {
                     Object[] array = (Object[])o;
                     for(Object obj : array) {
@@ -146,6 +170,7 @@ public class NetworkUtils{
         if(String.class.isAssignableFrom(field.getType())) return new SyncedString(te, field);
         if(field.getType().isEnum()) return new SyncedEnum(te, field);
         if(ItemStack.class.isAssignableFrom(field.getType())) return new SyncedItemStack(te, field);
+        if(FluidTank.class.isAssignableFrom(field.getType())) return new SyncedFluidTank(te, field);
         return null;
     }
 }

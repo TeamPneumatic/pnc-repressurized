@@ -15,6 +15,11 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.FluidContainerRegistry;
+import net.minecraftforge.fluids.FluidContainerRegistry.FluidContainerData;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.IFluidContainerItem;
+import net.minecraftforge.fluids.IFluidHandler;
 import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.api.block.IPneumaticWrenchable;
 import pneumaticCraft.common.Config;
@@ -60,13 +65,74 @@ public abstract class BlockPneumaticCraft extends BlockContainer implements IPne
             if(!world.isRemote) {
                 TileEntity te = world.getTileEntity(x, y, z);
 
-                if(te != null) {
+                if(te != null && !tryInsertingLiquid(te, player)) {
                     player.openGui(PneumaticCraft.instance, getGuiID(), world, x, y, z);
                 }
             }
 
             return true;
         }
+    }
+
+    private boolean tryInsertingLiquid(TileEntity te, EntityPlayer player){
+        if(te instanceof IFluidHandler) {
+            IFluidHandler fluidHandler = (IFluidHandler)te;
+
+            ItemStack heldStack = player.getCurrentEquippedItem();
+            if(heldStack != null) {
+                FluidStack fluid = FluidContainerRegistry.getFluidForFilledItem(heldStack);
+                if(fluid != null) {
+                    fluid.amount = 1000;
+                    if(fluidHandler.canFill(ForgeDirection.UNKNOWN, fluid.getFluid()) && fluidHandler.fill(ForgeDirection.UNKNOWN, fluid, false) == 1000) {
+                        fluidHandler.fill(ForgeDirection.UNKNOWN, fluid, true);
+                        heldStack.stackSize--;
+                        if(heldStack.stackSize <= 0) player.setCurrentItemOrArmor(0, null);
+
+                        ItemStack returnedItem = null;
+                        FluidContainerData[] allFluidData = FluidContainerRegistry.getRegisteredFluidContainerData();
+                        for(FluidContainerData fluidData : allFluidData) {
+                            if(fluidData.filledContainer.isItemEqual(heldStack)) {
+                                returnedItem = fluidData.emptyContainer;
+                                break;
+                            }
+                        }
+                        if(returnedItem != null) {
+                            returnedItem = returnedItem.copy();
+                            if(player.getCurrentEquippedItem() == null) {
+                                player.setCurrentItemOrArmor(0, returnedItem);
+                            } else {
+                                player.inventory.addItemStackToInventory(returnedItem);
+                            }
+                        }
+                        return true;
+                    }
+                } else if(heldStack.getItem() instanceof IFluidContainerItem) {
+                    IFluidContainerItem container = (IFluidContainerItem)heldStack.getItem();
+
+                    fluid = container.getFluid(heldStack);
+                    if(fluid != null) {
+                        fluid = fluid.copy();
+                        if(fluidHandler.canFill(ForgeDirection.UNKNOWN, fluid.getFluid()) && fluidHandler.fill(ForgeDirection.UNKNOWN, fluid, false) == fluid.amount) {
+                            ItemStack returnedItem = heldStack.copy();
+                            returnedItem.stackSize = 1;
+                            container.drain(returnedItem, fluid.amount, true);
+                            fluidHandler.fill(ForgeDirection.UNKNOWN, fluid, true);
+
+                            heldStack.stackSize--;
+                            if(heldStack.stackSize <= 0) player.setCurrentItemOrArmor(0, null);
+                            if(player.getCurrentEquippedItem() == null) {
+                                player.setCurrentItemOrArmor(0, returnedItem);
+                            } else {
+                                player.inventory.addItemStackToInventory(returnedItem);
+                            }
+                            return true;
+                        }
+                    }
+
+                }
+            }
+        }
+        return false;
     }
 
     @Override

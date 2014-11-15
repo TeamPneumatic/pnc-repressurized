@@ -13,10 +13,10 @@ import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.lib.PneumaticValues;
 
 public class FluidPlastic extends Fluid{
-    //TODO icon
 
     public FluidPlastic(String name){
         super(name);
+        setTemperature(PneumaticValues.PLASTIC_MIXER_MELTING_TEMP);
     }
 
     @Override

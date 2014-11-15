@@ -186,6 +186,7 @@ public class Textures{
     public static final String GUI_OMNIDIRECTIONAL_HOPPER = GUI_LOCATION + "GuiOmnidirectionalHopper.png";
     public static final String GUI_PROGRAMMER = GUI_LOCATION + "GuiProgrammer.png";
     public static final String GUI_PLASTIC_MIXER = GUI_LOCATION + "GuiPlasticMixer.png";
+    public static final String GUI_LIQUID_COMPRESSOR = GUI_LOCATION + "GuiLiquidCompressor.png";
     public static final ResourceLocation GUI_WIDGET_OPTIONS = new ResourceLocation(GUI_LOCATION + "GuiWidgetOptions.png");
     public static final ResourceLocation GUI_INVENTORY_SEARCHER = new ResourceLocation(GUI_LOCATION + "GuiInventorySearcher.png");
     public static final ResourceLocation GUI_TUBE_MODULE = new ResourceLocation(GUI_LOCATION + "GuiTubeModule.png");

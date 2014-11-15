@@ -54,6 +54,7 @@ tile.pressureChamberWall.window.name=Pressure Chamber Window
 tile.fluxCompressor.name=Flux Compressor
 tile.pneumaticDynamo.name=Pneumatic Dynamo
 tile.plasticMixer.name=Plastic Mixer
+tile.liquidCompressor.name=Liquid Compressor
 
 tile.monsterStoneEgg.name=Silverfish
 
@@ -240,6 +241,7 @@ gui.tab.info.plasticMixer=The Plastic Mixer is used to melt down Plastic into li
 gui.tab.info.heat=This machine requires heat. Heat can be applied by placing a block that generates heat next to this machine. Think of a Vortex Tube (fast, but requires power), but also Lava (slow) and Torches (very slow). To cool down a machine, remove the heat sources and/or speed up the process by placing down Ice.
 gui.tab.info.items=Add plastic in the bottom slot. In this slot plastic also will be put when it cools down into plastic. Add dye in the top slot. Note that when mixing dye with plastic, dye has a much lower effect than mixing another color of Plastic.
 gui.tab.info.heat.title=Heat
+gui.tab.liquidCompressor.fuel=Available Fuels
 
 gui.tab.info.tile.aerialInterface=§0By using an advanced technology which compresses items so much they become as small as atoms, this machine can use a player's inventory as its own. This means you can hopper items in and out of this machine, and they will be added or removed to the inventory of the player who placed the block. Smarter insertion methods like (the mod) Translocators could be used to keep the player's inventory supplied with 64 torches for example.
 gui.tab.info.tile.airCannon=§0This machine can be used to transport items through the air. To be able to use it you'll have to make a GPS Tool. Once made, right click with it on the block you want the items to travel to, and insert the GPS Tool in the GPS slot.
@@ -281,6 +283,7 @@ gui.tab.info.tile.omnidirectionalHopper=§0Did you ever want to use Hoppers to e
 gui.tab.info.tile.programmer=§0With this block you can program Drones. This is done with a simplified way of programming: A puzzle-like flowchart. Drones have only one hard programmed feature in them that overrules any other custom one: When the Drone gets low on air, it'll search for a nearby Charging Station with Dispenser upgrade inserted that has more than 1 bar. \n \nTips: \n-You can copy puzzle pieces by middle clicking them. \n-You can insert Machine Upgrades in the Drones. Put a Drone in a Charging Station to see what's possible and to insert them.
 gui.tab.info.tile.fluxCompressor=§0This block can convert Redstone Flux into compressed air. By default it has an efficiency of 40%%. The input RF rate is twice the amount of Flux used per tick to generate air.
 gui.tab.info.tile.pneumaticDynamo=§0This block can convert compressed air into Redstone Flux. By default it has an efficiency of 40%%. The output RF rate is twice the amount of Flux created per tick.
+gui.tab.info.tile.liquidCompressor=§0This machine can generate compressed air using various liquids. To see every possible fuel open up the 'Available Fuels' tab. This tab is ordered from best to worst fuel. \n \nYou can either pump in fuel, right click with a fluid container (like a bucket) on the Liquid Compressor, or put the fluid container in the top slot.
 
 # Pressure
 gui.tab.pressure=Pressure
@@ -324,6 +327,7 @@ gui.tab.upgrades.tile.vacuumPump=§7-Speed Upgrade (max = 10) \n§0The Vacuum Pu
 gui.tab.upgrades.tile.pneumaticGenerator=§7-Speed Upgrade (max = 10) \n§0Adjusts the output rate: \n§00 upgrades --> 32 EU/t \n§01 upgrade --> 128 EU/t \n§02 upgrades --> 512 EU/t
 gui.tab.upgrades.tile.fluxCompressor=§7-Speed Upgrade (max = 10) \n§0Increases the air production rate. It also increases the RF usage in a way that the machine will be more inefficient. Finally it increases the max RF input rate.
 gui.tab.upgrades.tile.pneumaticDynamo=§7-Speed Upgrade (max = 10) \n§0Increases the RF production rate. It also increases the air usage in a way that the machine will be more inefficient. Finally it increases the max RF output rate.
+gui.tab.upgrades.tile.liquidCompressor=§7-Speed Upgrade (max = 10) \n§0Increases the compressed air generated per tick. However this is at the expense of the efficiency.
 
 # Redstone Behaviour
 gui.tab.redstoneBehaviour=Redstone Behaviour
@@ -368,6 +372,7 @@ gui.setKeybind=Press key to bind
 gui.enableModule=Enable %s
 gui.pressureChamber=Pressure Chamber
 gui.pressureChamberTitle=%s Pressure Chamber
+gui.liquid.empty=Empty
 
 key.pneumaticcraft.category=PneumaticCraft
 # gui.enableModule.coreComponents=Enable Helmet

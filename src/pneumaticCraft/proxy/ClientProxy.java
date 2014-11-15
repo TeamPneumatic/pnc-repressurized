@@ -100,6 +100,7 @@ import pneumaticCraft.common.tileentity.TileEntityElectrostaticCompressor;
 import pneumaticCraft.common.tileentity.TileEntityElevatorBase;
 import pneumaticCraft.common.tileentity.TileEntityElevatorCaller;
 import pneumaticCraft.common.tileentity.TileEntityElevatorFrame;
+import pneumaticCraft.common.tileentity.TileEntityLiquidCompressor;
 import pneumaticCraft.common.tileentity.TileEntityOmnidirectionalHopper;
 import pneumaticCraft.common.tileentity.TileEntityPlasticMixer;
 import pneumaticCraft.common.tileentity.TileEntityPneumaticDoor;
@@ -153,6 +154,7 @@ public class ClientProxy extends CommonProxy{
         registerBaseModelRenderer(Blockss.omnidirectionalHopper, TileEntityOmnidirectionalHopper.class, new ModelOmnidirectionalHopper());
         registerBaseModelRenderer(Blockss.programmer, TileEntityProgrammer.class, new ModelComputer(Textures.MODEL_PROGRAMMER));
         registerBaseModelRenderer(Blockss.plasticMixer, TileEntityPlasticMixer.class, new ModelPlasticMixer());
+        registerBaseModelRenderer(Blockss.liquidCompressor, TileEntityLiquidCompressor.class, new BaseModel("liquidCompressor.obj"));
 
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPressureTube.class, new RenderPressureTube());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAirCannon.class, new RenderAirCannon());

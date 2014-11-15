@@ -94,7 +94,7 @@ public class WidgetTank extends WidgetBase{
 
         if(fluid == null || amt == 0 || capacity == 0) {
             curTip.add(amt + "/" + capacity + " mb");
-            curTip.add(EnumChatFormatting.GRAY + I18n.format("hud.empty"));
+            curTip.add(EnumChatFormatting.GRAY + I18n.format("gui.liquid.empty"));
         } else {
             curTip.add(amt + "/" + capacity + " mb");
             curTip.add(EnumChatFormatting.GRAY + fluid.getLocalizedName(new FluidStack(fluid, amt)));

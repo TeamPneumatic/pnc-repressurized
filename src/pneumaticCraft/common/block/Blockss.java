@@ -77,6 +77,7 @@ public class Blockss{
     public static Block programmer;
     public static Block creativeCompressor;
     public static Block plasticMixer;
+    public static Block liquidCompressor;
 
     public static void init(){
         pressureTube = new BlockPressureTube(Material.iron, PneumaticValues.DANGER_PRESSURE_PRESSURE_TUBE, PneumaticValues.MAX_PRESSURE_PRESSURE_TUBE, PneumaticValues.VOLUME_PRESSURE_TUBE).setHardness(3.0F).setResistance(3.0F).setBlockName("pressureTube");
@@ -124,6 +125,7 @@ public class Blockss{
         programmer = new BlockProgrammer(Material.iron).setHardness(3.0F).setResistance(10F).setBlockName("programmer");
         creativeCompressor = new BlockCreativeCompressor(Material.iron).setHardness(3.0F).setResistance(10F).setBlockName("creativeCompressor");
         plasticMixer = new BlockPlasticMixer(Material.iron).setHardness(3.0F).setResistance(10F).setBlockName("plasticMixer");
+        liquidCompressor = new BlockLiquidCompressor(Material.iron).setHardness(3.0F).setResistance(10F).setBlockName("liquidCompressor");
 
         registerBlocks();
 
@@ -183,6 +185,7 @@ public class Blockss{
         registerBlock(programmer);
         registerBlock(creativeCompressor);
         registerBlock(plasticMixer);
+        registerBlock(liquidCompressor);
     }
 
     public static void registerBlock(Block block){

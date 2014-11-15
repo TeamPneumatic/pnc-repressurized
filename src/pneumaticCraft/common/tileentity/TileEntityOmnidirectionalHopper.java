@@ -18,8 +18,7 @@ import pneumaticCraft.common.network.DescSynced;
 import pneumaticCraft.common.network.GuiSynced;
 import pneumaticCraft.common.util.IOHelper;
 
-public class TileEntityOmnidirectionalHopper extends TileEntityBase implements IGUIButtonSensitive, ISidedInventory,
-        IRedstoneControlled{
+public class TileEntityOmnidirectionalHopper extends TileEntityBase implements ISidedInventory, IRedstoneControlled{
     @DescSynced
     private ForgeDirection inputDir = ForgeDirection.UNKNOWN;
     private ItemStack[] inventory = new ItemStack[9];
@@ -265,7 +264,7 @@ public class TileEntityOmnidirectionalHopper extends TileEntityBase implements I
 
     @Override
     public boolean isUseableByPlayer(EntityPlayer p_70300_1_){
-        return true;
+        return isGuiUseableByPlayer(p_70300_1_);
     }
 
     @Override

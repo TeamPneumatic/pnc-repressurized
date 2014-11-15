@@ -4,12 +4,14 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fluids.FluidStack;
 import pneumaticCraft.common.inventory.ContainerPneumaticBase;
 import pneumaticCraft.common.inventory.SyncedField;
 import pneumaticCraft.common.inventory.SyncedField.SyncedBoolean;
 import pneumaticCraft.common.inventory.SyncedField.SyncedDouble;
 import pneumaticCraft.common.inventory.SyncedField.SyncedEnum;
 import pneumaticCraft.common.inventory.SyncedField.SyncedFloat;
+import pneumaticCraft.common.inventory.SyncedField.SyncedFluidTank;
 import pneumaticCraft.common.inventory.SyncedField.SyncedInt;
 import pneumaticCraft.common.inventory.SyncedField.SyncedItemStack;
 import pneumaticCraft.common.inventory.SyncedField.SyncedString;
@@ -36,6 +38,7 @@ public class PacketUpdateGui extends AbstractPacket<PacketUpdateGui>{
         else if(syncedField instanceof SyncedString) return 4;
         else if(syncedField instanceof SyncedEnum) return 5;
         else if(syncedField instanceof SyncedItemStack) return 6;
+        else if(syncedField instanceof SyncedFluidTank) return 7;
         else {
             throw new IllegalArgumentException("Invalid sync type! " + syncedField);
         }
@@ -57,6 +60,9 @@ public class PacketUpdateGui extends AbstractPacket<PacketUpdateGui>{
                 return buf.readByte();
             case 6:
                 return ByteBufUtils.readItemStack(buf);
+            case 7:
+                if(!buf.readBoolean()) return null;
+                return new FluidStack(buf.readInt(), buf.readInt(), ByteBufUtils.readTag(buf));
         }
         throw new IllegalArgumentException("Invalid sync type! " + type);
     }
@@ -83,6 +89,15 @@ public class PacketUpdateGui extends AbstractPacket<PacketUpdateGui>{
                 break;
             case 6:
                 ByteBufUtils.writeItemStack(buf, (ItemStack)value);
+                break;
+            case 7:
+                buf.writeBoolean(value != null);
+                if(value != null) {
+                    FluidStack stack = (FluidStack)value;
+                    buf.writeInt(stack.getFluid().getID());
+                    buf.writeInt(stack.amount);
+                    ByteBufUtils.writeTag(buf, stack.tag);
+                }
                 break;
         }
     }

@@ -85,6 +85,17 @@ public class PneumaticRegistry{
         public void registerBlockExchanger(Block block, double temperature, double thermalResistance);
 
         /*
+         * ---------------- Power Generation -----------
+         */
+
+        /**
+         * Adds a burnable liquid to the Liquid Compressor's available burnable fuels.
+         * @param fluid
+         * @param mLPerBucket the amount of mL generated for 1000mB of the fuel. As comparison, one piece of coal generates 16000mL in an Air Compressor.
+         */
+        public void registerFuel(Fluid fluid, int mLPerBucket);
+
+        /*
          * --------------- Misc -------------------
          */
 

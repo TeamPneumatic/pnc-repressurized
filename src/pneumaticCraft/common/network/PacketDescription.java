@@ -9,7 +9,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import pneumaticCraft.common.inventory.SyncedField;
 import pneumaticCraft.common.tileentity.TileEntityBase;
-import pneumaticCraft.lib.Log;
 import cpw.mods.fml.common.network.ByteBufUtils;
 
 public class PacketDescription extends LocationIntPacket<PacketDescription>{
@@ -21,7 +20,6 @@ public class PacketDescription extends LocationIntPacket<PacketDescription>{
 
     public PacketDescription(TileEntityBase te){
         super(te.xCoord, te.yCoord, te.zCoord);
-        Log.info(te + " is sending desc packet");
         values = new Object[te.getDescriptionFields().size()];
         types = new byte[values.length];
         for(int i = 0; i < values.length; i++) {
