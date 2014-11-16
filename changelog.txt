@@ -1,5 +1,20 @@
--Bugfix: Pneumatic Helmet's estimated time doesn't use take Volume Upgrades in account.
--Bugfix: Elevator Floor name tab widgets have a wrong offset.
--Bugfix: Vacuum Pump is buggy as heck.
--Bugfix: Omnidirectional Hopper dupe bug with locked barrel.
--Bugfix: Client crash with Potion Clouds (IndexOutOfBounds).
+-Added Liquid Compressor.
+-Added Advanced Liquid Compressor.
+-Added Advanced Air Compressor.
+-Added Plastic Mixer.
+-Added Charging Module.
+-Added Liquid Hopper.
+-Refactored the way server and client sync.
+-You can now connect CC modem wire to the bottom of Drone Interfaces.
+-Capped the amount of speed upgrades the Pneumatic Generator can take.
+-Removed console spam about recipe sorting.
+-OP's in creative mode will now be ignored by Security Stations.
+
+-Bugfix: Upgrades don't work for the Electrostatic Compressor.
+-Bugfix: NPE with Potion Clouds.
+-Bugfix: Drones are trying to access blocks below Y0 and above Y255.
+-Bugfix: The tooltip of the GPS Tool doesn't show its save coordinate when X, Y or Z = 0.
+-Bugfix: Localization issue on the IC2 power converters.
+-Bugfix: Creeper, Slime and Squid plants not performing full grown effects when the config option that allows full grown effects is turned off.
+-Bugfix: When pressing keys like 'E' while adding a player to the Security Station, the GUI closes.
+

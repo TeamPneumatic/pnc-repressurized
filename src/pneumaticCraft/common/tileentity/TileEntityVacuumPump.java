@@ -19,6 +19,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import pneumaticCraft.api.tileentity.IPneumaticMachine;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.Itemss;
+import pneumaticCraft.common.network.DescSynced;
+import pneumaticCraft.common.network.GuiSynced;
 import pneumaticCraft.common.thirdparty.ModInteractionUtils;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.PneumaticValues;
@@ -26,7 +28,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityVacuumPump extends TileEntityPneumaticBase implements IInventory, IRedstoneControlled{
-	@GuiSynced
+    @GuiSynced
     private final TileEntityPneumaticBase vacuumHandler = new TileEntityPneumaticBase(5, 7, PneumaticValues.VOLUME_VACUUM_PUMP){
         @Override
         public List<Pair<ForgeDirection, IPneumaticMachine>> getConnectedPneumatics(){

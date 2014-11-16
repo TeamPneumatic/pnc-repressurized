@@ -384,7 +384,7 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
     @Override
     protected void keyTyped(char key, int keyCode){
         for(IGuiWidget widget : widgets) {
-            widget.onKey(key, keyCode);
+            if(widget.onKey(key, keyCode)) return;
         }
         super.keyTyped(key, keyCode);
     }

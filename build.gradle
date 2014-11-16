@@ -39,8 +39,8 @@ apply plugin: 'forge'
 
 project.ext {
 	massive = "1"
-    major = "3"
-    minor = "2"
+    major = "4"
+    minor = "0"
     mcVersion = "1.7.10"
 }
 
