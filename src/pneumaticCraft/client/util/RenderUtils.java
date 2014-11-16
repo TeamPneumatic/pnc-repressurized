@@ -6,11 +6,18 @@ import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
+import net.minecraftforge.fluids.FluidTankInfo;
+
+import org.lwjgl.opengl.GL11;
+
+import cpw.mods.fml.client.FMLClientHandler;
 
 public class RenderUtils extends Render{
     public static RenderUtils INSTANCE = new RenderUtils();
@@ -18,6 +25,23 @@ public class RenderUtils extends Render{
 
     private RenderUtils(){
         renderBlocks = field_147909_c;
+    }
+
+    public void renderLiquid(FluidTankInfo info, RenderInfo renderInfo, World worldObj){
+        if(info.fluid.getFluid().getBlock() != null) {
+            renderInfo.baseBlock = info.fluid.getFluid().getBlock();
+        } else {
+            renderInfo.baseBlock = Blocks.water;
+        }
+        renderInfo.texture = info.fluid.getFluid().getIcon(info.fluid);
+        FMLClientHandler.instance().getClient().getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
+        // Tessellator.instance.setColorOpaque_I();
+        int color = info.fluid.getFluid().getColor(info.fluid);
+        int red = color >> 16 & 255;
+        int green = color >> 8 & 255;
+        int blue = color & 255;
+        GL11.glColor4ub((byte)red, (byte)green, (byte)blue, (byte)255);
+        RenderUtils.INSTANCE.renderBlock(renderInfo, worldObj, 0, 0, 0, false, true);
     }
 
     public void renderBlock(RenderInfo info, IBlockAccess blockAccess, int x, int y, int z, boolean doLight, boolean doTessellating){

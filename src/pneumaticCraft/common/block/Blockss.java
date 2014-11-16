@@ -79,6 +79,7 @@ public class Blockss{
     public static Block plasticMixer;
     public static Block liquidCompressor;
     public static Block advancedAirCompressor;
+    public static Block liquidHopper;
 
     public static void init(){
         pressureTube = new BlockPressureTube(Material.iron, PneumaticValues.DANGER_PRESSURE_PRESSURE_TUBE, PneumaticValues.MAX_PRESSURE_PRESSURE_TUBE, PneumaticValues.VOLUME_PRESSURE_TUBE).setHardness(3.0F).setResistance(3.0F).setBlockName("pressureTube");
@@ -123,6 +124,7 @@ public class Blockss{
         electrostaticCompressor = new BlockElectrostaticCompressor(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("electrostaticCompressor");
         aphorismTile = new BlockAphorismTile(Material.rock).setHardness(1.5F).setResistance(4.0F).setBlockName("aphorismTile");
         omnidirectionalHopper = new BlockOmnidirectionalHopper(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("omnidirectionalHopper");
+        liquidHopper = new BlockLiquidHopper(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("liquidHopper");
         elevatorCaller = new BlockElevatorCaller(Material.iron).setHardness(3.0F).setResistance(10F).setBlockName("elevatorCaller");
         programmer = new BlockProgrammer(Material.iron).setHardness(3.0F).setResistance(10F).setBlockName("programmer");
         creativeCompressor = new BlockCreativeCompressor(Material.iron).setHardness(3.0F).setResistance(10F).setBlockName("creativeCompressor");
@@ -184,6 +186,7 @@ public class Blockss{
         registerBlock(electrostaticCompressor);
         registerBlock(aphorismTile);
         registerBlock(omnidirectionalHopper);
+        registerBlock(liquidHopper);
         registerBlock(elevatorCaller);
         registerBlock(programmer);
         registerBlock(creativeCompressor);

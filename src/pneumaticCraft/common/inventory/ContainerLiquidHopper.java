@@ -5,22 +5,17 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import pneumaticCraft.common.item.Itemss;
-import pneumaticCraft.common.tileentity.TileEntityOmnidirectionalHopper;
+import pneumaticCraft.common.tileentity.TileEntityLiquidHopper;
 
-public class ContainerOmnidirectionalHopper extends ContainerPneumaticBase<TileEntityOmnidirectionalHopper>{
+public class ContainerLiquidHopper extends ContainerPneumaticBase<TileEntityLiquidHopper>{
 
-    public ContainerOmnidirectionalHopper(InventoryPlayer inventoryPlayer, TileEntityOmnidirectionalHopper te){
+    public ContainerLiquidHopper(InventoryPlayer inventoryPlayer, TileEntityLiquidHopper te){
         super(te);
 
-        // Add the hopper slots.
-        for(int i = 0; i < 5; i++)
-            addSlotToContainer(new Slot(te, i, 68 + i * 18, 36));
-
-        // add the upgrade slots
-        addSlotToContainer(new SlotUpgrade(te, 5, 23, 29));
-        addSlotToContainer(new SlotUpgrade(te, 6, 41, 29));
-        addSlotToContainer(new SlotUpgrade(te, 7, 23, 47));
-        addSlotToContainer(new SlotUpgrade(te, 8, 41, 47));
+        addSlotToContainer(new SlotUpgrade(te, 0, 48, 29));
+        addSlotToContainer(new SlotUpgrade(te, 1, 66, 29));
+        addSlotToContainer(new SlotUpgrade(te, 2, 48, 47));
+        addSlotToContainer(new SlotUpgrade(te, 3, 66, 47));
 
         // Add the player's inventory slots to the container
         for(int inventoryRowIndex = 0; inventoryRowIndex < 3; ++inventoryRowIndex) {
@@ -38,6 +33,7 @@ public class ContainerOmnidirectionalHopper extends ContainerPneumaticBase<TileE
     @Override
     public boolean canInteractWith(EntityPlayer player){
         return te.isUseableByPlayer(player);
+        //return te.isGuiUseableByPlayer(player);
     }
 
     /**
@@ -63,15 +59,15 @@ public class ContainerOmnidirectionalHopper extends ContainerPneumaticBase<TileE
             ItemStack var5 = var4.getStack();
             var3 = var5.copy();
 
-            if(par2 < 9) {
-                if(!mergeItemStack(var5, 9, 45, false)) return null;
+            if(par2 < 4) {
+                if(!mergeItemStack(var5, 4, 40, false)) return null;
 
                 var4.onSlotChange(var5, var3);
             } else {
 
                 if(var5.getItem() == Itemss.machineUpgrade) {
-                    if(!mergeItemStack(var5, 5, 9, false)) return null;
-                } else if(!mergeItemStack(var5, 0, 5, false)) return null;
+                    if(!mergeItemStack(var5, 0, 4, false)) return null;
+                }
                 var4.onSlotChange(var5, var3);
             }
 
@@ -87,5 +83,11 @@ public class ContainerOmnidirectionalHopper extends ContainerPneumaticBase<TileE
         }
 
         return var3;
+    }
+
+    @Override
+    public void onContainerClosed(EntityPlayer par1EntityPlayer){
+        super.onContainerClosed(par1EntityPlayer);
+        //  te.closeGUI();
     }
 }

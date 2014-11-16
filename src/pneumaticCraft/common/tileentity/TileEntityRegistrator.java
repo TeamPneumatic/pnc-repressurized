@@ -29,6 +29,7 @@ public class TileEntityRegistrator{
         GameRegistry.registerTileEntity(TileEntityElectrostaticCompressor.class, "TileEntityElectrostaticCompressor");
         GameRegistry.registerTileEntity(TileEntityAphorismTile.class, "TileEntityAphorismTile");
         GameRegistry.registerTileEntity(TileEntityOmnidirectionalHopper.class, "TileEntityOmnidirectionalHopper");
+        GameRegistry.registerTileEntity(TileEntityLiquidHopper.class, "PneumaticCraft_liquidHopper");
         GameRegistry.registerTileEntity(TileEntityElevatorCaller.class, "TileEntityElevatorCaller");
         GameRegistry.registerTileEntity(TileEntityProgrammer.class, "TileEntityProgrammer");
         GameRegistry.registerTileEntity(TileEntityCreativeCompressor.class, "TileEntityCreativeCompressor");

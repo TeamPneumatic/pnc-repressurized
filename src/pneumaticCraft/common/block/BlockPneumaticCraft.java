@@ -85,23 +85,25 @@ public abstract class BlockPneumaticCraft extends BlockContainer implements IPne
                     fluid.amount = 1000;
                     if(fluidHandler.canFill(ForgeDirection.UNKNOWN, fluid.getFluid()) && fluidHandler.fill(ForgeDirection.UNKNOWN, fluid, false) == 1000) {
                         fluidHandler.fill(ForgeDirection.UNKNOWN, fluid, true);
-                        heldStack.stackSize--;
-                        if(heldStack.stackSize <= 0) player.setCurrentItemOrArmor(0, null);
+                        if(!player.capabilities.isCreativeMode) {
+                            heldStack.stackSize--;
+                            if(heldStack.stackSize <= 0) player.setCurrentItemOrArmor(0, null);
 
-                        ItemStack returnedItem = null;
-                        FluidContainerData[] allFluidData = FluidContainerRegistry.getRegisteredFluidContainerData();
-                        for(FluidContainerData fluidData : allFluidData) {
-                            if(fluidData.filledContainer.isItemEqual(heldStack)) {
-                                returnedItem = fluidData.emptyContainer;
-                                break;
+                            ItemStack returnedItem = null;
+                            FluidContainerData[] allFluidData = FluidContainerRegistry.getRegisteredFluidContainerData();
+                            for(FluidContainerData fluidData : allFluidData) {
+                                if(fluidData.filledContainer.isItemEqual(heldStack)) {
+                                    returnedItem = fluidData.emptyContainer;
+                                    break;
+                                }
                             }
-                        }
-                        if(returnedItem != null) {
-                            returnedItem = returnedItem.copy();
-                            if(player.getCurrentEquippedItem() == null) {
-                                player.setCurrentItemOrArmor(0, returnedItem);
-                            } else {
-                                player.inventory.addItemStackToInventory(returnedItem);
+                            if(returnedItem != null) {
+                                returnedItem = returnedItem.copy();
+                                if(player.getCurrentEquippedItem() == null) {
+                                    player.setCurrentItemOrArmor(0, returnedItem);
+                                } else {
+                                    player.inventory.addItemStackToInventory(returnedItem);
+                                }
                             }
                         }
                         return true;
@@ -118,12 +120,14 @@ public abstract class BlockPneumaticCraft extends BlockContainer implements IPne
                             container.drain(returnedItem, fluid.amount, true);
                             fluidHandler.fill(ForgeDirection.UNKNOWN, fluid, true);
 
-                            heldStack.stackSize--;
-                            if(heldStack.stackSize <= 0) player.setCurrentItemOrArmor(0, null);
-                            if(player.getCurrentEquippedItem() == null) {
-                                player.setCurrentItemOrArmor(0, returnedItem);
-                            } else {
-                                player.inventory.addItemStackToInventory(returnedItem);
+                            if(!player.capabilities.isCreativeMode) {
+                                heldStack.stackSize--;
+                                if(heldStack.stackSize <= 0) player.setCurrentItemOrArmor(0, null);
+                                if(player.getCurrentEquippedItem() == null) {
+                                    player.setCurrentItemOrArmor(0, returnedItem);
+                                } else {
+                                    player.inventory.addItemStackToInventory(returnedItem);
+                                }
                             }
                             return true;
                         }

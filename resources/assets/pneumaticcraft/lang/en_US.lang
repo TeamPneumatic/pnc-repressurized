@@ -45,6 +45,7 @@ tile.aerialInterface.name=Aerial Interface
 tile.electrostaticCompressor.name=Electrostatic Compressor
 tile.aphorismTile.name=Aphorism Tile
 tile.omnidirectionalHopper.name=Omnidirectional Hopper
+tile.liquidHopper.name=Liquid Hopper
 tile.elevatorCaller.name=Elevator Caller
 tile.programmer.name=Programmer
 tile.droneInterface.name=Drone Interface
@@ -321,6 +322,7 @@ gui.tab.upgrades.tile.assemblyController=§7-Speed Upgrade (max = 10) \n§0All a
 gui.tab.upgrades.tile.chargingStation=§7-Speed Upgrade (max = 10) \n§0The Charging Station will be able to (dis)charge items faster. \n§7-Dispenser Upgrade \n§0Adds a charge pad onto the Charging Station, allowing it to (dis)charge any Drones, items, and player inventory items that are on top of the Charging Station.
 gui.tab.upgrades.tile.elevator=§7-Speed Upgrade (max = 10) \n§0The elevator will ascend/descent faster (at a higher energy cost).
 gui.tab.upgrades.tile.omnidirectionalHopper=§7-Speed Upgrade (max = 13) \n§0Increases the speed at which the Hopper transfers items.
+gui.tab.upgrades.tile.liquidHopper=§7-Speed Upgrade (max = 13) \n§0Increases the speed at which the Hopper transfers liquid.
 gui.tab.upgrades.tile.pneumaticDoor=§7-Range Upgrade \n§0Increases the player detection range by one block for every upgrade. \n§7Speed Upgrade \n§0Increases the speed at which the door opens/closes.
 gui.tab.upgrades.tile.pressureChamberInterface=§7-Speed Upgrade (max = 10) \n§0The floodgates of the Interface will open/close faster, meaning items can be transported quicker.
 gui.tab.upgrades.tile.pressureChamberValve=§7-Item Life Upgrade \n§0Items in the pressure chamber with this upgrade cannot despawn (their age is paused).
@@ -362,6 +364,12 @@ gui.tab.redstoneBehaviour.universalSensor.button.inverted=Inverted
 gui.tab.redstoneBehaviour.universalSensor.button.normal=Normal
 gui.tab.redstoneBehaviour.uvLightBox.button.chance=Success Chance
 
+#misc
+gui.tab.hopperStatus=Hopper Status
+gui.tab.hopperStatus.itemTransferPerTick=§7Item Transfer Speed: \n§0%s items/tick
+gui.tab.hopperStatus.itemTransferPerSecond=§7Item Transfer Speed: \n§0%s items/s
+gui.tab.hopperStatus.liquidTransferPerTick=§7Liquid Transfer Speed: \n§0%s mL/tick
+gui.tab.hopperStatus.liquidTransferPerSecond=§7Liquid Transfer Speed: \n§0%s mL/s
 
 # Universal Sensor descriptions
 gui.universalSensor.desc.userSetSensor=This is a 'sensor' you can use to emit a constant redstone value. The value emitted is the numeric value inserted into the textbox.

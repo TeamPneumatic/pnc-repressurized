@@ -3,20 +3,14 @@ package pneumaticCraft.client.model;
 
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
-import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.Entity;
-import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidTankInfo;
-
-import org.lwjgl.opengl.GL11;
-
 import pneumaticCraft.client.util.RenderUtils;
 import pneumaticCraft.client.util.RenderUtils.RenderInfo;
 import pneumaticCraft.common.tileentity.TileEntityPlasticMixer;
 import pneumaticCraft.lib.Textures;
-import cpw.mods.fml.client.FMLClientHandler;
 
 public class ModelPlasticMixer extends ModelBase implements IBaseModel{
     //fields
@@ -102,21 +96,7 @@ public class ModelPlasticMixer extends ModelBase implements IBaseModel{
             if(info.fluid != null && info.fluid.amount > 10) {
                 float percentageFull = (float)info.fluid.amount / info.capacity;
                 RenderInfo renderInfo = new RenderInfo(-6 / 16F + 0.01F, 22 / 16F - percentageFull * 13.999F / 16F, -6 / 16F + 0.01F, 6 / 16F - 0.01F, 22 / 16F, 6 / 16F - 0.01F);
-
-                if(info.fluid.getFluid().getBlock() != null) {
-                    renderInfo.baseBlock = info.fluid.getFluid().getBlock();
-                } else {
-                    renderInfo.baseBlock = Blocks.water;
-                }
-                renderInfo.texture = info.fluid.getFluid().getIcon(info.fluid);
-                FMLClientHandler.instance().getClient().getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
-                // Tessellator.instance.setColorOpaque_I();
-                int color = info.fluid.getFluid().getColor(info.fluid);
-                int red = color >> 16 & 255;
-                int green = color >> 8 & 255;
-                int blue = color & 255;
-                GL11.glColor4ub((byte)red, (byte)green, (byte)blue, (byte)255);
-                RenderUtils.INSTANCE.renderBlock(renderInfo, mixer.getWorldObj(), 0, 0, 0, false, true);
+                RenderUtils.INSTANCE.renderLiquid(info, renderInfo, mixer.getWorldObj());
             }
         }
     }

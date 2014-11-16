@@ -11,7 +11,6 @@ import org.lwjgl.opengl.GL11;
 
 import pneumaticCraft.common.tileentity.TileEntityOmnidirectionalHopper;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
-import pneumaticCraft.lib.Textures;
 
 public class ModelOmnidirectionalHopper extends ModelBase implements IBaseModel{
     //fields
@@ -22,8 +21,10 @@ public class ModelOmnidirectionalHopper extends ModelBase implements IBaseModel{
     ModelRenderer Funnel;
     ModelRenderer Funnel2;
     ModelRenderer InserterBottom;
+    private final ResourceLocation texture;
 
-    public ModelOmnidirectionalHopper(){
+    public ModelOmnidirectionalHopper(ResourceLocation texture){
+        this.texture = texture;
         textureWidth = 64;
         textureHeight = 64;
 
@@ -93,6 +94,7 @@ public class ModelOmnidirectionalHopper extends ModelBase implements IBaseModel{
     @Override
     public void renderStatic(float size, TileEntity tile){
         GL11.glPushMatrix();
+        GL11.glEnable(GL11.GL_BLEND);
         TileEntityOmnidirectionalHopper te = null;
 
         if(tile instanceof TileEntityOmnidirectionalHopper) {
@@ -108,6 +110,8 @@ public class ModelOmnidirectionalHopper extends ModelBase implements IBaseModel{
         Wall4.render(size);
         Funnel.render(size);
         Funnel2.render(size);
+        renderMain(te);
+
         GL11.glPopMatrix();
 
         if(te != null) {
@@ -116,7 +120,12 @@ public class ModelOmnidirectionalHopper extends ModelBase implements IBaseModel{
             PneumaticCraftUtils.rotateMatrixByMetadata(ForgeDirection.DOWN.ordinal());
         }
         InserterBottom.render(size);
+        renderBottom(te);
     }
+
+    protected void renderMain(TileEntityOmnidirectionalHopper hopper){}
+
+    protected void renderBottom(TileEntityOmnidirectionalHopper hopper){}
 
     @Override
     public void renderDynamic(float size, TileEntity te, float partialTicks){
@@ -125,7 +134,7 @@ public class ModelOmnidirectionalHopper extends ModelBase implements IBaseModel{
 
     @Override
     public ResourceLocation getModelTexture(TileEntity tile){
-        return Textures.MODEL_OMNIDIRECTIONAL_HOPPER;
+        return texture;
     }
 
     @Override

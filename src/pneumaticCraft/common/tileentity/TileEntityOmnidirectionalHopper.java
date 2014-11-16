@@ -13,21 +13,29 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
-import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.network.DescSynced;
 import pneumaticCraft.common.network.GuiSynced;
 import pneumaticCraft.common.util.IOHelper;
 
 public class TileEntityOmnidirectionalHopper extends TileEntityBase implements ISidedInventory, IRedstoneControlled{
     @DescSynced
-    private ForgeDirection inputDir = ForgeDirection.UNKNOWN;
-    private ItemStack[] inventory = new ItemStack[9];
+    protected ForgeDirection inputDir = ForgeDirection.UNKNOWN;
+    private ItemStack[] inventory = new ItemStack[getInvSize()];
     @GuiSynced
     public int redstoneMode;
     private int cooldown;
 
+    public TileEntityOmnidirectionalHopper(){
+        setUpgradeSlots(5, 6, 7, 8);
+    }
+
+    protected int getInvSize(){
+        return 9;
+    }
+
     @Override
     public void updateEntity(){
+        super.updateEntity();
         if(!getWorldObj().isRemote && --cooldown <= 0 && redstoneAllows()) {
             int maxItems = getMaxItems();
             boolean success = suckInItem(maxItems);
@@ -41,7 +49,7 @@ public class TileEntityOmnidirectionalHopper extends TileEntityBase implements I
         }
     }
 
-    private boolean exportItem(int maxItems){
+    protected boolean exportItem(int maxItems){
         ForgeDirection dir = ForgeDirection.getOrientation(getBlockMetadata());
         TileEntity neighbor = IOHelper.getNeighbor(this, dir);
         for(int i = 0; i < 5; i++) {
@@ -65,7 +73,7 @@ public class TileEntityOmnidirectionalHopper extends TileEntityBase implements I
         return false;
     }
 
-    private boolean suckInItem(int maxItems){
+    protected boolean suckInItem(int maxItems){
         TileEntity inputInv = IOHelper.getNeighbor(this, inputDir);
         boolean success = false;
 
@@ -100,7 +108,7 @@ public class TileEntityOmnidirectionalHopper extends TileEntityBase implements I
     }
 
     public int getMaxItems(){
-        int upgrades = getUpgrades(ItemMachineUpgrade.UPGRADE_SPEED_DAMAGE, 5, 8);
+        int upgrades = getUpgrades(ItemMachineUpgrade.UPGRADE_SPEED_DAMAGE, getUpgradeSlots());
         if(upgrades > 5) {
             return Math.min((int)Math.pow(2, upgrades - 5), 256);
         } else {
@@ -109,17 +117,7 @@ public class TileEntityOmnidirectionalHopper extends TileEntityBase implements I
     }
 
     public int getItemTransferInterval(){
-        return 8 / (1 + getUpgrades(ItemMachineUpgrade.UPGRADE_SPEED_DAMAGE, 5, 8));
-    }
-
-    protected int getUpgrades(int upgradeDamage, int startSlot, int endSlot){
-        int upgrades = 0;
-        for(int i = startSlot; i <= endSlot; i++) {
-            if(getStackInSlot(i) != null && getStackInSlot(i).getItem() == Itemss.machineUpgrade && getStackInSlot(i).getItemDamage() == upgradeDamage) {
-                upgrades += getStackInSlot(i).stackSize;
-            }
-        }
-        return upgrades;
+        return 8 / (1 + getUpgrades(ItemMachineUpgrade.UPGRADE_SPEED_DAMAGE, getUpgradeSlots()));
     }
 
     public void setDirection(ForgeDirection dir){
@@ -155,11 +153,11 @@ public class TileEntityOmnidirectionalHopper extends TileEntityBase implements I
         redstoneMode = tag.getInteger("redstoneMode");
 
         NBTTagList tagList = tag.getTagList("Inventory", 10);
-        inventory = new ItemStack[9];
+        inventory = new ItemStack[inventory.length];
         for(int i = 0; i < tagList.tagCount(); ++i) {
             NBTTagCompound tagCompound = tagList.getCompoundTagAt(i);
             byte slot = tagCompound.getByte("Slot");
-            if(slot >= 0 && slot < 9) {
+            if(slot >= 0 && slot < inventory.length) {
                 inventory[slot] = ItemStack.loadItemStackFromNBT(tagCompound);
             }
         }

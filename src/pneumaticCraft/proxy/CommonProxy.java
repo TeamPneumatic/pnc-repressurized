@@ -14,6 +14,7 @@ import pneumaticCraft.client.gui.GuiDrone;
 import pneumaticCraft.client.gui.GuiElectrostaticCompressor;
 import pneumaticCraft.client.gui.GuiElevator;
 import pneumaticCraft.client.gui.GuiLiquidCompressor;
+import pneumaticCraft.client.gui.GuiLiquidHopper;
 import pneumaticCraft.client.gui.GuiOmnidirectionalHopper;
 import pneumaticCraft.client.gui.GuiPlasticMixer;
 import pneumaticCraft.client.gui.GuiPneumaticDoor;
@@ -39,6 +40,7 @@ import pneumaticCraft.common.inventory.ContainerChargingStation;
 import pneumaticCraft.common.inventory.ContainerChargingStationItemInventory;
 import pneumaticCraft.common.inventory.ContainerElevator;
 import pneumaticCraft.common.inventory.ContainerLiquidCompressor;
+import pneumaticCraft.common.inventory.ContainerLiquidHopper;
 import pneumaticCraft.common.inventory.ContainerOmnidirectionalHopper;
 import pneumaticCraft.common.inventory.ContainerPlasticMixer;
 import pneumaticCraft.common.inventory.ContainerPneumaticDoor;
@@ -75,6 +77,7 @@ import pneumaticCraft.common.tileentity.TileEntityChargingStation;
 import pneumaticCraft.common.tileentity.TileEntityElectrostaticCompressor;
 import pneumaticCraft.common.tileentity.TileEntityElevatorBase;
 import pneumaticCraft.common.tileentity.TileEntityLiquidCompressor;
+import pneumaticCraft.common.tileentity.TileEntityLiquidHopper;
 import pneumaticCraft.common.tileentity.TileEntityOmnidirectionalHopper;
 import pneumaticCraft.common.tileentity.TileEntityPlasticMixer;
 import pneumaticCraft.common.tileentity.TileEntityPneumaticBase;
@@ -129,6 +132,7 @@ public class CommonProxy implements IGuiHandler{
     public static final int GUI_ID_PLASTIC_MIXER = 29;
     public static final int GUI_ID_LIQUID_COMPRESSOR = 30;
     public static final int GUI_ID_ADVANCED_AIR_COMPRESSOR = 31;
+    public static final int GUI_ID_LIQUID_HOPPER = 32;
 
     private final HackTickHandler serverHackTickHandler = new HackTickHandler();
 
@@ -222,7 +226,8 @@ public class CommonProxy implements IGuiHandler{
                 return new ContainerPlasticMixer(player.inventory, (TileEntityPlasticMixer)world.getTileEntity(x, y, z));
             case GUI_ID_LIQUID_COMPRESSOR:
                 return new ContainerLiquidCompressor(player.inventory, (TileEntityLiquidCompressor)world.getTileEntity(x, y, z));
-
+            case GUI_ID_LIQUID_HOPPER:
+                return new ContainerLiquidHopper(player.inventory, (TileEntityLiquidHopper)world.getTileEntity(x, y, z));
         }
         return null;
     }
@@ -292,7 +297,8 @@ public class CommonProxy implements IGuiHandler{
                 return new GuiPlasticMixer(player.inventory, (TileEntityPlasticMixer)world.getTileEntity(x, y, z));
             case GUI_ID_LIQUID_COMPRESSOR:
                 return new GuiLiquidCompressor(player.inventory, (TileEntityLiquidCompressor)world.getTileEntity(x, y, z));
-
+            case GUI_ID_LIQUID_HOPPER:
+                return new GuiLiquidHopper(player.inventory, (TileEntityLiquidHopper)world.getTileEntity(x, y, z));
         }
         return null;
     }
