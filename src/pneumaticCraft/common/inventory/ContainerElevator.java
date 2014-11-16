@@ -2,24 +2,21 @@ package pneumaticCraft.common.inventory;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.tileentity.TileEntityElevatorBase;
 
-public class ContainerElevator extends Container{
-    TileEntityElevatorBase te;
+public class ContainerElevator extends ContainerPneumaticBase<TileEntityElevatorBase>{
 
-    public ContainerElevator(InventoryPlayer inventoryPlayer, TileEntityElevatorBase teElevator){
-        te = teElevator;
-        te.openGUI();
+    public ContainerElevator(InventoryPlayer inventoryPlayer, TileEntityElevatorBase te){
+        super(te);
 
         // add the upgrade slots
-        addSlotToContainer(new SlotUpgrade(teElevator, 0, 48, 29));
-        addSlotToContainer(new SlotUpgrade(teElevator, 1, 66, 29));
-        addSlotToContainer(new SlotUpgrade(teElevator, 2, 48, 47));
-        addSlotToContainer(new SlotUpgrade(teElevator, 3, 66, 47));
+        addSlotToContainer(new SlotUpgrade(te, 0, 48, 29));
+        addSlotToContainer(new SlotUpgrade(te, 1, 66, 29));
+        addSlotToContainer(new SlotUpgrade(te, 2, 48, 47));
+        addSlotToContainer(new SlotUpgrade(te, 3, 66, 47));
 
         // Add the player's inventory slots to the container
         for(int inventoryRowIndex = 0; inventoryRowIndex < 3; ++inventoryRowIndex) {
@@ -32,12 +29,6 @@ public class ContainerElevator extends Container{
         for(int actionBarSlotIndex = 0; actionBarSlotIndex < 9; ++actionBarSlotIndex) {
             addSlotToContainer(new Slot(inventoryPlayer, actionBarSlotIndex, 8 + actionBarSlotIndex * 18, 142));
         }
-    }
-
-    @Override
-    public boolean canInteractWith(EntityPlayer player){
-
-        return te.isGuiUseableByPlayer(player);
     }
 
     /**
@@ -83,12 +74,6 @@ public class ContainerElevator extends Container{
         }
 
         return var3;
-    }
-
-    @Override
-    public void onContainerClosed(EntityPlayer par1EntityPlayer){
-        super.onContainerClosed(par1EntityPlayer);
-        te.closeGUI();
     }
 
 }

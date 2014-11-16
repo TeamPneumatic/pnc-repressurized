@@ -3,6 +3,7 @@ package pneumaticCraft.client.gui;
 import java.util.List;
 
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.inventory.Container;
 import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -12,13 +13,17 @@ import org.lwjgl.opengl.GL11;
 import pneumaticCraft.api.tileentity.IPneumaticMachine;
 import pneumaticCraft.common.inventory.ContainerAirCompressor;
 import pneumaticCraft.common.tileentity.TileEntityAirCompressor;
-import pneumaticCraft.lib.PneumaticValues;
 import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class GuiAirCompressor extends GuiPneumaticContainerBase<TileEntityAirCompressor>{
+
+    public GuiAirCompressor(Container container, TileEntityAirCompressor te, String texture){
+
+        super(container, te, texture);
+    }
 
     public GuiAirCompressor(InventoryPlayer player, TileEntityAirCompressor te){
 
@@ -43,15 +48,19 @@ public class GuiAirCompressor extends GuiPneumaticContainerBase<TileEntityAirCom
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
 
-        if(te.burnTime > 0) drawTexturedModalRect(xStart + 80, yStart + 38 + 12 - i1, 176, 12 - i1, 14, i1 + 2);
+        if(te.burnTime >= te.curFuelUsage) drawTexturedModalRect(xStart + getFuelSlotXOffset(), yStart + 38 + 12 - i1, 176, 12 - i1, 14, i1 + 2);
+    }
+
+    protected int getFuelSlotXOffset(){
+        return 80;
     }
 
     @Override
     protected void addPressureStatInfo(List<String> pressureStatText){
         super.addPressureStatInfo(pressureStatText);
-        if(te.burnTime > 0 || TileEntityFurnace.isItemFuel(te.getStackInSlot(0)) && te.redstoneAllows()) {
+        if(te.getBurnTimeRemainingScaled(12) > 0 || TileEntityFurnace.isItemFuel(te.getStackInSlot(0)) && te.redstoneAllows()) {
             pressureStatText.add("\u00a77Currently producing:");
-            pressureStatText.add("\u00a70" + (double)Math.round(PneumaticValues.PRODUCTION_COMPRESSOR * te.getSpeedMultiplierFromUpgrades(te.getUpgradeSlots())) + " mL/tick.");
+            pressureStatText.add("\u00a70" + (double)Math.round(te.getBaseProduction() * te.getEfficiency() * te.getSpeedMultiplierFromUpgrades(te.getUpgradeSlots()) / 100) + " mL/tick.");
         }
     }
 

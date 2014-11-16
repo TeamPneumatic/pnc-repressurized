@@ -37,6 +37,9 @@ import pneumaticCraft.api.tileentity.IPneumaticMachine;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.Itemss;
+import pneumaticCraft.common.network.DescSynced;
+import pneumaticCraft.common.network.GuiSynced;
+import pneumaticCraft.common.network.LazySynced;
 import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.PacketPlaySound;
 import pneumaticCraft.common.network.PacketSpawnParticle;
@@ -56,17 +59,28 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements ISid
 
     private ItemStack[] inventory;
     private final Random rand = new Random();
+    @DescSynced
+    @LazySynced
     public float rotationAngle;
+    @DescSynced
+    @LazySynced
     public float heightAngle;
+    @DescSynced
     public float targetRotationAngle;
+    @DescSynced
     public float targetHeightAngle;
-    public int ticks = 100;
+    @GuiSynced
     public boolean doneTurning = false;
     private boolean redstonePowered = false;
+    @GuiSynced
     public int gpsX;
+    @GuiSynced
     public int gpsY;
+    @GuiSynced
     public int gpsZ;
+    @GuiSynced
     public boolean coordWithinReach;
+    @GuiSynced
     public boolean fireOnlyOnRightAngle = true;
     private int oldRangeUpgrades;
     private boolean externalControl;//used in the CC API, to disallow the Cannon to update its angles when things like range upgrades / GPS Tool have changed.
@@ -87,11 +101,6 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements ISid
 
     @Override
     public void updateEntity(){
-        ticks++;
-        if(!worldObj.isRemote && ticks > 100) {
-            sendDescriptionPacket();
-            ticks = 0;
-        }
 
         // GPS Tool read
         if(inventory[1] != null && inventory[1].getItem() == Itemss.GPSTool && !externalControl) {
@@ -166,9 +175,6 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements ISid
 
     private void updateDestination(){
         doneTurning = false;
-        // send a packet to the client to be able to show the right GPS coords
-        // in the gui.
-        if(!worldObj.isRemote) sendDescriptionPacket();
         // take dispenser upgrade in account
         double payloadFrictionY = 0.98D;// this value will differ when a
                                         // dispenser upgrade is inserted.
@@ -472,7 +478,6 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements ISid
     public void handleGUIButtonPress(int buttonID, EntityPlayer player){
         if(buttonID == 0) {
             fireOnlyOnRightAngle = !fireOnlyOnRightAngle;
-            sendDescriptionPacket();
         }
     }
 

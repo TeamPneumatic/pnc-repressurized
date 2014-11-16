@@ -9,6 +9,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.Itemss;
+import pneumaticCraft.common.network.GuiSynced;
 import pneumaticCraft.lib.PneumaticValues;
 
 public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase implements IInventory, IRedstoneControl{
@@ -18,6 +19,7 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase i
     private final int INVENTORY_SIZE = 4;
 
     private boolean lastRedstoneState;
+    @GuiSynced
     public int redstoneMode = 0;
     public int ironBarsBeneath = 0;
     private int struckByLightningCooldown; //used by the redstone.
@@ -80,7 +82,6 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase i
         if(buttonID == 0) {
             redstoneMode++;
             if(redstoneMode > 1) redstoneMode = 0;
-            sendDescriptionPacket();
         }
     }
 

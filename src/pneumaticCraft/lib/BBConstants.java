@@ -15,6 +15,9 @@ public class BBConstants{
     public static final float CHARGING_STATION_MAX_POS = 0.8125F;
     public static final float CHARGING_STATION_MAX_POS_TOP = 0.625F;
 
+    public static final float PLASTIC_MIXER_MIN_POS = 1 / 16F;
+    public static final float PLASTIC_MIXER_MAX_POS = 15 / 16F;
+
     public static final float VACUUM_PUMP_MIN_POS = 2F / 16F;
     public static final float VACUUM_PUMP_MAX_POS = 14F / 16F;
     public static final float VACUUM_PUMP_MAX_POS_TOP = 11F / 16F;

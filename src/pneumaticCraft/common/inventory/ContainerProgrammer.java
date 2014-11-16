@@ -2,19 +2,15 @@ package pneumaticCraft.common.inventory;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import pneumaticCraft.api.item.IProgrammable;
-import pneumaticCraft.common.tileentity.TileEntityBase;
+import pneumaticCraft.common.tileentity.TileEntityProgrammer;
 
-public class ContainerProgrammer extends Container{
-    IInventory te;
+public class ContainerProgrammer extends ContainerPneumaticBase<TileEntityProgrammer>{
 
-    public ContainerProgrammer(InventoryPlayer inventoryPlayer, IInventory te){
-        this.te = te;
-        ((TileEntityBase)te).openGUI();
+    public ContainerProgrammer(InventoryPlayer inventoryPlayer, TileEntityProgrammer te){
+        super(te);
         // add the upgrade slots
         addSlotToContainer(new Slot(te, 0, 152, 15){
             @Override
@@ -39,11 +35,6 @@ public class ContainerProgrammer extends Container{
     private static boolean isProgrammableItem(ItemStack stack){
         if(stack == null) return false;
         return stack.getItem() instanceof IProgrammable && ((IProgrammable)stack.getItem()).canProgram(stack);
-    }
-
-    @Override
-    public boolean canInteractWith(EntityPlayer entityplayer){
-        return true;//TODO do properly
     }
 
     @Override
@@ -77,9 +68,4 @@ public class ContainerProgrammer extends Container{
         return var3;
     }
 
-    @Override
-    public void onContainerClosed(EntityPlayer par1EntityPlayer){
-        super.onContainerClosed(par1EntityPlayer);
-        ((TileEntityBase)te).closeGUI();
-    }
 }

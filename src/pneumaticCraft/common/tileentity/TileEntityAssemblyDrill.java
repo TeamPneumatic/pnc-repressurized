@@ -5,13 +5,17 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.api.recipe.AssemblyRecipe;
+import pneumaticCraft.common.network.DescSynced;
+import pneumaticCraft.common.network.LazySynced;
 import pneumaticCraft.common.recipes.programs.AssemblyProgram;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.TileEntityConstants;
 
 public class TileEntityAssemblyDrill extends TileEntityAssemblyRobot{
+    @DescSynced
     public boolean isDrillOn;
-    private boolean oldIsDrillOn;
+    @DescSynced
+    @LazySynced
     private float drillSpeed;
     public float drillRotation;
     public float oldDrillRotation;
@@ -19,10 +23,6 @@ public class TileEntityAssemblyDrill extends TileEntityAssemblyRobot{
 
     @Override
     public void updateEntity(){
-        if(oldIsDrillOn != isDrillOn) {
-            oldIsDrillOn = isDrillOn;
-            clientNeedsUpdate = true;
-        }
         oldDrillRotation = drillRotation;
         super.updateEntity();
         if(isDrillOn) {

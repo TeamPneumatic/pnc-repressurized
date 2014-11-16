@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 import net.minecraft.client.Minecraft;
@@ -13,6 +12,7 @@ import net.minecraft.util.ChatAllowedCharacters;
 import net.minecraft.util.ResourceLocation;
 
 import org.apache.commons.io.Charsets;
+import org.apache.commons.lang3.ArrayUtils;
 import org.lwjgl.input.Keyboard;
 
 import pneumaticCraft.common.network.NetworkHandler;
@@ -22,7 +22,7 @@ import pneumaticCraft.common.tileentity.TileEntityAphorismTile;
 
 public class GuiAphorismTile extends GuiScreen{
     public final TileEntityAphorismTile tile;
-    private final List<String> textLines;
+    private String[] textLines;
     public int cursorY;
     public int cursorX;
     public int updateCounter;
@@ -32,8 +32,8 @@ public class GuiAphorismTile extends GuiScreen{
     public GuiAphorismTile(TileEntityAphorismTile tile){
         this.tile = tile;
         textLines = tile.getTextLines();
-        if(textLines.size() == 1 && textLines.get(0).equals("")) {
-            textLines.set(0, getSplashText());
+        if(textLines.length == 1 && textLines[0].equals("")) {
+            textLines[0] = getSplashText();
         }
         NetworkHandler.sendToServer(new PacketAphorismTileUpdate(tile));
     }
@@ -49,23 +49,25 @@ public class GuiAphorismTile extends GuiScreen{
             NetworkHandler.sendToServer(new PacketAphorismTileUpdate(tile));
         } else if(par2 == 200) {
             cursorY--;
-            if(cursorY < 0) cursorY = textLines.size() - 1;
+            if(cursorY < 0) cursorY = textLines.length - 1;
         } else if(par2 == 208 || par2 == 156) {
             cursorY++;
-            if(cursorY >= textLines.size()) cursorY = 0;
+            if(cursorY >= textLines.length) cursorY = 0;
         } else if(par2 == 28) {
             cursorY++;
-            textLines.add(cursorY, "");
+            textLines = ArrayUtils.add(textLines, cursorY, "");
+            tile.setTextLines(textLines);
         } else if(par2 == 14) {
-            if(textLines.get(cursorY).length() > 0) {
-                textLines.set(cursorY, textLines.get(cursorY).substring(0, textLines.get(cursorY).length() - 1));
-            } else if(textLines.size() > 1) {
-                textLines.remove(cursorY);
+            if(textLines[cursorY].length() > 0) {
+                textLines[cursorY] = textLines[cursorY].substring(0, textLines[cursorY].length() - 1);
+            } else if(textLines.length > 1) {
+                textLines = ArrayUtils.remove(textLines, cursorY);
+                tile.setTextLines(textLines);
                 cursorY--;
                 if(cursorY < 0) cursorY = 0;
             }
         } else if(ChatAllowedCharacters.isAllowedCharacter(par1)) {
-            textLines.set(cursorY, textLines.get(cursorY) + par1);
+            textLines[cursorY] = textLines[cursorY] + par1;
         }
 
         super.keyTyped(par1, par2);

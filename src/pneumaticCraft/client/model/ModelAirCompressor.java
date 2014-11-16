@@ -12,9 +12,9 @@ public class ModelAirCompressor extends BaseModel{
 
     private final ResourceLocation activeTexture;
 
-    public ModelAirCompressor(){
-        super("airCompressor.obj");
-        activeTexture = new ResourceLocation(Textures.MODEL_LOCATION + "airCompressorActive.png");
+    public ModelAirCompressor(String name){
+        super("airCompressor.obj", name + ".png");
+        activeTexture = new ResourceLocation(Textures.MODEL_LOCATION + name + "Active.png");
     }
 
     @Override
@@ -28,7 +28,7 @@ public class ModelAirCompressor extends BaseModel{
         boolean active = false;
         if(tile != null) {
             TileEntityAirCompressor compressor = (TileEntityAirCompressor)tile;
-            active = compressor.burnTime > 0;
+            active = compressor.isActive;
         }
         return active ? activeTexture : resLoc;
     }

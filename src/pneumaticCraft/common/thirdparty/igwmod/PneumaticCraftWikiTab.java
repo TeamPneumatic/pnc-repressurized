@@ -17,6 +17,8 @@ public class PneumaticCraftWikiTab extends BaseWikiTab{
         pageEntries.add("pressureChamber");
         skipLine();
         pageEntries.add("block/omnidirectionalHopper");
+        pageEntries.add("block/liquidHopper");
+        pageEntries.add("block/plasticMixer");
         pageEntries.add("block/airCannon");
         pageEntries.add("elevator");
         pageEntries.add("pneumaticDoor");

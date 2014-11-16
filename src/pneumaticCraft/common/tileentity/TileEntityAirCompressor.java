@@ -17,6 +17,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import pneumaticCraft.api.tileentity.IPneumaticMachine;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.Itemss;
+import pneumaticCraft.common.network.DescSynced;
+import pneumaticCraft.common.network.GuiSynced;
 import pneumaticCraft.lib.PneumaticValues;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -31,47 +33,66 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
     public static final int UPGRADE_SLOT_START = 1;
     public static final int UPGRADE_SLOT_END = 4;
 
+    @GuiSynced
     public int burnTime;
+    @GuiSynced
     public int maxBurnTime; // in here the total burn time of the current
                             // burning item is stored.
-    private int oldScaledBurnTime;
+    @GuiSynced
     public int redstoneMode = 0; // determines how the compressor responds to
                                  // redstone.
+    @DescSynced
+    public boolean isActive;
+    @GuiSynced
+    public int curFuelUsage;
 
     public TileEntityAirCompressor(){
-        super(PneumaticValues.DANGER_PRESSURE_AIR_COMPRESSOR, PneumaticValues.MAX_PRESSURE_AIR_COMPRESSOR, PneumaticValues.VOLUME_AIR_COMPRESSOR);
+        this(PneumaticValues.DANGER_PRESSURE_AIR_COMPRESSOR, PneumaticValues.MAX_PRESSURE_AIR_COMPRESSOR, PneumaticValues.VOLUME_AIR_COMPRESSOR);
+    }
+
+    public TileEntityAirCompressor(float dangerPressure, float criticalPressure, int volume){
+        super(dangerPressure, criticalPressure, volume);
         inventory = new ItemStack[INVENTORY_SIZE];
         setUpgradeSlots(new int[]{UPGRADE_SLOT_START, 2, 3, UPGRADE_SLOT_END});
     }
 
     @Override
     public void updateEntity(){
-        if(!worldObj.isRemote && burnTime <= 0 && inventory[0] != null && TileEntityFurnace.isItemFuel(inventory[0]) && redstoneAllows()) {
-            burnTime = TileEntityFurnace.getItemBurnTime(inventory[0]);
-            maxBurnTime = burnTime;
+        if(!worldObj.isRemote) {
+            if(burnTime < curFuelUsage && inventory[0] != null && TileEntityFurnace.isItemFuel(inventory[0]) && redstoneAllows()) {
+                burnTime += TileEntityFurnace.getItemBurnTime(inventory[0]);
+                maxBurnTime = burnTime;
 
-            inventory[0].stackSize--;
-            if(inventory[0].stackSize == 0) {
-                inventory[0] = inventory[0].getItem().getContainerItem(inventory[0]);
-            }
-
-        }
-        if(burnTime > 0) {
-            burnTime = Math.max(burnTime - (int)getSpeedUsageMultiplierFromUpgrades(getUpgradeSlots()), 0);
-            if(!worldObj.isRemote) {
-
-                addAir(PneumaticValues.PRODUCTION_COMPRESSOR * (int)getSpeedMultiplierFromUpgrades(getUpgradeSlots()), ForgeDirection.UNKNOWN);
-                if(oldScaledBurnTime != getBurnTimeRemainingScaled(12)) {
-                    sendDescriptionPacket();
-                    oldScaledBurnTime = getBurnTimeRemainingScaled(12);
+                inventory[0].stackSize--;
+                if(inventory[0].stackSize == 0) {
+                    inventory[0] = inventory[0].getItem().getContainerItem(inventory[0]);
                 }
-            } else {
-                spawnBurningParticle();
+
             }
-        }
+
+            curFuelUsage = (int)(getBaseProduction() * getSpeedUsageMultiplierFromUpgrades(getUpgradeSlots()));
+            if(burnTime >= curFuelUsage) {
+                burnTime -= curFuelUsage;
+                if(!worldObj.isRemote) {
+                    addAir((int)(getBaseProduction() * getSpeedMultiplierFromUpgrades(getUpgradeSlots()) * getEfficiency() / 100D), ForgeDirection.UNKNOWN);
+                    onFuelBurn(curFuelUsage);
+                }
+            }
+            isActive = burnTime > curFuelUsage;
+        } else if(isActive) spawnBurningParticle();
 
         super.updateEntity();
 
+    }
+
+    protected void onFuelBurn(int burnedFuel){}
+
+    public int getEfficiency(){
+        return 100;
+    }
+
+    public int getBaseProduction(){
+        return PneumaticValues.PRODUCTION_COMPRESSOR;
     }
 
     @Override
@@ -128,8 +149,7 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
     }
 
     public int getBurnTimeRemainingScaled(int parts){
-        if(maxBurnTime == 0) return 0;
-        // System.out.println("burn: "+ burnTime + ", maxBurn: " + maxBurnTime);
+        if(maxBurnTime == 0 || burnTime < curFuelUsage) return 0;
         return parts * burnTime / maxBurnTime;
     }
 
@@ -138,7 +158,6 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
         if(buttonID == 0) {
             redstoneMode++;
             if(redstoneMode > 2) redstoneMode = 0;
-            sendDescriptionPacket();
         }
     }
 

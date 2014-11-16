@@ -4,6 +4,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.item.ItemBlock;
 import net.minecraftforge.oredict.OreDictionary;
+import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.common.block.pneumaticPlants.BlockBurstPlant;
 import pneumaticCraft.common.block.pneumaticPlants.BlockChopperPlant;
 import pneumaticCraft.common.block.pneumaticPlants.BlockCreeperPlant;
@@ -75,11 +76,17 @@ public class Blockss{
     public static Block elevatorCaller;
     public static Block programmer;
     public static Block creativeCompressor;
+    public static Block plasticMixer;
+    public static Block liquidCompressor;
+    public static Block advancedLiquidCompressor;
+    public static Block advancedAirCompressor;
+    public static Block liquidHopper;
 
     public static void init(){
         pressureTube = new BlockPressureTube(Material.iron, PneumaticValues.DANGER_PRESSURE_PRESSURE_TUBE, PneumaticValues.MAX_PRESSURE_PRESSURE_TUBE, PneumaticValues.VOLUME_PRESSURE_TUBE).setHardness(3.0F).setResistance(3.0F).setBlockName("pressureTube");
         advancedPressureTube = new BlockPressureTube(Material.iron, PneumaticValues.DANGER_PRESSURE_ADVANCED_PRESSURE_TUBE, PneumaticValues.MAX_PRESSURE_ADVANCED_PRESSURE_TUBE, PneumaticValues.VOLUME_ADVANCED_PRESSURE_TUBE).setHardness(3.0F).setResistance(3.0F).setBlockName("advancedPressureTube");
         airCompressor = new BlockAirCompressor(Material.iron).setHardness(3.0F).setResistance(3.0F).setBlockName("airCompressor");
+        advancedAirCompressor = new BlockAdvancedAirCompressor(Material.iron).setHardness(3.0F).setResistance(3.0F).setBlockName("advancedAirCompressor");
         airCannon = new BlockAirCannon(Material.iron).setHardness(3.0F).setResistance(3.0F).setBlockName("airCannon");
         pressureChamberWall = new BlockPressureChamberWall(Material.iron).setHardness(10.0F).setResistance(2000.0F).setBlockName("pressureChamberWall");
         pressureChamberValve = new BlockPressureChamberValve(Material.iron).setHardness(10.0F).setResistance(2000.0F).setBlockName("pressureChamberValve");
@@ -118,9 +125,13 @@ public class Blockss{
         electrostaticCompressor = new BlockElectrostaticCompressor(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("electrostaticCompressor");
         aphorismTile = new BlockAphorismTile(Material.rock).setHardness(1.5F).setResistance(4.0F).setBlockName("aphorismTile");
         omnidirectionalHopper = new BlockOmnidirectionalHopper(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("omnidirectionalHopper");
+        liquidHopper = new BlockLiquidHopper(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("liquidHopper");
         elevatorCaller = new BlockElevatorCaller(Material.iron).setHardness(3.0F).setResistance(10F).setBlockName("elevatorCaller");
         programmer = new BlockProgrammer(Material.iron).setHardness(3.0F).setResistance(10F).setBlockName("programmer");
         creativeCompressor = new BlockCreativeCompressor(Material.iron).setHardness(3.0F).setResistance(10F).setBlockName("creativeCompressor");
+        plasticMixer = new BlockPlasticMixer(Material.iron).setHardness(3.0F).setResistance(10F).setBlockName("plasticMixer");
+        liquidCompressor = new BlockLiquidCompressor(Material.iron).setHardness(3.0F).setResistance(10F).setBlockName("liquidCompressor");
+        advancedLiquidCompressor = new BlockAdvancedLiquidCompressor(Material.iron).setHardness(3.0F).setResistance(10F).setBlockName("advancedLiquidCompressor");
 
         registerBlocks();
 
@@ -130,12 +141,14 @@ public class Blockss{
     private static class HelperBlock extends Block{//helper class, as the constructor of Block is protected.
         public HelperBlock(Material material){
             super(material);
+            setCreativeTab(PneumaticCraft.tabPneumaticCraft);
         }
     }
 
     private static void registerBlocks(){
         registerBlock(pressureTube, ItemBlockPressureTube.class);
         registerBlock(airCompressor);
+        registerBlock(advancedAirCompressor);
         registerBlock(airCannon);
         registerBlock(pressureChamberWall, ItemBlockPressureChamberWall.class);//TODO legacy remove item block.
         registerBlock(pressureChamberValve);
@@ -175,9 +188,13 @@ public class Blockss{
         registerBlock(electrostaticCompressor);
         registerBlock(aphorismTile);
         registerBlock(omnidirectionalHopper);
+        registerBlock(liquidHopper);
         registerBlock(elevatorCaller);
         registerBlock(programmer);
         registerBlock(creativeCompressor);
+        registerBlock(plasticMixer);
+        registerBlock(liquidCompressor);
+        registerBlock(advancedLiquidCompressor);
     }
 
     public static void registerBlock(Block block){
@@ -187,6 +204,5 @@ public class Blockss{
     private static void registerBlock(Block block, Class<? extends ItemBlock> itemBlockClass){
         GameRegistry.registerBlock(block, itemBlockClass, block.getUnlocalizedName().substring("tile.".length()));
         ThirdPartyManager.instance().onBlockRegistry(block);
-
     }
 }

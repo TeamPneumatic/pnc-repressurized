@@ -7,6 +7,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.common.Config;
 import pneumaticCraft.common.item.Itemss;
+import pneumaticCraft.common.network.GuiSynced;
 import pneumaticCraft.common.tileentity.IRedstoneControlled;
 import pneumaticCraft.common.tileentity.TileEntityPneumaticBase;
 import pneumaticCraft.lib.PneumaticValues;
@@ -18,8 +19,11 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase implements
         IInventory, IRedstoneControlled, IRFConverter{
 
     private final EnergyStorage energy = new EnergyStorage(100000);
+    @GuiSynced
     private int rfPerTick;
+    @GuiSynced
     private int airPerTick;
+    @GuiSynced
     private int redstoneMode;
 
     private final ItemStack[] inventory = new ItemStack[4];
@@ -57,6 +61,7 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase implements
 
     @Override
     public int receiveEnergy(ForgeDirection from, int maxReceive, boolean simulate){
+        maxReceive = getRFRate() * 2;
         return energy.receiveEnergy(maxReceive, simulate);
     }
 

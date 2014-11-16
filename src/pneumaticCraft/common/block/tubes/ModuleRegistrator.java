@@ -17,6 +17,7 @@ public class ModuleRegistrator{
         registerModule(ModuleFlowDetector.class);
         registerModule(ModuleAirGrate.class);
         registerModule(ModuleRegulatorTube.class);
+        registerModule(ModuleCharging.class);
     }
 
     public static void registerModule(Class<? extends TubeModule> moduleClass){

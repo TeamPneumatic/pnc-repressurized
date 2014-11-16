@@ -3,8 +3,10 @@ package pneumaticCraft.common.tileentity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
+import pneumaticCraft.common.network.DescSynced;
 
 public class TileEntityCreativeCompressor extends TileEntityPneumaticBase{
+    @DescSynced
     public float pressureSetpoint;
 
     public TileEntityCreativeCompressor(){
@@ -54,6 +56,5 @@ public class TileEntityCreativeCompressor extends TileEntityPneumaticBase{
         }
         if(pressureSetpoint > 30) pressureSetpoint = 30;
         if(pressureSetpoint < -1) pressureSetpoint = -1;
-        sendDescriptionPacket();
     }
 }

@@ -24,12 +24,17 @@ import pneumaticCraft.common.inventory.ContainerChargingStationItemInventory;
 import pneumaticCraft.common.item.IChargingStationGUIHolderItem;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.Itemss;
+import pneumaticCraft.common.network.DescSynced;
+import pneumaticCraft.common.network.FilteredSynced;
+import pneumaticCraft.common.network.GuiSynced;
 import pneumaticCraft.lib.PneumaticValues;
 import pneumaticCraft.proxy.CommonProxy;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityChargingStation extends TileEntityPneumaticBase implements ISidedInventory, IRedstoneControl{
+    @DescSynced
+    @FilteredSynced(index = CHARGE_INVENTORY_INDEX)
     private ItemStack[] inventory;
 
     private final int INVENTORY_SIZE = 5;
@@ -39,8 +44,11 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     public static final int UPGRADE_SLOT_END = 4;
     public static final float ANIMATION_AIR_SPEED = 0.001F;
 
+    @GuiSynced
     public boolean charging;
+    @GuiSynced
     public boolean disCharging;
+    @GuiSynced
     public int redstoneMode;
     private boolean oldRedstoneStatus;
     public float renderAirProgress;
@@ -138,7 +146,6 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
             redstoneMode++;
             if(redstoneMode > 3) redstoneMode = 0;
             updateNeighbours();
-            sendDescriptionPacket();
         } else if((buttonID == 1 || buttonID == 2) && inventory[CHARGE_INVENTORY_INDEX] != null && inventory[CHARGE_INVENTORY_INDEX].getItem() instanceof IChargingStationGUIHolderItem) {
             player.openGui(PneumaticCraft.instance, buttonID == 1 ? ((IChargingStationGUIHolderItem)inventory[CHARGE_INVENTORY_INDEX].getItem()).getGuiID() : CommonProxy.GUI_ID_CHARGING_STATION, worldObj, xCoord, yCoord, zCoord);
         }

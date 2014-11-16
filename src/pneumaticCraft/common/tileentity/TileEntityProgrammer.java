@@ -40,7 +40,7 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory{
     public static List<IProgWidget> registeredWidgets = new ArrayList<IProgWidget>();
     @SideOnly(Side.CLIENT)
     private static AreaShowHandler previewedArea;
-    public int redstoneMode;
+    public int redstoneMode;//for later use
     private ItemStack[] inventory = new ItemStack[1];
 
     public static final int PROGRAM_SLOT = 0;

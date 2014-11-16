@@ -2,26 +2,23 @@ package pneumaticCraft.common.inventory;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.tileentity.TileEntityChargingStation;
 
-public class ContainerChargingStation extends Container{
-    TileEntityChargingStation te;
+public class ContainerChargingStation extends ContainerPneumaticBase<TileEntityChargingStation>{
 
-    public ContainerChargingStation(InventoryPlayer inventoryPlayer, TileEntityChargingStation teChargingStation){
-        te = teChargingStation;
-        te.openGUI();
+    public ContainerChargingStation(InventoryPlayer inventoryPlayer, TileEntityChargingStation te){
+        super(te);
 
         // add the cannoned slot.
-        addSlotToContainer(new Slot(teChargingStation, 0, 91, 39));
+        addSlotToContainer(new Slot(te, 0, 91, 39));
 
         // add the upgrade slots
         for(int i = 0; i < 2; i++) {
             for(int j = 0; j < 2; j++) {
-                addSlotToContainer(new SlotUpgrade(teChargingStation, i * 2 + j + 1, 42 + j * 18, 29 + i * 18));
+                addSlotToContainer(new SlotUpgrade(te, i * 2 + j + 1, 42 + j * 18, 29 + i * 18));
             }
         }
 
@@ -41,12 +38,6 @@ public class ContainerChargingStation extends Container{
         for(int i = 0; i < 4; i++) {
             addSlotToContainer(new SlotPneumaticArmor(inventoryPlayer.player, inventoryPlayer, inventoryPlayer.getSizeInventory() - 1 - i, 9, 8 + i * 18, i));
         }
-    }
-
-    @Override
-    public boolean canInteractWith(EntityPlayer player){
-
-        return te.isGuiUseableByPlayer(player);
     }
 
     /**
@@ -103,12 +94,6 @@ public class ContainerChargingStation extends Container{
         }
 
         return var3;
-    }
-
-    @Override
-    public void onContainerClosed(EntityPlayer par1EntityPlayer){
-        super.onContainerClosed(par1EntityPlayer);
-        te.closeGUI();
     }
 
 }

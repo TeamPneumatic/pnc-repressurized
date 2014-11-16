@@ -21,6 +21,7 @@ import pneumaticCraft.common.block.tubes.ModuleRegistrator;
 import pneumaticCraft.common.block.tubes.ModuleRegulatorTube;
 import pneumaticCraft.common.block.tubes.ModuleSafetyValve;
 import pneumaticCraft.common.block.tubes.TubeModule;
+import pneumaticCraft.common.network.DescSynced;
 import pneumaticCraft.common.thirdparty.ModInteractionUtils;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.Log;
@@ -29,20 +30,17 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityPressureTube extends TileEntityPneumaticBase{
-    public boolean[] sidesConnected;
-
+    @DescSynced
+    public boolean[] sidesConnected = new boolean[6];
     public TubeModule[] modules = new TubeModule[6];
-    private boolean firstRun = true;
 
     public TileEntityPressureTube(){
         super(PneumaticValues.DANGER_PRESSURE_PRESSURE_TUBE, PneumaticValues.MAX_PRESSURE_PRESSURE_TUBE, PneumaticValues.VOLUME_PRESSURE_TUBE);
-        sidesConnected = new boolean[6];
     }
 
     public TileEntityPressureTube(float dangerPressurePressureTube, float maxPressurePressureTube,
             int volumePressureTube){
         super(dangerPressurePressureTube, maxPressurePressureTube, volumePressureTube);
-        sidesConnected = new boolean[6];
     }
 
     @Override
@@ -50,15 +48,6 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase{
         super.readFromNBT(nbt);
         for(int i = 0; i < 6; i++) {
             sidesConnected[i] = nbt.getBoolean("sideConnected" + i);
-        }
-
-        modules = new TubeModule[6];
-        NBTTagList moduleList = nbt.getTagList("modules", 10);
-        for(int i = 0; i < moduleList.tagCount(); i++) {
-            NBTTagCompound moduleTag = moduleList.getCompoundTagAt(i);
-            TubeModule module = ModuleRegistrator.getModule(moduleTag.getString("type"));
-            module.readFromNBT(moduleTag);
-            setModule(module, ForgeDirection.getOrientation(moduleTag.getInteger("side")));
         }
     }
 
@@ -68,7 +57,11 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase{
         for(int i = 0; i < 6; i++) {
             nbt.setBoolean("sideConnected" + i, sidesConnected[i]);
         }
+    }
 
+    @Override
+    public void writeToPacket(NBTTagCompound tag){
+        super.writeToPacket(tag);
         NBTTagList moduleList = new NBTTagList();
         for(int i = 0; i < modules.length; i++) {
             if(modules[i] != null) {
@@ -79,18 +72,25 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase{
                 moduleList.appendTag(moduleTag);
             }
         }
-        nbt.setTag("modules", moduleList);
+        tag.setTag("modules", moduleList);
+    }
+
+    @Override
+    public void readFromPacket(NBTTagCompound tag){
+        super.readFromPacket(tag);
+        modules = new TubeModule[6];
+        NBTTagList moduleList = tag.getTagList("modules", 10);
+        for(int i = 0; i < moduleList.tagCount(); i++) {
+            NBTTagCompound moduleTag = moduleList.getCompoundTagAt(i);
+            TubeModule module = ModuleRegistrator.getModule(moduleTag.getString("type"));
+            module.readFromNBT(moduleTag);
+            setModule(module, ForgeDirection.getOrientation(moduleTag.getInteger("side")));
+        }
     }
 
     @Override
     public void updateEntity(){
         super.updateEntity();
-
-        if(!worldObj.isRemote && firstRun) {
-            firstRun = false;
-            updateConnections(worldObj, xCoord, yCoord, zCoord);
-            legacyHelper();
-        }
 
         for(TubeModule module : modules) {
             if(module != null) module.update();
@@ -124,6 +124,11 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase{
             }
         }
         return Integer.MAX_VALUE;
+    }
+
+    @Override
+    protected void onFirstServerUpdate(){
+        legacyHelper();
     }
 
     //TODO legacy, remove after a while
@@ -178,7 +183,18 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase{
         return modules[side.ordinal()] == null || modules[side.ordinal()].isInline();
     }
 
-    public void onNeighborBlockChange(){
+    @Override
+    public void onNeighborTileUpdate(){
+        super.onNeighborTileUpdate();
+        updateConnections(worldObj, xCoord, yCoord, zCoord);
+        for(TubeModule module : modules) {
+            if(module != null) module.onNeighborTileUpdate();
+        }
+    }
+
+    @Override
+    public void onNeighborBlockUpdate(){
+        super.onNeighborBlockUpdate();
         updateConnections(worldObj, xCoord, yCoord, zCoord);
         for(TubeModule module : modules) {
             if(module != null) module.onNeighborBlockUpdate();
@@ -208,8 +224,6 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase{
         for(int i = 0; i < 6; i++) {
             if(modules[i] != null && modules[i].isInline()) sidesConnected[i] = false;
         }
-
-        sendDescriptionPacket();
     }
 
     @Override

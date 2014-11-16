@@ -3,7 +3,6 @@ package pneumaticCraft.common.thirdparty.computercraft;
 import java.util.ArrayList;
 import java.util.List;
 
-import dan200.computercraft.api.lua.LuaException;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.nbt.NBTTagCompound;
@@ -27,6 +26,7 @@ import pneumaticCraft.common.progwidgets.ProgWidgetItemFilter;
 import pneumaticCraft.common.progwidgets.ProgWidgetString;
 import pneumaticCraft.common.tileentity.TileEntityProgrammer;
 import dan200.computercraft.api.lua.ILuaContext;
+import dan200.computercraft.api.lua.LuaException;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import dan200.computercraft.api.peripheral.IPeripheral;
 
@@ -78,7 +78,7 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral{
     public TileEntityDroneInterface(){
         luaMethods.add(new LuaMethod("isConnectedToDrone"){
             @Override
-            public Object[] call(IComputerAccess computer, ILuaContext context, Object[] args)  throws LuaException, InterruptedException{
+            public Object[] call(IComputerAccess computer, ILuaContext context, Object[] args) throws LuaException, InterruptedException{
                 if(args.length == 0) {
                     return new Object[]{drone != null};
                 } else {
@@ -89,7 +89,7 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral{
 
         luaMethods.add(new LuaMethod("getDronePressure"){
             @Override
-            public Object[] call(IComputerAccess computer, ILuaContext context, Object[] args)  throws LuaException, InterruptedException{
+            public Object[] call(IComputerAccess computer, ILuaContext context, Object[] args) throws LuaException, InterruptedException{
                 if(args.length == 0) {
                     if(drone == null) throw new IllegalArgumentException("There's no connected Drone!");
                     return new Object[]{(double)drone.getPressure(null)};
@@ -101,7 +101,7 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral{
 
         luaMethods.add(new LuaMethod("exitPiece"){
             @Override
-            public Object[] call(IComputerAccess computer, ILuaContext context, Object[] args)  throws LuaException, InterruptedException{
+            public Object[] call(IComputerAccess computer, ILuaContext context, Object[] args) throws LuaException, InterruptedException{
                 if(args.length == 0) {
                     if(drone == null) throw new IllegalArgumentException("There's no connected Drone!");
                     setDrone(null);//disconnect
@@ -114,7 +114,7 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral{
 
         luaMethods.add(new LuaMethod("getAllActions"){
             @Override
-            public Object[] call(IComputerAccess computer, ILuaContext context, Object[] args)  throws LuaException, InterruptedException{
+            public Object[] call(IComputerAccess computer, ILuaContext context, Object[] args) throws LuaException, InterruptedException{
                 if(args.length == 0) {
                     List<String> actions = new ArrayList<String>();
                     for(IProgWidget widget : TileEntityProgrammer.registeredWidgets) {
@@ -188,7 +188,7 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral{
 
         luaMethods.add(new LuaMethod("removeArea"){
             @Override
-            public Object[] call(IComputerAccess computer, ILuaContext context, Object[] args)  throws LuaException, InterruptedException{
+            public Object[] call(IComputerAccess computer, ILuaContext context, Object[] args) throws LuaException, InterruptedException{
                 if(args.length == 3) {
                     getWidget().removeArea(((Double)args[0]).intValue(), ((Double)args[1]).intValue(), ((Double)args[2]).intValue());
                     messageToDrone(ProgWidgetArea.class);
@@ -427,7 +427,7 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral{
     }
 
     @Override
-    public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments)  throws LuaException, InterruptedException{
+    public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) throws LuaException, InterruptedException{
         return luaMethods.get(method).call(computer, context, arguments);
     }
 

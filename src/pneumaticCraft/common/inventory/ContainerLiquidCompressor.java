@@ -2,26 +2,25 @@ package pneumaticCraft.common.inventory;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import pneumaticCraft.common.item.Itemss;
-import pneumaticCraft.common.tileentity.TileEntityPneumaticBase;
-import pneumaticCraft.common.util.PneumaticCraftUtils;
+import pneumaticCraft.common.tileentity.TileEntityLiquidCompressor;
 
-public class ContainerElectricCompressor extends Container{
-    IInventory te;
+public class ContainerLiquidCompressor extends ContainerPneumaticBase<TileEntityLiquidCompressor>{
 
-    public ContainerElectricCompressor(InventoryPlayer inventoryPlayer, IInventory te){
-        this.te = te;
-        ((TileEntityPneumaticBase)te).openGUI();
+    public ContainerLiquidCompressor(InventoryPlayer inventoryPlayer, TileEntityLiquidCompressor te){
+        super(te);
 
         // add the upgrade slots
-        addSlotToContainer(new SlotUpgradeAndIC2(te, 0, 48, 29));
-        addSlotToContainer(new SlotUpgradeAndIC2(te, 1, 66, 29));
-        addSlotToContainer(new SlotUpgradeAndIC2(te, 2, 48, 47));
-        addSlotToContainer(new SlotUpgradeAndIC2(te, 3, 66, 47));
+        for(int i = 0; i < 2; i++) {
+            for(int j = 0; j < 2; j++) {
+                addSlotToContainer(new SlotUpgrade(te, i * 2 + j, 11 + j * 18, 29 + i * 18));
+            }
+        }
+
+        addSlotToContainer(new SlotFullFluidContainer(te, 4, getFluidContainerOffset(), 22));
+        addSlotToContainer(new Slot(te, 5, getFluidContainerOffset(), 55));
 
         // Add the player's inventory slots to the container
         for(int inventoryRowIndex = 0; inventoryRowIndex < 3; ++inventoryRowIndex) {
@@ -36,10 +35,8 @@ public class ContainerElectricCompressor extends Container{
         }
     }
 
-    @Override
-    public boolean canInteractWith(EntityPlayer player){
-
-        return ((TileEntityPneumaticBase)te).isGuiUseableByPlayer(player);
+    protected int getFluidContainerOffset(){
+        return 62;
     }
 
     /**
@@ -65,11 +62,14 @@ public class ContainerElectricCompressor extends Container{
             ItemStack var5 = var4.getStack();
             var3 = var5.copy();
 
-            if(par2 < 4) {
-                if(!mergeItemStack(var5, 4, 39, false)) return null;
+            if(par2 < 6) {
+                if(!mergeItemStack(var5, 6, 42, false)) return null;
+
                 var4.onSlotChange(var5, var3);
-            } else if(var3.getItem() == Itemss.machineUpgrade || PneumaticCraftUtils.isIC2Upgrade(var3.getItem())) {
-                if(!mergeItemStack(var5, 0, 4, false)) return null;
+            } else {
+                if(var5.getItem() == Itemss.machineUpgrade) {
+                    if(!mergeItemStack(var5, 0, 4, false)) return null;
+                } else if(te.isItemValidForSlot(4, var5) && !mergeItemStack(var5, 4, 5, false)) return null;
                 var4.onSlotChange(var5, var3);
             }
 
@@ -86,11 +86,4 @@ public class ContainerElectricCompressor extends Container{
 
         return var3;
     }
-
-    @Override
-    public void onContainerClosed(EntityPlayer par1EntityPlayer){
-        super.onContainerClosed(par1EntityPlayer);
-        ((TileEntityPneumaticBase)te).closeGUI();
-    }
-
 }

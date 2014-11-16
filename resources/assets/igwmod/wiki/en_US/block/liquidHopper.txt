@@ -1,0 +1,2 @@
+The Liquid Hopper is a hopper which you can use to transfer liquids. Like the [link{block/omnidirectionalHopper}]Omnidirectional Hopper[link{}] it's omnidirectional. You can put in Speed Upgrades to increase the liquid transfer speed.
+[crafting{200, 70, key=block/liquidHopper}]

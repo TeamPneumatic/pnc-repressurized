@@ -22,6 +22,9 @@ import pneumaticCraft.common.Config;
 import pneumaticCraft.common.block.BlockElevatorBase;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.Itemss;
+import pneumaticCraft.common.network.DescSynced;
+import pneumaticCraft.common.network.GuiSynced;
+import pneumaticCraft.common.network.LazySynced;
 import pneumaticCraft.common.thirdparty.computercraft.LuaConstant;
 import pneumaticCraft.common.thirdparty.computercraft.LuaMethod;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
@@ -39,15 +42,19 @@ import dan200.computercraft.api.peripheral.IComputerAccess;
 
 public class TileEntityElevatorBase extends TileEntityPneumaticBase implements IInventory, IGUITextFieldSensitive,
         IRedstoneControlled, IMinWorkingPressure{
+    @DescSynced
     public boolean[] sidesConnected = new boolean[6];
     public float oldExtension;
+    @DescSynced
+    @LazySynced
     public float extension;
+    @DescSynced
     public float targetExtension;
-    public int speedStartup;
     private boolean firstRun = true;
     private int soundCounter;
     private boolean isStopped; //used for sounds
     private TileEntityElevatorBase coreElevator;
+    @GuiSynced
     public int redstoneMode;
     public int[] floorHeights = new int[0];//list of every floor of Elevator Callers.
     private final HashMap<Integer, String> floorNames = new HashMap<Integer, String>();
@@ -96,7 +103,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
                 }
                 if(extension > targetExtension) {
                     extension = targetExtension;
-                    updateFloors();
+                    if(!worldObj.isRemote) updateFloors();
                 }
                 if(isStopped) {
                     soundName = Sounds.ELEVATOR_START;
@@ -114,7 +121,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
                 }
                 if(extension < targetExtension) {
                     extension = targetExtension;
-                    updateFloors();
+                    if(!worldObj.isRemote) updateFloors();
                 }
                 if(isStopped) {
                     soundName = Sounds.ELEVATOR_START;
@@ -157,8 +164,6 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
                 i--;
                 te = worldObj.getTileEntity(xCoord, yCoord + i, zCoord);
             }
-
-            sendDescriptionPacket();
         }
     }
 
@@ -294,7 +299,6 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
                 te = worldObj.getTileEntity(xCoord, yCoord + i, zCoord);
             }
         }
-        sendDescriptionPacket();
     }
 
     public void moveInventoryToThis(){
@@ -461,6 +465,11 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
     @Override
     public AxisAlignedBB getRenderBoundingBox(){
         return AxisAlignedBB.getBoundingBox(xCoord, yCoord, zCoord, xCoord + 1, yCoord + 1 + extension, zCoord + 1);
+    }
+
+    @Override
+    protected double getPacketDistance(){
+        return 256;
     }
 
     @Override

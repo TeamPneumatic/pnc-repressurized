@@ -13,8 +13,8 @@ import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import pneumaticCraft.api.item.IProgrammable;
 import pneumaticCraft.common.Config;
 import pneumaticCraft.common.DateEventHandler;
-import pneumaticCraft.common.Fluids;
 import pneumaticCraft.common.block.Blockss;
+import pneumaticCraft.common.fluid.Fluids;
 import pneumaticCraft.common.item.ItemProgrammingPuzzle;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.tileentity.TileEntityProgrammer;
@@ -37,8 +37,16 @@ public class ClientEventHandler{
     }
 
     @SubscribeEvent
-    public void onTextureStitchEvent(TextureStitchEvent.Post event){
+    public void onTextureStitchEventPost(TextureStitchEvent.Post event){
         Fluids.EtchAcid.setIcons(Blockss.etchingAcid.getIcon(0, 0), Blockss.etchingAcid.getIcon(1, 0));
+
+    }
+
+    @SubscribeEvent
+    public void onTextureStitchEventPre(TextureStitchEvent.Pre event){
+        if(event.map.getTextureType() == 0) {
+            Fluids.plastic.setIcons(event.map.registerIcon("pneumaticcraft:plastic_still"), event.map.registerIcon("pneumaticcraft:plastic_flow"));
+        }
     }
 
     @SubscribeEvent

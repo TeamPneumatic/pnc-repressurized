@@ -10,6 +10,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidStack;
+import pneumaticCraft.api.IHeatExchangerLogic;
 import pneumaticCraft.api.PneumaticRegistry.IPneumaticCraftInterface;
 import pneumaticCraft.api.client.pneumaticHelmet.IBlockTrackEntry;
 import pneumaticCraft.api.client.pneumaticHelmet.IEntityTrackEntry;
@@ -17,8 +19,13 @@ import pneumaticCraft.api.client.pneumaticHelmet.IHackableBlock;
 import pneumaticCraft.api.client.pneumaticHelmet.IHackableEntity;
 import pneumaticCraft.api.drone.IPathfindHandler;
 import pneumaticCraft.api.item.IInventoryItem;
+import pneumaticCraft.api.tileentity.IHeatExchanger;
 import pneumaticCraft.client.render.pneumaticArmor.blockTracker.BlockTrackEntryList;
 import pneumaticCraft.client.render.pneumaticArmor.hacking.HackableHandler.HackingEntityProperties;
+import pneumaticCraft.common.heat.HeatExchangerLogic;
+import pneumaticCraft.common.heat.HeatExchangerLogicConstant;
+import pneumaticCraft.common.heat.HeatExchangerManager;
+import pneumaticCraft.common.heat.SimpleHeatExchanger;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.Log;
 
@@ -36,6 +43,7 @@ public class PneumaticCraftAPIHandler implements IPneumaticCraftInterface{
     public final List<IInventoryItem> inventoryItems = new ArrayList<IInventoryItem>();
     public final List<Integer> concealableRenderIds = new ArrayList<Integer>();
     public final Map<Fluid, Integer> liquidXPs = new HashMap<Fluid, Integer>();
+    public final Map<Fluid, Integer> liquidFuels = new HashMap<Fluid, Integer>();
 
     private PneumaticCraftAPIHandler(){
         concealableRenderIds.add(0);
@@ -146,4 +154,32 @@ public class PneumaticCraftAPIHandler implements IPneumaticCraftInterface{
         liquidXPs.put(fluid, liquidToPointRatio);
     }
 
+    @Override
+    public IHeatExchangerLogic getHeatExchangerLogic(){
+        return new HeatExchangerLogic();
+    }
+
+    public void registerBlockExchanger(Block block, IHeatExchanger heatExchanger){
+        HeatExchangerManager.getInstance().registerBlockExchanger(block, heatExchanger);
+    }
+
+    public void registerBlockExchanger(Block block, IHeatExchangerLogic heatExchangerLogic){
+        registerBlockExchanger(block, new SimpleHeatExchanger(heatExchangerLogic));
+    }
+
+    @Override
+    public void registerBlockExchanger(Block block, double temperature, double thermalResistance){
+        registerBlockExchanger(block, new HeatExchangerLogicConstant(temperature, thermalResistance));
+    }
+
+    @Override
+    public void registerFuel(Fluid fluid, int mLPerBucket){
+        if(fluid == null) throw new NullPointerException("Fluid can't be null!");
+        if(mLPerBucket < 0) throw new IllegalArgumentException("mLPerBucket can't be < 0");
+        if(liquidFuels.containsKey(fluid)) {
+            Log.info("Overriding liquid fuel entry " + fluid.getLocalizedName(new FluidStack(fluid, 1)) + " (" + fluid.getName() + ") with a fuel value of " + mLPerBucket + " (previously " + liquidFuels.get(fluid) + ")");
+            if(mLPerBucket == 0) liquidFuels.remove(fluid);
+        }
+        if(mLPerBucket > 0) liquidFuels.put(fluid, mLPerBucket);
+    }
 }

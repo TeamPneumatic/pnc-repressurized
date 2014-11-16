@@ -2,30 +2,27 @@ package pneumaticCraft.common.inventory;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.tileentity.TileEntityAirCannon;
 
-public class ContainerAirCannon extends Container{
-    TileEntityAirCannon te;
+public class ContainerAirCannon extends ContainerPneumaticBase<TileEntityAirCannon>{
 
-    public ContainerAirCannon(InventoryPlayer inventoryPlayer, TileEntityAirCannon teAirCannon){
-        te = teAirCannon;
-        te.openGUI();
+    public ContainerAirCannon(InventoryPlayer inventoryPlayer, TileEntityAirCannon te){
+        super(te);
 
         // add the cannoned slot.
-        addSlotToContainer(new Slot(teAirCannon, 0, 79, 40));
+        addSlotToContainer(new Slot(te, 0, 79, 40));
 
         // add the gps slot
-        addSlotToContainer(new SlotItemSpecific(teAirCannon, Itemss.GPSTool, 1, 51, 29));
+        addSlotToContainer(new SlotItemSpecific(te, Itemss.GPSTool, 1, 51, 29));
 
         // add the upgrade slots
-        addSlotToContainer(new SlotUpgrade(teAirCannon, 2, 8, 29));
-        addSlotToContainer(new SlotUpgrade(teAirCannon, 3, 26, 29));
-        addSlotToContainer(new SlotUpgrade(teAirCannon, 4, 8, 47));
-        addSlotToContainer(new SlotUpgrade(teAirCannon, 5, 26, 47));
+        addSlotToContainer(new SlotUpgrade(te, 2, 8, 29));
+        addSlotToContainer(new SlotUpgrade(te, 3, 26, 29));
+        addSlotToContainer(new SlotUpgrade(te, 4, 8, 47));
+        addSlotToContainer(new SlotUpgrade(te, 5, 26, 47));
 
         // Add the player's inventory slots to the container
         for(int inventoryRowIndex = 0; inventoryRowIndex < 3; ++inventoryRowIndex) {
@@ -38,12 +35,6 @@ public class ContainerAirCannon extends Container{
         for(int actionBarSlotIndex = 0; actionBarSlotIndex < 9; ++actionBarSlotIndex) {
             addSlotToContainer(new Slot(inventoryPlayer, actionBarSlotIndex, 8 + actionBarSlotIndex * 18, 142));
         }
-    }
-
-    @Override
-    public boolean canInteractWith(EntityPlayer player){
-
-        return te.isGuiUseableByPlayer(player);
     }
 
     /**
@@ -95,12 +86,6 @@ public class ContainerAirCannon extends Container{
         }
 
         return var3;
-    }
-
-    @Override
-    public void onContainerClosed(EntityPlayer par1EntityPlayer){
-        super.onContainerClosed(par1EntityPlayer);
-        te.closeGUI();
     }
 
 }

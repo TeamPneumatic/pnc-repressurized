@@ -1,22 +1,27 @@
 package pneumaticCraft.common.tileentity;
 
 import ic2.api.item.IC2Items;
+
+import java.util.List;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.ForgeModContainer;
+import net.minecraftforge.common.util.ForgeDirection;
+import pneumaticCraft.api.tileentity.IHeatExchanger;
 import pneumaticCraft.api.tileentity.IPneumaticMachine;
+import pneumaticCraft.common.inventory.SyncedField;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.Itemss;
+import pneumaticCraft.common.network.DescSynced;
 import pneumaticCraft.common.network.NetworkHandler;
+import pneumaticCraft.common.network.NetworkUtils;
+import pneumaticCraft.common.network.PacketDescription;
 import pneumaticCraft.common.network.PacketSendNBTPacket;
-import pneumaticCraft.lib.Log;
 import pneumaticCraft.lib.ModIds;
 import pneumaticCraft.lib.PneumaticValues;
 import cpw.mods.fml.common.Optional;
@@ -27,33 +32,38 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
      * True only the first time updateEntity invokes in a session.
      */
     protected boolean firstRun = true;
-    private int firstRunTicks = 100;
-    public int numUsingPlayers;
     private int[] upgradeSlots;
     private boolean descriptionPacketScheduled;
+    private List<SyncedField> descriptionFields;
     protected boolean isRedstonePowered;
 
-    @Override
-    public Packet getDescriptionPacket(){
-        NBTTagCompound tag = new NBTTagCompound();
-        writeToNBT(tag);
-        return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 0, tag);
+    public TileEntityBase(){
+
+    }
+
+    public TileEntityBase(int... upgradeSlots){
+        this();
+        this.upgradeSlots = upgradeSlots;
     }
 
     @Override
-    public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt){
-        if(ForgeModContainer.removeErroringTileEntities) {//Added protection, as apparently sometimes the NBTTagCompound is null...
-            try {
-                readFromNBT(pkt.func_148857_g());
-            } catch(Throwable e) {
-                Log.error("Removing erroring TileEntity at " + xCoord + ", " + yCoord + ", " + zCoord + ".");
-                e.printStackTrace();
-                invalidate();
-                worldObj.setBlockToAir(xCoord, yCoord, zCoord);
+    public Packet getDescriptionPacket(){
+        NetworkHandler.sendToAllAround(new PacketDescription(this), worldObj, getPacketDistance());
+        return null;
+    }
+
+    protected double getPacketDistance(){
+        return 64;
+    }
+
+    public List<SyncedField> getDescriptionFields(){
+        if(descriptionFields == null) {
+            descriptionFields = NetworkUtils.getSyncedFields(this, DescSynced.class);
+            for(SyncedField field : descriptionFields) {
+                field.update();
             }
-        } else {
-            readFromNBT(pkt.func_148857_g());
         }
+        return descriptionFields;
     }
 
     /**
@@ -81,19 +91,31 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
             //firstRun = false;
             onFirstServerUpdate();
             onNeighborTileUpdate();
-            firstRunTicks--;
-            if(needsFirstRunUpdate() && firstRunTicks == 0) {
+        }
+        firstRun = false;
+
+        if(!worldObj.isRemote) {
+            if(this instanceof IHeatExchanger) {
+                ((IHeatExchanger)this).getHeatExchangerLogic(ForgeDirection.UNKNOWN).update();
+            }
+
+            if(descriptionFields == null) descriptionPacketScheduled = true;
+            for(SyncedField field : getDescriptionFields()) {
+                if(field.update()) {
+                    descriptionPacketScheduled = true;
+                }
+            }
+
+            if(descriptionPacketScheduled) {
+                descriptionPacketScheduled = false;
                 sendDescriptionPacket();
             }
         }
-        firstRun = false;
-        if(!worldObj.isRemote && descriptionPacketScheduled) {
-            descriptionPacketScheduled = false;
-            sendDescriptionPacket();
-        }
     }
 
-    protected void onFirstServerUpdate(){}
+    protected void onFirstServerUpdate(){
+        initializeIfHeatExchanger();
+    }
 
     protected void updateNeighbours(){
         int oldMeta = getBlockMetadata();
@@ -115,33 +137,55 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
          */
     }
 
-    /**
-     * When returned true, the serversided TE will send an update (description) packet the first time updateEntity() invokes.
-     * @return
-     */
-    protected boolean needsFirstRunUpdate(){
+    protected void rerenderChunk(){
+        worldObj.markBlockRangeForRenderUpdate(xCoord, yCoord, zCoord, xCoord, yCoord, zCoord);
+    }
+
+    protected boolean shouldRerenderChunkOnDescUpdate(){
         return false;
     }
 
-    // similar to openChest() from IInventory
-    public void openGUI(){
-        if(numUsingPlayers < 0) {
-            numUsingPlayers = 0;
+    /**
+     * Encoded into the description packet. Also is included in the world save.
+     * Used as last resort, using @DescSynced is preferred.
+     * @param tag
+     */
+    public void writeToPacket(NBTTagCompound tag){}
+
+    /**
+     * Encoded into the description packet. Also is included in the world save.
+     * Used as last resort, using @DescSynced is preferred.
+     * @param tag
+     */
+    public void readFromPacket(NBTTagCompound tag){}
+
+    @Override
+    public void writeToNBT(NBTTagCompound tag){
+        super.writeToNBT(tag);
+        writeToPacket(tag);
+        if(this instanceof IHeatExchanger) {
+            ((IHeatExchanger)this).getHeatExchangerLogic(ForgeDirection.UNKNOWN).writeToNBT(tag);
         }
-        ++numUsingPlayers;
-        if(!worldObj.isRemote) sendDescriptionPacket();
     }
 
-    // similair to closeChest() from IInventory
-    public void closeGUI(){
-        --numUsingPlayers;
+    @Override
+    public void readFromNBT(NBTTagCompound tag){
+        super.readFromNBT(tag);
+        readFromPacket(tag);
+        if(this instanceof IHeatExchanger) {
+            ((IHeatExchanger)this).getHeatExchangerLogic(ForgeDirection.UNKNOWN).readFromNBT(tag);
+        }
+    }
+
+    public void onDescUpdate(){
+        if(shouldRerenderChunkOnDescUpdate()) rerenderChunk();
     }
 
     public int getUpgrades(int upgradeDamage){
         return getUpgrades(upgradeDamage, ((IPneumaticMachine)this).getAirHandler().getUpgradeSlots());
     }
 
-    protected int getUpgrades(int upgradeDamage, int[] upgradeSlots){
+    protected int getUpgrades(int upgradeDamage, int... upgradeSlots){
         int upgrades = 0;
         IInventory inv = null;
         if(this instanceof IInventory) inv = (IInventory)this;
@@ -256,10 +300,13 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
         }
     }
 
-    public void onNeighborTileUpdate(){}
+    public void onNeighborTileUpdate(){
+        initializeIfHeatExchanger();
+    }
 
     public void onNeighborBlockUpdate(){
         isRedstonePowered = worldObj.isBlockIndirectlyGettingPowered(xCoord, yCoord, zCoord);
+        initializeIfHeatExchanger();
     }
 
     public boolean redstoneAllows(){
@@ -274,4 +321,9 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
         return false;
     }
 
+    private void initializeIfHeatExchanger(){
+        if(this instanceof IHeatExchanger) {
+            ((IHeatExchanger)this).getHeatExchangerLogic(ForgeDirection.UNKNOWN).initializeAsHull(worldObj, xCoord, yCoord, zCoord);
+        }
+    }
 }

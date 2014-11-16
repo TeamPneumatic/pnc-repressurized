@@ -76,3 +76,4 @@ The following is a list of all the Tube Modules, click on the module to navigate
 [crafting{200,1290,key=item/pressureGaugeModule}]
 [crafting{200,1410,key=item/flowDetectorModule}]
 [crafting{200,1530,key=item/airGrateModule}]
+[crafting{200,1650,key=item/chargingModule}]

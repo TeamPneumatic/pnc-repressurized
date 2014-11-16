@@ -2,25 +2,21 @@ package pneumaticCraft.common.inventory;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.thirdparty.ic2.TileEntityPneumaticGenerator;
 
-public class ContainerPneumaticGenerator extends Container{
-    TileEntityPneumaticGenerator te;
+public class ContainerPneumaticGenerator extends ContainerPneumaticBase<TileEntityPneumaticGenerator>{
 
-    public ContainerPneumaticGenerator(InventoryPlayer inventoryPlayer,
-            TileEntityPneumaticGenerator tePneumaticGenerator){
-        te = tePneumaticGenerator;
-        te.openGUI();
+    public ContainerPneumaticGenerator(InventoryPlayer inventoryPlayer, TileEntityPneumaticGenerator te){
+        super(te);
 
         // add the upgrade slots
-        addSlotToContainer(new SlotUpgrade(tePneumaticGenerator, 0, 48, 29));
-        addSlotToContainer(new SlotUpgrade(tePneumaticGenerator, 1, 66, 29));
-        addSlotToContainer(new SlotUpgrade(tePneumaticGenerator, 2, 48, 47));
-        addSlotToContainer(new SlotUpgrade(tePneumaticGenerator, 3, 66, 47));
+        addSlotToContainer(new SlotUpgrade(te, 0, 48, 29));
+        addSlotToContainer(new SlotUpgrade(te, 1, 66, 29));
+        addSlotToContainer(new SlotUpgrade(te, 2, 48, 47));
+        addSlotToContainer(new SlotUpgrade(te, 3, 66, 47));
 
         // Add the player's inventory slots to the container
         for(int inventoryRowIndex = 0; inventoryRowIndex < 3; ++inventoryRowIndex) {
@@ -84,12 +80,6 @@ public class ContainerPneumaticGenerator extends Container{
         }
 
         return var3;
-    }
-
-    @Override
-    public void onContainerClosed(EntityPlayer par1EntityPlayer){
-        super.onContainerClosed(par1EntityPlayer);
-        te.closeGUI();
     }
 
 }

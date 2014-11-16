@@ -18,6 +18,7 @@ import pneumaticCraft.client.render.RenderProgressingLine;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.ItemNetworkComponents;
+import pneumaticCraft.common.network.GuiSynced;
 import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.PacketRenderRangeLines;
 import pneumaticCraft.lib.Log;
@@ -34,15 +35,19 @@ public class TileEntitySecurityStation extends TileEntityBase implements ISidedI
     private final int INVENTORY_SIZE = 39;
     public static final int UPGRADE_SLOT_START = 35;
     public static final int UPGRADE_SLOT_END = 38;
+
     public final List<GameProfile> hackedUsers = new ArrayList<GameProfile>(); //Stores all the users that have hacked this Security Station.
     public final List<GameProfile> sharedUsers = new ArrayList<GameProfile>(); //Stores all the users that have been allowed by the stationOwner.
+    @GuiSynced
     private int rebootTimer;//When the player decides to reset the station, this variable will hold the remaining reboot time.
+    @GuiSynced
     public String textFieldText = "";
     private int securityRange;
     private int oldSecurityRange; //range used by the range line renderer, to figure out if the range has been changed.
     private List<RenderProgressingLine> rangeLines;
     private int rangeLinesTimer = 0;
 
+    @GuiSynced
     public int redstoneMode;
     public boolean oldRedstoneStatus;
 
@@ -60,9 +65,6 @@ public class TileEntitySecurityStation extends TileEntityBase implements ISidedI
             if(!worldObj.isRemote) {
                 if(rebootTimer == 0) {
                     hackedUsers.clear();
-                }
-                if(rebootTimer % 60 == 0) {
-                    sendDescriptionPacket();
                 }
             }
         }
@@ -179,6 +181,7 @@ public class TileEntitySecurityStation extends TileEntityBase implements ISidedI
             if(gameProfileEquals(sharedUser, user)) return;
         }
         sharedUsers.add(user);
+        sendDescriptionPacket();
     }
 
     public void addHacker(GameProfile user){
@@ -188,6 +191,7 @@ public class TileEntitySecurityStation extends TileEntityBase implements ISidedI
             }
         }
         hackedUsers.add(user);
+        sendDescriptionPacket();
     }
 
     private boolean gameProfileEquals(GameProfile profile1, GameProfile profile2){
@@ -299,21 +303,6 @@ public class TileEntitySecurityStation extends TileEntityBase implements ISidedI
                 inventory[slot] = ItemStack.loadItemStackFromNBT(tagCompound);
             }
         }
-
-        sharedUsers.clear();
-        NBTTagList sharedList = tag.getTagList("SharedUsers", 10);
-        for(int i = 0; i < sharedList.tagCount(); ++i) {
-            NBTTagCompound tagCompound = sharedList.getCompoundTagAt(i);
-            sharedUsers.add(new GameProfile(tagCompound.hasKey("uuid") ? UUID.fromString(tagCompound.getString("uuid")) : null, tagCompound.getString("name")));
-        }
-
-        hackedUsers.clear();
-        NBTTagList hackedList = tag.getTagList("HackedUsers", 10);
-        for(int i = 0; i < hackedList.tagCount(); ++i) {
-            NBTTagCompound tagCompound = hackedList.getCompoundTagAt(i);
-            hackedUsers.add(new GameProfile(tagCompound.hasKey("uuid") ? UUID.fromString(tagCompound.getString("uuid")) : null, tagCompound.getString("name")));
-        }
-
         checkForNetworkValidity();
     }
 
@@ -334,7 +323,11 @@ public class TileEntitySecurityStation extends TileEntityBase implements ISidedI
             }
         }
         tag.setTag("Items", tagList);
+    }
 
+    @Override
+    public void writeToPacket(NBTTagCompound tag){
+        super.writeToPacket(tag);
         NBTTagList sharedList = new NBTTagList();
         for(int i = 0; i < sharedUsers.size(); i++) {
             NBTTagCompound tagCompound = new NBTTagCompound();
@@ -352,6 +345,24 @@ public class TileEntitySecurityStation extends TileEntityBase implements ISidedI
             hackedList.appendTag(tagCompound);
         }
         tag.setTag("HackedUsers", hackedList);
+    }
+
+    @Override
+    public void readFromPacket(NBTTagCompound tag){
+        super.readFromPacket(tag);
+        sharedUsers.clear();
+        NBTTagList sharedList = tag.getTagList("SharedUsers", 10);
+        for(int i = 0; i < sharedList.tagCount(); ++i) {
+            NBTTagCompound tagCompound = sharedList.getCompoundTagAt(i);
+            sharedUsers.add(new GameProfile(tagCompound.hasKey("uuid") ? UUID.fromString(tagCompound.getString("uuid")) : null, tagCompound.getString("name")));
+        }
+
+        hackedUsers.clear();
+        NBTTagList hackedList = tag.getTagList("HackedUsers", 10);
+        for(int i = 0; i < hackedList.tagCount(); ++i) {
+            NBTTagCompound tagCompound = hackedList.getCompoundTagAt(i);
+            hackedUsers.add(new GameProfile(tagCompound.hasKey("uuid") ? UUID.fromString(tagCompound.getString("uuid")) : null, tagCompound.getString("name")));
+        }
     }
 
     @Override

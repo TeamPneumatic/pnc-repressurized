@@ -5,10 +5,12 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.api.recipe.AssemblyRecipe;
+import pneumaticCraft.common.network.DescSynced;
 import pneumaticCraft.common.recipes.programs.AssemblyProgram;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 
 public class TileEntityAssemblyLaser extends TileEntityAssemblyRobot{
+    @DescSynced
     public boolean isLaserOn;
     private int laserStep;//used to progressively draw a circle.
     private static final float ITEM_SIZE = 10F;

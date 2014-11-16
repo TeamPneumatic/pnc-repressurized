@@ -11,13 +11,15 @@ import pneumaticCraft.client.render.pneumaticArmor.hacking.HackableHandler;
 import pneumaticCraft.common.Config;
 import pneumaticCraft.common.EventHandlerPneumaticCraft;
 import pneumaticCraft.common.EventHandlerUniversalSensor;
-import pneumaticCraft.common.Fluids;
 import pneumaticCraft.common.PneumaticCraftAPIHandler;
 import pneumaticCraft.common.TickHandlerPneumaticCraft;
 import pneumaticCraft.common.VillagerHandler;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.block.tubes.ModuleRegistrator;
 import pneumaticCraft.common.entity.EntityRegistrator;
+import pneumaticCraft.common.fluid.FluidFuelManager;
+import pneumaticCraft.common.fluid.Fluids;
+import pneumaticCraft.common.heat.HeatExchangerManager;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.recipes.CraftingHandler;
@@ -130,6 +132,8 @@ public class PneumaticCraft{
         //Add these later so we include other mod's storage recipes.
         // CraftingRegistrator.addPressureChamberStorageBlockRecipes();
         CraftingRegistrator.addAssemblyCombinedRecipes();
+        HeatExchangerManager.getInstance().init();
+        FluidFuelManager.registerFuels();
 
         ThirdPartyManager.instance().postInit();
         proxy.postInit();

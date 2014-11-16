@@ -29,20 +29,30 @@ import pneumaticCraft.common.DamageSourcePneumaticCraft;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.Itemss;
+import pneumaticCraft.common.network.DescSynced;
+import pneumaticCraft.common.network.GuiSynced;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.PneumaticValues;
 
 public class TileEntityPressureChamberValve extends TileEntityPneumaticBase implements IInventory, IMinWorkingPressure{
+    @DescSynced
     public int multiBlockX;
+    @DescSynced
     public int multiBlockY;
+    @DescSynced
     public int multiBlockZ;
+    @DescSynced
     public int multiBlockSize;
     public List<TileEntityPressureChamberValve> accessoryValves;
     private final List<int[]> nbtValveList;
     private boolean readNBT = false;
+    @GuiSynced
     public boolean isValidRecipeInChamber;
+    @GuiSynced
     public boolean isSufficientPressureInChamber;
+    @GuiSynced
     public boolean areEntitiesDoneMoving;
+    @GuiSynced
     public float recipePressure;
 
     private ItemStack[] inventory = new ItemStack[4];
@@ -58,6 +68,11 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
         accessoryValves = new ArrayList<TileEntityPressureChamberValve>();
         nbtValveList = new ArrayList<int[]>();
         setUpgradeSlots(new int[]{UPGRADE_SLOT_1, 1, 2, UPGRADE_SLOT_4});
+    }
+
+    @Override
+    protected boolean shouldRerenderChunkOnDescUpdate(){
+        return true;
     }
 
     // pneumatic methods-------------------------------------------------------
@@ -179,8 +194,6 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
 
         if(multiBlockSize != 0 && !worldObj.isRemote) {
             ItemStack[] stacksInChamber = getStacksInChamber();
-            boolean oldValidRecipes = isValidRecipeInChamber;
-            boolean oldSufficientPressure = isSufficientPressureInChamber;
             isValidRecipeInChamber = false;
             isSufficientPressureInChamber = false;
             recipePressure = Float.MAX_VALUE;
@@ -216,10 +229,6 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
                     double[] outputPosition = clearStacksInChamber(removedStacks);
                     giveOutput(recipe.craftRecipe(stacksInChamber, removedStacks), false, outputPosition);
                 }
-            }
-
-            if(oldValidRecipes != isValidRecipeInChamber || oldSufficientPressure != isSufficientPressureInChamber) {
-                sendDescriptionPacket();
             }
 
             if(getPressure(ForgeDirection.UNKNOWN) > PneumaticValues.MAX_PRESSURE_LIVING_ENTITY) {
@@ -794,7 +803,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
 
     @Override
     public float getMinWorkingPressure(){
-        return recipePressure;
+        return isValidRecipeInChamber ? recipePressure : -1;
     }
 
 }

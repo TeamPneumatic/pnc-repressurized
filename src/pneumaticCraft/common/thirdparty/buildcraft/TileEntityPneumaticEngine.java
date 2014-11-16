@@ -10,6 +10,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.common.Config;
 import pneumaticCraft.common.item.Itemss;
+import pneumaticCraft.common.network.DescSynced;
+import pneumaticCraft.common.network.GuiSynced;
+import pneumaticCraft.common.network.LazySynced;
 import pneumaticCraft.common.tileentity.IMinWorkingPressure;
 import pneumaticCraft.common.tileentity.IRedstoneControlled;
 import pneumaticCraft.common.tileentity.TileEntityPneumaticBase;
@@ -33,7 +36,9 @@ public class TileEntityPneumaticEngine extends TileEntityPneumaticBase implement
     public static final float MAX_HEAT = 250;
     public static final float CRITICAL_HEAT = 300;
 
+    @GuiSynced
     public float energy;
+    @DescSynced
     public EnergyStage lastEnergyStage = EnergyStage.BLUE;
 
     private ItemStack[] inventory;
@@ -43,10 +48,14 @@ public class TileEntityPneumaticEngine extends TileEntityPneumaticBase implement
     public static final int UPGRADE_SLOT_START = 0;
     public static final int UPGRADE_SLOT_END = 3;
 
+    @GuiSynced
     public int redstoneMode = 0;
 
     public float oldCilinderProgress;
+    @DescSynced
+    @LazySynced
     public float cilinderProgress = PneumaticCraftUtils.sin.length * 3 / 4;
+    @DescSynced
     private boolean isPumping;
     private float cilinderSpeed;
 
@@ -68,7 +77,6 @@ public class TileEntityPneumaticEngine extends TileEntityPneumaticBase implement
         oldCilinderProgress = cilinderProgress;
         if(!worldObj.isRemote && !isPumping && redstoneAllows() && getPressure(ForgeDirection.UNKNOWN) >= PneumaticValues.MIN_PRESSURE_PNEUMATIC_ENGINE) {
             isPumping = true;
-            sendDescriptionPacket();
         }
         if(isPumping) {
             if(cilinderSpeed < getCilinderSpeed()) {
@@ -85,16 +93,11 @@ public class TileEntityPneumaticEngine extends TileEntityPneumaticBase implement
             if(!worldObj.isRemote && (int)cilinderProgress == PneumaticCraftUtils.sin.length * 3 / 4 && cilinderSpeed < 2 && (!redstoneAllows() || getPressure(ForgeDirection.UNKNOWN) < PneumaticValues.MIN_PRESSURE_PNEUMATIC_ENGINE)) {
                 isPumping = false;
                 cilinderSpeed = 0;
-                sendDescriptionPacket();
             }
         }
         if(!worldObj.isRemote) {
             sendPower();
-            EnergyStage curEnergyStage = getEnergyStage();
-            if(curEnergyStage != lastEnergyStage) {
-                lastEnergyStage = curEnergyStage;
-                sendDescriptionPacket();
-            }
+            lastEnergyStage = getEnergyStage();
         }
 
         super.updateEntity();
@@ -234,7 +237,6 @@ public class TileEntityPneumaticEngine extends TileEntityPneumaticBase implement
         if(buttonID == 0) {
             redstoneMode++;
             if(redstoneMode > 2) redstoneMode = 0;
-            sendDescriptionPacket();
         }
     }
 
@@ -313,8 +315,6 @@ public class TileEntityPneumaticEngine extends TileEntityPneumaticBase implement
         redstoneMode = nbtTagCompound.getInteger("redstoneMode");
         cilinderProgress = nbtTagCompound.getFloat("cilinderProgress");
         cilinderSpeed = nbtTagCompound.getFloat("cilinderSpeed");
-        isPumping = nbtTagCompound.getBoolean("isPumping");
-        lastEnergyStage = EnergyStage.values()[nbtTagCompound.getInteger("energyStage")];
         energy = nbtTagCompound.getFloat("energy");
         powerHandler.readFromNBT(nbtTagCompound);
         // Read in the ItemStacks in the inventory from NBT
@@ -336,8 +336,6 @@ public class TileEntityPneumaticEngine extends TileEntityPneumaticBase implement
         nbtTagCompound.setInteger("redstoneMode", redstoneMode);
         nbtTagCompound.setFloat("cilinderProgress", cilinderProgress);
         nbtTagCompound.setFloat("cilinderSpeed", cilinderSpeed);
-        nbtTagCompound.setBoolean("isPumping", isPumping);
-        nbtTagCompound.setInteger("energyStage", lastEnergyStage.ordinal());
         nbtTagCompound.setFloat("energy", energy);
         powerHandler.writeToNBT(nbtTagCompound);
         // Write the ItemStacks in the inventory to NBT

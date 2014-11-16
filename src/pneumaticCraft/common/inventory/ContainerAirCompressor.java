@@ -2,27 +2,24 @@ package pneumaticCraft.common.inventory;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityFurnace;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.tileentity.TileEntityAirCompressor;
 
-public class ContainerAirCompressor extends Container{
-    TileEntityAirCompressor te;
+public class ContainerAirCompressor extends ContainerPneumaticBase<TileEntityAirCompressor>{
 
-    public ContainerAirCompressor(InventoryPlayer inventoryPlayer, TileEntityAirCompressor teAirCompressor){
-        te = teAirCompressor;
-        te.openGUI();
+    public ContainerAirCompressor(InventoryPlayer inventoryPlayer, TileEntityAirCompressor te){
+        super(te);
         // Add the burn slot.
-        addSlotToContainer(new Slot(teAirCompressor, 0, 80, 54));
+        addSlotToContainer(new Slot(te, 0, getFuelSlotXOffset(), 54));
 
         // add the upgrade slots
-        addSlotToContainer(new SlotUpgrade(teAirCompressor, 1, 23, 29));
-        addSlotToContainer(new SlotUpgrade(teAirCompressor, 2, 41, 29));
-        addSlotToContainer(new SlotUpgrade(teAirCompressor, 3, 23, 47));
-        addSlotToContainer(new SlotUpgrade(teAirCompressor, 4, 41, 47));
+        addSlotToContainer(new SlotUpgrade(te, 1, 23, 29));
+        addSlotToContainer(new SlotUpgrade(te, 2, 41, 29));
+        addSlotToContainer(new SlotUpgrade(te, 3, 23, 47));
+        addSlotToContainer(new SlotUpgrade(te, 4, 41, 47));
 
         // Add the player's inventory slots to the container
         for(int inventoryRowIndex = 0; inventoryRowIndex < 3; ++inventoryRowIndex) {
@@ -37,10 +34,8 @@ public class ContainerAirCompressor extends Container{
         }
     }
 
-    @Override
-    public boolean canInteractWith(EntityPlayer player){
-
-        return te.isGuiUseableByPlayer(player);
+    protected int getFuelSlotXOffset(){
+        return 80;
     }
 
     /**
@@ -91,9 +86,4 @@ public class ContainerAirCompressor extends Container{
         return var3;
     }
 
-    @Override
-    public void onContainerClosed(EntityPlayer par1EntityPlayer){
-        super.onContainerClosed(par1EntityPlayer);
-        te.closeGUI();
-    }
 }

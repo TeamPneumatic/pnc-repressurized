@@ -7,6 +7,7 @@ package pneumaticCraft.common.recipes;
 import java.util.LinkedList;
 
 import net.minecraft.item.ItemStack;
+import pneumaticCraft.api.recipe.IPressureChamberRecipe;
 
 public class PressureChamberRecipe{
     public static LinkedList<PressureChamberRecipe> chamberRecipes = new LinkedList<PressureChamberRecipe>();

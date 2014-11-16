@@ -3,9 +3,9 @@ package pneumaticCraft.client.gui;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumChatFormatting;
 import pneumaticCraft.client.gui.widget.GuiAnimatedStat;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.inventory.ContainerOmnidirectionalHopper;
@@ -27,7 +27,7 @@ public class GuiOmnidirectionalHopper extends GuiPneumaticContainerBase<TileEnti
     @Override
     public void initGui(){
         super.initGui();
-        statusStat = addAnimatedStat("Hopper Status", new ItemStack(Blockss.omnidirectionalHopper), 0xFFFFAA00, false);
+        statusStat = addAnimatedStat("gui.tab.hopperStatus", new ItemStack(Blockss.omnidirectionalHopper), 0xFFFFAA00, false);
     }
 
     @Override
@@ -49,13 +49,12 @@ public class GuiOmnidirectionalHopper extends GuiPneumaticContainerBase<TileEnti
 
     private List<String> getStatus(){
         List<String> textList = new ArrayList<String>();
-        textList.add(EnumChatFormatting.GRAY + "Item transfer speed:");
         int itemsPer = te.getMaxItems();
         if(itemsPer > 1) {
-            textList.add(EnumChatFormatting.BLACK.toString() + itemsPer + " items/tick");
+            textList.add(I18n.format("gui.tab.hopperStatus.itemTransferPerTick", itemsPer));
         } else {
             int transferInterval = te.getItemTransferInterval();
-            textList.add(EnumChatFormatting.BLACK.toString() + (transferInterval == 0 ? "20" : PneumaticCraftUtils.roundNumberTo(20F / transferInterval, 1)) + " items/s");
+            textList.add(I18n.format("gui.tab.hopperStatus.itemTransferPerSecond", transferInterval == 0 ? "20" : PneumaticCraftUtils.roundNumberTo(20F / transferInterval, 1)));
         }
         return textList;
     }

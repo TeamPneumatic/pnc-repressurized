@@ -91,7 +91,6 @@ public class BlockAphorismTile extends BlockPneumaticCraft{
             if(tile instanceof TileEntityAphorismTile) {
                 TileEntityAphorismTile teAt = (TileEntityAphorismTile)tile;
                 if(++teAt.textRotation > 3) teAt.textRotation = 0;
-                teAt.sendDescriptionPacket();
                 return true;
             } else {
                 return false;

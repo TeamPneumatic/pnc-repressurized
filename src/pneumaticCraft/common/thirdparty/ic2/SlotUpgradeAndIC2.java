@@ -1,4 +1,4 @@
-package pneumaticCraft.common.inventory;
+package pneumaticCraft.common.thirdparty.ic2;
 
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;

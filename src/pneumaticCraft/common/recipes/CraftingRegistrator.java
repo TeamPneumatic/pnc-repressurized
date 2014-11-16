@@ -43,18 +43,20 @@ public class CraftingRegistrator{
         ItemStack swiftnessPotion = new ItemStack(Items.potionitem, 1, 8194);//3.00m variant
         ItemStack cobbleSlab = new ItemStack(Blocks.stone_slab, 1, 3);
         // tubes
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Blockss.pressureTube, 4, 0 /* normal */), "igi", 'i', Names.INGOT_IRON_COMPRESSED, 'g', Blocks.glass));
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Blockss.pressureTube, 4, 0 /* normal */), "igi", 'i', Names.INGOT_IRON_COMPRESSED, 'g', "blockGlass"));
         GameRegistry.addRecipe(new ItemStack(ModuleRegistrator.getModuleItem(Names.MODULE_FLOW_DETECTOR)), "bbb", "btb", "bbb", 'b', Itemss.turbineBlade, 't', new ItemStack(Blockss.pressureTube, 1, 0));
         GameRegistry.addRecipe(new ItemStack(ModuleRegistrator.getModuleItem(Names.MODULE_SAFETY_VALVE)), " g ", "ltl", 'g', Itemss.pressureGauge, 'l', Blocks.lever, 't', new ItemStack(Blockss.pressureTube, 1, 0));
         GameRegistry.addRecipe(new ItemStack(ModuleRegistrator.getModuleItem(Names.MODULE_REGULATOR)), "sts", 's', ModuleRegistrator.getModuleItem(Names.MODULE_SAFETY_VALVE), 't', new ItemStack(Blockss.pressureTube, 1, 0));
         GameRegistry.addRecipe(new ItemStack(ModuleRegistrator.getModuleItem(Names.MODULE_AIR_GRATE)), " b ", "btb", " b ", 'b', Blocks.iron_bars, 't', new ItemStack(Blockss.pressureTube, 1, 0));
         GameRegistry.addRecipe(new ItemStack(ModuleRegistrator.getModuleItem(Names.MODULE_GAUGE)), " g ", "rtr", 'g', Itemss.pressureGauge, 'r', Items.redstone, 't', new ItemStack(Blockss.pressureTube, 1, 0));
+        GameRegistry.addRecipe(new ItemStack(ModuleRegistrator.getModuleItem(Names.MODULE_CHARGING)), " r ", "rtr", " r ", 'r', Blockss.chargingStation, 't', new ItemStack(Blockss.pressureTube, 1, 0));
+
         // tube addons
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Itemss.pressureGauge), " g ", "gig", " g ", 'g', Items.gold_ingot, 'i', Names.INGOT_IRON_COMPRESSED));
 
         // pressure chamber
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Blockss.pressureChamberWall, 4, 0), "iii", "i i", "iii", 'i', Names.INGOT_IRON_COMPRESSED));
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Blockss.pressureChamberWall, 4, 6), "iii", "igi", "iii", 'i', Names.INGOT_IRON_COMPRESSED, 'g', Blocks.glass));
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Blockss.pressureChamberWall, 4, 6), "iii", "igi", "iii", 'i', Names.INGOT_IRON_COMPRESSED, 'g', "blockGlass"));
         GameRegistry.addShapelessRecipe(new ItemStack(Blockss.pressureChamberWall, 4, 6), new ItemStack(Blockss.pressureChamberWall, 1, 0), new ItemStack(Blockss.pressureChamberWall, 1, 0), new ItemStack(Blockss.pressureChamberWall, 1, 0), new ItemStack(Blockss.pressureChamberWall, 1, 0), Blocks.glass);
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Blockss.pressureChamberValve, 4, 0), "iii", "iti", "iii", 'i', Names.INGOT_IRON_COMPRESSED, 't', new ItemStack(Blockss.pressureTube, 1, 0)));
         GameRegistry.addShapelessRecipe(new ItemStack(Blockss.pressureChamberValve, 4, 0), new ItemStack(Blockss.pressureChamberWall, 1, 0), new ItemStack(Blockss.pressureChamberWall, 1, 0), new ItemStack(Blockss.pressureChamberWall, 1, 0), new ItemStack(Blockss.pressureChamberWall, 1, 0), new ItemStack(Blockss.pressureTube, 1, 0));
@@ -69,6 +71,9 @@ public class CraftingRegistrator{
 
         // compressor
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Blockss.airCompressor), true, "iii", "i t", "ifi", 'i', Names.INGOT_IRON_COMPRESSED, 't', new ItemStack(Blockss.pressureTube, 1, 0), 'f', Blocks.furnace));
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Blockss.advancedAirCompressor), true, "iii", "i t", "ifi", 'i', Names.INGOT_IRON_COMPRESSED, 't', new ItemStack(Blockss.advancedPressureTube, 1, 0), 'f', Blockss.airCompressor));
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Blockss.liquidCompressor), true, "iii", "ibi", "ici", 'i', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.FIRE_FLOWER_DAMAGE), 'b', Items.bucket, 'c', Blockss.airCompressor));
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Blockss.advancedLiquidCompressor), true, "iii", "ibt", "ici", 'i', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.RAIN_PLANT_DAMAGE), 'b', Items.bucket, 'c', Blockss.liquidCompressor, 't', Blockss.advancedPressureTube));
         GameRegistry.addRecipe(new ItemStack(Blockss.electrostaticCompressor), "bpb", "dra", "bcb", 'b', Blocks.iron_bars, 'p', Itemss.printedCircuitBoard, 'd', Items.diamond, 'r', Itemss.turbineRotor, 'a', new ItemStack(Blockss.advancedPressureTube), 'c', Blockss.airCompressor);
 
         // Charging Station
@@ -150,6 +155,9 @@ public class CraftingRegistrator{
         GameRegistry.addRecipe(new ItemStack(Blockss.universalSensor), "plp", "lpl", "pcp", 'p', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.ENDER_PLANT_DAMAGE), 'l', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.CHOPPER_PLANT_DAMAGE), 'c', Itemss.printedCircuitBoard);
         GameRegistry.addRecipe(new ItemStack(Blockss.aerialInterface), "whw", "ese", "wtw", 'w', Blockss.pressureChamberWall, 'h', Blocks.hopper, 'e', Items.ender_pearl, 's', new ItemStack(Items.skull, 1, 1), 't', new ItemStack(Blockss.advancedPressureTube, 1, 0));
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Blockss.omnidirectionalHopper), "i i", "ici", " i ", 'i', Names.INGOT_IRON_COMPRESSED, 'c', Blocks.chest));
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Blockss.liquidHopper), "i i", "ici", " i ", 'i', "blockGlass", 'c', Blocks.hopper));
+
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Blockss.plasticMixer), "igi", "g g", "iii", 'i', Names.INGOT_IRON_COMPRESSED, 'g', "blockGlass"));
 
         //Programming puzzle recipes
         addProgrammingPuzzleRecipe(ProgWidgetStart.class, ItemPlasticPlants.REPULSION_PLANT_DAMAGE);

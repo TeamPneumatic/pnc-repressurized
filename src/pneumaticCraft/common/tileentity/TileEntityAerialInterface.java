@@ -24,6 +24,7 @@ import pneumaticCraft.common.PneumaticCraftAPIHandler;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.Itemss;
+import pneumaticCraft.common.network.GuiSynced;
 import pneumaticCraft.lib.Log;
 import pneumaticCraft.lib.PneumaticValues;
 
@@ -38,14 +39,17 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
     private static final int UPGRADE_SLOT_START = 0;
     private static final int UPGRADE_SLOT_END = 3;
 
+    @GuiSynced
     public String playerName = "";
     public String playerUUID = "";
 
     private Fluid curXpFluid;
 
+    @GuiSynced
     public int redstoneMode;
     private boolean oldRedstoneStatus;
     private boolean updateNeighbours;
+    @GuiSynced
     public boolean isConnectedToPlayer;
     private boolean dispenserUpgradeInserted;
 
@@ -76,13 +80,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
                 addAir(-PneumaticValues.USAGE_AERIAL_INTERFACE, ForgeDirection.UNKNOWN);
                 if(worldObj.getWorldTime() % 40 == 0) dispenserUpgradeInserted = getUpgrades(ItemMachineUpgrade.UPGRADE_DISPENSER_DAMAGE) > 0;
             }
-            if(numUsingPlayers > 0) {
-                boolean wasConnected = isConnectedToPlayer;
-                getPlayerInventory();
-                if(wasConnected != isConnectedToPlayer) {
-                    sendDescriptionPacket();
-                }
-            }
+            if(worldObj.getWorldTime() % 20 == 0) getPlayerInventory();
         }
 
         if(oldRedstoneStatus != shouldEmitRedstone()) {
@@ -100,7 +98,6 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
             redstoneMode++;
             if(redstoneMode > 1) redstoneMode = 0;
             // updateNeighbours();
-            sendDescriptionPacket();
         }
     }
 

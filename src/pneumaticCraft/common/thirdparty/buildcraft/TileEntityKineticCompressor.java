@@ -9,6 +9,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.common.Config;
 import pneumaticCraft.common.item.Itemss;
+import pneumaticCraft.common.network.GuiSynced;
 import pneumaticCraft.common.tileentity.IRedstoneControlled;
 import pneumaticCraft.common.tileentity.TileEntityPneumaticBase;
 import pneumaticCraft.lib.PneumaticValues;
@@ -28,13 +29,16 @@ public class TileEntityKineticCompressor extends TileEntityPneumaticBase impleme
     public static final int UPGRADE_SLOT_END = 3;
     public int outputTimer;//set to 20 when receiving energy, and decreased to 0 when not. Acts as a buffer before sending packets to update the client's rotation logic.
 
-    public int redstoneMode = 0;
+    @GuiSynced
+    public int redstoneMode;
     private int curEnergyProduction;
+    @GuiSynced
     public int lastEnergyProduction;
 
     public float turbineRotation;
     public float oldTurbineRotation;
     public float turbineSpeed;
+    @GuiSynced
     public double energyUsed;
     private final PowerHandler powerHandler;
 
@@ -125,7 +129,6 @@ public class TileEntityKineticCompressor extends TileEntityPneumaticBase impleme
         if(buttonID == 0) {
             redstoneMode++;
             if(redstoneMode > 2) redstoneMode = 0;
-            sendDescriptionPacket();
         }
     }
 

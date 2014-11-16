@@ -9,7 +9,6 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.EnumChatFormatting;
 import pneumaticCraft.client.gui.GuiPneumaticContainerBase;
 import pneumaticCraft.client.gui.widget.GuiAnimatedStat;
-import pneumaticCraft.common.inventory.ContainerElectricCompressor;
 import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;

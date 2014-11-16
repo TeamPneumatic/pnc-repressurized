@@ -43,9 +43,9 @@ public class GuiFluxCompressor extends GuiPneumaticContainerBase<TileEntityFluxC
     private List<String> getOutputStat(){
         List<String> textList = new ArrayList<String>();
         textList.add(EnumChatFormatting.GRAY + "Maximum RF usage:");
-        textList.add(EnumChatFormatting.BLACK.toString() + container.rfPerTick + " RF/tick");
+        textList.add(EnumChatFormatting.BLACK.toString() + te.getInfoEnergyPerTick() + " RF/tick");
         textList.add(EnumChatFormatting.GRAY + "Maximum input rate:");
-        textList.add(EnumChatFormatting.BLACK.toString() + container.rfPerTick * 2 + " RF/tick");
+        textList.add(EnumChatFormatting.BLACK.toString() + te.getInfoEnergyPerTick() * 2 + " RF/tick");
         textList.add(EnumChatFormatting.GRAY + "Current stored RF:");
         textList.add(EnumChatFormatting.BLACK.toString() + container.energy + " RF");
         return textList;
@@ -55,13 +55,13 @@ public class GuiFluxCompressor extends GuiPneumaticContainerBase<TileEntityFluxC
     protected void addPressureStatInfo(List<String> pressureStatText){
         super.addPressureStatInfo(pressureStatText);
         pressureStatText.add("\u00a77Max Production:");
-        pressureStatText.add("\u00a70" + container.airPerTick + " mL/tick.");
+        pressureStatText.add("\u00a70" + te.getAirRate() + " mL/tick.");
     }
 
     @Override
     protected void addProblems(List<String> textList){
         super.addProblems(textList);
-        if(container.rfPerTick > container.energy) {
+        if(te.getInfoEnergyPerTick() > container.energy) {
             textList.add("gui.tab.problems.fluxCompressor.noRF");
         }
     }

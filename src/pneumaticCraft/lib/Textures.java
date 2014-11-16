@@ -8,6 +8,7 @@ public class Textures{
     public static final String MODEL_LOCATION = ICON_LOCATION + "textures/model/";
     public static final String TUBE_MODULE_MODEL_LOCATION = MODEL_LOCATION + "tubemodules/";
     public static final String GUI_LOCATION = ICON_LOCATION + "textures/gui/";
+    public static final String WIDGET_LOCATION = GUI_LOCATION + "widget/";
     public static final String UPGRADE_LOCATION = ICON_LOCATION + "upgrades/";
     public static final String PROGRAM_LOCATION = ICON_LOCATION + "programs/";
     public static final String PLANT_LOCATION = ICON_LOCATION + "plants/";
@@ -19,7 +20,6 @@ public class Textures{
     public static final ResourceLocation MODEL_GREY_TEXTURE = new ResourceLocation(MODEL_LOCATION + "pressureTubeTexture.png");
     public static final ResourceLocation MODEL_PRESSURE_TUBE = new ResourceLocation(MODEL_LOCATION + "PressureTube.png");
     public static final ResourceLocation MODEL_ADVANCED_PRESSURE_TUBE = new ResourceLocation(MODEL_LOCATION + "PressureTubeAdvanced.png");
-    public static final ResourceLocation MODEL_AIR_COMPRESSOR = new ResourceLocation(MODEL_LOCATION + "airCompressorTexture.png");
     public static final ResourceLocation MODEL_AIR_CANNON = new ResourceLocation(MODEL_LOCATION + "airCannon.png");
     public static final ResourceLocation MODEL_CHARGING_STATION = new ResourceLocation(MODEL_LOCATION + "ChargingStation.png");
     public static final ResourceLocation MODEL_CHARGING_STATION_PAD = new ResourceLocation(MODEL_LOCATION + "chargingStationPad.png");
@@ -44,6 +44,7 @@ public class Textures{
     public static final ResourceLocation MODEL_PNEUMATIC_ENGINE_YELLOW = new ResourceLocation(MODEL_LOCATION + "PneumaticEngineYellow.png");
     public static final ResourceLocation MODEL_PNEUMATIC_ENGINE_RED = new ResourceLocation(MODEL_LOCATION + "PneumaticEngineRed.png");
     public static final ResourceLocation MODEL_OMNIDIRECTIONAL_HOPPER = new ResourceLocation(MODEL_LOCATION + "omnidirectionalHopper.png");
+    public static final ResourceLocation MODEL_LIQUID_HOPPER = new ResourceLocation(MODEL_LOCATION + "liquidHopper.png");
     public static final ResourceLocation MODEL_PROGRAMMER = new ResourceLocation(MODEL_LOCATION + "programmer.png");
     public static final ResourceLocation MODEL_DRONE_INTERFACE = new ResourceLocation(MODEL_LOCATION + "droneInterface.png");
     public static final ResourceLocation MODEL_THIRD_PARTY_COMPRESSOR = new ResourceLocation(MODEL_LOCATION + "ThirdPartyCompressor.png");
@@ -51,10 +52,12 @@ public class Textures{
     public static final ResourceLocation MODEL_KINETIC_COMPRESSOR = new ResourceLocation(MODEL_LOCATION + "kineticCompressor.png");
     public static final ResourceLocation MODEL_PNEUMATIC_DYNAMO_ON = new ResourceLocation(MODEL_LOCATION + "pneumaticDynamoOn.png");
     public static final ResourceLocation MODEL_PNEUMATIC_DYNAMO_OFF = new ResourceLocation(MODEL_LOCATION + "pneumaticDynamoOff.png");
+    public static final ResourceLocation MODEL_PLASTIC_MIXER = new ResourceLocation(MODEL_LOCATION + "plasticMixer.png");
 
     public static final ResourceLocation MODEL_FLOW_DETECTOR = new ResourceLocation(TUBE_MODULE_MODEL_LOCATION + "flowDetector.png");
     public static final ResourceLocation MODEL_GAUGE = new ResourceLocation(TUBE_MODULE_MODEL_LOCATION + "gaugeModule.png");
     public static final ResourceLocation MODEL_AIR_GRATE = new ResourceLocation(TUBE_MODULE_MODEL_LOCATION + "airGrate.png");
+    public static final ResourceLocation MODEL_CHARGING_MODULE = new ResourceLocation(TUBE_MODULE_MODEL_LOCATION + "chargingModule.png");
 
     public static final ResourceLocation MODEL_DRONE = new ResourceLocation(ENTITY_LOCATION + "Drone.png");
 
@@ -158,6 +161,7 @@ public class Textures{
     public static final String ITEM_STOP_WORM = "networkComponents/stopWorm";
 
     public static final String GUI_AIR_COMPRESSOR_LOCATION = GUI_LOCATION + "GuiAirCompressor.png";
+    public static final String GUI_ADVANCED_AIR_COMPRESSOR_LOCATION = GUI_LOCATION + "GuiAdvancedAirCompressor.png";
     public static final String GUI_AIR_CANNON_LOCATION = GUI_LOCATION + "GuiAirCannon.png";
     public static final String GUI_PROBLEMS_TEXTURE = GUI_LOCATION + "GuiProblem.png";
     public static final String GUI_INFO_LOCATION = GUI_LOCATION + "GuiInfo.png";
@@ -182,10 +186,16 @@ public class Textures{
     public static final String GUI_BUILDCRAFT_ENERGY = GUI_LOCATION + "GuiBuildcraftEnergy.png";
     public static final String GUI_OMNIDIRECTIONAL_HOPPER = GUI_LOCATION + "GuiOmnidirectionalHopper.png";
     public static final String GUI_PROGRAMMER = GUI_LOCATION + "GuiProgrammer.png";
+    public static final String GUI_PLASTIC_MIXER = GUI_LOCATION + "GuiPlasticMixer.png";
+    public static final String GUI_LIQUID_COMPRESSOR = GUI_LOCATION + "GuiLiquidCompressor.png";
+    public static final String GUI_ADVANCED_LIQUID_COMPRESSOR = GUI_LOCATION + "GuiAdvancedLiquidCompressor.png";
+    public static final String GUI_LIQUID_HOPPER = GUI_LOCATION + "GuiLiquidHopper.png";
     public static final ResourceLocation GUI_WIDGET_OPTIONS = new ResourceLocation(GUI_LOCATION + "GuiWidgetOptions.png");
     public static final ResourceLocation GUI_INVENTORY_SEARCHER = new ResourceLocation(GUI_LOCATION + "GuiInventorySearcher.png");
     public static final ResourceLocation GUI_TUBE_MODULE = new ResourceLocation(GUI_LOCATION + "GuiTubeModule.png");
     public static final ResourceLocation GUI_TEXT_WIDGET = new ResourceLocation(GUI_LOCATION + "GuiTextWidget.png");
+    public static final ResourceLocation WIDGET_TEMPERATURE = new ResourceLocation(WIDGET_LOCATION + "WidgetTemperature.png");
+    public static final ResourceLocation WIDGET_TANK = new ResourceLocation(WIDGET_LOCATION + "WidgetTank.png");
 
     public static final String VANILLA_ITEM_TEXTURE_SHEET = "/gui/items.png";
     public static final String VANILLA_BLOCK_TEXTURE_SHEET = "/terrain.png";

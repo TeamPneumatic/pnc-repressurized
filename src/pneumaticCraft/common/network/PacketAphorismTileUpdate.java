@@ -1,10 +1,6 @@
 package pneumaticCraft.common.network;
 
 import io.netty.buffer.ByteBuf;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import pneumaticCraft.common.tileentity.TileEntityAphorismTile;
@@ -12,7 +8,7 @@ import cpw.mods.fml.common.network.ByteBufUtils;
 
 public class PacketAphorismTileUpdate extends LocationIntPacket<PacketAphorismTileUpdate>{
 
-    private List<String> text;
+    private String[] text;
 
     public PacketAphorismTileUpdate(){}
 
@@ -24,7 +20,7 @@ public class PacketAphorismTileUpdate extends LocationIntPacket<PacketAphorismTi
     @Override
     public void toBytes(ByteBuf buffer){
         super.toBytes(buffer);
-        buffer.writeInt(text.size());
+        buffer.writeInt(text.length);
         for(String line : text) {
             ByteBufUtils.writeUTF8String(buffer, line);
         }
@@ -33,10 +29,10 @@ public class PacketAphorismTileUpdate extends LocationIntPacket<PacketAphorismTi
     @Override
     public void fromBytes(ByteBuf buffer){
         super.fromBytes(buffer);
-        text = new ArrayList<String>();
         int lines = buffer.readInt();
+        text = new String[lines];
         for(int i = 0; i < lines; i++) {
-            text.add(ByteBufUtils.readUTF8String(buffer));
+            text[i] = ByteBufUtils.readUTF8String(buffer);
         }
     }
 

@@ -2,18 +2,15 @@ package pneumaticCraft.common.inventory;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.tileentity.TileEntityOmnidirectionalHopper;
 
-public class ContainerOmnidirectionalHopper extends Container{
-    private final TileEntityOmnidirectionalHopper te;
+public class ContainerOmnidirectionalHopper extends ContainerPneumaticBase<TileEntityOmnidirectionalHopper>{
 
     public ContainerOmnidirectionalHopper(InventoryPlayer inventoryPlayer, TileEntityOmnidirectionalHopper te){
-        this.te = te;
-        //  te.openGUI();
+        super(te);
 
         // Add the hopper slots.
         for(int i = 0; i < 5; i++)
@@ -41,7 +38,6 @@ public class ContainerOmnidirectionalHopper extends Container{
     @Override
     public boolean canInteractWith(EntityPlayer player){
         return te.isUseableByPlayer(player);
-        //return te.isGuiUseableByPlayer(player);
     }
 
     /**
@@ -91,11 +87,5 @@ public class ContainerOmnidirectionalHopper extends Container{
         }
 
         return var3;
-    }
-
-    @Override
-    public void onContainerClosed(EntityPlayer par1EntityPlayer){
-        super.onContainerClosed(par1EntityPlayer);
-        //  te.closeGUI();
     }
 }

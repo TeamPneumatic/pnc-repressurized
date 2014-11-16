@@ -76,6 +76,7 @@ public class PneumaticValues{
     public static final int USAGE_PNEUMATIC_WRENCH = 100;//mL per usage.
 
     public static final int PRODUCTION_COMPRESSOR = 10; // mL per tick
+    public static final int PRODUCTION_ADVANCED_COMPRESSOR = 50; // mL per tick
     public static final int PRODUCTION_VACUUM_PUMP = 2;// mL vacuum per tick
     public static final int PRODUCTION_PNEUMATIC_ENGINE = 100; //MJ/pump move.
     public static final int PRODUCTION_ELECTROSTATIC_COMPRESSOR = 200000; //per lightning strike
@@ -145,4 +146,10 @@ public class PneumaticValues{
     public static final float SPEED_UPGRADE_USAGE_MULTIPLIER = 1.8F;
 
     public static final int RANGE_UPGRADE_HELMET_RANGE_INCREASE = 5;
+    public static final double PLASTIC_MIX_RATIO = 0.2;
+    public static final int NORMAL_TANK_CAPACITY = 16000;
+    public static final int PLASTIC_MIXER_HEAT_RATIO = 1;
+    public static final int PLASTIC_MIXER_MELTING_TEMP = 150 + 273;//150 C
+    public static final int MAX_DRAIN = 100;
+
 }
