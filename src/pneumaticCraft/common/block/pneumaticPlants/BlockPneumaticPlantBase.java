@@ -95,7 +95,7 @@ public abstract class BlockPneumaticPlantBase extends BlockFlower{
         if(!world.isRemote) {
             float var7 = getGrowthRate(world, x, y, z);
 
-            if(canGrowWithLightValue(world.getBlockLightValue(x, y + (isPlantHanging() ? -1 : 1), z)) /*&& rand.nextInt((int)(25.0F / var7) + 1) == 0 || skipGrowthCheck(world, x, y, z)*/) {
+            if(canGrowWithLightValue(world.getBlockLightValue(x, y + (isPlantHanging() ? -1 : 1), z)) && rand.nextInt((int)(25.0F / var7) + 1) == 0 || skipGrowthCheck(world, x, y, z)) {
                 int meta = world.getBlockMetadata(x, y, z);
                 if(meta < 13) {
                     if(meta != 6) {//let world generated full-grown plants not grow.
@@ -108,7 +108,7 @@ public abstract class BlockPneumaticPlantBase extends BlockFlower{
                 } else {
                     // if the plant is allowed to execute the full grown effect
                     // do so.
-                    if(Config.configPlantFullGrownEffect[getSeedDamage()]) executeFullGrownEffect(world, x, y, z, rand);
+                    if(Config.configPlantFullGrownEffect[getSeedDamage()] || skipGrowthCheck(world, x, y, z)) executeFullGrownEffect(world, x, y, z, rand);
                 }
             }
         }
