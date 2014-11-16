@@ -57,6 +57,7 @@ public class ModelLiquidHopper extends ModelOmnidirectionalHopper{
 
                 FMLClientHandler.instance().getClient().getTextureManager().bindTexture(getModelTexture(hopper));
                 GL11.glEnable(GL11.GL_LIGHTING);
+                GL11.glColor4d(1, 1, 1, 1);
             }
         }
     }

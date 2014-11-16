@@ -88,6 +88,7 @@ import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.thirdparty.ThirdPartyManager;
 import pneumaticCraft.common.thirdparty.igwmod.IGWSupportNotifier;
 import pneumaticCraft.common.tileentity.TileEntityAdvancedAirCompressor;
+import pneumaticCraft.common.tileentity.TileEntityAdvancedLiquidCompressor;
 import pneumaticCraft.common.tileentity.TileEntityAirCannon;
 import pneumaticCraft.common.tileentity.TileEntityAirCompressor;
 import pneumaticCraft.common.tileentity.TileEntityAphorismTile;
@@ -136,8 +137,8 @@ public class ClientProxy extends CommonProxy{
 
         RenderingRegistry.registerBlockHandler(new RenderModelBase());
         // RenderingRegistry.registerBlockHandler(new RendererSpecialBlock());
-        registerBaseModelRenderer(Blockss.airCompressor, TileEntityAirCompressor.class, new ModelAirCompressor());
-        registerBaseModelRenderer(Blockss.advancedAirCompressor, TileEntityAdvancedAirCompressor.class, new ModelAirCompressor());
+        registerBaseModelRenderer(Blockss.airCompressor, TileEntityAirCompressor.class, new ModelAirCompressor("airCompressor"));
+        registerBaseModelRenderer(Blockss.advancedAirCompressor, TileEntityAdvancedAirCompressor.class, new ModelAirCompressor("advancedAirCompressor"));
         registerBaseModelRenderer(Blockss.assemblyController, TileEntityAssemblyController.class, new ModelAssemblyController());
         registerBaseModelRenderer(Blockss.assemblyDrill, TileEntityAssemblyDrill.class, new ModelAssemblyDrill());
         registerBaseModelRenderer(Blockss.assemblyIOUnit, TileEntityAssemblyIOUnit.class, new ModelAssemblyIOUnit());
@@ -160,6 +161,7 @@ public class ClientProxy extends CommonProxy{
         registerBaseModelRenderer(Blockss.programmer, TileEntityProgrammer.class, new ModelComputer(Textures.MODEL_PROGRAMMER));
         registerBaseModelRenderer(Blockss.plasticMixer, TileEntityPlasticMixer.class, new ModelPlasticMixer());
         registerBaseModelRenderer(Blockss.liquidCompressor, TileEntityLiquidCompressor.class, new BaseModel("liquidCompressor.obj"));
+        registerBaseModelRenderer(Blockss.advancedLiquidCompressor, TileEntityAdvancedLiquidCompressor.class, new BaseModel("liquidCompressor.obj", "advancedLiquidCompressor.png"));
 
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPressureTube.class, new RenderPressureTube());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAirCannon.class, new RenderAirCannon());

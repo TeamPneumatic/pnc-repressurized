@@ -19,8 +19,8 @@ public class ContainerLiquidCompressor extends ContainerPneumaticBase<TileEntity
             }
         }
 
-        addSlotToContainer(new SlotFullFluidContainer(te, 4, 62, 22));
-        addSlotToContainer(new Slot(te, 5, 62, 55));
+        addSlotToContainer(new SlotFullFluidContainer(te, 4, getFluidContainerOffset(), 22));
+        addSlotToContainer(new Slot(te, 5, getFluidContainerOffset(), 55));
 
         // Add the player's inventory slots to the container
         for(int inventoryRowIndex = 0; inventoryRowIndex < 3; ++inventoryRowIndex) {
@@ -33,6 +33,10 @@ public class ContainerLiquidCompressor extends ContainerPneumaticBase<TileEntity
         for(int actionBarSlotIndex = 0; actionBarSlotIndex < 9; ++actionBarSlotIndex) {
             addSlotToContainer(new Slot(inventoryPlayer, actionBarSlotIndex, 8 + actionBarSlotIndex * 18, 142));
         }
+    }
+
+    protected int getFluidContainerOffset(){
+        return 62;
     }
 
     /**

@@ -78,6 +78,7 @@ public class Blockss{
     public static Block creativeCompressor;
     public static Block plasticMixer;
     public static Block liquidCompressor;
+    public static Block advancedLiquidCompressor;
     public static Block advancedAirCompressor;
     public static Block liquidHopper;
 
@@ -130,6 +131,7 @@ public class Blockss{
         creativeCompressor = new BlockCreativeCompressor(Material.iron).setHardness(3.0F).setResistance(10F).setBlockName("creativeCompressor");
         plasticMixer = new BlockPlasticMixer(Material.iron).setHardness(3.0F).setResistance(10F).setBlockName("plasticMixer");
         liquidCompressor = new BlockLiquidCompressor(Material.iron).setHardness(3.0F).setResistance(10F).setBlockName("liquidCompressor");
+        advancedLiquidCompressor = new BlockAdvancedLiquidCompressor(Material.iron).setHardness(3.0F).setResistance(10F).setBlockName("advancedLiquidCompressor");
 
         registerBlocks();
 
@@ -192,6 +194,7 @@ public class Blockss{
         registerBlock(creativeCompressor);
         registerBlock(plasticMixer);
         registerBlock(liquidCompressor);
+        registerBlock(advancedLiquidCompressor);
     }
 
     public static void registerBlock(Block block){

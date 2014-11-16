@@ -34,7 +34,11 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
     public boolean isProducing;
 
     public TileEntityLiquidCompressor(){
-        super(5, 7, 5000);
+        this(5, 7, 5000);
+    }
+
+    public TileEntityLiquidCompressor(float dangerPressure, float criticalPressure, int volume){
+        super(dangerPressure, criticalPressure, volume);
         setUpgradeSlots(0, 1, 2, 3);
     }
 
@@ -122,11 +126,12 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
 
             isProducing = false;
             if(redstoneAllows()) {
-                int usageRate = (int)(10 * this.getSpeedUsageMultiplierFromUpgrades());
+                int usageRate = (int)(getBaseProduction() * this.getSpeedUsageMultiplierFromUpgrades());
                 if(internalFuelBuffer < usageRate) {
                     double fuelValue = getFuelValue(tank.getFluid()) / 1000D;
                     if(fuelValue > 0) {
                         int usedFuel = Math.min(tank.getFluidAmount(), (int)(usageRate / fuelValue) + 1);
+                        onFuelBurn(usedFuel);
                         tank.drain(usedFuel, true);
                         internalFuelBuffer += usedFuel * fuelValue;
                     }
@@ -134,10 +139,20 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
                 if(internalFuelBuffer >= usageRate) {
                     isProducing = true;
                     internalFuelBuffer -= usageRate;
-                    addAir((int)(10 * this.getSpeedMultiplierFromUpgrades()), ForgeDirection.UNKNOWN);
+                    addAir((int)(getBaseProduction() * this.getSpeedMultiplierFromUpgrades() * getEfficiency() / 100), ForgeDirection.UNKNOWN);
                 }
             }
         }
+    }
+
+    protected void onFuelBurn(int burnedFuel){}
+
+    public int getEfficiency(){
+        return 100;
+    }
+
+    public int getBaseProduction(){
+        return 10;
     }
 
     private boolean canStack(ItemStack stack1, ItemStack stack2){

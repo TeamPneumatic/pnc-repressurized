@@ -28,3 +28,4 @@ Now, you can add dye to that liquid plastic. The color of the plastic will chang
 When you're happy with the color you should remove the heat source (and optionally speed up the cooling process by placing down Ice). The liquid plastic will transform back into its item form.
 
 You can automate this whole process by using two Plastic Mixers: one to heat up, and one to cool down. You can use any type of liquid transport to transfer the plastic.
+[crafting{200, 480, key=block/plasticMixer}]

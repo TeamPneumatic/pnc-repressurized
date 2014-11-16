@@ -19,16 +19,20 @@ public class BaseModel implements IBaseModel{
     public boolean rotatable;
 
     public BaseModel(String name){
-        this(name, null);
+        this(name, (String[])null);
+    }
+
+    public BaseModel(String name, String textureName){
+        this(name, textureName, null, null);
     }
 
     public BaseModel(String name, String[] staticParts){
-        this(name, staticParts, null);
+        this(name, name.substring(0, name.lastIndexOf('.')) + ".png", staticParts, null);
     }
 
-    public BaseModel(String name, String[] staticParts, String[] dynamicParts){
+    public BaseModel(String name, String textureName, String[] staticParts, String[] dynamicParts){
         model = AdvancedModelLoader.loadModel(new ResourceLocation(Models.MODELS + name));
-        resLoc = new ResourceLocation(Textures.MODEL_LOCATION + name.substring(0, name.lastIndexOf('.')) + ".png");
+        resLoc = new ResourceLocation(Textures.MODEL_LOCATION + textureName);
         this.staticParts = staticParts;
         this.dynamicParts = dynamicParts;
     }

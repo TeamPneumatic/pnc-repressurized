@@ -11,6 +11,7 @@ import java.util.Map;
 
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Items;
+import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
@@ -26,11 +27,28 @@ public class GuiLiquidCompressor extends GuiPneumaticContainerBase<TileEntityLiq
         super(new ContainerLiquidCompressor(player, te), te, Textures.GUI_LIQUID_COMPRESSOR);
     }
 
+    public GuiLiquidCompressor(Container container, TileEntityLiquidCompressor te, String texture){
+        super(container, te, texture);
+    }
+
     @Override
     public void initGui(){
         super.initGui();
-        addWidget(new WidgetTank(0, guiLeft + 86, guiTop + 15, te.getFluidTank()));
+        addWidget(new WidgetTank(0, guiLeft + getFluidOffset(), guiTop + 15, te.getFluidTank()));
         addAnimatedStat("gui.tab.liquidCompressor.fuel", new ItemStack(Items.lava_bucket), 0xFFFF6600, true).setTextWithoutCuttingString(getAllFuels());
+    }
+
+    @Override
+    protected void addPressureStatInfo(List<String> pressureStatText){
+        super.addPressureStatInfo(pressureStatText);
+        if(te.isProducing) {
+            pressureStatText.add("\u00a77Currently producing:");
+            pressureStatText.add("\u00a70" + (double)Math.round(te.getBaseProduction() * te.getEfficiency() * te.getSpeedMultiplierFromUpgrades(te.getUpgradeSlots()) / 100) + " mL/tick.");
+        }
+    }
+
+    protected int getFluidOffset(){
+        return 86;
     }
 
     @Override
