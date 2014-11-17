@@ -31,6 +31,7 @@ public class HeatExchangerManager{
     public void init(){
         PneumaticRegistry.getInstance().registerBlockExchanger(Blocks.ice, 263, 50);
         PneumaticRegistry.getInstance().registerBlockExchanger(Blocks.packed_ice, 263, 50);
+        PneumaticRegistry.getInstance().registerBlockExchanger(Blocks.snow, 268, 100);
         PneumaticRegistry.getInstance().registerBlockExchanger(Blocks.torch, 1700, 200);
         PneumaticRegistry.getInstance().registerBlockExchanger(Blocks.fire, 1700, 100);
 
