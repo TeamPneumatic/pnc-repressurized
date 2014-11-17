@@ -6,7 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import net.minecraft.block.Block;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
+import net.minecraft.world.World;
 import pneumaticCraft.common.Config;
 import pneumaticCraft.common.thirdparty.ae2.AE2;
 import pneumaticCraft.common.thirdparty.bloodmagic.BloodMagic;
@@ -27,8 +29,9 @@ import pneumaticCraft.lib.ModIds;
 import codechicken.multipart.TMultiPart;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Optional;
+import cpw.mods.fml.common.network.IGuiHandler;
 
-public class ThirdPartyManager{
+public class ThirdPartyManager implements IGuiHandler{
 
     private static ThirdPartyManager INSTANCE = new ThirdPartyManager();
     private final List<IThirdParty> thirdPartyMods = new ArrayList<IThirdParty>();
@@ -153,6 +156,28 @@ public class ThirdPartyManager{
             }
         }
         throw new IllegalStateException("No FMP found!");
+    }
+
+    @Override
+    public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z){
+        for(IThirdParty thirdParty : thirdPartyMods) {
+            if(thirdParty instanceof IGuiHandler) {
+                Object obj = ((IGuiHandler)thirdParty).getServerGuiElement(ID, player, world, x, y, z);
+                if(obj != null) return obj;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z){
+        for(IThirdParty thirdParty : thirdPartyMods) {
+            if(thirdParty instanceof IGuiHandler) {
+                Object obj = ((IGuiHandler)thirdParty).getClientGuiElement(ID, player, world, x, y, z);
+                if(obj != null) return obj;
+            }
+        }
+        return null;
     }
 
 }

@@ -2,20 +2,25 @@ package pneumaticCraft.common.thirdparty.cofh;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import pneumaticCraft.api.PneumaticRegistry;
 import pneumaticCraft.client.model.ModelThirdPartyCompressor;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.thirdparty.IThirdParty;
+import pneumaticCraft.common.tileentity.TileEntityPneumaticBase;
 import pneumaticCraft.lib.Names;
 import pneumaticCraft.proxy.ClientProxy;
+import pneumaticCraft.proxy.CommonProxy;
+import cpw.mods.fml.common.network.IGuiHandler;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-public class CoFHCore implements IThirdParty{
+public class CoFHCore implements IThirdParty, IGuiHandler{
 
     public static Block pneumaticDynamo;
     public static Block fluxCompressor;
@@ -48,6 +53,23 @@ public class CoFHCore implements IThirdParty{
     public void clientSide(){
         ClientProxy.registerBaseModelRenderer(fluxCompressor, TileEntityFluxCompressor.class, new ModelThirdPartyCompressor(ModelThirdPartyCompressor.Type.RF));
         ClientProxy.registerBaseModelRenderer(pneumaticDynamo, TileEntityPneumaticDynamo.class, new ModelPneumaticDynamo());
+    }
+
+    @Override
+    public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z){
+        if(ID == CommonProxy.GUI_ID_PNEUMATIC_DYNAMO || ID == CommonProxy.GUI_ID_FLUX_COMPRESSOR) return new ContainerRF(player.inventory, (TileEntityPneumaticBase)world.getTileEntity(x, y, z));
+        return null;
+    }
+
+    @Override
+    public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z){
+        switch(ID){
+            case CommonProxy.GUI_ID_PNEUMATIC_DYNAMO:
+                return new GuiPneumaticDynamo(player.inventory, (TileEntityPneumaticDynamo)world.getTileEntity(x, y, z));
+            case CommonProxy.GUI_ID_FLUX_COMPRESSOR:
+                return new GuiFluxCompressor(player.inventory, (TileEntityFluxCompressor)world.getTileEntity(x, y, z));
+        }
+        return null;
     }
 
 }

@@ -46,7 +46,6 @@ import pneumaticCraft.common.inventory.ContainerLiquidHopper;
 import pneumaticCraft.common.inventory.ContainerOmnidirectionalHopper;
 import pneumaticCraft.common.inventory.ContainerPlasticMixer;
 import pneumaticCraft.common.inventory.ContainerPneumaticDoor;
-import pneumaticCraft.common.inventory.ContainerPneumaticGenerator;
 import pneumaticCraft.common.inventory.ContainerPressureChamber;
 import pneumaticCraft.common.inventory.ContainerPressureChamberInterface;
 import pneumaticCraft.common.inventory.ContainerProgrammer;
@@ -55,20 +54,7 @@ import pneumaticCraft.common.inventory.ContainerSecurityStationInventory;
 import pneumaticCraft.common.inventory.ContainerUVLightBox;
 import pneumaticCraft.common.inventory.ContainerUniversalSensor;
 import pneumaticCraft.common.inventory.ContainerVacuumPump;
-import pneumaticCraft.common.thirdparty.buildcraft.GuiKineticCompressor;
-import pneumaticCraft.common.thirdparty.buildcraft.GuiPneumaticEngine;
-import pneumaticCraft.common.thirdparty.buildcraft.TileEntityKineticCompressor;
-import pneumaticCraft.common.thirdparty.buildcraft.TileEntityPneumaticEngine;
-import pneumaticCraft.common.thirdparty.cofh.ContainerRF;
-import pneumaticCraft.common.thirdparty.cofh.GuiFluxCompressor;
-import pneumaticCraft.common.thirdparty.cofh.GuiPneumaticDynamo;
-import pneumaticCraft.common.thirdparty.cofh.TileEntityFluxCompressor;
-import pneumaticCraft.common.thirdparty.cofh.TileEntityPneumaticDynamo;
-import pneumaticCraft.common.thirdparty.ic2.ContainerElectricCompressor;
-import pneumaticCraft.common.thirdparty.ic2.GuiElectricCompressor;
-import pneumaticCraft.common.thirdparty.ic2.GuiPneumaticGenerator;
-import pneumaticCraft.common.thirdparty.ic2.TileEntityElectricCompressor;
-import pneumaticCraft.common.thirdparty.ic2.TileEntityPneumaticGenerator;
+import pneumaticCraft.common.thirdparty.ThirdPartyManager;
 import pneumaticCraft.common.tileentity.TileEntityAdvancedAirCompressor;
 import pneumaticCraft.common.tileentity.TileEntityAdvancedLiquidCompressor;
 import pneumaticCraft.common.tileentity.TileEntityAerialInterface;
@@ -83,7 +69,6 @@ import pneumaticCraft.common.tileentity.TileEntityLiquidCompressor;
 import pneumaticCraft.common.tileentity.TileEntityLiquidHopper;
 import pneumaticCraft.common.tileentity.TileEntityOmnidirectionalHopper;
 import pneumaticCraft.common.tileentity.TileEntityPlasticMixer;
-import pneumaticCraft.common.tileentity.TileEntityPneumaticBase;
 import pneumaticCraft.common.tileentity.TileEntityPneumaticDoorBase;
 import pneumaticCraft.common.tileentity.TileEntityPressureChamberInterface;
 import pneumaticCraft.common.tileentity.TileEntityPressureChamberValve;
@@ -207,14 +192,6 @@ public class CommonProxy implements IGuiHandler{
                 return new ContainerSecurityStationHacking(player.inventory, (TileEntitySecurityStation)world.getTileEntity(x, y, z));
             case GUI_ID_UNIVERSAL_SENSOR:
                 return new ContainerUniversalSensor(player.inventory, (TileEntityUniversalSensor)world.getTileEntity(x, y, z));
-            case GUI_ID_PNEUMATIC_GENERATOR:
-                return new ContainerPneumaticGenerator(player.inventory, (TileEntityPneumaticGenerator)world.getTileEntity(x, y, z));
-            case GUI_ID_ELECTRIC_COMPRESSOR:
-                return new ContainerElectricCompressor(player.inventory, (TileEntityElectricCompressor)world.getTileEntity(x, y, z));
-            case GUI_ID_PNEUMATIC_ENGINE:
-                return new Container4UpgradeSlots(player.inventory, (TileEntityPneumaticEngine)world.getTileEntity(x, y, z));
-            case GUI_ID_KINETIC_COMPRESSOR:
-                return new Container4UpgradeSlots(player.inventory, (TileEntityKineticCompressor)world.getTileEntity(x, y, z));
             case GUI_ID_AERIAL_INTERFACE:
                 return new Container4UpgradeSlots(player.inventory, (TileEntityAerialInterface)world.getTileEntity(x, y, z));
             case GUI_ID_ELECTROSTATIC_COMPRESSOR:
@@ -223,9 +200,6 @@ public class CommonProxy implements IGuiHandler{
                 return new ContainerOmnidirectionalHopper(player.inventory, (TileEntityOmnidirectionalHopper)world.getTileEntity(x, y, z));
             case GUI_ID_PROGRAMMER:
                 return new ContainerProgrammer(player.inventory, (TileEntityProgrammer)world.getTileEntity(x, y, z));
-            case GUI_ID_PNEUMATIC_DYNAMO:
-            case GUI_ID_FLUX_COMPRESSOR:
-                return new ContainerRF(player.inventory, (TileEntityPneumaticBase)world.getTileEntity(x, y, z));
             case GUI_ID_PLASTIC_MIXER:
                 return new ContainerPlasticMixer(player.inventory, (TileEntityPlasticMixer)world.getTileEntity(x, y, z));
             case GUI_ID_LIQUID_COMPRESSOR:
@@ -235,7 +209,7 @@ public class CommonProxy implements IGuiHandler{
             case GUI_ID_LIQUID_HOPPER:
                 return new ContainerLiquidHopper(player.inventory, (TileEntityLiquidHopper)world.getTileEntity(x, y, z));
         }
-        return null;
+        return ThirdPartyManager.instance().getServerGuiElement(ID, player, world, x, y, z);
     }
 
     @Override
@@ -271,14 +245,6 @@ public class CommonProxy implements IGuiHandler{
                 return new GuiSecurityStationHacking(player.inventory, (TileEntitySecurityStation)world.getTileEntity(x, y, z));
             case GUI_ID_UNIVERSAL_SENSOR:
                 return new GuiUniversalSensor(player.inventory, (TileEntityUniversalSensor)world.getTileEntity(x, y, z));
-            case GUI_ID_PNEUMATIC_GENERATOR:
-                return new GuiPneumaticGenerator(player.inventory, (TileEntityPneumaticGenerator)world.getTileEntity(x, y, z));
-            case GUI_ID_ELECTRIC_COMPRESSOR:
-                return new GuiElectricCompressor(player.inventory, (TileEntityElectricCompressor)world.getTileEntity(x, y, z));
-            case GUI_ID_PNEUMATIC_ENGINE:
-                return new GuiPneumaticEngine(player.inventory, (TileEntityPneumaticEngine)world.getTileEntity(x, y, z));
-            case GUI_ID_KINETIC_COMPRESSOR:
-                return new GuiKineticCompressor(player.inventory, (TileEntityKineticCompressor)world.getTileEntity(x, y, z));
             case GUI_ID_AERIAL_INTERFACE:
                 return new GuiAerialInterface(player.inventory, (TileEntityAerialInterface)world.getTileEntity(x, y, z));
             case GUI_ID_ELECTROSTATIC_COMPRESSOR:
@@ -295,10 +261,6 @@ public class CommonProxy implements IGuiHandler{
                 return new GuiPressureModule(player, x, y, z);
             case GUI_ID_AIR_GRATE_MODULE:
                 return new GuiAirGrateModule(player, x, y, z);
-            case GUI_ID_PNEUMATIC_DYNAMO:
-                return new GuiPneumaticDynamo(player.inventory, (TileEntityPneumaticDynamo)world.getTileEntity(x, y, z));
-            case GUI_ID_FLUX_COMPRESSOR:
-                return new GuiFluxCompressor(player.inventory, (TileEntityFluxCompressor)world.getTileEntity(x, y, z));
             case GUI_ID_PLASTIC_MIXER:
                 return new GuiPlasticMixer(player.inventory, (TileEntityPlasticMixer)world.getTileEntity(x, y, z));
             case GUI_ID_LIQUID_COMPRESSOR:
@@ -308,7 +270,7 @@ public class CommonProxy implements IGuiHandler{
             case GUI_ID_LIQUID_HOPPER:
                 return new GuiLiquidHopper(player.inventory, (TileEntityLiquidHopper)world.getTileEntity(x, y, z));
         }
-        return null;
+        return ThirdPartyManager.instance().getClientGuiElement(ID, player, world, x, y, z);
     }
 
     public int getArmorRenderID(String armorName){
