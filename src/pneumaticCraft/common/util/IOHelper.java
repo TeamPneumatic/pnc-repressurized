@@ -262,7 +262,7 @@ public class IOHelper{
                         itemStack.splitStack(max);
                     }
                 }
-            } else if(itemstack1.isItemEqual(itemStack)) {
+            } else if(itemstack1.isItemEqual(itemStack) && ItemStack.areItemStackTagsEqual(itemstack1, itemStack)) {
                 int max = Math.min(itemStack.getMaxStackSize(), inventory.getInventoryStackLimit());
                 if(max > itemstack1.stackSize) {
                     int l = Math.min(itemStack.stackSize, max - itemstack1.stackSize);
