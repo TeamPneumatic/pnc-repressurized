@@ -4,12 +4,12 @@ import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.util.MathHelper;
 
 import org.lwjgl.opengl.GL11;
 
 import pneumaticCraft.api.IHeatExchangerLogic;
 import pneumaticCraft.lib.Textures;
-import buildcraft.core.utils.MathUtils;
 
 public class WidgetTemperature extends WidgetBase{
 
@@ -33,7 +33,7 @@ public class WidgetTemperature extends WidgetBase{
         Gui.func_146110_a(x + 6, y, 6, 0, 7, 50, 18, 50);
 
         int barLength = ((int)logic.getTemperature() - minTemp) * 48 / maxTemp;
-        barLength = MathUtils.clamp(barLength, 0, 48);
+        barLength = MathHelper.clamp_int(barLength, 0, 48);
         Gui.func_146110_a(x + 7, y + 1 + 48 - barLength, 13, 48 - barLength, 5, barLength, 18, 50);
 
         for(int scale : scales) {
