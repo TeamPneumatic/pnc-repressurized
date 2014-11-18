@@ -1,6 +1,5 @@
 package pneumaticCraft.client.gui.programmer;
 
-import net.minecraft.client.gui.GuiButton;
 import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.client.gui.widget.GuiCheckBox;
@@ -9,7 +8,7 @@ import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetInventoryBase;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 
-public class GuiProgWidgetImportExport extends GuiProgWidgetOptionBase{
+public class GuiProgWidgetImportExport extends GuiProgWidgetAreaShow{
 
     public GuiProgWidgetImportExport(IProgWidget widget, GuiProgrammer guiProgrammer){
         super(widget, guiProgrammer);
@@ -18,8 +17,6 @@ public class GuiProgWidgetImportExport extends GuiProgWidgetOptionBase{
     @Override
     public void initGui(){
         super.initGui();
-
-        buttonList.add(new GuiButton(0, guiLeft + 50, guiTop + 150, 80, 20, "Show area"));
 
         for(int i = 0; i < 6; i++) {
             String sideName = PneumaticCraftUtils.getOrientationName(ForgeDirection.getOrientation(i));
@@ -33,13 +30,6 @@ public class GuiProgWidgetImportExport extends GuiProgWidgetOptionBase{
     public void actionPerformed(IGuiWidget checkBox){
         ((ProgWidgetInventoryBase)widget).accessingSides[checkBox.getID()] = ((GuiCheckBox)checkBox).checked;
         super.actionPerformed(checkBox);
-    }
-
-    @Override
-    public void actionPerformed(GuiButton button){
-        guiProgrammer.te.previewArea(widget.getX(), widget.getY());
-        //PacketDispatcher.sendPacketToServer(PacketHandlerPneumaticCraft.showDroneArea(guiProgrammer.te.xCoord, guiProgrammer.te.yCoord, guiProgrammer.te.zCoord, widget.getX(), widget.getY()));
-        super.actionPerformed(button);
     }
 
     @Override

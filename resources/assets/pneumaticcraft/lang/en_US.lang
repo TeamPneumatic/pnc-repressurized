@@ -389,6 +389,7 @@ gui.setKeybind=Press key to bind
 gui.enableModule=Enable %s
 gui.pressureChamber=Pressure Chamber
 gui.pressureChamberTitle=%s Pressure Chamber
+gui.programmer.button.stopShowingArea=Stop Showing Area
 gui.liquid.empty=Empty
 
 key.pneumaticcraft.category=PneumaticCraft

@@ -75,6 +75,11 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory{
             }
         }
 
+    }
+
+    @Override
+    public void readFromPacket(NBTTagCompound tag){
+        super.readFromPacket(tag);
         readProgWidgetsFromNBT(tag);
     }
 
@@ -95,6 +100,11 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory{
         }
         tag.setTag("Items", tagList);
 
+    }
+
+    @Override
+    public void writeToPacket(NBTTagCompound tag){
+        super.writeToPacket(tag);
         writeProgWidgetsToNBT(tag);
     }
 
@@ -407,8 +417,7 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory{
             if(w.getX() == widgetX && w.getY() == widgetY && w instanceof IAreaProvider) {
                 AreaShowManager.getInstance().removeHandler(previewedArea);
                 Set<ChunkPosition> area = ((IAreaProvider)w).getArea();
-                if(area.size() > 10000) return false;
-                previewedArea = AreaShowManager.getInstance().showArea(area, 0x00FF00);
+                previewedArea = AreaShowManager.getInstance().showArea(area, 0x00FF00, this);
             }
         }
         return true;
