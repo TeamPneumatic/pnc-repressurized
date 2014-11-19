@@ -44,6 +44,7 @@ tile.aerialInterface.name=Interface Aéria
 tile.electrostaticCompressor.name=Compressor eletroestático
 tile.aphorismTile.name=Placa de citação
 tile.omnidirectionalHopper.name=Funil omnidirecional
+tile.liquidHopper.name=Funil de líquidos
 tile.elevatorCaller.name=Controlador do Elevador
 tile.programmer.name=Programador
 tile.droneInterface.name=Interface do Drone
@@ -51,6 +52,11 @@ tile.creativeCompressor.name=Compressor Criativo
 tile.wheatHarvester.plasticPlants.name=Plastic Plants Harvester Dolley
 tile.pressureChamberWall.wall.name=Parede da Câmara de pressão
 tile.pressureChamberWall.window.name=Janela da Câmara de pressão
+tile.fluxCompressor.name=Compressor de Flux
+tile.pneumaticDynamo.name=Dínamo pneumático
+tile.plasticMixer.name=Misturador de plásticos
+tile.liquidCompressor.name=Compressor líquido
+tile.advancedLiquidCompressor.name=Compressor líquido avançado
 
 tile.monsterStoneEgg.name=Traça
 
@@ -265,11 +271,13 @@ blockTracker.module.misc=Blocos
 blockTracker.module.bcEnergy=Blocos com energia do BuildCraft
 blockTracker.module.hydraulicraft=Blocos com energia do Hydraulicraft
 blockTracker.module.ic2=Blocos com energia do IC2
+blockTracker.module.rf=Blocos com Redstone Flux
 blockTracker.module.thaumcraft=Blocos com aspectos do Thaumcraft
 
 blockTracker.info.bcEnergy=Bloco com energia do BuildCraft
 blockTracker.info.hydraulicraft=Bloco com energia do Hydraulicraft
 blockTracker.info.ic2=Bloco com energia do IC2
+blockTracker.info.rf=Bloco com Redstone Flux
 blockTracker.info.thaumcraft=Contém os aspectos:
 blockTracker.info.thaumcraft.nodetype=Tipo de Aura:
 blockTracker.info.thaumcraft.nodeModifier=Modificante:
@@ -281,6 +289,11 @@ blockTracker.message.stopSpam=Spam parado em %s
 
 # Tooltips
 gui.tooltip.plasticPlant=Origem: %s
+
+# Waila
+hud.msg.state=Estado
+hud.msg.active=Ativa
+hud.msg.inactive=Inativa
 
 # Misc
 itemGroup.tabPneumaticCraft=PneumaticCraft
