@@ -33,6 +33,7 @@ public class NetworkHandler{
      * The integer is the ID of the message, the Side is the side this message will be handled (received) on!
      */
     public static void init(){
+        new DescPacketHandler();
         INSTANCE.registerMessage(PacketAddChatMessage.class, PacketAddChatMessage.class, discriminant++, Side.SERVER);
         INSTANCE.registerMessage(PacketAphorismTileUpdate.class, PacketAphorismTileUpdate.class, discriminant++, Side.SERVER);
         INSTANCE.registerMessage(PacketChangeGPSToolCoordinate.class, PacketChangeGPSToolCoordinate.class, discriminant++, Side.SERVER);
@@ -58,7 +59,6 @@ public class NetworkHandler{
         INSTANCE.registerMessage(PacketUpdateAirGrateModule.class, PacketUpdateAirGrateModule.class, discriminant++, Side.SERVER);
         INSTANCE.registerMessage(PacketUpdateAirGrateModule.class, PacketUpdateAirGrateModule.class, discriminant++, Side.CLIENT);
         INSTANCE.registerMessage(PacketUpdateGui.class, PacketUpdateGui.class, discriminant++, Side.CLIENT);
-        INSTANCE.registerMessage(PacketDescription.class, PacketDescription.class, discriminant++, Side.CLIENT);
 
         INSTANCE.registerMessage(PacketHackingBlockStart.class, PacketHackingBlockStart.class, discriminant++, Side.SERVER);
         INSTANCE.registerMessage(PacketHackingBlockStart.class, PacketHackingBlockStart.class, discriminant++, Side.CLIENT);

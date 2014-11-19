@@ -1,5 +1,6 @@
 -Greatly improved the Programmer's area render (the green cubes) performance. It'll now allow any size area to be rendered.
 -Showing the Programmer's area is now toggled instead of time based. A button to show the area, another to hide it.
+-GPS Tool now shows the selected coordinate when held.
 
 -Bugfix: Omnidirectional Hopper stacks items which have a different NBT value.
 -Bugfix: Programmer doesn't properly sync.
