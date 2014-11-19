@@ -121,6 +121,7 @@ public class ModelOmnidirectionalHopper extends ModelBase implements IBaseModel{
         }
         InserterBottom.render(size);
         renderBottom(te);
+        GL11.glDisable(GL11.GL_BLEND);
     }
 
     protected void renderMain(TileEntityOmnidirectionalHopper hopper){}
