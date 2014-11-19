@@ -93,8 +93,7 @@ public class TileEntityOmnidirectionalHopper extends TileEntityBase implements I
             }
         }
 
-        AxisAlignedBB box = AxisAlignedBB.getBoundingBox(xCoord + inputDir.offsetX, yCoord + inputDir.offsetY, zCoord + inputDir.offsetZ, xCoord + inputDir.offsetX + 1, yCoord + inputDir.offsetY + 1, zCoord + inputDir.offsetZ + 1);
-        for(EntityItem entity : (List<EntityItem>)worldObj.getEntitiesWithinAABB(EntityItem.class, box)) {
+        for(EntityItem entity : getNeighborItems(this, inputDir)) {
             if(!entity.isDead) {
                 ItemStack remainder = IOHelper.insert(this, entity.getEntityItem(), ForgeDirection.UNKNOWN, false);
                 if(remainder == null) {
@@ -105,6 +104,11 @@ public class TileEntityOmnidirectionalHopper extends TileEntityBase implements I
         }
 
         return success;
+    }
+
+    public static List<EntityItem> getNeighborItems(TileEntity te, ForgeDirection inputDir){
+        AxisAlignedBB box = AxisAlignedBB.getBoundingBox(te.xCoord + inputDir.offsetX, te.yCoord + inputDir.offsetY, te.zCoord + inputDir.offsetZ, te.xCoord + inputDir.offsetX + 1, te.yCoord + inputDir.offsetY + 1, te.zCoord + inputDir.offsetZ + 1);
+        return te.getWorldObj().getEntitiesWithinAABB(EntityItem.class, box);
     }
 
     public int getMaxItems(){

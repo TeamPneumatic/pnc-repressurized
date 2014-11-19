@@ -1,5 +1,7 @@
 package pneumaticCraft.common.block;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import net.minecraft.block.Block;
@@ -15,17 +17,13 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.fluids.FluidContainerRegistry;
-import net.minecraftforge.fluids.FluidContainerRegistry.FluidContainerData;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.IFluidContainerItem;
-import net.minecraftforge.fluids.IFluidHandler;
 import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.api.block.IPneumaticWrenchable;
 import pneumaticCraft.common.Config;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.thirdparty.ModInteractionUtils;
 import pneumaticCraft.common.tileentity.TileEntityBase;
+import pneumaticCraft.common.util.FluidUtils;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.ModIds;
 import pneumaticCraft.lib.Textures;
@@ -65,78 +63,26 @@ public abstract class BlockPneumaticCraft extends BlockContainer implements IPne
             if(!world.isRemote) {
                 TileEntity te = world.getTileEntity(x, y, z);
 
-                if(te != null && !tryInsertingLiquid(te, player)) {
+                List<ItemStack> returnedItems = new ArrayList<ItemStack>();
+                if(te != null && !FluidUtils.tryInsertingLiquid(te, player.getCurrentEquippedItem(), player.capabilities.isCreativeMode, returnedItems)) {
                     player.openGui(PneumaticCraft.instance, getGuiID(), world, x, y, z);
+                } else {
+                    if(player.getCurrentEquippedItem() != null && player.getCurrentEquippedItem().stackSize <= 0) {
+                        player.setCurrentItemOrArmor(0, null);
+                    }
+                    for(ItemStack returnedItem : returnedItems) {
+                        returnedItem = returnedItem.copy();
+                        if(player.getCurrentEquippedItem() == null) {
+                            player.setCurrentItemOrArmor(0, returnedItem);
+                        } else {
+                            player.inventory.addItemStackToInventory(returnedItem);
+                        }
+                    }
                 }
             }
 
             return true;
         }
-    }
-
-    private boolean tryInsertingLiquid(TileEntity te, EntityPlayer player){
-        if(te instanceof IFluidHandler) {
-            IFluidHandler fluidHandler = (IFluidHandler)te;
-
-            ItemStack heldStack = player.getCurrentEquippedItem();
-            if(heldStack != null) {
-                FluidStack fluid = FluidContainerRegistry.getFluidForFilledItem(heldStack);
-                if(fluid != null) {
-                    fluid.amount = 1000;
-                    if(fluidHandler.canFill(ForgeDirection.UNKNOWN, fluid.getFluid()) && fluidHandler.fill(ForgeDirection.UNKNOWN, fluid, false) == 1000) {
-                        fluidHandler.fill(ForgeDirection.UNKNOWN, fluid, true);
-                        if(!player.capabilities.isCreativeMode) {
-                            heldStack.stackSize--;
-                            if(heldStack.stackSize <= 0) player.setCurrentItemOrArmor(0, null);
-
-                            ItemStack returnedItem = null;
-                            FluidContainerData[] allFluidData = FluidContainerRegistry.getRegisteredFluidContainerData();
-                            for(FluidContainerData fluidData : allFluidData) {
-                                if(fluidData.filledContainer.isItemEqual(heldStack)) {
-                                    returnedItem = fluidData.emptyContainer;
-                                    break;
-                                }
-                            }
-                            if(returnedItem != null) {
-                                returnedItem = returnedItem.copy();
-                                if(player.getCurrentEquippedItem() == null) {
-                                    player.setCurrentItemOrArmor(0, returnedItem);
-                                } else {
-                                    player.inventory.addItemStackToInventory(returnedItem);
-                                }
-                            }
-                        }
-                        return true;
-                    }
-                } else if(heldStack.getItem() instanceof IFluidContainerItem) {
-                    IFluidContainerItem container = (IFluidContainerItem)heldStack.getItem();
-
-                    fluid = container.getFluid(heldStack);
-                    if(fluid != null) {
-                        fluid = fluid.copy();
-                        if(fluidHandler.canFill(ForgeDirection.UNKNOWN, fluid.getFluid()) && fluidHandler.fill(ForgeDirection.UNKNOWN, fluid, false) == fluid.amount) {
-                            ItemStack returnedItem = heldStack.copy();
-                            returnedItem.stackSize = 1;
-                            container.drain(returnedItem, fluid.amount, true);
-                            fluidHandler.fill(ForgeDirection.UNKNOWN, fluid, true);
-
-                            if(!player.capabilities.isCreativeMode) {
-                                heldStack.stackSize--;
-                                if(heldStack.stackSize <= 0) player.setCurrentItemOrArmor(0, null);
-                                if(player.getCurrentEquippedItem() == null) {
-                                    player.setCurrentItemOrArmor(0, returnedItem);
-                                } else {
-                                    player.inventory.addItemStackToInventory(returnedItem);
-                                }
-                            }
-                            return true;
-                        }
-                    }
-
-                }
-            }
-        }
-        return false;
     }
 
     @Override

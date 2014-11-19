@@ -1,5 +1,10 @@
 package pneumaticCraft.common.tileentity;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -10,6 +15,7 @@ import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.network.DescSynced;
+import pneumaticCraft.common.util.FluidUtils;
 import pneumaticCraft.common.util.IOHelper;
 import pneumaticCraft.lib.PneumaticValues;
 import cpw.mods.fml.relauncher.Side;
@@ -41,8 +47,8 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
 
     @Override
     protected boolean exportItem(int maxItems){
+        ForgeDirection dir = ForgeDirection.getOrientation(getBlockMetadata());
         if(tank.getFluid() != null) {
-            ForgeDirection dir = ForgeDirection.getOrientation(getBlockMetadata());
             TileEntity neighbor = IOHelper.getNeighbor(this, dir);
             if(neighbor instanceof IFluidHandler) {
                 IFluidHandler fluidHandler = (IFluidHandler)neighbor;
@@ -55,6 +61,22 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
                 }
             }
         }
+
+        if(worldObj.isAirBlock(xCoord + dir.offsetX, yCoord + dir.offsetY, zCoord + dir.offsetZ)) {
+            for(EntityItem entity : getNeighborItems(this, dir)) {
+                if(!entity.isDead) {
+                    List<ItemStack> returnedItems = new ArrayList<ItemStack>();
+                    if(FluidUtils.tryExtractingLiquid(this, entity.getEntityItem(), returnedItems)) {
+                        if(entity.getEntityItem().stackSize <= 0) entity.setDead();
+                        for(ItemStack stack : returnedItems) {
+                            worldObj.spawnEntityInWorld(new EntityItem(worldObj, entity.posX, entity.posY, entity.posZ, stack));
+                        }
+                        return true;
+                    }
+                }
+            }
+        }
+
         return false;
     }
 
@@ -73,6 +95,22 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
                 }
             }
         }
+
+        if(worldObj.isAirBlock(xCoord + inputDir.offsetX, yCoord + inputDir.offsetY, zCoord + inputDir.offsetZ)) {
+            for(EntityItem entity : getNeighborItems(this, inputDir)) {
+                if(!entity.isDead) {
+                    List<ItemStack> returnedItems = new ArrayList<ItemStack>();
+                    if(FluidUtils.tryInsertingLiquid(this, entity.getEntityItem(), false, returnedItems)) {
+                        if(entity.getEntityItem().stackSize <= 0) entity.setDead();
+                        for(ItemStack stack : returnedItems) {
+                            worldObj.spawnEntityInWorld(new EntityItem(worldObj, entity.posX, entity.posY, entity.posZ, stack));
+                        }
+                        return true;
+                    }
+                }
+            }
+        }
+
         return false;
     }
 
