@@ -3,6 +3,8 @@
 -GPS Tool now shows the selected coordinate when held.
 -Liquid Hopper now fills/empties any liquid container at the output/input side respectively.
 -Liquid Hopper now sucks liquid blocks at the input and places liquid blocks at the output when a Dispenser Upgrade is inserted.
+-Added MFR plant compatibility.
+-Added pt_BR localization (thanks MrKunji!)
 
 -Bugfix: Omnidirectional Hopper stacks items which have a different NBT value.
 -Bugfix: Programmer doesn't properly sync.
