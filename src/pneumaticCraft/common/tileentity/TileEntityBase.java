@@ -188,7 +188,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
     }
 
     public int getUpgrades(int upgradeDamage){
-        return getUpgrades(upgradeDamage, ((IPneumaticMachine)this).getAirHandler().getUpgradeSlots());
+        return getUpgrades(upgradeDamage, this instanceof IPneumaticMachine ? ((IPneumaticMachine)this).getAirHandler().getUpgradeSlots() : getUpgradeSlots());
     }
 
     protected int getUpgrades(int upgradeDamage, int... upgradeSlots){

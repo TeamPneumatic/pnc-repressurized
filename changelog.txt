@@ -1,6 +1,8 @@
 -Greatly improved the Programmer's area render (the green cubes) performance. It'll now allow any size area to be rendered.
 -Showing the Programmer's area is now toggled instead of time based. A button to show the area, another to hide it.
 -GPS Tool now shows the selected coordinate when held.
+-Liquid Hopper now fills/empties any liquid container at the output/input side respectively.
+-Liquid Hopper now sucks liquid blocks at the input and places liquid blocks at the output when a Dispenser Upgrade is inserted.
 
 -Bugfix: Omnidirectional Hopper stacks items which have a different NBT value.
 -Bugfix: Programmer doesn't properly sync.

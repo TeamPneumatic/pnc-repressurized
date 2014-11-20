@@ -3,17 +3,20 @@ package pneumaticCraft.common.tileentity;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 import pneumaticCraft.common.block.Blockss;
+import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.network.DescSynced;
 import pneumaticCraft.common.util.FluidUtils;
 import pneumaticCraft.common.util.IOHelper;
@@ -69,9 +72,26 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
                     if(FluidUtils.tryExtractingLiquid(this, entity.getEntityItem(), returnedItems)) {
                         if(entity.getEntityItem().stackSize <= 0) entity.setDead();
                         for(ItemStack stack : returnedItems) {
-                            worldObj.spawnEntityInWorld(new EntityItem(worldObj, entity.posX, entity.posY, entity.posZ, stack));
+                            EntityItem item = new EntityItem(worldObj, entity.posX, entity.posY, entity.posZ, stack);
+                            item.motionX = entity.motionX;
+                            item.motionY = entity.motionY;
+                            item.motionZ = entity.motionZ;
+                            worldObj.spawnEntityInWorld(item);
                         }
                         return true;
+                    }
+                }
+            }
+        }
+
+        if(getUpgrades(ItemMachineUpgrade.UPGRADE_DISPENSER_DAMAGE) > 0) {
+            if(worldObj.isAirBlock(xCoord + dir.offsetX, yCoord + dir.offsetY, zCoord + dir.offsetZ)) {
+                FluidStack extractedFluid = drain(ForgeDirection.UNKNOWN, 1000, false);
+                if(extractedFluid != null && extractedFluid.amount == 1000) {
+                    Block fluidBlock = extractedFluid.getFluid().getBlock();
+                    if(fluidBlock != null) {
+                        drain(ForgeDirection.UNKNOWN, 1000, true);
+                        worldObj.setBlock(xCoord + dir.offsetX, yCoord + dir.offsetY, zCoord + dir.offsetZ, fluidBlock);
                     }
                 }
             }
@@ -103,10 +123,25 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
                     if(FluidUtils.tryInsertingLiquid(this, entity.getEntityItem(), false, returnedItems)) {
                         if(entity.getEntityItem().stackSize <= 0) entity.setDead();
                         for(ItemStack stack : returnedItems) {
-                            worldObj.spawnEntityInWorld(new EntityItem(worldObj, entity.posX, entity.posY, entity.posZ, stack));
+                            EntityItem item = new EntityItem(worldObj, entity.posX, entity.posY, entity.posZ, stack);
+                            item.motionX = entity.motionX;
+                            item.motionY = entity.motionY;
+                            item.motionZ = entity.motionZ;
+                            worldObj.spawnEntityInWorld(item);
                         }
                         return true;
                     }
+                }
+            }
+        }
+
+        if(getUpgrades(ItemMachineUpgrade.UPGRADE_DISPENSER_DAMAGE) > 0) {
+            Fluid fluid = FluidRegistry.lookupFluidForBlock(worldObj.getBlock(xCoord + inputDir.offsetX, yCoord + inputDir.offsetY, zCoord + inputDir.offsetZ));
+            if(fluid != null) {
+                if(fill(ForgeDirection.UNKNOWN, new FluidStack(fluid, 1000), false) == 1000) {
+                    fill(ForgeDirection.UNKNOWN, new FluidStack(fluid, 1000), true);
+                    worldObj.setBlockToAir(xCoord + inputDir.offsetX, yCoord + inputDir.offsetY, zCoord + inputDir.offsetZ);
+                    return true;
                 }
             }
         }
