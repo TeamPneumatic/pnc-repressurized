@@ -228,6 +228,18 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral{
             }
         });
 
+        luaMethods.add(new LuaMethod("hideArea"){
+            @Override
+            public Object[] call(IComputerAccess computer, ILuaContext context, Object[] args) throws LuaException, InterruptedException{
+                if(args.length == 0) {
+                    NetworkHandler.sendToAllAround(new PacketShowArea(xCoord, yCoord, zCoord), worldObj);
+                    return null;
+                } else {
+                    throw new IllegalArgumentException("hideArea doesn't take any arguments!");
+                }
+            }
+        });
+
         luaMethods.add(new LuaMethod("addWhitelistItemFilter"){
             @Override
             public Object[] call(IComputerAccess computer, ILuaContext context, Object[] args) throws LuaException, InterruptedException{
@@ -407,6 +419,19 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral{
                     return new Object[]{getAI().isActionDone()};
                 } else {
                     throw new IllegalArgumentException("isActionDone doesn't take any arguments!");
+                }
+            }
+        });
+
+        luaMethods.add(new LuaMethod("forgetTarget"){
+            @Override
+            public Object[] call(IComputerAccess computer, ILuaContext context, Object[] args) throws LuaException, InterruptedException{
+                if(args.length == 0) {
+                    if(drone == null) throw new IllegalArgumentException("There's no connected Drone!");
+                    drone.setAttackTarget(null);
+                    return null;
+                } else {
+                    throw new IllegalArgumentException("forgetTarget doesn't take any arguments!");
                 }
             }
         });
