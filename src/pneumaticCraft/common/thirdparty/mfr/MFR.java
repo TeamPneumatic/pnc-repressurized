@@ -1,37 +1,26 @@
 package pneumaticCraft.common.thirdparty.mfr;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.minecraft.block.Block;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.FluidRegistry;
 import pneumaticCraft.api.PneumaticRegistry;
 import pneumaticCraft.common.item.ItemPlasticPlants;
-import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.thirdparty.IThirdParty;
-import pneumaticCraft.lib.ModIds;
-import cpw.mods.fml.common.event.FMLInterModComms;
-import cpw.mods.fml.common.registry.GameData;
+import powercrystals.minefactoryreloaded.api.IFactoryHarvestable;
+import powercrystals.minefactoryreloaded.api.IFactoryPlantable;
 
 public class MFR implements IThirdParty{
+    private Class registryClass;
 
     @Override
     public void preInit(){
-        List<ItemStack> seeds = new ArrayList<ItemStack>();
-        ((ItemPlasticPlants)Itemss.plasticPlant).addSubItems(seeds);
-        for(ItemStack seed : seeds) {
-            Block plantBlock = ItemPlasticPlants.getPlantBlockIDFromSeed(seed.getItemDamage());
-            FMLInterModComms.sendMessage(ModIds.MFR, "registerHarvestable_Crop", new ItemStack(plantBlock, 1, 6));
-
-            NBTTagCompound tag = new NBTTagCompound();
-            tag.setString("seed", GameData.getItemRegistry().getNameForObject(seed.getItem()));
-            tag.setInteger("meta", seed.getItemDamage());
-            tag.setString("crop", GameData.getBlockRegistry().getNameForObject(plantBlock));
-            FMLInterModComms.sendMessage(ModIds.MFR, "registerPlantable_Crop", tag);
+        try {
+            for(Block block : ItemPlasticPlants.getBlockToSeedMap().keySet()) {
+                register("registerHarvestable", IFactoryHarvestable.class, new PlasticHarvester(block));
+            }
+            register("registerPlantable", IFactoryPlantable.class, new PlasticPlanter());
+        } catch(Throwable e) {
+            e.printStackTrace();
         }
-
     }
 
     @Override
@@ -47,6 +36,13 @@ public class MFR implements IThirdParty{
     @Override
     public void clientSide(){
 
+    }
+
+    private void register(String methodName, Class parameterType, Object parameter) throws Throwable{
+        if(registryClass == null) {
+            registryClass = Class.forName("powercrystals.minefactoryreloaded.MFRRegistry");
+        }
+        registryClass.getMethod(methodName, parameterType).invoke(null, parameter);
     }
 
 }

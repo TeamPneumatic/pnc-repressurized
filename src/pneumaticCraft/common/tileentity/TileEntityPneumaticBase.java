@@ -166,8 +166,8 @@ public class TileEntityPneumaticBase extends TileEntityBase implements IManoMeas
             int transferedAir = dispersion.get(i).getValue();
 
             onAirDispersion(transferedAir, teList.get(i).getKey());
-            neighbor.getAirHandler().addAir(transferedAir, teList.get(i).getKey());
-            addAir(-transferedAir, teList.get(i).getKey().getOpposite());
+            neighbor.getAirHandler().addAir(transferedAir, teList.get(i).getKey().getOpposite());
+            addAir(-transferedAir, teList.get(i).getKey());
         }
     }
 
@@ -307,7 +307,7 @@ public class TileEntityPneumaticBase extends TileEntityBase implements IManoMeas
 
     @Override
     public void readFromNBT(NBTTagCompound nbt){
-        if(getClass() != TileEntityPneumaticBase.class) {
+        if(getClass() != TileEntityPneumaticBase.class && saveTeInternals()) {
             super.readFromNBT(nbt);
         }
         if(nbt.hasKey("pneumatic")) nbt = nbt.getCompoundTag("pneumatic");
@@ -322,7 +322,7 @@ public class TileEntityPneumaticBase extends TileEntityBase implements IManoMeas
 
     @Override
     public void writeToNBT(NBTTagCompound nbt){
-        if(getClass() != TileEntityPneumaticBase.class) {
+        if(getClass() != TileEntityPneumaticBase.class && saveTeInternals()) {
             super.writeToNBT(nbt);
         }
         nbt.setInteger("currentAir", currentAir);
@@ -335,6 +335,10 @@ public class TileEntityPneumaticBase extends TileEntityBase implements IManoMeas
         nbt.setInteger("currentAir", currentAir);
         nbt.setInteger("volume", volume);
         nbt.setFloat("maxPressure", maxPressure);
+    }
+
+    protected boolean saveTeInternals(){
+        return true;
     }
 
     protected int getVolumeFromUpgrades(int[] upgradeSlots){

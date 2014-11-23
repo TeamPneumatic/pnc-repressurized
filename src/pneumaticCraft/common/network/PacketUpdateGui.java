@@ -70,22 +70,22 @@ public class PacketUpdateGui extends AbstractPacket<PacketUpdateGui>{
     public static void writeField(ByteBuf buf, Object value, int type){
         switch(type){
             case 0:
-                buf.writeInt((int)value);
+                buf.writeInt((Integer)value);
                 break;
             case 1:
-                buf.writeFloat((float)value);
+                buf.writeFloat((Float)value);
                 break;
             case 2:
-                buf.writeDouble((double)value);
+                buf.writeDouble((Double)value);
                 break;
             case 3:
-                buf.writeBoolean((boolean)value);
+                buf.writeBoolean((Boolean)value);
                 break;
             case 4:
                 ByteBufUtils.writeUTF8String(buf, (String)value);
                 break;
             case 5:
-                buf.writeByte((byte)value);
+                buf.writeByte((Byte)value);
                 break;
             case 6:
                 ByteBufUtils.writeItemStack(buf, (ItemStack)value);

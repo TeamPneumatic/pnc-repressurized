@@ -4,11 +4,11 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import pneumaticCraft.client.gui.widget.GuiAnimatedStat;
+import pneumaticCraft.client.gui.widget.IGuiWidget;
+import pneumaticCraft.client.gui.widget.WidgetTextField;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.inventory.Container4UpgradeSlots;
 import pneumaticCraft.common.network.NetworkHandler;
@@ -25,9 +25,7 @@ public class GuiElevator extends GuiPneumaticContainerBase<TileEntityElevatorBas
     private GuiAnimatedStat statusStat;
     private GuiAnimatedStat floorNameStat;
     private int currentEditedFloor;
-    private GuiTextField floorNameField;
-    private GuiButton floorNameNext;
-    private GuiButton floorNamePrevious;
+    private WidgetTextField floorNameField;
 
     public GuiElevator(InventoryPlayer player, TileEntityElevatorBase te){
         super(new Container4UpgradeSlots(player, te), te, Textures.GUI_4UPGRADE_SLOTS);
@@ -42,17 +40,17 @@ public class GuiElevator extends GuiPneumaticContainerBase<TileEntityElevatorBas
         floorNameStat = addAnimatedStat("Floor Names", new ItemStack(Blockss.elevatorCaller), 0xFF005500, false);
         floorNameStat.setTextWithoutCuttingString(getFloorNameStat());
 
-        Rectangle fieldRectangle = floorNameStat.getButtonScaledRectangle(xStart + 182, yStart + 125, 150, 20);
+        Rectangle fieldRectangle = floorNameStat.getButtonScaledRectangle(6, 60, 160, 20);
         floorNameField = getTextFieldFromRectangle(fieldRectangle);
         floorNameField.setText(te.getFloorName(currentEditedFloor));
+        floorNameStat.addWidget(floorNameField);
 
-        Rectangle namePreviousRectangle = floorNameStat.getButtonScaledRectangle(xStart + 182, yStart + 100, 40, 20);
-        floorNamePrevious = getButtonFromRectangle(1, namePreviousRectangle, "<-");
-        buttonList.add(floorNamePrevious);
+        Rectangle namePreviousRectangle = floorNameStat.getButtonScaledRectangle(5, 35, 40, 20);
+        floorNameStat.addWidget(getButtonFromRectangle(1, namePreviousRectangle, "<-"));
 
-        Rectangle nameNextRectangle = floorNameStat.getButtonScaledRectangle(xStart + 292, yStart + 100, 40, 20);
-        floorNameNext = getButtonFromRectangle(2, nameNextRectangle, "->");
-        buttonList.add(floorNameNext);
+        Rectangle nameNextRectangle = floorNameStat.getButtonScaledRectangle(125, 35, 40, 20);
+        floorNameStat.addWidget(getButtonFromRectangle(2, nameNextRectangle, "->"));
+
     }
 
     @Override
@@ -74,18 +72,12 @@ public class GuiElevator extends GuiPneumaticContainerBase<TileEntityElevatorBas
     @Override
     protected void drawGuiContainerBackgroundLayer(float opacity, int x, int y){
         super.drawGuiContainerBackgroundLayer(opacity, x, y);
-        floorNameField.drawTextBox();
     }
 
     @Override
     public void updateScreen(){
         super.updateScreen();
-
         statusStat.setText(getStatusText());
-        floorNameField.setFocused(floorNameStat.isDoneExpanding());
-        floorNameField.setVisible(floorNameStat.isDoneExpanding());
-        floorNameNext.visible = floorNameStat.isDoneExpanding();
-        floorNamePrevious.visible = floorNameStat.isDoneExpanding();
     }
 
     private List<String> getFloorNameStat(){
@@ -118,17 +110,14 @@ public class GuiElevator extends GuiPneumaticContainerBase<TileEntityElevatorBas
         }
     }
 
-    /**
-     * Fired when a control is clicked. This is the equivalent of
-     * ActionListener.actionPerformed(ActionEvent e).
-     */
     @Override
-    protected void actionPerformed(GuiButton button){
-        int[] floorHeights = te.floorHeights;
+    public void actionPerformed(IGuiWidget widget){
+        super.actionPerformed(widget);
 
-        if(button.id == 1 || button.id == 2) {
-            if(floorNameStat != null) floorNameStat.closeWindow();
-            if(button.id == 1) {
+        if(widget.getID() == 1 || widget.getID() == 2) {
+            int[] floorHeights = te.floorHeights;
+
+            if(widget.getID() == 1) {
                 currentEditedFloor--;
                 if(currentEditedFloor < 0) {
                     currentEditedFloor = floorHeights.length - 1;
@@ -142,27 +131,12 @@ public class GuiElevator extends GuiPneumaticContainerBase<TileEntityElevatorBas
             }
             floorNameField.setText(te.getFloorName(currentEditedFloor));
             floorNameStat.setTextWithoutCuttingString(getFloorNameStat());
-        } else {
-            super.actionPerformed(button);
         }
     }
 
-    /*@Override
-    protected void mouseClicked(int par1, int par2, int par3){
-        super.mouseClicked(par1, par2, par3);
-        if(floorNameStat.isDoneExpanding()) {
-            floorNameField.mouseClicked(par1, par2, par3);
-        }
-    }*/
-
     @Override
-    protected void keyTyped(char par1, int par2){
-        if(floorNameField.isFocused() && par2 != 1) {
-            floorNameField.textboxKeyTyped(par1, par2);
-            te.setFloorName(currentEditedFloor, floorNameField.getText());
-            NetworkHandler.sendToServer(new PacketUpdateTextfield(te, currentEditedFloor));
-        } else {
-            super.keyTyped(par1, par2);
-        }
+    public void onKeyTyped(IGuiWidget widget){
+        te.setFloorName(currentEditedFloor, floorNameField.getText());
+        NetworkHandler.sendToServer(new PacketUpdateTextfield(te, currentEditedFloor));
     }
 }

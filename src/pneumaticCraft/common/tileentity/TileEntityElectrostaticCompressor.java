@@ -18,9 +18,6 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase i
 
     private final int INVENTORY_SIZE = 4;
 
-    public static final int UPGRADE_SLOT_START = 0;
-    public static final int UPGRADE_SLOT_END = 3;
-
     private boolean lastRedstoneState;
     @GuiSynced
     public int redstoneMode = 0;
@@ -30,6 +27,7 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase i
     public TileEntityElectrostaticCompressor(){
         super(PneumaticValues.DANGER_PRESSURE_ELECTROSTATIC_COMPRESSOR, PneumaticValues.MAX_PRESSURE_ELECTROSTATIC_COMPRESSOR, PneumaticValues.VOLUME_ELECTROSTATIC_COMPRESSOR);
         inventory = new ItemStack[INVENTORY_SIZE];
+        setUpgradeSlots(0, 1, 2, 3);
     }
 
     @Override

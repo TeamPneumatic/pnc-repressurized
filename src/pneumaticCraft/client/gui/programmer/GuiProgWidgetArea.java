@@ -18,7 +18,7 @@ import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetArea;
 import cpw.mods.fml.client.FMLClientHandler;
 
-public class GuiProgWidgetArea extends GuiProgWidgetOptionBase{
+public class GuiProgWidgetArea extends GuiProgWidgetAreaShow{
     private GuiInventorySearcher invSearchGui;
     private int pointSearched;
 
@@ -32,7 +32,6 @@ public class GuiProgWidgetArea extends GuiProgWidgetOptionBase{
 
         buttonList.add(new GuiButton(0, guiLeft + 4, guiTop + 20, 86, 20, "Select GPS 1..."));
         buttonList.add(new GuiButton(1, guiLeft + 93, guiTop + 20, 86, 20, "Select GPS 2..."));
-        buttonList.add(new GuiButton(2, guiLeft + 50, guiTop + 150, 80, 20, "Show area"));
 
         List<GuiRadioButton> radioButtons = new ArrayList<GuiRadioButton>();
         ProgWidgetArea.EnumAreaType[] areaTypes = ProgWidgetArea.EnumAreaType.values();
@@ -87,10 +86,6 @@ public class GuiProgWidgetArea extends GuiProgWidgetOptionBase{
             invSearchGui.setSearchStack(ItemGPSTool.getGPSLocation(gps) != null ? gps : null);
             FMLClientHandler.instance().showGuiScreen(invSearchGui);
             pointSearched = button.id;
-        } else {
-            guiProgrammer.te.previewArea(widget.getX(), widget.getY());
-            //PacketDispatcher.sendPacketToServer(PacketHandlerPneumaticCraft.getProgrammerUpdateWidgetPacket(guiProgrammer.te));
-            //PacketDispatcher.sendPacketToServer(PacketHandlerPneumaticCraft.showDroneArea(guiProgrammer.te.xCoord, guiProgrammer.te.yCoord, guiProgrammer.te.zCoord, widget.getX(), widget.getY()));
         }
         super.actionPerformed(button);
     }

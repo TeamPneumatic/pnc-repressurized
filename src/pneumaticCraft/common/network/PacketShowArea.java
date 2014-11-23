@@ -15,7 +15,6 @@ public class PacketShowArea extends LocationIntPacket<PacketShowArea>{
 
     public PacketShowArea(int x, int y, int z, ChunkPosition... area){
         super(x, y, z);
-        if(area.length > 5000) throw new IllegalArgumentException("Area too big! Max area: 5000. Area size: " + area.length);
         this.area = area;
     }
 
@@ -45,7 +44,7 @@ public class PacketShowArea extends LocationIntPacket<PacketShowArea>{
 
     @Override
     public void handleClientSide(PacketShowArea message, EntityPlayer player){
-        AreaShowManager.getInstance().showArea(message.area, 0x00FFFF);
+        AreaShowManager.getInstance().showArea(message.area, 0x00FFFF, message.getTileEntity(player.worldObj));
     }
 
     @Override

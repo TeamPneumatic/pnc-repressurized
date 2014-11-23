@@ -2,23 +2,28 @@ package pneumaticCraft.common.thirdparty.buildcraft;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import pneumaticCraft.api.PneumaticRegistry;
 import pneumaticCraft.client.model.ModelThirdPartyCompressor;
 import pneumaticCraft.common.Config;
 import pneumaticCraft.common.block.Blockss;
+import pneumaticCraft.common.inventory.Container4UpgradeSlots;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.thirdparty.IThirdParty;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.common.util.PneumaticCraftUtils.EnumBuildcraftModule;
 import pneumaticCraft.lib.Names;
 import pneumaticCraft.proxy.ClientProxy;
+import pneumaticCraft.proxy.CommonProxy;
+import cpw.mods.fml.common.network.IGuiHandler;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-public class BuildCraft implements IThirdParty{
+public class BuildCraft implements IThirdParty, IGuiHandler{
 
     public static Block pneumaticEngine;
     public static Block kineticCompressor;
@@ -57,6 +62,28 @@ public class BuildCraft implements IThirdParty{
     public void clientSide(){
         ClientProxy.registerBaseModelRenderer(kineticCompressor, TileEntityKineticCompressor.class, new ModelThirdPartyCompressor(ModelThirdPartyCompressor.Type.MJ));
         ClientProxy.registerBaseModelRenderer(pneumaticEngine, TileEntityPneumaticEngine.class, new ModelPneumaticEngine());
+    }
+
+    @Override
+    public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z){
+        switch(ID){
+            case CommonProxy.GUI_ID_PNEUMATIC_ENGINE:
+                return new Container4UpgradeSlots(player.inventory, (TileEntityPneumaticEngine)world.getTileEntity(x, y, z));
+            case CommonProxy.GUI_ID_KINETIC_COMPRESSOR:
+                return new Container4UpgradeSlots(player.inventory, (TileEntityKineticCompressor)world.getTileEntity(x, y, z));
+        }
+        return null;
+    }
+
+    @Override
+    public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z){
+        switch(ID){
+            case CommonProxy.GUI_ID_PNEUMATIC_ENGINE:
+                return new GuiPneumaticEngine(player.inventory, (TileEntityPneumaticEngine)world.getTileEntity(x, y, z));
+            case CommonProxy.GUI_ID_KINETIC_COMPRESSOR:
+                return new GuiKineticCompressor(player.inventory, (TileEntityKineticCompressor)world.getTileEntity(x, y, z));
+        }
+        return null;
     }
 
 }

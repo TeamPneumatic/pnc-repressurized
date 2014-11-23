@@ -95,6 +95,8 @@ public class ModelOmnidirectionalHopper extends ModelBase implements IBaseModel{
     public void renderStatic(float size, TileEntity tile){
         GL11.glPushMatrix();
         GL11.glEnable(GL11.GL_BLEND);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GL11.glColor4d(1, 1, 1, 1);
         TileEntityOmnidirectionalHopper te = null;
 
         if(tile instanceof TileEntityOmnidirectionalHopper) {
@@ -121,6 +123,7 @@ public class ModelOmnidirectionalHopper extends ModelBase implements IBaseModel{
         }
         InserterBottom.render(size);
         renderBottom(te);
+        GL11.glDisable(GL11.GL_BLEND);
     }
 
     protected void renderMain(TileEntityOmnidirectionalHopper hopper){}

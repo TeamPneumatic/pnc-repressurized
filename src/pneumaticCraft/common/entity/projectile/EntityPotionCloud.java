@@ -69,9 +69,11 @@ public class EntityPotionCloud extends Entity{
         moveEntity(motionX, motionY, motionZ);
 
         if(worldObj.isRemote) {
-            int potionColor = Potion.potionTypes[getPotionID()].getLiquidColor();
+            int potionColor = getPotionID() < Potion.potionTypes.length && Potion.potionTypes[getPotionID()] != null ? Potion.potionTypes[getPotionID()].getLiquidColor() : 0xFFFFFF;
             for(int i = 0; i < 4; i++)
                 worldObj.spawnParticle("mobSpell", posX + (rand.nextDouble() - 0.5D) * 2 * radius, posY + (rand.nextDouble() - 0.5D) * 2 * radius, posZ + (rand.nextDouble() - 0.5D) * 2 * radius, (potionColor >> 16 & 255) / 255.0F, (potionColor >> 8 & 255) / 255.0F, (potionColor >> 0 & 255) / 255.0F);
+        } else if(getPotionID() >= Potion.potionTypes.length) {
+            setDead();
         }
 
         AxisAlignedBB bbBox = AxisAlignedBB.getBoundingBox(posX - radius, posY - radius, posZ - radius, posX + radius, posY + radius, posZ + radius);

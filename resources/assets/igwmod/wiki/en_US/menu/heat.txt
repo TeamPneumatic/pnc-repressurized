@@ -1,0 +1,21 @@
+PneumaticCraft adds a whole heat system. It behaves similar to how heat spreads in real-life. It has some similarities with how pressure disperses too:
+
+-Heat will disperse from hotter objects to colder objects.
+-Blocks will only spread heat to adjacent blocks that work with heat.
+-The bigger the temperature difference, the faster the spread.
+-Different objects have a different thermal resistance. Torches and Air have a high resistance, where machines like a Plastic Mixer have a very low heat resistance. This determines how fast heat can spread from one object to another.
+-Different objects have a different thermal capacity. The higher the capacity, the slower the temperature will rise for the given heat. Similarly, the slower the temperature will drop for the given heat loss.
+
+Because of performance reasons blocks like Ice and liquids are static in terms of temperature. You won't ever be able to heat/cool these objects to a point where they will change. Due to this, for balance reasons blocks like Ice and liquids have a high thermal resistance.
+
+Static heat sources are:
+-Air
+-Ice
+-Packed Ice
+-Snow
+-Torch
+-Fire
+-Any Liquid (including Water and Lava)
+
+You can heat up a machine by placing down Lava for example. However, this is slow due to the high thermal resistance. You can use an [link{block/advancedAirCompressor}]Advanced Air Compressor[link{}] or [link{block/advancedLiquidCompressor}]Advanced Liquid Compressor[link{}] to generate heat. These machines have a low thermal resistance, but require fuel.
+Currently the best way to cool something down is by placing down Ice next to the machine that needs cooling. A [link{www.en.wikipedia.org/wiki/Vortex_tube}]Vortex Tube[link{}] is in the works.

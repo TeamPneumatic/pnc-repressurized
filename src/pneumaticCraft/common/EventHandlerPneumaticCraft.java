@@ -160,12 +160,14 @@ public class EventHandlerPneumaticCraft{
 
     @SubscribeEvent
     public void onPlayerClick(PlayerInteractEvent event){
-        if(event.action != PlayerInteractEvent.Action.RIGHT_CLICK_AIR && event.world != null && !event.world.isRemote) {
-            if(event.entity.worldObj.getBlock(event.x, event.y, event.z) != Blockss.securityStation || event.action == PlayerInteractEvent.Action.LEFT_CLICK_BLOCK) {
-                int blockingStations = PneumaticCraftUtils.getProtectingSecurityStations(event.entity.worldObj, event.x, event.y, event.z, event.entityPlayer, true);
-                if(blockingStations > 0) {
-                    event.setCanceled(true);
-                    event.entityPlayer.addChatComponentMessage(new ChatComponentTranslation(EnumChatFormatting.RED + "Access is prevented by " + blockingStations + " Security Station(s)."));
+        if(!event.entityPlayer.capabilities.isCreativeMode || !event.entityPlayer.canCommandSenderUseCommand(2, "securityStation")) {
+            if(event.action != PlayerInteractEvent.Action.RIGHT_CLICK_AIR && event.world != null && !event.world.isRemote) {
+                if(event.entity.worldObj.getBlock(event.x, event.y, event.z) != Blockss.securityStation || event.action == PlayerInteractEvent.Action.LEFT_CLICK_BLOCK) {
+                    int blockingStations = PneumaticCraftUtils.getProtectingSecurityStations(event.entity.worldObj, event.x, event.y, event.z, event.entityPlayer, true);
+                    if(blockingStations > 0) {
+                        event.setCanceled(true);
+                        event.entityPlayer.addChatComponentMessage(new ChatComponentTranslation(EnumChatFormatting.RED + "Access is prevented by " + blockingStations + " Security Station(s)."));
+                    }
                 }
             }
         }

@@ -17,6 +17,7 @@ import pneumaticCraft.api.tileentity.IPneumaticMachine;
 import pneumaticCraft.common.inventory.SyncedField;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.Itemss;
+import pneumaticCraft.common.network.DescPacketHandler;
 import pneumaticCraft.common.network.DescSynced;
 import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.NetworkUtils;
@@ -48,8 +49,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
 
     @Override
     public Packet getDescriptionPacket(){
-        NetworkHandler.sendToAllAround(new PacketDescription(this), worldObj, getPacketDistance());
-        return null;
+        return DescPacketHandler.getPacket(new PacketDescription(this));
     }
 
     protected double getPacketDistance(){
@@ -177,12 +177,18 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
         }
     }
 
+    @Override
+    public void validate(){
+        super.validate();
+        scheduleDescriptionPacket();
+    }
+
     public void onDescUpdate(){
         if(shouldRerenderChunkOnDescUpdate()) rerenderChunk();
     }
 
     public int getUpgrades(int upgradeDamage){
-        return getUpgrades(upgradeDamage, ((IPneumaticMachine)this).getAirHandler().getUpgradeSlots());
+        return getUpgrades(upgradeDamage, this instanceof IPneumaticMachine ? ((IPneumaticMachine)this).getAirHandler().getUpgradeSlots() : getUpgradeSlots());
     }
 
     protected int getUpgrades(int upgradeDamage, int... upgradeSlots){

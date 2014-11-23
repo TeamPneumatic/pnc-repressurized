@@ -116,6 +116,14 @@ public abstract class GuiPneumaticScreenBase extends GuiScreen implements IWidge
     }
 
     @Override
+    public void updateScreen(){
+        super.updateScreen();
+        for(IGuiWidget widget : widgets) {
+            widget.update();
+        }
+    }
+
+    @Override
     public void onKeyTyped(IGuiWidget widget){}
 
     @Override

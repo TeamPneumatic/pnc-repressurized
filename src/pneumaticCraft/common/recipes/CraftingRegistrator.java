@@ -9,6 +9,8 @@ import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraftforge.oredict.OreDictionary;
+import net.minecraftforge.oredict.RecipeSorter;
+import net.minecraftforge.oredict.RecipeSorter.Category;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 import pneumaticCraft.api.recipe.AssemblyRecipe;
@@ -120,6 +122,10 @@ public class CraftingRegistrator{
         GameRegistry.addRecipe(new RecipeGun(ItemPlasticPlants.BURST_PLANT_DAMAGE, Itemss.pneumaticWrench));
         GameRegistry.addRecipe(new RecipePneumaticHelmet());
         GameRegistry.addRecipe(new RecipeManometer());
+
+        RecipeSorter.register("pneumaticcraft:gun", RecipeGun.class, Category.SHAPED, "after:minecraft:shaped");
+        RecipeSorter.register("pneumaticcraft:pneumaticHelmet", RecipePneumaticHelmet.class, Category.SHAPED, "after:minecraft:shaped");
+        RecipeSorter.register("pneumaticcraft:manometer", RecipeManometer.class, Category.SHAPED, "after:minecraft:shaped");
 
         //misc
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Blockss.compressedIron), "iii", "iii", "iii", 'i', Names.INGOT_IRON_COMPRESSED));

@@ -289,7 +289,7 @@ gui.tab.info.tile.pneumaticDynamo=§0This block can convert compressed air into 
 gui.tab.info.tile.liquidCompressor=§0This machine can generate compressed air using various liquids. To see every possible fuel open up the 'Available Fuels' tab. This tab is ordered from best to worst fuel. \n \nYou can either pump in fuel, right click with a fluid container (like a bucket) on the Liquid Compressor, or put the fluid container in the top slot.
 gui.tab.info.tile.advancedLiquidCompressor=§0This machine is the tier two version of the Liquid Compressor. Like its less resistant brother it can generate compressed air using liquid fuel (all useable fuels can be seen in the 'Available Fuels' tab). However, this one generates at 50mL/tick, and also produces heat. The higher the heat, the lower the efficiency. The bottom arrow in the temperature gauge indicates where the efficiency will start to drop, and the top arrow indicates the 0%% efficiency mark. \n \nUnlike you might expect from this mod, this machine won't explode when the temperature gets too high.
 gui.tab.info.tile.plasticMixer=§0The Plastic Mixer is used to melt down Plastic into liquid plastic. It then can be mixed with other colors of plastic or Dye to create other colored Plastic. See other tabs for more info.
-gui.tab.info.tile.liquidHopper=§0The Liquid Hopper is a hopper which you can use to transfer liquids. Like the Omnidirectional Hopper it's omnidirectional.
+gui.tab.info.tile.liquidHopper=§0The Liquid Hopper is a hopper which you can use to transfer liquids. Like the Omnidirectional Hopper it's omnidirectional. \n \nApart from transfer liquids from one tank to another, the Liquid Hopper will try to empty any liquid container (like a Bucket) lying at the input side. Likewise it'll try to fill any liquid container at the output side.
 
 # Pressure
 gui.tab.pressure=Pressure
@@ -334,11 +334,11 @@ gui.tab.upgrades.tile.securityStation=§7-Range Upgrade \n§0Increases the (squa
 gui.tab.upgrades.tile.securityStation.hacking=§7-Security Upgrade \n§0Allows higher rated Security Stations to be hacked (one level for each upgrade).
 gui.tab.upgrades.tile.uvLightBox=§7-Speed Upgrade (max = 10) \n§0The UV lights will glow brighter and will expose PCB's quicker.
 gui.tab.upgrades.tile.vacuumPump=§7-Speed Upgrade (max = 10) \n§0The Vacuum Pump will produce more vacuum per tick. However this is at the expense of the efficiency.
-gui.tab.upgrades.tile.pneumaticGenerator=§7-Speed Upgrade (max = 10) \n§0Adjusts the output rate: \n§00 upgrades --> 32 EU/t \n§01 upgrade --> 128 EU/t \n§02 upgrades --> 512 EU/t
+gui.tab.upgrades.tile.pneumaticGenerator=§7-Speed Upgrade (max = 3) \n§0Adjusts the output rate: \n§00 upgrades --> 32 EU/t \n§01 upgrade --> 128 EU/t \n§02 upgrades --> 512 EU/t \n§03 upgrades --> 2048 EU/t
 gui.tab.upgrades.tile.fluxCompressor=§7-Speed Upgrade (max = 10) \n§0Increases the air production rate. It also increases the RF usage in a way that the machine will be more inefficient. Finally it increases the max RF input rate.
 gui.tab.upgrades.tile.pneumaticDynamo=§7-Speed Upgrade (max = 10) \n§0Increases the RF production rate. It also increases the air usage in a way that the machine will be more inefficient. Finally it increases the max RF output rate.
 gui.tab.upgrades.tile.liquidCompressor=§7-Speed Upgrade (max = 10) \n§0Increases the compressed air generated per tick. However this is at the expense of the efficiency.
-gui.tab.upgrades.tile.advancedLiquidCompressor=§7-Speed Upgrade (max = 10) \n§0Increases the compressed air generated per tick. However this is at the expense of the efficiency.
+gui.tab.upgrades.tile.advancedLiquidCompressor=§7-Speed Upgrade (max = 10) \n§0Increases the compressed air generated per tick. However this is at the expense of the efficiency. \n§7-Dispenser Upgrade (max = 1) \n§0The Liquid hopper will try to pump in any liquid block at the input side. Likewise it'll try to place any liquid in the world on the output side (if it's an air block).
 
 # Redstone Behaviour
 gui.tab.redstoneBehaviour=Redstone Behaviour
@@ -389,6 +389,7 @@ gui.setKeybind=Press key to bind
 gui.enableModule=Enable %s
 gui.pressureChamber=Pressure Chamber
 gui.pressureChamberTitle=%s Pressure Chamber
+gui.programmer.button.stopShowingArea=Stop Showing Area
 gui.liquid.empty=Empty
 
 key.pneumaticcraft.category=PneumaticCraft

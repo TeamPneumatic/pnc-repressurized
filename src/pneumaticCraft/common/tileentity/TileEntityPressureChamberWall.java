@@ -48,7 +48,6 @@ public class TileEntityPressureChamberWall extends TileEntityBase implements IMa
             valveY = 0;
             valveZ = 0;
         }
-        if(teValve != te) worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
         teValve = te;
     }
 

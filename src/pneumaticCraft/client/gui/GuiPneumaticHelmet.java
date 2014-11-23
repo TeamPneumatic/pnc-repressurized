@@ -13,6 +13,7 @@ import pneumaticCraft.client.render.pneumaticArmor.UpgradeRenderHandlerList;
 import pneumaticCraft.common.CommonHUDHandler;
 import pneumaticCraft.common.inventory.ContainerChargingStationItemInventory;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
+import pneumaticCraft.common.item.ItemPneumaticArmor;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.tileentity.TileEntityChargingStation;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
@@ -73,7 +74,8 @@ public class GuiPneumaticHelmet extends GuiPneumaticInventoryItem{
             text.add(EnumChatFormatting.BLACK + "0.0 mL/tick");
         }
         text.add("\u00a77Estimated time remaining:");
-        int airLeft = (int)(((IPressurizable)itemStack.getItem()).getPressure(itemStack) * PneumaticValues.PNEUMATIC_HELMET_VOLUME);
+        int volume = ItemPneumaticArmor.getUpgrades(ItemMachineUpgrade.UPGRADE_VOLUME_DAMAGE, te.getStackInSlot(TileEntityChargingStation.CHARGE_INVENTORY_INDEX)) * PneumaticValues.VOLUME_VOLUME_UPGRADE + getDefaultVolume();
+        int airLeft = (int)(((IPressurizable)itemStack.getItem()).getPressure(itemStack) * volume);
         if(totalUsage == 0) {
             if(airLeft > 0) text.add("\u00a70infinite");
             else text.add("\u00a700s");

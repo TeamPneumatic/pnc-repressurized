@@ -40,8 +40,8 @@ public class IGWSupportNotifier{
      */
     public IGWSupportNotifier(){
         if(FMLCommonHandler.instance().getSide() == Side.CLIENT && !Loader.isModLoaded("IGWMod")) {
-            String mcDataLocation = FMLCommonHandler.instance().getSavesDirectory().getAbsolutePath();
-            Configuration config = new Configuration(new File(mcDataLocation.substring(0, mcDataLocation.length() - 7) + "config/IGWMod.cfg"));
+            File dir = new File(".", "config");
+            Configuration config = new Configuration(new File(dir, "IGWMod.cfg"));
             config.load();
 
             if(config.get(Configuration.CATEGORY_GENERAL, "enable_missing_notification", true, "When enabled, this will notify players when IGW-Mod is not installed even though mods add support.").getBoolean()) {

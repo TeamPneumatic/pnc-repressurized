@@ -6,21 +6,26 @@ import ic2.api.recipe.IRecipeInput;
 import ic2.api.recipe.Recipes;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.World;
 import pneumaticCraft.api.PneumaticRegistry;
 import pneumaticCraft.client.model.BaseModel;
 import pneumaticCraft.client.model.ModelThirdPartyCompressor;
 import pneumaticCraft.common.Config;
 import pneumaticCraft.common.block.Blockss;
+import pneumaticCraft.common.inventory.ContainerPneumaticGenerator;
 import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.thirdparty.IThirdParty;
 import pneumaticCraft.proxy.ClientProxy;
+import pneumaticCraft.proxy.CommonProxy;
+import cpw.mods.fml.common.network.IGuiHandler;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-public class IC2 implements IThirdParty{
+public class IC2 implements IThirdParty, IGuiHandler{
 
     public static Block electricCompressor;
     public static Block pneumaticGenerator;
@@ -77,6 +82,28 @@ public class IC2 implements IThirdParty{
     public void clientSide(){
         ClientProxy.registerBaseModelRenderer(electricCompressor, TileEntityElectricCompressor.class, new ModelThirdPartyCompressor(ModelThirdPartyCompressor.Type.EU));
         ClientProxy.registerBaseModelRenderer(pneumaticGenerator, TileEntityPneumaticGenerator.class, new BaseModel("electricCompressor.obj"));
+    }
+
+    @Override
+    public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z){
+        switch(ID){
+            case CommonProxy.GUI_ID_PNEUMATIC_GENERATOR:
+                return new ContainerPneumaticGenerator(player.inventory, (TileEntityPneumaticGenerator)world.getTileEntity(x, y, z));
+            case CommonProxy.GUI_ID_ELECTRIC_COMPRESSOR:
+                return new ContainerElectricCompressor(player.inventory, (TileEntityElectricCompressor)world.getTileEntity(x, y, z));
+        }
+        return null;
+    }
+
+    @Override
+    public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z){
+        switch(ID){
+            case CommonProxy.GUI_ID_PNEUMATIC_GENERATOR:
+                return new GuiPneumaticGenerator(player.inventory, (TileEntityPneumaticGenerator)world.getTileEntity(x, y, z));
+            case CommonProxy.GUI_ID_ELECTRIC_COMPRESSOR:
+                return new GuiElectricCompressor(player.inventory, (TileEntityElectricCompressor)world.getTileEntity(x, y, z));
+        }
+        return null;
     }
 
 }

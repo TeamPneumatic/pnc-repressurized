@@ -131,7 +131,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider{
         switch(type){
             case FILL:
                 for(int x = minX; x <= maxX; x++) {
-                    for(int y = maxY; y >= minY; y--) {
+                    for(int y = Math.min(255, maxY); y >= minY && y >= 0; y--) {
                         for(int z = minZ; z <= maxZ; z++) {
                             area.add(new ChunkPosition(x, y, z));
                         }
@@ -140,7 +140,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider{
                 break;
             case FRAME:
                 for(int x = minX; x <= maxX; x++) {
-                    for(int y = minY; y <= maxY; y++) {
+                    for(int y = Math.max(0, minY); y <= maxY && y < 256; y++) {
                         for(int z = minZ; z <= maxZ; z++) {
                             int axisRight = 0;
                             if(x == minX || x == maxX) axisRight++;
@@ -155,7 +155,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider{
                 break;
             case WALL:
                 for(int x = minX; x <= maxX; x++) {
-                    for(int y = minY; y <= maxY; y++) {
+                    for(int y = Math.max(0, minY); y <= maxY && y < 256; y++) {
                         for(int z = minZ; z <= maxZ; z++) {
                             if(x == minX || x == maxX || y == minY || y == maxY || z == minZ || z == maxZ) {
                                 area.add(new ChunkPosition(x, y, z));
@@ -173,7 +173,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider{
                 maxY = (int)(areaPoints[0].chunkPosY + radius + 1);
                 maxZ = (int)(areaPoints[0].chunkPosZ + radius + 1);
                 for(int x = minX; x <= maxX; x++) {
-                    for(int y = minY; y <= maxY; y++) {
+                    for(int y = Math.max(0, minY); y <= maxY && y < 256; y++) {
                         for(int z = minZ; z <= maxZ; z++) {
                             if(PneumaticCraftUtils.distBetween(areaPoints[0], x + 0.5, y + 0.5, z + 0.5) <= radius) {
                                 area.add(new ChunkPosition(x, y, z));
