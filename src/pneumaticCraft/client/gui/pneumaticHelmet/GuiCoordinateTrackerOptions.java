@@ -45,7 +45,7 @@ public class GuiCoordinateTrackerOptions implements IOptionPage{
     @Override
     public void actionPerformed(GuiButton button){
         Minecraft mc = FMLClientHandler.instance().getClient();
-        CoordTrackUpgradeHandler coordHandler = (CoordTrackUpgradeHandler)HUDHandler.instance().getSpecificRenderer(CoordTrackUpgradeHandler.class);
+        CoordTrackUpgradeHandler coordHandler = HUDHandler.instance().getSpecificRenderer(CoordTrackUpgradeHandler.class);
         switch(button.id){
             case 10:
                 mc.displayGuiScreen((GuiScreen)null);
@@ -87,7 +87,7 @@ public class GuiCoordinateTrackerOptions implements IOptionPage{
     public void drawScreen(int x, int y, float partialTicks){}
 
     private void updateButtonTexts(){
-        CoordTrackUpgradeHandler coordHandler = (CoordTrackUpgradeHandler)HUDHandler.instance().getSpecificRenderer(CoordTrackUpgradeHandler.class);
+        CoordTrackUpgradeHandler coordHandler = HUDHandler.instance().getSpecificRenderer(CoordTrackUpgradeHandler.class);
         pathEnabled.displayString = coordHandler.pathEnabled ? "Navigation Enabled" : "Navigation Disabled";
         wirePath.displayString = coordHandler.wirePath ? "Wire Navigation" : "Tile Navigation";
         xRayEnabled.displayString = coordHandler.xRayEnabled ? "X-Ray Enabled" : "X-Ray Disabled";

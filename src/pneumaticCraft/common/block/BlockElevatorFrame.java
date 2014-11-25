@@ -36,10 +36,10 @@ public class BlockElevatorFrame extends BlockPneumaticCraftModeled{
 
     @Override
     public MovingObjectPosition collisionRayTrace(World world, int x, int y, int z, Vec3 origin, Vec3 direction){
-        if(world.isRemote){
+        if(world.isRemote) {
             ItemStack playerStack = PneumaticCraft.proxy.getPlayer().getCurrentEquippedItem();
-            if(playerStack != null && playerStack.getItem() == Item.getItemFromBlock(this)){
-                   return super.collisionRayTrace(world, x, y, z, origin, direction);
+            if(playerStack != null && playerStack.getItem() == Item.getItemFromBlock(this)) {
+                return super.collisionRayTrace(world, x, y, z, origin, direction);
             }
         }
         boolean isColliding = false;

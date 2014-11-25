@@ -1,6 +1,5 @@
 package pneumaticCraft.common.item;
 
-
 public interface IChargingStationGUIHolderItem{
 
     /**

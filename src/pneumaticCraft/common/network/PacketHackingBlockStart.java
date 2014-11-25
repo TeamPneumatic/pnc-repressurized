@@ -29,7 +29,7 @@ public class PacketHackingBlockStart extends LocationIntPacket<PacketHackingBloc
     @Override
     public void handleClientSide(PacketHackingBlockStart message, EntityPlayer player){
         CommonHUDHandler.getHandlerForPlayer(player).setHackedBlock(new WorldAndCoord(player.worldObj, message.x, message.y, message.z));
-        RenderBlockTarget target = ((BlockTrackUpgradeHandler)HUDHandler.instance().getSpecificRenderer(BlockTrackUpgradeHandler.class)).getTargetForCoord(message.x, message.y, message.z);
+        RenderBlockTarget target = HUDHandler.instance().getSpecificRenderer(BlockTrackUpgradeHandler.class).getTargetForCoord(message.x, message.y, message.z);
         if(target != null) target.onHackConfirmServer();
     }
 

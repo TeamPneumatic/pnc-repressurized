@@ -17,7 +17,7 @@ public class ArmorMessage{
 
     public ArmorMessage(String title, List<String> message, int duration, int backColor){
         lifeSpan = duration;
-        MainHelmetHandler mainOptions = (MainHelmetHandler)HUDHandler.instance().getSpecificRenderer(MainHelmetHandler.class);
+        MainHelmetHandler mainOptions = HUDHandler.instance().getSpecificRenderer(MainHelmetHandler.class);
         stat = new GuiAnimatedStat(null, title, "", mainOptions.messagesStatX, mainOptions.messagesStatY, backColor, null, mainOptions.messagesStatLeftSided);
         stat.setMinDimensionsAndReset(0, 0);
         stat.setText(message);

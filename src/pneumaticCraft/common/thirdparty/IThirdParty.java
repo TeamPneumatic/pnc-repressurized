@@ -1,6 +1,5 @@
 package pneumaticCraft.common.thirdparty;
 
-
 public interface IThirdParty{
 
     public void preInit();

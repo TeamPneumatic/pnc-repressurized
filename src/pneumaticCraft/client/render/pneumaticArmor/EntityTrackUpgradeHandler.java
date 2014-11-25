@@ -1,7 +1,11 @@
 package pneumaticCraft.client.render.pneumaticArmor;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
@@ -32,6 +36,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler{
 
     private final List<RenderTarget> targets = new ArrayList<RenderTarget>();
+    private final Map<Entity, Integer> targetingEntities = new HashMap<Entity, Integer>();
     private boolean shouldStopSpamOnEntityTracking = false;
     private static final int ENTITY_TRACK_THRESHOLD = 7;
     private static final float ENTITY_TRACKING_RANGE = 16F;
@@ -117,6 +122,28 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler{
             text.add("Filter mode: " + (entityFilter.equals("") ? "None" : entityFilter));
         }
         entityTrackInfo.setText(text);
+
+        //Remove entities that don't need to be tracked anymore.
+        Iterator<Entry<Entity, Integer>> iterator = targetingEntities.entrySet().iterator();
+        while(iterator.hasNext()) {
+            Entry<Entity, Integer> entry = iterator.next();
+            Entity entity = entry.getKey();
+            if(entry.getValue() >= 0) entry.setValue(entry.getValue() + 1);
+            if(entity.isDead || !player.worldObj.getLoadedEntityList().contains(entity) || entry.getValue() > 50) iterator.remove();
+        }
+    }
+
+    public void warnIfNecessary(Entity entity){
+        if(!targetingEntities.containsKey(entity)) {
+            HUDHandler.instance().addMessage(new ArmorMessage("A mob is targeting you!", new ArrayList<String>(), 60, 0x70FF0000));
+        }
+        targetingEntities.put(entity, -1);
+    }
+
+    public void removeTargetingEntity(Entity entity){
+        if(targetingEntities.containsKey(entity)) {
+            targetingEntities.put(entity, 0);
+        }
     }
 
     public static AxisAlignedBB getAABBFromRange(EntityPlayer player, int rangeUpgrades){

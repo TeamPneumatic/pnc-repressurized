@@ -36,7 +36,7 @@ public class PacketHackingEntityStart extends AbstractPacket<PacketHackingEntity
         Entity entity = player.worldObj.getEntityByID(message.entityId);
         if(entity != null) {
             CommonHUDHandler.getHandlerForPlayer(player).setHackedEntity(entity);
-            List<RenderTarget> targets = ((EntityTrackUpgradeHandler)HUDHandler.instance().getSpecificRenderer(EntityTrackUpgradeHandler.class)).getTargets();
+            List<RenderTarget> targets = HUDHandler.instance().getSpecificRenderer(EntityTrackUpgradeHandler.class).getTargets();
             for(RenderTarget target : targets) {
                 if(target.entity == entity) {
                     target.onHackConfirmServer();

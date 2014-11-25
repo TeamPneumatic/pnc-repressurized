@@ -53,9 +53,9 @@ public class HUDHandler{
         return INSTANCE;
     }
 
-    public IUpgradeRenderHandler getSpecificRenderer(Class<? extends IUpgradeRenderHandler> clazz){
+    public <T extends IUpgradeRenderHandler> T getSpecificRenderer(Class<T> clazz){
         for(IUpgradeRenderHandler renderHandler : UpgradeRenderHandlerList.instance().upgradeRenderers) {
-            if(clazz.isAssignableFrom(renderHandler.getClass())) return renderHandler;
+            if(clazz.isAssignableFrom(renderHandler.getClass())) return (T)renderHandler;
         }
         return null;
     }
@@ -256,8 +256,8 @@ public class HUDHandler{
                     FMLCommonHandler.instance().showGuiScreen(GuiHelmetMainScreen.getInstance());
                 }
             } else if(keybindHack.isPressed() && HackUpgradeRenderHandler.enabledForPlayer(mc.thePlayer)) {
-                ((BlockTrackUpgradeHandler)getSpecificRenderer(BlockTrackUpgradeHandler.class)).hack();
-                ((EntityTrackUpgradeHandler)getSpecificRenderer(EntityTrackUpgradeHandler.class)).hack();
+                getSpecificRenderer(BlockTrackUpgradeHandler.class).hack();
+                getSpecificRenderer(EntityTrackUpgradeHandler.class).hack();
             }
         }
     }
@@ -272,8 +272,8 @@ public class HUDHandler{
     @SubscribeEvent
     public void onMouseEvent(MouseEvent event){
         boolean isCaptured = false;
-        isCaptured = ((BlockTrackUpgradeHandler)getSpecificRenderer(BlockTrackUpgradeHandler.class)).scroll(event);
-        if(!isCaptured) isCaptured = ((EntityTrackUpgradeHandler)getSpecificRenderer(EntityTrackUpgradeHandler.class)).scroll(event);
+        isCaptured = getSpecificRenderer(BlockTrackUpgradeHandler.class).scroll(event);
+        if(!isCaptured) isCaptured = getSpecificRenderer(EntityTrackUpgradeHandler.class).scroll(event);
         if(isCaptured) event.setCanceled(true);
     }
 }

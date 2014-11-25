@@ -20,12 +20,12 @@ public class HackableButton implements IHackableBlock{
 
     @Override
     public void addInfo(World world, int x, int y, int z, List<String> curInfo, EntityPlayer player){
-         curInfo.add("pneumaticHelmet.hacking.result.activate");
+        curInfo.add("pneumaticHelmet.hacking.result.activate");
     }
 
     @Override
     public void addPostHackInfo(World world, int x, int y, int z, List<String> curInfo, EntityPlayer player){
-         curInfo.add("pneumaticHelmet.hacking.finished.activated");
+        curInfo.add("pneumaticHelmet.hacking.finished.activated");
     }
 
     @Override

@@ -281,7 +281,7 @@ public class EntityTrackHandler{
         public void addInfo(Entity entity, List<String> curInfo){
             IHackableEntity hackable = HackableHandler.getHackableForEntity(entity, PneumaticCraft.proxy.getPlayer());
             if(hackable != null) {
-                List<RenderTarget> targets = ((EntityTrackUpgradeHandler)HUDHandler.instance().getSpecificRenderer(EntityTrackUpgradeHandler.class)).getTargets();
+                List<RenderTarget> targets = HUDHandler.instance().getSpecificRenderer(EntityTrackUpgradeHandler.class).getTargets();
                 int hackTime = 0;
                 for(RenderTarget target : targets) {
                     if(target.entity == entity) {
