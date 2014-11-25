@@ -91,6 +91,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
             //firstRun = false;
             onFirstServerUpdate();
             onNeighborTileUpdate();
+            onNeighborBlockUpdate();
         }
         firstRun = false;
 
