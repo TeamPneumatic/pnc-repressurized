@@ -5,10 +5,12 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
+import pneumaticCraft.common.tileentity.TileEntityPlasticMixer;
 
 class SlotItemSpecific extends Slot{
     private Item itemAllowed;
     private int oreDictEntry;
+    private boolean dye;
 
     SlotItemSpecific(IInventory par2IInventory, Item itemAllowed, int par3, int par4, int par5){
         super(par2IInventory, par3, par4, par5);
@@ -18,6 +20,7 @@ class SlotItemSpecific extends Slot{
     SlotItemSpecific(IInventory par2IInventory, String oreDictKeyAllowed, int par3, int par4, int par5){
         super(par2IInventory, par3, par4, par5);
         oreDictEntry = OreDictionary.getOreID(oreDictKeyAllowed);
+        dye = oreDictKeyAllowed.equals("dye");
     }
 
     /**
@@ -33,6 +36,7 @@ class SlotItemSpecific extends Slot{
             int[] ids = OreDictionary.getOreIDs(par1ItemStack);
             for(int id : ids) {
                 if(id == oreDictEntry) return true;
+                if(dye && TileEntityPlasticMixer.getDyeIndex(par1ItemStack) >= 0) return true;
             }
             return false;
         }

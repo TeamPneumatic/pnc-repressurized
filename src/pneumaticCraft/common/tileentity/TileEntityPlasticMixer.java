@@ -312,7 +312,7 @@ public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHand
         return getDyeIndex(inventory[5]);
     }
 
-    private int getDyeIndex(ItemStack stack){
+    public static int getDyeIndex(ItemStack stack){
         int[] ids = OreDictionary.getOreIDs(stack);
         for(int id : ids) {
             String name = OreDictionary.getOreName(id);
