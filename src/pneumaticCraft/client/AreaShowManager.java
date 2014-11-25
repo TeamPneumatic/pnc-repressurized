@@ -55,7 +55,7 @@ public class AreaShowManager{
             if(gpsLocation != null) {
                 Set<ChunkPosition> set = new HashSet<ChunkPosition>();
                 set.add(gpsLocation);
-                new AreaShowHandler(set, 0x00FF00, null).render();
+                new AreaShowHandler(set, 0xFFFF00, null).render();
             }
         }
 

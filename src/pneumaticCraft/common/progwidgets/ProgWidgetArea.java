@@ -27,7 +27,8 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider{
 
     public enum EnumAreaType{
         FILL("Filled"), FRAME("Frame"), WALL("Walls"), SPHERE("Sphere"), LINE("Line"), X_WALL("X-Wall"), Y_WALL(
-                "Y-Wall"), Z_WALL("Z-Wall");
+                "Y-Wall"), Z_WALL("Z-Wall"), X_CYLINDER("X-Cylinder"), Y_CYLINDER("Y-Cylinder"), Z_CYLINDER(
+                "Z-Cylinder"), X_PYRAMID("X-Pyramid"), Y_PYRAMID("Y-Pyramid"), Z_PYRAMID("Z-Pyramid");
 
         private final String name;
 
@@ -263,7 +264,132 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider{
                     }
                 }
                 break;
+            case X_CYLINDER:
+                if(areaPoints[1] != null) {
+                    double rad = areaPoints[1] != null ? PneumaticCraftUtils.distBetween(areaPoints[0].chunkPosY, areaPoints[0].chunkPosZ, areaPoints[1].chunkPosY, areaPoints[1].chunkPosZ) : 0;
+                    minY = (int)(areaPoints[0].chunkPosY - rad - 1);
+                    minZ = (int)(areaPoints[0].chunkPosZ - rad - 1);
+                    maxY = (int)(areaPoints[0].chunkPosY + rad + 1);
+                    maxZ = (int)(areaPoints[0].chunkPosZ + rad + 1);
+                    for(int y = Math.max(0, minY); y <= maxY && y < 256; y++) {
+                        for(int z = minZ; z <= maxZ; z++) {
+                            if(PneumaticCraftUtils.distBetween(areaPoints[0].chunkPosY, areaPoints[0].chunkPosZ, y, z) <= rad) {
+                                for(int x = minX; x <= maxX; x++) {
+                                    area.add(new ChunkPosition(x, y, z));
+                                }
+                            }
+                        }
+                    }
+                }
+                break;
+            case Y_CYLINDER:
+                if(areaPoints[1] != null) {
+                    double rad = areaPoints[1] != null ? PneumaticCraftUtils.distBetween(areaPoints[0].chunkPosX, areaPoints[0].chunkPosZ, areaPoints[1].chunkPosX, areaPoints[1].chunkPosZ) : 0;
+                    minX = (int)(areaPoints[0].chunkPosX - rad - 1);
+                    minZ = (int)(areaPoints[0].chunkPosZ - rad - 1);
+                    maxX = (int)(areaPoints[0].chunkPosX + rad + 1);
+                    maxZ = (int)(areaPoints[0].chunkPosZ + rad + 1);
+                    for(int x = minX; x <= maxX; x++) {
+                        for(int z = minZ; z <= maxZ; z++) {
+                            if(PneumaticCraftUtils.distBetween(areaPoints[0].chunkPosX, areaPoints[0].chunkPosZ, x, z) <= rad) {
+                                for(int y = Math.max(0, minY); y <= maxY && y < 256; y++) {
+                                    area.add(new ChunkPosition(x, y, z));
+                                }
+                            }
+                        }
+                    }
+                }
+                break;
+            case Z_CYLINDER:
+                if(areaPoints[1] != null) {
+                    double rad = areaPoints[1] != null ? PneumaticCraftUtils.distBetween(areaPoints[0].chunkPosX, areaPoints[0].chunkPosY, areaPoints[1].chunkPosX, areaPoints[1].chunkPosY) : 0;
+                    minX = (int)(areaPoints[0].chunkPosX - rad - 1);
+                    minY = (int)(areaPoints[0].chunkPosY - rad - 1);
+                    maxX = (int)(areaPoints[0].chunkPosX + rad + 1);
+                    maxY = (int)(areaPoints[0].chunkPosY + rad + 1);
+                    for(int x = minX; x <= maxX; x++) {
+                        for(int y = Math.max(0, minY); y <= maxY && y < 256; y++) {
+                            if(PneumaticCraftUtils.distBetween(areaPoints[0].chunkPosX, areaPoints[0].chunkPosY, x, y) <= rad) {
+                                for(int z = minZ; z <= maxZ; z++) {
+                                    area.add(new ChunkPosition(x, y, z));
+                                }
+                            }
+                        }
+                    }
+                }
+                break;
+            case X_PYRAMID:
+                if(areaPoints[1] != null && areaPoints[1].chunkPosX != areaPoints[0].chunkPosX) {
+                    Vec3 lineVec = Vec3.createVectorHelper(areaPoints[1].chunkPosX - areaPoints[0].chunkPosX, areaPoints[1].chunkPosY - areaPoints[0].chunkPosY, areaPoints[1].chunkPosZ - areaPoints[0].chunkPosZ).normalize();
+                    lineVec.yCoord /= lineVec.xCoord;
+                    lineVec.zCoord /= lineVec.xCoord;
+                    double curY = areaPoints[0].chunkPosY - lineVec.yCoord;
+                    int x = areaPoints[0].chunkPosX + (areaPoints[1].chunkPosX > areaPoints[0].chunkPosX ? -1 : 1);
+                    double curZ = areaPoints[0].chunkPosZ - lineVec.zCoord;
+                    while(x != areaPoints[1].chunkPosX) {
 
+                        x += areaPoints[1].chunkPosX > areaPoints[0].chunkPosX ? 1 : -1;
+                        curY += lineVec.yCoord;
+                        curZ += lineVec.zCoord;
+
+                        int dY = Math.abs((int)(curY - areaPoints[0].chunkPosY));
+                        int dZ = Math.abs((int)(curZ - areaPoints[0].chunkPosZ));
+                        for(int y = areaPoints[0].chunkPosY - dY; y <= areaPoints[0].chunkPosY + dY; y++) {
+                            for(int z = areaPoints[0].chunkPosZ - dZ; z <= areaPoints[0].chunkPosZ + dZ; z++) {
+                                area.add(new ChunkPosition(x, y, z));
+                            }
+                        }
+                    }
+                }
+                break;
+            case Y_PYRAMID:
+                if(areaPoints[1] != null && areaPoints[1].chunkPosY != areaPoints[0].chunkPosY) {
+                    Vec3 lineVec = Vec3.createVectorHelper(areaPoints[1].chunkPosX - areaPoints[0].chunkPosX, areaPoints[1].chunkPosY - areaPoints[0].chunkPosY, areaPoints[1].chunkPosZ - areaPoints[0].chunkPosZ).normalize();
+                    lineVec.xCoord /= lineVec.yCoord;
+                    lineVec.zCoord /= lineVec.yCoord;
+                    double curX = areaPoints[0].chunkPosX - lineVec.xCoord;
+                    int y = areaPoints[0].chunkPosY + (areaPoints[1].chunkPosY > areaPoints[0].chunkPosY ? -1 : 1);
+                    double curZ = areaPoints[0].chunkPosZ - lineVec.zCoord;
+                    while(y != areaPoints[1].chunkPosY) {
+
+                        y += areaPoints[1].chunkPosY > areaPoints[0].chunkPosY ? 1 : -1;
+                        curX += lineVec.xCoord;
+                        curZ += lineVec.zCoord;
+
+                        int dX = Math.abs((int)(curX - areaPoints[0].chunkPosX));
+                        int dZ = Math.abs((int)(curZ - areaPoints[0].chunkPosZ));
+                        for(int x = areaPoints[0].chunkPosX - dX; x <= areaPoints[0].chunkPosX + dX; x++) {
+                            for(int z = areaPoints[0].chunkPosZ - dZ; z <= areaPoints[0].chunkPosZ + dZ; z++) {
+                                area.add(new ChunkPosition(x, y, z));
+                            }
+                        }
+                    }
+                }
+                break;
+            case Z_PYRAMID:
+                if(areaPoints[1] != null && areaPoints[1].chunkPosZ != areaPoints[0].chunkPosZ) {
+                    Vec3 lineVec = Vec3.createVectorHelper(areaPoints[1].chunkPosX - areaPoints[0].chunkPosX, areaPoints[1].chunkPosY - areaPoints[0].chunkPosY, areaPoints[1].chunkPosZ - areaPoints[0].chunkPosZ).normalize();
+                    lineVec.xCoord /= lineVec.zCoord;
+                    lineVec.yCoord /= lineVec.zCoord;
+                    double curX = areaPoints[0].chunkPosX - lineVec.xCoord;
+                    int z = areaPoints[0].chunkPosZ + (areaPoints[1].chunkPosZ > areaPoints[0].chunkPosZ ? -1 : 1);
+                    double curY = areaPoints[0].chunkPosY - lineVec.yCoord;
+                    while(z != areaPoints[1].chunkPosZ) {
+
+                        z += areaPoints[1].chunkPosZ > areaPoints[0].chunkPosZ ? 1 : -1;
+                        curX += lineVec.xCoord;
+                        curY += lineVec.yCoord;
+
+                        int dX = Math.abs((int)(curX - areaPoints[0].chunkPosX));
+                        int dY = Math.abs((int)(curY - areaPoints[0].chunkPosY));
+                        for(int x = areaPoints[0].chunkPosX - dX; x <= areaPoints[0].chunkPosX + dX; x++) {
+                            for(int y = areaPoints[0].chunkPosY - dY; y <= areaPoints[0].chunkPosY + dY; y++) {
+                                area.add(new ChunkPosition(x, y, z));
+                            }
+                        }
+                    }
+                }
+                break;
         }
         return area;
     }

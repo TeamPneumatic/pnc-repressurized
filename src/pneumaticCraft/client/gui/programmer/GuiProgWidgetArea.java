@@ -36,7 +36,7 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow{
         List<GuiRadioButton> radioButtons = new ArrayList<GuiRadioButton>();
         ProgWidgetArea.EnumAreaType[] areaTypes = ProgWidgetArea.EnumAreaType.values();
         for(int i = 0; i < areaTypes.length; i++) {
-            GuiRadioButton radioButton = new GuiRadioButton(i, guiLeft + 4 + i / 4 * 60, guiTop + 80 + i % 4 * 12, 0xFF000000, areaTypes[i].toString());
+            GuiRadioButton radioButton = new GuiRadioButton(i, guiLeft + 7 + i / 7 * 60, guiTop + 60 + i % 7 * 12, 0xFF000000, areaTypes[i].toString());
             radioButton.checked = areaTypes[i] == ((ProgWidgetArea)widget).type;
             addWidget(radioButton);
             radioButtons.add(radioButton);
@@ -95,6 +95,6 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow{
         super.drawScreen(mouseX, mouseY, partialTicks);
         fontRendererObj.drawString("Point 1", guiLeft + 30, guiTop + 10, 0xFF000000);
         fontRendererObj.drawString("Point 2", guiLeft + 119, guiTop + 10, 0xFF000000);
-        fontRendererObj.drawString("Area Type:", guiLeft + 4, guiTop + 70, 0xFF000000);
+        fontRendererObj.drawString("Area Type:", guiLeft + 4, guiTop + 50, 0xFF000000);
     }
 }
