@@ -46,5 +46,6 @@ public class TileEntityAphorismTile extends TileEntityBase{
 
     public void setTextLines(String[] textLines){
         this.textLines = textLines;
+        sendDescriptionPacket();
     }
 }
