@@ -9,11 +9,13 @@ import org.lwjgl.input.Keyboard;
 
 import pneumaticCraft.api.client.pneumaticHelmet.IGuiScreen;
 import pneumaticCraft.api.client.pneumaticHelmet.IOptionPage;
+import pneumaticCraft.client.KeyHandler;
 import pneumaticCraft.client.gui.widget.GuiAnimatedStat;
-import pneumaticCraft.client.render.pneumaticArmor.HUDHandler;
 import pneumaticCraft.client.render.pneumaticArmor.MainHelmetHandler;
+import pneumaticCraft.lib.ModIds;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.Loader;
 
 public class GuiHelmetMainOptions implements IOptionPage{
 
@@ -34,8 +36,10 @@ public class GuiHelmetMainOptions implements IOptionPage{
     public void initGui(IGuiScreen gui){
         gui.getButtonList().add(new GuiButton(10, 30, 128, 150, 20, "Move Pressure Stat Screen..."));
         gui.getButtonList().add(new GuiButton(11, 30, 150, 150, 20, "Move Message Screen..."));
-        changeKeybindingButton = new GuiButton(12, 30, 172, 150, 20, "Change open menu key...");
-        gui.getButtonList().add(changeKeybindingButton);
+        if(!Loader.isModLoaded(ModIds.NOT_ENOUGH_KEYS)) {
+            changeKeybindingButton = new GuiButton(12, 30, 172, 150, 20, "Change open menu key...");
+            gui.getButtonList().add(changeKeybindingButton);
+        }
     }
 
     @Override
@@ -72,7 +76,7 @@ public class GuiHelmetMainOptions implements IOptionPage{
             changingKeybinding = false;
             updateKeybindingButtonText();
 
-            HUDHandler.instance().keybindOpenOptions.setKeyCode(key);
+            KeyHandler.getInstance().keybindOpenOptions.setKeyCode(key);
             KeyBinding.resetKeyBindingArrayAndHash();
             FMLClientHandler.instance().getClient().thePlayer.addChatComponentMessage(new ChatComponentTranslation(EnumChatFormatting.GREEN + "Bound the opening of this menu to the '" + Keyboard.getKeyName(key) + "' key."));
         }

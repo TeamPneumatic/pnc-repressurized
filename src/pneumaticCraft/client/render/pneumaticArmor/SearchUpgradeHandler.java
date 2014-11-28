@@ -22,6 +22,7 @@ import org.lwjgl.opengl.GL12;
 
 import pneumaticCraft.api.client.pneumaticHelmet.IOptionPage;
 import pneumaticCraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
+import pneumaticCraft.client.KeyHandler;
 import pneumaticCraft.client.gui.pneumaticHelmet.GuiSearchUpgradeOptions;
 import pneumaticCraft.client.gui.widget.GuiAnimatedStat;
 import pneumaticCraft.common.Config;
@@ -148,7 +149,7 @@ public class SearchUpgradeHandler implements IUpgradeRenderHandler{
         ItemStack searchStack = ItemPneumaticArmor.getSearchedStack(FMLClientHandler.instance().getClient().thePlayer.getCurrentArmor(3));
         List<String> textList = new ArrayList<String>();
         if(searchStack == null) {
-            textList.add("press '" + Keyboard.getKeyName(HUDHandler.instance().keybindOpenOptions.getKeyCode()) + "' to configure");
+            textList.add("press '" + Keyboard.getKeyName(KeyHandler.getInstance().keybindOpenOptions.getKeyCode()) + "' to configure");
         } else {
             textList.add(searchStack.getDisplayName() + " (" + totalSearchedItemCount + " found)");
         }

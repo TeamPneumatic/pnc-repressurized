@@ -20,4 +20,7 @@ public class OpenBlocks implements IThirdParty{
     @Override
     public void clientSide(){}
 
+    @Override
+    public void clientInit(){}
+
 }

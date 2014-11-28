@@ -12,12 +12,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import pneumaticCraft.api.client.IGuiAnimatedStat;
 import pneumaticCraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
 import pneumaticCraft.api.item.IPressurizable;
+import pneumaticCraft.client.IKeyListener;
+import pneumaticCraft.client.KeyHandler;
 import pneumaticCraft.client.gui.pneumaticHelmet.GuiHelmetMainScreen;
 import pneumaticCraft.client.gui.widget.GuiKeybindCheckBox;
 import pneumaticCraft.client.render.RenderProgressBar;
@@ -25,23 +26,16 @@ import pneumaticCraft.common.CommonHUDHandler;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.PacketToggleHelmetFeature;
-import pneumaticCraft.lib.Names;
 import pneumaticCraft.lib.Sounds;
 import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.InputEvent.KeyInputEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class HUDHandler{
-
-    private static final String DESCRIPTION_HELMET_OPTIONS = "Pneumatic Helmet Options";
-    private static final String DESCRIPTION_HELMET_HACK = "Pneumatic Helmet Hack";
-    public KeyBinding keybindOpenOptions, keybindHack;
+public class HUDHandler implements IKeyListener{
 
     private final List<ArmorMessage> messageList = new ArrayList<ArmorMessage>();
     private boolean gaveEmptyWarning;
@@ -246,27 +240,20 @@ public class HUDHandler{
         messageList.add(message);
     }
 
-    @SubscribeEvent
-    public void onKeyInput(KeyInputEvent event){
+    @Override
+    public void onKeyPress(KeyBinding key){
         Minecraft mc = FMLClientHandler.instance().getClient();
         if(mc.inGameHasFocus) {
-            if(keybindOpenOptions.isPressed()) {
+            if(key == KeyHandler.getInstance().keybindOpenOptions) {
                 ItemStack helmetStack = mc.thePlayer.inventory.armorInventory[3];
                 if(helmetStack != null && helmetStack.getItem() == Itemss.pneumaticHelmet) {
                     FMLCommonHandler.instance().showGuiScreen(GuiHelmetMainScreen.getInstance());
                 }
-            } else if(keybindHack.isPressed() && HackUpgradeRenderHandler.enabledForPlayer(mc.thePlayer)) {
+            } else if(key == KeyHandler.getInstance().keybindHack && HackUpgradeRenderHandler.enabledForPlayer(mc.thePlayer)) {
                 ((BlockTrackUpgradeHandler)getSpecificRenderer(BlockTrackUpgradeHandler.class)).hack();
                 ((EntityTrackUpgradeHandler)getSpecificRenderer(EntityTrackUpgradeHandler.class)).hack();
             }
         }
-    }
-
-    public void registerKeyBinds(){
-        keybindOpenOptions = new KeyBinding(DESCRIPTION_HELMET_OPTIONS, Keyboard.KEY_F, Names.PNEUMATIC_KEYBINDING_CATEGORY);
-        keybindHack = new KeyBinding(DESCRIPTION_HELMET_HACK, Keyboard.KEY_H, Names.PNEUMATIC_KEYBINDING_CATEGORY);
-        ClientRegistry.registerKeyBinding(keybindOpenOptions);
-        ClientRegistry.registerKeyBinding(keybindHack);
     }
 
     @SubscribeEvent

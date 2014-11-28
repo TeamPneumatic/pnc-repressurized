@@ -19,4 +19,7 @@ public class IGWMod implements IThirdParty{
         FMLInterModComms.sendMessage("IGWMod", "pneumaticCraft.common.thirdparty.igwmod.IGWHandler", "init");
     }
 
+    @Override
+    public void clientInit(){}
+
 }

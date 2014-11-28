@@ -3,9 +3,11 @@ package pneumaticCraft.proxy;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import net.minecraft.block.Block;
@@ -25,6 +27,7 @@ import pneumaticCraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
 import pneumaticCraft.client.AreaShowManager;
 import pneumaticCraft.client.ClientEventHandler;
 import pneumaticCraft.client.ClientTickHandler;
+import pneumaticCraft.client.KeyHandler;
 import pneumaticCraft.client.gui.pneumaticHelmet.GuiHelmetMainScreen;
 import pneumaticCraft.client.model.BaseModel;
 import pneumaticCraft.client.model.IBaseModel;
@@ -38,7 +41,6 @@ import pneumaticCraft.client.model.ModelAssemblyPlatform;
 import pneumaticCraft.client.model.ModelChargingStation;
 import pneumaticCraft.client.model.ModelComputer;
 import pneumaticCraft.client.model.ModelElevatorBase;
-import pneumaticCraft.client.model.ModelElevatorFrame;
 import pneumaticCraft.client.model.ModelLiquidHopper;
 import pneumaticCraft.client.model.ModelOmnidirectionalHopper;
 import pneumaticCraft.client.model.ModelPlasticMixer;
@@ -48,6 +50,8 @@ import pneumaticCraft.client.model.ModelPressureChamberInterface;
 import pneumaticCraft.client.model.ModelUVLightBox;
 import pneumaticCraft.client.model.ModelUniversalSensor;
 import pneumaticCraft.client.model.ModelVacuumPump;
+import pneumaticCraft.client.render.block.ISBRHPneumatic;
+import pneumaticCraft.client.render.block.RenderElevatorFrame;
 import pneumaticCraft.client.render.block.RenderPneumaticDoorCamo;
 import pneumaticCraft.client.render.entity.RenderDrone;
 import pneumaticCraft.client.render.entity.RenderEntityChopperSeeds;
@@ -102,7 +106,6 @@ import pneumaticCraft.common.tileentity.TileEntityCreativeCompressor;
 import pneumaticCraft.common.tileentity.TileEntityElectrostaticCompressor;
 import pneumaticCraft.common.tileentity.TileEntityElevatorBase;
 import pneumaticCraft.common.tileentity.TileEntityElevatorCaller;
-import pneumaticCraft.common.tileentity.TileEntityElevatorFrame;
 import pneumaticCraft.common.tileentity.TileEntityLiquidCompressor;
 import pneumaticCraft.common.tileentity.TileEntityLiquidHopper;
 import pneumaticCraft.common.tileentity.TileEntityOmnidirectionalHopper;
@@ -117,11 +120,13 @@ import pneumaticCraft.common.tileentity.TileEntityUVLightBox;
 import pneumaticCraft.common.tileentity.TileEntityUniversalSensor;
 import pneumaticCraft.common.tileentity.TileEntityVacuumPump;
 import pneumaticCraft.lib.Log;
+import pneumaticCraft.lib.ModIds;
 import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.VillagerRegistry;
 
@@ -129,11 +134,17 @@ public class ClientProxy extends CommonProxy{
 
     private final HackTickHandler clientHackTickHandler = new HackTickHandler();
     public final Map<String, Integer> keybindToKeyCodes = new HashMap<String, Integer>();
+    private final List<ISBRHPneumatic> blockRenderers = new ArrayList<ISBRHPneumatic>();
 
     @Override
     public void registerRenders(){
         SPECIAL_RENDER_TYPE_VALUE = RenderingRegistry.getNextAvailableRenderId();
-        CAMO_RENDER_ID = RenderingRegistry.getNextAvailableRenderId();
+        blockRenderers.add(new RenderPneumaticDoorCamo());
+        blockRenderers.add(new RenderElevatorFrame());
+
+        for(ISBRHPneumatic renderer : blockRenderers) {
+            RenderingRegistry.registerBlockHandler(renderer);
+        }
 
         RenderingRegistry.registerBlockHandler(new RenderModelBase());
         // RenderingRegistry.registerBlockHandler(new RendererSpecialBlock());
@@ -148,7 +159,6 @@ public class ClientProxy extends CommonProxy{
         registerBaseModelRenderer(Blockss.creativeCompressor, TileEntityCreativeCompressor.class, new BaseModel("creativeCompressor.obj"));
         registerBaseModelRenderer(Blockss.electrostaticCompressor, TileEntityElectrostaticCompressor.class, new BaseModel("electrostaticCompressor.obj"));
         registerBaseModelRenderer(Blockss.elevatorBase, TileEntityElevatorBase.class, new ModelElevatorBase());
-        registerBaseModelRenderer(Blockss.elevatorFrame, TileEntityElevatorFrame.class, new ModelElevatorFrame());
         registerBaseModelRenderer(Blockss.pneumaticDoor, TileEntityPneumaticDoor.class, new ModelPneumaticDoor());
         registerBaseModelRenderer(Blockss.pneumaticDoorBase, TileEntityPneumaticDoorBase.class, new ModelPneumaticDoorBase());
         registerBaseModelRenderer(Blockss.pressureChamberInterface, TileEntityPressureChamberInterface.class, new ModelPressureChamberInterface());
@@ -233,8 +243,9 @@ public class ClientProxy extends CommonProxy{
         MinecraftForge.EVENT_BUS.register(AreaShowManager.getInstance());
         FMLCommonHandler.instance().bus().register(AreaShowManager.getInstance());
 
-        HUDHandler.instance().registerKeyBinds();
-
+        if(!Loader.isModLoaded(ModIds.NOT_ENOUGH_KEYS) || !Config.config.get("Third_Party_Enabling", ModIds.NOT_ENOUGH_KEYS, true).getBoolean()) {
+            FMLCommonHandler.instance().bus().register(KeyHandler.getInstance());
+        } else KeyHandler.getInstance();
         ThirdPartyManager.instance().clientSide();
 
         /*  if(Config.enableUpdateChecker) {
@@ -268,6 +279,11 @@ public class ClientProxy extends CommonProxy{
                 exception1.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public void init(){
+        ThirdPartyManager.instance().clientInit();
     }
 
     @Override
@@ -311,6 +327,14 @@ public class ClientProxy extends CommonProxy{
     @Override
     public int getArmorRenderID(String armorName){
         return RenderingRegistry.addNewArmourRendererPrefix(armorName);
+    }
+
+    @Override
+    public int getRenderIdForRenderer(Class clazz){
+        for(ISBRHPneumatic renderer : blockRenderers) {
+            if(renderer.getClass() == clazz) return renderer.getRenderId();
+        }
+        throw new IllegalArgumentException("Renderer " + clazz.getCanonicalName() + " isn't registered");
     }
 
     @Override

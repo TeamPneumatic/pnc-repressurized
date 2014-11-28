@@ -36,4 +36,7 @@ public class Waila implements IThirdParty{
         registrar.registerBodyProvider(new WailaTubeModuleHandler(), TileEntityPressureTube.class);
         //TODO registrar.registerBodyProvider(new WailaHandler(), TileMultipart.class);
     }
+
+    @Override
+    public void clientInit(){}
 }

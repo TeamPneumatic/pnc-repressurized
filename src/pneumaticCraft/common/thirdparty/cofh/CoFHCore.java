@@ -72,4 +72,7 @@ public class CoFHCore implements IThirdParty, IGuiHandler{
         return null;
     }
 
+    @Override
+    public void clientInit(){}
+
 }

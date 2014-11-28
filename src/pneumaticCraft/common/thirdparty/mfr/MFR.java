@@ -45,4 +45,7 @@ public class MFR implements IThirdParty{
         registryClass.getMethod(methodName, parameterType).invoke(null, parameter);
     }
 
+    @Override
+    public void clientInit(){}
+
 }

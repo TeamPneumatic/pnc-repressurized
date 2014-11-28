@@ -34,4 +34,7 @@ public class Chisel implements IThirdParty{
 
     }
 
+    @Override
+    public void clientInit(){}
+
 }
