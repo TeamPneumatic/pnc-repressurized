@@ -52,7 +52,6 @@ import pneumaticCraft.client.model.ModelUniversalSensor;
 import pneumaticCraft.client.model.ModelVacuumPump;
 import pneumaticCraft.client.render.block.ISBRHPneumatic;
 import pneumaticCraft.client.render.block.RenderElevatorFrame;
-import pneumaticCraft.client.render.block.RenderPneumaticDoorCamo;
 import pneumaticCraft.client.render.entity.RenderDrone;
 import pneumaticCraft.client.render.entity.RenderEntityChopperSeeds;
 import pneumaticCraft.client.render.entity.RenderEntityPotionCloud;
@@ -139,7 +138,6 @@ public class ClientProxy extends CommonProxy{
     @Override
     public void registerRenders(){
         SPECIAL_RENDER_TYPE_VALUE = RenderingRegistry.getNextAvailableRenderId();
-        blockRenderers.add(new RenderPneumaticDoorCamo());
         blockRenderers.add(new RenderElevatorFrame());
 
         for(ISBRHPneumatic renderer : blockRenderers) {
@@ -179,8 +177,6 @@ public class ClientProxy extends CommonProxy{
         // ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAdvancedPressureTube.class, new RenderAdvancedPressureTube());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAphorismTile.class, new RenderAphorismTile());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityElevatorCaller.class, new RenderElevatorCaller());
-
-        RenderingRegistry.registerBlockHandler(new RenderPneumaticDoorCamo());
 
         MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(Blockss.pressureTube), new RenderItemPressureTube(false));
         MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(Blockss.advancedPressureTube), new RenderItemPressureTube(true));

@@ -6,4 +6,7 @@ Elevator Caller blocks attached to the Elevator Frames are used to control the h
 [prefix{l}]Renaming floors[prefix{}]
 Floors can be renamed. You can do this in the GUI of the Elevator Base. When you rename any floors these names will be saved by floor height, not number. This is an important detail, as this means that if you remove a floor in the middle, the names of higher levels won't be shifted down. Likewise when you add a floor it will add a name in between.
 
-[crafting{200, 400,key=block/elevatorCaller}]
+[prefix{l}]Camouflaging [prefix{}]
+If you shift right-click the Elevator Caller with a (normal) block in your hand, the Elevator Caller will use this block to camouflage itself. Shift right-clicking with an empty hand (or non-block) will undo this.
+
+[crafting{200, 470,key=block/elevatorCaller}]

@@ -13,10 +13,14 @@ public class ContainerElevator extends ContainerPneumaticBase<TileEntityElevator
         super(te);
 
         // add the upgrade slots
-        addSlotToContainer(new SlotUpgrade(te, 0, 48, 29));
-        addSlotToContainer(new SlotUpgrade(te, 1, 66, 29));
-        addSlotToContainer(new SlotUpgrade(te, 2, 48, 47));
-        addSlotToContainer(new SlotUpgrade(te, 3, 66, 47));
+        addSlotToContainer(new SlotUpgrade(te, 0, 23, 29));
+        addSlotToContainer(new SlotUpgrade(te, 1, 41, 29));
+        addSlotToContainer(new SlotUpgrade(te, 2, 23, 47));
+        addSlotToContainer(new SlotUpgrade(te, 3, 41, 47));
+
+        // Add the camo slots.
+        addSlotToContainer(new Slot(te, 4, 77, 36));
+        addSlotToContainer(new Slot(te, 5, 77, 55));
 
         // Add the player's inventory slots to the container
         for(int inventoryRowIndex = 0; inventoryRowIndex < 3; ++inventoryRowIndex) {
@@ -54,11 +58,14 @@ public class ContainerElevator extends ContainerPneumaticBase<TileEntityElevator
             ItemStack var5 = var4.getStack();
             var3 = var5.copy();
 
-            if(par2 < 4) {
-                if(!mergeItemStack(var5, 4, 39, false)) return null;
+            if(par2 < 6) {
+                if(!mergeItemStack(var5, 6, 41, false)) return null;
                 var4.onSlotChange(var5, var3);
             } else if(var3.getItem() == Itemss.machineUpgrade) {
                 if(!mergeItemStack(var5, 0, 4, false)) return null;
+                var4.onSlotChange(var5, var3);
+            } else {
+                if(!mergeItemStack(var5, 4, 6, false)) return null;
                 var4.onSlotChange(var5, var3);
             }
 

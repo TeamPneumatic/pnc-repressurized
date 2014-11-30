@@ -16,5 +16,11 @@ A redstone signal (applied to any Elevator Base) will define whether the elevato
 [prefix{l}]Elevator Caller[prefix{}]
 Go to the [link{block/elevatorCaller}]Elevator Caller[link{}] for info.
 
-[crafting{200,440,key=block/elevatorBase}]
-[crafting{200,560,key=block/elevatorFrame}]
+[prefix{l}]Expanding in width[prefix{}]
+You can create bigger Elevators by connecting more Elevator Bases next to eachother. When the top Elevator Base of every connected Elevator is at the same height, the Elevators will share the floors (defined by Elevator Callers), redstone input, and therefore the desired height.
+
+[prefix{l}]Camouflaging [prefix{}]
+You can camouflage the Elevator floor by putting in a block in the top slot of the camo section in the Elevator Base's GUI. It will then use that block's texture to paint the floor. Likewise you can paint the Elevator Frames above an Elevator Base by putting in a block in the bottom slot of the GUI.
+
+[crafting{200,600,key=block/elevatorBase}]
+[crafting{200,720,key=block/elevatorFrame}]

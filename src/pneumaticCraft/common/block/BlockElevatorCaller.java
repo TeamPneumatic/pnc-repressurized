@@ -4,6 +4,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.IIcon;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.IBlockAccess;
@@ -28,13 +29,16 @@ public class BlockElevatorCaller extends BlockPneumaticCraft{
 
     @Override
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float hitX, float hitY, float hitZ){
+        TileEntityElevatorCaller te = (TileEntityElevatorCaller)world.getTileEntity(x, y, z);
         if(!world.isRemote) {
             MovingObjectPosition mop = PneumaticCraftUtils.getEntityLookedObject(player);
             if(mop != null && mop.subHit >= 0) {
                 setSurroundingElevators(world, x, y, z, mop.subHit);
+            } else if(player.isSneaking()) {
+                te.camoStack = player.getCurrentEquippedItem();
             }
         }
-        return true;
+        return te.getRotation().getOpposite().ordinal() == side;
     }
 
     @Override
@@ -161,7 +165,7 @@ public class BlockElevatorCaller extends BlockPneumaticCraft{
         Block block = world.getBlock(x, y, z);
         TileEntityElevatorBase elevator = null;
         if(block == Blockss.elevatorFrame) {
-            elevator = ((BlockElevatorFrame)Blockss.elevatorFrame).getElevatorTE(world, x, y, z);
+            elevator = BlockElevatorFrame.getElevatorTE(world, x, y, z);
         }
         if(block == Blockss.elevatorBase) {
             TileEntity te = world.getTileEntity(x, y, z);
@@ -191,6 +195,15 @@ public class BlockElevatorCaller extends BlockPneumaticCraft{
     @Override
     public boolean canProvidePower(){
         return true;
+    }
+
+    @Override
+    public IIcon getIcon(IBlockAccess world, int x, int y, int z, int side){
+        TileEntityElevatorCaller te = (TileEntityElevatorCaller)world.getTileEntity(x, y, z);
+        if(te.camoBlock != null && PneumaticCraftUtils.isRenderIDCamo(te.camoBlock.getRenderType())) {
+            return te.camoBlock.getIcon(side, te.camoStack.getItemDamage());
+        }
+        return this.getIcon(side, world.getBlockMetadata(x, y, z));
     }
 
     /**

@@ -9,10 +9,14 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import pneumaticCraft.PneumaticCraft;
+import pneumaticCraft.client.render.block.RenderElevatorFrame;
 import pneumaticCraft.common.tileentity.TileEntityElevatorBase;
 import pneumaticCraft.common.tileentity.TileEntityElevatorFrame;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockElevatorFrame extends BlockPneumaticCraftModeled{
 
@@ -36,10 +40,10 @@ public class BlockElevatorFrame extends BlockPneumaticCraftModeled{
 
     @Override
     public MovingObjectPosition collisionRayTrace(World world, int x, int y, int z, Vec3 origin, Vec3 direction){
-        if(world.isRemote){
+        if(world.isRemote) {
             ItemStack playerStack = PneumaticCraft.proxy.getPlayer().getCurrentEquippedItem();
-            if(playerStack != null && playerStack.getItem() == Item.getItemFromBlock(this)){
-                   return super.collisionRayTrace(world, x, y, z, origin, direction);
+            if(playerStack != null && playerStack.getItem() == Item.getItemFromBlock(this)) {
+                return super.collisionRayTrace(world, x, y, z, origin, direction);
             }
         }
         boolean isColliding = false;
@@ -54,6 +58,12 @@ public class BlockElevatorFrame extends BlockPneumaticCraftModeled{
 
         setBlockBounds(0, 0, 0, 1, 1, 1);
         return isColliding ? super.collisionRayTrace(world, x, y, z, origin, direction) : null;
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public int getRenderType(){
+        return PneumaticCraft.proxy.getRenderIdForRenderer(RenderElevatorFrame.class);
     }
 
     @Override
@@ -108,7 +118,7 @@ public class BlockElevatorFrame extends BlockPneumaticCraftModeled{
         // return null;
     }
 
-    public TileEntityElevatorBase getElevatorTE(World world, int x, int y, int z){
+    public static TileEntityElevatorBase getElevatorTE(IBlockAccess world, int x, int y, int z){
         int i = 0;
         while(true) {
             i--;
