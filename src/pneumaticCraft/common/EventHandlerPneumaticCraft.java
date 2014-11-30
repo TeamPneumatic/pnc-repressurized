@@ -175,7 +175,7 @@ public class EventHandlerPneumaticCraft{
         /**
          * Due to some weird quirk that causes Block#onBlockActivated not getting called on the server when the player is sneaking, this is a workaround.
          */
-        if(!event.isCanceled() && !event.world.isRemote && event.entityPlayer.isSneaking() && event.world.getBlock(event.x, event.y, event.z) == Blockss.elevatorCaller) {
+        if(!event.isCanceled() && event.action == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK && !event.world.isRemote && event.entityPlayer.isSneaking() && event.world.getBlock(event.x, event.y, event.z) == Blockss.elevatorCaller) {
             Blockss.elevatorCaller.onBlockActivated(event.world, event.x, event.y, event.z, event.entityPlayer, event.face, 0, 0, 0);
             event.setCanceled(true);
         }
