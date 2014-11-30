@@ -86,4 +86,7 @@ public class BuildCraft implements IThirdParty, IGuiHandler{
         return null;
     }
 
+    @Override
+    public void clientInit(){}
+
 }

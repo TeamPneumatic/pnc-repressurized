@@ -58,6 +58,7 @@ public class ThirdPartyManager implements IGuiHandler{
         thirdPartyClasses.put(ModIds.MFR, MFR.class);
         thirdPartyClasses.put(ModIds.OPEN_BLOCKS, OpenBlocks.class);
         thirdPartyClasses.put(ModIds.COFH_CORE, CoFHCore.class);
+        thirdPartyClasses.put(ModIds.NOT_ENOUGH_KEYS, NotEnoughKeys.class);
         DramaSplash.newDrama();
 
         List<String> enabledThirdParty = new ArrayList<String>();
@@ -132,6 +133,17 @@ public class ThirdPartyManager implements IGuiHandler{
                 thirdParty.clientSide();
             } catch(Exception e) {
                 Log.error("PneumaticCraft wasn't able to load third party content from the third party class " + thirdParty.getClass() + " client side!");
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void clientInit(){
+        for(IThirdParty thirdParty : thirdPartyMods) {
+            try {
+                thirdParty.clientInit();
+            } catch(Exception e) {
+                Log.error("PneumaticCraft wasn't able to load third party content from the third party class " + thirdParty.getClass() + " client side on the init!");
                 e.printStackTrace();
             }
         }

@@ -6,8 +6,10 @@
 
 package pneumaticCraft.client.model;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
@@ -15,7 +17,9 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import org.lwjgl.opengl.GL11;
 
+import pneumaticCraft.client.util.RenderUtils;
 import pneumaticCraft.common.tileentity.TileEntityElevatorBase;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.Textures;
 
 public class ModelElevatorBase extends ModelBase implements IBaseModel{
@@ -313,7 +317,7 @@ public class ModelElevatorBase extends ModelBase implements IBaseModel{
         PipeBack4.render(f5);
     }
 
-    public void renderModel(float size, float extension, boolean[] sidesConnected){
+    public void renderModel(float size, float extension, boolean[] sidesConnected, TileEntityElevatorBase te){
         Base.render(size);
         Pole5.render(size);
         TopSupport1.render(size);
@@ -390,7 +394,16 @@ public class ModelElevatorBase extends ModelBase implements IBaseModel{
         Pole1.render(size);
         GL11.glPopMatrix();
 
-        Floor.render(size);
+        if(te != null && te.isCoreElevator() && te.baseCamo != null && PneumaticCraftUtils.isRenderIDCamo(te.baseCamo.getRenderType())) {
+            Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
+            GL11.glRotated(180, 0, 0, 1);
+            GL11.glTranslated(-0.5, -9 / 16D, -0.5);
+            RenderUtils.RenderInfo renderInfo = new RenderUtils.RenderInfo(0, 0, 0, 1, 1 / 16F, 1);
+            renderInfo.baseBlock = te.baseCamo;
+            RenderUtils.INSTANCE.renderBlock(renderInfo, Minecraft.getMinecraft().theWorld, 0, 0, 0, te.xCoord, te.yCoord, te.zCoord, false, true);
+        } else {
+            Floor.render(size);
+        }
     }
 
     private void setRotation(ModelRenderer model, float x, float y, float z){
@@ -418,9 +431,9 @@ public class ModelElevatorBase extends ModelBase implements IBaseModel{
     public void renderDynamic(float size, TileEntity te, float partialTicks){
         if(te instanceof TileEntityElevatorBase) {
             TileEntityElevatorBase tile = (TileEntityElevatorBase)te;
-            renderModel(1 / 16F, tile.oldExtension + (tile.extension - tile.oldExtension) * partialTicks, tile.sidesConnected);
+            renderModel(1 / 16F, tile.oldExtension + (tile.extension - tile.oldExtension) * partialTicks, tile.sidesConnected, tile);
         } else {
-            renderModel(1 / 16F, 0, new boolean[]{false, false, false, false, false, false});
+            renderModel(1 / 16F, 0, new boolean[]{false, false, false, false, false, false}, null);
         }
     }
 

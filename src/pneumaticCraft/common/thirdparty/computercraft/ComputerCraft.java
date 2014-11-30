@@ -69,4 +69,7 @@ public class ComputerCraft implements IThirdParty, IRegistryListener{
         }
     }
 
+    @Override
+    public void clientInit(){}
+
 }

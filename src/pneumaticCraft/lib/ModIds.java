@@ -18,4 +18,5 @@ public class ModIds{
     public static final String MFR = "MineFactoryReloaded";
     public static final String OPEN_BLOCKS = "OpenBlocks";
     public static final String COFH_CORE = "CoFHCore";
+    public static final String NOT_ENOUGH_KEYS = "notenoughkeys";
 }

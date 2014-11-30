@@ -1,7 +1,11 @@
 package pneumaticCraft.common.tileentity;
 
+import net.minecraft.block.Block;
+import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
+import pneumaticCraft.common.network.DescSynced;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -9,6 +13,9 @@ public class TileEntityElevatorCaller extends TileEntityBase{
     private ElevatorButton[] floors = new ElevatorButton[0];
     public int thisFloor;
     private boolean emittingRedstone;
+    @DescSynced
+    public ItemStack camoStack;
+    public Block camoBlock;
 
     public void setEmittingRedstone(boolean emittingRedstone){
         if(emittingRedstone != this.emittingRedstone) {
@@ -26,6 +33,7 @@ public class TileEntityElevatorCaller extends TileEntityBase{
         super.readFromNBT(tag);
         emittingRedstone = tag.getBoolean("emittingRedstone");
         thisFloor = tag.getInteger("thisFloor");
+        camoStack = tag.hasKey("camoStack") ? ItemStack.loadItemStackFromNBT(tag.getCompoundTag("camoStack")) : null;
     }
 
     @Override
@@ -33,6 +41,11 @@ public class TileEntityElevatorCaller extends TileEntityBase{
         super.writeToNBT(tag);
         tag.setBoolean("emittingRedstone", emittingRedstone);
         tag.setInteger("thisFloor", thisFloor);
+        if(camoStack != null) {
+            NBTTagCompound camoTag = new NBTTagCompound();
+            camoStack.writeToNBT(camoTag);
+            tag.setTag("camoStack", camoTag);
+        }
     }
 
     @Override
@@ -55,6 +68,16 @@ public class TileEntityElevatorCaller extends TileEntityBase{
             NBTTagCompound buttonTag = new NBTTagCompound();
             floor.writeToNBT(buttonTag);
             tag.setTag("floor" + floor.floorNumber, buttonTag);
+        }
+    }
+
+    @Override
+    public void onDescUpdate(){
+        Block newCamo = camoStack != null && camoStack.getItem() instanceof ItemBlock ? ((ItemBlock)camoStack.getItem()).field_150939_a : null;
+
+        if(newCamo != camoBlock) {
+            camoBlock = newCamo;
+            rerenderChunk();
         }
     }
 

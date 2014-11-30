@@ -10,7 +10,7 @@ import pneumaticCraft.client.gui.widget.GuiAnimatedStat;
 import pneumaticCraft.client.gui.widget.IGuiWidget;
 import pneumaticCraft.client.gui.widget.WidgetTextField;
 import pneumaticCraft.common.block.Blockss;
-import pneumaticCraft.common.inventory.Container4UpgradeSlots;
+import pneumaticCraft.common.inventory.ContainerElevator;
 import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.PacketUpdateTextfield;
 import pneumaticCraft.common.tileentity.TileEntityElevatorBase;
@@ -28,14 +28,12 @@ public class GuiElevator extends GuiPneumaticContainerBase<TileEntityElevatorBas
     private WidgetTextField floorNameField;
 
     public GuiElevator(InventoryPlayer player, TileEntityElevatorBase te){
-        super(new Container4UpgradeSlots(player, te), te, Textures.GUI_4UPGRADE_SLOTS);
+        super(new ContainerElevator(player, te), te, Textures.GUI_ELEVATOR);
     }
 
     @Override
     public void initGui(){
         super.initGui();
-        int xStart = (width - xSize) / 2;
-        int yStart = (height - ySize) / 2;
         statusStat = addAnimatedStat("Elevator Status", new ItemStack(Blockss.elevatorBase), 0xFFFFAA00, false);
         floorNameStat = addAnimatedStat("Floor Names", new ItemStack(Blockss.elevatorCaller), 0xFF005500, false);
         floorNameStat.setTextWithoutCuttingString(getFloorNameStat());
@@ -56,7 +54,8 @@ public class GuiElevator extends GuiPneumaticContainerBase<TileEntityElevatorBas
     @Override
     protected void drawGuiContainerForegroundLayer(int x, int y){
         super.drawGuiContainerForegroundLayer(x, y);
-        fontRendererObj.drawString("Upgr.", 53, 19, 4210752);
+        fontRendererObj.drawString("Upgr.", 28, 19, 4210752);
+        fontRendererObj.drawString("Camo", 73, 26, 4210752);
     }
 
     @Override

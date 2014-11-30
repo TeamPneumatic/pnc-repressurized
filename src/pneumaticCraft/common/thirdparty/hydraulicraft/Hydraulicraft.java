@@ -47,4 +47,7 @@ public class Hydraulicraft implements IThirdParty{
         GameRegistry.addRecipe(new ShapedOreRecipe(cropsTrolly, true, "-P-", "WCW", "-H-", 'C', new ItemStack(pressureCore, 1, 1), 'W', pressureWall, 'H', Itemss.turbineRotor, 'P', hydraulicPiston));
     }
 
+    @Override
+    public void clientInit(){}
+
 }

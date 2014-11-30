@@ -50,4 +50,7 @@ public class BloodMagic implements IThirdParty{
     @Override
     public void clientSide(){}
 
+    @Override
+    public void clientInit(){}
+
 }

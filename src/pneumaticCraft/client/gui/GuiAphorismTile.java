@@ -56,20 +56,18 @@ public class GuiAphorismTile extends GuiScreen{
         } else if(par2 == 28) {
             cursorY++;
             textLines = ArrayUtils.add(textLines, cursorY, "");
-            tile.setTextLines(textLines);
         } else if(par2 == 14) {
             if(textLines[cursorY].length() > 0) {
                 textLines[cursorY] = textLines[cursorY].substring(0, textLines[cursorY].length() - 1);
             } else if(textLines.length > 1) {
                 textLines = ArrayUtils.remove(textLines, cursorY);
-                tile.setTextLines(textLines);
                 cursorY--;
                 if(cursorY < 0) cursorY = 0;
             }
         } else if(ChatAllowedCharacters.isAllowedCharacter(par1)) {
             textLines[cursorY] = textLines[cursorY] + par1;
         }
-
+        tile.setTextLines(textLines);
         super.keyTyped(par1, par2);
     }
 

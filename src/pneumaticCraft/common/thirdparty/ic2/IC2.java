@@ -106,4 +106,7 @@ public class IC2 implements IThirdParty, IGuiHandler{
         return null;
     }
 
+    @Override
+    public void clientInit(){}
+
 }

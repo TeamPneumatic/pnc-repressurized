@@ -26,4 +26,9 @@ public class FMPLoader implements IThirdParty{
         fmp.clientSide();
     }
 
+    @Override
+    public void clientInit(){
+        fmp.clientInit();
+    }
+
 }

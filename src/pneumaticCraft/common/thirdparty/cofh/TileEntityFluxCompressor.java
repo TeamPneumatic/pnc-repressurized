@@ -75,10 +75,6 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase implements
         return energy.getMaxEnergyStored();
     }
 
-    private ForgeDirection getRotation(){
-        return ForgeDirection.getOrientation(getBlockMetadata());
-    }
-
     @Override
     public void writeToNBT(NBTTagCompound tag){
         super.writeToNBT(tag);

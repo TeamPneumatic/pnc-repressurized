@@ -3,10 +3,13 @@ package pneumaticCraft.common.tileentity;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Stack;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -50,19 +53,20 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
     public float extension;
     @DescSynced
     public float targetExtension;
-    private boolean firstRun = true;
     private int soundCounter;
     private boolean isStopped; //used for sounds
     private TileEntityElevatorBase coreElevator;
+    private List<TileEntityElevatorBase> multiElevators;//initialized when multiple elevators are connected in a multiblock manner.
     @GuiSynced
     public int redstoneMode;
     public int[] floorHeights = new int[0];//list of every floor of Elevator Callers.
-    private final HashMap<Integer, String> floorNames = new HashMap<Integer, String>();
+    private HashMap<Integer, String> floorNames = new HashMap<Integer, String>();
     private int maxFloorHeight;
     private int redstoneInputLevel;//current redstone input level
-    private List<Pair<ForgeDirection, IPneumaticMachine>> connectedMachines;
 
-    private ItemStack[] inventory = new ItemStack[4];
+    @DescSynced
+    private ItemStack[] inventory = new ItemStack[6];
+    public Block baseCamo, frameCamo;
     public static final int UPGRADE_SLOT_1 = 0;
     public static final int UPGRADE_SLOT_4 = 3;
 
@@ -73,19 +77,24 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
 
     @Override
     public void updateEntity(){
-        if(firstRun) {
-            firstRun = false;
-            updateConnections();
-        }
         oldExtension = extension;
+        if(worldObj.isRemote && worldObj.getWorldTime() % 60 == 0) coreElevator = null;//reset this because the client doesn't get notified of neighbor block updates.
         if(isCoreElevator()) {
             super.updateEntity();
             if(!worldObj.isRemote && isControlledByRedstone()) {
                 float oldTargetExtension = targetExtension;
                 float maxExtension = getMaxElevatorHeight();
-                targetExtension = redstoneInputLevel * maxExtension / 15;
+
+                int redstoneInput = redstoneInputLevel;
+                if(multiElevators != null) {
+                    for(TileEntityElevatorBase base : multiElevators) {
+                        redstoneInput = Math.max(redstoneInputLevel, base.redstoneInputLevel);
+                    }
+                }
+
+                targetExtension = redstoneInput * maxExtension / 15;
                 if(targetExtension > oldExtension && getPressure(ForgeDirection.UNKNOWN) < PneumaticValues.MIN_PRESSURE_ELEVATOR) targetExtension = oldExtension; // only ascent when there's enough pressure
-                if(oldTargetExtension != targetExtension) sendNBTPacket(256D);
+                if(oldTargetExtension != targetExtension) sendDescPacket(256D);
             }
             float speedMultiplier = getSpeedMultiplierFromUpgrades(getUpgradeSlots());
 
@@ -93,7 +102,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
             if(extension < targetExtension) {
                 if(!worldObj.isRemote && getPressure(ForgeDirection.UNKNOWN) < PneumaticValues.MIN_PRESSURE_ELEVATOR) {
                     targetExtension = extension;
-                    sendNBTPacket(256D);
+                    sendDescPacket(256D);
                 }
                 soundName = Sounds.ELEVATOR_MOVING;
                 if(extension < targetExtension - TileEntityConstants.ELEVATOR_SLOW_EXTENSION) {
@@ -157,6 +166,14 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
             redstoneMode++;
             if(redstoneMode > 1) redstoneMode = 0;
 
+            if(multiElevators != null) {
+                for(TileEntityElevatorBase base : multiElevators) {
+                    while(base.redstoneMode != redstoneMode) {
+                        base.handleGUIButtonPress(buttonID, player);
+                    }
+                }
+            }
+
             int i = -1;
             TileEntity te = worldObj.getTileEntity(xCoord, yCoord - 1, zCoord);
             while(te instanceof TileEntityElevatorBase) {
@@ -172,28 +189,27 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
     }
 
     public void updateRedstoneInputLevel(){
-        int i = 0;
         int maxRedstone = 0;
-        boolean isIndirectlyPowered = false;
-        while(worldObj.getBlock(xCoord, yCoord + i, zCoord) == Blockss.elevatorBase) {
-            maxRedstone = Math.max(maxRedstone, worldObj.getBlockPowerInput(xCoord, yCoord + i, zCoord));
-            if(maxRedstone == 0 && !isIndirectlyPowered) isIndirectlyPowered = worldObj.isBlockIndirectlyGettingPowered(xCoord, yCoord + i, zCoord);
-            i--;
+        for(TileEntityElevatorBase base : multiElevators) {
+            int i = 0;
+            while(worldObj.getBlock(base.xCoord, base.yCoord + i, base.zCoord) == Blockss.elevatorBase) {
+                maxRedstone = Math.max(maxRedstone, PneumaticCraftUtils.getRedstoneLevel(worldObj, base.xCoord, base.yCoord + i, base.zCoord));
+                i--;
+            }
         }
-        redstoneInputLevel = maxRedstone > 0 ? maxRedstone : isIndirectlyPowered ? 15 : 0;
-    }
-
-    @Override
-    public void onNeighborTileUpdate(){
-        super.onNeighborTileUpdate();
-        connectedMachines = null;
-        if(!isCoreElevator()) {
-            getCoreElevator().onNeighborTileUpdate();
+        for(TileEntityElevatorBase base : multiElevators) {
+            base.redstoneInputLevel = maxRedstone;
         }
     }
 
     public float getMaxElevatorHeight(){
-        return maxFloorHeight;
+        int max = maxFloorHeight;
+        if(multiElevators != null) {
+            for(TileEntityElevatorBase base : multiElevators) {
+                max = Math.max(max, base.maxFloorHeight);
+            }
+        }
+        return max;
     }
 
     public void updateMaxElevatorHeight(){
@@ -224,14 +240,6 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
         for(int i = 0; i < 6; i++) {
             sidesConnected[i] = tag.getBoolean("sideConnected" + i);
         }
-        floorHeights = tag.getIntArray("floorHeights");
-
-        floorNames.clear();
-        NBTTagList floorNameList = tag.getTagList("floorNames", 10);
-        for(int i = 0; i < floorNameList.tagCount(); i++) {
-            NBTTagCompound floorName = floorNameList.getCompoundTagAt(i);
-            floorNames.put(floorName.getInteger("floorHeight"), floorName.getString("floorName"));
-        }
 
         // Read in the ItemStacks in the inventory from NBT
         NBTTagList tagList = tag.getTagList("Items", 10);
@@ -256,16 +264,6 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
             tag.setBoolean("sideConnected" + i, sidesConnected[i]);
         }
 
-        tag.setIntArray("floorHeights", floorHeights);
-        NBTTagList floorNameList = new NBTTagList();
-        for(int key : floorNames.keySet()) {
-            NBTTagCompound floorNameTag = new NBTTagCompound();
-            floorNameTag.setInteger("floorHeight", key);
-            floorNameTag.setString("floorName", floorNames.get(key));
-            floorNameList.appendTag(floorNameTag);
-        }
-        tag.setTag("floorNames", floorNameList);
-
         // Write the ItemStacks in the inventory to NBT
         NBTTagList tagList = new NBTTagList();
         for(int currentIndex = 0; currentIndex < inventory.length; ++currentIndex) {
@@ -278,6 +276,69 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
         }
         tag.setTag("Items", tagList);
 
+    }
+
+    @Override
+    public void readFromPacket(NBTTagCompound tag){
+        super.readFromPacket(tag);
+        floorHeights = tag.getIntArray("floorHeights");
+
+        floorNames.clear();
+        NBTTagList floorNameList = tag.getTagList("floorNames", 10);
+        for(int i = 0; i < floorNameList.tagCount(); i++) {
+            NBTTagCompound floorName = floorNameList.getCompoundTagAt(i);
+            floorNames.put(floorName.getInteger("floorHeight"), floorName.getString("floorName"));
+        }
+    }
+
+    @Override
+    public void writeToPacket(NBTTagCompound tag){
+        super.writeToPacket(tag);
+        tag.setIntArray("floorHeights", floorHeights);
+
+        NBTTagList floorNameList = new NBTTagList();
+        for(int key : floorNames.keySet()) {
+            NBTTagCompound floorNameTag = new NBTTagCompound();
+            floorNameTag.setInteger("floorHeight", key);
+            floorNameTag.setString("floorName", floorNames.get(key));
+            floorNameList.appendTag(floorNameTag);
+        }
+        tag.setTag("floorNames", floorNameList);
+    }
+
+    @Override
+    public void onNeighborTileUpdate(){
+        super.onNeighborTileUpdate();
+        updateConnections();
+        connectAsMultiblock();
+    }
+
+    private void connectAsMultiblock(){
+        multiElevators = null;
+        if(isCoreElevator()) {
+            multiElevators = new ArrayList<TileEntityElevatorBase>();
+            Stack<TileEntityElevatorBase> todo = new Stack<TileEntityElevatorBase>();
+            todo.add(this);
+            while(!todo.isEmpty()) {
+                TileEntityElevatorBase curElevator = todo.pop();
+                if(curElevator.isCoreElevator()) {
+                    multiElevators.add(curElevator);
+                    curElevator.multiElevators = multiElevators;
+                    for(int i = 2; i < 6; i++) {
+                        TileEntity te = curElevator.getTileCache()[i].getTileEntity();
+                        if(!multiElevators.contains(te) && te instanceof TileEntityElevatorBase) {
+                            todo.push((TileEntityElevatorBase)te);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onNeighborBlockUpdate(){
+        super.onNeighborBlockUpdate();
+        getCoreElevator().updateRedstoneInputLevel();
     }
 
     public void updateConnections(){
@@ -314,21 +375,39 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
     public void updateFloors(){
         List<Integer> floorList = new ArrayList<Integer>();
         List<ChunkPosition> callerList = new ArrayList<ChunkPosition>();
-        for(int i = 0; i == 0 || worldObj.getBlock(xCoord, yCoord + i, zCoord) == Blockss.elevatorFrame; i++) {
-            boolean registeredThisFloor = false;
-            for(ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-                if(dir != ForgeDirection.UP && dir != ForgeDirection.DOWN) {
-                    if(worldObj.getBlock(xCoord + dir.offsetX, yCoord + i + 2, zCoord + dir.offsetZ) == Blockss.elevatorCaller) {
-                        callerList.add(new ChunkPosition(xCoord + dir.offsetX, yCoord + i + 2, zCoord + dir.offsetZ));
-                        if(!registeredThisFloor) floorList.add(i);
-                        registeredThisFloor = true;
+
+        if(multiElevators != null) {
+            int i = 0;
+            boolean shouldBreak = false;
+            while(!shouldBreak) {
+                boolean registeredThisFloor = false;
+                for(TileEntityElevatorBase base : multiElevators) {
+                    for(ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+                        if(dir != ForgeDirection.UP && dir != ForgeDirection.DOWN) {
+                            if(base.worldObj.getBlock(base.xCoord + dir.offsetX, base.yCoord + i + 2, base.zCoord + dir.offsetZ) == Blockss.elevatorCaller) {
+                                callerList.add(new ChunkPosition(base.xCoord + dir.offsetX, base.yCoord + i + 2, base.zCoord + dir.offsetZ));
+                                if(!registeredThisFloor) floorList.add(i);
+                                registeredThisFloor = true;
+                            }
+                        }
+                    }
+                }
+
+                i++;
+                for(TileEntityElevatorBase base : multiElevators) {
+                    if(base.worldObj.getBlock(base.xCoord, base.yCoord + i, base.zCoord) != Blockss.elevatorFrame) {
+                        shouldBreak = true;
+                        break;
                     }
                 }
             }
         }
-        floorHeights = new int[floorList.size()];
-        for(int i = 0; i < floorHeights.length; i++) {
-            floorHeights[i] = floorList.get(i);
+
+        for(TileEntityElevatorBase base : multiElevators) {
+            base.floorHeights = new int[floorList.size()];
+            for(int i = 0; i < base.floorHeights.length; i++) {
+                base.floorHeights[i] = floorList.get(i);
+            }
         }
 
         double buttonHeight = 0.06D;
@@ -346,6 +425,10 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
                     floorNames.put(floorHeights[i], elevatorButtons[i].buttonText);
                 }
             }
+        }
+
+        for(TileEntityElevatorBase base : multiElevators) {
+            base.floorNames = new HashMap<Integer, String>(floorNames);
         }
 
         for(ChunkPosition p : callerList) {
@@ -370,9 +453,27 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
 
     public void goToFloor(int floor){
         if(getCoreElevator().isControlledByRedstone()) getCoreElevator().handleGUIButtonPress(0, null);
-        if(floor >= 0 && floor < floorHeights.length) targetExtension = Math.min(floorHeights[floor], getMaxElevatorHeight());
+        if(floor >= 0 && floor < floorHeights.length) setTargetHeight(floorHeights[floor]);
         updateFloors();
-        sendNBTPacket(256D);
+        sendDescPacket(256D);
+    }
+
+    private void setTargetHeight(float height){
+        height = Math.min(height, getMaxElevatorHeight());
+        for(TileEntityElevatorBase base : multiElevators) {
+            base.targetExtension = height;
+        }
+    }
+
+    @Override
+    public void onDescUpdate(){
+        baseCamo = inventory[4] != null && inventory[4].getItem() instanceof ItemBlock ? ((ItemBlock)inventory[4].getItem()).field_150939_a : null;
+        Block newFrameCamo = inventory[5] != null && inventory[5].getItem() instanceof ItemBlock ? ((ItemBlock)inventory[5].getItem()).field_150939_a : null;
+
+        if(newFrameCamo != frameCamo) {
+            frameCamo = newFrameCamo;
+            rerenderChunk();
+        }
     }
 
     // INVENTORY METHODS-
@@ -454,7 +555,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
 
     @Override
     public boolean isItemValidForSlot(int i, ItemStack itemstack){
-        return itemstack.getItem() == Itemss.machineUpgrade;
+        return itemstack.getItem() == Itemss.machineUpgrade && i < 4 || itemstack.getItem() instanceof ItemBlock && i >= 4;
     }
 
     @Override
@@ -523,12 +624,10 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
 
     @Override
     public List<Pair<ForgeDirection, IPneumaticMachine>> getConnectedPneumatics(){
-        if(connectedMachines == null) {
-            connectedMachines = super.getConnectedPneumatics();
-            TileEntity te = getTileCache()[ForgeDirection.DOWN.ordinal()].getTileEntity();
-            if(te instanceof TileEntityElevatorBase) {
-                connectedMachines.addAll(((TileEntityElevatorBase)te).getConnectedPneumatics());
-            }
+        List<Pair<ForgeDirection, IPneumaticMachine>> connectedMachines = super.getConnectedPneumatics();
+        TileEntity te = getTileCache()[ForgeDirection.DOWN.ordinal()].getTileEntity();
+        if(te instanceof TileEntityElevatorBase) {
+            connectedMachines.addAll(((TileEntityElevatorBase)te).getConnectedPneumatics());
         }
         return connectedMachines;
     }
@@ -582,9 +681,9 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
             @Override
             public Object[] call(IComputerAccess computer, ILuaContext context, Object[] args) throws LuaException, InterruptedException{
                 if(args.length == 1) {
-                    getCoreElevator().targetExtension = Math.min(((Double)args[0]).floatValue(), getCoreElevator().getMaxElevatorHeight());
+                    setTargetHeight(((Double)args[0]).floatValue());
                     if(getCoreElevator().isControlledByRedstone()) getCoreElevator().handleGUIButtonPress(0, null);
-                    getCoreElevator().sendNBTPacket(256D);
+                    getCoreElevator().sendDescPacket(256D);
                     return null;
                 } else {
                     throw new IllegalArgumentException("setHeight does take one argument (height)");

@@ -66,10 +66,7 @@ public class BlockElevatorBase extends BlockPneumaticCraftModeled{
                     }
                 }
             }
-            thisTe.updateConnections();
         }
-        TileEntityElevatorBase elevatorBase = getCoreTileEntity(world, x, y, z);
-        if(elevatorBase != null) elevatorBase.updateRedstoneInputLevel();
     }
 
     public static int getCoreElevatorY(World world, int x, int y, int z){

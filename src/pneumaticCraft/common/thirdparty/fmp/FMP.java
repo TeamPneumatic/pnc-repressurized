@@ -109,4 +109,7 @@ public class FMP implements IThirdParty, IPartFactory, IPartConverter{
         }
         return parts;
     }
+
+    @Override
+    public void clientInit(){}
 }

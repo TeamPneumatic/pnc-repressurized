@@ -85,7 +85,6 @@ public class CommonProxy implements IGuiHandler{
     protected CommonHUDHandler clientHudHandler;
     private CommonHUDHandler serverHudHandler;
 
-    public int CAMO_RENDER_ID;
     public int SPECIAL_RENDER_TYPE_VALUE;
 
     public int PneumaticHelmetRenderID = 0;
@@ -277,6 +276,10 @@ public class CommonProxy implements IGuiHandler{
         return 0;
     }
 
+    public int getRenderIdForRenderer(Class clazz){
+        return 0;
+    }
+
     public void registerVillagerSkins(){}
 
     public HackTickHandler getHackTickHandler(){
@@ -286,4 +289,6 @@ public class CommonProxy implements IGuiHandler{
     public boolean isSneakingInGui(){
         return false;
     }
+
+    public void init(){}
 }

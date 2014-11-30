@@ -22,7 +22,7 @@ import pneumaticCraft.common.network.DescSynced;
 import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.NetworkUtils;
 import pneumaticCraft.common.network.PacketDescription;
-import pneumaticCraft.common.network.PacketSendNBTPacket;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.ModIds;
 import pneumaticCraft.lib.PneumaticValues;
 import cpw.mods.fml.common.Optional;
@@ -36,7 +36,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
     private int[] upgradeSlots;
     private boolean descriptionPacketScheduled;
     private List<SyncedField> descriptionFields;
-    protected boolean isRedstonePowered;
+    protected int poweredRedstone; //The redstone strength currently applied to the block.
 
     public TileEntityBase(){
 
@@ -81,8 +81,8 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
         descriptionPacketScheduled = true;
     }
 
-    public void sendNBTPacket(double maxPacketDistance){
-        NetworkHandler.sendToAllAround(new PacketSendNBTPacket(this), new TargetPoint(worldObj.provider.dimensionId, xCoord, yCoord, zCoord, maxPacketDistance));
+    public void sendDescPacket(double maxPacketDistance){
+        NetworkHandler.sendToAllAround(new PacketDescription(this), new TargetPoint(worldObj.provider.dimensionId, xCoord, yCoord, zCoord, maxPacketDistance));
     }
 
     @Override
@@ -186,6 +186,10 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
 
     public void onDescUpdate(){
         if(shouldRerenderChunkOnDescUpdate()) rerenderChunk();
+    }
+
+    public ForgeDirection getRotation(){
+        return ForgeDirection.getOrientation(getBlockMetadata());
     }
 
     public int getUpgrades(int upgradeDamage){
@@ -312,7 +316,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
     }
 
     public void onNeighborBlockUpdate(){
-        isRedstonePowered = worldObj.isBlockIndirectlyGettingPowered(xCoord, yCoord, zCoord);
+        poweredRedstone = PneumaticCraftUtils.getRedstoneLevel(worldObj, xCoord, yCoord, zCoord);
         initializeIfHeatExchanger();
     }
 
@@ -321,9 +325,9 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
             case 0:
                 return true;
             case 1:
-                return isRedstonePowered;
+                return poweredRedstone > 0;
             case 2:
-                return !isRedstonePowered;
+                return poweredRedstone == 0;
         }
         return false;
     }

@@ -76,7 +76,13 @@ public class RenderUtils extends Render{
             realDoLight = false;
         }
 
-        tessellator.startDrawingQuads();
+        boolean ambientOcclusion = renderBlocks.enableAO;
+        if(!realDoLight) {
+            tessellator.setColorOpaque_F(1, 1, 1);
+            renderBlocks.enableAO = false;
+        }
+
+        if(doTessellating) tessellator.startDrawingQuads();
 
         float light = 0;
         if(realDoLight) {
@@ -147,7 +153,9 @@ public class RenderUtils extends Render{
             renderBlocks.renderFaceXPos(info.baseBlock, x, y, z, info.getBlockTextureFromSide(5));
         }
 
-        tessellator.draw();
+        renderBlocks.enableAO = ambientOcclusion;
+
+        if(doTessellating) tessellator.draw();
     }
 
     @Override

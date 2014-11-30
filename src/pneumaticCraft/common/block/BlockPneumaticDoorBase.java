@@ -4,15 +4,19 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.IIcon;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.common.tileentity.TileEntityPneumaticDoor;
 import pneumaticCraft.common.tileentity.TileEntityPneumaticDoorBase;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.proxy.CommonProxy;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockPneumaticDoorBase extends BlockPneumaticCraftModeled{
 
@@ -21,8 +25,9 @@ public class BlockPneumaticDoorBase extends BlockPneumaticCraftModeled{
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public int getRenderType(){
-        return PneumaticCraft.proxy.CAMO_RENDER_ID;
+        return 0;
     }
 
     @Override
@@ -87,6 +92,33 @@ public class BlockPneumaticDoorBase extends BlockPneumaticCraftModeled{
             if(newMeta == 0) newMeta = 2;
             teDb.orientation = ForgeDirection.getOrientation(newMeta);
             return true;
+        }
+        return false;
+    }
+
+    @Override
+    public IIcon getIcon(IBlockAccess world, int x, int y, int z, int side){
+        TileEntityPneumaticDoorBase te = (TileEntityPneumaticDoorBase)world.getTileEntity(x, y, z);
+        ItemStack camoStack = te.getStackInSlot(TileEntityPneumaticDoorBase.CAMO_SLOT);
+        if(camoStack != null && camoStack.getItem() instanceof ItemBlock) {
+            Block block = ((ItemBlock)camoStack.getItem()).field_150939_a;
+            if(PneumaticCraftUtils.isRenderIDCamo(block.getRenderType())) {
+                return block.getIcon(side, camoStack.getItemDamage());
+            }
+        }
+        return this.getIcon(side, world.getBlockMetadata(x, y, z));
+    }
+
+    @Override
+    public boolean shouldSideBeRendered(IBlockAccess world, int x, int y, int z, int side){
+        ForgeDirection d = ForgeDirection.getOrientation(side);
+        TileEntityPneumaticDoorBase te = (TileEntityPneumaticDoorBase)world.getTileEntity(x - d.offsetX, y - d.offsetY, z - d.offsetZ);
+        ItemStack camoStack = te.getStackInSlot(TileEntityPneumaticDoorBase.CAMO_SLOT);
+        if(camoStack != null && camoStack.getItem() instanceof ItemBlock) {
+            Block block = ((ItemBlock)camoStack.getItem()).field_150939_a;
+            if(PneumaticCraftUtils.isRenderIDCamo(block.getRenderType())) {
+                return true;
+            }
         }
         return false;
     }

@@ -11,6 +11,7 @@ The Drone Interface is a block that only gets added when ComputerCraft is instal
 -removeArea(<x>,<y>,<z>), removeArea(<x1>,<y1>,<z1>,<x2>,<y2>,<z2>,<areaType>) - Removes an area from the current stored area (like blacklisting).
 -clearArea() - Clears the current stored area.
 -showArea() - Will show the current stored area using the area renderer you are used to.
+-hideArea() - Will stop showing the area stored in the Drone.
 -addWhitelistItemFilter(<item/block name>, <damage/metadata>, <useMetadata>, <useNBT>, <useOreDictionary>, <useModSimilarity>) - Acts as you've put a Item Filter piece on the right of a piece (making it whitelisting). The item/block name is in Minecraft format, i.e. "minecraft:stone", or "pneumaticcraft:pressureTube". The 'useXXX' are all booleans that determine what filters will be used (same functionality as the check boxes in the Item Filter puzzle piece).
 -addBlacklistItemFilter(<item/block name>, <damage/metadata>, <useMetadata>, <useNBT>, <useOreDictionary>, <useModSimilarity>) - Like the addWhitelistItemFilter(...), but to blacklist items.
 -clearWhitelistItemFilter() - Clears all the whitelisted item filters stored.
@@ -24,5 +25,6 @@ The Drone Interface is a block that only gets added when ComputerCraft is instal
 -setAction(<action>) - String that represents the action. This should be one of the actions returned by getAllActions().
 -abortAction() - Stops the current running action.
 -isActionDone() - Returns true if the current action is done (goto has arrived at the target location, inventory import can't import anymore, dig has dug every possible block, ..).
+-forgetTarget() - When the Drone was targeting an Entity (in the Entity Attack program), this will stop attacking that target.
 
 Anytime the Drone gets updated a ring will be shot out of the Drone Interface, indicating it was successful. The color of the ring is the same color as the puzzle piece it was associated with.

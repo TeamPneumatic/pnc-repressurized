@@ -101,4 +101,7 @@ public class Thaumcraft implements IThirdParty, IRegistryListener{
 
     }
 
+    @Override
+    public void clientInit(){}
+
 }
