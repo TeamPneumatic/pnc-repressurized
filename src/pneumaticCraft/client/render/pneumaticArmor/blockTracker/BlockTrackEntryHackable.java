@@ -34,7 +34,7 @@ public class BlockTrackEntryHackable implements IBlockTrackEntry{
     @Override
     public void addInformation(World world, int x, int y, int z, List<String> infoList){
         IHackableBlock hackableBlock = HackableHandler.getHackableForCoord(world, x, y, z, PneumaticCraft.proxy.getPlayer());
-        int hackTime = ((BlockTrackUpgradeHandler)HUDHandler.instance().getSpecificRenderer(BlockTrackUpgradeHandler.class)).getTargetForCoord(x, y, z).getHackTime();
+        int hackTime = HUDHandler.instance().getSpecificRenderer(BlockTrackUpgradeHandler.class).getTargetForCoord(x, y, z).getHackTime();
         if(hackTime == 0) {
             hackableBlock.addInfo(world, x, y, z, infoList, PneumaticCraft.proxy.getPlayer());
         } else {

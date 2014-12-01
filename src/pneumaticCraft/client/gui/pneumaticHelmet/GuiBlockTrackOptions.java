@@ -25,7 +25,7 @@ public class GuiBlockTrackOptions implements IOptionPage{
     @Override
     public void initGui(IGuiScreen gui){
         gui.getButtonList().add(new GuiButton(10, 30, 128, 150, 20, "Move Stat Screen..."));
-        for(int i = 0; i < BlockTrackEntryList.instance.trackList.size(); i++){
+        for(int i = 0; i < BlockTrackEntryList.instance.trackList.size(); i++) {
             ((GuiHelmetMainScreen)gui).addWidget(new GuiKeybindCheckBox(i, 5, 32 + i * 12, 0xFFFFFFFF, BlockTrackEntryList.instance.trackList.get(i).getEntryName()));
         }
     }

@@ -155,7 +155,7 @@ public class TileEntityPneumaticBase extends TileEntityBase implements IManoMeas
                         receivers--;//next step this receiver won't be able to receive any air.
                     }
                     int transfered = Math.min(dividedValue, maxTransfer);//cap it at the max it can have.
-                    disp.setValue(disp.getKey() + transfered);
+                    disp.setValue(disp.getValue() + transfered);
                     toBeDivided -= transfered;
                 }
             }

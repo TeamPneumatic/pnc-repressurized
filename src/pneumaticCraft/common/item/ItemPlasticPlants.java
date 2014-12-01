@@ -251,7 +251,7 @@ public class ItemPlasticPlants extends ItemPneumatic{
                 boolean canSustain = false;
 
                 canSustain = ((BlockPneumaticPlantBase)blockID).canBlockStay(entityItem.worldObj, landedBlockX, landedBlockY, landedBlockZ);
-                if(itemDamage % 16 == ItemPlasticPlants.FIRE_FLOWER_DAMAGE && !canSustain && net.minecraft.init.Blocks.fire.canPlaceBlockAt(entityItem.worldObj, landedBlockX, landedBlockY, landedBlockZ) && entityItem.worldObj.isAirBlock(landedBlockX, landedBlockY, landedBlockZ)) {
+                if(itemDamage % 16 == ItemPlasticPlants.FIRE_FLOWER_DAMAGE && !canSustain && !isInChamber(entityItem.worldObj.getBlock(landedBlockX, landedBlockY - 1, landedBlockZ)) && net.minecraft.init.Blocks.fire.canPlaceBlockAt(entityItem.worldObj, landedBlockX, landedBlockY, landedBlockZ) && entityItem.worldObj.isAirBlock(landedBlockX, landedBlockY, landedBlockZ)) {
                     entityItem.worldObj.setBlock(landedBlockX, landedBlockY, landedBlockZ, net.minecraft.init.Blocks.fire);
                 }
 
@@ -291,6 +291,10 @@ public class ItemPlasticPlants extends ItemPneumatic{
             }
         }
         return false;
+    }
+
+    private boolean isInChamber(Block block){
+        return block == Blockss.pressureChamberInterface || block == Blockss.pressureChamberValve || block == Blockss.pressureChamberWall;
     }
 
     private boolean handlePropulsionBehaviour(EntityItem entityItem, double oldMotionX, double oldMotionZ){

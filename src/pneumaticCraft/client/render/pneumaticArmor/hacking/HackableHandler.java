@@ -166,7 +166,7 @@ public class HackableHandler{
 
     private static boolean isInDisplayCooldown(IHackableBlock hackableBlock, IBlockAccess world, int x, int y, int z, EntityPlayer player){
         if(player.worldObj.isRemote) {
-            RenderBlockTarget target = ((BlockTrackUpgradeHandler)HUDHandler.instance().getSpecificRenderer(BlockTrackUpgradeHandler.class)).getTargetForCoord(x, y, z);
+            RenderBlockTarget target = HUDHandler.instance().getSpecificRenderer(BlockTrackUpgradeHandler.class).getTargetForCoord(x, y, z);
             int requiredHackTime = hackableBlock.getHackTime(world, x, y, z, player);
             return target != null && target.getHackTime() >= requiredHackTime && target.getHackTime() <= requiredHackTime + 20;
         } else {
@@ -176,7 +176,7 @@ public class HackableHandler{
 
     private static boolean isInDisplayCooldown(IHackableEntity hackableBlock, Entity entity){
         if(entity.worldObj.isRemote) {
-            RenderTarget target = ((EntityTrackUpgradeHandler)HUDHandler.instance().getSpecificRenderer(EntityTrackUpgradeHandler.class)).getTargetForEntity(entity);
+            RenderTarget target = HUDHandler.instance().getSpecificRenderer(EntityTrackUpgradeHandler.class).getTargetForEntity(entity);
             int requiredHackTime = hackableBlock.getHackTime(entity, PneumaticCraft.proxy.getPlayer());
             return target != null && target.getHackTime() >= requiredHackTime && target.getHackTime() <= requiredHackTime + 20;
         } else {

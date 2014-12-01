@@ -73,7 +73,7 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler{
     public void update(EntityPlayer player, int rangeUpgrades){
         ticksExisted++;
 
-        SearchUpgradeHandler searchHandler = (SearchUpgradeHandler)HUDHandler.instance().getSpecificRenderer(SearchUpgradeHandler.class);
+        SearchUpgradeHandler searchHandler = HUDHandler.instance().getSpecificRenderer(SearchUpgradeHandler.class);
 
         if(ticksExisted % updateInterval == 0) {
             int timeTaken = (int)accTime / updateInterval;

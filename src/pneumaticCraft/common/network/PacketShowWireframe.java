@@ -46,7 +46,7 @@ public class PacketShowWireframe extends LocationIntPacket<PacketShowWireframe>{
 
     @SideOnly(Side.CLIENT)
     private void addToHudHandler(EntityDrone drone, int x, int y, int z){
-        List<RenderTarget> targets = ((EntityTrackUpgradeHandler)HUDHandler.instance().getSpecificRenderer(EntityTrackUpgradeHandler.class)).getTargets();
+        List<RenderTarget> targets = HUDHandler.instance().getSpecificRenderer(EntityTrackUpgradeHandler.class).getTargets();
         for(RenderTarget target : targets) {
             if(target.entity == drone) {
                 target.getDroneAIRenderer().addBlackListEntry(drone.worldObj, x, y, z);

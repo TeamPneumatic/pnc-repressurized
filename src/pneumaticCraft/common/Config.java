@@ -37,8 +37,6 @@ public class Config{
     public static int pneumaticDynamoEfficiency;
     public static boolean enableElectricCompressorRecipe;
     public static boolean enablePneumaticGeneratorRecipe;
-    public static boolean enableKineticCompressorRecipe;
-    public static boolean enablePneumaticEngineRecipe;
     public static boolean enablePneumaticPumpRecipe;
     public static boolean enableCreeperPlantMaceratorRecipe;
     public static boolean enableHeliumPlantMaceratorRecipe;
@@ -141,8 +139,6 @@ public class Config{
         enableCoalToDiamondsRecipe = config.get("recipe_enabling", "8 Block of Coal --> 1 Diamond (Pressure Chamber)", true).getBoolean(true);
         enableElectricCompressorRecipe = config.get("recipe_enabling", "Electric Compressor", true).getBoolean(true);
         enablePneumaticGeneratorRecipe = config.get("recipe_enabling", "Pneumatic Generator", true).getBoolean(true);
-        enableKineticCompressorRecipe = config.get("recipe_enabling", "Kinetic Compressor", true).getBoolean(true);
-        enablePneumaticEngineRecipe = config.get("recipe_enabling", "Pneumatic Engine", true).getBoolean(true);
         enablePneumaticPumpRecipe = config.get("recipe_enabling", "Pneumatic Pump", true).getBoolean(true);
         enableCreeperPlantMaceratorRecipe = config.get("recipe_enabling", "Creeper Plant Seeds --> Gunpowder (IC2 Macerator)", true).getBoolean(true);
         enableHeliumPlantMaceratorRecipe = config.get("recipe_enabling", "Helium Plant Seeds --> Glowstone (IC2 Macerator)", true).getBoolean(true);

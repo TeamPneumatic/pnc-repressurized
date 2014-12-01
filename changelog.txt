@@ -1,10 +1,12 @@
--Greatly improved the Programmer's area render (the green cubes) performance. It'll now allow any size area to be rendered.
--Showing the Programmer's area is now toggled instead of time based. A button to show the area, another to hide it.
--GPS Tool now shows the selected coordinate when held.
--Liquid Hopper now fills/empties any liquid container at the output/input side respectively.
--Liquid Hopper now sucks liquid blocks at the input and places liquid blocks at the output when a Dispenser Upgrade is inserted.
--Added MFR plant compatibility.
--Added pt_BR localization (thanks MrKunji!)
+-Added multiblock elevator functionality.
+-Added elevator part camouflaging.
+-Removed MJ power converters.
+-Added Not Enough Keys support.
 
--Bugfix: Omnidirectional Hopper stacks items which have a different NBT value.
--Bugfix: Programmer doesn't properly sync.
+-Bugfix: Entity Tracker "A mob is targeting you" spams.
+-Bugfix: Some machines don't properly look for redstone after world reset.
+-Bugfix: Regulator tube causes an explosion.
+-Bugfix: Plastic Mixer dye Ore Dictionary doesn't behave.
+-Bugfix: infinite RF powah!
+-Bugfix: Fire Flowers catch fire in Pressure Chamber. Fixes #282
+-Bugfix: [SMP] Aphorism tile appears to ignore any typed character until you hit the Enter key for the first time.

@@ -61,7 +61,7 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase implements
 
     @Override
     public int receiveEnergy(ForgeDirection from, int maxReceive, boolean simulate){
-        maxReceive = getRFRate() * 2;
+        maxReceive = Math.min(maxReceive, getRFRate() * 2);
         return energy.receiveEnergy(maxReceive, simulate);
     }
 

@@ -2,7 +2,6 @@ package pneumaticCraft.common.inventory;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.init.Items;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import pneumaticCraft.common.item.Itemss;
@@ -66,7 +65,7 @@ public class ContainerPlasticMixer extends ContainerPneumaticBase<TileEntityPlas
             } else {
                 if(var5.getItem() == Itemss.machineUpgrade) {
                     if(!mergeItemStack(var5, 0, 4, false)) return null;
-                } else if(var5.getItem() == Items.dye && !mergeItemStack(var5, 5, 6, false)) return null;
+                } else if(TileEntityPlasticMixer.getDyeIndex(var5) >= 0 && !mergeItemStack(var5, 5, 6, false)) return null;
                 else if(var5.getItem() == Itemss.plastic && !mergeItemStack(var5, 4, 5, false)) return null;
                 var4.onSlotChange(var5, var3);
             }

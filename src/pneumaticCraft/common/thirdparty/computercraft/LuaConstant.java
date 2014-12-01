@@ -22,7 +22,7 @@ public class LuaConstant extends LuaMethod{
     }
 
     @Override
-    public Object[] call(IComputerAccess computer, ILuaContext context, Object[] args)  throws LuaException, InterruptedException{
+    public Object[] call(IComputerAccess computer, ILuaContext context, Object[] args) throws LuaException, InterruptedException{
         if(args.length == 0) {
             return new Object[]{constant};
         } else {
