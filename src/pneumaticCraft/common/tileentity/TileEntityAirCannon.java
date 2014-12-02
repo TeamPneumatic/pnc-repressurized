@@ -5,6 +5,7 @@ import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityBoat;
 import net.minecraft.entity.item.EntityExpBottle;
 import net.minecraft.entity.item.EntityItem;
@@ -15,6 +16,7 @@ import net.minecraft.entity.item.EntityMinecartHopper;
 import net.minecraft.entity.item.EntityMinecartTNT;
 import net.minecraft.entity.item.EntityTNTPrimed;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.entity.projectile.EntityEgg;
 import net.minecraft.entity.projectile.EntityFireball;
@@ -29,6 +31,7 @@ import net.minecraft.item.ItemMonsterPlacer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -42,14 +45,17 @@ import pneumaticCraft.common.network.GuiSynced;
 import pneumaticCraft.common.network.LazySynced;
 import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.PacketPlaySound;
+import pneumaticCraft.common.network.PacketSetEntityMotion;
 import pneumaticCraft.common.network.PacketSpawnParticle;
 import pneumaticCraft.common.thirdparty.computercraft.LuaConstant;
 import pneumaticCraft.common.thirdparty.computercraft.LuaMethod;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.ModIds;
 import pneumaticCraft.lib.PneumaticValues;
 import pneumaticCraft.lib.Sounds;
 import pneumaticCraft.lib.TileEntityConstants;
 import cpw.mods.fml.common.Optional;
+import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.lua.LuaException;
 import dan200.computercraft.api.peripheral.IComputerAccess;
@@ -84,6 +90,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements ISid
     public boolean fireOnlyOnRightAngle = true;
     private int oldRangeUpgrades;
     private boolean externalControl;//used in the CC API, to disallow the Cannon to update its angles when things like range upgrades / GPS Tool have changed.
+    private boolean entityUpgradeInserted, dispenserUpgradeInserted;
 
     private final int INVENTORY_SIZE = 6;
     public final int CANNON_SLOT = 0;
@@ -101,7 +108,6 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements ISid
 
     @Override
     public void updateEntity(){
-
         // GPS Tool read
         if(inventory[1] != null && inventory[1].getItem() == Itemss.GPSTool && !externalControl) {
             if(inventory[1].stackTagCompound != null) {
@@ -125,6 +131,16 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements ISid
         if(curRangeUpgrades != oldRangeUpgrades) {
             oldRangeUpgrades = curRangeUpgrades;
             if(!externalControl) updateDestination();
+        }
+
+        if(worldObj.getWorldTime() % 40 == 0) {
+            boolean isDispenserUpgradeInserted = getUpgrades(ItemMachineUpgrade.UPGRADE_DISPENSER_DAMAGE) > 0;
+            boolean isEntityTrackerUpgradeInserted = getUpgrades(ItemMachineUpgrade.UPGRADE_ENTITY_TRACKER) > 0;
+            if(dispenserUpgradeInserted != isDispenserUpgradeInserted || entityUpgradeInserted != isEntityTrackerUpgradeInserted) {
+                dispenserUpgradeInserted = isDispenserUpgradeInserted;
+                entityUpgradeInserted = isEntityTrackerUpgradeInserted;
+                updateDestination();
+            }
         }
 
         // update angles
@@ -180,7 +196,11 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements ISid
                                         // dispenser upgrade is inserted.
         double payloadFrictionX = 0.98D;
         double payloadGravity = 0.04D;
-        if(getUpgrades(ItemMachineUpgrade.UPGRADE_DISPENSER_DAMAGE, getUpgradeSlots()) > 0 && inventory[0] != null) {// if
+        if(getUpgrades(ItemMachineUpgrade.UPGRADE_ENTITY_TRACKER) > 0) {
+            payloadFrictionY = 0.98D;
+            payloadFrictionX = 0.91D;
+            payloadGravity = 0.08D;
+        } else if(getUpgrades(ItemMachineUpgrade.UPGRADE_DISPENSER_DAMAGE, getUpgradeSlots()) > 0 && inventory[0] != null) {// if
             // there
             // is
             // a
@@ -491,11 +511,35 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements ISid
     }
 
     private synchronized boolean fire(){
-        double[] velocity = getVelocityVector(heightAngle, rotationAngle, getForce());
-        if(getPressure(ForgeDirection.UNKNOWN) >= PneumaticValues.MIN_PRESSURE_AIR_CANNON && inventory[0] != null) {
+        Entity itemShot = getCloseEntityIfUpgraded();
+        if(getPressure(ForgeDirection.UNKNOWN) >= PneumaticValues.MIN_PRESSURE_AIR_CANNON && (itemShot != null || inventory[0] != null)) {
+            double[] velocity = getVelocityVector(heightAngle, rotationAngle, getForce());
             addAir((int)(-500 * getForce()), ForgeDirection.UNKNOWN);
-            Entity itemShot = getPayloadEntity();
+            boolean shootingInventory = false;
+            if(itemShot == null) {
+                shootingInventory = true;
+                itemShot = getPayloadEntity();
+
+                if(itemShot instanceof EntityItem) {
+                    inventory[0] = null;
+                } else {
+                    inventory[0].stackSize--;
+                    if(inventory[0].stackSize <= 0) inventory[0] = null;
+                }
+            } else if(itemShot instanceof EntityPlayer) {
+                EntityPlayerMP entityplayermp = (EntityPlayerMP)itemShot;
+                if(entityplayermp.playerNetServerHandler.func_147362_b().isChannelOpen()) {
+                    entityplayermp.setPositionAndUpdate(xCoord + 0.5D, yCoord + 1.8D, zCoord + 0.5D);
+                }
+            }
+
+            if(itemShot.isRiding()) {
+                itemShot.mountEntity((Entity)null);
+            }
+
             itemShot.setPosition(xCoord + 0.5D, yCoord + 1.8D, zCoord + 0.5D);
+            NetworkHandler.sendToAllAround(new PacketSetEntityMotion(itemShot, velocity[0], velocity[1], velocity[2]), new TargetPoint(worldObj.provider.dimensionId, xCoord, yCoord, zCoord, 64));
+
             if(itemShot instanceof EntityFireball) {
                 velocity[0] *= 0.05D;
                 velocity[1] *= 0.05D;
@@ -505,14 +549,15 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements ISid
             itemShot.motionX = velocity[0];
             itemShot.motionY = velocity[1];
             itemShot.motionZ = velocity[2];
-            if(!worldObj.isRemote) worldObj.spawnEntityInWorld(itemShot);
 
-            if(itemShot instanceof EntityItem) {
-                inventory[0] = null;
-            } else {
-                inventory[0].stackSize--;
-                if(inventory[0].stackSize <= 0) inventory[0] = null;
-            }
+            itemShot.onGround = false;
+            itemShot.isCollided = false;
+            itemShot.isCollidedHorizontally = false;
+            itemShot.isCollidedVertically = false;
+            if(itemShot instanceof EntityLivingBase) ((EntityLivingBase)itemShot).setJumping(true);
+
+            if(shootingInventory && !worldObj.isRemote) worldObj.spawnEntityInWorld(itemShot);
+
             for(int i = 0; i < 10; i++) {
                 double velX = velocity[0] * 0.4D + (rand.nextGaussian() - 0.5D) * 0.05D;
                 double velY = velocity[1] * 0.4D + (rand.nextGaussian() - 0.5D) * 0.05D;
@@ -571,6 +616,22 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements ISid
         // min.
         return item;
 
+    }
+
+    private Entity getCloseEntityIfUpgraded(){
+        int entityUpgrades = getUpgrades(ItemMachineUpgrade.UPGRADE_ENTITY_TRACKER);
+        if(entityUpgrades > 0) {
+            entityUpgrades = Math.min(entityUpgrades, 5);
+            List<Entity> entities = worldObj.getEntitiesWithinAABB(EntityLivingBase.class, AxisAlignedBB.getBoundingBox(xCoord - entityUpgrades, yCoord - entityUpgrades, zCoord - entityUpgrades, xCoord + 1 + entityUpgrades, yCoord + 1 + entityUpgrades, zCoord + 1 + entityUpgrades));
+            Entity closestEntity = null;
+            for(Entity entity : entities) {
+                if(closestEntity == null || PneumaticCraftUtils.distBetween(closestEntity.posX, closestEntity.posY, closestEntity.posZ, xCoord + 0.5, yCoord + 0.5, zCoord + 0.5) > PneumaticCraftUtils.distBetween(entity.posX, entity.posY, entity.posZ, xCoord + 0.5, yCoord + 0.5, zCoord + 0.5)) {
+                    closestEntity = entity;
+                }
+            }
+            return closestEntity;
+        }
+        return null;
     }
 
     @Override
