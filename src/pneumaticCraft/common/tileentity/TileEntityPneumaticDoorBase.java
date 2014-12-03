@@ -40,6 +40,7 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
     private ItemStack[] inventory = new ItemStack[5];
     @GuiSynced
     public int redstoneMode;
+    @DescSynced
     public ForgeDirection orientation = ForgeDirection.UNKNOWN;
     public static final int UPGRADE_SLOT_1 = 0;
     public static final int UPGRADE_SLOT_4 = 3;
