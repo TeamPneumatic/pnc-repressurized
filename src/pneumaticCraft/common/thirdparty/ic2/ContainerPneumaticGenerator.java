@@ -1,11 +1,12 @@
-package pneumaticCraft.common.inventory;
+package pneumaticCraft.common.thirdparty.ic2;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import pneumaticCraft.common.inventory.ContainerPneumaticBase;
+import pneumaticCraft.common.inventory.SlotUpgrade;
 import pneumaticCraft.common.item.Itemss;
-import pneumaticCraft.common.thirdparty.ic2.TileEntityPneumaticGenerator;
 
 public class ContainerPneumaticGenerator extends ContainerPneumaticBase<TileEntityPneumaticGenerator>{
 
@@ -29,12 +30,6 @@ public class ContainerPneumaticGenerator extends ContainerPneumaticBase<TileEnti
         for(int actionBarSlotIndex = 0; actionBarSlotIndex < 9; ++actionBarSlotIndex) {
             addSlotToContainer(new Slot(inventoryPlayer, actionBarSlotIndex, 8 + actionBarSlotIndex * 18, 142));
         }
-    }
-
-    @Override
-    public boolean canInteractWith(EntityPlayer player){
-
-        return te.isGuiUseableByPlayer(player);
     }
 
     /**

@@ -15,6 +15,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.common.Config;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.Itemss;
+import pneumaticCraft.common.network.GuiSynced;
 import pneumaticCraft.common.tileentity.IMinWorkingPressure;
 import pneumaticCraft.common.tileentity.IRedstoneControlled;
 import pneumaticCraft.common.tileentity.TileEntityPneumaticBase;
@@ -30,8 +31,10 @@ public class TileEntityPneumaticGenerator extends TileEntityPneumaticBase implem
     public static final int UPGRADE_SLOT_START = 0;
     public static final int UPGRADE_SLOT_END = 3;
     public boolean outputting;//true when fully dispersed all the EU's it can possibly do.
+    @GuiSynced
     public int curEnergyProduction;
 
+    @GuiSynced
     public int redstoneMode = 0;
 
     public TileEntityPneumaticGenerator(){
@@ -101,8 +104,10 @@ public class TileEntityPneumaticGenerator extends TileEntityPneumaticBase implem
 
     @Override
     public void handleGUIButtonPress(int buttonID, EntityPlayer player){
-        redstoneMode++;
-        if(redstoneMode > 2) redstoneMode = 0;
+        if(buttonID == 0) {
+            redstoneMode++;
+            if(redstoneMode > 2) redstoneMode = 0;
+        }
     }
 
     /**

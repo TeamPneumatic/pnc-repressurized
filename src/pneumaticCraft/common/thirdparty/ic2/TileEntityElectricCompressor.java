@@ -14,6 +14,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.common.Config;
 import pneumaticCraft.common.item.Itemss;
+import pneumaticCraft.common.network.GuiSynced;
 import pneumaticCraft.common.tileentity.IRedstoneControlled;
 import pneumaticCraft.common.tileentity.TileEntityPneumaticBase;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
@@ -31,8 +32,10 @@ public class TileEntityElectricCompressor extends TileEntityPneumaticBase implem
     public int outputTimer;//set to 20 when receiving energy, and decreased to 0 when not. Acts as a buffer before sending packets to update the client's rotation logic.
 
     private boolean redstoneAllows;
+    @GuiSynced
     public int redstoneMode = 0;
     private int curEnergyProduction;
+    @GuiSynced
     public int lastEnergyProduction;
 
     public float turbineRotation;
@@ -133,8 +136,10 @@ public class TileEntityElectricCompressor extends TileEntityPneumaticBase implem
 
     @Override
     public void handleGUIButtonPress(int buttonID, EntityPlayer player){
-        redstoneMode++;
-        if(redstoneMode > 2) redstoneMode = 0;
+        if(buttonID == 0) {
+            redstoneMode++;
+            if(redstoneMode > 2) redstoneMode = 0;
+        }
     }
 
     /**
