@@ -16,7 +16,6 @@ import pneumaticCraft.client.model.BaseModel;
 import pneumaticCraft.client.model.ModelThirdPartyCompressor;
 import pneumaticCraft.common.Config;
 import pneumaticCraft.common.block.Blockss;
-import pneumaticCraft.common.inventory.ContainerPneumaticGenerator;
 import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.thirdparty.IThirdParty;

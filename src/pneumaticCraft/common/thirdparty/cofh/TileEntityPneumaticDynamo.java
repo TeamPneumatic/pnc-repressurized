@@ -262,4 +262,9 @@ public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implement
     public float getMinWorkingPressure(){
         return PneumaticValues.MIN_PRESSURE_PNEUMATIC_DYNAMO;
     }
+
+    @Override
+    public EnergyStorage getEnergyStorage(){
+        return energy;
+    }
 }

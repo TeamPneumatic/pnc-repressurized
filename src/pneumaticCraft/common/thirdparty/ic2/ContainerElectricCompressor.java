@@ -6,7 +6,6 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import pneumaticCraft.common.inventory.ContainerPneumaticBase;
 import pneumaticCraft.common.item.Itemss;
-import pneumaticCraft.common.tileentity.TileEntityPneumaticBase;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 
 public class ContainerElectricCompressor extends ContainerPneumaticBase<TileEntityElectricCompressor>{
@@ -31,12 +30,6 @@ public class ContainerElectricCompressor extends ContainerPneumaticBase<TileEnti
         for(int actionBarSlotIndex = 0; actionBarSlotIndex < 9; ++actionBarSlotIndex) {
             addSlotToContainer(new Slot(inventoryPlayer, actionBarSlotIndex, 8 + actionBarSlotIndex * 18, 142));
         }
-    }
-
-    @Override
-    public boolean canInteractWith(EntityPlayer player){
-
-        return ((TileEntityPneumaticBase)te).isGuiUseableByPlayer(player);
     }
 
     /**

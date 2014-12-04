@@ -7,6 +7,7 @@ import java.util.List;
 
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.ChunkPosition;
 import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
@@ -34,9 +35,9 @@ public class DroneGoToChargingStation extends EntityAIBase{
         List<TileEntityChargingStation> validChargingStations = new ArrayList<TileEntityChargingStation>();
         if(drone.getPressure(null) < PneumaticValues.DRONE_LOW_PRESSURE) {
             for(TileEntity te : (List<TileEntity>)drone.worldObj.loadedTileEntityList) {
-                if(te.getDistanceFrom(drone.posX, drone.posY, drone.posZ) <= Math.pow(drone.getRange(), 2) && te instanceof TileEntityChargingStation) {
+                if(te instanceof TileEntityChargingStation && te.getDistanceFrom(drone.posX, drone.posY, drone.posZ) <= Math.pow(drone.getRange(), 2)) {
                     TileEntityChargingStation station = (TileEntityChargingStation)te;
-                    if(station.getPressure(ForgeDirection.UNKNOWN) > PneumaticValues.DRONE_LOW_PRESSURE && station.getUpgrades(ItemMachineUpgrade.UPGRADE_DISPENSER_DAMAGE) > 0) {
+                    if(!DroneClaimManager.getInstance(drone.worldObj).isClaimed(new ChunkPosition(station.xCoord, station.yCoord, station.zCoord)) && station.getPressure(ForgeDirection.UNKNOWN) > PneumaticValues.DRONE_LOW_PRESSURE && station.getUpgrades(ItemMachineUpgrade.UPGRADE_DISPENSER_DAMAGE) > 0) {
                         validChargingStations.add(station);
                     }
                 }
@@ -56,6 +57,7 @@ public class DroneGoToChargingStation extends EntityAIBase{
             if(drone.getNavigator().tryMoveToXYZ(station.xCoord, station.yCoord + 1.5, station.zCoord, speed) || ((EntityPathNavigateDrone)drone.getNavigator()).isGoingToTeleport()) {
                 isExecuting = true;
                 curCharger = station;
+                DroneClaimManager.getInstance(drone.worldObj).claim(new ChunkPosition(station.xCoord, station.yCoord, station.zCoord));
                 return true;
             }
         }
@@ -73,8 +75,10 @@ public class DroneGoToChargingStation extends EntityAIBase{
             return false;
         } else if(drone.getNavigator().getPath().isFinished()) {
             isExecuting = drone.getPressure(null) < 9.9F && curCharger.getPressure(ForgeDirection.UNKNOWN) > drone.getPressure(null) + 0.1F;
+            if(isExecuting) DroneClaimManager.getInstance(drone.worldObj).claim(new ChunkPosition(curCharger.xCoord, curCharger.yCoord, curCharger.zCoord));
             return isExecuting;
         } else {
+            DroneClaimManager.getInstance(drone.worldObj).claim(new ChunkPosition(curCharger.xCoord, curCharger.yCoord, curCharger.zCoord));
             return true;
         }
     }

@@ -11,12 +11,10 @@ import pneumaticCraft.client.gui.widget.GuiAnimatedStat;
 import pneumaticCraft.lib.Textures;
 
 public class GuiPneumaticDynamo extends GuiPneumaticContainerBase<TileEntityPneumaticDynamo>{
-    private final ContainerRF container;
     private GuiAnimatedStat inputStat;
 
     public GuiPneumaticDynamo(InventoryPlayer inventoryPlayer, TileEntityPneumaticDynamo te){
         super(new ContainerRF(inventoryPlayer, te), te, Textures.GUI_4UPGRADE_SLOTS);
-        container = (ContainerRF)inventorySlots;
     }
 
     @Override
@@ -24,7 +22,7 @@ public class GuiPneumaticDynamo extends GuiPneumaticContainerBase<TileEntityPneu
         super.initGui();
         inputStat = addAnimatedStat("Input", (ItemStack)null, 0xFF555555, false);
 
-        addWidget(new WidgetEnergy(guiLeft + 20, guiTop + 20, container));
+        addWidget(new WidgetEnergy(guiLeft + 20, guiTop + 20, te));
     }
 
     @Override
@@ -46,7 +44,7 @@ public class GuiPneumaticDynamo extends GuiPneumaticContainerBase<TileEntityPneu
         textList.add(EnumChatFormatting.GRAY + "Maximum output rate:");
         textList.add(EnumChatFormatting.BLACK.toString() + te.getRFRate() * 2 + " RF/tick");
         textList.add(EnumChatFormatting.GRAY + "Current stored RF:");
-        textList.add(EnumChatFormatting.BLACK.toString() + container.energy + " RF");
+        textList.add(EnumChatFormatting.BLACK.toString() + te.getInfoEnergyStored() + " RF");
         return textList;
     }
 

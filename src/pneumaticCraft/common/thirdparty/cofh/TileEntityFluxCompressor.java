@@ -228,4 +228,9 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase implements
         return airPerTick;
     }
 
+    @Override
+    public EnergyStorage getEnergyStorage(){
+        return energy;
+    }
+
 }

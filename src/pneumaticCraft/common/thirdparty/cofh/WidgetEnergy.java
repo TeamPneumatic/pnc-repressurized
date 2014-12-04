@@ -6,15 +6,16 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.util.ResourceLocation;
 import pneumaticCraft.client.gui.widget.WidgetBase;
+import cofh.api.tileentity.IEnergyInfo;
 
 public class WidgetEnergy extends WidgetBase{
 
     public static final ResourceLocation DEFAULT_TEXTURE = new ResourceLocation("cofh:textures/gui/elements/Energy.png");
     public static final int DEFAULT_SCALE = 42;
 
-    protected ContainerRF storage;
+    protected IEnergyInfo storage;
 
-    public WidgetEnergy(int x, int y, ContainerRF storage){
+    public WidgetEnergy(int x, int y, IEnergyInfo storage){
         super(-1, x, y, 16, DEFAULT_SCALE);
         this.storage = storage;
     }
@@ -31,15 +32,15 @@ public class WidgetEnergy extends WidgetBase{
 
     @Override
     public void addTooltip(int mouseX, int mouseY, List<String> list, boolean shiftPressed){
-        list.add(storage.energy + " / " + storage.energyHandler.getInfoMaxEnergyStored() + " RF");
+        list.add(storage.getInfoEnergyStored() + " / " + storage.getInfoMaxEnergyStored() + " RF");
     }
 
     protected int getScaled(){
 
-        if(storage.energyHandler.getInfoMaxEnergyStored() <= 0) {
+        if(storage.getInfoMaxEnergyStored() <= 0) {
             return getBounds().height;
         }
-        return storage.energy * getBounds().height / storage.energyHandler.getInfoMaxEnergyStored();
+        return storage.getInfoEnergyStored() * getBounds().height / storage.getInfoMaxEnergyStored();
     }
 
 }

@@ -22,6 +22,10 @@ public class ContainerPneumaticBase<Tile extends TileEntityBase> extends Contain
         syncedFields = NetworkUtils.getSyncedFields(te, GuiSynced.class);
     }
 
+    protected void addSyncedField(SyncedField field){
+        syncedFields.add(field);
+    }
+
     public void updateField(int index, Object value){
         syncedFields.get(index).setValue(value);
     }

@@ -114,7 +114,7 @@ public class GuiKeybindCheckBox extends GuiCheckBox{
     public static KeyBinding setOrAddKeybind(String keybindName, int keyCode){
         GameSettings gameSettings = FMLClientHandler.instance().getClient().gameSettings;
         for(KeyBinding keyBinding : gameSettings.keyBindings) {
-            if(keyBinding.getKeyDescription().equals(keybindName)) {
+            if(keyBinding != null && keyBinding.getKeyDescription().equals(keybindName)) {
                 if(keybindName.equals(keyBinding.getKeyDescription())) {
                     if(keyCode >= 0) {
                         keyBinding.setKeyCode(keyCode);

@@ -12,6 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.world.ChunkPosition;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.lwjgl.opengl.GL11;
@@ -572,6 +573,27 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
                 }
             }
 
+        });
+
+        luaMethods.add(new LuaMethod("getGPSToolCoordinate"){
+            @Override
+            public Object[] call(IComputerAccess computer, ILuaContext context, Object[] args) throws LuaException, InterruptedException{
+                if(args.length == 1) {
+                    ItemStack stack = getStackInSlot(((Double)args[0]).intValue() - 1); //minus one, as lua is 1-oriented.
+                    if(stack != null && stack.getItem() == Itemss.GPSTool) {
+                        ChunkPosition pos = ItemGPSTool.getGPSLocation(stack);
+                        if(pos != null) {
+                            return new Object[]{pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ};
+                        } else {
+                            return new Object[]{0, 0, 0};
+                        }
+                    } else {
+                        return null;
+                    }
+                } else {
+                    throw new IllegalArgumentException("setGPSToolCoordinate needs 1 argument: slot");
+                }
+            }
         });
     }
 

@@ -1,6 +1,7 @@
 package pneumaticCraft.common.progwidgets;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -41,7 +42,7 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
         return 44;
     }
 
-    public static IBlockAccess getCache(Set<ChunkPosition> area, World world){
+    public static IBlockAccess getCache(Collection<ChunkPosition> area, World world){
         if(area.size() == 0) return world;
         int minX, minY, minZ, maxX, maxY, maxZ;
         Iterator<ChunkPosition> iterator = area.iterator();

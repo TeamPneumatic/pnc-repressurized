@@ -12,12 +12,10 @@ import pneumaticCraft.lib.Textures;
 
 public class GuiFluxCompressor extends GuiPneumaticContainerBase<TileEntityFluxCompressor>{
 
-    private final ContainerRF container;
     private GuiAnimatedStat inputStat;
 
     public GuiFluxCompressor(InventoryPlayer inventoryPlayer, TileEntityFluxCompressor te){
         super(new ContainerRF(inventoryPlayer, te), te, Textures.GUI_4UPGRADE_SLOTS);
-        container = (ContainerRF)inventorySlots;
     }
 
     @Override
@@ -25,7 +23,7 @@ public class GuiFluxCompressor extends GuiPneumaticContainerBase<TileEntityFluxC
         super.initGui();
         inputStat = addAnimatedStat("Input", (ItemStack)null, 0xFF555555, false);
 
-        addWidget(new WidgetEnergy(guiLeft + 20, guiTop + 20, container));
+        addWidget(new WidgetEnergy(guiLeft + 20, guiTop + 20, te));
     }
 
     @Override
@@ -47,7 +45,7 @@ public class GuiFluxCompressor extends GuiPneumaticContainerBase<TileEntityFluxC
         textList.add(EnumChatFormatting.GRAY + "Maximum input rate:");
         textList.add(EnumChatFormatting.BLACK.toString() + te.getInfoEnergyPerTick() * 2 + " RF/tick");
         textList.add(EnumChatFormatting.GRAY + "Current stored RF:");
-        textList.add(EnumChatFormatting.BLACK.toString() + container.energy + " RF");
+        textList.add(EnumChatFormatting.BLACK.toString() + te.getInfoEnergyStored() + " RF");
         return textList;
     }
 
@@ -61,7 +59,7 @@ public class GuiFluxCompressor extends GuiPneumaticContainerBase<TileEntityFluxC
     @Override
     protected void addProblems(List<String> textList){
         super.addProblems(textList);
-        if(te.getInfoEnergyPerTick() > container.energy) {
+        if(te.getInfoEnergyPerTick() > te.getInfoEnergyStored()) {
             textList.add("gui.tab.problems.fluxCompressor.noRF");
         }
     }
