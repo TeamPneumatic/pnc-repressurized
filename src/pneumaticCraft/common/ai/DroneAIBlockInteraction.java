@@ -3,19 +3,27 @@ package pneumaticCraft.common.ai;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.util.ForgeDirection;
+import pneumaticCraft.api.item.IPressurizable;
 import pneumaticCraft.common.entity.living.EntityDrone;
+import pneumaticCraft.common.item.ItemMachineUpgrade;
+import pneumaticCraft.common.item.ItemPneumaticArmor;
+import pneumaticCraft.common.item.Itemss;
+import pneumaticCraft.common.network.NetworkHandler;
+import pneumaticCraft.common.network.PacketSpawnParticle;
 import pneumaticCraft.common.progwidgets.IBlockOrdered;
 import pneumaticCraft.common.progwidgets.IBlockOrdered.EnumOrder;
 import pneumaticCraft.common.progwidgets.ProgWidgetAreaItemBase;
 import pneumaticCraft.common.progwidgets.ProgWidgetDigAndPlace;
 import pneumaticCraft.common.progwidgets.ProgWidgetPlace;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
+import pneumaticCraft.common.util.ThreadedSorter;
 
 public abstract class DroneAIBlockInteraction extends EntityAIBase{
     protected final EntityDrone drone;
@@ -23,12 +31,17 @@ public abstract class DroneAIBlockInteraction extends EntityAIBase{
     protected final ProgWidgetAreaItemBase widget;
     private final EnumOrder order;
     private ChunkPosition curPos;
-    private final Set<ChunkPosition> area;
-    private final ChunkPositionSorter sorter;
+    private final List<ChunkPosition> area;
     protected final IBlockAccess worldCache;
     private final List<ChunkPosition> blacklist = new ArrayList<ChunkPosition>();//a list of position which weren't allowed to be digged in the past.
     private int curY;
+    private int lastSuccessfulY;
     private int minY, maxY;
+    private ThreadedSorter<ChunkPosition> sorter;
+
+    private boolean searching; //true while the drone is searching for a coordinate, false if traveling/processing a coordinate.
+    private int searchIndex;//The current index in the area list the drone is searching at.
+    private static final int LOOKUPS_PER_SEARCH_TICK = 30; //How many blocks does the drone access per AI update.
 
     /**
      * 
@@ -42,9 +55,8 @@ public abstract class DroneAIBlockInteraction extends EntityAIBase{
         setMutexBits(63);//binary 111111, so it won't run along with other AI tasks.
         this.widget = widget;
         order = ((IBlockOrdered)widget).getOrder();
-        area = widget.getArea();
+        area = new ArrayList(widget.getArea());
         worldCache = ProgWidgetAreaItemBase.getCache(area, drone.worldObj);
-        sorter = new ChunkPositionSorter(drone);
         if(area.size() > 0) {
             Iterator<ChunkPosition> iterator = area.iterator();
             ChunkPosition pos = iterator.next();
@@ -67,39 +79,20 @@ public abstract class DroneAIBlockInteraction extends EntityAIBase{
      */
     @Override
     public boolean shouldExecute(){
-        ChunkPosition bestPos = null;
-        int startY = curY;
-        boolean firstRun = true;
-        while(bestPos == null && (curY != startY && order != ProgWidgetDigAndPlace.EnumOrder.CLOSEST || firstRun)) {
-            firstRun = false;
-            for(ChunkPosition pos : area) {
-                if(isYValid(pos.chunkPosY) && !blacklist.contains(pos)) {
-                    if(bestPos == null || sorter.compare(bestPos, pos) > 0) {
-                        if(isValidPosition(pos)) {
-                            bestPos = pos;
-                        }
-                    }
-                }
-            }
-            if(bestPos == null) updateY();
+        if(!searching) {
+            searching = true;
+            searchIndex = 0;
+            curPos = null;
+            lastSuccessfulY = curY;
+            if(sorter == null || sorter.isDone()) sorter = new ThreadedSorter(area, new ChunkPositionSorter(drone));
+            return true;
+        } else {
+            return false;
         }
-        if(bestPos != null) {
-            for(ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-                if(drone.getNavigator().tryMoveToXYZ(bestPos.chunkPosX + dir.offsetX, bestPos.chunkPosY + dir.offsetY + 0.5, bestPos.chunkPosZ + dir.offsetZ, speed)) {
-                    curPos = bestPos;
-                    return true;
-                }
-            }
-            if(((EntityPathNavigateDrone)drone.getNavigator()).isGoingToTeleport()) {
-                curPos = bestPos;
-                return true;
-            }
-        }
-        blacklist.clear();//clear the list for next time (maybe the blocks/rights have changed by the time there will be dug again).
-        return false;
     }
 
     private void updateY(){
+        searchIndex = 0;
         if(order == ProgWidgetPlace.EnumOrder.LOW_TO_HIGH) {
             if(++curY > maxY) curY = minY;
         } else if(order == ProgWidgetPlace.EnumOrder.HIGH_TO_LOW) {
@@ -120,11 +113,63 @@ public abstract class DroneAIBlockInteraction extends EntityAIBase{
      */
     @Override
     public boolean continueExecuting(){
-        double dist = curPos != null ? PneumaticCraftUtils.distBetween(curPos.chunkPosX + 0.5, curPos.chunkPosY + 0.5, curPos.chunkPosZ + 0.5, drone.posX, drone.posY, drone.posZ) : 0;
-        if(curPos != null && dist < 2) {
-            return doBlockInteraction(curPos, dist);
+        if(searching) {
+            if(!sorter.isDone()) return true;//Wait until the area is sorted from closest to furtherest.
+            boolean firstRun = true;
+            int searchedBlocks = 0; //keeps track of the looked up blocks, and stops searching when we reach our quota.
+            while(curPos == null && curY != lastSuccessfulY && order != ProgWidgetDigAndPlace.EnumOrder.CLOSEST || firstRun) {
+                firstRun = false;
+                while(searchIndex < area.size()) {
+                    ChunkPosition pos = area.get(searchIndex);
+                    if(isYValid(pos.chunkPosY) && !blacklist.contains(pos) && !DroneClaimManager.getInstance(drone.worldObj).isClaimed(pos)) {
+                        indicateToListeningPlayers(pos);
+                        if(isValidPosition(pos)) {
+                            curPos = pos;
+                            for(ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+                                if(drone.getNavigator().tryMoveToXYZ(curPos.chunkPosX + dir.offsetX, curPos.chunkPosY + dir.offsetY + 0.5, curPos.chunkPosZ + dir.offsetZ, speed)) {
+                                    searching = false;
+                                    DroneClaimManager.getInstance(drone.worldObj).claim(pos);
+                                    blacklist.clear();//clear the list for next time (maybe the blocks/rights have changed by the time there will be dug again).
+                                    return true;
+                                }
+                            }
+                            if(((EntityPathNavigateDrone)drone.getNavigator()).isGoingToTeleport()) {
+                                searching = false;
+                                DroneClaimManager.getInstance(drone.worldObj).claim(pos);
+                                blacklist.clear();//clear the list for next time (maybe the blocks/rights have changed by the time there will be dug again).
+                                return true;
+                            }
+                        }
+                        searchedBlocks++;
+                    }
+                    searchIndex++;
+                    if(searchedBlocks >= LOOKUPS_PER_SEARCH_TICK) return true;
+                }
+                if(curPos == null) updateY();
+            }
+            return false;
+        } else {
+            double dist = curPos != null ? PneumaticCraftUtils.distBetween(curPos.chunkPosX + 0.5, curPos.chunkPosY + 0.5, curPos.chunkPosZ + 0.5, drone.posX, drone.posY, drone.posZ) : 0;
+            if(curPos != null) {
+                DroneClaimManager.getInstance(drone.worldObj).claim(curPos);
+                if(dist < 2) {
+                    return doBlockInteraction(curPos, dist);
+                }
+            }
+            return !drone.getNavigator().noPath();
         }
-        return !drone.getNavigator().noPath();
+    }
+
+    /**
+     * Sends particle spawn packets to any close player that has a charged pneumatic helmet with entity tracker.
+     * @param pos
+     */
+    private void indicateToListeningPlayers(ChunkPosition pos){
+        for(EntityPlayer player : (List<EntityPlayer>)drone.worldObj.playerEntities) {
+            if(player.getCurrentArmor(3) != null && player.getCurrentArmor(3).getItem() == Itemss.pneumaticHelmet && ItemPneumaticArmor.getUpgrades(ItemMachineUpgrade.UPGRADE_ENTITY_TRACKER, player.getCurrentArmor(3)) > 0 && ((IPressurizable)Itemss.pneumaticHelmet).getPressure(player.getCurrentArmor(3)) > 0) {
+                NetworkHandler.sendTo(new PacketSpawnParticle("reddust", pos.chunkPosX + 0.5, pos.chunkPosY + 0.5, pos.chunkPosZ + 0.5, 0, 0, 0), (EntityPlayerMP)player);
+            }
+        }
     }
 
     protected void addToBlacklist(ChunkPosition coord){

@@ -25,7 +25,7 @@ public class DroneAIManager{
     /** Instance of Profiler. */
     private final Profiler theProfiler;
     private int tickCount;
-    private final int tickRate = 3;
+    public static final int TICK_RATE = 3;
     private static final int MIN_CYCLE_TIME = 40;//lag prevention, prevents drones from cycling very quick through their AI tasks.
     private int cycleTimeCounter;
 
@@ -152,7 +152,7 @@ public class DroneAIManager{
             Iterator<EntityAITaskEntry> iterator;
             EntityAITaskEntry entityaitaskentry;
 
-            if(tickCount++ % tickRate == 0) {
+            if(tickCount++ % TICK_RATE == 0) {
                 iterator = taskEntries.iterator();
 
                 while(iterator.hasNext()) {

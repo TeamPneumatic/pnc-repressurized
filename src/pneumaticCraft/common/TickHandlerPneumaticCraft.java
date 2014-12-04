@@ -10,6 +10,7 @@ import net.minecraft.entity.projectile.EntityPotion;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import pneumaticCraft.common.ai.DroneClaimManager;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.block.pneumaticPlants.BlockPneumaticPlantBase;
 import pneumaticCraft.common.tileentity.TileEntityElectrostaticCompressor;
@@ -27,6 +28,7 @@ public class TickHandlerPneumaticCraft{
             World world = event.world;
             checkLightning(world);
             checkPotions(world);
+            DroneClaimManager.getInstance(world).update();
         }
     }
 
