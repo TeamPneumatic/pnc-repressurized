@@ -1,12 +1,11 @@
--Added multiblock elevator functionality.
--Added elevator part camouflaging.
--Removed MJ power converters.
--Added Not Enough Keys support.
+-You can now shoot entities with an Air Cannon by inserting an Entity Tracker Upgrade.
+-Added 'getGPSToolCoordinate' to the Universal Sensor CC methods.
+-Drones now access areas gradually (much more controlled). Should solve a lot of lag problems.
+-Entity Tracker in the Pneumatic Helmet now can be used to see which blocks the Drone currently is analyzing.
+-Drones now dig/place blocks smart: They'll never dig the same block as another drone.
+-Drones now claim Charging Stations, and only one Drone can charge at the same time.
 
--Bugfix: Entity Tracker "A mob is targeting you" spams.
--Bugfix: Some machines don't properly look for redstone after world reset.
--Bugfix: Regulator tube causes an explosion.
--Bugfix: Plastic Mixer dye Ore Dictionary doesn't behave.
--Bugfix: infinite RF powah!
--Bugfix: Fire Flowers catch fire in Pressure Chamber. Fixes #282
--Bugfix: [SMP] Aphorism tile appears to ignore any typed character until you hit the Enter key for the first time.
+-Bugfix: IC2 Power converters don't properly sync the current redstone setting, and the redstone setting gets switched for every action in the GUI.
+-Bugfix: [SMP] Flux Compressor / Pneumatic Dynamo show negative RF values when over 32000 RF.
+-Bugfix: Pneumatic Door Base doesn't properly sync it's orientation.
+-Bugfix: crash when certain mods add a null keybind.
