@@ -82,7 +82,7 @@ public abstract class BlockPneumaticPlantBase extends BlockFlower{
 
     // make this method public
     public boolean canPlantGrowOnThisBlock(Block block, World world, int x, int y, int z){
-        return canPlaceBlockOn(block);
+    	return(block.canSustainPlant(world, x, y, z, ForgeDirection.UP, this));
     }
 
     /**
