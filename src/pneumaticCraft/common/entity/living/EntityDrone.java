@@ -39,6 +39,7 @@ import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.FluidTank;
 
 import org.lwjgl.opengl.GL11;
 
@@ -92,6 +93,7 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
 
     public boolean isChangingCurrentStack;//used when syncing up the stacks of the drone with the fake player. Without it they'll keep syncing resulting in a stackoverflow.
     private IInventory inventory = new InventoryDrone("Drone Inventory", true, 0);
+    private final FluidTank tank = new FluidTank(PneumaticValues.DRONE_TANK_SIZE);
     private ItemStack[] upgradeInventory = new ItemStack[9];
     public float oldPropRotation;
     public float propRotation;
@@ -557,6 +559,7 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
         inv.setTag("Items", upgradeList);
         tag.setTag("Inventory", inv);
 
+        tank.writeToNBT(tag);
     }
 
     @Override
@@ -596,6 +599,7 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
             }
         }
 
+        tank.readFromNBT(tag);
     }
 
     /**
@@ -848,6 +852,10 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
 
     private boolean isGoingToOwner(){
         return dataWatcher.getWatchableObjectByte(21) == (byte)1;
+    }
+
+    public FluidTank getTank(){
+        return tank;
     }
 
 }

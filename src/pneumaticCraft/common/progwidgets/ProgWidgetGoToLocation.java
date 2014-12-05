@@ -99,9 +99,4 @@ public class ProgWidgetGoToLocation extends ProgWidget implements IGotoWidget, I
         return 0xFF0092ef;
     }
 
-    @Override
-    public String getLegacyString(){
-        return getWidgetString();
-    }
-
 }

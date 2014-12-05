@@ -54,7 +54,7 @@ public abstract class DroneAIBlockInteraction extends EntityAIBase{
         this.speed = speed;
         setMutexBits(63);//binary 111111, so it won't run along with other AI tasks.
         this.widget = widget;
-        order = ((IBlockOrdered)widget).getOrder();
+        order = widget instanceof IBlockOrdered ? ((IBlockOrdered)widget).getOrder() : EnumOrder.CLOSEST;
         area = new ArrayList(widget.getArea());
         worldCache = ProgWidgetAreaItemBase.getCache(area, drone.worldObj);
         if(area.size() > 0) {
@@ -119,7 +119,7 @@ public abstract class DroneAIBlockInteraction extends EntityAIBase{
             int searchedBlocks = 0; //keeps track of the looked up blocks, and stops searching when we reach our quota.
             while(curPos == null && curY != lastSuccessfulY && order != ProgWidgetDigAndPlace.EnumOrder.CLOSEST || firstRun) {
                 firstRun = false;
-                while(searchIndex < area.size()) {
+                while(!shouldAbort() && searchIndex < area.size()) {
                     ChunkPosition pos = area.get(searchIndex);
                     if(isYValid(pos.chunkPosY) && !blacklist.contains(pos) && !DroneClaimManager.getInstance(drone.worldObj).isClaimed(pos)) {
                         indicateToListeningPlayers(pos);
@@ -158,6 +158,10 @@ public abstract class DroneAIBlockInteraction extends EntityAIBase{
             }
             return !drone.getNavigator().noPath();
         }
+    }
+
+    protected boolean shouldAbort(){
+        return false;
     }
 
     /**

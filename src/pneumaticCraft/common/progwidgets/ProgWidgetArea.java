@@ -95,11 +95,6 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider{
     }
 
     @Override
-    public String getLegacyString(){
-        return "  area";
-    }
-
-    @Override
     protected ResourceLocation getTexture(){
         return Textures.PROG_WIDGET_AREA;
     }

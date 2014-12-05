@@ -63,7 +63,7 @@ public abstract class ProgWidget implements IProgWidget{
 
     @Override
     public int getHeight(){
-        return 22;
+        return getParameters() != null ? getParameters().length * 22 : 22;
     }
 
     @Override
@@ -113,6 +113,18 @@ public abstract class ProgWidget implements IProgWidget{
     }
 
     @Override
+    public boolean canSetParameter(int index){
+        if(connectedParameters != null) {
+            return hasBlacklist() || index < connectedParameters.length / 2;
+        }
+        return false;
+    }
+
+    protected boolean hasBlacklist(){
+        return true;
+    }
+
+    @Override
     public IProgWidget[] getConnectedParameters(){
         return connectedParameters;
     }
@@ -124,6 +136,11 @@ public abstract class ProgWidget implements IProgWidget{
 
     @Override
     public IProgWidget getOutputWidget(){
+        return outputStepConnection;
+    }
+
+    @Override
+    public IProgWidget getOutputWidget(List<IProgWidget> allWidgets){
         return outputStepConnection;
     }
 

@@ -27,10 +27,19 @@ import pneumaticCraft.common.progwidgets.ProgWidgetGoToLocation;
 import pneumaticCraft.common.progwidgets.ProgWidgetInventoryExport;
 import pneumaticCraft.common.progwidgets.ProgWidgetInventoryImport;
 import pneumaticCraft.common.progwidgets.ProgWidgetItemFilter;
+import pneumaticCraft.common.progwidgets.ProgWidgetItemInventoryCondition;
+import pneumaticCraft.common.progwidgets.ProgWidgetJump;
+import pneumaticCraft.common.progwidgets.ProgWidgetLabel;
+import pneumaticCraft.common.progwidgets.ProgWidgetLiquidExport;
+import pneumaticCraft.common.progwidgets.ProgWidgetLiquidFilter;
+import pneumaticCraft.common.progwidgets.ProgWidgetLiquidImport;
+import pneumaticCraft.common.progwidgets.ProgWidgetLiquidInventoryCondition;
 import pneumaticCraft.common.progwidgets.ProgWidgetPickupItem;
 import pneumaticCraft.common.progwidgets.ProgWidgetPlace;
+import pneumaticCraft.common.progwidgets.ProgWidgetRedstoneCondition;
 import pneumaticCraft.common.progwidgets.ProgWidgetStart;
 import pneumaticCraft.common.progwidgets.ProgWidgetString;
+import pneumaticCraft.common.progwidgets.ProgWidgetWait;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -50,13 +59,22 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory{
         registeredWidgets.add(new ProgWidgetArea());
         registeredWidgets.add(new ProgWidgetString());
         registeredWidgets.add(new ProgWidgetItemFilter());
+        registeredWidgets.add(new ProgWidgetLiquidFilter());
         registeredWidgets.add(new ProgWidgetEntityAttack());
         registeredWidgets.add(new ProgWidgetDig());
         registeredWidgets.add(new ProgWidgetPlace());
         registeredWidgets.add(new ProgWidgetPickupItem());
         registeredWidgets.add(new ProgWidgetInventoryExport());
         registeredWidgets.add(new ProgWidgetInventoryImport());
+        registeredWidgets.add(new ProgWidgetLiquidExport());
+        registeredWidgets.add(new ProgWidgetLiquidImport());
         registeredWidgets.add(new ProgWidgetGoToLocation());
+        registeredWidgets.add(new ProgWidgetLabel());
+        registeredWidgets.add(new ProgWidgetJump());
+        registeredWidgets.add(new ProgWidgetWait());
+        registeredWidgets.add(new ProgWidgetRedstoneCondition());
+        registeredWidgets.add(new ProgWidgetItemInventoryCondition());
+        registeredWidgets.add(new ProgWidgetLiquidInventoryCondition());
     }
 
     @Override
@@ -123,7 +141,7 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory{
             NBTTagCompound widgetTag = widgetTags.getCompoundTagAt(i);
             String widgetName = widgetTag.getString("name");
             for(IProgWidget widget : registeredWidgets) {
-                if(widgetName.equals(widget.getWidgetString()) || widgetName.equals(widget.getLegacyString())) {//create the right progWidget for the given id tag.
+                if(widgetName.equals(widget.getWidgetString())) {//create the right progWidget for the given id tag.
                     IProgWidget addedWidget = widget.copy();
                     addedWidget.readFromNBT(widgetTag);
                     progWidgets.add(addedWidget);
@@ -163,7 +181,7 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory{
                 for(IProgWidget widget : progWidgets) {
                     if(widget != checkedWidget && checkedWidget.getX() + checkedWidget.getWidth() / 2 == widget.getX()) {
                         for(int i = 0; i < parameters.length; i++) {
-                            if(parameters[i] == widget.returnType() && checkedWidget.getY() + i * 11 == widget.getY()) {
+                            if(checkedWidget.canSetParameter(i) && parameters[i] == widget.returnType() && checkedWidget.getY() + i * 11 == widget.getY()) {
                                 checkedWidget.setParameter(i, widget);
                                 widget.setParent(checkedWidget);
                             }
@@ -188,14 +206,16 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory{
                 Class<? extends IProgWidget>[] parameters = checkedWidget.getParameters();
                 if(parameters != null) {
                     for(int i = 0; i < parameters.length; i++) {
-                        for(IProgWidget widget : progWidgets) {
-                            if(parameters[i] == widget.returnType()) {
-                                if(widget != checkedWidget && widget.getX() + widget.getWidth() / 2 == checkedWidget.getX() && widget.getY() == checkedWidget.getY() + i * 11) {
-                                    IProgWidget root = widget;
-                                    while(root.getParent() != null) {
-                                        root = root.getParent();
+                        if(checkedWidget.canSetParameter(i)) {
+                            for(IProgWidget widget : progWidgets) {
+                                if(parameters[i] == widget.returnType()) {
+                                    if(widget != checkedWidget && widget.getX() + widget.getWidth() / 2 == checkedWidget.getX() && widget.getY() == checkedWidget.getY() + i * 11) {
+                                        IProgWidget root = widget;
+                                        while(root.getParent() != null) {
+                                            root = root.getParent();
+                                        }
+                                        checkedWidget.setParameter(i + parameters.length, root);
                                     }
-                                    checkedWidget.setParameter(i + parameters.length, root);
                                 }
                             }
                         }

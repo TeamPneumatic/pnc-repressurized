@@ -122,8 +122,4 @@ public class ProgWidgetItemFilter extends ProgWidget{
         return 0xFF5f5f5f;
     }
 
-    @Override
-    public String getLegacyString(){
-        return "I-ftr";
-    }
 }

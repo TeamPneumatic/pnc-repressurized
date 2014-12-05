@@ -94,11 +94,21 @@ public class Textures{
     public static final ResourceLocation PROG_WIDGET_GOTO = new ResourceLocation(PROG_WIDGET_LOCATION + "gotoPiece.png");
     public static final ResourceLocation PROG_WIDGET_INV_EX = new ResourceLocation(PROG_WIDGET_LOCATION + "inventoryExportPiece.png");
     public static final ResourceLocation PROG_WIDGET_INV_IM = new ResourceLocation(PROG_WIDGET_LOCATION + "inventoryImportPiece.png");
+    public static final ResourceLocation PROG_WIDGET_LIQUID_EX = new ResourceLocation(PROG_WIDGET_LOCATION + "liquidExportPiece.png");
+    public static final ResourceLocation PROG_WIDGET_LIQUID_IM = new ResourceLocation(PROG_WIDGET_LOCATION + "liquidImportPiece.png");
     public static final ResourceLocation PROG_WIDGET_ITEM_FILTER = new ResourceLocation(PROG_WIDGET_LOCATION + "itemFilterPiece.png");
+    public static final ResourceLocation PROG_WIDGET_LIQUID_FILTER = new ResourceLocation(PROG_WIDGET_LOCATION + "liquidFilterPiece.png");
     public static final ResourceLocation PROG_WIDGET_PICK_ITEM = new ResourceLocation(PROG_WIDGET_LOCATION + "itemPickPiece.png");
     public static final ResourceLocation PROG_WIDGET_PLACE = new ResourceLocation(PROG_WIDGET_LOCATION + "placePiece.png");
     public static final ResourceLocation PROG_WIDGET_START = new ResourceLocation(PROG_WIDGET_LOCATION + "startPiece.png");
     public static final ResourceLocation PROG_WIDGET_TEXT = new ResourceLocation(PROG_WIDGET_LOCATION + "textPiece.png");
+    public static final ResourceLocation PROG_WIDGET_LABEL = new ResourceLocation(PROG_WIDGET_LOCATION + "labelPiece.png");
+    public static final ResourceLocation PROG_WIDGET_JUMP = new ResourceLocation(PROG_WIDGET_LOCATION + "jumpPiece.png");
+    public static final ResourceLocation PROG_WIDGET_WAIT = new ResourceLocation(PROG_WIDGET_LOCATION + "waitPiece.png");
+    public static final ResourceLocation PROG_WIDGET_CONDITION_REDSTONE = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionRedstonePiece.png");
+    public static final ResourceLocation PROG_WIDGET_CONDITION_ENTITY = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionEntityPiece.png");
+    public static final ResourceLocation PROG_WIDGET_CONDITION_LIQUID_INVENTORY = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionLiquidInventoryPiece.png");
+    public static final ResourceLocation PROG_WIDGET_CONDITION_ITEM_INVENTORY = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionItemInventoryPiece.png");
 
     public static final String BLOCK_PRESSURE_TUBE = ICON_LOCATION + "BlockPressureTube";
     public static final String BLOCK_PNEUMATIC_DOOR = ICON_LOCATION + "PneumaticDoor";

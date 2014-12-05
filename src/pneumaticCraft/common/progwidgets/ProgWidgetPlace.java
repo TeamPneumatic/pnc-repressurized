@@ -100,8 +100,4 @@ public class ProgWidgetPlace extends ProgWidgetDigAndPlace implements ISidedWidg
         return 0xFFbfd503;
     }
 
-    @Override
-    public String getLegacyString(){
-        return "Place";
-    }
 }

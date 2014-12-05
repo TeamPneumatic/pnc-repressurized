@@ -49,7 +49,7 @@ public class DroneAIManager{
             }
         }
         if(!isExecuting && curActiveWidget != null && (curWidgetTargetAI == null || !curWidgetTargetAI.shouldExecute())) {
-            IProgWidget widget = curActiveWidget.getOutputWidget();
+            IProgWidget widget = curActiveWidget.getOutputWidget(drone.progWidgets);
             if(widget != null) {
                 setActiveWidget(widget);
             } else {
@@ -80,7 +80,7 @@ public class DroneAIManager{
         EntityAIBase targetAI = widget.getWidgetTargetAI(drone, widget);
         EntityAIBase ai = widget.getWidgetAI(drone, widget);
         while(targetAI == null && ai == null) {
-            widget = widget.getOutputWidget();
+            widget = widget.getOutputWidget(drone.progWidgets);
             if(widget == null) {
                 if(first) {
                     return;

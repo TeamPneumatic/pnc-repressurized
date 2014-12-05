@@ -34,9 +34,4 @@ public class ProgWidgetInventoryImport extends ProgWidgetInventoryBase{
         return 0xFF0000ff;
     }
 
-    @Override
-    public String getLegacyString(){
-        return "Inv-I";
-    }
-
 }

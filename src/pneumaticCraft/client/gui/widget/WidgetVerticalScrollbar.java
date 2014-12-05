@@ -13,6 +13,7 @@ import pneumaticCraft.lib.Textures;
 public class WidgetVerticalScrollbar extends WidgetBase{
     public float currentScroll;
     private int states;
+    private boolean listening;
     private static ResourceLocation scrollTexture = new ResourceLocation(Textures.GUI_LOCATION + "widget/verticalScrollbar.png");
 
     public WidgetVerticalScrollbar(int x, int y, int height){
@@ -25,6 +26,20 @@ public class WidgetVerticalScrollbar extends WidgetBase{
 
     public WidgetVerticalScrollbar setStates(int states){
         this.states = states;
+        return this;
+    }
+
+    @Override
+    public void handleMouseInput(){
+        if(listening) {
+            int wheel = -Mouse.getDWheel();
+            wheel = MathHelper.clamp_int(wheel, -1, 1);
+            currentScroll += (float)wheel / states;
+        }
+    }
+
+    public WidgetVerticalScrollbar setListening(boolean listening){
+        this.listening = listening;
         return this;
     }
 
@@ -49,4 +64,5 @@ public class WidgetVerticalScrollbar extends WidgetBase{
 
         Gui.func_146110_a(x + 1, y + 1 + (int)((getBounds().height - 17) * currentScroll), 0, 0, 12, 15, 26, 15);
     }
+
 }

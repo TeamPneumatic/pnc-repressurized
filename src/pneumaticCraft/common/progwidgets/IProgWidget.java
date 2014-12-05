@@ -45,11 +45,20 @@ public interface IProgWidget{
 
     public IProgWidget getOutputWidget();
 
+    /**
+     * This one will be called when running in an actual program.
+     * @param allWidgets
+     * @return
+     */
+    public IProgWidget getOutputWidget(List<IProgWidget> allWidgets);
+
     public Class<? extends IProgWidget> returnType();//true for widgets that can give info to the widget left of it (like areas or filters)
 
     public Class<? extends IProgWidget>[] getParameters(); //the entity attack widget for instance returns the filter and area class.
 
     public void setParameter(int index, IProgWidget parm);
+
+    public boolean canSetParameter(int index);
 
     public IProgWidget[] getConnectedParameters();//this includes whitelist and blacklist. whitelist will go in the first half of elements, blacklist in the second half.
 
@@ -62,13 +71,6 @@ public interface IProgWidget{
      * @return
      */
     public String getWidgetString();
-
-    /**
-     * Just a method to have backwards compatibility.
-     * @return
-     */
-    @Deprecated
-    public String getLegacyString();
 
     public String getGuiTabText();
 

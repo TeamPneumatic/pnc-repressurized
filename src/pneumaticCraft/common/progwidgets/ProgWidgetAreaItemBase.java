@@ -37,11 +37,6 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
         return new Class[]{ProgWidgetArea.class, ProgWidgetItemFilter.class};
     }
 
-    @Override
-    public int getHeight(){
-        return 44;
-    }
-
     public static IBlockAccess getCache(Collection<ChunkPosition> area, World world){
         if(area.size() == 0) return world;
         int minX, minY, minZ, maxX, maxY, maxZ;
@@ -64,7 +59,7 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
 
     @Override
     public Set<ChunkPosition> getArea(){
-        return getArea((ProgWidgetArea)getConnectedParameters()[0], (ProgWidgetArea)getConnectedParameters()[2]);
+        return getArea((ProgWidgetArea)getConnectedParameters()[0], (ProgWidgetArea)getConnectedParameters()[getParameters().length]);
     }
 
     public static Set<ChunkPosition> getArea(ProgWidgetArea whitelistWidget, ProgWidgetArea blacklistWidget){
@@ -88,11 +83,11 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
     }
 
     public boolean isItemValidForFilters(ItemStack item, int blockMetadata){
-        return ProgWidgetItemFilter.isItemValidForFilters(item, ProgWidget.getConnectedWidgetList(this, 1), ProgWidget.getConnectedWidgetList(this, 3), blockMetadata);
+        return ProgWidgetItemFilter.isItemValidForFilters(item, ProgWidget.getConnectedWidgetList(this, 1), ProgWidget.getConnectedWidgetList(this, getParameters().length + 1), blockMetadata);
     }
 
     public List<Entity> getEntitiesInArea(World world, IEntitySelector filter){
-        return getEntitiesInArea((ProgWidgetArea)getConnectedParameters()[0], (ProgWidgetArea)getConnectedParameters()[2], world, filter, null);
+        return getEntitiesInArea((ProgWidgetArea)getConnectedParameters()[0], (ProgWidgetArea)getConnectedParameters()[getParameters().length], world, filter, null);
     }
 
     public static List<Entity> getEntitiesInArea(ProgWidgetArea whitelistWidget, ProgWidgetArea blacklistWidget, World world, IEntitySelector whitelistFilter, IEntitySelector blacklistFilter){

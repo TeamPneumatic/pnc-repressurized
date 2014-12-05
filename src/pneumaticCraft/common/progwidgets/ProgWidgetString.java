@@ -73,9 +73,4 @@ public class ProgWidgetString extends ProgWidget{
         return 0xFF0000FF;
     }
 
-    @Override
-    public String getLegacyString(){
-        return getWidgetString();
-    }
-
 }

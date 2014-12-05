@@ -38,8 +38,4 @@ public class ProgWidgetDig extends ProgWidgetDigAndPlace{
         return 0xFF8e3900;
     }
 
-    @Override
-    public String getLegacyString(){
-        return getWidgetString();
-    }
 }

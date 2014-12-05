@@ -12,7 +12,7 @@ public class ContainerProgrammer extends ContainerPneumaticBase<TileEntityProgra
     public ContainerProgrammer(InventoryPlayer inventoryPlayer, TileEntityProgrammer te){
         super(te);
         // add the upgrade slots
-        addSlotToContainer(new Slot(te, 0, 152, 15){
+        addSlotToContainer(new Slot(te, 0, 326, 15){
             @Override
             public boolean isItemValid(ItemStack stack){
                 return isProgrammableItem(stack);
@@ -22,13 +22,13 @@ public class ContainerProgrammer extends ContainerPneumaticBase<TileEntityProgra
         // Add the player's inventory slots to the container
         for(int inventoryRowIndex = 0; inventoryRowIndex < 3; ++inventoryRowIndex) {
             for(int inventoryColumnIndex = 0; inventoryColumnIndex < 9; ++inventoryColumnIndex) {
-                addSlotToContainer(new Slot(inventoryPlayer, inventoryColumnIndex + inventoryRowIndex * 9 + 9, 8 + inventoryColumnIndex * 18, 174 + inventoryRowIndex * 18));
+                addSlotToContainer(new Slot(inventoryPlayer, inventoryColumnIndex + inventoryRowIndex * 9 + 9, 95 + inventoryColumnIndex * 18, 174 + inventoryRowIndex * 18));
             }
         }
 
         // Add the player's action bar slots to the container
         for(int actionBarSlotIndex = 0; actionBarSlotIndex < 9; ++actionBarSlotIndex) {
-            addSlotToContainer(new Slot(inventoryPlayer, actionBarSlotIndex, 8 + actionBarSlotIndex * 18, 232));
+            addSlotToContainer(new Slot(inventoryPlayer, actionBarSlotIndex, 95 + actionBarSlotIndex * 18, 232));
         }
     }
 

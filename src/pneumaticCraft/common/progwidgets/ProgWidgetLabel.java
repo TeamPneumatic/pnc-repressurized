@@ -3,7 +3,7 @@ package pneumaticCraft.common.progwidgets;
 import net.minecraft.util.ResourceLocation;
 import pneumaticCraft.lib.Textures;
 
-public class ProgWidgetStart extends ProgWidget{
+public class ProgWidgetLabel extends ProgWidget{
 
     @Override
     public boolean hasStepInput(){
@@ -22,27 +22,32 @@ public class ProgWidgetStart extends ProgWidget{
 
     @Override
     public Class<? extends IProgWidget>[] getParameters(){
-        return null;
+        return new Class[]{ProgWidgetString.class};
     }
 
     @Override
-    protected ResourceLocation getTexture(){
-        return Textures.PROG_WIDGET_START;
+    protected boolean hasBlacklist(){
+        return false;
     }
 
     @Override
     public String getWidgetString(){
-        return "start";
+        return "label";
     }
 
     @Override
     public String getGuiTabText(){
-        return "This module is used as start of every program. It's the first block in any sequence.";
+        return "bla";
     }
 
     @Override
     public int getGuiTabColor(){
-        return 0xFF6cbc37;
+        return 0xFFFFFFFF;
+    }
+
+    @Override
+    protected ResourceLocation getTexture(){
+        return Textures.PROG_WIDGET_LABEL;
     }
 
 }

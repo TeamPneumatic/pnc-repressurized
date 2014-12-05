@@ -52,11 +52,6 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
     }
 
     @Override
-    public int getHeight(){
-        return 22;
-    }
-
-    @Override
     public EntityAIBase getWidgetAI(EntityDrone drone, IProgWidget widget){
         return new DroneAICC(drone, (ProgWidgetCC)widget, false);
     }
@@ -278,11 +273,6 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
     @SideOnly(Side.CLIENT)
     public GuiScreen getOptionWindow(GuiProgrammer guiProgrammer){
         return null;
-    }
-
-    @Override
-    public String getLegacyString(){
-        return "CC-Int";
     }
 
 }

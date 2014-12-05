@@ -56,11 +56,6 @@ public class ProgWidgetEntityAttack extends ProgWidget implements IAreaProvider,
     }
 
     @Override
-    public int getHeight(){
-        return 44;
-    }
-
-    @Override
     public String getWidgetString(){
         return "entityAttack";
     }
@@ -139,8 +134,4 @@ public class ProgWidgetEntityAttack extends ProgWidget implements IAreaProvider,
         return 0xFFFF0000;
     }
 
-    @Override
-    public String getLegacyString(){
-        return "attk";
-    }
 }

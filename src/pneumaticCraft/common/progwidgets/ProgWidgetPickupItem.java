@@ -33,9 +33,4 @@ public class ProgWidgetPickupItem extends ProgWidgetAreaItemBase{
         return 0xFFff7cf7;
     }
 
-    @Override
-    public String getLegacyString(){
-        return "I-pick";
-    }
-
 }
