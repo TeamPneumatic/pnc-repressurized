@@ -120,4 +120,9 @@ public class TileEntityAssemblyLaser extends TileEntityAssemblyRobot{
         }
         return null;
     }
+    
+    public void reset(){
+    	this.isLaserOn = false;
+    	this.laserStep = 105;
+    }
 }

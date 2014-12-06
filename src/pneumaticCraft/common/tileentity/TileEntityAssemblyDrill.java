@@ -125,4 +125,10 @@ public class TileEntityAssemblyDrill extends TileEntityAssemblyRobot{
         }
         return null;
     }
+
+    public void reset(){
+    	isDrillOn = false;
+    	drillStep = 6;
+    }
+    
 }

@@ -158,40 +158,44 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
     }
 
     private void goToHomePosition(TileEntityAssemblyPlatform platform, TileEntityAssemblyIOUnit ioUnitImport, TileEntityAssemblyIOUnit ioUnitExport, TileEntityAssemblyDrill drill, TileEntityAssemblyLaser laser){
-        if(ioUnitExport != null) {
-            ioUnitExport.slowMode = false;
-            if(ioUnitExport.inventory[0] != null) {
-                ioUnitExport.exportHeldItem();
-            } else {
-                if(platform != null) {
-                    if(platform.getHeldStack() != null) {
-                        ForgeDirection[] platformDirection = ioUnitExport.getPlatformDirection();
-                        if(platformDirection != null) {
-                        	platform.openClaw();
-                        	if(platform.isDone()) {
-	                            ioUnitExport.hoverOverNeighbour(platformDirection[0], platformDirection[1]);
-	                            if(ioUnitExport.isDoneRotatingYaw()) {
-	                                ioUnitExport.gotoNeighbour(platformDirection[0], platformDirection[1]);
-	                                if(ioUnitExport.isDone()) {
-	                                    ioUnitExport.inventory[0] = platform.getHeldStack();
-	                                    platform.setHeldStack(null);
-	                                }
-	                            }
-                        	}
-                        }
-                    } else {
-                        if(ioUnitImport != null) {
-                            ioUnitImport.slowMode = false;
-                            if(ioUnitImport.inventory[0] != null) {
-                            	/*
-                            	 * simply wait until the unit has unloaded its inventory, that's what it will
-                            	 * do anyway - no need for special handling here.
-                            	 * 
-                            	 * the reason this doesn't work is:
-                            	 * while waiting for .isDone here, in TileEntityAssemblyIO we'll call
-                            	 * hoverOverNeighbour because we end up in feedPlatformStep 7, so
-                            	 * coordinates are changed and we'll never be done.
-                            	 *
+    	if(drill != null && !drill.isDone()){
+    		drill.reset();
+    	} else if(laser != null && !laser.isDone()){
+    		laser.reset();
+    	} else if(ioUnitExport != null) {
+    		ioUnitExport.slowMode = false;
+    		if(ioUnitExport.inventory[0] != null) {
+    			ioUnitExport.exportHeldItem();
+    		} else {
+    			if(platform != null) {
+    				if(platform.getHeldStack() != null) {
+    					ForgeDirection[] platformDirection = ioUnitExport.getPlatformDirection();
+    					if(platformDirection != null) {
+    						platform.openClaw();
+    						if(platform.isDone()) {
+    							ioUnitExport.hoverOverNeighbour(platformDirection[0], platformDirection[1]);
+    							if(ioUnitExport.isDoneRotatingYaw()) {
+    								ioUnitExport.gotoNeighbour(platformDirection[0], platformDirection[1]);
+    								if(ioUnitExport.isDone()) {
+    									ioUnitExport.inventory[0] = platform.getHeldStack();
+    									platform.setHeldStack(null);
+    								}
+    							}
+    						}
+    					}
+    				} else {
+    					if(ioUnitImport != null) {
+    						ioUnitImport.slowMode = false;
+    						if(ioUnitImport.inventory[0] != null) {
+    							/*
+    							 * simply wait until the unit has unloaded its inventory, that's what it will
+    							 * do anyway - no need for special handling here.
+    							 * 
+    							 * the reason this doesn't work is:
+    							 * while waiting for .isDone here, in TileEntityAssemblyIO we'll call
+    							 * hoverOverNeighbour because we end up in feedPlatformStep 7, so
+    							 * coordinates are changed and we'll never be done.
+    							 *
                                 ForgeDirection[] platformDirection = ioUnitImport.getPlatformDirection();
                                 if(platformDirection != null) {
                                     ioUnitImport.hoverOverNeighbour(platformDirection[0], platformDirection[1]);
@@ -203,21 +207,21 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
                                         }
                                     }
                                 }
-                                */
-                            } else {
-                                ioUnitExport.gotoHomePosition();
-                                platform.openClaw();
-                                ioUnitImport.gotoHomePosition();
-                                ioUnitImport.feedPlatformStep = 0;
-                                if(drill != null) drill.gotoHomePosition();
-                                if(laser != null) laser.gotoHomePosition();
-                                goingToHomePosition = !(ioUnitExport.isDone() && platform.isDone() && ioUnitImport.isDone() && (drill == null || drill.isDone()) && (laser == null || laser.isDone()));
-                            }
-                        }
-                    }
-                }
-            }
-        }
+    							 */
+    						} else {
+    							ioUnitExport.gotoHomePosition();
+    							platform.openClaw();
+    							ioUnitImport.gotoHomePosition();
+    							ioUnitImport.feedPlatformStep = 0;
+    							if(drill != null) drill.gotoHomePosition();
+    							if(laser != null) laser.gotoHomePosition();
+    							goingToHomePosition = !(ioUnitExport.isDone() && platform.isDone() && ioUnitImport.isDone() && (drill == null || drill.isDone()) && (laser == null || laser.isDone()));
+    						}
+    					}
+    				}
+    			}
+    		}
+    	}
     }
 
     public void addProblems(List<String> problemList){
