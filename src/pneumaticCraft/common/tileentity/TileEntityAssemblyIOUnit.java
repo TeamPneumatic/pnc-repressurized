@@ -41,7 +41,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
         }
         if(!worldObj.isRemote) {
             if(!shouldClawClose && clawProgress == 0F && isDoneInternal()) {
-                if(getBlockMetadata() == 1 && inventory[0] != null) {//when in export mode, auto eject.
+                if(isExportUnit() && inventory[0] != null) {//when in export mode, auto eject.
                     IInventory inv = getInventoryForCurrentDirection();
                     if(inv != null) {
                         int startSize = inventory[0].stackSize;
@@ -53,7 +53,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
                     }
                 }
             }
-            if(pickUpPlatformStackStep > 0 && getBlockMetadata() == 1) {
+            if(pickUpPlatformStackStep > 0 && isExportUnit()) {
                 ForgeDirection[] platformDir = getPlatformDirection();
                 TileEntity tile = getTileEntityForCurrentDirection();
                 TileEntityAssemblyPlatform platform = null;
@@ -101,7 +101,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
                         slowMode = false;
                     }
                 }
-            } else if(exportHeldItemStep > 0 && getBlockMetadata() == 1) {
+            } else if(exportHeldItemStep > 0 && isExportUnit()) {
                 ForgeDirection[] chestLocation = getExportLocationForItem(inventory[0]);
                 if(chestLocation != null || exportHeldItemStep > 2) {
                     switch(exportHeldItemStep){
@@ -129,7 +129,8 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
                     slowMode = false;
                     exportHeldItemStep = 0;
                 }
-            } else if(feedPlatformStep > 0 && getBlockMetadata() == 0 && recipeList != null) {
+            } else if(feedPlatformStep > 0 && isImportUnit() && recipeList != null) {
+            	// TODO BUG FIXME recipeList will be null if we're in going-home-mode and the world is reloaded
                 ForgeDirection[] inventoryDir = null;
                 searchedItemStack = null;
                 for(AssemblyRecipe recipe : recipeList) {
@@ -232,6 +233,14 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
                 }
             }
         }
+    }
+    
+    private boolean isExportUnit(){
+    	return(getBlockMetadata() == 1);
+    }
+
+    private boolean isImportUnit(){
+    	return(getBlockMetadata() == 0);
     }
 
     public IInventory getInventoryForCurrentDirection(){
