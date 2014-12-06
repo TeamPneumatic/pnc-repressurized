@@ -103,24 +103,30 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
                 }
             } else if(exportHeldItemStep > 0 && isExportUnit()) {
                 ForgeDirection[] chestLocation = getExportLocationForItem(inventory[0]);
-                if(chestLocation != null || exportHeldItemStep > 2) {
+                if(chestLocation != null || exportHeldItemStep > 3) {
                     switch(exportHeldItemStep){
                         case 1:
                             slowMode = false;
                             shouldClawClose = true;
-                            hoverOverNeighbour(chestLocation[0], chestLocation[1]);
                             break;
                         case 2:
+                            hoverOverNeighbour(chestLocation[0], chestLocation[1]);
+                            break;
+                        case 3:
                             slowMode = true;
                             gotoNeighbour(chestLocation[0], chestLocation[1]);
                             break;
-                        case 3:
+                        case 4:
                             shouldClawClose = false;
                             break;
+                        case 5:
+                        	slowMode = false;
+                            gotoHomePosition();
+                            break;
                     }
-                    if(isDoneInternal() && (exportHeldItemStep != 3 || inventory[0] == null)) {
+                    if(isDoneInternal() && (exportHeldItemStep != 4 || inventory[0] == null)) {
                         exportHeldItemStep++;
-                        if(exportHeldItemStep > 3) {
+                        if(exportHeldItemStep > 5) {
                             exportHeldItemStep = 0;
                         }
                     }
@@ -130,7 +136,8 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
                     exportHeldItemStep = 0;
                 }
             } else if(feedPlatformStep > 0 && isImportUnit() && recipeList != null) {
-            	// TODO BUG FIXME recipeList will be null if we're in going-home-mode and the world is reloaded
+            	// TODO BUG FIXME recipeList will be null if we're in going-home-mode
+            	// because program was removed from controller and the world is reloaded
                 ForgeDirection[] inventoryDir = null;
                 searchedItemStack = null;
                 for(AssemblyRecipe recipe : recipeList) {
@@ -242,7 +249,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
     private boolean isImportUnit(){
     	return(getBlockMetadata() == 0);
     }
-
+    
     public IInventory getInventoryForCurrentDirection(){
         TileEntity te = getTileEntityForCurrentDirection();
         if(te instanceof IInventory) return (IInventory)te;
