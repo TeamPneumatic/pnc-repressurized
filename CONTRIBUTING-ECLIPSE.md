@@ -40,7 +40,7 @@ In your shell, cd there and call gradlew from your forge-directory:
 ../forge-1.7.10-10.13.2.1230-src/gradlew eclipse
 this will setup a Eclipse-project for PneumaticCraft. Switch to Eclipse, click File/Import in the menu, select General/Existing Projects into Workspace, click next and browse for your PneumaticCraft folder. It should find a project. Click Finish.
 
-Since PneumaticCraft uses NEI, and NEI uses something called Access Transformers (making some stuff from Minecraft public which would otherwise be protected/private) you now have to do some more tinkering with Forge, or Minecraft will crash as soon as you enter a world. See http://www.minecraftforge.net/wiki/Using_Access_Transformers if you want to know more, or simply do this:
+Since PneumaticCraft uses NEI, and NEI uses something called Access Transformers (making some stuff from Minecraft public which would otherwise be protected/private) you now have to do some more tinkering with Forge, or Minecraft will crash as soon as you enter a world. See [link](http://www.minecraftforge.net/wiki/Using_Access_Transformers) if you want to know more, or simply do this:
 
 First, you add the folder META-INF to forge-1.7.10-10.13.2.1230-src/src/main/resources/. Then you find NEI_at.cfg - I grabbed it from [link](https://raw.githubusercontent.com/Chicken-Bones/NotEnoughItems/master/resources/nei_at.cfg) - and put it there.
 
