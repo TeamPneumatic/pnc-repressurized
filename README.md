@@ -39,6 +39,6 @@ If you're planning to contribute to the PneumaticCraft's mods source, the best t
 
 After you've made changes, do a pull request :)
 
-For more details on pull-requests see [link](https://help.github.com/articles/using-pull-requests/)
+For more details on pull-requests see (https://help.github.com/articles/using-pull-requests/)
 
-For more details on how to get PneumaticCraft up and running in Eclipse, see [link](CONTRIBUTING-ECLIPSE.md)
+For more details on how to get PneumaticCraft up and running in Eclipse, see (CONTRIBUTING-ECLIPSE.md)
