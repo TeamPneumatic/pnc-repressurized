@@ -35,6 +35,10 @@ It should be clear that the version number used in the 'compile' is an example, 
 =======
 Contributing to PneumaticCraft
 =======
-If you're planning to contribute to the PneumaticCraft's mods source, the best thing you can do is clone this github repository, and run 'gradle setupDecompWorkspace idea/eclipse' on the build.gradle file in this repository.
+If you're planning to contribute to the PneumaticCraft's mods source, the best thing you can do is fork this github repository, and run 'gradle setupDecompWorkspace idea/eclipse' on the build.gradle file in this repository.
 
 After you've made changes, do a pull request :)
+
+For more details on pull-requests see [link](https://help.github.com/articles/using-pull-requests/)
+
+For more details on how to get PneumaticCraft up and running in Eclipse, see [link](CONTRIBUTING-ECLIPSE.md)
