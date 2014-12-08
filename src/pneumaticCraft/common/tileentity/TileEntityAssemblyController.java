@@ -172,6 +172,10 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
     					ForgeDirection[] platformDirection = ioUnitExport.getPlatformDirection();
     					if(platformDirection != null) {
     						platform.openClaw();
+    						ioUnitExport.pickUpPlatformItem();
+    						/*
+    						 * and again: just let the export-unit do it's thing.
+    						 * 
     						if(platform.isDone()) {
     							ioUnitExport.hoverOverNeighbour(platformDirection[0], platformDirection[1]);
     							if(ioUnitExport.isDoneRotatingYaw()) {
@@ -182,6 +186,7 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
     								}
     							}
     						}
+    						*/
     					}
     				} else {
     					if(ioUnitImport != null) {
