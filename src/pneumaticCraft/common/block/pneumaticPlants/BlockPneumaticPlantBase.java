@@ -39,6 +39,7 @@ public abstract class BlockPneumaticPlantBase extends BlockFlower{
         if(isPlantHanging()) {
             setBlockBounds(0, 0.75F, 0, 1, 1, 1);
         }
+        BlockPlants.allPlants.add(this);
     }
 
     @Override
