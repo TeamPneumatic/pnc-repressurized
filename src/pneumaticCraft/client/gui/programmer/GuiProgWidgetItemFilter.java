@@ -128,6 +128,5 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase{
         String value = String.valueOf(widg.specificMeta);
         fontRendererObj.drawString(value, guiLeft + 158 - fontRendererObj.getStringWidth(value) / 2, guiTop + 68, checkBoxUseDamage.enabled && checkBoxUseDamage.checked ? 0xFF000000 : 0xFF888888);
         fontRendererObj.drawString("Specific block metadata:", guiLeft + 14, guiTop + 68, checkBoxUseDamage.enabled && checkBoxUseDamage.checked ? 0xFF000000 : 0xFF888888);
-
     }
 }

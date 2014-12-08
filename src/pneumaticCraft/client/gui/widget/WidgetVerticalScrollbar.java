@@ -14,6 +14,8 @@ public class WidgetVerticalScrollbar extends WidgetBase{
     public float currentScroll;
     private int states;
     private boolean listening;
+    private boolean dragging;
+    private boolean wasClicking;
     private static ResourceLocation scrollTexture = new ResourceLocation(Textures.GUI_LOCATION + "widget/verticalScrollbar.png");
 
     public WidgetVerticalScrollbar(int x, int y, int height){
@@ -26,6 +28,12 @@ public class WidgetVerticalScrollbar extends WidgetBase{
 
     public WidgetVerticalScrollbar setStates(int states){
         this.states = states;
+        return this;
+    }
+
+    public WidgetVerticalScrollbar setCurrentState(int state){
+        if(state >= states) throw new IllegalArgumentException("State to high! max = " + states + ", tried to assign " + state);
+        currentScroll = (float)state / states;
         return this;
     }
 
@@ -52,9 +60,12 @@ public class WidgetVerticalScrollbar extends WidgetBase{
     @Override
     public void render(int mouseX, int mouseY, float partialTick){
         GL11.glColor4d(1, 1, 1, 1);
-        if(Mouse.isButtonDown(0) && getBounds().contains(mouseX, mouseY)) {
-            currentScroll = (float)(mouseY - 7 - getBounds().y) / (getBounds().height - 17);
+        if(!Mouse.isButtonDown(0)) dragging = false;
+        if(!wasClicking && Mouse.isButtonDown(0) && getBounds().contains(mouseX, mouseY)) {
+            dragging = true;
         }
+        wasClicking = Mouse.isButtonDown(0);
+        if(dragging) currentScroll = (float)(mouseY - 7 - getBounds().y) / (getBounds().height - 17);
         currentScroll = MathHelper.clamp_float(currentScroll, 0, 1);
         Minecraft.getMinecraft().getTextureManager().bindTexture(scrollTexture);
         Gui.func_146110_a(x, y, 12, 0, getBounds().width, 1, 26, 15);

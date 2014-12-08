@@ -1,6 +1,7 @@
 package pneumaticCraft.common.tileentity;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,7 @@ import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetArea;
 import pneumaticCraft.common.progwidgets.ProgWidgetDig;
 import pneumaticCraft.common.progwidgets.ProgWidgetEntityAttack;
+import pneumaticCraft.common.progwidgets.ProgWidgetEntityCondition;
 import pneumaticCraft.common.progwidgets.ProgWidgetGoToLocation;
 import pneumaticCraft.common.progwidgets.ProgWidgetInventoryExport;
 import pneumaticCraft.common.progwidgets.ProgWidgetInventoryImport;
@@ -54,6 +56,15 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory{
 
     public static final int PROGRAM_SLOT = 0;
 
+    //Client side variables that are used to prevent resetting.
+    public int translatedX, translatedY, zoomState;
+    public boolean[] filters = new boolean[IProgWidget.WidgetCategory.values().length];
+    public boolean showInfo, showFlow;
+
+    public TileEntityProgrammer(){
+        Arrays.fill(filters, true);
+    }
+
     static {
         registeredWidgets.add(new ProgWidgetStart());
         registeredWidgets.add(new ProgWidgetArea());
@@ -75,6 +86,7 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory{
         registeredWidgets.add(new ProgWidgetRedstoneCondition());
         registeredWidgets.add(new ProgWidgetItemInventoryCondition());
         registeredWidgets.add(new ProgWidgetLiquidInventoryCondition());
+        registeredWidgets.add(new ProgWidgetEntityCondition());
     }
 
     @Override

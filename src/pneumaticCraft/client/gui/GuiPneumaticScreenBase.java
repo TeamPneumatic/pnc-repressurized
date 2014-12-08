@@ -124,6 +124,14 @@ public abstract class GuiPneumaticScreenBase extends GuiScreen implements IWidge
     }
 
     @Override
+    public void handleMouseInput(){
+        super.handleMouseInput();
+        for(IGuiWidget widget : widgets) {
+            widget.handleMouseInput();
+        }
+    }
+
+    @Override
     public void onKeyTyped(IGuiWidget widget){}
 
     @Override

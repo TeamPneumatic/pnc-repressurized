@@ -4,16 +4,15 @@ import java.util.Set;
 
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.ChunkPosition;
 import pneumaticCraft.common.ai.DroneAIBlockCondition;
 import pneumaticCraft.common.entity.living.EntityDrone;
+import pneumaticCraft.common.util.IOHelper;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.Textures;
 
-public class ProgWidgetItemInventoryCondition extends ProgWidgetCondition implements ISidedWidget{
-    public boolean[] accessingSides = new boolean[]{true, true, true, true, true, true};
+public class ProgWidgetItemInventoryCondition extends ProgWidgetCondition{
 
     @Override
     public String getWidgetString(){
@@ -41,17 +40,17 @@ public class ProgWidgetItemInventoryCondition extends ProgWidgetCondition implem
 
             @Override
             protected boolean evaluate(ChunkPosition pos){
-                TileEntity te = drone.worldObj.getTileEntity(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ);
-                if(te instanceof IInventory) {
-                    IInventory inv = (IInventory)te;
+                IInventory inv = IOHelper.getInventoryForTE(drone.worldObj.getTileEntity(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ));
+                if(inv != null) {
+                    int count = 0;
                     Set<Integer> accessibleSlots = PneumaticCraftUtils.getAccessibleSlotsForInventoryAndSides(inv, ((ISidedWidget)widget).getSides());
                     for(Integer i : accessibleSlots) {
                         ItemStack stack = inv.getStackInSlot(i);
                         if(stack != null && widget.isItemValidForFilters(stack)) {
-
-                            return true;
+                            count += stack.stackSize;
                         }
                     }
+                    return ((ICondition)widget).getOperator() == ICondition.Operator.EQUALS ? count == ((ICondition)widget).getRequiredCount() : count >= ((ICondition)widget).getRequiredCount();
                 }
                 return false;
             }
@@ -62,16 +61,6 @@ public class ProgWidgetItemInventoryCondition extends ProgWidgetCondition implem
     @Override
     protected ResourceLocation getTexture(){
         return Textures.PROG_WIDGET_CONDITION_ITEM_INVENTORY;
-    }
-
-    @Override
-    public void setSides(boolean[] sides){
-        accessingSides = sides;
-    }
-
-    @Override
-    public boolean[] getSides(){
-        return accessingSides;
     }
 
 }

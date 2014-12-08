@@ -6,11 +6,12 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidHandler;
 import pneumaticCraft.common.entity.living.EntityDrone;
+import pneumaticCraft.common.progwidgets.ICountWidget;
 import pneumaticCraft.common.progwidgets.ILiquidFiltered;
 import pneumaticCraft.common.progwidgets.ISidedWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetAreaItemBase;
 
-public class DroneAILiquidExport extends DroneAIBlockInteraction{
+public class DroneAILiquidExport extends DroneAIImExBase{
 
     public DroneAILiquidExport(EntityDrone drone, double speed, ProgWidgetAreaItemBase widget){
         super(drone, speed, widget);
@@ -23,7 +24,7 @@ public class DroneAILiquidExport extends DroneAIBlockInteraction{
 
     @Override
     protected boolean doBlockInteraction(ChunkPosition pos, double distToBlock){
-        return fillTank(pos, false);
+        return fillTank(pos, false) && super.doBlockInteraction(pos, distToBlock);
     }
 
     private boolean fillTank(ChunkPosition pos, boolean simulate){
@@ -37,8 +38,9 @@ public class DroneAILiquidExport extends DroneAIBlockInteraction{
                     if(((ISidedWidget)widget).getSides()[i]) {
                         int filledAmount = tank.fill(ForgeDirection.getOrientation(i), exportedFluid, false);
                         if(filledAmount > 0) {
+                            if(((ICountWidget)widget).useCount()) filledAmount = Math.min(filledAmount, getRemainingCount());
                             if(!simulate) {
-                                tank.fill(ForgeDirection.getOrientation(i), drone.getTank().drain(filledAmount, true), true);
+                                decreaseCount(tank.fill(ForgeDirection.getOrientation(i), drone.getTank().drain(filledAmount, true), true));
                             }
                             return true;
                         }

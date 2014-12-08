@@ -22,7 +22,7 @@ public class GuiProgWidgetDigAndPlace extends GuiProgWidgetAreaShow{
         List<GuiRadioButton> radioButtons = new ArrayList<GuiRadioButton>();
         ProgWidgetDigAndPlace.EnumOrder[] orders = ProgWidgetDigAndPlace.EnumOrder.values();
         for(int i = 0; i < orders.length; i++) {
-            GuiRadioButton radioButton = new GuiRadioButton(i, guiLeft + 4, guiTop + 30 + i * 12, 0xFF000000, orders[i].toString());
+            GuiRadioButton radioButton = new GuiRadioButton(i, guiLeft + 4, guiTop + 30 + i * 12, 0xFF000000, orders[i].getLocalizedName());
             radioButton.checked = orders[i] == ((ProgWidgetDigAndPlace)widget).getOrder();
             addWidget(radioButton);
             radioButtons.add(radioButton);

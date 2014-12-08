@@ -17,6 +17,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.client.gui.programmer.GuiProgWidgetAreaShow;
+import pneumaticCraft.common.ai.StringFilterEntitySelector;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -90,6 +91,29 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
         return getEntitiesInArea((ProgWidgetArea)getConnectedParameters()[0], (ProgWidgetArea)getConnectedParameters()[getParameters().length], world, filter, null);
     }
 
+    public List<Entity> getEntitiesInArea(World world){
+        StringFilterEntitySelector whitelistFilter = new StringFilterEntitySelector();
+        StringFilterEntitySelector blacklistFilter = new StringFilterEntitySelector();
+
+        ProgWidgetString widget = (ProgWidgetString)getConnectedParameters()[1];
+        if(widget != null) {
+            while(widget != null) {
+                whitelistFilter.addEntry(widget.string);
+                widget = (ProgWidgetString)widget.getConnectedParameters()[0];
+            }
+        } else {
+            whitelistFilter.setFilter("");
+        }
+
+        widget = (ProgWidgetString)getConnectedParameters()[getParameters().length + 1];
+        while(widget != null) {
+            blacklistFilter.addEntry(widget.string);
+            widget = (ProgWidgetString)widget.getConnectedParameters()[0];
+        }
+
+        return getEntitiesInArea((ProgWidgetArea)getConnectedParameters()[0], (ProgWidgetArea)getConnectedParameters()[getParameters().length], world, whitelistFilter, blacklistFilter);
+    }
+
     public static List<Entity> getEntitiesInArea(ProgWidgetArea whitelistWidget, ProgWidgetArea blacklistWidget, World world, IEntitySelector whitelistFilter, IEntitySelector blacklistFilter){
         if(whitelistWidget == null) return new ArrayList<Entity>();
         Set<Entity> entities = new HashSet<Entity>();
@@ -118,5 +142,10 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
     @SideOnly(Side.CLIENT)
     public GuiScreen getOptionWindow(GuiProgrammer guiProgrammer){
         return new GuiProgWidgetAreaShow(this, guiProgrammer);
+    }
+
+    @Override
+    public WidgetCategory getCategory(){
+        return WidgetCategory.ACTION;
     }
 }

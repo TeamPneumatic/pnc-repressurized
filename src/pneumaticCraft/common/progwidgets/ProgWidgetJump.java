@@ -1,11 +1,13 @@
 package pneumaticCraft.common.progwidgets;
 
+import java.util.Arrays;
 import java.util.List;
 
 import net.minecraft.util.ResourceLocation;
+import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.lib.Textures;
 
-public class ProgWidgetJump extends ProgWidget{
+public class ProgWidgetJump extends ProgWidget implements IJump{
 
     @Override
     public boolean hasStepInput(){
@@ -18,7 +20,7 @@ public class ProgWidgetJump extends ProgWidget{
     }
 
     @Override
-    public IProgWidget getOutputWidget(List<IProgWidget> allWidgets){
+    public IProgWidget getOutputWidget(EntityDrone drone, List<IProgWidget> allWidgets){
         ProgWidgetString jumpedLabel = (ProgWidgetString)getConnectedParameters()[0];
         if(jumpedLabel != null) {
             return jumpToLabel(allWidgets, jumpedLabel.string);
@@ -43,9 +45,9 @@ public class ProgWidgetJump extends ProgWidget{
 
     public static IProgWidget jumpToLabel(List<IProgWidget> allWidgets, String label){
         for(IProgWidget widget : allWidgets) {
-            if(widget instanceof ProgWidgetLabel) {
-                ProgWidgetString labelWidget = (ProgWidgetString)widget.getConnectedParameters()[0];
-                if(labelWidget != null && labelWidget.string.equals(label)) {
+            if(widget instanceof ILabel) {
+                String labelLabel = ((ILabel)widget).getLabel();
+                if(labelLabel != null && labelLabel.equals(label)) {
                     return widget;
                 }
             }
@@ -93,4 +95,17 @@ public class ProgWidgetJump extends ProgWidget{
         return Textures.PROG_WIDGET_JUMP;
     }
 
+    @Override
+    public WidgetCategory getCategory(){
+        return WidgetCategory.FLOW_CONTROL;
+    }
+
+    @Override
+    public List<String> getPossibleJumpLocations(){
+        ProgWidgetString jumpedLabel = (ProgWidgetString)getConnectedParameters()[0];
+        if(jumpedLabel != null) {
+            return Arrays.asList(jumpedLabel.string);
+        }
+        return null;
+    }
 }

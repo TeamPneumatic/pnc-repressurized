@@ -3,6 +3,7 @@ package pneumaticCraft.common.progwidgets;
 import java.util.List;
 
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.nbt.NBTTagCompound;
 import pneumaticCraft.client.gui.GuiProgrammer;
@@ -27,6 +28,10 @@ public interface IProgWidget{
 
     public void getTooltip(List<String> curTooltip);
 
+    public void renderExtraInfo();
+
+    public void addCompileErrors(List<String> curErrors);
+
     public boolean hasStepInput();
 
     public boolean hasStepOutput();
@@ -47,10 +52,11 @@ public interface IProgWidget{
 
     /**
      * This one will be called when running in an actual program.
+     * @param drone TODO
      * @param allWidgets
      * @return
      */
-    public IProgWidget getOutputWidget(List<IProgWidget> allWidgets);
+    public IProgWidget getOutputWidget(EntityDrone drone, List<IProgWidget> allWidgets);
 
     public Class<? extends IProgWidget> returnType();//true for widgets that can give info to the widget left of it (like areas or filters)
 
@@ -88,4 +94,20 @@ public interface IProgWidget{
 
     @SideOnly(Side.CLIENT)
     public GuiScreen getOptionWindow(GuiProgrammer guiProgrammer);
+
+    public WidgetCategory getCategory();
+
+    public static enum WidgetCategory{
+        PARAMETER("parameters"), FLOW_CONTROL("flowControl"), ACTION("actions"), CONDITION("conditions");
+
+        private final String name;
+
+        private WidgetCategory(String name){
+            this.name = name;
+        }
+
+        public String getLocalizedName(){
+            return I18n.format("gui.progWidget.category." + name);
+        }
+    }
 }

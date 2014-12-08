@@ -6,9 +6,9 @@ import pneumaticCraft.client.AreaShowManager;
 import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.common.progwidgets.IProgWidget;
 
-public class GuiProgWidgetAreaShow extends GuiProgWidgetOptionBase{
+public class GuiProgWidgetAreaShow<Widget extends IProgWidget> extends GuiProgWidgetOptionBase<Widget>{
 
-    public GuiProgWidgetAreaShow(IProgWidget widget, GuiProgrammer guiProgrammer){
+    public GuiProgWidgetAreaShow(Widget widget, GuiProgrammer guiProgrammer){
         super(widget, guiProgrammer);
     }
 

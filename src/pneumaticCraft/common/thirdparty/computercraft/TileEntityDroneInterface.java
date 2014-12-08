@@ -146,7 +146,7 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral{
                 if(args.length == 1) {
                     String arg = (String)args[0];
                     for(EnumOrder order : IBlockOrdered.EnumOrder.values()) {
-                        if(order.ccName.equals(arg)) {
+                        if(order.toString().equals(arg)) {
                             getWidget().setOrder(order);
                             return null;
                         }

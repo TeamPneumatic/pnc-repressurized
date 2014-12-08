@@ -7,10 +7,7 @@ import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.Textures;
 
-public class ProgWidgetRedstoneCondition extends ProgWidgetCondition implements IRedstoneCondition{
-
-    public int requiredRedstone = 0;
-    public IRedstoneCondition.Operator operator = IRedstoneCondition.Operator.HIGHER_THAN;
+public class ProgWidgetRedstoneCondition extends ProgWidgetCondition{
 
     @Override
     public String getWidgetString(){
@@ -44,21 +41,10 @@ public class ProgWidgetRedstoneCondition extends ProgWidgetCondition implements 
             @Override
             protected boolean evaluate(ChunkPosition pos){
                 int redstoneLevel = PneumaticCraftUtils.getRedstoneLevel(drone.worldObj, pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ);
-                int requiredRedstone = ((IRedstoneCondition)widget).getRequiredRedstone();
-                return ((IRedstoneCondition)widget).getOperator() == IRedstoneCondition.Operator.EQUALS ? requiredRedstone == redstoneLevel : redstoneLevel > requiredRedstone;
+                int requiredRedstone = ((ICondition)widget).getRequiredCount();
+                return ((ICondition)widget).getOperator() == ICondition.Operator.EQUALS ? requiredRedstone == redstoneLevel : redstoneLevel >= requiredRedstone;
             }
 
         };
     }
-
-    @Override
-    public int getRequiredRedstone(){
-        return requiredRedstone;
-    }
-
-    @Override
-    public Operator getOperator(){
-        return operator;
-    }
-
 }

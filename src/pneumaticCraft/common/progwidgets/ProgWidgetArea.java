@@ -458,4 +458,9 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider{
         return 0xFF209600;
     }
 
+    @Override
+    public WidgetCategory getCategory(){
+        return WidgetCategory.PARAMETER;
+    }
+
 }

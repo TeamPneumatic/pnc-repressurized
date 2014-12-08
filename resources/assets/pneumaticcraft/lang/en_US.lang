@@ -385,6 +385,23 @@ gui.enableModule=Enable %s
 gui.pressureChamber=Pressure Chamber
 gui.pressureChamberTitle=%s Pressure Chamber
 gui.programmer.button.stopShowingArea=Stop Showing Area
+gui.programmer.button.showStart=Show Start
+gui.programmer.button.showLatest=Show Latest
+gui.programmer.filters=Filters:
+gui.programmer.checkbox.showInfo=Show Info
+gui.programmer.checkbox.showFlow=Show Flow
+gui.progWidget.category.actions=Actions
+gui.progWidget.category.conditions=Conditions
+gui.progWidget.category.flowControl=Flow Control
+gui.progWidget.category.parameters=Parameters
+gui.progWidget.liquidFilter.noFluid=No Fluid
+gui.progWidget.condition.any=Any
+gui.progWidget.condition.all=All
+gui.progWidget.blockOrder.lowToHigh=Low to high
+gui.progWidget.blockOrder.highToLow=High to low
+gui.progWidget.blockOrder.closest=Closest
+gui.progWidget.itemFilter.useItemCount=Use item count
+
 gui.liquid.empty=Empty
 
 key.pneumaticcraft.category=PneumaticCraft

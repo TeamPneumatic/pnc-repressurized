@@ -2,10 +2,17 @@ package pneumaticCraft.common.progwidgets;
 
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+
+import org.lwjgl.opengl.GL11;
+
 import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.client.gui.programmer.GuiProgWidgetItemFilter;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
@@ -17,6 +24,34 @@ public class ProgWidgetItemFilter extends ProgWidget{
     public ItemStack filter;
     public boolean useMetadata = true, useNBT, useOreDict, useModSimilarity;
     public int specificMeta;
+    private static RenderItem itemRender = new RenderItem();
+
+    @Override
+    public void renderExtraInfo(){
+        if(filter != null) {
+            drawItemStack(filter, 10, 2, "");
+        }
+    }
+
+    private void drawItemStack(ItemStack p_146982_1_, int p_146982_2_, int p_146982_3_, String p_146982_4_){
+        RenderHelper.disableStandardItemLighting();
+        GL11.glPushMatrix();
+        Minecraft mc = Minecraft.getMinecraft();
+        GL11.glTranslatef(0.0F, 0.0F, 32.0F);
+        //  zLevel = 200.0F;
+        itemRender.zLevel = 200.0F;
+        FontRenderer font = null;
+        if(p_146982_1_ != null) font = p_146982_1_.getItem().getFontRenderer(p_146982_1_);
+        if(font == null) font = mc.fontRenderer;
+        itemRender.renderItemAndEffectIntoGUI(font, mc.getTextureManager(), p_146982_1_, p_146982_2_, p_146982_3_);
+        itemRender.renderItemOverlayIntoGUI(font, mc.getTextureManager(), p_146982_1_, p_146982_2_, p_146982_3_, p_146982_4_);
+        GL11.glPopMatrix();
+
+        //GL11.glEnable(GL11.GL_LIGHTING);
+        RenderHelper.enableGUIStandardItemLighting();
+        // zLevel = 0.0F;
+        //  itemRender.zLevel = 0.0F;
+    }
 
     @Override
     public void getTooltip(List<String> curTooltip){
@@ -32,6 +67,7 @@ public class ProgWidgetItemFilter extends ProgWidget{
                 curTooltip.add((useMetadata ? "Using" : "Ignoring") + " metadata / damage values");
                 curTooltip.add((useNBT ? "Using" : "Ignoring") + " NBT tags");
             }
+
         }
     }
 
@@ -122,4 +158,8 @@ public class ProgWidgetItemFilter extends ProgWidget{
         return 0xFF5f5f5f;
     }
 
+    @Override
+    public WidgetCategory getCategory(){
+        return WidgetCategory.PARAMETER;
+    }
 }

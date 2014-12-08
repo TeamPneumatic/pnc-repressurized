@@ -99,4 +99,8 @@ public class ProgWidgetGoToLocation extends ProgWidget implements IGotoWidget, I
         return 0xFF0092ef;
     }
 
+    @Override
+    public WidgetCategory getCategory(){
+        return WidgetCategory.ACTION;
+    }
 }

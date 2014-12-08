@@ -3,7 +3,7 @@ package pneumaticCraft.common.progwidgets;
 import net.minecraft.util.ResourceLocation;
 import pneumaticCraft.lib.Textures;
 
-public class ProgWidgetLabel extends ProgWidget{
+public class ProgWidgetLabel extends ProgWidget implements ILabel{
 
     @Override
     public boolean hasStepInput(){
@@ -50,4 +50,14 @@ public class ProgWidgetLabel extends ProgWidget{
         return Textures.PROG_WIDGET_LABEL;
     }
 
+    @Override
+    public WidgetCategory getCategory(){
+        return WidgetCategory.FLOW_CONTROL;
+    }
+
+    @Override
+    public String getLabel(){
+        ProgWidgetString labelWidget = (ProgWidgetString)getConnectedParameters()[0];
+        return labelWidget != null ? labelWidget.string : null;
+    }
 }

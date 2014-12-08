@@ -17,7 +17,12 @@ public class ProgWidgetString extends ProgWidget{
     @Override
     public void getTooltip(List<String> curTooltip){
         super.getTooltip(curTooltip);
-        curTooltip.add("Value: '" + string + "'");
+        curTooltip.add("Value: \"" + string + "\"");
+    }
+
+    @Override
+    protected String getExtraStringInfo(){
+        return "\"" + string + "\"";
     }
 
     @Override
@@ -71,6 +76,11 @@ public class ProgWidgetString extends ProgWidget{
     @Override
     public int getGuiTabColor(){
         return 0xFF0000FF;
+    }
+
+    @Override
+    public WidgetCategory getCategory(){
+        return WidgetCategory.PARAMETER;
     }
 
 }

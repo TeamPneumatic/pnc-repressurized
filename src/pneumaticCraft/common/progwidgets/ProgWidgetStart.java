@@ -45,4 +45,8 @@ public class ProgWidgetStart extends ProgWidget{
         return 0xFF6cbc37;
     }
 
+    @Override
+    public WidgetCategory getCategory(){
+        return WidgetCategory.FLOW_CONTROL;
+    }
 }

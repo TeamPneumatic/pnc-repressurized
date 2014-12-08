@@ -134,4 +134,8 @@ public class ProgWidgetEntityAttack extends ProgWidget implements IAreaProvider,
         return 0xFFFF0000;
     }
 
+    @Override
+    public WidgetCategory getCategory(){
+        return WidgetCategory.ACTION;
+    }
 }

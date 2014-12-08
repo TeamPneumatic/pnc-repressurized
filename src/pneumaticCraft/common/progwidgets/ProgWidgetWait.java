@@ -77,4 +77,8 @@ public class ProgWidgetWait extends ProgWidget{
 
     }
 
+    @Override
+    public WidgetCategory getCategory(){
+        return WidgetCategory.ACTION;
+    }
 }

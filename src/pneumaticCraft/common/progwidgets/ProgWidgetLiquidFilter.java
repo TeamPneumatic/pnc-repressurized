@@ -1,10 +1,17 @@
 package pneumaticCraft.common.progwidgets;
 
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.FluidStack;
+import pneumaticCraft.client.gui.GuiProgrammer;
+import pneumaticCraft.client.gui.programmer.GuiProgWidgetLiquidFilter;
 import pneumaticCraft.lib.Textures;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class ProgWidgetLiquidFilter extends ProgWidget{
     private Fluid fluid;
@@ -73,6 +80,30 @@ public class ProgWidgetLiquidFilter extends ProgWidget{
             widget = (ProgWidgetLiquidFilter)widget.getConnectedParameters()[0];
         }
         return false;
+    }
+
+    @Override
+    public WidgetCategory getCategory(){
+        return WidgetCategory.PARAMETER;
+    }
+
+    @Override
+    protected String getExtraStringInfo(){
+        return fluid != null ? fluid.getLocalizedName(new FluidStack(fluid, 1)) : I18n.format("gui.progWidget.liquidFilter.noFluid");
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public GuiScreen getOptionWindow(GuiProgrammer guiProgrammer){
+        return new GuiProgWidgetLiquidFilter(this, guiProgrammer);
+    }
+
+    public void setFluid(Fluid fluid){
+        this.fluid = fluid;
+    }
+
+    public Fluid getFluid(){
+        return fluid;
     }
 
 }
