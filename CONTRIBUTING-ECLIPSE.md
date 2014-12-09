@@ -23,7 +23,9 @@ Using your favorite shell, cd to the forge directory and run ./gradlew setupDeco
 This will download all dependencies and create a decompiled workspace, ready for Eclipse.
 Delete the src/main/java subfolder to get rid of the example-mod.
 
-Start Eclipse. When prompted for a workspace, use the Forge provided one which in this example will be located in ~/Git/forge-1.7.10-10.13.2.1230-src/eclipse - note that you can't actually type this in the dialog (at least on Mac OS X) because Eclipse doesn't seem to know that ~ stands for your home-directory. So instead, click browse and go there manually. Oh boy!
+Move the eclipse folder (this is a pre-created workspace) somewhere else, it must not be anywhere below the Forge folder. I moved mine to the Git folder, so at this state my Git folder has two subfolders: forge-1.7.10-10.13.2.1230-src and eclipse.
+
+Start Eclipse. When prompted for a workspace, point eclipse to the folder you just moved - in this example ~/Git/eclipse - note that you can't actually type this in the dialog (at least on Mac OS X) because Eclipse doesn't seem to know that ~ stands for your home-directory. So instead, click browse and go there manually. Oh boy!
 
 If everything is ok, you'll be greeted with a workspace that has one project: Minecraft.
 
