@@ -96,8 +96,15 @@ public class Textures{
     public static final ResourceLocation PROG_WIDGET_INV_IM = new ResourceLocation(PROG_WIDGET_LOCATION + "inventoryImportPiece.png");
     public static final ResourceLocation PROG_WIDGET_LIQUID_EX = new ResourceLocation(PROG_WIDGET_LOCATION + "liquidExportPiece.png");
     public static final ResourceLocation PROG_WIDGET_LIQUID_IM = new ResourceLocation(PROG_WIDGET_LOCATION + "liquidImportPiece.png");
+    public static final ResourceLocation PROG_WIDGET_ENTITY_EX = new ResourceLocation(PROG_WIDGET_LOCATION + "entityExportPiece.png");
+    public static final ResourceLocation PROG_WIDGET_ENTITY_IM = new ResourceLocation(PROG_WIDGET_LOCATION + "entityImportPiece.png");
+    public static final ResourceLocation PROG_WIDGET_RF_EX = new ResourceLocation(PROG_WIDGET_LOCATION + "RFExportPiece.png");
+    public static final ResourceLocation PROG_WIDGET_RF_IM = new ResourceLocation(PROG_WIDGET_LOCATION + "RFImportPiece.png");
+    public static final ResourceLocation PROG_WIDGET_ESSENTIA_EX = new ResourceLocation(PROG_WIDGET_LOCATION + "essentiaExportPiece.png");
+    public static final ResourceLocation PROG_WIDGET_ESSENTIA_IM = new ResourceLocation(PROG_WIDGET_LOCATION + "essentiaImportPiece.png");
     public static final ResourceLocation PROG_WIDGET_ITEM_FILTER = new ResourceLocation(PROG_WIDGET_LOCATION + "itemFilterPiece.png");
     public static final ResourceLocation PROG_WIDGET_LIQUID_FILTER = new ResourceLocation(PROG_WIDGET_LOCATION + "liquidFilterPiece.png");
+    public static final ResourceLocation PROG_WIDGET_ESSENTIA_FILTER = new ResourceLocation(PROG_WIDGET_LOCATION + "essentiaFilterPiece.png");
     public static final ResourceLocation PROG_WIDGET_PICK_ITEM = new ResourceLocation(PROG_WIDGET_LOCATION + "itemPickPiece.png");
     public static final ResourceLocation PROG_WIDGET_PLACE = new ResourceLocation(PROG_WIDGET_LOCATION + "placePiece.png");
     public static final ResourceLocation PROG_WIDGET_START = new ResourceLocation(PROG_WIDGET_LOCATION + "startPiece.png");
@@ -105,10 +112,16 @@ public class Textures{
     public static final ResourceLocation PROG_WIDGET_LABEL = new ResourceLocation(PROG_WIDGET_LOCATION + "labelPiece.png");
     public static final ResourceLocation PROG_WIDGET_JUMP = new ResourceLocation(PROG_WIDGET_LOCATION + "jumpPiece.png");
     public static final ResourceLocation PROG_WIDGET_WAIT = new ResourceLocation(PROG_WIDGET_LOCATION + "waitPiece.png");
+    public static final ResourceLocation PROG_WIDGET_DROP_ITEM = new ResourceLocation(PROG_WIDGET_LOCATION + "itemDropPiece.png");
     public static final ResourceLocation PROG_WIDGET_CONDITION_REDSTONE = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionRedstonePiece.png");
     public static final ResourceLocation PROG_WIDGET_CONDITION_ENTITY = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionEntityPiece.png");
     public static final ResourceLocation PROG_WIDGET_CONDITION_LIQUID_INVENTORY = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionLiquidInventoryPiece.png");
     public static final ResourceLocation PROG_WIDGET_CONDITION_ITEM_INVENTORY = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionItemInventoryPiece.png");
+    public static final ResourceLocation PROG_WIDGET_CONDITION_RF = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionRFPiece.png");
+    public static final ResourceLocation PROG_WIDGET_CONDITION_DRONE_ENTITY = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionDroneEntityPiece.png");
+    public static final ResourceLocation PROG_WIDGET_CONDITION_DRONE_LIQUID__INVENTORY = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionDroneLiquidPiece.png");
+    public static final ResourceLocation PROG_WIDGET_CONDITION_DRONE_ITEM_INVENTORY = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionDroneInventoryPiece.png");
+    public static final ResourceLocation PROG_WIDGET_CONDITION_DRONE_RF = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionDroneRFPiece.png");
 
     public static final String BLOCK_PRESSURE_TUBE = ICON_LOCATION + "BlockPressureTube";
     public static final String BLOCK_PNEUMATIC_DOOR = ICON_LOCATION + "PneumaticDoor";

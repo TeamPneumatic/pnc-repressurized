@@ -17,6 +17,7 @@ import pneumaticCraft.api.client.pneumaticHelmet.IBlockTrackEntry;
 import pneumaticCraft.api.client.pneumaticHelmet.IEntityTrackEntry;
 import pneumaticCraft.api.client.pneumaticHelmet.IHackableBlock;
 import pneumaticCraft.api.client.pneumaticHelmet.IHackableEntity;
+import pneumaticCraft.api.drone.ICustomBlockInteract;
 import pneumaticCraft.api.drone.IPathfindHandler;
 import pneumaticCraft.api.item.IInventoryItem;
 import pneumaticCraft.api.tileentity.IHeatExchanger;
@@ -26,6 +27,8 @@ import pneumaticCraft.common.heat.HeatExchangerLogic;
 import pneumaticCraft.common.heat.HeatExchangerLogicConstant;
 import pneumaticCraft.common.heat.HeatExchangerManager;
 import pneumaticCraft.common.heat.SimpleHeatExchanger;
+import pneumaticCraft.common.progwidgets.ProgWidgetCustomBlockInteract;
+import pneumaticCraft.common.tileentity.TileEntityProgrammer;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.Log;
 
@@ -181,5 +184,10 @@ public class PneumaticCraftAPIHandler implements IPneumaticCraftInterface{
             if(mLPerBucket == 0) liquidFuels.remove(fluid);
         }
         if(mLPerBucket > 0) liquidFuels.put(fluid, mLPerBucket);
+    }
+
+    @Override
+    public void registerCustomBlockInteractor(ICustomBlockInteract interactor){
+        TileEntityProgrammer.registeredWidgets.add(new ProgWidgetCustomBlockInteract().setInteractor(interactor));
     }
 }

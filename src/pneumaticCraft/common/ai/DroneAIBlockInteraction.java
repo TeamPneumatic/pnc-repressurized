@@ -125,12 +125,21 @@ public abstract class DroneAIBlockInteraction extends EntityAIBase{
                         indicateToListeningPlayers(pos);
                         if(isValidPosition(pos)) {
                             curPos = pos;
-                            for(ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-                                if(drone.getNavigator().tryMoveToXYZ(curPos.chunkPosX + dir.offsetX, curPos.chunkPosY + dir.offsetY + 0.5, curPos.chunkPosZ + dir.offsetZ, speed)) {
+                            if(moveIntoBlock()) {
+                                if(drone.getNavigator().tryMoveToXYZ(curPos.chunkPosX, curPos.chunkPosY + 0.5, curPos.chunkPosZ, speed)) {
                                     searching = false;
                                     DroneClaimManager.getInstance(drone.worldObj).claim(pos);
                                     blacklist.clear();//clear the list for next time (maybe the blocks/rights have changed by the time there will be dug again).
                                     return true;
+                                }
+                            } else {
+                                for(ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+                                    if(drone.getNavigator().tryMoveToXYZ(curPos.chunkPosX + dir.offsetX, curPos.chunkPosY + dir.offsetY + 0.5, curPos.chunkPosZ + dir.offsetZ, speed)) {
+                                        searching = false;
+                                        DroneClaimManager.getInstance(drone.worldObj).claim(pos);
+                                        blacklist.clear();//clear the list for next time (maybe the blocks/rights have changed by the time there will be dug again).
+                                        return true;
+                                    }
                                 }
                             }
                             if(((EntityPathNavigateDrone)drone.getNavigator()).isGoingToTeleport()) {
@@ -152,12 +161,16 @@ public abstract class DroneAIBlockInteraction extends EntityAIBase{
             double dist = curPos != null ? PneumaticCraftUtils.distBetween(curPos.chunkPosX + 0.5, curPos.chunkPosY + 0.5, curPos.chunkPosZ + 0.5, drone.posX, drone.posY, drone.posZ) : 0;
             if(curPos != null) {
                 DroneClaimManager.getInstance(drone.worldObj).claim(curPos);
-                if(dist < 2) {
+                if(dist < (moveIntoBlock() ? 1 : 2)) {
                     return doBlockInteraction(curPos, dist);
                 }
             }
             return !drone.getNavigator().noPath();
         }
+    }
+
+    protected boolean moveIntoBlock(){
+        return false;
     }
 
     protected boolean shouldAbort(){

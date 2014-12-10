@@ -45,6 +45,7 @@ import org.lwjgl.opengl.GL11;
 
 import pneumaticCraft.api.block.IPneumaticWrenchable;
 import pneumaticCraft.api.client.pneumaticHelmet.IHackableEntity;
+import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.api.drone.IPathfindHandler;
 import pneumaticCraft.api.item.IPressurizable;
 import pneumaticCraft.api.tileentity.IManoMeasurable;
@@ -81,7 +82,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class EntityDrone extends EntityCreature implements IPressurizable, IManoMeasurable, IInventoryHolder,
-        IPneumaticWrenchable, IEntityAdditionalSpawnData, IHackableEntity{
+        IPneumaticWrenchable, IEntityAdditionalSpawnData, IHackableEntity, IDrone{
 
     private static final HashMap<String, Integer> colorMap = new HashMap<String, Integer>();
 

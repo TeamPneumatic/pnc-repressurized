@@ -29,28 +29,34 @@ public class GuiProgWidgetImportExport extends GuiProgWidgetAreaShow{
     public void initGui(){
         super.initGui();
 
-        for(int i = 0; i < 6; i++) {
-            String sideName = PneumaticCraftUtils.getOrientationName(ForgeDirection.getOrientation(i));
-            GuiCheckBox checkBox = new GuiCheckBox(i, guiLeft + 4, guiTop + 30 + i * 12, 0xFF000000, sideName);
-            checkBox.checked = ((ProgWidgetInventoryBase)widget).accessingSides[i];
-            addWidget(checkBox);
+        if(showSides()) {
+            for(int i = 0; i < 6; i++) {
+                String sideName = PneumaticCraftUtils.getOrientationName(ForgeDirection.getOrientation(i));
+                GuiCheckBox checkBox = new GuiCheckBox(i, guiLeft + 4, guiTop + 30 + i * 12, 0xFF000000, sideName);
+                checkBox.checked = ((ProgWidgetInventoryBase)widget).accessingSides[i];
+                addWidget(checkBox);
+            }
         }
 
-        useItemCount = new GuiCheckBox(6, guiLeft + 4, guiTop + 115, 0xFF000000, I18n.format("gui.progWidget.itemFilter.useItemCount"));
+        useItemCount = new GuiCheckBox(6, guiLeft + 4, guiTop + (showSides() ? 115 : 30), 0xFF000000, I18n.format("gui.progWidget.itemFilter.useItemCount"));
         useItemCount.setTooltip("gui.progWidget.itemFilter.useItemCount.tooltip");
         useItemCount.checked = ((ProgWidgetInventoryBase)widget).useCount();
         addWidget(useItemCount);
-        textField = new WidgetTextField(Minecraft.getMinecraft().fontRenderer, guiLeft + 7, guiTop + 128, 50, 11);
+        textField = new WidgetTextField(Minecraft.getMinecraft().fontRenderer, guiLeft + 7, guiTop + (showSides() ? 128 : 43), 50, 11);
         textField.setText(((ProgWidgetInventoryBase)widget).getCount() + "");
         textField.setEnabled(useItemCount.checked);
         addWidget(textField);
+    }
+
+    protected boolean showSides(){
+        return true;
     }
 
     @Override
     public void actionPerformed(IGuiWidget checkBox){
         if(checkBox.getID() < 6) {
             ((ProgWidgetInventoryBase)widget).accessingSides[checkBox.getID()] = ((GuiCheckBox)checkBox).checked;
-        } else {
+        } else if(checkBox.getID() == 6) {
             ((ProgWidgetInventoryBase)widget).setUseCount(((GuiCheckBox)checkBox).checked);
             textField.setEnabled(((GuiCheckBox)checkBox).checked);
         }
