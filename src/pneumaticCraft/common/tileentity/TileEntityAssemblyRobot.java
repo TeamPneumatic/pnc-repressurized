@@ -66,6 +66,14 @@ public abstract class TileEntityAssemblyRobot extends TileEntityBase implements 
         targetAngles[EnumAngles.TAIL.ordinal()] = 35F;
         targetAngles[EnumAngles.HEAD.ordinal()] = 0F;
     }
+    
+    public boolean gotoTarget() {
+    	if(this.targetDirection == null)
+    		return(false);
+    	
+    	this.gotoNeighbour(this.targetDirection[0], this.targetDirection[1]);
+    	return(this.isDone());
+    }
 
     public void gotoNeighbour(ForgeDirection direction){
         gotoNeighbour(direction, ForgeDirection.UNKNOWN);
@@ -130,7 +138,19 @@ public abstract class TileEntityAssemblyRobot extends TileEntityBase implements 
         }
         return diagonal;
     }
+    
+    public boolean hoverOverTarget() {
+    	if(this.targetDirection == null)
+    		return(false);
+    	
+    	return(this.hoverOverNeighbour(this.targetDirection));
+    }
 
+    public boolean hoverOverNeighbour(ForgeDirection[] directions){    	
+    	hoverOverNeighbour(directions[0], directions[1]);
+    	return(this.isDone());
+    }
+    
     public void hoverOverNeighbour(ForgeDirection primaryDir, ForgeDirection secondaryDir){
         boolean diagonal = gotoNeighbour(primaryDir, secondaryDir);
         if(diagonal) {
@@ -148,9 +168,12 @@ public abstract class TileEntityAssemblyRobot extends TileEntityBase implements 
         return getTileEntityForDirection(targetDirection[0], targetDirection[1]);
     }
 
-    public TileEntity getTileEntityForDirection(ForgeDirection firstDir, ForgeDirection secondDir){
-        return worldObj.getTileEntity(xCoord + firstDir.offsetX + secondDir.offsetX, yCoord + firstDir.offsetY + secondDir.offsetY, zCoord + firstDir.offsetZ + secondDir.offsetZ);
+    public TileEntity getTileEntityForDirection(ForgeDirection[] directions){
+    	return(getTileEntityForDirection(directions[0], directions[1]));
+    }
 
+    public TileEntity getTileEntityForDirection(ForgeDirection firstDir, ForgeDirection secondDir){
+    	return worldObj.getTileEntity(xCoord + firstDir.offsetX + secondDir.offsetX, yCoord + firstDir.offsetY + secondDir.offsetY, zCoord + firstDir.offsetZ + secondDir.offsetZ);
     }
 
     @Override

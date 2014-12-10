@@ -29,16 +29,117 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
     private int exportHeldItemStep;
     private List<AssemblyRecipe> recipeList;
     private ItemStack searchedItemStack;
+    private byte state = 0;
 
-    @Override
-    public void updateEntity(){
-        super.updateEntity();
-        oldClawProgress = clawProgress;
-        if(!shouldClawClose && clawProgress > 0F) {
-            clawProgress = Math.max(clawProgress - TileEntityConstants.ASSEMBLY_IO_UNIT_CLAW_SPEED * speed, 0);
-        } else if(shouldClawClose && clawProgress < 1F) {
-            clawProgress = Math.min(clawProgress + TileEntityConstants.ASSEMBLY_IO_UNIT_CLAW_SPEED * speed, 1);
+    public boolean pickupItem(List<AssemblyRecipe> list) {
+    	
+    	this.recipeList = list;
+    	
+    	if(this.state == 0)
+    		this.state++;
+    	
+    	return((this.state > 1) && (this.state < 127)); // will not use air while waiting for item to be available in inventory
+    }
+    
+    private boolean gotoIdlePos() {
+    	this.gotoHomePosition();
+    	return(this.isDone());
+    }
+    
+    private boolean findPickupLocation() {
+        ForgeDirection[] inventoryDir = null;
+        
+        if(this.isImportUnit()) {
+        	this.searchedItemStack = null;
+        	if(this.recipeList != null) {
+        		for(AssemblyRecipe recipe : recipeList) {
+        			inventoryDir = getInventoryDirectionForItem(recipe.getInput());
+        			if(inventoryDir != null) {
+        				this.searchedItemStack = recipe.getInput();
+        				break;
+        			}
+        		}
+        	}
+        } else {
+        	inventoryDir = getPlatformDirection();        	
         }
+        
+        this.targetDirection = inventoryDir;
+        
+        return(this.targetDirection != null);
+    }
+    
+    private boolean findDropOffLoation() {
+        ForgeDirection[] inventoryDir = null;
+        
+        if(this.isImportUnit()) {
+        	inventoryDir = getPlatformDirection();
+        	// TODO check if platform is ready (== no items in it, claws open)
+        }
+    
+        this.targetDirection = inventoryDir;
+        
+        return(this.targetDirection != null);    	
+    }
+    
+    @Override
+    public void updateEntity() {
+        super.updateEntity();
+        
+        if(this.isExportUnit())
+        	return;
+
+        if(!worldObj.isRemote){
+        	
+//            moveClaw();
+            
+            switch(this.state) {
+
+            case 0: // idle
+            	break;
+            case 1:
+            	if(findPickupLocation())
+            		this.state++;
+            	break;
+            // rise to the right height for target location
+            case 2: // pickup 
+            case 5: // drop-off
+            	if(hoverOverTarget())
+            		this.state++;
+            	break;
+           	// turn and move to target
+            case 3: // pickup 
+            case 6: // drop-off
+            	if(gotoTarget())
+            		this.state++;
+            	break;
+            case 4:
+            	if(findDropOffLoation())
+            		this.state++;
+            	break;
+            case 7:
+            	if(gotoIdlePos())
+            		this.state = 0;
+            case 127: // this will be set if we encounter and unknown state; prevents log-spam that would result from default-case
+            	break;
+            default:
+            	System.out.printf("unexpected state: {0}\n", this.state);
+            	this.state = 127;
+            	break;
+            }
+        }
+
+        /*
+        hoverOverNeighbour(inventoryDir[0], inventoryDir[1]);
+        shouldClawClose = false;
+        break;
+
+        slowMode = true;
+        gotoNeighbour(inventoryDir[0], inventoryDir[1]);
+        */
+
+        
+        /*
         if(!worldObj.isRemote) {
             if(!shouldClawClose && clawProgress == 0F && isDoneInternal()) {
                 if(isExportUnit() && inventory[0] != null) {//when in export mode, auto eject.
@@ -240,7 +341,17 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
                 }
             }
         }
+        */
     }
+
+	private void moveClaw() {
+		oldClawProgress = clawProgress;
+        if(!shouldClawClose && clawProgress > 0F) {
+            clawProgress = Math.max(clawProgress - TileEntityConstants.ASSEMBLY_IO_UNIT_CLAW_SPEED * speed, 0);
+        } else if(shouldClawClose && clawProgress < 1F) {
+            clawProgress = Math.min(clawProgress + TileEntityConstants.ASSEMBLY_IO_UNIT_CLAW_SPEED * speed, 1);
+        }
+	}
     
     private boolean isExportUnit(){
     	return(getBlockMetadata() == 1);

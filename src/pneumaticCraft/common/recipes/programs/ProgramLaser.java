@@ -32,7 +32,8 @@ public class ProgramLaser extends AssemblyProgram{
                     controller.resetSetup();
                 }
             } else {
-                return ioUnitImport.pickUpInventoryItem(getRecipeList());
+                //return ioUnitImport.pickUpInventoryItem(getRecipeList());
+            	return(ioUnitImport.pickupItem(getRecipeList()));
             }
         }
         return true;
