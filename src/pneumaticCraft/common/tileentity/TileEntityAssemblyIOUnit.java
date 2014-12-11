@@ -24,9 +24,6 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
     public float oldClawProgress;
     @DescSynced
     public ItemStack[] inventory = new ItemStack[1];
-    private int pickUpPlatformStackStep;
-    public int feedPlatformStep;
-    private int exportHeldItemStep;
     private List<AssemblyRecipe> recipeList;
     private ItemStack searchedItemStack;
     private byte state = 0;
@@ -36,7 +33,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
     
     private final static byte STATE_IDLE = 0;
     private final static byte STATE_SEARCH_SRC = 1;
-    private final static byte STATE_SEARCH_DROPOFF = 5;
+    private final static byte STATE_SEARCH_DROPOFF = 6;
     private final static byte STATE_MAX = 127;
     
     public boolean pickupItem(List<AssemblyRecipe> list) {   	
@@ -122,7 +119,9 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
 		boolean extracted = false;
 
 		if(this.isImportUnit()) {
-			if(tile instanceof IInventory) {
+			if(this.searchedItemStack == null) { // we don't know what we're supposed to pick up
+				this.reset();
+			} else if(tile instanceof IInventory) {
 				IInventory inv = (IInventory)tile;
 				for(int i = 0; i < inv.getSizeInventory(); i++) {
 					if(inv.getStackInSlot(i) != null && inv.getStackInSlot(i).isItemEqual(searchedItemStack)) {
@@ -138,19 +137,22 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
 				}
 			}
 		} else {
-	    	if(tile instanceof TileEntityAssemblyPlatform) {
-	    		
-	    		TileEntityAssemblyPlatform plat = (TileEntityAssemblyPlatform)tile;
-	    		
-	    		if(true) { // TODO: check if we can pickup the item
-	    			inventory[0] = plat.getHeldStack();
-	    			plat.setHeldStack(null);
-	    			extracted = (inventory[0] != null);
-	    		}
-	    	}			
+			if(tile instanceof TileEntityAssemblyPlatform) {
+
+				TileEntityAssemblyPlatform plat = (TileEntityAssemblyPlatform)tile;
+
+				if(true) { // TODO: check if we can pickup the item
+					inventory[0] = plat.getHeldStack();
+					plat.setHeldStack(null);
+					extracted = (inventory[0] != null);
+				}
+
+				if(!extracted) // something went wrong - either the platform is gone altogether, or the item is not there anymore
+					reset();
+			}			
 		}
-    	
-    	return(extracted);
+
+		return(extracted);
     }
     
     private boolean putItemToCurrentDirection() {    	    	
@@ -181,28 +183,28 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
     	}
     	
     	return(false);
-/*
-    	
-    	
-    	if(platform != null) {
-platform.setHeldStack(inventory[0]);
-inventory[0] = null;
-}
-if(platformDir != null) plat = getTileEntityForDirection(platformDir[0], platformDir[1]);
-TileEntityAssemblyPlatform platform = null;
-if(plat instanceof TileEntityAssemblyPlatform) {
-platform = (TileEntityAssemblyPlatform)plat;
-}
-*/
     }
     
+    private boolean closeClaw(){
+    	this.shouldClawClose = true;
+    	return(this.moveClaw());
+    }
+    
+    private boolean openClaw(){
+    	this.shouldClawClose = false;
+    	return(this.moveClaw());
+    }
+
     @Override
     public void updateEntity() {
         super.updateEntity();
         
-        if(!worldObj.isRemote){
+        if(worldObj.isRemote) {
+        	if(!this.isClawDone())
+        		this.moveClaw();
+        } else {
         	
-//            moveClaw();
+        	this.slowMode = false;
             
             switch(this.state) {
 
@@ -214,17 +216,22 @@ platform = (TileEntityAssemblyPlatform)plat;
             	break;
             // rise to the right height for target location
             case 2: // for pickup 
-            case 6: // for drop-off
+            case 7: // for drop-off
             	if(hoverOverTarget())
             		this.state++;
             	break;
            	// turn and move to target
             case 3: // for pickup 
-            case 7: // for drop-off
+            case 8: // for drop-off
+            	this.slowMode = true;
             	if(gotoTarget())
             		this.state++;
             	break;
-            case 4: // pickup item
+            case 4:
+            	if(this.closeClaw())
+            		this.state++;
+            	break;
+            case 5: // pickup item
             	if(getItemFromCurrentDirection())
             		this.state++;
             	break;
@@ -232,17 +239,21 @@ platform = (TileEntityAssemblyPlatform)plat;
             	if(findDropOffLoation())
             		this.state++;
             	break;
-            case 8: // drop off item
+            case 9: // drop off item
             	if(putItemToCurrentDirection())
             		this.state++;
             	break;
-            case 9:
+            case 10:
+            	if(this.openClaw())
+            		this.state++;
+            	break;
+            case 11:
             	if(gotoIdlePos())
             		this.state = 0;
             case STATE_MAX: // this will be set if we encounter an unknown state; prevents log-spam that would result from default-case
             	break;
             default:
-            	System.out.printf("unexpected state: {0}\n", this.state);
+            	System.out.printf("unexpected state: %d%n", this.state);
             	this.state = STATE_MAX;
             	break;
             }
@@ -465,14 +476,32 @@ platform = (TileEntityAssemblyPlatform)plat;
         }
         */
     }
+    
+    public boolean reset() {
+    	if(this.inventory[0] != null) {
+    		this.state = STATE_SEARCH_DROPOFF;
+    		return(false);
+    	} else {
+    		this.gotoHomePosition();
+    		return(this.isDone());
+    	}
+    }
 
-	private void moveClaw() {
+	private boolean moveClaw() {
 		oldClawProgress = clawProgress;
         if(!shouldClawClose && clawProgress > 0F) {
             clawProgress = Math.max(clawProgress - TileEntityConstants.ASSEMBLY_IO_UNIT_CLAW_SPEED * speed, 0);
         } else if(shouldClawClose && clawProgress < 1F) {
             clawProgress = Math.min(clawProgress + TileEntityConstants.ASSEMBLY_IO_UNIT_CLAW_SPEED * speed, 1);
         }
+        
+    	//System.out.printf("MC claw-progress: %f%n", this.clawProgress);
+
+    	return(this.isClawDone());
+	}
+	
+	private boolean isClawDone() {
+		return(clawProgress == (shouldClawClose ? 1F : 0F));
 	}
 	
     
@@ -504,7 +533,9 @@ platform = (TileEntityAssemblyPlatform)plat;
     @Override
     public void gotoHomePosition(){
         super.gotoHomePosition();
-        shouldClawClose = false;
+        
+        if(this.isClawDone())
+        	this.openClaw();
     }
 
     @Override
@@ -523,26 +554,6 @@ platform = (TileEntityAssemblyPlatform)plat;
             return false;
         }
        */
-    }
-
-    public void pickUpPlatformItem(){
-        if(pickUpPlatformStackStep == 0) {
-            pickUpPlatformStackStep = 1;
-        }
-    }
-
-    public boolean pickUpInventoryItem(List<AssemblyRecipe> list){
-        if(feedPlatformStep == 0) {
-            feedPlatformStep = 1;
-        }
-        recipeList = list;
-        return feedPlatformStep != 2;
-    }
-
-    public void exportHeldItem(){
-        if(exportHeldItemStep == 0) {
-            exportHeldItemStep = 1;
-        }
     }
 
     public ForgeDirection[] getInventoryDirectionForItem(ItemStack searchedItem){
@@ -672,9 +683,7 @@ platform = (TileEntityAssemblyPlatform)plat;
         super.readFromNBT(tag);
         clawProgress = tag.getFloat("clawProgress");
         shouldClawClose = tag.getBoolean("clawClosing");
-        pickUpPlatformStackStep = tag.getInteger("platformPickStep");
-        feedPlatformStep = tag.getInteger("feedPlatformStep");
-        exportHeldItemStep = tag.getInteger("exportHeldItemStep");
+        this.state = tag.getByte("state");
         // Read in the ItemStacks in the inventory from NBT
         NBTTagList tagList = tag.getTagList("Items", 10);
         inventory = new ItemStack[1];
@@ -692,9 +701,7 @@ platform = (TileEntityAssemblyPlatform)plat;
         super.writeToNBT(tag);
         tag.setFloat("clawProgress", clawProgress);
         tag.setBoolean("clawClosing", shouldClawClose);
-        tag.setInteger("platformPickStep", pickUpPlatformStackStep);
-        tag.setInteger("feedPlatformStep", feedPlatformStep);
-        tag.setInteger("exportHeldItemStep", exportHeldItemStep);
+        tag.setByte("state", this.state);
         // Write the ItemStacks in the inventory to NBT
         NBTTagList tagList = new NBTTagList();
         for(int currentIndex = 0; currentIndex < inventory.length; ++currentIndex) {

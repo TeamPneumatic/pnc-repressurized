@@ -211,7 +211,7 @@ public abstract class TileEntityAssemblyRobot extends TileEntityBase implements 
         }
         tag.setBoolean("slowMode", slowMode);
         tag.setFloat("speed", speed);
-        tag.setInteger("targetDir1", targetDirection[0].ordinal());
+        tag.setInteger("targetDir1", targetDirection[0].ordinal()); // TODO BUG FIXME targetDirection might be null
         tag.setInteger("targetDir2", targetDirection[1].ordinal());
     }
 
