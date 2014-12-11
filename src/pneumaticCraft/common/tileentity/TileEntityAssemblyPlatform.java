@@ -35,6 +35,10 @@ public class TileEntityAssemblyPlatform extends TileEntityBase implements IAssem
     public boolean isDone(){
         return clawProgress == (shouldClawClose ? 1F : 0F);
     }
+    
+    public boolean isReadyForItem() {
+    	return(!this.shouldClawClose && this.isDone() && (this.inventory[0] == null));
+    }
 
     public void closeClaw(){
         hasDrilledStack = false;

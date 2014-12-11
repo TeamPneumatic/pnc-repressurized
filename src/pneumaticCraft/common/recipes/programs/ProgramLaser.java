@@ -20,6 +20,18 @@ public class ProgramLaser extends AssemblyProgram{
 
     @Override
     public boolean executeStep(TileEntityAssemblyController controller, TileEntityAssemblyPlatform platform, TileEntityAssemblyIOUnit ioUnitImport, TileEntityAssemblyIOUnit ioUnitExport, TileEntityAssemblyDrill drill, TileEntityAssemblyLaser laser){
+    	if(platform.getHeldStack() != null) {
+    		if(canItemBeLasered(platform.getHeldStack())) {
+    			laser.startLasering();
+    			return(true);
+    		}
+    		else
+    			return(ioUnitExport.pickupItem(null));
+    	}
+    	else {
+    		return(ioUnitImport.pickupItem(getRecipeList()));
+    	}
+    	/*
         if(ioUnitExport.inventory[0] != null) {
             ioUnitExport.exportHeldItem();
         } else {
@@ -37,6 +49,7 @@ public class ProgramLaser extends AssemblyProgram{
             }
         }
         return true;
+        */
     }
 
     private boolean canItemBeLasered(ItemStack item){

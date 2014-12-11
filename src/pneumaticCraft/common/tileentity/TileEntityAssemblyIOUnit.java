@@ -30,15 +30,24 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
     private List<AssemblyRecipe> recipeList;
     private ItemStack searchedItemStack;
     private byte state = 0;
-
-    public boolean pickupItem(List<AssemblyRecipe> list) {
-    	
+    private byte tickCounter = 0;
+    
+    private final static byte SLEEP_TICKS = 50;
+    
+    private final static byte STATE_IDLE = 0;
+    private final static byte STATE_SEARCH_SRC = 1;
+    private final static byte STATE_SEARCH_DROPOFF = 5;
+    private final static byte STATE_MAX = 127;
+    
+    public boolean pickupItem(List<AssemblyRecipe> list) {   	
     	this.recipeList = list;
     	
-    	if(this.state == 0)
+    	if(this.state == STATE_IDLE)
     		this.state++;
     	
-    	return((this.state > 1) && (this.state < 127)); // will not use air while waiting for item to be available in inventory
+    	return((this.state > STATE_SEARCH_SRC)
+    			&& (this.state != STATE_SEARCH_DROPOFF)
+    			&& (this.state < STATE_MAX)); // will not use air while waiting for item/inventory to be available
     }
     
     private boolean gotoIdlePos() {
@@ -47,6 +56,9 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
     }
     
     private boolean findPickupLocation() {
+    	if(shouldSleep())
+    		return(false);
+    	
         ForgeDirection[] inventoryDir = null;
         
         if(this.isImportUnit()) {
@@ -68,63 +80,170 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
         
         return(this.targetDirection != null);
     }
+
+	private boolean shouldSleep() {
+		if((this.tickCounter > 0) && this.tickCounter++ < SLEEP_TICKS) {
+    		return(true);
+    	} else {
+    		this.tickCounter = 0;
+    		return(false);
+    	}
+	}
+	
+	private void sleepBeforeNextSearch() {
+		this.tickCounter = 1;
+	}
     
     private boolean findDropOffLoation() {
-        ForgeDirection[] inventoryDir = null;
+    	if(shouldSleep())
+    		return(false);
+
+    	ForgeDirection[] inventoryDir = null;
         
         if(this.isImportUnit()) {
         	inventoryDir = getPlatformDirection();
-        	// TODO check if platform is ready (== no items in it, claws open)
+        } else {
+        	inventoryDir = getExportLocationForItem(inventory[0]);
         }
     
         this.targetDirection = inventoryDir;
         
-        return(this.targetDirection != null);    	
+        if(this.targetDirection == null) {
+        	sleepBeforeNextSearch();
+        	
+        	return(false);
+        } else
+        	return(true);        
+    }
+    
+    private boolean getItemFromCurrentDirection(){
+    	TileEntity tile = getTileEntityForCurrentDirection();
+
+		boolean extracted = false;
+
+		if(this.isImportUnit()) {
+			if(tile instanceof IInventory) {
+				IInventory inv = (IInventory)tile;
+				for(int i = 0; i < inv.getSizeInventory(); i++) {
+					if(inv.getStackInSlot(i) != null && inv.getStackInSlot(i).isItemEqual(searchedItemStack)) {
+						if(inventory[0] == null) {
+							inventory[0] = inv.decrStackSize(i, 1);
+						} else {
+							inv.decrStackSize(i, 1);
+							inventory[0].stackSize++;
+						}
+						extracted = true;
+						break;
+					}
+				}
+			}
+		} else {
+	    	if(tile instanceof TileEntityAssemblyPlatform) {
+	    		
+	    		TileEntityAssemblyPlatform plat = (TileEntityAssemblyPlatform)tile;
+	    		
+	    		if(true) { // TODO: check if we can pickup the item
+	    			inventory[0] = plat.getHeldStack();
+	    			plat.setHeldStack(null);
+	    			extracted = (inventory[0] != null);
+	    		}
+	    	}			
+		}
+    	
+    	return(extracted);
+    }
+    
+    private boolean putItemToCurrentDirection() {    	    	
+    	if(this.isImportUnit()) {
+    		TileEntity tile = getTileEntityForCurrentDirection();
+    		if(tile instanceof TileEntityAssemblyPlatform) {
+
+    			TileEntityAssemblyPlatform plat = (TileEntityAssemblyPlatform)tile;
+
+    			if(plat.isReadyForItem()) {
+    				plat.setHeldStack(inventory[0]);
+    				inventory[0] = null;
+    				return(true);
+    			}
+    		}
+    	} else {
+            IInventory inv = getInventoryForCurrentDirection();
+            if(inv != null) {
+                int startSize = inventory[0].stackSize;
+                for(int i = 0; i < 6; i++) {
+                    inventory[0] = PneumaticCraftUtils.exportStackToInventory(inv, inventory[0], ForgeDirection.getOrientation(i));
+                    if(inventory[0] == null) break;
+                }
+                if(inventory[0] == null || startSize != inventory[0].stackSize) sendDescriptionPacket();
+            }
+            
+            return(inventory[0] == null);
+    	}
+    	
+    	return(false);
+/*
+    	
+    	
+    	if(platform != null) {
+platform.setHeldStack(inventory[0]);
+inventory[0] = null;
+}
+if(platformDir != null) plat = getTileEntityForDirection(platformDir[0], platformDir[1]);
+TileEntityAssemblyPlatform platform = null;
+if(plat instanceof TileEntityAssemblyPlatform) {
+platform = (TileEntityAssemblyPlatform)plat;
+}
+*/
     }
     
     @Override
     public void updateEntity() {
         super.updateEntity();
         
-        if(this.isExportUnit())
-        	return;
-
         if(!worldObj.isRemote){
         	
 //            moveClaw();
             
             switch(this.state) {
 
-            case 0: // idle
+            case STATE_IDLE:
             	break;
-            case 1:
+            case STATE_SEARCH_SRC:
             	if(findPickupLocation())
             		this.state++;
             	break;
             // rise to the right height for target location
-            case 2: // pickup 
-            case 5: // drop-off
+            case 2: // for pickup 
+            case 6: // for drop-off
             	if(hoverOverTarget())
             		this.state++;
             	break;
            	// turn and move to target
-            case 3: // pickup 
-            case 6: // drop-off
+            case 3: // for pickup 
+            case 7: // for drop-off
             	if(gotoTarget())
             		this.state++;
             	break;
-            case 4:
+            case 4: // pickup item
+            	if(getItemFromCurrentDirection())
+            		this.state++;
+            	break;
+            case STATE_SEARCH_DROPOFF:
             	if(findDropOffLoation())
             		this.state++;
             	break;
-            case 7:
+            case 8: // drop off item
+            	if(putItemToCurrentDirection())
+            		this.state++;
+            	break;
+            case 9:
             	if(gotoIdlePos())
             		this.state = 0;
-            case 127: // this will be set if we encounter and unknown state; prevents log-spam that would result from default-case
+            case STATE_MAX: // this will be set if we encounter an unknown state; prevents log-spam that would result from default-case
             	break;
             default:
             	System.out.printf("unexpected state: {0}\n", this.state);
-            	this.state = 127;
+            	this.state = STATE_MAX;
             	break;
             }
         }
@@ -248,6 +367,9 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
                         break;
                     }
                 }
+
+           
+                
                 if(searchedItemStack != null || feedPlatformStep != 4) {
                     ForgeDirection[] platformDir = getPlatformDirection();
                     TileEntity tile = getTileEntityForCurrentDirection();
@@ -352,6 +474,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
             clawProgress = Math.min(clawProgress + TileEntityConstants.ASSEMBLY_IO_UNIT_CLAW_SPEED * speed, 1);
         }
 	}
+	
     
     private boolean isExportUnit(){
     	return(getBlockMetadata() == 1);
@@ -367,9 +490,15 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
         return null;
     }
 
-    public void switchMode(){
-        worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 1 - getBlockMetadata(), 3);
-        //PacketDispatcher.sendPacketToAllPlayers(getDescriptionPacket());
+    public boolean switchMode(){
+    	if(this.state <= STATE_SEARCH_SRC) {
+    		worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 1 - getBlockMetadata(), 3);
+    		return(true);
+    	} else {
+    		return false;
+    	}
+
+    	//PacketDispatcher.sendPacketToAllPlayers(getDescriptionPacket());
     }
 
     @Override
@@ -380,16 +509,20 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
 
     @Override
     public boolean isDone(){
-        return pickUpPlatformStackStep == 0 && exportHeldItemStep == 0 && feedPlatformStep == 0 && isDoneInternal();
+        //return pickUpPlatformStackStep == 0 && exportHeldItemStep == 0 && feedPlatformStep == 0 && isDoneInternal();
+    	return(isDoneInternal());
     }
 
     private boolean isDoneInternal(){
+    	return(super.isDone());
+    	/*
         if(super.isDone()) {
             boolean searchDone = feedPlatformStep != 4 || searchedItemStack != null && inventory[0] != null && searchedItemStack.isItemEqual(inventory[0]) && inventory[0].stackSize == searchedItemStack.stackSize;
             return clawProgress == (shouldClawClose ? 1F : 0F) && searchDone;
         } else {
             return false;
         }
+       */
     }
 
     public void pickUpPlatformItem(){
