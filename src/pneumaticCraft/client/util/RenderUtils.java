@@ -196,6 +196,7 @@ public class RenderUtils extends Render{
         public boolean[] renderSide = new boolean[6];
         public float light = -1f;
         public int brightness = -1;
+        private int meta;
 
         public RenderInfo(){
             setRenderAllSides();
@@ -214,6 +215,11 @@ public class RenderUtils extends Render{
 
         public float getBlockBrightness(IBlockAccess iblockaccess, int i, int j, int k){
             return baseBlock.getMixedBrightnessForBlock(iblockaccess, i, j, k);
+        }
+
+        public RenderInfo setMeta(int meta){
+            this.meta = meta;
+            return this;
         }
 
         public final void setBounds(double minX, double minY, double minZ, double maxX, double maxY, double maxZ){
@@ -264,7 +270,7 @@ public class RenderUtils extends Render{
             int index = i;
 
             if(textureArray == null || textureArray.length == 0) {
-                return baseBlock.getBlockTextureFromSide(index);
+                return baseBlock.getIcon(index, meta);
             } else {
                 if(index >= textureArray.length) {
                     index = 0;
