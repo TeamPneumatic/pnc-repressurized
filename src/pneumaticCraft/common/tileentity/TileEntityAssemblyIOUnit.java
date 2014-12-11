@@ -488,13 +488,18 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
     }
 
 	private boolean moveClaw() {
-		oldClawProgress = clawProgress;
         if(!shouldClawClose && clawProgress > 0F) {
             clawProgress = Math.max(clawProgress - TileEntityConstants.ASSEMBLY_IO_UNIT_CLAW_SPEED * speed, 0);
         } else if(shouldClawClose && clawProgress < 1F) {
             clawProgress = Math.min(clawProgress + TileEntityConstants.ASSEMBLY_IO_UNIT_CLAW_SPEED * speed, 1);
         }
         
+        /*
+         * this was moved to the end because we're now only calling moveClaw when not isClawDone, which
+         * leaves the client with oldClawProgress != clawProgress and a constant flicker. 
+         */
+		oldClawProgress = clawProgress; 
+		
     	//System.out.printf("MC claw-progress: %f%n", this.clawProgress);
 
     	return(this.isClawDone());
