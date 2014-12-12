@@ -42,9 +42,9 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
     	if(this.state == STATE_IDLE)
     		this.state++;
     	
-    	return((this.state > STATE_SEARCH_SRC)
-    			&& (this.state != STATE_SEARCH_DROPOFF)
-    			&& (this.state < STATE_MAX)); // will not use air while waiting for item/inventory to be available
+    	return((this.state > STATE_IDLE)
+    			&& !this.shouldSleep()  // will not use air while waiting for item/inventory to be available
+    			&& (this.state < STATE_MAX));
     }
     
     private boolean gotoIdlePos() {
@@ -131,7 +131,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
 							inv.decrStackSize(i, 1);
 							inventory[0].stackSize++;
 						}
-						extracted = true;
+						extracted = (inventory[0].stackSize == searchedItemStack.stackSize); // we might need to pickup more than 1 item
 						break;
 					}
 				}
@@ -227,24 +227,24 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
             	if(gotoTarget())
             		this.state++;
             	break;
-            case 4:
-            	if(this.closeClaw())
+            case 4: // pickup item - need to pick up before closeClaw; claw needs to know item size to 'grab' it!
+            	if(getItemFromCurrentDirection())
             		this.state++;
             	break;
-            case 5: // pickup item
-            	if(getItemFromCurrentDirection())
+            case 5:
+            	if(this.closeClaw())
             		this.state++;
             	break;
             case STATE_SEARCH_DROPOFF:
             	if(findDropOffLoation())
             		this.state++;
             	break;
-            case 9: // drop off item
-            	if(putItemToCurrentDirection())
+            case 9:
+            	if(this.openClaw())
             		this.state++;
             	break;
-            case 10:
-            	if(this.openClaw())
+            case 10: // drop off item
+            	if(putItemToCurrentDirection())
             		this.state++;
             	break;
             case 11:
@@ -258,223 +258,6 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
             	break;
             }
         }
-
-        /*
-        hoverOverNeighbour(inventoryDir[0], inventoryDir[1]);
-        shouldClawClose = false;
-        break;
-
-        slowMode = true;
-        gotoNeighbour(inventoryDir[0], inventoryDir[1]);
-        */
-
-        
-        /*
-        if(!worldObj.isRemote) {
-            if(!shouldClawClose && clawProgress == 0F && isDoneInternal()) {
-                if(isExportUnit() && inventory[0] != null) {//when in export mode, auto eject.
-                    IInventory inv = getInventoryForCurrentDirection();
-                    if(inv != null) {
-                        int startSize = inventory[0].stackSize;
-                        for(int i = 0; i < 6; i++) {
-                            inventory[0] = PneumaticCraftUtils.exportStackToInventory(inv, inventory[0], ForgeDirection.getOrientation(i));
-                            if(inventory[0] == null) break;
-                        }
-                        if(inventory[0] == null || startSize != inventory[0].stackSize) sendDescriptionPacket();
-                    }
-                }
-            }
-            if(pickUpPlatformStackStep > 0 && isExportUnit()) {
-                ForgeDirection[] platformDir = getPlatformDirection();
-                TileEntity tile = getTileEntityForCurrentDirection();
-                TileEntityAssemblyPlatform platform = null;
-                if(tile instanceof TileEntityAssemblyPlatform) {
-                    platform = (TileEntityAssemblyPlatform)tile;
-                }
-                if(platformDir == null) pickUpPlatformStackStep = 1;
-                switch(pickUpPlatformStackStep){
-                    case 1:
-                        slowMode = false;
-                        gotoHomePosition();
-                        break;
-                    case 2:
-                        hoverOverNeighbour(platformDir[0], platformDir[1]);
-                        shouldClawClose = false;
-                        break;
-                    case 3:
-                        slowMode = true;
-                        gotoNeighbour(platformDir[0], platformDir[1]);
-                        break;
-                    case 4:
-                        TileEntity te = getTileEntityForCurrentDirection();
-                        if(te instanceof TileEntityAssemblyPlatform) {
-                            inventory[0] = ((TileEntityAssemblyPlatform)te).getHeldStack();
-                            ((TileEntityAssemblyPlatform)te).setHeldStack(null);
-                        }
-                        break;
-
-                    case 5:
-                        if(platform != null) {
-                            platform.openClaw();
-                        }
-                        break;
-                    case 6:
-                        shouldClawClose = true;
-                        break;
-                    case 7:
-                        hoverOverNeighbour(platformDir[0], platformDir[1]);
-                        break;
-                }
-                if(isDoneInternal()) {
-                    pickUpPlatformStackStep++;
-                    if(pickUpPlatformStackStep > 7) {
-                        pickUpPlatformStackStep = 0;
-                        slowMode = false;
-                    }
-                }
-            } else if(exportHeldItemStep > 0 && isExportUnit()) {
-                ForgeDirection[] chestLocation = getExportLocationForItem(inventory[0]);
-                if(chestLocation != null || exportHeldItemStep > 3) {
-                    switch(exportHeldItemStep){
-                        case 1:
-                            slowMode = false;
-                            shouldClawClose = true;
-                            break;
-                        case 2:
-                            hoverOverNeighbour(chestLocation[0], chestLocation[1]);
-                            break;
-                        case 3:
-                            slowMode = true;
-                            gotoNeighbour(chestLocation[0], chestLocation[1]);
-                            break;
-                        case 4:
-                            shouldClawClose = false;
-                            break;
-                        case 5:
-                        	slowMode = false;
-                            gotoHomePosition();
-                            break;
-                    }
-                    if(isDoneInternal() && (exportHeldItemStep != 4 || inventory[0] == null)) {
-                        exportHeldItemStep++;
-                        if(exportHeldItemStep > 5) {
-                            exportHeldItemStep = 0;
-                        }
-                    }
-                } else if(inventory[0] == null) {
-                    gotoHomePosition();
-                    slowMode = false;
-                    exportHeldItemStep = 0;
-                }
-            } else if(feedPlatformStep > 0 && isImportUnit() && recipeList != null) {
-            	// TODO BUG FIXME recipeList will be null if we're in going-home-mode
-            	// because program was removed from controller and the world is reloaded
-                ForgeDirection[] inventoryDir = null;
-                searchedItemStack = null;
-                for(AssemblyRecipe recipe : recipeList) {
-                    inventoryDir = getInventoryDirectionForItem(recipe.getInput());
-                    if(inventoryDir != null) {
-                        searchedItemStack = recipe.getInput();
-                        break;
-                    }
-                }
-
-           
-                
-                if(searchedItemStack != null || feedPlatformStep != 4) {
-                    ForgeDirection[] platformDir = getPlatformDirection();
-                    TileEntity tile = getTileEntityForCurrentDirection();
-                    TileEntity plat = null;
-                    if(platformDir != null) plat = getTileEntityForDirection(platformDir[0], platformDir[1]);
-                    TileEntityAssemblyPlatform platform = null;
-                    if(plat instanceof TileEntityAssemblyPlatform) {
-                        platform = (TileEntityAssemblyPlatform)plat;
-                    }
-                    //  System.out.println("inventory: " + inventory[0] + ", feedPlatformStep = " + feedPlatformStep + " tile entity: " + this);
-                    if(feedPlatformStep < 4 && inventoryDir == null) feedPlatformStep = 1;
-                    if(feedPlatformStep > 6 && (platformDir == null || platform == null)) feedPlatformStep = 6;
-                    switch(feedPlatformStep){
-                        case 1:
-                            gotoHomePosition();
-                            break;
-                        case 2:
-                            hoverOverNeighbour(inventoryDir[0], inventoryDir[1]);
-                            shouldClawClose = false;
-                            break;
-                        case 3:
-                            slowMode = true;
-                            gotoNeighbour(inventoryDir[0], inventoryDir[1]);
-                            break;
-                        case 4:
-                            if(tile instanceof IInventory) {
-                                IInventory inv = (IInventory)tile;
-                                boolean extracted = false;
-                                for(int i = 0; i < inv.getSizeInventory(); i++) {
-                                    if(inv.getStackInSlot(i) != null && inv.getStackInSlot(i).isItemEqual(searchedItemStack)) {
-                                        if(inventory[0] == null) {
-                                            inventory[0] = inv.decrStackSize(i, 1);
-                                        } else {
-                                            inv.decrStackSize(i, 1);
-                                            inventory[0].stackSize++;
-                                        }
-                                        extracted = true;
-                                        break;
-                                    }
-                                }
-                                if(!extracted) {
-                                    feedPlatformStep = 2;
-                                    slowMode = false;
-                                }
-                            }
-                            break;
-                        case 5:
-                            shouldClawClose = true;
-                            break;
-                        case 6:
-                            hoverOverNeighbour(targetDirection[0], targetDirection[1]);
-                            break;
-                        case 7:
-                            slowMode = false;
-                            hoverOverNeighbour(platformDir[0], platformDir[1]);
-                            if(platform != null) {
-                                platform.openClaw();
-                            }
-                            break;
-                        case 8:
-                            slowMode = true;
-                            gotoNeighbour(platformDir[0], platformDir[1]);
-                            break;
-                        case 9:
-                            shouldClawClose = false;
-                            break;
-                        case 10:
-                            if(platform != null) {
-                                platform.setHeldStack(inventory[0]);
-                                inventory[0] = null;
-                            }
-                            break;
-                        case 11:
-                            if(platform != null) {
-                                platform.closeClaw();
-                            }
-                        case 12:
-                            slowMode = false;
-                            hoverOverNeighbour(platformDir[0], platformDir[1]);
-                            break;
-                        case 13:
-                            gotoHomePosition();
-                            break;
-                    }
-                    if(isDoneInternal()) {
-                        feedPlatformStep++;
-                        if(feedPlatformStep > 13) {
-                            feedPlatformStep = 0;
-                        }
-                    }
-                }
-            }
-        }
-        */
     }
     
     public boolean reset() {
