@@ -31,19 +31,24 @@ public class TileEntityAssemblyPlatform extends TileEntityBase implements IAssem
         }
     }
 
-    @Override
-    public boolean isDone(){
+    private boolean isClawDone(){
         return clawProgress == (shouldClawClose ? 1F : 0F);
     }
+    
+    public boolean isIdle() {
+    	return(!this.shouldClawClose && this.isClawDone() && (this.inventory[0] == null));
+    }
 
-    public void closeClaw(){
+    public boolean closeClaw(){
         hasDrilledStack = false;
         hasLaseredStack = false;
         shouldClawClose = true;
+        return(this.isClawDone());
     }
 
-    public void openClaw(){
+    public boolean openClaw(){
         shouldClawClose = false;
+        return(this.isClawDone());
     }
 
     public ItemStack getHeldStack(){

@@ -20,12 +20,14 @@ public class TileEntityAssemblyLaser extends TileEntityAssemblyRobot{
         super.updateEntity();
         if(laserStep > 0) {
             ForgeDirection[] platformDirection = getPlatformDirection();
-            if(platformDirection == null) laserStep = 1;
+            if(platformDirection == null) {
+            	laserStep = 105;
+            }
             switch(laserStep){
                 case 1:
-                    isLaserOn = false;
+//                    isLaserOn = false;
                     slowMode = false;
-                    gotoHomePosition();
+//                    gotoHomePosition();
                     break;
                 case 2:
                     hoverOverNeighbour(platformDirection[0], platformDirection[1]);
@@ -49,7 +51,8 @@ public class TileEntityAssemblyLaser extends TileEntityAssemblyRobot{
                     }
                     break;
                 case 105:
-                    slowMode = false;
+                    this.slowMode = false;
+                    this.isLaserOn = false;
                     gotoHomePosition();
                     break;
                 default: //4-103
@@ -71,7 +74,6 @@ public class TileEntityAssemblyLaser extends TileEntityAssemblyRobot{
     public void startLasering(){
         if(laserStep == 0) {
             laserStep = 1;
-            isLaserOn = true;
         }
     }
 
@@ -83,16 +85,12 @@ public class TileEntityAssemblyLaser extends TileEntityAssemblyRobot{
     }
 
     private boolean isDoneInternal(){
-        return super.isDone();
+        return super.isDoneMoving();
     }
 
     @Override
-    public boolean isDone(){
-        if(isDoneInternal()) {
-            return laserStep == 0;
-        } else {
-            return false;
-        }
+    public boolean isIdle(){
+        return laserStep == 0 && isDoneInternal();
     }
 
     @Override
@@ -121,8 +119,13 @@ public class TileEntityAssemblyLaser extends TileEntityAssemblyRobot{
         return null;
     }
     
-    public void reset(){
-    	this.isLaserOn = false;
-    	this.laserStep = 105;
+    public boolean reset(){
+    	if(this.isIdle())
+    		return(true);
+    	else {    		
+    		this.isLaserOn = false;
+    		this.laserStep = 105;
+    		return(false);
+    	}
     }
 }

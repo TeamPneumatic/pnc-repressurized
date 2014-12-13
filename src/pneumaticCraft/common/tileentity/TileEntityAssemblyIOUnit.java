@@ -24,228 +24,306 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
     public float oldClawProgress;
     @DescSynced
     public ItemStack[] inventory = new ItemStack[1];
-    private int pickUpPlatformStackStep;
-    public int feedPlatformStep;
-    private int exportHeldItemStep;
     private List<AssemblyRecipe> recipeList;
     private ItemStack searchedItemStack;
+    private byte state = 0;
+    private byte tickCounter = 0;
+    
+    private final static byte SLEEP_TICKS = 50;
+    
+    private final static byte STATE_IDLE = 0;
+    private final static byte STATE_SEARCH_SRC = 1;
+    private final static byte STATE_SEARCH_DROPOFF = 6;
+    private final static byte STATE_RESET_SEARCH_DROPOFF = 20;
+    private final static byte STATE_RESET_GOTO_IDLE = 25;
+    private final static byte STATE_MAX = 127;    
 
     @Override
-    public void updateEntity(){
+    public void updateEntity() {
         super.updateEntity();
-        oldClawProgress = clawProgress;
+        
+        if(worldObj.isRemote) {
+        	if(!this.isClawDone())
+        		this.moveClaw();
+        } else {
+        	
+        	this.slowMode = false;
+            
+            switch(this.state) {
+
+            case STATE_IDLE:
+            	break;
+            case STATE_SEARCH_SRC:
+            	if(findPickupLocation())
+            		this.state++;
+            	break;
+            // rise to the right height for target location
+            case 2: // for pickup 
+            case 7: // for drop-off
+            case 21: // for reset
+            	if(hoverOverTarget())
+            		this.state++;
+            	break;
+           	// turn and move to target
+            case 3: // for pickup 
+            case 8: // for drop-off
+            case 22: // for reset
+            	this.slowMode = true;
+            	if(gotoTarget())
+            		this.state++;
+            	break;
+            case 4: // pickup item - need to pick up before closeClaw; claw needs to know item size to 'grab' it!
+            	if(getItemFromCurrentDirection())
+            		this.state++;
+            	break;
+            case 5:
+            	if(this.closeClaw())
+            		this.state++;
+            	break;
+            case STATE_SEARCH_DROPOFF:
+            case STATE_RESET_SEARCH_DROPOFF:
+            	if(findDropOffLoation())
+            		this.state++;
+            	break;
+            case 9:
+            case 23:
+            	if(this.openClaw())
+            		this.state++;
+            	break;
+            case 10: // drop off item
+            case 24:
+            	if(putItemToCurrentDirection())
+            		this.state++;
+            	break;
+            case 11:
+            case STATE_RESET_GOTO_IDLE:
+            	if(gotoIdlePos())
+            		this.state = 0;
+            case STATE_MAX: // this will be set if we encounter an unknown state; prevents log-spam that would result from default-case
+            	break;
+            default:
+            	System.out.printf("unexpected state: %d%n", this.state);
+            	this.state = STATE_MAX;
+            	break;
+            }
+        }
+    }
+    
+    public boolean reset() {
+    	if(this.state >= STATE_RESET_SEARCH_DROPOFF)
+    		return(false);
+    	else if(this.inventory[0] != null) {
+    		this.state = STATE_RESET_SEARCH_DROPOFF;
+    		return(false);
+    	} else if (this.state == STATE_IDLE) {
+    		return(true);
+    	} else {
+    		this.state = STATE_RESET_GOTO_IDLE;
+    		return(this.isIdle());
+    	}
+    }
+    
+    /**
+     * @return true if the controller should use air and display 'running'
+     */
+    public boolean pickupItem(List<AssemblyRecipe> list) {   	
+    	this.recipeList = list;
+    	
+    	if(this.state == STATE_IDLE)
+    		this.state++;
+    	
+    	return((this.state > STATE_IDLE)
+    			&& !this.shouldSleep()  // will not use air while waiting for item/inventory to be available
+    			&& (this.state < STATE_MAX));
+    }
+    
+    private boolean gotoIdlePos() {
+    	this.gotoHomePosition();
+    	return(this.isDoneInternal());
+    }
+    
+    private boolean findPickupLocation() {
+    	if(shouldSleep())
+    		return(false);
+    	
+        ForgeDirection[] inventoryDir = null;
+        
+        if(this.isImportUnit()) {
+        	this.searchedItemStack = null;
+        	if(this.recipeList != null) {
+        		for(AssemblyRecipe recipe : recipeList) {
+        			inventoryDir = getInventoryDirectionForItem(recipe.getInput());
+        			if(inventoryDir != null) {
+        				this.searchedItemStack = recipe.getInput();
+        				break;
+        			}
+        		}
+        	}
+        } else {
+        	inventoryDir = getPlatformDirection();        	
+        }
+        
+        this.targetDirection = inventoryDir;
+        
+        if(this.targetDirection == null) {
+        	sleepBeforeNextSearch();
+        	
+        	return(false);
+        } else
+        	return(true);        
+    }
+
+	private boolean shouldSleep() {
+		if((this.tickCounter > 0) && this.tickCounter++ < SLEEP_TICKS) {
+    		return(true);
+    	} else {
+    		this.tickCounter = 0;
+    		return(false);
+    	}
+	}
+	
+	private void sleepBeforeNextSearch() {
+		this.tickCounter = 1;
+	}
+    
+    private boolean findDropOffLoation() {
+    	if(shouldSleep())
+    		return(false);
+
+    	ForgeDirection[] inventoryDir = null;
+        
+        if(this.isImportUnit()) {
+        	inventoryDir = getPlatformDirection();
+        } else {
+        	inventoryDir = getExportLocationForItem(inventory[0]);
+        }
+    
+        this.targetDirection = inventoryDir;
+        
+        if(this.targetDirection == null) {
+        	sleepBeforeNextSearch();
+        	
+        	return(false);
+        } else
+        	return(true);        
+    }
+    
+    private boolean getItemFromCurrentDirection(){
+    	TileEntity tile = getTileEntityForCurrentDirection();
+
+		boolean extracted = false;
+		
+		/*
+		 * we must not .reset here because we might inadvertently change this.state right before this.state++ 
+		 * 
+		if((tile == null) || !(tile instanceof IInventory)) // TE / inventory is gone
+			reset();
+		*/
+
+		if(this.isImportUnit()) {
+			if(this.searchedItemStack == null) { // we don't know what we're supposed to pick up
+				this.reset();
+			} else if(tile instanceof IInventory) {
+				IInventory inv = (IInventory)tile;
+				for(int i = 0; i < inv.getSizeInventory(); i++) {
+					if(inv.getStackInSlot(i) != null && inv.getStackInSlot(i).isItemEqual(searchedItemStack)) {
+						if(inventory[0] == null) {
+							inventory[0] = inv.decrStackSize(i, 1);
+						} else {
+							inv.decrStackSize(i, 1);
+							inventory[0].stackSize++;
+						}
+						extracted = (inventory[0].stackSize == searchedItemStack.stackSize); // we might need to pickup more than 1 item
+						break;
+					}
+				}
+			} else
+				reset(); // inventory gone
+		} else {
+			if(tile instanceof TileEntityAssemblyPlatform) {
+
+				TileEntityAssemblyPlatform plat = (TileEntityAssemblyPlatform)tile;
+
+				if(plat.openClaw()) {
+					inventory[0] = plat.getHeldStack();
+					plat.setHeldStack(null);
+					extracted = (inventory[0] != null);
+					
+					if(!extracted) // something went wrong - either the platform is gone altogether, or the item is not there anymore
+						reset();
+				}				
+			}			
+		}
+
+		return(extracted);
+    }
+    
+    private boolean putItemToCurrentDirection() {    	    	
+    	if(this.isImportUnit()) {
+    		TileEntity tile = getTileEntityForCurrentDirection();
+    		if(tile instanceof TileEntityAssemblyPlatform) {
+
+    			TileEntityAssemblyPlatform plat = (TileEntityAssemblyPlatform)tile;
+
+    			if(inventory[0] == null)
+    				return(plat.closeClaw());
+    			
+    			if(plat.isIdle()) {
+    				plat.setHeldStack(inventory[0]);
+    				inventory[0] = null;
+    				return(plat.closeClaw());
+    			}
+    		}
+    	} else {
+            IInventory inv = getInventoryForCurrentDirection();
+            if(inv != null) {
+                int startSize = inventory[0].stackSize;
+                for(int i = 0; i < 6; i++) {
+                    inventory[0] = PneumaticCraftUtils.exportStackToInventory(inv, inventory[0], ForgeDirection.getOrientation(i));
+                    if(inventory[0] == null) break;
+                }
+                if(inventory[0] == null || startSize != inventory[0].stackSize) sendDescriptionPacket();
+            }
+            
+            return(inventory[0] == null);
+    	}
+    	
+    	return(false);
+    }
+    
+    private boolean closeClaw(){
+    	this.shouldClawClose = true;
+    	return(this.moveClaw());
+    }
+    
+    private boolean openClaw(){
+    	this.shouldClawClose = false;
+    	return(this.moveClaw());
+    }    
+
+	private boolean moveClaw() {
         if(!shouldClawClose && clawProgress > 0F) {
             clawProgress = Math.max(clawProgress - TileEntityConstants.ASSEMBLY_IO_UNIT_CLAW_SPEED * speed, 0);
         } else if(shouldClawClose && clawProgress < 1F) {
             clawProgress = Math.min(clawProgress + TileEntityConstants.ASSEMBLY_IO_UNIT_CLAW_SPEED * speed, 1);
         }
-        if(!worldObj.isRemote) {
-            if(!shouldClawClose && clawProgress == 0F && isDoneInternal()) {
-                if(isExportUnit() && inventory[0] != null) {//when in export mode, auto eject.
-                    IInventory inv = getInventoryForCurrentDirection();
-                    if(inv != null) {
-                        int startSize = inventory[0].stackSize;
-                        for(int i = 0; i < 6; i++) {
-                            inventory[0] = PneumaticCraftUtils.exportStackToInventory(inv, inventory[0], ForgeDirection.getOrientation(i));
-                            if(inventory[0] == null) break;
-                        }
-                        if(inventory[0] == null || startSize != inventory[0].stackSize) sendDescriptionPacket();
-                    }
-                }
-            }
-            if(pickUpPlatformStackStep > 0 && isExportUnit()) {
-                ForgeDirection[] platformDir = getPlatformDirection();
-                TileEntity tile = getTileEntityForCurrentDirection();
-                TileEntityAssemblyPlatform platform = null;
-                if(tile instanceof TileEntityAssemblyPlatform) {
-                    platform = (TileEntityAssemblyPlatform)tile;
-                }
-                if(platformDir == null) pickUpPlatformStackStep = 1;
-                switch(pickUpPlatformStackStep){
-                    case 1:
-                        slowMode = false;
-                        gotoHomePosition();
-                        break;
-                    case 2:
-                        hoverOverNeighbour(platformDir[0], platformDir[1]);
-                        shouldClawClose = false;
-                        break;
-                    case 3:
-                        slowMode = true;
-                        gotoNeighbour(platformDir[0], platformDir[1]);
-                        break;
-                    case 4:
-                        TileEntity te = getTileEntityForCurrentDirection();
-                        if(te instanceof TileEntityAssemblyPlatform) {
-                            inventory[0] = ((TileEntityAssemblyPlatform)te).getHeldStack();
-                            ((TileEntityAssemblyPlatform)te).setHeldStack(null);
-                        }
-                        break;
+        
+        /*
+         * this was moved to the end because we're now only calling moveClaw when not isClawDone, which
+         * leaves the client with oldClawProgress != clawProgress and a constant flicker. 
+         */
+		oldClawProgress = clawProgress; 
+		
+    	//System.out.printf("MC claw-progress: %f%n", this.clawProgress);
 
-                    case 5:
-                        if(platform != null) {
-                            platform.openClaw();
-                        }
-                        break;
-                    case 6:
-                        shouldClawClose = true;
-                        break;
-                    case 7:
-                        hoverOverNeighbour(platformDir[0], platformDir[1]);
-                        break;
-                }
-                if(isDoneInternal()) {
-                    pickUpPlatformStackStep++;
-                    if(pickUpPlatformStackStep > 7) {
-                        pickUpPlatformStackStep = 0;
-                        slowMode = false;
-                    }
-                }
-            } else if(exportHeldItemStep > 0 && isExportUnit()) {
-                ForgeDirection[] chestLocation = getExportLocationForItem(inventory[0]);
-                if(chestLocation != null || exportHeldItemStep > 3) {
-                    switch(exportHeldItemStep){
-                        case 1:
-                            slowMode = false;
-                            shouldClawClose = true;
-                            break;
-                        case 2:
-                            hoverOverNeighbour(chestLocation[0], chestLocation[1]);
-                            break;
-                        case 3:
-                            slowMode = true;
-                            gotoNeighbour(chestLocation[0], chestLocation[1]);
-                            break;
-                        case 4:
-                            shouldClawClose = false;
-                            break;
-                        case 5:
-                        	slowMode = false;
-                            gotoHomePosition();
-                            break;
-                    }
-                    if(isDoneInternal() && (exportHeldItemStep != 4 || inventory[0] == null)) {
-                        exportHeldItemStep++;
-                        if(exportHeldItemStep > 5) {
-                            exportHeldItemStep = 0;
-                        }
-                    }
-                } else if(inventory[0] == null) {
-                    gotoHomePosition();
-                    slowMode = false;
-                    exportHeldItemStep = 0;
-                }
-            } else if(feedPlatformStep > 0 && isImportUnit() && recipeList != null) {
-            	// TODO BUG FIXME recipeList will be null if we're in going-home-mode
-            	// because program was removed from controller and the world is reloaded
-                ForgeDirection[] inventoryDir = null;
-                searchedItemStack = null;
-                for(AssemblyRecipe recipe : recipeList) {
-                    inventoryDir = getInventoryDirectionForItem(recipe.getInput());
-                    if(inventoryDir != null) {
-                        searchedItemStack = recipe.getInput();
-                        break;
-                    }
-                }
-                if(searchedItemStack != null || feedPlatformStep != 4) {
-                    ForgeDirection[] platformDir = getPlatformDirection();
-                    TileEntity tile = getTileEntityForCurrentDirection();
-                    TileEntity plat = null;
-                    if(platformDir != null) plat = getTileEntityForDirection(platformDir[0], platformDir[1]);
-                    TileEntityAssemblyPlatform platform = null;
-                    if(plat instanceof TileEntityAssemblyPlatform) {
-                        platform = (TileEntityAssemblyPlatform)plat;
-                    }
-                    //  System.out.println("inventory: " + inventory[0] + ", feedPlatformStep = " + feedPlatformStep + " tile entity: " + this);
-                    if(feedPlatformStep < 4 && inventoryDir == null) feedPlatformStep = 1;
-                    if(feedPlatformStep > 6 && (platformDir == null || platform == null)) feedPlatformStep = 6;
-                    switch(feedPlatformStep){
-                        case 1:
-                            gotoHomePosition();
-                            break;
-                        case 2:
-                            hoverOverNeighbour(inventoryDir[0], inventoryDir[1]);
-                            shouldClawClose = false;
-                            break;
-                        case 3:
-                            slowMode = true;
-                            gotoNeighbour(inventoryDir[0], inventoryDir[1]);
-                            break;
-                        case 4:
-                            if(tile instanceof IInventory) {
-                                IInventory inv = (IInventory)tile;
-                                boolean extracted = false;
-                                for(int i = 0; i < inv.getSizeInventory(); i++) {
-                                    if(inv.getStackInSlot(i) != null && inv.getStackInSlot(i).isItemEqual(searchedItemStack)) {
-                                        if(inventory[0] == null) {
-                                            inventory[0] = inv.decrStackSize(i, 1);
-                                        } else {
-                                            inv.decrStackSize(i, 1);
-                                            inventory[0].stackSize++;
-                                        }
-                                        extracted = true;
-                                        break;
-                                    }
-                                }
-                                if(!extracted) {
-                                    feedPlatformStep = 2;
-                                    slowMode = false;
-                                }
-                            }
-                            break;
-                        case 5:
-                            shouldClawClose = true;
-                            break;
-                        case 6:
-                            hoverOverNeighbour(targetDirection[0], targetDirection[1]);
-                            break;
-                        case 7:
-                            slowMode = false;
-                            hoverOverNeighbour(platformDir[0], platformDir[1]);
-                            if(platform != null) {
-                                platform.openClaw();
-                            }
-                            break;
-                        case 8:
-                            slowMode = true;
-                            gotoNeighbour(platformDir[0], platformDir[1]);
-                            break;
-                        case 9:
-                            shouldClawClose = false;
-                            break;
-                        case 10:
-                            if(platform != null) {
-                                platform.setHeldStack(inventory[0]);
-                                inventory[0] = null;
-                            }
-                            break;
-                        case 11:
-                            if(platform != null) {
-                                platform.closeClaw();
-                            }
-                        case 12:
-                            slowMode = false;
-                            hoverOverNeighbour(platformDir[0], platformDir[1]);
-                            break;
-                        case 13:
-                            gotoHomePosition();
-                            break;
-                    }
-                    if(isDoneInternal()) {
-                        feedPlatformStep++;
-                        if(feedPlatformStep > 13) {
-                            feedPlatformStep = 0;
-                        }
-                    }
-                }
-            }
-        }
-    }
+    	return(this.isClawDone());
+	}
+	
+	private boolean isClawDone() {
+		return(clawProgress == (shouldClawClose ? 1F : 0F));
+	}
+	
     
-    private boolean isExportUnit(){
-    	return(getBlockMetadata() == 1);
-    }
-
     private boolean isImportUnit(){
     	return(getBlockMetadata() == 0);
     }
@@ -256,49 +334,39 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
         return null;
     }
 
-    public void switchMode(){
-        worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 1 - getBlockMetadata(), 3);
-        //PacketDispatcher.sendPacketToAllPlayers(getDescriptionPacket());
+    public boolean switchMode(){
+    	if(this.state <= STATE_SEARCH_SRC) {
+    		worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 1 - getBlockMetadata(), 3);
+    		return(true);
+    	} else {
+    		return false;
+    	}
+
+    	//PacketDispatcher.sendPacketToAllPlayers(getDescriptionPacket());
     }
 
     @Override
     public void gotoHomePosition(){
         super.gotoHomePosition();
-        shouldClawClose = false;
+        
+        if(this.isClawDone())
+        	this.openClaw();
     }
 
-    @Override
-    public boolean isDone(){
-        return pickUpPlatformStackStep == 0 && exportHeldItemStep == 0 && feedPlatformStep == 0 && isDoneInternal();
+    public boolean isIdle() {
+    	return(this.state == STATE_IDLE);
     }
-
+    
     private boolean isDoneInternal(){
+    	return(super.isDoneMoving());
+    	/*
         if(super.isDone()) {
             boolean searchDone = feedPlatformStep != 4 || searchedItemStack != null && inventory[0] != null && searchedItemStack.isItemEqual(inventory[0]) && inventory[0].stackSize == searchedItemStack.stackSize;
             return clawProgress == (shouldClawClose ? 1F : 0F) && searchDone;
         } else {
             return false;
         }
-    }
-
-    public void pickUpPlatformItem(){
-        if(pickUpPlatformStackStep == 0) {
-            pickUpPlatformStackStep = 1;
-        }
-    }
-
-    public boolean pickUpInventoryItem(List<AssemblyRecipe> list){
-        if(feedPlatformStep == 0) {
-            feedPlatformStep = 1;
-        }
-        recipeList = list;
-        return feedPlatformStep != 2;
-    }
-
-    public void exportHeldItem(){
-        if(exportHeldItemStep == 0) {
-            exportHeldItemStep = 1;
-        }
+       */
     }
 
     public ForgeDirection[] getInventoryDirectionForItem(ItemStack searchedItem){
@@ -428,9 +496,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
         super.readFromNBT(tag);
         clawProgress = tag.getFloat("clawProgress");
         shouldClawClose = tag.getBoolean("clawClosing");
-        pickUpPlatformStackStep = tag.getInteger("platformPickStep");
-        feedPlatformStep = tag.getInteger("feedPlatformStep");
-        exportHeldItemStep = tag.getInteger("exportHeldItemStep");
+        this.state = tag.getByte("state");
         // Read in the ItemStacks in the inventory from NBT
         NBTTagList tagList = tag.getTagList("Items", 10);
         inventory = new ItemStack[1];
@@ -448,9 +514,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
         super.writeToNBT(tag);
         tag.setFloat("clawProgress", clawProgress);
         tag.setBoolean("clawClosing", shouldClawClose);
-        tag.setInteger("platformPickStep", pickUpPlatformStackStep);
-        tag.setInteger("feedPlatformStep", feedPlatformStep);
-        tag.setInteger("exportHeldItemStep", exportHeldItemStep);
+        tag.setByte("state", this.state);
         // Write the ItemStacks in the inventory to NBT
         NBTTagList tagList = new NBTTagList();
         for(int currentIndex = 0; currentIndex < inventory.length; ++currentIndex) {
