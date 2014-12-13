@@ -36,7 +36,92 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
     private final static byte STATE_SEARCH_DROPOFF = 6;
     private final static byte STATE_RESET_SEARCH_DROPOFF = 20;
     private final static byte STATE_RESET_GOTO_IDLE = 25;
-    private final static byte STATE_MAX = 127;
+    private final static byte STATE_MAX = 127;    
+
+    @Override
+    public void updateEntity() {
+        super.updateEntity();
+        
+        if(worldObj.isRemote) {
+        	if(!this.isClawDone())
+        		this.moveClaw();
+        } else {
+        	
+        	this.slowMode = false;
+            
+            switch(this.state) {
+
+            case STATE_IDLE:
+            	break;
+            case STATE_SEARCH_SRC:
+            	if(findPickupLocation())
+            		this.state++;
+            	break;
+            // rise to the right height for target location
+            case 2: // for pickup 
+            case 7: // for drop-off
+            case 21: // for reset
+            	if(hoverOverTarget())
+            		this.state++;
+            	break;
+           	// turn and move to target
+            case 3: // for pickup 
+            case 8: // for drop-off
+            case 22: // for reset
+            	this.slowMode = true;
+            	if(gotoTarget())
+            		this.state++;
+            	break;
+            case 4: // pickup item - need to pick up before closeClaw; claw needs to know item size to 'grab' it!
+            	if(getItemFromCurrentDirection())
+            		this.state++;
+            	break;
+            case 5:
+            	if(this.closeClaw())
+            		this.state++;
+            	break;
+            case STATE_SEARCH_DROPOFF:
+            case STATE_RESET_SEARCH_DROPOFF:
+            	if(findDropOffLoation())
+            		this.state++;
+            	break;
+            case 9:
+            case 23:
+            	if(this.openClaw())
+            		this.state++;
+            	break;
+            case 10: // drop off item
+            case 24:
+            	if(putItemToCurrentDirection())
+            		this.state++;
+            	break;
+            case 11:
+            case STATE_RESET_GOTO_IDLE:
+            	if(gotoIdlePos())
+            		this.state = 0;
+            case STATE_MAX: // this will be set if we encounter an unknown state; prevents log-spam that would result from default-case
+            	break;
+            default:
+            	System.out.printf("unexpected state: %d%n", this.state);
+            	this.state = STATE_MAX;
+            	break;
+            }
+        }
+    }
+    
+    public boolean reset() {
+    	if(this.state >= STATE_RESET_SEARCH_DROPOFF)
+    		return(false);
+    	else if(this.inventory[0] != null) {
+    		this.state = STATE_RESET_SEARCH_DROPOFF;
+    		return(false);
+    	} else if (this.state == STATE_IDLE) {
+    		return(true);
+    	} else {
+    		this.state = STATE_RESET_GOTO_IDLE;
+    		return(this.isIdle());
+    	}
+    }
     
     /**
      * @return true if the controller should use air and display 'running'
@@ -159,14 +244,14 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
 
 				TileEntityAssemblyPlatform plat = (TileEntityAssemblyPlatform)tile;
 
-				if(true) { // TODO: check if we can pickup the item
+				if(plat.openClaw()) {
 					inventory[0] = plat.getHeldStack();
 					plat.setHeldStack(null);
 					extracted = (inventory[0] != null);
-				}
-				
-				if(!extracted) // something went wrong - either the platform is gone altogether, or the item is not there anymore
-					reset();
+					
+					if(!extracted) // something went wrong - either the platform is gone altogether, or the item is not there anymore
+						reset();
+				}				
 			}			
 		}
 
@@ -180,10 +265,13 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
 
     			TileEntityAssemblyPlatform plat = (TileEntityAssemblyPlatform)tile;
 
+    			if(inventory[0] == null)
+    				return(plat.closeClaw());
+    			
     			if(plat.isIdle()) {
     				plat.setHeldStack(inventory[0]);
     				inventory[0] = null;
-    				return(true);
+    				return(plat.closeClaw());
     			}
     		}
     	} else {
@@ -211,92 +299,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
     private boolean openClaw(){
     	this.shouldClawClose = false;
     	return(this.moveClaw());
-    }
-
-    @Override
-    public void updateEntity() {
-        super.updateEntity();
-        
-        if(worldObj.isRemote) {
-        	if(!this.isClawDone())
-        		this.moveClaw();
-        } else {
-        	
-        	this.slowMode = false;
-            
-            switch(this.state) {
-
-            case STATE_IDLE:
-            	break;
-            case STATE_SEARCH_SRC:
-            	if(findPickupLocation())
-            		this.state++;
-            	break;
-            // rise to the right height for target location
-            case 2: // for pickup 
-            case 7: // for drop-off
-            case 21: // for reset
-            	if(hoverOverTarget())
-            		this.state++;
-            	break;
-           	// turn and move to target
-            case 3: // for pickup 
-            case 8: // for drop-off
-            case 22: // for reset
-            	this.slowMode = true;
-            	if(gotoTarget())
-            		this.state++;
-            	break;
-            case 4: // pickup item - need to pick up before closeClaw; claw needs to know item size to 'grab' it!
-            	if(getItemFromCurrentDirection())
-            		this.state++;
-            	break;
-            case 5:
-            	if(this.closeClaw())
-            		this.state++;
-            	break;
-            case STATE_SEARCH_DROPOFF:
-            case STATE_RESET_SEARCH_DROPOFF:
-            	if(findDropOffLoation())
-            		this.state++;
-            	break;
-            case 9:
-            case 23:
-            	if(this.openClaw())
-            		this.state++;
-            	break;
-            case 10: // drop off item
-            case 24:
-            	if(putItemToCurrentDirection())
-            		this.state++;
-            	break;
-            case 11:
-            case STATE_RESET_GOTO_IDLE:
-            	if(gotoIdlePos())
-            		this.state = 0;
-            case STATE_MAX: // this will be set if we encounter an unknown state; prevents log-spam that would result from default-case
-            	break;
-            default:
-            	System.out.printf("unexpected state: %d%n", this.state);
-            	this.state = STATE_MAX;
-            	break;
-            }
-        }
-    }
-    
-    public boolean reset() {
-    	if(this.state >= STATE_RESET_SEARCH_DROPOFF)
-    		return(false);
-    	else if(this.inventory[0] != null) {
-    		this.state = STATE_RESET_SEARCH_DROPOFF;
-    		return(false);
-    	} else if (this.state == STATE_IDLE) {
-    		return(true);
-    	} else {
-    		this.state = STATE_RESET_GOTO_IDLE;
-    		return(this.isIdle());
-    	}
-    }
+    }    
 
 	private boolean moveClaw() {
         if(!shouldClawClose && clawProgress > 0F) {
@@ -321,10 +324,6 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
 	}
 	
     
-    private boolean isExportUnit(){
-    	return(getBlockMetadata() == 1);
-    }
-
     private boolean isImportUnit(){
     	return(getBlockMetadata() == 0);
     }

@@ -170,14 +170,18 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
     			this.resetStep++;
     		break;
     	case 3:
-    		if((ioUnitImport == null) || ioUnitImport.reset())
+    		if((platform == null) || platform.openClaw())
     			this.resetStep++;
     		break;
     	case 4:
-    		if((ioUnitExport == null) || ioUnitExport.reset())
+    		if((ioUnitImport == null) || ioUnitImport.reset())
     			this.resetStep++;
     		break;
     	case 5:
+    		if((ioUnitExport == null) || ioUnitExport.reset())
+    			this.resetStep++;
+    		break;
+    	case 6:
     		if((platform != null) && (platform.getHeldStack() != null)) {
     			if(ioUnitExport != null) {
     				if(!ioUnitExport.pickupItem(null))
@@ -186,7 +190,7 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
     		} else
     			this.resetStep++;
     		break;
-    	case 6:
+    	case 7:
     		this.goingToHomePosition = false;
     		this.resetStep = 0;
     		break;    		

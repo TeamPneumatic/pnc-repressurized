@@ -85,7 +85,8 @@ public abstract class TileEntityAssemblyRobot extends TileEntityBase implements 
      * @param secondaryDir
      * @return
      */
-    public boolean gotoNeighbour(ForgeDirection primaryDir, ForgeDirection secondaryDir){
+    @SuppressWarnings("incomplete-switch")
+	public boolean gotoNeighbour(ForgeDirection primaryDir, ForgeDirection secondaryDir){
         targetDirection = new ForgeDirection[]{primaryDir, secondaryDir};
         boolean diagonal = true;
         boolean diagonalAllowed = canMoveToDiagonalNeighbours();
@@ -210,7 +211,7 @@ public abstract class TileEntityAssemblyRobot extends TileEntityBase implements 
         }
         tag.setBoolean("slowMode", slowMode);
         tag.setFloat("speed", speed);
-        tag.setInteger("targetDir1", targetDirection[0].ordinal()); // TODO BUG FIXME targetDirection might be null
+        tag.setInteger("targetDir1", targetDirection[0].ordinal()); // FIXME targetDirection might be null
         tag.setInteger("targetDir2", targetDirection[1].ordinal());
     }
 
