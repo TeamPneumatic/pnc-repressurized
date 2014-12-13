@@ -152,48 +152,58 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
         super.updateEntity();
 
     }
-
-    public void resetSetup(){
-        goingToHomePosition = true;
-    }
+    
+    // this is temporary until we re-factor this class
+    private byte resetStep = 0;
 
     private void goToHomePosition(TileEntityAssemblyPlatform platform, TileEntityAssemblyIOUnit ioUnitImport, TileEntityAssemblyIOUnit ioUnitExport, TileEntityAssemblyDrill drill, TileEntityAssemblyLaser laser){
-    	/*
-    	if(drill != null && !drill.isDone()){
-    		drill.reset();
-    	} else if(laser != null && !laser.isDone()){
-    		laser.reset();
-    	} else if(ioUnitExport != null) {
-    		ioUnitExport.slowMode = false;
-    		if(ioUnitExport.inventory[0] != null) {
-    			ioUnitExport.exportHeldItem();
-    		} else {
-    			if(platform != null) {
-    				if(platform.getHeldStack() != null) {
-    					ForgeDirection[] platformDirection = ioUnitExport.getPlatformDirection();
-    					if(platformDirection != null) {
-    						platform.openClaw();
-    						ioUnitExport.pickUpPlatformItem();
-    					}
-    				} else {
-    					if(ioUnitImport != null) {
-    						ioUnitImport.slowMode = false;
-    						if(ioUnitImport.inventory[0] != null) {
-    						} else {
-    							ioUnitExport.gotoHomePosition();
-    							platform.openClaw();
-    							ioUnitImport.gotoHomePosition();
-    							ioUnitImport.feedPlatformStep = 0;
-    							if(drill != null) drill.gotoHomePosition();
-    							if(laser != null) laser.gotoHomePosition();
-    							goingToHomePosition = !(ioUnitExport.isDone() && platform.isDone() && ioUnitImport.isDone() && (drill == null || drill.isDone()) && (laser == null || laser.isDone()));
-    						}
-    					}
-    				}
+    	if(this.goingToHomePosition && this.resetStep == 0)
+    		this.resetStep = 1;
+    	
+    	switch(this.resetStep) {
+    	case 1:
+    		if((drill == null) || drill.reset())
+    			this.resetStep++;
+    		break;
+    	case 2:
+    		if((laser == null) || laser.reset())
+    			this.resetStep++;
+    		break;
+    	case 3:
+    		if((ioUnitImport == null) || ioUnitImport.reset())
+    			this.resetStep++;
+    		break;
+    	case 4:
+    		if((ioUnitExport == null) || ioUnitExport.reset())
+    			this.resetStep++;
+    		break;
+    	case 5:
+    		if((platform != null) && (platform.getHeldStack() != null)) {
+    			if(ioUnitExport != null) {
+    				if(!ioUnitExport.pickupItem(null))
+    					this.resetStep--; // reset exportUnit and re-check platform
     			}
-    		}
+    		} else
+    			this.resetStep++;
+    		break;
+    	case 6:
+    		this.goingToHomePosition = false;
+    		this.resetStep = 0;
+    		break;    		
     	}
-    	*/
+    	/*
+    	if(drill != null && !drill.reset()){
+    	} else if(laser != null && !laser.reset()){
+    	} else if((ioUnitImport != null) && ioUnitImport.isDone()
+    			&& (platform != null) && (platform.getHeldStack() != null)
+    			&& (ioUnitExport != null) &&ioUnitExport.isDone()) {
+    		ioUnitExport.pickupItem(null);
+    	} else if(!ioUnitImport.reset()) {    		
+    	} else if(!ioUnitExport.reset()) {    		
+    	}
+    	else
+    		this.goingToHomePosition = false;
+    		*/
     }
 
     public void addProblems(List<String> problemList){

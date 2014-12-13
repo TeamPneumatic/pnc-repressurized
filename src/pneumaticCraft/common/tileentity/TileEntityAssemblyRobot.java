@@ -72,7 +72,7 @@ public abstract class TileEntityAssemblyRobot extends TileEntityBase implements 
     		return(false);
     	
     	this.gotoNeighbour(this.targetDirection[0], this.targetDirection[1]);
-    	return(this.isDone());
+    	return(this.isDoneMoving());
     }
 
     public void gotoNeighbour(ForgeDirection direction){
@@ -148,7 +148,7 @@ public abstract class TileEntityAssemblyRobot extends TileEntityBase implements 
 
     public boolean hoverOverNeighbour(ForgeDirection[] directions){    	
     	hoverOverNeighbour(directions[0], directions[1]);
-    	return(this.isDone());
+    	return(this.isDoneMoving());
     }
     
     public void hoverOverNeighbour(ForgeDirection primaryDir, ForgeDirection secondaryDir){
@@ -176,8 +176,7 @@ public abstract class TileEntityAssemblyRobot extends TileEntityBase implements 
     	return worldObj.getTileEntity(xCoord + firstDir.offsetX + secondDir.offsetX, yCoord + firstDir.offsetY + secondDir.offsetY, zCoord + firstDir.offsetZ + secondDir.offsetZ);
     }
 
-    @Override
-    public boolean isDone(){
+    protected boolean isDoneMoving(){
         for(int i = 0; i < 5; i++) {
             if(!PneumaticCraftUtils.areFloatsEqual(angles[i], targetAngles[i])) return false;
         }

@@ -34,6 +34,8 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
     private final static byte STATE_IDLE = 0;
     private final static byte STATE_SEARCH_SRC = 1;
     private final static byte STATE_SEARCH_DROPOFF = 6;
+    private final static byte STATE_RESET_SEARCH_DROPOFF = 20;
+    private final static byte STATE_RESET_GOTO_IDLE = 25;
     private final static byte STATE_MAX = 127;
     
     public boolean pickupItem(List<AssemblyRecipe> list) {   	
@@ -49,7 +51,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
     
     private boolean gotoIdlePos() {
     	this.gotoHomePosition();
-    	return(this.isDone());
+    	return(this.isDoneInternal());
     }
     
     private boolean findPickupLocation() {
@@ -75,7 +77,12 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
         
         this.targetDirection = inventoryDir;
         
-        return(this.targetDirection != null);
+        if(this.targetDirection == null) {
+        	sleepBeforeNextSearch();
+        	
+        	return(false);
+        } else
+        	return(true);        
     }
 
 	private boolean shouldSleep() {
@@ -117,6 +124,13 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
     	TileEntity tile = getTileEntityForCurrentDirection();
 
 		boolean extracted = false;
+		
+		/*
+		 * we must not .reset here because we might inadvertently change this.state right before this.state++ 
+		 * 
+		if((tile == null) || !(tile instanceof IInventory)) // TE / inventory is gone
+			reset();
+		*/
 
 		if(this.isImportUnit()) {
 			if(this.searchedItemStack == null) { // we don't know what we're supposed to pick up
@@ -135,7 +149,8 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
 						break;
 					}
 				}
-			}
+			} else
+				reset(); // inventory gone
 		} else {
 			if(tile instanceof TileEntityAssemblyPlatform) {
 
@@ -146,7 +161,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
 					plat.setHeldStack(null);
 					extracted = (inventory[0] != null);
 				}
-
+				
 				if(!extracted) // something went wrong - either the platform is gone altogether, or the item is not there anymore
 					reset();
 			}			
@@ -217,12 +232,14 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
             // rise to the right height for target location
             case 2: // for pickup 
             case 7: // for drop-off
+            case 21: // for reset
             	if(hoverOverTarget())
             		this.state++;
             	break;
            	// turn and move to target
             case 3: // for pickup 
             case 8: // for drop-off
+            case 22: // for reset
             	this.slowMode = true;
             	if(gotoTarget())
             		this.state++;
@@ -236,18 +253,22 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
             		this.state++;
             	break;
             case STATE_SEARCH_DROPOFF:
+            case STATE_RESET_SEARCH_DROPOFF:
             	if(findDropOffLoation())
             		this.state++;
             	break;
             case 9:
+            case 23:
             	if(this.openClaw())
             		this.state++;
             	break;
             case 10: // drop off item
+            case 24:
             	if(putItemToCurrentDirection())
             		this.state++;
             	break;
             case 11:
+            case STATE_RESET_GOTO_IDLE:
             	if(gotoIdlePos())
             		this.state = 0;
             case STATE_MAX: // this will be set if we encounter an unknown state; prevents log-spam that would result from default-case
@@ -261,11 +282,15 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
     }
     
     public boolean reset() {
-    	if(this.inventory[0] != null) {
-    		this.state = STATE_SEARCH_DROPOFF;
+    	if(this.state >= STATE_RESET_SEARCH_DROPOFF)
     		return(false);
+    	else if(this.inventory[0] != null) {
+    		this.state = STATE_RESET_SEARCH_DROPOFF;
+    		return(false);
+    	} else if (this.state == STATE_IDLE) {
+    		return(true);
     	} else {
-    		this.gotoHomePosition();
+    		this.state = STATE_RESET_GOTO_IDLE;
     		return(this.isDone());
     	}
     }
@@ -329,11 +354,15 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
     @Override
     public boolean isDone(){
         //return pickUpPlatformStackStep == 0 && exportHeldItemStep == 0 && feedPlatformStep == 0 && isDoneInternal();
-    	return(isDoneInternal());
+    	return(isIdle());
     }
 
+    public boolean isIdle() {
+    	return(this.state == STATE_IDLE);
+    }
+    
     private boolean isDoneInternal(){
-    	return(super.isDone());
+    	return(super.isDoneMoving());
     	/*
         if(super.isDone()) {
             boolean searchDone = feedPlatformStep != 4 || searchedItemStack != null && inventory[0] != null && searchedItemStack.isItemEqual(inventory[0]) && inventory[0].stackSize == searchedItemStack.stackSize;
