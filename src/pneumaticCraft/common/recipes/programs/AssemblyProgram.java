@@ -49,7 +49,8 @@ public abstract class AssemblyProgram{
      * You can add problem messages here if an assembly program has a problem with a certain step.
      * @param problemList
      */
-    public void addProgramProblem(List<String> problemList){
+    @SuppressWarnings("incomplete-switch")
+	public void addProgramProblem(List<String> problemList){
         switch(curProblem){
             case NO_INPUT:
                 problemList.addAll(PneumaticCraftUtils.convertStringIntoList(EnumChatFormatting.GRAY + "The input IO Unit can't find an inventory with a Block of Compressed Iron.", GuiConstants.maxCharPerLineLeft));

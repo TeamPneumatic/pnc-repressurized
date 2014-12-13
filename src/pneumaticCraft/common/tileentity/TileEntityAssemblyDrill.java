@@ -102,7 +102,7 @@ public class TileEntityAssemblyDrill extends TileEntityAssemblyRobot{
     }
 
     @Override
-    public boolean isDone(){
+    public boolean isIdle(){
         return drillStep == 0 && isDoneInternal();
     }
 
@@ -127,7 +127,7 @@ public class TileEntityAssemblyDrill extends TileEntityAssemblyRobot{
     }
 
     public boolean reset(){
-    	if(this.isDone())
+    	if(this.isIdle())
     		return(true);
     	else
     	{

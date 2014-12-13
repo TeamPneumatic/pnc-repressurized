@@ -17,24 +17,27 @@ public class ProgramDrillLaser extends AssemblyProgram{
     public EnumMachine[] getRequiredMachines(){
         return new EnumMachine[]{EnumMachine.PLATFORM, EnumMachine.IO_UNIT_EXPORT, EnumMachine.IO_UNIT_IMPORT, EnumMachine.DRILL, EnumMachine.LASER};
     }
-
+    
     @Override
-    public boolean executeStep(TileEntityAssemblyController controller, TileEntityAssemblyPlatform platform, TileEntityAssemblyIOUnit ioUnitImport, TileEntityAssemblyIOUnit ioUnitExport, TileEntityAssemblyDrill drill, TileEntityAssemblyLaser laser){
+    public boolean executeStep(TileEntityAssemblyController controller, TileEntityAssemblyPlatform platform, TileEntityAssemblyIOUnit ioUnitImport, TileEntityAssemblyIOUnit ioUnitExport, TileEntityAssemblyDrill drill, TileEntityAssemblyLaser laser){   
+    	boolean useAir = true;
+
     	if(platform.getHeldStack() != null) {
     		if(canItemBeDrilled(platform.getHeldStack())) {
     			drill.goDrilling();
-    			return(true);
     		}
-    		else if(canItemBeLasered(platform.getHeldStack())) {
+    		else if(drill.isIdle() && canItemBeLasered(platform.getHeldStack())) {
     			laser.startLasering();
-    			return(true);
     		}
-    		else
-    			return(ioUnitExport.pickupItem(null));
+    		else if(drill.isIdle() && laser.isIdle()) {
+    			useAir = ioUnitExport.pickupItem(null);
+    		}
     	}
     	else {
-    		return(ioUnitImport.pickupItem(getRecipeList()));
-    	}
+    		useAir = ioUnitImport.pickupItem(getRecipeList());
+    	}    	
+    	
+    	return(useAir);    	
 
     	/*
         if(ioUnitExport.inventory[0] != null) {

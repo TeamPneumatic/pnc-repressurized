@@ -26,7 +26,7 @@ public class ProgramDrill extends AssemblyProgram{
     			return(true);
     		}
     		else
-    			return(ioUnitExport.pickupItem(null));
+    			return(drill.isIdle() && ioUnitExport.pickupItem(null));
     	}
     	else {
     		return(ioUnitImport.pickupItem(getRecipeList()));

@@ -38,6 +38,9 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
     private final static byte STATE_RESET_GOTO_IDLE = 25;
     private final static byte STATE_MAX = 127;
     
+    /**
+     * @return true if the controller should use air and display 'running'
+     */
     public boolean pickupItem(List<AssemblyRecipe> list) {   	
     	this.recipeList = list;
     	
@@ -177,7 +180,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
 
     			TileEntityAssemblyPlatform plat = (TileEntityAssemblyPlatform)tile;
 
-    			if(plat.isReadyForItem()) {
+    			if(plat.isIdle()) {
     				plat.setHeldStack(inventory[0]);
     				inventory[0] = null;
     				return(true);
@@ -291,7 +294,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
     		return(true);
     	} else {
     		this.state = STATE_RESET_GOTO_IDLE;
-    		return(this.isDone());
+    		return(this.isIdle());
     	}
     }
 
@@ -349,12 +352,6 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
         
         if(this.isClawDone())
         	this.openClaw();
-    }
-
-    @Override
-    public boolean isDone(){
-        //return pickUpPlatformStackStep == 0 && exportHeldItemStep == 0 && feedPlatformStep == 0 && isDoneInternal();
-    	return(isIdle());
     }
 
     public boolean isIdle() {

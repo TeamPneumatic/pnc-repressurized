@@ -31,25 +31,6 @@ public class ProgramLaser extends AssemblyProgram{
     	else {
     		return(ioUnitImport.pickupItem(getRecipeList()));
     	}
-    	/*
-        if(ioUnitExport.inventory[0] != null) {
-            ioUnitExport.exportHeldItem();
-        } else {
-            if(platform.hasLaseredStack) {
-                ioUnitExport.pickUpPlatformItem();
-            } else if(platform.getHeldStack() != null) {
-                if(canItemBeLasered(platform.getHeldStack())) {
-                    laser.startLasering();
-                } else {
-                    controller.resetSetup();
-                }
-            } else {
-                //return ioUnitImport.pickUpInventoryItem(getRecipeList());
-            	return(ioUnitImport.pickupItem(getRecipeList()));
-            }
-        }
-        return true;
-        */
     }
 
     private boolean canItemBeLasered(ItemStack item){

@@ -71,7 +71,6 @@ public class TileEntityAssemblyLaser extends TileEntityAssemblyRobot{
     public void startLasering(){
         if(laserStep == 0) {
             laserStep = 1;
-            isLaserOn = true;
         }
     }
 
@@ -87,12 +86,8 @@ public class TileEntityAssemblyLaser extends TileEntityAssemblyRobot{
     }
 
     @Override
-    public boolean isDone(){
-        if(isDoneInternal()) {
-            return laserStep == 0;
-        } else {
-            return false;
-        }
+    public boolean isIdle(){
+        return laserStep == 0 && isDoneInternal();
     }
 
     @Override
@@ -122,7 +117,7 @@ public class TileEntityAssemblyLaser extends TileEntityAssemblyRobot{
     }
     
     public boolean reset(){
-    	if(this.isDone())
+    	if(this.isIdle())
     		return(true);
     	else {    		
     		this.isLaserOn = false;

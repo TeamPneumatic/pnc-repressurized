@@ -244,7 +244,7 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
 
     public boolean areAllMachinesDone(List<IAssemblyMachine> machineList){
         for(IAssemblyMachine machine : machineList) {
-            if(!machine.isDone()) return false;
+            if(!machine.isIdle()) return false;
         }
         return true;
     }
@@ -439,7 +439,7 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
     }
 
     @Override
-    public boolean isDone(){
+    public boolean isIdle(){
         return true;
     }
 
