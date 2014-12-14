@@ -26,6 +26,8 @@ import pneumaticCraft.common.progwidgets.ProgWidgetDig;
 import pneumaticCraft.common.progwidgets.ProgWidgetDropItem;
 import pneumaticCraft.common.progwidgets.ProgWidgetEntityAttack;
 import pneumaticCraft.common.progwidgets.ProgWidgetEntityCondition;
+import pneumaticCraft.common.progwidgets.ProgWidgetEntityExport;
+import pneumaticCraft.common.progwidgets.ProgWidgetEntityImport;
 import pneumaticCraft.common.progwidgets.ProgWidgetGoToLocation;
 import pneumaticCraft.common.progwidgets.ProgWidgetInventoryExport;
 import pneumaticCraft.common.progwidgets.ProgWidgetInventoryImport;
@@ -81,6 +83,8 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory{
         registeredWidgets.add(new ProgWidgetInventoryImport());
         registeredWidgets.add(new ProgWidgetLiquidExport());
         registeredWidgets.add(new ProgWidgetLiquidImport());
+        registeredWidgets.add(new ProgWidgetEntityExport());
+        registeredWidgets.add(new ProgWidgetEntityImport());
         registeredWidgets.add(new ProgWidgetGoToLocation());
         registeredWidgets.add(new ProgWidgetLabel());
         registeredWidgets.add(new ProgWidgetJump());

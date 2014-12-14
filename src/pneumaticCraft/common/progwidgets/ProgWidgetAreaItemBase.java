@@ -92,26 +92,26 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
     }
 
     public List<Entity> getEntitiesInArea(World world){
-        StringFilterEntitySelector whitelistFilter = new StringFilterEntitySelector();
-        StringFilterEntitySelector blacklistFilter = new StringFilterEntitySelector();
+        return getEntitiesInArea(world, this);
+    }
 
-        ProgWidgetString widget = (ProgWidgetString)getConnectedParameters()[1];
+    public static List<Entity> getEntitiesInArea(World world, IProgWidget askingWidget){
+        StringFilterEntitySelector whitelistFilter = getEntityFilter((ProgWidgetString)askingWidget.getConnectedParameters()[1], true);
+        StringFilterEntitySelector blacklistFilter = getEntityFilter((ProgWidgetString)askingWidget.getConnectedParameters()[askingWidget.getParameters().length + 1], false);
+        return getEntitiesInArea((ProgWidgetArea)askingWidget.getConnectedParameters()[0], (ProgWidgetArea)askingWidget.getConnectedParameters()[askingWidget.getParameters().length], world, whitelistFilter, blacklistFilter);
+    }
+
+    public static StringFilterEntitySelector getEntityFilter(ProgWidgetString widget, boolean allowEntityIfNoFilter){
+        StringFilterEntitySelector filter = new StringFilterEntitySelector();
         if(widget != null) {
             while(widget != null) {
-                whitelistFilter.addEntry(widget.string);
+                filter.addEntry(widget.string);
                 widget = (ProgWidgetString)widget.getConnectedParameters()[0];
             }
-        } else {
-            whitelistFilter.setFilter("");
+        } else if(allowEntityIfNoFilter) {
+            filter.setFilter("");
         }
-
-        widget = (ProgWidgetString)getConnectedParameters()[getParameters().length + 1];
-        while(widget != null) {
-            blacklistFilter.addEntry(widget.string);
-            widget = (ProgWidgetString)widget.getConnectedParameters()[0];
-        }
-
-        return getEntitiesInArea((ProgWidgetArea)getConnectedParameters()[0], (ProgWidgetArea)getConnectedParameters()[getParameters().length], world, whitelistFilter, blacklistFilter);
+        return filter;
     }
 
     public static List<Entity> getEntitiesInArea(ProgWidgetArea whitelistWidget, ProgWidgetArea blacklistWidget, World world, IEntitySelector whitelistFilter, IEntitySelector blacklistFilter){
