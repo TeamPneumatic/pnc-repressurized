@@ -54,17 +54,21 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
 
     @Override
     public void updateEntity(){
-        if(!worldObj.isRemote) {
-            if(firstRun) {
-                updateConnections();
-            }
-            if(curProgram == null && !goingToHomePosition && inventory[PROGRAM_INVENTORY_INDEX] != null && inventory[PROGRAM_INVENTORY_INDEX].getItem() == Itemss.assemblyProgram) {
-                AssemblyProgram program = ItemAssemblyProgram.getProgramFromItem(inventory[PROGRAM_INVENTORY_INDEX].getItemDamage());
-                curProgram = program;
-            } else if(curProgram != null && (inventory[PROGRAM_INVENTORY_INDEX] == null || curProgram.getClass() != ItemAssemblyProgram.getProgramFromItem(inventory[PROGRAM_INVENTORY_INDEX].getItemDamage()).getClass())) {
-                curProgram = null;
-                goingToHomePosition = true;
-            }
+    	
+        if(!worldObj.isRemote && firstRun)
+            updateConnections();
+    	
+        // curProgram must be available on the client, or we can't show program-problems in the gui
+		if(curProgram == null && !goingToHomePosition && inventory[PROGRAM_INVENTORY_INDEX] != null && inventory[PROGRAM_INVENTORY_INDEX].getItem() == Itemss.assemblyProgram) {
+		    AssemblyProgram program = ItemAssemblyProgram.getProgramFromItem(inventory[PROGRAM_INVENTORY_INDEX].getItemDamage());
+		    curProgram = program;
+		} else if(curProgram != null && (inventory[PROGRAM_INVENTORY_INDEX] == null || curProgram.getClass() != ItemAssemblyProgram.getProgramFromItem(inventory[PROGRAM_INVENTORY_INDEX].getItemDamage()).getClass())) {
+		    curProgram = null;
+		    if(!worldObj.isRemote)
+		    	goingToHomePosition = true;
+		}
+    	
+        if(!worldObj.isRemote) {            
             displayedText = "Standby";
             if(getPressure(ForgeDirection.UNKNOWN) >= PneumaticValues.MIN_PRESSURE_ASSEMBLY_CONTROLLER) {
                 if(curProgram != null || goingToHomePosition) {
