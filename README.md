@@ -6,7 +6,7 @@ I'm open to pull requests.
 
 If you have any questions about the source, you can bug me on IRC, in #PneumaticCraft on Espernet.
 
-I know parts of the code still need refactoring, notably TileEntity rendering and container syncing.
+I know parts of the code still need refactoring, notably TileEntity rendering.
 
 =======
 Developping with PneumaticCraft

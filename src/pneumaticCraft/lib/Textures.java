@@ -118,10 +118,12 @@ public class Textures{
     public static final ResourceLocation PROG_WIDGET_CONDITION_LIQUID_INVENTORY = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionLiquidInventoryPiece.png");
     public static final ResourceLocation PROG_WIDGET_CONDITION_ITEM_INVENTORY = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionItemInventoryPiece.png");
     public static final ResourceLocation PROG_WIDGET_CONDITION_RF = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionRFPiece.png");
+    public static final ResourceLocation PROG_WIDGET_CONDITION_PRESSURE = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionPressurePiece.png");
     public static final ResourceLocation PROG_WIDGET_CONDITION_DRONE_ENTITY = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionDroneEntityPiece.png");
-    public static final ResourceLocation PROG_WIDGET_CONDITION_DRONE_LIQUID__INVENTORY = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionDroneLiquidPiece.png");
+    public static final ResourceLocation PROG_WIDGET_CONDITION_DRONE_LIQUID_INVENTORY = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionDroneLiquidPiece.png");
     public static final ResourceLocation PROG_WIDGET_CONDITION_DRONE_ITEM_INVENTORY = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionDroneInventoryPiece.png");
     public static final ResourceLocation PROG_WIDGET_CONDITION_DRONE_RF = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionDroneRFPiece.png");
+    public static final ResourceLocation PROG_WIDGET_CONDITION_DRONE_PRESSURE = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionDronePressurePiece.png");
 
     public static final String BLOCK_PRESSURE_TUBE = ICON_LOCATION + "BlockPressureTube";
     public static final String BLOCK_PNEUMATIC_DOOR = ICON_LOCATION + "PneumaticDoor";

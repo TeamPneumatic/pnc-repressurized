@@ -23,6 +23,10 @@ import pneumaticCraft.common.progwidgets.IAreaProvider;
 import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetArea;
 import pneumaticCraft.common.progwidgets.ProgWidgetDig;
+import pneumaticCraft.common.progwidgets.ProgWidgetDroneConditionEntity;
+import pneumaticCraft.common.progwidgets.ProgWidgetDroneConditionItem;
+import pneumaticCraft.common.progwidgets.ProgWidgetDroneConditionLiquid;
+import pneumaticCraft.common.progwidgets.ProgWidgetDroneConditionPressure;
 import pneumaticCraft.common.progwidgets.ProgWidgetDropItem;
 import pneumaticCraft.common.progwidgets.ProgWidgetEntityAttack;
 import pneumaticCraft.common.progwidgets.ProgWidgetEntityCondition;
@@ -41,6 +45,7 @@ import pneumaticCraft.common.progwidgets.ProgWidgetLiquidImport;
 import pneumaticCraft.common.progwidgets.ProgWidgetLiquidInventoryCondition;
 import pneumaticCraft.common.progwidgets.ProgWidgetPickupItem;
 import pneumaticCraft.common.progwidgets.ProgWidgetPlace;
+import pneumaticCraft.common.progwidgets.ProgWidgetPressureCondition;
 import pneumaticCraft.common.progwidgets.ProgWidgetRedstoneCondition;
 import pneumaticCraft.common.progwidgets.ProgWidgetStart;
 import pneumaticCraft.common.progwidgets.ProgWidgetString;
@@ -93,6 +98,11 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory{
         registeredWidgets.add(new ProgWidgetItemInventoryCondition());
         registeredWidgets.add(new ProgWidgetLiquidInventoryCondition());
         registeredWidgets.add(new ProgWidgetEntityCondition());
+        registeredWidgets.add(new ProgWidgetPressureCondition());
+        registeredWidgets.add(new ProgWidgetDroneConditionItem());
+        registeredWidgets.add(new ProgWidgetDroneConditionLiquid());
+        registeredWidgets.add(new ProgWidgetDroneConditionEntity());
+        registeredWidgets.add(new ProgWidgetDroneConditionPressure());
     }
 
     @Override

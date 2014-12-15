@@ -33,7 +33,7 @@ public class GuiProgWidgetImportExport extends GuiProgWidgetAreaShow{
             for(int i = 0; i < 6; i++) {
                 String sideName = PneumaticCraftUtils.getOrientationName(ForgeDirection.getOrientation(i));
                 GuiCheckBox checkBox = new GuiCheckBox(i, guiLeft + 4, guiTop + 30 + i * 12, 0xFF000000, sideName);
-                checkBox.checked = ((ProgWidgetInventoryBase)widget).accessingSides[i];
+                checkBox.checked = ((ProgWidgetInventoryBase)widget).getSides()[i];
                 addWidget(checkBox);
             }
         }
@@ -55,7 +55,7 @@ public class GuiProgWidgetImportExport extends GuiProgWidgetAreaShow{
     @Override
     public void actionPerformed(IGuiWidget checkBox){
         if(checkBox.getID() < 6) {
-            ((ProgWidgetInventoryBase)widget).accessingSides[checkBox.getID()] = ((GuiCheckBox)checkBox).checked;
+            ((ProgWidgetInventoryBase)widget).getSides()[checkBox.getID()] = ((GuiCheckBox)checkBox).checked;
         } else if(checkBox.getID() == 6) {
             ((ProgWidgetInventoryBase)widget).setUseCount(((GuiCheckBox)checkBox).checked);
             textField.setEnabled(((GuiCheckBox)checkBox).checked);

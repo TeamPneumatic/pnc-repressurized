@@ -18,6 +18,7 @@ import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.thirdparty.IThirdParty;
 import pneumaticCraft.common.tileentity.TileEntityPneumaticBase;
+import pneumaticCraft.common.tileentity.TileEntityProgrammer;
 import pneumaticCraft.lib.Names;
 import pneumaticCraft.proxy.ClientProxy;
 import pneumaticCraft.proxy.CommonProxy;
@@ -49,6 +50,8 @@ public class CoFHCore implements IThirdParty, IGuiHandler{
         PneumaticRegistry.getInstance().registerBlockTrackEntry(new BlockTrackEntryRF());
         PneumaticRegistry.getInstance().registerCustomBlockInteractor(new DroneInteractRFExport());
         PneumaticRegistry.getInstance().registerCustomBlockInteractor(new DroneInteractRFImport());
+        TileEntityProgrammer.registeredWidgets.add(new ProgWidgetRFCondition());
+        TileEntityProgrammer.registeredWidgets.add(new ProgWidgetDroneConditionRF());
 
         MinecraftForge.EVENT_BUS.register(this);
     }

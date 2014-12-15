@@ -21,7 +21,7 @@ public class ProgWidgetString extends ProgWidget{
     }
 
     @Override
-    protected String getExtraStringInfo(){
+    public String getExtraStringInfo(){
         return "\"" + string + "\"";
     }
 

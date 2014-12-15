@@ -11,7 +11,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase implements ISidedWidget, ICountWidget{
-    public boolean[] accessingSides = new boolean[]{true, true, true, true, true, true};
+    private boolean[] accessingSides = new boolean[]{true, true, true, true, true, true};
     private boolean useCount;
     private int count = 1;
 
@@ -54,7 +54,7 @@ public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase imp
     }
 
     @Override
-    protected String getExtraStringInfo(){
+    public String getExtraStringInfo(){
         boolean allSides = true;
         boolean noSides = true;
         for(boolean bool : accessingSides) {

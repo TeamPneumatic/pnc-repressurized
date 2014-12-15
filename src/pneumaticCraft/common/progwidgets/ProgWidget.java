@@ -58,7 +58,7 @@ public abstract class ProgWidget implements IProgWidget{
         }
     }
 
-    protected String getExtraStringInfo(){
+    public String getExtraStringInfo(){
         return null;
     }
 

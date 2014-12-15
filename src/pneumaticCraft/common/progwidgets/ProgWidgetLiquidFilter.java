@@ -88,7 +88,7 @@ public class ProgWidgetLiquidFilter extends ProgWidget{
     }
 
     @Override
-    protected String getExtraStringInfo(){
+    public String getExtraStringInfo(){
         return fluid != null ? fluid.getLocalizedName(new FluidStack(fluid, 1)) : I18n.format("gui.progWidget.liquidFilter.noFluid");
     }
 

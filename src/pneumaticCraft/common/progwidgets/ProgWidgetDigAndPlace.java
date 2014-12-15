@@ -51,7 +51,7 @@ public abstract class ProgWidgetDigAndPlace extends ProgWidgetAreaItemBase imple
     }
 
     @Override
-    protected String getExtraStringInfo(){
+    public String getExtraStringInfo(){
         return order.getLocalizedName();
     }
 
