@@ -33,9 +33,10 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
     
     private final static byte STATE_IDLE = 0;
     private final static byte STATE_SEARCH_SRC = 1;
+    private final static byte STATE_CLOSECLAW_AFTER_PICKUP = 5;
     private final static byte STATE_SEARCH_DROPOFF = 6;
-    private final static byte STATE_RESET_SEARCH_DROPOFF = 20;
-    private final static byte STATE_RESET_GOTO_IDLE = 25;
+    private final static byte STATE_RESET_CLOSECLAW_AFTER_PICKUP = 20;
+    private final static byte STATE_RESET_GOTO_IDLE = 26;
     private final static byte STATE_MAX = 127;    
 
     @Override
@@ -60,14 +61,14 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
             // rise to the right height for target location
             case 2: // for pickup 
             case 7: // for drop-off
-            case 21: // for reset
+            case 22: // for reset
             	if(hoverOverTarget())
             		this.state++;
             	break;
            	// turn and move to target
             case 3: // for pickup 
             case 8: // for drop-off
-            case 22: // for reset
+            case 23: // for reset
             	this.slowMode = true;
             	if(gotoTarget())
             		this.state++;
@@ -76,22 +77,23 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
             	if(getItemFromCurrentDirection())
             		this.state++;
             	break;
-            case 5:
+            case STATE_CLOSECLAW_AFTER_PICKUP:
+            case STATE_RESET_CLOSECLAW_AFTER_PICKUP:
             	if(this.closeClaw())
             		this.state++;
             	break;
-            case STATE_SEARCH_DROPOFF:
-            case STATE_RESET_SEARCH_DROPOFF:
+            case 6:
+            case 21:
             	if(findDropOffLoation())
             		this.state++;
             	break;
             case 9:
-            case 23:
+            case 24:
             	if(this.openClaw())
             		this.state++;
             	break;
             case 10: // drop off item
-            case 24:
+            case 25:
             	if(putItemToCurrentDirection())
             		this.state++;
             	break;
@@ -110,10 +112,10 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
     }
     
     public boolean reset() {
-    	if(this.state >= STATE_RESET_SEARCH_DROPOFF)
+    	if(this.state >= STATE_RESET_CLOSECLAW_AFTER_PICKUP)
     		return(false);
     	else if(this.inventory[0] != null) {
-    		this.state = STATE_RESET_SEARCH_DROPOFF;
+    		this.state = STATE_RESET_CLOSECLAW_AFTER_PICKUP;
     		return(false);
     	} else if (this.state == STATE_IDLE) {
     		return(true);
@@ -238,7 +240,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
 					}
 				}
 			} else
-				reset(); // inventory gone
+				this.state = STATE_SEARCH_SRC; // inventory gone
 		} else {
 			if(tile instanceof TileEntityAssemblyPlatform) {
 
@@ -250,7 +252,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
 					extracted = (inventory[0] != null);
 					
 					if(!extracted) // something went wrong - either the platform is gone altogether, or the item is not there anymore
-						reset();
+						this.state = STATE_SEARCH_SRC;
 				}				
 			}			
 		}
@@ -273,10 +275,13 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
     				inventory[0] = null;
     				return(plat.closeClaw());
     			}
-    		}
+    		} else
+            	this.state =  this.state >= STATE_RESET_CLOSECLAW_AFTER_PICKUP ? STATE_RESET_CLOSECLAW_AFTER_PICKUP : STATE_CLOSECLAW_AFTER_PICKUP; // platform gone; close claw and search new drop-off-location
     	} else {
             IInventory inv = getInventoryForCurrentDirection();
-            if(inv != null) {
+            if(inv == null)
+            	this.state =  this.state >= STATE_RESET_CLOSECLAW_AFTER_PICKUP ? STATE_RESET_CLOSECLAW_AFTER_PICKUP : STATE_CLOSECLAW_AFTER_PICKUP; // inventory gone; close claw and search new drop-off-location
+            else {
                 int startSize = inventory[0].stackSize;
                 for(int i = 0; i < 6; i++) {
                     inventory[0] = PneumaticCraftUtils.exportStackToInventory(inv, inventory[0], ForgeDirection.getOrientation(i));
