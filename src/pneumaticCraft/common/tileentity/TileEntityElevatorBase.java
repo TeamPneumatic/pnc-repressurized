@@ -189,6 +189,9 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
     }
 
     public void updateRedstoneInputLevel(){
+    	if(this.multiElevators == null)
+    		return;
+    	
         int maxRedstone = 0;
         for(TileEntityElevatorBase base : multiElevators) {
             int i = 0;
