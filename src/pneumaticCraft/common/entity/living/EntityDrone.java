@@ -60,6 +60,7 @@ import pneumaticCraft.common.ai.DroneGoToOwner;
 import pneumaticCraft.common.ai.DroneMoveHelper;
 import pneumaticCraft.common.ai.EntityPathNavigateDrone;
 import pneumaticCraft.common.ai.FakePlayerItemInWorldManager;
+import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.ItemGPSTool;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.ItemProgrammingPuzzle;
@@ -285,7 +286,17 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
             }
         }
         super.onUpdate();
-        if(!worldObj.isRemote && isEntityAlive()) aiManager.onUpdateTasks();
+        if(!worldObj.isRemote && isEntityAlive()) {
+            aiManager.onUpdateTasks();
+            for(ForgeDirection d : ForgeDirection.VALID_DIRECTIONS) {
+                if(getEmittingRedstone(d) > 0) {
+                    if(worldObj.isAirBlock((int)Math.floor(posX + width / 2), (int)Math.floor(posY), (int)Math.floor(posZ + width / 2))) {
+                        worldObj.setBlock((int)Math.floor(posX + width / 2), (int)Math.floor(posY), (int)Math.floor(posZ + width / 2), Blockss.droneRedstoneEmitter);
+                    }
+                    break;
+                }
+            }
+        }
     }
 
     public ChunkPosition getTargetedBlock(){
@@ -664,6 +675,10 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
 
     public double getSpeed(){
         return speed;
+    }
+
+    public int getEmittingRedstone(ForgeDirection side){
+        return 0;
     }
 
     public boolean isBlockValidPathfindBlock(int x, int y, int z){

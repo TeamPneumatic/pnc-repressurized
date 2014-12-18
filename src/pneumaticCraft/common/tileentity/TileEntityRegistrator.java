@@ -36,6 +36,7 @@ public class TileEntityRegistrator{
         GameRegistry.registerTileEntity(TileEntityPlasticMixer.class, "PneumaticCraft_plasticMixer");
         GameRegistry.registerTileEntity(TileEntityLiquidCompressor.class, "PneumaticCraft_liquidCompressor");
         GameRegistry.registerTileEntity(TileEntityAdvancedLiquidCompressor.class, "PneumaticCraft_advancedLiquidCompressor");
+        GameRegistry.registerTileEntity(TileEntityDroneRedstoneEmitter.class, "PneumaticCraft_droneRedstoneEmitter");
     }
 
 }

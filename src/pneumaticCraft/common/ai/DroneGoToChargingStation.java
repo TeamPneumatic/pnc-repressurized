@@ -35,7 +35,7 @@ public class DroneGoToChargingStation extends EntityAIBase{
         List<TileEntityChargingStation> validChargingStations = new ArrayList<TileEntityChargingStation>();
         if(drone.getPressure(null) < PneumaticValues.DRONE_LOW_PRESSURE) {
             for(TileEntity te : (List<TileEntity>)drone.worldObj.loadedTileEntityList) {
-                if(te instanceof TileEntityChargingStation && te.getDistanceFrom(drone.posX, drone.posY, drone.posZ) <= Math.pow(drone.getRange(), 2)) {
+                if(te instanceof TileEntityChargingStation) {
                     TileEntityChargingStation station = (TileEntityChargingStation)te;
                     if(!DroneClaimManager.getInstance(drone.worldObj).isClaimed(new ChunkPosition(station.xCoord, station.yCoord, station.zCoord)) && station.getPressure(ForgeDirection.UNKNOWN) > PneumaticValues.DRONE_LOW_PRESSURE && station.getUpgrades(ItemMachineUpgrade.UPGRADE_DISPENSER_DAMAGE) > 0) {
                         validChargingStations.add(station);

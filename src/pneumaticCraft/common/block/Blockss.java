@@ -81,6 +81,7 @@ public class Blockss{
     public static Block advancedLiquidCompressor;
     public static Block advancedAirCompressor;
     public static Block liquidHopper;
+    public static Block droneRedstoneEmitter;
 
     public static void init(){
         pressureTube = new BlockPressureTube(Material.iron, PneumaticValues.DANGER_PRESSURE_PRESSURE_TUBE, PneumaticValues.MAX_PRESSURE_PRESSURE_TUBE, PneumaticValues.VOLUME_PRESSURE_TUBE).setHardness(3.0F).setResistance(3.0F).setBlockName("pressureTube");
@@ -132,6 +133,7 @@ public class Blockss{
         plasticMixer = new BlockPlasticMixer(Material.iron).setHardness(3.0F).setResistance(10F).setBlockName("plasticMixer");
         liquidCompressor = new BlockLiquidCompressor(Material.iron).setHardness(3.0F).setResistance(10F).setBlockName("liquidCompressor");
         advancedLiquidCompressor = new BlockAdvancedLiquidCompressor(Material.iron).setHardness(3.0F).setResistance(10F).setBlockName("advancedLiquidCompressor");
+        droneRedstoneEmitter = new BlockDroneRedstoneEmitter().setBlockName("droneRedstoneEmitter");
 
         registerBlocks();
 
@@ -195,6 +197,7 @@ public class Blockss{
         registerBlock(plasticMixer);
         registerBlock(liquidCompressor);
         registerBlock(advancedLiquidCompressor);
+        registerBlock(droneRedstoneEmitter);
     }
 
     public static void registerBlock(Block block){
