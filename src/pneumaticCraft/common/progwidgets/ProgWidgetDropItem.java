@@ -14,6 +14,7 @@ import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.client.gui.programmer.GuiProgWidgetDropItem;
 import pneumaticCraft.common.ai.DroneAIImExBase;
 import pneumaticCraft.common.entity.living.EntityDrone;
+import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -123,5 +124,10 @@ public class ProgWidgetDropItem extends ProgWidgetInventoryBase implements IItem
             }
 
         };
+    }
+
+    @Override
+    public int getCraftingColorIndex(){
+        return ItemPlasticPlants.POTION_PLANT_DAMAGE;
     }
 }

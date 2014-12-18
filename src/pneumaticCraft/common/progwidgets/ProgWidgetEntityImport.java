@@ -10,6 +10,7 @@ import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.client.gui.programmer.GuiProgWidgetAreaShow;
 import pneumaticCraft.common.ai.DroneAIEntityImport;
 import pneumaticCraft.common.entity.living.EntityDrone;
+import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -72,4 +73,8 @@ public class ProgWidgetEntityImport extends ProgWidget implements IProgWidget, I
         return ProgWidgetAreaItemBase.getArea((ProgWidgetArea)getConnectedParameters()[0], (ProgWidgetArea)getConnectedParameters()[2]);
     }
 
+    @Override
+    public int getCraftingColorIndex(){
+        return ItemPlasticPlants.RAIN_PLANT_DAMAGE;
+    }
 }

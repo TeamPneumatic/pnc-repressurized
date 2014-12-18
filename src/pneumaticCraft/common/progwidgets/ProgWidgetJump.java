@@ -5,6 +5,7 @@ import java.util.List;
 
 import net.minecraft.util.ResourceLocation;
 import pneumaticCraft.common.entity.living.EntityDrone;
+import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.lib.Textures;
 
 public class ProgWidgetJump extends ProgWidget implements IJump{
@@ -107,5 +108,10 @@ public class ProgWidgetJump extends ProgWidget implements IJump{
             return Arrays.asList(jumpedLabel.string);
         }
         return null;
+    }
+
+    @Override
+    public int getCraftingColorIndex(){
+        return ItemPlasticPlants.FLYING_FLOWER_DAMAGE;
     }
 }

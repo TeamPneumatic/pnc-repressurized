@@ -6,6 +6,7 @@ import net.minecraft.util.ResourceLocation;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import pneumaticCraft.common.entity.living.EntityDrone;
+import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.lib.Textures;
 
 public class ProgWidgetWait extends ProgWidget{
@@ -80,5 +81,10 @@ public class ProgWidgetWait extends ProgWidget{
     @Override
     public WidgetCategory getCategory(){
         return WidgetCategory.ACTION;
+    }
+
+    @Override
+    public int getCraftingColorIndex(){
+        return ItemPlasticPlants.FLYING_FLOWER_DAMAGE;
     }
 }

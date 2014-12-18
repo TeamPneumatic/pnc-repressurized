@@ -9,9 +9,7 @@ import net.minecraftforge.oredict.ShapedOreRecipe;
 import pneumaticCraft.api.PneumaticRegistry;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
-import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.common.item.Itemss;
-import pneumaticCraft.common.recipes.CraftingRegistrator;
 import pneumaticCraft.common.thirdparty.IRegistryListener;
 import pneumaticCraft.common.thirdparty.IThirdParty;
 import pneumaticCraft.common.thirdparty.ThirdPartyManager;
@@ -34,7 +32,6 @@ public class ComputerCraft implements IThirdParty, IRegistryListener{
         Blockss.registerBlock(droneInterface);
         GameRegistry.registerTileEntity(TileEntityDroneInterface.class, "droneInterface");
         TileEntityProgrammer.registeredWidgets.add(new ProgWidgetCC());
-        CraftingRegistrator.addProgrammingPuzzleRecipe(ProgWidgetCC.class, ItemPlasticPlants.ENDER_PLANT_DAMAGE);
         PneumaticRegistry.instance.registerBlockTrackEntry(new BlockTrackEntryPeripheral());
     }
 

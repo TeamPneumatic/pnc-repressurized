@@ -1,5 +1,6 @@
 package pneumaticCraft.common.recipes;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.init.Blocks;
@@ -22,18 +23,6 @@ import pneumaticCraft.common.item.ItemNetworkComponents;
 import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.common.item.ItemProgrammingPuzzle;
 import pneumaticCraft.common.item.Itemss;
-import pneumaticCraft.common.progwidgets.IProgWidget;
-import pneumaticCraft.common.progwidgets.ProgWidgetArea;
-import pneumaticCraft.common.progwidgets.ProgWidgetDig;
-import pneumaticCraft.common.progwidgets.ProgWidgetEntityAttack;
-import pneumaticCraft.common.progwidgets.ProgWidgetGoToLocation;
-import pneumaticCraft.common.progwidgets.ProgWidgetInventoryExport;
-import pneumaticCraft.common.progwidgets.ProgWidgetInventoryImport;
-import pneumaticCraft.common.progwidgets.ProgWidgetItemFilter;
-import pneumaticCraft.common.progwidgets.ProgWidgetPickupItem;
-import pneumaticCraft.common.progwidgets.ProgWidgetPlace;
-import pneumaticCraft.common.progwidgets.ProgWidgetStart;
-import pneumaticCraft.common.progwidgets.ProgWidgetString;
 import pneumaticCraft.lib.Names;
 import cpw.mods.fml.common.registry.GameRegistry;
 
@@ -159,18 +148,7 @@ public class CraftingRegistrator{
 
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Blockss.plasticMixer), "igi", "g g", "iii", 'i', Names.INGOT_IRON_COMPRESSED, 'g', "blockGlass"));
 
-        //Programming puzzle recipes
-        addProgrammingPuzzleRecipe(ProgWidgetStart.class, ItemPlasticPlants.REPULSION_PLANT_DAMAGE);
-        addProgrammingPuzzleRecipe(ProgWidgetEntityAttack.class, ItemPlasticPlants.FIRE_FLOWER_DAMAGE);
-        addProgrammingPuzzleRecipe(ProgWidgetArea.class, ItemPlasticPlants.CREEPER_PLANT_DAMAGE);
-        addProgrammingPuzzleRecipe(ProgWidgetString.class, ItemPlasticPlants.CHOPPER_PLANT_DAMAGE);
-        addProgrammingPuzzleRecipe(ProgWidgetItemFilter.class, ItemPlasticPlants.BURST_PLANT_DAMAGE);
-        addProgrammingPuzzleRecipe(ProgWidgetDig.class, ItemPlasticPlants.SLIME_PLANT_DAMAGE);
-        addProgrammingPuzzleRecipe(ProgWidgetPickupItem.class, ItemPlasticPlants.POTION_PLANT_DAMAGE);
-        addProgrammingPuzzleRecipe(ProgWidgetInventoryExport.class, ItemPlasticPlants.PROPULSION_PLANT_DAMAGE);
-        addProgrammingPuzzleRecipe(ProgWidgetInventoryImport.class, ItemPlasticPlants.RAIN_PLANT_DAMAGE);
-        addProgrammingPuzzleRecipe(ProgWidgetGoToLocation.class, ItemPlasticPlants.LIGHTNING_PLANT_DAMAGE);
-        addProgrammingPuzzleRecipe(ProgWidgetPlace.class, ItemPlasticPlants.HELIUM_PLANT_DAMAGE);
+        addProgrammingPuzzleRecipes();
         GameRegistry.addRecipe(new ItemStack(Itemss.drone), " b ", "bcb", " b ", 'b', Itemss.turbineRotor, 'c', Itemss.printedCircuitBoard);
         GameRegistry.addRecipe(new ItemStack(Blockss.programmer), "gbg", "tpt", "ggg", 'g', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.FIRE_FLOWER_DAMAGE), 'b', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.SQUID_PLANT_DAMAGE), 't', Itemss.turbineRotor, 'p', Itemss.printedCircuitBoard);
 
@@ -184,10 +162,13 @@ public class CraftingRegistrator{
         addAssemblyRecipes();
     }
 
-    public static void addProgrammingPuzzleRecipe(Class<? extends IProgWidget> puzzleKey, int plasticIndex){
-        ItemStack output = ItemProgrammingPuzzle.getStackForWidgetKey(ItemProgrammingPuzzle.getWidgetForClass(puzzleKey).getWidgetString());
-        output.stackSize = 4;
-        GameRegistry.addRecipe(output, "ppp", "pcp", "ppp", 'p', new ItemStack(Itemss.plastic, 1, plasticIndex), 'c', Itemss.printedCircuitBoard);
+    public static void addProgrammingPuzzleRecipes(){
+        List<ItemStack> widgets = new ArrayList<ItemStack>();
+        ItemProgrammingPuzzle.addItems(widgets);
+        for(ItemStack output : widgets) {
+            output.stackSize = 4;
+            GameRegistry.addRecipe(output, "ppp", "pcp", "ppp", 'p', new ItemStack(Itemss.plastic, 1, output.getItemDamage()), 'c', Itemss.printedCircuitBoard);
+        }
     }
 
     private static void addPressureChamberRecipes(){

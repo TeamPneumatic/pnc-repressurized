@@ -1,6 +1,7 @@
 package pneumaticCraft.common.progwidgets;
 
 import net.minecraft.util.ResourceLocation;
+import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.lib.Textures;
 
 public class ProgWidgetLabel extends ProgWidget implements ILabel{
@@ -59,5 +60,10 @@ public class ProgWidgetLabel extends ProgWidget implements ILabel{
     public String getLabel(){
         ProgWidgetString labelWidget = (ProgWidgetString)getConnectedParameters()[0];
         return labelWidget != null ? labelWidget.string : null;
+    }
+
+    @Override
+    public int getCraftingColorIndex(){
+        return ItemPlasticPlants.FLYING_FLOWER_DAMAGE;
     }
 }

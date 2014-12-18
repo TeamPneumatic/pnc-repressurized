@@ -11,6 +11,7 @@ import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.client.gui.programmer.GuiProgWidgetCondition;
 import pneumaticCraft.common.ai.DroneAIBlockCondition;
 import pneumaticCraft.common.entity.living.EntityDrone;
+import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.lib.Log;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -111,5 +112,10 @@ public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implem
     public String getExtraStringInfo(){
         String anyAll = I18n.format(isAndFunction() ? "gui.progWidget.condition.all" : "gui.progWidget.condition.any");
         return anyAll + " " + getOperator().toString() + " " + getRequiredCount();
+    }
+
+    @Override
+    public int getCraftingColorIndex(){
+        return ItemPlasticPlants.LIGHTNING_PLANT_DAMAGE;
     }
 }

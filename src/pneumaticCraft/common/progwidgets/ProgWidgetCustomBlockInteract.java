@@ -52,4 +52,9 @@ public class ProgWidgetCustomBlockInteract extends ProgWidgetInventoryBase{
         return new Class[]{ProgWidgetArea.class};
     }
 
+    @Override
+    public int getCraftingColorIndex(){
+        return interactor.getCraftingColorIndex();
+    }
+
 }

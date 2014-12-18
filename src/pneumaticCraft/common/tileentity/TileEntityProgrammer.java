@@ -302,19 +302,19 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory{
     public List<ItemStack> getRequiredPuzzleStacks(){
         List<ItemStack> stacks = new ArrayList<ItemStack>();
         if(((IProgrammable)inventory[PROGRAM_SLOT].getItem()).usesPieces(inventory[PROGRAM_SLOT])) {
-            Map<String, Integer> tePieces = getPuzzleSummary(progWidgets);
-            Map<String, Integer> dronePieces = getPuzzleSummary(getProgWidgets(inventory[PROGRAM_SLOT]));
-            for(String includedWidget : tePieces.keySet()) {
+            Map<Integer, Integer> tePieces = getPuzzleSummary(progWidgets);
+            Map<Integer, Integer> dronePieces = getPuzzleSummary(getProgWidgets(inventory[PROGRAM_SLOT]));
+            for(Integer includedWidget : tePieces.keySet()) {
                 Integer existingWidgets = dronePieces.get(includedWidget);
                 if(existingWidgets != null) {
                     Integer neededWidgets = tePieces.get(includedWidget);
                     if(neededWidgets > existingWidgets) {
-                        ItemStack stack = ItemProgrammingPuzzle.getStackForWidgetKey(includedWidget);
+                        ItemStack stack = ItemProgrammingPuzzle.getStackForColor(includedWidget);
                         stack.stackSize = (neededWidgets - existingWidgets) * inventory[PROGRAM_SLOT].stackSize;
                         stacks.add(stack);
                     }
                 } else {
-                    ItemStack stack = ItemProgrammingPuzzle.getStackForWidgetKey(includedWidget);
+                    ItemStack stack = ItemProgrammingPuzzle.getStackForColor(includedWidget);
                     stack.stackSize = tePieces.get(includedWidget) * inventory[PROGRAM_SLOT].stackSize;
                     stacks.add(stack);
                 }
@@ -326,15 +326,15 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory{
     public List<ItemStack> getReturnedPuzzleStacks(){
         List<ItemStack> stacks = new ArrayList<ItemStack>();
         if(((IProgrammable)inventory[PROGRAM_SLOT].getItem()).usesPieces(inventory[PROGRAM_SLOT])) {
-            Map<String, Integer> tePieces = getPuzzleSummary(progWidgets);
-            Map<String, Integer> dronePieces = getPuzzleSummary(getProgWidgets(inventory[PROGRAM_SLOT]));
+            Map<Integer, Integer> tePieces = getPuzzleSummary(progWidgets);
+            Map<Integer, Integer> dronePieces = getPuzzleSummary(getProgWidgets(inventory[PROGRAM_SLOT]));
 
-            for(String availableWidget : dronePieces.keySet()) {
+            for(Integer availableWidget : dronePieces.keySet()) {
                 Integer requiredWidget = tePieces.get(availableWidget);
                 if(requiredWidget != null) {
                     Integer availableWidgets = dronePieces.get(availableWidget);
                     if(availableWidgets > requiredWidget) {
-                        ItemStack stack = ItemProgrammingPuzzle.getStackForWidgetKey(availableWidget);
+                        ItemStack stack = ItemProgrammingPuzzle.getStackForColor(availableWidget);
                         stack.stackSize = (availableWidgets - requiredWidget) * inventory[PROGRAM_SLOT].stackSize;
                         while(stack.stackSize > stack.getMaxStackSize()) {
                             stacks.add(stack.splitStack(stack.getMaxStackSize()));
@@ -342,7 +342,7 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory{
                         stacks.add(stack);
                     }
                 } else {
-                    ItemStack stack = ItemProgrammingPuzzle.getStackForWidgetKey(availableWidget);
+                    ItemStack stack = ItemProgrammingPuzzle.getStackForColor(availableWidget);
                     stack.stackSize = dronePieces.get(availableWidget) * inventory[PROGRAM_SLOT].stackSize;
                     while(stack.stackSize > stack.getMaxStackSize()) {
                         stacks.add(stack.splitStack(stack.getMaxStackSize()));
@@ -374,13 +374,13 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory{
         return false;
     }
 
-    public static Map<String, Integer> getPuzzleSummary(List<IProgWidget> widgets){
-        Map<String, Integer> map = new HashMap<String, Integer>();
+    public static Map<Integer, Integer> getPuzzleSummary(List<IProgWidget> widgets){
+        Map<Integer, Integer> map = new HashMap<Integer, Integer>();
         for(IProgWidget widget : widgets) {
-            if(!map.containsKey(widget.getWidgetString())) {
-                map.put(widget.getWidgetString(), 1);
+            if(!map.containsKey(widget.getCraftingColorIndex())) {
+                map.put(widget.getCraftingColorIndex(), 1);
             } else {
-                map.put(widget.getWidgetString(), map.get(widget.getWidgetString()) + 1);
+                map.put(widget.getCraftingColorIndex(), map.get(widget.getCraftingColorIndex()) + 1);
             }
         }
         return map;

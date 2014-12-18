@@ -9,6 +9,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.client.gui.programmer.GuiProgWidgetCondition;
 import pneumaticCraft.common.entity.living.EntityDrone;
+import pneumaticCraft.common.item.ItemPlasticPlants;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -117,6 +118,11 @@ public abstract class ProgWidgetDroneEvaluation extends ProgWidget implements IC
     public String getExtraStringInfo(){
         String anyAll = I18n.format(isAndFunction() ? "gui.progWidget.condition.all" : "gui.progWidget.condition.any");
         return anyAll + " " + getOperator().toString() + " " + getRequiredCount();
+    }
+
+    @Override
+    public int getCraftingColorIndex(){
+        return ItemPlasticPlants.LIGHTNING_PLANT_DAMAGE;
     }
 
 }

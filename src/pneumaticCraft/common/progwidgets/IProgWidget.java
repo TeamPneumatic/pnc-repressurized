@@ -82,6 +82,8 @@ public interface IProgWidget{
 
     public int getGuiTabColor();
 
+    public int getCraftingColorIndex();
+
     /**
      * At least do a tag.setString("id", getWidgetString());
      * @param tag

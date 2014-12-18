@@ -4,6 +4,7 @@ import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.util.ResourceLocation;
 import pneumaticCraft.common.ai.DroneAIDig;
 import pneumaticCraft.common.entity.living.EntityDrone;
+import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.lib.PneumaticValues;
 import pneumaticCraft.lib.Textures;
 
@@ -36,6 +37,11 @@ public class ProgWidgetDig extends ProgWidgetDigAndPlace{
     @Override
     public int getGuiTabColor(){
         return 0xFF8e3900;
+    }
+
+    @Override
+    public int getCraftingColorIndex(){
+        return ItemPlasticPlants.SLIME_PLANT_DAMAGE;
     }
 
 }

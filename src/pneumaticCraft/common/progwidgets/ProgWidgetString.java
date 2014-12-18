@@ -7,6 +7,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.client.gui.programmer.GuiProgWidgetString;
+import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -81,6 +82,11 @@ public class ProgWidgetString extends ProgWidget{
     @Override
     public WidgetCategory getCategory(){
         return WidgetCategory.PARAMETER;
+    }
+
+    @Override
+    public int getCraftingColorIndex(){
+        return ItemPlasticPlants.CHOPPER_PLANT_DAMAGE;
     }
 
 }

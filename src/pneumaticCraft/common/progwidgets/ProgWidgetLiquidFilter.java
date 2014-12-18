@@ -9,6 +9,7 @@ import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.client.gui.programmer.GuiProgWidgetLiquidFilter;
+import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -106,4 +107,8 @@ public class ProgWidgetLiquidFilter extends ProgWidget{
         return fluid;
     }
 
+    @Override
+    public int getCraftingColorIndex(){
+        return ItemPlasticPlants.FIRE_FLOWER_DAMAGE;
+    }
 }

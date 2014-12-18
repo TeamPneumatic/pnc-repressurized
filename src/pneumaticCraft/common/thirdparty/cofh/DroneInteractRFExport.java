@@ -7,6 +7,7 @@ import net.minecraft.world.ChunkPosition;
 import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.api.drone.IBlockInteractHandler;
 import pneumaticCraft.api.drone.ICustomBlockInteract;
+import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.lib.Textures;
 import cofh.api.energy.IEnergyReceiver;
 import cofh.api.energy.IEnergyStorage;
@@ -44,5 +45,10 @@ public class DroneInteractRFExport implements ICustomBlockInteract{
             }
         }
         return false;
+    }
+
+    @Override
+    public int getCraftingColorIndex(){
+        return ItemPlasticPlants.PROPULSION_PLANT_DAMAGE;
     }
 }

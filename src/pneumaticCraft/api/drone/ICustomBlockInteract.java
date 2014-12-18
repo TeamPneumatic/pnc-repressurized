@@ -37,4 +37,10 @@ public interface ICustomBlockInteract{
      * @return
      */
     public boolean doInteract(ChunkPosition pos, EntityCreature drone, IBlockInteractHandler interactHandler, boolean simulate);
+
+    /**
+     * Used for crafting, categorizes the puzzle piece.
+     * @return
+     */
+    public int getCraftingColorIndex();
 }

@@ -1,6 +1,7 @@
 package pneumaticCraft.common.progwidgets;
 
 import net.minecraft.util.ResourceLocation;
+import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.lib.Textures;
 
 public class ProgWidgetStart extends ProgWidget{
@@ -48,5 +49,10 @@ public class ProgWidgetStart extends ProgWidget{
     @Override
     public WidgetCategory getCategory(){
         return WidgetCategory.FLOW_CONTROL;
+    }
+
+    @Override
+    public int getCraftingColorIndex(){
+        return ItemPlasticPlants.REPULSION_PLANT_DAMAGE;
     }
 }

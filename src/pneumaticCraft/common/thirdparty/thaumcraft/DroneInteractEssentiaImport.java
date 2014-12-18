@@ -31,4 +31,10 @@ public class DroneInteractEssentiaImport implements ICustomBlockInteract{
         return false;
     }
 
+    @Override
+    public int getCraftingColorIndex(){
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
 }

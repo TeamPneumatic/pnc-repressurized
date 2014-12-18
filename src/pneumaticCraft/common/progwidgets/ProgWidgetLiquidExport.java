@@ -5,6 +5,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.Fluid;
 import pneumaticCraft.common.ai.DroneAILiquidExport;
 import pneumaticCraft.common.entity.living.EntityDrone;
+import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.lib.Textures;
 
 public class ProgWidgetLiquidExport extends ProgWidgetInventoryBase implements ILiquidFiltered{
@@ -42,5 +43,10 @@ public class ProgWidgetLiquidExport extends ProgWidgetInventoryBase implements I
     @Override
     public EntityAIBase getWidgetAI(EntityDrone drone, IProgWidget widget){
         return new DroneAILiquidExport(drone, drone.getSpeed(), (ProgWidgetAreaItemBase)widget);
+    }
+
+    @Override
+    public int getCraftingColorIndex(){
+        return ItemPlasticPlants.PROPULSION_PLANT_DAMAGE;
     }
 }

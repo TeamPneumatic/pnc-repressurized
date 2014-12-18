@@ -18,6 +18,7 @@ import net.minecraft.world.World;
 import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.common.ai.StringFilterEntitySelector;
 import pneumaticCraft.common.entity.living.EntityDrone;
+import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.common.progwidgets.IBlockOrdered;
 import pneumaticCraft.common.progwidgets.IEntityProvider;
 import pneumaticCraft.common.progwidgets.IGotoWidget;
@@ -273,6 +274,11 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
     @SideOnly(Side.CLIENT)
     public GuiScreen getOptionWindow(GuiProgrammer guiProgrammer){
         return null;
+    }
+
+    @Override
+    public int getCraftingColorIndex(){
+        return ItemPlasticPlants.ENDER_PLANT_DAMAGE;
     }
 
 }

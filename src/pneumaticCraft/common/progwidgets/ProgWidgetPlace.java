@@ -11,6 +11,7 @@ import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.client.gui.programmer.GuiProgWidgetPlace;
 import pneumaticCraft.common.ai.DroneAIPlace;
 import pneumaticCraft.common.entity.living.EntityDrone;
+import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.Log;
 import pneumaticCraft.lib.PneumaticValues;
@@ -98,6 +99,11 @@ public class ProgWidgetPlace extends ProgWidgetDigAndPlace implements ISidedWidg
     @Override
     public int getGuiTabColor(){
         return 0xFFbfd503;
+    }
+
+    @Override
+    public int getCraftingColorIndex(){
+        return ItemPlasticPlants.HELIUM_PLANT_DAMAGE;
     }
 
 }

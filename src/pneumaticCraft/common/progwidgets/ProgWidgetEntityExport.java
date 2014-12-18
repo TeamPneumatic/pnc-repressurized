@@ -5,6 +5,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.ChunkPosition;
 import pneumaticCraft.common.ai.DroneAIBlockInteraction;
 import pneumaticCraft.common.entity.living.EntityDrone;
+import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.lib.Textures;
 
 public class ProgWidgetEntityExport extends ProgWidgetAreaItemBase{
@@ -32,6 +33,11 @@ public class ProgWidgetEntityExport extends ProgWidgetAreaItemBase{
     @Override
     public Class<? extends IProgWidget>[] getParameters(){
         return new Class[]{ProgWidgetArea.class, ProgWidgetString.class};
+    }
+
+    @Override
+    public int getCraftingColorIndex(){
+        return ItemPlasticPlants.PROPULSION_PLANT_DAMAGE;
     }
 
     @Override

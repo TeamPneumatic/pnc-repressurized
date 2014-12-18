@@ -1,10 +1,15 @@
 package pneumaticCraft.client;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderBiped;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
@@ -15,8 +20,8 @@ import pneumaticCraft.common.Config;
 import pneumaticCraft.common.DateEventHandler;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.fluid.Fluids;
-import pneumaticCraft.common.item.ItemProgrammingPuzzle;
 import pneumaticCraft.common.item.Itemss;
+import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.common.tileentity.TileEntityProgrammer;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
@@ -28,12 +33,27 @@ public class ClientEventHandler{
         if(event.itemStack.getItem() instanceof IProgrammable) {
             IProgrammable programmable = (IProgrammable)event.itemStack.getItem();
             if(programmable.canProgram(event.itemStack) && programmable.showProgramTooltip()) {
-                Map<String, Integer> widgetMap = TileEntityProgrammer.getPuzzleSummary(TileEntityProgrammer.getProgWidgets(event.itemStack));
-                for(Map.Entry<String, Integer> entry : widgetMap.entrySet()) {
-                    event.toolTip.add("-" + entry.getValue() + "x " + ItemProgrammingPuzzle.getStackForWidgetKey(entry.getKey()).getTooltip(event.entityPlayer, false).get(1));
+                List<String> addedEntries = new ArrayList<String>();
+                Map<IProgWidget, Integer> widgetMap = getPuzzleSummary(TileEntityProgrammer.getProgWidgets(event.itemStack));
+                for(Map.Entry<IProgWidget, Integer> entry : widgetMap.entrySet()) {
+                    addedEntries.add("-" + entry.getValue() + "x " + I18n.format("programmingPuzzle." + entry.getKey().getWidgetString() + ".name"));
                 }
+                Collections.sort(addedEntries);
+                event.toolTip.addAll(addedEntries);
             }
         }
+    }
+
+    private static Map<IProgWidget, Integer> getPuzzleSummary(List<IProgWidget> widgets){
+        Map<IProgWidget, Integer> map = new HashMap<IProgWidget, Integer>();
+        for(IProgWidget widget : widgets) {
+            if(!map.containsKey(widget)) {
+                map.put(widget, 1);
+            } else {
+                map.put(widget, map.get(widget) + 1);
+            }
+        }
+        return map;
     }
 
     @SubscribeEvent

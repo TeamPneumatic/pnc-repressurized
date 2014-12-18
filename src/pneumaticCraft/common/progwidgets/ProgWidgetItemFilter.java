@@ -15,6 +15,7 @@ import org.lwjgl.opengl.GL11;
 
 import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.client.gui.programmer.GuiProgWidgetItemFilter;
+import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.relauncher.Side;
@@ -161,5 +162,10 @@ public class ProgWidgetItemFilter extends ProgWidget{
     @Override
     public WidgetCategory getCategory(){
         return WidgetCategory.PARAMETER;
+    }
+
+    @Override
+    public int getCraftingColorIndex(){
+        return ItemPlasticPlants.BURST_PLANT_DAMAGE;
     }
 }
