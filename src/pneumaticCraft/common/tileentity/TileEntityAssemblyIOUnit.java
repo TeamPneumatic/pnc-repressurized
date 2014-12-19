@@ -33,9 +33,10 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
     
     private final static byte STATE_IDLE = 0;
     private final static byte STATE_SEARCH_SRC = 1;
+    private final static byte STATE_CLOSECLAW_AFTER_PICKUP = 5;
     private final static byte STATE_SEARCH_DROPOFF = 6;
-    private final static byte STATE_RESET_SEARCH_DROPOFF = 20;
-    private final static byte STATE_RESET_GOTO_IDLE = 25;
+    private final static byte STATE_RESET_CLOSECLAW_AFTER_PICKUP = 20;
+    private final static byte STATE_RESET_GOTO_IDLE = 26;
     private final static byte STATE_MAX = 127;    
 
     @Override
@@ -60,14 +61,14 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
             // rise to the right height for target location
             case 2: // for pickup 
             case 7: // for drop-off
-            case 21: // for reset
+            case 22: // for reset
             	if(hoverOverTarget())
             		this.state++;
             	break;
            	// turn and move to target
             case 3: // for pickup 
             case 8: // for drop-off
-            case 22: // for reset
+            case 23: // for reset
             	this.slowMode = true;
             	if(gotoTarget())
             		this.state++;
@@ -76,22 +77,23 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
             	if(getItemFromCurrentDirection())
             		this.state++;
             	break;
-            case 5:
+            case STATE_CLOSECLAW_AFTER_PICKUP:
+            case STATE_RESET_CLOSECLAW_AFTER_PICKUP:
             	if(this.closeClaw())
             		this.state++;
             	break;
-            case STATE_SEARCH_DROPOFF:
-            case STATE_RESET_SEARCH_DROPOFF:
+            case 6:
+            case 21:
             	if(findDropOffLoation())
             		this.state++;
             	break;
             case 9:
-            case 23:
+            case 24:
             	if(this.openClaw())
             		this.state++;
             	break;
             case 10: // drop off item
-            case 24:
+            case 25:
             	if(putItemToCurrentDirection())
             		this.state++;
             	break;
@@ -110,10 +112,10 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
     }
     
     public boolean reset() {
-    	if(this.state >= STATE_RESET_SEARCH_DROPOFF)
+    	if(this.state >= STATE_RESET_CLOSECLAW_AFTER_PICKUP)
     		return(false);
     	else if(this.inventory[0] != null) {
-    		this.state = STATE_RESET_SEARCH_DROPOFF;
+    		this.state = STATE_RESET_CLOSECLAW_AFTER_PICKUP;
     		return(false);
     	} else if (this.state == STATE_IDLE) {
     		return(true);
@@ -133,7 +135,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
     		this.state++;
     	
     	return((this.state > STATE_IDLE)
-    			&& !this.shouldSleep()  // will not use air while waiting for item/inventory to be available
+    			&& !this.isSleeping()  // will not use air while waiting for item/inventory to be available
     			&& (this.state < STATE_MAX));
     }
     
@@ -171,6 +173,10 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
         	return(false);
         } else
         	return(true);        
+    }
+    
+    private boolean isSleeping() {
+    	return(this.tickCounter > 0);
     }
 
 	private boolean shouldSleep() {
@@ -225,6 +231,9 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
 				this.reset();
 			} else if(tile instanceof IInventory) {
 				IInventory inv = (IInventory)tile;
+				
+				int oldStackSize = (inventory[0] == null ? 0 : inventory[0].stackSize); 
+				
 				for(int i = 0; i < inv.getSizeInventory(); i++) {
 					if(inv.getStackInSlot(i) != null && inv.getStackInSlot(i).isItemEqual(searchedItemStack)) {
 						if(inventory[0] == null) {
@@ -237,8 +246,12 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
 						break;
 					}
 				}
+				
+				if(oldStackSize == (inventory[0] == null ? 0 : inventory[0].stackSize)) // nothing picked up, search for different inventory
+					this.state = STATE_SEARCH_SRC;
+				
 			} else
-				reset(); // inventory gone
+				this.state = STATE_SEARCH_SRC; // inventory gone
 		} else {
 			if(tile instanceof TileEntityAssemblyPlatform) {
 
@@ -250,7 +263,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
 					extracted = (inventory[0] != null);
 					
 					if(!extracted) // something went wrong - either the platform is gone altogether, or the item is not there anymore
-						reset();
+						this.state = STATE_SEARCH_SRC;
 				}				
 			}			
 		}
@@ -273,22 +286,32 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
     				inventory[0] = null;
     				return(plat.closeClaw());
     			}
-    		}
+    		} else
+            	repeatDropOffSearch(); // platform gone; close claw and search new drop-off-location
     	} else {
             IInventory inv = getInventoryForCurrentDirection();
-            if(inv != null) {
+            if(inv == null)
+            	repeatDropOffSearch(); // inventory gone; close claw and search new drop-off-location
+            else {
                 int startSize = inventory[0].stackSize;
                 for(int i = 0; i < 6; i++) {
                     inventory[0] = PneumaticCraftUtils.exportStackToInventory(inv, inventory[0], ForgeDirection.getOrientation(i));
                     if(inventory[0] == null) break;
                 }
-                if(inventory[0] == null || startSize != inventory[0].stackSize) sendDescriptionPacket();
+                if(inventory[0] == null || startSize != inventory[0].stackSize) sendDescriptionPacket(); // TODO - is this still needed? Shouldn't @DescSynced on inventory take care of this?
+                
+                if((inventory[0] != null) && startSize == inventory[0].stackSize)
+                	repeatDropOffSearch(); // target-inventory full or unavailable
             }
             
             return(inventory[0] == null);
     	}
     	
     	return(false);
+    }
+    
+    private void repeatDropOffSearch(){
+    	this.state =  this.state >= STATE_RESET_CLOSECLAW_AFTER_PICKUP ? STATE_RESET_CLOSECLAW_AFTER_PICKUP : STATE_CLOSECLAW_AFTER_PICKUP;    	
     }
     
     private boolean closeClaw(){
@@ -302,25 +325,20 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
     }    
 
 	private boolean moveClaw() {
-        if(!shouldClawClose && clawProgress > 0F) {
+		oldClawProgress = clawProgress; 
+
+		if(!shouldClawClose && clawProgress > 0F) {
             clawProgress = Math.max(clawProgress - TileEntityConstants.ASSEMBLY_IO_UNIT_CLAW_SPEED * speed, 0);
         } else if(shouldClawClose && clawProgress < 1F) {
             clawProgress = Math.min(clawProgress + TileEntityConstants.ASSEMBLY_IO_UNIT_CLAW_SPEED * speed, 1);
         }
         
-        /*
-         * this was moved to the end because we're now only calling moveClaw when not isClawDone, which
-         * leaves the client with oldClawProgress != clawProgress and a constant flicker. 
-         */
-		oldClawProgress = clawProgress; 
-		
-    	//System.out.printf("MC claw-progress: %f%n", this.clawProgress);
-
     	return(this.isClawDone());
 	}
 	
 	private boolean isClawDone() {
-		return(clawProgress == (shouldClawClose ? 1F : 0F));
+		// need to make sure that clawProgress and oldClawProgress are the same, or we will get rendering artifacts
+		return((clawProgress == oldClawProgress) && (clawProgress == (shouldClawClose ? 1F : 0F)));
 	}
 	
     

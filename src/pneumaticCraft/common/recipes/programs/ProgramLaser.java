@@ -20,17 +20,20 @@ public class ProgramLaser extends AssemblyProgram{
 
     @Override
     public boolean executeStep(TileEntityAssemblyController controller, TileEntityAssemblyPlatform platform, TileEntityAssemblyIOUnit ioUnitImport, TileEntityAssemblyIOUnit ioUnitExport, TileEntityAssemblyDrill drill, TileEntityAssemblyLaser laser){
+    	boolean useAir = true;
+    	
     	if(platform.getHeldStack() != null) {
     		if(canItemBeLasered(platform.getHeldStack())) {
     			laser.startLasering();
-    			return(true);
     		}
-    		else
-    			return(ioUnitExport.pickupItem(null));
-    	}
-    	else {
-    		return(ioUnitImport.pickupItem(getRecipeList()));
-    	}
+    		else if(laser.isIdle())
+    			useAir = ioUnitExport.pickupItem(null);
+    	} else if(!ioUnitExport.isIdle())
+			useAir = ioUnitExport.pickupItem(null);
+    	else
+    		useAir = ioUnitImport.pickupItem(getRecipeList());
+    	
+    	return(useAir);    	
     }
 
     private boolean canItemBeLasered(ItemStack item){
