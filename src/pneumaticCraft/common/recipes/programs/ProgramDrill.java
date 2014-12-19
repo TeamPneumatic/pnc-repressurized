@@ -20,35 +20,20 @@ public class ProgramDrill extends AssemblyProgram{
 
     @Override
     public boolean executeStep(TileEntityAssemblyController controller, TileEntityAssemblyPlatform platform, TileEntityAssemblyIOUnit ioUnitImport, TileEntityAssemblyIOUnit ioUnitExport, TileEntityAssemblyDrill drill, TileEntityAssemblyLaser laser){
+    	boolean useAir = true;
+    	
     	if(platform.getHeldStack() != null) {
     		if(canItemBeDrilled(platform.getHeldStack())) {
     			drill.goDrilling();
-    			return(true);
     		}
-    		else
-    			return(drill.isIdle() && ioUnitExport.pickupItem(null));
-    	}
-    	else {
-    		return(ioUnitImport.pickupItem(getRecipeList()));
-    	}
-    	/*
-        if(ioUnitExport.inventory[0] != null) {
-            ioUnitExport.exportHeldItem();
-        } else {
-            if(platform.hasDrilledStack) {
-                ioUnitExport.pickUpPlatformItem();
-            } else if(platform.getHeldStack() != null) {
-                if(canItemBeLasered(platform.getHeldStack())) {
-                    drill.goDrilling();
-                } else {
-                    controller.resetSetup();
-                }
-            } else {
-                return ioUnitImport.pickUpInventoryItem(getRecipeList());
-            }
-        }
-        return true;
-        */
+    		else if(drill.isIdle())
+    			useAir = ioUnitExport.pickupItem(null);
+    	} else if(!ioUnitExport.isIdle())
+			useAir = ioUnitExport.pickupItem(null);
+    	else
+    		useAir = ioUnitImport.pickupItem(getRecipeList());
+    	
+    	return(useAir);    	    	
     }
 
     private boolean canItemBeDrilled(ItemStack item){

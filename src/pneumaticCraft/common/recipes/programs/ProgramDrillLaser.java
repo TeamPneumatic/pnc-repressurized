@@ -32,37 +32,12 @@ public class ProgramDrillLaser extends AssemblyProgram{
     		else if(drill.isIdle() && laser.isIdle()) {
     			useAir = ioUnitExport.pickupItem(null);
     		}
-    	}
-    	else {
+    	} else if(!ioUnitExport.isIdle())
+    		useAir = ioUnitExport.pickupItem(null);
+    	else
     		useAir = ioUnitImport.pickupItem(getRecipeList());
-    	}    	
     	
-    	return(useAir);    	
-
-    	/*
-        if(ioUnitExport.inventory[0] != null) {
-            ioUnitExport.exportHeldItem();
-        } else {
-            if(platform.hasDrilledStack && platform.hasLaseredStack) {
-                ioUnitExport.pickUpPlatformItem();
-            } else if(platform.hasDrilledStack) {
-                if(canItemBeLasered(platform.getHeldStack())) {
-                    laser.startLasering();
-                } else {
-                    controller.resetSetup();
-                }
-            } else if(platform.getHeldStack() != null) {
-                if(canItemBeDrilled(platform.getHeldStack())) {
-                    drill.goDrilling();
-                } else {
-                    controller.resetSetup();
-                }
-            } else {
-                return ioUnitImport.pickUpInventoryItem(getRecipeList());
-            }
-        }
-        return true;
-        */
+    	return(useAir);
     }
     
     /*
