@@ -135,7 +135,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
     		this.state++;
     	
     	return((this.state > STATE_IDLE)
-    			&& !this.shouldSleep()  // will not use air while waiting for item/inventory to be available
+    			&& !this.isSleeping()  // will not use air while waiting for item/inventory to be available
     			&& (this.state < STATE_MAX));
     }
     
@@ -173,6 +173,10 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
         	return(false);
         } else
         	return(true);        
+    }
+    
+    private boolean isSleeping() {
+    	return(this.tickCounter > 0);
     }
 
 	private boolean shouldSleep() {
@@ -227,6 +231,9 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
 				this.reset();
 			} else if(tile instanceof IInventory) {
 				IInventory inv = (IInventory)tile;
+				
+				int oldStackSize = (inventory[0] == null ? 0 : inventory[0].stackSize); 
+				
 				for(int i = 0; i < inv.getSizeInventory(); i++) {
 					if(inv.getStackInSlot(i) != null && inv.getStackInSlot(i).isItemEqual(searchedItemStack)) {
 						if(inventory[0] == null) {
@@ -239,6 +246,10 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
 						break;
 					}
 				}
+				
+				if(oldStackSize == (inventory[0] == null ? 0 : inventory[0].stackSize)) // nothing picked up, search for different inventory
+					this.state = STATE_SEARCH_SRC;
+				
 			} else
 				this.state = STATE_SEARCH_SRC; // inventory gone
 		} else {
@@ -276,24 +287,31 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
     				return(plat.closeClaw());
     			}
     		} else
-            	this.state =  this.state >= STATE_RESET_CLOSECLAW_AFTER_PICKUP ? STATE_RESET_CLOSECLAW_AFTER_PICKUP : STATE_CLOSECLAW_AFTER_PICKUP; // platform gone; close claw and search new drop-off-location
+            	repeatDropOffSearch(); // platform gone; close claw and search new drop-off-location
     	} else {
             IInventory inv = getInventoryForCurrentDirection();
             if(inv == null)
-            	this.state =  this.state >= STATE_RESET_CLOSECLAW_AFTER_PICKUP ? STATE_RESET_CLOSECLAW_AFTER_PICKUP : STATE_CLOSECLAW_AFTER_PICKUP; // inventory gone; close claw and search new drop-off-location
+            	repeatDropOffSearch(); // inventory gone; close claw and search new drop-off-location
             else {
                 int startSize = inventory[0].stackSize;
                 for(int i = 0; i < 6; i++) {
                     inventory[0] = PneumaticCraftUtils.exportStackToInventory(inv, inventory[0], ForgeDirection.getOrientation(i));
                     if(inventory[0] == null) break;
                 }
-                if(inventory[0] == null || startSize != inventory[0].stackSize) sendDescriptionPacket();
+                if(inventory[0] == null || startSize != inventory[0].stackSize) sendDescriptionPacket(); // TODO - is this still needed? Shouldn't @DescSynced on inventory take care of this?
+                
+                if((inventory[0] != null) && startSize == inventory[0].stackSize)
+                	repeatDropOffSearch(); // target-inventory full or unavailable
             }
             
             return(inventory[0] == null);
     	}
     	
     	return(false);
+    }
+    
+    private void repeatDropOffSearch(){
+    	this.state =  this.state >= STATE_RESET_CLOSECLAW_AFTER_PICKUP ? STATE_RESET_CLOSECLAW_AFTER_PICKUP : STATE_CLOSECLAW_AFTER_PICKUP;    	
     }
     
     private boolean closeClaw(){
@@ -307,25 +325,20 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
     }    
 
 	private boolean moveClaw() {
-        if(!shouldClawClose && clawProgress > 0F) {
+		oldClawProgress = clawProgress; 
+
+		if(!shouldClawClose && clawProgress > 0F) {
             clawProgress = Math.max(clawProgress - TileEntityConstants.ASSEMBLY_IO_UNIT_CLAW_SPEED * speed, 0);
         } else if(shouldClawClose && clawProgress < 1F) {
             clawProgress = Math.min(clawProgress + TileEntityConstants.ASSEMBLY_IO_UNIT_CLAW_SPEED * speed, 1);
         }
         
-        /*
-         * this was moved to the end because we're now only calling moveClaw when not isClawDone, which
-         * leaves the client with oldClawProgress != clawProgress and a constant flicker. 
-         */
-		oldClawProgress = clawProgress; 
-		
-    	//System.out.printf("MC claw-progress: %f%n", this.clawProgress);
-
     	return(this.isClawDone());
 	}
 	
 	private boolean isClawDone() {
-		return(clawProgress == (shouldClawClose ? 1F : 0F));
+		// need to make sure that clawProgress and oldClawProgress are the same, or we will get rendering artifacts
+		return((clawProgress == oldClawProgress) && (clawProgress == (shouldClawClose ? 1F : 0F)));
 	}
 	
     

@@ -27,7 +27,8 @@ public class ProgramLaser extends AssemblyProgram{
     		}
     		else
     			return(ioUnitExport.pickupItem(null));
-    	}
+    	} else if(!ioUnitExport.isIdle())
+    		return(ioUnitExport.pickupItem(null));
     	else {
     		return(ioUnitImport.pickupItem(getRecipeList()));
     	}

@@ -211,8 +211,14 @@ public abstract class TileEntityAssemblyRobot extends TileEntityBase implements 
         }
         tag.setBoolean("slowMode", slowMode);
         tag.setFloat("speed", speed);
-        tag.setInteger("targetDir1", targetDirection[0].ordinal()); // FIXME targetDirection might be null
-        tag.setInteger("targetDir2", targetDirection[1].ordinal());
+        
+        if(this.targetDirection != null) {
+        	if(this.targetDirection.length > 0)
+        		tag.setInteger("targetDir1", targetDirection[0].ordinal());
+        	
+        	if(this.targetDirection.length > 1)
+        		tag.setInteger("targetDir2", targetDirection[1].ordinal());
+        }
     }
 
     public abstract boolean canMoveToDiagonalNeighbours();
