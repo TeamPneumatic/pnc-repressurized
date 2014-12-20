@@ -7,7 +7,7 @@ import pneumaticCraft.common.network.DescSynced;
 import pneumaticCraft.common.network.LazySynced;
 import pneumaticCraft.lib.TileEntityConstants;
 
-public class TileEntityAssemblyPlatform extends TileEntityBase implements IAssemblyMachine{
+public class TileEntityAssemblyPlatform extends TileEntityBase implements IAssemblyMachine, IResettable {
     @DescSynced
     private boolean shouldClawClose;
     @DescSynced
@@ -37,6 +37,11 @@ public class TileEntityAssemblyPlatform extends TileEntityBase implements IAssem
     
     public boolean isIdle() {
     	return(!this.shouldClawClose && this.isClawDone() && (this.inventory[0] == null));
+    }
+    
+    public boolean reset() {
+    	this.openClaw();
+    	return(this.isIdle());
     }
 
     public boolean closeClaw(){

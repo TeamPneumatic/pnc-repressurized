@@ -58,7 +58,7 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
         if(!worldObj.isRemote && firstRun)
             updateConnections();
     	
-        // curProgram must be available on the client, or we can't show program-problems in the gui
+        // curProgram must be available on the client, or we can't show program-problems in the GUI
 		if(curProgram == null && !goingToHomePosition && inventory[PROGRAM_INVENTORY_INDEX] != null && inventory[PROGRAM_INVENTORY_INDEX].getItem() == Itemss.assemblyProgram) {
 		    AssemblyProgram program = ItemAssemblyProgram.getProgramFromItem(inventory[PROGRAM_INVENTORY_INDEX].getItemDamage());
 		    curProgram = program;
@@ -157,61 +157,24 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
 
     }
     
-    // this is temporary until we re-factor this class
-    private byte resetStep = 0;
-
     private void goToHomePosition(TileEntityAssemblyPlatform platform, TileEntityAssemblyIOUnit ioUnitImport, TileEntityAssemblyIOUnit ioUnitExport, TileEntityAssemblyDrill drill, TileEntityAssemblyLaser laser){
-    	if(this.goingToHomePosition && this.resetStep == 0)
-    		this.resetStep = 1;
     	
-    	switch(this.resetStep) {
-    	case 1:
-    		if((drill == null) || drill.reset())
-    			this.resetStep++;
-    		break;
-    	case 2:
-    		if((laser == null) || laser.reset())
-    			this.resetStep++;
-    		break;
-    	case 3:
-    		if((platform == null) || platform.openClaw())
-    			this.resetStep++;
-    		break;
-    	case 4:
-    		if((ioUnitImport == null) || ioUnitImport.reset())
-    			this.resetStep++;
-    		break;
-    	case 5:
-    		if((ioUnitExport == null) || ioUnitExport.reset())
-    			this.resetStep++;
-    		break;
-    	case 6:
-    		if((platform != null) && (platform.getHeldStack() != null)) {
-    			if(ioUnitExport != null) {
-    				if(!ioUnitExport.pickupItem(null))
-    					this.resetStep--; // reset exportUnit and re-check platform
-    			}
-    		} else
-    			this.resetStep++;
-    		break;
-    	case 7:
-    		this.goingToHomePosition = false;
-    		this.resetStep = 0;
-    		break;    		
-    	}
-    	/*
-    	if(drill != null && !drill.reset()){
-    	} else if(laser != null && !laser.reset()){
-    	} else if((ioUnitImport != null) && ioUnitImport.isDone()
-    			&& (platform != null) && (platform.getHeldStack() != null)
-    			&& (ioUnitExport != null) &&ioUnitExport.isDone()) {
-    		ioUnitExport.pickupItem(null);
-    	} else if(!ioUnitImport.reset()) {    		
-    	} else if(!ioUnitExport.reset()) {    		
-    	}
-    	else
-    		this.goingToHomePosition = false;
-    		*/
+    	boolean resetDone = true;
+    	
+    	 for(IResettable machine : new IResettable[] { drill, laser, ioUnitImport, platform, ioUnitExport  }) {
+             if((machine != null) && !machine.reset()) {
+            	 resetDone = false;
+            	 
+            	 if(machine == platform) {
+            		 if(ioUnitExport != null)
+            			 ioUnitExport.pickupItem(null);            		 
+            	 }
+            	 
+        		 break;            	 
+             }
+         }
+    	 
+    	 this.goingToHomePosition = !(this.foundAllMachines && resetDone);
     }
 
     public void addProblems(List<String> problemList){

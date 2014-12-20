@@ -11,7 +11,7 @@ import pneumaticCraft.lib.TileEntityConstants;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public abstract class TileEntityAssemblyRobot extends TileEntityBase implements IAssemblyMachine{
+public abstract class TileEntityAssemblyRobot extends TileEntityBase implements IAssemblyMachine, IResettable {
     public float[] oldAngles = new float[5];
     @DescSynced
     @LazySynced
