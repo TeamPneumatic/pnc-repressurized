@@ -102,6 +102,8 @@ public class Textures{
     public static final ResourceLocation PROG_WIDGET_RF_IM = new ResourceLocation(PROG_WIDGET_LOCATION + "RFImportPiece.png");
     public static final ResourceLocation PROG_WIDGET_ESSENTIA_EX = new ResourceLocation(PROG_WIDGET_LOCATION + "essentiaExportPiece.png");
     public static final ResourceLocation PROG_WIDGET_ESSENTIA_IM = new ResourceLocation(PROG_WIDGET_LOCATION + "essentiaImportPiece.png");
+    public static final ResourceLocation PROG_WIDGET_ENTITY_RIGHT_CLICK = new ResourceLocation(PROG_WIDGET_LOCATION + "entityRightClickPiece.png");
+    public static final ResourceLocation PROG_WIDGET_BLOCK_RIGHT_CLICK = new ResourceLocation(PROG_WIDGET_LOCATION + "blockRightClickPiece.png");
     public static final ResourceLocation PROG_WIDGET_ITEM_FILTER = new ResourceLocation(PROG_WIDGET_LOCATION + "itemFilterPiece.png");
     public static final ResourceLocation PROG_WIDGET_LIQUID_FILTER = new ResourceLocation(PROG_WIDGET_LOCATION + "liquidFilterPiece.png");
     public static final ResourceLocation PROG_WIDGET_ESSENTIA_FILTER = new ResourceLocation(PROG_WIDGET_LOCATION + "essentiaFilterPiece.png");

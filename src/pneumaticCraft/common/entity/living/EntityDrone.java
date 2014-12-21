@@ -745,6 +745,16 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
         }
 
         @Override
+        public void setCurrentItemOrArmor(int p_70062_1_, ItemStack p_70062_2_){
+
+            if(p_70062_1_ == 0) {
+                inventory.setInventorySlotContents(inventory.currentItem, p_70062_2_);
+            } else {
+                inventory.armorInventory[p_70062_1_ - 1] = p_70062_2_;
+            }
+        }
+
+        @Override
         public boolean canCommandSenderUseCommand(int i, String s){
             return false;
         }
