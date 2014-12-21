@@ -2,7 +2,6 @@ package pneumaticCraft.common.tileentity;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemDye;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -27,7 +26,7 @@ import pneumaticCraft.lib.PneumaticValues;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHandler, IInventory, IHeatExchanger, ISidedInventory{
+public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHandler, IInventory, IHeatExchanger{
     private final FluidTank tank = new FluidTank(PneumaticValues.NORMAL_TANK_CAPACITY);
     private final ItemStack[] inventory = new ItemStack[6];
     private int lastTickInventoryStacksize;
@@ -40,8 +39,8 @@ public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHand
     private final IHeatExchangerLogic liquidLogic = PneumaticRegistry.getInstance().getHeatExchangerLogic();
 
     private static final String[] DYES = {"dyeBlack", "dyeRed", "dyeGreen", "dyeBrown", "dyeBlue", "dyePurple", "dyeCyan", "dyeLightGray", "dyeGray", "dyePink", "dyeLime", "dyeYellow", "dyeLightBlue", "dyeMagenta", "dyeOrange", "dyeWhite"};
-    
-    private static final int INV_ITEM = 4, INV_DYE=5;
+
+    private static final int INV_ITEM = 4, INV_DYE = 5;
 
     public TileEntityPlasticMixer(){
         super(0, 1, 2, 3);
@@ -236,7 +235,7 @@ public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHand
      */
     @Override
     public int getSizeInventory(){
-        return 1;
+        return inventory.length;
     }
 
     /**
@@ -325,21 +324,4 @@ public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHand
         }
         return -1;
     }
-
-	@Override
-	public int[] getAccessibleSlotsFromSide(int side) {
-		return new int[]{INV_ITEM, INV_DYE};
-	}
-
-	@Override
-	public boolean canInsertItem(int slot, ItemStack item,
-			int side) {
-		return(this.isItemValidForSlot(slot, item));
-	}
-
-	@Override
-	public boolean canExtractItem(int slot, ItemStack item,
-			int side) {
-		return true; // can extract anything from any side
-	}
 }
