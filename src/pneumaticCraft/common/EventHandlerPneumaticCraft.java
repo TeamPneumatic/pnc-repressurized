@@ -131,35 +131,36 @@ public class EventHandlerPneumaticCraft{
     // bone meal event, to grow plants
     @SubscribeEvent
     public void onFertilization(BonemealEvent event){
-    	if(event.world.isRemote)
-    		return; // why would we want to handle this on the client-side?
+        if(event.world.isRemote) return; // why would we want to handle this on the client-side?
 
-    	if(event.block instanceof BlockPneumaticPlantBase) {
-    		if(((BlockPneumaticPlantBase)event.block).fertilize(event.world, event.x, event.y, event.z, event.entityPlayer)) {
-    			event.setResult(Result.ALLOW);
-    		}
-    	} else if(event.block.canSustainPlant(event.world, event.x, event.y, event.z, ForgeDirection.UP, Blocks.red_flower)) { // can bonemeal Biomes O' Plenty grass, etc.    			    			
-    		// we'll try to spawn plants in a 5x5 area which is centered on the block that has been bonemealed
-    		for(int x = event.x-2; x < event.x+3; x++) {
-    			for(int z = event.z-2; z < event.z+3; z++) {
-    				if(event.world.isAirBlock(x, event.y+1, z)) {
-    					if(event.world.rand.nextInt(8) == 1) { // increase .nextInt(x) to lower the chances of spawning a plant
-    						BlockPneumaticPlantBase trySpawn = BlockPlants.allPlants.get(event.world.rand.nextInt(BlockPlants.allPlants.size()-1)); // select a random plant    							
-    						int ySoil = trySpawn.isPlantHanging() ? event.y+2 : event.y; // if the plant is hanging we'll need a block above, not below
-    						if(trySpawn.canPlantGrowOnThisBlock(event.world.getBlock(x, ySoil, z), event.world, x, ySoil, z)) { // make sure that the plant we selected can grow on the soil
-    							event.world.setBlock(x, event.y+1, z, trySpawn);    								
-    						}
-    					}
-    				}
-    			}
+        if(event.block instanceof BlockPneumaticPlantBase) {
+            if(((BlockPneumaticPlantBase)event.block).fertilize(event.world, event.x, event.y, event.z, event.entityPlayer)) {
+                event.setResult(Result.ALLOW);
+            }
+        } else if(event.block == Blocks.netherrack || event.block == Blocks.end_stone || event.block.canSustainPlant(event.world, event.x, event.y, event.z, ForgeDirection.UP, Blocks.red_flower)) { // can bonemeal Biomes O' Plenty grass, etc.    			    			
+            boolean onGrass = event.block instanceof BlockGrass;
+            if(onGrass && Config.includePlantsOnBonemeal || !onGrass && Config.allowDirtBonemealing) {
+                // we'll try to spawn plants in a 5x5 area which is centered on the block that has been bonemealed
+                for(int x = event.x - 2; x < event.x + 3; x++) {
+                    for(int z = event.z - 2; z < event.z + 3; z++) {
+                        if(event.world.isAirBlock(x, event.y + 1, z)) {
+                            if(event.world.rand.nextInt(8) == 1) { // increase .nextInt(x) to lower the chances of spawning a plant
+                                BlockPneumaticPlantBase trySpawn = BlockPlants.allPlants.get(event.world.rand.nextInt(BlockPlants.allPlants.size() - 1)); // select a random plant    							
+                                if(trySpawn.canPlantGrowOnThisBlock(event.world.getBlock(x, event.y, z), event.world, x, event.y, z)) { // make sure that the plant we selected can grow on the soil
+                                    event.world.setBlock(x, event.y + (trySpawn.isPlantHanging() ? -1 : 1), z, trySpawn);
+                                }
+                            }
+                        }
+                    }
 
-    			/*
-    			 * vanilla mechanics will spawn flowers etc. when bonemeal is used on grass,
-    			 * so we cannot set Result.ALLOW in this case because it would stop event-propagation
-    			 */
-    			if(!(event.block instanceof BlockGrass)) event.setResult(Result.ALLOW);
-    		}
-    	}
+                    /*
+                     * vanilla mechanics will spawn flowers etc. when bonemeal is used on grass,
+                     * so we cannot set Result.ALLOW in this case because it would stop event-propagation
+                     */
+                    if(!onGrass) event.setResult(Result.ALLOW);
+                }
+            }
+        }
     }
 
     @SubscribeEvent
