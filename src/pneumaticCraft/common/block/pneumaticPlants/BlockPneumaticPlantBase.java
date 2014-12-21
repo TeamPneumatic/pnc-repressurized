@@ -39,6 +39,7 @@ public abstract class BlockPneumaticPlantBase extends BlockFlower{
         if(isPlantHanging()) {
             setBlockBounds(0, 0.75F, 0, 1, 1, 1);
         }
+        BlockPlants.allPlants.add(this);
     }
 
     @Override
@@ -82,7 +83,7 @@ public abstract class BlockPneumaticPlantBase extends BlockFlower{
 
     // make this method public
     public boolean canPlantGrowOnThisBlock(Block block, World world, int x, int y, int z){
-        return canPlaceBlockOn(block);
+    	return(block.canSustainPlant(world, x, y, z, ForgeDirection.UP, this));
     }
 
     /**

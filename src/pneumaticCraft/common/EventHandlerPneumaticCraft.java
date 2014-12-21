@@ -1,6 +1,7 @@
 package pneumaticCraft.common;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockGrass;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityCreeper;
@@ -10,6 +11,7 @@ import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.entity.passive.EntitySquid;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityPotion;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -17,6 +19,7 @@ import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
@@ -34,6 +37,7 @@ import pneumaticCraft.client.render.pneumaticArmor.HUDHandler;
 import pneumaticCraft.client.render.pneumaticArmor.hacking.HackableHandler;
 import pneumaticCraft.client.render.pneumaticArmor.hacking.entity.HackableEnderman;
 import pneumaticCraft.common.block.Blockss;
+import pneumaticCraft.common.block.pneumaticPlants.BlockPlants;
 import pneumaticCraft.common.block.pneumaticPlants.BlockPneumaticPlantBase;
 import pneumaticCraft.common.entity.item.EntityItemSpecial;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
@@ -127,9 +131,34 @@ public class EventHandlerPneumaticCraft{
     // bone meal event, to grow plants
     @SubscribeEvent
     public void onFertilization(BonemealEvent event){
+        if(event.world.isRemote) return; // why would we want to handle this on the client-side?
+
         if(event.block instanceof BlockPneumaticPlantBase) {
             if(((BlockPneumaticPlantBase)event.block).fertilize(event.world, event.x, event.y, event.z, event.entityPlayer)) {
                 event.setResult(Result.ALLOW);
+            }
+        } else if(event.block == Blocks.netherrack || event.block == Blocks.end_stone || event.block.canSustainPlant(event.world, event.x, event.y, event.z, ForgeDirection.UP, Blocks.red_flower)) { // can bonemeal Biomes O' Plenty grass, etc.    			    			
+            boolean onGrass = event.block instanceof BlockGrass;
+            if(onGrass && Config.includePlantsOnBonemeal || !onGrass && Config.allowDirtBonemealing) {
+                // we'll try to spawn plants in a 5x5 area which is centered on the block that has been bonemealed
+                for(int x = event.x - 2; x < event.x + 3; x++) {
+                    for(int z = event.z - 2; z < event.z + 3; z++) {
+                        if(event.world.isAirBlock(x, event.y + 1, z)) {
+                            if(event.world.rand.nextInt(8) == 1) { // increase .nextInt(x) to lower the chances of spawning a plant
+                                BlockPneumaticPlantBase trySpawn = BlockPlants.allPlants.get(event.world.rand.nextInt(BlockPlants.allPlants.size() - 1)); // select a random plant    							
+                                if(trySpawn.canPlantGrowOnThisBlock(event.world.getBlock(x, event.y, z), event.world, x, event.y, z)) { // make sure that the plant we selected can grow on the soil
+                                    event.world.setBlock(x, event.y + (trySpawn.isPlantHanging() ? -1 : 1), z, trySpawn);
+                                }
+                            }
+                        }
+                    }
+
+                    /*
+                     * vanilla mechanics will spawn flowers etc. when bonemeal is used on grass,
+                     * so we cannot set Result.ALLOW in this case because it would stop event-propagation
+                     */
+                    if(!onGrass) event.setResult(Result.ALLOW);
+                }
             }
         }
     }
