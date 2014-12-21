@@ -54,21 +54,19 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
 
     @Override
     public void updateEntity(){
-    	
-        if(!worldObj.isRemote && firstRun)
-            updateConnections();
-    	
+
+        if(!worldObj.isRemote && firstRun) updateConnections();
+
         // curProgram must be available on the client, or we can't show program-problems in the GUI
-		if(curProgram == null && !goingToHomePosition && inventory[PROGRAM_INVENTORY_INDEX] != null && inventory[PROGRAM_INVENTORY_INDEX].getItem() == Itemss.assemblyProgram) {
-		    AssemblyProgram program = ItemAssemblyProgram.getProgramFromItem(inventory[PROGRAM_INVENTORY_INDEX].getItemDamage());
-		    curProgram = program;
-		} else if(curProgram != null && (inventory[PROGRAM_INVENTORY_INDEX] == null || curProgram.getClass() != ItemAssemblyProgram.getProgramFromItem(inventory[PROGRAM_INVENTORY_INDEX].getItemDamage()).getClass())) {
-		    curProgram = null;
-		    if(!worldObj.isRemote)
-		    	goingToHomePosition = true;
-		}
-    	
-        if(!worldObj.isRemote) {            
+        if(curProgram == null && !goingToHomePosition && inventory[PROGRAM_INVENTORY_INDEX] != null && inventory[PROGRAM_INVENTORY_INDEX].getItem() == Itemss.assemblyProgram) {
+            AssemblyProgram program = ItemAssemblyProgram.getProgramFromItem(inventory[PROGRAM_INVENTORY_INDEX].getItemDamage());
+            curProgram = program;
+        } else if(curProgram != null && (inventory[PROGRAM_INVENTORY_INDEX] == null || curProgram.getClass() != ItemAssemblyProgram.getProgramFromItem(inventory[PROGRAM_INVENTORY_INDEX].getItemDamage()).getClass())) {
+            curProgram = null;
+            if(!worldObj.isRemote) goingToHomePosition = true;
+        }
+
+        if(!worldObj.isRemote) {
             displayedText = "Standby";
             if(getPressure(ForgeDirection.UNKNOWN) >= PneumaticValues.MIN_PRESSURE_ASSEMBLY_CONTROLLER) {
                 if(curProgram != null || goingToHomePosition) {
@@ -156,25 +154,24 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
         super.updateEntity();
 
     }
-    
+
     private void goToHomePosition(TileEntityAssemblyPlatform platform, TileEntityAssemblyIOUnit ioUnitImport, TileEntityAssemblyIOUnit ioUnitExport, TileEntityAssemblyDrill drill, TileEntityAssemblyLaser laser){
-    	
-    	boolean resetDone = true;
-    	
-    	 for(IResettable machine : new IResettable[] { drill, laser, ioUnitImport, platform, ioUnitExport  }) {
-             if((machine != null) && !machine.reset()) {
-            	 resetDone = false;
-            	 
-            	 if(machine == platform) {
-            		 if(ioUnitExport != null)
-            			 ioUnitExport.pickupItem(null);            		 
-            	 }
-            	 
-        		 break;            	 
-             }
-         }
-    	 
-    	 this.goingToHomePosition = !(this.foundAllMachines && resetDone);
+
+        boolean resetDone = true;
+
+        for(IResettable machine : new IResettable[]{drill, laser, ioUnitImport, platform, ioUnitExport}) {
+            if(machine != null && !machine.reset()) {
+                resetDone = false;
+
+                if(machine == platform) {
+                    if(ioUnitExport != null) ioUnitExport.pickupItem(null);
+                }
+
+                break;
+            }
+        }
+
+        goingToHomePosition = !(foundAllMachines && resetDone);
     }
 
     public void addProblems(List<String> problemList){

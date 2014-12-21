@@ -21,13 +21,13 @@ public class TileEntityAssemblyLaser extends TileEntityAssemblyRobot{
         if(laserStep > 0) {
             ForgeDirection[] platformDirection = getPlatformDirection();
             if(platformDirection == null) {
-            	laserStep = 105;
+                laserStep = 105;
             }
             switch(laserStep){
                 case 1:
-//                    isLaserOn = false;
+                    //                    isLaserOn = false;
                     slowMode = false;
-//                    gotoHomePosition();
+                    //                    gotoHomePosition();
                     break;
                 case 2:
                     hoverOverNeighbour(platformDirection[0], platformDirection[1]);
@@ -51,8 +51,8 @@ public class TileEntityAssemblyLaser extends TileEntityAssemblyRobot{
                     }
                     break;
                 case 105:
-                    this.slowMode = false;
-                    this.isLaserOn = false;
+                    slowMode = false;
+                    isLaserOn = false;
                     gotoHomePosition();
                     break;
                 default: //4-103
@@ -118,14 +118,14 @@ public class TileEntityAssemblyLaser extends TileEntityAssemblyRobot{
         }
         return null;
     }
-    
+
+    @Override
     public boolean reset(){
-    	if(this.isIdle())
-    		return(true);
-    	else {    		
-    		this.isLaserOn = false;
-    		this.laserStep = 105;
-    		return(false);
-    	}
+        if(isIdle()) return true;
+        else {
+            isLaserOn = false;
+            laserStep = 105;
+            return false;
+        }
     }
 }

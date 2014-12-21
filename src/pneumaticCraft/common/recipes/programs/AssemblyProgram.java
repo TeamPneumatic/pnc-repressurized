@@ -50,7 +50,7 @@ public abstract class AssemblyProgram{
      * @param problemList
      */
     @SuppressWarnings("incomplete-switch")
-	public void addProgramProblem(List<String> problemList){
+    public void addProgramProblem(List<String> problemList){
         switch(curProblem){
             case NO_INPUT:
                 problemList.addAll(PneumaticCraftUtils.convertStringIntoList(EnumChatFormatting.GRAY + "The input IO Unit can't find an inventory with a Block of Compressed Iron.", GuiConstants.maxCharPerLineLeft));

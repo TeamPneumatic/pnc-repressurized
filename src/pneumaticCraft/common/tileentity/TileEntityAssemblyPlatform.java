@@ -7,7 +7,7 @@ import pneumaticCraft.common.network.DescSynced;
 import pneumaticCraft.common.network.LazySynced;
 import pneumaticCraft.lib.TileEntityConstants;
 
-public class TileEntityAssemblyPlatform extends TileEntityBase implements IAssemblyMachine, IResettable {
+public class TileEntityAssemblyPlatform extends TileEntityBase implements IAssemblyMachine, IResettable{
     @DescSynced
     private boolean shouldClawClose;
     @DescSynced
@@ -34,26 +34,28 @@ public class TileEntityAssemblyPlatform extends TileEntityBase implements IAssem
     private boolean isClawDone(){
         return clawProgress == (shouldClawClose ? 1F : 0F);
     }
-    
-    public boolean isIdle() {
-    	return(!this.shouldClawClose && this.isClawDone() && (this.inventory[0] == null));
+
+    @Override
+    public boolean isIdle(){
+        return !shouldClawClose && isClawDone() && inventory[0] == null;
     }
-    
-    public boolean reset() {
-    	this.openClaw();
-    	return(this.isIdle());
+
+    @Override
+    public boolean reset(){
+        openClaw();
+        return isIdle();
     }
 
     public boolean closeClaw(){
         hasDrilledStack = false;
         hasLaseredStack = false;
         shouldClawClose = true;
-        return(this.isClawDone());
+        return isClawDone();
     }
 
     public boolean openClaw(){
         shouldClawClose = false;
-        return(this.isClawDone());
+        return isClawDone();
     }
 
     public ItemStack getHeldStack(){

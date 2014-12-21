@@ -126,15 +126,14 @@ public class TileEntityAssemblyDrill extends TileEntityAssemblyRobot{
         return null;
     }
 
+    @Override
     public boolean reset(){
-    	if(this.isIdle())
-    		return(true);
-    	else
-    	{
-    		isDrillOn = false;
-    		drillStep = 6;
-    		return(false);
-    	}
+        if(isIdle()) return true;
+        else {
+            isDrillOn = false;
+            drillStep = 6;
+            return false;
+        }
     }
-    
+
 }

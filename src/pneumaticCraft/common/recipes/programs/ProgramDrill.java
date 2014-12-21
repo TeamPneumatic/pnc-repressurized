@@ -20,20 +20,16 @@ public class ProgramDrill extends AssemblyProgram{
 
     @Override
     public boolean executeStep(TileEntityAssemblyController controller, TileEntityAssemblyPlatform platform, TileEntityAssemblyIOUnit ioUnitImport, TileEntityAssemblyIOUnit ioUnitExport, TileEntityAssemblyDrill drill, TileEntityAssemblyLaser laser){
-    	boolean useAir = true;
-    	
-    	if(platform.getHeldStack() != null) {
-    		if(canItemBeDrilled(platform.getHeldStack())) {
-    			drill.goDrilling();
-    		}
-    		else if(drill.isIdle())
-    			useAir = ioUnitExport.pickupItem(null);
-    	} else if(!ioUnitExport.isIdle())
-			useAir = ioUnitExport.pickupItem(null);
-    	else
-    		useAir = ioUnitImport.pickupItem(getRecipeList());
-    	
-    	return(useAir);    	    	
+        boolean useAir = true;
+
+        if(platform.getHeldStack() != null) {
+            if(canItemBeDrilled(platform.getHeldStack())) {
+                drill.goDrilling();
+            } else if(drill.isIdle()) useAir = ioUnitExport.pickupItem(null);
+        } else if(!ioUnitExport.isIdle()) useAir = ioUnitExport.pickupItem(null);
+        else useAir = ioUnitImport.pickupItem(getRecipeList());
+
+        return useAir;
     }
 
     private boolean canItemBeDrilled(ItemStack item){

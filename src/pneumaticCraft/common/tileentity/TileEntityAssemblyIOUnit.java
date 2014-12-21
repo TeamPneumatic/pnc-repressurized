@@ -28,270 +28,250 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
     private ItemStack searchedItemStack;
     private byte state = 0;
     private byte tickCounter = 0;
-    
+
     private final static byte SLEEP_TICKS = 50;
-    
+
     private final static byte STATE_IDLE = 0;
     private final static byte STATE_SEARCH_SRC = 1;
     private final static byte STATE_CLOSECLAW_AFTER_PICKUP = 5;
     private final static byte STATE_SEARCH_DROPOFF = 6;
     private final static byte STATE_RESET_CLOSECLAW_AFTER_PICKUP = 20;
     private final static byte STATE_RESET_GOTO_IDLE = 26;
-    private final static byte STATE_MAX = 127;    
+    private final static byte STATE_MAX = 127;
 
     @Override
-    public void updateEntity() {
+    public void updateEntity(){
         super.updateEntity();
-        
-        if(worldObj.isRemote) {
-        	if(!this.isClawDone())
-        		this.moveClaw();
-        } else {
-        	
-        	this.slowMode = false;
-            
-            switch(this.state) {
 
-            case STATE_IDLE:
-            	break;
-            case STATE_SEARCH_SRC:
-            	if(findPickupLocation())
-            		this.state++;
-            	break;
-            // rise to the right height for target location
-            case 2: // for pickup 
-            case 7: // for drop-off
-            case 22: // for reset
-            	if(hoverOverTarget())
-            		this.state++;
-            	break;
-           	// turn and move to target
-            case 3: // for pickup 
-            case 8: // for drop-off
-            case 23: // for reset
-            	this.slowMode = true;
-            	if(gotoTarget())
-            		this.state++;
-            	break;
-            case 4: // pickup item - need to pick up before closeClaw; claw needs to know item size to 'grab' it!
-            	if(getItemFromCurrentDirection())
-            		this.state++;
-            	break;
-            case STATE_CLOSECLAW_AFTER_PICKUP:
-            case STATE_RESET_CLOSECLAW_AFTER_PICKUP:
-            	if(this.closeClaw())
-            		this.state++;
-            	break;
-            case 6:
-            case 21:
-            	if(findDropOffLoation())
-            		this.state++;
-            	break;
-            case 9:
-            case 24:
-            	if(this.openClaw())
-            		this.state++;
-            	break;
-            case 10: // drop off item
-            case 25:
-            	if(putItemToCurrentDirection())
-            		this.state++;
-            	break;
-            case 11:
-            case STATE_RESET_GOTO_IDLE:
-            	if(gotoIdlePos())
-            		this.state = 0;
-            case STATE_MAX: // this will be set if we encounter an unknown state; prevents log-spam that would result from default-case
-            	break;
-            default:
-            	System.out.printf("unexpected state: %d%n", this.state);
-            	this.state = STATE_MAX;
-            	break;
+        if(worldObj.isRemote) {
+            if(!isClawDone()) moveClaw();
+        } else {
+
+            slowMode = false;
+
+            switch(state){
+
+                case STATE_IDLE:
+                    break;
+                case STATE_SEARCH_SRC:
+                    if(findPickupLocation()) state++;
+                    break;
+                // rise to the right height for target location
+                case 2: // for pickup 
+                case 7: // for drop-off
+                case 22: // for reset
+                    if(hoverOverTarget()) state++;
+                    break;
+                // turn and move to target
+                case 3: // for pickup 
+                case 8: // for drop-off
+                case 23: // for reset
+                    slowMode = true;
+                    if(gotoTarget()) state++;
+                    break;
+                case 4: // pickup item - need to pick up before closeClaw; claw needs to know item size to 'grab' it!
+                    if(getItemFromCurrentDirection()) state++;
+                    break;
+                case STATE_CLOSECLAW_AFTER_PICKUP:
+                case STATE_RESET_CLOSECLAW_AFTER_PICKUP:
+                    if(closeClaw()) state++;
+                    break;
+                case 6:
+                case 21:
+                    if(findDropOffLocation()) state++;
+                    break;
+                case 9:
+                case 24:
+                    if(openClaw()) state++;
+                    break;
+                case 10: // drop off item
+                case 25:
+                    if(putItemToCurrentDirection()) state++;
+                    break;
+                case 11:
+                case STATE_RESET_GOTO_IDLE:
+                    if(gotoIdlePos()) state = 0;
+                case STATE_MAX: // this will be set if we encounter an unknown state; prevents log-spam that would result from default-case
+                    break;
+                default:
+                    System.out.printf("unexpected state: %d%n", state);
+                    state = STATE_MAX;
+                    break;
             }
         }
     }
-    
-    public boolean reset() {
-    	if(this.state >= STATE_RESET_CLOSECLAW_AFTER_PICKUP)
-    		return(false);
-    	else if(this.inventory[0] != null) {
-    		this.state = STATE_RESET_CLOSECLAW_AFTER_PICKUP;
-    		return(false);
-    	} else if (this.state == STATE_IDLE) {
-    		return(true);
-    	} else {
-    		this.state = STATE_RESET_GOTO_IDLE;
-    		return(this.isIdle());
-    	}
+
+    @Override
+    public boolean reset(){
+        if(state >= STATE_RESET_CLOSECLAW_AFTER_PICKUP) return false;
+        else if(inventory[0] != null) {
+            state = STATE_RESET_CLOSECLAW_AFTER_PICKUP;
+            return false;
+        } else if(state == STATE_IDLE) {
+            return true;
+        } else {
+            state = STATE_RESET_GOTO_IDLE;
+            return isIdle();
+        }
     }
-    
+
     /**
      * @return true if the controller should use air and display 'running'
      */
-    public boolean pickupItem(List<AssemblyRecipe> list) {   	
-    	this.recipeList = list;
-    	
-    	if(this.state == STATE_IDLE)
-    		this.state++;
-    	
-    	return((this.state > STATE_IDLE)
-    			&& !this.isSleeping()  // will not use air while waiting for item/inventory to be available
-    			&& (this.state < STATE_MAX));
+    public boolean pickupItem(List<AssemblyRecipe> list){
+        recipeList = list;
+
+        if(state == STATE_IDLE) state++;
+
+        return state > STATE_IDLE && !isSleeping() // will not use air while waiting for item/inventory to be available
+                && state < STATE_MAX;
     }
-    
-    private boolean gotoIdlePos() {
-    	this.gotoHomePosition();
-    	return(this.isDoneInternal());
+
+    private boolean gotoIdlePos(){
+        gotoHomePosition();
+        return isDoneInternal();
     }
-    
-    private boolean findPickupLocation() {
-    	if(shouldSleep())
-    		return(false);
-    	
+
+    private boolean findPickupLocation(){
+        if(shouldSleep()) return false;
+
         ForgeDirection[] inventoryDir = null;
-        
-        if(this.isImportUnit()) {
-        	this.searchedItemStack = null;
-        	if(this.recipeList != null) {
-        		for(AssemblyRecipe recipe : recipeList) {
-        			inventoryDir = getInventoryDirectionForItem(recipe.getInput());
-        			if(inventoryDir != null) {
-        				this.searchedItemStack = recipe.getInput();
-        				break;
-        			}
-        		}
-        	}
+
+        if(isImportUnit()) {
+            searchedItemStack = null;
+            if(recipeList != null) {
+                for(AssemblyRecipe recipe : recipeList) {
+                    inventoryDir = getInventoryDirectionForItem(recipe.getInput());
+                    if(inventoryDir != null) {
+                        searchedItemStack = recipe.getInput();
+                        break;
+                    }
+                }
+            }
         } else {
-        	inventoryDir = getPlatformDirection();        	
+            inventoryDir = getPlatformDirection();
         }
-        
-        this.targetDirection = inventoryDir;
-        
-        if(this.targetDirection == null) {
-        	sleepBeforeNextSearch();
-        	
-        	return(false);
-        } else
-        	return(true);        
-    }
-    
-    private boolean isSleeping() {
-    	return(this.tickCounter > 0);
+
+        targetDirection = inventoryDir;
+
+        if(targetDirection == null) {
+            sleepBeforeNextSearch();
+
+            return false;
+        } else return true;
     }
 
-	private boolean shouldSleep() {
-		if((this.tickCounter > 0) && this.tickCounter++ < SLEEP_TICKS) {
-    		return(true);
-    	} else {
-    		this.tickCounter = 0;
-    		return(false);
-    	}
-	}
-	
-	private void sleepBeforeNextSearch() {
-		this.tickCounter = 1;
-	}
-    
-    private boolean findDropOffLoation() {
-    	if(shouldSleep())
-    		return(false);
-
-    	ForgeDirection[] inventoryDir = null;
-        
-        if(this.isImportUnit()) {
-        	inventoryDir = getPlatformDirection();
-        } else {
-        	inventoryDir = getExportLocationForItem(inventory[0]);
-        }
-    
-        this.targetDirection = inventoryDir;
-        
-        if(this.targetDirection == null) {
-        	sleepBeforeNextSearch();
-        	
-        	return(false);
-        } else
-        	return(true);        
+    private boolean isSleeping(){
+        return tickCounter > 0;
     }
-    
+
+    private boolean shouldSleep(){
+        if(tickCounter > 0 && tickCounter++ < SLEEP_TICKS) {
+            return true;
+        } else {
+            tickCounter = 0;
+            return false;
+        }
+    }
+
+    private void sleepBeforeNextSearch(){
+        tickCounter = 1;
+    }
+
+    private boolean findDropOffLocation(){
+        if(shouldSleep()) return false;
+
+        ForgeDirection[] inventoryDir = null;
+
+        if(isImportUnit()) {
+            inventoryDir = getPlatformDirection();
+        } else {
+            inventoryDir = getExportLocationForItem(inventory[0]);
+        }
+
+        targetDirection = inventoryDir;
+
+        if(targetDirection == null) {
+            sleepBeforeNextSearch();
+
+            return false;
+        } else return true;
+    }
+
     private boolean getItemFromCurrentDirection(){
-    	TileEntity tile = getTileEntityForCurrentDirection();
+        TileEntity tile = getTileEntityForCurrentDirection();
 
-		boolean extracted = false;
-		
-		/*
-		 * we must not .reset here because we might inadvertently change this.state right before this.state++ 
-		 * 
-		if((tile == null) || !(tile instanceof IInventory)) // TE / inventory is gone
-			reset();
-		*/
+        boolean extracted = false;
 
-		if(this.isImportUnit()) {
-			if(this.searchedItemStack == null) { // we don't know what we're supposed to pick up
-				this.reset();
-			} else if(tile instanceof IInventory) {
-				IInventory inv = (IInventory)tile;
-				
-				int oldStackSize = (inventory[0] == null ? 0 : inventory[0].stackSize); 
-				
-				for(int i = 0; i < inv.getSizeInventory(); i++) {
-					if(inv.getStackInSlot(i) != null && inv.getStackInSlot(i).isItemEqual(searchedItemStack)) {
-						if(inventory[0] == null) {
-							inventory[0] = inv.decrStackSize(i, 1);
-						} else {
-							inv.decrStackSize(i, 1);
-							inventory[0].stackSize++;
-						}
-						extracted = (inventory[0].stackSize == searchedItemStack.stackSize); // we might need to pickup more than 1 item
-						break;
-					}
-				}
-				
-				if(oldStackSize == (inventory[0] == null ? 0 : inventory[0].stackSize)) // nothing picked up, search for different inventory
-					this.state = STATE_SEARCH_SRC;
-				
-			} else
-				this.state = STATE_SEARCH_SRC; // inventory gone
-		} else {
-			if(tile instanceof TileEntityAssemblyPlatform) {
+        /*
+         * we must not .reset here because we might inadvertently change this.state right before this.state++ 
+         * 
+        if((tile == null) || !(tile instanceof IInventory)) // TE / inventory is gone
+        	reset();
+        */
 
-				TileEntityAssemblyPlatform plat = (TileEntityAssemblyPlatform)tile;
+        if(isImportUnit()) {
+            if(searchedItemStack == null) { // we don't know what we're supposed to pick up
+                reset();
+            } else if(tile instanceof IInventory) {
+                IInventory inv = (IInventory)tile;
 
-				if(plat.openClaw()) {
-					inventory[0] = plat.getHeldStack();
-					plat.setHeldStack(null);
-					extracted = (inventory[0] != null);
-					
-					if(!extracted) // something went wrong - either the platform is gone altogether, or the item is not there anymore
-						this.state = STATE_SEARCH_SRC;
-				}				
-			}			
-		}
+                int oldStackSize = inventory[0] == null ? 0 : inventory[0].stackSize;
 
-		return(extracted);
+                for(int i = 0; i < inv.getSizeInventory(); i++) {
+                    if(inv.getStackInSlot(i) != null && inv.getStackInSlot(i).isItemEqual(searchedItemStack)) {
+                        if(inventory[0] == null) {
+                            inventory[0] = inv.decrStackSize(i, 1);
+                        } else {
+                            inv.decrStackSize(i, 1);
+                            inventory[0].stackSize++;
+                        }
+                        extracted = inventory[0].stackSize == searchedItemStack.stackSize; // we might need to pickup more than 1 item
+                        break;
+                    }
+                }
+
+                if(oldStackSize == (inventory[0] == null ? 0 : inventory[0].stackSize)) // nothing picked up, search for different inventory
+                state = STATE_SEARCH_SRC;
+
+            } else state = STATE_SEARCH_SRC; // inventory gone
+        } else {
+            if(tile instanceof TileEntityAssemblyPlatform) {
+
+                TileEntityAssemblyPlatform plat = (TileEntityAssemblyPlatform)tile;
+
+                if(plat.openClaw()) {
+                    inventory[0] = plat.getHeldStack();
+                    plat.setHeldStack(null);
+                    extracted = inventory[0] != null;
+
+                    if(!extracted) // something went wrong - either the platform is gone altogether, or the item is not there anymore
+                    state = STATE_SEARCH_SRC;
+                }
+            }
+        }
+
+        return extracted;
     }
-    
-    private boolean putItemToCurrentDirection() {    	    	
-    	if(this.isImportUnit()) {
-    		TileEntity tile = getTileEntityForCurrentDirection();
-    		if(tile instanceof TileEntityAssemblyPlatform) {
 
-    			TileEntityAssemblyPlatform plat = (TileEntityAssemblyPlatform)tile;
+    private boolean putItemToCurrentDirection(){
+        if(isImportUnit()) {
+            TileEntity tile = getTileEntityForCurrentDirection();
+            if(tile instanceof TileEntityAssemblyPlatform) {
 
-    			if(inventory[0] == null)
-    				return(plat.closeClaw());
-    			
-    			if(plat.isIdle()) {
-    				plat.setHeldStack(inventory[0]);
-    				inventory[0] = null;
-    				return(plat.closeClaw());
-    			}
-    		} else
-            	repeatDropOffSearch(); // platform gone; close claw and search new drop-off-location
-    	} else {
+                TileEntityAssemblyPlatform plat = (TileEntityAssemblyPlatform)tile;
+
+                if(inventory[0] == null) return plat.closeClaw();
+
+                if(plat.isIdle()) {
+                    plat.setHeldStack(inventory[0]);
+                    inventory[0] = null;
+                    return plat.closeClaw();
+                }
+            } else repeatDropOffSearch(); // platform gone; close claw and search new drop-off-location
+        } else {
             IInventory inv = getInventoryForCurrentDirection();
-            if(inv == null)
-            	repeatDropOffSearch(); // inventory gone; close claw and search new drop-off-location
+            if(inv == null) repeatDropOffSearch(); // inventory gone; close claw and search new drop-off-location
             else {
                 int startSize = inventory[0].stackSize;
                 for(int i = 0; i < 6; i++) {
@@ -299,53 +279,51 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
                     if(inventory[0] == null) break;
                 }
                 if(inventory[0] == null || startSize != inventory[0].stackSize) sendDescriptionPacket(); // TODO - is this still needed? Shouldn't @DescSynced on inventory take care of this?
-                
-                if((inventory[0] != null) && startSize == inventory[0].stackSize)
-                	repeatDropOffSearch(); // target-inventory full or unavailable
+
+                if(inventory[0] != null && startSize == inventory[0].stackSize) repeatDropOffSearch(); // target-inventory full or unavailable
             }
-            
-            return(inventory[0] == null);
-    	}
-    	
-    	return(false);
+
+            return inventory[0] == null;
+        }
+
+        return false;
     }
-    
+
     private void repeatDropOffSearch(){
-    	this.state =  this.state >= STATE_RESET_CLOSECLAW_AFTER_PICKUP ? STATE_RESET_CLOSECLAW_AFTER_PICKUP : STATE_CLOSECLAW_AFTER_PICKUP;    	
+        state = state >= STATE_RESET_CLOSECLAW_AFTER_PICKUP ? STATE_RESET_CLOSECLAW_AFTER_PICKUP : STATE_CLOSECLAW_AFTER_PICKUP;
     }
-    
+
     private boolean closeClaw(){
-    	this.shouldClawClose = true;
-    	return(this.moveClaw());
+        shouldClawClose = true;
+        return moveClaw();
     }
-    
+
     private boolean openClaw(){
-    	this.shouldClawClose = false;
-    	return(this.moveClaw());
-    }    
+        shouldClawClose = false;
+        return moveClaw();
+    }
 
-	private boolean moveClaw() {
-		oldClawProgress = clawProgress; 
+    private boolean moveClaw(){
+        oldClawProgress = clawProgress;
 
-		if(!shouldClawClose && clawProgress > 0F) {
+        if(!shouldClawClose && clawProgress > 0F) {
             clawProgress = Math.max(clawProgress - TileEntityConstants.ASSEMBLY_IO_UNIT_CLAW_SPEED * speed, 0);
         } else if(shouldClawClose && clawProgress < 1F) {
             clawProgress = Math.min(clawProgress + TileEntityConstants.ASSEMBLY_IO_UNIT_CLAW_SPEED * speed, 1);
         }
-        
-    	return(this.isClawDone());
-	}
-	
-	private boolean isClawDone() {
-		// need to make sure that clawProgress and oldClawProgress are the same, or we will get rendering artifacts
-		return((clawProgress == oldClawProgress) && (clawProgress == (shouldClawClose ? 1F : 0F)));
-	}
-	
-    
-    private boolean isImportUnit(){
-    	return(getBlockMetadata() == 0);
+
+        return isClawDone();
     }
-    
+
+    private boolean isClawDone(){
+        // need to make sure that clawProgress and oldClawProgress are the same, or we will get rendering artifacts
+        return clawProgress == oldClawProgress && clawProgress == (shouldClawClose ? 1F : 0F);
+    }
+
+    private boolean isImportUnit(){
+        return getBlockMetadata() == 0;
+    }
+
     public IInventory getInventoryForCurrentDirection(){
         TileEntity te = getTileEntityForCurrentDirection();
         if(te instanceof IInventory) return (IInventory)te;
@@ -353,38 +331,38 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
     }
 
     public boolean switchMode(){
-    	if(this.state <= STATE_SEARCH_SRC) {
-    		worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 1 - getBlockMetadata(), 3);
-    		return(true);
-    	} else {
-    		return false;
-    	}
+        if(state <= STATE_SEARCH_SRC) {
+            worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 1 - getBlockMetadata(), 3);
+            return true;
+        } else {
+            return false;
+        }
 
-    	//PacketDispatcher.sendPacketToAllPlayers(getDescriptionPacket());
+        //PacketDispatcher.sendPacketToAllPlayers(getDescriptionPacket());
     }
 
     @Override
     public void gotoHomePosition(){
         super.gotoHomePosition();
-        
-        if(this.isClawDone())
-        	this.openClaw();
+
+        if(isClawDone()) openClaw();
     }
 
-    public boolean isIdle() {
-    	return(this.state == STATE_IDLE);
+    @Override
+    public boolean isIdle(){
+        return state == STATE_IDLE;
     }
-    
+
     private boolean isDoneInternal(){
-    	return(super.isDoneMoving());
-    	/*
+        return super.isDoneMoving();
+        /*
         if(super.isDone()) {
             boolean searchDone = feedPlatformStep != 4 || searchedItemStack != null && inventory[0] != null && searchedItemStack.isItemEqual(inventory[0]) && inventory[0].stackSize == searchedItemStack.stackSize;
             return clawProgress == (shouldClawClose ? 1F : 0F) && searchDone;
         } else {
             return false;
         }
-       */
+        */
     }
 
     public ForgeDirection[] getInventoryDirectionForItem(ItemStack searchedItem){
@@ -514,7 +492,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
         super.readFromNBT(tag);
         clawProgress = tag.getFloat("clawProgress");
         shouldClawClose = tag.getBoolean("clawClosing");
-        this.state = tag.getByte("state");
+        state = tag.getByte("state");
         // Read in the ItemStacks in the inventory from NBT
         NBTTagList tagList = tag.getTagList("Items", 10);
         inventory = new ItemStack[1];
@@ -532,7 +510,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
         super.writeToNBT(tag);
         tag.setFloat("clawProgress", clawProgress);
         tag.setBoolean("clawClosing", shouldClawClose);
-        tag.setByte("state", this.state);
+        tag.setByte("state", state);
         // Write the ItemStacks in the inventory to NBT
         NBTTagList tagList = new NBTTagList();
         for(int currentIndex = 0; currentIndex < inventory.length; ++currentIndex) {
