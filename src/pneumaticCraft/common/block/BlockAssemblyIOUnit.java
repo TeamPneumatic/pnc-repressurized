@@ -26,8 +26,7 @@ public class BlockAssemblyIOUnit extends BlockPneumaticCraftModeled{
 
     @Override
     public boolean rotateBlock(World world, EntityPlayer player, int x, int y, int z, ForgeDirection side){
-        ((TileEntityAssemblyIOUnit)world.getTileEntity(x, y, z)).switchMode();
-        return true;
+        return ((TileEntityAssemblyIOUnit)world.getTileEntity(x, y, z)).switchMode();
     }
 
     @Override

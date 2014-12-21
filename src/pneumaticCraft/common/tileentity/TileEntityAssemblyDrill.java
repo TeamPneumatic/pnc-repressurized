@@ -102,12 +102,12 @@ public class TileEntityAssemblyDrill extends TileEntityAssemblyRobot{
     }
 
     @Override
-    public boolean isDone(){
+    public boolean isIdle(){
         return drillStep == 0 && isDoneInternal();
     }
 
     private boolean isDoneInternal(){
-        if(super.isDone()) {
+        if(super.isDoneMoving()) {
             return isDrillOn ? drillSpeed > TileEntityConstants.ASSEMBLY_DRILL_MAX_SPEED - 1F : PneumaticCraftUtils.areFloatsEqual(drillSpeed, 0F);
         } else {
             return false;
@@ -125,4 +125,15 @@ public class TileEntityAssemblyDrill extends TileEntityAssemblyRobot{
         }
         return null;
     }
+
+    @Override
+    public boolean reset(){
+        if(isIdle()) return true;
+        else {
+            isDrillOn = false;
+            drillStep = 6;
+            return false;
+        }
+    }
+
 }
