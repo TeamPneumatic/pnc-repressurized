@@ -16,7 +16,6 @@ import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.network.DescSynced;
-import pneumaticCraft.common.network.FilteredSynced;
 import pneumaticCraft.common.network.GuiSynced;
 import pneumaticCraft.common.network.LazySynced;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
@@ -36,7 +35,6 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
     private boolean opening;
     public boolean wasPowered;
     @DescSynced
-    @FilteredSynced(index = 4)
     private ItemStack[] inventory = new ItemStack[5];
     @GuiSynced
     public int redstoneMode;

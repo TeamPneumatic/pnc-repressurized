@@ -1,11 +1,14 @@
--You can now shoot entities with an Air Cannon by inserting an Entity Tracker Upgrade.
--Added 'getGPSToolCoordinate' to the Universal Sensor CC methods.
--Drones now access areas gradually (much more controlled). Should solve a lot of lag problems.
--Entity Tracker in the Pneumatic Helmet now can be used to see which blocks the Drone currently is analyzing.
--Drones now dig/place blocks smart: They'll never dig the same block as another drone.
--Drones now claim Charging Stations, and only one Drone can charge at the same time.
+-Pneumatic plants will now be part of bonemealed grass (DarkStarDS9).
+-You can now bonemeal Dirt, End Stone, and Netherrack to get pneumaticcraft plants (configurable) (DarkStarDS9).
+-Refactored Assembly System (DarkStarDS9).
 
--Bugfix: IC2 Power converters don't properly sync the current redstone setting, and the redstone setting gets switched for every action in the GUI.
--Bugfix: [SMP] Flux Compressor / Pneumatic Dynamo show negative RF values when over 32000 RF.
--Bugfix: Pneumatic Door Base doesn't properly sync it's orientation.
--Bugfix: crash when certain mods add a null keybind.
+-Bugfix: Pneumatic Door base forgets speed upgrades (on client).
+-Bugfix: Elevator crashes on certain occasions when redstone controlled (DarkStarDS9).
+-Bugfix: You can't interact with the Plastic Mixer's inventory.
+-Bugfix: Assembly System gets stuck when removing and putting back a program (DarkStarDS9).
+-Bugfix: Elevator Frames bug out rendering of transparent blocks.
+-Bugfix: Pneumatic Dynamo loses RF energy.
+-Bugfix: Waila is labeling plants mature when they aren't. Fixes #303
+-Bugfix: (Advanced) Air Compressor is using 10x as much fuel as it should.
+-Bugfix: Missing texture when trying to camo with Chisel.
+-Bugfix: Lighting issue with elevators.

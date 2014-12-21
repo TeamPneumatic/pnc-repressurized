@@ -24,7 +24,7 @@ public class WailaPlantHandler implements IWailaDataProvider{
     public List<String> getWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config){
         int meta = accessor.getMetadata();
         boolean active = meta > 6;
-        if(active) meta -= 6;
+        if(active) meta -= 7;
         float growthValue = meta / 6.0F * 100.0F;
         if(growthValue < 100.0) currenttip.add(String.format("%s : %.0f %%", I18n.format("hud.msg.growth"), growthValue));
         else currenttip.add(String.format("%s : %s", I18n.format("hud.msg.growth"), I18n.format("hud.msg.mature")));

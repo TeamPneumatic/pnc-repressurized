@@ -20,29 +20,27 @@ public class ProgramDrillLaser extends AssemblyProgram{
 
     @Override
     public boolean executeStep(TileEntityAssemblyController controller, TileEntityAssemblyPlatform platform, TileEntityAssemblyIOUnit ioUnitImport, TileEntityAssemblyIOUnit ioUnitExport, TileEntityAssemblyDrill drill, TileEntityAssemblyLaser laser){
-        if(ioUnitExport.inventory[0] != null) {
-            ioUnitExport.exportHeldItem();
-        } else {
-            if(platform.hasDrilledStack && platform.hasLaseredStack) {
-                ioUnitExport.pickUpPlatformItem();
-            } else if(platform.hasDrilledStack) {
-                if(canItemBeLasered(platform.getHeldStack())) {
-                    laser.startLasering();
-                } else {
-                    controller.resetSetup();
-                }
-            } else if(platform.getHeldStack() != null) {
-                if(canItemBeDrilled(platform.getHeldStack())) {
-                    drill.goDrilling();
-                } else {
-                    controller.resetSetup();
-                }
-            } else {
-                return ioUnitImport.pickUpInventoryItem(getRecipeList());
+        boolean useAir = true;
+
+        if(platform.getHeldStack() != null) {
+            if(canItemBeDrilled(platform.getHeldStack())) {
+                drill.goDrilling();
+            } else if(drill.isIdle() && canItemBeLasered(platform.getHeldStack())) {
+                laser.startLasering();
+            } else if(drill.isIdle() && laser.isIdle()) {
+                useAir = ioUnitExport.pickupItem(null);
             }
-        }
-        return true;
+        } else if(!ioUnitExport.isIdle()) useAir = ioUnitExport.pickupItem(null);
+        else useAir = ioUnitImport.pickupItem(getRecipeList());
+
+        return useAir;
     }
+
+    /*
+    private boolean canItemBeProcessed(ItemStack item) {
+    	return(this.canItemBeDrilled(item) && this.canItemBeLasered(item));
+    }
+    */
 
     private boolean canItemBeLasered(ItemStack item){
         for(AssemblyRecipe recipe : AssemblyRecipe.laserRecipes) {

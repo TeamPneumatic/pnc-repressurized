@@ -42,6 +42,7 @@ public class RenderElevatorFrame extends ISBRHPneumatic{
             renderer.renderStandardBlock(block, x, y, z);
         }
         renderer.setOverrideBlockTexture(null);
+        renderer.renderAllFaces = false;
         return true;
     }
 

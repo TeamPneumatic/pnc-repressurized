@@ -11,7 +11,7 @@ import pneumaticCraft.lib.TileEntityConstants;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public abstract class TileEntityAssemblyRobot extends TileEntityBase implements IAssemblyMachine{
+public abstract class TileEntityAssemblyRobot extends TileEntityBase implements IAssemblyMachine, IResettable{
     public float[] oldAngles = new float[5];
     @DescSynced
     @LazySynced
@@ -67,6 +67,13 @@ public abstract class TileEntityAssemblyRobot extends TileEntityBase implements 
         targetAngles[EnumAngles.HEAD.ordinal()] = 0F;
     }
 
+    public boolean gotoTarget(){
+        if(targetDirection == null) return false;
+
+        this.gotoNeighbour(targetDirection[0], targetDirection[1]);
+        return isDoneMoving();
+    }
+
     public void gotoNeighbour(ForgeDirection direction){
         gotoNeighbour(direction, ForgeDirection.UNKNOWN);
     }
@@ -77,6 +84,7 @@ public abstract class TileEntityAssemblyRobot extends TileEntityBase implements 
      * @param secondaryDir
      * @return
      */
+    @SuppressWarnings("incomplete-switch")
     public boolean gotoNeighbour(ForgeDirection primaryDir, ForgeDirection secondaryDir){
         targetDirection = new ForgeDirection[]{primaryDir, secondaryDir};
         boolean diagonal = true;
@@ -131,6 +139,17 @@ public abstract class TileEntityAssemblyRobot extends TileEntityBase implements 
         return diagonal;
     }
 
+    public boolean hoverOverTarget(){
+        if(targetDirection == null) return false;
+
+        return this.hoverOverNeighbour(targetDirection);
+    }
+
+    public boolean hoverOverNeighbour(ForgeDirection[] directions){
+        hoverOverNeighbour(directions[0], directions[1]);
+        return isDoneMoving();
+    }
+
     public void hoverOverNeighbour(ForgeDirection primaryDir, ForgeDirection secondaryDir){
         boolean diagonal = gotoNeighbour(primaryDir, secondaryDir);
         if(diagonal) {
@@ -148,13 +167,15 @@ public abstract class TileEntityAssemblyRobot extends TileEntityBase implements 
         return getTileEntityForDirection(targetDirection[0], targetDirection[1]);
     }
 
-    public TileEntity getTileEntityForDirection(ForgeDirection firstDir, ForgeDirection secondDir){
-        return worldObj.getTileEntity(xCoord + firstDir.offsetX + secondDir.offsetX, yCoord + firstDir.offsetY + secondDir.offsetY, zCoord + firstDir.offsetZ + secondDir.offsetZ);
-
+    public TileEntity getTileEntityForDirection(ForgeDirection[] directions){
+        return getTileEntityForDirection(directions[0], directions[1]);
     }
 
-    @Override
-    public boolean isDone(){
+    public TileEntity getTileEntityForDirection(ForgeDirection firstDir, ForgeDirection secondDir){
+        return worldObj.getTileEntity(xCoord + firstDir.offsetX + secondDir.offsetX, yCoord + firstDir.offsetY + secondDir.offsetY, zCoord + firstDir.offsetZ + secondDir.offsetZ);
+    }
+
+    protected boolean isDoneMoving(){
         for(int i = 0; i < 5; i++) {
             if(!PneumaticCraftUtils.areFloatsEqual(angles[i], targetAngles[i])) return false;
         }
@@ -188,8 +209,12 @@ public abstract class TileEntityAssemblyRobot extends TileEntityBase implements 
         }
         tag.setBoolean("slowMode", slowMode);
         tag.setFloat("speed", speed);
-        tag.setInteger("targetDir1", targetDirection[0].ordinal());
-        tag.setInteger("targetDir2", targetDirection[1].ordinal());
+
+        if(targetDirection != null) {
+            if(targetDirection.length > 0) tag.setInteger("targetDir1", targetDirection[0].ordinal());
+
+            if(targetDirection.length > 1) tag.setInteger("targetDir2", targetDirection[1].ordinal());
+        }
     }
 
     public abstract boolean canMoveToDiagonalNeighbours();
