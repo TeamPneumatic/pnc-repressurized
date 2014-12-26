@@ -151,5 +151,6 @@ public class PneumaticValues{
     public static final int PLASTIC_MIXER_HEAT_RATIO = 1;
     public static final int PLASTIC_MIXER_MELTING_TEMP = 150 + 273;//150 C
     public static final int MAX_DRAIN = 100;
+    public static final int DRONE_TANK_SIZE = 16000;
 
 }

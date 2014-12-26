@@ -3,6 +3,9 @@ Entity Filters are used at a few locations in PneumaticCraft. They all work the 
 @player --> allows all players only
 @mob --> allows all aggressive creatures only
 @animal --> allows all passive creatures only
+@animal(age = adult) --> allows all passive creatures that are adult only
+@animal(age = baby) --> allows all passive creatures that are baby only
+@animal(breedable = yes) --> allows all passive creatures that can breed at this very moment (they'll consume wheat/carrots/...)
 @minecart --> allows minecarts only
 @living --> allows all living entities only
 @item --> allows item entities only

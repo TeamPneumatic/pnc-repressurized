@@ -18,6 +18,7 @@ import pneumaticCraft.client.gui.programmer.GuiProgWidgetAreaShow;
 import pneumaticCraft.common.ai.DroneAINearestAttackableTarget;
 import pneumaticCraft.common.ai.StringFilterEntitySelector;
 import pneumaticCraft.common.entity.living.EntityDrone;
+import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.lib.PneumaticValues;
 import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.relauncher.Side;
@@ -53,11 +54,6 @@ public class ProgWidgetEntityAttack extends ProgWidget implements IAreaProvider,
     @Override
     protected ResourceLocation getTexture(){
         return Textures.PROG_WIDGET_ATTACK;
-    }
-
-    @Override
-    public int getHeight(){
-        return 44;
     }
 
     @Override
@@ -140,7 +136,12 @@ public class ProgWidgetEntityAttack extends ProgWidget implements IAreaProvider,
     }
 
     @Override
-    public String getLegacyString(){
-        return "attk";
+    public WidgetCategory getCategory(){
+        return WidgetCategory.ACTION;
+    }
+
+    @Override
+    public int getCraftingColorIndex(){
+        return ItemPlasticPlants.FIRE_FLOWER_DAMAGE;
     }
 }

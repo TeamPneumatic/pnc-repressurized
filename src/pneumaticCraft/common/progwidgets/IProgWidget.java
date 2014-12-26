@@ -3,6 +3,7 @@ package pneumaticCraft.common.progwidgets;
 import java.util.List;
 
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.nbt.NBTTagCompound;
 import pneumaticCraft.client.gui.GuiProgrammer;
@@ -27,6 +28,10 @@ public interface IProgWidget{
 
     public void getTooltip(List<String> curTooltip);
 
+    public void renderExtraInfo();
+
+    public void addCompileErrors(List<String> curErrors);
+
     public boolean hasStepInput();
 
     public boolean hasStepOutput();
@@ -45,11 +50,21 @@ public interface IProgWidget{
 
     public IProgWidget getOutputWidget();
 
+    /**
+     * This one will be called when running in an actual program.
+     * @param drone
+     * @param allWidgets
+     * @return
+     */
+    public IProgWidget getOutputWidget(EntityDrone drone, List<IProgWidget> allWidgets);
+
     public Class<? extends IProgWidget> returnType();//true for widgets that can give info to the widget left of it (like areas or filters)
 
     public Class<? extends IProgWidget>[] getParameters(); //the entity attack widget for instance returns the filter and area class.
 
     public void setParameter(int index, IProgWidget parm);
+
+    public boolean canSetParameter(int index);
 
     public IProgWidget[] getConnectedParameters();//this includes whitelist and blacklist. whitelist will go in the first half of elements, blacklist in the second half.
 
@@ -63,16 +78,11 @@ public interface IProgWidget{
      */
     public String getWidgetString();
 
-    /**
-     * Just a method to have backwards compatibility.
-     * @return
-     */
-    @Deprecated
-    public String getLegacyString();
-
     public String getGuiTabText();
 
     public int getGuiTabColor();
+
+    public int getCraftingColorIndex();
 
     /**
      * At least do a tag.setString("id", getWidgetString());
@@ -86,4 +96,20 @@ public interface IProgWidget{
 
     @SideOnly(Side.CLIENT)
     public GuiScreen getOptionWindow(GuiProgrammer guiProgrammer);
+
+    public WidgetCategory getCategory();
+
+    public static enum WidgetCategory{
+        PARAMETER("parameters"), FLOW_CONTROL("flowControl"), ACTION("actions"), CONDITION("conditions");
+
+        private final String name;
+
+        private WidgetCategory(String name){
+            this.name = name;
+        }
+
+        public String getLocalizedName(){
+            return I18n.format("gui.progWidget.category." + name);
+        }
+    }
 }

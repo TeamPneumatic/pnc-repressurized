@@ -1,0 +1,6 @@
+Programming Puzzles are used in [link{block/programmer}]programmers [link{}].
+
+[prefix{l}]The Jump piece [prefix{}]
+This piece is purely focused on program flow. When the program hits a Jump piece, it will look at the connected Text piece, and try to jump to a [link{progwidget/label}] Label[link{}] piece with the same text in the attached Text piece. When it fails, the program will continue in the Start piece. This never is intended.
+
+So a Jump piece can be used to merge multiple 'branches' in the program flow (by using two or more jumps that all jump to the same Label), or just to organize pieces by putting them next to each other. A nice tip is to check 'Show Flow' at the bottom right of the Programmer Interface. It will show lines where pieces can jump from and to.

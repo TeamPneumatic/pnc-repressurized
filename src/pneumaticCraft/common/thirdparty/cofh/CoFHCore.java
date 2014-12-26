@@ -2,21 +2,28 @@ package pneumaticCraft.common.thirdparty.cofh;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import pneumaticCraft.api.PneumaticRegistry;
+import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.client.model.ModelThirdPartyCompressor;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.thirdparty.IThirdParty;
 import pneumaticCraft.common.tileentity.TileEntityPneumaticBase;
+import pneumaticCraft.common.tileentity.TileEntityProgrammer;
 import pneumaticCraft.lib.Names;
 import pneumaticCraft.proxy.ClientProxy;
 import pneumaticCraft.proxy.CommonProxy;
+import cofh.api.energy.IEnergyStorage;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.network.IGuiHandler;
 import cpw.mods.fml.common.registry.GameRegistry;
 
@@ -41,6 +48,12 @@ public class CoFHCore implements IThirdParty, IGuiHandler{
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(fluxCompressor), "gcp", "frt", "gqp", 'p', Itemss.printedCircuitBoard, 'c', Itemss.compressedIronGear, 'g', Items.redstone, 't', new ItemStack(Blockss.advancedPressureTube, 1, 0), 'r', Itemss.turbineRotor, 'f', Blocks.redstone_block, 'q', Blocks.furnace));
 
         PneumaticRegistry.getInstance().registerBlockTrackEntry(new BlockTrackEntryRF());
+        PneumaticRegistry.getInstance().registerCustomBlockInteractor(new DroneInteractRFExport());
+        PneumaticRegistry.getInstance().registerCustomBlockInteractor(new DroneInteractRFImport());
+        TileEntityProgrammer.registeredWidgets.add(new ProgWidgetRFCondition());
+        TileEntityProgrammer.registeredWidgets.add(new ProgWidgetDroneConditionRF());
+
+        MinecraftForge.EVENT_BUS.register(this);
     }
 
     @Override
@@ -75,4 +88,19 @@ public class CoFHCore implements IThirdParty, IGuiHandler{
     @Override
     public void clientInit(){}
 
+    @SubscribeEvent
+    public void onEntityConstruction(EntityConstructing event){
+        if(event.entity instanceof IDrone) {
+            getEnergyStorage((EntityCreature)event.entity);//will add an instance of ExtendedEntityProperties that can be loaded out of NBT.
+        }
+    }
+
+    public static IEnergyStorage getEnergyStorage(EntityCreature entity){
+        ExtendedPropertyRF property = (ExtendedPropertyRF)entity.getExtendedProperties("PneumaticCraft_RF");
+        if(property == null) {
+            property = new ExtendedPropertyRF();
+            entity.registerExtendedProperties("PneumaticCraft_RF", property);
+        }
+        return property.energy;
+    }
 }

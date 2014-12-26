@@ -4,6 +4,7 @@ import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.util.ResourceLocation;
 import pneumaticCraft.common.ai.DroneEntityAIPickupItems;
 import pneumaticCraft.common.entity.living.EntityDrone;
+import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.lib.Textures;
 
 public class ProgWidgetPickupItem extends ProgWidgetAreaItemBase{
@@ -34,8 +35,7 @@ public class ProgWidgetPickupItem extends ProgWidgetAreaItemBase{
     }
 
     @Override
-    public String getLegacyString(){
-        return "I-pick";
+    public int getCraftingColorIndex(){
+        return ItemPlasticPlants.POTION_PLANT_DAMAGE;
     }
-
 }

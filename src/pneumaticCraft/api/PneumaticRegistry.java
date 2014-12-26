@@ -11,6 +11,7 @@ import pneumaticCraft.api.client.pneumaticHelmet.IBlockTrackEntry;
 import pneumaticCraft.api.client.pneumaticHelmet.IEntityTrackEntry;
 import pneumaticCraft.api.client.pneumaticHelmet.IHackableBlock;
 import pneumaticCraft.api.client.pneumaticHelmet.IHackableEntity;
+import pneumaticCraft.api.drone.ICustomBlockInteract;
 import pneumaticCraft.api.drone.IPathfindHandler;
 import pneumaticCraft.api.item.IInventoryItem;
 
@@ -67,6 +68,13 @@ public class PneumaticRegistry{
          * @param handler can be null, to always allow pathfinding through this block.
          */
         public void addPathfindableBlock(Block block, IPathfindHandler handler);
+
+        /**
+         * This will add a puzzle piece that has only a Area white- and blacklist parameter (similar to a GoTo piece).
+         * It will do the specified behaviour. This can be used to create energy import/export widgets.
+         * @param interactor
+         */
+        public void registerCustomBlockInteractor(ICustomBlockInteract interactor);
 
         /*
          * --------------- Items -------------------

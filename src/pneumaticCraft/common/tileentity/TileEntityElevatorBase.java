@@ -692,7 +692,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
                     getCoreElevator().sendDescPacket(256D);
                     return null;
                 } else {
-                    throw new IllegalArgumentException("setHeight does take one argument (height)");
+                    throw new LuaException("setHeight does take one argument (height)");
                 }
             }
         });
@@ -706,7 +706,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
                     }
                     return null;
                 } else {
-                    throw new IllegalArgumentException("setExternalControl does take one argument! (bool)");
+                    throw new LuaException("setExternalControl does take one argument! (bool)");
                 }
             }
         });

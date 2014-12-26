@@ -1,15 +1,18 @@
 package pneumaticCraft.common.progwidgets;
 
+import net.minecraft.client.resources.I18n;
+
 public interface IBlockOrdered{
     public enum EnumOrder{
-        CLOSEST("Closest block", "closest"), LOW_TO_HIGH("From low to high", "lowToHigh"), HIGH_TO_LOW(
-                "From high to low", "highToLow");
+        CLOSEST("closest"), LOW_TO_HIGH("lowToHigh"), HIGH_TO_LOW("highToLow");
         public String name;
-        public String ccName;
 
-        EnumOrder(String name, String ccName){
+        EnumOrder(String name){
             this.name = name;
-            this.ccName = ccName;
+        }
+
+        public String getLocalizedName(){
+            return I18n.format("gui.progWidget.blockOrder." + this);
         }
 
         @Override

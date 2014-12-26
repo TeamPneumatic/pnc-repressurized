@@ -67,7 +67,7 @@ public class GuiCheckBox extends Gui implements IGuiWidget{
 
     @Override
     public Rectangle getBounds(){
-        return new Rectangle(x, y, CHECKBOX_WIDTH + fontRenderer.getStringWidth(text), CHECKBOX_HEIGHT);
+        return new Rectangle(x, y, CHECKBOX_WIDTH + fontRenderer.getStringWidth(I18n.format(text)), CHECKBOX_HEIGHT);
     }
 
     @Override

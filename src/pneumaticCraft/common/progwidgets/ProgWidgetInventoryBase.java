@@ -10,8 +10,10 @@ import pneumaticCraft.client.gui.programmer.GuiProgWidgetImportExport;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase implements ISidedWidget{
-    public boolean[] accessingSides = new boolean[]{true, true, true, true, true, true};
+public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase implements ISidedWidget, ICountWidget{
+    private boolean[] accessingSides = new boolean[]{true, true, true, true, true, true};
+    private boolean useCount;
+    private int count = 1;
 
     @Override
     public void setSides(boolean[] sides){
@@ -24,9 +26,35 @@ public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase imp
     }
 
     @Override
+    public boolean useCount(){
+        return useCount;
+    }
+
+    @Override
+    public void setUseCount(boolean useCount){
+        this.useCount = useCount;
+    }
+
+    @Override
+    public int getCount(){
+        return count;
+    }
+
+    @Override
+    public void setCount(int count){
+        this.count = count;
+    }
+
+    @Override
     public void getTooltip(List<String> curTooltip){
         super.getTooltip(curTooltip);
         curTooltip.add("Accessing sides:");
+        curTooltip.add(getExtraStringInfo());
+        if(useCount) curTooltip.add("Using count (" + count + ")");
+    }
+
+    @Override
+    public String getExtraStringInfo(){
         boolean allSides = true;
         boolean noSides = true;
         for(boolean bool : accessingSides) {
@@ -37,9 +65,9 @@ public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase imp
             }
         }
         if(allSides) {
-            curTooltip.add("All sides");
+            return "All sides";
         } else if(noSides) {
-            curTooltip.add("No Sides");
+            return "No Sides";
         } else {
             String tip = "";
             for(int i = 0; i < 6; i++) {
@@ -66,7 +94,7 @@ public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase imp
                     }
                 }
             }
-            curTooltip.add(tip.substring(0, tip.length() - 2));
+            return tip.substring(0, tip.length() - 2);
         }
     }
 
@@ -76,6 +104,8 @@ public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase imp
         for(int i = 0; i < 6; i++) {
             tag.setBoolean(ForgeDirection.getOrientation(i).name(), accessingSides[i]);
         }
+        tag.setBoolean("useCount", useCount);
+        tag.setInteger("count", count);
     }
 
     @Override
@@ -84,6 +114,8 @@ public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase imp
         for(int i = 0; i < 6; i++) {
             accessingSides[i] = tag.getBoolean(ForgeDirection.getOrientation(i).name());
         }
+        useCount = tag.getBoolean("useCount");
+        count = tag.getInteger("count");
     }
 
     @Override

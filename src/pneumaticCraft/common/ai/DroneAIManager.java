@@ -49,19 +49,19 @@ public class DroneAIManager{
             }
         }
         if(!isExecuting && curActiveWidget != null && (curWidgetTargetAI == null || !curWidgetTargetAI.shouldExecute())) {
-            IProgWidget widget = curActiveWidget.getOutputWidget();
+            IProgWidget widget = curActiveWidget.getOutputWidget(drone, drone.progWidgets);
             if(widget != null) {
                 setActiveWidget(widget);
             } else {
-                if(cycleTimeCounter < MIN_CYCLE_TIME) {
-                    if(curWidgetAI != null) removeTask(curWidgetAI);
-                    if(curWidgetTargetAI != null) drone.targetTasks.removeTask(curWidgetTargetAI);
-                    curWidgetAI = null;
-                    curWidgetTargetAI = null;
-                } else {
-                    gotoFirstWidget();
-                    cycleTimeCounter = 0;
-                }
+                /* if(cycleTimeCounter < MIN_CYCLE_TIME) {
+                     if(curWidgetAI != null) removeTask(curWidgetAI);
+                     if(curWidgetTargetAI != null) drone.targetTasks.removeTask(curWidgetTargetAI);
+                     curWidgetAI = null;
+                     curWidgetTargetAI = null;
+                 } else {*/
+                gotoFirstWidget();
+                cycleTimeCounter = 0;
+                // }
             }
         }
     }
@@ -80,7 +80,7 @@ public class DroneAIManager{
         EntityAIBase targetAI = widget.getWidgetTargetAI(drone, widget);
         EntityAIBase ai = widget.getWidgetAI(drone, widget);
         while(targetAI == null && ai == null) {
-            widget = widget.getOutputWidget();
+            widget = widget.getOutputWidget(drone, drone.progWidgets);
             if(widget == null) {
                 if(first) {
                     return;

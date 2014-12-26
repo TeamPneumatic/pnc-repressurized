@@ -1,0 +1,4 @@
+Programming Puzzles are used in [link{block/programmer}]programmers [link{}].
+
+[prefix{l}]The Entity Import piece [prefix{}]
+The Drone will go to the closest entity in the specified area that is allowed by an attached [link{misc/entityFilter}]Entity Filter[link{}] (optional) and grab it to be transported. This includes players. Players can easily escape a drone though by sneaking (like with minecarts/horses).
