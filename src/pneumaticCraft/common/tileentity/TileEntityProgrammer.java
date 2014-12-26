@@ -51,6 +51,7 @@ import pneumaticCraft.common.progwidgets.ProgWidgetPickupItem;
 import pneumaticCraft.common.progwidgets.ProgWidgetPlace;
 import pneumaticCraft.common.progwidgets.ProgWidgetPressureCondition;
 import pneumaticCraft.common.progwidgets.ProgWidgetRedstoneCondition;
+import pneumaticCraft.common.progwidgets.ProgWidgetRename;
 import pneumaticCraft.common.progwidgets.ProgWidgetStart;
 import pneumaticCraft.common.progwidgets.ProgWidgetString;
 import pneumaticCraft.common.progwidgets.ProgWidgetWait;
@@ -101,6 +102,7 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory{
         registeredWidgets.add(new ProgWidgetLabel());
         registeredWidgets.add(new ProgWidgetJump());
         registeredWidgets.add(new ProgWidgetWait());
+        registeredWidgets.add(new ProgWidgetRename());
         registeredWidgets.add(new ProgWidgetRedstoneCondition());
         registeredWidgets.add(new ProgWidgetItemInventoryCondition());
         registeredWidgets.add(new ProgWidgetBlockCondition());

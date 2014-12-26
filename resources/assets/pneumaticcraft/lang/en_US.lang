@@ -201,6 +201,7 @@ programmingPuzzle.entityImport.name=Import Entity
 programmingPuzzle.label.name=Label
 programmingPuzzle.jump.name=Jump
 programmingPuzzle.wait.name=Wait
+programmingPuzzle.rename.name=Rename Drone
 programmingPuzzle.conditionRedstone.name=Condition: Redstone
 programmingPuzzle.conditionItemInventory.name=Condition: Items
 programmingPuzzle.conditionBlock.name=Condition: Block
