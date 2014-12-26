@@ -1,14 +1,17 @@
--Pneumatic plants will now be part of bonemealed grass (DarkStarDS9).
--You can now bonemeal Dirt, End Stone, and Netherrack to get pneumaticcraft plants (configurable) (DarkStarDS9).
--Refactored Assembly System (DarkStarDS9).
+BIG DRONE UPDATE!:D
 
--Bugfix: Pneumatic Door base forgets speed upgrades (on client).
--Bugfix: Elevator crashes on certain occasions when redstone controlled (DarkStarDS9).
--Bugfix: You can't interact with the Plastic Mixer's inventory.
--Bugfix: Assembly System gets stuck when removing and putting back a program (DarkStarDS9).
--Bugfix: Elevator Frames bug out rendering of transparent blocks.
--Bugfix: Pneumatic Dynamo loses RF energy.
--Bugfix: Waila is labeling plants mature when they aren't. Fixes #303
--Bugfix: (Advanced) Air Compressor is using 10x as much fuel as it should.
--Bugfix: Missing texture when trying to camo with Chisel.
--Bugfix: Lighting issue with elevators.
+-Added Conditions to drones.
+-Added Liquid Filter/Import/Export pieces.
+-Added Jump/Label pieces.
+-Added Wait piece.
+-Added RF Import/Export pieces.
+-Added Drop Item piece.
+-Added Entity Import/Export pieces.
+-Added Emit Redstone piece.
+-Added Entity Right Click and Block Right Click piece.
+-Improved Programmer's programming area (increased size, added scrolling and zooming).
+-Added the ability to import/export a certain amount of items/fluid.
+
+-Bugfix: A generic Java exception is thrown instead of a descriptive lua exception when dealing with PneumaticCraft CC peripherals.
+-Bugfix: Drone still executing actions (when pushed around) when he's out of pressure.
+-Bugfix: Some rare crashes with the Drone Interface (CC compatibility) due to race conditions.
