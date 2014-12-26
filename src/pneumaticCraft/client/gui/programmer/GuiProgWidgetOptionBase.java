@@ -11,11 +11,11 @@ import pneumaticCraft.common.network.PacketProgrammerUpdate;
 import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.lib.Textures;
 
-public class GuiProgWidgetOptionBase extends GuiPneumaticScreenBase{
-    protected IProgWidget widget;
+public class GuiProgWidgetOptionBase<Widget extends IProgWidget> extends GuiPneumaticScreenBase{
+    protected Widget widget;
     protected GuiProgrammer guiProgrammer;
 
-    public GuiProgWidgetOptionBase(IProgWidget widget, GuiProgrammer guiProgrammer){
+    public GuiProgWidgetOptionBase(Widget widget, GuiProgrammer guiProgrammer){
         this.widget = widget;
         this.guiProgrammer = guiProgrammer;
         xSize = 183;
@@ -24,6 +24,7 @@ public class GuiProgWidgetOptionBase extends GuiPneumaticScreenBase{
 
     @Override
     public void keyTyped(char key, int keyCode){
+        super.keyTyped(key, keyCode);
         if(keyCode == 1) {
             mc.displayGuiScreen(guiProgrammer);
             onGuiClosed();

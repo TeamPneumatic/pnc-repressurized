@@ -1,0 +1,10 @@
+Programming Puzzles are used in [link{block/programmer}]programmers [link{}].
+
+[prefix{l}]The Right Click Block piece [prefix{}]
+The Drone will right click the item in it's first inventory slot, for every block position in the area once. This can be used to hoe the ground, place seeds, apply bonemeal, throwing a potion, putting down a drone, rotating blocks with a wrench, ... . The options are countless. You can filter which blocks should be right-clicked by putting in an item filter which specifies the block.
+
+You could use this piece to place down regular blocks. However, it is not recommended, because of two reasons:
+1. A Drone doesn't know when it's 'done' right clicking the block. For every 'Right Click Block' cycle it will visit all blocks to right click them, regardless of whether they've got a block already.
+2. When a Drone right clicks a position where a block exists already, it will right click the block, resulting in placing down a block next to this block. This could very well be in an unwanted position.
+
+for these reasons the use of the [link{progwidget/place}]Place piece[link{}] is preferred. There are some situations (like with trying to place down Nether Wart or Seeds) where this piece is required.

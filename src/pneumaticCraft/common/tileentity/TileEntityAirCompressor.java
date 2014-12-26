@@ -70,7 +70,7 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
 
             }
 
-            curFuelUsage = (int)(getBaseProduction() * getSpeedUsageMultiplierFromUpgrades(getUpgradeSlots()));
+            curFuelUsage = (int)(getBaseProduction() * getSpeedUsageMultiplierFromUpgrades(getUpgradeSlots()) / 10);
             if(burnTime >= curFuelUsage) {
                 burnTime -= curFuelUsage;
                 if(!worldObj.isRemote) {

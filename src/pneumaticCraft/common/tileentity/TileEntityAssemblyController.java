@@ -54,17 +54,19 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
 
     @Override
     public void updateEntity(){
+
+        if(!worldObj.isRemote && firstRun) updateConnections();
+
+        // curProgram must be available on the client, or we can't show program-problems in the GUI
+        if(curProgram == null && !goingToHomePosition && inventory[PROGRAM_INVENTORY_INDEX] != null && inventory[PROGRAM_INVENTORY_INDEX].getItem() == Itemss.assemblyProgram) {
+            AssemblyProgram program = ItemAssemblyProgram.getProgramFromItem(inventory[PROGRAM_INVENTORY_INDEX].getItemDamage());
+            curProgram = program;
+        } else if(curProgram != null && (inventory[PROGRAM_INVENTORY_INDEX] == null || curProgram.getClass() != ItemAssemblyProgram.getProgramFromItem(inventory[PROGRAM_INVENTORY_INDEX].getItemDamage()).getClass())) {
+            curProgram = null;
+            if(!worldObj.isRemote) goingToHomePosition = true;
+        }
+
         if(!worldObj.isRemote) {
-            if(firstRun) {
-                updateConnections();
-            }
-            if(curProgram == null && !goingToHomePosition && inventory[PROGRAM_INVENTORY_INDEX] != null && inventory[PROGRAM_INVENTORY_INDEX].getItem() == Itemss.assemblyProgram) {
-                AssemblyProgram program = ItemAssemblyProgram.getProgramFromItem(inventory[PROGRAM_INVENTORY_INDEX].getItemDamage());
-                curProgram = program;
-            } else if(curProgram != null && (inventory[PROGRAM_INVENTORY_INDEX] == null || curProgram.getClass() != ItemAssemblyProgram.getProgramFromItem(inventory[PROGRAM_INVENTORY_INDEX].getItemDamage()).getClass())) {
-                curProgram = null;
-                goingToHomePosition = true;
-            }
             displayedText = "Standby";
             if(getPressure(ForgeDirection.UNKNOWN) >= PneumaticValues.MIN_PRESSURE_ASSEMBLY_CONTROLLER) {
                 if(curProgram != null || goingToHomePosition) {
@@ -153,58 +155,23 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
 
     }
 
-    public void resetSetup(){
-        goingToHomePosition = true;
-    }
-
     private void goToHomePosition(TileEntityAssemblyPlatform platform, TileEntityAssemblyIOUnit ioUnitImport, TileEntityAssemblyIOUnit ioUnitExport, TileEntityAssemblyDrill drill, TileEntityAssemblyLaser laser){
-        if(ioUnitExport != null) {
-            ioUnitExport.slowMode = false;
-            if(ioUnitExport.inventory[0] != null) {
-                ioUnitExport.exportHeldItem();
-            } else {
-                if(platform != null) {
-                    if(platform.getHeldStack() != null) {
-                        ForgeDirection[] platformDirection = ioUnitExport.getPlatformDirection();
-                        if(platformDirection != null) {
-                            ioUnitExport.hoverOverNeighbour(platformDirection[0], platformDirection[1]);
-                            if(ioUnitExport.isDoneRotatingYaw()) {
-                                ioUnitExport.gotoNeighbour(platformDirection[0], platformDirection[1]);
-                                if(ioUnitExport.isDone()) {
-                                    ioUnitExport.inventory[0] = platform.getHeldStack();
-                                    platform.setHeldStack(null);
-                                }
-                            }
-                        }
-                    } else {
-                        if(ioUnitImport != null) {
-                            ioUnitImport.slowMode = false;
-                            if(ioUnitImport.inventory[0] != null) {
-                                ForgeDirection[] platformDirection = ioUnitImport.getPlatformDirection();
-                                if(platformDirection != null) {
-                                    ioUnitImport.hoverOverNeighbour(platformDirection[0], platformDirection[1]);
-                                    if(ioUnitImport.isDoneRotatingYaw()) {
-                                        ioUnitImport.gotoNeighbour(platformDirection[0], platformDirection[1]);
-                                        if(ioUnitImport.isDone()) {
-                                            platform.setHeldStack(ioUnitImport.inventory[0]);
-                                            ioUnitImport.inventory[0] = null;
-                                        }
-                                    }
-                                }
-                            } else {
-                                ioUnitExport.gotoHomePosition();
-                                platform.openClaw();
-                                ioUnitImport.gotoHomePosition();
-                                ioUnitImport.feedPlatformStep = 0;
-                                if(drill != null) drill.gotoHomePosition();
-                                if(laser != null) laser.gotoHomePosition();
-                                goingToHomePosition = !(ioUnitExport.isDone() && platform.isDone() && ioUnitImport.isDone() && (drill == null || drill.isDone()) && (laser == null || laser.isDone()));
-                            }
-                        }
-                    }
+
+        boolean resetDone = true;
+
+        for(IResettable machine : new IResettable[]{drill, laser, ioUnitImport, platform, ioUnitExport}) {
+            if(machine != null && !machine.reset()) {
+                resetDone = false;
+
+                if(machine == platform) {
+                    if(ioUnitExport != null) ioUnitExport.pickupItem(null);
                 }
+
+                break;
             }
         }
+
+        goingToHomePosition = !(foundAllMachines && resetDone);
     }
 
     public void addProblems(List<String> problemList){
@@ -245,7 +212,7 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
 
     public boolean areAllMachinesDone(List<IAssemblyMachine> machineList){
         for(IAssemblyMachine machine : machineList) {
-            if(!machine.isDone()) return false;
+            if(!machine.isIdle()) return false;
         }
         return true;
     }
@@ -440,7 +407,7 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
     }
 
     @Override
-    public boolean isDone(){
+    public boolean isIdle(){
         return true;
     }
 

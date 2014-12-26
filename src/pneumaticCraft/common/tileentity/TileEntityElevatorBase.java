@@ -189,6 +189,8 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
     }
 
     public void updateRedstoneInputLevel(){
+        if(multiElevators == null) return;
+
         int maxRedstone = 0;
         for(TileEntityElevatorBase base : multiElevators) {
             int i = 0;
@@ -401,12 +403,12 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
                     }
                 }
             }
-        }
 
-        for(TileEntityElevatorBase base : multiElevators) {
-            base.floorHeights = new int[floorList.size()];
-            for(int i = 0; i < base.floorHeights.length; i++) {
-                base.floorHeights[i] = floorList.get(i);
+            for(TileEntityElevatorBase base : multiElevators) {
+                base.floorHeights = new int[floorList.size()];
+                for(i = 0; i < base.floorHeights.length; i++) {
+                    base.floorHeights[i] = floorList.get(i);
+                }
             }
         }
 
@@ -427,8 +429,10 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
             }
         }
 
-        for(TileEntityElevatorBase base : multiElevators) {
-            base.floorNames = new HashMap<Integer, String>(floorNames);
+        if(multiElevators != null) {
+            for(TileEntityElevatorBase base : multiElevators) {
+                base.floorNames = new HashMap<Integer, String>(floorNames);
+            }
         }
 
         for(ChunkPosition p : callerList) {
@@ -460,8 +464,10 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
 
     private void setTargetHeight(float height){
         height = Math.min(height, getMaxElevatorHeight());
-        for(TileEntityElevatorBase base : multiElevators) {
-            base.targetExtension = height;
+        if(multiElevators != null) {
+            for(TileEntityElevatorBase base : multiElevators) {
+                base.targetExtension = height;
+            }
         }
     }
 
@@ -686,7 +692,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
                     getCoreElevator().sendDescPacket(256D);
                     return null;
                 } else {
-                    throw new IllegalArgumentException("setHeight does take one argument (height)");
+                    throw new LuaException("setHeight does take one argument (height)");
                 }
             }
         });
@@ -700,7 +706,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
                     }
                     return null;
                 } else {
-                    throw new IllegalArgumentException("setExternalControl does take one argument! (bool)");
+                    throw new LuaException("setExternalControl does take one argument! (bool)");
                 }
             }
         });

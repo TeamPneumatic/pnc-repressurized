@@ -40,7 +40,12 @@ public class GuiInventorySearcher extends GuiContainer{
             if(par1Slot.slotNumber == 36) {
                 par1Slot.putStack(null);
             } else {
-                inventory.setInventorySlotContents(0, par1Slot.getStack());
+                ItemStack stack = par1Slot.getStack();
+                if(stack != null) {
+                    stack = stack.copy();
+                    stack.stackSize = 1;
+                }
+                inventory.setInventorySlotContents(0, stack);
             }
         }
     }

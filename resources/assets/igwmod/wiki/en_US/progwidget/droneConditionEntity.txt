@@ -1,0 +1,3 @@
+This is a Condition. [link{progwidget/conditions}]Click here[link{}] to read general information about Conditions.
+
+The Condition: Entity allows you to count entities in a certain area. These can be filtered using a Text piece used as [link{misc/entityFilter}]Entity Filter[link{}].

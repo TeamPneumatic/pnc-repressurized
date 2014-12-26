@@ -99,7 +99,7 @@ Takes the two coordinates and creates a cuboid from them. It fills in the sides 
 
 
 [prefix{l}]Sphere [prefix{}]
-The first coordinate is the center of the sphere. The second coordinate is one of the points laying on the outside of the sphere (thus specifying the diameter).
+The first coordinate is the center of the sphere. The second coordinate is one of the points laying on the outside of the sphere (thus specifying the radius).
 [image{200,1160,0.40,igwmod:textures/ProgrammingPuzzleAreaSphere.png}]
 
 

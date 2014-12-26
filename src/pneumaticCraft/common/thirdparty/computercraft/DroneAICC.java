@@ -7,6 +7,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.ChunkPosition;
 import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.progwidgets.IProgWidget;
+import dan200.computercraft.api.lua.LuaException;
 
 class DroneAICC extends EntityAIBase{
     private final EntityDrone drone;
@@ -46,7 +47,7 @@ class DroneAICC extends EntityAIBase{
     }
 
     @Override
-    public boolean shouldExecute(){
+    public synchronized boolean shouldExecute(){
         newAction = false;
         if(curAction != null) {
             curActionActive = curAction.shouldExecute();
@@ -56,7 +57,7 @@ class DroneAICC extends EntityAIBase{
     }
 
     @Override
-    public boolean continueExecuting(){
+    public synchronized boolean continueExecuting(){
         if(!newAction && curActionActive && curAction != null) {
             boolean contin = curAction.continueExecuting();
             if(!contin) curAction.resetTask();
@@ -67,21 +68,22 @@ class DroneAICC extends EntityAIBase{
     }
 
     @Override
-    public void updateTask(){
+    public synchronized void updateTask(){
         if(curActionActive && curAction != null) curAction.updateTask();
     }
 
-    public void setAction(IProgWidget widget, EntityAIBase ai) throws IllegalArgumentException{
+    public synchronized void setAction(IProgWidget widget, EntityAIBase ai) throws IllegalArgumentException{
         curAction = ai;
         newAction = true;
+        curActionActive = true;
     }
 
-    public void abortAction(){
+    public synchronized void abortAction(){
         curAction = null;
     }
 
-    public boolean isActionDone() throws IllegalStateException{
-        if(curAction == null) throw new IllegalStateException("There's no action active!");
+    public synchronized boolean isActionDone() throws LuaException{
+        if(curAction == null) throw new LuaException("There's no action active!");
         return !curActionActive;
     }
 }

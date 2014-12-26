@@ -49,6 +49,7 @@ public abstract class AssemblyProgram{
      * You can add problem messages here if an assembly program has a problem with a certain step.
      * @param problemList
      */
+    @SuppressWarnings("incomplete-switch")
     public void addProgramProblem(List<String> problemList){
         switch(curProblem){
             case NO_INPUT:

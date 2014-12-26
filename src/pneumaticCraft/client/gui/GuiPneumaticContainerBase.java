@@ -176,12 +176,13 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
 
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int i, int j){
-
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        bindGuiTexture();
-        int xStart = (width - xSize) / 2;
-        int yStart = (height - ySize) / 2;
-        drawTexturedModalRect(xStart, yStart, 0, 0, xSize, ySize);
+        if(shouldDrawBackground()) {
+            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+            bindGuiTexture();
+            int xStart = (width - xSize) / 2;
+            int yStart = (height - ySize) / 2;
+            drawTexturedModalRect(xStart, yStart, 0, 0, xSize, ySize);
+        }
 
         GL11.glColor4d(1, 1, 1, 1);
         GL11.glDisable(GL11.GL_LIGHTING);
@@ -194,6 +195,10 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
             Point gaugeLocation = getGaugeLocation();
             if(gaugeLocation != null) GuiUtils.drawPressureGauge(fontRendererObj, -1, pneu.CRITICAL_PRESSURE, pneu.DANGER_PRESSURE, te instanceof IMinWorkingPressure ? ((IMinWorkingPressure)te).getMinWorkingPressure() : -1, pneu.getPressure(ForgeDirection.UNKNOWN), gaugeLocation.x, gaugeLocation.y, zLevel);
         }
+    }
+
+    protected boolean shouldDrawBackground(){
+        return true;
     }
 
     protected void bindGuiTexture(){

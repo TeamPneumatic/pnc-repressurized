@@ -1,12 +1,17 @@
--Added multiblock elevator functionality.
--Added elevator part camouflaging.
--Removed MJ power converters.
--Added Not Enough Keys support.
+BIG DRONE UPDATE!:D
 
--Bugfix: Entity Tracker "A mob is targeting you" spams.
--Bugfix: Some machines don't properly look for redstone after world reset.
--Bugfix: Regulator tube causes an explosion.
--Bugfix: Plastic Mixer dye Ore Dictionary doesn't behave.
--Bugfix: infinite RF powah!
--Bugfix: Fire Flowers catch fire in Pressure Chamber. Fixes #282
--Bugfix: [SMP] Aphorism tile appears to ignore any typed character until you hit the Enter key for the first time.
+-Added Conditions to drones.
+-Added Liquid Filter/Import/Export pieces.
+-Added Jump/Label pieces.
+-Added Wait piece.
+-Added RF Import/Export pieces.
+-Added Drop Item piece.
+-Added Entity Import/Export pieces.
+-Added Emit Redstone piece.
+-Added Entity Right Click and Block Right Click piece.
+-Improved Programmer's programming area (increased size, added scrolling and zooming).
+-Added the ability to import/export a certain amount of items/fluid.
+
+-Bugfix: A generic Java exception is thrown instead of a descriptive lua exception when dealing with PneumaticCraft CC peripherals.
+-Bugfix: Drone still executing actions (when pushed around) when he's out of pressure.
+-Bugfix: Some rare crashes with the Drone Interface (CC compatibility) due to race conditions.

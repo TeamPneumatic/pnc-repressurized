@@ -1,4 +1,4 @@
-The Universal Sensor is like the name suggests a sensor that can be used in many applications. Being universal isn’t free: the sensor requires air to run (1 mL/tick), and sensors need certain Machine Upgrades to run.
+The Universal Sensor is, like the name suggests, a sensor that can be used in many applications. Being universal isn’t free: the sensor requires air to run (1 mL/tick), and sensors need certain Machine Upgrades to run.
 
 Currently there are over 15 different things the Sensor can measure, variating from being able to look whether there's a block at a certain coordinate or whether there is a Twitcher streaming. Open the GUI of the Universal Sensor to see what's available, plus descriptions.
 

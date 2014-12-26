@@ -19,6 +19,7 @@ public class Config{
 
     public static boolean[] configPlantFullGrownEffect = new boolean[16];
     public static double[] configPlantGenerationChance = new double[16];
+    public static boolean includePlantsOnBonemeal, allowDirtBonemealing;
 
     public static int configCompressedIngotLossRate;
     public static int elevatorBaseBlocksPerBase;
@@ -135,6 +136,8 @@ public class Config{
         enableSlimeSeedDrop = config.get(Configuration.CATEGORY_GENERAL, "Enable Slime Seed Drops", true).getBoolean(true);
         enableEndermanSeedDrop = config.get(Configuration.CATEGORY_GENERAL, "Enable Enderman Seed Drops", true).getBoolean(true);
         enableSquidSeedDrop = config.get(Configuration.CATEGORY_GENERAL, "Enable Squid Seed Drops", true).getBoolean(true);
+        includePlantsOnBonemeal = config.get(Configuration.CATEGORY_GENERAL, "Include Plastic Plants on bonemealing", true).getBoolean(true);
+        allowDirtBonemealing = config.get(Configuration.CATEGORY_GENERAL, "Allow dirt to be bonemealed for plastic plants", true).getBoolean(true);
 
         enableCoalToDiamondsRecipe = config.get("recipe_enabling", "8 Block of Coal --> 1 Diamond (Pressure Chamber)", true).getBoolean(true);
         enableElectricCompressorRecipe = config.get("recipe_enabling", "Electric Compressor", true).getBoolean(true);

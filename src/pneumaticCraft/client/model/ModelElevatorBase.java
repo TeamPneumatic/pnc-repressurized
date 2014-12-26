@@ -393,16 +393,17 @@ public class ModelElevatorBase extends ModelBase implements IBaseModel{
         GL11.glTranslated(0, -factor, 0);
         Pole1.render(size);
         GL11.glPopMatrix();
-
-        if(te != null && te.isCoreElevator() && te.baseCamo != null && PneumaticCraftUtils.isRenderIDCamo(te.baseCamo.getRenderType())) {
+        Floor.render(size);
+        if(te != null && te.isCoreElevator() && te.baseCamo != null && te.getStackInSlot(4) != null && PneumaticCraftUtils.isRenderIDCamo(te.baseCamo.getRenderType())) {
             Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
             GL11.glRotated(180, 0, 0, 1);
-            GL11.glTranslated(-0.5, -9 / 16D, -0.5);
+            GL11.glTranslated(0.5, -8 / 16D + 0.0001, 0.5);
+            GL11.glScaled(-1, 0, -1);
             RenderUtils.RenderInfo renderInfo = new RenderUtils.RenderInfo(0, 0, 0, 1, 1 / 16F, 1);
+            renderInfo.setRenderSingleSide(1);
             renderInfo.baseBlock = te.baseCamo;
-            RenderUtils.INSTANCE.renderBlock(renderInfo, Minecraft.getMinecraft().theWorld, 0, 0, 0, te.xCoord, te.yCoord, te.zCoord, false, true);
-        } else {
-            Floor.render(size);
+            renderInfo.setMeta(te.getStackInSlot(4).getItemDamage());
+            RenderUtils.INSTANCE.renderBlock(renderInfo, Minecraft.getMinecraft().theWorld, 0, 0, 0, te.xCoord, (int)Math.floor(te.yCoord + te.extension), te.zCoord, false, true);
         }
     }
 

@@ -89,7 +89,7 @@ public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implement
 
     @Override
     public int extractEnergy(ForgeDirection from, int maxExtract, boolean simulate){
-        maxExtract = getRFRate() * 2;
+        maxExtract = Math.min(maxExtract, getRFRate() * 2);
         return energy.extractEnergy(maxExtract, simulate);
     }
 

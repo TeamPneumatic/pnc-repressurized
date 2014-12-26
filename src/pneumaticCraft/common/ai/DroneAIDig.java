@@ -8,6 +8,7 @@ import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.ChunkPosition;
+import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.progwidgets.ProgWidgetAreaItemBase;
@@ -60,33 +61,21 @@ public class DroneAIDig extends DroneAIBlockInteraction{
             int z = pos.chunkPosZ;
 
             Block block = worldCache.getBlock(x, y, z);
-
-            if(!block.isAir(worldCache, x, y, z) && !ignoreBlock(block)) {
-                int meta = worldCache.getBlockMetadata(x, y, z);
-                List<ItemStack> droppedStacks;
-                if(block.canSilkHarvest(drone.worldObj, drone.getFakePlayer(), x, y, z, meta)) {
-                    droppedStacks = Arrays.asList(new ItemStack[]{getSilkTouchBlock(block, meta)});
-                } else {
-                    droppedStacks = block.getDrops(drone.worldObj, x, y, z, meta, 0);
+            if(!ignoreBlock(block) && isBlockValidForFilter(worldCache, drone, pos, widget)) {
+                if(block.getBlockHardness(drone.worldObj, x, y, z) < 0) {
+                    addToBlacklist(pos);
+                    drone.setDugBlock(0, 0, 0);
+                    return false;
                 }
-                for(ItemStack droppedStack : droppedStacks) {
-                    if(widget.isItemValidForFilters(droppedStack, meta)) {
-                        if(block.getBlockHardness(drone.worldObj, x, y, z) < 0) {
-                            addToBlacklist(pos);
-                            drone.setDugBlock(0, 0, 0);
-                            return false;
-                        }
-                        FakePlayerItemInWorldManager manager = (FakePlayerItemInWorldManager)drone.getFakePlayer().theItemInWorldManager;
-                        manager.onBlockClicked(x, y, z, 0);
-                        if(!manager.isAccepted) {
-                            addToBlacklist(pos);
-                            drone.setDugBlock(0, 0, 0);
-                            return false;
-                        }
-                        drone.setDugBlock(x, y, z);
-                        return true;
-                    }
+                FakePlayerItemInWorldManager manager = (FakePlayerItemInWorldManager)drone.getFakePlayer().theItemInWorldManager;
+                manager.onBlockClicked(x, y, z, 0);
+                if(!manager.isAccepted) {
+                    addToBlacklist(pos);
+                    drone.setDugBlock(0, 0, 0);
+                    return false;
                 }
+                drone.setDugBlock(x, y, z);
+                return true;
             }
             drone.setDugBlock(0, 0, 0);
             return false;
@@ -95,9 +84,32 @@ public class DroneAIDig extends DroneAIBlockInteraction{
         }
     }
 
-    private final HashMap<Integer, ItemStack> silkTouchBlocks = new HashMap<Integer, ItemStack>();
+    public static boolean isBlockValidForFilter(IBlockAccess worldCache, EntityDrone drone, ChunkPosition pos, ProgWidgetAreaItemBase widget){
+        int x = pos.chunkPosX;
+        int y = pos.chunkPosY;
+        int z = pos.chunkPosZ;
+        Block block = worldCache.getBlock(x, y, z);
 
-    private ItemStack getSilkTouchBlock(Block block, int meta){
+        if(!block.isAir(worldCache, x, y, z)) {
+            int meta = worldCache.getBlockMetadata(x, y, z);
+            List<ItemStack> droppedStacks;
+            if(block.canSilkHarvest(drone.worldObj, drone.getFakePlayer(), x, y, z, meta)) {
+                droppedStacks = Arrays.asList(new ItemStack[]{getSilkTouchBlock(block, meta)});
+            } else {
+                droppedStacks = block.getDrops(drone.worldObj, x, y, z, meta, 0);
+            }
+            for(ItemStack droppedStack : droppedStacks) {
+                if(widget.isItemValidForFilters(droppedStack, meta)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private static final HashMap<Integer, ItemStack> silkTouchBlocks = new HashMap<Integer, ItemStack>();
+
+    private static ItemStack getSilkTouchBlock(Block block, int meta){
         ItemStack stack = silkTouchBlocks.get(Block.getIdFromBlock(block));
         if(stack == null) {
             Method method = ReflectionHelper.findMethod(Block.class, block, new String[]{"func_149644_j", "createStackedBlock"}, int.class);
@@ -112,7 +124,7 @@ public class DroneAIDig extends DroneAIBlockInteraction{
         return stack.copy();
     }
 
-    private boolean ignoreBlock(Block block){
+    private static boolean ignoreBlock(Block block){
         return PneumaticCraftUtils.isBlockLiquid(block);
     }
 

@@ -1,0 +1,5 @@
+The drone will wait the specified amount of time. The time can be put in by attaching a Text piece, and putting in a text. A couple of postfixes are possible:
+
+'20' --> wait 1 second (20 ticks)
+'10s' --> wait 10 seconds
+'5m' --> wait 5 minutes

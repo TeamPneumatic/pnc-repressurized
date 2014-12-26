@@ -1,101 +1,58 @@
 package pneumaticCraft.common.ai;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 
-import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.ChunkPosition;
-import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.common.entity.living.EntityDrone;
+import pneumaticCraft.common.progwidgets.ICountWidget;
 import pneumaticCraft.common.progwidgets.ISidedWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetAreaItemBase;
+import pneumaticCraft.common.util.IOHelper;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.PneumaticValues;
 
-public class DroneEntityAIInventoryImport extends EntityAIBase{
-    private final EntityDrone drone;
-    private final double speed;
-    private final ProgWidgetAreaItemBase importWidget;
-    private TileEntity targetInventory;
-    private final DistanceTileEntitySorter closestTileEntitySorter;
-    private final Set<ChunkPosition> validArea;
+public class DroneEntityAIInventoryImport extends DroneAIImExBase{
 
-    public DroneEntityAIInventoryImport(EntityDrone drone, double speed, ProgWidgetAreaItemBase progWidgetImport){
-        this.drone = drone;
-        this.speed = speed;
-        setMutexBits(63);//binary 111111, so it won't run along with other AI tasks.
-        importWidget = progWidgetImport;
-        validArea = importWidget.getArea();
-        closestTileEntitySorter = new DistanceTileEntitySorter(drone);
+    public DroneEntityAIInventoryImport(EntityDrone drone, double speed, ProgWidgetAreaItemBase widget){
+        super(drone, speed, widget);
     }
 
-    /**
-     * Returns whether the EntityAIBase should begin execution.
-     */
     @Override
-    public boolean shouldExecute(){
-        List<IInventory> inventories = new ArrayList<IInventory>();
-        for(ChunkPosition pos : validArea) {
-            TileEntity te = drone.worldObj.getTileEntity(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ);
-            if(te instanceof IInventory) {
-                inventories.add((IInventory)te);
-            }
-        }
+    protected boolean isValidPosition(ChunkPosition pos){
+        return importItems(pos, true);
+    }
 
-        Collections.sort(inventories, closestTileEntitySorter);
+    @Override
+    protected boolean doBlockInteraction(ChunkPosition pos, double distToBlock){
+        return importItems(pos, false) && super.doBlockInteraction(pos, distToBlock);
+    }
 
-        for(IInventory inv : inventories) {
-            Set<Integer> accessibleSlots = PneumaticCraftUtils.getAccessibleSlotsForInventoryAndSides(inv, ((ISidedWidget)importWidget).getSides());
+    private boolean importItems(ChunkPosition pos, boolean simulate){
+        IInventory inv = IOHelper.getInventoryForTE(drone.worldObj.getTileEntity(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ));
+        if(inv != null) {
+            Set<Integer> accessibleSlots = PneumaticCraftUtils.getAccessibleSlotsForInventoryAndSides(inv, ((ISidedWidget)widget).getSides());
             for(Integer i : accessibleSlots) {
                 ItemStack stack = inv.getStackInSlot(i);
-                if(stack != null && importWidget.isItemValidForFilters(stack)) {
-                    for(int j = 0; j < drone.getInventory().getSizeInventory(); j++) {
-                        ItemStack droneStack = drone.getInventory().getStackInSlot(j);
-                        if(droneStack == null || PneumaticCraftUtils.areStacksEqual(droneStack, stack, true, true, false, false) && droneStack.stackSize < droneStack.getMaxStackSize()) {
-                            TileEntity te = (TileEntity)inv;
-                            for(ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-                                if(drone.getNavigator().tryMoveToXYZ(te.xCoord + dir.offsetX, te.yCoord + dir.offsetY + 0.5, te.zCoord + dir.offsetZ, speed)) {
-                                    targetInventory = te;
-                                    return true;
-                                }
-                            }
-                            if(((EntityPathNavigateDrone)drone.getNavigator()).isGoingToTeleport()) {
-                                targetInventory = te;
-                                return true;
-                            }
-                        }
-                    }
+                if(stack != null && widget.isItemValidForFilters(stack)) {
+                    ItemStack importedStack = stack.copy();
+                    if(((ICountWidget)widget).useCount()) importedStack.stackSize = Math.min(importedStack.stackSize, getRemainingCount());
+                    ItemStack remainder = IOHelper.insert(drone.getInventory(), importedStack.copy(), 0, simulate);
+                    int removedItems = importedStack.stackSize - (remainder != null ? remainder.stackSize : 0);
+                    if(!simulate) {
+                        ItemStack newStack = stack.copy();
+                        newStack.stackSize = stack.stackSize - removedItems;
+                        inv.setInventorySlotContents(i, newStack.stackSize > 0 ? newStack : null);
+                        decreaseCount(removedItems);
+                        drone.addAir(null, -PneumaticValues.DRONE_USAGE_INV);
+                        if(((ICountWidget)widget).useCount() && getRemainingCount() <= 0) return false;
+                    } else if(removedItems > 0) return true;
                 }
             }
         }
+
         return false;
-
-    }
-
-    /**
-     * Returns whether an in-progress EntityAIBase should continue executing
-     */
-    @Override
-    public boolean continueExecuting(){
-        if(targetInventory.isInvalid()) return false;
-        if(targetInventory.getDistanceFrom(drone.posX, drone.posY + drone.height / 2, drone.posZ) < 1.5) {
-            IInventory inv = (IInventory)targetInventory;
-            Set<Integer> accessibleSlots = PneumaticCraftUtils.getAccessibleSlotsForInventoryAndSides(inv, ((ISidedWidget)importWidget).getSides());
-            for(Integer i : accessibleSlots) {
-                ItemStack stack = inv.getStackInSlot(i);
-                if(stack != null && importWidget.isItemValidForFilters(stack)) {
-                    inv.setInventorySlotContents(i, PneumaticCraftUtils.exportStackToInventory(drone.getInventory(), stack, ForgeDirection.UP));
-                    drone.addAir(null, -PneumaticValues.DRONE_USAGE_INV);
-                }
-            }
-            return false;
-        }
-        return !drone.getNavigator().noPath();
     }
 
 }
