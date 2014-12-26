@@ -288,7 +288,7 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
         }
         super.onUpdate();
         if(!worldObj.isRemote && isEntityAlive()) {
-            aiManager.onUpdateTasks();
+            if(isAccelerating()) aiManager.onUpdateTasks();
             for(ForgeDirection d : ForgeDirection.VALID_DIRECTIONS) {
                 if(getEmittingRedstone(d) > 0) {
                     if(worldObj.isAirBlock((int)Math.floor(posX + width / 2), (int)Math.floor(posY), (int)Math.floor(posZ + width / 2))) {
