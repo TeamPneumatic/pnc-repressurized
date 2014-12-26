@@ -444,7 +444,7 @@ public class TileEntityPneumaticBase extends TileEntityBase implements IManoMeas
                 } else if(args.length == 1) {
                     return new Object[]{getPressure(getDirForString((String)args[0]))};
                 } else {
-                    throw new IllegalArgumentException("getPressure method requires 0 or 1 argument (direction: up, down, east, west, north, south!");
+                    throw new LuaException("getPressure method requires 0 or 1 argument (direction: up, down, east, west, north, south!");
                 }
             }
         });

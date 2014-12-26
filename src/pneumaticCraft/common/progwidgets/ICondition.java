@@ -1,5 +1,7 @@
 package pneumaticCraft.common.progwidgets;
 
+import pneumaticCraft.common.entity.living.EntityDrone;
+
 public interface ICondition{
     public boolean isAndFunction();
 
@@ -12,6 +14,13 @@ public interface ICondition{
     public Operator getOperator();
 
     public void setOperator(Operator operator);
+
+    /**
+     * Used in the CC compatibility.
+     * @param drone TODO
+     * @return
+     */
+    public boolean evaluate(EntityDrone drone);
 
     public enum Operator{
         EQUALS("="), HIGHER_THAN_EQUALS(">=");

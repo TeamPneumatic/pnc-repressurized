@@ -1,30 +1,116 @@
 [image{200, 20, 0.44,igwmod:textures/droneInterface.png}]
 The Drone Interface is a block that only gets added when ComputerCraft is installed. It's a peripheral that's used to communicate with Drones. To do so, program a Drone with a ComputerCraft puzzle piece. You can combine it with other puzzle pieces. When the Drone gets to the ComputerCraft piece, it'll try to connect to an available Drone Interface located within the selected area. Available, because a Drone Interface can connect to one Drone at a time only. The following functions apply:
--isConnectedToDrone() - Returns true if a Drone has connected with this Drone Interface (when the Drone's program has arrived at the ComputerCraft piece and made a connection).
--getDronePressure() - Returns the pressure of the connected Drone.
--getDronePosition() - Returns a table of 3 double values containing the x,y and z position respectively of the Drone.
--exitPiece() - Stops the ComputerCraft piece in the Drone, and allows the Drone's program to proceed to the next puzzle piece.
--getAllActions() - Returns a table of all the current selectable actions (like 'dig' or 'place').
--setBlockOrder(<closest/highToLow/lowToHigh>) - Sets the place/dig order of the Drone.
--getAreaTypes() - Returns a table of all the possible area types (filled, frame, sphere, ..).
--addArea(<x>,<y>,<z>), addArea(<x1>,<y1>,<z1>,<x2>,<y2>,<z2>,<areaType>) - Adds an area to the current stored area of the Drone. When using the latter method, x1, y1, and z1, represent the first point (which would be the first GPS Tool normally), and x2, y2, and z2 represent the second point.
--removeArea(<x>,<y>,<z>), removeArea(<x1>,<y1>,<z1>,<x2>,<y2>,<z2>,<areaType>) - Removes an area from the current stored area (like blacklisting).
--clearArea() - Clears the current stored area.
--showArea() - Will show the current stored area using the area renderer you are used to.
--hideArea() - Will stop showing the area stored in the Drone.
--addWhitelistItemFilter(<item/block name>, <damage/metadata>, <useMetadata>, <useNBT>, <useOreDictionary>, <useModSimilarity>) - Acts as you've put a Item Filter piece on the right of a piece (making it whitelisting). The item/block name is in Minecraft format, i.e. "minecraft:stone", or "pneumaticcraft:pressureTube". The 'useXXX' are all booleans that determine what filters will be used (same functionality as the check boxes in the Item Filter puzzle piece).
--addBlacklistItemFilter(<item/block name>, <damage/metadata>, <useMetadata>, <useNBT>, <useOreDictionary>, <useModSimilarity>) - Like the addWhitelistItemFilter(...), but to blacklist items.
--clearWhitelistItemFilter() - Clears all the whitelisted item filters stored.
--clearBlacklistItemFilter() - Clears all the blacklisted item filters stored.
--addWhitelistText(<text>) - Adds a text to the whitelisted texts. Used to specify a filter for the Entity Attack action for example.
--addBlacklistText(<text>) - Adds a text to the blacklisted texts. Used to specify a filter for the Entity Attack action for example.
--clearWhitelistText() - Clears the stored whitelisted texts.
--clearBlacklistText() - Clears the stored blacklisted texts.
--setSide(<side>, <accessible>) - Sets the specific side to be accessible or not. Used in the Inventory Im- and Export actions to set which side of the inventory the Drone can access. It is also used for the Place action to determine how to place the block.
--setSides(<down>, <up>, <north>, <south>, <east>, <west>) - Same as above, now in one function to set all sides at once (6x boolean).
--setAction(<action>) - String that represents the action. This should be one of the actions returned by getAllActions().
--abortAction() - Stops the current running action.
--isActionDone() - Returns true if the current action is done (goto has arrived at the target location, inventory import can't import anymore, dig has dug every possible block, ..).
--forgetTarget() - When the Drone was targeting an Entity (in the Entity Attack program), this will stop attacking that target.
+
+[prefix{l}]isConnectedToDrone() [prefix{}] 
+Returns true if a Drone has connected with this Drone Interface (when the Drone's program has arrived at the ComputerCraft piece and made a connection).
+
+[prefix{l}]getDronePressure() [prefix{}] 
+Returns the pressure of the connected Drone.
+
+[prefix{l}]getDronePosition() [prefix{}] 
+Returns a table of 3 double values containing the x,y and z position respectively of the Drone.
+
+[prefix{l}]exitPiece() [prefix{}] 
+Stops the ComputerCraft piece in the Drone, and allows the Drone's program to proceed to the next puzzle piece.
+
+[prefix{l}]getAllActions() [prefix{}] 
+Returns a table of all the current selectable actions (like 'dig' or 'place').
+
+[prefix{l}]setBlockOrder(<closest/highToLow/lowToHigh>) [prefix{}] 
+Sets the place/dig order of the Drone.
+
+[prefix{l}]getAreaTypes() [prefix{}] 
+Returns a table of all the possible area types (filled, frame, sphere, ..).
+
+[prefix{l}]addArea(<x>,<y>,<z>),
+addArea(<x1>,<y1>,<z1>,<x2>,<y2>,<z2>,<areaType>) [prefix{}] 
+Adds an area to the current stored area of the Drone. When using the latter method, x1, y1, and z1, represent the first point (which would be the first GPS Tool normally), and x2, y2, and z2 represent the second point.
+
+[prefix{l}]removeArea(<x>,<y>,<z>),
+removeArea(<x1>,<y1>,<z1>,<x2>,<y2>,<z2>,<areaType>) [prefix{}] 
+Removes an area from the current stored area (like blacklisting).
+
+[prefix{l}]clearArea() [prefix{}] 
+Clears the current stored area.
+
+[prefix{l}]showArea() [prefix{}] 
+Will show the current stored area using the area renderer you are used to.
+[prefix{l}]hideArea() [prefix{}] 
+Will stop showing the area stored in the Drone.
+
+[prefix{l}]addWhitelistItemFilter(<item/block name>, <damage/metadata>, <useMetadata>, <useNBT>, <useOreDictionary>, <useModSimilarity>) [prefix{}] 
+Acts as you've put a Item Filter piece on the right of a piece (making it whitelisting). The item/block name is in Minecraft format, i.e. "minecraft:stone", or "pneumaticcraft:pressureTube". The 'useXXX' are all booleans that determine what filters will be used (same functionality as the check boxes in the Item Filter puzzle piece).
+
+[prefix{l}]addBlacklistItemFilter(<item/block name>, <damage/metadata>, <useMetadata>, <useNBT>, <useOreDictionary>, <useModSimilarity>) [prefix{}] 
+Like the addWhitelistItemFilter(...), but to blacklist items.
+
+[prefix{l}]clearWhitelistItemFilter() [prefix{}] 
+Clears all the whitelisted item filters stored.
+
+[prefix{l}]clearBlacklistItemFilter() [prefix{}] 
+Clears all the blacklisted item filters stored.
+
+[prefix{l}]addWhitelistText(<text>) [prefix{}] 
+Adds a text to the whitelisted texts. Used to specify a filter for the Entity Attack action for example.
+
+[prefix{l}]addBlacklistText(<text>) [prefix{}] 
+Adds a text to the blacklisted texts. Used to specify a filter for the Entity Attack action for example.
+
+[prefix{l}]clearWhitelistText() [prefix{}] 
+Clears the stored whitelisted texts.
+
+[prefix{l}]clearBlacklistText() [prefix{}] 
+Clears the stored blacklisted texts.
+
+[prefix{l}]addWhitelistLiquidFilter(<liquid name>) [prefix{}] 
+Acts as you've put a Liquid Filter piece on the right of a piece (making it whitelisting). You can either give it the 'registry name', or the localized name.
+
+[prefix{l}]addBlacklistLiquidFilter(<liquid name>) [prefix{}] 
+Like the addWhitelistLiquidFilter(...), but to blacklist liquids.
+
+[prefix{l}]clearWhitelistLiquidFilter() [prefix{}] 
+Clears all the whitelisted liquid filters stored.
+
+[prefix{l}]clearBlacklistLiquidFilter() [prefix{}] 
+Clears all the blacklisted liquid filters stored.
+
+[prefix{l}]setEmittingRedstone(<strength>) [prefix{}] 
+Sets the strength the redstone will be emitting when the "emitRedstone" action would be set.
+
+[prefix{l}]setDropStraight(<true/false>) [prefix{}] 
+When the "dropItem" action would be set, this determines whether or not the item will be dropped with a random velocity, or straight down.
+
+[prefix{l}]setUseCount(<true/false>) [prefix{}] 
+This says whether or not the Drone has a maximum of imported/exported/dropped pieces. If true, also use setCount().
+
+[prefix{l}]setCount(<amount>) [prefix{}] 
+This configures the maximum amount of imported/exported/dropped items, and also is the amount that's checked when doing a condition check.
+
+[prefix{l}]setIsAndFunction(<true/false>) [prefix{}] 
+Used in conditions only. When true, all checked blocks need to satisfy the condition requirements (>=10 etcetera).
+
+[prefix{l}]setOperator(<">=" / "=">) [prefix{}] 
+Used in conditions only. Says whether or not the condition is checking for an equal amount (=) or equal and higher than amount (>=). The amount can be set using setCount().
+
+[prefix{l}]evaluateCondition() [prefix{}] 
+Returns true/false. Used in conditions only. Will return true/false depending on whether or not the condition is satisfied. Drone Conditions can be checked right after setting 'setAction()'. Note that you need to wait until 'isActionDone' if you're dealing with a non Drone Condition.
+
+[prefix{l}]setSide(<side>, <accessible>) [prefix{}] 
+Sets the specific side to be accessible or not. Used in the Inventory Im- and Export actions to set which side of the inventory the Drone can access. It is also used for the Place action to determine how to place the block.
+
+[prefix{l}]setSides(<down>, <up>, <north>, <south>, <east>, <west>) [prefix{}] 
+Same as above, now in one function to set all sides at once (6x boolean).
+
+[prefix{l}]setAction(<action>) [prefix{}] 
+String that represents the action. This should be one of the actions returned by getAllActions().
+
+[prefix{l}]abortAction() [prefix{}] 
+Stops the current running action.
+
+[prefix{l}]isActionDone() [prefix{}] 
+Returns true if the current action is done (goto has arrived at the target location, inventory import can't import anymore, dig has dug every possible block, ..).
+
+[prefix{l}]forgetTarget() [prefix{}] 
+When the Drone was targeting an Entity (in the Entity Attack program), this will stop attacking that target.
 
 Anytime the Drone gets updated a ring will be shot out of the Drone Interface, indicating it was successful. The color of the ring is the same color as the puzzle piece it was associated with.

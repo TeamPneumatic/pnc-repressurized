@@ -97,6 +97,7 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
     private IInventory inventory = new InventoryDrone("Drone Inventory", true, 0);
     private final FluidTank tank = new FluidTank(PneumaticValues.DRONE_TANK_SIZE);
     private ItemStack[] upgradeInventory = new ItemStack[9];
+    private final int[] emittingRedstoneValues = new int[6];
     public float oldPropRotation;
     public float propRotation;
     private float propSpeed;
@@ -678,7 +679,14 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
     }
 
     public int getEmittingRedstone(ForgeDirection side){
-        return 0;
+        return emittingRedstoneValues[side.ordinal()];
+    }
+
+    public void setEmittingRedstone(ForgeDirection side, int value){
+        if(emittingRedstoneValues[side.ordinal()] != value) {
+            emittingRedstoneValues[side.ordinal()] = value;
+            worldObj.notifyBlocksOfNeighborChange((int)Math.floor(posX + width / 2), (int)Math.floor(posY), (int)Math.floor(posZ + width / 2), Blockss.droneRedstoneEmitter);
+        }
     }
 
     public boolean isBlockValidPathfindBlock(int x, int y, int z){

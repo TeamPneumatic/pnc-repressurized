@@ -465,7 +465,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
                 if(args.length == 0) {
                     return SensorHandler.instance().getSensorNames();
                 } else {
-                    throw new IllegalArgumentException("getSensorNames doesn't accept any arguments!");
+                    throw new LuaException("getSensorNames doesn't accept any arguments!");
                 }
             }
         });
@@ -481,12 +481,12 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
                         sensor = SensorHandler.instance().getSensorByIndex(((Double)args[0]).intValue() - 1);
                     }
                     if(sensor != null) return new Object[]{setSensorSetting(sensor)};
-                    throw new IllegalArgumentException("Invalid sensor name/index: " + args[0]);
+                    throw new LuaException("Invalid sensor name/index: " + args[0]);
                 } else if(args.length == 0) {
                     setSensorSetting("");
                     return new Object[]{true};
                 } else {
-                    throw new IllegalArgumentException("setSensor needs one argument(a number as index, or a sensor name).");
+                    throw new LuaException("setSensor needs one argument(a number as index, or a sensor name).");
                 }
             }
         });
@@ -498,7 +498,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
                     ISensorSetting curSensor = SensorHandler.instance().getSensorFromPath(getSensorSetting());
                     return curSensor == null ? null : new Object[]{getSensorSetting().substring(getSensorSetting().lastIndexOf('/') + 1)};
                 } else {
-                    throw new IllegalArgumentException("getSensor doesn't take any arguments!");
+                    throw new LuaException("getSensor doesn't take any arguments!");
                 }
             }
         });
@@ -510,7 +510,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
                     setText(0, (String)args[0]);
                     return null;
                 } else {
-                    throw new IllegalArgumentException("setTextfield takes one argument (string)");
+                    throw new LuaException("setTextfield takes one argument (string)");
                 }
             }
         });
@@ -521,7 +521,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
                 if(args.length == 0) {
                     return new Object[]{getText(0)};
                 } else {
-                    throw new IllegalArgumentException("getTextfield takes no arguments");
+                    throw new LuaException("getTextfield takes no arguments");
                 }
             }
         });
@@ -532,7 +532,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
                 if(args.length == 0) {
                     return new Object[]{SensorHandler.instance().getSensorFromPath(getSensorSetting()) instanceof IEventSensorSetting};
                 } else {
-                    throw new IllegalArgumentException("isSensorEventBased takes no arguments");
+                    throw new LuaException("isSensorEventBased takes no arguments");
                 }
             }
         });
@@ -546,12 +546,12 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
                         requestPollPullEvent = true;
                         return new Object[]{redstoneStrength};
                     } else if(s != null) {
-                        throw new IllegalArgumentException("The selected sensor is pull event based. You can't poll the value.");
+                        throw new LuaException("The selected sensor is pull event based. You can't poll the value.");
                     } else {
-                        throw new IllegalArgumentException("There's no sensor selected!");
+                        throw new LuaException("There's no sensor selected!");
                     }
                 } else {
-                    throw new IllegalArgumentException("getSensorValue takes no arguments");
+                    throw new LuaException("getSensorValue takes no arguments");
                 }
             }
         });
@@ -569,7 +569,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
                         return new Object[]{false};
                     }
                 } else {
-                    throw new IllegalArgumentException("setGPSToolCoordinate needs 4 arguments: slot, x, y, z");
+                    throw new LuaException("setGPSToolCoordinate needs 4 arguments: slot, x, y, z");
                 }
             }
 
@@ -591,7 +591,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
                         return null;
                     }
                 } else {
-                    throw new IllegalArgumentException("setGPSToolCoordinate needs 1 argument: slot");
+                    throw new LuaException("setGPSToolCoordinate needs 1 argument: slot");
                 }
             }
         });

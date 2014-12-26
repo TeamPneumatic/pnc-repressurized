@@ -34,9 +34,9 @@ public class ClientEventHandler{
             IProgrammable programmable = (IProgrammable)event.itemStack.getItem();
             if(programmable.canProgram(event.itemStack) && programmable.showProgramTooltip()) {
                 List<String> addedEntries = new ArrayList<String>();
-                Map<IProgWidget, Integer> widgetMap = getPuzzleSummary(TileEntityProgrammer.getProgWidgets(event.itemStack));
-                for(Map.Entry<IProgWidget, Integer> entry : widgetMap.entrySet()) {
-                    addedEntries.add("-" + entry.getValue() + "x " + I18n.format("programmingPuzzle." + entry.getKey().getWidgetString() + ".name"));
+                Map<String, Integer> widgetMap = getPuzzleSummary(TileEntityProgrammer.getProgWidgets(event.itemStack));
+                for(Map.Entry<String, Integer> entry : widgetMap.entrySet()) {
+                    addedEntries.add("-" + entry.getValue() + "x " + I18n.format("programmingPuzzle." + entry.getKey() + ".name"));
                 }
                 Collections.sort(addedEntries);
                 event.toolTip.addAll(addedEntries);
@@ -44,13 +44,13 @@ public class ClientEventHandler{
         }
     }
 
-    private static Map<IProgWidget, Integer> getPuzzleSummary(List<IProgWidget> widgets){
-        Map<IProgWidget, Integer> map = new HashMap<IProgWidget, Integer>();
+    private static Map<String, Integer> getPuzzleSummary(List<IProgWidget> widgets){
+        Map<String, Integer> map = new HashMap<String, Integer>();
         for(IProgWidget widget : widgets) {
-            if(!map.containsKey(widget)) {
-                map.put(widget, 1);
+            if(!map.containsKey(widget.getWidgetString())) {
+                map.put(widget.getWidgetString(), 1);
             } else {
-                map.put(widget, map.get(widget) + 1);
+                map.put(widget.getWidgetString(), map.get(widget.getWidgetString()) + 1);
             }
         }
         return map;

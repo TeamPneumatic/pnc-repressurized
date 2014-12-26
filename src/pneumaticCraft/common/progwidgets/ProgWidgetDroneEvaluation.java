@@ -5,6 +5,7 @@ import java.util.List;
 
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.nbt.NBTTagCompound;
 import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.client.gui.programmer.GuiProgWidgetCondition;
@@ -17,7 +18,7 @@ public abstract class ProgWidgetDroneEvaluation extends ProgWidget implements IC
 
     private boolean isAndFunction;
     private ICondition.Operator operator = ICondition.Operator.HIGHER_THAN_EQUALS;
-    private int requiredCount;
+    private int requiredCount = 1;
 
     @Override
     public boolean hasStepInput(){
@@ -66,11 +67,30 @@ public abstract class ProgWidgetDroneEvaluation extends ProgWidget implements IC
 
     @Override
     public IProgWidget getOutputWidget(EntityDrone drone, List<IProgWidget> allWidgets){
+        return ProgWidgetJump.jumpToLabel(allWidgets, this, evaluate(drone));
+    }
+
+    @Override
+    public boolean evaluate(EntityDrone drone){
         int count = getCount(drone);
-        return ProgWidgetJump.jumpToLabel(allWidgets, this, getOperator() == Operator.EQUALS ? count == getRequiredCount() : count >= getRequiredCount());
+        return getOperator() == Operator.EQUALS ? count == getRequiredCount() : count >= getRequiredCount();
     }
 
     protected abstract int getCount(EntityDrone drone);
+
+    @Override
+    public EntityAIBase getWidgetAI(EntityDrone drone, IProgWidget widget){
+        if(widget instanceof ProgWidgetDroneEvaluation) {
+            return null;
+        } else {
+            return new EntityAIBase(){//Trick the CC program into thinking this is an executable piece.
+                @Override
+                public boolean shouldExecute(){
+                    return false;
+                }
+            };
+        }
+    }
 
     @Override
     public int getRequiredCount(){
@@ -111,7 +131,12 @@ public abstract class ProgWidgetDroneEvaluation extends ProgWidget implements IC
     @Override
     @SideOnly(Side.CLIENT)
     public GuiScreen getOptionWindow(GuiProgrammer guiProgrammer){
-        return new GuiProgWidgetCondition(this, guiProgrammer);
+        return new GuiProgWidgetCondition(this, guiProgrammer){
+            @Override
+            protected boolean isUsingAndOr(){
+                return false;
+            }
+        };
     }
 
     @Override

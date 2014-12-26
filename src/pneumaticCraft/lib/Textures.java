@@ -115,10 +115,12 @@ public class Textures{
     public static final ResourceLocation PROG_WIDGET_JUMP = new ResourceLocation(PROG_WIDGET_LOCATION + "jumpPiece.png");
     public static final ResourceLocation PROG_WIDGET_WAIT = new ResourceLocation(PROG_WIDGET_LOCATION + "waitPiece.png");
     public static final ResourceLocation PROG_WIDGET_DROP_ITEM = new ResourceLocation(PROG_WIDGET_LOCATION + "itemDropPiece.png");
+    public static final ResourceLocation PROG_WIDGET_EMIT_REDSTONE = new ResourceLocation(PROG_WIDGET_LOCATION + "emitRedstonePiece.png");
     public static final ResourceLocation PROG_WIDGET_CONDITION_REDSTONE = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionRedstonePiece.png");
     public static final ResourceLocation PROG_WIDGET_CONDITION_ENTITY = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionEntityPiece.png");
     public static final ResourceLocation PROG_WIDGET_CONDITION_LIQUID_INVENTORY = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionLiquidInventoryPiece.png");
     public static final ResourceLocation PROG_WIDGET_CONDITION_ITEM_INVENTORY = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionItemInventoryPiece.png");
+    public static final ResourceLocation PROG_WIDGET_CONDITION_BLOCK = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionBlockPiece.png");
     public static final ResourceLocation PROG_WIDGET_CONDITION_RF = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionRFPiece.png");
     public static final ResourceLocation PROG_WIDGET_CONDITION_PRESSURE = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionPressurePiece.png");
     public static final ResourceLocation PROG_WIDGET_CONDITION_DRONE_ENTITY = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionDroneEntityPiece.png");

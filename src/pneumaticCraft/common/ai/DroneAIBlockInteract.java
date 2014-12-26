@@ -30,7 +30,7 @@ public class DroneAIBlockInteract extends DroneAIBlockInteraction{
 
     @Override
     protected boolean isValidPosition(ChunkPosition pos){
-        return !visitedPositions.contains(pos);
+        return !visitedPositions.contains(pos) && (widget.getConnectedParameters()[1] == null && widget.getConnectedParameters()[3] == null || DroneAIDig.isBlockValidForFilter(drone.worldObj, drone, pos, widget));
     }
 
     @Override

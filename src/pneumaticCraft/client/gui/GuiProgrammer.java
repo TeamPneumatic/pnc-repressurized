@@ -1,5 +1,7 @@
 package pneumaticCraft.client.gui;
 
+import igwmod.gui.GuiWiki;
+
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.ArrayList;
@@ -16,6 +18,7 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
@@ -35,6 +38,7 @@ import pneumaticCraft.lib.ModIds;
 import pneumaticCraft.lib.Textures;
 import codechicken.nei.VisiblityData;
 import cpw.mods.fml.client.FMLClientHandler;
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -85,7 +89,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
             if(filters.get(widget.getCategory().ordinal()).checked) {
                 int widgetHeight = widget.getHeight() / 2 + (widget.hasStepOutput() ? 5 : 0) + 1;
                 y += widgetHeight;
-                if(y > ySize - 150) {
+                if(y > ySize - 160) {
                     y = 0;
                     page++;
                     maxPage++;
@@ -160,6 +164,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
     protected void drawGuiContainerForegroundLayer(int x, int y){
         super.drawGuiContainerForegroundLayer(x, y);
 
+        boolean igwLoaded = Loader.isModLoaded(ModIds.IGWMOD);
         fontRendererObj.drawString(widgetPage + 1 + "/" + (maxPage + 1), 316, 175, 0xFF000000);
         fontRendererObj.drawString(I18n.format("gui.programmer.filters"), 263, 180, 0xFF000000);
 
@@ -170,6 +175,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
                 if(widget != draggingWidget && (x - translatedX) / scale - guiLeft >= widget.getX() && (y - translatedY) / scale - guiTop >= widget.getY() && (x - translatedX) / scale - guiLeft <= widget.getX() + widget.getWidth() / 2 && (y - translatedY) / scale - guiTop <= widget.getY() + widget.getHeight() / 2) {
                     List<String> tooltip = new ArrayList<String>();
                     widget.getTooltip(tooltip);
+                    if(igwLoaded) tooltip.add(I18n.format("gui.programmer.pressIForInfo"));
                     if(tooltip.size() > 0) drawHoveringString(tooltip, x - guiLeft, y - guiTop, fontRendererObj);
                 }
             }
@@ -179,10 +185,41 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
             if(widget != draggingWidget && x - guiLeft >= widget.getX() && y - guiTop >= widget.getY() && x - guiLeft <= widget.getX() + widget.getWidth() / 2 && y - guiTop <= widget.getY() + widget.getHeight() / 2) {
                 List<String> tooltip = new ArrayList<String>();
                 widget.getTooltip(tooltip);
+                if(igwLoaded) tooltip.add(I18n.format("gui.programmer.pressIForInfo"));
                 if(tooltip.size() > 0) drawHoveringString(tooltip, x - guiLeft, y - guiTop, fontRendererObj);
             }
         }
 
+    }
+
+    @Override
+    @Optional.Method(modid = ModIds.IGWMOD)
+    protected void keyTyped(char key, int keyCode){
+        super.keyTyped(key, keyCode);
+
+        if(Keyboard.KEY_I == keyCode) {
+            int x = lastMouseX;
+            int y = lastMouseY;
+            float scale = 1.0F - scaleScroll.getState() * SCALE_PER_STEP;
+
+            for(IProgWidget widget : te.progWidgets) {
+                if(!isOutsideProgrammingArea(widget)) {
+                    if(widget != draggingWidget && (x - translatedX) / scale - guiLeft >= widget.getX() && (y - translatedY) / scale - guiTop >= widget.getY() && (x - translatedX) / scale - guiLeft <= widget.getX() + widget.getWidth() / 2 && (y - translatedY) / scale - guiTop <= widget.getY() + widget.getHeight() / 2) {
+                        GuiWiki gui = new GuiWiki();
+                        FMLClientHandler.instance().showGuiScreen(gui);
+                        gui.setCurrentFile("progwidget/" + widget.getWidgetString());
+                    }
+                }
+            }
+
+            for(IProgWidget widget : visibleSpawnWidgets) {
+                if(widget != draggingWidget && x - guiLeft >= widget.getX() && y - guiTop >= widget.getY() && x - guiLeft <= widget.getX() + widget.getWidth() / 2 && y - guiTop <= widget.getY() + widget.getHeight() / 2) {
+                    GuiWiki gui = new GuiWiki();
+                    FMLClientHandler.instance().showGuiScreen(gui);
+                    gui.setCurrentFile("progwidget/" + widget.getWidgetString());
+                }
+            }
+        }
     }
 
     @Override

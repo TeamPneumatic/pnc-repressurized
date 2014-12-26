@@ -53,7 +53,7 @@ public class ProgWidgetWait extends ProgWidget{
 
     @Override
     public EntityAIBase getWidgetAI(EntityDrone drone, IProgWidget widget){
-        return widget.getConnectedParameters()[0] != null ? new DroneAIWait((ProgWidgetString)widget.getConnectedParameters()[0]) : null;
+        return widget instanceof ProgWidgetWait ? widget.getConnectedParameters()[0] != null ? new DroneAIWait((ProgWidgetString)widget.getConnectedParameters()[0]) : null : null;
     }
 
     private static class DroneAIWait extends EntityAIBase{
@@ -62,7 +62,16 @@ public class ProgWidgetWait extends ProgWidget{
         private int ticks;
 
         private DroneAIWait(ProgWidgetString widget){
-            maxTicks = NumberUtils.toInt(widget.string);
+            String time = widget.string;
+            int multiplier = 1;
+            if(time.endsWith("s") || time.endsWith("S")) {
+                multiplier = 20;
+                time = time.substring(0, time.length() - 1);
+            } else if(time.endsWith("m") || time.endsWith("M")) {
+                multiplier = 1200;
+                time = time.substring(0, time.length() - 1);
+            }
+            maxTicks = NumberUtils.toInt(time) * multiplier;
         }
 
         @Override

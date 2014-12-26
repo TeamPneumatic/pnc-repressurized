@@ -39,7 +39,7 @@ public class BlockDroneRedstoneEmitter extends BlockAir implements ITileEntityPr
             List<EntityDrone> drones = world.getEntitiesWithinAABB(EntityDrone.class, AxisAlignedBB.getBoundingBox(x, y, z, x + 1, y + 1, z + 1));
             int signal = 0;
             for(EntityDrone drone : drones) {
-                signal = Math.max(signal, drone.getEmittingRedstone(ForgeDirection.getOrientation(side)));
+                signal = Math.max(signal, drone.getEmittingRedstone(ForgeDirection.getOrientation(side).getOpposite()));
             }
             return signal;
 

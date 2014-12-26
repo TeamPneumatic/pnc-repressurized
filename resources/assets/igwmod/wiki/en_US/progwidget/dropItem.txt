@@ -1,0 +1,8 @@
+Programming Puzzles are used in [link{block/programmer}]programmers [link{}].
+
+[prefix{l}]The Item Drop piece [prefix{}]
+This will make the Drone drop items out of its inventory in the specified area. By right clicking the Drop Item piece you can specify how many items per position in the area are allowed to be dropped. You can also toggle between 'Random' and 'Straight' spreading modes, which mean they will drop the item with a speed, or drop the item straight down respectively.
+
+You can apply an item filter. With a filter, only items that are allowed by the filter will be dropped.
+
+The program is done when none of the (by the item filter allowed) items are in the Drone's inventory or when the Drone has visited every coordinate.

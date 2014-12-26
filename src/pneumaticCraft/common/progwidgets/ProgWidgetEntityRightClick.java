@@ -96,7 +96,7 @@ public class ProgWidgetEntityRightClick extends ProgWidget{
                         drone.getFakePlayer().inventory.mainInventory[j] = null;
                     }
                 }
-                return activated;
+                return false;//return activated; <-- will right click as long as it's sucessfully activated.
             }
 
         };

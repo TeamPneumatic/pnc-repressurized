@@ -11,7 +11,7 @@ public class ProgWidgetBlockRightClick extends ProgWidgetPlace{
 
     @Override
     public String getWidgetString(){
-        return "rightClickBlock";
+        return "blockRightClick";
     }
 
     @Override

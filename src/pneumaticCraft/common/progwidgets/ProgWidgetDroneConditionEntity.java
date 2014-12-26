@@ -1,8 +1,12 @@
 package pneumaticCraft.common.progwidgets;
 
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.ResourceLocation;
+import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.lib.Textures;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class ProgWidgetDroneConditionEntity extends ProgWidgetDroneEvaluation{
 
@@ -24,6 +28,12 @@ public class ProgWidgetDroneConditionEntity extends ProgWidgetDroneEvaluation{
     @Override
     protected ResourceLocation getTexture(){
         return Textures.PROG_WIDGET_CONDITION_DRONE_ENTITY;
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public GuiScreen getOptionWindow(GuiProgrammer guiProgrammer){
+        return null;
     }
 
 }

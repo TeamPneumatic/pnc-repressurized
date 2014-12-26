@@ -670,7 +670,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements ISid
                     updateDestination();
                     return new Object[]{coordWithinReach};
                 } else {
-                    throw new IllegalArgumentException("setTargetLocation requires 3 parameters (x,y,z)");
+                    throw new LuaException("setTargetLocation requires 3 parameters (x,y,z)");
                 }
             }
         });
@@ -681,7 +681,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements ISid
                 if(args.length == 0) {
                     return new Object[]{fire()};//returns true if the fire succeeded.
                 } else {
-                    throw new IllegalArgumentException("fire doesn't take any arguments!");
+                    throw new LuaException("fire doesn't take any arguments!");
                 }
             }
         });
@@ -691,7 +691,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements ISid
                 if(args.length == 0) {
                     return new Object[]{doneTurning};
                 } else {
-                    throw new IllegalArgumentException("isDoneTurning doesn't take any arguments!");
+                    throw new LuaException("isDoneTurning doesn't take any arguments!");
                 }
             }
         });
@@ -703,7 +703,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements ISid
                     setTargetAngles(((Double)args[0]).floatValue(), targetHeightAngle);
                     return null;
                 } else {
-                    throw new IllegalArgumentException("setRotationAngle does take one argument!");
+                    throw new LuaException("setRotationAngle does take one argument!");
                 }
             }
         });
@@ -715,7 +715,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements ISid
                     setTargetAngles(targetRotationAngle, 90 - ((Double)args[0]).floatValue());
                     return null;
                 } else {
-                    throw new IllegalArgumentException("setHeightAngle does take one argument!");
+                    throw new LuaException("setHeightAngle does take one argument!");
                 }
             }
         });
@@ -727,7 +727,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements ISid
                     externalControl = (Boolean)args[0];
                     return null;
                 } else {
-                    throw new IllegalArgumentException("setExternalControl does take one argument!");
+                    throw new LuaException("setExternalControl does take one argument!");
                 }
             }
         });

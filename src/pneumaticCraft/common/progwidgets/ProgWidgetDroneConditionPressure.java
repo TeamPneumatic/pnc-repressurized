@@ -13,7 +13,7 @@ public class ProgWidgetDroneConditionPressure extends ProgWidgetDroneEvaluation{
 
     @Override
     public String getWidgetString(){
-        return "conditionDronePressure";
+        return "droneConditionPressure";
     }
 
     @Override

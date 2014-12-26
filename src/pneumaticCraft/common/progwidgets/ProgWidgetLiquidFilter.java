@@ -1,5 +1,7 @@
 package pneumaticCraft.common.progwidgets;
 
+import java.util.List;
+
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.nbt.NBTTagCompound;
@@ -79,6 +81,17 @@ public class ProgWidgetLiquidFilter extends ProgWidget{
         while(widget != null) {
             if(widget.isLiquidValid(fluid)) return true;
             widget = (ProgWidgetLiquidFilter)widget.getConnectedParameters()[0];
+        }
+        return false;
+    }
+
+    public static boolean isLiquidValid(Fluid fluid, List<ProgWidgetLiquidFilter> whitelist, List<ProgWidgetLiquidFilter> blacklist){
+        for(ProgWidgetLiquidFilter filter : blacklist) {
+            if(!filter.isLiquidValid(fluid)) return false;
+        }
+        if(whitelist.size() == 0) return true;
+        for(ProgWidgetLiquidFilter filter : whitelist) {
+            if(filter.isLiquidValid(fluid)) return true;
         }
         return false;
     }
