@@ -25,7 +25,8 @@ public class ProgWidgetItemFilter extends ProgWidget{
     public ItemStack filter;
     public boolean useMetadata = true, useNBT, useOreDict, useModSimilarity;
     public int specificMeta;
-    private static RenderItem itemRender = new RenderItem();
+    @SideOnly(Side.CLIENT)
+    private static RenderItem itemRender;
 
     @Override
     public void renderExtraInfo(){
@@ -40,6 +41,7 @@ public class ProgWidgetItemFilter extends ProgWidget{
         Minecraft mc = Minecraft.getMinecraft();
         GL11.glTranslatef(0.0F, 0.0F, 32.0F);
         //  zLevel = 200.0F;
+        if(itemRender == null) itemRender = new RenderItem();
         itemRender.zLevel = 200.0F;
         FontRenderer font = null;
         if(p_146982_1_ != null) font = p_146982_1_.getItem().getFontRenderer(p_146982_1_);

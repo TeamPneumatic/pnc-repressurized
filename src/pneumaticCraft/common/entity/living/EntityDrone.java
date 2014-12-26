@@ -621,8 +621,10 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
     @Override
     public void writeToNBT(NBTTagCompound tag){
         super.writeToNBT(tag);
-        tag.setString("owner", fakePlayer.getCommandSenderName());
-        if(fakePlayer.getGameProfile().getId() != null) tag.setString("ownerUUID", fakePlayer.getGameProfile().getId().toString());
+        if(fakePlayer != null) {
+            tag.setString("owner", fakePlayer.getCommandSenderName());
+            if(fakePlayer.getGameProfile().getId() != null) tag.setString("ownerUUID", fakePlayer.getGameProfile().getId().toString());
+        }
     }
 
     @Override

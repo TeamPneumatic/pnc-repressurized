@@ -31,9 +31,11 @@ public class DroneAIPlace extends DroneAIBlockInteraction{
                 ItemStack droneStack = drone.getInventory().getStackInSlot(i);
                 if(droneStack != null && droneStack.getItem() instanceof ItemBlock && ((ItemBlock)droneStack.getItem()).field_150939_a.canPlaceBlockOnSide(drone.worldObj, pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ, ProgWidgetPlace.getDirForSides(((ISidedWidget)widget).getSides()).ordinal())) {
                     if(widget.isItemValidForFilters(droneStack)) {
-                        for(ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-                            if(drone.isBlockValidPathfindBlock(pos.chunkPosX + dir.offsetX, pos.chunkPosY + dir.offsetY, pos.chunkPosZ + dir.offsetZ)) {
-                                return true;
+                        if(drone.worldObj.canPlaceEntityOnSide(((ItemBlock)droneStack.getItem()).field_150939_a, pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ, false, 0, null, droneStack)) {
+                            for(ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+                                if(drone.isBlockValidPathfindBlock(pos.chunkPosX + dir.offsetX, pos.chunkPosY + dir.offsetY, pos.chunkPosZ + dir.offsetZ)) {
+                                    return true;
+                                }
                             }
                         }
                     }
@@ -51,18 +53,20 @@ public class DroneAIPlace extends DroneAIBlockInteraction{
                 ItemStack droneStack = drone.getInventory().getStackInSlot(i);
                 if(droneStack != null && droneStack.getItem() instanceof ItemBlock && ((ItemBlock)droneStack.getItem()).field_150939_a.canPlaceBlockOnSide(drone.worldObj, pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ, ProgWidgetPlace.getDirForSides(((ISidedWidget)widget).getSides()).ordinal())) {
                     if(widget.isItemValidForFilters(droneStack)) {
-                        Block block = Block.getBlockFromItem(droneStack.getItem());
-                        int meta = droneStack.getItem().getMetadata(droneStack.getItemDamage());
-                        int newMeta = block.onBlockPlaced(drone.worldObj, pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ, side.ordinal(), side.offsetX, side.offsetY, side.offsetZ, meta);
-                        setFakePlayerAccordingToDir();
-                        if(placeBlockAt(droneStack, drone.getFakePlayer(), drone.worldObj, pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ, side.ordinal(), 0, 0, 0, newMeta)) {
-                            drone.addAir(null, -PneumaticValues.DRONE_USAGE_PLACE);
-                            drone.worldObj.playSoundEffect(pos.chunkPosX + 0.5F, pos.chunkPosY + 0.5F, pos.chunkPosZ + 0.5F, block.stepSound.func_150496_b(), (block.stepSound.getVolume() + 1.0F) / 2.0F, block.stepSound.getPitch() * 0.8F);
-                            if(--droneStack.stackSize <= 0) {
-                                drone.getInventory().setInventorySlotContents(i, null);
+                        if(drone.worldObj.canPlaceEntityOnSide(((ItemBlock)droneStack.getItem()).field_150939_a, pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ, false, 0, null, droneStack)) {
+                            Block block = Block.getBlockFromItem(droneStack.getItem());
+                            int meta = droneStack.getItem().getMetadata(droneStack.getItemDamage());
+                            int newMeta = block.onBlockPlaced(drone.worldObj, pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ, side.ordinal(), side.offsetX, side.offsetY, side.offsetZ, meta);
+                            setFakePlayerAccordingToDir();
+                            if(placeBlockAt(droneStack, drone.getFakePlayer(), drone.worldObj, pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ, side.ordinal(), 0, 0, 0, newMeta)) {
+                                drone.addAir(null, -PneumaticValues.DRONE_USAGE_PLACE);
+                                drone.worldObj.playSoundEffect(pos.chunkPosX + 0.5F, pos.chunkPosY + 0.5F, pos.chunkPosZ + 0.5F, block.stepSound.func_150496_b(), (block.stepSound.getVolume() + 1.0F) / 2.0F, block.stepSound.getPitch() * 0.8F);
+                                if(--droneStack.stackSize <= 0) {
+                                    drone.getInventory().setInventorySlotContents(i, null);
+                                }
                             }
+                            return false;
                         }
-                        return false;
                     }
                 }
             }
