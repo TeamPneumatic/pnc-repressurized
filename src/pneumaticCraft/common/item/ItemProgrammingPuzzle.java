@@ -3,7 +3,6 @@ package pneumaticCraft.common.item;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
@@ -11,6 +10,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.common.NBTUtil;
 import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.common.tileentity.TileEntityProgrammer;
@@ -63,7 +63,7 @@ public class ItemProgrammingPuzzle extends ItemPneumatic{
         } else {
             List<IProgWidget> widgets = getWidgetsForColor(stack.getItemDamage());
             if(widgets.size() > 0) {
-                World world = Minecraft.getMinecraft().theWorld;
+                World world = PneumaticCraft.proxy.getClientWorld();
                 return widgets.get((int)(world.getWorldTime() % (widgets.size() * 20) / 20));
             } else {
                 return null;

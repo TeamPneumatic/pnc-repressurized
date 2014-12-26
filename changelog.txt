@@ -1,17 +1,5 @@
-BIG DRONE UPDATE!:D
+-Added 'Rename Drone' piece.
 
--Added Conditions to drones.
--Added Liquid Filter/Import/Export pieces.
--Added Jump/Label pieces.
--Added Wait piece.
--Added RF Import/Export pieces.
--Added Drop Item piece.
--Added Entity Import/Export pieces.
--Added Emit Redstone piece.
--Added Entity Right Click and Block Right Click piece.
--Improved Programmer's programming area (increased size, added scrolling and zooming).
--Added the ability to import/export a certain amount of items/fluid.
-
--Bugfix: A generic Java exception is thrown instead of a descriptive lua exception when dealing with PneumaticCraft CC peripherals.
--Bugfix: Drone still executing actions (when pushed around) when he's out of pressure.
--Bugfix: Some rare crashes with the Drone Interface (CC compatibility) due to race conditions.
+-Bugfix: Drone places blocks even when there are entities occupying the block space.
+-Bugfix: Crash when using XU Golden Lasso on Drone.
+-Bugfix: Server startup crashes.
