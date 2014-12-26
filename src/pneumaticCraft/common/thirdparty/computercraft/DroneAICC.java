@@ -47,7 +47,7 @@ class DroneAICC extends EntityAIBase{
     }
 
     @Override
-    public boolean shouldExecute(){
+    public synchronized boolean shouldExecute(){
         newAction = false;
         if(curAction != null) {
             curActionActive = curAction.shouldExecute();
@@ -57,7 +57,7 @@ class DroneAICC extends EntityAIBase{
     }
 
     @Override
-    public boolean continueExecuting(){
+    public synchronized boolean continueExecuting(){
         if(!newAction && curActionActive && curAction != null) {
             boolean contin = curAction.continueExecuting();
             if(!contin) curAction.resetTask();
@@ -68,21 +68,21 @@ class DroneAICC extends EntityAIBase{
     }
 
     @Override
-    public void updateTask(){
+    public synchronized void updateTask(){
         if(curActionActive && curAction != null) curAction.updateTask();
     }
 
-    public void setAction(IProgWidget widget, EntityAIBase ai) throws IllegalArgumentException{
+    public synchronized void setAction(IProgWidget widget, EntityAIBase ai) throws IllegalArgumentException{
         curAction = ai;
         newAction = true;
         curActionActive = true;
     }
 
-    public void abortAction(){
+    public synchronized void abortAction(){
         curAction = null;
     }
 
-    public boolean isActionDone() throws LuaException{
+    public synchronized boolean isActionDone() throws LuaException{
         if(curAction == null) throw new LuaException("There's no action active!");
         return !curActionActive;
     }

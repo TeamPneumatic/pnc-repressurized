@@ -102,28 +102,28 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
         return areaTypes;
     }
 
-    public void addArea(int x, int y, int z){
+    public synchronized void addArea(int x, int y, int z){
         area.add(new ChunkPosition(x, y, z));
     }
 
-    public void addArea(int x1, int y1, int z1, int x2, int y2, int z2, String areaType) throws LuaException{
+    public synchronized void addArea(int x1, int y1, int z1, int x2, int y2, int z2, String areaType) throws LuaException{
         area.addAll(getArea(x1, y1, z1, x2, y2, z2, areaType));
     }
 
-    public void removeArea(int x, int y, int z){
+    public synchronized void removeArea(int x, int y, int z){
         area.remove(new ChunkPosition(x, y, z));
     }
 
-    public void removeArea(int x1, int y1, int z1, int x2, int y2, int z2, String areaType) throws LuaException{
+    public synchronized void removeArea(int x1, int y1, int z1, int x2, int y2, int z2, String areaType) throws LuaException{
         area.removeAll(getArea(x1, y1, z1, x2, y2, z2, areaType));
     }
 
-    public void clearArea(){
+    public synchronized void clearArea(){
         area.clear();
     }
 
     @Override
-    public Set<ChunkPosition> getArea(){
+    public synchronized Set<ChunkPosition> getArea(){
         return area;
     }
 
@@ -148,23 +148,23 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
     }
 
     @Override
-    public boolean isItemValidForFilters(ItemStack item, int blockMetadata){
+    public synchronized boolean isItemValidForFilters(ItemStack item, int blockMetadata){
         return ProgWidgetItemFilter.isItemValidForFilters(item, itemWhitelist, itemBlacklist, blockMetadata);
     }
 
-    public void addWhitelistItemFilter(String itemName, int damage, boolean useMetadata, boolean useNBT, boolean useOreDict, boolean useModSimilarity) throws LuaException{
+    public synchronized void addWhitelistItemFilter(String itemName, int damage, boolean useMetadata, boolean useNBT, boolean useOreDict, boolean useModSimilarity) throws LuaException{
         itemWhitelist.add(getItemFilter(itemName, damage, useMetadata, useNBT, useOreDict, useModSimilarity));
     }
 
-    public void addBlacklistItemFilter(String itemName, int damage, boolean useMetadata, boolean useNBT, boolean useOreDict, boolean useModSimilarity) throws LuaException{
+    public synchronized void addBlacklistItemFilter(String itemName, int damage, boolean useMetadata, boolean useNBT, boolean useOreDict, boolean useModSimilarity) throws LuaException{
         itemBlacklist.add(getItemFilter(itemName, damage, useMetadata, useNBT, useOreDict, useModSimilarity));
     }
 
-    public void clearItemWhitelist(){
+    public synchronized void clearItemWhitelist(){
         itemWhitelist.clear();
     }
 
-    public void clearItemBlacklist(){
+    public synchronized void clearItemBlacklist(){
         itemBlacklist.clear();
     }
 
@@ -183,21 +183,21 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
         return itemFilter;
     }
 
-    public void addWhitelistText(String text){
+    public synchronized void addWhitelistText(String text){
         if(whitelistFilter == null) whitelistFilter = new StringFilterEntitySelector();
         whitelistFilter.addEntry(text);
     }
 
-    public void addBlacklistText(String text){
+    public synchronized void addBlacklistText(String text){
         if(blacklistFilter == null) blacklistFilter = new StringFilterEntitySelector();
         blacklistFilter.addEntry(text);
     }
 
-    public void clearWhitelistText(){
+    public synchronized void clearWhitelistText(){
         whitelistFilter = null;
     }
 
-    public void clearBlacklistText(){
+    public synchronized void clearBlacklistText(){
         blacklistFilter = null;
     }
 
@@ -217,7 +217,7 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
     }
 
     @Override
-    public List<EntityLivingBase> getValidEntities(World world){
+    public synchronized List<EntityLivingBase> getValidEntities(World world){
         List<Entity> entities = ProgWidgetAreaItemBase.getEntitiesInArea(getEntityAreaWidget(), null, world, whitelistFilter, blacklistFilter);
         List<EntityLivingBase> livingEntities = new ArrayList<EntityLivingBase>();
         for(Entity entity : entities) {
@@ -242,7 +242,7 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
     }
 
     @Override
-    public List<Entity> getEntitiesInArea(World world, IEntitySelector filter){
+    public synchronized List<Entity> getEntitiesInArea(World world, IEntitySelector filter){
         return ProgWidgetAreaItemBase.getEntitiesInArea(getEntityAreaWidget(), null, world, filter, null);
     }
 
@@ -279,12 +279,12 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
     public void setDoneWhenDeparting(boolean bool){}
 
     @Override
-    public void setSides(boolean[] sides){
+    public synchronized void setSides(boolean[] sides){
         this.sides = sides;
     }
 
     @Override
-    public boolean[] getSides(){
+    public synchronized boolean[] getSides(){
         return sides;
     }
 
@@ -308,19 +308,19 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
         return emittingRedstone;
     }
 
-    public void addWhitelistLiquidFilter(String fluidName) throws LuaException{
+    public synchronized void addWhitelistLiquidFilter(String fluidName) throws LuaException{
         liquidWhitelist.add(getFilterForArgs(fluidName));
     }
 
-    public void addBlacklistLiquidFilter(String fluidName) throws LuaException{
+    public synchronized void addBlacklistLiquidFilter(String fluidName) throws LuaException{
         liquidBlacklist.add(getFilterForArgs(fluidName));
     }
 
-    public void clearLiquidWhitelist(){
+    public synchronized void clearLiquidWhitelist(){
         liquidWhitelist.clear();
     }
 
-    public void clearLiquidBlacklist(){
+    public synchronized void clearLiquidBlacklist(){
         liquidBlacklist.clear();
     }
 
@@ -333,7 +333,7 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
     }
 
     @Override
-    public boolean isFluidValid(Fluid fluid){
+    public synchronized boolean isFluidValid(Fluid fluid){
         return ProgWidgetLiquidFilter.isLiquidValid(fluid, liquidWhitelist, liquidBlacklist);
     }
 
@@ -397,7 +397,7 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
         this.operator = operator;
     }
 
-    public void setOperator(String operator) throws LuaException{
+    public synchronized void setOperator(String operator) throws LuaException{
         for(Operator op : Operator.values()) {
             if(op.toString().equals(operator)) {
                 setOperator(op);
