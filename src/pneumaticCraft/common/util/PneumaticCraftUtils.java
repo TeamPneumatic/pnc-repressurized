@@ -14,6 +14,7 @@ import java.util.StringTokenizer;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityMinecart;
@@ -35,6 +36,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.IFluidBlock;
 import net.minecraftforge.oredict.OreDictionary;
 
+import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.opengl.GL11;
 
 import pneumaticCraft.api.item.IInventoryItem;
@@ -43,7 +45,6 @@ import pneumaticCraft.common.thirdparty.ModInteractionUtils;
 import pneumaticCraft.common.tileentity.TileEntitySecurityStation;
 import pneumaticCraft.lib.Log;
 import pneumaticCraft.lib.ModIds;
-import buildcraft.api.power.IPowerReceptor;
 import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.GameRegistry.UniqueIdentifier;
@@ -412,26 +413,6 @@ public class PneumaticCraftUtils{
         return isIC2Item(id, "overclockerUpgrade") || isIC2Item(id, "transformerUpgrade") || isIC2Item(id, "energyStorageUpgrade");
     }
 
-    public static boolean rotateBuildcraftBlock(World world, int x, int y, int z, boolean everyPowerPipe){
-        ForgeDirection orientation = ForgeDirection.getOrientation(world.getBlockMetadata(x, y, z)).getOpposite();
-        for(int i = orientation.ordinal() + 1; i <= orientation.ordinal() + 6; ++i) {
-            ForgeDirection o = ForgeDirection.VALID_DIRECTIONS[i % 6];
-
-            TileEntity tile = world.getTileEntity(x + o.offsetX, y + o.offsetY, z + o.offsetZ);
-
-            if(isPoweredTile(tile, o, everyPowerPipe)) {
-                world.setBlockMetadataWithNotify(x, y, z, o.getOpposite().ordinal(), 3);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Optional.Method(modid = ModIds.BUILDCRAFT)
-    private static boolean isPoweredTile(TileEntity tile, ForgeDirection side, boolean everyPowerPipe){
-        return tile instanceof IPowerReceptor && (everyPowerPipe || ((IPowerReceptor)tile).getPowerReceiver(side.getOpposite()) != null);
-    }
-
     public enum EnumBuildcraftModule{
         BUILDERS, CORE, ENERGY, FACTORY, SILICON, TRANSPORT
     }
@@ -522,6 +503,59 @@ public class PneumaticCraftUtils{
     }
 
     public static boolean isEntityValidForFilter(String filter, Entity entity){
+        try {
+            return isEntityValidForFilterUnsafe(filter, entity);
+        } catch(IllegalArgumentException e) {}
+        return false;
+    }
+
+    public static boolean isEntityValidForFilterUnsafe(String filter, Entity entity) throws IllegalArgumentException{
+        if(StringUtils.countMatches(filter, "(") != StringUtils.countMatches(filter, ")")) throw new IllegalArgumentException("Not an equal amount of opening and closing braces");
+        String[] splits = filter.split("[(),]");
+        for(int i = 0; i < splits.length; i++)
+            splits[i] = splits[i].trim();
+        if(!isEntityValidForName(splits[0], entity)) return false;
+        for(int i = 1; i < splits.length; i++) {
+            String[] modifier = splits[i].split("=");
+            if(modifier.length == 2) {
+                if(!isEntityValidForModifier(modifier[0].trim(), modifier[1].trim(), entity)) return false;
+            } else {
+                throw new IllegalArgumentException("No '=' sign in the modifier.");
+            }
+        }
+        return true;
+    }
+
+    private static boolean isEntityValidForModifier(String modifier, String value, Entity entity) throws IllegalArgumentException{
+        if(modifier.equalsIgnoreCase("age")) {
+            if(entity instanceof EntityAgeable) {
+                if(value.equalsIgnoreCase("adult")) {
+                    return ((EntityAgeable)entity).getGrowingAge() >= 0;
+                } else if(value.equalsIgnoreCase("baby")) {
+                    return ((EntityAgeable)entity).getGrowingAge() < 0;
+                } else {
+                    throw new IllegalArgumentException(value + " doesn't match 'adult'/'baby'.");
+                }
+            } else {
+                throw new IllegalArgumentException("This modifier can't be applied to this entity.");
+            }
+        } else if(modifier.equalsIgnoreCase("breedable")) {
+            if(entity instanceof EntityAgeable) {
+                if(value.equalsIgnoreCase("yes")) {
+                    return ((EntityAgeable)entity).getGrowingAge() == 0;
+                } else if(value.equalsIgnoreCase("no")) {
+                    return ((EntityAgeable)entity).getGrowingAge() != 0;
+                } else {
+                    throw new IllegalArgumentException(value + " doesn't match 'yes'/'no'.");
+                }
+            } else {
+                throw new IllegalArgumentException("This modifier can't be applied to this entity.");
+            }
+        }
+        throw new IllegalArgumentException(modifier + " is not a valid modifier");
+    }
+
+    private static boolean isEntityValidForName(String filter, Entity entity) throws IllegalArgumentException{
         if(filter.equals("")) {
             return true;
         } else if(filter.startsWith("@")) {//entity type selection
@@ -542,11 +576,12 @@ public class PneumaticCraftUtils{
             }
             if(typeClass != null) {
                 return typeClass.isAssignableFrom(entity.getClass());
+            } else {
+                throw new IllegalArgumentException(filter + " is not a valid entity type.");
             }
         } else {
             return entity.getCommandSenderName().toLowerCase().equals(filter.toLowerCase());//TODO when player, check if entity is tamed by the player (see EntityAIAvoidEntity for example)
         }
-        return false;
     }
 
     public static Method getDeclaredMethodIncludingSupertype(Class clazz, String methodName, Class... methodParms){

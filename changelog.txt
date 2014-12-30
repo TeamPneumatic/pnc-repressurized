@@ -1,14 +1,5 @@
--Pneumatic plants will now be part of bonemealed grass (DarkStarDS9).
--You can now bonemeal Dirt, End Stone, and Netherrack to get pneumaticcraft plants (configurable) (DarkStarDS9).
--Refactored Assembly System (DarkStarDS9).
+-Added 'Rename Drone' piece.
 
--Bugfix: Pneumatic Door base forgets speed upgrades (on client).
--Bugfix: Elevator crashes on certain occasions when redstone controlled (DarkStarDS9).
--Bugfix: You can't interact with the Plastic Mixer's inventory.
--Bugfix: Assembly System gets stuck when removing and putting back a program (DarkStarDS9).
--Bugfix: Elevator Frames bug out rendering of transparent blocks.
--Bugfix: Pneumatic Dynamo loses RF energy.
--Bugfix: Waila is labeling plants mature when they aren't. Fixes #303
--Bugfix: (Advanced) Air Compressor is using 10x as much fuel as it should.
--Bugfix: Missing texture when trying to camo with Chisel.
--Bugfix: Lighting issue with elevators.
+-Bugfix: Drone places blocks even when there are entities occupying the block space.
+-Bugfix: Crash when using XU Golden Lasso on Drone.
+-Bugfix: Server startup crashes.

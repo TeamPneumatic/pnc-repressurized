@@ -16,6 +16,7 @@ import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.World;
 import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.client.gui.programmer.GuiProgWidgetArea;
+import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.relauncher.Side;
@@ -92,11 +93,6 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider{
     @Override
     public String getWidgetString(){
         return "area";
-    }
-
-    @Override
-    public String getLegacyString(){
-        return "  area";
     }
 
     @Override
@@ -461,6 +457,16 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider{
     @Override
     public int getGuiTabColor(){
         return 0xFF209600;
+    }
+
+    @Override
+    public WidgetCategory getCategory(){
+        return WidgetCategory.PARAMETER;
+    }
+
+    @Override
+    public int getCraftingColorIndex(){
+        return ItemPlasticPlants.CREEPER_PLANT_DAMAGE;
     }
 
 }

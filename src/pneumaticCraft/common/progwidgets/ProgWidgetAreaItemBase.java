@@ -17,6 +17,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.client.gui.programmer.GuiProgWidgetAreaShow;
+import pneumaticCraft.common.ai.StringFilterEntitySelector;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -35,11 +36,6 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
     @Override
     public Class<? extends IProgWidget>[] getParameters(){
         return new Class[]{ProgWidgetArea.class, ProgWidgetItemFilter.class};
-    }
-
-    @Override
-    public int getHeight(){
-        return 44;
     }
 
     public static IBlockAccess getCache(Collection<ChunkPosition> area, World world){
@@ -64,7 +60,7 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
 
     @Override
     public Set<ChunkPosition> getArea(){
-        return getArea((ProgWidgetArea)getConnectedParameters()[0], (ProgWidgetArea)getConnectedParameters()[2]);
+        return getArea((ProgWidgetArea)getConnectedParameters()[0], (ProgWidgetArea)getConnectedParameters()[getParameters().length]);
     }
 
     public static Set<ChunkPosition> getArea(ProgWidgetArea whitelistWidget, ProgWidgetArea blacklistWidget){
@@ -88,11 +84,34 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
     }
 
     public boolean isItemValidForFilters(ItemStack item, int blockMetadata){
-        return ProgWidgetItemFilter.isItemValidForFilters(item, ProgWidget.getConnectedWidgetList(this, 1), ProgWidget.getConnectedWidgetList(this, 3), blockMetadata);
+        return ProgWidgetItemFilter.isItemValidForFilters(item, ProgWidget.getConnectedWidgetList(this, 1), ProgWidget.getConnectedWidgetList(this, getParameters().length + 1), blockMetadata);
     }
 
     public List<Entity> getEntitiesInArea(World world, IEntitySelector filter){
-        return getEntitiesInArea((ProgWidgetArea)getConnectedParameters()[0], (ProgWidgetArea)getConnectedParameters()[2], world, filter, null);
+        return getEntitiesInArea((ProgWidgetArea)getConnectedParameters()[0], (ProgWidgetArea)getConnectedParameters()[getParameters().length], world, filter, null);
+    }
+
+    public List<Entity> getEntitiesInArea(World world){
+        return getEntitiesInArea(world, this);
+    }
+
+    public static List<Entity> getEntitiesInArea(World world, IProgWidget askingWidget){
+        StringFilterEntitySelector whitelistFilter = getEntityFilter((ProgWidgetString)askingWidget.getConnectedParameters()[1], true);
+        StringFilterEntitySelector blacklistFilter = getEntityFilter((ProgWidgetString)askingWidget.getConnectedParameters()[askingWidget.getParameters().length + 1], false);
+        return getEntitiesInArea((ProgWidgetArea)askingWidget.getConnectedParameters()[0], (ProgWidgetArea)askingWidget.getConnectedParameters()[askingWidget.getParameters().length], world, whitelistFilter, blacklistFilter);
+    }
+
+    public static StringFilterEntitySelector getEntityFilter(ProgWidgetString widget, boolean allowEntityIfNoFilter){
+        StringFilterEntitySelector filter = new StringFilterEntitySelector();
+        if(widget != null) {
+            while(widget != null) {
+                filter.addEntry(widget.string);
+                widget = (ProgWidgetString)widget.getConnectedParameters()[0];
+            }
+        } else if(allowEntityIfNoFilter) {
+            filter.setFilter("");
+        }
+        return filter;
     }
 
     public static List<Entity> getEntitiesInArea(ProgWidgetArea whitelistWidget, ProgWidgetArea blacklistWidget, World world, IEntitySelector whitelistFilter, IEntitySelector blacklistFilter){
@@ -123,5 +142,10 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
     @SideOnly(Side.CLIENT)
     public GuiScreen getOptionWindow(GuiProgrammer guiProgrammer){
         return new GuiProgWidgetAreaShow(this, guiProgrammer);
+    }
+
+    @Override
+    public WidgetCategory getCategory(){
+        return WidgetCategory.ACTION;
     }
 }

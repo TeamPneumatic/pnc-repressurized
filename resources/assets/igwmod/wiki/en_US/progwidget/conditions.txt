@@ -1,0 +1,24 @@
+Conditions are a collection of puzzle pieces that allow you to check a certain thing, and jump to a certain part in the program when that condition is met.
+
+Every Condition puzzle piece has a Text puzzle piece as bottom-most parameter. When a condition is met, it will look for a Text puzzle piece on the right side of this parameter, and jump to a [link{progwidget/label}]Label [link{}] piece with that name. When the condition is false, it will jump to a label with the same name as the Text parameter on the left side. When the Condition piece can't find a Text parameter, it will proceed to a puzzle piece connected to the bottom.
+
+Most of the times you can right-click a Condition piece to open up an interface to configure the condition. Most of the times it will contain a '='/'>=' option, and a text field where you can put in a number. With this you can set up conditions (like item counts in a chest) to be exactly 10 ('=' mode and text field 10), more than 20 ('>=' mode and text field '21') and less than 12 ('>=' mode and text field '12', and checking for the condition to be false).
+
+Conditions can be divided into two categories: Conditions and Drone Conditions. Plain Conditions are used to check for things inside the world. You can check if a Chest has a certain amount items and that kind. Drone Conditions specifically target the Drone. You can check if a Drone has a certain item, or has a certain pressure.
+
+[prefix{l}]Conditions: [prefix{}]
+Most (normal) Conditions have an Any/All block option. This is used when you are checking multiple blocks with one Condition. In 'Any' mode, one of the blocks in the selected area need to match the condition to be true. In 'All' mode, all blocks have to.
+
+The following is a list of all Conditions:
+[link{progwidget/conditionItemInventory}]Condition: Items[link{}]
+[link{progwidget/conditionBlock}]Condition: Block[link{}]
+[link{progwidget/conditionLiquidInventory}]Condition: Liquid[link{}]
+[link{progwidget/conditionRedstone}]Condition: Redstone[link{}]
+[link{progwidget/conditionEntity}]Condition: Entity[link{}]
+[link{progwidget/conditionPressure}]Condition: Pressure[link{}]
+
+[prefix{l}]Drone Conditions:[prefix{}]
+[link{progwidget/droneConditionItem}]Drone Condition: Items[link{}]
+[link{progwidget/droneConditionLiquid}]Drone Condition: Liquid[link{}]
+[link{progwidget/droneConditionEntity}]Drone Condition: Entity[link{}]
+[link{progwidget/droneConditionPressure}]Drone Condition: Pressure[link{}]

@@ -1,6 +1,7 @@
 package pneumaticCraft.common.tileentity;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,16 +22,39 @@ import pneumaticCraft.common.item.ItemProgrammingPuzzle;
 import pneumaticCraft.common.progwidgets.IAreaProvider;
 import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetArea;
+import pneumaticCraft.common.progwidgets.ProgWidgetBlockCondition;
+import pneumaticCraft.common.progwidgets.ProgWidgetBlockRightClick;
 import pneumaticCraft.common.progwidgets.ProgWidgetDig;
+import pneumaticCraft.common.progwidgets.ProgWidgetDroneConditionEntity;
+import pneumaticCraft.common.progwidgets.ProgWidgetDroneConditionItem;
+import pneumaticCraft.common.progwidgets.ProgWidgetDroneConditionLiquid;
+import pneumaticCraft.common.progwidgets.ProgWidgetDroneConditionPressure;
+import pneumaticCraft.common.progwidgets.ProgWidgetDropItem;
+import pneumaticCraft.common.progwidgets.ProgWidgetEmitRedstone;
 import pneumaticCraft.common.progwidgets.ProgWidgetEntityAttack;
+import pneumaticCraft.common.progwidgets.ProgWidgetEntityCondition;
+import pneumaticCraft.common.progwidgets.ProgWidgetEntityExport;
+import pneumaticCraft.common.progwidgets.ProgWidgetEntityImport;
+import pneumaticCraft.common.progwidgets.ProgWidgetEntityRightClick;
 import pneumaticCraft.common.progwidgets.ProgWidgetGoToLocation;
 import pneumaticCraft.common.progwidgets.ProgWidgetInventoryExport;
 import pneumaticCraft.common.progwidgets.ProgWidgetInventoryImport;
 import pneumaticCraft.common.progwidgets.ProgWidgetItemFilter;
+import pneumaticCraft.common.progwidgets.ProgWidgetItemInventoryCondition;
+import pneumaticCraft.common.progwidgets.ProgWidgetJump;
+import pneumaticCraft.common.progwidgets.ProgWidgetLabel;
+import pneumaticCraft.common.progwidgets.ProgWidgetLiquidExport;
+import pneumaticCraft.common.progwidgets.ProgWidgetLiquidFilter;
+import pneumaticCraft.common.progwidgets.ProgWidgetLiquidImport;
+import pneumaticCraft.common.progwidgets.ProgWidgetLiquidInventoryCondition;
 import pneumaticCraft.common.progwidgets.ProgWidgetPickupItem;
 import pneumaticCraft.common.progwidgets.ProgWidgetPlace;
+import pneumaticCraft.common.progwidgets.ProgWidgetPressureCondition;
+import pneumaticCraft.common.progwidgets.ProgWidgetRedstoneCondition;
+import pneumaticCraft.common.progwidgets.ProgWidgetRename;
 import pneumaticCraft.common.progwidgets.ProgWidgetStart;
 import pneumaticCraft.common.progwidgets.ProgWidgetString;
+import pneumaticCraft.common.progwidgets.ProgWidgetWait;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -45,18 +69,50 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory{
 
     public static final int PROGRAM_SLOT = 0;
 
+    //Client side variables that are used to prevent resetting.
+    public int translatedX, translatedY, zoomState;
+    public boolean[] filters = new boolean[IProgWidget.WidgetCategory.values().length];
+    public boolean showInfo, showFlow;
+
+    public TileEntityProgrammer(){
+        Arrays.fill(filters, true);
+    }
+
     static {
         registeredWidgets.add(new ProgWidgetStart());
         registeredWidgets.add(new ProgWidgetArea());
         registeredWidgets.add(new ProgWidgetString());
         registeredWidgets.add(new ProgWidgetItemFilter());
+        registeredWidgets.add(new ProgWidgetLiquidFilter());
         registeredWidgets.add(new ProgWidgetEntityAttack());
         registeredWidgets.add(new ProgWidgetDig());
         registeredWidgets.add(new ProgWidgetPlace());
+        registeredWidgets.add(new ProgWidgetBlockRightClick());
+        registeredWidgets.add(new ProgWidgetEntityRightClick());
         registeredWidgets.add(new ProgWidgetPickupItem());
+        registeredWidgets.add(new ProgWidgetDropItem());
         registeredWidgets.add(new ProgWidgetInventoryExport());
         registeredWidgets.add(new ProgWidgetInventoryImport());
+        registeredWidgets.add(new ProgWidgetLiquidExport());
+        registeredWidgets.add(new ProgWidgetLiquidImport());
+        registeredWidgets.add(new ProgWidgetEntityExport());
+        registeredWidgets.add(new ProgWidgetEntityImport());
         registeredWidgets.add(new ProgWidgetGoToLocation());
+        registeredWidgets.add(new ProgWidgetEmitRedstone());
+        registeredWidgets.add(new ProgWidgetLabel());
+        registeredWidgets.add(new ProgWidgetJump());
+        registeredWidgets.add(new ProgWidgetWait());
+        registeredWidgets.add(new ProgWidgetRename());
+        registeredWidgets.add(new ProgWidgetRedstoneCondition());
+        registeredWidgets.add(new ProgWidgetItemInventoryCondition());
+        registeredWidgets.add(new ProgWidgetBlockCondition());
+        registeredWidgets.add(new ProgWidgetLiquidInventoryCondition());
+        registeredWidgets.add(new ProgWidgetEntityCondition());
+        registeredWidgets.add(new ProgWidgetPressureCondition());
+        registeredWidgets.add(new ProgWidgetDroneConditionItem());
+        registeredWidgets.add(new ProgWidgetDroneConditionLiquid());
+        registeredWidgets.add(new ProgWidgetDroneConditionEntity());
+        registeredWidgets.add(new ProgWidgetDroneConditionPressure());
     }
 
     @Override
@@ -123,7 +179,7 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory{
             NBTTagCompound widgetTag = widgetTags.getCompoundTagAt(i);
             String widgetName = widgetTag.getString("name");
             for(IProgWidget widget : registeredWidgets) {
-                if(widgetName.equals(widget.getWidgetString()) || widgetName.equals(widget.getLegacyString())) {//create the right progWidget for the given id tag.
+                if(widgetName.equals(widget.getWidgetString())) {//create the right progWidget for the given id tag.
                     IProgWidget addedWidget = widget.copy();
                     addedWidget.readFromNBT(widgetTag);
                     progWidgets.add(addedWidget);
@@ -163,7 +219,7 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory{
                 for(IProgWidget widget : progWidgets) {
                     if(widget != checkedWidget && checkedWidget.getX() + checkedWidget.getWidth() / 2 == widget.getX()) {
                         for(int i = 0; i < parameters.length; i++) {
-                            if(parameters[i] == widget.returnType() && checkedWidget.getY() + i * 11 == widget.getY()) {
+                            if(checkedWidget.canSetParameter(i) && parameters[i] == widget.returnType() && checkedWidget.getY() + i * 11 == widget.getY()) {
                                 checkedWidget.setParameter(i, widget);
                                 widget.setParent(checkedWidget);
                             }
@@ -188,14 +244,16 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory{
                 Class<? extends IProgWidget>[] parameters = checkedWidget.getParameters();
                 if(parameters != null) {
                     for(int i = 0; i < parameters.length; i++) {
-                        for(IProgWidget widget : progWidgets) {
-                            if(parameters[i] == widget.returnType()) {
-                                if(widget != checkedWidget && widget.getX() + widget.getWidth() / 2 == checkedWidget.getX() && widget.getY() == checkedWidget.getY() + i * 11) {
-                                    IProgWidget root = widget;
-                                    while(root.getParent() != null) {
-                                        root = root.getParent();
+                        if(checkedWidget.canSetParameter(i)) {
+                            for(IProgWidget widget : progWidgets) {
+                                if(parameters[i] == widget.returnType()) {
+                                    if(widget != checkedWidget && widget.getX() + widget.getWidth() / 2 == checkedWidget.getX() && widget.getY() == checkedWidget.getY() + i * 11) {
+                                        IProgWidget root = widget;
+                                        while(root.getParent() != null) {
+                                            root = root.getParent();
+                                        }
+                                        checkedWidget.setParameter(i + parameters.length, root);
                                     }
-                                    checkedWidget.setParameter(i + parameters.length, root);
                                 }
                             }
                         }
@@ -254,19 +312,19 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory{
     public List<ItemStack> getRequiredPuzzleStacks(){
         List<ItemStack> stacks = new ArrayList<ItemStack>();
         if(((IProgrammable)inventory[PROGRAM_SLOT].getItem()).usesPieces(inventory[PROGRAM_SLOT])) {
-            Map<String, Integer> tePieces = getPuzzleSummary(progWidgets);
-            Map<String, Integer> dronePieces = getPuzzleSummary(getProgWidgets(inventory[PROGRAM_SLOT]));
-            for(String includedWidget : tePieces.keySet()) {
+            Map<Integer, Integer> tePieces = getPuzzleSummary(progWidgets);
+            Map<Integer, Integer> dronePieces = getPuzzleSummary(getProgWidgets(inventory[PROGRAM_SLOT]));
+            for(Integer includedWidget : tePieces.keySet()) {
                 Integer existingWidgets = dronePieces.get(includedWidget);
                 if(existingWidgets != null) {
                     Integer neededWidgets = tePieces.get(includedWidget);
                     if(neededWidgets > existingWidgets) {
-                        ItemStack stack = ItemProgrammingPuzzle.getStackForWidgetKey(includedWidget);
+                        ItemStack stack = ItemProgrammingPuzzle.getStackForColor(includedWidget);
                         stack.stackSize = (neededWidgets - existingWidgets) * inventory[PROGRAM_SLOT].stackSize;
                         stacks.add(stack);
                     }
                 } else {
-                    ItemStack stack = ItemProgrammingPuzzle.getStackForWidgetKey(includedWidget);
+                    ItemStack stack = ItemProgrammingPuzzle.getStackForColor(includedWidget);
                     stack.stackSize = tePieces.get(includedWidget) * inventory[PROGRAM_SLOT].stackSize;
                     stacks.add(stack);
                 }
@@ -278,15 +336,15 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory{
     public List<ItemStack> getReturnedPuzzleStacks(){
         List<ItemStack> stacks = new ArrayList<ItemStack>();
         if(((IProgrammable)inventory[PROGRAM_SLOT].getItem()).usesPieces(inventory[PROGRAM_SLOT])) {
-            Map<String, Integer> tePieces = getPuzzleSummary(progWidgets);
-            Map<String, Integer> dronePieces = getPuzzleSummary(getProgWidgets(inventory[PROGRAM_SLOT]));
+            Map<Integer, Integer> tePieces = getPuzzleSummary(progWidgets);
+            Map<Integer, Integer> dronePieces = getPuzzleSummary(getProgWidgets(inventory[PROGRAM_SLOT]));
 
-            for(String availableWidget : dronePieces.keySet()) {
+            for(Integer availableWidget : dronePieces.keySet()) {
                 Integer requiredWidget = tePieces.get(availableWidget);
                 if(requiredWidget != null) {
                     Integer availableWidgets = dronePieces.get(availableWidget);
                     if(availableWidgets > requiredWidget) {
-                        ItemStack stack = ItemProgrammingPuzzle.getStackForWidgetKey(availableWidget);
+                        ItemStack stack = ItemProgrammingPuzzle.getStackForColor(availableWidget);
                         stack.stackSize = (availableWidgets - requiredWidget) * inventory[PROGRAM_SLOT].stackSize;
                         while(stack.stackSize > stack.getMaxStackSize()) {
                             stacks.add(stack.splitStack(stack.getMaxStackSize()));
@@ -294,7 +352,7 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory{
                         stacks.add(stack);
                     }
                 } else {
-                    ItemStack stack = ItemProgrammingPuzzle.getStackForWidgetKey(availableWidget);
+                    ItemStack stack = ItemProgrammingPuzzle.getStackForColor(availableWidget);
                     stack.stackSize = dronePieces.get(availableWidget) * inventory[PROGRAM_SLOT].stackSize;
                     while(stack.stackSize > stack.getMaxStackSize()) {
                         stacks.add(stack.splitStack(stack.getMaxStackSize()));
@@ -326,13 +384,13 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory{
         return false;
     }
 
-    public static Map<String, Integer> getPuzzleSummary(List<IProgWidget> widgets){
-        Map<String, Integer> map = new HashMap<String, Integer>();
+    public static Map<Integer, Integer> getPuzzleSummary(List<IProgWidget> widgets){
+        Map<Integer, Integer> map = new HashMap<Integer, Integer>();
         for(IProgWidget widget : widgets) {
-            if(!map.containsKey(widget.getWidgetString())) {
-                map.put(widget.getWidgetString(), 1);
+            if(!map.containsKey(widget.getCraftingColorIndex())) {
+                map.put(widget.getCraftingColorIndex(), 1);
             } else {
-                map.put(widget.getWidgetString(), map.get(widget.getWidgetString()) + 1);
+                map.put(widget.getCraftingColorIndex(), map.get(widget.getCraftingColorIndex()) + 1);
             }
         }
         return map;

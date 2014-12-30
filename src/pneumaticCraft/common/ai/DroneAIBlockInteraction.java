@@ -54,7 +54,7 @@ public abstract class DroneAIBlockInteraction extends EntityAIBase{
         this.speed = speed;
         setMutexBits(63);//binary 111111, so it won't run along with other AI tasks.
         this.widget = widget;
-        order = ((IBlockOrdered)widget).getOrder();
+        order = widget instanceof IBlockOrdered ? ((IBlockOrdered)widget).getOrder() : EnumOrder.CLOSEST;
         area = new ArrayList(widget.getArea());
         worldCache = ProgWidgetAreaItemBase.getCache(area, drone.worldObj);
         if(area.size() > 0) {
@@ -119,18 +119,27 @@ public abstract class DroneAIBlockInteraction extends EntityAIBase{
             int searchedBlocks = 0; //keeps track of the looked up blocks, and stops searching when we reach our quota.
             while(curPos == null && curY != lastSuccessfulY && order != ProgWidgetDigAndPlace.EnumOrder.CLOSEST || firstRun) {
                 firstRun = false;
-                while(searchIndex < area.size()) {
+                while(!shouldAbort() && searchIndex < area.size()) {
                     ChunkPosition pos = area.get(searchIndex);
                     if(isYValid(pos.chunkPosY) && !blacklist.contains(pos) && !DroneClaimManager.getInstance(drone.worldObj).isClaimed(pos)) {
                         indicateToListeningPlayers(pos);
                         if(isValidPosition(pos)) {
                             curPos = pos;
-                            for(ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-                                if(drone.getNavigator().tryMoveToXYZ(curPos.chunkPosX + dir.offsetX, curPos.chunkPosY + dir.offsetY + 0.5, curPos.chunkPosZ + dir.offsetZ, speed)) {
+                            if(moveIntoBlock()) {
+                                if(drone.getNavigator().tryMoveToXYZ(curPos.chunkPosX, curPos.chunkPosY + 0.5, curPos.chunkPosZ, speed)) {
                                     searching = false;
                                     DroneClaimManager.getInstance(drone.worldObj).claim(pos);
                                     blacklist.clear();//clear the list for next time (maybe the blocks/rights have changed by the time there will be dug again).
                                     return true;
+                                }
+                            } else {
+                                for(ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+                                    if(drone.getNavigator().tryMoveToXYZ(curPos.chunkPosX + dir.offsetX, curPos.chunkPosY + dir.offsetY + 0.5, curPos.chunkPosZ + dir.offsetZ, speed)) {
+                                        searching = false;
+                                        DroneClaimManager.getInstance(drone.worldObj).claim(pos);
+                                        blacklist.clear();//clear the list for next time (maybe the blocks/rights have changed by the time there will be dug again).
+                                        return true;
+                                    }
                                 }
                             }
                             if(((EntityPathNavigateDrone)drone.getNavigator()).isGoingToTeleport()) {
@@ -152,12 +161,20 @@ public abstract class DroneAIBlockInteraction extends EntityAIBase{
             double dist = curPos != null ? PneumaticCraftUtils.distBetween(curPos.chunkPosX + 0.5, curPos.chunkPosY + 0.5, curPos.chunkPosZ + 0.5, drone.posX, drone.posY, drone.posZ) : 0;
             if(curPos != null) {
                 DroneClaimManager.getInstance(drone.worldObj).claim(curPos);
-                if(dist < 2) {
+                if(dist < (moveIntoBlock() ? 1 : 2)) {
                     return doBlockInteraction(curPos, dist);
                 }
             }
             return !drone.getNavigator().noPath();
         }
+    }
+
+    protected boolean moveIntoBlock(){
+        return false;
+    }
+
+    protected boolean shouldAbort(){
+        return false;
     }
 
     /**

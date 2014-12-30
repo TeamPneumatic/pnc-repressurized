@@ -3,7 +3,7 @@ Programming Puzzles are used in [link{block/programmer}]programmers [link{}].
 [prefix{l}]The 'Inv-E' (Inventory Export) piece [prefix{}]
 The opposite of [link{item/programmingPuzzle_Inv-I}]Inventory Import [link{}]: The Drone will move to the nearest inventory within the specified area to drop off items from the Drone's inventory.
 
-You can specify to which sides of the inventory the Drone should output its items by right clicking the 'Inv-E' piece.
+You can specify to which sides of the inventory the Drone should output its items by right clicking the 'Inv-E' piece. In here you can specify a maximum amount of exported items too.
 
 You can also apply an item filter. With a filter, only items that are allowed by the filter will be exported by the Drone.
 

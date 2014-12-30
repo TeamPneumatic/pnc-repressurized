@@ -3,6 +3,9 @@ package pneumaticCraft.common.progwidgets;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
@@ -10,6 +13,9 @@ import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
+
+import org.lwjgl.opengl.GL11;
+
 import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.lib.Log;
@@ -35,6 +41,29 @@ public abstract class ProgWidget implements IProgWidget{
             curTooltip.add(EnumChatFormatting.GOLD + "Right click for options");
         }
     }
+
+    @Override
+    public void renderExtraInfo(){
+        if(getExtraStringInfo() != null) {
+            GL11.glPushMatrix();
+            GL11.glScaled(0.5, 0.5, 0.5);
+            FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
+            int stringLength = fr.getStringWidth(getExtraStringInfo());
+            int startX = getWidth() / 2 - stringLength / 4;
+            int startY = getHeight() / 2 - fr.FONT_HEIGHT / 4;
+            Gui.drawRect(startX * 2 - 1, startY * 2 - 1, startX * 2 + stringLength + 1, startY * 2 + fr.FONT_HEIGHT + 1, 0xFFFFFFFF);
+            fr.drawString(getExtraStringInfo(), startX * 2, startY * 2, 0xFF000000);
+            GL11.glPopMatrix();
+            GL11.glColor4d(1, 1, 1, 1);
+        }
+    }
+
+    public String getExtraStringInfo(){
+        return null;
+    }
+
+    @Override
+    public void addCompileErrors(List<String> curErrors){}
 
     @Override
     public int getX(){
@@ -63,7 +92,7 @@ public abstract class ProgWidget implements IProgWidget{
 
     @Override
     public int getHeight(){
-        return 22;
+        return getParameters() != null ? getParameters().length * 22 : 22;
     }
 
     @Override
@@ -113,6 +142,18 @@ public abstract class ProgWidget implements IProgWidget{
     }
 
     @Override
+    public boolean canSetParameter(int index){
+        if(connectedParameters != null) {
+            return hasBlacklist() || index < connectedParameters.length / 2;
+        }
+        return false;
+    }
+
+    protected boolean hasBlacklist(){
+        return true;
+    }
+
+    @Override
     public IProgWidget[] getConnectedParameters(){
         return connectedParameters;
     }
@@ -124,6 +165,11 @@ public abstract class ProgWidget implements IProgWidget{
 
     @Override
     public IProgWidget getOutputWidget(){
+        return outputStepConnection;
+    }
+
+    @Override
+    public IProgWidget getOutputWidget(EntityDrone drone, List<IProgWidget> allWidgets){
         return outputStepConnection;
     }
 

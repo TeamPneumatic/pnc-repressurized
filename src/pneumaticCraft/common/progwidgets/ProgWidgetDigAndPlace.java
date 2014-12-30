@@ -25,7 +25,7 @@ public abstract class ProgWidgetDigAndPlace extends ProgWidgetAreaItemBase imple
     @Override
     public void getTooltip(List<String> curTooltip){
         super.getTooltip(curTooltip);
-        curTooltip.add("Order: " + order);
+        curTooltip.add("Order: " + order.getLocalizedName());
     }
 
     public ProgWidgetDigAndPlace(EnumOrder order){
@@ -48,6 +48,11 @@ public abstract class ProgWidgetDigAndPlace extends ProgWidgetAreaItemBase imple
     public void readFromNBT(NBTTagCompound tag){
         super.readFromNBT(tag);
         order = EnumOrder.values()[tag.getInteger("order")];
+    }
+
+    @Override
+    public String getExtraStringInfo(){
+        return order.getLocalizedName();
     }
 
 }

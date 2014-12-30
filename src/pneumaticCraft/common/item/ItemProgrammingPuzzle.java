@@ -1,19 +1,19 @@
 package pneumaticCraft.common.item;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.common.NBTUtil;
 import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.common.tileentity.TileEntityProgrammer;
-import pneumaticCraft.lib.Log;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -32,29 +32,66 @@ public class ItemProgrammingPuzzle extends ItemPneumatic{
      * allows items to add custom lines of information to the mouseover description
      */
     public void addInformation(ItemStack stack, EntityPlayer player, List par3List, boolean par4){
-        par3List.add(I18n.format("programmingPuzzle." + stack.getTagCompound().getString("type") + ".name"));
+        par3List.add(I18n.format("gui.tooltip.plasticPlant", I18n.format(Itemss.plasticPlant.getUnlocalizedName(stack) + ".name")));
     }
 
     @Override
     public void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List){
-        for(IProgWidget widget : TileEntityProgrammer.registeredWidgets) {
-            par3List.add(getStackForWidgetKey(widget.getWidgetString()));
+        addItems(par3List);
+    }
+
+    public static void addItems(List<ItemStack> list){
+        for(int i = 0; i < 16; i++) {
+            for(IProgWidget widget : TileEntityProgrammer.registeredWidgets) {
+                if(widget.getCraftingColorIndex() == i) {
+                    list.add(new ItemStack(Itemss.programmingPuzzle, 1, i));
+                    break;
+                }
+            }
         }
     }
 
     public static IProgWidget getWidgetForPiece(ItemStack stack){
-        String type = stack.getTagCompound().getString("type");
-        for(IProgWidget widget : TileEntityProgrammer.registeredWidgets) {
-            if(widget.getLegacyString().equals(type) && !widget.getWidgetString().equals(type)) {
-                stack.getTagCompound().setString("type", widget.getWidgetString());
-                Log.info("Found legacy piece: " + widget.getLegacyString() + ", transforming to: " + widget.getWidgetString());
-                type = stack.getTagCompound().getString("type");
+        if(NBTUtil.hasTag(stack, "type")) {//TODO legacy remove
+            String type = stack.getTagCompound().getString("type");
+            for(IProgWidget widget : TileEntityProgrammer.registeredWidgets) {
+                if(widget.getWidgetString().equals(type)) return widget;
             }
-            if(widget.getWidgetString().equals(type)) return widget;
+            Exception e = new IllegalArgumentException("No widget registered with the name " + type + "! This is not possible?!");
+            e.printStackTrace();
+            return null;
+        } else {
+            List<IProgWidget> widgets = getWidgetsForColor(stack.getItemDamage());
+            if(widgets.size() > 0) {
+                World world = PneumaticCraft.proxy.getClientWorld();
+                return widgets.get((int)(world.getWorldTime() % (widgets.size() * 20) / 20));
+            } else {
+                return null;
+            }
         }
-        Exception e = new IllegalArgumentException("No widget registered with the name " + type + "! This is not possible?!");
-        e.printStackTrace();
-        return null;
+    }
+
+    private static List<IProgWidget> getWidgetsForColor(int color){
+        List<IProgWidget> widgets = new ArrayList<IProgWidget>();
+        for(IProgWidget widget : TileEntityProgrammer.registeredWidgets) {
+            if(widget.getCraftingColorIndex() == color) {
+                widgets.add(widget);
+            }
+        }
+        return widgets;
+    }
+
+    public static ItemStack getStackForColor(int color){
+        return new ItemStack(Itemss.programmingPuzzle, 1, color);
+    }
+
+    public static ItemStack getStackForWidgetKey(String widgetKey){
+        for(IProgWidget widget : TileEntityProgrammer.registeredWidgets) {
+            if(widget.getWidgetString().equals(widgetKey)) {
+                return new ItemStack(Itemss.programmingPuzzle, 1, widget.getCraftingColorIndex());
+            }
+        }
+        throw new IllegalArgumentException("No widget registered with the name " + widgetKey + "! This is not possible?!");
     }
 
     public static IProgWidget getWidgetForClass(Class<? extends IProgWidget> clazz){
@@ -64,17 +101,4 @@ public class ItemProgrammingPuzzle extends ItemPneumatic{
         throw new IllegalArgumentException("Widget " + clazz.getCanonicalName() + " isn't registered!");
     }
 
-    public static ItemStack getStackForWidgetKey(String widgetKey){
-        ItemStack stack = new ItemStack(Itemss.programmingPuzzle, 1, 0);
-        NBTUtil.setString(stack, "type", widgetKey);
-        return stack;
-    }
-
-    //TODO legacy: remove
-    @Override
-    public void onUpdate(ItemStack par1ItemStack, World par2World, Entity par3Entity, int par4, boolean par5){
-        if(!par2World.isRemote && par2World.getWorldTime() % 40 == 0) {
-            getWidgetForPiece(par1ItemStack);
-        }
-    }
 }

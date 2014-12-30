@@ -1,7 +1,9 @@
 Contributing using Eclipse
 ==================
+a HowTo by [DarkStarDS9](https://github.com/DarkStarDS9)
 
 If you're not quite up to speed with Eclipse, Gradle or Forge, this should get you started.
+
 
 =======
 Eclipse
@@ -36,7 +38,7 @@ Check if everything is working so far: click on the run icon and select "Client"
 PneumaticCraft
 =======
 
-Go to GitHub.com, fork PneumaticCraft (see [link](https://help.github.com/articles/using-pull-requests/)) and clone your fork to a local directory. I'm using ~/Git/PneumaticCraft.
+Go to GitHub.com, fork and clone PneumaticCraft (see [link](https://help.github.com/articles/using-pull-requests/)) and clone your fork to a local directory. I'm using ~/Git/PneumaticCraft.
 
 In your shell, cd there and call gradlew from your forge-directory:
 ../forge-1.7.10-10.13.2.1230-src/gradlew eclipse
@@ -70,4 +72,4 @@ Wrapping Up
 
 Whatever way you chose, you should now be able to select your run-Configuration when you click the little arrow on the run-button. Do this now - you should now have 17 mods loaded. Create a new world. Have fun :o)
 
-Thanks to skyboy (Thermal Expansion) who pointed me (Rainer, aka DarkStar_DS9) in the right direction when I first tried to get a mod to compile and run.
+Thanks to skyboy (Thermal Expansion) who pointed me in the right direction when I first tried to get a mod to compile and run.

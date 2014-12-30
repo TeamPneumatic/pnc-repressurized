@@ -5,6 +5,7 @@ import java.util.List;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.item.ItemDye;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
@@ -20,11 +21,13 @@ import pneumaticCraft.common.network.PacketShowArea;
 import pneumaticCraft.common.network.PacketSpawnRing;
 import pneumaticCraft.common.progwidgets.IBlockOrdered;
 import pneumaticCraft.common.progwidgets.IBlockOrdered.EnumOrder;
+import pneumaticCraft.common.progwidgets.ICondition;
 import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetArea;
 import pneumaticCraft.common.progwidgets.ProgWidgetItemFilter;
 import pneumaticCraft.common.progwidgets.ProgWidgetString;
 import pneumaticCraft.common.tileentity.TileEntityProgrammer;
+import pneumaticCraft.lib.Log;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.lua.LuaException;
 import dan200.computercraft.api.peripheral.IComputerAccess;
@@ -38,6 +41,7 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral{
     public float rotationYaw, rotationPitch = (float)Math.toRadians(-42);
     private final List<Integer> ringSendList = new ArrayList<Integer>();
     private int ringSendCooldown;
+    private IProgWidget curAction;
 
     @Override
     public void updateEntity(){
@@ -82,7 +86,7 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral{
                 if(args.length == 0) {
                     return new Object[]{drone != null};
                 } else {
-                    throw new IllegalArgumentException("isConnectedToDrone doesn't take any arguments!");
+                    throw new LuaException("isConnectedToDrone doesn't take any arguments!");
                 }
             }
         });
@@ -91,10 +95,10 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral{
             @Override
             public Object[] call(IComputerAccess computer, ILuaContext context, Object[] args) throws LuaException, InterruptedException{
                 if(args.length == 0) {
-                    if(drone == null) throw new IllegalArgumentException("There's no connected Drone!");
+                    if(drone == null) throw new LuaException("There's no connected Drone!");
                     return new Object[]{(double)drone.getPressure(null)};
                 } else {
-                    throw new IllegalArgumentException("getDronePressure doesn't take any arguments!");
+                    throw new LuaException("getDronePressure doesn't take any arguments!");
                 }
             }
         });
@@ -103,11 +107,11 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral{
             @Override
             public Object[] call(IComputerAccess computer, ILuaContext context, Object[] args) throws LuaException, InterruptedException{
                 if(args.length == 0) {
-                    if(drone == null) throw new IllegalArgumentException("There's no connected Drone!");
+                    if(drone == null) throw new LuaException("There's no connected Drone!");
                     setDrone(null);//disconnect
                     return null;
                 } else {
-                    throw new IllegalArgumentException("exitPiece doesn't take any arguments!");
+                    throw new LuaException("exitPiece doesn't take any arguments!");
                 }
             }
         });
@@ -118,13 +122,13 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral{
                 if(args.length == 0) {
                     List<String> actions = new ArrayList<String>();
                     for(IProgWidget widget : TileEntityProgrammer.registeredWidgets) {
-                        if(widget.getWidgetAI(drone, getWidget()) != null) {
+                        if(widget.getWidgetAI(new EntityDrone(worldObj), getWidget()) != null) {
                             actions.add(widget.getWidgetString());
                         }
                     }
                     return actions.toArray(new String[actions.size()]);
                 } else {
-                    throw new IllegalArgumentException("getAllActions doesn't take any arguments!");
+                    throw new LuaException("getAllActions doesn't take any arguments!");
                 }
             }
         });
@@ -135,7 +139,7 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral{
                 if(args.length == 0) {
                     return new Double[]{drone.posX, drone.posY, drone.posZ};
                 } else {
-                    throw new IllegalArgumentException("getDronePosition doesn't take any arguments!");
+                    throw new LuaException("getDronePosition doesn't take any arguments!");
                 }
             }
         });
@@ -146,14 +150,14 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral{
                 if(args.length == 1) {
                     String arg = (String)args[0];
                     for(EnumOrder order : IBlockOrdered.EnumOrder.values()) {
-                        if(order.ccName.equals(arg)) {
+                        if(order.toString().equalsIgnoreCase(arg)) {
                             getWidget().setOrder(order);
                             return null;
                         }
                     }
-                    throw new IllegalArgumentException("No valid order. Valid arguments:  'closest', 'highToLow' or 'lowToHigh'!");
+                    throw new LuaException("No valid order. Valid arguments:  'closest', 'highToLow' or 'lowToHigh'!");
                 } else {
-                    throw new IllegalArgumentException("setBlockOrder takes one argument, 'closest', 'highToLow' or 'lowToHigh'!");
+                    throw new LuaException("setBlockOrder takes one argument, 'closest', 'highToLow' or 'lowToHigh'!");
                 }
             }
         });
@@ -164,7 +168,7 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral{
                 if(args.length == 0) {
                     return getWidget().getAreaTypes();
                 } else {
-                    throw new IllegalArgumentException("getAreaTypes doesn't take any arguments!");
+                    throw new LuaException("getAreaTypes doesn't take any arguments!");
                 }
             }
         });
@@ -181,7 +185,7 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral{
                     messageToDrone(ProgWidgetArea.class);
                     return null;
                 } else {
-                    throw new IllegalArgumentException("addArea either requires 3 arguments (x, y, z), or 7 (x1, y1, z1, x2, y2, z2, areaType)!");
+                    throw new LuaException("addArea either requires 3 arguments (x, y, z), or 7 (x1, y1, z1, x2, y2, z2, areaType)!");
                 }
             }
         });
@@ -198,7 +202,7 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral{
                     messageToDrone(ProgWidgetArea.class);
                     return null;
                 } else {
-                    throw new IllegalArgumentException("removeArea either requires 3 arguments (x, y, z), or 7 (x1, y1, z1, x2, y2, z2, areaType)!");
+                    throw new LuaException("removeArea either requires 3 arguments (x, y, z), or 7 (x1, y1, z1, x2, y2, z2, areaType)!");
                 }
             }
         });
@@ -211,7 +215,7 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral{
                     messageToDrone(ProgWidgetArea.class);
                     return null;
                 } else {
-                    throw new IllegalArgumentException("clearArea doesn't take any arguments!");
+                    throw new LuaException("clearArea doesn't take any arguments!");
                 }
             }
         });
@@ -223,7 +227,7 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral{
                     NetworkHandler.sendToAllAround(new PacketShowArea(xCoord, yCoord, zCoord, getWidget().getArea()), worldObj);
                     return null;
                 } else {
-                    throw new IllegalArgumentException("showArea doesn't take any arguments!");
+                    throw new LuaException("showArea doesn't take any arguments!");
                 }
             }
         });
@@ -235,7 +239,7 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral{
                     NetworkHandler.sendToAllAround(new PacketShowArea(xCoord, yCoord, zCoord), worldObj);
                     return null;
                 } else {
-                    throw new IllegalArgumentException("hideArea doesn't take any arguments!");
+                    throw new LuaException("hideArea doesn't take any arguments!");
                 }
             }
         });
@@ -248,7 +252,7 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral{
                     messageToDrone(ProgWidgetItemFilter.class);
                     return null;
                 } else {
-                    throw new IllegalArgumentException("addWhitelistItemFilter takes 6 arguments (<string> item/block name, <number> item/block metadata, <bool> Use Metadata, <bool> Use NBT, <bool> Use Ore Dictionary, <bool> Use Mod Similarity)!");
+                    throw new LuaException("addWhitelistItemFilter takes 6 arguments (<string> item/block name, <number> item/block metadata, <bool> Use Metadata, <bool> Use NBT, <bool> Use Ore Dictionary, <bool> Use Mod Similarity)!");
                 }
             }
         });
@@ -261,7 +265,7 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral{
                     messageToDrone(ProgWidgetItemFilter.class);
                     return null;
                 } else {
-                    throw new IllegalArgumentException("addBlacklistItemFilter takes 6 arguments (<string> item/block name, <number> item/block metadata, <bool> Use Metadata, <bool> Use NBT, <bool> Use Ore Dictionary, <bool> Use Mod Similarity)!");
+                    throw new LuaException("addBlacklistItemFilter takes 6 arguments (<string> item/block name, <number> item/block metadata, <bool> Use Metadata, <bool> Use NBT, <bool> Use Ore Dictionary, <bool> Use Mod Similarity)!");
                 }
             }
         });
@@ -274,7 +278,7 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral{
                     messageToDrone(ProgWidgetItemFilter.class);
                     return null;
                 } else {
-                    throw new IllegalArgumentException("clearWhitelistItemFilter doesn't take any arguments!");
+                    throw new LuaException("clearWhitelistItemFilter doesn't take any arguments!");
                 }
             }
         });
@@ -287,7 +291,7 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral{
                     messageToDrone(ProgWidgetItemFilter.class);
                     return null;
                 } else {
-                    throw new IllegalArgumentException("clearBlacklistItemFilter doesn't take any arguments!");
+                    throw new LuaException("clearBlacklistItemFilter doesn't take any arguments!");
                 }
             }
         });
@@ -300,7 +304,7 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral{
                     messageToDrone(ProgWidgetString.class);
                     return null;
                 } else {
-                    throw new IllegalArgumentException("addWhitelistText takes one argument (text)!");
+                    throw new LuaException("addWhitelistText takes one argument (text)!");
                 }
             }
         });
@@ -313,7 +317,7 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral{
                     messageToDrone(ProgWidgetString.class);
                     return null;
                 } else {
-                    throw new IllegalArgumentException("addBlacklistText takes one argument (text)!");
+                    throw new LuaException("addBlacklistText takes one argument (text)!");
                 }
             }
         });
@@ -326,7 +330,7 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral{
                     messageToDrone(ProgWidgetString.class);
                     return null;
                 } else {
-                    throw new IllegalArgumentException("clearWhitelistText doesn't take any arguments!");
+                    throw new LuaException("clearWhitelistText doesn't take any arguments!");
                 }
             }
         });
@@ -339,7 +343,7 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral{
                     messageToDrone(ProgWidgetString.class);
                     return null;
                 } else {
-                    throw new IllegalArgumentException("clearBlacklistText doesn't take any arguments!");
+                    throw new LuaException("clearBlacklistText doesn't take any arguments!");
                 }
             }
         });
@@ -354,7 +358,7 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral{
                     messageToDrone(0xFFFFFFFF);
                     return null;
                 } else {
-                    throw new IllegalArgumentException("addSide takes two arguments (direction, <boolean> valid)!");
+                    throw new LuaException("addSide takes two arguments (direction, <boolean> valid)!");
                 }
             }
         });
@@ -371,7 +375,154 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral{
                     messageToDrone(0xFFFFFFFF);
                     return null;
                 } else {
-                    throw new IllegalArgumentException("setSides takes 6 arguments (6x boolean)!");
+                    throw new LuaException("setSides takes 6 arguments (6x boolean)!");
+                }
+            }
+        });
+
+        luaMethods.add(new LuaMethod("setEmittingRedstone"){
+            @Override
+            public Object[] call(IComputerAccess computer, ILuaContext context, Object[] args) throws LuaException, InterruptedException{
+                if(args.length == 1) {
+                    getWidget().setEmittingRedstone(((Double)args[0]).intValue());
+                    messageToDrone(0xFFFFFFFF);
+                    return null;
+                } else {
+                    throw new LuaException("setEmittingRedstone takes 1 argument (redstone strength)!");
+                }
+            }
+        });
+
+        luaMethods.add(new LuaMethod("addWhitelistLiquidFilter"){
+            @Override
+            public Object[] call(IComputerAccess computer, ILuaContext context, Object[] args) throws LuaException, InterruptedException{
+                if(args.length == 1) {
+                    getWidget().addWhitelistLiquidFilter((String)args[0]);
+                    messageToDrone(0xFFFFFFFF);
+                    return null;
+                } else {
+                    throw new LuaException("addWhitelistLiquidFilter takes 1 argument (liquid name)!");
+                }
+            }
+        });
+
+        luaMethods.add(new LuaMethod("addBlacklistLiquidFilter"){
+            @Override
+            public Object[] call(IComputerAccess computer, ILuaContext context, Object[] args) throws LuaException, InterruptedException{
+                if(args.length == 1) {
+                    getWidget().addBlacklistLiquidFilter((String)args[0]);
+                    messageToDrone(0xFFFFFFFF);
+                    return null;
+                } else {
+                    throw new LuaException("addBlacklistLiquidFilter takes 1 argument (liquid name)!");
+                }
+            }
+        });
+
+        luaMethods.add(new LuaMethod("clearWhitelistLiquidFilter"){
+            @Override
+            public Object[] call(IComputerAccess computer, ILuaContext context, Object[] args) throws LuaException, InterruptedException{
+                if(args.length == 0) {
+                    getWidget().clearLiquidWhitelist();
+                    messageToDrone(0xFFFFFFFF);
+                    return null;
+                } else {
+                    throw new LuaException("clearWhitelistLiquidFilter takes no arguments!");
+                }
+            }
+        });
+
+        luaMethods.add(new LuaMethod("clearBlacklistLiquidFilter"){
+            @Override
+            public Object[] call(IComputerAccess computer, ILuaContext context, Object[] args) throws LuaException, InterruptedException{
+                if(args.length == 0) {
+                    getWidget().clearLiquidBlacklist();
+                    messageToDrone(0xFFFFFFFF);
+                    return null;
+                } else {
+                    throw new LuaException("clearBlacklistLiquidFilter takes no arguments!");
+                }
+            }
+        });
+
+        luaMethods.add(new LuaMethod("setDropStraight"){
+            @Override
+            public Object[] call(IComputerAccess computer, ILuaContext context, Object[] args) throws LuaException, InterruptedException{
+                if(args.length == 1) {
+                    getWidget().setDropStraight((Boolean)args[0]);
+                    messageToDrone(0xFFFFFFFF);
+                    return null;
+                } else {
+                    throw new LuaException("setDropStraight takes 1 argument (boolean straight true/false!");
+                }
+            }
+        });
+
+        luaMethods.add(new LuaMethod("setUseCount"){
+            @Override
+            public Object[] call(IComputerAccess computer, ILuaContext context, Object[] args) throws LuaException, InterruptedException{
+                if(args.length == 1) {
+                    getWidget().setUseCount((Boolean)args[0]);
+                    messageToDrone(0xFFFFFFFF);
+                    return null;
+                } else {
+                    throw new LuaException("setUseCount takes 1 argument (boolean use count true/false!");
+                }
+            }
+        });
+
+        luaMethods.add(new LuaMethod("setCount"){
+            @Override
+            public Object[] call(IComputerAccess computer, ILuaContext context, Object[] args) throws LuaException, InterruptedException{
+                if(args.length == 1) {
+                    getWidget().setCount(((Double)args[0]).intValue());
+                    messageToDrone(0xFFFFFFFF);
+                    return null;
+                } else {
+                    throw new LuaException("setCount takes 1 argument (count)!");
+                }
+            }
+        });
+
+        luaMethods.add(new LuaMethod("setIsAndFunction"){
+            @Override
+            public Object[] call(IComputerAccess computer, ILuaContext context, Object[] args) throws LuaException, InterruptedException{
+                if(args.length == 1) {
+                    getWidget().setAndFunction((Boolean)args[0]);
+                    messageToDrone(0xFFFFFFFF);
+                    return null;
+                } else {
+                    throw new LuaException("setIsAndFunction takes 1 argument (boolean is and function true/false!");
+                }
+            }
+        });
+
+        luaMethods.add(new LuaMethod("setOperator"){
+            @Override
+            public Object[] call(IComputerAccess computer, ILuaContext context, Object[] args) throws LuaException, InterruptedException{
+                if(args.length == 1) {
+                    getWidget().setOperator((String)args[0]);
+                    messageToDrone(0xFFFFFFFF);
+                    return null;
+                } else {
+                    throw new LuaException("setOperator takes 1 argument (\">=\" or \"=\")!");
+                }
+            }
+        });
+
+        luaMethods.add(new LuaMethod("evaluateCondition"){
+            @Override
+            public Object[] call(IComputerAccess computer, ILuaContext context, Object[] args) throws LuaException, InterruptedException{
+                if(args.length == 0) {
+                    if(curAction instanceof ICondition) {
+                        Boolean bool = ((ICondition)curAction).evaluate(drone);
+                        Log.info(bool.toString());
+                        return new Object[]{bool};
+                    } else {
+                        throw new LuaException("current action is not a condition! Action: " + (curAction != null ? curAction.getWidgetString() : "no action"));
+                    }
+                } else {
+                    throw new LuaException("evaluateCondition takes no arguments!");
                 }
             }
         });
@@ -382,18 +533,19 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral{
                 if(args.length == 1) {
                     String widgetName = (String)args[0];
                     for(IProgWidget widget : TileEntityProgrammer.registeredWidgets) {
-                        if(widget.getWidgetString().equals(widgetName)) {
+                        if(widget.getWidgetString().equalsIgnoreCase(widgetName)) {
                             EntityAIBase ai = widget.getWidgetAI(drone, getWidget());
-                            if(ai == null) throw new IllegalArgumentException("The parsed action is not a runnable action! Action: \"" + widget.getWidgetString() + "\".");
+                            if(ai == null) throw new LuaException("The parsed action is not a runnable action! Action: \"" + widget.getWidgetString() + "\".");
                             getAI().setAction(widget, ai);
                             getTargetAI().setAction(widget, widget.getWidgetTargetAI(drone, getWidget()));
                             messageToDrone(widget.getGuiTabColor());
+                            curAction = widget;
                             return null;
                         }
                     }
-                    throw new IllegalArgumentException("No action with the name \"" + widgetName + "\"!");
+                    throw new LuaException("No action with the name \"" + widgetName + "\"!");
                 } else {
-                    throw new IllegalArgumentException("setAction takes one argument (action)!");
+                    throw new LuaException("setAction takes one argument (action)!");
                 }
             }
         });
@@ -405,9 +557,10 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral{
                     getAI().abortAction();
                     getTargetAI().abortAction();
                     messageToDrone(0xFFFFFFFF);
+                    curAction = null;
                     return null;
                 } else {
-                    throw new IllegalArgumentException("abortAction takes no arguments!");
+                    throw new LuaException("abortAction takes no arguments!");
                 }
             }
         });
@@ -418,7 +571,7 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral{
                 if(args.length == 0) {
                     return new Object[]{getAI().isActionDone()};
                 } else {
-                    throw new IllegalArgumentException("isActionDone doesn't take any arguments!");
+                    throw new LuaException("isActionDone doesn't take any arguments!");
                 }
             }
         });
@@ -427,11 +580,11 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral{
             @Override
             public Object[] call(IComputerAccess computer, ILuaContext context, Object[] args) throws LuaException, InterruptedException{
                 if(args.length == 0) {
-                    if(drone == null) throw new IllegalArgumentException("There's no connected Drone!");
+                    if(drone == null) throw new LuaException("There's no connected Drone!");
                     drone.setAttackTarget(null);
                     return null;
                 } else {
-                    throw new IllegalArgumentException("forgetTarget doesn't take any arguments!");
+                    throw new LuaException("forgetTarget doesn't take any arguments!");
                 }
             }
         });
@@ -487,31 +640,31 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral{
         return drone;
     }
 
-    private ProgWidgetCC getWidget(){
+    private ProgWidgetCC getWidget() throws LuaException{
         return getAI().getWidget();
     }
 
-    private DroneAICC getAI(){
+    private DroneAICC getAI() throws LuaException{
         if(drone != null) {
             for(EntityAITaskEntry task : drone.getRunningTasks()) {
                 if(task.action instanceof DroneAICC) return (DroneAICC)task.action;
             }
         }
         setDrone(null);//set to null in case of the drone is connected, but for some reason isn't currently running the piece (shouldn't be possible).
-        throw new IllegalArgumentException("There's no connected Drone!");
+        throw new LuaException("There's no connected Drone!");
     }
 
-    private DroneAICC getTargetAI(){
+    private DroneAICC getTargetAI() throws LuaException{
         if(drone != null && drone.getRunningTargetAI() instanceof DroneAICC) {
             return (DroneAICC)drone.getRunningTargetAI();
         } else {
             setDrone(null);//set to null in case of the drone is connected, but for some reason isn't currently running the piece (shouldn't be possible).
-            throw new IllegalArgumentException("There's no connected Drone!");
+            throw new LuaException("There's no connected Drone!");
         }
     }
 
     private void messageToDrone(Class<? extends IProgWidget> widget){
-        messageToDrone(ItemProgrammingPuzzle.getWidgetForClass(widget).getGuiTabColor());
+        messageToDrone(ItemDye.field_150922_c[ItemProgrammingPuzzle.getWidgetForClass(widget).getCraftingColorIndex()]);
     }
 
     private void messageToDrone(int color){

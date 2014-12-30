@@ -39,11 +39,13 @@ import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.FluidTank;
 
 import org.lwjgl.opengl.GL11;
 
 import pneumaticCraft.api.block.IPneumaticWrenchable;
 import pneumaticCraft.api.client.pneumaticHelmet.IHackableEntity;
+import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.api.drone.IPathfindHandler;
 import pneumaticCraft.api.item.IPressurizable;
 import pneumaticCraft.api.tileentity.IManoMeasurable;
@@ -58,6 +60,7 @@ import pneumaticCraft.common.ai.DroneGoToOwner;
 import pneumaticCraft.common.ai.DroneMoveHelper;
 import pneumaticCraft.common.ai.EntityPathNavigateDrone;
 import pneumaticCraft.common.ai.FakePlayerItemInWorldManager;
+import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.ItemGPSTool;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.ItemProgrammingPuzzle;
@@ -80,7 +83,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class EntityDrone extends EntityCreature implements IPressurizable, IManoMeasurable, IInventoryHolder,
-        IPneumaticWrenchable, IEntityAdditionalSpawnData, IHackableEntity{
+        IPneumaticWrenchable, IEntityAdditionalSpawnData, IHackableEntity, IDrone{
 
     private static final HashMap<String, Integer> colorMap = new HashMap<String, Integer>();
 
@@ -92,7 +95,9 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
 
     public boolean isChangingCurrentStack;//used when syncing up the stacks of the drone with the fake player. Without it they'll keep syncing resulting in a stackoverflow.
     private IInventory inventory = new InventoryDrone("Drone Inventory", true, 0);
+    private final FluidTank tank = new FluidTank(PneumaticValues.DRONE_TANK_SIZE);
     private ItemStack[] upgradeInventory = new ItemStack[9];
+    private final int[] emittingRedstoneValues = new int[6];
     public float oldPropRotation;
     public float propRotation;
     private float propSpeed;
@@ -282,7 +287,17 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
             }
         }
         super.onUpdate();
-        if(!worldObj.isRemote && isEntityAlive()) aiManager.onUpdateTasks();
+        if(!worldObj.isRemote && isEntityAlive()) {
+            if(isAccelerating()) aiManager.onUpdateTasks();
+            for(ForgeDirection d : ForgeDirection.VALID_DIRECTIONS) {
+                if(getEmittingRedstone(d) > 0) {
+                    if(worldObj.isAirBlock((int)Math.floor(posX + width / 2), (int)Math.floor(posY), (int)Math.floor(posZ + width / 2))) {
+                        worldObj.setBlock((int)Math.floor(posX + width / 2), (int)Math.floor(posY), (int)Math.floor(posZ + width / 2), Blockss.droneRedstoneEmitter);
+                    }
+                    break;
+                }
+            }
+        }
     }
 
     public ChunkPosition getTargetedBlock(){
@@ -557,6 +572,7 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
         inv.setTag("Items", upgradeList);
         tag.setTag("Inventory", inv);
 
+        tank.writeToNBT(tag);
     }
 
     @Override
@@ -596,6 +612,7 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
             }
         }
 
+        tank.readFromNBT(tag);
     }
 
     /**
@@ -604,8 +621,10 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
     @Override
     public void writeToNBT(NBTTagCompound tag){
         super.writeToNBT(tag);
-        tag.setString("owner", fakePlayer.getCommandSenderName());
-        if(fakePlayer.getGameProfile().getId() != null) tag.setString("ownerUUID", fakePlayer.getGameProfile().getId().toString());
+        if(fakePlayer != null) {
+            tag.setString("owner", fakePlayer.getCommandSenderName());
+            if(fakePlayer.getGameProfile().getId() != null) tag.setString("ownerUUID", fakePlayer.getGameProfile().getId().toString());
+        }
     }
 
     @Override
@@ -659,6 +678,17 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
 
     public double getSpeed(){
         return speed;
+    }
+
+    public int getEmittingRedstone(ForgeDirection side){
+        return emittingRedstoneValues[side.ordinal()];
+    }
+
+    public void setEmittingRedstone(ForgeDirection side, int value){
+        if(emittingRedstoneValues[side.ordinal()] != value) {
+            emittingRedstoneValues[side.ordinal()] = value;
+            worldObj.notifyBlocksOfNeighborChange((int)Math.floor(posX + width / 2), (int)Math.floor(posY), (int)Math.floor(posZ + width / 2), Blockss.droneRedstoneEmitter);
+        }
     }
 
     public boolean isBlockValidPathfindBlock(int x, int y, int z){
@@ -722,6 +752,16 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
     public class DroneFakePlayer extends EntityPlayerMP{
         public DroneFakePlayer(WorldServer world, GameProfile name, ItemInWorldManager itemManager){
             super(FMLCommonHandler.instance().getMinecraftServerInstance(), world, name, itemManager);
+        }
+
+        @Override
+        public void setCurrentItemOrArmor(int p_70062_1_, ItemStack p_70062_2_){
+
+            if(p_70062_1_ == 0) {
+                inventory.setInventorySlotContents(inventory.currentItem, p_70062_2_);
+            } else {
+                inventory.armorInventory[p_70062_1_ - 1] = p_70062_2_;
+            }
         }
 
         @Override
@@ -848,6 +888,10 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
 
     private boolean isGoingToOwner(){
         return dataWatcher.getWatchableObjectByte(21) == (byte)1;
+    }
+
+    public FluidTank getTank(){
+        return tank;
     }
 
 }

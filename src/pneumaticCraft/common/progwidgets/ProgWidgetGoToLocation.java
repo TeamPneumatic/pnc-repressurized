@@ -12,6 +12,7 @@ import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.client.gui.programmer.GuiProgWidgetGoto;
 import pneumaticCraft.common.ai.DroneEntityAIGoToLocation;
 import pneumaticCraft.common.entity.living.EntityDrone;
+import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -100,8 +101,12 @@ public class ProgWidgetGoToLocation extends ProgWidget implements IGotoWidget, I
     }
 
     @Override
-    public String getLegacyString(){
-        return getWidgetString();
+    public WidgetCategory getCategory(){
+        return WidgetCategory.ACTION;
     }
 
+    @Override
+    public int getCraftingColorIndex(){
+        return ItemPlasticPlants.CHOPPER_PLANT_DAMAGE;
+    }
 }
