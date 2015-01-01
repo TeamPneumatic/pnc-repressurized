@@ -105,12 +105,15 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
                     sendDescPacket(256D);
                 }
                 soundName = Sounds.ELEVATOR_MOVING;
+
+                float moveBy;
+
                 if(extension < targetExtension - TileEntityConstants.ELEVATOR_SLOW_EXTENSION) {
-                    extension += TileEntityConstants.ELEVATOR_SPEED_FAST * speedMultiplier;
+                    moveBy = TileEntityConstants.ELEVATOR_SPEED_FAST * speedMultiplier;
                 } else {
-                    extension += TileEntityConstants.ELEVATOR_SPEED_SLOW * speedMultiplier;
+                    moveBy = TileEntityConstants.ELEVATOR_SPEED_SLOW * speedMultiplier;
                 }
-                if(extension > targetExtension) {
+                if(extension + moveBy > targetExtension) {
                     extension = targetExtension;
                     if(!worldObj.isRemote) updateFloors();
                 }
@@ -118,7 +121,17 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
                     soundName = Sounds.ELEVATOR_START;
                     isStopped = false;
                 }
-                moveEntities();
+                float startingExtension = extension;
+
+                while(extension < startingExtension + moveBy) {
+                    extension += TileEntityConstants.ELEVATOR_SPEED_SLOW;
+                    /*
+                    if(extension > startingExtension + moveBy) {
+                        extension = startingExtension + moveBy;
+                    }
+                    */
+                    moveEntities(TileEntityConstants.ELEVATOR_SPEED_SLOW);
+                }
                 addAir((int)((oldExtension - extension) * PneumaticValues.USAGE_ELEVATOR * (getSpeedUsageMultiplierFromUpgrades(getUpgradeSlots()) / speedMultiplier)), ForgeDirection.UNKNOWN);// substract the ascended distance from the air reservoir.
             }
             if(extension > targetExtension) {
@@ -136,6 +149,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
                     soundName = Sounds.ELEVATOR_START;
                     isStopped = false;
                 }
+                movePlayerDown();
             }
             if(oldExtension == extension && !isStopped) {
                 soundName = Sounds.ELEVATOR_STOP;
@@ -152,12 +166,38 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
 
     }
 
-    private void moveEntities(){
+    private void movePlayerDown(){
+        if(!worldObj.isRemote) return;
+
+        AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(xCoord, yCoord + 1, zCoord, xCoord + 1, yCoord + oldExtension + 1.05F, zCoord + 1);
+        List<Entity> entityList = worldObj.getEntitiesWithinAABBExcludingEntity(null, aabb);
+        for(Entity entity : entityList) {
+            if(entity instanceof EntityPlayer) {
+                moveEntityToCenter(entity);
+                entity.moveEntity(0, extension - oldExtension + 0.001F, 0);
+            }
+        }
+    }
+
+    private void moveEntities(float moveBy){
         AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(xCoord, yCoord + 1, zCoord, xCoord + 1, yCoord + extension + 1, zCoord + 1);
         List<Entity> entityList = worldObj.getEntitiesWithinAABBExcludingEntity(null, aabb);
         for(Entity entity : entityList) {
-            entity.moveEntity(0, extension - oldExtension + 0.05F, 0);
+            if(entity instanceof EntityPlayer) {
+                if(worldObj.isRemote) {
+                    moveEntityToCenter(entity);
+                    entity.moveEntity(0, moveBy + 0.001F, 0);
+                }
+            } else entity.moveEntity(0, moveBy + 0.05F, 0);
         }
+    }
+
+    private void moveEntityToCenter(Entity entity){
+        /*
+         * this is for your own protection. you may hurt yourself if you're not standing right, especially
+         * on multiblock-elevators (entity will be found by multiple bases, causing problems)
+         */
+        ((EntityPlayer)entity).setPosition(xCoord + 0.5F, entity.posY, zCoord + 0.5F);
     }
 
     @Override
