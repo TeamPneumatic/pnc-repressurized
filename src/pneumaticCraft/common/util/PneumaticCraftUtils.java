@@ -510,6 +510,7 @@ public class PneumaticCraftUtils{
     }
 
     public static boolean isEntityValidForFilterUnsafe(String filter, Entity entity) throws IllegalArgumentException{
+        if(filter == null) return true;
         if(StringUtils.countMatches(filter, "(") != StringUtils.countMatches(filter, ")")) throw new IllegalArgumentException("Not an equal amount of opening and closing braces");
         String[] splits = filter.split("[(),]");
         for(int i = 0; i < splits.length; i++)
