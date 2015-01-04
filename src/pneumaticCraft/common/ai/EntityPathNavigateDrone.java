@@ -29,6 +29,11 @@ public class EntityPathNavigateDrone extends PathNavigate{
         this.pathfindingEntity = pathfindingEntity;
     }
 
+    @Override
+    public boolean tryMoveToEntityLiving(Entity p_75497_1_, double p_75497_2_){
+        return super.tryMoveToEntityLiving(p_75497_1_, p_75497_2_) || isGoingToTeleport();
+    }
+
     /**
      * Returns the path to the given coordinates
      */

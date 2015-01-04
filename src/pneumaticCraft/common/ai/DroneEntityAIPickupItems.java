@@ -50,7 +50,7 @@ public class DroneEntityAIPickupItems extends EntityAIBase{
                 for(int i = 0; i < drone.getInventory().getSizeInventory(); i++) {
                     ItemStack droneStack = drone.getInventory().getStackInSlot(i);
                     if(droneStack == null || droneStack.isItemEqual(stack) && droneStack.stackSize < droneStack.getMaxStackSize()) {
-                        if(drone.getNavigator().tryMoveToEntityLiving(ent, speed) || ((EntityPathNavigateDrone)drone.getNavigator()).isGoingToTeleport()) {
+                        if(drone.getNavigator().tryMoveToEntityLiving(ent, speed)) {
                             curPickingUpEntity = (EntityItem)ent;
                             return true;
                         }
