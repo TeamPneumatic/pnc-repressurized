@@ -32,6 +32,9 @@ public class ModuleAirGrate extends TubeModule{
     private boolean vacuum;
     public String entityFilter = "";
 
+    private int plantCheckX = Integer.MIN_VALUE;
+    private int plantCheckZ = Integer.MIN_VALUE;
+
     private int getRange(){
         float range = pressureTube.getAirHandler().getPressure(ForgeDirection.UNKNOWN) * 4;
         vacuum = range < 0;
@@ -127,18 +130,27 @@ public class ModuleAirGrate extends TubeModule{
         }
     }
 
-    private void checkForPlantsAndFarm(World worldObj, int x, int y, int z, int grateRange){
-        if(worldObj.rand.nextInt(50) != 0) return; // don't run too often
+    private void checkForPlantsAndFarm(World worldObj, int x, int y, int z, int plantCheckRange){
+        if(!(grateRange > 0 && worldObj.getWorldTime() % 20 == 0 && worldObj.rand.nextInt(5) == 0)) return; // don't run too often
 
-        for(int searchX = x - grateRange; searchX <= x + grateRange; searchX++) {
-            for(int searchZ = z - grateRange; searchZ <= z + grateRange; searchZ++) {
-                if(!(searchX == x && searchZ == z)) { // we know that we're no plant, avoid getBlock
-                    Block b = worldObj.getBlock(searchX, y, searchZ);
-                    if(b instanceof BlockPneumaticPlantBase) {
-                        ((BlockPneumaticPlantBase)b).attemptFarmByAirGrate(worldObj, searchX, y, searchZ);
-                    }
-                }
+        if(plantCheckX < x - plantCheckRange || plantCheckZ < z - plantCheckRange) {
+            plantCheckX = x - plantCheckRange;
+            plantCheckZ = z - plantCheckRange;
+        }
+
+        if(!(plantCheckX == x && plantCheckZ == z)) { // we know that we're no plant, avoid getBlock
+            //System.out.printf("Checking for Plants at x=%d, z=%d (range is %d)%n", plantCheckX, plantCheckZ, plantCheckRange);
+            Block b = worldObj.getBlock(plantCheckX, y, plantCheckZ);
+            if(b instanceof BlockPneumaticPlantBase) {
+                ((BlockPneumaticPlantBase)b).attemptFarmByAirGrate(worldObj, plantCheckX, y, plantCheckZ);
             }
+        }
+
+        if(plantCheckZ++ >= z + plantCheckRange) {
+            if(plantCheckX++ >= x + plantCheckRange) {
+                plantCheckX = x - plantCheckRange;
+            }
+            plantCheckZ = z - plantCheckRange;
         }
     }
 
