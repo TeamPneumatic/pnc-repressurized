@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.inventory.IInventory;
@@ -20,6 +21,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.client.model.IBaseModel;
 import pneumaticCraft.client.model.tubemodules.ModelAirGrate;
 import pneumaticCraft.common.ai.StringFilterEntitySelector;
+import pneumaticCraft.common.block.pneumaticPlants.BlockPneumaticPlantBase;
 import pneumaticCraft.lib.Names;
 import pneumaticCraft.lib.PneumaticValues;
 import pneumaticCraft.proxy.CommonProxy;
@@ -54,6 +56,8 @@ public class ModuleAirGrate extends TubeModule{
             grateRange = getRange();
             pressureTube.getAirHandler().addAir((vacuum ? 1 : -1) * grateRange * PneumaticValues.USAGE_AIR_GRATE, ForgeDirection.UNKNOWN);
             if(oldGrateRange != grateRange) sendDescriptionPacket();
+
+            checkForPlantsAndFarm(worldObj, xCoord, yCoord, zCoord, grateRange);
         } else {
 
             /*  updateParticleTargets(tileVec, grateRange);
@@ -79,7 +83,7 @@ public class ModuleAirGrate extends TubeModule{
         List<Entity> entities = worldObj.selectEntitiesWithinAABB(Entity.class, bbBox, new StringFilterEntitySelector().setFilter(entityFilter));
         double d0 = grateRange + 0.5D;
         for(Entity entity : entities) {
-            if(!entity.worldObj.isRemote && entity.getDistanceSq(xCoord + 0.5D, yCoord + 0.5D, zCoord + 0.5D) < 0.5D && entity instanceof EntityItem && !entity.isDead) {
+            if(!entity.worldObj.isRemote && entity.getDistanceSq(xCoord + 0.5D, yCoord + 0.5D, zCoord + 0.5D) < 0.6D && entity instanceof EntityItem && !entity.isDead) {
                 List<IInventory> inventories = new ArrayList<IInventory>();
                 List<Integer> sides = new ArrayList<Integer>();
                 for(int i = 0; i < 6; i++) {
@@ -117,6 +121,21 @@ public class ModuleAirGrate extends TubeModule{
                         entity.motionX -= d1 / d4 * d5 * 0.1D;
                         entity.motionY -= d2 / d4 * d5 * 0.1D;
                         entity.motionZ -= d3 / d4 * d5 * 0.1D;
+                    }
+                }
+            }
+        }
+    }
+
+    private void checkForPlantsAndFarm(World worldObj, int x, int y, int z, int grateRange){
+        if(worldObj.rand.nextInt(50) != 0) return; // don't run too often
+
+        for(int searchX = x - grateRange; searchX <= x + grateRange; searchX++) {
+            for(int searchZ = z - grateRange; searchZ <= z + grateRange; searchZ++) {
+                if(!(searchX == x && searchZ == z)) { // we know that we're no plant, avoid getBlock
+                    Block b = worldObj.getBlock(searchX, y, searchZ);
+                    if(b instanceof BlockPneumaticPlantBase) {
+                        ((BlockPneumaticPlantBase)b).attemptFarmByAirGrate(worldObj, searchX, y, searchZ);
                     }
                 }
             }
