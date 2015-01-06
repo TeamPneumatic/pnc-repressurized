@@ -76,8 +76,15 @@ public class TileEntityPneumaticBase extends TileEntityBase implements IManoMeas
             setVolume(DEFAULT_VOLUME + upgradeVolume);
 
             if(getUpgrades(ItemMachineUpgrade.UPGRADE_SECURITY, getUpgradeSlots()) > 0) {
-                while(getPressure(ForgeDirection.UNKNOWN) >= DANGER_PRESSURE - 0.1) {
+                if(getPressure(ForgeDirection.UNKNOWN) >= DANGER_PRESSURE - 0.1) {
                     airLeak(ForgeDirection.DOWN);
+                }
+
+                //Remove the remaining air if there is any still.
+                int excessAir = getCurrentAir(ForgeDirection.UNKNOWN) - (int)(getVolume() * (DANGER_PRESSURE - 0.1));
+                if(excessAir > 0) {
+                    addAir(-excessAir, ForgeDirection.DOWN);
+                    onAirDispersion(-excessAir, ForgeDirection.DOWN);
                 }
             }
         }
