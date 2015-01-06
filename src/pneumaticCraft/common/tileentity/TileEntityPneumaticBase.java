@@ -78,7 +78,6 @@ public class TileEntityPneumaticBase extends TileEntityBase implements IManoMeas
             if(getUpgrades(ItemMachineUpgrade.UPGRADE_SECURITY, getUpgradeSlots()) > 0) {
                 if(getPressure(ForgeDirection.UNKNOWN) >= DANGER_PRESSURE - 0.1) {
                     airLeak(ForgeDirection.DOWN);
-                    if(++loopCount > 1000) break; // if we're still not finished (creative compressor?) its better to explode than bring down the server due to lag
                 }
 
                 //Remove the remaining air if there is any still.
@@ -197,10 +196,6 @@ public class TileEntityPneumaticBase extends TileEntityBase implements IManoMeas
      */
     protected void onAirDispersion(int amount, ForgeDirection side){}
 
-    private boolean shouldThrottleEffects(){
-        return(soundCounter > 0);
-    }
-
     /**
      * Method to release air in the air. It takes air from a specific side, plays a sound effect, and spawns smoke particles.
      * @param side
@@ -211,14 +206,14 @@ public class TileEntityPneumaticBase extends TileEntityBase implements IManoMeas
         double motionX = side.offsetX;
         double motionY = side.offsetY;
         double motionZ = side.offsetZ;
-        if(!shouldThrottleEffects()) {
+        if(soundCounter <= 0) {
             soundCounter = 20;
             NetworkHandler.sendToAllAround(new PacketPlaySound(Sounds.LEAKING_GAS_SOUND, xCoord, yCoord, zCoord, 0.1F, 1.0F, true), worldObj);
         }
 
         if(getPressure(side) < 0) {
             double speed = getPressure(side) * 0.1F - 0.1F;
-            if(!shouldThrottleEffects()) NetworkHandler.sendToAllAround(new PacketSpawnParticle("smoke", xCoord + 0.5D + motionX / 2D, yCoord + 0.5D + motionY / 2D, zCoord + 0.5D + motionZ / 2D, motionX * speed, motionY * speed, motionZ * speed), worldObj);
+            NetworkHandler.sendToAllAround(new PacketSpawnParticle("smoke", xCoord + 0.5D + motionX / 2D, yCoord + 0.5D + motionY / 2D, zCoord + 0.5D + motionZ / 2D, motionX * speed, motionY * speed, motionZ * speed), worldObj);
 
             int dispersedAmount = -(int)(getPressure(side) * PneumaticValues.AIR_LEAK_FACTOR) + 20;
             if(getCurrentAir(side) > dispersedAmount) dispersedAmount = -getCurrentAir(side);
@@ -226,12 +221,10 @@ public class TileEntityPneumaticBase extends TileEntityBase implements IManoMeas
             addAir(dispersedAmount, side);
         } else {
             double speed = getPressure(side) * 0.1F + 0.1F;
-            if(!shouldThrottleEffects()) {
-                if(DateEventHandler.isEvent()) {
-                    DateEventHandler.spawnFirework(worldObj, xCoord + 0.5D + motionX / 2D, yCoord + 0.5D + motionY / 2D, zCoord + 0.5D + motionZ / 2D);
-                } else {
-                    NetworkHandler.sendToAllAround(new PacketSpawnParticle("smoke", xCoord + 0.5D + motionX / 2D, yCoord + 0.5D + motionY / 2D, zCoord + 0.5D + motionZ / 2D, motionX * speed, motionY * speed, motionZ * speed), worldObj);
-                }
+            if(DateEventHandler.isEvent()) {
+                DateEventHandler.spawnFirework(worldObj, xCoord + 0.5D + motionX / 2D, yCoord + 0.5D + motionY / 2D, zCoord + 0.5D + motionZ / 2D);
+            } else {
+                NetworkHandler.sendToAllAround(new PacketSpawnParticle("smoke", xCoord + 0.5D + motionX / 2D, yCoord + 0.5D + motionY / 2D, zCoord + 0.5D + motionZ / 2D, motionX * speed, motionY * speed, motionZ * speed), worldObj);
             }
 
             int dispersedAmount = (int)(getPressure(side) * PneumaticValues.AIR_LEAK_FACTOR) + 20;
