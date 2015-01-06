@@ -1,6 +1,10 @@
 package pneumaticCraft.common.thirdparty.igwmod;
 
 import igwmod.api.WikiRegistry;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import net.minecraft.item.ItemStack;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.ItemProgrammingPuzzle;
@@ -11,17 +15,11 @@ public class IGWHandler{
     public static void init(){
         WikiRegistry.registerWikiTab(new PneumaticCraftWikiTab());
 
-        WikiRegistry.registerBlockAndItemPageEntry(ItemProgrammingPuzzle.getStackForWidgetKey("start"), "item/programmingPuzzle_start");
-        WikiRegistry.registerBlockAndItemPageEntry(ItemProgrammingPuzzle.getStackForWidgetKey("inventoryExport"), "item/programmingPuzzle_Inv-E");
-        WikiRegistry.registerBlockAndItemPageEntry(ItemProgrammingPuzzle.getStackForWidgetKey("inventoryImport"), "item/programmingPuzzle_Inv-I");
-        WikiRegistry.registerBlockAndItemPageEntry(ItemProgrammingPuzzle.getStackForWidgetKey("itemFilter"), "item/programmingPuzzle_I-ftr");
-        WikiRegistry.registerBlockAndItemPageEntry(ItemProgrammingPuzzle.getStackForWidgetKey("entityAttack"), "item/programmingPuzzle_attk");
-        WikiRegistry.registerBlockAndItemPageEntry(ItemProgrammingPuzzle.getStackForWidgetKey("dig"), "item/programmingPuzzle_dig");
-        WikiRegistry.registerBlockAndItemPageEntry(ItemProgrammingPuzzle.getStackForWidgetKey("place"), "item/programmingPuzzle_place");
-        WikiRegistry.registerBlockAndItemPageEntry(ItemProgrammingPuzzle.getStackForWidgetKey("area"), "item/programmingPuzzle_area");
-        WikiRegistry.registerBlockAndItemPageEntry(ItemProgrammingPuzzle.getStackForWidgetKey("goto"), "item/programmingPuzzle_goto");
-        WikiRegistry.registerBlockAndItemPageEntry(ItemProgrammingPuzzle.getStackForWidgetKey("pickupItem"), "item/programmingPuzzle_I-pick");
-        WikiRegistry.registerBlockAndItemPageEntry(ItemProgrammingPuzzle.getStackForWidgetKey("text"), "item/programmingPuzzle_text");
+        List<ItemStack> programmingPuzzles = new ArrayList<ItemStack>();
+        ItemProgrammingPuzzle.addItems(programmingPuzzles);
+        for(ItemStack stack : programmingPuzzles) {
+            WikiRegistry.registerBlockAndItemPageEntry(stack, "block/programmer");
+        }
 
         WikiRegistry.registerRecipeIntegrator(new IntegratorPressureChamber());
         WikiRegistry.registerRecipeIntegrator(new IntegratorAssembly());

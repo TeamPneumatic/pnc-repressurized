@@ -9,6 +9,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.common.NBTUtil;
@@ -86,12 +87,17 @@ public class ItemProgrammingPuzzle extends ItemPneumatic{
     }
 
     public static ItemStack getStackForWidgetKey(String widgetKey){
-        for(IProgWidget widget : TileEntityProgrammer.registeredWidgets) {
+        /*for(IProgWidget widget : TileEntityProgrammer.registeredWidgets) {
             if(widget.getWidgetString().equals(widgetKey)) {
                 return new ItemStack(Itemss.programmingPuzzle, 1, widget.getCraftingColorIndex());
             }
-        }
-        throw new IllegalArgumentException("No widget registered with the name " + widgetKey + "! This is not possible?!");
+        }*/
+        ItemStack stack = new ItemStack(Itemss.programmingPuzzle);
+        NBTTagCompound tag = new NBTTagCompound();
+        tag.setString("type", widgetKey);
+        stack.setTagCompound(tag);
+        return stack;
+        //    throw new IllegalArgumentException("No widget registered with the name " + widgetKey + "! This is not possible?!");
     }
 
     public static IProgWidget getWidgetForClass(Class<? extends IProgWidget> clazz){
