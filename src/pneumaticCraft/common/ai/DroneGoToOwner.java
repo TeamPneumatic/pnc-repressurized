@@ -18,7 +18,7 @@ public class DroneGoToOwner extends EntityAIBase{
     @Override
     public boolean shouldExecute(){
         EntityPlayer owner = getOnlineOwner();
-        return isExecuting = owner != null && drone.getNavigator().tryMoveToEntityLiving(owner, drone.getSpeed()) || ((EntityPathNavigateDrone)drone.getNavigator()).isGoingToTeleport();
+        return isExecuting = owner != null && drone.getNavigator().tryMoveToEntityLiving(owner, drone.getSpeed());
     }
 
     @Override

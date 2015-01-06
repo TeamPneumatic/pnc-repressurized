@@ -2,7 +2,6 @@ package pneumaticCraft.common.block;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -64,40 +63,6 @@ public class BlockElevatorFrame extends BlockPneumaticCraftModeled{
     @SideOnly(Side.CLIENT)
     public int getRenderType(){
         return PneumaticCraft.proxy.getRenderIdForRenderer(RenderElevatorFrame.class);
-    }
-
-    @Override
-    public void onEntityCollidedWithBlock(World world, int x, int y, int z, Entity entity){
-        // if(world.getBlockMetadata(x, y, z) > 0) return;
-
-        TileEntityElevatorBase te = getElevatorTE(world, x, y, z);
-        if(te != null && te.extension - te.oldExtension > 0F) {// when the
-                                                               // block's
-                                                               // attached to an
-                                                               // elevator and
-                                                               // the elevator
-                                                               // is going up.
-
-            /*  float blockHeight = getElevatorBlockHeight(world, x, y, z);
-              if(entity.posY - y > 0 && entity.posY - y < 1 && blockHeight > entity.posY - y) {
-                  entity.posY = y + blockHeight;
-              }*/
-
-            if(getElevatorBlockHeight(world, x, y, z) > 0F) {
-                //System.out.println("extDif: " + (te.extension - te.oldExtension));
-                // entity.posY += te.extension - te.oldExtension;
-                entity.setPosition(entity.posX, entity.posY + te.extension - te.oldExtension + 0.05F, entity.posZ);
-            }
-
-            /*  float blockHeight = getElevatorBlockHeight(world, x, y, z);
-              if(blockHeight > 0F && entity.posY < blockHeight + y) {
-                  //System.out.println("extDif: " + (te.extension - te.oldExtension));
-                  // entity.posY += te.extension - te.oldExtension;
-                  entity.moveEntity(0, te.extension - te.oldExtension + 0.05F, 0);
-              }
-            */
-        }
-
     }
 
     /**

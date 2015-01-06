@@ -33,7 +33,7 @@ public abstract class DroneEntityBase<Widget extends IProgWidget, E extends Enti
         Collections.sort(pickableItems, new EntityAINearestAttackableTarget.Sorter(drone));
         for(Entity ent : pickableItems) {
             if(ent != drone && isEntityValid(ent)) {
-                if(drone.getNavigator().tryMoveToEntityLiving(ent, speed) || ((EntityPathNavigateDrone)drone.getNavigator()).isGoingToTeleport()) {
+                if(drone.getNavigator().tryMoveToEntityLiving(ent, speed)) {
                     targetedEntity = (E)ent;
                     return true;
                 }
