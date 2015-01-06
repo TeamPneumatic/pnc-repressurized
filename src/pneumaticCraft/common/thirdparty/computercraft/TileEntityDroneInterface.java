@@ -588,6 +588,19 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral{
                 }
             }
         });
+
+        luaMethods.add(new LuaMethod("getUpgrades"){
+            @Override
+            public Object[] call(IComputerAccess computer, ILuaContext context, Object[] args) throws LuaException, InterruptedException{
+                if(args.length == 1) {
+                    if(drone == null) throw new LuaException("There's no connected Drone!");
+                    return new Object[]{new Double(drone.getUpgrades(((Double)args[0]).intValue()))};
+                } else {
+                    throw new LuaException("getUpgrades takes one argument (upgrade index)!");
+                }
+            }
+
+        });
     }
 
     @Override
