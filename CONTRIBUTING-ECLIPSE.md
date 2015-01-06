@@ -46,7 +46,7 @@ this will setup a Eclipse-project for PneumaticCraft. Switch to Eclipse, click F
 
 Since PneumaticCraft uses NEI, and NEI uses something called Access Transformers (making some stuff from Minecraft public which would otherwise be protected/private) you now have to do some more tinkering with Forge, or Minecraft will crash as soon as you enter a world. See [link](http://www.minecraftforge.net/wiki/Using_Access_Transformers) if you want to know more, or simply do this:
 
-First, you add the folder META-INF to forge-1.7.10-10.13.2.1230-src/src/main/resources/. Then you find NEI_at.cfg - I grabbed it from [link](https://raw.githubusercontent.com/Chicken-Bones/NotEnoughItems/master/resources/nei_at.cfg) - and put it there.
+First, you add the folder META-INF to forge-1.7.10-10.13.2.1230-src/src/main/resources/. Then you find NEI_at.cfg - I grabbed it from [link](https://raw.githubusercontent.com/Chicken-Bones/NotEnoughItems/1.7/resources/nei_at.cfg) - and put it there.
 
 In your shell, cd to the Forge folder and run "./gradlew setupDecompWorkspace eclipse" again. You should see "Found AccessTransformer in main resources: nei_at.cfg" flash by early on.
 
