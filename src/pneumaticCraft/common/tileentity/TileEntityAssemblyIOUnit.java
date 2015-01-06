@@ -34,7 +34,6 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
     private final static byte STATE_IDLE = 0;
     private final static byte STATE_SEARCH_SRC = 1;
     private final static byte STATE_CLOSECLAW_AFTER_PICKUP = 5;
-    private final static byte STATE_SEARCH_DROPOFF = 6;
     private final static byte STATE_RESET_CLOSECLAW_AFTER_PICKUP = 20;
     private final static byte STATE_RESET_GOTO_IDLE = 26;
     private final static byte STATE_MAX = 127;
@@ -57,13 +56,13 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
                     if(findPickupLocation()) state++;
                     break;
                 // rise to the right height for target location
-                case 2: // for pickup 
+                case 2: // for pickup
                 case 7: // for drop-off
                 case 22: // for reset
                     if(hoverOverTarget()) state++;
                     break;
                 // turn and move to target
-                case 3: // for pickup 
+                case 3: // for pickup
                 case 8: // for drop-off
                 case 23: // for reset
                     slowMode = true;
@@ -204,8 +203,8 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
         boolean extracted = false;
 
         /*
-         * we must not .reset here because we might inadvertently change this.state right before this.state++ 
-         * 
+         * we must not .reset here because we might inadvertently change this.state right before this.state++
+         *
         if((tile == null) || !(tile instanceof IInventory)) // TE / inventory is gone
         	reset();
         */
@@ -219,15 +218,17 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
                 int oldStackSize = inventory[0] == null ? 0 : inventory[0].stackSize;
 
                 for(int i = 0; i < inv.getSizeInventory(); i++) {
-                    if(inv.getStackInSlot(i) != null && inv.getStackInSlot(i).isItemEqual(searchedItemStack)) {
+                    if(inv.getStackInSlot(i) != null) {
                         if(inventory[0] == null) {
-                            inventory[0] = inv.decrStackSize(i, 1);
-                        } else {
+                            if(inv.getStackInSlot(i).isItemEqual(searchedItemStack)) {
+                                inventory[0] = inv.decrStackSize(i, 1);
+                            }
+                        } else if(inv.getStackInSlot(i).isItemEqual(inventory[0])) {
                             inv.decrStackSize(i, 1);
                             inventory[0].stackSize++;
                         }
-                        extracted = inventory[0].stackSize == searchedItemStack.stackSize; // we might need to pickup more than 1 item
-                        break;
+                        extracted = (inventory[0] == null ? 0 : inventory[0].stackSize) == searchedItemStack.stackSize; // we might need to pickup more than 1 item
+                        if(extracted) break;
                     }
                 }
 
@@ -366,7 +367,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
     }
 
     public ForgeDirection[] getInventoryDirectionForItem(ItemStack searchedItem){
-        if(searchedItem != null) {
+        if(searchedItem != null && (inventory[0] == null || inventory[0].isItemEqual(searchedItem))) {
             for(ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
                 if(dir != ForgeDirection.UP && dir != ForgeDirection.DOWN) {
                     TileEntity te = worldObj.getTileEntity(xCoord + dir.offsetX, yCoord, zCoord + dir.offsetZ);
@@ -392,7 +393,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
     }
 
     /**
-     * 
+     *
      * @param searchedItem
      * @param inventory where the item is being tried to be extracted from the top (respects ISidedInventory)
      * @return returns -1 when the item can't be found / accessed, else it returns the slot the requested stack is in.
@@ -451,7 +452,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
     }
 
     /**
-     * 
+     *
      * @param exported
      * @param inventory where the item is being tried to be placed in the top (respects ISidedInventory)
      * @return returns -1 when the item can't be placed / accessed
