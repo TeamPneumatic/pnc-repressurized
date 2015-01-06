@@ -173,8 +173,14 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
         List<Entity> entityList = worldObj.getEntitiesWithinAABBExcludingEntity(null, aabb);
         for(Entity entity : entityList) {
             if(entity instanceof EntityPlayer) {
-                moveEntityToCenter(entity);
-                entity.moveEntity(0, extension - oldExtension + 0.001F, 0);
+                //   moveEntityToCenter(entity);
+                double posX = entity.posX;
+                double posZ = entity.posZ;
+                if(posX >= xCoord && posX < xCoord + 1 && posZ >= zCoord && posZ < zCoord + 1) {
+                    entity.motionX *= 0.6;
+                    entity.motionZ *= 0.6;
+                    entity.moveEntity(0, extension - oldExtension + 0.001F, 0);
+                }
             }
         }
     }
@@ -185,8 +191,14 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
         for(Entity entity : entityList) {
             if(entity instanceof EntityPlayer) {
                 if(worldObj.isRemote) {
-                    moveEntityToCenter(entity);
-                    entity.moveEntity(0, moveBy + 0.001F, 0);
+                    // moveEntityToCenter(entity);
+                    double posX = entity.posX;
+                    double posZ = entity.posZ;
+                    if(posX >= xCoord && posX < xCoord + 1 && posZ >= zCoord && posZ < zCoord + 1) {
+                        entity.motionX *= 0.6;
+                        entity.motionZ *= 0.6;
+                        entity.moveEntity(0, moveBy + 0.001F, 0);
+                    }
                 }
             } else entity.moveEntity(0, moveBy + 0.05F, 0);
         }
