@@ -17,7 +17,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class ItemMachineUpgrade extends ItemPneumatic{
-    public static final int UPGRADES_AMOUNT = 10;
+    public static final int UPGRADES_AMOUNT = 11;
 
     public static final int UPGRADE_VOLUME_DAMAGE = 0;
     public static final int UPGRADE_DISPENSER_DAMAGE = 1;
@@ -29,6 +29,7 @@ public class ItemMachineUpgrade extends ItemPneumatic{
     public static final int UPGRADE_COORDINATE_TRACKER_DAMAGE = 7;
     public static final int UPGRADE_RANGE = 8;
     public static final int UPGRADE_SECURITY = 9;
+    public static final int UPGRADE_THAUMCRAFT = 10;
 
     private IIcon[] texture;
 
@@ -50,6 +51,7 @@ public class ItemMachineUpgrade extends ItemPneumatic{
         texture[7] = par1IconRegister.registerIcon(Textures.ITEM_UPGRADE_COORDINATE_TRACKER);
         texture[8] = par1IconRegister.registerIcon(Textures.ITEM_UPGRADE_RANGE);
         texture[9] = par1IconRegister.registerIcon(Textures.ITEM_UPGRADE_SECURITY);
+        texture[10] = par1IconRegister.registerIcon(Textures.ITEM_UPGRADE_THAUMCRAFT);
     }
 
     @Override
@@ -135,6 +137,10 @@ public class ItemMachineUpgrade extends ItemPneumatic{
                 infoList.add("-" + Names.VACUUM_PUMP);
                 infoList.add("-" + Names.ASSEMBLY_CONTROLLER);
                 infoList.add("-" + Names.UV_LIGHT_BOX);*/
+                break;
+            case 10:
+                infoList.add(Itemss.pneumaticHelmet.getUnlocalizedName());
+                break;
         }
 
         for(String unloc : unlocalized) {
