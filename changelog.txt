@@ -1,5 +1,9 @@
--Added 'Rename Drone' piece.
+-Added Thaumcraft support for the Pneumatic Helmet.
+-Added "getUpgrades" method to the Drone Interface. Allows to get the upgrades a Drone has.
 
--Bugfix: Drone places blocks even when there are entities occupying the block space.
--Bugfix: Crash when using XU Golden Lasso on Drone.
--Bugfix: Server startup crashes.
+-Bugfix: Pneumatic Helmet Drone program renderer displays the cycled program render, instead of just the program.
+-Bugfix: Lag when connecting a Creative Compressor with too high pressure to a machine with Security Upgrade.
+-Bugfix: Fixed logic of Assembly Machines (DarkstarDS9).
+-Bugfix: Elevator moving players is buggy and can cause falling damage (DarkstarDS9).
+-Bugfix: Drones cause lag when trying to teleport to entities to attack.
+-Bugfix: Crash when using ComputerCraft and adding a 'nil' text filter to the Drone Interface.

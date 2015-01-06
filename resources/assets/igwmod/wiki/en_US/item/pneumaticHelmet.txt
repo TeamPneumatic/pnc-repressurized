@@ -51,10 +51,13 @@ Note that the visibility of the green glow is dependent on whether you have an E
 This upgrade will calculate the shortest path to a given location. It uses Minecraft's pathfinding that is used in entities to accomplish this. This is very useful when you're lost in a cave and want to get out. Just open up the options menu and press “Navigate to surface…”. You can also control how much of the path is displayed by switching between X-ray on/off (on means you can see through walls). The color of the lines/tiles are green when you're close to the destination and become more red the further you are from the target.
 
 [prefix{l}]Security Upgrade[prefix{}]
-This upgrade allows you to hack [link{block/securityStation}]Security Stations[link{}]. It has a second functionality: It allows you to hack your surroundings. If you're familiar with the game Watch Dogs that's exactly what you can expect. Lots of things can be hacked: Levers, Mob Spawners, Tripwires, Dispensers, Creepers, Ghasts, etcetera. This can all be done remotely. As soon as soon as the object is withing the Block/Entity Tracker's range you can hack it. A good thing to note is to be able to hack Entities you need an Entity Tracker, and for blocks a Block Tracker.
+This upgrade allows you to hack [link{block/securityStation}]Security Stations[link{}]. It has a second functionality: It allows you to hack your surroundings. If you're familiar with the game Watch Dogs that's exactly what you can expect. Lots of things can be hacked: Levers, Mob Spawners, Tripwires, Dispensers, Creepers, Ghasts, etcetera. This can all be done remotely. As soon as soon as the object is within the Block/Entity Tracker's range you can hack it. A good thing to note is to be able to hack Entities you need an Entity Tracker, and for blocks a Block Tracker.
 
 [prefix{l}]Speed Upgrade[prefix{}]
 Increases the speed at which the Pneumatic Helmet initializes, the block tracker tracks, and the entity tracker tracks. There's no real maximum of speed upgrades, but do keep in mind that the air usage also increases with the speed.
 
 [prefix{l}]Range Upgrade[prefix{}]
 Increases the range of the Entity Tracker and Block Tracker with 5 blocks radius per upgrade. For the Entity Tracker there's no limit, for the Block Tracker up to 5 upgrades are accepted. This upgrade increases the air usage of the Block and Entity Tracker.
+
+[prefix{l}]Thaumcraft Upgrade[prefix{}]
+This gives the helmet Goggles of Revealing functionality. It gives a 5% vis discount, and reveals Nodes and shows aspects in blocks.
