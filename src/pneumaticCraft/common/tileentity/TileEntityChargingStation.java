@@ -25,7 +25,6 @@ import pneumaticCraft.common.item.IChargingStationGUIHolderItem;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.network.DescSynced;
-import pneumaticCraft.common.network.FilteredSynced;
 import pneumaticCraft.common.network.GuiSynced;
 import pneumaticCraft.lib.PneumaticValues;
 import pneumaticCraft.proxy.CommonProxy;
@@ -34,7 +33,6 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityChargingStation extends TileEntityPneumaticBase implements ISidedInventory, IRedstoneControl{
     @DescSynced
-    @FilteredSynced(index = CHARGE_INVENTORY_INDEX)
     private ItemStack[] inventory;
 
     private final int INVENTORY_SIZE = 5;
