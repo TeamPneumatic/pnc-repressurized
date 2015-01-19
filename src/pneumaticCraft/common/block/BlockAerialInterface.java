@@ -12,10 +12,14 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.common.tileentity.TileEntityAerialInterface;
+import pneumaticCraft.lib.ModIds;
 import pneumaticCraft.lib.Textures;
 import pneumaticCraft.proxy.CommonProxy;
+import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import dan200.computercraft.api.peripheral.IPeripheral;
+import dan200.computercraft.api.peripheral.IPeripheralProvider;
 
 public class BlockAerialInterface extends BlockPneumaticCraft{
 
@@ -111,5 +115,16 @@ public class BlockAerialInterface extends BlockPneumaticCraft{
     @Override
     protected int getInventoryDropEndSlot(IInventory inventory){
         return 4;
+    }
+
+    /**
+     * Produce an peripheral implementation from a block location.
+     * @see dan200.computercraft.api.ComputerCraftAPI#registerPeripheralProvider(IPeripheralProvider)
+     * @return a peripheral, or null if there is not a peripheral here you'd like to handle.
+     */
+    @Override
+    @Optional.Method(modid = ModIds.COMPUTERCRAFT)
+    public IPeripheral getPeripheral(World world, int x, int y, int z, int side){
+        return side == 0 || side == 1 ? super.getPeripheral(world, x, y, z, side) : null;
     }
 }
