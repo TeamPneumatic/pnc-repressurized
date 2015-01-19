@@ -22,6 +22,7 @@ public class TileEntityCache{
     }
 
     public TileEntity getTileEntity(){
+        if(te != null && te.isInvalid()) te = null;
         return te;
     }
 
