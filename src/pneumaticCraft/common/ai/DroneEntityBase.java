@@ -7,8 +7,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import pneumaticCraft.common.entity.living.EntityDrone;
+import pneumaticCraft.common.progwidgets.IEntityProvider;
 import pneumaticCraft.common.progwidgets.IProgWidget;
-import pneumaticCraft.common.progwidgets.ProgWidgetAreaItemBase;
 
 public abstract class DroneEntityBase<Widget extends IProgWidget, E extends Entity> extends EntityAIBase{
     protected final EntityDrone drone;
@@ -28,7 +28,7 @@ public abstract class DroneEntityBase<Widget extends IProgWidget, E extends Enti
      */
     @Override
     public boolean shouldExecute(){
-        List<Entity> pickableItems = ProgWidgetAreaItemBase.getEntitiesInArea(drone.worldObj, widget);
+        List<Entity> pickableItems = ((IEntityProvider)widget).getValidEntities(drone.worldObj);
 
         Collections.sort(pickableItems, new EntityAINearestAttackableTarget.Sorter(drone));
         for(Entity ent : pickableItems) {

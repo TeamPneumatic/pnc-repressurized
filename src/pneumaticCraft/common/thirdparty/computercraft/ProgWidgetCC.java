@@ -8,7 +8,6 @@ import java.util.Set;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.command.IEntitySelector;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -217,15 +216,8 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
     }
 
     @Override
-    public synchronized List<EntityLivingBase> getValidEntities(World world){
-        List<Entity> entities = ProgWidgetAreaItemBase.getEntitiesInArea(getEntityAreaWidget(), null, world, whitelistFilter, blacklistFilter);
-        List<EntityLivingBase> livingEntities = new ArrayList<EntityLivingBase>();
-        for(Entity entity : entities) {
-            if(entity instanceof EntityLivingBase) {
-                livingEntities.add((EntityLivingBase)entity);
-            }
-        }
-        return livingEntities;
+    public synchronized List<Entity> getValidEntities(World world){
+        return ProgWidgetAreaItemBase.getEntitiesInArea(getEntityAreaWidget(), null, world, whitelistFilter, blacklistFilter);
     }
 
     private ProgWidgetArea getEntityAreaWidget(){
