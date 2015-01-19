@@ -8,9 +8,12 @@ import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 import mcp.mobius.waila.api.IWailaDataProvider;
 import mcp.mobius.waila.api.SpecialChars;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.api.tileentity.IPneumaticMachine;
 import pneumaticCraft.common.tileentity.TileEntityPneumaticBase;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
@@ -38,11 +41,7 @@ public class WailaHandler implements IWailaDataProvider{
         //This is used so that we can split values later easier and have them all in the same layout.
         Map<String, String> values = new HashMap<String, String>();
 
-        if(tCompound.hasKey("pneumatic")) {
-            tCompound = tCompound.getCompoundTag("pneumatic");
-        }
-
-        String pressure = PneumaticCraftUtils.roundNumberTo((float)tCompound.getInteger("currentAir") / tCompound.getInteger("volume"), 1);
+        String pressure = PneumaticCraftUtils.roundNumberTo(tCompound.getFloat("pressure"), 1);
         values.put("Pressure", pressure + " bar");
 
         TileEntity te = accessor.getTileEntity();
@@ -60,5 +59,13 @@ public class WailaHandler implements IWailaDataProvider{
     @Override
     public List<String> getWailaTail(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config){
         return currenttip;
+    }
+
+    @Override
+    public NBTTagCompound getNBTData(EntityPlayerMP player, TileEntity te, NBTTagCompound tag, World world, int x, int y, int z){
+        if(te instanceof IPneumaticMachine) {
+            tag.setFloat("pressure", ((IPneumaticMachine)te).getAirHandler().getPressure(ForgeDirection.UNKNOWN));
+        }
+        return tag;
     }
 }

@@ -30,10 +30,12 @@ public class Waila implements IThirdParty{
 
         registrar.registerBodyProvider(new WailaPlantHandler(), BlockPneumaticPlantBase.class);
 
-        registrar.registerSyncedNBTKey("pneumatic", IPneumaticMachine.class);
+        //registrar.registerSyncedNBTKey("pneumatic", IPneumaticMachine.class);
 
-        registrar.registerSyncedNBTKey("*", TileEntityPressureTube.class);
+        //registrar.registerSyncedNBTKey("*", TileEntityPressureTube.class);
         registrar.registerBodyProvider(new WailaTubeModuleHandler(), TileEntityPressureTube.class);
+        registrar.registerNBTProvider(new WailaHandler(), IPneumaticMachine.class);
+        registrar.registerNBTProvider(new WailaTubeModuleHandler(), TileEntityPressureTube.class);
         //TODO registrar.registerBodyProvider(new WailaHandler(), TileMultipart.class);
     }
 
