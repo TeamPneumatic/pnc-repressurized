@@ -38,6 +38,7 @@ public abstract class DroneAIBlockInteraction extends EntityAIBase{
     private int lastSuccessfulY;
     private int minY, maxY;
     private ThreadedSorter<ChunkPosition> sorter;
+    private boolean aborted;
 
     private boolean searching; //true while the drone is searching for a coordinate, false if traveling/processing a coordinate.
     private int searchIndex;//The current index in the area list the drone is searching at.
@@ -79,15 +80,19 @@ public abstract class DroneAIBlockInteraction extends EntityAIBase{
      */
     @Override
     public boolean shouldExecute(){
-        if(!searching) {
-            searching = true;
-            searchIndex = 0;
-            curPos = null;
-            lastSuccessfulY = curY;
-            if(sorter == null || sorter.isDone()) sorter = new ThreadedSorter(area, new ChunkPositionSorter(drone));
-            return true;
-        } else {
+        if(aborted) {
             return false;
+        } else {
+            if(!searching) {
+                searching = true;
+                searchIndex = 0;
+                curPos = null;
+                lastSuccessfulY = curY;
+                if(sorter == null || sorter.isDone()) sorter = new ThreadedSorter(area, new ChunkPositionSorter(drone));
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 
@@ -113,6 +118,7 @@ public abstract class DroneAIBlockInteraction extends EntityAIBase{
      */
     @Override
     public boolean continueExecuting(){
+        if(aborted) return false;
         if(searching) {
             if(!sorter.isDone()) return true;//Wait until the area is sorted from closest to furtherest.
             boolean firstRun = true;
@@ -174,7 +180,11 @@ public abstract class DroneAIBlockInteraction extends EntityAIBase{
     }
 
     protected boolean shouldAbort(){
-        return false;
+        return aborted;
+    }
+
+    public void abort(){
+        aborted = true;
     }
 
     /**

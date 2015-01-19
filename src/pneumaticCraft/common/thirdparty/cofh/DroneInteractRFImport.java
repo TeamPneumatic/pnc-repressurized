@@ -26,25 +26,30 @@ public class DroneInteractRFImport implements ICustomBlockInteract{
 
     @Override
     public boolean doInteract(ChunkPosition pos, EntityCreature drone, IBlockInteractHandler interactHandler, boolean simulate){
-        TileEntity te = drone.worldObj.getTileEntity(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ);
-        if(te instanceof IEnergyProvider) {
-            IEnergyProvider provider = (IEnergyProvider)te;
-            IEnergyStorage droneEnergy = CoFHCore.getEnergyStorage(drone);
-            for(ForgeDirection d : ForgeDirection.VALID_DIRECTIONS) {
-                if(interactHandler.getSides()[d.ordinal()]) {
-                    int transferedEnergy = droneEnergy.receiveEnergy(provider.extractEnergy(d, Math.min(1000, interactHandler.useCount() ? interactHandler.getRemainingCount() : Integer.MAX_VALUE), true), true);
-                    if(transferedEnergy > 0) {
-                        if(!simulate) {
-                            interactHandler.decreaseCount(transferedEnergy);
-                            droneEnergy.receiveEnergy(transferedEnergy, false);
-                            provider.extractEnergy(d, transferedEnergy, false);
+        IEnergyStorage droneEnergy = CoFHCore.getEnergyStorage(drone);
+        if(droneEnergy.getEnergyStored() == droneEnergy.getMaxEnergyStored()) {
+            interactHandler.abort();
+            return false;
+        } else {
+            TileEntity te = drone.worldObj.getTileEntity(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ);
+            if(te instanceof IEnergyProvider) {
+                IEnergyProvider provider = (IEnergyProvider)te;
+                for(ForgeDirection d : ForgeDirection.VALID_DIRECTIONS) {
+                    if(interactHandler.getSides()[d.ordinal()]) {
+                        int transferedEnergy = droneEnergy.receiveEnergy(provider.extractEnergy(d, Math.min(1000, interactHandler.useCount() ? interactHandler.getRemainingCount() : Integer.MAX_VALUE), true), true);
+                        if(transferedEnergy > 0) {
+                            if(!simulate) {
+                                interactHandler.decreaseCount(transferedEnergy);
+                                droneEnergy.receiveEnergy(transferedEnergy, false);
+                                provider.extractEnergy(d, transferedEnergy, false);
+                            }
+                            return true;
                         }
-                        return true;
                     }
                 }
             }
+            return false;
         }
-        return false;
     }
 
     @Override
