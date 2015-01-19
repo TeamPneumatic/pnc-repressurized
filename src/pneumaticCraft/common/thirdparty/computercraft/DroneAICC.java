@@ -7,7 +7,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.ChunkPosition;
 import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.progwidgets.IProgWidget;
-import dan200.computercraft.api.lua.LuaException;
 
 class DroneAICC extends EntityAIBase{
     private final EntityDrone drone;
@@ -82,8 +81,8 @@ class DroneAICC extends EntityAIBase{
         curAction = null;
     }
 
-    public synchronized boolean isActionDone() throws LuaException{
-        if(curAction == null) throw new LuaException("There's no action active!");
+    public synchronized boolean isActionDone() throws Exception{
+        if(curAction == null) throw new IllegalStateException("There's no action active!");
         return !curActionActive;
     }
 }

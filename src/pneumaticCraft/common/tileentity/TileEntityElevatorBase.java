@@ -39,9 +39,6 @@ import pneumaticCraft.lib.TileEntityConstants;
 import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import dan200.computercraft.api.lua.ILuaContext;
-import dan200.computercraft.api.lua.LuaException;
-import dan200.computercraft.api.peripheral.IComputerAccess;
 
 public class TileEntityElevatorBase extends TileEntityPneumaticBase implements IInventory, IGUITextFieldSensitive,
         IRedstoneControlled, IMinWorkingPressure{
@@ -737,28 +734,28 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
         luaMethods.add(new LuaConstant("getMinWorkingPressure", PneumaticValues.MIN_PRESSURE_ELEVATOR));
         luaMethods.add(new LuaMethod("setHeight"){
             @Override
-            public Object[] call(IComputerAccess computer, ILuaContext context, Object[] args) throws LuaException, InterruptedException{
+            public Object[] call(Object[] args) throws Exception{
                 if(args.length == 1) {
                     setTargetHeight(((Double)args[0]).floatValue());
                     if(getCoreElevator().isControlledByRedstone()) getCoreElevator().handleGUIButtonPress(0, null);
                     getCoreElevator().sendDescPacket(256D);
                     return null;
                 } else {
-                    throw new LuaException("setHeight does take one argument (height)");
+                    throw new IllegalArgumentException("setHeight does take one argument (height)");
                 }
             }
         });
 
         luaMethods.add(new LuaMethod("setExternalControl"){
             @Override
-            public Object[] call(IComputerAccess computer, ILuaContext context, Object[] args) throws LuaException, InterruptedException{
+            public Object[] call(Object[] args) throws Exception{
                 if(args.length == 1) {
                     if((Boolean)args[0] && getCoreElevator().isControlledByRedstone() || !(Boolean)args[0] && !getCoreElevator().isControlledByRedstone()) {
                         getCoreElevator().handleGUIButtonPress(0, null);
                     }
                     return null;
                 } else {
-                    throw new LuaException("setExternalControl does take one argument! (bool)");
+                    throw new IllegalArgumentException("setExternalControl does take one argument! (bool)");
                 }
             }
         });

@@ -40,8 +40,6 @@ import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.common.eventhandler.Event;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import dan200.computercraft.api.lua.ILuaContext;
-import dan200.computercraft.api.lua.LuaException;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 
 public class TileEntityUniversalSensor extends TileEntityPneumaticBase implements IInventory, IRangeLineShower,
@@ -461,18 +459,18 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
 
         luaMethods.add(new LuaMethod("getSensorNames"){
             @Override
-            public Object[] call(IComputerAccess computer, ILuaContext context, Object[] args) throws LuaException, InterruptedException{
+            public Object[] call(Object[] args) throws Exception{
                 if(args.length == 0) {
                     return SensorHandler.instance().getSensorNames();
                 } else {
-                    throw new LuaException("getSensorNames doesn't accept any arguments!");
+                    throw new IllegalArgumentException("getSensorNames doesn't accept any arguments!");
                 }
             }
         });
 
         luaMethods.add(new LuaMethod("setSensor"){
             @Override
-            public Object[] call(IComputerAccess computer, ILuaContext context, Object[] args) throws LuaException, InterruptedException{
+            public Object[] call(Object[] args) throws Exception{
                 if(args.length == 1) {
                     ISensorSetting sensor = null;
                     if(args[0] instanceof String) {
@@ -481,77 +479,77 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
                         sensor = SensorHandler.instance().getSensorByIndex(((Double)args[0]).intValue() - 1);
                     }
                     if(sensor != null) return new Object[]{setSensorSetting(sensor)};
-                    throw new LuaException("Invalid sensor name/index: " + args[0]);
+                    throw new IllegalArgumentException("Invalid sensor name/index: " + args[0]);
                 } else if(args.length == 0) {
                     setSensorSetting("");
                     return new Object[]{true};
                 } else {
-                    throw new LuaException("setSensor needs one argument(a number as index, or a sensor name).");
+                    throw new IllegalArgumentException("setSensor needs one argument(a number as index, or a sensor name).");
                 }
             }
         });
 
         luaMethods.add(new LuaMethod("getSensor"){
             @Override
-            public Object[] call(IComputerAccess computer, ILuaContext context, Object[] args) throws LuaException, InterruptedException{
+            public Object[] call(Object[] args) throws Exception{
                 if(args.length == 0) {
                     ISensorSetting curSensor = SensorHandler.instance().getSensorFromPath(getSensorSetting());
                     return curSensor == null ? null : new Object[]{getSensorSetting().substring(getSensorSetting().lastIndexOf('/') + 1)};
                 } else {
-                    throw new LuaException("getSensor doesn't take any arguments!");
+                    throw new IllegalArgumentException("getSensor doesn't take any arguments!");
                 }
             }
         });
 
         luaMethods.add(new LuaMethod("setTextfield"){
             @Override
-            public Object[] call(IComputerAccess computer, ILuaContext context, Object[] args) throws LuaException, InterruptedException{
+            public Object[] call(Object[] args) throws Exception{
                 if(args.length == 1) {
                     setText(0, (String)args[0]);
                     return null;
                 } else {
-                    throw new LuaException("setTextfield takes one argument (string)");
+                    throw new IllegalArgumentException("setTextfield takes one argument (string)");
                 }
             }
         });
 
         luaMethods.add(new LuaMethod("getTextfield"){
             @Override
-            public Object[] call(IComputerAccess computer, ILuaContext context, Object[] args) throws LuaException, InterruptedException{
+            public Object[] call(Object[] args) throws Exception{
                 if(args.length == 0) {
                     return new Object[]{getText(0)};
                 } else {
-                    throw new LuaException("getTextfield takes no arguments");
+                    throw new IllegalArgumentException("getTextfield takes no arguments");
                 }
             }
         });
 
         luaMethods.add(new LuaMethod("isSensorEventBased"){
             @Override
-            public Object[] call(IComputerAccess computer, ILuaContext context, Object[] args) throws LuaException, InterruptedException{
+            public Object[] call(Object[] args) throws Exception{
                 if(args.length == 0) {
                     return new Object[]{SensorHandler.instance().getSensorFromPath(getSensorSetting()) instanceof IEventSensorSetting};
                 } else {
-                    throw new LuaException("isSensorEventBased takes no arguments");
+                    throw new IllegalArgumentException("isSensorEventBased takes no arguments");
                 }
             }
         });
 
         luaMethods.add(new LuaMethod("getSensorValue"){
             @Override
-            public Object[] call(IComputerAccess computer, ILuaContext context, Object[] args) throws LuaException, InterruptedException{
+            public Object[] call(Object[] args) throws Exception{
                 if(args.length == 0) {
                     ISensorSetting s = SensorHandler.instance().getSensorFromPath(getSensorSetting());
                     if(s instanceof IPollSensorSetting) {
                         requestPollPullEvent = true;
                         return new Object[]{redstoneStrength};
                     } else if(s != null) {
-                        throw new LuaException("The selected sensor is pull event based. You can't poll the value.");
+                        throw new IllegalArgumentException("The selected sensor is pull event based. You can't poll the value.");
                     } else {
-                        throw new LuaException("There's no sensor selected!");
+                        throw new IllegalArgumentException("There's no sensor selected!");
                     }
                 } else {
-                    throw new LuaException("getSensorValue takes no arguments");
+                    throw new IllegalArgumentException("getSensorValue takes no arguments");
                 }
             }
         });
@@ -559,7 +557,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
 
         luaMethods.add(new LuaMethod("setGPSToolCoordinate"){
             @Override
-            public Object[] call(IComputerAccess computer, ILuaContext context, Object[] args) throws LuaException, InterruptedException{
+            public Object[] call(Object[] args) throws Exception{
                 if(args.length == 4) {
                     ItemStack stack = getStackInSlot(((Double)args[0]).intValue() - 1); //minus one, as lua is 1-oriented.
                     if(stack != null && stack.getItem() == Itemss.GPSTool) {
@@ -569,7 +567,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
                         return new Object[]{false};
                     }
                 } else {
-                    throw new LuaException("setGPSToolCoordinate needs 4 arguments: slot, x, y, z");
+                    throw new IllegalArgumentException("setGPSToolCoordinate needs 4 arguments: slot, x, y, z");
                 }
             }
 
@@ -577,7 +575,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
 
         luaMethods.add(new LuaMethod("getGPSToolCoordinate"){
             @Override
-            public Object[] call(IComputerAccess computer, ILuaContext context, Object[] args) throws LuaException, InterruptedException{
+            public Object[] call(Object[] args) throws Exception{
                 if(args.length == 1) {
                     ItemStack stack = getStackInSlot(((Double)args[0]).intValue() - 1); //minus one, as lua is 1-oriented.
                     if(stack != null && stack.getItem() == Itemss.GPSTool) {
@@ -591,7 +589,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
                         return null;
                     }
                 } else {
-                    throw new LuaException("setGPSToolCoordinate needs 1 argument: slot");
+                    throw new IllegalArgumentException("setGPSToolCoordinate needs 1 argument: slot");
                 }
             }
         });

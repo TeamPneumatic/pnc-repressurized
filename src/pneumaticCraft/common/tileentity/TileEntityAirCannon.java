@@ -56,9 +56,6 @@ import pneumaticCraft.lib.Sounds;
 import pneumaticCraft.lib.TileEntityConstants;
 import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
-import dan200.computercraft.api.lua.ILuaContext;
-import dan200.computercraft.api.lua.LuaException;
-import dan200.computercraft.api.peripheral.IComputerAccess;
 
 public class TileEntityAirCannon extends TileEntityPneumaticBase implements ISidedInventory, IInventory,
         IMinWorkingPressure, IRedstoneControl{
@@ -662,7 +659,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements ISid
 
         luaMethods.add(new LuaMethod("setTargetLocation"){
             @Override
-            public Object[] call(IComputerAccess computer, ILuaContext context, Object[] args) throws LuaException, InterruptedException{
+            public Object[] call(Object[] args) throws Exception{
                 if(args.length == 3) {
                     gpsX = ((Double)args[0]).intValue();
                     gpsY = ((Double)args[1]).intValue();
@@ -670,64 +667,64 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements ISid
                     updateDestination();
                     return new Object[]{coordWithinReach};
                 } else {
-                    throw new LuaException("setTargetLocation requires 3 parameters (x,y,z)");
+                    throw new IllegalArgumentException("setTargetLocation requires 3 parameters (x,y,z)");
                 }
             }
         });
 
         luaMethods.add(new LuaMethod("fire"){
             @Override
-            public Object[] call(IComputerAccess computer, ILuaContext context, Object[] args) throws LuaException, InterruptedException{
+            public Object[] call(Object[] args) throws Exception{
                 if(args.length == 0) {
                     return new Object[]{fire()};//returns true if the fire succeeded.
                 } else {
-                    throw new LuaException("fire doesn't take any arguments!");
+                    throw new IllegalArgumentException("fire doesn't take any arguments!");
                 }
             }
         });
         luaMethods.add(new LuaMethod("isDoneTurning"){
             @Override
-            public Object[] call(IComputerAccess computer, ILuaContext context, Object[] args) throws LuaException, InterruptedException{
+            public Object[] call(Object[] args) throws Exception{
                 if(args.length == 0) {
                     return new Object[]{doneTurning};
                 } else {
-                    throw new LuaException("isDoneTurning doesn't take any arguments!");
+                    throw new IllegalArgumentException("isDoneTurning doesn't take any arguments!");
                 }
             }
         });
 
         luaMethods.add(new LuaMethod("setRotationAngle"){
             @Override
-            public Object[] call(IComputerAccess computer, ILuaContext context, Object[] args) throws LuaException, InterruptedException{
+            public Object[] call(Object[] args) throws Exception{
                 if(args.length == 1) {
                     setTargetAngles(((Double)args[0]).floatValue(), targetHeightAngle);
                     return null;
                 } else {
-                    throw new LuaException("setRotationAngle does take one argument!");
+                    throw new IllegalArgumentException("setRotationAngle does take one argument!");
                 }
             }
         });
 
         luaMethods.add(new LuaMethod("setHeightAngle"){
             @Override
-            public Object[] call(IComputerAccess computer, ILuaContext context, Object[] args) throws LuaException, InterruptedException{
+            public Object[] call(Object[] args) throws Exception{
                 if(args.length == 1) {
                     setTargetAngles(targetRotationAngle, 90 - ((Double)args[0]).floatValue());
                     return null;
                 } else {
-                    throw new LuaException("setHeightAngle does take one argument!");
+                    throw new IllegalArgumentException("setHeightAngle does take one argument!");
                 }
             }
         });
 
         luaMethods.add(new LuaMethod("setExternalControl"){
             @Override
-            public Object[] call(IComputerAccess computer, ILuaContext context, Object[] args) throws LuaException, InterruptedException{
+            public Object[] call(Object[] args) throws Exception{
                 if(args.length == 1) {
                     externalControl = (Boolean)args[0];
                     return null;
                 } else {
-                    throw new LuaException("setExternalControl does take one argument!");
+                    throw new IllegalArgumentException("setExternalControl does take one argument!");
                 }
             }
         });
