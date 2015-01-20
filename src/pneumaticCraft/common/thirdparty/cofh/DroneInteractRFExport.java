@@ -36,7 +36,7 @@ public class DroneInteractRFExport implements ICustomBlockInteract{
                 IEnergyReceiver receiver = (IEnergyReceiver)te;
                 for(ForgeDirection d : ForgeDirection.VALID_DIRECTIONS) {
                     if(interactHandler.getSides()[d.ordinal()]) {
-                        int transferedEnergy = droneEnergy.extractEnergy(receiver.receiveEnergy(d, Math.min(1000, interactHandler.useCount() ? interactHandler.getRemainingCount() : Integer.MAX_VALUE), true), true);
+                        int transferedEnergy = droneEnergy.extractEnergy(receiver.receiveEnergy(d, interactHandler.useCount() ? interactHandler.getRemainingCount() : Integer.MAX_VALUE, true), true);
                         if(transferedEnergy > 0) {
                             if(!simulate) {
                                 interactHandler.decreaseCount(transferedEnergy);

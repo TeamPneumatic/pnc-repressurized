@@ -8,7 +8,7 @@ import cofh.api.energy.EnergyStorage;
 
 public class ExtendedPropertyRF implements IExtendedEntityProperties{
 
-    public final EnergyStorage energy = new EnergyStorage(100000);
+    public EnergyStorage energy = new EnergyStorage(Integer.MAX_VALUE);
 
     @Override
     public void saveNBTData(NBTTagCompound compound){

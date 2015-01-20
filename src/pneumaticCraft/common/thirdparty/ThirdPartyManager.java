@@ -15,6 +15,7 @@ import pneumaticCraft.common.thirdparty.bloodmagic.BloodMagic;
 import pneumaticCraft.common.thirdparty.buildcraft.BuildCraft;
 import pneumaticCraft.common.thirdparty.cofh.CoFHCore;
 import pneumaticCraft.common.thirdparty.computercraft.ComputerCraft;
+import pneumaticCraft.common.thirdparty.computercraft.OpenComputers;
 import pneumaticCraft.common.thirdparty.fmp.FMPLoader;
 import pneumaticCraft.common.thirdparty.forestry.Forestry;
 import pneumaticCraft.common.thirdparty.hydraulicraft.Hydraulicraft;
@@ -47,6 +48,7 @@ public class ThirdPartyManager implements IGuiHandler{
         thirdPartyClasses.put(ModIds.BUILDCRAFT, BuildCraft.class);
         thirdPartyClasses.put(ModIds.IGWMOD, IGWMod.class);
         thirdPartyClasses.put(ModIds.COMPUTERCRAFT, ComputerCraft.class);
+        if(!Loader.isModLoaded(ModIds.COMPUTERCRAFT)) thirdPartyClasses.put(ModIds.OPEN_COMPUTERS, OpenComputers.class);
         thirdPartyClasses.put(ModIds.FMP, FMPLoader.class);
         thirdPartyClasses.put(ModIds.WAILA, Waila.class);
         thirdPartyClasses.put(ModIds.HC, Hydraulicraft.class);
