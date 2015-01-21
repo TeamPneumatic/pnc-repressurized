@@ -558,6 +558,17 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral,
             }
         });
 
+        luaMethods.add(new LuaMethod("getAction"){
+            @Override
+            public Object[] call(Object[] args) throws Exception{
+                if(args.length == 0) {
+                    return curAction != null ? new Object[]{curAction.getWidgetString()} : null;
+                } else {
+                    throw new IllegalArgumentException("getAction doesn't take arguments!");
+                }
+            }
+        });
+
         luaMethods.add(new LuaMethod("abortAction"){
             @Override
             public Object[] call(Object[] args) throws Exception{
@@ -607,8 +618,8 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral,
                     throw new IllegalArgumentException("getUpgrades takes one argument (upgrade index)!");
                 }
             }
-
         });
+
     }
 
     @Override
