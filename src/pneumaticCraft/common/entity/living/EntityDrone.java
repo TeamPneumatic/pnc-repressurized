@@ -467,6 +467,7 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
     @Override
     public boolean rotateBlock(World world, EntityPlayer player, int x, int y, int z, ForgeDirection side){
         if(!naturallySpawned) {
+            if(player.capabilities.isCreativeMode) naturallySpawned = true;//don't drop the drone in creative.
             attackEntityFrom(DamageSource.outOfWorld, 2000.0F);
             return true;
         } else {
