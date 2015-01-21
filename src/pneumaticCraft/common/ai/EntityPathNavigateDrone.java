@@ -20,6 +20,7 @@ public class EntityPathNavigateDrone extends PathNavigate{
 
     private final EntityDrone pathfindingEntity;
     public boolean pathThroughLiquid;
+    private boolean forceTeleport;
     private int teleportCounter = -1;
     private int telX, telY, telZ;
     private static final int TELEPORT_TICKS = 120;
@@ -50,6 +51,10 @@ public class EntityPathNavigateDrone extends PathNavigate{
         return getPathEntityToEntity(pathfindingEntity, par1Entity, getPathSearchRange(), false, false, true, false);
     }
 
+    public void setForceTeleport(boolean forceTeleport){
+        this.forceTeleport = forceTeleport;
+    }
+
     private PathEntity getPathEntityToEntity(EntityDrone par1Entity, Entity par2Entity, float par3, boolean par4, boolean par5, boolean par6, boolean par7){
         /* int i = MathHelper.floor_double(par1Entity.posX);
          int j = MathHelper.floor_double(par1Entity.posY + 1.0D);
@@ -69,21 +74,24 @@ public class EntityPathNavigateDrone extends PathNavigate{
 
     private PathEntity getEntityPathToXYZ(EntityDrone par1Entity, int par2, int par3, int par4, float par5, boolean par6, boolean par7, boolean par8, boolean par9){
         if(!par1Entity.isBlockValidPathfindBlock(par2, par3, par4)) return null;
+        PathEntity pathentity = null;
         int l = MathHelper.floor_double(par1Entity.posX);
         int i1 = MathHelper.floor_double(par1Entity.posY);
         int j1 = MathHelper.floor_double(par1Entity.posZ);
-        int k1 = (int)(par5 + 8.0F);
-        int l1 = l - k1;
-        int i2 = i1 - k1;
-        int j2 = j1 - k1;
-        int k2 = l + k1;
-        int l2 = i1 + k1;
-        int i3 = j1 + k1;
-        ChunkCache chunkcache = new ChunkCache(par1Entity.worldObj, l1, i2, j2, k2, l2, i3, 0);
-        PathEntity pathentity = new PathFinderDrone(par1Entity, chunkcache, par6, par7, pathThroughLiquid, par9).createEntityPathTo(par1Entity, par2, par3, par4, par5);
-        if(pathentity != null) {
-            PathPoint finalPoint = pathentity.getFinalPathPoint();
-            if(finalPoint == null || finalPoint.xCoord != par2 || finalPoint.yCoord != par3 || finalPoint.zCoord != par4) pathentity = null;
+        if(!forceTeleport || l == par2 && i1 == par3 && j1 == par4) {
+            int k1 = (int)(par5 + 8.0F);
+            int l1 = l - k1;
+            int i2 = i1 - k1;
+            int j2 = j1 - k1;
+            int k2 = l + k1;
+            int l2 = i1 + k1;
+            int i3 = j1 + k1;
+            ChunkCache chunkcache = new ChunkCache(par1Entity.worldObj, l1, i2, j2, k2, l2, i3, 0);
+            pathentity = new PathFinderDrone(par1Entity, chunkcache, par6, par7, pathThroughLiquid, par9).createEntityPathTo(par1Entity, par2, par3, par4, par5);
+            if(pathentity != null) {
+                PathPoint finalPoint = pathentity.getFinalPathPoint();
+                if(finalPoint == null || finalPoint.xCoord != par2 || finalPoint.yCoord != par3 || finalPoint.zCoord != par4) pathentity = null;
+            }
         }
         teleportCounter = pathentity != null ? -1 : 0;
         telX = par2;

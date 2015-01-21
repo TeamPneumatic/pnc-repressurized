@@ -188,6 +188,7 @@ programmingPuzzle.pickupItem.name=Pick up Items
 programmingPuzzle.inventoryExport.name=Export to Inventory
 programmingPuzzle.inventoryImport.name=Import from Inventory
 programmingPuzzle.goto.name=Go to location
+programmingPuzzle.teleport.name=Teleport to location
 programmingPuzzle.place.name=Place
 programmingPuzzle.entityRightClick.name=Right Click Entity
 programmingPuzzle.blockRightClick.name=Right Click Block
