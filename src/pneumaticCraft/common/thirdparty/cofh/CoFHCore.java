@@ -15,6 +15,7 @@ import pneumaticCraft.api.PneumaticRegistry;
 import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.client.model.ModelThirdPartyCompressor;
 import pneumaticCraft.common.block.Blockss;
+import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.thirdparty.IThirdParty;
 import pneumaticCraft.common.tileentity.TileEntityPneumaticBase;
@@ -100,6 +101,10 @@ public class CoFHCore implements IThirdParty, IGuiHandler{
         if(property == null) {
             property = new ExtendedPropertyRF();
             entity.registerExtendedProperties("PneumaticCraft_RF", property);
+        } else {
+            property.energy.setCapacity(100000 + 100000 * ((IDrone)entity).getUpgrades(ItemMachineUpgrade.UPGRADE_DISPENSER_DAMAGE));
+            property.energy.setMaxExtract(property.energy.getMaxEnergyStored() / 100);
+            property.energy.setMaxReceive(property.energy.getMaxExtract());
         }
         return property.energy;
     }

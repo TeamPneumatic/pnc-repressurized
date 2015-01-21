@@ -8,7 +8,6 @@ import java.util.Set;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.command.IEntitySelector;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -40,7 +39,6 @@ import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import dan200.computercraft.api.lua.LuaException;
 
 public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdered, ISidedWidget, IGotoWidget,
         IEntityProvider, ITextWidget, ICondition, ICountWidget, IItemDropper, ILiquidFiltered, IRedstoneEmissionWidget{
@@ -106,7 +104,7 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
         area.add(new ChunkPosition(x, y, z));
     }
 
-    public synchronized void addArea(int x1, int y1, int z1, int x2, int y2, int z2, String areaType) throws LuaException{
+    public synchronized void addArea(int x1, int y1, int z1, int x2, int y2, int z2, String areaType) throws IllegalArgumentException{
         area.addAll(getArea(x1, y1, z1, x2, y2, z2, areaType));
     }
 
@@ -114,7 +112,7 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
         area.remove(new ChunkPosition(x, y, z));
     }
 
-    public synchronized void removeArea(int x1, int y1, int z1, int x2, int y2, int z2, String areaType) throws LuaException{
+    public synchronized void removeArea(int x1, int y1, int z1, int x2, int y2, int z2, String areaType) throws IllegalArgumentException{
         area.removeAll(getArea(x1, y1, z1, x2, y2, z2, areaType));
     }
 
@@ -127,7 +125,7 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
         return area;
     }
 
-    private Set<ChunkPosition> getArea(int x1, int y1, int z1, int x2, int y2, int z2, String areaType) throws LuaException{
+    private Set<ChunkPosition> getArea(int x1, int y1, int z1, int x2, int y2, int z2, String areaType) throws IllegalArgumentException{
         ProgWidgetArea.EnumAreaType type = null;
         for(ProgWidgetArea.EnumAreaType t : ProgWidgetArea.EnumAreaType.values()) {
             if(t.toString().equals(areaType)) {
@@ -135,7 +133,7 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
                 break;
             }
         }
-        if(type == null) throw new LuaException("Invalid area type: " + areaType);
+        if(type == null) throw new IllegalArgumentException("Invalid area type: " + areaType);
         ProgWidgetArea helperWidget = new ProgWidgetArea();
         helperWidget.x1 = x1;
         helperWidget.y1 = y1;
@@ -152,11 +150,11 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
         return ProgWidgetItemFilter.isItemValidForFilters(item, itemWhitelist, itemBlacklist, blockMetadata);
     }
 
-    public synchronized void addWhitelistItemFilter(String itemName, int damage, boolean useMetadata, boolean useNBT, boolean useOreDict, boolean useModSimilarity) throws LuaException{
+    public synchronized void addWhitelistItemFilter(String itemName, int damage, boolean useMetadata, boolean useNBT, boolean useOreDict, boolean useModSimilarity) throws IllegalArgumentException{
         itemWhitelist.add(getItemFilter(itemName, damage, useMetadata, useNBT, useOreDict, useModSimilarity));
     }
 
-    public synchronized void addBlacklistItemFilter(String itemName, int damage, boolean useMetadata, boolean useNBT, boolean useOreDict, boolean useModSimilarity) throws LuaException{
+    public synchronized void addBlacklistItemFilter(String itemName, int damage, boolean useMetadata, boolean useNBT, boolean useOreDict, boolean useModSimilarity) throws IllegalArgumentException{
         itemBlacklist.add(getItemFilter(itemName, damage, useMetadata, useNBT, useOreDict, useModSimilarity));
     }
 
@@ -168,11 +166,11 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
         itemBlacklist.clear();
     }
 
-    private ProgWidgetItemFilter getItemFilter(String itemName, int damage, boolean useMetadata, boolean useNBT, boolean useOreDict, boolean useModSimilarity) throws LuaException{
-        if(!itemName.contains(":")) throw new LuaException("Item/Block name doesn't contain a ':'!");
+    private ProgWidgetItemFilter getItemFilter(String itemName, int damage, boolean useMetadata, boolean useNBT, boolean useOreDict, boolean useModSimilarity) throws IllegalArgumentException{
+        if(!itemName.contains(":")) throw new IllegalArgumentException("Item/Block name doesn't contain a ':'!");
         String[] itemParts = itemName.split(":");
         Item item = GameRegistry.findItem(itemParts[0], itemParts[1]);
-        if(item == null) throw new LuaException("Item not found for the name \"" + itemName + "\"!");
+        if(item == null) throw new IllegalArgumentException("Item not found for the name \"" + itemName + "\"!");
         ProgWidgetItemFilter itemFilter = new ProgWidgetItemFilter();
         itemFilter.filter = new ItemStack(item, 1, damage);
         itemFilter.specificMeta = damage;
@@ -217,15 +215,8 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
     }
 
     @Override
-    public synchronized List<EntityLivingBase> getValidEntities(World world){
-        List<Entity> entities = ProgWidgetAreaItemBase.getEntitiesInArea(getEntityAreaWidget(), null, world, whitelistFilter, blacklistFilter);
-        List<EntityLivingBase> livingEntities = new ArrayList<EntityLivingBase>();
-        for(Entity entity : entities) {
-            if(entity instanceof EntityLivingBase) {
-                livingEntities.add((EntityLivingBase)entity);
-            }
-        }
-        return livingEntities;
+    public synchronized List<Entity> getValidEntities(World world){
+        return ProgWidgetAreaItemBase.getEntitiesInArea(getEntityAreaWidget(), null, world, whitelistFilter, blacklistFilter);
     }
 
     private ProgWidgetArea getEntityAreaWidget(){
@@ -308,11 +299,11 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
         return emittingRedstone;
     }
 
-    public synchronized void addWhitelistLiquidFilter(String fluidName) throws LuaException{
+    public synchronized void addWhitelistLiquidFilter(String fluidName) throws IllegalArgumentException{
         liquidWhitelist.add(getFilterForArgs(fluidName));
     }
 
-    public synchronized void addBlacklistLiquidFilter(String fluidName) throws LuaException{
+    public synchronized void addBlacklistLiquidFilter(String fluidName) throws IllegalArgumentException{
         liquidBlacklist.add(getFilterForArgs(fluidName));
     }
 
@@ -324,9 +315,9 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
         liquidBlacklist.clear();
     }
 
-    private ProgWidgetLiquidFilter getFilterForArgs(String fluidName) throws LuaException{
+    private ProgWidgetLiquidFilter getFilterForArgs(String fluidName) throws IllegalArgumentException{
         Fluid fluid = FluidRegistry.getFluid(fluidName);
-        if(fluid == null) throw new LuaException("Can't find fluid for the name \"" + fluidName + "\"!");
+        if(fluid == null) throw new IllegalArgumentException("Can't find fluid for the name \"" + fluidName + "\"!");
         ProgWidgetLiquidFilter filter = new ProgWidgetLiquidFilter();
         filter.setFluid(fluid);
         return filter;
@@ -397,14 +388,14 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
         this.operator = operator;
     }
 
-    public synchronized void setOperator(String operator) throws LuaException{
+    public synchronized void setOperator(String operator) throws IllegalArgumentException{
         for(Operator op : Operator.values()) {
             if(op.toString().equals(operator)) {
                 setOperator(op);
                 return;
             }
         }
-        throw new LuaException("Invalid operator: \"" + operator + "\". Valid operators are: \">=\" and \"=\"");
+        throw new IllegalArgumentException("Invalid operator: \"" + operator + "\". Valid operators are: \">=\" and \"=\"");
     }
 
     @Override

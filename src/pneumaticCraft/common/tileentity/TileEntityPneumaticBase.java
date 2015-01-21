@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import li.cil.oc.api.machine.Arguments;
+import li.cil.oc.api.machine.Context;
+import li.cil.oc.api.network.ManagedPeripheral;
+import li.cil.oc.api.network.SimpleComponent;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -41,9 +45,9 @@ import dan200.computercraft.api.lua.LuaException;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import dan200.computercraft.api.peripheral.IPeripheral;
 
-@Optional.Interface(iface = "dan200.computercraft.api.peripheral.IPeripheral", modid = ModIds.COMPUTERCRAFT)
+@Optional.InterfaceList({@Optional.Interface(iface = "dan200.computercraft.api.peripheral.IPeripheral", modid = ModIds.COMPUTERCRAFT), @Optional.Interface(iface = "li.cil.oc.api.network.ManagedPeripheral", modid = ModIds.OPEN_COMPUTERS), @Optional.Interface(iface = "li.cil.oc.api.network.SimpleComponent", modid = ModIds.OPEN_COMPUTERS)})
 public class TileEntityPneumaticBase extends TileEntityBase implements IManoMeasurable, IAirHandler,
-        IPneumaticPosProvider, IPeripheral{
+        IPneumaticPosProvider, IPeripheral, ManagedPeripheral, SimpleComponent{
     public float maxPressure;
     @GuiSynced
     public int volume;
@@ -405,13 +409,21 @@ public class TileEntityPneumaticBase extends TileEntityBase implements IManoMeas
      */
 
     @Override
-    @Optional.Method(modid = ModIds.COMPUTERCRAFT)
     public String getType(){
         return "pneumaticMachine";
     }
 
     @Override
-    @Optional.Method(modid = ModIds.COMPUTERCRAFT)
+    public String getComponentName(){
+        return getType();
+    }
+
+    @Override
+    public String[] methods(){
+        return getMethodNames();
+    }
+
+    @Override
     public String[] getMethodNames(){
         String[] methodNames = new String[luaMethods.size()];
         for(int i = 0; i < methodNames.length; i++) {
@@ -421,9 +433,25 @@ public class TileEntityPneumaticBase extends TileEntityBase implements IManoMeas
     }
 
     @Override
+    @Optional.Method(modid = ModIds.OPEN_COMPUTERS)
+    public Object[] invoke(String method, Context context, Arguments args) throws Exception{
+        if("greet".equals(method)) return new Object[]{String.format("Hello, %s!", args.checkString(0))};
+        for(ILuaMethod m : luaMethods) {
+            if(m.getMethodName().equals(method)) {
+                return m.call(args.toArray());
+            }
+        }
+        throw new IllegalArgumentException("Can't invoke method with name \"" + method + "\". not registered");
+    }
+
+    @Override
     @Optional.Method(modid = ModIds.COMPUTERCRAFT)
     public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) throws LuaException, InterruptedException{
-        return luaMethods.get(method).call(computer, context, arguments);
+        try {
+            return luaMethods.get(method).call(arguments);
+        } catch(Exception e) {
+            throw new LuaException(e.getMessage());
+        }
     }
 
     @Override
@@ -445,13 +473,13 @@ public class TileEntityPneumaticBase extends TileEntityBase implements IManoMeas
     protected void addLuaMethods(){
         luaMethods.add(new LuaMethod("getPressure"){
             @Override
-            public Object[] call(IComputerAccess computer, ILuaContext context, Object[] args) throws LuaException, InterruptedException{
+            public Object[] call(Object[] args) throws Exception{
                 if(args.length == 0) {
                     return new Object[]{getPressure(ForgeDirection.UNKNOWN)};
                 } else if(args.length == 1) {
                     return new Object[]{getPressure(getDirForString((String)args[0]))};
                 } else {
-                    throw new LuaException("getPressure method requires 0 or 1 argument (direction: up, down, east, west, north, south!");
+                    throw new IllegalArgumentException("getPressure method requires 0 or 1 argument (direction: up, down, east, west, north, south!");
                 }
             }
         });

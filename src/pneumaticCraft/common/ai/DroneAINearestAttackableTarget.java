@@ -3,6 +3,7 @@ package pneumaticCraft.common.ai;
 import java.util.Collections;
 import java.util.List;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAITarget;
@@ -37,11 +38,11 @@ public class DroneAINearestAttackableTarget extends EntityAITarget{
      */
     @Override
     public boolean shouldExecute(){
-        List<EntityLivingBase> list = ((IEntityProvider)widget).getValidEntities(drone.worldObj);
+        List<Entity> list = ((IEntityProvider)widget).getValidEntities(drone.worldObj);
         Collections.sort(list, theNearestAttackableTargetSorter);
-        for(EntityLivingBase entity : list) {
-            if(entity != taskOwner) {
-                targetEntity = entity;
+        for(Entity entity : list) {
+            if(entity != taskOwner && entity instanceof EntityLivingBase) {
+                targetEntity = (EntityLivingBase)entity;
                 return true;
             }
         }

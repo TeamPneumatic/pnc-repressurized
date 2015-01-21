@@ -27,20 +27,26 @@ public class DroneAIPlace extends DroneAIBlockInteraction{
     @Override
     protected boolean isValidPosition(ChunkPosition pos){
         if(drone.worldObj.isAirBlock(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ)) {
+            boolean failedOnPlacement = false;
             for(int i = 0; i < drone.getInventory().getSizeInventory(); i++) {
                 ItemStack droneStack = drone.getInventory().getStackInSlot(i);
-                if(droneStack != null && droneStack.getItem() instanceof ItemBlock && ((ItemBlock)droneStack.getItem()).field_150939_a.canPlaceBlockOnSide(drone.worldObj, pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ, ProgWidgetPlace.getDirForSides(((ISidedWidget)widget).getSides()).ordinal())) {
-                    if(widget.isItemValidForFilters(droneStack)) {
-                        if(drone.worldObj.canPlaceEntityOnSide(((ItemBlock)droneStack.getItem()).field_150939_a, pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ, false, 0, null, droneStack)) {
-                            for(ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-                                if(drone.isBlockValidPathfindBlock(pos.chunkPosX + dir.offsetX, pos.chunkPosY + dir.offsetY, pos.chunkPosZ + dir.offsetZ)) {
-                                    return true;
+                if(droneStack != null && droneStack.getItem() instanceof ItemBlock) {
+                    if(((ItemBlock)droneStack.getItem()).field_150939_a.canPlaceBlockOnSide(drone.worldObj, pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ, ProgWidgetPlace.getDirForSides(((ISidedWidget)widget).getSides()).ordinal())) {
+                        if(widget.isItemValidForFilters(droneStack)) {
+                            if(drone.worldObj.canPlaceEntityOnSide(((ItemBlock)droneStack.getItem()).field_150939_a, pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ, false, 0, null, droneStack)) {
+                                for(ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+                                    if(drone.isBlockValidPathfindBlock(pos.chunkPosX + dir.offsetX, pos.chunkPosY + dir.offsetY, pos.chunkPosZ + dir.offsetZ)) {
+                                        return true;
+                                    }
                                 }
                             }
                         }
+                    } else {
+                        failedOnPlacement = true;
                     }
                 }
             }
+            if(!failedOnPlacement) abort();
         }
         return false;
     }

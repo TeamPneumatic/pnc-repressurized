@@ -73,7 +73,7 @@ public class Forestry implements IThirdParty{
     @Override
     public void init(){
         PneumaticRegistry.getInstance().registerFuel(FluidRegistry.getFluid("biomass"), 500000);
-        PneumaticRegistry.getInstance().registerFuel(FluidRegistry.getFluid("biofuel"), 500000);
+        PneumaticRegistry.getInstance().registerFuel(FluidRegistry.getFluid("bioethanol"), 500000);
 
         for(ItemStack stack : ((ItemPlasticElectronTube)plasticElectronTube).getSubItems()) {
             RecipeManagers.fabricatorManager.addRecipe(null, FluidRegistry.getFluidStack("glass", 500), stack.copy(), new Object[]{" X ", "#X#", "XXX", '#', Items.redstone, 'X', new ItemStack(Itemss.plastic, 1, stack.getItemDamage())});

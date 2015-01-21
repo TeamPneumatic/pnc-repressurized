@@ -176,6 +176,7 @@ public class Textures{
     public static final String ITEM_UPGRADE_COORDINATE_TRACKER = UPGRADE_LOCATION + "upgradeCoordinateTracker";
     public static final String ITEM_UPGRADE_RANGE = UPGRADE_LOCATION + "upgradeRange";
     public static final String ITEM_UPGRADE_SECURITY = UPGRADE_LOCATION + "upgradeSecurity";
+    public static final String ITEM_UPGRADE_THAUMCRAFT = UPGRADE_LOCATION + "upgradeThaumcraft";
 
     public static final String ITEM_PROGRAM_DRILL = PROGRAM_LOCATION + "ProgramDrill";
     public static final String ITEM_PROGRAM_LASER = PROGRAM_LOCATION + "ProgramLaser";

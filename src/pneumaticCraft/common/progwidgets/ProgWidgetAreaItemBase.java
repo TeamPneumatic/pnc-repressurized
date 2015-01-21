@@ -21,7 +21,7 @@ import pneumaticCraft.common.ai.StringFilterEntitySelector;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IAreaProvider{
+public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IAreaProvider, IEntityProvider{
 
     @Override
     public boolean hasStepInput(){
@@ -91,14 +91,11 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
         return getEntitiesInArea((ProgWidgetArea)getConnectedParameters()[0], (ProgWidgetArea)getConnectedParameters()[getParameters().length], world, filter, null);
     }
 
-    public List<Entity> getEntitiesInArea(World world){
-        return getEntitiesInArea(world, this);
-    }
-
-    public static List<Entity> getEntitiesInArea(World world, IProgWidget askingWidget){
-        StringFilterEntitySelector whitelistFilter = getEntityFilter((ProgWidgetString)askingWidget.getConnectedParameters()[1], true);
-        StringFilterEntitySelector blacklistFilter = getEntityFilter((ProgWidgetString)askingWidget.getConnectedParameters()[askingWidget.getParameters().length + 1], false);
-        return getEntitiesInArea((ProgWidgetArea)askingWidget.getConnectedParameters()[0], (ProgWidgetArea)askingWidget.getConnectedParameters()[askingWidget.getParameters().length], world, whitelistFilter, blacklistFilter);
+    @Override
+    public List<Entity> getValidEntities(World world){
+        StringFilterEntitySelector whitelistFilter = getEntityFilter((ProgWidgetString)getConnectedParameters()[1], true);
+        StringFilterEntitySelector blacklistFilter = getEntityFilter((ProgWidgetString)getConnectedParameters()[getParameters().length + 1], false);
+        return getEntitiesInArea((ProgWidgetArea)getConnectedParameters()[0], (ProgWidgetArea)getConnectedParameters()[getParameters().length], world, whitelistFilter, blacklistFilter);
     }
 
     public static StringFilterEntitySelector getEntityFilter(ProgWidgetString widget, boolean allowEntityIfNoFilter){

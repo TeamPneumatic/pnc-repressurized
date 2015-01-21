@@ -1,13 +1,11 @@
 package pneumaticCraft.common.progwidgets;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIAttackOnCollide;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.util.ResourceLocation;
@@ -62,7 +60,7 @@ public class ProgWidgetEntityAttack extends ProgWidget implements IAreaProvider,
     }
 
     @Override
-    public List<EntityLivingBase> getValidEntities(World world){
+    public List<Entity> getValidEntities(World world){
         StringFilterEntitySelector whitelistFilter = new StringFilterEntitySelector();
         StringFilterEntitySelector blacklistFilter = new StringFilterEntitySelector();
 
@@ -82,14 +80,7 @@ public class ProgWidgetEntityAttack extends ProgWidget implements IAreaProvider,
             widget = (ProgWidgetString)widget.getConnectedParameters()[0];
         }
 
-        List<Entity> entities = ProgWidgetAreaItemBase.getEntitiesInArea((ProgWidgetArea)getConnectedParameters()[0], (ProgWidgetArea)getConnectedParameters()[2], world, whitelistFilter, blacklistFilter);
-        List<EntityLivingBase> livingEntities = new ArrayList<EntityLivingBase>();
-        for(Entity entity : entities) {
-            if(entity instanceof EntityLivingBase) {
-                livingEntities.add((EntityLivingBase)entity);
-            }
-        }
-        return livingEntities;
+        return ProgWidgetAreaItemBase.getEntitiesInArea((ProgWidgetArea)getConnectedParameters()[0], (ProgWidgetArea)getConnectedParameters()[2], world, whitelistFilter, blacklistFilter);
     }
 
     @Override

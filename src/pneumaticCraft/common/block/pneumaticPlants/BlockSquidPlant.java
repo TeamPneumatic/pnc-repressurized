@@ -35,7 +35,7 @@ public class BlockSquidPlant extends BlockPneumaticPlantBase{
 
     @Override
     public boolean canPlantGrowOnThisBlock(Block block, World world, int x, int y, int z){
-        return block == Blocks.water;
+        return block == Blocks.water || block == Blocks.flowing_water;
     }
 
     @Override

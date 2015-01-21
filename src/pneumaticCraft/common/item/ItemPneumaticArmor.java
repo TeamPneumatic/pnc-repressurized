@@ -28,14 +28,20 @@ import pneumaticCraft.lib.ModIds;
 import pneumaticCraft.lib.PneumaticValues;
 import pneumaticCraft.lib.Textures;
 import pneumaticCraft.proxy.CommonProxy;
+import thaumcraft.api.IGoggles;
 import thaumcraft.api.IRepairable;
+import thaumcraft.api.IVisDiscountGear;
+import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.nodes.IRevealer;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.Optional;
+import cpw.mods.fml.common.Optional.Interface;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-@Optional.Interface(iface = "thaumcraft.api.IRepairable", modid = ModIds.THAUMCRAFT)
-public class ItemPneumaticArmor extends ItemArmor implements IPressurizable, IChargingStationGUIHolderItem, IRepairable{
+@Optional.InterfaceList({@Interface(iface = "thaumcraft.api.IRepairable", modid = ModIds.THAUMCRAFT), @Interface(iface = "thaumcraft.api.IGoggles", modid = ModIds.THAUMCRAFT), @Interface(iface = "thaumcraft.api.IVisDiscountGear", modid = ModIds.THAUMCRAFT), @Interface(iface = "thaumcraft.api.nodes.IRevealer", modid = ModIds.THAUMCRAFT)})
+public class ItemPneumaticArmor extends ItemArmor implements IPressurizable, IChargingStationGUIHolderItem,
+        IRepairable, IRevealer, IGoggles, IVisDiscountGear{
     private final String textureLocation;
     private final int volume;
 
@@ -189,6 +195,10 @@ public class ItemPneumaticArmor extends ItemArmor implements IPressurizable, ICh
         return (float)NBTUtil.getInteger(iStack, "air") / volume;
     }
 
+    public boolean hasSufficientPressure(ItemStack iStack){
+        return getPressure(iStack) > 0F;
+    }
+
     @Override
     public float maxPressure(ItemStack iStack){
         return 10F;
@@ -226,6 +236,26 @@ public class ItemPneumaticArmor extends ItemArmor implements IPressurizable, ICh
             return model;
         }
         return null;
+    }
+
+    private boolean hasThaumcraftUpgradeAndPressure(ItemStack stack){
+        return hasSufficientPressure(stack) && getUpgrades(ItemMachineUpgrade.UPGRADE_THAUMCRAFT, stack) > 0;
+    }
+
+    @Override
+    @Optional.Method(modid = ModIds.THAUMCRAFT)
+    public int getVisDiscount(ItemStack stack, EntityPlayer player, Aspect aspect){
+        return hasThaumcraftUpgradeAndPressure(stack) ? 5 : 0;
+    }
+
+    @Override
+    public boolean showIngamePopups(ItemStack itemstack, EntityLivingBase player){
+        return hasThaumcraftUpgradeAndPressure(itemstack);
+    }
+
+    @Override
+    public boolean showNodes(ItemStack itemstack, EntityLivingBase player){
+        return hasThaumcraftUpgradeAndPressure(itemstack);
     }
 
 }

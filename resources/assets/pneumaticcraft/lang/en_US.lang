@@ -191,7 +191,7 @@ programmingPuzzle.goto.name=Go to location
 programmingPuzzle.place.name=Place
 programmingPuzzle.entityRightClick.name=Right Click Entity
 programmingPuzzle.blockRightClick.name=Right Click Block
-programmingPuzzle.computerCraft.name=ComputerCraft Control
+programmingPuzzle.computerCraft.name=Computer Control
 programmingPuzzle.dropItem.name=Drop Items
 programmingPuzzle.emitRedstone.name=Emit Redstone
 programmingPuzzle.liquidExport.name=Export Liquid
@@ -502,7 +502,7 @@ igwtab.entry.assemblyMachines=Assembly Machines
 igwtab.entry.ic2Integration=IC2 Integration
 igwtab.entry.bcIntegration=Buildcraft Integration
 igwtab.entry.cofhIntegration=CoFH Integration
-igwtab.entry.ccIntegration=Computercraft Integration
+igwtab.entry.ccIntegration=Computercraft/Open Computers Integration
 igwmod.pressureChamber.requiredPressure=Required Pressure
 
 item.programmingPuzzle_start.name=Programming Puzzle: Start

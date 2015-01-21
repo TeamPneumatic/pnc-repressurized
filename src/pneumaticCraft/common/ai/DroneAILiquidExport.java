@@ -28,26 +28,31 @@ public class DroneAILiquidExport extends DroneAIImExBase{
     }
 
     private boolean fillTank(ChunkPosition pos, boolean simulate){
-        TileEntity te = drone.worldObj.getTileEntity(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ);
-        if(te instanceof IFluidHandler) {
-            IFluidHandler tank = (IFluidHandler)te;
+        if(drone.getTank().getFluidAmount() == 0) {
+            abort();
+            return false;
+        } else {
+            TileEntity te = drone.worldObj.getTileEntity(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ);
+            if(te instanceof IFluidHandler) {
+                IFluidHandler tank = (IFluidHandler)te;
 
-            FluidStack exportedFluid = drone.getTank().drain(Integer.MAX_VALUE, false);
-            if(exportedFluid != null && ((ILiquidFiltered)widget).isFluidValid(exportedFluid.getFluid())) {
-                for(int i = 0; i < 6; i++) {
-                    if(((ISidedWidget)widget).getSides()[i]) {
-                        int filledAmount = tank.fill(ForgeDirection.getOrientation(i), exportedFluid, false);
-                        if(filledAmount > 0) {
-                            if(((ICountWidget)widget).useCount()) filledAmount = Math.min(filledAmount, getRemainingCount());
-                            if(!simulate) {
-                                decreaseCount(tank.fill(ForgeDirection.getOrientation(i), drone.getTank().drain(filledAmount, true), true));
+                FluidStack exportedFluid = drone.getTank().drain(Integer.MAX_VALUE, false);
+                if(exportedFluid != null && ((ILiquidFiltered)widget).isFluidValid(exportedFluid.getFluid())) {
+                    for(int i = 0; i < 6; i++) {
+                        if(((ISidedWidget)widget).getSides()[i]) {
+                            int filledAmount = tank.fill(ForgeDirection.getOrientation(i), exportedFluid, false);
+                            if(filledAmount > 0) {
+                                if(((ICountWidget)widget).useCount()) filledAmount = Math.min(filledAmount, getRemainingCount());
+                                if(!simulate) {
+                                    decreaseCount(tank.fill(ForgeDirection.getOrientation(i), drone.getTank().drain(filledAmount, true), true));
+                                }
+                                return true;
                             }
-                            return true;
                         }
                     }
                 }
             }
+            return false;
         }
-        return false;
     }
 }

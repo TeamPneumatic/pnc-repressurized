@@ -95,7 +95,7 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
 
     public boolean isChangingCurrentStack;//used when syncing up the stacks of the drone with the fake player. Without it they'll keep syncing resulting in a stackoverflow.
     private IInventory inventory = new InventoryDrone("Drone Inventory", true, 0);
-    private final FluidTank tank = new FluidTank(PneumaticValues.DRONE_TANK_SIZE);
+    private final FluidTank tank = new FluidTank(Integer.MAX_VALUE);
     private ItemStack[] upgradeInventory = new ItemStack[9];
     private final int[] emittingRedstoneValues = new int[6];
     public float oldPropRotation;
@@ -612,6 +612,7 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
             }
         }
 
+        tank.setCapacity(PneumaticValues.DRONE_TANK_SIZE * (1 + getUpgrades(ItemMachineUpgrade.UPGRADE_DISPENSER_DAMAGE)));
         tank.readFromNBT(tag);
     }
 
@@ -639,6 +640,7 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
         }
     }
 
+    @Override
     public int getUpgrades(int upgradeDamage){
         int upgrades = 0;
         for(ItemStack stack : upgradeInventory) {

@@ -31,7 +31,7 @@ public interface ICustomBlockInteract{
      * In the interface of the puzzle piece users can specify a 'use count' and fill in the maximum count they want to use. When not simulating, you should only import/export up to interactHandler.getRemainingCount(), and you should notify the removed/added count by doing interactHandler.decreaseCount(int count).
      * 
      * @param pos   current visited location
-     * @param drone
+     * @param drone can be casted to IDrone where necessary
      * @param interactHandler   object you can use to use to get accessible sides and give feedback about counts.
      * @param simulate  will be true when trying to figure out whether or not the drone should navigate to this block, false when next to this block.
      * @return
