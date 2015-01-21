@@ -32,6 +32,10 @@ repositories {
 			name = "IGW"
 			url = "http://maven.k-4u.nl/"
 		}
+		maven {
+			name 'OpenComputers'
+			url = "http://maven.cil.li/"
+		}
 }
 
 apply plugin: "curseforge"
@@ -74,6 +78,7 @@ dependencies {
     compile 'com.mod-buildcraft:buildcraft:6.0.8:dev'
     compile 'net.industrial-craft:industrialcraft-2:2.2.504-experimental:api'
 	compile "igwmod:IGW-Mod-1.7.10:1.1.0-13:userdev"
+	compile "li.cil.oc:OpenComputers:MC1.7.10-1.4.5.28:api"
 
 	println("  Finished adding dependencies!")
 }
