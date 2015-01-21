@@ -3,6 +3,8 @@ Programming Puzzles are used in [link{block/programmer}]programmers [link{}].
 [prefix{l}]The 'Dig' (Dig Blocks) piece [prefix{}]
 The Drone will dig/mine the blocks within the specified area. Items that are dropped from the blocks will not be picked up by the Drone. The order in which the blocks will be digged is similar to the 'Place' piece's. Also like with the 'Place' piece, you can control if the area should be digged layer by layer (top to bottom or bottom to top).
 
+You can make the drone [link{progwidget/inventoryImport}] import[link{}] a pickaxe/shovel/... to make it use this tool. When the Drone carries around multiple tools, the best tool is chosen to be used to dig the block.
+
 Lastly you can specify which blocks are allowed to be mined by using an item filter. When used with things like crops, use item that you get when you middle-click a crop (so Seeds for a Wheat crop).
 
 This program is done when every (valid and reachable) block within the area is mined.

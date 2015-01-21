@@ -104,6 +104,9 @@ Same as above, now in one function to set all sides at once (6x boolean).
 [prefix{l}]setAction(<action>) [prefix{}] 
 String that represents the action. This should be one of the actions returned by getAllActions().
 
+[prefix{l}]getAction() [prefix{}]
+Returns a string that represents the last action set by 'setAction'. Will return nil when no action is set. Can be used to make sure to only call 'isActionDone()' when this method does not return nil.
+
 [prefix{l}]abortAction() [prefix{}] 
 Stops the current running action.
 

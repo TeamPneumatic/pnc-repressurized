@@ -1,0 +1,7 @@
+Programming Puzzles are used in [link{block/programmer}]programmers [link{}].
+
+[prefix{l}]The Teleport to location piece [prefix{}]
+Teleport is the more expensive version of [link{progwidget/goto}] goto[link{}]. It is pretty straightforward: The Drone will teleport to the nearest reachable location within the area.
+Keep in mind this is more expensive in terms of pressure than a normal goto: The drone will use 10000mL to teleport.
+
+This program is done when the Drone has reached the area, or when this area isn't reachable.

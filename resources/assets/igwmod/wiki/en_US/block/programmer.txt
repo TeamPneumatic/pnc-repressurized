@@ -59,6 +59,7 @@ The following is a list of all the different Programming Puzzles:
 [link{progwidget/blockRightClick}]-Right Click Blocks [link{}]
 [link{progwidget/entityRightClick}]-Right Click Entities [link{}]
 [link{progwidget/goto}]-Go To Location [link{}]
+[link{progwidget/teleport}]-Teleport To Location [link{}]
 [link{progwidget/entityAttack}]-Entity Attack [link{}]
 [link{progwidget/emitRedstone}]-Emit Redstone[link{}]
 [link{progwidget/itemFilter}]-Item Filter [link{}]
@@ -67,7 +68,8 @@ The following is a list of all the different Programming Puzzles:
 [link{progwidget/text}]-Text [link{}]
 [link{progwidget/jump}]-Jump [link{}]
 [link{progwidget/label}]-Label [link{}]
-[link{progwidget/label}]-Wait [link{}]
+[link{progwidget/wait}]-Wait [link{}]
+[link{progwidget/rename}]-Rename Drone [link{}]
 
 And last, but most certainly not least, a collection of pieces:
 [link{progwidget/conditions}]-Conditions [link{}]
