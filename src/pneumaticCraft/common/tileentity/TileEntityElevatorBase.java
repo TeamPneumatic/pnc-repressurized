@@ -32,11 +32,9 @@ import pneumaticCraft.common.thirdparty.computercraft.LuaConstant;
 import pneumaticCraft.common.thirdparty.computercraft.LuaMethod;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.Log;
-import pneumaticCraft.lib.ModIds;
 import pneumaticCraft.lib.PneumaticValues;
 import pneumaticCraft.lib.Sounds;
 import pneumaticCraft.lib.TileEntityConstants;
-import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -728,7 +726,6 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
     }
 
     @Override
-    @Optional.Method(modid = ModIds.COMPUTERCRAFT)
     protected void addLuaMethods(){
         super.addLuaMethods();
         luaMethods.add(new LuaConstant("getMinWorkingPressure", PneumaticValues.MIN_PRESSURE_ELEVATOR));

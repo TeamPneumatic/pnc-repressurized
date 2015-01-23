@@ -258,8 +258,6 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
         return upgradeSlots;
     }
 
-    protected void addLuaMethods(){}
-
     protected void writeInventoryToNBT(NBTTagCompound tag, ItemStack[] stacks){
         writeInventoryToNBT(tag, stacks, "Items");
     }
