@@ -84,7 +84,7 @@ dependencies {
 }
 
 minecraft {
-    version = "${project.ext.mcVersion}-10.13.0.1208"
+    version = "${project.ext.mcVersion}-10.13.2.1291"
     runDir = "minecraft/assets"
 
     // replacing stuff in the source
