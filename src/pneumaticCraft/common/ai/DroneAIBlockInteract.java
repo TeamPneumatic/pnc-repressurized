@@ -18,6 +18,7 @@ import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.progwidgets.ISidedWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetAreaItemBase;
 import pneumaticCraft.common.progwidgets.ProgWidgetPlace;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.Log;
 
 public class DroneAIBlockInteract extends DroneAIBlockInteraction{
@@ -40,7 +41,23 @@ public class DroneAIBlockInteract extends DroneAIBlockInteraction{
         if(drone.getFakePlayer().getCurrentEquippedItem() != null && drone.getFakePlayer().getCurrentEquippedItem().stackSize <= 0) {
             drone.getFakePlayer().setCurrentItemOrArmor(0, null);
         }
+        transferToDroneFromFakePlayer(drone);
         return result;
+    }
+
+    public static void transferToDroneFromFakePlayer(EntityDrone drone){
+        //transfer items
+        for(int j = 1; j < drone.getFakePlayer().inventory.mainInventory.length; j++) {
+            ItemStack excessStack = drone.getFakePlayer().inventory.mainInventory[j];
+            if(excessStack != null) {
+                ItemStack remainder = PneumaticCraftUtils.exportStackToInventory(drone.getInventory(), excessStack, ForgeDirection.UNKNOWN);
+                if(remainder != null) {
+                    drone.entityDropItem(remainder, 0);
+                }
+                drone.getFakePlayer().inventory.mainInventory[j] = null;
+            }
+        }
+
     }
 
     private boolean rightClick(ChunkPosition pos){

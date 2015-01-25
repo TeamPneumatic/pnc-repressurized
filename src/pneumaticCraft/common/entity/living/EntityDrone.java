@@ -14,6 +14,7 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -145,7 +146,7 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
     }
 
     private void initializeFakePlayer(World world, String uuid, String name){
-        fakePlayer = new DroneFakePlayer((WorldServer)world, new GameProfile(uuid != null ? UUID.fromString(uuid) : null, name), new FakePlayerItemInWorldManager(world, fakePlayer, this));
+        fakePlayer = new DroneFakePlayer((WorldServer)world, new GameProfile(uuid != null ? UUID.fromString(uuid) : null, name), new FakePlayerItemInWorldManager(world, fakePlayer, this), this);
         fakePlayer.playerNetServerHandler = new NetHandlerPlayServer(MinecraftServer.getServer(), new NetworkManager(false), fakePlayer);
         fakePlayer.inventory = new InventoryFakePlayer(fakePlayer);
         playerName = name;
@@ -753,8 +754,17 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
     }
 
     public class DroneFakePlayer extends EntityPlayerMP{
-        public DroneFakePlayer(WorldServer world, GameProfile name, ItemInWorldManager itemManager){
+        private final EntityDrone drone;
+
+        public DroneFakePlayer(WorldServer world, GameProfile name, ItemInWorldManager itemManager, EntityDrone drone){
             super(FMLCommonHandler.instance().getMinecraftServerInstance(), world, name, itemManager);
+            this.drone = drone;
+        }
+
+        @Override
+        public void addExperience(int amount){
+            EntityXPOrb orb = new EntityXPOrb(drone.worldObj, drone.posX, drone.posY, drone.posZ, amount);
+            drone.worldObj.spawnEntityInWorld(orb);
         }
 
         @Override
