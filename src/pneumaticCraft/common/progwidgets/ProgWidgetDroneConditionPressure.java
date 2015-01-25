@@ -17,7 +17,7 @@ public class ProgWidgetDroneConditionPressure extends ProgWidgetDroneEvaluation{
     }
 
     @Override
-    protected int getCount(EntityDrone drone){
+    protected int getCount(EntityDrone drone, IProgWidget widget){
         return (int)drone.getPressure(null);
     }
 

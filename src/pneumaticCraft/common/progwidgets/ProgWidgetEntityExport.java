@@ -46,7 +46,7 @@ public class ProgWidgetEntityExport extends ProgWidgetAreaItemBase{
 
             @Override
             public boolean shouldExecute(){
-                return drone.riddenByEntity == null || !ProgWidgetAreaItemBase.getEntityFilter((ProgWidgetString)widget.getConnectedParameters()[1], true).isEntityApplicable(drone.riddenByEntity) || ProgWidgetAreaItemBase.getEntityFilter((ProgWidgetString)widget.getConnectedParameters()[3], false).isEntityApplicable(drone.riddenByEntity) ? false : super.shouldExecute();
+                return drone.riddenByEntity == null || !widget.isEntityValid(drone.riddenByEntity) ? false : super.shouldExecute();
             }
 
             @Override

@@ -87,15 +87,34 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
         return ProgWidgetItemFilter.isItemValidForFilters(item, ProgWidget.getConnectedWidgetList(this, 1), ProgWidget.getConnectedWidgetList(this, getParameters().length + 1), blockMetadata);
     }
 
+    public boolean isItemFilterEmpty(){
+        return getConnectedParameters()[1] == null && getConnectedParameters()[3] == null;
+    }
+
     public List<Entity> getEntitiesInArea(World world, IEntitySelector filter){
         return getEntitiesInArea((ProgWidgetArea)getConnectedParameters()[0], (ProgWidgetArea)getConnectedParameters()[getParameters().length], world, filter, null);
     }
 
+    public static List<Entity> getValidEntities(World world, IProgWidget widget){
+        StringFilterEntitySelector whitelistFilter = getEntityFilter((ProgWidgetString)widget.getConnectedParameters()[1], true);
+        StringFilterEntitySelector blacklistFilter = getEntityFilter((ProgWidgetString)widget.getConnectedParameters()[widget.getParameters().length + 1], false);
+        return getEntitiesInArea((ProgWidgetArea)widget.getConnectedParameters()[0], (ProgWidgetArea)widget.getConnectedParameters()[widget.getParameters().length], world, whitelistFilter, blacklistFilter);
+    }
+
     @Override
     public List<Entity> getValidEntities(World world){
-        StringFilterEntitySelector whitelistFilter = getEntityFilter((ProgWidgetString)getConnectedParameters()[1], true);
-        StringFilterEntitySelector blacklistFilter = getEntityFilter((ProgWidgetString)getConnectedParameters()[getParameters().length + 1], false);
-        return getEntitiesInArea((ProgWidgetArea)getConnectedParameters()[0], (ProgWidgetArea)getConnectedParameters()[getParameters().length], world, whitelistFilter, blacklistFilter);
+        return getValidEntities(world, this);
+    }
+
+    public static boolean isEntityValid(Entity entity, IProgWidget widget){
+        StringFilterEntitySelector whitelistFilter = getEntityFilter((ProgWidgetString)widget.getConnectedParameters()[1], true);
+        StringFilterEntitySelector blacklistFilter = getEntityFilter((ProgWidgetString)widget.getConnectedParameters()[widget.getParameters().length + 1], false);
+        return whitelistFilter.isEntityApplicable(entity) && !blacklistFilter.isEntityApplicable(entity);
+    }
+
+    @Override
+    public boolean isEntityValid(Entity entity){
+        return isEntityValid(entity, this);
     }
 
     public static StringFilterEntitySelector getEntityFilter(ProgWidgetString widget, boolean allowEntityIfNoFilter){

@@ -20,7 +20,7 @@ public interface ICondition{
      * @param drone TODO
      * @return
      */
-    public boolean evaluate(EntityDrone drone);
+    public boolean evaluate(EntityDrone drone, IProgWidget widget);
 
     public enum Operator{
         EQUALS("="), HIGHER_THAN_EQUALS(">=");

@@ -18,11 +18,12 @@ public class ProgWidgetDroneConditionItem extends ProgWidgetDroneEvaluation{
     }
 
     @Override
-    protected int getCount(EntityDrone drone){
+    protected int getCount(EntityDrone drone, IProgWidget widget){
         int count = 0;
         for(int i = 0; i < drone.getInventory().getSizeInventory(); i++) {
             ItemStack droneStack = drone.getInventory().getStackInSlot(i);
-            if(droneStack != null && ProgWidgetItemFilter.isItemValidForFilters(droneStack, ProgWidget.getConnectedWidgetList(this, 0), ProgWidget.getConnectedWidgetList(this, getParameters().length), -1)) {
+
+            if(droneStack != null && ((ProgWidgetAreaItemBase)widget).isItemValidForFilters(droneStack)) {
                 count += droneStack.stackSize;
             }
         }

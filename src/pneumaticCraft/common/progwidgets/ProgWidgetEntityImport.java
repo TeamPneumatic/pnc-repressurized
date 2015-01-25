@@ -1,11 +1,14 @@
 package pneumaticCraft.common.progwidgets;
 
+import java.util.List;
 import java.util.Set;
 
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.ChunkPosition;
+import net.minecraft.world.World;
 import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.client.gui.programmer.GuiProgWidgetAreaShow;
 import pneumaticCraft.common.ai.DroneAIEntityImport;
@@ -15,7 +18,7 @@ import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ProgWidgetEntityImport extends ProgWidget implements IProgWidget, IAreaProvider{
+public class ProgWidgetEntityImport extends ProgWidget implements IProgWidget, IAreaProvider, IEntityProvider{
 
     @Override
     public boolean hasStepInput(){
@@ -76,5 +79,15 @@ public class ProgWidgetEntityImport extends ProgWidget implements IProgWidget, I
     @Override
     public int getCraftingColorIndex(){
         return ItemPlasticPlants.RAIN_PLANT_DAMAGE;
+    }
+
+    @Override
+    public List<Entity> getValidEntities(World world){
+        return ProgWidgetAreaItemBase.getValidEntities(world, this);
+    }
+
+    @Override
+    public boolean isEntityValid(Entity entity){
+        return ProgWidgetAreaItemBase.isEntityValid(entity, this);
     }
 }

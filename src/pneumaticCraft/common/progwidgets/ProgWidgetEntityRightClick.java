@@ -9,13 +9,14 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 import pneumaticCraft.common.ai.DroneAIBlockInteract;
 import pneumaticCraft.common.ai.DroneEntityBase;
 import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.lib.Textures;
 
-public class ProgWidgetEntityRightClick extends ProgWidget{
+public class ProgWidgetEntityRightClick extends ProgWidget implements IEntityProvider{
 
     @Override
     public boolean hasStepInput(){
@@ -90,5 +91,15 @@ public class ProgWidgetEntityRightClick extends ProgWidget{
             }
 
         };
+    }
+
+    @Override
+    public List<Entity> getValidEntities(World world){
+        return ProgWidgetAreaItemBase.getValidEntities(world, this);
+    }
+
+    @Override
+    public boolean isEntityValid(Entity entity){
+        return ProgWidgetAreaItemBase.isEntityValid(entity, this);
     }
 }

@@ -61,26 +61,16 @@ public class ProgWidgetEntityAttack extends ProgWidget implements IAreaProvider,
 
     @Override
     public List<Entity> getValidEntities(World world){
-        StringFilterEntitySelector whitelistFilter = new StringFilterEntitySelector();
-        StringFilterEntitySelector blacklistFilter = new StringFilterEntitySelector();
-
-        ProgWidgetString widget = (ProgWidgetString)getConnectedParameters()[1];
-        if(widget != null) {
-            while(widget != null) {
-                whitelistFilter.addEntry(widget.string);
-                widget = (ProgWidgetString)widget.getConnectedParameters()[0];
-            }
-        } else {
-            whitelistFilter.setFilter("");
-        }
-
-        widget = (ProgWidgetString)getConnectedParameters()[3];
-        while(widget != null) {
-            blacklistFilter.addEntry(widget.string);
-            widget = (ProgWidgetString)widget.getConnectedParameters()[0];
-        }
-
+        StringFilterEntitySelector whitelistFilter = ProgWidgetAreaItemBase.getEntityFilter((ProgWidgetString)getConnectedParameters()[1], true);
+        StringFilterEntitySelector blacklistFilter = ProgWidgetAreaItemBase.getEntityFilter((ProgWidgetString)getConnectedParameters()[3], false);
         return ProgWidgetAreaItemBase.getEntitiesInArea((ProgWidgetArea)getConnectedParameters()[0], (ProgWidgetArea)getConnectedParameters()[2], world, whitelistFilter, blacklistFilter);
+    }
+
+    @Override
+    public boolean isEntityValid(Entity entity){
+        StringFilterEntitySelector whitelistFilter = ProgWidgetAreaItemBase.getEntityFilter((ProgWidgetString)getConnectedParameters()[1], true);
+        StringFilterEntitySelector blacklistFilter = ProgWidgetAreaItemBase.getEntityFilter((ProgWidgetString)getConnectedParameters()[3], false);
+        return whitelistFilter.isEntityApplicable(entity) && !blacklistFilter.isEntityApplicable(entity);
     }
 
     @Override

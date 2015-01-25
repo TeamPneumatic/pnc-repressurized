@@ -150,6 +150,11 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
         return ProgWidgetItemFilter.isItemValidForFilters(item, itemWhitelist, itemBlacklist, blockMetadata);
     }
 
+    @Override
+    public boolean isItemFilterEmpty(){
+        return itemWhitelist.isEmpty() && itemBlacklist.isEmpty();
+    }
+
     public synchronized void addWhitelistItemFilter(String itemName, int damage, boolean useMetadata, boolean useNBT, boolean useOreDict, boolean useModSimilarity) throws IllegalArgumentException{
         itemWhitelist.add(getItemFilter(itemName, damage, useMetadata, useNBT, useOreDict, useModSimilarity));
     }
@@ -235,6 +240,11 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
     @Override
     public synchronized List<Entity> getEntitiesInArea(World world, IEntitySelector filter){
         return ProgWidgetAreaItemBase.getEntitiesInArea(getEntityAreaWidget(), null, world, filter, null);
+    }
+
+    @Override
+    public boolean isEntityValid(Entity entity){
+        return whitelistFilter.isEntityApplicable(entity) && !blacklistFilter.isEntityApplicable(entity);
     }
 
     private ChunkPosition getMinPos(){
@@ -399,7 +409,7 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
     }
 
     @Override
-    public boolean evaluate(EntityDrone drone){
+    public boolean evaluate(EntityDrone drone, IProgWidget widget){
         return false;
     }
 

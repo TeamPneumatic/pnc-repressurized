@@ -1,10 +1,11 @@
 package pneumaticCraft.common.progwidgets;
 
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fluids.Fluid;
 import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.lib.Textures;
 
-public class ProgWidgetDroneConditionLiquid extends ProgWidgetDroneEvaluation{
+public class ProgWidgetDroneConditionLiquid extends ProgWidgetDroneEvaluation implements ILiquidFiltered{
 
     @Override
     public Class<? extends IProgWidget>[] getParameters(){
@@ -17,13 +18,18 @@ public class ProgWidgetDroneConditionLiquid extends ProgWidgetDroneEvaluation{
     }
 
     @Override
-    protected int getCount(EntityDrone drone){
-        return drone.getTank().getFluid() != null && ProgWidgetLiquidFilter.isLiquidValid(drone.getTank().getFluid().getFluid(), this, 0) ? drone.getTank().getFluidAmount() : 0;
+    protected int getCount(EntityDrone drone, IProgWidget widget){
+        return drone.getTank().getFluid() != null && ((ILiquidFiltered)widget).isFluidValid(drone.getTank().getFluid().getFluid()) ? drone.getTank().getFluidAmount() : 0;
     }
 
     @Override
     protected ResourceLocation getTexture(){
         return Textures.PROG_WIDGET_CONDITION_DRONE_LIQUID_INVENTORY;
+    }
+
+    @Override
+    public boolean isFluidValid(Fluid fluid){
+        return ProgWidgetLiquidFilter.isLiquidValid(fluid, this, 0);
     }
 
 }

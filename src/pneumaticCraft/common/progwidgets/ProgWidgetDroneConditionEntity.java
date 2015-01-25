@@ -21,8 +21,8 @@ public class ProgWidgetDroneConditionEntity extends ProgWidgetDroneEvaluation{
     }
 
     @Override
-    protected int getCount(EntityDrone drone){
-        return drone.riddenByEntity == null || !ProgWidgetAreaItemBase.getEntityFilter((ProgWidgetString)getConnectedParameters()[0], true).isEntityApplicable(drone.riddenByEntity) || ProgWidgetAreaItemBase.getEntityFilter((ProgWidgetString)getConnectedParameters()[2], false).isEntityApplicable(drone.riddenByEntity) ? 0 : 1;
+    protected int getCount(EntityDrone drone, IProgWidget widget){
+        return drone.riddenByEntity == null || !((ProgWidgetAreaItemBase)widget).isEntityValid(drone.riddenByEntity) ? 0 : 1;
     }
 
     @Override

@@ -20,7 +20,7 @@ public class ProgWidgetDroneConditionRF extends ProgWidgetDroneEvaluation{
     }
 
     @Override
-    protected int getCount(EntityDrone drone){
+    protected int getCount(EntityDrone drone, IProgWidget widget){
         return CoFHCore.getEnergyStorage(drone).getEnergyStored();
     }
 

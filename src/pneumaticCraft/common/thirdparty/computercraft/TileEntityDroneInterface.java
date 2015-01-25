@@ -523,7 +523,7 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral,
             public Object[] call(Object[] args) throws Exception{
                 if(args.length == 0) {
                     if(curAction instanceof ICondition) {
-                        Boolean bool = ((ICondition)curAction).evaluate(drone);
+                        Boolean bool = ((ICondition)curAction).evaluate(drone, getWidget());
                         Log.info(bool.toString());
                         return new Object[]{bool};
                     } else {

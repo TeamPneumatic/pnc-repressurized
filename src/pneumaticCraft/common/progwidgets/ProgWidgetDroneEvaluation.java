@@ -67,16 +67,16 @@ public abstract class ProgWidgetDroneEvaluation extends ProgWidget implements IC
 
     @Override
     public IProgWidget getOutputWidget(EntityDrone drone, List<IProgWidget> allWidgets){
-        return ProgWidgetJump.jumpToLabel(allWidgets, this, evaluate(drone));
+        return ProgWidgetJump.jumpToLabel(allWidgets, this, evaluate(drone, this));
     }
 
     @Override
-    public boolean evaluate(EntityDrone drone){
-        int count = getCount(drone);
+    public boolean evaluate(EntityDrone drone, IProgWidget widget){
+        int count = getCount(drone, widget);
         return getOperator() == Operator.EQUALS ? count == getRequiredCount() : count >= getRequiredCount();
     }
 
-    protected abstract int getCount(EntityDrone drone);
+    protected abstract int getCount(EntityDrone drone, IProgWidget widget);
 
     @Override
     public EntityAIBase getWidgetAI(EntityDrone drone, IProgWidget widget){
