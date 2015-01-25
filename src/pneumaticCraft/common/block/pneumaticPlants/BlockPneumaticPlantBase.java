@@ -6,14 +6,13 @@ import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFlower;
+import net.minecraft.block.IGrowable;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
-import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.common.Config;
@@ -24,7 +23,7 @@ import pneumaticCraft.common.network.PacketSpawnParticle;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public abstract class BlockPneumaticPlantBase extends BlockFlower{
+public abstract class BlockPneumaticPlantBase extends BlockFlower implements IGrowable{
     IIcon[] texture;
 
     protected BlockPneumaticPlantBase(){
@@ -123,6 +122,9 @@ public abstract class BlockPneumaticPlantBase extends BlockFlower{
      * Apply bonemeal to the crops.
      */
 
+    /*
+     * now using IGrowable's func_149853_b for fertilization
+     * 
     public boolean fertilize(World par1World, int par2, int par3, int par4, EntityPlayer player){
         int meta = par1World.getBlockMetadata(par2, par3, par4);
         if(meta == 6 || meta == 13) {
@@ -144,6 +146,7 @@ public abstract class BlockPneumaticPlantBase extends BlockFlower{
         // spawn a seed.
         // Doesnt work, because it first goes through the get growth rate thing.
     }
+    */
 
     @Override
     public boolean canBlockStay(World par1World, int par2, int par3, int par4){
@@ -265,4 +268,41 @@ public abstract class BlockPneumaticPlantBase extends BlockFlower{
      * @SideOnly(Side.CLIENT) public int idPicked(World par1World, int par2, int
      * par3, int par4) { return this.getSeedItem(); }
      */
+
+    private boolean isNotMature(int meta){
+        return(meta < 6 || (meta > 6 && meta < 13));
+        //return(meta > 6 && meta < 13); // only allow bonemealing of user-placed plants
+    }
+
+    public void executeGrowthStep(World world, int x, int y, int z, Random rand){
+        int meta = world.getBlockMetadata(x, y, z);
+        if(isNotMature(meta)) {
+            ++meta;
+            world.setBlockMetadataWithNotify(x, y, z, meta, 3);
+        }
+    }
+
+    /**
+     * can this grow when bonemealed?
+     */
+    @Override
+    public boolean func_149851_a(World world, int x, int y, int z, boolean isRemote){
+        return isNotMature(world.getBlockMetadata(x, y, z));
+    }
+
+    /**
+     * can we still grow (as opposed to: already mature)?
+     */
+    @Override
+    public boolean func_149852_a(World world, Random random, int x, int y, int z){
+        return isNotMature(world.getBlockMetadata(x, y, z));
+    }
+
+    /**
+     * execute a growth step
+     */
+    @Override
+    public void func_149853_b(World world, Random rand, int x, int y, int z){
+        executeGrowthStep(world, x, y, z, rand);
+    }
 }

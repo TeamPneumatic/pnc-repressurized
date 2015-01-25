@@ -133,11 +133,7 @@ public class EventHandlerPneumaticCraft{
     public void onFertilization(BonemealEvent event){
         if(event.world.isRemote) return; // why would we want to handle this on the client-side?
 
-        if(event.block instanceof BlockPneumaticPlantBase) {
-            if(((BlockPneumaticPlantBase)event.block).fertilize(event.world, event.x, event.y, event.z, event.entityPlayer)) {
-                event.setResult(Result.ALLOW);
-            }
-        } else if(event.block == Blocks.netherrack || event.block == Blocks.end_stone || event.block.canSustainPlant(event.world, event.x, event.y, event.z, ForgeDirection.UP, Blocks.red_flower)) { // can bonemeal Biomes O' Plenty grass, etc.    			    			
+        if(event.block == Blocks.netherrack || event.block == Blocks.end_stone || event.block.canSustainPlant(event.world, event.x, event.y, event.z, ForgeDirection.UP, Blocks.red_flower)) { // can bonemeal Biomes O' Plenty grass, etc.    			    			
             boolean onGrass = event.block instanceof BlockGrass;
             if(onGrass && Config.includePlantsOnBonemeal || !onGrass && Config.allowDirtBonemealing) {
                 // we'll try to spawn plants in a 5x5 area which is centered on the block that has been bonemealed
