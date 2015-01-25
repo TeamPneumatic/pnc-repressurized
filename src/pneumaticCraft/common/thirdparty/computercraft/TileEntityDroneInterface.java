@@ -401,6 +401,19 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral,
             }
         });
 
+        luaMethods.add(new LuaMethod("setRenameString"){
+            @Override
+            public Object[] call(Object[] args) throws Exception{
+                if(args.length == 1) {
+                    getWidget().setNewName((String)args[0]);
+                    messageToDrone(0xFFFFFFFF);
+                    return null;
+                } else {
+                    throw new IllegalArgumentException("setRenameString takes 1 argument (new name)!");
+                }
+            }
+        });
+
         luaMethods.add(new LuaMethod("addWhitelistLiquidFilter"){
             @Override
             public Object[] call(Object[] args) throws Exception{

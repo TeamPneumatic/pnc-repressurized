@@ -7,7 +7,7 @@ import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.lib.Textures;
 
-public class ProgWidgetRename extends ProgWidget{
+public class ProgWidgetRename extends ProgWidget implements IRenamingWidget{
 
     @Override
     public boolean hasStepInput(){
@@ -58,14 +58,29 @@ public class ProgWidgetRename extends ProgWidget{
 
     @Override
     public EntityAIBase getWidgetAI(final EntityDrone drone, final IProgWidget widget){
-        return new EntityAIBase(){
-            @Override
-            public boolean shouldExecute(){
-                drone.setCustomNameTag(widget.getConnectedParameters()[0] != null ? ((ProgWidgetString)widget.getConnectedParameters()[0]).string : I18n.format("entity.PneumaticCraft.Drone.name"));
-                return false;
-            }
+        return new DroneAIRename(drone, (IRenamingWidget)widget);
+    }
 
-        };
+    private class DroneAIRename extends EntityAIBase{
+        private final EntityDrone drone;
+        private final IRenamingWidget widget;
+
+        public DroneAIRename(EntityDrone drone, IRenamingWidget widget){
+            this.drone = drone;
+            this.widget = widget;
+        }
+
+        @Override
+        public boolean shouldExecute(){
+            drone.setCustomNameTag(widget.getNewName() != null ? widget.getNewName() : I18n.format("entity.PneumaticCraft.Drone.name"));
+            return false;
+        }
+
+    }
+
+    @Override
+    public String getNewName(){
+        return getConnectedParameters()[0] != null ? ((ProgWidgetString)getConnectedParameters()[0]).string : null;
     }
 
 }

@@ -29,6 +29,7 @@ import pneumaticCraft.common.progwidgets.IItemDropper;
 import pneumaticCraft.common.progwidgets.ILiquidFiltered;
 import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.common.progwidgets.IRedstoneEmissionWidget;
+import pneumaticCraft.common.progwidgets.IRenamingWidget;
 import pneumaticCraft.common.progwidgets.ISidedWidget;
 import pneumaticCraft.common.progwidgets.ITextWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetArea;
@@ -41,7 +42,8 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdered, ISidedWidget, IGotoWidget,
-        IEntityProvider, ITextWidget, ICondition, ICountWidget, IItemDropper, ILiquidFiltered, IRedstoneEmissionWidget{
+        IEntityProvider, ITextWidget, ICondition, ICountWidget, IItemDropper, ILiquidFiltered, IRedstoneEmissionWidget,
+        IRenamingWidget{
     private EnumOrder order = EnumOrder.CLOSEST;
     private boolean[] sides = new boolean[6];
     private final Set<ChunkPosition> area = new HashSet<ChunkPosition>();
@@ -57,6 +59,7 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
     private Operator operator;
     private final List<ProgWidgetLiquidFilter> liquidBlacklist = new ArrayList<ProgWidgetLiquidFilter>();
     private final List<ProgWidgetLiquidFilter> liquidWhitelist = new ArrayList<ProgWidgetLiquidFilter>();
+    private String renamingName;
 
     @Override
     public Class<? extends IProgWidget>[] getParameters(){
@@ -411,6 +414,15 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
     @Override
     public boolean evaluate(EntityDrone drone, IProgWidget widget){
         return false;
+    }
+
+    public void setNewName(String name){
+        renamingName = name;
+    }
+
+    @Override
+    public String getNewName(){
+        return renamingName;
     }
 
 }

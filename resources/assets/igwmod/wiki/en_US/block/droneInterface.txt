@@ -77,6 +77,9 @@ Clears all the blacklisted liquid filters stored.
 [prefix{l}]setEmittingRedstone(<strength>) [prefix{}] 
 Sets the strength the redstone will be emitting when the "emitRedstone" action would be set.
 
+[prefix{l}]setRenameString(<name>) [prefix{}] 
+Sets the name the Drone will be named to when the "rename" action would be set.
+
 [prefix{l}]setDropStraight(<true/false>) [prefix{}] 
 When the "dropItem" action would be set, this determines whether or not the item will be dropped with a random velocity, or straight down.
 
@@ -116,7 +119,7 @@ Returns true if the current action is done (goto has arrived at the target locat
 [prefix{l}]forgetTarget() [prefix{}] 
 When the Drone was targeting an Entity (in the Entity Attack program), this will stop attacking that target.
 
-[prefix{l}]forgetTarget(<upgrade>) [prefix{}] 
+[prefix{l}]getUpgrades(<upgrade>) [prefix{}] 
 Will get the amount of inserted upgrades of the given type. This type is the index of the upgrade (in creative, or NEI), starting with 0. Or the metadata value when you use NEI. A Speed upgrade for example has an index of 5.
 
 Anytime the Drone gets updated a ring will be shot out of the Drone Interface, indicating it was successful. The color of the ring is the same color as the puzzle piece it was associated with.
