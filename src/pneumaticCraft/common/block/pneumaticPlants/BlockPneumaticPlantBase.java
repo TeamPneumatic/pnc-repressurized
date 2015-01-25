@@ -83,7 +83,7 @@ public abstract class BlockPneumaticPlantBase extends BlockFlower{
 
     // make this method public
     public boolean canPlantGrowOnThisBlock(Block block, World world, int x, int y, int z){
-    	return(block.canSustainPlant(world, x, y, z, ForgeDirection.UP, this));
+        return block.canSustainPlant(world, x, y, z, ForgeDirection.UP, this);
     }
 
     /**
@@ -96,7 +96,7 @@ public abstract class BlockPneumaticPlantBase extends BlockFlower{
         if(!world.isRemote) {
             float var7 = getGrowthRate(world, x, y, z);
 
-            if(canGrowWithLightValue(world.getBlockLightValue(x, y + (isPlantHanging() ? -1 : 1), z)) && rand.nextInt((int)(25.0F / var7) + 1) == 0 || skipGrowthCheck(world, x, y, z)) {
+            if(canGrowWithLightValue(world.getBlockLightValue(x, y, z)) && rand.nextInt((int)(25.0F / var7) + 1) == 0 || skipGrowthCheck(world, x, y, z)) {
                 int meta = world.getBlockMetadata(x, y, z);
                 if(meta < 13) {
                     if(meta != 6) {//let world generated full-grown plants not grow.
