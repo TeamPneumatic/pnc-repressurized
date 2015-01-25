@@ -468,8 +468,6 @@ public class TileEntityPneumaticBase extends TileEntityBase implements IManoMeas
         return this.equals((Object)other);
     }
 
-    @Override
-    @Optional.Method(modid = ModIds.COMPUTERCRAFT)
     protected void addLuaMethods(){
         luaMethods.add(new LuaMethod("getPressure"){
             @Override

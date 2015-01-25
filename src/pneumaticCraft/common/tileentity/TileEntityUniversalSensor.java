@@ -453,7 +453,6 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
     }
 
     @Override
-    @Optional.Method(modid = ModIds.COMPUTERCRAFT)
     public void addLuaMethods(){
         super.addLuaMethods();
 

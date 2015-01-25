@@ -12,7 +12,7 @@ import pneumaticCraft.common.progwidgets.IGotoWidget;
 import pneumaticCraft.common.progwidgets.ProgWidget;
 
 public class DroneEntityAIGoToLocation extends EntityAIBase{
-    private final EntityDrone drone;
+    protected final EntityDrone drone;
     private final double speed;
     private final ProgWidget gotoWidget;
     private final ChunkPositionSorter positionSorter;

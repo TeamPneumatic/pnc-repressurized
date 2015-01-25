@@ -24,3 +24,6 @@ By inserting a Dispenser Upgrade you can make the Aerial Interface act like a re
 If you've got either OpenBlocks or Minefactory Reloaded installed, the Dispenser Upgrade also allows you to pump Liquid XP or Mob Essence in or out of the Aerial Interface. When multiple types of liquid XP exist in your instance you can pump in a little bit of the desired type into the Aerial Interface to 'learn' the Interface about which one to output.
 
 Note that the Aerial Interface doesn't have an internal liquid buffer. This means that when pumping XP in or out, you need a device that can transport liquids at a rate higher than the amount of liquid XP per XP point. This is 20mB/tick for OpenBlocks' Liquid XP, and 77mB/tick for MFR's Mob Essence.
+
+[prefix{l}]Computer peripheral[prefix{}]
+The Aerial Interface can be accessed as a pneumatic peripheral only on the top and bottom of the block. The other sides don't give access to a pneumatic peripheral. This allows you to us mods like OpenPeripherals to access the contents of the player's inventory through the Aerial Interface by connecting to the Aerial Interface from a side.

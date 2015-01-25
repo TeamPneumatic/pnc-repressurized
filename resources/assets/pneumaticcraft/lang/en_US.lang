@@ -188,6 +188,7 @@ programmingPuzzle.pickupItem.name=Pick up Items
 programmingPuzzle.inventoryExport.name=Export to Inventory
 programmingPuzzle.inventoryImport.name=Import from Inventory
 programmingPuzzle.goto.name=Go to location
+programmingPuzzle.teleport.name=Teleport to location
 programmingPuzzle.place.name=Place
 programmingPuzzle.entityRightClick.name=Right Click Entity
 programmingPuzzle.blockRightClick.name=Right Click Block
@@ -287,7 +288,7 @@ gui.tab.info.item.pneumaticHelmet.entityTracker=§0With the Entity Tracker upgra
 gui.tab.info.item.pneumaticHelmet.blockTracker=§0With the Block Tracker you'll be able to track Chests, Mob Spawners, Furnaces, Silverfish Blocks, Tripwires, Dispensers, TNT and End Portal Blocks within a range of 30 blocks. This way Dungeons, Fortresses and temples can easily be found. Inventories even can be remotely explored, as hovering over one of these indicators will show their inventories.
 gui.tab.info.item.drone=§0In this interface you can insert upgrades into the Drone. Open up other tabs to see which enhancements can be done.
 gui.tab.info.item.drone.speedUpgrade=§0Per Speed Upgrade inserted, the moving speed of the Drone will increase by 10%% of it's original moving speed. This can stack up to 10 upgrades, meaning 200%% speed is the max.
-gui.tab.info.item.drone.dispenserUpgrade=§0By default the Drone can transfer one stack of items. For every Dispenser Upgrade inserted, the Drone can transfer one additional stack.
+gui.tab.info.item.drone.dispenserUpgrade=§0By default the Drone can transfer one stack of items. For every Dispenser Upgrade inserted, the Drone can transfer one additional stack. \n \nIt will also increase the internal liquid tank by 16000mB per upgrade, and 100000RF storage per upgrade (if installed). It also increases the rate at which the Drone can transfer RF (transfer = max storage / 100).
 gui.tab.info.item.drone.itemLifeUpgrade=§0With the Item Life Upgrade inserted, the Drone will be able to auto-repair. It will regen health over time. The more upgrades you insert, the stronger the effect (up to 6 upgrades).
 gui.tab.info.item.drone.securityUpgrade=§0With one of this upgrade inserted, the Drone will be capable of being immune to liquids. Liquids around the Drone will be removed by the Drone's forcefield.
 gui.tab.info.item.drone.volumeUpgrade=§0For each upgrade inserted, the Drone's volume will be increased by 5000mL. This could be used for long travels.

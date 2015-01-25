@@ -43,6 +43,7 @@ public class DroneAIDig extends DroneAIBlockInteraction{
                 if(widget.isItemValidForFilters(droppedStack, meta)) {
                     for(ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
                         if(drone.isBlockValidPathfindBlock(pos.chunkPosX + dir.offsetX, pos.chunkPosY + dir.offsetY, pos.chunkPosZ + dir.offsetZ)) {
+                            swapBestItemToFirstSlot(block, pos);
                             return true;
                         }
                     }
@@ -51,6 +52,26 @@ public class DroneAIDig extends DroneAIBlockInteraction{
             }
         }
         return false;
+    }
+
+    private void swapBestItemToFirstSlot(Block block, ChunkPosition pos){
+        int bestSlot = 0;
+        float bestSoftness = Float.MIN_VALUE;
+        ItemStack oldCurrentStack = drone.getInventory().getStackInSlot(0);
+        for(int i = 0; i < drone.getInventory().getSizeInventory(); i++) {
+            drone.getInventory().setInventorySlotContents(0, drone.getInventory().getStackInSlot(i));
+            float softness = block.getPlayerRelativeBlockHardness(drone.getFakePlayer(), drone.worldObj, pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ);
+            if(softness > bestSoftness) {
+                bestSlot = i;
+                bestSoftness = softness;
+            }
+        }
+        drone.getInventory().setInventorySlotContents(0, oldCurrentStack);
+        if(bestSlot != 0) {
+            ItemStack bestItem = drone.getInventory().getStackInSlot(bestSlot);
+            drone.getInventory().setInventorySlotContents(bestSlot, drone.getInventory().getStackInSlot(0));
+            drone.getInventory().setInventorySlotContents(0, bestItem);
+        }
     }
 
     @Override
