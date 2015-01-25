@@ -82,7 +82,7 @@ public abstract class BlockPneumaticPlantBase extends BlockFlower implements IGr
 
     // make this method public
     public boolean canPlantGrowOnThisBlock(Block block, World world, int x, int y, int z){
-    	return(block.canSustainPlant(world, x, y, z, ForgeDirection.UP, this));
+        return block.canSustainPlant(world, x, y, z, ForgeDirection.UP, this);
     }
 
     /**
@@ -270,7 +270,7 @@ public abstract class BlockPneumaticPlantBase extends BlockFlower implements IGr
      */
 
     private boolean isNotMature(int meta){
-        return(meta < 6 || (meta > 6 && meta < 13));
+        return meta < 6 || meta > 6 && meta < 13;
         //return(meta > 6 && meta < 13); // only allow bonemealing of user-placed plants
     }
 

@@ -17,7 +17,7 @@ public class MFR implements IThirdParty{
         try {
             for(Block block : ItemPlasticPlants.getBlockToSeedMap().keySet()) {
                 register("registerHarvestable", IFactoryHarvestable.class, new PlasticHarvester(block));
-        		register("registerFertilizable", IFactoryFertilizable.class, new PlasticFertilizer(block));
+                register("registerFertilizable", IFactoryFertilizable.class, new PlasticFertilizer(block));
             }
             register("registerPlantable", IFactoryPlantable.class, new PlasticPlanter());
         } catch(Throwable e) {
