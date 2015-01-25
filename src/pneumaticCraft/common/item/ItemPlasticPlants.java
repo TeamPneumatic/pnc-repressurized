@@ -9,6 +9,7 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
@@ -17,6 +18,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IIcon;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import net.minecraftforge.common.IExtendedEntityProperties;
 import pneumaticCraft.common.block.Blockss;
@@ -121,6 +123,47 @@ public class ItemPlasticPlants extends ItemPneumatic{
         return blockToSeedMap;
     }
 
+    @Override
+    public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ){
+        BlockPneumaticPlantBase plant = (BlockPneumaticPlantBase)getPlantBlockIDFromSeed(stack.getItemDamage());
+        if(side != (plant.isPlantHanging() ? 0 : 1)) {
+            return false;
+        } else if(player.canPlayerEdit(x, y, z, side, stack) && player.canPlayerEdit(x, y + (plant.isPlantHanging() ? -1 : 1), z, side, stack)) {
+            if(plant.canBlockStay(world, x, y + (plant.isPlantHanging() ? -1 : 1), z) && world.isAirBlock(x, y + (plant.isPlantHanging() ? -1 : 1), z)) {
+                world.setBlock(x, y + (plant.isPlantHanging() ? -1 : 1), z, plant, 7, 3);
+                --stack.stackSize;
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Called whenever this item is equipped and the right mouse button is pressed. Args: itemStack, world, entityPlayer
+     */
+    @Override
+    public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player){
+        BlockPneumaticPlantBase plant = (BlockPneumaticPlantBase)getPlantBlockIDFromSeed(stack.getItemDamage());
+        if(plant == Blockss.squidPlant) {
+            MovingObjectPosition mop = getMovingObjectPositionFromPlayer(world, player, true);
+            if(mop != null) {
+                int x = mop.blockX;
+                int y = mop.blockY;
+                int z = mop.blockZ;
+                if(player.canPlayerEdit(x, y, z, 1, stack) && player.canPlayerEdit(x, y + 1, z, 1, stack)) {
+                    if(plant.canBlockStay(world, x, y + 1, z) && world.isAirBlock(x, y + 1, z)) {
+                        stack.stackSize--;
+                        world.setBlock(x, y + 1, z, Blockss.squidPlant, 7, 3);
+                    }
+                }
+            }
+        }
+        return stack;
+    }
+
     public static void onEntityConstruction(Entity entity){
         if(entity instanceof EntityItem) {
             if(((EntityItem)entity).getExtendedProperties("PneumaticCraft_Active") == null) entity.registerExtendedProperties("PneumaticCraft_Active", new ActivityProperty(true));
@@ -176,7 +219,7 @@ public class ItemPlasticPlants extends ItemPneumatic{
                 infoList.add("Soil: Dirt, Grass or Farmland");
                 break;
         }
-        infoList.add("Press 'Q' to plant seed");
+        infoList.add(I18n.format("gui.tooltip.plasticPlant.plant"));
     }
 
     public static Block getPlantBlockIDFromSeed(int seedMetadata){

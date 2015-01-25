@@ -1,14 +1,8 @@
--Added OpenComputers support.
--Added 'getAction' CC/OC command to the Drone Interface.
--Added Drone Teleport puzzle piece.
--Added Chisel 2 support.
--Drones now will swap their currently holding item to the best item to dig an area.
--Drone's now don't get dropped when wrenched in creative.
--Drones now abort their action early if they can (like not trying to place blocks when not having any blocks).
--Aerial Interface computer peripheral can only be accessed from the top/bottom now. Potential fix for not being able to access the inventory via OpenPeripherals.
--Updated to the new WAILA.
+-You can now right click blocks to plant seeds.
+-Added MFR Fertilizer support (DarkstarDS9).
+-Added "setRenameString" method to the Drone Interface.
+-Updated pt_BR.lang (MrKunji).
 
--Bugfix: Crash when interacting with entities using CC support.
--Bugfix: Sync issue with Charging Stations.
--Bugfix: Waila info isn't synced properly.
--Bugfix: Slight memory leak with pressure blocks.
+-Bugfix: Plants don't grow when there's a block directly above.
+-Bugfix: Crashes with certain Drone Interface actions. Fixes #384
+-Bugfix: Drone will steal XP when right clicking an Essence Berry for example. Fixes #383

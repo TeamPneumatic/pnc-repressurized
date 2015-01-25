@@ -472,6 +472,7 @@ blockTracker.message.stopSpam=Stopped spam on %s
 
 # Tooltips
 gui.tooltip.plasticPlant=Origin: %s
+gui.tooltip.plasticPlant.plant=Press 'Q' or right click to plant seed
 
 # Waila
 hud.msg.state=State
