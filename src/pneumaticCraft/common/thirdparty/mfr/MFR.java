@@ -5,6 +5,7 @@ import net.minecraftforge.fluids.FluidRegistry;
 import pneumaticCraft.api.PneumaticRegistry;
 import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.common.thirdparty.IThirdParty;
+import powercrystals.minefactoryreloaded.api.IFactoryFertilizable;
 import powercrystals.minefactoryreloaded.api.IFactoryHarvestable;
 import powercrystals.minefactoryreloaded.api.IFactoryPlantable;
 
@@ -16,6 +17,7 @@ public class MFR implements IThirdParty{
         try {
             for(Block block : ItemPlasticPlants.getBlockToSeedMap().keySet()) {
                 register("registerHarvestable", IFactoryHarvestable.class, new PlasticHarvester(block));
+                register("registerFertilizable", IFactoryFertilizable.class, new PlasticFertilizer(block));
             }
             register("registerPlantable", IFactoryPlantable.class, new PlasticPlanter());
         } catch(Throwable e) {
