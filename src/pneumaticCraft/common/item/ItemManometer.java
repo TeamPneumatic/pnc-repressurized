@@ -2,6 +2,7 @@ package pneumaticCraft.common.item;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -29,6 +30,8 @@ public class ItemManometer extends ItemPressurizable{
     @Override
     public boolean onItemUse(ItemStack iStack, EntityPlayer player, World world, int x, int y, int z, int side, float par8, float par9, float par10){
         if(world.isRemote) return true;
+        for(int i = 0; i < 10; i++)
+            world.getBlock(x, y, z).updateTick(world, x, y, z, new Random());
         if(((IPressurizable)iStack.getItem()).getPressure(iStack) > 0F) {
             TileEntity te = world.getTileEntity(x, y, z);
             IPneumaticMachine machine = ModInteractionUtils.getInstance().getMachine(te);

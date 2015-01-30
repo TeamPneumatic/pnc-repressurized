@@ -118,6 +118,7 @@ public class Textures{
     public static final ResourceLocation PROG_WIDGET_DROP_ITEM = new ResourceLocation(PROG_WIDGET_LOCATION + "itemDropPiece.png");
     public static final ResourceLocation PROG_WIDGET_EMIT_REDSTONE = new ResourceLocation(PROG_WIDGET_LOCATION + "emitRedstonePiece.png");
     public static final ResourceLocation PROG_WIDGET_RENAME = new ResourceLocation(PROG_WIDGET_LOCATION + "renamePiece.png");
+    public static final ResourceLocation PROG_WIDGET_SUICIDE = new ResourceLocation(PROG_WIDGET_LOCATION + "suicidePiece.png");
     public static final ResourceLocation PROG_WIDGET_CONDITION_REDSTONE = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionRedstonePiece.png");
     public static final ResourceLocation PROG_WIDGET_CONDITION_ENTITY = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionEntityPiece.png");
     public static final ResourceLocation PROG_WIDGET_CONDITION_LIQUID_INVENTORY = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionLiquidInventoryPiece.png");
