@@ -75,6 +75,7 @@ public class ProgWidgetSuicide extends ProgWidget{
 
         @Override
         public boolean shouldExecute(){
+            drone.setCustomNameTag("");
             drone.attackEntityFrom(DamageSource.outOfWorld, 2000.0F);
             return false;
         }

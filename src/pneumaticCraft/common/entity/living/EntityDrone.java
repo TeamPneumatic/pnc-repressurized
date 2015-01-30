@@ -698,7 +698,7 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
     public boolean isBlockValidPathfindBlock(int x, int y, int z){
         if(worldObj.isAirBlock(x, y, z)) return true;
         Block block = worldObj.getBlock(x, y, z);
-        if(block.getBlocksMovement(worldObj, x, y, z) && (!PneumaticCraftUtils.isBlockLiquid(block) || hasLiquidImmunity)) return true;
+        if(block.getBlocksMovement(worldObj, x, y, z) && block != Blocks.ladder && (!PneumaticCraftUtils.isBlockLiquid(block) || hasLiquidImmunity)) return true;
         if(PneumaticCraftAPIHandler.getInstance().pathfindableBlocks.containsKey(block)) {
             IPathfindHandler pathfindHandler = PneumaticCraftAPIHandler.getInstance().pathfindableBlocks.get(block);
             return pathfindHandler == null || pathfindHandler.canPathfindThrough(worldObj, x, y, z);

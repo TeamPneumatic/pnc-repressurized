@@ -4,7 +4,9 @@ import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.Fluid;
 import pneumaticCraft.api.client.pneumaticHelmet.IBlockTrackEntry;
@@ -75,6 +77,23 @@ public class PneumaticRegistry{
          * @param interactor
          */
         public void registerCustomBlockInteractor(ICustomBlockInteract interactor);
+
+        /**
+         * Will spawn in a Drone a distance away from the given coordinate. The drone is programmed to travel to go to 5 blocks above the specified
+         * y level, and drop the deliveredStacks. When there isn't a clear path for the items to fall these 5 blocks the Drone will deliver at a
+         * y level above the specified y that _is_ clear. If no clear blocks can be found (when there are only solid blocks), the Drone will
+         * drop the items very high up in the air instead, and drop them there.
+         * 
+         * When the Drone is tried to be catched by a player (by wrenching it), the drone will only the drop the items that it was delivering (or
+         * none if it dropped those items already). The Drone itself never will be dropped.
+         * 
+         * @param x
+         * @param y
+         * @param z
+         * @param deliveredStacks stacks that are delivered by the drone. When no stacks, or more than 65 stacks are given, this will generate a IllegalArgumentException.
+         * @return the drone. You can use this to set a custom name for example (defaults to "Amazon Delivery Drone").
+         */
+        public EntityCreature deliverItemsAmazonStyle(World world, int x, int y, int z, ItemStack... deliveredStacks);
 
         /*
          * --------------- Items -------------------

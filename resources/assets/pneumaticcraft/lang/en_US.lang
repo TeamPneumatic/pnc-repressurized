@@ -519,3 +519,11 @@ item.programmingPuzzle_attk.name=Programming Puzzle: Attack Entity
 item.programmingPuzzle_I-ftr.name=Programming Puzzle: Item Filter
 item.programmingPuzzle_area.name=Programming Puzzle: Area
 item.programmingPuzzle_text.name=Programming Puzzle: Text
+
+# commands
+command.deliverAmazon.args=Not enough arguments
+command.deliverAmazon.coords=Included invalide coords. They need to be integers.
+command.deliverAmazon.playerName=No such player name found.
+command.deliverAmazon.noItems=The specified inventory doesn't contain items.
+command.deliverAmazon.noInventory=The specified coordinate doesn't have an inventory.
+command.deliverAmazon.success=Delivering items!

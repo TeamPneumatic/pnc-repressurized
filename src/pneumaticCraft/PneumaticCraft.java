@@ -1,6 +1,8 @@
 package pneumaticCraft;
 
+import net.minecraft.command.ServerCommandManager;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.common.MinecraftForge;
@@ -11,6 +13,7 @@ import pneumaticCraft.client.render.pneumaticArmor.hacking.HackableHandler;
 import pneumaticCraft.common.Config;
 import pneumaticCraft.common.EventHandlerPneumaticCraft;
 import pneumaticCraft.common.EventHandlerUniversalSensor;
+import pneumaticCraft.common.PCCommandManager;
 import pneumaticCraft.common.PneumaticCraftAPIHandler;
 import pneumaticCraft.common.TickHandlerPneumaticCraft;
 import pneumaticCraft.common.VillagerHandler;
@@ -123,8 +126,8 @@ public class PneumaticCraft{
 
     @EventHandler
     public void onServerStart(FMLServerStartingEvent event){
-        /*      ServerCommandManager comManager = (ServerCommandManager)MinecraftServer.getServer().getCommandManager();
-              comManager.registerCommand(new UpdateChecker.CommandChangelog());*/
+        ServerCommandManager comManager = (ServerCommandManager)MinecraftServer.getServer().getCommandManager();
+        new PCCommandManager().init(comManager);
     }
 
     @EventHandler

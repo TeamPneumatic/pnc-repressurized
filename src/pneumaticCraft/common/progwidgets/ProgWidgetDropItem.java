@@ -105,9 +105,12 @@ public class ProgWidgetDropItem extends ProgWidgetInventoryBase implements IItem
                 for(int i = 0; i < drone.getInventory().getSizeInventory(); i++) {
                     ItemStack stack = drone.getInventory().getStackInSlot(i);
                     if(stack != null && widget.isItemValidForFilters(stack)) {
+
                         if(useCount() && getRemainingCount() < stack.stackSize) {
                             stack = stack.splitStack(getRemainingCount());
+                            decreaseCount(getRemainingCount());
                         } else {
+                            decreaseCount(stack.stackSize);
                             drone.getInventory().setInventorySlotContents(i, null);
                         }
                         EntityItem item = new EntityItem(drone.worldObj, pos.chunkPosX + 0.5, pos.chunkPosY + 0.5, pos.chunkPosZ + 0.5, stack);
@@ -117,7 +120,7 @@ public class ProgWidgetDropItem extends ProgWidgetInventoryBase implements IItem
                             item.motionZ = 0;
                         }
                         drone.worldObj.spawnEntityInWorld(item);
-                        break;
+                        if(useCount() && getRemainingCount() == 0) break;
                     }
                 }
                 return false;
