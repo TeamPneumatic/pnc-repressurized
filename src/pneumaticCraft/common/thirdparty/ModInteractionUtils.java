@@ -17,6 +17,14 @@ public class ModInteractionUtils{
     }
 
     public boolean isWrench(Item item){
+        return isBCWrench(item) || isTEWrench(item);
+    }
+
+    protected boolean isBCWrench(Item item){
+        return false;
+    }
+
+    protected boolean isTEWrench(Item item){
         return false;
     }
 

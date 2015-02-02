@@ -12,13 +12,20 @@ import buildcraft.api.tools.IToolWrench;
 import buildcraft.api.transport.IPipeTile;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
+import cofh.api.item.IToolHammer;
 import cpw.mods.fml.common.Optional;
 
 public class ModInteractionUtilImplementation extends ModInteractionUtils{
     @Override
     @Optional.Method(modid = ModIds.BUILDCRAFT)
-    public boolean isWrench(Item item){
+    protected boolean isBCWrench(Item item){
         return item instanceof IToolWrench;
+    }
+
+    @Override
+    @Optional.Method(modid = ModIds.COFH_CORE)
+    protected boolean isTEWrench(Item item){
+        return item instanceof IToolHammer;
     }
 
     @Override

@@ -31,6 +31,7 @@ import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import pneumaticCraft.PneumaticCraft;
+import pneumaticCraft.api.block.IPneumaticWrenchable;
 import pneumaticCraft.api.item.IPressurizable;
 import pneumaticCraft.client.render.pneumaticArmor.EntityTrackUpgradeHandler;
 import pneumaticCraft.client.render.pneumaticArmor.HUDHandler;
@@ -47,6 +48,7 @@ import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.PacketPlaySound;
 import pneumaticCraft.common.network.PacketSetMobTarget;
+import pneumaticCraft.common.thirdparty.ModInteractionUtilImplementation;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.TileEntityConstants;
 import cpw.mods.fml.client.FMLClientHandler;
@@ -183,9 +185,10 @@ public class EventHandlerPneumaticCraft{
 
     @SubscribeEvent
     public void onPlayerClick(PlayerInteractEvent event){
+        Block interactedBlock = event.world.getBlock(event.x, event.y, event.z);
         if(!event.entityPlayer.capabilities.isCreativeMode || !event.entityPlayer.canCommandSenderUseCommand(2, "securityStation")) {
             if(event.action != PlayerInteractEvent.Action.RIGHT_CLICK_AIR && event.world != null && !event.world.isRemote) {
-                if(event.entity.worldObj.getBlock(event.x, event.y, event.z) != Blockss.securityStation || event.action == PlayerInteractEvent.Action.LEFT_CLICK_BLOCK) {
+                if(interactedBlock != Blockss.securityStation || event.action == PlayerInteractEvent.Action.LEFT_CLICK_BLOCK) {
                     int blockingStations = PneumaticCraftUtils.getProtectingSecurityStations(event.entity.worldObj, event.x, event.y, event.z, event.entityPlayer, true);
                     if(blockingStations > 0) {
                         event.setCanceled(true);
@@ -198,9 +201,15 @@ public class EventHandlerPneumaticCraft{
         /**
          * Due to some weird quirk that causes Block#onBlockActivated not getting called on the server when the player is sneaking, this is a workaround.
          */
-        if(!event.isCanceled() && event.action == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK && !event.world.isRemote && event.entityPlayer.isSneaking() && event.world.getBlock(event.x, event.y, event.z) == Blockss.elevatorCaller) {
-            Blockss.elevatorCaller.onBlockActivated(event.world, event.x, event.y, event.z, event.entityPlayer, event.face, 0, 0, 0);
-            event.setCanceled(true);
+        if(!event.isCanceled() && event.action == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK && !event.world.isRemote) {
+            if(event.entityPlayer.isSneaking() && interactedBlock == Blockss.elevatorCaller) {
+                Blockss.elevatorCaller.onBlockActivated(event.world, event.x, event.y, event.z, event.entityPlayer, event.face, 0, 0, 0);
+                event.setCanceled(true);
+            } else if(event.entityPlayer.getCurrentEquippedItem() != null && ModInteractionUtilImplementation.getInstance().isWrench(event.entityPlayer.getCurrentEquippedItem().getItem())) {
+                if(interactedBlock instanceof IPneumaticWrenchable) {
+                    ((IPneumaticWrenchable)interactedBlock).rotateBlock(event.world, event.entityPlayer, event.x, event.y, event.z, ForgeDirection.getOrientation(event.face));
+                }
+            }
         }
     }
 

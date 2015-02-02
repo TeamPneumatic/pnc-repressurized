@@ -23,7 +23,6 @@ public class Config{
 
     public static int configCompressedIngotLossRate;
     public static int elevatorBaseBlocksPerBase;
-    public static boolean rotateUseEnergy;
     public static boolean useHelmetModel;
 
     public static boolean enableUpdateChecker;
@@ -119,10 +118,6 @@ public class Config{
         pneumaticPumpEfficiency = property.getInt();
 
         elevatorBaseBlocksPerBase = config.getInt("Height per Elevator Base", "machine_properties", 4, 1, 256, "The max height of an elevator per stacked Elevator Base.");
-
-        property = config.get(Configuration.CATEGORY_GENERAL, "Block rotate use energy", true);
-        property.comment = "When set to false rotating PneumaticCraft blocks doesn't use any energy. This means that the Pneumatic Wrench doesn't use air and that all blocks can be rotated with a Buildcraft Wrench.";
-        rotateUseEnergy = property.getBoolean(true);
 
         property = config.get("advanced", "Convert Multiparts to Blocks", false);
         property.comment = "ONLY SET TO TRUE WHEN YOU KNOW WHAT YOU'RE DOING. When set to true, this will convert any Pressure Tube in the world that was a FMP to its block variant. Handy when you're about to remove FMP from the instance. This will remove any other parts from the block like covers. Exception are tube modules.";

@@ -7,7 +7,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.api.block.IPneumaticWrenchable;
-import pneumaticCraft.common.Config;
 import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.PacketPlaySound;
 import pneumaticCraft.lib.ModIds;
@@ -31,9 +30,9 @@ public class ItemPneumaticWrench extends ItemPressurizable implements IToolWrenc
     public boolean onItemUseFirst(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float hitVecX, float hitVecY, float hitVecZ){
         if(!world.isRemote) {
             Block block = world.getBlock(x, y, z);
-            if(block instanceof IPneumaticWrenchable && (((ItemPneumaticWrench)Itemss.pneumaticWrench).getPressure(stack) > 0 || !Config.rotateUseEnergy)) {
+            if(block instanceof IPneumaticWrenchable && ((ItemPneumaticWrench)Itemss.pneumaticWrench).getPressure(stack) > 0) {
                 if(((IPneumaticWrenchable)block).rotateBlock(world, player, x, y, z, ForgeDirection.getOrientation(side))) {
-                    if(!player.capabilities.isCreativeMode && Config.rotateUseEnergy) ((ItemPneumaticWrench)Itemss.pneumaticWrench).addAir(stack, -PneumaticValues.USAGE_PNEUMATIC_WRENCH);
+                    if(!player.capabilities.isCreativeMode) ((ItemPneumaticWrench)Itemss.pneumaticWrench).addAir(stack, -PneumaticValues.USAGE_PNEUMATIC_WRENCH);
                     NetworkHandler.sendToAllAround(new PacketPlaySound(Sounds.PNEUMATIC_WRENCH, x, y, z, 1.0F, 1.0F, false), world);
                     return true;
                 }
@@ -53,9 +52,9 @@ public class ItemPneumaticWrench extends ItemPressurizable implements IToolWrenc
     @Override
     public boolean itemInteractionForEntity(ItemStack iStack, EntityPlayer player, EntityLivingBase entity){
         if(!player.worldObj.isRemote) {
-            if(entity.isEntityAlive() && entity instanceof IPneumaticWrenchable && (((ItemPneumaticWrench)Itemss.pneumaticWrench).getPressure(iStack) > 0 || !Config.rotateUseEnergy)) {
+            if(entity.isEntityAlive() && entity instanceof IPneumaticWrenchable && ((ItemPneumaticWrench)Itemss.pneumaticWrench).getPressure(iStack) > 0) {
                 if(((IPneumaticWrenchable)entity).rotateBlock(entity.worldObj, player, 0, 0, 0, ForgeDirection.UNKNOWN)) {
-                    if(!player.capabilities.isCreativeMode && Config.rotateUseEnergy) ((ItemPneumaticWrench)Itemss.pneumaticWrench).addAir(iStack, -PneumaticValues.USAGE_PNEUMATIC_WRENCH);
+                    if(!player.capabilities.isCreativeMode) ((ItemPneumaticWrench)Itemss.pneumaticWrench).addAir(iStack, -PneumaticValues.USAGE_PNEUMATIC_WRENCH);
                     NetworkHandler.sendToAllAround(new PacketPlaySound(Sounds.PNEUMATIC_WRENCH, entity.posX, entity.posY, entity.posZ, 1.0F, 1.0F, false), entity.worldObj);
                     return true;
                 }

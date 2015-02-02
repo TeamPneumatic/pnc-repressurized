@@ -149,14 +149,6 @@ public abstract class BlockPneumaticCraft extends BlockContainer implements IPne
     }
 
     @Override
-    public boolean rotateBlock(World world, int x, int y, int z, ForgeDirection side){
-        if(!Config.rotateUseEnergy) {
-            return rotateBlock(world, null, x, y, z, side);
-        }
-        return false;
-    }
-
-    @Override
     public boolean rotateBlock(World world, EntityPlayer player, int x, int y, int z, ForgeDirection side){
         if(player.isSneaking()) {
             dropBlockAsItem(world, x, y, z, world.getBlockMetadata(x, y, z), 0);
