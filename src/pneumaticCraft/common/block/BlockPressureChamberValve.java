@@ -137,12 +137,16 @@ public class BlockPressureChamberValve extends BlockPneumaticCraft{
 
     @Override
     public boolean rotateBlock(World world, EntityPlayer player, int x, int y, int z, ForgeDirection face){
-        int newMeta = (world.getBlockMetadata(x, y, z) / 2 + 1) * 2;
-        if(newMeta == 6) newMeta = 0;
-        world.setBlockMetadataWithNotify(x, y, z, newMeta, 3);
-        invalidateMultiBlock(world, x, y, z);
-        TileEntityPressureChamberValve.checkIfProperlyFormed(world, x, y, z);
-        return true;
+        if(player.isSneaking()) {
+            return super.rotateBlock(world, player, x, y, z, face);
+        } else {
+            int newMeta = (world.getBlockMetadata(x, y, z) / 2 + 1) * 2;
+            if(newMeta == 6) newMeta = 0;
+            world.setBlockMetadataWithNotify(x, y, z, newMeta, 3);
+            invalidateMultiBlock(world, x, y, z);
+            TileEntityPressureChamberValve.checkIfProperlyFormed(world, x, y, z);
+            return true;
+        }
     }
 
 }

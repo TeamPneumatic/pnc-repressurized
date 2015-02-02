@@ -85,15 +85,19 @@ public class BlockPneumaticDoorBase extends BlockPneumaticCraftModeled{
 
     @Override
     public boolean rotateBlock(World world, EntityPlayer player, int x, int y, int z, ForgeDirection side){
-        TileEntity te = world.getTileEntity(x, y, z);
-        if(te instanceof TileEntityPneumaticDoorBase) {
-            TileEntityPneumaticDoorBase teDb = (TileEntityPneumaticDoorBase)te;
-            int newMeta = (teDb.orientation.ordinal() + 1) % 6;
-            if(newMeta == 0) newMeta = 2;
-            teDb.orientation = ForgeDirection.getOrientation(newMeta);
-            return true;
+        if(player.isSneaking()) {
+            return super.rotateBlock(world, player, x, y, z, side);
+        } else {
+            TileEntity te = world.getTileEntity(x, y, z);
+            if(te instanceof TileEntityPneumaticDoorBase) {
+                TileEntityPneumaticDoorBase teDb = (TileEntityPneumaticDoorBase)te;
+                int newMeta = (teDb.orientation.ordinal() + 1) % 6;
+                if(newMeta == 0) newMeta = 2;
+                teDb.orientation = ForgeDirection.getOrientation(newMeta);
+                return true;
+            }
+            return false;
         }
-        return false;
     }
 
     @Override

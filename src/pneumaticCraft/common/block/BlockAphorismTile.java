@@ -86,7 +86,7 @@ public class BlockAphorismTile extends BlockPneumaticCraft{
 
     @Override
     public boolean rotateBlock(World world, EntityPlayer player, int x, int y, int z, ForgeDirection face){
-        if(!player.isSneaking()) {
+        if(player.isSneaking()) {
             TileEntity tile = world.getTileEntity(x, y, z);
             if(tile instanceof TileEntityAphorismTile) {
                 TileEntityAphorismTile teAt = (TileEntityAphorismTile)tile;

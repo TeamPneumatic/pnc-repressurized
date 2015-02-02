@@ -96,9 +96,13 @@ public class BlockPressureChamberInterface extends BlockPressureChamberWall{
 
     @Override
     public boolean rotateBlock(World world, EntityPlayer player, int x, int y, int z, ForgeDirection side){
-        int newMeta = (world.getBlockMetadata(x, y, z) + 1) % 6;
-        world.setBlockMetadataWithNotify(x, y, z, newMeta, 3);
-        return true;
+        if(player.isSneaking()) {
+            return super.rotateBlock(world, player, x, y, z, side);
+        } else {
+            int newMeta = (world.getBlockMetadata(x, y, z) + 1) % 6;
+            world.setBlockMetadataWithNotify(x, y, z, newMeta, 3);
+            return true;
+        }
     }
 
 }

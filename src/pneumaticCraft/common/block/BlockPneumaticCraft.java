@@ -158,17 +158,23 @@ public abstract class BlockPneumaticCraft extends BlockContainer implements IPne
 
     @Override
     public boolean rotateBlock(World world, EntityPlayer player, int x, int y, int z, ForgeDirection side){
-        if(isRotatable()) {
-            int newMeta = (world.getBlockMetadata(x, y, z) + 1) % 6;
-            if(!canRotateToTopOrBottom()) {
-                if(newMeta == 0) {
-                    newMeta = 2;
-                }
-            }
-            world.setBlockMetadataWithNotify(x, y, z, newMeta, 3);
+        if(player.isSneaking()) {
+            dropBlockAsItem(world, x, y, z, world.getBlockMetadata(x, y, z), 0);
+            world.setBlockToAir(x, y, z);
             return true;
         } else {
-            return false;
+            if(isRotatable()) {
+                int newMeta = (world.getBlockMetadata(x, y, z) + 1) % 6;
+                if(!canRotateToTopOrBottom()) {
+                    if(newMeta == 0) {
+                        newMeta = 2;
+                    }
+                }
+                world.setBlockMetadataWithNotify(x, y, z, newMeta, 3);
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 

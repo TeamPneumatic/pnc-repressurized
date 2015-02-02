@@ -169,11 +169,11 @@ public class BlockPressureTube extends BlockPneumaticCraftModeled{
     }
 
     @Override
-    public boolean removedByPlayer(World world, EntityPlayer player, int x, int y, int z){
-        MovingObjectPosition mop = PneumaticCraftUtils.getEntityLookedObject(player);
-        if(mop != null && mop.hitInfo instanceof ForgeDirection) {
-            if(mop.hitInfo != ForgeDirection.UNKNOWN) {
-                if(!world.isRemote) {
+    public boolean rotateBlock(World world, EntityPlayer player, int x, int y, int z, ForgeDirection side){
+        if(player.isSneaking()) {
+            MovingObjectPosition mop = PneumaticCraftUtils.getEntityLookedObject(player);
+            if(mop != null && mop.hitInfo instanceof ForgeDirection) {
+                if(mop.hitInfo != ForgeDirection.UNKNOWN) {
                     TileEntityPressureTube tube = (TileEntityPressureTube)world.getTileEntity(x, y, z);
                     if(!player.capabilities.isCreativeMode) {
                         List<ItemStack> drops = tube.modules[((ForgeDirection)mop.hitInfo).ordinal()].getDrops();
@@ -186,23 +186,26 @@ public class BlockPressureTube extends BlockPneumaticCraftModeled{
                     tube.setModule(null, (ForgeDirection)mop.hitInfo);
                     onNeighborBlockChange(world, x, y, z, this);
                     world.notifyBlocksOfNeighborChange(x, y, z, this, ((ForgeDirection)mop.hitInfo).getOpposite().ordinal());
-                }
-                return false;
-            }
-        }
-        if(!world.isRemote && !player.capabilities.isCreativeMode) {
-            for(TubeModule module : ((TileEntityPressureTube)world.getTileEntity(x, y, z)).modules) {
-                if(module != null) {
-                    List<ItemStack> drops = module.getDrops();
-                    for(ItemStack drop : drops) {
-                        EntityItem entity = new EntityItem(world, x + 0.5, y + 0.5, z + 0.5);
-                        entity.setEntityItemStack(drop);
-                        world.spawnEntityInWorld(entity);
-                    }
+                    return true;
                 }
             }
         }
-        return super.removedByPlayer(world, player, x, y, z);
+        return super.rotateBlock(world, player, x, y, z, side);
+    }
+
+    @Override
+    public void breakBlock(World world, int x, int y, int z, Block block, int meta){
+        for(TubeModule module : ((TileEntityPressureTube)world.getTileEntity(x, y, z)).modules) {
+            if(module != null) {
+                List<ItemStack> drops = module.getDrops();
+                for(ItemStack drop : drops) {
+                    EntityItem entity = new EntityItem(world, x + 0.5, y + 0.5, z + 0.5);
+                    entity.setEntityItemStack(drop);
+                    world.spawnEntityInWorld(entity);
+                }
+            }
+        }
+        super.breakBlock(world, x, y, z, block, meta);
     }
 
     @Override
