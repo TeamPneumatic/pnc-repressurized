@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.inventory.IInventory;
@@ -20,6 +21,10 @@ import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.client.model.IBaseModel;
 import pneumaticCraft.client.model.tubemodules.ModelAirGrate;
 import pneumaticCraft.common.ai.StringFilterEntitySelector;
+import pneumaticCraft.common.block.pneumaticPlants.BlockPneumaticPlantBase;
+import pneumaticCraft.common.network.NetworkHandler;
+import pneumaticCraft.common.network.PacketSpawnParticle;
+import pneumaticCraft.lib.Log;
 import pneumaticCraft.lib.Names;
 import pneumaticCraft.lib.PneumaticValues;
 import pneumaticCraft.proxy.CommonProxy;
@@ -29,6 +34,9 @@ public class ModuleAirGrate extends TubeModule{
     private int grateRange;
     private boolean vacuum;
     public String entityFilter = "";
+
+    private int plantCheckX = Integer.MIN_VALUE;
+    private int plantCheckZ = Integer.MIN_VALUE;
 
     private int getRange(){
         float range = pressureTube.getAirHandler().getPressure(ForgeDirection.UNKNOWN) * 4;
@@ -54,6 +62,8 @@ public class ModuleAirGrate extends TubeModule{
             grateRange = getRange();
             pressureTube.getAirHandler().addAir((vacuum ? 1 : -1) * grateRange * PneumaticValues.USAGE_AIR_GRATE, ForgeDirection.UNKNOWN);
             if(oldGrateRange != grateRange) sendDescriptionPacket();
+
+            checkForPlantsAndFarm(worldObj, xCoord, yCoord, zCoord, grateRange);
         } else {
 
             /*  updateParticleTargets(tileVec, grateRange);
@@ -79,7 +89,7 @@ public class ModuleAirGrate extends TubeModule{
         List<Entity> entities = worldObj.selectEntitiesWithinAABB(Entity.class, bbBox, new StringFilterEntitySelector().setFilter(entityFilter));
         double d0 = grateRange + 0.5D;
         for(Entity entity : entities) {
-            if(!entity.worldObj.isRemote && entity.getDistanceSq(xCoord + 0.5D, yCoord + 0.5D, zCoord + 0.5D) < 0.5D && entity instanceof EntityItem && !entity.isDead) {
+            if(!entity.worldObj.isRemote && entity.getDistanceSq(xCoord + 0.5D, yCoord + 0.5D, zCoord + 0.5D) < 0.6D && entity instanceof EntityItem && !entity.isDead) {
                 List<IInventory> inventories = new ArrayList<IInventory>();
                 List<Integer> sides = new ArrayList<Integer>();
                 for(int i = 0; i < 6; i++) {
@@ -118,6 +128,31 @@ public class ModuleAirGrate extends TubeModule{
                         entity.motionY -= d2 / d4 * d5 * 0.1D;
                         entity.motionZ -= d3 / d4 * d5 * 0.1D;
                     }
+                }
+            }
+        }
+    }
+
+    private void checkForPlantsAndFarm(World worldObj, int x, int y, int z, int plantCheckRange){
+        if(grateRange > 0 && worldObj.getWorldTime() % 5 == 0) {
+            if(plantCheckX < x - plantCheckRange || plantCheckZ < z - plantCheckRange) {
+                plantCheckX = x - plantCheckRange;
+                plantCheckZ = z - plantCheckRange;
+            }
+
+            if(plantCheckX != x || plantCheckZ != z) { // we know that we're no plant, avoid getBlock
+                Block b = worldObj.getBlock(plantCheckX, y, plantCheckZ);
+                Log.info(plantCheckX + ", " + plantCheckZ);
+                NetworkHandler.sendToAllAround(new PacketSpawnParticle("reddust", plantCheckX + 0.5, y + 0.5, plantCheckZ + 0.5, 0, 0, 0), worldObj);
+                if(b instanceof BlockPneumaticPlantBase) {
+                    ((BlockPneumaticPlantBase)b).attemptFarmByAirGrate(worldObj, plantCheckX, y, plantCheckZ);
+                }
+            }
+
+            if(plantCheckZ++ >= z + plantCheckRange) {
+                plantCheckZ = z - plantCheckRange;
+                if(plantCheckX++ >= x + plantCheckRange) {
+                    plantCheckX = x - plantCheckRange;
                 }
             }
         }
