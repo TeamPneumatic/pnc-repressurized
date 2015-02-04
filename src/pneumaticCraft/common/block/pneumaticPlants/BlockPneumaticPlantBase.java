@@ -13,6 +13,7 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.common.Config;
@@ -117,36 +118,6 @@ public abstract class BlockPneumaticPlantBase extends BlockFlower implements IGr
     protected void spawnParticle(String particleName, World world, double spawnX, double spawnY, double spawnZ, double spawnMotX, double spawnMotY, double spawnMotZ){
         NetworkHandler.sendToAllAround(new PacketSpawnParticle(particleName, spawnX, spawnY, spawnZ, spawnMotX, spawnMotY, spawnMotZ), world);
     }
-
-    /**
-     * Apply bonemeal to the crops.
-     */
-
-    /*
-     * now using IGrowable's func_149853_b for fertilization
-     * 
-    public boolean fertilize(World par1World, int par2, int par3, int par4, EntityPlayer player){
-        int meta = par1World.getBlockMetadata(par2, par3, par4);
-        if(meta == 6 || meta == 13) {
-            par1World.setBlockMetadataWithNotify(par2, par3, par4, 13, 0);
-            executeFullGrownEffect(par1World, par2, par3, par4, par1World.rand);
-            return true;
-        }
-        if(meta > 13) return false;
-        int l = meta + MathHelper.getRandomIntegerInRange(par1World.rand, 2, 5);
-        if(meta < 6 && l > 6) {
-            l = 6;
-        } else if(meta > 6 && l > 13) {
-            l = 13;
-        }
-        par1World.setBlockMetadataWithNotify(par2, par3, par4, l, 3);
-        return true;
-        // player.inventory.getCurrentItem().stackSize--;//use the item
-        // updateTick(par1World, par2, par3, par4, new Random());//Immediately
-        // spawn a seed.
-        // Doesnt work, because it first goes through the get growth rate thing.
-    }
-    */
 
     @Override
     public boolean canBlockStay(World par1World, int par2, int par3, int par4){
@@ -269,25 +240,12 @@ public abstract class BlockPneumaticPlantBase extends BlockFlower implements IGr
      * par3, int par4) { return this.getSeedItem(); }
      */
 
-    private boolean isNotMature(int meta){
-        return meta < 6 || meta > 6 && meta < 13;
-        //return(meta > 6 && meta < 13); // only allow bonemealing of user-placed plants
-    }
-
-    public void executeGrowthStep(World world, int x, int y, int z, Random rand){
-        int meta = world.getBlockMetadata(x, y, z);
-        if(isNotMature(meta)) {
-            ++meta;
-            world.setBlockMetadataWithNotify(x, y, z, meta, 3);
-        }
-    }
-
     /**
      * can this grow when bonemealed?
      */
     @Override
     public boolean func_149851_a(World world, int x, int y, int z, boolean isRemote){
-        return isNotMature(world.getBlockMetadata(x, y, z));
+        return canApplyBonemeal(world.getBlockMetadata(x, y, z));
     }
 
     /**
@@ -295,7 +253,11 @@ public abstract class BlockPneumaticPlantBase extends BlockFlower implements IGr
      */
     @Override
     public boolean func_149852_a(World world, Random random, int x, int y, int z){
-        return isNotMature(world.getBlockMetadata(x, y, z));
+        return canApplyBonemeal(world.getBlockMetadata(x, y, z));
+    }
+
+    private boolean canApplyBonemeal(int meta){
+        return meta <= 13;
     }
 
     /**
@@ -304,5 +266,21 @@ public abstract class BlockPneumaticPlantBase extends BlockFlower implements IGr
     @Override
     public void func_149853_b(World world, Random rand, int x, int y, int z){
         executeGrowthStep(world, x, y, z, rand);
+    }
+
+    private void executeGrowthStep(World world, int x, int y, int z, Random rand){
+        int meta = world.getBlockMetadata(x, y, z);
+        if(meta == 6 || meta == 13) {
+            world.setBlockMetadataWithNotify(x, y, z, 13, 0);
+            executeFullGrownEffect(world, x, y, z, world.rand);
+        } else {
+            int l = meta + MathHelper.getRandomIntegerInRange(world.rand, 2, 5);
+            if(meta < 6 && l > 6) {
+                l = 6;
+            } else if(meta > 6 && l > 13) {
+                l = 13;
+            }
+            world.setBlockMetadataWithNotify(x, y, z, l, 3);
+        }
     }
 }
