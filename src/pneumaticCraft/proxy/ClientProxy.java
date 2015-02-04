@@ -12,7 +12,6 @@ import java.util.Map;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -82,7 +81,6 @@ import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.block.tubes.ModuleRegistrator;
 import pneumaticCraft.common.block.tubes.TubeModule;
 import pneumaticCraft.common.entity.EntityRing;
-import pneumaticCraft.common.entity.item.EntityItemSpecial;
 import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.entity.projectile.EntityChopperSeeds;
 import pneumaticCraft.common.entity.projectile.EntityPotionCloud;
@@ -193,7 +191,6 @@ public class ClientProxy extends CommonProxy{
         if(Config.useHelmetModel) MinecraftForgeClient.registerItemRenderer(Itemss.pneumaticHelmet, new RenderItemPneumaticHelmet());
 
         RenderingRegistry.registerEntityRenderingHandler(EntityVortex.class, new RenderEntityVortex());
-        RenderingRegistry.registerEntityRenderingHandler(EntityItemSpecial.class, new RenderItem());
         RenderingRegistry.registerEntityRenderingHandler(EntityChopperSeeds.class, new RenderEntityChopperSeeds());
         RenderingRegistry.registerEntityRenderingHandler(EntityPotionCloud.class, new RenderEntityPotionCloud());
         RenderingRegistry.registerEntityRenderingHandler(EntityDrone.class, new RenderDrone());

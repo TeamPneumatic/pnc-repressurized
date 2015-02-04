@@ -1,7 +1,11 @@
 package pneumaticCraft.common;
 
+import java.util.Iterator;
+import java.util.Random;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockGrass;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityCreeper;
@@ -30,6 +34,7 @@ import net.minecraftforge.event.entity.player.BonemealEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.world.ExplosionEvent;
 import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.api.block.IPneumaticWrenchable;
 import pneumaticCraft.api.item.IPressurizable;
@@ -40,7 +45,6 @@ import pneumaticCraft.client.render.pneumaticArmor.hacking.entity.HackableEnderm
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.block.pneumaticPlants.BlockPlants;
 import pneumaticCraft.common.block.pneumaticPlants.BlockPneumaticPlantBase;
-import pneumaticCraft.common.entity.item.EntityItemSpecial;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.common.item.ItemPneumaticArmor;
@@ -65,21 +69,34 @@ public class EventHandlerPneumaticCraft{
     @SubscribeEvent
     public void onEntityJoinWorld(EntityJoinWorldEvent event){
         if(!event.entity.worldObj.isRemote && !event.entity.isDead) {
-            if(event.entity instanceof EntityItem) {
-                ItemStack stack = ((EntityItem)event.entity).getEntityItem();
-                if(!(event.entity instanceof EntityItemSpecial)) {
-                    if(stack.getItem() == net.minecraft.init.Items.iron_ingot || stack.getItem() == Item.getItemFromBlock(net.minecraft.init.Blocks.iron_block)) {
-                        EntityItemSpecial seedEntity = new EntityItemSpecial(event.world, stack.copy());
-                        seedEntity.delayBeforeCanPickup = ((EntityItem)event.entity).delayBeforeCanPickup;
-                        seedEntity.copyDataFrom(event.entity, true);
-                        event.setCanceled(true);
-                        stack.stackSize = 0; //Tinkers Construct fix, because tinkers invokes EntityItem#onCollideWithPlayer(EntityItem) without checking if the item entity is dead.
-                        event.world.spawnEntityInWorld(seedEntity);
+            if(event.entity instanceof EntityPotion) {
+                PneumaticCraft.tickHandler.potionEntities.add((EntityPotion)event.entity);
+            }
+        }
+    }
+
+    private static ItemStack IRON_INGOT = new ItemStack(Items.iron_ingot);
+    private static ItemStack IRON_BLOCK = new ItemStack(Blocks.iron_block);
+
+    @SubscribeEvent
+    public void handleIronExplosions(ExplosionEvent.Detonate event){
+        Iterator<Entity> iterator = event.getAffectedEntities().iterator();
+        while(iterator.hasNext()) {
+            Entity entity = iterator.next();
+            if(entity instanceof EntityItem) {
+                ItemStack stack = ((EntityItem)entity).getEntityItem();
+                if(stack != null && !entity.isDead && PneumaticCraftUtils.isSameOreDictStack(stack, IRON_INGOT) || PneumaticCraftUtils.isSameOreDictStack(stack, IRON_BLOCK)) {
+                    Random rand = new Random();
+                    if(stack.stackSize >= 3 || rand.nextDouble() >= Config.configCompressedIngotLossRate / 100D) {
+                        Item newItem = PneumaticCraftUtils.isSameOreDictStack(stack, IRON_INGOT) ? Itemss.ingotIronCompressed : Item.getItemFromBlock(Blockss.compressedIron);
+                        ItemStack newStack = new ItemStack(newItem, stack.stackSize, stack.getItemDamage());
+                        if(stack.stackSize >= 3) {
+                            newStack.stackSize = (int)(stack.stackSize * (rand.nextDouble() * Math.min(Config.configCompressedIngotLossRate * 0.02D, 0.2D) + (Math.max(0.9D, 1D - Config.configCompressedIngotLossRate * 0.01D) - Config.configCompressedIngotLossRate * 0.01D)));
+                        }
+                        ((EntityItem)entity).setEntityItemStack(newStack);
+                        iterator.remove();
                     }
                 }
-
-            } else if(event.entity instanceof EntityPotion) {
-                PneumaticCraft.tickHandler.potionEntities.add((EntityPotion)event.entity);
             }
         }
     }

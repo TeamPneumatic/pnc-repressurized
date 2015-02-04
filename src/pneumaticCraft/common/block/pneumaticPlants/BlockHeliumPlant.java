@@ -7,7 +7,6 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
-import pneumaticCraft.common.entity.item.EntityItemSpecial;
 import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.lib.Textures;
@@ -51,7 +50,7 @@ public class BlockHeliumPlant extends BlockPneumaticPlantBase{
     public void executeFullGrownEffect(World world, int x, int y, int z, Random rand){
         if(!world.isRemote) {
             ItemStack seed = new ItemStack(Itemss.plasticPlant, 1, ItemPlasticPlants.HELIUM_PLANT_DAMAGE);
-            EntityItem plant = new EntityItemSpecial(world, x + 0.5D, y + 0.2D, z + 0.5D, seed);
+            EntityItem plant = new EntityItem(world, x + 0.5D, y + 0.2D, z + 0.5D, seed);
             plant.motionX = rand.nextFloat() - 0.5F;
             plant.motionY = -1.0F;
             plant.motionZ = rand.nextFloat() - 0.5F;

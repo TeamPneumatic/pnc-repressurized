@@ -4,7 +4,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityList.EntityEggInfo;
 import pneumaticCraft.PneumaticCraft;
-import pneumaticCraft.common.entity.item.EntityItemSpecial;
 import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.entity.projectile.EntityChopperSeeds;
 import pneumaticCraft.common.entity.projectile.EntityPotionCloud;
@@ -18,7 +17,6 @@ public class EntityRegistrator{
         // distance for update, update frequency, boolean keep server updated
         // about velocities.
         EntityRegistry.registerModEntity(EntityVortex.class, "Vortex", 0, PneumaticCraft.instance, 80, 1, true);
-        EntityRegistry.registerModEntity(EntityItemSpecial.class, "Special Item Entity", 1, PneumaticCraft.instance, 80, 1, true);
         EntityRegistry.registerModEntity(EntityChopperSeeds.class, "Chopper Plant Seeds Entity", 2, PneumaticCraft.instance, 80, 1, true);
         EntityRegistry.registerModEntity(EntityPotionCloud.class, "Potion Cloud", 3, PneumaticCraft.instance, 80, 1, true);
         EntityRegistry.registerModEntity(EntityDrone.class, "Drone", 4, PneumaticCraft.instance, 80, 1, true);
