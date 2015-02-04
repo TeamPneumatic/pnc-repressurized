@@ -24,7 +24,6 @@ import pneumaticCraft.common.ai.StringFilterEntitySelector;
 import pneumaticCraft.common.block.pneumaticPlants.BlockPneumaticPlantBase;
 import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.PacketSpawnParticle;
-import pneumaticCraft.lib.Log;
 import pneumaticCraft.lib.Names;
 import pneumaticCraft.lib.PneumaticValues;
 import pneumaticCraft.proxy.CommonProxy;
@@ -142,7 +141,6 @@ public class ModuleAirGrate extends TubeModule{
 
             if(plantCheckX != x || plantCheckZ != z) { // we know that we're no plant, avoid getBlock
                 Block b = worldObj.getBlock(plantCheckX, y, plantCheckZ);
-                Log.info(plantCheckX + ", " + plantCheckZ);
                 NetworkHandler.sendToAllAround(new PacketSpawnParticle("reddust", plantCheckX + 0.5, y + 0.5, plantCheckZ + 0.5, 0, 0, 0), worldObj);
                 if(b instanceof BlockPneumaticPlantBase) {
                     ((BlockPneumaticPlantBase)b).attemptFarmByAirGrate(worldObj, plantCheckX, y, plantCheckZ);

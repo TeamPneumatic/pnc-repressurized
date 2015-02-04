@@ -5,3 +5,6 @@
 -Added 'Suicide' puzzle piece.
 
 -API: Added Amazon-style drone delivery to the API.
+
+-Bugfix: Pressure Chamber not fully respecting OreDictionary. (DarkstarDS9)
+-Bugfix: Plastic plants only grow one growth stage per bonemeal, and don't execute a full grown effect when bonemealed again.

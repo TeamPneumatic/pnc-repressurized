@@ -13,7 +13,6 @@ import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.api.item.IPressurizable;
 import pneumaticCraft.api.item.IProgrammable;
 import pneumaticCraft.common.NBTUtil;
-import pneumaticCraft.common.debug.DebugUtils;
 import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.common.tileentity.TileEntityProgrammer;
@@ -35,7 +34,6 @@ public class ItemDrone extends ItemPneumatic implements IPressurizable, IChargin
     @Override
     public boolean onItemUse(ItemStack iStack, EntityPlayer player, World world, int x, int y, int z, int side, float vecX, float vecY, float vecZ){
         if(!world.isRemote) {
-            DebugUtils.printNBT(iStack.getTagCompound());
             EntityDrone drone = new EntityDrone(world, player);
             ForgeDirection dir = ForgeDirection.getOrientation(side);
             drone.setPosition(x + 0.5 + dir.offsetX, y + 0.5 + dir.offsetY, z + 0.5 + dir.offsetZ);

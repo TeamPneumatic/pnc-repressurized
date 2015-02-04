@@ -31,7 +31,6 @@ import pneumaticCraft.common.progwidgets.ProgWidgetArea;
 import pneumaticCraft.common.progwidgets.ProgWidgetItemFilter;
 import pneumaticCraft.common.progwidgets.ProgWidgetString;
 import pneumaticCraft.common.tileentity.TileEntityProgrammer;
-import pneumaticCraft.lib.Log;
 import pneumaticCraft.lib.ModIds;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Optional;
@@ -537,7 +536,6 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral,
                 if(args.length == 0) {
                     if(curAction instanceof ICondition) {
                         Boolean bool = ((ICondition)curAction).evaluate(drone, getWidget());
-                        Log.info(bool.toString());
                         return new Object[]{bool};
                     } else {
                         throw new IllegalArgumentException("current action is not a condition! Action: " + (curAction != null ? curAction.getWidgetString() : "no action"));
