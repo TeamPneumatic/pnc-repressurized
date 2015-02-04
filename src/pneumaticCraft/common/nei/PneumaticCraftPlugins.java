@@ -34,7 +34,7 @@ public abstract class PneumaticCraftPlugins extends TemplateRecipeHandler{
 
         @Override
         public List<PositionedStack> getIngredients(){
-            return input;
+            return getCycledIngredients(cycleticks / 20, input);
         }
 
         @Override
