@@ -14,9 +14,12 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.common.Config;
+import pneumaticCraft.common.block.BlockPressureTube;
 import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.network.NetworkHandler;
@@ -203,19 +206,19 @@ public abstract class BlockPneumaticPlantBase extends BlockFlower implements IGr
     }
 
     @Override
-    protected void dropBlockAsItem(World p_149642_1_, int p_149642_2_, int p_149642_3_, int p_149642_4_, ItemStack p_149642_5_){
-        if(!p_149642_1_.isRemote && p_149642_1_.getGameRules().getGameRuleBooleanValue("doTileDrops")) {
+    protected void dropBlockAsItem(World world, int x, int y, int z, ItemStack stack){
+        if(!world.isRemote && world.getGameRules().getGameRuleBooleanValue("doTileDrops")) {
             if(captureDrops.get()) {
-                capturedDrops.get().add(p_149642_5_);
+                capturedDrops.get().add(stack);
                 return;
             }
             float f = 0.7F;
-            double d0 = p_149642_1_.rand.nextFloat() * f + (1.0F - f) * 0.5D;
-            double d1 = p_149642_1_.rand.nextFloat() * f + (1.0F - f) * 0.5D;
-            double d2 = p_149642_1_.rand.nextFloat() * f + (1.0F - f) * 0.5D;
-            EntityItem entityitem = new EntityItem(p_149642_1_, p_149642_2_ + d0, p_149642_3_ + d1, p_149642_4_ + d2, p_149642_5_);
+            double d0 = world.rand.nextFloat() * f + (1.0F - f) * 0.5D;
+            double d1 = world.rand.nextFloat() * f + (1.0F - f) * 0.5D;
+            double d2 = world.rand.nextFloat() * f + (1.0F - f) * 0.5D;
+            EntityItem entityitem = new EntityItem(world, x + d0, y + d1, z + d2, stack);
             entityitem.delayBeforeCanPickup = 10;
-            p_149642_1_.spawnEntityInWorld(entityitem);
+            world.spawnEntityInWorld(entityitem);
             ItemPlasticPlants.markInactive(entityitem);
         }
     }
@@ -233,6 +236,22 @@ public abstract class BlockPneumaticPlantBase extends BlockFlower implements IGr
         }
 
         return ret;
+    }
+
+    public void attemptFarmByAirGrate(World world, int x, int y, int z){
+        int meta = world.getBlockMetadata(x, y, z);
+        if(meta == 6 || meta == 13) { // only do this for mature plants
+            dropBlockAsItem(world, x, y, z, getDrops(world, x, y, z, 0, 0).get(0));
+            world.setBlockMetadataWithNotify(x, y, z, world.rand.nextInt(5), 3);
+        }
+    }
+
+    @Override
+    public MovingObjectPosition collisionRayTrace(World world, int x, int y, int z, Vec3 startVect, Vec3 endVect){
+        Block b = world.getBlock((int)Math.floor(endVect.xCoord), (int)Math.floor(endVect.yCoord), (int)Math.floor(endVect.zCoord));
+        if(b instanceof BlockPressureTube) return null; // AirGrate farming support; seeds won't get stuck in plants
+
+        return super.collisionRayTrace(world, x, y, z, startVect, endVect);
     }
 
     /*

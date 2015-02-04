@@ -1,8 +1,7 @@
--You can now right click blocks to plant seeds.
--Added MFR Fertilizer support (DarkstarDS9).
--Added "setRenameString" method to the Drone Interface.
--Updated pt_BR.lang (MrKunji).
+-The Air Grate Module can now farm plastic plants.
+-Blocks can now be rotated/removed by any wrench (not limited to the Pneumatic Wrench anymore).
+-When sneak-clicking with a wrench, (most) PneumaticCraft blocks will now drop.
+-Added a 'deliveryAmazon' command.
+-Added 'Suicide' puzzle piece.
 
--Bugfix: Plants don't grow when there's a block directly above.
--Bugfix: Crashes with certain Drone Interface actions. Fixes #384
--Bugfix: Drone will steal XP when right clicking an Essence Berry for example. Fixes #383
+-API: Added Amazon-style drone delivery to the API.

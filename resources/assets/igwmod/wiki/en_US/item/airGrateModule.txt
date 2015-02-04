@@ -9,6 +9,9 @@ In vacuum:
 
 So for instance, when the module is at 2 bar it will be repelling with a range of (4 x 2 = ) 8 blocks. when it's in a vacuum of -0.5 bar it will have a range of (-16 x -0.5 = ) 8 blocks.
 
+[prefix{l}]Early game plastic farm[prefix{}]
+The Air Grate can be used to create an early game plastic farm. The Air Grate will harvest any full-grown plastic plants that are within range, and at the same height as the Air Grate is. It will leave behind the stem for further farming.
+
 [prefix{l}]Applying an    [link{item/advancedPCB}]Advanced PCB[link{}][prefix{}]
 When you apply an Advanced PCB, you'll get control over which Entities will be affected by the module. You could set it up so that only a certain player gets affected, or Creepers only. This all can be done by right clicking the module after you upgraded it with the Advanced PCB. The following GUI will pop up:
 
