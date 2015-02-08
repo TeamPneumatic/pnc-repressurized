@@ -5,13 +5,11 @@ import java.util.List;
 
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
-import pneumaticCraft.api.PneumaticRegistry;
 import pneumaticCraft.api.item.IPressurizable;
 import pneumaticCraft.api.tileentity.IManoMeasurable;
 import pneumaticCraft.api.tileentity.IPneumaticMachine;
@@ -31,7 +29,6 @@ public class ItemManometer extends ItemPressurizable{
     @Override
     public boolean onItemUse(ItemStack iStack, EntityPlayer player, World world, int x, int y, int z, int side, float par8, float par9, float par10){
         if(world.isRemote) return true;
-        PneumaticRegistry.getInstance().deliverItemsAmazonStyle(world, (int)player.posX, (int)player.posY, (int)player.posZ, new ItemStack(Items.apple), new ItemStack(Itemss.advancedPCB));
         if(((IPressurizable)iStack.getItem()).getPressure(iStack) > 0F) {
             TileEntity te = world.getTileEntity(x, y, z);
             IPneumaticMachine machine = ModInteractionUtils.getInstance().getMachine(te);

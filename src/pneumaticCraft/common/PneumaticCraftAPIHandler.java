@@ -6,13 +6,13 @@ import java.util.List;
 import java.util.Map;
 
 import net.minecraft.block.Block;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
@@ -239,7 +239,7 @@ public class PneumaticCraftAPIHandler implements IPneumaticCraftInterface{
         tag.setFloat("currentAir", 100000);
 
         drone.readEntityFromNBT(tag);
-        drone.setCustomNameTag(I18n.format("drone.amazonDeliveryDrone"));
+        drone.setCustomNameTag(StatCollector.translateToLocal("drone.amazonDeliveryDrone"));
 
         //Program the drone
         int startY = world.getHeightValue(x + 30, z) + 30;
