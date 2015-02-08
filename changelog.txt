@@ -1,10 +1,4 @@
--The Air Grate Module can now farm plastic plants.
--Blocks can now be rotated/removed by any wrench (not limited to the Pneumatic Wrench anymore).
--When sneak-clicking with a wrench, (most) PneumaticCraft blocks will now drop.
--Added a 'deliveryAmazon' command.
--Added 'Suicide' puzzle piece.
+-Removed leftover debug code, which caused a crash when using the Manometer on SMP.
 
--API: Added Amazon-style drone delivery to the API.
-
--Bugfix: Pressure Chamber not fully respecting OreDictionary. (DarkstarDS9)
--Bugfix: Plastic plants only grow one growth stage per bonemeal, and don't execute a full grown effect when bonemealed again.
+-Bugfix: Crash when using older forge, added dependency on correct version.
+-Bugfix: Pneumatic Wrench doesn't work correctly when having Buildcraft installed.

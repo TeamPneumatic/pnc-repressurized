@@ -7,6 +7,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.api.tileentity.IPneumaticMachine;
 import pneumaticCraft.common.block.tubes.IPneumaticPosProvider;
 import pneumaticCraft.common.item.ItemTubeModule;
+import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.tileentity.TileEntityPressureTube;
 
 public class ModInteractionUtils{
@@ -16,8 +17,8 @@ public class ModInteractionUtils{
         return INSTANCE;
     }
 
-    public boolean isWrench(Item item){
-        return isBCWrench(item) || isTEWrench(item);
+    public boolean isModdedWrench(Item item){
+        return item != Itemss.pneumaticWrench && (isBCWrench(item) || isTEWrench(item));
     }
 
     protected boolean isBCWrench(Item item){

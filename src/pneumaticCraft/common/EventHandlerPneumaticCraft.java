@@ -222,7 +222,7 @@ public class EventHandlerPneumaticCraft{
             if(event.entityPlayer.isSneaking() && interactedBlock == Blockss.elevatorCaller) {
                 Blockss.elevatorCaller.onBlockActivated(event.world, event.x, event.y, event.z, event.entityPlayer, event.face, 0, 0, 0);
                 event.setCanceled(true);
-            } else if(event.entityPlayer.getCurrentEquippedItem() != null && ModInteractionUtilImplementation.getInstance().isWrench(event.entityPlayer.getCurrentEquippedItem().getItem())) {
+            } else if(event.entityPlayer.getCurrentEquippedItem() != null && ModInteractionUtilImplementation.getInstance().isModdedWrench(event.entityPlayer.getCurrentEquippedItem().getItem())) {
                 if(interactedBlock instanceof IPneumaticWrenchable) {
                     ((IPneumaticWrenchable)interactedBlock).rotateBlock(event.world, event.entityPlayer, event.x, event.y, event.z, ForgeDirection.getOrientation(event.face));
                 }

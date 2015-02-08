@@ -58,7 +58,7 @@ public abstract class BlockPneumaticCraft extends BlockContainer implements IPne
 
     @Override
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int par6, float par7, float par8, float par9){
-        if(player.isSneaking() || getGuiID() == -1 || isRotatable() && player.getCurrentEquippedItem() != null && (player.getCurrentEquippedItem().getItem() == Itemss.manometer || ModInteractionUtils.getInstance().isWrench(player.getCurrentEquippedItem().getItem()))) return false;
+        if(player.isSneaking() || getGuiID() == -1 || isRotatable() && player.getCurrentEquippedItem() != null && (player.getCurrentEquippedItem().getItem() == Itemss.manometer || ModInteractionUtils.getInstance().isModdedWrench(player.getCurrentEquippedItem().getItem()))) return false;
         else {
             if(!world.isRemote) {
                 TileEntity te = world.getTileEntity(x, y, z);
