@@ -21,7 +21,8 @@ import pneumaticCraft.common.ai.StringFilterEntitySelector;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IAreaProvider, IEntityProvider{
+public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IAreaProvider, IEntityProvider,
+        IItemFiltering{
 
     @Override
     public boolean hasStepInput(){
@@ -79,6 +80,7 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
         return new HashSet<ChunkPosition>(area);
     }
 
+    @Override
     public boolean isItemValidForFilters(ItemStack item){
         return isItemValidForFilters(item, -1);
     }

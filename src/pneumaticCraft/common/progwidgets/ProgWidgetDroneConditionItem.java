@@ -5,7 +5,7 @@ import net.minecraft.util.ResourceLocation;
 import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.lib.Textures;
 
-public class ProgWidgetDroneConditionItem extends ProgWidgetDroneEvaluation{
+public class ProgWidgetDroneConditionItem extends ProgWidgetDroneEvaluation implements IItemFiltering{
 
     @Override
     public Class<? extends IProgWidget>[] getParameters(){
@@ -23,7 +23,7 @@ public class ProgWidgetDroneConditionItem extends ProgWidgetDroneEvaluation{
         for(int i = 0; i < drone.getInventory().getSizeInventory(); i++) {
             ItemStack droneStack = drone.getInventory().getStackInSlot(i);
 
-            if(droneStack != null && ((ProgWidgetAreaItemBase)widget).isItemValidForFilters(droneStack)) {
+            if(droneStack != null && ((IItemFiltering)widget).isItemValidForFilters(droneStack)) {
                 count += droneStack.stackSize;
             }
         }
@@ -33,6 +33,11 @@ public class ProgWidgetDroneConditionItem extends ProgWidgetDroneEvaluation{
     @Override
     protected ResourceLocation getTexture(){
         return Textures.PROG_WIDGET_CONDITION_DRONE_ITEM_INVENTORY;
+    }
+
+    @Override
+    public boolean isItemValidForFilters(ItemStack item){
+        return ProgWidgetItemFilter.isItemValidForFilters(item, ProgWidget.getConnectedWidgetList(this, 0), ProgWidget.getConnectedWidgetList(this, getParameters().length), -1);
     }
 
 }
