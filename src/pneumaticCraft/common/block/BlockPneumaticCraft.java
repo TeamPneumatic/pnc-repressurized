@@ -19,7 +19,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.api.block.IPneumaticWrenchable;
-import pneumaticCraft.common.Config;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.thirdparty.ModInteractionUtils;
 import pneumaticCraft.common.tileentity.TileEntityBase;
@@ -156,18 +155,42 @@ public abstract class BlockPneumaticCraft extends BlockContainer implements IPne
             return true;
         } else {
             if(isRotatable()) {
-                int newMeta = (world.getBlockMetadata(x, y, z) + 1) % 6;
-                if(!canRotateToTopOrBottom()) {
-                    if(newMeta == 0) {
-                        newMeta = 2;
+                int meta = world.getBlockMetadata(x, y, z);
+                if(!rotateCustom(world, x, y, z, side, meta)) {
+                    int newMeta;
+                    if(rotateForgeWay()) {
+                        if(!canRotateToTopOrBottom()) side = ForgeDirection.UP;
+
+                        newMeta = ForgeDirection.getOrientation(meta).getRotation(side).ordinal();
+                        world.setBlockMetadataWithNotify(x, y, z, newMeta, 3);
+                    } else {
+                        newMeta = (meta + 1) % 6;
+                        if(!canRotateToTopOrBottom()) {
+                            if(newMeta == 0) {
+                                newMeta = 2;
+                            }
+                        }
                     }
+                    world.setBlockMetadataWithNotify(x, y, z, newMeta, 3);
                 }
-                world.setBlockMetadataWithNotify(x, y, z, newMeta, 3);
+
+                TileEntity te = world.getTileEntity(x, y, z);
+                if(te instanceof TileEntityBase) {
+                    ((TileEntityBase)te).onBlockRotated();
+                }
                 return true;
             } else {
                 return false;
             }
         }
+    }
+
+    protected boolean rotateForgeWay(){
+        return true;
+    }
+
+    protected boolean rotateCustom(World world, int x, int y, int z, ForgeDirection side, int meta){
+        return false;
     }
 
     /**

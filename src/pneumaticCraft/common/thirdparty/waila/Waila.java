@@ -1,6 +1,7 @@
 package pneumaticCraft.common.thirdparty.waila;
 
 import mcp.mobius.waila.api.IWailaRegistrar;
+import pneumaticCraft.api.tileentity.IHeatExchanger;
 import pneumaticCraft.api.tileentity.IPneumaticMachine;
 import pneumaticCraft.common.block.pneumaticPlants.BlockPneumaticPlantBase;
 import pneumaticCraft.common.thirdparty.IThirdParty;
@@ -26,15 +27,16 @@ public class Waila implements IThirdParty{
     }
 
     public static void callbackRegister(IWailaRegistrar registrar){
-        registrar.registerBodyProvider(new WailaHandler(), IPneumaticMachine.class);
-
+        registrar.registerBodyProvider(new WailaPneumaticHandler(), IPneumaticMachine.class);
+        registrar.registerBodyProvider(new WailaHeatHandler(), IHeatExchanger.class);
         registrar.registerBodyProvider(new WailaPlantHandler(), BlockPneumaticPlantBase.class);
 
         //registrar.registerSyncedNBTKey("pneumatic", IPneumaticMachine.class);
 
         //registrar.registerSyncedNBTKey("*", TileEntityPressureTube.class);
         registrar.registerBodyProvider(new WailaTubeModuleHandler(), TileEntityPressureTube.class);
-        registrar.registerNBTProvider(new WailaHandler(), IPneumaticMachine.class);
+        registrar.registerNBTProvider(new WailaPneumaticHandler(), IPneumaticMachine.class);
+        registrar.registerNBTProvider(new WailaHeatHandler(), IHeatExchanger.class);
         registrar.registerNBTProvider(new WailaTubeModuleHandler(), TileEntityPressureTube.class);
         //TODO registrar.registerBodyProvider(new WailaHandler(), TileMultipart.class);
     }

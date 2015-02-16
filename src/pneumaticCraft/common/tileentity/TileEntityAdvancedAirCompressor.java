@@ -25,7 +25,7 @@ public class TileEntityAdvancedAirCompressor extends TileEntityAirCompressor imp
 
     @Override
     protected void onFuelBurn(int burnedFuel){
-        heatExchanger.addHeat(burnedFuel / 10);
+        heatExchanger.addHeat(burnedFuel * 2);
     }
 
     @Override
@@ -36,6 +36,11 @@ public class TileEntityAdvancedAirCompressor extends TileEntityAirCompressor imp
     @Override
     public int getEfficiency(){
         return MathHelper.clamp_int((int)((625 - heatExchanger.getTemperature()) / 3), 0, 100);//0% efficiency at > 350 degree C, 100% at < 50 degree C.
+    }
+
+    @Override
+    protected float getSpeedUsageMultiplierFromUpgrades(int[] upgradeSlots){
+        return getSpeedMultiplierFromUpgrades(upgradeSlots);//return the same as the speed multiplier, so adding speed upgrades doesn't affect the efficiency.
     }
 
     @Override

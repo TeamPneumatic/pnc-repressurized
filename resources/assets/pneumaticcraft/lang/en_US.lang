@@ -56,6 +56,8 @@ tile.pneumaticDynamo.name=Pneumatic Dynamo
 tile.plasticMixer.name=Plastic Mixer
 tile.liquidCompressor.name=Liquid Compressor
 tile.advancedLiquidCompressor.name=Advanced Liquid Compressor
+tile.heatSink.name=Heat Sink
+tile.vortexTube.name=Vortex Tube
 
 tile.monsterStoneEgg.name=Silverfish
 
@@ -479,6 +481,14 @@ gui.tooltip.plasticPlant.plant=Press 'Q' or right click to plant seed
 hud.msg.state=State
 hud.msg.active=Active
 hud.msg.inactive=Inactive
+
+waila.temperature=Temperature
+waila.temperature.north=North Temperature
+waila.temperature.south=South Temperature
+waila.temperature.west=West Temperature
+waila.temperature.east=East Temperature
+waila.temperature.up=Top Temperature
+waila.temperature.down=Bottom Temperature
 
 # Misc
 itemGroup.tabPneumaticCraft=PneumaticCraft

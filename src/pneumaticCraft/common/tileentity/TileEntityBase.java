@@ -12,6 +12,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.Packet;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
+import pneumaticCraft.api.IHeatExchangerLogic;
 import pneumaticCraft.api.tileentity.IHeatExchanger;
 import pneumaticCraft.api.tileentity.IPneumaticMachine;
 import pneumaticCraft.common.inventory.SyncedField;
@@ -137,6 +138,8 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
          * PneumaticCraft.BlockChargingStation.blockID);
          */
     }
+
+    public void onBlockRotated(){}
 
     protected void rerenderChunk(){
         worldObj.markBlockRangeForRenderUpdate(xCoord, yCoord, zCoord, xCoord, yCoord, zCoord);
@@ -330,9 +333,21 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
         return false;
     }
 
-    private void initializeIfHeatExchanger(){
+    protected void initializeIfHeatExchanger(){
         if(this instanceof IHeatExchanger) {
-            ((IHeatExchanger)this).getHeatExchangerLogic(ForgeDirection.UNKNOWN).initializeAsHull(worldObj, xCoord, yCoord, zCoord);
+            initializeHeatExchanger(((IHeatExchanger)this).getHeatExchangerLogic(ForgeDirection.UNKNOWN), getConnectedHeatExchangerSides());
         }
+    }
+
+    protected void initializeHeatExchanger(IHeatExchangerLogic heatExchanger, ForgeDirection... connectedSides){
+        heatExchanger.initializeAsHull(worldObj, xCoord, yCoord, zCoord, connectedSides);
+    }
+
+    /**
+     * Gets the valid sides for heat exchanging to be allowed. returning an empty array will allow any side.
+     * @return
+     */
+    protected ForgeDirection[] getConnectedHeatExchangerSides(){
+        return new ForgeDirection[0];
     }
 }

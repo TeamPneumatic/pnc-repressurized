@@ -1,8 +1,11 @@
 package pneumaticCraft.common.block.tubes;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
@@ -10,6 +13,7 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityHopper;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.EnumChatFormatting;
@@ -18,12 +22,17 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+
+import org.lwjgl.opengl.GL11;
+
 import pneumaticCraft.client.model.IBaseModel;
 import pneumaticCraft.client.model.tubemodules.ModelAirGrate;
+import pneumaticCraft.client.render.RenderRangeLines;
 import pneumaticCraft.common.ai.StringFilterEntitySelector;
 import pneumaticCraft.common.block.pneumaticPlants.BlockPneumaticPlantBase;
 import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.PacketSpawnParticle;
+import pneumaticCraft.common.tileentity.TileEntityHeatSink;
 import pneumaticCraft.lib.Names;
 import pneumaticCraft.lib.PneumaticValues;
 import pneumaticCraft.proxy.CommonProxy;
@@ -33,9 +42,15 @@ public class ModuleAirGrate extends TubeModule{
     private int grateRange;
     private boolean vacuum;
     public String entityFilter = "";
+    private final Set<TileEntityHeatSink> heatSinks = new HashSet<TileEntityHeatSink>();
+    private final RenderRangeLines rangeLineRenderer = new RenderRangeLines(0x55FF0000);
 
     private int plantCheckX = Integer.MIN_VALUE;
     private int plantCheckZ = Integer.MIN_VALUE;
+
+    public ModuleAirGrate(){
+        rangeLineRenderer.resetRendering(1);
+    }
 
     private int getRange(){
         float range = pressureTube.getAirHandler().getPressure(ForgeDirection.UNKNOWN) * 4;
@@ -63,8 +78,10 @@ public class ModuleAirGrate extends TubeModule{
             if(oldGrateRange != grateRange) sendDescriptionPacket();
 
             checkForPlantsAndFarm(worldObj, xCoord, yCoord, zCoord, grateRange);
-        } else {
+            coolHeatSinks(worldObj, xCoord, yCoord, zCoord, grateRange);
 
+        } else {
+            rangeLineRenderer.update();
             /*  updateParticleTargets(tileVec, grateRange);
               for(Vec3 particleVec : particleTargets) {
 
@@ -156,6 +173,28 @@ public class ModuleAirGrate extends TubeModule{
         }
     }
 
+    private void coolHeatSinks(World world, int x, int y, int z, int range){
+        if(grateRange > 2) {
+            int curTeIndex = (int)(world.getWorldTime() % 27);
+            x += dir.offsetX * 2;
+            y += dir.offsetY * 2;
+            z += dir.offsetZ * 2;
+            TileEntity te = world.getTileEntity(x - 1 + curTeIndex % 3, y - 1 + curTeIndex / 3 % 3, z - 1 + curTeIndex / 9 % 3);
+            if(te instanceof TileEntityHeatSink) heatSinks.add((TileEntityHeatSink)te);
+
+            Iterator<TileEntityHeatSink> iterator = heatSinks.iterator();
+            while(iterator.hasNext()) {
+                TileEntityHeatSink heatSink = iterator.next();
+                if(heatSink.isInvalid()) {
+                    iterator.remove();
+                } else {
+                    for(int i = 0; i < 4; i++)
+                        heatSink.onFannedByAirGrate();
+                }
+            }
+        }
+    }
+
     @Override
     public void readFromNBT(NBTTagCompound tag){
         super.readFromNBT(tag);
@@ -180,6 +219,14 @@ public class ModuleAirGrate extends TubeModule{
     @Override
     public IBaseModel getModel(){
         return model;
+    }
+
+    @Override
+    protected void renderModule(){
+        GL11.glPushMatrix();
+        GL11.glTranslated(0, 0, 2);
+        rangeLineRenderer.render();
+        GL11.glPopMatrix();
     }
 
     @Override

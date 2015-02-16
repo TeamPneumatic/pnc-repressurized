@@ -1,7 +1,7 @@
 package pneumaticCraft.common.heat;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
@@ -10,8 +10,8 @@ import pneumaticCraft.api.IHeatExchangerLogic;
 import pneumaticCraft.common.network.GuiSynced;
 
 public class HeatExchangerLogic implements IHeatExchangerLogic{
-    private final List<IHeatExchangerLogic> hullExchangers = new ArrayList<IHeatExchangerLogic>();
-    private final List<IHeatExchangerLogic> connectedExchangers = new ArrayList<IHeatExchangerLogic>();
+    private final Set<IHeatExchangerLogic> hullExchangers = new HashSet<IHeatExchangerLogic>();
+    private final Set<IHeatExchangerLogic> connectedExchangers = new HashSet<IHeatExchangerLogic>();
     @GuiSynced
     private double temperature = 295;//degrees Kelvin, 20 degrees by default.
     private double thermalResistance = 1;
@@ -116,8 +116,12 @@ public class HeatExchangerLogic implements IHeatExchangerLogic{
             }
             double deltaTemp = logic.getTemperature() - getTemperature();
 
+            double totalResistance = thermalResistance + logic.getThermalResistance();
             deltaTemp /= getTickingHeatExchangers();//As the connected logics also will tick, we should prevent dispersing more when more are connected.
-            deltaTemp /= thermalResistance + logic.getThermalResistance();
+            deltaTemp /= totalResistance;
+
+            double maxDeltaTemp = (logic.getTemperature() * logic.getThermalCapacity() - temperature * getThermalCapacity()) / 2;//Calculate the heat needed to exactly equalize the heat.
+            if(maxDeltaTemp >= 0 && deltaTemp > maxDeltaTemp || maxDeltaTemp <= 0 && deltaTemp < maxDeltaTemp) deltaTemp = maxDeltaTemp;
             temperature += deltaTemp / getThermalCapacity();
             logic.setTemperature(logic.getTemperature() - deltaTemp / logic.getThermalCapacity());
         }

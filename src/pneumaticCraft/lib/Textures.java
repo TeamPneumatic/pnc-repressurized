@@ -53,6 +53,7 @@ public class Textures{
     public static final ResourceLocation MODEL_PNEUMATIC_DYNAMO_ON = new ResourceLocation(MODEL_LOCATION + "pneumaticDynamoOn.png");
     public static final ResourceLocation MODEL_PNEUMATIC_DYNAMO_OFF = new ResourceLocation(MODEL_LOCATION + "pneumaticDynamoOff.png");
     public static final ResourceLocation MODEL_PLASTIC_MIXER = new ResourceLocation(MODEL_LOCATION + "plasticMixer.png");
+    public static final ResourceLocation MODEL_HEAT_SINK = new ResourceLocation(MODEL_LOCATION + "heatSink.png");
 
     public static final ResourceLocation MODEL_FLOW_DETECTOR = new ResourceLocation(TUBE_MODULE_MODEL_LOCATION + "flowDetector.png");
     public static final ResourceLocation MODEL_GAUGE = new ResourceLocation(TUBE_MODULE_MODEL_LOCATION + "gaugeModule.png");

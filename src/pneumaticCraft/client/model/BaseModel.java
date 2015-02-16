@@ -41,22 +41,29 @@ public class BaseModel implements IBaseModel{
     public void renderStatic(float size, TileEntity te){
         GL11.glPushMatrix();
         if(model instanceof WavefrontObject) {
-            if(te != null) {
-                GL11.glRotated(180, 1, 0, 0);
-                GL11.glRotated(90, 0, -1, 0);
-                GL11.glTranslated(-8, 0, 8);
-            } else {
-                GL11.glRotated(180, -1, 0, 0);
-                GL11.glTranslated(-8, 0, 8);
-            }
-
+            applyRenderPreps(te);
         }
         if(staticParts != null) {
             model.renderOnly(staticParts);
         } else {
-            model.renderAll();
+            renderAll(te);
         }
         GL11.glPopMatrix();
+    }
+
+    protected void renderAll(TileEntity te){
+        model.renderAll();
+    }
+
+    protected void applyRenderPreps(TileEntity te){
+        if(te != null) {
+            GL11.glRotated(180, 1, 0, 0);
+            GL11.glRotated(90, 0, -1, 0);
+            GL11.glTranslated(-8, 0, 8);
+        } else {
+            GL11.glRotated(180, -1, 0, 0);
+            GL11.glTranslated(-8, 0, 8);
+        }
     }
 
     @Override

@@ -116,6 +116,10 @@ public class CraftingRegistrator{
         RecipeSorter.register("pneumaticcraft:pneumaticHelmet", RecipePneumaticHelmet.class, Category.SHAPED, "after:minecraft:shaped");
         RecipeSorter.register("pneumaticcraft:manometer", RecipeManometer.class, Category.SHAPED, "after:minecraft:shaped");
 
+        //Heat related
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Blockss.heatSink), "bbb", "igi", 'i', Names.INGOT_IRON_COMPRESSED, 'b', Blocks.iron_bars, 'g', "ingotGold"));
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Blockss.vortexTube), "iti", "gtg", "iii", 'i', Names.INGOT_IRON_COMPRESSED, 'g', "ingotGold", 't', Blockss.pressureTube));
+
         //misc
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Blockss.compressedIron), "iii", "iii", "iii", 'i', Names.INGOT_IRON_COMPRESSED));
         GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(Itemss.ingotIronCompressed, 9, 0), Names.BLOCK_IRON_COMPRESSED));

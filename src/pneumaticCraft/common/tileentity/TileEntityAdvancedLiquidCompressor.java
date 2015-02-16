@@ -40,6 +40,11 @@ public class TileEntityAdvancedLiquidCompressor extends TileEntityLiquidCompress
     }
 
     @Override
+    protected float getSpeedUsageMultiplierFromUpgrades(int[] upgradeSlots){
+        return getSpeedMultiplierFromUpgrades(upgradeSlots);//return the same as the speed multiplier, so adding speed upgrades doesn't affect the efficiency.
+    }
+
+    @Override
     public String getInventoryName(){
 
         return Blockss.advancedLiquidCompressor.getUnlocalizedName();

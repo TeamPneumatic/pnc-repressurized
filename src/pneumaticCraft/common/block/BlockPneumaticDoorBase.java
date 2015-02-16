@@ -91,9 +91,7 @@ public class BlockPneumaticDoorBase extends BlockPneumaticCraftModeled{
             TileEntity te = world.getTileEntity(x, y, z);
             if(te instanceof TileEntityPneumaticDoorBase) {
                 TileEntityPneumaticDoorBase teDb = (TileEntityPneumaticDoorBase)te;
-                int newMeta = (teDb.orientation.ordinal() + 1) % 6;
-                if(newMeta == 0) newMeta = 2;
-                teDb.orientation = ForgeDirection.getOrientation(newMeta);
+                teDb.orientation = teDb.orientation.getRotation(ForgeDirection.UP);
                 return true;
             }
             return false;

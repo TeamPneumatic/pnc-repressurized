@@ -99,4 +99,9 @@ public class BlockAphorismTile extends BlockPneumaticCraft{
             return super.rotateBlock(world, player, x, y, z, face);
         }
     }
+
+    @Override
+    protected boolean rotateForgeWay(){
+        return false;
+    }
 }

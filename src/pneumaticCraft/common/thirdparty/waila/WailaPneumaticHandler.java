@@ -18,7 +18,7 @@ import pneumaticCraft.api.tileentity.IPneumaticMachine;
 import pneumaticCraft.common.tileentity.TileEntityPneumaticBase;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 
-public class WailaHandler implements IWailaDataProvider{
+public class WailaPneumaticHandler implements IWailaDataProvider{
 
     @Override
     public ItemStack getWailaStack(IWailaDataAccessor accessor, IWailaConfigHandler config){

@@ -4,7 +4,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.item.ItemBlock;
 import net.minecraftforge.oredict.OreDictionary;
-import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.common.block.pneumaticPlants.BlockBurstPlant;
 import pneumaticCraft.common.block.pneumaticPlants.BlockChopperPlant;
 import pneumaticCraft.common.block.pneumaticPlants.BlockCreeperPlant;
@@ -82,6 +81,8 @@ public class Blockss{
     public static Block advancedAirCompressor;
     public static Block liquidHopper;
     public static Block droneRedstoneEmitter;
+    public static Block heatSink;
+    public static Block vortexTube;
 
     public static void init(){
         pressureTube = new BlockPressureTube(Material.iron, PneumaticValues.DANGER_PRESSURE_PRESSURE_TUBE, PneumaticValues.MAX_PRESSURE_PRESSURE_TUBE, PneumaticValues.VOLUME_PRESSURE_TUBE).setHardness(3.0F).setResistance(3.0F).setBlockName("pressureTube");
@@ -117,7 +118,7 @@ public class Blockss{
         assemblyDrill = new BlockAssemblyDrill(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("assemblyDrill");
         assemblyLaser = new BlockAssemblyLaser(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("assemblyLaser");
         assemblyController = new BlockAssemblyController(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("assemblyController");
-        compressedIron = new HelperBlock(Material.iron).setBlockTextureName(Textures.BLOCK_COMPRESSED_IRON).setStepSound(Block.soundTypeMetal).setHardness(3.0F).setResistance(10.0F).setBlockName("compressedIronBlock");
+        compressedIron = new BlockCompressedIron(Material.iron).setBlockTextureName(Textures.BLOCK_COMPRESSED_IRON).setStepSound(Block.soundTypeMetal).setHardness(3.0F).setResistance(10.0F).setBlockName("compressedIronBlock");
         uvLightBox = new BlockUVLightBox(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("uvLightBox");
         etchingAcid = new BlockFluidEtchingAcid().setBlockName("etchingAcid");
         securityStation = new BlockSecurityStation(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("securityStation");
@@ -134,17 +135,12 @@ public class Blockss{
         liquidCompressor = new BlockLiquidCompressor(Material.iron).setHardness(3.0F).setResistance(10F).setBlockName("liquidCompressor");
         advancedLiquidCompressor = new BlockAdvancedLiquidCompressor(Material.iron).setHardness(3.0F).setResistance(10F).setBlockName("advancedLiquidCompressor");
         droneRedstoneEmitter = new BlockDroneRedstoneEmitter().setBlockName("droneRedstoneEmitter");
+        heatSink = new BlockHeatSink(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("heatSink");
+        vortexTube = new BlockVortexTube(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("vortexTube");
 
         registerBlocks();
 
         OreDictionary.registerOre(Names.BLOCK_IRON_COMPRESSED, compressedIron);
-    }
-
-    private static class HelperBlock extends Block{//helper class, as the constructor of Block is protected.
-        public HelperBlock(Material material){
-            super(material);
-            setCreativeTab(PneumaticCraft.tabPneumaticCraft);
-        }
     }
 
     private static void registerBlocks(){
@@ -198,6 +194,8 @@ public class Blockss{
         registerBlock(liquidCompressor);
         registerBlock(advancedLiquidCompressor);
         registerBlock(droneRedstoneEmitter);
+        registerBlock(heatSink);
+        registerBlock(vortexTube);
     }
 
     public static void registerBlock(Block block){

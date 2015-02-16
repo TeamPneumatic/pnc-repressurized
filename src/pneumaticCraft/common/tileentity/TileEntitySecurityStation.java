@@ -1,7 +1,6 @@
 package pneumaticCraft.common.tileentity;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
@@ -11,10 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.AxisAlignedBB;
-
-import org.lwjgl.opengl.GL11;
-
-import pneumaticCraft.client.render.RenderProgressingLine;
+import pneumaticCraft.client.render.RenderRangeLines;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.ItemNetworkComponents;
@@ -44,8 +40,7 @@ public class TileEntitySecurityStation extends TileEntityBase implements ISidedI
     public String textFieldText = "";
     private int securityRange;
     private int oldSecurityRange; //range used by the range line renderer, to figure out if the range has been changed.
-    private List<RenderProgressingLine> rangeLines;
-    private int rangeLinesTimer = 0;
+    private final RenderRangeLines rangeLineRenderer = new RenderRangeLines(0x33FF0000);
 
     @GuiSynced
     public int redstoneMode;
@@ -68,26 +63,12 @@ public class TileEntitySecurityStation extends TileEntityBase implements ISidedI
                 }
             }
         }
-        if(worldObj.isRemote && rangeLines != null) {
-            if(rangeLinesTimer > 0) {
-                rangeLinesTimer--;
-                for(RenderProgressingLine line : rangeLines) {
-                    if(line.getProgress() > 0.005F || worldObj.rand.nextInt(60) == 0) {
-                        line.incProgress(0.01F);
-                    }
-                }
-            } else {
-                Iterator<RenderProgressingLine> iterator = rangeLines.iterator();
-                while(iterator.hasNext()) {
-                    RenderProgressingLine line = iterator.next();
-                    if(line.getProgress() > 0.005F) {
-                        line.incProgress(0.01F);
-                    }
-                    if(worldObj.rand.nextInt(10) == 0) {
-                        iterator.remove();
-                    }
-                }
+        if(worldObj.isRemote) {
+            if(oldSecurityRange != getSecurityRange() || oldSecurityRange == 0) {
+                rangeLineRenderer.resetRendering(getSecurityRange());
+                oldSecurityRange = getSecurityRange();
             }
+            rangeLineRenderer.update();
         }
         if(/* !worldObj.isRemote && */oldRedstoneStatus != shouldEmitRedstone()) {
             oldRedstoneStatus = shouldEmitRedstone();
@@ -114,7 +95,7 @@ public class TileEntitySecurityStation extends TileEntityBase implements ISidedI
     @Override
     public void showRangeLines(){
         if(worldObj.isRemote) {
-            rangeLinesTimer = 200;
+            rangeLineRenderer.resetRendering(getSecurityRange());
         } else {
             NetworkHandler.sendToAllAround(new PacketRenderRangeLines(this), worldObj, TileEntityConstants.PACKET_UPDATE_DISTANCE + getSecurityRange());
         }
@@ -122,44 +103,7 @@ public class TileEntitySecurityStation extends TileEntityBase implements ISidedI
 
     @SideOnly(Side.CLIENT)
     public void renderRangeLines(){
-        if(oldSecurityRange != getSecurityRange() || oldSecurityRange == 0) {
-            showRangeLines();
-            oldSecurityRange = getSecurityRange();
-            rangeLines = new ArrayList<RenderProgressingLine>();
-            double renderSecurityRange = securityRange + 0.5D;
-            for(int i = 0; i < securityRange * 16 + 8; i++) {
-                //Add the vertical lines of the walls
-                rangeLines.add(new RenderProgressingLine(-renderSecurityRange + i / 8D, -renderSecurityRange + 1, -renderSecurityRange, -renderSecurityRange + i / 8D, renderSecurityRange + 1, -renderSecurityRange));
-                rangeLines.add(new RenderProgressingLine(renderSecurityRange - i / 8D, -renderSecurityRange + 1, renderSecurityRange, renderSecurityRange - i / 8D, renderSecurityRange + 1, renderSecurityRange));
-                rangeLines.add(new RenderProgressingLine(-renderSecurityRange, -renderSecurityRange + 1, renderSecurityRange - i / 8D, -renderSecurityRange, renderSecurityRange + 1, renderSecurityRange - i / 8D));
-                rangeLines.add(new RenderProgressingLine(renderSecurityRange, -renderSecurityRange + 1, -renderSecurityRange + i / 8D, renderSecurityRange, renderSecurityRange + 1, -renderSecurityRange + i / 8D));
-
-                //Add the horizontal lines of the walls
-                rangeLines.add(new RenderProgressingLine(-renderSecurityRange, -renderSecurityRange + i / 8D + 1, -renderSecurityRange, -renderSecurityRange, -renderSecurityRange + i / 8D + 1, renderSecurityRange));
-                rangeLines.add(new RenderProgressingLine(renderSecurityRange, -renderSecurityRange + i / 8D + 1, -renderSecurityRange, renderSecurityRange, -renderSecurityRange + i / 8D + 1, renderSecurityRange));
-                rangeLines.add(new RenderProgressingLine(-renderSecurityRange, renderSecurityRange - i / 8D + 1, -renderSecurityRange, renderSecurityRange, renderSecurityRange - i / 8D + 1, -renderSecurityRange));
-                rangeLines.add(new RenderProgressingLine(-renderSecurityRange, -renderSecurityRange + i / 8D + 1, renderSecurityRange, renderSecurityRange, -renderSecurityRange + i / 8D + 1, renderSecurityRange));
-
-                //Add the roof and floor
-                rangeLines.add(new RenderProgressingLine(renderSecurityRange - i / 8D, -renderSecurityRange + 1, -renderSecurityRange, renderSecurityRange - i / 8D, -renderSecurityRange + 1, renderSecurityRange));
-                rangeLines.add(new RenderProgressingLine(renderSecurityRange - i / 8D, renderSecurityRange + 1, -renderSecurityRange, renderSecurityRange - i / 8D, renderSecurityRange + 1, renderSecurityRange));
-                rangeLines.add(new RenderProgressingLine(-renderSecurityRange, -renderSecurityRange + 1, -renderSecurityRange + i / 8D, renderSecurityRange, -renderSecurityRange + 1, -renderSecurityRange + i / 8D));
-                rangeLines.add(new RenderProgressingLine(-renderSecurityRange, renderSecurityRange + 1, -renderSecurityRange + i / 8D, renderSecurityRange, renderSecurityRange + 1, -renderSecurityRange + i / 8D));
-
-            }
-        }
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GL11.glColor4d(1, 0, 0, 0.2D);
-        GL11.glLineWidth(1.0F);
-        for(RenderProgressingLine line : rangeLines) {
-            line.render();
-        }
-        GL11.glColor4d(1, 1, 1, 1);
-        GL11.glDisable(GL11.GL_BLEND);
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
-
+        rangeLineRenderer.render();
     }
 
     @Override
@@ -217,7 +161,7 @@ public class TileEntitySecurityStation extends TileEntityBase implements ISidedI
     @Override
     @SideOnly(Side.CLIENT)
     public AxisAlignedBB getRenderBoundingBox(){
-        if(rangeLines == null || rangeLines.size() == 0) return super.getRenderBoundingBox();
+        if(!rangeLineRenderer.isCurrentlyRendering()) return super.getRenderBoundingBox();
         int range = getSecurityRange();
         return AxisAlignedBB.getBoundingBox(xCoord - range, yCoord - range, zCoord - range, xCoord + 1 + range, yCoord + 1 + range, zCoord + 1 + range);
     }

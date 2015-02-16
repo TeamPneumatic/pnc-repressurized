@@ -99,7 +99,7 @@ public class BlockPressureChamberInterface extends BlockPressureChamberWall{
         if(player.isSneaking()) {
             return super.rotateBlock(world, player, x, y, z, side);
         } else {
-            int newMeta = (world.getBlockMetadata(x, y, z) + 1) % 6;
+            int newMeta = ForgeDirection.getOrientation(world.getBlockMetadata(x, y, z)).getRotation(side).ordinal();
             world.setBlockMetadataWithNotify(x, y, z, newMeta, 3);
             return true;
         }

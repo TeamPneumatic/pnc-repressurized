@@ -1,7 +1,6 @@
 package pneumaticCraft.common.tileentity;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
@@ -14,14 +13,11 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.ChunkPosition;
 import net.minecraftforge.common.util.ForgeDirection;
-
-import org.lwjgl.opengl.GL11;
-
 import pneumaticCraft.api.universalSensor.IEventSensorSetting;
 import pneumaticCraft.api.universalSensor.IPollSensorSetting;
 import pneumaticCraft.api.universalSensor.ISensorSetting;
 import pneumaticCraft.client.gui.GuiUniversalSensor;
-import pneumaticCraft.client.render.RenderProgressingLine;
+import pneumaticCraft.client.render.RenderRangeLines;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.ItemGPSTool;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
@@ -67,8 +63,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
     private boolean requestPollPullEvent;
 
     private int oldSensorRange; //range used by the range line renderer, to figure out if the range has been changed.
-    private List<RenderProgressingLine> rangeLines;
-    private int rangeLinesTimer = 0;
+    private final RenderRangeLines rangeLineRenderer = new RenderRangeLines(0x330000FF);
 
     private final List<IComputerAccess> attachedComputers = new ArrayList<IComputerAccess>(); //keep track of the computers so we can raise a os.pullevent.
 
@@ -88,26 +83,13 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
         dishRotation += dishSpeed;
         super.updateEntity();
 
-        if(worldObj.isRemote && rangeLines != null) {
-            if(rangeLinesTimer > 0) {
-                rangeLinesTimer--;
-                for(RenderProgressingLine line : rangeLines) {
-                    if(line.getProgress() > 0.005F || worldObj.rand.nextInt(60) == 0) {
-                        line.incProgress(0.01F);
-                    }
-                }
-            } else {
-                Iterator<RenderProgressingLine> iterator = rangeLines.iterator();
-                while(iterator.hasNext()) {
-                    RenderProgressingLine line = iterator.next();
-                    if(line.getProgress() > 0.005F) {
-                        line.incProgress(0.01F);
-                    }
-                    if(worldObj.rand.nextInt(10) == 0) {
-                        iterator.remove();
-                    }
-                }
+        if(worldObj.isRemote) {
+            int sensorRange = getRange();
+            if(oldSensorRange != sensorRange || oldSensorRange == 0) {
+                oldSensorRange = sensorRange;
+                rangeLineRenderer.resetRendering(sensorRange);
             }
+            rangeLineRenderer.update();
         }
 
         if(!worldObj.isRemote) {
@@ -154,7 +136,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
     @Override
     public void showRangeLines(){
         if(worldObj.isRemote) {
-            rangeLinesTimer = 200;
+            rangeLineRenderer.resetRendering(getRange());
         } else {
             NetworkHandler.sendToAllAround(new PacketRenderRangeLines(this), worldObj, TileEntityConstants.PACKET_UPDATE_DISTANCE + getRange());
         }
@@ -162,50 +144,13 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
 
     @SideOnly(Side.CLIENT)
     public void renderRangeLines(){
-        int sensorRange = getRange();
-        if(oldSensorRange != sensorRange || oldSensorRange == 0) {
-            showRangeLines();
-            oldSensorRange = sensorRange;
-            rangeLines = new ArrayList<RenderProgressingLine>();
-            double renderSensorRange = sensorRange + 0.5D;
-            for(int i = 0; i < sensorRange * 16 + 8; i++) {
-                //Add the vertical lines of the walls
-                rangeLines.add(new RenderProgressingLine(-renderSensorRange + i / 8D, -renderSensorRange + 1, -renderSensorRange, -renderSensorRange + i / 8D, renderSensorRange + 1, -renderSensorRange));
-                rangeLines.add(new RenderProgressingLine(renderSensorRange - i / 8D, -renderSensorRange + 1, renderSensorRange, renderSensorRange - i / 8D, renderSensorRange + 1, renderSensorRange));
-                rangeLines.add(new RenderProgressingLine(-renderSensorRange, -renderSensorRange + 1, renderSensorRange - i / 8D, -renderSensorRange, renderSensorRange + 1, renderSensorRange - i / 8D));
-                rangeLines.add(new RenderProgressingLine(renderSensorRange, -renderSensorRange + 1, -renderSensorRange + i / 8D, renderSensorRange, renderSensorRange + 1, -renderSensorRange + i / 8D));
-
-                //Add the horizontal lines of the walls
-                rangeLines.add(new RenderProgressingLine(-renderSensorRange, -renderSensorRange + i / 8D + 1, -renderSensorRange, -renderSensorRange, -renderSensorRange + i / 8D + 1, renderSensorRange));
-                rangeLines.add(new RenderProgressingLine(renderSensorRange, -renderSensorRange + i / 8D + 1, -renderSensorRange, renderSensorRange, -renderSensorRange + i / 8D + 1, renderSensorRange));
-                rangeLines.add(new RenderProgressingLine(-renderSensorRange, renderSensorRange - i / 8D + 1, -renderSensorRange, renderSensorRange, renderSensorRange - i / 8D + 1, -renderSensorRange));
-                rangeLines.add(new RenderProgressingLine(-renderSensorRange, -renderSensorRange + i / 8D + 1, renderSensorRange, renderSensorRange, -renderSensorRange + i / 8D + 1, renderSensorRange));
-
-                //Add the roof and floor
-                rangeLines.add(new RenderProgressingLine(renderSensorRange - i / 8D, -renderSensorRange + 1, -renderSensorRange, renderSensorRange - i / 8D, -renderSensorRange + 1, renderSensorRange));
-                rangeLines.add(new RenderProgressingLine(renderSensorRange - i / 8D, renderSensorRange + 1, -renderSensorRange, renderSensorRange - i / 8D, renderSensorRange + 1, renderSensorRange));
-                rangeLines.add(new RenderProgressingLine(-renderSensorRange, -renderSensorRange + 1, -renderSensorRange + i / 8D, renderSensorRange, -renderSensorRange + 1, -renderSensorRange + i / 8D));
-                rangeLines.add(new RenderProgressingLine(-renderSensorRange, renderSensorRange + 1, -renderSensorRange + i / 8D, renderSensorRange, renderSensorRange + 1, -renderSensorRange + i / 8D));
-
-            }
-        }
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GL11.glColor4d(0, 0, 1, 0.2D);
-        GL11.glLineWidth(1.0F);
-        for(RenderProgressingLine line : rangeLines) {
-            line.render();
-        }
-        GL11.glDisable(GL11.GL_BLEND);
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
-
+        rangeLineRenderer.render();
     }
 
     @Override
     @SideOnly(Side.CLIENT)
     public AxisAlignedBB getRenderBoundingBox(){
-        if(rangeLines == null || rangeLines.size() == 0) return super.getRenderBoundingBox();
+        if(!rangeLineRenderer.isCurrentlyRendering()) return super.getRenderBoundingBox();
         int range = getRange();
         return AxisAlignedBB.getBoundingBox(xCoord - range, yCoord - range, zCoord - range, xCoord + 1 + range, yCoord + 1 + range, zCoord + 1 + range);
     }
