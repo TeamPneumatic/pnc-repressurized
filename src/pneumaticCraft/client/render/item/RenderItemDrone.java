@@ -1,11 +1,13 @@
 package pneumaticCraft.client.render.item;
 
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.client.IItemRenderer;
 
 import org.lwjgl.opengl.GL11;
 
 import pneumaticCraft.client.model.entity.ModelDrone;
+import pneumaticCraft.client.util.RenderUtils;
 import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.relauncher.Side;
@@ -34,7 +36,12 @@ public class RenderItemDrone implements IItemRenderer{
 
     @Override
     public void renderItem(ItemRenderType type, ItemStack item, Object... data){
-
+        NBTTagCompound tag = item.getTagCompound();
+        int color = 0;
+        if(tag != null) {
+            color = tag.getInteger("color");
+        }
+        RenderUtils.glColorHex(0xFF000000 + color);
         switch(type){
             case ENTITY: {
                 render(0.0F, 0.0F, 1.0F, 0.5F);

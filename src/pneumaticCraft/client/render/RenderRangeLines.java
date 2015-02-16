@@ -7,6 +7,8 @@ import java.util.Random;
 
 import org.lwjgl.opengl.GL11;
 
+import pneumaticCraft.client.util.RenderUtils;
+
 public class RenderRangeLines{
     private final List<RenderProgressingLine> rangeLines = new ArrayList<RenderProgressingLine>();
     private int rangeLinesTimer = 0;
@@ -74,11 +76,7 @@ public class RenderRangeLines{
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        double alpha = (color >> 24) / 256D;
-        double red = (color >> 16 & 255) / 256D;
-        double green = (color >> 8 & 255) / 256D;
-        double blue = (color & 255) / 256D;
-        GL11.glColor4d(red, green, blue, alpha);
+        RenderUtils.glColorHex(color);
         GL11.glLineWidth(1.0F);
         for(RenderProgressingLine line : rangeLines) {
             line.render();

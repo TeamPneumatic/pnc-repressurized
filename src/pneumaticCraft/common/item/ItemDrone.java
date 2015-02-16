@@ -45,6 +45,7 @@ public class ItemDrone extends ItemPneumatic implements IPressurizable, IChargin
             if(stackTag != null) {
                 entityTag.setTag("widgets", stackTag.getTagList("widgets", 10).copy());
                 entityTag.setFloat("currentAir", stackTag.getFloat("currentAir"));
+                entityTag.setInteger("color", stackTag.getInteger("color"));
                 NBTTagCompound invTag = stackTag.getCompoundTag("Inventory");
                 if(invTag != null) entityTag.setTag("Inventory", invTag.copy());
             }

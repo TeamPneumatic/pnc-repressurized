@@ -281,4 +281,12 @@ public class RenderUtils extends Render{
         }
     }
 
+    public static void glColorHex(int color){
+        double alpha = (color >> 24 & 255) / 255D;
+        double red = (color >> 16 & 255) / 255D;
+        double green = (color >> 8 & 255) / 255D;
+        double blue = (color & 255) / 255D;
+        GL11.glColor4d(red, green, blue, alpha);
+    }
+
 }

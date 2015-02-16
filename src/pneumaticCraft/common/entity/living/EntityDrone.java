@@ -21,6 +21,7 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryBasic;
+import net.minecraft.item.ItemDye;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -70,6 +71,7 @@ import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.PacketShowWireframe;
 import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetGoToLocation;
+import pneumaticCraft.common.tileentity.TileEntityPlasticMixer;
 import pneumaticCraft.common.tileentity.TileEntityProgrammer;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.PneumaticValues;
@@ -165,6 +167,7 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
         dataWatcher.addObject(19, 0);
         dataWatcher.addObject(20, 0);
         dataWatcher.addObject(21, (byte)0);
+        dataWatcher.addObject(22, 0);
     }
 
     @Override
@@ -360,6 +363,14 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
         return dataWatcher.getWatchableObjectByte(13) == 1;
     }
 
+    private void setDroneColor(int color){
+        dataWatcher.updateObject(22, color);
+    }
+
+    public int getDroneColor(){
+        return dataWatcher.getWatchableObjectInt(22);
+    }
+
     /**
      * Returns true if the newer Entity AI code should be run
      */
@@ -457,6 +468,15 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
                 if(gpsLoc != null) {
                     getNavigator().tryMoveToXYZ(gpsLoc.chunkPosX, gpsLoc.chunkPosY, gpsLoc.chunkPosZ, 0.1D);
                 }
+            } else {
+                int dyeIndex = TileEntityPlasticMixer.getDyeIndex(equippedItem);
+                if(dyeIndex >= 0) {
+                    setDroneColor(ItemDye.field_150922_c[dyeIndex]);
+                    equippedItem.stackSize--;
+                    if(equippedItem.stackSize <= 0) {
+                        player.setCurrentItemOrArmor(0, null);
+                    }
+                }
             }
         }
         return false;
@@ -547,6 +567,7 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
         tag.setFloat("propSpeed", propSpeed);
         tag.setBoolean("disabledByHacking", disabledByHacking);
         tag.setBoolean("hackedByOwner", gotoOwnerAI != null);
+        tag.setInteger("color", getDroneColor());
 
         NBTTagCompound inv = new NBTTagCompound();
         // Write the ItemStacks in the inventory to NBT
@@ -587,6 +608,7 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
         propSpeed = tag.getFloat("propSpeed");
         disabledByHacking = tag.getBoolean("disabledByHacking");
         setGoingToOwner(tag.getBoolean("hackedByOwner"));
+        setDroneColor(tag.getInteger("color"));
 
         // Read in the ItemStacks in the inventory from NBT
         NBTTagCompound inv = tag.getCompoundTag("Inventory");

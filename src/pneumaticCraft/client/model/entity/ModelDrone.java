@@ -4,6 +4,10 @@ import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+
+import org.lwjgl.opengl.GL11;
+
+import pneumaticCraft.client.util.RenderUtils;
 import pneumaticCraft.common.entity.living.EntityDrone;
 
 public class ModelDrone extends ModelBase{
@@ -196,11 +200,13 @@ public class ModelDrone extends ModelBase{
     public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5){
         super.render(entity, f, f1, f2, f3, f4, f5);
         setRotationAngles(f, f1, f2, f3, f4, f5, entity);
-        Base.render(f5);
+        if(entity != null) RenderUtils.glColorHex(0xFF000000 + ((EntityDrone)entity).getDroneColor());
         Base2.render(f5);
         Base3.render(f5);
         Base4.render(f5);
         Base5.render(f5);
+        GL11.glColor4d(1, 1, 1, 1);
+        Base.render(f5);
         Prop1Part1.render(f5);
         Prop1Part2.render(f5);
         Prop1Part3.render(f5);

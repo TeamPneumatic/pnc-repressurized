@@ -111,10 +111,12 @@ public class CraftingRegistrator{
         GameRegistry.addRecipe(new RecipeGun(ItemPlasticPlants.BURST_PLANT_DAMAGE, Itemss.pneumaticWrench));
         GameRegistry.addRecipe(new RecipePneumaticHelmet());
         GameRegistry.addRecipe(new RecipeManometer());
+        GameRegistry.addRecipe(new RecipeColorDrone());
 
         RecipeSorter.register("pneumaticcraft:gun", RecipeGun.class, Category.SHAPED, "after:minecraft:shaped");
         RecipeSorter.register("pneumaticcraft:pneumaticHelmet", RecipePneumaticHelmet.class, Category.SHAPED, "after:minecraft:shaped");
         RecipeSorter.register("pneumaticcraft:manometer", RecipeManometer.class, Category.SHAPED, "after:minecraft:shaped");
+        RecipeSorter.register("pneumaticcraft:colorDrone", RecipeColorDrone.class, Category.SHAPELESS, "after:minecraft:shaped");
 
         //Heat related
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Blockss.heatSink), "bbb", "igi", 'i', Names.INGOT_IRON_COMPRESSED, 'b', Blocks.iron_bars, 'g', "ingotGold"));
