@@ -32,7 +32,6 @@ public class IGWHandler{
         WikiRegistry.registerBlockAndItemPageEntry(Itemss.stoneBase, "block/airCannon");
 
         WikiRegistry.registerBlockAndItemPageEntry(Itemss.ingotIronCompressed, "menu/baseConcepts");
-        WikiRegistry.registerBlockAndItemPageEntry(Blockss.compressedIron, "menu/baseConcepts");
 
         WikiRegistry.registerBlockAndItemPageEntry(Blockss.pressureChamberValve, "menu/pressureChamber");
         WikiRegistry.registerBlockAndItemPageEntry(new ItemStack(Blockss.pressureChamberWall, 0, 0), "menu/pressureChamber");

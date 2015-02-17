@@ -11,11 +11,16 @@ So for instance, when the module is at 2 bar it will be repelling with a range o
 
 [prefix{l}]Early game plastic farm[prefix{}]
 The Air Grate can be used to create an early game plastic farm. The Air Grate will harvest any full-grown plastic plants that are within range, and at the same height as the Air Grate is. It will leave behind the stem for further farming.
+[image{200, 335, 0.22, igwmod:textures/airGrateFarm.png}]
+
+[prefix{l}]Actively cooling Heat Sinks[prefix{}]
+An Air Grate Tube Module can be used to actively cool [link{block/heatSink}]Heat Sinks[link{}]. The range in which Heat Sinks is cooled is a 3x3x3 block in front of the Air Grate. This range is visualized when the module is placed down. The Air Grate will only cool Heat Sinks when the Air Grate as a range of 3 blocks or more.
+[image{200, 570, 0.22, igwmod:textures/activeCooling.png}]
 
 [prefix{l}]Applying an    [link{item/advancedPCB}]Advanced PCB[link{}][prefix{}]
 When you apply an Advanced PCB, you'll get control over which Entities will be affected by the module. You could set it up so that only a certain player gets affected, or Creepers only. This all can be done by right clicking the module after you upgraded it with the Advanced PCB. The following GUI will pop up:
 
-[image{200, 350, 0.36, igwmod:textures/airGrateGUI.png}]
+[image{200, 835, 0.36, igwmod:textures/airGrateGUI.png}]
 
 
 It's pretty self-explanatory, you put in the [link{misc/entityFilter}]Entity Filter[link{}] in the text box.

@@ -131,7 +131,6 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
                     double fuelValue = getFuelValue(tank.getFluid()) / 1000D;
                     if(fuelValue > 0) {
                         int usedFuel = Math.min(tank.getFluidAmount(), (int)(usageRate / fuelValue) + 1);
-                        onFuelBurn(usedFuel);
                         tank.drain(usedFuel, true);
                         internalFuelBuffer += usedFuel * fuelValue;
                     }
@@ -139,6 +138,7 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
                 if(internalFuelBuffer >= usageRate) {
                     isProducing = true;
                     internalFuelBuffer -= usageRate;
+                    onFuelBurn(usageRate);
                     addAir((int)(getBaseProduction() * this.getSpeedMultiplierFromUpgrades() * getEfficiency() / 100), ForgeDirection.UNKNOWN);
                 }
             }

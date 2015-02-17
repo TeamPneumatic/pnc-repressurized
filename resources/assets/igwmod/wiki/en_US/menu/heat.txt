@@ -17,5 +17,7 @@ Static heat sources are:
 -Fire
 -Any Liquid (including Water and Lava)
 
-You can heat up a machine by placing down Lava for example. However, this is slow due to the high thermal resistance. You can use an [link{block/advancedAirCompressor}]Advanced Air Compressor[link{}] or [link{block/advancedLiquidCompressor}]Advanced Liquid Compressor[link{}] to generate heat. These machines have a low thermal resistance, but require fuel.
-Currently the best way to cool something down is by placing down Ice next to the machine that needs cooling. A [link{www.en.wikipedia.org/wiki/Vortex_tube}]Vortex Tube[link{}] is in the works.
+Dynamic heat sources, used to control heat:
+-[link{block/vortexTube}]Vortex Tube[link{}]
+-[link{block/compressedIronBlock}]Block of Compressed Iron[link{}]
+-[link{block/heatSink}]Heat Sink[link{}]

@@ -20,6 +20,11 @@ public class ProgWidgetSuicide extends ProgWidget{
     }
 
     @Override
+    public int getWidth(){
+        return 40;
+    }
+
+    @Override
     public Class<? extends IProgWidget> returnType(){
         return null;
     }
