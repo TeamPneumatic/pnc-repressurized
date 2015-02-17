@@ -28,6 +28,7 @@ public class ContainerPneumaticBase<Tile extends TileEntityBase> extends Contain
 
     public void updateField(int index, Object value){
         syncedFields.get(index).setValue(value);
+        te.onGuiUpdate();
     }
 
     @Override

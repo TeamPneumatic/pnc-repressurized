@@ -81,16 +81,16 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
             dishSpeed = Math.max(dishSpeed - 0.2F, 0);
         }
         dishRotation += dishSpeed;
-        super.updateEntity();
 
         if(worldObj.isRemote) {
             int sensorRange = getRange();
             if(oldSensorRange != sensorRange || oldSensorRange == 0) {
                 oldSensorRange = sensorRange;
-                rangeLineRenderer.resetRendering(sensorRange);
+                if(!firstRun) rangeLineRenderer.resetRendering(sensorRange);
             }
             rangeLineRenderer.update();
         }
+        super.updateEntity();
 
         if(!worldObj.isRemote) {
             ticksExisted++;
@@ -197,6 +197,11 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
     }
 
     @Override
+    public void onGuiUpdate(){
+        setSensorSetting(sensorSetting);
+    }
+
+    @Override
     public void writeToNBT(NBTTagCompound tag){
         super.writeToNBT(tag);
         tag.setString("sensorSetting", sensorSetting);
@@ -283,7 +288,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
      * We need to override this, as we need to add the GPS Tool to the mapping.
      */
     @Override
-    protected int getUpgrades(int upgradeDamage, int[] upgradeSlots){
+    protected int getUpgrades(int upgradeDamage, int... upgradeSlots){
         int upgrades = 0;
         if(this instanceof IInventory) {// this always should be true.
             IInventory inv = this;

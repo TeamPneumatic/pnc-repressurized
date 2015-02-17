@@ -6,6 +6,7 @@ import java.util.List;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -136,6 +137,8 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<TileEntityUniv
         buttonList.add(redstoneButton);
         if(!te.getSensorSetting().equals("")) {
             buttonList.add(new GuiButton(1, guiLeft + 70, guiTop + 18, 30, 20, "back"));
+        } else {
+            buttonList.add(new GuiButton(-1, guiLeft + 70, guiTop + 125, 98, 20, I18n.format("gui.universalSensor.button.showRange")));
         }
         String[] directories = SensorHandler.instance().getDirectoriesAtLocation(te.getSensorSetting());
         maxPage = (directories.length - 1) / MAX_SENSORS_PER_PAGE + 1;
@@ -264,6 +267,8 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<TileEntityUniv
             page++;
             if(page > maxPage) page = 1;
             updateButtons();
+        } else if(button.id == -1) {
+            te.showRangeLines();
         } else {
             super.actionPerformed(button);
         }

@@ -63,7 +63,7 @@ public class TileEntitySecurityStation extends TileEntityBase implements ISidedI
                 }
             }
         }
-        if(worldObj.isRemote) {
+        if(worldObj.isRemote && !firstRun) {
             if(oldSecurityRange != getSecurityRange() || oldSecurityRange == 0) {
                 rangeLineRenderer.resetRendering(getSecurityRange());
                 oldSecurityRange = getSecurityRange();

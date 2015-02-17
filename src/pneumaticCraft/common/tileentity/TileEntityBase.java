@@ -191,6 +191,11 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
         if(shouldRerenderChunkOnDescUpdate()) rerenderChunk();
     }
 
+    /**
+     * Called when a key is synced in the container.
+     */
+    public void onGuiUpdate(){}
+
     public ForgeDirection getRotation(){
         return ForgeDirection.getOrientation(getBlockMetadata());
     }

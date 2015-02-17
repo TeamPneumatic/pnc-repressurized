@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -66,6 +67,7 @@ public class GuiSecurityStationInventory extends GuiSecurityStationBase{
         accessStat.addWidget(addButton);
 
         buttonList.add(rebootButton);
+        buttonList.add(new GuiButton(-1, guiLeft + 108, guiTop + 125, 64, 20, I18n.format("gui.universalSensor.button.showRange")));
 
         updateUserRemoveButtons();
 
@@ -220,6 +222,8 @@ public class GuiSecurityStationInventory extends GuiSecurityStationBase{
     protected void actionPerformed(GuiButton button){
         if(button.id == 2) {
             te.rebootStation();
+        } else if(button.id == -1) {
+            te.showRangeLines();
         }
 
         super.actionPerformed(button);

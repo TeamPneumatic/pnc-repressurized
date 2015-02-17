@@ -18,7 +18,7 @@ public class GuiProgWidgetAreaShow<Widget extends IProgWidget> extends GuiProgWi
         super.initGui();
 
         if(widget instanceof IAreaProvider) {
-            buttonList.add(new GuiButton(1000, guiLeft + 40, guiTop + 150, 100, 20, "Show area"));
+            buttonList.add(new GuiButton(1000, guiLeft + 40, guiTop + 150, 100, 20, I18n.format("gui.programmer.button.showArea")));
             if(AreaShowManager.getInstance().isShowing(guiProgrammer.te)) buttonList.add(new GuiButton(1001, guiLeft + 40, guiTop + 175, 100, 20, I18n.format("gui.programmer.button.stopShowingArea")));
         }
     }
