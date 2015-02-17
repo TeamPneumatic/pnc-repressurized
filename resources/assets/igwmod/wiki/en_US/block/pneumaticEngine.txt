@@ -1,4 +1,0 @@
-[image{350, 20, 0.18, igwmod:textures/pneumaticEngine.png}]
-The Pneumatic Engine is like any other BuildCraft engine. But this one runs on compressed air. It starts running from 5 bar, creates more MJ (and uses more air) at higher pressures. These different energy production stages can be seen as the engine color: blue = 4MJ/tick, green = 6MJ/tick, yellow = 8MJ/tick and red = 10MJ/tick. You can rotate it with a BuildCraft Wrench exactly like you would with any other BuildCraft engine.
-[crafting{200, 170, key=block/pneumaticEngine}]
-[crafting{200, 290, key=item/compressedIronGear}]

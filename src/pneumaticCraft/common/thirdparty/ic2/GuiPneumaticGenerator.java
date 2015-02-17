@@ -5,10 +5,14 @@ import ic2.api.item.IC2Items;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraftforge.common.util.ForgeDirection;
+import pneumaticCraft.api.tileentity.IHeatExchanger;
 import pneumaticCraft.client.gui.GuiPneumaticContainerBase;
 import pneumaticCraft.client.gui.widget.GuiAnimatedStat;
+import pneumaticCraft.client.gui.widget.WidgetTemperature;
 import pneumaticCraft.common.inventory.Container4UpgradeSlots;
 import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.relauncher.Side;
@@ -26,6 +30,7 @@ public class GuiPneumaticGenerator extends GuiPneumaticContainerBase<TileEntityP
     public void initGui(){
         super.initGui();
         outputStat = addAnimatedStat("Output", IC2Items.getItem("glassFiberCableItem"), 0xFF555555, false);
+        addWidget(new WidgetTemperature(0, guiLeft + 87, guiTop + 20, 273, 675, ((IHeatExchanger)te).getHeatExchangerLogic(ForgeDirection.UNKNOWN), 325, 625));
     }
 
     @Override
@@ -49,4 +54,11 @@ public class GuiPneumaticGenerator extends GuiPneumaticContainerBase<TileEntityP
         return textList;
     }
 
+    @Override
+    public void addProblems(List<String> curInfo){
+        super.addProblems(curInfo);
+        if(te.getEfficiency() < 100) {
+            curInfo.add(I18n.format("gui.tab.problems.advancedAirCompressor.efficiency", te.getEfficiency() + "%%"));
+        }
+    }
 }

@@ -12,17 +12,21 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
+import pneumaticCraft.api.IHeatExchangerLogic;
+import pneumaticCraft.api.PneumaticRegistry;
+import pneumaticCraft.api.tileentity.IHeatExchanger;
 import pneumaticCraft.common.Config;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.network.GuiSynced;
 import pneumaticCraft.common.tileentity.IMinWorkingPressure;
 import pneumaticCraft.common.tileentity.IRedstoneControlled;
+import pneumaticCraft.common.tileentity.TileEntityAdvancedAirCompressor;
 import pneumaticCraft.common.tileentity.TileEntityPneumaticBase;
 import pneumaticCraft.lib.PneumaticValues;
 
 public class TileEntityPneumaticGenerator extends TileEntityPneumaticBase implements IEnergySource, IWrenchable,
-        IInventory, IRedstoneControlled, IMinWorkingPressure{
+        IInventory, IRedstoneControlled, IMinWorkingPressure, IHeatExchanger{
 
     private ItemStack[] inventory;
 
@@ -33,6 +37,8 @@ public class TileEntityPneumaticGenerator extends TileEntityPneumaticBase implem
     public boolean outputting;//true when fully dispersed all the EU's it can possibly do.
     @GuiSynced
     public int curEnergyProduction;
+    @GuiSynced
+    private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatExchangerLogic();
 
     @GuiSynced
     public int redstoneMode = 0;
@@ -41,6 +47,11 @@ public class TileEntityPneumaticGenerator extends TileEntityPneumaticBase implem
         super(PneumaticValues.DANGER_PRESSURE_PNEUMATIC_GENERATOR, PneumaticValues.MAX_PRESSURE_PNEUMATIC_GENERATOR, PneumaticValues.VOLUME_PNEUMATIC_GENERATOR);
         inventory = new ItemStack[INVENTORY_SIZE];
         setUpgradeSlots(new int[]{UPGRADE_SLOT_START, 1, 2, UPGRADE_SLOT_END});
+        heatExchanger.setThermalCapacity(100);
+    }
+
+    public int getEfficiency(){
+        return TileEntityAdvancedAirCompressor.getEfficiency(heatExchanger.getTemperature());
     }
 
     @Override
@@ -244,6 +255,7 @@ public class TileEntityPneumaticGenerator extends TileEntityPneumaticBase implem
         if(efficiency < 1) efficiency = 1;
         int airUsage = (int)(amount / 0.25F * 100F / efficiency);
         addAir(-airUsage, ForgeDirection.UNKNOWN);
+        heatExchanger.addHeat(airUsage / 10);
         outputting = true;
         curEnergyProduction = (int)amount;
     }
@@ -254,7 +266,8 @@ public class TileEntityPneumaticGenerator extends TileEntityPneumaticBase implem
      */
     public int getEnergyPacketSize(){
         int upgradesInserted = getUpgrades(ItemMachineUpgrade.UPGRADE_SPEED_DAMAGE, getUpgradeSlots());
-        return 32 * (int)Math.pow(4, Math.min(3, upgradesInserted));
+        int energyAmount = 32 * (int)Math.pow(4, Math.min(3, upgradesInserted));
+        return energyAmount * getEfficiency() / 100;
     }
 
     @Override
@@ -316,5 +329,10 @@ public class TileEntityPneumaticGenerator extends TileEntityPneumaticBase implem
     @Override
     public float getMinWorkingPressure(){
         return PneumaticValues.MIN_PRESSURE_PNEUMATIC_GENERATOR;
+    }
+
+    @Override
+    public IHeatExchangerLogic getHeatExchangerLogic(ForgeDirection side){
+        return heatExchanger;
     }
 }

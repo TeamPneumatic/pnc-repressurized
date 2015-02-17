@@ -35,7 +35,6 @@ public class PneumaticCraftWikiTab extends BaseWikiTab{
         pageEntries.add("block/securityStation");
         skipLine();
         pageEntries.add("ic2Integration");
-        pageEntries.add("bcIntegration");
         pageEntries.add("cofhIntegration");
         pageEntries.add("ccIntegration");
 

@@ -19,7 +19,7 @@ public class TileEntityHeatSink extends TileEntityCompressedIronBlock implements
 
     @Override
     public IHeatExchangerLogic getHeatExchangerLogic(ForgeDirection side){
-        return side == getRotation() || side == ForgeDirection.UNKNOWN ? super.getHeatExchangerLogic(side) : null;
+        return side == ForgeDirection.UNKNOWN || side == getRotation() ? super.getHeatExchangerLogic(side) : null;
     }
 
     /**

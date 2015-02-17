@@ -58,8 +58,6 @@ public class IGWHandler{
         WikiRegistry.registerBlockAndItemPageEntry(Itemss.printedCircuitBoard, "menu/printedCircuitBoards");
         WikiRegistry.registerBlockAndItemPageEntry(Itemss.failedPCB, "item/etchingAcidBucket");
 
-        WikiRegistry.registerBlockAndItemPageEntry(Itemss.compressedIronGear, "block/pneumaticEngine");
-
         WikiRegistry.registerBlockAndItemPageEntry(Itemss.networkComponent, "block/securityStation");
 
         Log.info("Loaded PneumaticCraft IGW-Mod plug-in! Thanks IGW-Mod!");

@@ -1,7 +1,0 @@
-To convert energy between BuildCraft and PneumaticCraft, PneumaticCraft adds two machines: The Pneumatic Engine, which converts compressed air into BuildCraft’s MJ, and the Kinetic Compressor, which creates compressed air from MJ. For both you can select their efficiency (as server owner) in the config. By default it’s set to 40%.
-
-PneumaticCraft air --> Buildcraft MJ conversion:
-[link{block/pneumaticEngine}]Pneumatic Engine[link{}]
-
-Buildcraft MJ --> PneumaticCraft air conversion:
-[link{block/kineticCompressor}]Kinetic Compressor[link{}]

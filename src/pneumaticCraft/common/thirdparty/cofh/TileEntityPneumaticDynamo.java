@@ -6,12 +6,16 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
+import pneumaticCraft.api.IHeatExchangerLogic;
+import pneumaticCraft.api.PneumaticRegistry;
+import pneumaticCraft.api.tileentity.IHeatExchanger;
 import pneumaticCraft.common.Config;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.network.DescSynced;
 import pneumaticCraft.common.network.GuiSynced;
 import pneumaticCraft.common.tileentity.IMinWorkingPressure;
 import pneumaticCraft.common.tileentity.IRedstoneControlled;
+import pneumaticCraft.common.tileentity.TileEntityAdvancedAirCompressor;
 import pneumaticCraft.common.tileentity.TileEntityPneumaticBase;
 import pneumaticCraft.lib.PneumaticValues;
 import cofh.api.energy.EnergyStorage;
@@ -20,7 +24,7 @@ import cofh.api.energy.IEnergyReceiver;
 import cofh.api.tileentity.IEnergyInfo;
 
 public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implements IEnergyHandler, IEnergyInfo,
-        IInventory, IRedstoneControlled, IRFConverter, IMinWorkingPressure{
+        IInventory, IRedstoneControlled, IRFConverter, IMinWorkingPressure, IHeatExchanger{
 
     private final EnergyStorage energy = new EnergyStorage(100000);
     @GuiSynced
@@ -33,10 +37,17 @@ public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implement
     private final ItemStack[] inventory = new ItemStack[4];
     @GuiSynced
     private int redstoneMode;
+    @GuiSynced
+    private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatExchangerLogic();
 
     public TileEntityPneumaticDynamo(){
         super(PneumaticValues.DANGER_PRESSURE_PNEUMATIC_DYNAMO, PneumaticValues.MAX_PRESSURE_PNEUMATIC_DYNAMO, PneumaticValues.VOLUME_PNEUMATIC_DYNAMO);
         setUpgradeSlots(0, 1, 2, 3);
+        heatExchanger.setThermalCapacity(100);
+    }
+
+    public int getEfficiency(){
+        return TileEntityAdvancedAirCompressor.getEfficiency(heatExchanger.getTemperature());
     }
 
     @Override
@@ -45,13 +56,16 @@ public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implement
 
         if(!worldObj.isRemote) {
             if(worldObj.getWorldTime() % 20 == 0) {
-                airPerTick = (int)(20 * this.getSpeedUsageMultiplierFromUpgrades() * Config.pneumaticDynamoEfficiency / 100);
-                rfPerTick = (int)(20 * this.getSpeedUsageMultiplierFromUpgrades());
+                int efficiency = Config.pneumaticDynamoEfficiency;
+                if(efficiency < 1) efficiency = 1;
+                airPerTick = (int)(40 * this.getSpeedUsageMultiplierFromUpgrades() * 100 / efficiency);
+                rfPerTick = (int)(40 * this.getSpeedUsageMultiplierFromUpgrades() * getEfficiency() / 100);
             }
 
             boolean newEnabled;
             if(redstoneAllows() && getPressure(ForgeDirection.UNKNOWN) > PneumaticValues.MIN_PRESSURE_PNEUMATIC_DYNAMO && getMaxEnergyStored(ForgeDirection.UNKNOWN) - getEnergyStored(ForgeDirection.UNKNOWN) >= rfPerTick) {
                 this.addAir(-airPerTick, ForgeDirection.UNKNOWN);
+                heatExchanger.addHeat(airPerTick / 5);
                 energy.receiveEnergy(rfPerTick, false);
                 newEnabled = true;
             } else {
@@ -266,5 +280,10 @@ public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implement
     @Override
     public EnergyStorage getEnergyStorage(){
         return energy;
+    }
+
+    @Override
+    public IHeatExchangerLogic getHeatExchangerLogic(ForgeDirection side){
+        return heatExchanger;
     }
 }

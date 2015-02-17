@@ -1,3 +1,0 @@
-[image{350, 20, 0.22, igwmod:textures/kineticCompressor.png}]
-The Kinetic Compressor, converts BuildCraft's MJ into compressed air. It consumes 1 up to 10 MJ/tick. It can't be powered with a Redstone Engine. It's rotatable with a BuildCraft Wrench.
-[crafting{200, 150, key=block/kineticCompressor}]

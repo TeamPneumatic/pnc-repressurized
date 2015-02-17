@@ -12,16 +12,20 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
+import pneumaticCraft.api.IHeatExchangerLogic;
+import pneumaticCraft.api.PneumaticRegistry;
+import pneumaticCraft.api.tileentity.IHeatExchanger;
 import pneumaticCraft.common.Config;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.network.GuiSynced;
 import pneumaticCraft.common.tileentity.IRedstoneControlled;
+import pneumaticCraft.common.tileentity.TileEntityAdvancedAirCompressor;
 import pneumaticCraft.common.tileentity.TileEntityPneumaticBase;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.PneumaticValues;
 
 public class TileEntityElectricCompressor extends TileEntityPneumaticBase implements IEnergySink, IWrenchable,
-        IInventory, IRedstoneControlled{
+        IInventory, IRedstoneControlled, IHeatExchanger{
 
     private ItemStack[] inventory;
 
@@ -37,6 +41,8 @@ public class TileEntityElectricCompressor extends TileEntityPneumaticBase implem
     private int curEnergyProduction;
     @GuiSynced
     public int lastEnergyProduction;
+    @GuiSynced
+    private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatExchangerLogic();
 
     public float turbineRotation;
     public float oldTurbineRotation;
@@ -46,6 +52,11 @@ public class TileEntityElectricCompressor extends TileEntityPneumaticBase implem
         super(PneumaticValues.DANGER_PRESSURE_ELECTRIC_COMPRESSOR, PneumaticValues.MAX_PRESSURE_ELECTRIC_COMPRESSOR, PneumaticValues.VOLUME_ELECTRIC_COMPRESSOR);
         inventory = new ItemStack[INVENTORY_SIZE];
         setUpgradeSlots(new int[]{UPGRADE_SLOT_START, 1, 2, UPGRADE_SLOT_END});
+        heatExchanger.setThermalCapacity(100);
+    }
+
+    public int getEfficiency(){
+        return TileEntityAdvancedAirCompressor.getEfficiency(heatExchanger.getTemperature());
     }
 
     @Override
@@ -278,7 +289,8 @@ public class TileEntityElectricCompressor extends TileEntityPneumaticBase implem
          } else {*/
         double energyUsed = amount;
         int efficiency = Config.electricCompressorEfficiency;
-        int airProduction = (int)(energyUsed / 0.25F / 100F * efficiency);
+        int airProduction = (int)(energyUsed / 0.25F * efficiency / 100F * getEfficiency() / 100);
+        heatExchanger.addHeat(energyUsed / 4);
         addAir(airProduction, ForgeDirection.UNKNOWN);
         curEnergyProduction += airProduction;
         boolean clientNeedsUpdate = outputTimer <= 0;
@@ -350,4 +362,8 @@ public class TileEntityElectricCompressor extends TileEntityPneumaticBase implem
         return redstoneMode;
     }
 
+    @Override
+    public IHeatExchangerLogic getHeatExchangerLogic(ForgeDirection side){
+        return heatExchanger;
+    }
 }

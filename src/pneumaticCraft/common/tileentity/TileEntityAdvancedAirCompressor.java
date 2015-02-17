@@ -35,7 +35,11 @@ public class TileEntityAdvancedAirCompressor extends TileEntityAirCompressor imp
 
     @Override
     public int getEfficiency(){
-        return MathHelper.clamp_int((int)((625 - heatExchanger.getTemperature()) / 3), 0, 100);//0% efficiency at > 350 degree C, 100% at < 50 degree C.
+        return getEfficiency(heatExchanger.getTemperature());
+    }
+
+    public static int getEfficiency(double temperature){
+        return MathHelper.clamp_int((int)((625 - temperature) / 3), 0, 100);//0% efficiency at > 350 degree C, 100% at < 50 degree C.
     }
 
     @Override

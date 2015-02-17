@@ -5,10 +5,14 @@ import ic2.api.item.IC2Items;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraftforge.common.util.ForgeDirection;
+import pneumaticCraft.api.tileentity.IHeatExchanger;
 import pneumaticCraft.client.gui.GuiPneumaticContainerBase;
 import pneumaticCraft.client.gui.widget.GuiAnimatedStat;
+import pneumaticCraft.client.gui.widget.WidgetTemperature;
 import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -25,6 +29,7 @@ public class GuiElectricCompressor extends GuiPneumaticContainerBase<TileEntityE
     public void initGui(){
         super.initGui();
         inputStat = addAnimatedStat("Input", IC2Items.getItem("glassFiberCableItem"), 0xFF555555, false);
+        addWidget(new WidgetTemperature(0, guiLeft + 87, guiTop + 20, 273, 675, ((IHeatExchanger)te).getHeatExchangerLogic(ForgeDirection.UNKNOWN), 325, 625));
     }
 
     @Override
@@ -59,6 +64,9 @@ public class GuiElectricCompressor extends GuiPneumaticContainerBase<TileEntityE
         if(te.outputTimer <= 0) {
             textList.add(EnumChatFormatting.GRAY + "There is no EU input!");
             textList.add(EnumChatFormatting.BLACK + "Add a (bigger) EU supply to the network.");
+        }
+        if(te.getEfficiency() < 100) {
+            textList.add(I18n.format("gui.tab.problems.advancedAirCompressor.efficiency", te.getEfficiency() + "%%"));
         }
     }
 

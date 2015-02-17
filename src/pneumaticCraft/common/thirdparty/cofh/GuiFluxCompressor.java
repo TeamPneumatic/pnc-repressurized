@@ -3,11 +3,15 @@ package pneumaticCraft.common.thirdparty.cofh;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraftforge.common.util.ForgeDirection;
+import pneumaticCraft.api.tileentity.IHeatExchanger;
 import pneumaticCraft.client.gui.GuiPneumaticContainerBase;
 import pneumaticCraft.client.gui.widget.GuiAnimatedStat;
+import pneumaticCraft.client.gui.widget.WidgetTemperature;
 import pneumaticCraft.lib.Textures;
 
 public class GuiFluxCompressor extends GuiPneumaticContainerBase<TileEntityFluxCompressor>{
@@ -24,6 +28,7 @@ public class GuiFluxCompressor extends GuiPneumaticContainerBase<TileEntityFluxC
         inputStat = addAnimatedStat("Input", (ItemStack)null, 0xFF555555, false);
 
         addWidget(new WidgetEnergy(guiLeft + 20, guiTop + 20, te));
+        addWidget(new WidgetTemperature(0, guiLeft + 87, guiTop + 20, 273, 675, ((IHeatExchanger)te).getHeatExchangerLogic(ForgeDirection.UNKNOWN), 325, 625));
     }
 
     @Override
@@ -61,6 +66,9 @@ public class GuiFluxCompressor extends GuiPneumaticContainerBase<TileEntityFluxC
         super.addProblems(textList);
         if(te.getInfoEnergyPerTick() > te.getInfoEnergyStored()) {
             textList.add("gui.tab.problems.fluxCompressor.noRF");
+        }
+        if(te.getEfficiency() < 100) {
+            textList.add(I18n.format("gui.tab.problems.advancedAirCompressor.efficiency", te.getEfficiency() + "%%"));
         }
     }
 }

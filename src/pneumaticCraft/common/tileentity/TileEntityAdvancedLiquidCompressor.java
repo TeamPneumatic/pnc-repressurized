@@ -1,6 +1,5 @@
 package pneumaticCraft.common.tileentity;
 
-import net.minecraft.util.MathHelper;
 import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.api.IHeatExchangerLogic;
 import pneumaticCraft.api.PneumaticRegistry;
@@ -36,7 +35,7 @@ public class TileEntityAdvancedLiquidCompressor extends TileEntityLiquidCompress
 
     @Override
     public int getEfficiency(){
-        return MathHelper.clamp_int((int)((625 - heatExchanger.getTemperature()) / 3), 0, 100);//0% efficiency at > 350 degree C, 100% at < 50 degree C.
+        return TileEntityAdvancedAirCompressor.getEfficiency(heatExchanger.getTemperature());
     }
 
     @Override

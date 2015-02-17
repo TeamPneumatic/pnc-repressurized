@@ -5,10 +5,14 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
+import pneumaticCraft.api.IHeatExchangerLogic;
+import pneumaticCraft.api.PneumaticRegistry;
+import pneumaticCraft.api.tileentity.IHeatExchanger;
 import pneumaticCraft.common.Config;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.network.GuiSynced;
 import pneumaticCraft.common.tileentity.IRedstoneControlled;
+import pneumaticCraft.common.tileentity.TileEntityAdvancedAirCompressor;
 import pneumaticCraft.common.tileentity.TileEntityPneumaticBase;
 import pneumaticCraft.lib.PneumaticValues;
 import cofh.api.energy.EnergyStorage;
@@ -16,7 +20,7 @@ import cofh.api.energy.IEnergyHandler;
 import cofh.api.tileentity.IEnergyInfo;
 
 public class TileEntityFluxCompressor extends TileEntityPneumaticBase implements IEnergyHandler, IEnergyInfo,
-        IInventory, IRedstoneControlled, IRFConverter{
+        IInventory, IRedstoneControlled, IRFConverter, IHeatExchanger{
 
     private final EnergyStorage energy = new EnergyStorage(100000);
     @GuiSynced
@@ -25,12 +29,19 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase implements
     private int airPerTick;
     @GuiSynced
     private int redstoneMode;
+    @GuiSynced
+    private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatExchangerLogic();
 
     private final ItemStack[] inventory = new ItemStack[4];
 
     public TileEntityFluxCompressor(){
         super(PneumaticValues.DANGER_PRESSURE_FLUX_COMPRESSOR, PneumaticValues.MAX_PRESSURE_FLUX_COMPRESSOR, PneumaticValues.VOLUME_FLUX_COMPRESSOR);
         setUpgradeSlots(0, 1, 2, 3);
+        heatExchanger.setThermalCapacity(100);
+    }
+
+    public int getEfficiency(){
+        return TileEntityAdvancedAirCompressor.getEfficiency(heatExchanger.getTemperature());
     }
 
     @Override
@@ -39,12 +50,13 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase implements
 
         if(!worldObj.isRemote) {
             if(worldObj.getWorldTime() % 5 == 0) {
-                airPerTick = (int)(20 * this.getSpeedUsageMultiplierFromUpgrades() * Config.fluxCompressorEfficiency / 100);
-                rfPerTick = (int)(20 * this.getSpeedUsageMultiplierFromUpgrades());
+                airPerTick = (int)(40 * this.getSpeedUsageMultiplierFromUpgrades() * getEfficiency() * Config.fluxCompressorEfficiency / 100 / 100);
+                rfPerTick = (int)(40 * this.getSpeedUsageMultiplierFromUpgrades());
             }
             if(redstoneAllows() && getEnergyStored(ForgeDirection.UNKNOWN) >= rfPerTick) {
                 this.addAir(airPerTick, ForgeDirection.UNKNOWN);
                 energy.extractEnergy(rfPerTick, false);
+                heatExchanger.addHeat(rfPerTick / 5);
             }
         }
     }
@@ -233,4 +245,8 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase implements
         return energy;
     }
 
+    @Override
+    public IHeatExchangerLogic getHeatExchangerLogic(ForgeDirection side){
+        return heatExchanger;
+    }
 }
