@@ -38,7 +38,7 @@ public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHand
     @GuiSynced
     private final IHeatExchangerLogic liquidLogic = PneumaticRegistry.getInstance().getHeatExchangerLogic();
 
-    private static final String[] DYES = {"dyeBlack", "dyeRed", "dyeGreen", "dyeBrown", "dyeBlue", "dyePurple", "dyeCyan", "dyeLightGray", "dyeGray", "dyePink", "dyeLime", "dyeYellow", "dyeLightBlue", "dyeMagenta", "dyeOrange", "dyeWhite"};
+    public static final String[] DYES = {"dyeBlack", "dyeRed", "dyeGreen", "dyeBrown", "dyeBlue", "dyePurple", "dyeCyan", "dyeLightGray", "dyeGray", "dyePink", "dyeLime", "dyeYellow", "dyeLightBlue", "dyeMagenta", "dyeOrange", "dyeWhite"};
 
     private static final int INV_ITEM = 4, INV_DYE = 5;
 
