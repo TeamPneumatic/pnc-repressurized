@@ -1,3 +1,4 @@
 -Added Drone Interface recipe for when Open Computers is installed, but Computercraft isn't.
+-Removed Firework easter eggs.
 
 -Bugfix: Drones get stuck when pathfinding over fences.

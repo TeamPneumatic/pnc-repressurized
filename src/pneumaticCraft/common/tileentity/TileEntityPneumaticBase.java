@@ -225,11 +225,11 @@ public class TileEntityPneumaticBase extends TileEntityBase implements IManoMeas
             addAir(dispersedAmount, side);
         } else {
             double speed = getPressure(side) * 0.1F + 0.1F;
-            if(DateEventHandler.isEvent()) {
-                DateEventHandler.spawnFirework(worldObj, xCoord + 0.5D + motionX / 2D, yCoord + 0.5D + motionY / 2D, zCoord + 0.5D + motionZ / 2D);
-            } else {
-                NetworkHandler.sendToAllAround(new PacketSpawnParticle("smoke", xCoord + 0.5D + motionX / 2D, yCoord + 0.5D + motionY / 2D, zCoord + 0.5D + motionZ / 2D, motionX * speed, motionY * speed, motionZ * speed), worldObj);
-            }
+            // if(DateEventHandler.isEvent()) {
+            DateEventHandler.spawnFirework(worldObj, xCoord + 0.5D + motionX / 2D, yCoord + 0.5D + motionY / 2D, zCoord + 0.5D + motionZ / 2D);
+            // } else {
+            //     NetworkHandler.sendToAllAround(new PacketSpawnParticle("smoke", xCoord + 0.5D + motionX / 2D, yCoord + 0.5D + motionY / 2D, zCoord + 0.5D + motionZ / 2D, motionX * speed, motionY * speed, motionZ * speed), worldObj);
+            // }
 
             int dispersedAmount = (int)(getPressure(side) * PneumaticValues.AIR_LEAK_FACTOR) + 20;
             if(dispersedAmount > getCurrentAir(side)) dispersedAmount = getCurrentAir(side);
