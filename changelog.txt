@@ -1,9 +1,3 @@
--Added Heat Sink, changed the Compressed Iron Block, and added Vortex Tube.
--Added 'Show Range' buttons to the Security Station and Universal Sensor. They now also won't show their range on startup.
--Drones now can be dyed.
--Third party power converters now produce heat.
--Rebalanced the RF converters to produce/use 40RF/tick instead of 20RF/tick by default.
--Balanced heat system.
--Drones now will only charge at Charging Stations which aren't protectd by a Security Station which does not whitelist the player who placed down the Drone.
+-Added Drone Interface recipe for when Open Computers is installed, but Computercraft isn't.
 
--Bugfix: Crash when using Drone Condition: Item.
+-Bugfix: Drones get stuck when pathfinding over fences.
