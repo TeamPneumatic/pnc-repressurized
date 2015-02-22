@@ -46,6 +46,7 @@ public class HeatExchangerManager{
     }
 
     public IHeatExchangerLogic getLogic(World world, int x, int y, int z, ForgeDirection side){
+        if(!world.blockExists(x, y, z)) return null;
         TileEntity te = world.getTileEntity(x, y, z);
         if(te instanceof IHeatExchanger) {
             return ((IHeatExchanger)te).getHeatExchangerLogic(side);
