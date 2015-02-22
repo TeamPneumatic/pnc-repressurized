@@ -1,4 +1,3 @@
--Added Drone Interface recipe for when Open Computers is installed, but Computercraft isn't.
--Removed Firework easter eggs.
+-Hopefully fixed a StackOverFlowException concerning heat logic. Closes #415
 
--Bugfix: Drones get stuck when pathfinding over fences.
+-Bugfix: pneumatic tubes always spawn particles, instead of never.
