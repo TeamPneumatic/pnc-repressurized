@@ -82,9 +82,12 @@ public class NEIPressureChamberRecipeManager extends PneumaticCraftPlugins{
                 List<ItemStack> oreInputs = new ArrayList<ItemStack>();
 
                 for(int oreID : oreIDs) {
-                    oreInputs.addAll(OreDictionary.getOres(OreDictionary.getOreName(oreID)));
+                    for(ItemStack oreInput : OreDictionary.getOres(OreDictionary.getOreName(oreID))) {
+                        oreInput = oreInput.copy();
+                        oreInput.stackSize = recipe.input[i].stackSize;
+                        oreInputs.add(oreInput);
+                    }
                 }
-
                 stack = new PositionedStack(oreInputs, posX, posY, true);
             } else {
                 stack = new PositionedStack(recipe.input[i], posX, posY);
