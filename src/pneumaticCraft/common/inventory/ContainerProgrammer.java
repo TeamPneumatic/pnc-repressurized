@@ -2,9 +2,13 @@ package pneumaticCraft.common.inventory;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.api.item.IProgrammable;
+import pneumaticCraft.common.network.PacketSendNBTPacket;
 import pneumaticCraft.common.tileentity.TileEntityProgrammer;
 
 public class ContainerProgrammer extends ContainerPneumaticBase<TileEntityProgrammer>{
@@ -35,6 +39,19 @@ public class ContainerProgrammer extends ContainerPneumaticBase<TileEntityProgra
     private static boolean isProgrammableItem(ItemStack stack){
         if(stack == null) return false;
         return stack.getItem() instanceof IProgrammable && ((IProgrammable)stack.getItem()).canProgram(stack);
+    }
+
+    @Override
+    public void detectAndSendChanges(){
+        super.detectAndSendChanges();
+        if(te.getWorldObj().getWorldTime() % 20 == 0) {
+            for(ForgeDirection d : ForgeDirection.VALID_DIRECTIONS) {
+                TileEntity neighbor = te.getWorldObj().getTileEntity(te.xCoord + d.offsetX, te.yCoord + d.offsetY, te.zCoord + d.offsetZ);
+                if(neighbor instanceof IInventory) {
+                    sendToCrafters(new PacketSendNBTPacket(neighbor));
+                }
+            }
+        }
     }
 
     @Override

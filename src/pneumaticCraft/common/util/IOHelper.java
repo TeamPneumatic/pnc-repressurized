@@ -224,7 +224,7 @@ public class IOHelper{
             for(int j = 0; j < aint.length && itemStack != null && itemStack.stackSize > 0; ++j) {
                 itemStack = insert(inventory, itemStack, aint[j], side, simulate);
             }
-        } else {
+        } else if(inventory != null) {
             int k = inventory.getSizeInventory();
 
             for(int l = 0; l < k && itemStack != null && itemStack.stackSize > 0; ++l) {

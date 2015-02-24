@@ -7,12 +7,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.ChunkPosition;
+import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.api.item.IProgrammable;
 import pneumaticCraft.client.AreaShowHandler;
 import pneumaticCraft.client.AreaShowManager;
@@ -57,6 +59,7 @@ import pneumaticCraft.common.progwidgets.ProgWidgetString;
 import pneumaticCraft.common.progwidgets.ProgWidgetSuicide;
 import pneumaticCraft.common.progwidgets.ProgWidgetTeleport;
 import pneumaticCraft.common.progwidgets.ProgWidgetWait;
+import pneumaticCraft.common.util.IOHelper;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -279,38 +282,69 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory{
                 else progWidgets = new ArrayList<IProgWidget>();
                 break;
             case 2:
-                if(inventory[PROGRAM_SLOT] != null) {
-                    if(!player.capabilities.isCreativeMode) {
-                        List<ItemStack> requiredStacks = getRequiredPuzzleStacks();
-                        for(ItemStack stack : requiredStacks) {
-                            if(!hasEnoughPuzzleStacks(player, stack)) return;
-                        }
-                        for(ItemStack stack : requiredStacks) {
-                            int left = stack.stackSize;
-                            for(int i = 0; i < player.inventory.getSizeInventory(); i++) {
-                                if(PneumaticCraftUtils.areStacksEqual(stack, player.inventory.getStackInSlot(i), true, true, false, false)) {
-                                    left -= player.inventory.decrStackSize(i, left).stackSize;
-                                    if(left <= 0) break;
-                                }
-                            }
-                        }
-                        List<ItemStack> returnedStacks = getReturnedPuzzleStacks();
-                        for(ItemStack stack : returnedStacks) {
-                            if(!player.inventory.addItemStackToInventory(stack)) {
-                                player.dropPlayerItemWithRandomChoice(stack.copy(), false);
-                            }
-                        }
-                    }
-                    tag = inventory[PROGRAM_SLOT].getTagCompound();
-                    if(tag == null) {
-                        tag = new NBTTagCompound();
-                        inventory[PROGRAM_SLOT].setTagCompound(tag);
-                    }
-                    writeProgWidgetsToNBT(tag);
-                }
+                tryProgramDrone(player);
                 break;
         }
         sendDescriptionPacket();
+    }
+
+    private void tryProgramDrone(EntityPlayer player){
+        if(inventory[PROGRAM_SLOT] != null) {
+            if(player == null || !player.capabilities.isCreativeMode) {
+                List<ItemStack> requiredStacks = getRequiredPuzzleStacks();
+                for(ItemStack stack : requiredStacks) {
+                    if(!hasEnoughPuzzleStacks(player, stack)) return;
+                }
+                for(ItemStack stack : requiredStacks) {
+                    int left = stack.stackSize;
+                    if(player != null) {
+                        for(int i = 0; i < player.inventory.getSizeInventory(); i++) {
+                            if(PneumaticCraftUtils.areStacksEqual(stack, player.inventory.getStackInSlot(i), true, true, false, false)) {
+                                left -= player.inventory.decrStackSize(i, left).stackSize;
+                                if(left <= 0) break;
+                            }
+                        }
+                    }
+                    if(left > 0) {
+                        for(ForgeDirection d : ForgeDirection.VALID_DIRECTIONS) {
+                            IInventory neighbor = IOHelper.getInventoryForTE(getWorldObj().getTileEntity(xCoord + d.offsetX, yCoord + d.offsetY, zCoord + d.offsetZ));
+                            for(int slot : IOHelper.getAccessibleSlotsForInventory(neighbor, d.getOpposite())) {
+                                if(IOHelper.canExtractItemFromInventory(neighbor, stack, slot, d.getOpposite().ordinal())) {
+                                    ItemStack neighborStack = neighbor.getStackInSlot(slot);
+                                    if(PneumaticCraftUtils.areStacksEqual(neighborStack, stack, true, true, false, false)) {
+                                        left -= neighbor.decrStackSize(slot, left).stackSize;
+                                        if(left <= 0) break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                List<ItemStack> returnedStacks = getReturnedPuzzleStacks();
+                for(ItemStack stack : returnedStacks) {
+                    for(ForgeDirection d : ForgeDirection.VALID_DIRECTIONS) {
+                        IInventory neighbor = IOHelper.getInventoryForTE(getWorldObj().getTileEntity(xCoord + d.offsetX, yCoord + d.offsetY, zCoord + d.offsetZ));
+                        stack = IOHelper.insert(neighbor, stack, d.getOpposite().ordinal(), false);
+                        if(stack == null) break;
+                    }
+                    if(player != null && stack != null) {
+                        if(!player.inventory.addItemStackToInventory(stack)) {
+                            player.dropPlayerItemWithRandomChoice(stack.copy(), false);
+                            stack = null;
+                        }
+                    }
+                    if(stack != null) {
+                        worldObj.spawnEntityInWorld(new EntityItem(worldObj, xCoord + 0.5, yCoord + 1.5, zCoord + 0.5, stack));
+                    }
+                }
+            }
+            NBTTagCompound tag = inventory[PROGRAM_SLOT].getTagCompound();
+            if(tag == null) {
+                tag = new NBTTagCompound();
+                inventory[PROGRAM_SLOT].setTagCompound(tag);
+            }
+            writeProgWidgetsToNBT(tag);
+        }
     }
 
     public List<ItemStack> getRequiredPuzzleStacks(){
@@ -378,13 +412,29 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory{
 
     public boolean hasEnoughPuzzleStacks(EntityPlayer player, ItemStack stack){
         int amountLeft = stack.stackSize;
-        for(int i = 0; i < player.inventory.getSizeInventory(); i++) {
-            ItemStack playerStack = player.inventory.getStackInSlot(i);
-            if(PneumaticCraftUtils.areStacksEqual(playerStack, stack, true, true, false, false)) {
-                amountLeft -= playerStack.stackSize;
-                if(amountLeft <= 0) return true;
+        if(player != null) {
+            for(int i = 0; i < player.inventory.getSizeInventory(); i++) {
+                ItemStack playerStack = player.inventory.getStackInSlot(i);
+                if(PneumaticCraftUtils.areStacksEqual(playerStack, stack, true, true, false, false)) {
+                    amountLeft -= playerStack.stackSize;
+                    if(amountLeft <= 0) return true;
+                }
             }
         }
+
+        for(ForgeDirection d : ForgeDirection.VALID_DIRECTIONS) {
+            IInventory neighbor = IOHelper.getInventoryForTE(getWorldObj().getTileEntity(xCoord + d.offsetX, yCoord + d.offsetY, zCoord + d.offsetZ));
+            for(int slot : IOHelper.getAccessibleSlotsForInventory(neighbor, d.getOpposite())) {
+                if(IOHelper.canExtractItemFromInventory(neighbor, stack, slot, d.getOpposite().ordinal())) {
+                    ItemStack neighborStack = neighbor.getStackInSlot(slot);
+                    if(PneumaticCraftUtils.areStacksEqual(neighborStack, stack, true, true, false, false)) {
+                        amountLeft -= neighborStack.stackSize;
+                        if(amountLeft <= 0) return true;
+                    }
+                }
+            }
+        }
+
         return false;
     }
 

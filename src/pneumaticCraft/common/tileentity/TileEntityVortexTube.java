@@ -6,7 +6,6 @@ import pneumaticCraft.api.IHeatExchangerLogic;
 import pneumaticCraft.api.PneumaticRegistry;
 import pneumaticCraft.api.tileentity.IHeatExchanger;
 import pneumaticCraft.common.network.DescSynced;
-import pneumaticCraft.lib.Log;
 
 public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHeatExchanger{
     private final IHeatExchangerLogic coldHeatExchanger = PneumaticRegistry.getInstance().getHeatExchangerLogic();
@@ -94,7 +93,6 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
         super.readFromNBT(tag);
         coldHeatExchanger.readFromNBT(tag.getCompoundTag("coldHeat"));
         roll = tag.getByte("roll");
-        Log.info("roll" + roll);
     }
 
     public int getColdHeatLevel(){

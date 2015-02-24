@@ -11,6 +11,7 @@ import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.NetworkUtils;
 import pneumaticCraft.common.network.PacketUpdateGui;
 import pneumaticCraft.common.tileentity.TileEntityBase;
+import cpw.mods.fml.common.network.simpleimpl.IMessage;
 
 public class ContainerPneumaticBase<Tile extends TileEntityBase> extends Container{
 
@@ -41,11 +42,15 @@ public class ContainerPneumaticBase<Tile extends TileEntityBase> extends Contain
         super.detectAndSendChanges();
         for(int i = 0; i < syncedFields.size(); i++) {
             if(syncedFields.get(i).update()) {
-                for(ICrafting crafter : (List<ICrafting>)crafters) {
-                    if(crafter instanceof EntityPlayerMP) {
-                        NetworkHandler.sendTo(new PacketUpdateGui(i, syncedFields.get(i)), (EntityPlayerMP)crafter);
-                    }
-                }
+                sendToCrafters(new PacketUpdateGui(i, syncedFields.get(i)));
+            }
+        }
+    }
+
+    protected void sendToCrafters(IMessage message){
+        for(ICrafting crafter : (List<ICrafting>)crafters) {
+            if(crafter instanceof EntityPlayerMP) {
+                NetworkHandler.sendTo(message, (EntityPlayerMP)crafter);
             }
         }
     }
