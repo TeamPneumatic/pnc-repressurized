@@ -78,10 +78,6 @@ public interface IProgWidget{
      */
     public String getWidgetString();
 
-    public String getGuiTabText();
-
-    public int getGuiTabColor();
-
     public int getCraftingColorIndex();
 
     /**

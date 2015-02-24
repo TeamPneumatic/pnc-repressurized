@@ -91,16 +91,6 @@ public class ProgWidgetGoToLocation extends ProgWidget implements IGotoWidget, I
     }
 
     @Override
-    public String getGuiTabText(){
-        return "This will make the Drone travel to the location specified. When a big area is selected, the Drone will go to the closest reachable position within this area.";
-    }
-
-    @Override
-    public int getGuiTabColor(){
-        return 0xFF0092ef;
-    }
-
-    @Override
     public WidgetCategory getCategory(){
         return WidgetCategory.ACTION;
     }

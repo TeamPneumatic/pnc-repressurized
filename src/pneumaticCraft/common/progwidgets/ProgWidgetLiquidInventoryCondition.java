@@ -22,16 +22,6 @@ public class ProgWidgetLiquidInventoryCondition extends ProgWidgetCondition{
     }
 
     @Override
-    public String getGuiTabText(){
-        return "bla";
-    }
-
-    @Override
-    public int getGuiTabColor(){
-        return 0xFFFFFFFF;
-    }
-
-    @Override
     public Class<? extends IProgWidget>[] getParameters(){
         return new Class[]{ProgWidgetArea.class, ProgWidgetLiquidFilter.class, ProgWidgetString.class};
     }

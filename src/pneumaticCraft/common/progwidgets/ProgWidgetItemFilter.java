@@ -152,16 +152,6 @@ public class ProgWidgetItemFilter extends ProgWidget{
     }
 
     @Override
-    public String getGuiTabText(){
-        return "This program can be used to filter items. These can for example be used to specify which items are allowed to be imported in the Drone, or to specify which blocks are allowed to be dug.";
-    }
-
-    @Override
-    public int getGuiTabColor(){
-        return 0xFF5f5f5f;
-    }
-
-    @Override
     public WidgetCategory getCategory(){
         return WidgetCategory.PARAMETER;
     }

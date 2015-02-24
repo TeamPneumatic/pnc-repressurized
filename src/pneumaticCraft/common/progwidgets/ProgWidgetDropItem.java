@@ -33,16 +33,6 @@ public class ProgWidgetDropItem extends ProgWidgetInventoryBase implements IItem
     }
 
     @Override
-    public String getGuiTabText(){
-        return "bla";
-    }
-
-    @Override
-    public int getGuiTabColor(){
-        return 0xFFff7cf7;
-    }
-
-    @Override
     public boolean dropStraight(){
         return dropStraight;
     }

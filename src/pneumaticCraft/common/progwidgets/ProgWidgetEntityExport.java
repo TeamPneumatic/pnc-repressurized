@@ -16,16 +16,6 @@ public class ProgWidgetEntityExport extends ProgWidgetAreaItemBase{
     }
 
     @Override
-    public String getGuiTabText(){
-        return null;
-    }
-
-    @Override
-    public int getGuiTabColor(){
-        return 0;
-    }
-
-    @Override
     protected ResourceLocation getTexture(){
         return Textures.PROG_WIDGET_ENTITY_EX;
     }

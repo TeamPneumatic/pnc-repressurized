@@ -28,16 +28,6 @@ public class ProgWidgetCustomBlockInteract extends ProgWidgetInventoryBase{
     }
 
     @Override
-    public String getGuiTabText(){
-        return "bla";
-    }
-
-    @Override
-    public int getGuiTabColor(){
-        return 0xFFFFFFFF;
-    }
-
-    @Override
     protected ResourceLocation getTexture(){
         return interactor.getTexture();
     }

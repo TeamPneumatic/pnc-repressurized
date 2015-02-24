@@ -17,7 +17,6 @@ import pneumaticCraft.common.ai.DroneAINearestAttackableTarget;
 import pneumaticCraft.common.ai.StringFilterEntitySelector;
 import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.item.ItemPlasticPlants;
-import pneumaticCraft.lib.PneumaticValues;
 import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -104,16 +103,6 @@ public class ProgWidgetEntityAttack extends ProgWidget implements IAreaProvider,
     @SideOnly(Side.CLIENT)
     public GuiScreen getOptionWindow(GuiProgrammer guiProgrammer){
         return new GuiProgWidgetAreaShow(this, guiProgrammer);
-    }
-
-    @Override
-    public String getGuiTabText(){
-        return "This module can be used to kill certain entities in a certain area. Defining an entity filter isn't required: With no filter, every living entity will be attacked. Note that the connected 'Area' puzzle pieces always will be handled as they were in 'Filled' mode. \n \nAir usage: " + PneumaticValues.DRONE_USAGE_ATTACK + "mL/hit.";
-    }
-
-    @Override
-    public int getGuiTabColor(){
-        return 0xFFFF0000;
     }
 
     @Override

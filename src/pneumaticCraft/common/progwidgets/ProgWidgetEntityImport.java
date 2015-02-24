@@ -52,16 +52,6 @@ public class ProgWidgetEntityImport extends ProgWidget implements IProgWidget, I
     }
 
     @Override
-    public String getGuiTabText(){
-        return "bla";
-    }
-
-    @Override
-    public int getGuiTabColor(){
-        return 0xFFFFFFFF;
-    }
-
-    @Override
     public WidgetCategory getCategory(){
         return WidgetCategory.ACTION;
     }

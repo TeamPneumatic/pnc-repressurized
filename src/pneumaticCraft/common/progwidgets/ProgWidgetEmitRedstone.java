@@ -134,17 +134,6 @@ public class ProgWidgetEmitRedstone extends ProgWidget implements IRedstoneEmiss
     }
 
     @Override
-    public String getGuiTabText(){
-        return null;
-    }
-
-    @Override
-    public int getGuiTabColor(){
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
-    @Override
     public int getCraftingColorIndex(){
         return ItemPlasticPlants.FIRE_FLOWER_DAMAGE;
     }

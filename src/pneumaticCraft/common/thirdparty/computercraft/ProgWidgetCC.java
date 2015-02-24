@@ -213,16 +213,6 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
     }
 
     @Override
-    public String getGuiTabText(){
-        return "With this widget you can control a Drone via ComputerCraft. To do this attach an Area that has a Drone Interface in it. When this piece gets triggered it will send an event to the connected computers and you can control it. When done, invoke an exitPiece() to allow the program to resume running the other pieces.";
-    }
-
-    @Override
-    public int getGuiTabColor(){
-        return 0xFF6e2988;
-    }
-
-    @Override
     public synchronized List<Entity> getValidEntities(World world){
         return ProgWidgetAreaItemBase.getEntitiesInArea(getEntityAreaWidget(), null, world, whitelistFilter, blacklistFilter);
     }

@@ -557,7 +557,7 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral,
                             if(ai == null) throw new IllegalArgumentException("The parsed action is not a runnable action! Action: \"" + widget.getWidgetString() + "\".");
                             getAI().setAction(widget, ai);
                             getTargetAI().setAction(widget, widget.getWidgetTargetAI(drone, getWidget()));
-                            messageToDrone(widget.getGuiTabColor());
+                            messageToDrone(ItemDye.field_150922_c[widget.getCraftingColorIndex()]);
                             curAction = widget;
                             return null;
                         }

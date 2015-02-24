@@ -21,16 +21,6 @@ public class ProgWidgetEntityCondition extends ProgWidgetCondition{
     }
 
     @Override
-    public String getGuiTabText(){
-        return "bla";
-    }
-
-    @Override
-    public int getGuiTabColor(){
-        return 0xFFFFFFFF;
-    }
-
-    @Override
     public Class<? extends IProgWidget>[] getParameters(){
         return new Class[]{ProgWidgetArea.class, ProgWidgetString.class, ProgWidgetString.class};
     }

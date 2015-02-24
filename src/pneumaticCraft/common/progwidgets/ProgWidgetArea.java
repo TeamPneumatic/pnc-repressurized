@@ -450,16 +450,6 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider{
     }
 
     @Override
-    public String getGuiTabText(){
-        return "This module is used as parameter for other modules. It can provide an area.";
-    }
-
-    @Override
-    public int getGuiTabColor(){
-        return 0xFF209600;
-    }
-
-    @Override
     public WidgetCategory getCategory(){
         return WidgetCategory.PARAMETER;
     }

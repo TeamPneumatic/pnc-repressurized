@@ -82,16 +82,6 @@ public class ProgWidgetJump extends ProgWidget implements IJump{
     }
 
     @Override
-    public String getGuiTabText(){
-        return "bla";
-    }
-
-    @Override
-    public int getGuiTabColor(){
-        return 0xFFFFFFFF;
-    }
-
-    @Override
     protected ResourceLocation getTexture(){
         return Textures.PROG_WIDGET_JUMP;
     }

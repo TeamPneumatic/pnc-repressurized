@@ -31,16 +31,6 @@ public abstract class ProgWidgetDroneEvaluation extends ProgWidget implements IC
     }
 
     @Override
-    public String getGuiTabText(){
-        return null;
-    }
-
-    @Override
-    public int getGuiTabColor(){
-        return 0;
-    }
-
-    @Override
     public WidgetCategory getCategory(){
         return WidgetCategory.CONDITION;
     }

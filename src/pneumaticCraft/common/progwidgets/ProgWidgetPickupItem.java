@@ -25,16 +25,6 @@ public class ProgWidgetPickupItem extends ProgWidgetAreaItemBase{
     }
 
     @Override
-    public String getGuiTabText(){
-        return "This program is used to make the Drone pick up items that are lying on the ground within the selected area. Note that the connected 'Area' puzzle pieces always will be handled as they were in 'Filled' mode.";
-    }
-
-    @Override
-    public int getGuiTabColor(){
-        return 0xFFff7cf7;
-    }
-
-    @Override
     public int getCraftingColorIndex(){
         return ItemPlasticPlants.POTION_PLANT_DAMAGE;
     }

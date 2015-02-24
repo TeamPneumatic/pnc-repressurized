@@ -70,16 +70,6 @@ public class ProgWidgetString extends ProgWidget{
     }
 
     @Override
-    public String getGuiTabText(){
-        return "This module is used as parameter for other modules. It can provide a string";
-    }
-
-    @Override
-    public int getGuiTabColor(){
-        return 0xFF0000FF;
-    }
-
-    @Override
     public WidgetCategory getCategory(){
         return WidgetCategory.PARAMETER;
     }

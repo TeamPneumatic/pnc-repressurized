@@ -14,7 +14,6 @@ import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.Log;
-import pneumaticCraft.lib.PneumaticValues;
 import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -89,16 +88,6 @@ public class ProgWidgetPlace extends ProgWidgetDigAndPlace implements ISidedWidg
     public void readFromNBT(NBTTagCompound tag){
         super.readFromNBT(tag);
         placeDir = ForgeDirection.getOrientation(tag.getInteger("dir"));
-    }
-
-    @Override
-    public String getGuiTabText(){
-        return "This program is used to allow the Drone to place blocks in the area selected. The Drone will take them from it's inventory. You can specify which blocks are allowed to be placed by using item filters. You can also somewhat influence in which order the blocks are placed down by right clicking the program. \n \nAir usage: " + PneumaticValues.DRONE_USAGE_PLACE + "mL/block.";
-    }
-
-    @Override
-    public int getGuiTabColor(){
-        return 0xFFbfd503;
     }
 
     @Override

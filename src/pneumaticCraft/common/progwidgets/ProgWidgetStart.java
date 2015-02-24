@@ -37,16 +37,6 @@ public class ProgWidgetStart extends ProgWidget{
     }
 
     @Override
-    public String getGuiTabText(){
-        return "This module is used as start of every program. It's the first block in any sequence.";
-    }
-
-    @Override
-    public int getGuiTabColor(){
-        return 0xFF6cbc37;
-    }
-
-    @Override
     public WidgetCategory getCategory(){
         return WidgetCategory.FLOW_CONTROL;
     }

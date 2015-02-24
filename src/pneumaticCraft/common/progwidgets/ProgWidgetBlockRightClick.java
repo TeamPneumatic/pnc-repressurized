@@ -15,18 +15,6 @@ public class ProgWidgetBlockRightClick extends ProgWidgetPlace{
     }
 
     @Override
-    public String getGuiTabText(){
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public int getGuiTabColor(){
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
-    @Override
     public int getCraftingColorIndex(){
         return ItemPlasticPlants.HELIUM_PLANT_DAMAGE;
     }

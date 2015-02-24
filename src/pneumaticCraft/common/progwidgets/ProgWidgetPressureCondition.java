@@ -18,16 +18,6 @@ public class ProgWidgetPressureCondition extends ProgWidgetCondition{
     }
 
     @Override
-    public String getGuiTabText(){
-        return null;
-    }
-
-    @Override
-    public int getGuiTabColor(){
-        return 0;
-    }
-
-    @Override
     public Class<? extends IProgWidget>[] getParameters(){
         return new Class[]{ProgWidgetArea.class, ProgWidgetString.class};
     }
