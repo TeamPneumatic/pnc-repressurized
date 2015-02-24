@@ -206,6 +206,7 @@ programmingPuzzle.jump.name=Jump
 programmingPuzzle.wait.name=Wait
 programmingPuzzle.rename.name=Rename Drone
 programmingPuzzle.suicide.name=Suicide
+programmingPuzzle.externalProgram.name=External Program
 programmingPuzzle.conditionRedstone.name=Condition: Redstone
 programmingPuzzle.conditionItemInventory.name=Condition: Items
 programmingPuzzle.conditionBlock.name=Condition: Block

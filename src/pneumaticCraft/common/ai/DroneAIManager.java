@@ -26,22 +26,44 @@ public class DroneAIManager{
     private final Profiler theProfiler;
     private int tickCount;
     public static final int TICK_RATE = 3;
-    private static final int MIN_CYCLE_TIME = 40;//lag prevention, prevents drones from cycling very quick through their AI tasks.
-    private int cycleTimeCounter;
 
     private final EntityDrone drone;
+    private List<IProgWidget> progWidgets;
     private IProgWidget curActiveWidget;
     private EntityAIBase curWidgetAI;
     private EntityAIBase curWidgetTargetAI;
+    private boolean stopWhenEndReached;
 
-    public DroneAIManager(Profiler par1Profiler, EntityDrone drone){
-        theProfiler = par1Profiler;
+    public DroneAIManager(EntityDrone drone){
+        theProfiler = drone.worldObj.theProfiler;
         this.drone = drone;
+        progWidgets = drone.progWidgets;
+        gotoFirstWidget();
+    }
+
+    public DroneAIManager(EntityDrone drone, List<IProgWidget> progWidgets){
+        theProfiler = drone.worldObj.theProfiler;
+        this.drone = drone;
+        this.progWidgets = progWidgets;
+        stopWhenEndReached = true;
+        gotoFirstWidget();
+    }
+
+    public void setWidgets(List<IProgWidget> progWidgets){
+        this.progWidgets = progWidgets;
+        gotoFirstWidget();
+    }
+
+    public boolean isIdling(){
+        return curWidgetAI == null;
+    }
+
+    public EntityAIBase getCurrentAI(){
+        return curWidgetAI;
     }
 
     private void updateWidgetFlow(){
         boolean isExecuting = false;
-        cycleTimeCounter++;
         for(EntityAITaskEntry entry : executingTaskEntries) {
             if(curWidgetAI == entry.action) {
                 isExecuting = true;
@@ -49,25 +71,21 @@ public class DroneAIManager{
             }
         }
         if(!isExecuting && curActiveWidget != null && (curWidgetTargetAI == null || !curWidgetTargetAI.shouldExecute())) {
-            IProgWidget widget = curActiveWidget.getOutputWidget(drone, drone.progWidgets);
+            IProgWidget widget = curActiveWidget.getOutputWidget(drone, progWidgets);
             if(widget != null) {
                 setActiveWidget(widget);
             } else {
-                /* if(cycleTimeCounter < MIN_CYCLE_TIME) {
-                     if(curWidgetAI != null) removeTask(curWidgetAI);
-                     if(curWidgetTargetAI != null) drone.targetTasks.removeTask(curWidgetTargetAI);
-                     curWidgetAI = null;
-                     curWidgetTargetAI = null;
-                 } else {*/
-                gotoFirstWidget();
-                cycleTimeCounter = 0;
-                // }
+                if(stopWhenEndReached) {
+                    setActiveWidget(null);
+                } else {
+                    gotoFirstWidget();
+                }
             }
         }
     }
 
-    public void gotoFirstWidget(){
-        for(IProgWidget widget : drone.progWidgets) {
+    private void gotoFirstWidget(){
+        for(IProgWidget widget : progWidgets) {
             if(widget instanceof ProgWidgetStart) {
                 setActiveWidget(widget);
                 return;
@@ -76,25 +94,33 @@ public class DroneAIManager{
     }
 
     private void setActiveWidget(IProgWidget widget){
-        boolean first = widget instanceof ProgWidgetStart;
-        EntityAIBase targetAI = widget.getWidgetTargetAI(drone, widget);
-        EntityAIBase ai = widget.getWidgetAI(drone, widget);
-        while(targetAI == null && ai == null) {
-            widget = widget.getOutputWidget(drone, drone.progWidgets);
-            if(widget == null) {
-                if(first) {
-                    return;
-                } else {
-                    gotoFirstWidget();
-                    return;
-                }
-            }
+        EntityAIBase targetAI = null;
+        EntityAIBase ai = null;
+        if(widget != null) {
+            boolean first = widget instanceof ProgWidgetStart;
             targetAI = widget.getWidgetTargetAI(drone, widget);
             ai = widget.getWidgetAI(drone, widget);
+            while(targetAI == null && ai == null) {
+                widget = widget.getOutputWidget(drone, progWidgets);
+                if(widget == null) {
+                    if(first) {
+                        return;
+                    } else {
+                        if(stopWhenEndReached) {
+                            setActiveWidget(null);
+                        } else {
+                            gotoFirstWidget();
+                        }
+                        return;
+                    }
+                }
+                targetAI = widget.getWidgetTargetAI(drone, widget);
+                ai = widget.getWidgetAI(drone, widget);
+            }
+            drone.setActiveProgram(widget);
         }
 
         curActiveWidget = widget;
-        drone.setActiveProgram(widget);
         if(curWidgetAI != null) removeTask(curWidgetAI);
         if(curWidgetTargetAI != null) drone.targetTasks.removeTask(curWidgetTargetAI);
         if(ai != null) addTask(2, ai);

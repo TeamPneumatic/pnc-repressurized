@@ -71,6 +71,7 @@ The following is a list of all the different Programming Puzzles:
 [link{progwidget/wait}]-Wait [link{}]
 [link{progwidget/rename}]-Rename Drone [link{}]
 [link{progwidget/suicide}]-Suicide [link{}]
+[link{progwidget/externalProgram}]-External Program [link{}]
 
 And last, but most certainly not least, a collection of pieces:
 [link{progwidget/conditions}]-Conditions [link{}]

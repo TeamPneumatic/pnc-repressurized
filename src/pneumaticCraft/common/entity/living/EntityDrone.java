@@ -139,7 +139,7 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
         ReflectionHelper.setPrivateValue(EntityLiving.class, this, new EntityPathNavigateDrone(this, world), "navigator", "field_70699_by");
         ReflectionHelper.setPrivateValue(EntityLiving.class, this, new DroneMoveHelper(this), "moveHelper", "field_70765_h");
         tasks.addTask(1, chargeAI = new DroneGoToChargingStation(this, 0.1D));
-        aiManager = new DroneAIManager(world.theProfiler, this);
+        aiManager = new DroneAIManager(this);
         if(!world.isRemote) initializeFakePlayer(world, null, "Drone");
     }
 
@@ -225,7 +225,7 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
             }
             speed = 0.1 + Math.min(10, getUpgrades(ItemMachineUpgrade.UPGRADE_SPEED_DAMAGE)) * 0.01;
             lifeUpgrades = getUpgrades(ItemMachineUpgrade.UPGRADE_ITEM_LIFE);
-            aiManager.gotoFirstWidget();
+            aiManager.setWidgets(progWidgets);
         }
 
         if(!worldObj.isRemote) {
