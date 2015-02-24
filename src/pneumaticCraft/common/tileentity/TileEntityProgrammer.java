@@ -21,6 +21,7 @@ import pneumaticCraft.client.AreaShowManager;
 import pneumaticCraft.common.NBTUtil;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.ItemProgrammingPuzzle;
+import pneumaticCraft.common.network.GuiSynced;
 import pneumaticCraft.common.progwidgets.IAreaProvider;
 import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetArea;
@@ -70,6 +71,7 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory{
     public static List<IProgWidget> registeredWidgets = new ArrayList<IProgWidget>();
     @SideOnly(Side.CLIENT)
     private static AreaShowHandler previewedArea;
+    @GuiSynced
     public int redstoneMode;//for later use
     private ItemStack[] inventory = new ItemStack[1];
 
@@ -276,7 +278,7 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory{
     public void handleGUIButtonPress(int buttonID, EntityPlayer player){
         switch(buttonID){
             case 0:
-                if(redstoneMode++ > 1) redstoneMode = 1;
+                if(++redstoneMode > 1) redstoneMode = 0;
                 break;
             case 1:
                 NBTTagCompound tag = inventory[PROGRAM_SLOT] != null ? inventory[PROGRAM_SLOT].getTagCompound() : null;
@@ -501,6 +503,9 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory{
         inventory[slot] = itemStack;
         if(itemStack != null && itemStack.stackSize > getInventoryStackLimit()) {
             itemStack.stackSize = getInventoryStackLimit();
+        }
+        if(redstoneMode == 1 && slot == 0 && itemStack != null) {
+            tryProgramDrone(null);
         }
     }
 

@@ -402,6 +402,10 @@ gui.tab.hopperStatus.itemTransferPerTick=§7Item Transfer Speed: \n§0%s items/t
 gui.tab.hopperStatus.itemTransferPerSecond=§7Item Transfer Speed: \n§0%s items/s
 gui.tab.hopperStatus.liquidTransferPerTick=§7Liquid Transfer Speed: \n§0%s mL/tick
 gui.tab.hopperStatus.liquidTransferPerSecond=§7Liquid Transfer Speed: \n§0%s mL/s
+gui.programmer.button.export.programmingWhen=§cProgramming when: %s
+gui.programmer.button.export.pressingButton=Pressing button
+gui.programmer.button.export.onItemInsert=Item inserted
+gui.programmer.button.export.pressRToChange=§cPress 'R' to change
 
 # Universal Sensor descriptions
 gui.universalSensor.desc.userSetSensor=This is a 'sensor' you can use to emit a constant redstone value. The value emitted is the numeric value inserted into the textbox.

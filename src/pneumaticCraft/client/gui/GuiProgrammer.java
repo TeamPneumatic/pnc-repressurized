@@ -220,6 +220,11 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
                 }
             }
         }
+        if(Keyboard.KEY_R == keyCode) {
+            if(exportButton.getBounds().contains(lastMouseX, lastMouseY)) {
+                NetworkHandler.sendToServer(new PacketGuiButton(te, 0));
+            }
+        }
     }
 
     @Override
@@ -613,9 +618,12 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
 
         List<String> exportButtonTooltip = new ArrayList<String>();
         exportButtonTooltip.add("Export program");
+        exportButtonTooltip.add(I18n.format("gui.programmer.button.export.programmingWhen", I18n.format("gui.programmer.button.export." + (te.redstoneMode == 0 ? "pressingButton" : "onItemInsert"))));
+        exportButtonTooltip.add(I18n.format("gui.programmer.button.export.pressRToChange"));
         if(te.getStackInSlot(TileEntityProgrammer.PROGRAM_SLOT) != null) {
             List<ItemStack> requiredPieces = te.getRequiredPuzzleStacks();
             List<ItemStack> returnedPieces = te.getReturnedPuzzleStacks();
+            if(!requiredPieces.isEmpty() || !returnedPieces.isEmpty()) exportButtonTooltip.add("");
             if(!requiredPieces.isEmpty()) {
                 exportButtonTooltip.add("Required Programming Puzzles:");
                 if(player.capabilities.isCreativeMode) exportButtonTooltip.add("(Creative mode, so the following is free)");

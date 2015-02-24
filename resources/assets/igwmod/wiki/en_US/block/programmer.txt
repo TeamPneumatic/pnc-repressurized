@@ -76,5 +76,11 @@ The following is a list of all the different Programming Puzzles:
 And last, but most certainly not least, a collection of pieces:
 [link{progwidget/conditions}]-Conditions [link{}]
 
+Just drag and drop pieces to make up your program. When you are done writing the program, insert the Drone in the top right of the GUI, and press the 'Export' button. You will notice while hovering over the 'Export' button that you need to craft pieces. For programming to work, you need to either have the pieces in your inventory, or in an inventory next to the Programmer. When you export an already programmed Drone, it will return any pieces that the Drone does not use in the new program.
+
+You can press the 'Import' button to load the program stored in the Drone into the Programmer. This will override any program written in the Programmer.
+
+You can automate the programming of Drones by pressing 'R' while hovering over the 'Export' button. This will put the Programmer in 'program when inserting item' mode. When items are put in via a Hopper for example, the Drone will automatically be tried to be programmed.
+
 There is a trick to speed up certain programming: Middle-click a puzzle piece to copy the piece along with its properties (so a copied 'area' piece will contain the area of the copied piece).
 
