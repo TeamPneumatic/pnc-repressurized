@@ -281,7 +281,7 @@ public class ItemPlasticPlants extends ItemPneumatic{
         }
         if(motProps != null) motProps.update(entityItem);
 
-        boolean isDelayOver = entityItem.delayBeforeCanPickup == 0;
+        boolean isDelayOver = isActive(entityItem) || entityItem.age > 60 && entityItem.delayBeforeCanPickup == 0;
         if(entityItem.onGround || Math.abs(entityItem.motionY) < 0.13D && (itemDamage % 16 == ItemPlasticPlants.HELIUM_PLANT_DAMAGE || itemDamage % 16 == ItemPlasticPlants.SQUID_PLANT_DAMAGE)) {
             if(!handleRepulsionBehaviour(entityItem, oldMotionX, oldMotionY, oldMotionZ)) return false;
             if(!handlePropulsionBehaviour(entityItem, oldMotionX, oldMotionZ)) return false;
