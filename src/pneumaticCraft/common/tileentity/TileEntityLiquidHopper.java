@@ -57,7 +57,7 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
                 IFluidHandler fluidHandler = (IFluidHandler)neighbor;
                 if(fluidHandler.canFill(dir.getOpposite(), tank.getFluid().getFluid())) {
                     FluidStack fluid = tank.getFluid().copy();
-                    fluid.amount = maxItems * 100;
+                    fluid.amount = Math.min(maxItems * 100, tank.getFluid().amount);
                     tank.getFluid().amount -= fluidHandler.fill(dir.getOpposite(), fluid, true);
                     if(tank.getFluidAmount() <= 0) tank.setFluid(null);
                     return true;
