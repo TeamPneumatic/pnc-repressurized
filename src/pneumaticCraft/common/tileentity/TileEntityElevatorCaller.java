@@ -13,6 +13,7 @@ public class TileEntityElevatorCaller extends TileEntityBase{
     private ElevatorButton[] floors = new ElevatorButton[0];
     public int thisFloor;
     private boolean emittingRedstone;
+    private boolean shouldUpdateNeighbors;
     @DescSynced
     public ItemStack camoStack;
     public Block camoBlock;
@@ -20,7 +21,16 @@ public class TileEntityElevatorCaller extends TileEntityBase{
     public void setEmittingRedstone(boolean emittingRedstone){
         if(emittingRedstone != this.emittingRedstone) {
             this.emittingRedstone = emittingRedstone;
+            shouldUpdateNeighbors = true;
+        }
+    }
+
+    @Override
+    public void updateEntity(){
+        super.updateEntity();
+        if(shouldUpdateNeighbors) {
             updateNeighbours();
+            shouldUpdateNeighbors = false;
         }
     }
 
@@ -34,6 +44,7 @@ public class TileEntityElevatorCaller extends TileEntityBase{
         emittingRedstone = tag.getBoolean("emittingRedstone");
         thisFloor = tag.getInteger("thisFloor");
         camoStack = tag.hasKey("camoStack") ? ItemStack.loadItemStackFromNBT(tag.getCompoundTag("camoStack")) : null;
+        shouldUpdateNeighbors = tag.getBoolean("shouldUpdateNeighbors");
     }
 
     @Override
@@ -46,6 +57,7 @@ public class TileEntityElevatorCaller extends TileEntityBase{
             camoStack.writeToNBT(camoTag);
             tag.setTag("camoStack", camoTag);
         }
+        tag.setBoolean("shouldUpdateNeighbors", shouldUpdateNeighbors);
     }
 
     @Override
