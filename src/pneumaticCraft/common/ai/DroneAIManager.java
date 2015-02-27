@@ -1,13 +1,21 @@
 package pneumaticCraft.common.ai;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.profiler.Profiler;
+import net.minecraft.world.ChunkPosition;
+import net.minecraftforge.common.MinecraftForge;
+import pneumaticCraft.api.drone.SpecialVariableRetrievalEvent;
 import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.progwidgets.IProgWidget;
+import pneumaticCraft.common.progwidgets.IVariableWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetStart;
 
 /**
@@ -34,23 +42,28 @@ public class DroneAIManager{
     private EntityAIBase curWidgetTargetAI;
     private boolean stopWhenEndReached;
 
+    private final Map<String, ChunkPosition> coordinateVariables = new HashMap<String, ChunkPosition>();
+
     public DroneAIManager(EntityDrone drone){
         theProfiler = drone.worldObj.theProfiler;
         this.drone = drone;
-        progWidgets = drone.progWidgets;
-        gotoFirstWidget();
+        setWidgets(drone.progWidgets);
     }
 
     public DroneAIManager(EntityDrone drone, List<IProgWidget> progWidgets){
         theProfiler = drone.worldObj.theProfiler;
         this.drone = drone;
-        this.progWidgets = progWidgets;
         stopWhenEndReached = true;
-        gotoFirstWidget();
+        setWidgets(progWidgets);
     }
 
     public void setWidgets(List<IProgWidget> progWidgets){
         this.progWidgets = progWidgets;
+        for(IProgWidget widget : progWidgets) {
+            if(widget instanceof IVariableWidget) {
+                ((IVariableWidget)widget).setAIManager(this);
+            }
+        }
         gotoFirstWidget();
     }
 
@@ -60,6 +73,44 @@ public class DroneAIManager{
 
     public EntityAIBase getCurrentAI(){
         return curWidgetAI;
+    }
+
+    public void writeToNBT(NBTTagCompound tag){
+        NBTTagList tagList = new NBTTagList();
+        for(Map.Entry<String, ChunkPosition> entry : coordinateVariables.entrySet()) {
+            NBTTagCompound t = new NBTTagCompound();
+            t.setString("key", entry.getKey());
+            t.setInteger("x", entry.getValue().chunkPosX);
+            t.setInteger("y", entry.getValue().chunkPosY);
+            t.setInteger("z", entry.getValue().chunkPosZ);
+            tagList.appendTag(t);
+        }
+        tag.setTag("coords", tagList);
+    }
+
+    public void readFromNBT(NBTTagCompound tag){
+        coordinateVariables.clear();
+        NBTTagList tagList = tag.getTagList("coords", 10);
+        for(int i = 0; i < tagList.tagCount(); i++) {
+            NBTTagCompound t = tagList.getCompoundTagAt(i);
+            coordinateVariables.put(t.getString("key"), new ChunkPosition(t.getInteger("x"), t.getInteger("y"), t.getInteger("z")));
+        }
+    }
+
+    public ChunkPosition getCoordinate(String varName){
+        ChunkPosition pos;
+        if(varName.startsWith("$")) {
+            SpecialVariableRetrievalEvent event = new SpecialVariableRetrievalEvent(drone, varName.substring(1));
+            MinecraftForge.EVENT_BUS.post(event);
+            pos = event.coordinate;
+        } else {
+            pos = coordinateVariables.get(varName);
+        }
+        return pos != null ? pos : new ChunkPosition(0, 0, 0);
+    }
+
+    public void setCoordinate(String varName, ChunkPosition coord){
+        if(!varName.startsWith("$")) coordinateVariables.put(varName, coord);
     }
 
     private void updateWidgetFlow(){

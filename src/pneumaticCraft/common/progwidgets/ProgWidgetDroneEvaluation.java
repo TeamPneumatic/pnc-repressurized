@@ -1,8 +1,5 @@
 package pneumaticCraft.common.progwidgets;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.ai.EntityAIBase;
@@ -10,30 +7,14 @@ import net.minecraft.nbt.NBTTagCompound;
 import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.client.gui.programmer.GuiProgWidgetCondition;
 import pneumaticCraft.common.entity.living.EntityDrone;
-import pneumaticCraft.common.item.ItemPlasticPlants;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public abstract class ProgWidgetDroneEvaluation extends ProgWidget implements ICondition, IJump{
+public abstract class ProgWidgetDroneEvaluation extends ProgWidgetConditionBase implements ICondition{
 
     private boolean isAndFunction;
     private ICondition.Operator operator = ICondition.Operator.HIGHER_THAN_EQUALS;
     private int requiredCount = 1;
-
-    @Override
-    public boolean hasStepInput(){
-        return true;
-    }
-
-    @Override
-    public Class<? extends IProgWidget> returnType(){
-        return null;
-    }
-
-    @Override
-    public WidgetCategory getCategory(){
-        return WidgetCategory.CONDITION;
-    }
 
     @Override
     public boolean isAndFunction(){
@@ -43,21 +24,6 @@ public abstract class ProgWidgetDroneEvaluation extends ProgWidget implements IC
     @Override
     public void setAndFunction(boolean isAndFunction){
         this.isAndFunction = isAndFunction;
-    }
-
-    @Override
-    public List<String> getPossibleJumpLocations(){
-        ProgWidgetString textWidget = (ProgWidgetString)getConnectedParameters()[getParameters().length - 1];
-        ProgWidgetString textWidget2 = (ProgWidgetString)getConnectedParameters()[getParameters().length * 2 - 1];
-        List<String> locations = new ArrayList<String>();
-        if(textWidget != null) locations.add(textWidget.string);
-        if(textWidget2 != null) locations.add(textWidget2.string);
-        return locations;
-    }
-
-    @Override
-    public IProgWidget getOutputWidget(EntityDrone drone, List<IProgWidget> allWidgets){
-        return ProgWidgetJump.jumpToLabel(allWidgets, this, evaluate(drone, this));
     }
 
     @Override
@@ -133,11 +99,6 @@ public abstract class ProgWidgetDroneEvaluation extends ProgWidget implements IC
     public String getExtraStringInfo(){
         String anyAll = I18n.format(isAndFunction() ? "gui.progWidget.condition.all" : "gui.progWidget.condition.any");
         return anyAll + " " + getOperator().toString() + " " + getRequiredCount();
-    }
-
-    @Override
-    public int getCraftingColorIndex(){
-        return ItemPlasticPlants.LIGHTNING_PLANT_DAMAGE;
     }
 
 }

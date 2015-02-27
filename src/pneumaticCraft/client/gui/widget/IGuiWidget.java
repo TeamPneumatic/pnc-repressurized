@@ -12,6 +12,8 @@ public interface IGuiWidget{
 
     public void onMouseClicked(int mouseX, int mouseY, int button);
 
+    public void onMouseClickedOutsideBounds(int mouseX, int mouseY, int button);
+
     public Rectangle getBounds();
 
     public void addTooltip(int mouseX, int mouseY, List<String> curTooltip, boolean shiftPressed);

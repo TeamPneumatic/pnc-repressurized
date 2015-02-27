@@ -13,8 +13,6 @@ import pneumaticCraft.client.gui.widget.GuiCheckBox;
 import pneumaticCraft.client.gui.widget.GuiRadioButton;
 import pneumaticCraft.client.gui.widget.IGuiWidget;
 import pneumaticCraft.client.gui.widget.WidgetTextField;
-import pneumaticCraft.common.network.NetworkHandler;
-import pneumaticCraft.common.network.PacketProgrammerUpdate;
 import pneumaticCraft.common.progwidgets.ICondition;
 import pneumaticCraft.common.progwidgets.ISidedWidget;
 import pneumaticCraft.common.progwidgets.ProgWidget;
@@ -110,11 +108,10 @@ public class GuiProgWidgetCondition extends GuiProgWidgetAreaShow<ProgWidget>{
 
     @Override
     public void onKeyTyped(IGuiWidget widget){
-        super.onKeyTyped(widget);
         if(requiresNumber()) {
             ((ICondition)this.widget).setRequiredCount(NumberUtils.toInt(textField.getText()));
-            NetworkHandler.sendToServer(new PacketProgrammerUpdate(guiProgrammer.te));
         }
+        super.onKeyTyped(widget);
     }
 
     @Override

@@ -1,11 +1,9 @@
 package pneumaticCraft.client.gui.programmer;
 
-import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import pneumaticCraft.client.gui.GuiPneumaticScreenBase;
 import pneumaticCraft.client.gui.GuiProgrammer;
-import pneumaticCraft.client.gui.widget.IGuiWidget;
 import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.PacketProgrammerUpdate;
 import pneumaticCraft.common.progwidgets.IProgWidget;
@@ -26,8 +24,9 @@ public class GuiProgWidgetOptionBase<Widget extends IProgWidget> extends GuiPneu
     public void keyTyped(char key, int keyCode){
         super.keyTyped(key, keyCode);
         if(keyCode == 1) {
-            mc.displayGuiScreen(guiProgrammer);
             onGuiClosed();
+            NetworkHandler.sendToServer(new PacketProgrammerUpdate(guiProgrammer.te));
+            mc.displayGuiScreen(guiProgrammer);
         }
     }
 
@@ -47,15 +46,5 @@ public class GuiProgWidgetOptionBase<Widget extends IProgWidget> extends GuiPneu
     @Override
     public boolean doesGuiPauseGame(){
         return false;
-    }
-
-    @Override
-    public void actionPerformed(GuiButton button){
-        NetworkHandler.sendToServer(new PacketProgrammerUpdate(guiProgrammer.te));
-    }
-
-    @Override
-    public void actionPerformed(IGuiWidget widget){
-        NetworkHandler.sendToServer(new PacketProgrammerUpdate(guiProgrammer.te));
     }
 }

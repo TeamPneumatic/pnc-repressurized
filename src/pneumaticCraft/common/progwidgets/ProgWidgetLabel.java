@@ -42,8 +42,8 @@ public class ProgWidgetLabel extends ProgWidget implements ILabel{
     }
 
     @Override
-    public WidgetCategory getCategory(){
-        return WidgetCategory.FLOW_CONTROL;
+    public WidgetDifficulty getDifficulty(){
+        return WidgetDifficulty.MEDIUM;
     }
 
     @Override

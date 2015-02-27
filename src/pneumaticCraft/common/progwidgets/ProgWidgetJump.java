@@ -87,8 +87,8 @@ public class ProgWidgetJump extends ProgWidget implements IJump{
     }
 
     @Override
-    public WidgetCategory getCategory(){
-        return WidgetCategory.FLOW_CONTROL;
+    public WidgetDifficulty getDifficulty(){
+        return WidgetDifficulty.MEDIUM;
     }
 
     @Override

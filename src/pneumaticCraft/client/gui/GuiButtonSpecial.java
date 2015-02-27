@@ -43,7 +43,7 @@ public class GuiButtonSpecial extends GuiButton implements IGuiWidget{
         invisibleHoverColor = color;
     }
 
-    public void setRenderStacks(ItemStack[] renderedStacks){
+    public void setRenderStacks(ItemStack... renderedStacks){
         this.renderedStacks = renderedStacks;
     }
 
@@ -112,6 +112,11 @@ public class GuiButtonSpecial extends GuiButton implements IGuiWidget{
             func_146113_a(Minecraft.getMinecraft().getSoundHandler());
             listener.actionPerformed(this);
         }
+    }
+
+    @Override
+    public void onMouseClickedOutsideBounds(int mouseX, int mouseY, int button){
+
     }
 
     @Override

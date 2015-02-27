@@ -8,8 +8,6 @@ import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.client.gui.GuiSearcher;
 import pneumaticCraft.client.gui.widget.GuiCheckBox;
 import pneumaticCraft.client.gui.widget.IGuiWidget;
-import pneumaticCraft.common.network.NetworkHandler;
-import pneumaticCraft.common.network.PacketProgrammerUpdate;
 import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetItemFilter;
 import cpw.mods.fml.client.FMLClientHandler;
@@ -69,7 +67,6 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase{
 
         if(searchGui != null) widg.filter = searchGui.getSearchStack();
         if(invSearchGui != null) widg.filter = invSearchGui.getSearchStack();
-        NetworkHandler.sendToServer(new PacketProgrammerUpdate(guiProgrammer.te));
     }
 
     @Override

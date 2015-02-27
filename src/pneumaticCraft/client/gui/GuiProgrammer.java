@@ -23,8 +23,10 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import pneumaticCraft.client.gui.widget.GuiCheckBox;
+import pneumaticCraft.client.gui.widget.GuiRadioButton;
 import pneumaticCraft.client.gui.widget.IGuiWidget;
 import pneumaticCraft.client.gui.widget.WidgetVerticalScrollbar;
+import pneumaticCraft.common.Config;
 import pneumaticCraft.common.inventory.ContainerProgrammer;
 import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.PacketGuiButton;
@@ -50,7 +52,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
     //  private GuiButton redstoneButton;
     private GuiButtonSpecial importButton;
     private GuiButtonSpecial exportButton;
-    private List<GuiCheckBox> filters;
+    private List<GuiRadioButton> difficultyButtons;
     private GuiCheckBox showInfo, showFlow;
 
     private final List<IProgWidget> visibleSpawnWidgets = new ArrayList<IProgWidget>();
@@ -85,8 +87,15 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         int y = 0, page = 0;
         maxPage = 0;
         visibleSpawnWidgets.clear();
+        int difficulty = 0;
+        for(int i = 0; i < difficultyButtons.size(); i++) {
+            if(difficultyButtons.get(i).checked) {
+                difficulty = i;
+                break;
+            }
+        }
         for(IProgWidget widget : TileEntityProgrammer.registeredWidgets) {
-            if(filters.get(widget.getCategory().ordinal()).checked) {
+            if(difficulty >= widget.getDifficulty().ordinal()) {
                 int widgetHeight = widget.getHeight() / 2 + (widget.hasStepOutput() ? 5 : 0) + 1;
                 y += widgetHeight;
                 if(y > ySize - 160) {
@@ -119,15 +128,16 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         exportButton = new GuiButtonSpecial(2, xStart + 301, yStart + 20, 20, 15, "-->");
         buttonList.add(exportButton);
 
-        buttonList.add(new GuiButton(3, xStart + 305, yStart + 174, 10, 10, "-"));
+        buttonList.add(new GuiButton(3, xStart + 294, yStart + 174, 10, 10, "-"));
         buttonList.add(new GuiButton(4, xStart + 335, yStart + 174, 10, 10, "+"));
 
-        filters = new ArrayList<GuiCheckBox>();
-        for(int i = 0; i < IProgWidget.WidgetCategory.values().length; i++) {
-            GuiCheckBox checkBox = new GuiCheckBox(i, xStart + 263, yStart + 190 + i * 12, 0xFF000000, IProgWidget.WidgetCategory.values()[i].getLocalizedName());
-            checkBox.checked = te.filters[i];
-            addWidget(checkBox);
-            filters.add(checkBox);
+        difficultyButtons = new ArrayList<GuiRadioButton>();
+        for(int i = 0; i < IProgWidget.WidgetDifficulty.values().length; i++) {
+            GuiRadioButton radioButton = new GuiRadioButton(i, xStart + 263, yStart + 200 + i * 12, 0xFF000000, IProgWidget.WidgetDifficulty.values()[i].getLocalizedName());
+            radioButton.checked = Config.getProgrammerDifficulty() == i;
+            addWidget(radioButton);
+            difficultyButtons.add(radioButton);
+            radioButton.otherChoices = difficultyButtons;
         }
 
         buttonList.add(new GuiButton(5, xStart + 5, yStart + 175, 87, 20, I18n.format("gui.programmer.button.showStart")));
@@ -165,8 +175,8 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         super.drawGuiContainerForegroundLayer(x, y);
 
         boolean igwLoaded = Loader.isModLoaded(ModIds.IGWMOD);
-        fontRendererObj.drawString(widgetPage + 1 + "/" + (maxPage + 1), 316, 175, 0xFF000000);
-        fontRendererObj.drawString(I18n.format("gui.programmer.filters"), 263, 180, 0xFF000000);
+        fontRendererObj.drawString(widgetPage + 1 + "/" + (maxPage + 1), 305, 175, 0xFF000000);
+        fontRendererObj.drawString(I18n.format("gui.programmer.difficulty"), 263, 190, 0xFF000000);
 
         float scale = 1.0F - scaleScroll.getState() * SCALE_PER_STEP;
 
@@ -599,6 +609,12 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
 
     @Override
     public void actionPerformed(IGuiWidget button){
+        for(int i = 0; i < difficultyButtons.size(); i++) {
+            if(difficultyButtons.get(i).checked) {
+                Config.setProgrammerDifficulty(i);
+                break;
+            }
+        }
         updateVisibleProgWidgets();
     }
 
@@ -684,9 +700,6 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         te.zoomState = lastZoom;
         te.showFlow = showFlow.checked;
         te.showInfo = showInfo.checked;
-        for(int i = 0; i < filters.size(); i++) {
-            te.filters[i] = filters.get(i).checked;
-        }
         super.onGuiClosed();
     }
 

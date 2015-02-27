@@ -10,8 +10,6 @@ import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.client.gui.widget.GuiCheckBox;
 import pneumaticCraft.client.gui.widget.IGuiWidget;
 import pneumaticCraft.client.gui.widget.WidgetTextField;
-import pneumaticCraft.common.network.NetworkHandler;
-import pneumaticCraft.common.network.PacketProgrammerUpdate;
 import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetInventoryBase;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
@@ -65,9 +63,8 @@ public class GuiProgWidgetImportExport extends GuiProgWidgetAreaShow{
 
     @Override
     public void onKeyTyped(IGuiWidget widget){
-        super.onKeyTyped(widget);
         ((ProgWidgetInventoryBase)this.widget).setCount(NumberUtils.toInt(textField.getText()));
-        NetworkHandler.sendToServer(new PacketProgrammerUpdate(guiProgrammer.te));
+        super.onKeyTyped(widget);
     }
 
     @Override

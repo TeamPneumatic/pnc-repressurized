@@ -52,8 +52,8 @@ public class ProgWidgetEntityImport extends ProgWidget implements IProgWidget, I
     }
 
     @Override
-    public WidgetCategory getCategory(){
-        return WidgetCategory.ACTION;
+    public WidgetDifficulty getDifficulty(){
+        return WidgetDifficulty.EASY;
     }
 
     @Override

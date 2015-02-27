@@ -152,8 +152,8 @@ public class ProgWidgetItemFilter extends ProgWidget{
     }
 
     @Override
-    public WidgetCategory getCategory(){
-        return WidgetCategory.PARAMETER;
+    public WidgetDifficulty getDifficulty(){
+        return WidgetDifficulty.EASY;
     }
 
     @Override

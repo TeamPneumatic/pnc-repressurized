@@ -2,8 +2,6 @@ package pneumaticCraft.client.gui.programmer;
 
 import net.minecraft.client.gui.GuiTextField;
 import pneumaticCraft.client.gui.GuiProgrammer;
-import pneumaticCraft.common.network.NetworkHandler;
-import pneumaticCraft.common.network.PacketProgrammerUpdate;
 import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetString;
 
@@ -38,7 +36,6 @@ public class GuiProgWidgetString extends GuiProgWidgetOptionBase{
         if(textfield.isFocused() && par2 != 1) {
             textfield.textboxKeyTyped(par1, par2);
             ((ProgWidgetString)widget).string = textfield.getText();
-            NetworkHandler.sendToServer(new PacketProgrammerUpdate(guiProgrammer.te));
         } else {
             super.keyTyped(par1, par2);
         }

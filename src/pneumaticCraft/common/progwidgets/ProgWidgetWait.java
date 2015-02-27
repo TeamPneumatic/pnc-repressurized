@@ -78,8 +78,8 @@ public class ProgWidgetWait extends ProgWidget{
     }
 
     @Override
-    public WidgetCategory getCategory(){
-        return WidgetCategory.ACTION;
+    public WidgetDifficulty getDifficulty(){
+        return WidgetDifficulty.EASY;
     }
 
     @Override

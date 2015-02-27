@@ -106,8 +106,8 @@ public class ProgWidgetEntityAttack extends ProgWidget implements IAreaProvider,
     }
 
     @Override
-    public WidgetCategory getCategory(){
-        return WidgetCategory.ACTION;
+    public WidgetDifficulty getDifficulty(){
+        return WidgetDifficulty.EASY;
     }
 
     @Override

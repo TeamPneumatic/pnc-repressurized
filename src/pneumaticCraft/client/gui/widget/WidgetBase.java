@@ -40,6 +40,11 @@ public class WidgetBase implements IGuiWidget{
     }
 
     @Override
+    public void onMouseClickedOutsideBounds(int mouseX, int mouseY, int button){
+
+    }
+
+    @Override
     public Rectangle getBounds(){
 
         return new Rectangle(x, y, width, height);

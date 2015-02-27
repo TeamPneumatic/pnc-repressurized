@@ -20,6 +20,7 @@ import pneumaticCraft.common.VillagerHandler;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.block.tubes.ModuleRegistrator;
 import pneumaticCraft.common.entity.EntityRegistrator;
+import pneumaticCraft.common.event.DroneSpecialVariableHandler;
 import pneumaticCraft.common.fluid.FluidFuelManager;
 import pneumaticCraft.common.fluid.Fluids;
 import pneumaticCraft.common.heat.HeatExchangerManager;
@@ -93,6 +94,7 @@ public class PneumaticCraft{
         FMLCommonHandler.instance().bus().register(tickHandler);
         MinecraftForge.EVENT_BUS.register(new EventHandlerPneumaticCraft());
         MinecraftForge.EVENT_BUS.register(new EventHandlerUniversalSensor());
+        MinecraftForge.EVENT_BUS.register(new DroneSpecialVariableHandler());
 
         FMLCommonHandler.instance().bus().register(new CraftingHandler());
         FMLCommonHandler.instance().bus().register(new Config());

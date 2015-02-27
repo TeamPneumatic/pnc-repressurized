@@ -78,6 +78,11 @@ public class GuiCheckBox extends Gui implements IGuiWidget{
         }
     }
 
+    @Override
+    public void onMouseClickedOutsideBounds(int mouseX, int mouseY, int button){
+
+    }
+
     public void setTooltip(String tooltip){
         setTooltip(Arrays.asList(new String[]{tooltip}));
     }

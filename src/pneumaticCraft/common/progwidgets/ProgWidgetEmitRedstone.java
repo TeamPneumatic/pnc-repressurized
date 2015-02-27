@@ -139,8 +139,8 @@ public class ProgWidgetEmitRedstone extends ProgWidget implements IRedstoneEmiss
     }
 
     @Override
-    public WidgetCategory getCategory(){
-        return WidgetCategory.ACTION;
+    public WidgetDifficulty getDifficulty(){
+        return WidgetDifficulty.EASY;
     }
 
     @Override

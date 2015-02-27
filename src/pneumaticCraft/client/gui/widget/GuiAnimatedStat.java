@@ -382,6 +382,11 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
     }
 
     @Override
+    public void onMouseClickedOutsideBounds(int mouseX, int mouseY, int button){
+
+    }
+
+    @Override
     public void closeWindow(){
         isClicked = false;
     }

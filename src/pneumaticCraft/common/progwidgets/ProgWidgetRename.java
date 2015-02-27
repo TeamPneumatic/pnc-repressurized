@@ -35,8 +35,8 @@ public class ProgWidgetRename extends ProgWidget implements IRenamingWidget{
     }
 
     @Override
-    public WidgetCategory getCategory(){
-        return WidgetCategory.FLOW_CONTROL;
+    public WidgetDifficulty getDifficulty(){
+        return WidgetDifficulty.EASY;
     }
 
     @Override

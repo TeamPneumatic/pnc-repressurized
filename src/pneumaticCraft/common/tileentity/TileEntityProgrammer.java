@@ -1,7 +1,6 @@
 package pneumaticCraft.common.tileentity;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +26,9 @@ import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetArea;
 import pneumaticCraft.common.progwidgets.ProgWidgetBlockCondition;
 import pneumaticCraft.common.progwidgets.ProgWidgetBlockRightClick;
+import pneumaticCraft.common.progwidgets.ProgWidgetCoordinate;
+import pneumaticCraft.common.progwidgets.ProgWidgetCoordinateCondition;
+import pneumaticCraft.common.progwidgets.ProgWidgetCoordinateOperator;
 import pneumaticCraft.common.progwidgets.ProgWidgetDig;
 import pneumaticCraft.common.progwidgets.ProgWidgetDroneConditionEntity;
 import pneumaticCraft.common.progwidgets.ProgWidgetDroneConditionItem;
@@ -79,12 +81,7 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory{
 
     //Client side variables that are used to prevent resetting.
     public int translatedX, translatedY, zoomState;
-    public boolean[] filters = new boolean[IProgWidget.WidgetCategory.values().length];
-    public boolean showInfo, showFlow;
-
-    public TileEntityProgrammer(){
-        Arrays.fill(filters, true);
-    }
+    public boolean showInfo = true, showFlow = true;
 
     static {
         registeredWidgets.add(new ProgWidgetStart());
@@ -92,6 +89,8 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory{
         registeredWidgets.add(new ProgWidgetString());
         registeredWidgets.add(new ProgWidgetItemFilter());
         registeredWidgets.add(new ProgWidgetLiquidFilter());
+        registeredWidgets.add(new ProgWidgetCoordinate());
+        registeredWidgets.add(new ProgWidgetCoordinateOperator());
         registeredWidgets.add(new ProgWidgetEntityAttack());
         registeredWidgets.add(new ProgWidgetDig());
         registeredWidgets.add(new ProgWidgetPlace());
@@ -114,6 +113,7 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory{
         registeredWidgets.add(new ProgWidgetRename());
         registeredWidgets.add(new ProgWidgetSuicide());
         registeredWidgets.add(new ProgWidgetExternalProgram());
+        registeredWidgets.add(new ProgWidgetCoordinateCondition());
         registeredWidgets.add(new ProgWidgetRedstoneCondition());
         registeredWidgets.add(new ProgWidgetItemInventoryCondition());
         registeredWidgets.add(new ProgWidgetBlockCondition());

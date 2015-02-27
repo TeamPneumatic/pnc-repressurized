@@ -16,6 +16,7 @@ The following is a list of all Conditions:
 [link{progwidget/conditionRedstone}]Condition: Redstone[link{}]
 [link{progwidget/conditionEntity}]Condition: Entity[link{}]
 [link{progwidget/conditionPressure}]Condition: Pressure[link{}]
+[link{progwidget/conditionCoordinate}]Condition: Coordinate[link{}]
 
 [prefix{l}]Drone Conditions:[prefix{}]
 [link{progwidget/droneConditionItem}]Drone Condition: Items[link{}]

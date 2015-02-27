@@ -16,14 +16,17 @@ import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.World;
 import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.client.gui.programmer.GuiProgWidgetArea;
+import pneumaticCraft.common.ai.DroneAIManager;
 import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ProgWidgetArea extends ProgWidget implements IAreaProvider{
+public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariableWidget{
     public int x1, y1, z1, x2, y2, z2;
+    private String coord1Variable = "", coord2Variable = "";
+    private DroneAIManager aiManager;
     public EnumAreaType type = EnumAreaType.FILL;
 
     public enum EnumAreaType{
@@ -46,15 +49,32 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider{
     @Override
     public void getTooltip(List<String> curTooltip){
         super.getTooltip(curTooltip);
-        ChunkPosition[] areaPoints = getAreaPoints();
-        if(areaPoints[0] != null) {
-            if(areaPoints[1] != null) {
+
+        String c1;
+        if(coord1Variable.equals("")) {
+            c1 = x1 != 0 || y1 != 0 || z1 != 0 ? "X%s: " + x1 + ", Y%s: " + y1 + ", Z%s: " + z1 : null;
+        } else {
+            c1 = "XYZ%s: \"" + coord1Variable + "\"";
+        }
+        String c2;
+        if(coord2Variable.equals("")) {
+            c2 = x2 != 0 || y2 != 0 || z2 != 0 ? "X%s: " + x2 + ", Y%s: " + y2 + ", Z%s: " + z2 : null;
+        } else {
+            c2 = "XYZ%s: \"" + coord2Variable + "\"";
+        }
+        if(c1 == null) {
+            c1 = c2;
+            c2 = null;
+        }
+
+        if(c1 != null) {
+            if(c2 != null) {
                 curTooltip.add("Contains the points:");
-                curTooltip.add("X1: " + areaPoints[0].chunkPosX + ", Y1: " + areaPoints[0].chunkPosY + ", Z1: " + areaPoints[0].chunkPosZ);
-                curTooltip.add("X2: " + areaPoints[1].chunkPosX + ", Y2: " + areaPoints[1].chunkPosY + ", Z2: " + areaPoints[1].chunkPosZ);
+                curTooltip.add(c1.replace("%s", "1"));
+                curTooltip.add(c2.replace("%s", "2"));
             } else {
                 curTooltip.add("Contains the point:");
-                curTooltip.add("X1: " + areaPoints[0].chunkPosX + ", Y1: " + areaPoints[0].chunkPosY + ", Z1: " + areaPoints[0].chunkPosZ);
+                curTooltip.add(c1.replace("%s", "1"));
             }
         }
 
@@ -62,8 +82,18 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider{
     }
 
     private ChunkPosition[] getAreaPoints(){
-        ChunkPosition c1 = x1 != 0 || y1 != 0 || z1 != 0 ? new ChunkPosition(x1, y1, z1) : null;
-        ChunkPosition c2 = x2 != 0 || y2 != 0 || z2 != 0 ? new ChunkPosition(x2, y2, z2) : null;
+        ChunkPosition c1;
+        if(coord1Variable.equals("")) {
+            c1 = x1 != 0 || y1 != 0 || z1 != 0 ? new ChunkPosition(x1, y1, z1) : null;
+        } else {
+            c1 = aiManager != null ? aiManager.getCoordinate(coord1Variable) : null;
+        }
+        ChunkPosition c2;
+        if(coord2Variable.equals("")) {
+            c2 = x2 != 0 || y2 != 0 || z2 != 0 ? new ChunkPosition(x2, y2, z2) : null;
+        } else {
+            c2 = aiManager != null ? aiManager.getCoordinate(coord2Variable) : null;
+        }
         if(c1 == null && c2 == null) {
             return new ChunkPosition[]{null, null};
         } else if(c1 == null) {
@@ -195,8 +225,10 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider{
                         curX += lineVec.xCoord;
                         curY += lineVec.yCoord;
                         curZ += lineVec.zCoord;
-                        ChunkPosition pos = new ChunkPosition((int)curX, (int)curY, (int)curZ);
-                        if(!area.contains(pos)) area.add(pos);
+                        if(curY >= 0 && curY < 256) {
+                            ChunkPosition pos = new ChunkPosition((int)curX, (int)curY, (int)curZ);
+                            if(!area.contains(pos)) area.add(pos);
+                        }
                     }
                 }
                 break;
@@ -214,8 +246,10 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider{
                         curY += lineVec.yCoord;
                         curZ += lineVec.zCoord;
                         for(int i = minX; i <= maxX; i++) {
-                            ChunkPosition pos = new ChunkPosition(i, (int)curY, (int)curZ);
-                            if(!area.contains(pos)) area.add(pos);
+                            if(curY >= 0 && curY < 256) {
+                                ChunkPosition pos = new ChunkPosition(i, (int)curY, (int)curZ);
+                                if(!area.contains(pos)) area.add(pos);
+                            }
                         }
                     }
                 }
@@ -233,7 +267,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider{
                         totalDistance += 0.1;
                         curX += lineVec.xCoord;
                         curZ += lineVec.zCoord;
-                        for(int i = minY; i <= maxY; i++) {
+                        for(int i = Math.max(0, minY); i <= Math.min(maxY, 255); i++) {
                             ChunkPosition pos = new ChunkPosition((int)curX, i, (int)curZ);
                             if(!area.contains(pos)) area.add(pos);
                         }
@@ -254,8 +288,10 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider{
                         curX += lineVec.xCoord;
                         curY += lineVec.yCoord;
                         for(int i = minZ; i <= maxZ; i++) {
-                            ChunkPosition pos = new ChunkPosition((int)curX, (int)curY, i);
-                            if(!area.contains(pos)) area.add(pos);
+                            if(curY >= 0 && curY < 256) {
+                                ChunkPosition pos = new ChunkPosition((int)curX, (int)curY, i);
+                                if(!area.contains(pos)) area.add(pos);
+                            }
                         }
                     }
                 }
@@ -332,7 +368,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider{
                         int dZ = Math.abs((int)(curZ - areaPoints[0].chunkPosZ));
                         for(int y = areaPoints[0].chunkPosY - dY; y <= areaPoints[0].chunkPosY + dY; y++) {
                             for(int z = areaPoints[0].chunkPosZ - dZ; z <= areaPoints[0].chunkPosZ + dZ; z++) {
-                                area.add(new ChunkPosition(x, y, z));
+                                if(y > 0 && y < 256) area.add(new ChunkPosition(x, y, z));
                             }
                         }
                     }
@@ -356,7 +392,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider{
                         int dZ = Math.abs((int)(curZ - areaPoints[0].chunkPosZ));
                         for(int x = areaPoints[0].chunkPosX - dX; x <= areaPoints[0].chunkPosX + dX; x++) {
                             for(int z = areaPoints[0].chunkPosZ - dZ; z <= areaPoints[0].chunkPosZ + dZ; z++) {
-                                area.add(new ChunkPosition(x, y, z));
+                                if(y > 0 && y < 256) area.add(new ChunkPosition(x, y, z));
                             }
                         }
                     }
@@ -380,7 +416,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider{
                         int dY = Math.abs((int)(curY - areaPoints[0].chunkPosY));
                         for(int x = areaPoints[0].chunkPosX - dX; x <= areaPoints[0].chunkPosX + dX; x++) {
                             for(int y = areaPoints[0].chunkPosY - dY; y <= areaPoints[0].chunkPosY + dY; y++) {
-                                area.add(new ChunkPosition(x, y, z));
+                                if(y > 0 && y < 256) area.add(new ChunkPosition(x, y, z));
                             }
                         }
                     }
@@ -429,6 +465,8 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider{
         tag.setInteger("y2", y2);
         tag.setInteger("z2", z2);
         if(type != null) tag.setInteger("type", type.ordinal());
+        tag.setString("coord1Variable", coord1Variable);
+        tag.setString("coord2Variable", coord2Variable);
     }
 
     @Override
@@ -441,6 +479,8 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider{
         y2 = tag.getInteger("y2");
         z2 = tag.getInteger("z2");
         type = EnumAreaType.values()[tag.getInteger("type")];
+        coord1Variable = tag.getString("coord1Variable");
+        coord2Variable = tag.getString("coord2Variable");
     }
 
     @Override
@@ -450,13 +490,34 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider{
     }
 
     @Override
-    public WidgetCategory getCategory(){
-        return WidgetCategory.PARAMETER;
+    public WidgetDifficulty getDifficulty(){
+        return WidgetDifficulty.EASY;
     }
 
     @Override
     public int getCraftingColorIndex(){
         return ItemPlasticPlants.CREEPER_PLANT_DAMAGE;
+    }
+
+    public String getCoord1Variable(){
+        return coord1Variable;
+    }
+
+    public void setCoord1Variable(String coord1Variable){
+        this.coord1Variable = coord1Variable;
+    }
+
+    public String getCoord2Variable(){
+        return coord2Variable;
+    }
+
+    public void setCoord2Variable(String coord2Variable){
+        this.coord2Variable = coord2Variable;
+    }
+
+    @Override
+    public void setAIManager(DroneAIManager aiManager){
+        this.aiManager = aiManager;
     }
 
 }

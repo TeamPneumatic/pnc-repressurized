@@ -24,6 +24,7 @@ public class Config{
     public static int configCompressedIngotLossRate;
     public static int elevatorBaseBlocksPerBase;
     public static boolean useHelmetModel;
+    private static int programmerDifficulty;
 
     public static boolean enableUpdateChecker;
     public static boolean convertMultipartsToBlocks;
@@ -84,6 +85,7 @@ public class Config{
         configCompressedIngotLossRate = property.getInt();
 
         useHelmetModel = config.getBoolean("Use Pneumatic Helmet model", Configuration.CATEGORY_GENERAL, false, "When true, the Pneumatic Helmet will be a model. Warning: this model looks far too good to be in MC");
+        programmerDifficulty = config.getInt("Programmer Difficulty", Configuration.CATEGORY_GENERAL, 0, 0, 2, "Defines the difficulty of the programmer shown to the user. 0 = easy, 1 = medium, 2 = advanced");
 
         property = config.get(Configuration.CATEGORY_GENERAL, "Villager Mechanic ID", 125);
         property.comment = "Villager ID used for the Mechanic Villager. Change when ID collides with an other mod which adds villagers.";
@@ -146,6 +148,15 @@ public class Config{
         PneumaticCraft.proxy.initConfig(config);
 
         config.save();// save the configuration file
+    }
+
+    public static void setProgrammerDifficulty(int difficulty){
+        config.get(Configuration.CATEGORY_GENERAL, "Programmer Difficulty", 0).set(difficulty);
+        init(null);
+    }
+
+    public static int getProgrammerDifficulty(){
+        return programmerDifficulty;
     }
 
 }

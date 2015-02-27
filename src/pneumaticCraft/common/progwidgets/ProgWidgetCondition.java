@@ -59,8 +59,8 @@ public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implem
     }
 
     @Override
-    public WidgetCategory getCategory(){
-        return WidgetCategory.CONDITION;
+    public WidgetDifficulty getDifficulty(){
+        return WidgetDifficulty.MEDIUM;
     }
 
     @Override

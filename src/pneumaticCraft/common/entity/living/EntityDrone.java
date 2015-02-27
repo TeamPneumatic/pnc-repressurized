@@ -122,7 +122,7 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
 
     public DroneGoToChargingStation chargeAI;
     public DroneGoToOwner gotoOwnerAI;
-    private final DroneAIManager aiManager;
+    private final DroneAIManager aiManager = new DroneAIManager(this);
 
     private boolean firstTick = true;
     public boolean naturallySpawned = true;//determines if it should drop a drone when it dies.
@@ -139,7 +139,6 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
         ReflectionHelper.setPrivateValue(EntityLiving.class, this, new EntityPathNavigateDrone(this, world), "navigator", "field_70699_by");
         ReflectionHelper.setPrivateValue(EntityLiving.class, this, new DroneMoveHelper(this), "moveHelper", "field_70765_h");
         tasks.addTask(1, chargeAI = new DroneGoToChargingStation(this, 0.1D));
-        aiManager = new DroneAIManager(this);
         if(!world.isRemote) initializeFakePlayer(world, null, "Drone");
     }
 
@@ -570,6 +569,10 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
         tag.setBoolean("hackedByOwner", gotoOwnerAI != null);
         tag.setInteger("color", getDroneColor());
 
+        NBTTagCompound variableTag = new NBTTagCompound();
+        aiManager.writeToNBT(variableTag);
+        tag.setTag("variables", variableTag);
+
         NBTTagCompound inv = new NBTTagCompound();
         // Write the ItemStacks in the inventory to NBT
         NBTTagList tagList = new NBTTagList();
@@ -610,6 +613,7 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
         disabledByHacking = tag.getBoolean("disabledByHacking");
         setGoingToOwner(tag.getBoolean("hackedByOwner"));
         setDroneColor(tag.getInteger("color"));
+        aiManager.readFromNBT(tag.getCompoundTag("variables"));
 
         // Read in the ItemStacks in the inventory from NBT
         NBTTagCompound inv = tag.getCompoundTag("Inventory");
@@ -939,6 +943,14 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
 
     public FluidTank getTank(){
         return tank;
+    }
+
+    /**
+     * Returns the owning player. Returns null when the player is not online.
+     * @return
+     */
+    public EntityPlayer getOwner(){
+        return MinecraftServer.getServer().getConfigurationManager().func_152612_a(playerName);
     }
 
 }

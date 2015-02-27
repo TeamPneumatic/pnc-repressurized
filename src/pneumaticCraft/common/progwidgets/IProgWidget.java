@@ -93,19 +93,19 @@ public interface IProgWidget{
     @SideOnly(Side.CLIENT)
     public GuiScreen getOptionWindow(GuiProgrammer guiProgrammer);
 
-    public WidgetCategory getCategory();
+    public WidgetDifficulty getDifficulty();
 
-    public static enum WidgetCategory{
-        PARAMETER("parameters"), FLOW_CONTROL("flowControl"), ACTION("actions"), CONDITION("conditions");
+    public static enum WidgetDifficulty{
+        EASY("easy"), MEDIUM("medium"), ADVANCED("advanced");
 
         private final String name;
 
-        private WidgetCategory(String name){
+        private WidgetDifficulty(String name){
             this.name = name;
         }
 
         public String getLocalizedName(){
-            return I18n.format("gui.progWidget.category." + name);
+            return I18n.format("gui.progWidget.difficulty." + name);
         }
     }
 }

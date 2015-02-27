@@ -163,7 +163,7 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
     }
 
     @Override
-    public WidgetCategory getCategory(){
-        return WidgetCategory.ACTION;
+    public WidgetDifficulty getDifficulty(){
+        return WidgetDifficulty.EASY;
     }
 }

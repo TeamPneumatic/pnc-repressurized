@@ -32,6 +32,12 @@ public class WidgetTextField extends GuiTextField implements IGuiWidget{
     @Override
     public void onMouseClicked(int mouseX, int mouseY, int button){
         mouseClicked(mouseX, mouseY, button);
+        if(isFocused() && button == 1) setText("");
+    }
+
+    @Override
+    public void onMouseClickedOutsideBounds(int mouseX, int mouseY, int button){
+        onMouseClicked(mouseX, mouseY, button);
     }
 
     @Override

@@ -41,6 +41,7 @@ import codechicken.multipart.JNormalOcclusion;
 import codechicken.multipart.MultiPartRegistry;
 import codechicken.multipart.NormalOcclusionTest;
 import codechicken.multipart.NormallyOccludedPart;
+import codechicken.multipart.PartMap;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TSlottedPart;
 import codechicken.multipart.TileMultipart;
@@ -261,8 +262,7 @@ public class PartPressureTube extends TMultiPart implements IPneumaticPosProvide
 
     @Override
     public int getSlotMask(){
-        // TODO Auto-generated method stub
-        return 0;
+        return PartMap.CENTER.mask;
     }
 
     @SideOnly(Side.CLIENT)
