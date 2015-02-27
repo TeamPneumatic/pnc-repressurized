@@ -192,7 +192,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
                     if(posX >= xCoord && posX < xCoord + 1 && posZ >= zCoord && posZ < zCoord + 1) {
                         entity.motionX *= 0.6;
                         entity.motionZ *= 0.6;
-                        entity.moveEntity(0, moveBy + 0.001F, 0);
+                        entity.moveEntity(0, moveBy + 0.05F, 0);
                     }
                 }
             } else entity.moveEntity(0, moveBy + 0.05F, 0);
