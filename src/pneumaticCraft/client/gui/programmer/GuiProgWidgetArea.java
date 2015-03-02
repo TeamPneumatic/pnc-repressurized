@@ -13,6 +13,7 @@ import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.client.gui.widget.GuiRadioButton;
 import pneumaticCraft.client.gui.widget.IGuiWidget;
 import pneumaticCraft.client.gui.widget.WidgetTextField;
+import pneumaticCraft.common.Config;
 import pneumaticCraft.common.item.ItemGPSTool;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.progwidgets.ProgWidgetArea;
@@ -45,8 +46,10 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea>{
         variableField2 = new WidgetTextField(fontRendererObj, guiLeft + 115, guiTop + 25, 50, fontRendererObj.FONT_HEIGHT + 1);
         variableField1.setText(widget.getCoord1Variable());
         variableField2.setText(widget.getCoord2Variable());
-        addWidget(variableField1);
-        addWidget(variableField2);
+        if(Config.getProgrammerDifficulty() == 2) {
+            addWidget(variableField1);
+            addWidget(variableField2);
+        }
 
         List<GuiRadioButton> radioButtons = new ArrayList<GuiRadioButton>();
         ProgWidgetArea.EnumAreaType[] areaTypes = ProgWidgetArea.EnumAreaType.values();
