@@ -133,7 +133,7 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral,
                             actions.add(widget.getWidgetString());
                         }
                     }
-                    return actions.toArray(new String[actions.size()]);
+                    return new Object[]{getStringTable(actions)};
                 } else {
                     throw new IllegalArgumentException("getAllActions doesn't take any arguments!");
                 }

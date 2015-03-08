@@ -1,5 +1,8 @@
 package pneumaticCraft.common.thirdparty.computercraft;
 
+import java.util.LinkedHashMap;
+import java.util.List;
+
 import net.minecraftforge.common.util.ForgeDirection;
 
 public abstract class LuaMethod implements ILuaMethod{
@@ -21,5 +24,13 @@ public abstract class LuaMethod implements ILuaMethod{
             }
         }
         throw new IllegalArgumentException("Side can only be up, down, north, east, south or west!");
+    }
+
+    protected LinkedHashMap<Integer, String> getStringTable(List<String> list){
+        LinkedHashMap<Integer, String> table = new LinkedHashMap<Integer, String>();
+        for(int i = 0; i < list.size(); i++) {
+            table.put(i + 1, list.get(i));
+        }
+        return table;
     }
 }
