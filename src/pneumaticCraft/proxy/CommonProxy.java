@@ -23,6 +23,8 @@ import pneumaticCraft.client.gui.GuiPneumaticHelmet;
 import pneumaticCraft.client.gui.GuiPressureChamber;
 import pneumaticCraft.client.gui.GuiPressureChamberInterface;
 import pneumaticCraft.client.gui.GuiProgrammer;
+import pneumaticCraft.client.gui.GuiRemote;
+import pneumaticCraft.client.gui.GuiRemoteEditor;
 import pneumaticCraft.client.gui.GuiSecurityStationHacking;
 import pneumaticCraft.client.gui.GuiSecurityStationInventory;
 import pneumaticCraft.client.gui.GuiUVLightBox;
@@ -49,6 +51,7 @@ import pneumaticCraft.common.inventory.ContainerPneumaticDoor;
 import pneumaticCraft.common.inventory.ContainerPressureChamber;
 import pneumaticCraft.common.inventory.ContainerPressureChamberInterface;
 import pneumaticCraft.common.inventory.ContainerProgrammer;
+import pneumaticCraft.common.inventory.ContainerRemote;
 import pneumaticCraft.common.inventory.ContainerSecurityStationHacking;
 import pneumaticCraft.common.inventory.ContainerSecurityStationInventory;
 import pneumaticCraft.common.inventory.ContainerUVLightBox;
@@ -121,6 +124,8 @@ public class CommonProxy implements IGuiHandler{
     public static final int GUI_ID_ADVANCED_AIR_COMPRESSOR = 31;
     public static final int GUI_ID_LIQUID_HOPPER = 32;
     public static final int GUI_ID_ADVANCED_LIQUID_COMPRESSOR = 33;
+    public static final int GUI_ID_REMOTE = 34;
+    public static final int GUI_ID_REMOTE_EDITOR = 35;
 
     private final HackTickHandler serverHackTickHandler = new HackTickHandler();
 
@@ -207,6 +212,9 @@ public class CommonProxy implements IGuiHandler{
                 return new ContainerAdvancedLiquidCompressor(player.inventory, (TileEntityAdvancedLiquidCompressor)world.getTileEntity(x, y, z));
             case GUI_ID_LIQUID_HOPPER:
                 return new ContainerLiquidHopper(player.inventory, (TileEntityLiquidHopper)world.getTileEntity(x, y, z));
+            case GUI_ID_REMOTE:
+            case GUI_ID_REMOTE_EDITOR:
+                return new ContainerRemote(player.getCurrentEquippedItem());
         }
         return ThirdPartyManager.instance().getServerGuiElement(ID, player, world, x, y, z);
     }
@@ -268,6 +276,10 @@ public class CommonProxy implements IGuiHandler{
                 return new GuiAdvancedLiquidCompressor(player.inventory, (TileEntityAdvancedLiquidCompressor)world.getTileEntity(x, y, z));
             case GUI_ID_LIQUID_HOPPER:
                 return new GuiLiquidHopper(player.inventory, (TileEntityLiquidHopper)world.getTileEntity(x, y, z));
+            case GUI_ID_REMOTE:
+                return new GuiRemote(player.getCurrentEquippedItem());
+            case GUI_ID_REMOTE_EDITOR:
+                return new GuiRemoteEditor(player.getCurrentEquippedItem());
         }
         return ThirdPartyManager.instance().getClientGuiElement(ID, player, world, x, y, z);
     }

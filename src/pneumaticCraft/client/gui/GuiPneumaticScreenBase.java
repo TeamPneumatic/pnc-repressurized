@@ -19,6 +19,7 @@ import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.api.client.IGuiAnimatedStat;
 import pneumaticCraft.client.gui.widget.IGuiWidget;
 import pneumaticCraft.client.gui.widget.IWidgetListener;
+import pneumaticCraft.client.gui.widget.WidgetLabel;
 import cpw.mods.fml.client.FMLClientHandler;
 
 public abstract class GuiPneumaticScreenBase extends GuiScreen implements IWidgetListener{
@@ -34,9 +35,23 @@ public abstract class GuiPneumaticScreenBase extends GuiScreen implements IWidge
         guiTop = height / 2 - ySize / 2;
     }
 
+    public void addWidgets(Iterable<IGuiWidget> widgets){
+        for(IGuiWidget widget : widgets) {
+            addWidget(widget);
+        }
+    }
+
     public void addWidget(IGuiWidget widget){
         widgets.add(widget);
         widget.setListener(this);
+    }
+
+    protected void addLabel(String text, int x, int y){
+        addWidget(new WidgetLabel(x, y, text));
+    }
+
+    public void removeWidget(IGuiWidget widget){
+        widgets.remove(widget);
     }
 
     protected abstract ResourceLocation getTexture();

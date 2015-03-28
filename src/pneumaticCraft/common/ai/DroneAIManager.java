@@ -17,6 +17,7 @@ import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.common.progwidgets.IVariableWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetStart;
+import pneumaticCraft.common.remote.GlobalVariableManager;
 
 /**
  * This class is derived from Minecraft's {link EntityAITasks} class. As the original class would need quite a few
@@ -103,6 +104,8 @@ public class DroneAIManager{
             SpecialVariableRetrievalEvent event = new SpecialVariableRetrievalEvent(drone, varName.substring(1));
             MinecraftForge.EVENT_BUS.post(event);
             pos = event.coordinate;
+        } else if(varName.startsWith("#")) {
+            pos = GlobalVariableManager.getPos(varName.substring(1));
         } else {
             pos = coordinateVariables.get(varName);
         }
@@ -110,7 +113,9 @@ public class DroneAIManager{
     }
 
     public void setCoordinate(String varName, ChunkPosition coord){
-        if(!varName.startsWith("$")) coordinateVariables.put(varName, coord);
+        if(varName.startsWith("#")) {
+            GlobalVariableManager.set(varName.substring(1), coord);
+        } else if(!varName.startsWith("$")) coordinateVariables.put(varName, coord);
     }
 
     private void updateWidgetFlow(){
@@ -132,6 +137,9 @@ public class DroneAIManager{
                     gotoFirstWidget();
                 }
             }
+        }
+        if(curActiveWidget == null && !stopWhenEndReached) {
+            gotoFirstWidget();
         }
     }
 

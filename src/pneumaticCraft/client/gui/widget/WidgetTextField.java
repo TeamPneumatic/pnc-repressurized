@@ -6,9 +6,13 @@ import java.util.List;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiTextField;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class WidgetTextField extends GuiTextField implements IGuiWidget{
 
     private IWidgetListener listener;
+    private String tooltip;
+    private boolean passwordBox;
 
     public WidgetTextField(FontRenderer fontRenderer, int x, int y, int width, int height){
         super(fontRenderer, x, y, width, height);
@@ -19,6 +23,11 @@ public class WidgetTextField extends GuiTextField implements IGuiWidget{
         listener = gui;
     }
 
+    public WidgetTextField setAsPasswordBox(){
+        passwordBox = true;
+        return this;
+    }
+
     @Override
     public int getID(){
         return -1;
@@ -26,7 +35,17 @@ public class WidgetTextField extends GuiTextField implements IGuiWidget{
 
     @Override
     public void render(int mouseX, int mouseY, float partialTick){
+        String oldText = getText();
+        int oldCursorPos = getCursorPosition();
+        if(passwordBox) {
+            setText(StringUtils.repeat('*', oldText.length()));
+            setCursorPosition(oldCursorPos);
+        }
         drawTextBox();
+        if(passwordBox) {
+            setText(oldText);
+            setCursorPosition(oldCursorPos);
+        }
     }
 
     @Override
@@ -47,7 +66,11 @@ public class WidgetTextField extends GuiTextField implements IGuiWidget{
 
     @Override
     public void addTooltip(int mouseX, int mouseY, List<String> curTooltip, boolean shiftPressed){
+        if(!net.minecraft.util.StringUtils.isNullOrEmpty(tooltip)) curTooltip.add(tooltip);
+    }
 
+    public void setTooltip(String tooltip){
+        this.tooltip = tooltip;
     }
 
     @Override

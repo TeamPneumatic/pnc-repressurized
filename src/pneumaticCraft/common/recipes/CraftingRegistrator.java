@@ -60,6 +60,7 @@ public class CraftingRegistrator{
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Itemss.cannonBarrel), true, "i i", "i i", "pii", 'i', Names.INGOT_IRON_COMPRESSED, 'p', ModuleRegistrator.getModuleItem(Names.MODULE_SAFETY_VALVE)));
 
         GameRegistry.addRecipe(new ItemStack(Itemss.GPSTool), " r ", "pgp", "pdp", 'r', Blocks.redstone_torch, 'p', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.FIRE_FLOWER_DAMAGE), 'g', Blocks.glass_pane, 'd', Items.diamond);
+        GameRegistry.addRecipe(new ItemStack(Itemss.remote), " i ", "tgt", "tdt", 'i', new ItemStack(Itemss.networkComponent, 1, ItemNetworkComponents.NETWORK_IO_PORT), 't', Itemss.transistor, 'g', Itemss.GPSTool, 'd', new ItemStack(Itemss.networkComponent, 1, ItemNetworkComponents.NETWORK_DATA_STORAGE));
 
         // compressor
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Blockss.airCompressor), true, "iii", "i t", "ifi", 'i', Names.INGOT_IRON_COMPRESSED, 't', new ItemStack(Blockss.pressureTube, 1, 0), 'f', Blocks.furnace));

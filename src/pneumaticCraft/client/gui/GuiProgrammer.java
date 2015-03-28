@@ -243,14 +243,14 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(float opacity, int x, int y){
+    protected void drawGuiContainerBackgroundLayer(float partialTicks, int x, int y){
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         bindGuiTexture();
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
         func_146110_a(xStart, yStart, 0, 0, xSize, ySize, xSize, ySize);
 
-        super.drawGuiContainerBackgroundLayer(opacity, x, y);
+        super.drawGuiContainerBackgroundLayer(partialTicks, x, y);
 
         int origX = x;
         int origY = y;

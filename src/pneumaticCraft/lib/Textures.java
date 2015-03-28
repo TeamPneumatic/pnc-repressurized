@@ -230,7 +230,10 @@ public class Textures{
     public static final String GUI_ADVANCED_LIQUID_COMPRESSOR = GUI_LOCATION + "GuiAdvancedLiquidCompressor.png";
     public static final String GUI_LIQUID_HOPPER = GUI_LOCATION + "GuiLiquidHopper.png";
     public static final String GUI_ELEVATOR = GUI_LOCATION + "GuiElevator.png";
-    public static final ResourceLocation GUI_WIDGET_OPTIONS = new ResourceLocation(GUI_LOCATION + "GuiWidgetOptions.png");
+    public static final String GUI_REMOTE_EDITOR = GUI_LOCATION + "GuiRemoteEditor.png";
+    public static final String GUI_WIDGET_OPTIONS_STRING = GUI_LOCATION + "GuiWidgetOptions.png";
+    public static final ResourceLocation GUI_WIDGET_OPTIONS = new ResourceLocation(GUI_WIDGET_OPTIONS_STRING);
+    public static final ResourceLocation GUI_PASTEBIN = new ResourceLocation(GUI_LOCATION + "GuiPastebin.png");
     public static final ResourceLocation GUI_INVENTORY_SEARCHER = new ResourceLocation(GUI_LOCATION + "GuiInventorySearcher.png");
     public static final ResourceLocation GUI_TUBE_MODULE = new ResourceLocation(GUI_LOCATION + "GuiTubeModule.png");
     public static final ResourceLocation GUI_TEXT_WIDGET = new ResourceLocation(GUI_LOCATION + "GuiTextWidget.png");

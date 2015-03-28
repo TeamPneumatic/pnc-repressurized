@@ -137,7 +137,7 @@ public class UpdateChecker extends Thread{
         return newVersion;
     }
 
-    public String getPage(final String URL) throws IOException{
+    public static String getPage(final String URL) throws IOException{
         String line = "", all = "";
         URL myUrl = null;
         BufferedReader in = null;

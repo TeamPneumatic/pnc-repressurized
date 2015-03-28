@@ -42,6 +42,13 @@ public class GuiPressureModule extends GuiTubeModule{
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
 
+        addLabel("lower", guiLeft + 10, guiTop + 12);
+        addLabel("bar", guiLeft + 45, guiTop + 24);
+        addLabel("higher", guiLeft + 140, guiTop + 12);
+
+        String title = I18n.format("item." + module.getType() + ".name");
+        addLabel(title, width / 2 - fontRendererObj.getStringWidth(title) / 2, guiTop + 5);
+
         lowerBoundField = new GuiTextField(fontRendererObj, xStart + 10, yStart + 23, 30, 10);
         lowerBoundField.setText(PneumaticCraftUtils.roundNumberTo(module.lowerBound, 1));
         higherBoundField = new GuiTextField(fontRendererObj, xStart + 140, yStart + 23, 30, 10);
@@ -92,12 +99,6 @@ public class GuiPressureModule extends GuiTubeModule{
         drawTexturedModalRect(scrollbarLowerBoundX, guiTop + 55, 183, 0, 15, 12);
         drawTexturedModalRect(scrollbarHigherBoundX, guiTop + 41, 183, 0, 15, 12);
 
-        fontRendererObj.drawString("lower", guiLeft + 10, guiTop + 12, 0xFF000000);
-        fontRendererObj.drawString("bar", guiLeft + 45, guiTop + 24, 0xFF000000);
-        fontRendererObj.drawString("higher", guiLeft + 140, guiTop + 12, 0xFF000000);
-
-        String title = I18n.format("item." + module.getType() + ".name");
-        fontRendererObj.drawString(title, width / 2 - fontRendererObj.getStringWidth(title) / 2, guiTop + 5, 0xFF000000);
         lowerBoundField.drawTextBox();
         higherBoundField.drawTextBox();
 

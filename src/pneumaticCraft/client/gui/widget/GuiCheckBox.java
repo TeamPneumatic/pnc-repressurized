@@ -2,7 +2,6 @@ package pneumaticCraft.client.gui.widget;
 
 import java.awt.Rectangle;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import net.minecraft.client.gui.FontRenderer;
@@ -84,7 +83,10 @@ public class GuiCheckBox extends Gui implements IGuiWidget{
     }
 
     public void setTooltip(String tooltip){
-        setTooltip(Arrays.asList(new String[]{tooltip}));
+        this.tooltip.clear();
+        if(tooltip != null && !tooltip.equals("")) {
+            this.tooltip.add(tooltip);
+        }
     }
 
     public void setTooltip(List<String> tooltip){
@@ -94,6 +96,10 @@ public class GuiCheckBox extends Gui implements IGuiWidget{
     @Override
     public void addTooltip(int mouseX, int mouseY, List<String> curTooltip, boolean shiftPressed){
         curTooltip.addAll(tooltip);
+    }
+
+    public String getTooltip(){
+        return tooltip.size() > 0 ? tooltip.get(0) : "";
     }
 
     @Override

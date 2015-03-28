@@ -1,10 +1,14 @@
 package pneumaticCraft.client.gui.widget;
 
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.util.MathHelper;
 
 import org.apache.commons.lang3.math.NumberUtils;
 
 public class WidgetTextFieldNumber extends WidgetTextField{
+
+    public int minValue = Integer.MIN_VALUE;
+    public int maxValue = Integer.MAX_VALUE;
 
     public WidgetTextFieldNumber(FontRenderer fontRenderer, int x, int y, int width, int height){
         super(fontRenderer, x, y, width, height);
@@ -30,6 +34,6 @@ public class WidgetTextFieldNumber extends WidgetTextField{
     }
 
     public int getValue(){
-        return NumberUtils.toInt(getText());
+        return MathHelper.clamp_int(NumberUtils.toInt(getText()), minValue, maxValue);
     }
 }
