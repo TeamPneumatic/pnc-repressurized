@@ -44,7 +44,7 @@ public class GuiOmnidirectionalHopper extends GuiPneumaticContainerBase<TileEnti
 
     @Override
     protected String getRedstoneButtonText(int mode){
-        return super.getRedstoneButtonText(mode == 0 ? 0 : 3 - mode);
+        return super.getRedstoneButtonText(mode);
     }
 
     private List<String> getStatus(){
