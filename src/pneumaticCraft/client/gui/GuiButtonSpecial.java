@@ -1,7 +1,7 @@
 package pneumaticCraft.client.gui;
 
 import java.awt.Rectangle;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
@@ -25,7 +25,7 @@ import cpw.mods.fml.client.FMLClientHandler;
 public class GuiButtonSpecial extends GuiButton implements IGuiWidget{
 
     private ItemStack[] renderedStacks;
-    private List<String> tooltipText;
+    private List<String> tooltipText = new ArrayList<String>();
     private final RenderItem itemRenderer = new RenderItem();
     private int invisibleHoverColor;
     private boolean thisVisible = true;
@@ -52,13 +52,20 @@ public class GuiButtonSpecial extends GuiButton implements IGuiWidget{
     }
 
     public void setTooltipText(String tooltip){
-        tooltipText = tooltip == null || tooltip.equals("") ? null : Arrays.asList(new String[]{tooltip});
+        tooltipText.clear();
+        if(tooltip != null && !tooltip.equals("")) {
+            tooltipText.add(tooltip);
+        }
     }
 
     public void getTooltip(List<String> curTooltip){
         if(tooltipText != null) {
             curTooltip.addAll(tooltipText);
         }
+    }
+
+    public String getTooltip(){
+        return tooltipText.size() > 0 ? tooltipText.get(0) : "";
     }
 
     public int getWidth(){
@@ -126,7 +133,7 @@ public class GuiButtonSpecial extends GuiButton implements IGuiWidget{
 
     @Override
     public void addTooltip(int mouseX, int mouseY, List<String> curTooltip, boolean shiftPressed){
-
+        curTooltip.addAll(tooltipText);
     }
 
     @Override

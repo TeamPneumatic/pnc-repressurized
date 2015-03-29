@@ -35,6 +35,7 @@ import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.ExplosionEvent;
+import net.minecraftforge.event.world.WorldEvent;
 import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.api.block.IPneumaticWrenchable;
 import pneumaticCraft.api.item.IPressurizable;
@@ -52,6 +53,7 @@ import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.PacketPlaySound;
 import pneumaticCraft.common.network.PacketSetMobTarget;
+import pneumaticCraft.common.remote.GlobalVariableManager;
 import pneumaticCraft.common.thirdparty.ModInteractionUtilImplementation;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.TileEntityConstants;
@@ -263,6 +265,14 @@ public class EventHandlerPneumaticCraft{
         if(event.username.equals("Quetzz") && event.message.equals("m00")) {
             for(int i = 0; i < 4; i++)
                 NetworkHandler.sendTo(new PacketPlaySound("mob.cow.say", event.player.posX, event.player.posY, event.player.posZ, 1, 1, true), event.player);
+        }
+    }
+
+    @SubscribeEvent
+    public void onWorldLoad(WorldEvent.Load event){
+        if(!event.world.isRemote && event.world.provider.dimensionId == 0) {
+            GlobalVariableManager.overworld = event.world;
+            event.world.loadItemData(GlobalVariableManager.class, GlobalVariableManager.DATA_KEY);
         }
     }
 }

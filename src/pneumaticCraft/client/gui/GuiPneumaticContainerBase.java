@@ -57,7 +57,7 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
     /**
      * Any GuiAnimatedStat added to this list will be tracked for mouseclicks, tooltip renders, rendering,updating (resolution and expansion).
      */
-    private final List<IGuiWidget> widgets = new ArrayList<IGuiWidget>();
+    protected final List<IGuiWidget> widgets = new ArrayList<IGuiWidget>();
     private IGuiAnimatedStat lastLeftStat, lastRightStat;
 
     private GuiAnimatedStat pressureStat;
@@ -68,7 +68,7 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
     public GuiPneumaticContainerBase(Container par1Container, Tile te, String guiTexture){
         super(par1Container);
         this.te = te;
-        this.guiTexture = new ResourceLocation(guiTexture);
+        this.guiTexture = guiTexture != null ? new ResourceLocation(guiTexture) : null;
     }
 
     protected GuiAnimatedStat addAnimatedStat(String title, ItemStack icon, int color, boolean leftSided){
@@ -102,6 +102,16 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
     protected void addWidget(IGuiWidget widget){
         widgets.add(widget);
         widget.setListener(this);
+    }
+
+    protected void addWidgets(Iterable<IGuiWidget> widgets){
+        for(IGuiWidget widget : widgets) {
+            addWidget(widget);
+        }
+    }
+
+    protected void removeWidget(IGuiWidget widget){
+        widgets.remove(widget);
     }
 
     @Override
@@ -202,7 +212,7 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
     }
 
     protected void bindGuiTexture(){
-        mc.getTextureManager().bindTexture(guiTexture);
+        if(guiTexture != null) mc.getTextureManager().bindTexture(guiTexture);
     }
 
     protected Point getGaugeLocation(){

@@ -94,6 +94,7 @@ item.pneumaticWrench.name=Pneumatic Wrench
 item.drone.name=Drone
 item.programmingPuzzle.name=Programming Puzzle
 item.advancedPCB.name=Advanced PCB
+item.remote.name=Remote
 
 item.plasticPlant0.name=Squid Plant Seeds
 item.plasticPlant1.name=Fire Flower Seeds
@@ -225,6 +226,30 @@ programmingPuzzle.rfImport.name=Import RF
 programmingPuzzle.rfExport.name=Export RF
 programmingPuzzle.conditionRF.name=Condition: RF
 programmingPuzzle.droneConditionRF.name=Drone Condition: RF
+
+#Remote elements
+gui.remote.noEditRights=§cA Security Station at %s, %s, %s is preventing you from editing the Remote.
+gui.remote.boundSecurityStation=The Security Station at %s, %s, %s has been bound to this Remote. Only players with access to this Station can modify it.
+gui.remote.cantBindSecurityStation=§cYou can't bind this Remote to this Security Station: You don't have access to it.
+gui.remote.tooltip.boundToSecurityStation=Bound to Security Station in dimension %s at location (%s, %s, %s).
+gui.remote.tooltip.rightClickToBind=Right click a Security Station to bind the remote to it. Only players allowed by the Station can edit the Remote.
+gui.remote.tooltip.sneakRightClickToEdit=§aSneak right click to edit
+gui.remote.differentSecuritySettings=§cYou can't import Remote lay-outs from Remotes with different Security Station bindings.
+gui.remote.text=Text:
+gui.remote.button.settingValue=Setting Value:
+gui.remote.button.width=Width:
+gui.remote.button.height=Height:
+gui.remote.button.importRemoteButton=Import an existing Remote lay-out from another Remote.
+gui.remote.button.pastebinButton=Import/Export layout from/to Pastebin.
+gui.remote.tooltip=Tooltip:
+remote.checkbox.name=CheckBox
+remote.label.name=Label
+remote.button.name=Button
+gui.remote.label.tooltip=The text displayed on this widget.
+gui.remote.variable.tooltip=The variable modified by this widget.
+gui.remote.button.value.tooltip=When this button is pressed, the variable will be set to this coordinate.
+gui.remote.enable=Enabling variable:
+gui.remote.enable.tooltip=When specifying a variable, this widget only will be visible and working when the variable is evaluated as true.
 
 # entities
 entity.PneumaticCraft.Drone.name=Drone
@@ -452,6 +477,19 @@ gui.progWidget.coordinate.constant=Constant
 gui.progWidget.coordinate.variable=Variable
 gui.progWidget.coordinate.variableName=Variable name:
 gui.progWidget.coordinateOperator.operator=Operator:
+gui.pastebin.button.login=Log In
+gui.pastebin.button.logout=Log Out
+gui.pastebin.button.upload=Upload to Pastebin
+gui.pastebin.button.get=Get from Pastebin
+gui.pastebin.username=Username:
+gui.pastebin.password=Password:
+gui.pastebin.pastebinLink=Pastebin link:
+gui.pastebin.invalidPastebin=Invalid Pastebin
+gui.pastebin.invalidFormattedPastebin=Invalid formatted pastebin (json)
+gui.pastebin.invalidLogin=Invalid login
+gui.pastebin.loggingIn=Logging in...
+gui.pastebin.uploadingToPastebin=Uploading to Pastebin...
+gui.pastebin.retrievingFromPastebin=Retrieving from Pastebin...
 
 
 gui.liquid.empty=Empty

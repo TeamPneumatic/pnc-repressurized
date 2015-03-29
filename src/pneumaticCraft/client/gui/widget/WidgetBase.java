@@ -1,16 +1,18 @@
 package pneumaticCraft.client.gui.widget;
 
 import java.awt.Rectangle;
+import java.util.ArrayList;
 import java.util.List;
 
 public class WidgetBase implements IGuiWidget{
 
     private final int id;
     public int value; //just a generic value
-    protected final int x, y;
+    public int x, y;
     private final int width;
     private final int height;
     protected IWidgetListener listener;
+    private final List<String> tooltipText = new ArrayList<String>();
 
     public WidgetBase(int id, int x, int y, int width, int height){
 
@@ -50,9 +52,20 @@ public class WidgetBase implements IGuiWidget{
         return new Rectangle(x, y, width, height);
     }
 
+    public void setTooltipText(String tooltip){
+        tooltipText.clear();
+        if(tooltip != null && !tooltip.equals("")) {
+            tooltipText.add(tooltip);
+        }
+    }
+
     @Override
     public void addTooltip(int mouseX, int mouseY, List<String> curTip, boolean shiftPressed){
+        curTip.addAll(tooltipText);
+    }
 
+    public String getTooltip(){
+        return tooltipText.size() > 0 ? tooltipText.get(0) : "";
     }
 
     @Override

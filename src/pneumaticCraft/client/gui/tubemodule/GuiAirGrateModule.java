@@ -21,6 +21,8 @@ public class GuiAirGrateModule extends GuiTubeModule{
     @Override
     public void initGui(){
         super.initGui();
+        addLabel(I18n.format("gui.entityFilter"), guiLeft + 10, guiTop + 14);
+
         textfield = new GuiTextField(fontRendererObj, guiLeft + 10, guiTop + 25, 160, 10);
         textfield.setText(((ModuleAirGrate)module).entityFilter);
     }
@@ -29,7 +31,6 @@ public class GuiAirGrateModule extends GuiTubeModule{
     public void drawScreen(int mouseX, int mouseY, float partialTicks){
         super.drawScreen(mouseX, mouseY, partialTicks);
         if(!textfield.isFocused()) textfield.setText(((ModuleAirGrate)module).entityFilter);
-        fontRendererObj.drawString(I18n.format("gui.entityFilter"), guiLeft + 10, guiTop + 14, 0xFF000000);
         textfield.drawTextBox();
     }
 

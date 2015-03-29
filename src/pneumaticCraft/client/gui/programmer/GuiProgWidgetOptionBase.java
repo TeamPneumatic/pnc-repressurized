@@ -31,11 +31,16 @@ public class GuiProgWidgetOptionBase<Widget extends IProgWidget> extends GuiPneu
     }
 
     @Override
+    public void initGui(){
+        super.initGui();
+        String title = I18n.format("programmingPuzzle." + widget.getWidgetString() + ".name");
+        addLabel(title, width / 2 - fontRendererObj.getStringWidth(title) / 2, guiTop + 5);
+    }
+
+    @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks){
         drawDefaultBackground();
         super.drawScreen(mouseX, mouseY, partialTicks);
-        String title = I18n.format("programmingPuzzle." + widget.getWidgetString() + ".name");
-        fontRendererObj.drawString(title, width / 2 - fontRendererObj.getStringWidth(title) / 2, guiTop + 5, 0xFF000000);
     }
 
     @Override

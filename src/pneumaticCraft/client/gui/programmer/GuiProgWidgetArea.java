@@ -33,6 +33,10 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea>{
     public void initGui(){
         super.initGui();
 
+        addLabel("Point 1", guiLeft + 30, guiTop + 10);
+        addLabel("Point 2", guiLeft + 119, guiTop + 10);
+        addLabel("Area Type:", guiLeft + 4, guiTop + 50);
+
         GuiButtonSpecial gpsButton1 = new GuiButtonSpecial(0, guiLeft + 4, guiTop + 20, 20, 20, "");
         GuiButtonSpecial gpsButton2 = new GuiButtonSpecial(1, guiLeft + 93, guiTop + 20, 20, 20, "");
         gpsButton1.setTooltipText(I18n.format("gui.progWidget.area.selectGPS1"));
@@ -114,11 +118,4 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea>{
         super.keyTyped(key, keyCode);
     }
 
-    @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks){
-        super.drawScreen(mouseX, mouseY, partialTicks);
-        fontRendererObj.drawString("Point 1", guiLeft + 30, guiTop + 10, 0xFF000000);
-        fontRendererObj.drawString("Point 2", guiLeft + 119, guiTop + 10, 0xFF000000);
-        fontRendererObj.drawString("Area Type:", guiLeft + 4, guiTop + 50, 0xFF000000);
-    }
 }
