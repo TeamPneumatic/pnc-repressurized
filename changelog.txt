@@ -1,11 +1,5 @@
--Added relative coordinates to drones!
--Improved seed picking up and planting.
--Programmers now can be set up to automatically program an item as soon as it gets inserted into the Programmer.
--Added External Program drone widget.
--Programmers now apart from the player's inventory, will also use adjacent inventories to program.
+-Added Remote
+-Minor tweaks to the Programmer difficulty system.
 
--Bugfix: Sometimes you glitch through an elevator when starting the elevator.
--Bugfix: Crash with Elevators when having two or more Elevator Callers next to eachother.
--Bugfix: Dupe bug with Liquid Hoppers.
--Bugfix: NEI Pressure Chamber recipe handler shows that only 1 gunpowder is required in making an Etching Acid Bucket.
--Bugfix: IGW entry for Drones is missing.
+-Bugfix: Drone Interface peripheral does not properly return a table for getAllActions()
+-Bugfix: Omnidirectional Hopper GUI has a mislabeled Redstone setting.

@@ -138,6 +138,8 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
             addWidget(radioButton);
             difficultyButtons.add(radioButton);
             radioButton.otherChoices = difficultyButtons;
+            if(i == 1) radioButton.setTooltip(I18n.format("gui.programmer.difficulty.medium.tooltip"));
+            if(i == 2) radioButton.setTooltip(I18n.format("gui.programmer.difficulty.advanced.tooltip"));
         }
 
         buttonList.add(new GuiButton(5, xStart + 5, yStart + 175, 87, 20, I18n.format("gui.programmer.button.showStart")));
