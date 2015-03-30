@@ -32,6 +32,7 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.IFluidBlock;
 import net.minecraftforge.oredict.OreDictionary;
@@ -461,15 +462,21 @@ public class PneumaticCraftUtils{
     }
 
     public static int getProtectingSecurityStations(World world, int x, int y, int z, EntityPlayer player, boolean showRangeLines){
+        long start = System.nanoTime();
         int blockingStations = 0;
-        for(TileEntity te : (List<TileEntity>)world.loadedTileEntityList) {
-            if(te instanceof TileEntitySecurityStation) {
-                TileEntitySecurityStation station = (TileEntitySecurityStation)te;
-                if(station.hasValidNetwork()) {
-                    if(Math.abs(station.xCoord - x) <= station.getSecurityRange() && Math.abs(station.yCoord - y) <= station.getSecurityRange() && Math.abs(station.zCoord - z) <= station.getSecurityRange()) {
-                        if(!station.doesAllowPlayer(player)) {
-                            blockingStations++;
-                            if(showRangeLines) station.showRangeLines();
+        for(int i = x - 16; i <= x + 16; i += 16) {
+            for(int j = z - 16; j <= z + 16; j += 16) {
+                Chunk chunk = world.getChunkFromBlockCoords(i, j);
+                for(TileEntity te : (Iterable<TileEntity>)chunk.chunkTileEntityMap.values()) {
+                    if(te instanceof TileEntitySecurityStation) {
+                        TileEntitySecurityStation station = (TileEntitySecurityStation)te;
+                        if(station.hasValidNetwork()) {
+                            if(Math.abs(station.xCoord - x) <= station.getSecurityRange() && Math.abs(station.yCoord - y) <= station.getSecurityRange() && Math.abs(station.zCoord - z) <= station.getSecurityRange()) {
+                                if(!station.doesAllowPlayer(player)) {
+                                    blockingStations++;
+                                    if(showRangeLines) station.showRangeLines();
+                                }
+                            }
                         }
                     }
                 }
