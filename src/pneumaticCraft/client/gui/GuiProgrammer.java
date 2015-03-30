@@ -16,6 +16,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
 
 import org.lwjgl.input.Keyboard;
@@ -48,6 +49,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgrammer>{
     private final EntityPlayer player;
+    private GuiPastebin pastebinGui;
 
     //  private GuiButton redstoneButton;
     private GuiButtonSpecial importButton;
@@ -114,6 +116,11 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
 
     @Override
     public void initGui(){
+        if(pastebinGui != null && pastebinGui.outputTag != null) {
+            te.readProgWidgetsFromNBT(pastebinGui.outputTag);
+            NetworkHandler.sendToServer(new PacketProgrammerUpdate(te));
+        }
+
         super.initGui();
 
         int xStart = (width - xSize) / 2;
@@ -146,6 +153,12 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         buttonList.add(new GuiButton(6, xStart + 5, yStart + 197, 87, 20, I18n.format("gui.programmer.button.showLatest")));
         addWidget(showInfo = new GuiCheckBox(-1, xStart + 5, yStart + 220, 0xFF000000, "gui.programmer.checkbox.showInfo").setChecked(te.showInfo));
         addWidget(showFlow = new GuiCheckBox(-1, xStart + 5, yStart + 232, 0xFF000000, "gui.programmer.checkbox.showFlow").setChecked(te.showFlow));
+
+        GuiButtonSpecial pastebinButton = new GuiButtonSpecial(7, guiLeft - 24, guiTop + 44, 20, 20, "");
+        pastebinButton.setTooltipText(I18n.format("gui.remote.button.pastebinButton"));
+        //pastebinButton.setRenderStacks(new ItemStack(Itemss.advancedPCB));
+        pastebinButton.setRenderedIcon(Textures.GUI_PASTEBIN_ICON_LOCATION);
+        buttonList.add(pastebinButton);
 
         scaleScroll = new WidgetVerticalScrollbar(xStart + 302, yStart + 40, 129).setStates(9).setCurrentState(te.zoomState).setListening(true);
         addWidget(scaleScroll);
@@ -604,6 +617,10 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
                     gotoPiece(te.progWidgets.get(te.progWidgets.size() - 1));
                 }
                 return;
+            case 7:
+                NBTTagCompound mainTag = new NBTTagCompound();
+                te.writeProgWidgetsToNBT(mainTag);
+                FMLClientHandler.instance().showGuiScreen(pastebinGui = new GuiPastebin(this, mainTag));
         }
 
         NetworkHandler.sendToServer(new PacketGuiButton(te, button.id));
