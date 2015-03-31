@@ -29,6 +29,7 @@ import pneumaticCraft.common.progwidgets.ProgWidgetBlockRightClick;
 import pneumaticCraft.common.progwidgets.ProgWidgetCoordinate;
 import pneumaticCraft.common.progwidgets.ProgWidgetCoordinateCondition;
 import pneumaticCraft.common.progwidgets.ProgWidgetCoordinateOperator;
+import pneumaticCraft.common.progwidgets.ProgWidgetCrafting;
 import pneumaticCraft.common.progwidgets.ProgWidgetDig;
 import pneumaticCraft.common.progwidgets.ProgWidgetDroneConditionEntity;
 import pneumaticCraft.common.progwidgets.ProgWidgetDroneConditionItem;
@@ -113,6 +114,7 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory{
         registeredWidgets.add(new ProgWidgetRename());
         registeredWidgets.add(new ProgWidgetSuicide());
         registeredWidgets.add(new ProgWidgetExternalProgram());
+        registeredWidgets.add(new ProgWidgetCrafting());
         registeredWidgets.add(new ProgWidgetCoordinateCondition());
         registeredWidgets.add(new ProgWidgetRedstoneCondition());
         registeredWidgets.add(new ProgWidgetItemInventoryCondition());

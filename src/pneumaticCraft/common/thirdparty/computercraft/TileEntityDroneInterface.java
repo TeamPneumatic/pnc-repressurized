@@ -631,6 +631,22 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral,
             }
         });
 
+        luaMethods.add(new LuaMethod("setCraftingGrid"){
+            @Override
+            public Object[] call(Object[] args) throws Exception{
+                if(args.length == 9) {
+                    String[] grid = new String[9];
+                    for(int i = 0; i < 9; i++) {
+                        grid[i] = (String)args[i];
+                    }
+                    getWidget().setCraftingGrid(grid);
+                    messageToDrone(0xFFFFFFFF);
+                    return null;
+                } else {
+                    throw new IllegalArgumentException("setCraftingGrid takes 9 arguments (crafting items)!");
+                }
+            }
+        });
     }
 
     @Override

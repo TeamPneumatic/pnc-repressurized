@@ -121,6 +121,7 @@ public class Textures{
     public static final ResourceLocation PROG_WIDGET_RENAME = new ResourceLocation(PROG_WIDGET_LOCATION + "renamePiece.png");
     public static final ResourceLocation PROG_WIDGET_SUICIDE = new ResourceLocation(PROG_WIDGET_LOCATION + "suicidePiece.png");
     public static final ResourceLocation PROG_WIDGET_EXTERNAL_PROGRAM = new ResourceLocation(PROG_WIDGET_LOCATION + "externalProgramPiece.png");
+    public static final ResourceLocation PROG_WIDGET_CRAFTING = new ResourceLocation(PROG_WIDGET_LOCATION + "craftPiece.png");
     public static final ResourceLocation PROG_WIDGET_COORDINATE = new ResourceLocation(PROG_WIDGET_LOCATION + "coordinatePiece.png");
     public static final ResourceLocation PROG_WIDGET_COORDINATE_OPERATION_PLUS_MINUS = new ResourceLocation(PROG_WIDGET_LOCATION + "coordinateOperationPlusMinus.png");
     public static final ResourceLocation PROG_WIDGET_COORDINATE_OPERATION_MULTIPLY_DIVIDE = new ResourceLocation(PROG_WIDGET_LOCATION + "coordinateOperationMultiplyDivide.png");

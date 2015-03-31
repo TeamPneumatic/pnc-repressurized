@@ -104,6 +104,9 @@ Sets the specific side to be accessible or not. Used in the Inventory Im- and Ex
 [prefix{l}]setSides(<down>, <up>, <north>, <south>, <east>, <west>) [prefix{}] 
 Same as above, now in one function to set all sides at once (6x boolean).
 
+[prefix{l}]setCraftingGrid(<item/block name>, <item/block name>, ...(9x)) [prefix{}] 
+Sets up the crafting grid so when the Crafting instruction is called, this recipe will be used. You need to specify all 9 items making up the recipe. For empty spaces supply nil. The naming format is the same as for supplying item filters.
+
 [prefix{l}]setAction(<action>) [prefix{}] 
 String that represents the action. This should be one of the actions returned by getAllActions().
 

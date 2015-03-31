@@ -9,6 +9,9 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.command.IEntitySelector;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.Container;
+import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -23,6 +26,7 @@ import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.common.progwidgets.IBlockOrdered;
 import pneumaticCraft.common.progwidgets.ICondition;
 import pneumaticCraft.common.progwidgets.ICountWidget;
+import pneumaticCraft.common.progwidgets.ICraftingWidget;
 import pneumaticCraft.common.progwidgets.IEntityProvider;
 import pneumaticCraft.common.progwidgets.IGotoWidget;
 import pneumaticCraft.common.progwidgets.IItemDropper;
@@ -43,7 +47,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdered, ISidedWidget, IGotoWidget,
         IEntityProvider, ITextWidget, ICondition, ICountWidget, IItemDropper, ILiquidFiltered, IRedstoneEmissionWidget,
-        IRenamingWidget{
+        IRenamingWidget, ICraftingWidget{
     private EnumOrder order = EnumOrder.CLOSEST;
     private boolean[] sides = new boolean[6];
     private final Set<ChunkPosition> area = new HashSet<ChunkPosition>();
@@ -60,6 +64,7 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
     private final List<ProgWidgetLiquidFilter> liquidBlacklist = new ArrayList<ProgWidgetLiquidFilter>();
     private final List<ProgWidgetLiquidFilter> liquidWhitelist = new ArrayList<ProgWidgetLiquidFilter>();
     private String renamingName;
+    private ItemStack[] craftingGrid = new ItemStack[9];
 
     @Override
     public Class<? extends IProgWidget>[] getParameters(){
@@ -413,6 +418,27 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
     @Override
     public String getNewName(){
         return renamingName;
+    }
+
+    public void setCraftingGrid(String[] stackStrings){
+        ItemStack[] grid = new ItemStack[9];
+        for(int i = 0; i < 9; i++) {
+            if(stackStrings[i] != null) grid[i] = getItemFilter(stackStrings[i], 0, false, false, false, false).filter;
+        }
+        craftingGrid = grid;
+    }
+
+    @Override
+    public InventoryCrafting getCraftingGrid(){
+        InventoryCrafting invCrafting = new InventoryCrafting(new Container(){
+            @Override
+            public boolean canInteractWith(EntityPlayer p_75145_1_){
+                return false;
+            }
+        }, 3, 3);
+        for(int i = 0; i < 9; i++)
+            invCrafting.setInventorySlotContents(i, craftingGrid[i]);
+        return invCrafting;
     }
 
 }
