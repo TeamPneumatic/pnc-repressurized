@@ -69,7 +69,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
         }
         if(this.getUpgrades(ItemMachineUpgrade.UPGRADE_DISPENSER_DAMAGE) > 0) {
             //creating a new word, 'entities padding'.
-            List<Entity> entitiesPadding = worldObj.getEntitiesWithinAABB(Entity.class, AxisAlignedBB.getBoundingBox(xCoord, yCoord + 1, zCoord, xCoord + 1, yCoord + 2, zCoord + 1));
+            List<Entity> entitiesPadding = worldObj.getEntitiesWithinAABB(Entity.class, AxisAlignedBB.getBoundingBox(xCoord, yCoord, zCoord, xCoord + 1, yCoord + 2, zCoord + 1));
             for(Entity entity : entitiesPadding) {
                 if(entity instanceof IPressurizable) {
                     chargingItems.add((IPressurizable)entity);
