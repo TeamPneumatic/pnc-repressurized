@@ -140,7 +140,8 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
                 String info = "gui.tab.info." + ((IInventory)te).getInventoryName();
                 String translatedInfo = I18n.format(info);
                 if(!translatedInfo.equals(info)) {
-                    addAnimatedStat("gui.tab.info", Textures.GUI_INFO_LOCATION, 0xFF8888FF, true).setText(info);
+                    translatedInfo += " \\n \\n" + I18n.format("gui.tab.info.assistIGW");
+                    addAnimatedStat("gui.tab.info", Textures.GUI_INFO_LOCATION, 0xFF8888FF, true).setText(translatedInfo);
                 }
             }
             if(te instanceof IHeatExchanger) {

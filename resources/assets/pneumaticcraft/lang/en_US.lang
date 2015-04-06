@@ -299,6 +299,8 @@ pneumaticHelmet.hacking.finished.resumedTasks=Resumed tasks
 
 # Info
 gui.tab.info=Information
+gui.tab.info.assistIGW=For more info, install the In-Game Wiki Mod.
+
 gui.tab.info.tubeModule=§0In this interface you can exactly define how a module should behave dependent on the redstone signal. You can define a formula.
 gui.tab.info.heat=This machine requires or produces heat. Heat can be applied by placing a block that generates heat next to this machine. Think of a Vortex Tube (fast, but requires power), but also Lava (slow) and Torches (very slow). To cool down a machine, remove the heat sources and/or speed up the process by placing down Ice.
 gui.tab.info.items=Add plastic in the bottom slot. In this slot plastic also will be put when it cools down into plastic. Add dye in the top slot. Note that when mixing dye with plastic, dye has a much lower effect than mixing another color of Plastic.
