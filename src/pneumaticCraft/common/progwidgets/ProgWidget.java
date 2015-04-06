@@ -14,6 +14,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 
+import org.apache.commons.lang3.text.WordUtils;
 import org.lwjgl.opengl.GL11;
 
 import pneumaticCraft.client.gui.GuiProgrammer;
@@ -48,11 +49,14 @@ public abstract class ProgWidget implements IProgWidget{
             GL11.glPushMatrix();
             GL11.glScaled(0.5, 0.5, 0.5);
             FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
-            int stringLength = fr.getStringWidth(getExtraStringInfo());
-            int startX = getWidth() / 2 - stringLength / 4;
-            int startY = getHeight() / 2 - fr.FONT_HEIGHT / 4;
-            Gui.drawRect(startX * 2 - 1, startY * 2 - 1, startX * 2 + stringLength + 1, startY * 2 + fr.FONT_HEIGHT + 1, 0xFFFFFFFF);
-            fr.drawString(getExtraStringInfo(), startX * 2, startY * 2, 0xFF000000);
+            String[] splittedInfo = WordUtils.wrap(getExtraStringInfo(), 40).split(System.getProperty("line.separator"));
+            for(int i = 0; i < splittedInfo.length; i++) {
+                int stringLength = fr.getStringWidth(splittedInfo[i]);
+                int startX = getWidth() / 2 - stringLength / 4;
+                int startY = getHeight() / 2 - (fr.FONT_HEIGHT + 1) * (splittedInfo.length - 1) / 4 + (fr.FONT_HEIGHT + 1) * i / 2 - fr.FONT_HEIGHT / 4;
+                Gui.drawRect(startX * 2 - 1, startY * 2 - 1, startX * 2 + stringLength + 1, startY * 2 + fr.FONT_HEIGHT + 1, 0xFFFFFFFF);
+                fr.drawString(splittedInfo[i], startX * 2, startY * 2, 0xFF000000);
+            }
             GL11.glPopMatrix();
             GL11.glColor4d(1, 1, 1, 1);
         }

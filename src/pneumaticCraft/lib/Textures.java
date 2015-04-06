@@ -88,6 +88,7 @@ public class Textures{
     public static final String ICON_CHOPPER_PLANT_LOCATION = PLANT_LOCATION + "chopperPlant";
 
     private static final String PROG_WIDGET_LOCATION = ICON_LOCATION + "textures/items/progwidgets/";
+    public static final ResourceLocation PROG_WIDGET_COMMENT = new ResourceLocation(PROG_WIDGET_LOCATION + "commentPiece.png");
     public static final ResourceLocation PROG_WIDGET_AREA = new ResourceLocation(PROG_WIDGET_LOCATION + "areaPiece.png");
     public static final ResourceLocation PROG_WIDGET_ATTACK = new ResourceLocation(PROG_WIDGET_LOCATION + "attackPiece.png");
     public static final ResourceLocation PROG_WIDGET_CC = new ResourceLocation(PROG_WIDGET_LOCATION + "computerCraftPiece.png");

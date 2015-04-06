@@ -181,6 +181,7 @@ item.regulatorTubeModule.name=Regulator Tube Module
 item.chargingModule.name=Charging Module
 
 # Programming Puzzles
+programmingPuzzle.comment.name=Comment
 programmingPuzzle.start.name=Start
 programmingPuzzle.entityAttack.name=Entity Attack
 programmingPuzzle.area.name=Area
@@ -481,6 +482,7 @@ gui.progWidget.coordinate.constant=Constant
 gui.progWidget.coordinate.variable=Variable
 gui.progWidget.coordinate.variableName=Variable name:
 gui.progWidget.coordinateOperator.operator=Operator:
+gui.progWidget.comment.tooltip.freeToUse=§aThis piece is free to use
 gui.pastebin.button.login=Log In
 gui.pastebin.button.logout=Log Out
 gui.pastebin.button.upload=Upload to Pastebin

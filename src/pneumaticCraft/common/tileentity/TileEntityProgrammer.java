@@ -26,6 +26,7 @@ import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetArea;
 import pneumaticCraft.common.progwidgets.ProgWidgetBlockCondition;
 import pneumaticCraft.common.progwidgets.ProgWidgetBlockRightClick;
+import pneumaticCraft.common.progwidgets.ProgWidgetComment;
 import pneumaticCraft.common.progwidgets.ProgWidgetCoordinate;
 import pneumaticCraft.common.progwidgets.ProgWidgetCoordinateCondition;
 import pneumaticCraft.common.progwidgets.ProgWidgetCoordinateOperator;
@@ -86,6 +87,7 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory{
     public boolean showInfo = true, showFlow = true;
 
     static {
+        registeredWidgets.add(new ProgWidgetComment());
         registeredWidgets.add(new ProgWidgetStart());
         registeredWidgets.add(new ProgWidgetArea());
         registeredWidgets.add(new ProgWidgetString());
@@ -449,10 +451,12 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory{
     public static Map<Integer, Integer> getPuzzleSummary(List<IProgWidget> widgets){
         Map<Integer, Integer> map = new HashMap<Integer, Integer>();
         for(IProgWidget widget : widgets) {
-            if(!map.containsKey(widget.getCraftingColorIndex())) {
-                map.put(widget.getCraftingColorIndex(), 1);
-            } else {
-                map.put(widget.getCraftingColorIndex(), map.get(widget.getCraftingColorIndex()) + 1);
+            if(widget.getCraftingColorIndex() != -1) {
+                if(!map.containsKey(widget.getCraftingColorIndex())) {
+                    map.put(widget.getCraftingColorIndex(), 1);
+                } else {
+                    map.put(widget.getCraftingColorIndex(), map.get(widget.getCraftingColorIndex()) + 1);
+                }
             }
         }
         return map;

@@ -43,6 +43,7 @@ import pneumaticCraft.lib.Textures;
 import codechicken.nei.VisiblityData;
 import codechicken.nei.api.INEIGuiHandler;
 import codechicken.nei.api.TaggedInventoryArea;
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -140,7 +141,7 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
                 String info = "gui.tab.info." + ((IInventory)te).getInventoryName();
                 String translatedInfo = I18n.format(info);
                 if(!translatedInfo.equals(info)) {
-                    translatedInfo += " \\n \\n" + I18n.format("gui.tab.info.assistIGW");
+                    if(!Loader.isModLoaded(ModIds.IGWMOD)) translatedInfo += " \\n \\n" + I18n.format("gui.tab.info.assistIGW");
                     addAnimatedStat("gui.tab.info", Textures.GUI_INFO_LOCATION, 0xFF8888FF, true).setText(translatedInfo);
                 }
             }

@@ -18,7 +18,11 @@ public class ProgWidgetString extends ProgWidget{
     @Override
     public void getTooltip(List<String> curTooltip){
         super.getTooltip(curTooltip);
-        curTooltip.add("Value: \"" + string + "\"");
+        if(addToTooltip()) curTooltip.add("Value: \"" + string + "\"");
+    }
+
+    protected boolean addToTooltip(){
+        return true;
     }
 
     @Override
