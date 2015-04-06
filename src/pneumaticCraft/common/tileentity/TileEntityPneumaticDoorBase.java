@@ -25,6 +25,7 @@ import pneumaticCraft.lib.TileEntityConstants;
 public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase implements IInventory, IRedstoneControl,
         IMinWorkingPressure{
     private TileEntityPneumaticDoor door;
+    private TileEntityPneumaticDoorBase doubleDoor;
     @DescSynced
     public boolean rightGoing;
     public float oldProgress;
@@ -55,7 +56,16 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
         super.updateEntity();
         oldProgress = progress;
         if(!worldObj.isRemote && getPressure(ForgeDirection.UNKNOWN) >= PneumaticValues.MIN_PRESSURE_PNEUMATIC_DOOR) {
-            setOpening(shouldOpen());
+            if(worldObj.getWorldTime() % 60 == 0) {
+                TileEntity te = worldObj.getTileEntity(orientation.offsetX * 3 + xCoord, yCoord, orientation.offsetZ * 3 + zCoord);
+                if(te instanceof TileEntityPneumaticDoorBase) {
+                    doubleDoor = (TileEntityPneumaticDoorBase)te;
+                } else {
+                    doubleDoor = null;
+                }
+            }
+            setOpening(shouldOpen() || isNeighborOpening());
+            setNeighborOpening(isOpening());
         }
         float targetProgress = opening ? 1F : 0F;
         float speedMultiplier = getSpeedMultiplierFromUpgrades(getUpgradeSlots());
@@ -132,6 +142,16 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
 
     public boolean isOpening(){
         return opening;
+    }
+
+    private boolean isNeighborOpening(){
+        return doubleDoor != null ? doubleDoor.shouldOpen() : false;
+    }
+
+    public void setNeighborOpening(boolean opening){
+        if(doubleDoor != null) {
+            doubleDoor.setOpening(opening);
+        }
     }
 
     @Override

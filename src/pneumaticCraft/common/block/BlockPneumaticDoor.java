@@ -146,6 +146,7 @@ public class BlockPneumaticDoor extends BlockPneumaticCraftModeled{
         TileEntityPneumaticDoorBase doorBase = getDoorBase(world, x, y, z);
         if(!world.isRemote && doorBase != null && doorBase.redstoneMode == 2 && doorBase.getPressure(ForgeDirection.UNKNOWN) >= PneumaticValues.MIN_PRESSURE_PNEUMATIC_DOOR) {
             doorBase.setOpening(!doorBase.isOpening());
+            doorBase.setNeighborOpening(doorBase.isOpening());
             return true;
         }
         return false;
