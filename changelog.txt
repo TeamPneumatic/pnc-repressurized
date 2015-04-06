@@ -1,5 +1,8 @@
--Added Remote
--Minor tweaks to the Programmer difficulty system.
+-Added Pastebin functionality to the Programmer.
+-Added Crafting puzzle piece.
+-Added Block Tracker upgrade behaviour to the Air Cannon (hoppering items).
+-Added Standby puzzle piece to the Programmer.
 
--Bugfix: Drone Interface peripheral does not properly return a table for getAllActions()
--Bugfix: Omnidirectional Hopper GUI has a mislabeled Redstone setting.
+-Bugfix: Security Station causes lag when having a lot of Tile Entities (converted the lookup from O(n) to O(1)).
+-Bugfix: Crash on SMP when opening Remote GUI.
+-Bugfix: Remote not properly synchronizing current variable state.
