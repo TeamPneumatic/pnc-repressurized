@@ -18,10 +18,11 @@ import net.minecraft.entity.projectile.EntityPotion;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ChatComponentTranslation;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.ServerChatEvent;
@@ -208,10 +209,12 @@ public class EventHandlerPneumaticCraft{
         if(!event.entityPlayer.capabilities.isCreativeMode || !event.entityPlayer.canCommandSenderUseCommand(2, "securityStation")) {
             if(event.action != PlayerInteractEvent.Action.RIGHT_CLICK_AIR && event.world != null && !event.world.isRemote) {
                 if(interactedBlock != Blockss.securityStation || event.action == PlayerInteractEvent.Action.LEFT_CLICK_BLOCK) {
-                    int blockingStations = PneumaticCraftUtils.getProtectingSecurityStations(event.entity.worldObj, event.x, event.y, event.z, event.entityPlayer, true);
+                    ItemStack heldItem = event.entityPlayer.getCurrentEquippedItem();
+                    boolean tryingToPlaceSecurityStation = heldItem != null && heldItem.getItem() instanceof ItemBlock && ((ItemBlock)heldItem.getItem()).field_150939_a == Blockss.securityStation;
+                    int blockingStations = PneumaticCraftUtils.getProtectingSecurityStations(event.entity.worldObj, event.x, event.y, event.z, event.entityPlayer, true, tryingToPlaceSecurityStation);
                     if(blockingStations > 0) {
                         event.setCanceled(true);
-                        event.entityPlayer.addChatComponentMessage(new ChatComponentTranslation(EnumChatFormatting.RED + "Access is prevented by " + blockingStations + " Security Station(s)."));
+                        event.entityPlayer.addChatComponentMessage(new ChatComponentText(StatCollector.translateToLocalFormatted(tryingToPlaceSecurityStation ? "message.securityStation.stationPlacementPrevented" : "message.securityStation.accessPrevented", blockingStations)));
                     }
                 }
             }

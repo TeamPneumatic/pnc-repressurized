@@ -552,6 +552,8 @@ waila.temperature.down=Bottom Temperature
 # Misc
 itemGroup.tabPneumaticCraft=PneumaticCraft
 message.date.ironman=Today an Iron Man movie went in premiere!
+message.securityStation.accessPrevented=§cAccess is prevented by %s Security Station(s).
+message.securityStation.stationPlacementPrevented=§cYou can't place a Security Station here: %s Security Station(s) are too close by!
 
 # Death Messages
 death.attack.pressure1=%1$s is as flat as a pancake!
