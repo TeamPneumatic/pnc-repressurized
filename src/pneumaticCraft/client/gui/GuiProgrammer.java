@@ -67,7 +67,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
     private int widgetPage;
     private int maxPage;
     private WidgetVerticalScrollbar scaleScroll;
-    private static final float SCALE_PER_STEP = 0.1F;
+    private static final float SCALE_PER_STEP = 0.2F;
     private int translatedX, translatedY;
     private int lastMouseX, lastMouseY;
     private int lastZoom;
@@ -185,6 +185,10 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         return false;
     }
 
+    private float getScale(){
+        return 2.0F - scaleScroll.getState() * SCALE_PER_STEP;
+    }
+
     @Override
     protected void drawGuiContainerForegroundLayer(int x, int y){
         super.drawGuiContainerForegroundLayer(x, y);
@@ -193,7 +197,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         fontRendererObj.drawString(widgetPage + 1 + "/" + (maxPage + 1), 305, 175, 0xFF000000);
         fontRendererObj.drawString(I18n.format("gui.programmer.difficulty"), 263, 190, 0xFF000000);
 
-        float scale = 1.0F - scaleScroll.getState() * SCALE_PER_STEP;
+        float scale = getScale();
 
         for(IProgWidget widget : te.progWidgets) {
             if(!isOutsideProgrammingArea(widget)) {
@@ -225,7 +229,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         if(Keyboard.KEY_I == keyCode) {
             int x = lastMouseX;
             int y = lastMouseY;
-            float scale = 1.0F - scaleScroll.getState() * SCALE_PER_STEP;
+            float scale = getScale();
 
             for(IProgWidget widget : te.progWidgets) {
                 if(!isOutsideProgrammingArea(widget)) {
@@ -271,7 +275,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         int origY = y;
         x -= translatedX;
         y -= translatedY;
-        float scale = 1.0F - scaleScroll.getState() * SCALE_PER_STEP;
+        float scale = getScale();
         x = (int)(x / scale);
         y = (int)(y / scale);
 
@@ -540,7 +544,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
     }
 
     private boolean isOutsideProgrammingArea(IProgWidget widget){
-        float scale = 1.0F - scaleScroll.getState() * SCALE_PER_STEP;
+        float scale = getScale();
         int x = (int)((widget.getX() + guiLeft) * scale);
         int y = (int)((widget.getY() + guiTop) * scale);
         x += translatedX - guiLeft;
@@ -640,8 +644,8 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
     private void gotoPiece(IProgWidget widget){
         scaleScroll.currentScroll = 0;
         lastZoom = 0;
-        translatedX = -widget.getX() + 294 / 2;
-        translatedY = -widget.getY() + 166 / 2;
+        translatedX = -widget.getX() * 2 + 294 / 4;
+        translatedY = -widget.getY() * 2 + 166 / 2;
     }
 
     @Override
@@ -697,7 +701,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         if(par3 == 1) {
             x -= translatedX;
             y -= translatedY;
-            float scale = 1.0F - scaleScroll.getState() * SCALE_PER_STEP;
+            float scale = getScale();
             x = (int)(x / scale);
             y = (int)(y / scale);
 
