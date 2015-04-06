@@ -55,17 +55,21 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
     public void updateEntity(){
         super.updateEntity();
         oldProgress = progress;
-        if(!worldObj.isRemote && getPressure(ForgeDirection.UNKNOWN) >= PneumaticValues.MIN_PRESSURE_PNEUMATIC_DOOR) {
-            if(worldObj.getWorldTime() % 60 == 0) {
-                TileEntity te = worldObj.getTileEntity(orientation.offsetX * 3 + xCoord, yCoord, orientation.offsetZ * 3 + zCoord);
-                if(te instanceof TileEntityPneumaticDoorBase) {
-                    doubleDoor = (TileEntityPneumaticDoorBase)te;
-                } else {
-                    doubleDoor = null;
+        if(!worldObj.isRemote) {
+            if(getPressure(ForgeDirection.UNKNOWN) >= PneumaticValues.MIN_PRESSURE_PNEUMATIC_DOOR) {
+                if(worldObj.getWorldTime() % 60 == 0) {
+                    TileEntity te = worldObj.getTileEntity(orientation.offsetX * 3 + xCoord, yCoord, orientation.offsetZ * 3 + zCoord);
+                    if(te instanceof TileEntityPneumaticDoorBase) {
+                        doubleDoor = (TileEntityPneumaticDoorBase)te;
+                    } else {
+                        doubleDoor = null;
+                    }
                 }
+                setOpening(shouldOpen() || isNeighborOpening());
+                setNeighborOpening(isOpening());
+            } else {
+                setOpening(true);
             }
-            setOpening(shouldOpen() || isNeighborOpening());
-            setNeighborOpening(isOpening());
         }
         float targetProgress = opening ? 1F : 0F;
         float speedMultiplier = getSpeedMultiplierFromUpgrades(getUpgradeSlots());
@@ -149,7 +153,7 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
     }
 
     public void setNeighborOpening(boolean opening){
-        if(doubleDoor != null) {
+        if(doubleDoor != null && doubleDoor.getPressure(ForgeDirection.UNKNOWN) >= PneumaticValues.MIN_PRESSURE_PNEUMATIC_DOOR) {
             doubleDoor.setOpening(opening);
         }
     }
