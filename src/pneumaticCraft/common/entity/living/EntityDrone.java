@@ -132,6 +132,7 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
     private int suffocationCounter = 40;//Drones are invincible for suffocation for this time.
     private boolean isSuffocating;
     private boolean disabledByHacking;
+    private boolean standby;//If true, the drone's propellors stop, the drone will fall down, and won't use pressure.
 
     public EntityDrone(World world){
         super(world);
@@ -226,9 +227,9 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
             lifeUpgrades = getUpgrades(ItemMachineUpgrade.UPGRADE_ITEM_LIFE);
             aiManager.setWidgets(progWidgets);
         }
-
+        boolean enabled = !disabledByHacking && getPressure(null) > 0.01F;
         if(!worldObj.isRemote) {
-            setAccelerating(!disabledByHacking && getPressure(null) > 0.01F);
+            setAccelerating(!standby && enabled);
             if(isAccelerating()) {
                 fallDistance = 0;
             }
@@ -292,7 +293,7 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
         }
         super.onUpdate();
         if(!worldObj.isRemote && isEntityAlive()) {
-            if(isAccelerating()) aiManager.onUpdateTasks();
+            if(enabled) aiManager.onUpdateTasks();
             for(ForgeDirection d : ForgeDirection.VALID_DIRECTIONS) {
                 if(getEmittingRedstone(d) > 0) {
                     if(worldObj.isAirBlock((int)Math.floor(posX + width / 2), (int)Math.floor(posY), (int)Math.floor(posZ + width / 2))) {
@@ -568,6 +569,7 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
         tag.setBoolean("disabledByHacking", disabledByHacking);
         tag.setBoolean("hackedByOwner", gotoOwnerAI != null);
         tag.setInteger("color", getDroneColor());
+        tag.setBoolean("standby", standby);
 
         NBTTagCompound variableTag = new NBTTagCompound();
         aiManager.writeToNBT(variableTag);
@@ -614,6 +616,7 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
         setGoingToOwner(tag.getBoolean("hackedByOwner"));
         setDroneColor(tag.getInteger("color"));
         aiManager.readFromNBT(tag.getCompoundTag("variables"));
+        standby = tag.getBoolean("standby");
 
         // Read in the ItemStacks in the inventory from NBT
         NBTTagCompound inv = tag.getCompoundTag("Inventory");
@@ -951,6 +954,10 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
      */
     public EntityPlayer getOwner(){
         return MinecraftServer.getServer().getConfigurationManager().func_152612_a(playerName);
+    }
+
+    public void setStandby(boolean standby){
+        this.standby = standby;
     }
 
 }

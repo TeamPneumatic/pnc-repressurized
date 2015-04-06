@@ -20,6 +20,7 @@ public class DroneGoToChargingStation extends EntityAIBase{
     private final double speed;
     public boolean isExecuting;
     public TileEntityChargingStation curCharger;
+    private int chargingTime;
 
     public DroneGoToChargingStation(EntityDrone drone, double par2){
         this.drone = drone;
@@ -75,11 +76,16 @@ public class DroneGoToChargingStation extends EntityAIBase{
             return false;
         } else if(drone.getNavigator().getPath().isFinished()) {
             isExecuting = drone.getPressure(null) < 9.9F && curCharger.getPressure(ForgeDirection.UNKNOWN) > drone.getPressure(null) + 0.1F;
-            if(isExecuting) DroneClaimManager.getInstance(drone.worldObj).claim(new ChunkPosition(curCharger.xCoord, curCharger.yCoord, curCharger.zCoord));
+            if(isExecuting) {
+                chargingTime++;
+                if(chargingTime > 20) drone.setStandby(true);
+                DroneClaimManager.getInstance(drone.worldObj).claim(new ChunkPosition(curCharger.xCoord, curCharger.yCoord, curCharger.zCoord));
+            }
             return isExecuting;
         } else {
+            chargingTime = 0;
             DroneClaimManager.getInstance(drone.worldObj).claim(new ChunkPosition(curCharger.xCoord, curCharger.yCoord, curCharger.zCoord));
-            return true;
+            return drone.isAccelerating();
         }
     }
 }

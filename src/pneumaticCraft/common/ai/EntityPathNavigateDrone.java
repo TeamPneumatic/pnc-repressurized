@@ -97,6 +97,7 @@ public class EntityPathNavigateDrone extends PathNavigate{
         telX = par2;
         telY = par3;
         telZ = par4;
+        par1Entity.setStandby(false);
         return pathentity;
     }
 

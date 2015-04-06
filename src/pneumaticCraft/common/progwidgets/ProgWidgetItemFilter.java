@@ -35,7 +35,7 @@ public class ProgWidgetItemFilter extends ProgWidget{
         }
     }
 
-    private void drawItemStack(ItemStack p_146982_1_, int p_146982_2_, int p_146982_3_, String p_146982_4_){
+    public static void drawItemStack(ItemStack p_146982_1_, int p_146982_2_, int p_146982_3_, String p_146982_4_){
         RenderHelper.disableStandardItemLighting();
         GL11.glPushMatrix();
         Minecraft mc = Minecraft.getMinecraft();

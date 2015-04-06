@@ -53,26 +53,6 @@ public class RemoteLayout{
         }
     }
 
-    public static List<String> getRelevantVariableNames(ItemStack remote){
-        List<String> variables = new ArrayList<String>();
-        NBTTagCompound tag = remote.getTagCompound();
-        if(tag != null) {
-            NBTTagList tagList = tag.getTagList("actionWidgets", 10);
-            for(int i = 0; i < tagList.tagCount(); i++) {
-                NBTTagCompound widgetTag = tagList.getCompoundTagAt(i);
-                String id = widgetTag.getString("id");
-                Class<? extends ActionWidget> clazz = registeredWidgets.get(id);
-                if(ActionWidgetVariable.class.isAssignableFrom(clazz)) {
-                    String variable = widgetTag.getString("variableName");
-                    if(!variables.contains(variable)) variables.add(variable);
-                }
-                String enableVariable = widgetTag.getString("enableVariable");
-                if(!variables.contains(enableVariable)) variables.add(enableVariable);
-            }
-        }
-        return variables;
-    }
-
     public NBTTagCompound toNBT(int guiLeft, int guiTop){
         NBTTagCompound tag = new NBTTagCompound();
 

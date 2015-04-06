@@ -1,7 +1,15 @@
 package pneumaticCraft.common.tileentity;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
+import java.util.Set;
+import java.util.UUID;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
@@ -32,6 +40,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.world.ChunkPosition;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -49,6 +58,7 @@ import pneumaticCraft.common.network.PacketSetEntityMotion;
 import pneumaticCraft.common.network.PacketSpawnParticle;
 import pneumaticCraft.common.thirdparty.computercraft.LuaConstant;
 import pneumaticCraft.common.thirdparty.computercraft.LuaMethod;
+import pneumaticCraft.common.util.IOHelper;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.PneumaticValues;
 import pneumaticCraft.lib.Sounds;
@@ -86,6 +96,8 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements ISid
     private int oldRangeUpgrades;
     private boolean externalControl;//used in the CC API, to disallow the Cannon to update its angles when things like range upgrades / GPS Tool have changed.
     private boolean entityUpgradeInserted, dispenserUpgradeInserted;
+    private final List<EntityItem> trackedItems = new ArrayList<EntityItem>();//Items that are being checked to be hoppering into inventories.
+    private Set<UUID> trackedItemIds;
 
     private final int INVENTORY_SIZE = 6;
     public final int CANNON_SLOT = 0;
@@ -178,8 +190,49 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements ISid
             doneTurning = false;
         }
 
+        updateTrackedItems();
+
         super.updateEntity();
 
+    }
+
+    private void updateTrackedItems(){
+        if(trackedItemIds != null) {
+            trackedItems.clear();
+            for(Entity entity : (List<Entity>)worldObj.loadedEntityList) {
+                if(trackedItemIds.contains(entity.getUniqueID()) && entity instanceof EntityItem) {
+                    trackedItems.add((EntityItem)entity);
+                }
+            }
+            trackedItemIds = null;
+        }
+        Iterator<EntityItem> iterator = trackedItems.iterator();
+        while(iterator.hasNext()) {
+            EntityItem item = iterator.next();
+            if(item.worldObj != worldObj || item.isDead) {
+                iterator.remove();
+            } else {
+                Map<ChunkPosition, ForgeDirection> positions = new HashMap<ChunkPosition, ForgeDirection>();
+                double range = 0.1;
+                for(ForgeDirection d : ForgeDirection.VALID_DIRECTIONS) {
+                    double posX = item.posX - d.offsetX * range;
+                    double posY = item.posY - d.offsetY * range;
+                    double posZ = item.posZ - d.offsetZ * range;
+                    positions.put(new ChunkPosition((int)Math.floor(posX), (int)Math.floor(posY), (int)Math.floor(posZ)), d.getOpposite());
+                }
+                for(Entry<ChunkPosition, ForgeDirection> entry : positions.entrySet()) {
+                    ChunkPosition pos = entry.getKey();
+                    IInventory inv = IOHelper.getInventoryForTE(worldObj.getTileEntity(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ));
+                    ItemStack remainder = IOHelper.insert(inv, item.getEntityItem(), entry.getValue().ordinal(), false);
+                    if(remainder != null) {
+                        item.setEntityItemStack(remainder);
+                    } else {
+                        item.setDead();
+                        iterator.remove();
+                    }
+                }
+            }
+        }
     }
 
     // ANGLE METHODS -------------------------------------------------
@@ -428,6 +481,13 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements ISid
                 inventory[slot] = ItemStack.loadItemStackFromNBT(tagCompound);
             }
         }
+
+        trackedItemIds = new HashSet<UUID>();
+        tagList = nbtTagCompound.getTagList("trackedItems", 10);
+        for(int i = 0; i < tagList.tagCount(); i++) {
+            NBTTagCompound t = tagList.getCompoundTagAt(i);
+            trackedItemIds.add(new UUID(t.getLong("UUIDMost"), t.getLong("UUIDLeast")));
+        }
     }
 
     @Override
@@ -454,6 +514,16 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements ISid
             }
         }
         nbtTagCompound.setTag("Items", tagList);
+
+        tagList = new NBTTagList();
+        for(EntityItem entity : trackedItems) {
+            UUID uuid = entity.getUniqueID();
+            NBTTagCompound t = new NBTTagCompound();
+            t.setLong("UUIDMost", uuid.getMostSignificantBits());
+            t.setLong("UUIDLeast", uuid.getLeastSignificantBits());
+            tagList.appendTag(t);
+        }
+        nbtTagCompound.setTag("trackedItems", tagList);
     }
 
     @Override
@@ -517,6 +587,9 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements ISid
 
                 if(itemShot instanceof EntityItem) {
                     inventory[0] = null;
+                    if(getUpgrades(ItemMachineUpgrade.UPGRADE_BLOCK_TRACKER) > 0) {
+                        trackedItems.add((EntityItem)itemShot);
+                    }
                 } else {
                     inventory[0].stackSize--;
                     if(inventory[0].stackSize <= 0) inventory[0] = null;

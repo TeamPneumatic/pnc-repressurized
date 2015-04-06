@@ -1,25 +1,43 @@
 package pneumaticCraft.common.inventory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.ChunkPosition;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.PacketSetGlobalVariable;
 import pneumaticCraft.common.remote.GlobalVariableManager;
-import pneumaticCraft.common.remote.RemoteLayout;
 
 public class ContainerRemote extends Container{
     private final List<String> syncedVars;
     private final ChunkPosition[] lastValues;
 
     public ContainerRemote(ItemStack remote){
-        syncedVars = RemoteLayout.getRelevantVariableNames(remote);
+        syncedVars = getRelevantVariableNames(remote);
         lastValues = new ChunkPosition[syncedVars.size()];
+    }
+
+    private static List<String> getRelevantVariableNames(ItemStack remote){
+        List<String> variables = new ArrayList<String>();
+        NBTTagCompound tag = remote.getTagCompound();
+        if(tag != null) {
+            NBTTagList tagList = tag.getTagList("actionWidgets", 10);
+            for(int i = 0; i < tagList.tagCount(); i++) {
+                NBTTagCompound widgetTag = tagList.getCompoundTagAt(i);
+                String variable = widgetTag.getString("variableName");
+                if(!variables.contains(variable)) variables.add(variable);
+                String enableVariable = widgetTag.getString("enableVariable");
+                if(!variables.contains(enableVariable)) variables.add(enableVariable);
+            }
+        }
+        return variables;
     }
 
     @Override

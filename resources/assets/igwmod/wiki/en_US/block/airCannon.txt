@@ -65,3 +65,6 @@ Apart from the usual [link{menu/machineUpgrades}]upgrades [link{}] (Volume and S
 
 [prefix{l}]Entity Tracker Upgrade[prefix{}]
 It can also shoot any living entity by inserting an Entity Tracker Upgrade. This includes players, meaning that you can use this machine as player transport mechanic.
+
+[prefix{l}]Block Tracker Upgrade[prefix{}]
+When fired, items being shot automatically will try to go into inventories they hit. When firing at a Chest for example, items will land in the Chest without needing a Hopper. The side the item will be tried to put in is dependent on the side of the block the item hits.
