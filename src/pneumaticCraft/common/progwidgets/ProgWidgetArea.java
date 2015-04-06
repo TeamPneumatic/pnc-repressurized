@@ -3,6 +3,7 @@ package pneumaticCraft.common.progwidgets;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 import net.minecraft.client.gui.GuiScreen;
@@ -28,16 +29,24 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     private String coord1Variable = "", coord2Variable = "";
     private DroneAIManager aiManager;
     public EnumAreaType type = EnumAreaType.FILL;
+    public int typeInfo;//For the grid type, it's the grid interval, for Random it's the amount of selected blocks.
 
     public enum EnumAreaType{
         FILL("Filled"), FRAME("Frame"), WALL("Walls"), SPHERE("Sphere"), LINE("Line"), X_WALL("X-Wall"), Y_WALL(
                 "Y-Wall"), Z_WALL("Z-Wall"), X_CYLINDER("X-Cylinder"), Y_CYLINDER("Y-Cylinder"), Z_CYLINDER(
-                "Z-Cylinder"), X_PYRAMID("X-Pyramid"), Y_PYRAMID("Y-Pyramid"), Z_PYRAMID("Z-Pyramid");
+                "Z-Cylinder"), X_PYRAMID("X-Pyramid"), Y_PYRAMID("Y-Pyramid"), Z_PYRAMID("Z-Pyramid"), GRID("Grid",
+                true), RANDOM("Random", true);
 
         private final String name;
+        public final boolean utilizesTypeInfo;
 
         private EnumAreaType(String name){
+            this(name, false);
+        }
+
+        private EnumAreaType(String name, boolean utilizesTypeInfo){
             this.name = name;
+            this.utilizesTypeInfo = utilizesTypeInfo;
         }
 
         @Override
@@ -422,6 +431,36 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
                     }
                 }
                 break;
+            case GRID:
+                if(areaPoints[1] == null || areaPoints[0].equals(areaPoints[1]) || typeInfo <= 0) {
+                    area.add(areaPoints[0]);
+                } else {
+                    int interval = typeInfo;
+                    for(int x = areaPoints[0].chunkPosX; areaPoints[0].chunkPosX < areaPoints[1].chunkPosX ? x <= areaPoints[1].chunkPosX : x >= areaPoints[1].chunkPosX; x += (areaPoints[0].chunkPosX < areaPoints[1].chunkPosX ? 1 : -1) * interval) {
+                        for(int y = areaPoints[0].chunkPosY; areaPoints[0].chunkPosY < areaPoints[1].chunkPosY ? y <= areaPoints[1].chunkPosY : y >= areaPoints[1].chunkPosY; y += (areaPoints[0].chunkPosY < areaPoints[1].chunkPosY ? 1 : -1) * interval) {
+                            for(int z = areaPoints[0].chunkPosZ; areaPoints[0].chunkPosZ < areaPoints[1].chunkPosZ ? z <= areaPoints[1].chunkPosZ : z >= areaPoints[1].chunkPosZ; z += (areaPoints[0].chunkPosZ < areaPoints[1].chunkPosZ ? 1 : -1) * interval) {
+                                if(y > 0 && y < 256) area.add(new ChunkPosition(x, y, z));
+                            }
+                        }
+                    }
+                }
+                break;
+            case RANDOM:
+                type = EnumAreaType.FILL;
+                Set<ChunkPosition> filledArea = getArea();
+                type = EnumAreaType.RANDOM;
+                if(typeInfo >= filledArea.size()) return filledArea;
+                Random rand = new Random();
+                Set<Integer> randomIndexes = new HashSet<Integer>();
+                while(randomIndexes.size() < typeInfo) {
+                    randomIndexes.add(rand.nextInt(filledArea.size()));
+                }
+                int curIndex = 0;
+                for(ChunkPosition pos : filledArea) {
+                    if(randomIndexes.contains(curIndex)) area.add(pos);
+                    curIndex++;
+                }
+                break;
         }
         return area;
     }
@@ -465,6 +504,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         tag.setInteger("y2", y2);
         tag.setInteger("z2", z2);
         if(type != null) tag.setInteger("type", type.ordinal());
+        tag.setInteger("typeInfo", typeInfo);
         tag.setString("coord1Variable", coord1Variable);
         tag.setString("coord2Variable", coord2Variable);
     }
@@ -479,6 +519,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         y2 = tag.getInteger("y2");
         z2 = tag.getInteger("z2");
         type = EnumAreaType.values()[tag.getInteger("type")];
+        typeInfo = tag.getInteger("typeInfo");
         coord1Variable = tag.getString("coord1Variable");
         coord2Variable = tag.getString("coord2Variable");
     }

@@ -6,17 +6,21 @@ import java.util.List;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.ChunkPosition;
 import pneumaticCraft.client.gui.GuiButtonSpecial;
 import pneumaticCraft.client.gui.GuiInventorySearcher;
 import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.client.gui.widget.GuiRadioButton;
 import pneumaticCraft.client.gui.widget.IGuiWidget;
+import pneumaticCraft.client.gui.widget.WidgetLabel;
 import pneumaticCraft.client.gui.widget.WidgetTextField;
+import pneumaticCraft.client.gui.widget.WidgetTextFieldNumber;
 import pneumaticCraft.common.Config;
 import pneumaticCraft.common.item.ItemGPSTool;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.progwidgets.ProgWidgetArea;
+import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.client.FMLClientHandler;
 
 public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea>{
@@ -24,21 +28,23 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea>{
     private int pointSearched;
     private WidgetTextField variableField1;
     private WidgetTextField variableField2;
+    private WidgetTextFieldNumber typeInfoField;
 
     public GuiProgWidgetArea(ProgWidgetArea widget, GuiProgrammer guiProgrammer){
         super(widget, guiProgrammer);
+        xSize = 256;
     }
 
     @Override
     public void initGui(){
         super.initGui();
 
-        addLabel("Point 1", guiLeft + 30, guiTop + 10);
-        addLabel("Point 2", guiLeft + 119, guiTop + 10);
+        addLabel("Point 1", guiLeft + 70, guiTop + 10);
+        addLabel("Point 2", guiLeft + 159, guiTop + 10);
         addLabel("Area Type:", guiLeft + 4, guiTop + 50);
 
-        GuiButtonSpecial gpsButton1 = new GuiButtonSpecial(0, guiLeft + 4, guiTop + 20, 20, 20, "");
-        GuiButtonSpecial gpsButton2 = new GuiButtonSpecial(1, guiLeft + 93, guiTop + 20, 20, 20, "");
+        GuiButtonSpecial gpsButton1 = new GuiButtonSpecial(0, guiLeft + 44, guiTop + 20, 20, 20, "");
+        GuiButtonSpecial gpsButton2 = new GuiButtonSpecial(1, guiLeft + 133, guiTop + 20, 20, 20, "");
         gpsButton1.setTooltipText(I18n.format("gui.progWidget.area.selectGPS1"));
         gpsButton2.setTooltipText(I18n.format("gui.progWidget.area.selectGPS2"));
         gpsButton1.setRenderStacks(new ItemStack(Itemss.GPSTool));
@@ -46,10 +52,15 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea>{
         buttonList.add(gpsButton1);
         buttonList.add(gpsButton2);
 
-        variableField1 = new WidgetTextField(fontRendererObj, guiLeft + 26, guiTop + 25, 50, fontRendererObj.FONT_HEIGHT + 1);
-        variableField2 = new WidgetTextField(fontRendererObj, guiLeft + 115, guiTop + 25, 50, fontRendererObj.FONT_HEIGHT + 1);
+        variableField1 = new WidgetTextField(fontRendererObj, guiLeft + 66, guiTop + 25, 50, fontRendererObj.FONT_HEIGHT + 1);
+        variableField2 = new WidgetTextField(fontRendererObj, guiLeft + 155, guiTop + 25, 50, fontRendererObj.FONT_HEIGHT + 1);
         variableField1.setText(widget.getCoord1Variable());
         variableField2.setText(widget.getCoord2Variable());
+        typeInfoField = new WidgetTextFieldNumber(fontRendererObj, guiLeft + 160, guiTop + 110, 20, fontRendererObj.FONT_HEIGHT + 1);
+        typeInfoField.setValue(widget.typeInfo);
+        typeInfoField.setTooltip(I18n.format("gui.progWidget.area.extraInfo.tooltip"));
+        addWidget(typeInfoField);
+        addWidget(new WidgetLabel(guiLeft + 160, guiTop + 100, I18n.format("gui.progWidget.area.extraInfo")));
         if(Config.getProgrammerDifficulty() == 2) {
             addWidget(variableField1);
             addWidget(variableField2);
@@ -58,7 +69,7 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea>{
         List<GuiRadioButton> radioButtons = new ArrayList<GuiRadioButton>();
         ProgWidgetArea.EnumAreaType[] areaTypes = ProgWidgetArea.EnumAreaType.values();
         for(int i = 0; i < areaTypes.length; i++) {
-            GuiRadioButton radioButton = new GuiRadioButton(i, guiLeft + 7 + i / 7 * 60, guiTop + 60 + i % 7 * 12, 0xFF000000, areaTypes[i].toString());
+            GuiRadioButton radioButton = new GuiRadioButton(i, guiLeft + 7 + i / 7 * 80, guiTop + 60 + i % 7 * 12, 0xFF000000, areaTypes[i].toString());
             radioButton.checked = areaTypes[i] == widget.type;
             addWidget(radioButton);
             radioButtons.add(radioButton);
@@ -89,6 +100,7 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea>{
     @Override
     public void actionPerformed(IGuiWidget guiWidget){
         widget.type = ProgWidgetArea.EnumAreaType.values()[guiWidget.getID()];
+        typeInfoField.setEnabled(widget.type.utilizesTypeInfo);
         super.actionPerformed(guiWidget);
     }
 
@@ -110,10 +122,16 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea>{
     }
 
     @Override
+    protected ResourceLocation getTexture(){
+        return Textures.GUI_WIDGET_AREA;
+    }
+
+    @Override
     public void keyTyped(char key, int keyCode){
         if(keyCode == 1) {
             widget.setCoord1Variable(variableField1.getText());
             widget.setCoord2Variable(variableField2.getText());
+            widget.typeInfo = typeInfoField.getValue();
         }
         super.keyTyped(key, keyCode);
     }

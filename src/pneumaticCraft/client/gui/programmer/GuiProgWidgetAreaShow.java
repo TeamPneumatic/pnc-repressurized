@@ -18,8 +18,8 @@ public class GuiProgWidgetAreaShow<Widget extends IProgWidget> extends GuiProgWi
         super.initGui();
 
         if(widget instanceof IAreaProvider) {
-            buttonList.add(new GuiButton(1000, guiLeft + 40, guiTop + 150, 100, 20, I18n.format("gui.programmer.button.showArea")));
-            if(AreaShowManager.getInstance().isShowing(guiProgrammer.te)) buttonList.add(new GuiButton(1001, guiLeft + 40, guiTop + 175, 100, 20, I18n.format("gui.programmer.button.stopShowingArea")));
+            buttonList.add(new GuiButton(1000, guiLeft + xSize / 2 - 50, guiTop + 150, 100, 20, I18n.format("gui.programmer.button.showArea")));
+            if(AreaShowManager.getInstance().isShowing(guiProgrammer.te)) buttonList.add(new GuiButton(1001, guiLeft + xSize / 2 - 50, guiTop + 175, 100, 20, I18n.format("gui.programmer.button.stopShowingArea")));
         }
     }
 
@@ -27,7 +27,7 @@ public class GuiProgWidgetAreaShow<Widget extends IProgWidget> extends GuiProgWi
     public void actionPerformed(GuiButton button){
         if(widget instanceof IAreaProvider) {
             if(button.id == 1000) {
-                if(!AreaShowManager.getInstance().isShowing(guiProgrammer.te)) buttonList.add(new GuiButton(1001, guiLeft + 40, guiTop + 175, 100, 20, I18n.format("gui.programmer.button.stopShowingArea")));
+                if(!AreaShowManager.getInstance().isShowing(guiProgrammer.te)) buttonList.add(new GuiButton(1001, guiLeft + xSize / 2 - 50, guiTop + 175, 100, 20, I18n.format("gui.programmer.button.stopShowingArea")));
                 guiProgrammer.te.previewArea(widget.getX(), widget.getY());
                 return;
             } else if(button.id == 1001) {
