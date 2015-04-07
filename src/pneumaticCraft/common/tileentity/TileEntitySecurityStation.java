@@ -10,6 +10,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.EnumChatFormatting;
+import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.client.render.RenderRangeLines;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
@@ -19,6 +22,7 @@ import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.PacketRenderRangeLines;
 import pneumaticCraft.lib.Log;
 import pneumaticCraft.lib.TileEntityConstants;
+import pneumaticCraft.proxy.CommonProxy;
 
 import com.mojang.authlib.GameProfile;
 
@@ -114,8 +118,14 @@ public class TileEntitySecurityStation extends TileEntityBase implements ISidedI
             updateNeighbours();
         } else if(buttonID == 2) {
             rebootStation();
-        } else if(buttonID > 2 && buttonID - 3 < sharedUsers.size()) {
-            sharedUsers.remove(buttonID - 3);
+        } else if(buttonID == 3) {
+            if(!hasValidNetwork()) {
+                player.addChatComponentMessage(new ChatComponentTranslation(EnumChatFormatting.GREEN + "This Security Station is out of order: Its network hasn't been properly configured."));
+            } else {
+                player.openGui(PneumaticCraft.instance, CommonProxy.GUI_ID_HACKING, worldObj, xCoord, yCoord, zCoord);
+            }
+        } else if(buttonID > 3 && buttonID - 4 < sharedUsers.size()) {
+            sharedUsers.remove(buttonID - 4);
         }
         sendDescriptionPacket();
     }
@@ -133,6 +143,9 @@ public class TileEntitySecurityStation extends TileEntityBase implements ISidedI
             if(gameProfileEquals(hackedUser, user)) {
                 return;
             }
+        }
+        for(GameProfile sharedUser : sharedUsers) {
+            if(gameProfileEquals(sharedUser, user)) return;
         }
         hackedUsers.add(user);
         sendDescriptionPacket();

@@ -1,22 +1,29 @@
 package pneumaticCraft.common.network;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.tileentity.TileEntity;
 import pneumaticCraft.common.DamageSourcePneumaticCraft;
+import pneumaticCraft.common.tileentity.TileEntitySecurityStation;
 
-public class PacketSecurityStationFailedHack extends AbstractPacket<PacketSecurityStationFailedHack>{
+public class PacketSecurityStationFailedHack extends LocationIntPacket<PacketSecurityStationFailedHack>{
 
-    @Override
-    public void fromBytes(ByteBuf buf){}
+    public PacketSecurityStationFailedHack(){}
 
-    @Override
-    public void toBytes(ByteBuf buf){}
+    public PacketSecurityStationFailedHack(int x, int y, int z){
+        super(x, y, z);
+    }
 
     @Override
     public void handleClientSide(PacketSecurityStationFailedHack message, EntityPlayer player){}
 
     @Override
     public void handleServerSide(PacketSecurityStationFailedHack message, EntityPlayer player){
-        player.attackEntityFrom(DamageSourcePneumaticCraft.securityStation, 19);
+        TileEntity te = message.getTileEntity(player.worldObj);
+        if(te instanceof TileEntitySecurityStation) {
+            TileEntitySecurityStation station = (TileEntitySecurityStation)te;
+            if(!station.isPlayerOnWhiteList(player)) {
+                player.attackEntityFrom(DamageSourcePneumaticCraft.securityStation, 19);
+            }
+        }
     }
 }

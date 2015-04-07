@@ -66,6 +66,7 @@ public class GuiSecurityStationInventory extends GuiSecurityStationBase{
         accessStat.addWidget(sharedUserTextField);
         accessStat.addWidget(addButton);
 
+        buttonList.add(new GuiButton(3, guiLeft + 108, guiTop + 103, 64, 20, I18n.format("gui.securityStation.test")));
         buttonList.add(rebootButton);
         buttonList.add(new GuiButton(-1, guiLeft + 108, guiTop + 125, 64, 20, I18n.format("gui.universalSensor.button.showRange")));
 
@@ -244,7 +245,7 @@ public class GuiSecurityStationInventory extends GuiSecurityStationBase{
         removeUserButtons = new ArrayList<GuiButtonSpecial>();
         for(int i = 0; i < te.sharedUsers.size(); i++) {
             Rectangle rect = accessStat.getButtonScaledRectangle(20, 32 + i * 10, fontRendererObj.getStringWidth("-" + te.sharedUsers.get(i).getName()), 8);
-            GuiButtonSpecial button = getInvisibleButtonFromRectangle(3 + i, rect);
+            GuiButtonSpecial button = getInvisibleButtonFromRectangle(4 + i, rect);
             button.setInvisibleHoverColor(0x44FF0000);
             button.setVisible(false);
             accessStat.addWidget(button);
