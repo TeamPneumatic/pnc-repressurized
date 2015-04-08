@@ -74,7 +74,8 @@ public class CraftingRegistrator{
 
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Blockss.elevatorFrame, 4, 0), "i i", "i i", "i i", 'i', Names.INGOT_IRON_COMPRESSED));
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Itemss.pneumaticCylinder), "pip", "pip", "pbp", 'p', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.RAIN_PLANT_DAMAGE), 'i', Names.INGOT_IRON_COMPRESSED, 'b', Itemss.cannonBarrel));
-        GameRegistry.addRecipe(new ItemStack(Blockss.elevatorBase, 4, 0), "cpc", "pcp", "cpc", 'p', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.BURST_PLANT_DAMAGE), 'c', Itemss.pneumaticCylinder);
+        GameRegistry.addRecipe(new ItemStack(Blockss.elevatorBase, 4, 0), "cp", "pc", 'p', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.BURST_PLANT_DAMAGE), 'c', Itemss.pneumaticCylinder);
+        GameRegistry.addRecipe(new ItemStack(Blockss.elevatorBase, 4, 0), "pc", "cp", 'p', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.BURST_PLANT_DAMAGE), 'c', Itemss.pneumaticCylinder);
         GameRegistry.addRecipe(new ItemStack(Blockss.elevatorCaller, 1, 0), "cpc", "prp", "cpc", 'p', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.SLIME_PLANT_DAMAGE), 'c', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.FLYING_FLOWER_DAMAGE), 'r', Items.redstone);
         GameRegistry.addRecipe(new ItemStack(Blockss.elevatorCaller, 1, 0), "cpc", "prp", "cpc", 'c', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.SLIME_PLANT_DAMAGE), 'p', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.FLYING_FLOWER_DAMAGE), 'r', Items.redstone);
 
