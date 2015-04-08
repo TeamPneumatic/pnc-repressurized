@@ -1,8 +1,11 @@
--Added Pastebin functionality to the Programmer.
--Added Crafting puzzle piece.
--Added Block Tracker upgrade behaviour to the Air Cannon (hoppering items).
--Added Standby puzzle piece to the Programmer.
+-Added Equivalent Exchange 3 support.
+-Rebalanced Elevator Base recipe (cheaper).
+-Added a button the Security Station that allows you to test your own layout.
+-Added 'Grid' and 'Random' area type to the Area puzzle piece.
+-Pneumatic Door now will open automatically when it runs out of pressure.
+-The maximum scale of the Programmer has been doubled, allowing people with a lower resolution to see programs
+-Added Comment piece to the Programmer.
+-Pneumatic Doors when configured as double doors now will open/close together.
+-Security Stations can now only be placed when they don't (or won't) overlap with another player's Security Station area.
 
--Bugfix: Security Station causes lag when having a lot of Tile Entities (converted the lookup from O(n) to O(1)).
--Bugfix: Crash on SMP when opening Remote GUI.
--Bugfix: Remote not properly synchronizing current variable state.
+-Bugfix: You can fill water bottles by right clicking Etching Acid.

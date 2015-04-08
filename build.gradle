@@ -44,7 +44,7 @@ apply plugin: 'forge'
 project.ext {
 	massive = "1"
     major = "6"
-    minor = "5"
+    minor = "6"
     mcVersion = "1.7.10"
 }
 
@@ -79,6 +79,7 @@ dependencies {
     compile 'net.industrial-craft:industrialcraft-2:2.2.504-experimental:api'
 	compile "igwmod:IGW-Mod-1.7.10:1.1.0-13:userdev"
 	compile "li.cil.oc:OpenComputers:MC1.7.10-1.4.5.28:api"
+	compile "com.pahimar.ee3:EquivalentExchange3:1.7.10-0.2.347:dev"
 
 	println("  Finished adding dependencies!")
 }

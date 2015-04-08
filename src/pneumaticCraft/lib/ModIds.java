@@ -20,4 +20,5 @@ public class ModIds{
     public static final String COFH_CORE = "CoFHCore";
     public static final String NOT_ENOUGH_KEYS = "notenoughkeys";
     public static final String OPEN_COMPUTERS = "OpenComputers|Core";
+    public static final String EE3 = "EE3";
 }
