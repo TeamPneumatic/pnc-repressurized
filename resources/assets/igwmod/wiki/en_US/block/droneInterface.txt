@@ -107,6 +107,14 @@ Same as above, now in one function to set all sides at once (6x boolean).
 [prefix{l}]setCraftingGrid(<item/block name>, <item/block name>, ...(9x)) [prefix{}] 
 Sets up the crafting grid so when the Crafting instruction is called, this recipe will be used. You need to specify all 9 items making up the recipe. For empty spaces supply nil. The naming format is the same as for supplying item filters.
 
+[prefix{l}]setVariable(<variable name>, <true/false>) [prefix{}]
+[prefix{l}]setVariable(<variable name>, <x>) [prefix{}]
+[prefix{l}]setVariable(<variable name>, <x>, <y>, <z>) [prefix{}]
+Sets the[link{progWidget/coordinateOperator}] variable[link{}] of this Drone. When passing 'true', the coordinate will be set to (1,0,0). Alternatively, false will be setting it to (0,0,0). It is possible to set global variables (#) as well.
+
+[prefix{l}]getVariable(<variable name>) [prefix{}]
+Returns the value of the variable from this Drone (x, y and z). It is possible to get global (#) and special variables ($) as well.
+
 [prefix{l}]setAction(<action>) [prefix{}] 
 String that represents the action. This should be one of the actions returned by getAllActions().
 

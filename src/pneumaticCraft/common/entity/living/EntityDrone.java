@@ -339,6 +339,14 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
         return aiManager.getTargetAI();
     }
 
+    public void setVariable(String varName, ChunkPosition pos){
+        aiManager.setCoordinate(varName, pos);
+    }
+
+    public ChunkPosition getVariable(String varName){
+        return aiManager.getCoordinate(varName);
+    }
+
     public ItemStack getActiveProgram(){
         String key = getActiveProgramKey();
         if(key.equals("")) {
