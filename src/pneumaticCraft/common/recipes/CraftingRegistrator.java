@@ -5,12 +5,10 @@ import java.util.List;
 
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
-import net.minecraft.item.ItemDye;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.RecipeSorter;
 import net.minecraftforge.oredict.RecipeSorter.Category;
@@ -25,7 +23,6 @@ import pneumaticCraft.common.item.ItemNetworkComponents;
 import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.common.item.ItemProgrammingPuzzle;
 import pneumaticCraft.common.item.Itemss;
-import pneumaticCraft.common.tileentity.TileEntityPlasticMixer;
 import pneumaticCraft.lib.Names;
 import cpw.mods.fml.common.registry.GameRegistry;
 
@@ -161,13 +158,6 @@ public class CraftingRegistrator{
 
         addProgrammingPuzzleRecipes();
         GameRegistry.addRecipe(new ItemStack(Itemss.drone), " b ", "bcb", " b ", 'b', Itemss.turbineRotor, 'c', Itemss.printedCircuitBoard);
-        for(int i = 0; i < 16; i++) {
-            ItemStack drone = new ItemStack(Itemss.drone);
-            NBTTagCompound tag = new NBTTagCompound();
-            tag.setInteger("color", ItemDye.field_150922_c[i]);
-            drone.setTagCompound(tag);
-            GameRegistry.addRecipe(new ShapelessOreRecipe(drone, Itemss.drone, TileEntityPlasticMixer.DYES[i]));
-        }
 
         GameRegistry.addRecipe(new ItemStack(Blockss.programmer), "gbg", "tpt", "ggg", 'g', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.FIRE_FLOWER_DAMAGE), 'b', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.SQUID_PLANT_DAMAGE), 't', Itemss.turbineRotor, 'p', Itemss.printedCircuitBoard);
 
