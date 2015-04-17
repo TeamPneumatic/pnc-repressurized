@@ -118,7 +118,8 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
     public List<IProgWidget> progWidgets = new ArrayList<IProgWidget>();
 
     private DroneFakePlayer fakePlayer;
-    public String playerName;
+    public String playerName = "Drone";
+    private String playerUUID;
 
     public DroneGoToChargingStation chargeAI;
     public DroneGoToOwner gotoOwnerAI;
@@ -140,19 +141,18 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
         ReflectionHelper.setPrivateValue(EntityLiving.class, this, new EntityPathNavigateDrone(this, world), "navigator", "field_70699_by");
         ReflectionHelper.setPrivateValue(EntityLiving.class, this, new DroneMoveHelper(this), "moveHelper", "field_70765_h");
         tasks.addTask(1, chargeAI = new DroneGoToChargingStation(this, 0.1D));
-        if(!world.isRemote) initializeFakePlayer(world, null, "Drone");
     }
 
     public EntityDrone(World world, EntityPlayer player){
         this(world);
-        initializeFakePlayer(world, player.getGameProfile().getId().toString(), player.getCommandSenderName());
+        playerUUID = player.getGameProfile().getId().toString();
+        playerName = player.getCommandSenderName();
     }
 
-    private void initializeFakePlayer(World world, String uuid, String name){
-        fakePlayer = new DroneFakePlayer((WorldServer)world, new GameProfile(uuid != null ? UUID.fromString(uuid) : null, name), new FakePlayerItemInWorldManager(world, fakePlayer, this), this);
+    private void initializeFakePlayer(){
+        fakePlayer = new DroneFakePlayer((WorldServer)worldObj, new GameProfile(playerUUID != null ? UUID.fromString(playerUUID) : null, playerName), new FakePlayerItemInWorldManager(worldObj, fakePlayer, this), this);
         fakePlayer.playerNetServerHandler = new NetHandlerPlayServer(MinecraftServer.getServer(), new NetworkManager(false), fakePlayer);
         fakePlayer.inventory = new InventoryFakePlayer(fakePlayer);
-        playerName = name;
     }
 
     @Override
@@ -180,7 +180,7 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
 
     @Override
     public void writeSpawnData(ByteBuf data){
-        ByteBufUtils.writeUTF8String(data, fakePlayer.getCommandSenderName());
+        ByteBufUtils.writeUTF8String(data, getFakePlayer().getCommandSenderName());
     }
 
     @Override
@@ -288,7 +288,7 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
 
         if(!worldObj.isRemote && isEntityAlive()/*((FakePlayerItemInWorldManager)fakePlayer.theItemInWorldManager).isDigging()*/) {
             for(int i = 0; i < 4; i++) {
-                fakePlayer.theItemInWorldManager.updateBlockRemoving();
+                getFakePlayer().theItemInWorldManager.updateBlockRemoving();
             }
         }
         super.onUpdate();
@@ -524,7 +524,7 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
 
             entityDropItem(drone, 0);
         }
-        if(!worldObj.isRemote) ((FakePlayerItemInWorldManager)fakePlayer.theItemInWorldManager).cancelDigging();
+        if(!worldObj.isRemote) ((FakePlayerItemInWorldManager)getFakePlayer().theItemInWorldManager).cancelDigging();
         super.onDeath(par1DamageSource);
     }
 
@@ -558,7 +558,7 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
     @Override
     public void printManometerMessage(EntityPlayer player, List<String> curInfo){
         if(hasCustomNameTag()) curInfo.add(EnumChatFormatting.AQUA + getCustomNameTag());
-        curInfo.add("Owner: " + fakePlayer.getCommandSenderName());
+        curInfo.add("Owner: " + getFakePlayer().getCommandSenderName());
         curInfo.add("Current pressure: " + PneumaticCraftUtils.roundNumberTo(getPressure(null), 1) + " bar.");
         /*for(int i = 0; i < 9; i++) {
             if(upgradeInventory[i] != null) {
@@ -672,11 +672,8 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
     public void readFromNBT(NBTTagCompound tag){
         super.readFromNBT(tag);
         if(tag.hasKey("owner")) {
-            if(worldObj.isRemote) {
-                playerName = tag.getString("owner");
-            } else {
-                initializeFakePlayer(worldObj, tag.hasKey("ownerUUID") ? tag.getString("ownerUUID") : null, tag.getString("owner"));
-            }
+            playerName = tag.getString("owner");
+            playerUUID = tag.hasKey("ownerUUID") ? tag.getString("ownerUUID") : null;
         }
     }
 
@@ -692,12 +689,13 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
     }
 
     public DroneFakePlayer getFakePlayer(){
+        if(fakePlayer == null && !worldObj.isRemote) initializeFakePlayer();
         return fakePlayer;
     }
 
     @Override
     public boolean attackEntityAsMob(Entity entity){
-        fakePlayer.attackTargetEntityWithCurrentItem(entity);
+        getFakePlayer().attackTargetEntityWithCurrentItem(entity);
         addAir(null, -PneumaticValues.DRONE_USAGE_ATTACK);
         return true;
     }
@@ -772,14 +770,14 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
             super.setInventorySlotContents(slot, stack);
             if(slot == 0 && !isChangingCurrentStack) {
                 isChangingCurrentStack = true;
-                fakePlayer.inventory.setInventorySlotContents(slot, stack);
+                getFakePlayer().inventory.setInventorySlotContents(slot, stack);
                 isChangingCurrentStack = false;
                 if(oldStack != null) {
-                    fakePlayer.getAttributeMap().removeAttributeModifiers(oldStack.getAttributeModifiers());
+                    getFakePlayer().getAttributeMap().removeAttributeModifiers(oldStack.getAttributeModifiers());
                 }
 
                 if(stack != null) {
-                    fakePlayer.getAttributeMap().applyAttributeModifiers(stack.getAttributeModifiers());
+                    getFakePlayer().getAttributeMap().applyAttributeModifiers(stack.getAttributeModifiers());
                 }
                 oldStack = stack;
             }
