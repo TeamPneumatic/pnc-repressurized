@@ -242,7 +242,7 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
 
     @Override
     public boolean isEntityValid(Entity entity){
-        return whitelistFilter.isEntityApplicable(entity) && !blacklistFilter.isEntityApplicable(entity);
+        return (whitelistFilter == null || whitelistFilter.isEntityApplicable(entity)) && (blacklistFilter == null || !blacklistFilter.isEntityApplicable(entity));
     }
 
     private ChunkPosition getMinPos(){
