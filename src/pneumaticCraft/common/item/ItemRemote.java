@@ -3,6 +3,7 @@ package pneumaticCraft.common.item;
 import java.util.List;
 
 import net.minecraft.client.resources.I18n;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -141,12 +142,39 @@ public class ItemRemote extends ItemPneumatic{
                         return canAccess;
                     }
                 }
-                tag.removeTag("securityX");
-                tag.removeTag("securityY");
-                tag.removeTag("securityZ");
-                tag.removeTag("securityDimension");
             }
         }
         return true;
+    }
+
+    @Override
+    public void onUpdate(ItemStack remote, World worl, Entity entity, int slot, boolean holdingItem){
+        if(!worl.isRemote) {
+            NBTTagCompound tag = remote.getTagCompound();
+            if(tag != null) {
+                if(tag.hasKey("securityX")) {
+                    int x = tag.getInteger("securityX");
+                    int y = tag.getInteger("securityY");
+                    int z = tag.getInteger("securityZ");
+                    int dimensionId = tag.getInteger("securityDimension");
+                    WorldServer world = null;
+                    for(WorldServer w : MinecraftServer.getServer().worldServers) {
+                        if(w.provider.dimensionId == dimensionId) {
+                            world = w;
+                            break;
+                        }
+                    }
+                    if(world != null) {
+                        TileEntity te = world.getTileEntity(x, y, z);
+                        if(!(te instanceof TileEntitySecurityStation)) {
+                            tag.removeTag("securityX");
+                            tag.removeTag("securityY");
+                            tag.removeTag("securityZ");
+                            tag.removeTag("securityDimension");
+                        }
+                    }
+                }
+            }
+        }
     }
 }
