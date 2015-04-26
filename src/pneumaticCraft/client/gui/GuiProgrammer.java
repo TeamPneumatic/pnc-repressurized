@@ -118,6 +118,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
     public void initGui(){
         if(pastebinGui != null && pastebinGui.outputTag != null) {
             te.readProgWidgetsFromNBT(pastebinGui.outputTag);
+            pastebinGui = null;
             NetworkHandler.sendToServer(new PacketProgrammerUpdate(te));
         }
 
