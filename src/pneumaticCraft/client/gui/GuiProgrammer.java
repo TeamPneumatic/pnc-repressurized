@@ -222,36 +222,40 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
     }
 
     @Override
-    @Optional.Method(modid = ModIds.IGWMOD)
     protected void keyTyped(char key, int keyCode){
         super.keyTyped(key, keyCode);
 
-        if(Keyboard.KEY_I == keyCode) {
-            int x = lastMouseX;
-            int y = lastMouseY;
-            float scale = getScale();
-
-            for(IProgWidget widget : te.progWidgets) {
-                if(!isOutsideProgrammingArea(widget)) {
-                    if(widget != draggingWidget && (x - translatedX) / scale - guiLeft >= widget.getX() && (y - translatedY) / scale - guiTop >= widget.getY() && (x - translatedX) / scale - guiLeft <= widget.getX() + widget.getWidth() / 2 && (y - translatedY) / scale - guiTop <= widget.getY() + widget.getHeight() / 2) {
-                        GuiWiki gui = new GuiWiki();
-                        FMLClientHandler.instance().showGuiScreen(gui);
-                        gui.setCurrentFile("progwidget/" + widget.getWidgetString());
-                    }
-                }
+        if(Keyboard.KEY_I == keyCode && Loader.isModLoaded(ModIds.IGWMOD)) {
+            onIGWAction();
+        }
+        if(Keyboard.KEY_R == keyCode) {
+            if(exportButton.getBounds().contains(lastMouseX, lastMouseY)) {
+                NetworkHandler.sendToServer(new PacketGuiButton(te, 0));
             }
+        }
+    }
 
-            for(IProgWidget widget : visibleSpawnWidgets) {
-                if(widget != draggingWidget && x - guiLeft >= widget.getX() && y - guiTop >= widget.getY() && x - guiLeft <= widget.getX() + widget.getWidth() / 2 && y - guiTop <= widget.getY() + widget.getHeight() / 2) {
+    @Optional.Method(modid = ModIds.IGWMOD)
+    private void onIGWAction(){
+        int x = lastMouseX;
+        int y = lastMouseY;
+        float scale = getScale();
+
+        for(IProgWidget widget : te.progWidgets) {
+            if(!isOutsideProgrammingArea(widget)) {
+                if(widget != draggingWidget && (x - translatedX) / scale - guiLeft >= widget.getX() && (y - translatedY) / scale - guiTop >= widget.getY() && (x - translatedX) / scale - guiLeft <= widget.getX() + widget.getWidth() / 2 && (y - translatedY) / scale - guiTop <= widget.getY() + widget.getHeight() / 2) {
                     GuiWiki gui = new GuiWiki();
                     FMLClientHandler.instance().showGuiScreen(gui);
                     gui.setCurrentFile("progwidget/" + widget.getWidgetString());
                 }
             }
         }
-        if(Keyboard.KEY_R == keyCode) {
-            if(exportButton.getBounds().contains(lastMouseX, lastMouseY)) {
-                NetworkHandler.sendToServer(new PacketGuiButton(te, 0));
+
+        for(IProgWidget widget : visibleSpawnWidgets) {
+            if(widget != draggingWidget && x - guiLeft >= widget.getX() && y - guiTop >= widget.getY() && x - guiLeft <= widget.getX() + widget.getWidth() / 2 && y - guiTop <= widget.getY() + widget.getHeight() / 2) {
+                GuiWiki gui = new GuiWiki();
+                FMLClientHandler.instance().showGuiScreen(gui);
+                gui.setCurrentFile("progwidget/" + widget.getWidgetString());
             }
         }
     }
