@@ -7,7 +7,6 @@ import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import pneumaticCraft.client.gui.GuiPneumaticInventoryItem;
 import pneumaticCraft.common.NBTUtil;
 import pneumaticCraft.common.tileentity.TileEntityChargingStation;
 
@@ -16,7 +15,6 @@ public class InventoryPneumaticInventoryItem extends InventoryBasic{
     protected String inventoryTitle;
     // the original ItemStack to compare with the player inventory
     public ItemStack armorStack;
-    private GuiPneumaticInventoryItem gui;
     private final TileEntityChargingStation te;
 
     // if class is reading from NBT tag
@@ -44,10 +42,6 @@ public class InventoryPneumaticInventoryItem extends InventoryBasic{
         if(!reading) {
             saveInventory();
         }
-    }
-
-    public void setGui(GuiPneumaticInventoryItem gui){
-        this.gui = gui;
     }
 
     /**
@@ -110,7 +104,7 @@ public class InventoryPneumaticInventoryItem extends InventoryBasic{
      */
     public void saveInventory(){
         writeToNBT();
-        updateToChargingStation();
+        //   updateToChargingStation();
     }
 
     private void updateToChargingStation(){
@@ -124,7 +118,7 @@ public class InventoryPneumaticInventoryItem extends InventoryBasic{
      *            The NBT Node to write to.
      * @return The written NBT Node.
      */
-    protected void writeToNBT(){
+    public void writeToNBT(){
         NBTTagList itemList = new NBTTagList();
         for(int i = 0; i < getSizeInventory(); i++) {
             if(getStackInSlot(i) != null) {

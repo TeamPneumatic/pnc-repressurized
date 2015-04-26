@@ -28,7 +28,6 @@ public abstract class GuiPneumaticInventoryItem extends GuiPneumaticContainerBas
     public GuiPneumaticInventoryItem(ContainerChargingStationItemInventory container, TileEntityChargingStation te){
         super(container, te, Textures.GUI_PNEUMATIC_ARMOR_LOCATION);
         itemStack = te.getStackInSlot(TileEntityChargingStation.CHARGE_INVENTORY_INDEX);
-        container.armor.setGui(this);
     }
 
     @Override
