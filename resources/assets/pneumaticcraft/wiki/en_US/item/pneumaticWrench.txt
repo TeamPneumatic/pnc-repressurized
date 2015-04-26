@@ -1,0 +1,4 @@
+The Pneumatic Wrench can be used to rotate PneumaticCraft (and many more) blocks. It's a 'Buildcraft-compatible Wrench' so to speak. Rotating PneumaticCraft blocks uses compressed air, other blocks don't. This can be changed in the config though. When you disable this, this will allow other mod's wrenches to rotate PneumaticCraft blocks as well.
+
+
+[crafting{200, 110, key=item/pneumaticWrench}]

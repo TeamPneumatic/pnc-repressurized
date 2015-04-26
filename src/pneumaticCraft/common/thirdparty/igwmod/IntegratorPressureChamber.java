@@ -48,7 +48,7 @@ public class IntegratorPressureChamber implements IRecipeIntegrator{
         } catch(NumberFormatException e) {
             throw new IllegalArgumentException("The second parameter (the y coordinate) contains an invalid number. Check for invalid characters!");
         }
-        locatedTextures.add(new LocatedTexture(TextureSupplier.getTexture(Paths.MOD_ID + "textures/pressureChamberRecipe.png"), x, y, 1 / GuiWiki.TEXT_SCALE));
+        locatedTextures.add(new LocatedTexture(TextureSupplier.getTexture(Paths.MOD_ID_WITH_COLON + "textures/pressureChamberRecipe.png"), x, y, 1 / GuiWiki.TEXT_SCALE));
 
         //Look up the recipe
 

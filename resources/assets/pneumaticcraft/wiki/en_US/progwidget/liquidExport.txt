@@ -1,0 +1,10 @@
+Programming Puzzles are used in [link{block/programmer}]programmers [link{}].
+
+[prefix{l}]The Liquid Export piece [prefix{}]
+The opposite of [link{progwidget/liquidImport}]Liquid Import [link{}]: The Drone will move to the nearest tank within the specified area to drop off liquid from the Drone's tank.
+
+You can specify to which sides of the tank the Drone should output its items by right clicking the Liquid Export piece. In here you can specify a maximum amount of exported liquid (in mB) too.
+
+You can also apply a Liquid Filter. With a filter, only liquids that are allowed by the filter will be exported by the Drone.
+
+This program is done when the Drone's tank is empty (of the by the liquid filter allowed liquids), or when there's no tank within the area to output the liquid to.

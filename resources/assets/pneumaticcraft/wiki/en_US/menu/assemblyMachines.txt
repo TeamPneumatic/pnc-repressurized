@@ -1,0 +1,41 @@
+[image{200, 20, 0.9, igwmod:textures/assemblyMachines.png}]
+To be able to craft higher tier materials, you'll need an Assembly set-up. It basically is a collection of Assembly machines. These machines can communicate with each other when they're next to eachother (not vertically!). In this set-up only one machine of each type can be existing (with the exception of the Assembly IO Unit). The assembly line runs on compressed air. You'll only have to apply pressure to the Assembly Controller to power the whole system though.
+
+[image{370, 270, 0.4, igwmod:textures/assemblyController.png}]
+[prefix{l}]Assembly Controller[prefix{}]
+The brain of the Assembly set-up. In this device you can put programs which then tells the Assembly Controller how to control the other Assembly machines. The display of the Controller shows some information about the current crafting cycle. It also displays an exclamation mark icon when there is a problem which is holding up the crafting. Open the GUI to see what's happening.
+
+[image{370, 420, 0.3, igwmod:textures/assemblyPlatform.png}]
+[prefix{l}]Assembly Platform[prefix{}]
+The Assembly Platform is a worktable for the other Assembly Machines. It is used to keep items still when drilling/lasering. The Assembly Platform best could be positioned in the middle, as many machines need to access it.
+
+[image{200, 500, 0.9, igwmod:textures/assemblyIOUnit.png}]
+[prefix{l}]Assembly IO Unit[prefix{}]
+The IO Unit is the connection between inventories and the Assembly Platform. The robot arm is able to reach diagonally. The IO Unit can either export crafted items, or import to be used items. You can switch modes by right-clicking the IO Unit with a (Pneumatic) Wrench. Orange means it's in export, blue means it's in import. For an IO Unit to work it needs to be able to reach an Assembly Platform, as well as an inventory to extract items from (in import mode) or an inventory to store crafted items in (in export mode).
+
+[image{395, 790, 0.3, igwmod:textures/assemblyDrill.png}]
+[prefix{l}]Assembly Drill[prefix{}]
+The Assembly drill is one of te Assembly machines which do the real job. Its diamond drillhead is able to drill through the toughest materials. The Assembly Drill is NOT able to reach diagonally, which means it should be located directly adjacent to an Assembly Platform.
+
+[image{405, 890, 0.3, igwmod:textures/assemblyLaser.png}]
+[prefix{l}]Assembly Laser[prefix{}]
+The Assembly Laser is able to cut through materials, used to cut an item in half, or to cut off  edges. Like the Assembly Drill, this machine can NOT reach diagonally.
+
+[prefix{l}]Using the Assembly Machines[prefix{}]
+To craft items with the Assembly machines, put an Assembly Program in the Assembly Controller, and put the required items in the input inventory. Assembly Programs only can be acquired via trading with Mechanics (PneumaticCraft Villagers), [prefix{m}]which spawn naturally[prefix{}]  (still to-do!) or you can 'make' them in a Pressure Chamber. You can also create Assembly Programs with a 'temporary' recipe, displayed below.
+
+Note: The Assembly Program: Drill & Laser doesn't mean it can handle both recipes, it only means it will do items that require lasering right after being drilled!
+
+[crafting{200, 1120, key=item/assemblyProgram0}]
+[crafting{200, 1240, key=item/assemblyProgram1}]
+[crafting{200, 1360, key=item/assemblyProgram2}]
+[crafting{200, 1480, key=block/assemblyController}]
+[crafting{200, 1600, key=block/assemblyPlatform}]
+[crafting{200, 1720, key=block/assemblyIOUnit}]
+[crafting{200, 1840, key=block/assemblyDrill}]
+[crafting{200, 1960, key=block/assemblyLaser}]
+[assemblyLine{200, 2080, block/advancedPressureTube}]
+[assemblyLine{200, 2250, block/advancedPressureTube,1}]
+[assemblyLine{200, 2420, block/pressureChamberValve}]
+[assemblyLine{200, 2590, item/unassembledPCB}]
+[assemblyLine{200, 2760, block/aphorismTile}]

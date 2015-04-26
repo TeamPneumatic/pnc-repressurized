@@ -1,0 +1,4 @@
+Crafting component.
+Crafted by throwing [link{menu/worldgen}]seeds [link{}] in a [link{menu/pressureChamber}]Pressure Chamber[link{}]. A certain color seed will turn into the same color plastic.
+
+[pressureChamber{190, 70, item/plastic}]

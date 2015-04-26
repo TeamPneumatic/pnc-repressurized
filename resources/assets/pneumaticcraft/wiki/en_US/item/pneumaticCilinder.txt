@@ -1,0 +1,3 @@
+Crafting item
+
+[crafting{200, 40, key=item/pneumaticCilinder}]

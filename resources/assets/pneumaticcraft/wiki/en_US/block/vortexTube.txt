@@ -1,0 +1,6 @@
+The Vortex Tube is a device which is based on real life [link{www.en.wikipedia.org/wiki/Vortex_tube}](click here for info)[link{}]. It splits the air flowing into it into a hot air part and a cold air part. It heats up one side of the Tube, and cools down the opposite side. When you place down a Vortex Tube the side that's creating heat is shown red, and the side that's cooling down is shown blue. The image below shows this, the Vortex Tube displayed left has just been placed down.
+
+Air is required to make the Vortex Tube work. The higher the pressure, the higher the air use, but also the faster the Vortex Tube works. Note that the Vortex Tube has only one tube connection for air. Rotate the Vortex Tube by right clicking on a wrench on the hot/cold side of the Vortex Tube so only the tube connection turns. Alternatively place down the Vortex Tube against a pneumatic device. The Vortex Tube will try to connect to the first possible machine.
+[image{200,115,0.34,igwmod:textures/vortexTube.png}]
+
+[crafting{200,400,key=block/vortexTube}]

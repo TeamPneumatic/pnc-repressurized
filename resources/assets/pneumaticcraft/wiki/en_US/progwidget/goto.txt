@@ -1,0 +1,6 @@
+Programming Puzzles are used in [link{block/programmer}]programmers [link{}].
+
+[prefix{l}]The 'Goto' (Go To Location) piece [prefix{}]
+Goto is pretty straightforward: The Drone will go to the nearest reachable location within the area.
+
+This program is done when the Drone has reached the area, or when this area isn't reachable.

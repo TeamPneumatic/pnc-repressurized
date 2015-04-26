@@ -1,0 +1,4 @@
+Programming Puzzles are used in [link{block/programmer}]programmers [link{}].
+
+[prefix{l}]The Rename piece [prefix{}]
+The rename piece is as if you right click a drone with a name tag. The name can be put in as text piece. This can be used as debug feature, as a Drone can be named on the fly with this.

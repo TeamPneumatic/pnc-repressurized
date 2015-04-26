@@ -1,0 +1,3 @@
+This is a Condition. [link{progwidget/conditions}]Click here[link{}] to read general information about Conditions.
+
+The Condition: Block piece allows you to check an area for certain blocks. With this you can check if an area contains a full-grown crop for example. You can filter which blocks are valid by attaching an Item Filter. The drone will check the block if it can be silk touched, if so it will check if the item filter matches the silk touched block. If it can't be silk touched, the drops of the block will be used to filter. For example, you can set the filter to Wheat, and it will match the filter as soon as the crop will drop wheat (= full grown).

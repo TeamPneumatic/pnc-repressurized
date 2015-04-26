@@ -1,0 +1,4 @@
+Programming Puzzles are used in [link{block/programmer}]programmers [link{}].
+
+[prefix{l}]The 'Start' piece [prefix{}]
+The start piece is the first piece in a program, the piece that starts the process.

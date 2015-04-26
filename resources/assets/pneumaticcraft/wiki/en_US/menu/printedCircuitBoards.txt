@@ -1,0 +1,48 @@
+Printed Circuit Boards (PCB) are important components used in the more high tier machines. Making them requires a few steps. First of all, craft an Empty PCB:
+
+[pressureChamber{190, 70, item/emptyPCB}]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Then there are two ways to make an Unassembled PCB. You can throw the Empty PCB in a Assembly line in which it will be lasered:
+
+[assemblyLine{200, 280, item/unassembledPCB}]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Or you can develop a PCB chemically by throwing it in a [link{block/uvLightbox}]UV Light Box[link{}] and then etch it in [link{item/etchingAcidBucket}]Etching Acid[link{}].
+
+After you've created an Unassembled PCB you can finish it by adding some components:
+
+[pressureChamber{190, 520, item/transistor}]
+[pressureChamber{190, 700, item/capacitor}]
+[crafting{200, 880, key=item/printedCircuitBoard}]
