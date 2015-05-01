@@ -31,8 +31,9 @@ public class EE3 implements IThirdParty{
     public void postInit(){
         for(PressureChamberRecipe recipe : PressureChamberRecipe.chamberRecipes) {
             if(recipe.output.length == 1) {
-                Log.info("Adding recipe with output: " + recipe.output[0]);
                 RecipeRegistryProxy.addRecipe(recipe.output[0], Arrays.asList(recipe.input));
+            } else {
+                Log.info("Found a Pressure Chamber recipe that has more than one output. This will cause problems with DynEMC!");
             }
         }
         registerAssemblyRecipes(AssemblyRecipe.drillLaserRecipes);
