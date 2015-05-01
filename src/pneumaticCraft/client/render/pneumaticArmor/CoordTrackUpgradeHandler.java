@@ -16,6 +16,8 @@ import pneumaticCraft.client.gui.pneumaticHelmet.GuiCoordinateTrackerOptions;
 import pneumaticCraft.client.gui.widget.GuiAnimatedStat;
 import pneumaticCraft.common.Config;
 import pneumaticCraft.common.NBTUtil;
+import pneumaticCraft.common.ai.EntityPathNavigateDrone;
+import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.ItemPneumaticArmor;
 import pneumaticCraft.common.item.Itemss;
@@ -40,6 +42,10 @@ public class CoordTrackUpgradeHandler implements IUpgradeRenderHandler{
     //gigantic lag, as it uses much performance to find a path when it doesn't have anything cached.
     private int pathCalculateCooldown;
     public int pathUpdateSetting;
+
+    public enum EnumNavigationResult{
+        NO_PATH, EASY_PATH, DRONE_PATH;
+    }
 
     @Override
     @SideOnly(Side.CLIENT)
@@ -138,21 +144,40 @@ public class CoordTrackUpgradeHandler implements IUpgradeRenderHandler{
     }
 
     @SideOnly(Side.CLIENT)
-    public boolean navigateToSurface(EntityPlayer player){
+    public EnumNavigationResult navigateToSurface(EntityPlayer player){
         World worldObj = player.worldObj;
         int y = worldObj.getHeightValue((int)player.posX, (int)player.posZ);
         PathEntity path = worldObj.getEntityPathToXYZ(player, (int)player.posX, y, (int)player.posZ, 300, true, true, false, true);
+        EnumNavigationResult result = path != null ? EnumNavigationResult.EASY_PATH : EnumNavigationResult.DRONE_PATH;
         if(path != null) {
             for(int i = 0; i < path.getCurrentPathLength(); i++) {
                 PathPoint pathPoint = path.getPathPointFromIndex(i);
                 if(worldObj.canBlockSeeTheSky(pathPoint.xCoord, pathPoint.yCoord, pathPoint.zCoord)) {
                     coordTracker = new RenderCoordWireframe(worldObj, pathPoint.xCoord, pathPoint.yCoord, pathPoint.zCoord);
                     navigator = new RenderNavigator(worldObj, pathPoint.xCoord, pathPoint.yCoord, pathPoint.zCoord);
-                    return true;
+                    return EnumNavigationResult.EASY_PATH;
                 }
             }
         }
-        return false;
+        path = getDronePath(player, (int)player.posX, y, (int)player.posZ);
+        if(path != null) {
+            for(int i = 0; i < path.getCurrentPathLength(); i++) {
+                PathPoint pathPoint = path.getPathPointFromIndex(i);
+                if(worldObj.canBlockSeeTheSky(pathPoint.xCoord, pathPoint.yCoord, pathPoint.zCoord)) {
+                    coordTracker = new RenderCoordWireframe(worldObj, pathPoint.xCoord, pathPoint.yCoord, pathPoint.zCoord);
+                    navigator = new RenderNavigator(worldObj, pathPoint.xCoord, pathPoint.yCoord, pathPoint.zCoord);
+                    return EnumNavigationResult.DRONE_PATH;
+                }
+            }
+        }
+        return EnumNavigationResult.NO_PATH;
+    }
+
+    public static PathEntity getDronePath(EntityPlayer player, int x, int y, int z){
+        World worldObj = player.worldObj;
+        EntityDrone drone = new EntityDrone(worldObj);
+        drone.setPosition(player.posX, player.posY - 2, player.posZ);
+        return new EntityPathNavigateDrone(drone, worldObj).getEntityPathToXYZ(drone, x, y, z, 300, true, true, false, true);
     }
 
     @Override

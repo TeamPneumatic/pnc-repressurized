@@ -516,6 +516,9 @@ pneumaticHelmet.upgrade.coreComponents=Helmet
 
 pneumaticHelmet.message.enableSetting=%s Enabled
 pneumaticHelmet.message.disableSetting=%s Disabled
+pneumaticHelmet.message.coordinateTracker.routeFound=Successfully found a route to the surface!
+pneumaticHelmet.message.coordinateTracker.harderRouteFound=Found a non-ideal route (requires actions like nerd poling)
+pneumaticHelmet.message.coordinateTracker.noRouteFound=Unable to find a route to the surface!
 
 blockTracker.module.hackables=Hackables
 blockTracker.module.inventories=Inventories

@@ -30,6 +30,9 @@ public class RenderNavigator{
     public void updatePath(){
         EntityPlayer player = FMLClientHandler.instance().getClient().thePlayer;
         path = worldObj.getEntityPathToXYZ(player, targetX, targetY, targetZ, 300, true, true, false, true);
+        if(!tracedToDestination()) {
+            path = CoordTrackUpgradeHandler.getDronePath(player, targetX, targetY, targetZ);
+        }
     }
 
     public void render(boolean wirePath, boolean xRayEnabled, float partialTicks){
