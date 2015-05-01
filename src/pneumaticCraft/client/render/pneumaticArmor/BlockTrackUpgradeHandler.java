@@ -99,7 +99,7 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler{
                     if(searchHandler != null && te instanceof IInventory) {
                         searchHandler.checkInventoryForItems(te);
                     }
-                    List<IBlockTrackEntry> entries = BlockTrackEntryList.instance.getEntriesForCoordinate(chunkCache, i, j, k);
+                    List<IBlockTrackEntry> entries = BlockTrackEntryList.instance.getEntriesForCoordinate(chunkCache, i, j, k, te);
                     if(entries.isEmpty()) continue;
                     boolean inList = false;
                     for(int l = 0; l < blockTargets.size(); l++) {
@@ -110,7 +110,7 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler{
                         }
                     }
                     if(!inList) {
-                        addBlockTarget(new RenderBlockTarget(player.worldObj, player, i, j, k, this));
+                        addBlockTarget(new RenderBlockTarget(player.worldObj, player, i, j, k, te, this));
                         for(IBlockTrackEntry entry : entries) {
                             if(countBlockTrackersOfType(entry) == entry.spamThreshold() + 1) {
                                 HUDHandler.instance().addMessage(new ArmorMessage(I18n.format("blockTracker.message.stopSpam", I18n.format(entry.getEntryName())), new ArrayList<String>(), 60, 0x7700AA00));

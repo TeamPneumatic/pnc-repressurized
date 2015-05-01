@@ -45,14 +45,16 @@ public class RenderBlockTarget{
     public List<String> textList = new ArrayList<String>();
     private int hackTime;
     private final BlockTrackUpgradeHandler blockTracker;
+    private TileEntity te;
 
-    public RenderBlockTarget(World world, EntityPlayer player, int x, int y, int z,
+    public RenderBlockTarget(World world, EntityPlayer player, int x, int y, int z, TileEntity te,
             BlockTrackUpgradeHandler blockTracker){
         this.world = world;
         this.player = player;
         blockX = x;
         blockY = y;
         blockZ = z;
+        this.te = te;
         this.blockTracker = blockTracker;
         // oldTicksExisted = entity.ticksExisted;
         String title = world.getBlock(x, y, z).getLocalizedName();
@@ -63,7 +65,6 @@ public class RenderBlockTarget{
             } catch(Throwable e) {}
         }
         if(title.contains(".name")) {
-            TileEntity te = world.getTileEntity(x, y, z);
             if(te instanceof IInventory) {
                 try {
                     title = I18n.format(((IInventory)te).getInventoryName());
@@ -81,7 +82,7 @@ public class RenderBlockTarget{
     }
 
     public List<IBlockTrackEntry> getApplicableEntries(){
-        return BlockTrackEntryList.instance.getEntriesForCoordinate(world, blockX, blockY, blockZ);
+        return BlockTrackEntryList.instance.getEntriesForCoordinate(world, blockX, blockY, blockZ, te);
     }
 
     public boolean isSameTarget(World world, int x, int y, int z){
@@ -97,13 +98,17 @@ public class RenderBlockTarget{
     }
 
     public void update(){
+        if(te != null && te.isInvalid()) te = null;
         stat.update();
         List<IBlockTrackEntry> applicableTrackEntries = getApplicableEntries();
         if(CommonHUDHandler.getHandlerForPlayer().ticksExisted % 100 == 0) {
+            boolean sentUpdate = false;
             for(IBlockTrackEntry entry : applicableTrackEntries) {
-                if(entry.shouldBeUpdatedFromServer()) {
-                    NetworkHandler.sendToServer(new PacketDescriptionPacketRequest(blockX, blockY, blockZ));
-                    break;
+                if(entry.shouldBeUpdatedFromServer(te)) {
+                    if(!sentUpdate) {
+                        NetworkHandler.sendToServer(new PacketDescriptionPacketRequest(blockX, blockY, blockZ));
+                        sentUpdate = true;
+                    }
                 }
             }
         }
@@ -200,7 +205,7 @@ public class RenderBlockTarget{
 
     public void addBlockTrackInfo(List<String> textList){
         for(IBlockTrackEntry blockTrackEntry : getApplicableEntries())
-            blockTrackEntry.addInformation(world, blockX, blockY, blockZ, textList);
+            blockTrackEntry.addInformation(world, blockX, blockY, blockZ, te, textList);
     }
 
     public boolean isPlayerLooking(){

@@ -3,6 +3,7 @@ package pneumaticCraft.api.client.pneumaticHelmet;
 import java.util.List;
 
 import net.minecraft.block.Block;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
@@ -23,9 +24,10 @@ public interface IBlockTrackEntry{
      * @param block
      *            The block of the current coordinate. This will save you a
      *            call to World.getBlock().
+     * @param te  The TileEntity at this x,y,z.
      * @return true if the coordinate should be tracked by this BlockTrackEntry.
      */
-    public boolean shouldTrackWithThisEntry(IBlockAccess world, int x, int y, int z, Block block);
+    public boolean shouldTrackWithThisEntry(IBlockAccess world, int x, int y, int z, Block block, TileEntity te);
 
     /**
      * This method defines if the block should be updated by the server (each 5
@@ -33,11 +35,12 @@ public interface IBlockTrackEntry{
      * send an NBT packet. This method returns true at for instance Chests and
      * Mob Spawners, to get the inventory at the client side and the time to the
      * next spawn respectively.
+     * @param te The TileEntity at the currently checked location.
      * 
      * @return true if the Tile Entity should be updated, or false when it
      *         doesn't have to.
      */
-    public boolean shouldBeUpdatedFromServer();
+    public boolean shouldBeUpdatedFromServer(TileEntity te);
 
     /**
      * The return of this method defines at how many tracked blocks of this type
@@ -62,10 +65,11 @@ public interface IBlockTrackEntry{
      *            The y coordinate the block is at.
      * @param z
      *            The z coordinate the block is at.
+     * @param te  The TileEntity at the x,y,z.
      * @param infoList
      *            The list of lines to display.
      */
-    public void addInformation(World world, int x, int y, int z, List<String> infoList);
+    public void addInformation(World world, int x, int y, int z, TileEntity te, List<String> infoList);
 
     /**
      * This method is called when displaying the currently tracked blocks.

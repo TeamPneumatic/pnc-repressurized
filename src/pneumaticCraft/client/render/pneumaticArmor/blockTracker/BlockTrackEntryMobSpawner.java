@@ -5,6 +5,7 @@ import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.MobSpawnerBaseLogic;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.IBlockAccess;
@@ -16,12 +17,12 @@ import pneumaticCraft.common.util.PneumaticCraftUtils;
 public class BlockTrackEntryMobSpawner implements IBlockTrackEntry{
 
     @Override
-    public boolean shouldTrackWithThisEntry(IBlockAccess world, int x, int y, int z, Block block){
+    public boolean shouldTrackWithThisEntry(IBlockAccess world, int x, int y, int z, Block block, TileEntity te){
         return block == Blocks.mob_spawner;
     }
 
     @Override
-    public boolean shouldBeUpdatedFromServer(){
+    public boolean shouldBeUpdatedFromServer(TileEntity te){
         return true;
     }
 
@@ -31,15 +32,17 @@ public class BlockTrackEntryMobSpawner implements IBlockTrackEntry{
     }
 
     @Override
-    public void addInformation(World world, int x, int y, int z, List<String> infoList){
-        MobSpawnerBaseLogic spawner = ((TileEntityMobSpawner)world.getTileEntity(x, y, z)).func_145881_a();
-        infoList.add("Spawner Type: " + StatCollector.translateToLocal("entity." + spawner.getEntityNameToSpawn() + ".name"));
-        if(spawner.isActivated()) {
-            infoList.add("Time until next spawn: " + PneumaticCraftUtils.convertTicksToMinutesAndSeconds(spawner.spawnDelay, false));
-        } else if(HackableMobSpawner.isHacked(world, x, y, z)) {
-            infoList.add("Spawner is hacked");
-        } else {
-            infoList.add("Spawner is standing by");
+    public void addInformation(World world, int x, int y, int z, TileEntity te, List<String> infoList){
+        if(te instanceof TileEntityMobSpawner) {
+            MobSpawnerBaseLogic spawner = ((TileEntityMobSpawner)te).func_145881_a();
+            infoList.add("Spawner Type: " + StatCollector.translateToLocal("entity." + spawner.getEntityNameToSpawn() + ".name"));
+            if(spawner.isActivated()) {
+                infoList.add("Time until next spawn: " + PneumaticCraftUtils.convertTicksToMinutesAndSeconds(spawner.spawnDelay, false));
+            } else if(HackableMobSpawner.isHacked(world, x, y, z)) {
+                infoList.add("Spawner is hacked");
+            } else {
+                infoList.add("Spawner is standing by");
+            }
         }
 
     }
