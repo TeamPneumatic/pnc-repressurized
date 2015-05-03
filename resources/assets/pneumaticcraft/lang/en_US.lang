@@ -466,6 +466,7 @@ gui.programmer.pressIForInfo=§2Press 'I' for info
 gui.programmer.difficulty=Difficulty:
 gui.programmer.difficulty.medium.tooltip=Enables Conditions, Jump and Labels
 gui.programmer.difficulty.advanced.tooltip=Enables Coordinates and variables
+gui.programmer.button.openPanel.tooltip=Alternatively press 'SPACE'
 gui.progWidget.difficulty.easy=Easy
 gui.progWidget.difficulty.medium=Medium
 gui.progWidget.difficulty.advanced=Advanced

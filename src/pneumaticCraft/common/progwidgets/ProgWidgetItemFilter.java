@@ -75,6 +75,7 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget{
         RenderHelper.enableGUIStandardItemLighting();
         // zLevel = 0.0F;
         //  itemRender.zLevel = 0.0F;
+        GL11.glDisable(GL11.GL_LIGHTING);
     }
 
     @Override
