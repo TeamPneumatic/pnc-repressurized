@@ -1,0 +1,4 @@
+Programming Puzzles are used in [link{block/programmer}]programmers [link{}].
+
+[prefix{l}]The 'Suicide' (Dig Blocks) piece [prefix{}]
+The Drone will turn into its item form. This is behaving exactly as if you would have right clicked the drone with a Pneumatic Wrench.

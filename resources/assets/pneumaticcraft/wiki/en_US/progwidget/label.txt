@@ -1,0 +1,6 @@
+Programming Puzzles are used in [link{block/programmer}]programmers [link{}].
+
+[prefix{l}]The Label piece [prefix{}]
+This piece is purely focused on program flow. The label is a point in the program [link{progwidget/jump}] Jump[link{}] and [link{progwidget{progwidget/conditions}] Conditions[link{}] can jump to. You can attach a Text piece to this label piece. It will label it with this name. Then jumps/conditions that are going to jump to the same name will jump to this label.
+
+So a Label piece can be used to create a 'branch' in the program flow (when using conditions), or just to organize pieces by putting them next to each other. A nice tip is to check 'Show Flow' at the bottom right of the Programmer Interface. It will show lines where pieces can jump from and to.

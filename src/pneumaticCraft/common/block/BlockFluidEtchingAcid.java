@@ -1,6 +1,7 @@
 package pneumaticCraft.common.block;
 
-import net.minecraft.block.material.Material;
+import net.minecraft.block.material.MapColor;
+import net.minecraft.block.material.MaterialLiquid;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -16,7 +17,12 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class BlockFluidEtchingAcid extends BlockFluidClassic{
 
     public BlockFluidEtchingAcid(){
-        super(Fluids.EtchAcid, Material.water);
+        super(Fluids.EtchAcid, new MaterialLiquid(MapColor.waterColor){
+            @Override
+            public int getMaterialMobility(){
+                return 1;
+            }
+        });
         Fluids.EtchAcid.setBlock(this); // Set the fluids block ID to this block.
     }
 

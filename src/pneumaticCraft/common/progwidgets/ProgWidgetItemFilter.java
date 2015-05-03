@@ -15,24 +15,45 @@ import org.lwjgl.opengl.GL11;
 
 import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.client.gui.programmer.GuiProgWidgetItemFilter;
+import pneumaticCraft.common.ai.DroneAIManager;
 import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ProgWidgetItemFilter extends ProgWidget{
-    public ItemStack filter;
+public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget{
+    private ItemStack filter;
     public boolean useMetadata = true, useNBT, useOreDict, useModSimilarity;
     public int specificMeta;
+    private DroneAIManager aiManager;
+    private String variable = "";
+
     @SideOnly(Side.CLIENT)
     private static RenderItem itemRender;
 
     @Override
     public void renderExtraInfo(){
-        if(filter != null) {
-            drawItemStack(filter, 10, 2, "");
+        if(variable.equals("")) {
+            if(filter != null) {
+                drawItemStack(filter, 10, 2, "");
+            }
+        } else {
+            super.renderExtraInfo();
         }
+    }
+
+    @Override
+    public String getExtraStringInfo(){
+        return "\"" + variable + "\"";
+    }
+
+    public ItemStack getFilter(){
+        return variable.equals("") ? filter : aiManager != null ? aiManager.getStack(variable) : null;
+    }
+
+    public void setFilter(ItemStack filter){
+        this.filter = filter;
     }
 
     public static void drawItemStack(ItemStack p_146982_1_, int p_146982_2_, int p_146982_3_, String p_146982_4_){
@@ -108,6 +129,7 @@ public class ProgWidgetItemFilter extends ProgWidget{
         tag.setBoolean("useOreDict", useOreDict);
         tag.setBoolean("useModSimilarity", useModSimilarity);
         tag.setInteger("specificMeta", specificMeta);
+        tag.setString("variable", variable);
     }
 
     @Override
@@ -119,6 +141,7 @@ public class ProgWidgetItemFilter extends ProgWidget{
         useOreDict = tag.getBoolean("useOreDict");
         useModSimilarity = tag.getBoolean("useModSimilarity");
         specificMeta = tag.getInteger("specificMeta");
+        variable = tag.getString("variable");
     }
 
     @Override
@@ -159,5 +182,18 @@ public class ProgWidgetItemFilter extends ProgWidget{
     @Override
     public int getCraftingColorIndex(){
         return ItemPlasticPlants.BURST_PLANT_DAMAGE;
+    }
+
+    @Override
+    public void setAIManager(DroneAIManager aiManager){
+        this.aiManager = aiManager;
+    }
+
+    public void setVariable(String variable){
+        this.variable = variable;
+    }
+
+    public String getVariable(){
+        return variable;
     }
 }

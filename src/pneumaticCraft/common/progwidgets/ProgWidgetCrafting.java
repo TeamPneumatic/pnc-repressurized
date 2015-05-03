@@ -85,7 +85,7 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
         for(int y = 0; y < 3; y++) {
             ProgWidgetItemFilter itemFilter = (ProgWidgetItemFilter)getConnectedParameters()[y];
             for(int x = 0; x < 3 && itemFilter != null; x++) {
-                invCrafting.setInventorySlotContents(y * 3 + x, itemFilter.filter);
+                invCrafting.setInventorySlotContents(y * 3 + x, itemFilter.getFilter());
                 itemFilter = (ProgWidgetItemFilter)itemFilter.getConnectedParameters()[0];
             }
         }

@@ -1,0 +1,4 @@
+Programming Puzzles are used in [link{block/programmer}]programmers [link{}].
+
+[prefix{l}]The Entity Export piece [prefix{}]
+The Drone will go to the specified area, and drop the entity it is carrying, provided that it is allowed by an attached [link{misc/entityFilter}]Entity Filter[link{}] (optional).

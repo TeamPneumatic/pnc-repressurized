@@ -1,0 +1,4 @@
+Programming Puzzles are used in [link{block/programmer}]programmers [link{}].
+
+[prefix{l}]The Right Click Entity piece [prefix{}]
+The Drone will right click the item in it's first inventory slot, for every entity in the area once. This can be used to shear sheep, milk cows, breed animals, and what not!

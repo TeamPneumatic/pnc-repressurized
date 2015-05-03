@@ -87,9 +87,11 @@ public abstract class GuiPneumaticScreenBase extends GuiScreen implements IWidge
             List<String> localizedTooltip = new ArrayList<String>();
             for(String line : tooltip) {
                 String localizedLine = I18n.format(line);
-                String[] lines = WordUtils.wrap(localizedLine, 50).split(System.getProperty("line.separator"));
-                for(String locLine : lines) {
-                    localizedTooltip.add(locLine);
+                for(String wrappedLine : localizedLine.split("\\\\n")) {
+                    String[] lines = WordUtils.wrap(wrappedLine, 50).split(System.getProperty("line.separator"));
+                    for(String locLine : lines) {
+                        localizedTooltip.add(locLine);
+                    }
                 }
             }
             drawHoveringText(localizedTooltip, x, y, fontRendererObj);

@@ -5,27 +5,25 @@
  ******************************************************************************/
 package forestry.api.apiculture.hives;
 
-import forestry.api.apiculture.IHiveDrop;
-import forestry.api.core.EnumHumidity;
-import forestry.api.core.EnumTemperature;
 import net.minecraft.block.Block;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 
-import java.util.ArrayList;
+import forestry.api.core.EnumHumidity;
+import forestry.api.core.EnumTemperature;
 
-public interface IHive {
+public interface IHiveDescription {
+
+	/**
+	 * The hive generator for this hive.
+	 */
+	IHiveGen getHiveGen();
+
 	/**
 	 * The hive block to be placed in the world.
 	 */
-	Block getHiveBlock();
-	int getHiveMeta();
-
-	/**
-	 * Hive drops
-	 */
-	ArrayList<IHiveDrop> getDrops();
-	void addDrop(IHiveDrop drop);
+	Block getBlock();
+	int getMeta();
 
 	/**
 	 * returns true if the hive can be generated in these conditions.
@@ -36,28 +34,11 @@ public interface IHive {
 	boolean isGoodTemperature(EnumTemperature temperature);
 
 	/**
-	 * returns true if the hive can be generated at this location.
-	 * Used for advanced conditions, like checking that the ground below the hive is a certain type.
-	 */
-	boolean isGoodLocation(World world, int x, int y, int z);
-
-	/**
-	 * returns true if the hive can safely replace the block at this location.
-	 */
-	boolean canReplace(World world, int x, int y, int z);
-
-	/**
 	 * float representing the relative chance a hive will generate in a chunk.
 	 * Default is 1.0, higher numbers result in more hives, smaller will result in fewer.
-	 * Tree hives may want around 3.0 to 4.0 since there are less locations to generate on.
+	 * Tree hives want around 3.0 to 4.0 since there are less locations to generate on.
  	 */
-	float genChance();
-
-	/**
-	 * return a Y value that the hive should try to generate at.
-	 * returns negative if the hive can't be placed anywhere.
-	 */
-	int getYForHive(World world, int x, int z);
+	float getGenChance();
 
 	/**
 	 * Called after successful hive generation.

@@ -55,7 +55,7 @@ public class DroneGoToChargingStation extends EntityAIBase{
         });
 
         for(TileEntityChargingStation station : validChargingStations) {
-            if(PneumaticCraftUtils.getProtectingSecurityStations(drone.worldObj, station.xCoord, station.yCoord, station.zCoord, drone.getFakePlayer(), false) == 0 && drone.getNavigator().tryMoveToXYZ(station.xCoord, station.yCoord + 1.5, station.zCoord, speed) || ((EntityPathNavigateDrone)drone.getNavigator()).isGoingToTeleport()) {
+            if(PneumaticCraftUtils.getProtectingSecurityStations(drone.worldObj, station.xCoord, station.yCoord, station.zCoord, drone.getFakePlayer(), false, false) == 0 && drone.getNavigator().tryMoveToXYZ(station.xCoord, station.yCoord + 1.5, station.zCoord, speed) || ((EntityPathNavigateDrone)drone.getNavigator()).isGoingToTeleport()) {
                 isExecuting = true;
                 curCharger = station;
                 DroneClaimManager.getInstance(drone.worldObj).claim(new ChunkPosition(station.xCoord, station.yCoord, station.zCoord));

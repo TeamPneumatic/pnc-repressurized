@@ -1,0 +1,3 @@
+[image{365, 20, 0.5, igwmod:textures/omnidirectionalHopper.png}]
+This Hopper behaves just like the Vanilla Hopper. However, this Hopper can be oriented in every direction, not just up. On top of that it accepts Machine Upgrades, which can be used to speed up the Hopper. Finally it has a custom hitbox which means you can access other blocks by just pointing your crosshair 'through' the Omnidirectional Hopper. It also doesn't use air, making it a perfect early game gadget.
+[crafting{200, 200, key=block/omnidirectionalHopper}]

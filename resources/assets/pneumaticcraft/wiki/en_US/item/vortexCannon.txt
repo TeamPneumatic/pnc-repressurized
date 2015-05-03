@@ -1,0 +1,3 @@
+The Vortex Cannon is a weapon which shoots vortexes. A vortex is when air is spinning in a way that it doesn't have much air friction and can be mostly stable. A cannon can shoot these. You can use this to shoot gusts to the target of choice.  You can use this to repel enemies, or to blow your to be farmed animals in a pen. Vortexes also have the ability to harvest any crop they come along. The higher the Vortex Cannon is pressurized, the more impact it has on it's targets and the bigger the range is.
+
+[crafting{200,140,key=item/vortexCannon}]

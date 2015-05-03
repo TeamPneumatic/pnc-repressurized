@@ -1,5 +1,6 @@
 package pneumaticCraft.common.item;
 
+
 public interface IChargingStationGUIHolderItem{
 
     /**
@@ -7,4 +8,5 @@ public interface IChargingStationGUIHolderItem{
      * @return
      */
     public int getGuiID();
+
 }

@@ -15,7 +15,7 @@ public class ContainerChargingStationItemInventory extends ContainerPneumaticBas
     public ContainerChargingStationItemInventory(InventoryPlayer inventoryPlayer, TileEntityChargingStation te){
         super(te);
         if(te.getStackInSlot(TileEntityChargingStation.CHARGE_INVENTORY_INDEX) == null) throw new IllegalArgumentException("instanciating ContainerPneumaticArmor with a charge item being null!");
-        armor = new InventoryPneumaticInventoryItem(te);
+        armor = te.getChargeableInventory();
 
         for(int i = 0; i < 3; i++) {
             for(int j = 0; j < 3; j++) {

@@ -105,7 +105,7 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
                                         inventory[5].stackSize += returnedItem.stackSize;
                                     }
                                 }
-                                tank.fill(new FluidStack(fluid.fluidID, amount, fluid.tag), true);
+                                tank.fill(new FluidStack(fluid.getFluid(), amount, fluid.tag), true);
                                 inventory[4].stackSize--;
                                 if(inventory[4].stackSize <= 0) inventory[4] = null;
                             }

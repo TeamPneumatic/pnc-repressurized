@@ -4,6 +4,7 @@ import java.util.List;
 
 import k4unl.minecraft.Hydraulicraft.api.IHydraulicMachine;
 import net.minecraft.block.Block;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import pneumaticCraft.api.client.pneumaticHelmet.IBlockTrackEntry;
@@ -13,12 +14,12 @@ import pneumaticCraft.api.client.pneumaticHelmet.IBlockTrackEntry;
  */
 public class BlockTrackEntryHydraulicraft implements IBlockTrackEntry{
     @Override
-    public boolean shouldTrackWithThisEntry(IBlockAccess world, int x, int y, int z, Block block){
-        return world.getTileEntity(x, y, z) instanceof IHydraulicMachine;
+    public boolean shouldTrackWithThisEntry(IBlockAccess world, int x, int y, int z, Block block, TileEntity te){
+        return te instanceof IHydraulicMachine;
     }
 
     @Override
-    public boolean shouldBeUpdatedFromServer(){
+    public boolean shouldBeUpdatedFromServer(TileEntity te){
         return false;
     }
 
@@ -28,7 +29,7 @@ public class BlockTrackEntryHydraulicraft implements IBlockTrackEntry{
     }
 
     @Override
-    public void addInformation(World world, int x, int y, int z, List<String> infoList){
+    public void addInformation(World world, int x, int y, int z, TileEntity te, List<String> infoList){
         infoList.add("blockTracker.info.hydraulicraft");
     }
 

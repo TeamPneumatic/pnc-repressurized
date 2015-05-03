@@ -5,13 +5,14 @@
  ******************************************************************************/
 package forestry.api.apiculture;
 
-import java.util.ArrayList;
-
-import net.minecraft.item.ItemStack;
-
+import forestry.api.core.IErrorState;
 import forestry.api.genetics.IEffectData;
 import forestry.api.genetics.IIndividual;
 import forestry.api.genetics.IIndividualLiving;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.biome.BiomeGenBase;
+
+import java.util.ArrayList;
 
 /**
  * Other implementations than Forestry's default one are not supported.
@@ -48,7 +49,9 @@ public interface IBee extends IIndividualLiving {
 
 	/**
 	 * @return true if the bee is mated with another whose isNatural() doesn't match.
+	 * @deprecated since Forestry 3.4.0. Only princesses have isNatural() so this is always false
 	 */
+	@Deprecated
 	boolean isIrregularMating();
 
 	IEffectData[] doEffect(IEffectData[] storedData, IBeeHousing housing);
@@ -66,11 +69,25 @@ public interface IBee extends IIndividualLiving {
 	 * @param housing the {@link IBeeHousing} the bee currently resides in.
 	 * @return Ordinal of the error code encountered. 0 - EnumErrorCode.OK
 	 */
+	@Deprecated // Deprecated since Forestry 3.2.0. Use canWork instead.
 	int isWorking(IBeeHousing housing);
+
+	/**
+	 * Determines whether the queen can work.
+	 *
+	 * @param housing the {@link IBeeHousing} the bee currently resides in.
+	 * @return the error code encountered.
+	 */
+	IErrorState canWork(IBeeHousing housing);
 
 	boolean hasFlower(IBeeHousing housing);
 
+	/**
+	 * @deprecated since Forestry 3.2. Use getSuitableBiomes()
+	 */
+	@Deprecated
 	ArrayList<Integer> getSuitableBiomeIds();
+	ArrayList<BiomeGenBase> getSuitableBiomes();
 
 	ItemStack[] getProduceList();
 

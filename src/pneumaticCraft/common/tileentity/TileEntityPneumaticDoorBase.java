@@ -25,6 +25,7 @@ import pneumaticCraft.lib.TileEntityConstants;
 public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase implements IInventory, IRedstoneControl,
         IMinWorkingPressure{
     private TileEntityPneumaticDoor door;
+    private TileEntityPneumaticDoorBase doubleDoor;
     @DescSynced
     public boolean rightGoing;
     public float oldProgress;
@@ -54,8 +55,21 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
     public void updateEntity(){
         super.updateEntity();
         oldProgress = progress;
-        if(!worldObj.isRemote && getPressure(ForgeDirection.UNKNOWN) >= PneumaticValues.MIN_PRESSURE_PNEUMATIC_DOOR) {
-            setOpening(shouldOpen());
+        if(!worldObj.isRemote) {
+            if(getPressure(ForgeDirection.UNKNOWN) >= PneumaticValues.MIN_PRESSURE_PNEUMATIC_DOOR) {
+                if(worldObj.getWorldTime() % 60 == 0) {
+                    TileEntity te = worldObj.getTileEntity(orientation.offsetX * 3 + xCoord, yCoord, orientation.offsetZ * 3 + zCoord);
+                    if(te instanceof TileEntityPneumaticDoorBase) {
+                        doubleDoor = (TileEntityPneumaticDoorBase)te;
+                    } else {
+                        doubleDoor = null;
+                    }
+                }
+                setOpening(shouldOpen() || isNeighborOpening());
+                setNeighborOpening(isOpening());
+            } else {
+                setOpening(true);
+            }
         }
         float targetProgress = opening ? 1F : 0F;
         float speedMultiplier = getSpeedMultiplierFromUpgrades(getUpgradeSlots());
@@ -99,7 +113,7 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
                 AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(xCoord - range, yCoord - range, zCoord - range, xCoord + range + 1, yCoord + range + 1, zCoord + range + 1);
                 List<EntityPlayer> players = worldObj.getEntitiesWithinAABB(EntityPlayer.class, aabb);
                 for(EntityPlayer player : players) {
-                    if(PneumaticCraftUtils.getProtectingSecurityStations(worldObj, xCoord, yCoord, zCoord, player, false) == 0) {
+                    if(PneumaticCraftUtils.getProtectingSecurityStations(worldObj, xCoord, yCoord, zCoord, player, false, false) == 0) {
                         if(redstoneMode == 0) {
                             return true;
                         } else {
@@ -132,6 +146,16 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
 
     public boolean isOpening(){
         return opening;
+    }
+
+    private boolean isNeighborOpening(){
+        return doubleDoor != null ? doubleDoor.shouldOpen() : false;
+    }
+
+    public void setNeighborOpening(boolean opening){
+        if(doubleDoor != null && doubleDoor.getPressure(ForgeDirection.UNKNOWN) >= PneumaticValues.MIN_PRESSURE_PNEUMATIC_DOOR) {
+            doubleDoor.setOpening(opening);
+        }
     }
 
     @Override

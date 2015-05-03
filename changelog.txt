@@ -1,5 +1,7 @@
--Added Remote
--Minor tweaks to the Programmer difficulty system.
+-Added 'setVariable' and 'getVariable' methods to the Drone Interface.
 
--Bugfix: Drone Interface peripheral does not properly return a table for getAllActions()
--Bugfix: Omnidirectional Hopper GUI has a mislabeled Redstone setting.
+-Bugfix: Crash when using Entity Export action with the Drone Interface.
+-Bugfix: Probably fixed a strange silent StackOverFlowException which causes Drones to dupe on startup.
+-Bugfix: Crash when using Drone Condition: Entity.
+-Bugfix: Drone loses program when redyed in a crafting bench.
+-Bugfix: Drone Place piece sometimes aborts without apparent reason.

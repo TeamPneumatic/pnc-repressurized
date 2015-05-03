@@ -1,0 +1,8 @@
+[image{320, 20, 0.5, igwmod:textures/pneumaticDoor.png}]
+These special doors will open automatically if there is a player nearby, provided that it has air pressure. It has a range of 2 blocks but this can be increased by inserting Range Upgrades. When the Pneumatic Door Base is within the range of an operating Security Station it will only open the door when allowed by the Security Station. You can also select the Pneumatic Door to only open when you look at the door or you can make it behave like a Wooden Door.
+
+[image{320, 190, 0.5, igwmod:textures/pneumaticDoorCamo.png}]
+[prefix{l}]Camouflaging [prefix{}]
+You can let the Pneumatic Door Base blend in with the environment by placing any normal block in the camo slot of the Pneumatic Door Base. It will then use that block to camouflage itself.
+[crafting{200, 340, key=block/pneumaticDoorBase}]
+[crafting{200, 460, key=block/pneumaticDoor}]

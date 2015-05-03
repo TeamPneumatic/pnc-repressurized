@@ -6,6 +6,7 @@
 package forestry.api.core;
 
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.tileentity.TileEntity;
 
 /**
@@ -41,9 +42,15 @@ public interface ITileStructure {
 	void setCentralTE(TileEntity tile);
 
 	/**
-	 * @return IInventory representing the TE's inventory.
+	 * @return IInventory representing the inventory accessed from this block.
 	 */
+	@Deprecated
 	IInventory getInventory();
+
+	/**
+	 * @return ISidedInventory representing the inventory accessed from this block.
+	 */
+	ISidedInventory getStructureInventory();
 
 	/**
 	 * Only called on Forestry's own blocks.

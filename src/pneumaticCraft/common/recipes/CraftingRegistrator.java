@@ -5,12 +5,10 @@ import java.util.List;
 
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
-import net.minecraft.item.ItemDye;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.RecipeSorter;
 import net.minecraftforge.oredict.RecipeSorter.Category;
@@ -25,7 +23,6 @@ import pneumaticCraft.common.item.ItemNetworkComponents;
 import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.common.item.ItemProgrammingPuzzle;
 import pneumaticCraft.common.item.Itemss;
-import pneumaticCraft.common.tileentity.TileEntityPlasticMixer;
 import pneumaticCraft.lib.Names;
 import cpw.mods.fml.common.registry.GameRegistry;
 
@@ -74,7 +71,8 @@ public class CraftingRegistrator{
 
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Blockss.elevatorFrame, 4, 0), "i i", "i i", "i i", 'i', Names.INGOT_IRON_COMPRESSED));
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Itemss.pneumaticCylinder), "pip", "pip", "pbp", 'p', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.RAIN_PLANT_DAMAGE), 'i', Names.INGOT_IRON_COMPRESSED, 'b', Itemss.cannonBarrel));
-        GameRegistry.addRecipe(new ItemStack(Blockss.elevatorBase, 4, 0), "cpc", "pcp", "cpc", 'p', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.BURST_PLANT_DAMAGE), 'c', Itemss.pneumaticCylinder);
+        GameRegistry.addRecipe(new ItemStack(Blockss.elevatorBase, 4, 0), "cp", "pc", 'p', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.BURST_PLANT_DAMAGE), 'c', Itemss.pneumaticCylinder);
+        GameRegistry.addRecipe(new ItemStack(Blockss.elevatorBase, 4, 0), "pc", "cp", 'p', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.BURST_PLANT_DAMAGE), 'c', Itemss.pneumaticCylinder);
         GameRegistry.addRecipe(new ItemStack(Blockss.elevatorCaller, 1, 0), "cpc", "prp", "cpc", 'p', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.SLIME_PLANT_DAMAGE), 'c', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.FLYING_FLOWER_DAMAGE), 'r', Items.redstone);
         GameRegistry.addRecipe(new ItemStack(Blockss.elevatorCaller, 1, 0), "cpc", "prp", "cpc", 'c', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.SLIME_PLANT_DAMAGE), 'p', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.FLYING_FLOWER_DAMAGE), 'r', Items.redstone);
 
@@ -160,13 +158,6 @@ public class CraftingRegistrator{
 
         addProgrammingPuzzleRecipes();
         GameRegistry.addRecipe(new ItemStack(Itemss.drone), " b ", "bcb", " b ", 'b', Itemss.turbineRotor, 'c', Itemss.printedCircuitBoard);
-        for(int i = 0; i < 16; i++) {
-            ItemStack drone = new ItemStack(Itemss.drone);
-            NBTTagCompound tag = new NBTTagCompound();
-            tag.setInteger("color", ItemDye.field_150922_c[i]);
-            drone.setTagCompound(tag);
-            GameRegistry.addRecipe(new ShapelessOreRecipe(drone, Itemss.drone, TileEntityPlasticMixer.DYES[i]));
-        }
 
         GameRegistry.addRecipe(new ItemStack(Blockss.programmer), "gbg", "tpt", "ggg", 'g', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.FIRE_FLOWER_DAMAGE), 'b', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.SQUID_PLANT_DAMAGE), 't', Itemss.turbineRotor, 'p', Itemss.printedCircuitBoard);
 

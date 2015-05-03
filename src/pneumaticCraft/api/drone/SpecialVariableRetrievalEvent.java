@@ -1,27 +1,61 @@
 package pneumaticCraft.api.drone;
 
 import net.minecraft.entity.EntityCreature;
+import net.minecraft.item.ItemStack;
 import net.minecraft.world.ChunkPosition;
 import cpw.mods.fml.common.eventhandler.Event;
 
 /**
- * Fired when a Drones is trying to get a special coordinate, by accessing a variable with '$' prefix.
- * This event is posted on the MinecraftForge.EVENT_BUS.
+ * Fired when a Drone is trying to get a special coordinate, by accessing a variable with '$' prefix.
+ * These event are posted on the MinecraftForge.EVENT_BUS.
  */
-public class SpecialVariableRetrievalEvent extends Event{
-    public final EntityCreature drone;
+public abstract class SpecialVariableRetrievalEvent extends Event{
+
     /**
      * The special variable name, with the '$' stripped away.
      */
     public final String specialVarName;
+
     /**
      * The returning coordinate
      */
-    public ChunkPosition coordinate;
 
-    public SpecialVariableRetrievalEvent(EntityCreature drone, String specialVarName){
-        this.drone = drone;
+    public SpecialVariableRetrievalEvent(String specialVarName){
+
         this.specialVarName = specialVarName;
     }
 
+    public static abstract class CoordinateVariable extends SpecialVariableRetrievalEvent{
+        public ChunkPosition coordinate;
+
+        public CoordinateVariable(String specialVarName){
+            super(specialVarName);
+        }
+
+        public static class Drone extends CoordinateVariable{
+            public final EntityCreature drone;
+
+            public Drone(EntityCreature drone, String specialVarName){
+                super(specialVarName);
+                this.drone = drone;
+            }
+        }
+    }
+
+    public static abstract class ItemVariable extends SpecialVariableRetrievalEvent{
+        public ItemStack item;
+
+        public ItemVariable(String specialVarName){
+            super(specialVarName);
+        }
+
+        public static class Drone extends ItemVariable{
+            public final EntityCreature drone;
+
+            public Drone(EntityCreature drone, String specialVarName){
+                super(specialVarName);
+                this.drone = drone;
+            }
+        }
+    }
 }

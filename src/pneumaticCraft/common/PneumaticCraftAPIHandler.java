@@ -151,7 +151,7 @@ public class PneumaticCraftAPIHandler implements IPneumaticCraftInterface{
     @Override
     public int getProtectingSecurityStations(World world, int x, int y, int z, EntityPlayer player, boolean showRangeLines){
         if(world.isRemote) throw new IllegalArgumentException("This method can only be called from the server side!");
-        return PneumaticCraftUtils.getProtectingSecurityStations(world, x, y, z, player, showRangeLines);
+        return PneumaticCraftUtils.getProtectingSecurityStations(world, x, y, z, player, showRangeLines, false);
     }
 
     @Override

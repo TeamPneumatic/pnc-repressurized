@@ -16,6 +16,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
 
 import org.lwjgl.input.Keyboard;
@@ -48,6 +49,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgrammer>{
     private final EntityPlayer player;
+    private GuiPastebin pastebinGui;
 
     //  private GuiButton redstoneButton;
     private GuiButtonSpecial importButton;
@@ -65,7 +67,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
     private int widgetPage;
     private int maxPage;
     private WidgetVerticalScrollbar scaleScroll;
-    private static final float SCALE_PER_STEP = 0.1F;
+    private static final float SCALE_PER_STEP = 0.2F;
     private int translatedX, translatedY;
     private int lastMouseX, lastMouseY;
     private int lastZoom;
@@ -114,6 +116,12 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
 
     @Override
     public void initGui(){
+        if(pastebinGui != null && pastebinGui.outputTag != null) {
+            te.readProgWidgetsFromNBT(pastebinGui.outputTag);
+            pastebinGui = null;
+            NetworkHandler.sendToServer(new PacketProgrammerUpdate(te));
+        }
+
         super.initGui();
 
         int xStart = (width - xSize) / 2;
@@ -147,6 +155,12 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         addWidget(showInfo = new GuiCheckBox(-1, xStart + 5, yStart + 220, 0xFF000000, "gui.programmer.checkbox.showInfo").setChecked(te.showInfo));
         addWidget(showFlow = new GuiCheckBox(-1, xStart + 5, yStart + 232, 0xFF000000, "gui.programmer.checkbox.showFlow").setChecked(te.showFlow));
 
+        GuiButtonSpecial pastebinButton = new GuiButtonSpecial(7, guiLeft - 24, guiTop + 44, 20, 20, "");
+        pastebinButton.setTooltipText(I18n.format("gui.remote.button.pastebinButton"));
+        //pastebinButton.setRenderStacks(new ItemStack(Itemss.advancedPCB));
+        pastebinButton.setRenderedIcon(Textures.GUI_PASTEBIN_ICON_LOCATION);
+        buttonList.add(pastebinButton);
+
         scaleScroll = new WidgetVerticalScrollbar(xStart + 302, yStart + 40, 129).setStates(9).setCurrentState(te.zoomState).setListening(true);
         addWidget(scaleScroll);
 
@@ -172,6 +186,10 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         return false;
     }
 
+    private float getScale(){
+        return 2.0F - scaleScroll.getState() * SCALE_PER_STEP;
+    }
+
     @Override
     protected void drawGuiContainerForegroundLayer(int x, int y){
         super.drawGuiContainerForegroundLayer(x, y);
@@ -180,7 +198,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         fontRendererObj.drawString(widgetPage + 1 + "/" + (maxPage + 1), 305, 175, 0xFF000000);
         fontRendererObj.drawString(I18n.format("gui.programmer.difficulty"), 263, 190, 0xFF000000);
 
-        float scale = 1.0F - scaleScroll.getState() * SCALE_PER_STEP;
+        float scale = getScale();
 
         for(IProgWidget widget : te.progWidgets) {
             if(!isOutsideProgrammingArea(widget)) {
@@ -205,36 +223,40 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
     }
 
     @Override
-    @Optional.Method(modid = ModIds.IGWMOD)
     protected void keyTyped(char key, int keyCode){
         super.keyTyped(key, keyCode);
 
-        if(Keyboard.KEY_I == keyCode) {
-            int x = lastMouseX;
-            int y = lastMouseY;
-            float scale = 1.0F - scaleScroll.getState() * SCALE_PER_STEP;
-
-            for(IProgWidget widget : te.progWidgets) {
-                if(!isOutsideProgrammingArea(widget)) {
-                    if(widget != draggingWidget && (x - translatedX) / scale - guiLeft >= widget.getX() && (y - translatedY) / scale - guiTop >= widget.getY() && (x - translatedX) / scale - guiLeft <= widget.getX() + widget.getWidth() / 2 && (y - translatedY) / scale - guiTop <= widget.getY() + widget.getHeight() / 2) {
-                        GuiWiki gui = new GuiWiki();
-                        FMLClientHandler.instance().showGuiScreen(gui);
-                        gui.setCurrentFile("progwidget/" + widget.getWidgetString());
-                    }
-                }
+        if(Keyboard.KEY_I == keyCode && Loader.isModLoaded(ModIds.IGWMOD)) {
+            onIGWAction();
+        }
+        if(Keyboard.KEY_R == keyCode) {
+            if(exportButton.getBounds().contains(lastMouseX, lastMouseY)) {
+                NetworkHandler.sendToServer(new PacketGuiButton(te, 0));
             }
+        }
+    }
 
-            for(IProgWidget widget : visibleSpawnWidgets) {
-                if(widget != draggingWidget && x - guiLeft >= widget.getX() && y - guiTop >= widget.getY() && x - guiLeft <= widget.getX() + widget.getWidth() / 2 && y - guiTop <= widget.getY() + widget.getHeight() / 2) {
+    @Optional.Method(modid = ModIds.IGWMOD)
+    private void onIGWAction(){
+        int x = lastMouseX;
+        int y = lastMouseY;
+        float scale = getScale();
+
+        for(IProgWidget widget : te.progWidgets) {
+            if(!isOutsideProgrammingArea(widget)) {
+                if(widget != draggingWidget && (x - translatedX) / scale - guiLeft >= widget.getX() && (y - translatedY) / scale - guiTop >= widget.getY() && (x - translatedX) / scale - guiLeft <= widget.getX() + widget.getWidth() / 2 && (y - translatedY) / scale - guiTop <= widget.getY() + widget.getHeight() / 2) {
                     GuiWiki gui = new GuiWiki();
                     FMLClientHandler.instance().showGuiScreen(gui);
                     gui.setCurrentFile("progwidget/" + widget.getWidgetString());
                 }
             }
         }
-        if(Keyboard.KEY_R == keyCode) {
-            if(exportButton.getBounds().contains(lastMouseX, lastMouseY)) {
-                NetworkHandler.sendToServer(new PacketGuiButton(te, 0));
+
+        for(IProgWidget widget : visibleSpawnWidgets) {
+            if(widget != draggingWidget && x - guiLeft >= widget.getX() && y - guiTop >= widget.getY() && x - guiLeft <= widget.getX() + widget.getWidth() / 2 && y - guiTop <= widget.getY() + widget.getHeight() / 2) {
+                GuiWiki gui = new GuiWiki();
+                FMLClientHandler.instance().showGuiScreen(gui);
+                gui.setCurrentFile("progwidget/" + widget.getWidgetString());
             }
         }
     }
@@ -258,7 +280,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         int origY = y;
         x -= translatedX;
         y -= translatedY;
-        float scale = 1.0F - scaleScroll.getState() * SCALE_PER_STEP;
+        float scale = getScale();
         x = (int)(x / scale);
         y = (int)(y / scale);
 
@@ -527,7 +549,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
     }
 
     private boolean isOutsideProgrammingArea(IProgWidget widget){
-        float scale = 1.0F - scaleScroll.getState() * SCALE_PER_STEP;
+        float scale = getScale();
         int x = (int)((widget.getX() + guiLeft) * scale);
         int y = (int)((widget.getY() + guiTop) * scale);
         x += translatedX - guiLeft;
@@ -604,6 +626,10 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
                     gotoPiece(te.progWidgets.get(te.progWidgets.size() - 1));
                 }
                 return;
+            case 7:
+                NBTTagCompound mainTag = new NBTTagCompound();
+                te.writeProgWidgetsToNBT(mainTag);
+                FMLClientHandler.instance().showGuiScreen(pastebinGui = new GuiPastebin(this, mainTag));
         }
 
         NetworkHandler.sendToServer(new PacketGuiButton(te, button.id));
@@ -623,8 +649,8 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
     private void gotoPiece(IProgWidget widget){
         scaleScroll.currentScroll = 0;
         lastZoom = 0;
-        translatedX = -widget.getX() + 294 / 2;
-        translatedY = -widget.getY() + 166 / 2;
+        translatedX = -widget.getX() * 2 + 294 / 4;
+        translatedY = -widget.getY() * 2 + 166 / 2;
     }
 
     @Override
@@ -680,7 +706,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         if(par3 == 1) {
             x -= translatedX;
             y -= translatedY;
-            float scale = 1.0F - scaleScroll.getState() * SCALE_PER_STEP;
+            float scale = getScale();
             x = (int)(x / scale);
             y = (int)(y / scale);
 

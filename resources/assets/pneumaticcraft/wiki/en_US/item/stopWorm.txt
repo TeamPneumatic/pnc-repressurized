@@ -1,0 +1,1 @@
+Dungeon loot only item. Used in [link{block/securityStation}]Security Stations[link{}]

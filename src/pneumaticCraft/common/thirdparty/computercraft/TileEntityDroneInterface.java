@@ -16,6 +16,7 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
+import net.minecraft.world.ChunkPosition;
 import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.common.ai.DroneAIManager.EntityAITaskEntry;
 import pneumaticCraft.common.entity.living.EntityDrone;
@@ -646,6 +647,47 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral,
                     throw new IllegalArgumentException("setCraftingGrid takes 9 arguments (crafting items)!");
                 }
             }
+        });
+
+        luaMethods.add(new LuaMethod("setVariable"){
+
+            @Override
+            public Object[] call(Object[] args) throws Exception{
+                if(args.length == 2 || args.length == 4) {
+                    if(drone == null) throw new IllegalStateException("There's no connected Drone!");
+                    String varName = (String)args[0];
+                    int x = args[1] instanceof Double ? ((Double)args[1]).intValue() : (Boolean)args[1] ? 1 : 0;
+                    int y = 0;
+                    int z = 0;
+                    if(args.length == 4) {
+                        y = ((Double)args[2]).intValue();
+                        z = ((Double)args[3]).intValue();
+                    }
+                    drone.setVariable(varName, new ChunkPosition(x, y, z));
+                    messageToDrone(0xFFFFFFFF);
+                    return null;
+                } else {
+                    throw new IllegalArgumentException("setVariable takes 2 or 4 arguments (<variable name>, <true/false>), or (<variable name>, <x> [, <y>, <z>])!");
+                }
+            }
+
+        });
+
+        luaMethods.add(new LuaMethod("getVariable"){
+
+            @Override
+            public Object[] call(Object[] args) throws Exception{
+                if(args.length == 1) {
+                    if(drone == null) throw new IllegalStateException("There's no connected Drone!");
+                    String varName = (String)args[0];
+                    ChunkPosition var = drone.getVariable(varName);
+                    messageToDrone(0xFFFFFFFF);
+                    return new Object[]{var.chunkPosX, var.chunkPosY, var.chunkPosZ};
+                } else {
+                    throw new IllegalArgumentException("setVariable takes 2 or 4 arguments (<variable name>, <true/false>), or (<variable name>, <x> [, <y>, <z>])!");
+                }
+            }
+
         });
     }
 

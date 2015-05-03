@@ -6,6 +6,7 @@ import java.util.Arrays;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.resources.I18n;
 import pneumaticCraft.api.client.pneumaticHelmet.IGuiScreen;
 import pneumaticCraft.api.client.pneumaticHelmet.IOptionPage;
 import pneumaticCraft.client.render.pneumaticArmor.ArmorMessage;
@@ -56,10 +57,16 @@ public class GuiCoordinateTrackerOptions implements IOptionPage{
             case 11:
                 mc.displayGuiScreen((GuiScreen)null);
                 mc.setIngameFocus();
-                if(coordHandler.navigateToSurface(mc.thePlayer)) {
-                    HUDHandler.instance().addMessage(new ArmorMessage("Successfully found a route to the surface!", new ArrayList<String>(), 90, 0x7000AA00));
-                } else {
-                    HUDHandler.instance().addMessage(new ArmorMessage("Unable to find a route to the surface!", new ArrayList<String>(), 90, 0x70FF0000));
+                switch(coordHandler.navigateToSurface(mc.thePlayer)){
+                    case EASY_PATH:
+                        HUDHandler.instance().addMessage(new ArmorMessage(I18n.format("pneumaticHelmet.message.coordinateTracker.routeFound"), new ArrayList<String>(), 90, 0x7000AA00));
+                        break;
+                    case DRONE_PATH:
+                        HUDHandler.instance().addMessage(new ArmorMessage(I18n.format("pneumaticHelmet.message.coordinateTracker.harderRouteFound"), new ArrayList<String>(), 90, 0x7044AA00));
+                        break;
+                    case NO_PATH:
+                        HUDHandler.instance().addMessage(new ArmorMessage(I18n.format("pneumaticHelmet.message.coordinateTracker.noRouteFound"), new ArrayList<String>(), 90, 0x70FF0000));
+                        break;
                 }
 
                 break;

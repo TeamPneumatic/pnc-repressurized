@@ -88,6 +88,7 @@ public class Textures{
     public static final String ICON_CHOPPER_PLANT_LOCATION = PLANT_LOCATION + "chopperPlant";
 
     private static final String PROG_WIDGET_LOCATION = ICON_LOCATION + "textures/items/progwidgets/";
+    public static final ResourceLocation PROG_WIDGET_COMMENT = new ResourceLocation(PROG_WIDGET_LOCATION + "commentPiece.png");
     public static final ResourceLocation PROG_WIDGET_AREA = new ResourceLocation(PROG_WIDGET_LOCATION + "areaPiece.png");
     public static final ResourceLocation PROG_WIDGET_ATTACK = new ResourceLocation(PROG_WIDGET_LOCATION + "attackPiece.png");
     public static final ResourceLocation PROG_WIDGET_CC = new ResourceLocation(PROG_WIDGET_LOCATION + "computerCraftPiece.png");
@@ -126,6 +127,7 @@ public class Textures{
     public static final ResourceLocation PROG_WIDGET_COORDINATE = new ResourceLocation(PROG_WIDGET_LOCATION + "coordinatePiece.png");
     public static final ResourceLocation PROG_WIDGET_COORDINATE_OPERATION_PLUS_MINUS = new ResourceLocation(PROG_WIDGET_LOCATION + "coordinateOperationPlusMinus.png");
     public static final ResourceLocation PROG_WIDGET_COORDINATE_OPERATION_MULTIPLY_DIVIDE = new ResourceLocation(PROG_WIDGET_LOCATION + "coordinateOperationMultiplyDivide.png");
+    public static final ResourceLocation PROG_WIDGET_ITEM_ASSIGN = new ResourceLocation(PROG_WIDGET_LOCATION + "itemAssignPiece.png");
     public static final ResourceLocation PROG_WIDGET_CONDITION_REDSTONE = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionRedstonePiece.png");
     public static final ResourceLocation PROG_WIDGET_CONDITION_ENTITY = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionEntityPiece.png");
     public static final ResourceLocation PROG_WIDGET_CONDITION_LIQUID_INVENTORY = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionLiquidInventoryPiece.png");
@@ -134,6 +136,7 @@ public class Textures{
     public static final ResourceLocation PROG_WIDGET_CONDITION_RF = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionRFPiece.png");
     public static final ResourceLocation PROG_WIDGET_CONDITION_PRESSURE = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionPressurePiece.png");
     public static final ResourceLocation PROG_WIDGET_CONDITION_COORDINATE = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionCoordinatePiece.png");
+    public static final ResourceLocation PROG_WIDGET_CONDITION_ITEM = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionItem.png");
     public static final ResourceLocation PROG_WIDGET_CONDITION_DRONE_ENTITY = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionDroneEntityPiece.png");
     public static final ResourceLocation PROG_WIDGET_CONDITION_DRONE_LIQUID_INVENTORY = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionDroneLiquidPiece.png");
     public static final ResourceLocation PROG_WIDGET_CONDITION_DRONE_ITEM_INVENTORY = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionDroneInventoryPiece.png");
@@ -207,6 +210,7 @@ public class Textures{
     public static final String GUI_PROBLEMS_TEXTURE = GUI_LOCATION + "GuiProblem.png";
     public static final String GUI_INFO_LOCATION = GUI_LOCATION + "GuiInfo.png";
     public static final String GUI_UPGRADES_LOCATION = GUI_LOCATION + "GuiUpgrade.png";
+    public static final ResourceLocation GUI_PASTEBIN_ICON_LOCATION = new ResourceLocation(GUI_LOCATION + "GuiPastebinIcon.png");
     public static final String GUI_4UPGRADE_SLOTS = GUI_LOCATION + "GuiPressureChamber.png";
     public static final String GUI_NEI_PRESSURE_CHAMBER_LOCATION = GUI_LOCATION + "GuiNEIPressureChamber.png";
     public static final String GUI_CHARGING_STATION_LOCATION = GUI_LOCATION + "GuiChargingStation.png";
@@ -235,6 +239,7 @@ public class Textures{
     public static final String GUI_REMOTE_EDITOR = GUI_LOCATION + "GuiRemoteEditor.png";
     public static final String GUI_WIDGET_OPTIONS_STRING = GUI_LOCATION + "GuiWidgetOptions.png";
     public static final ResourceLocation GUI_WIDGET_OPTIONS = new ResourceLocation(GUI_WIDGET_OPTIONS_STRING);
+    public static final ResourceLocation GUI_WIDGET_AREA = new ResourceLocation(GUI_LOCATION + "GuiWidgetArea.png");
     public static final ResourceLocation GUI_PASTEBIN = new ResourceLocation(GUI_LOCATION + "GuiPastebin.png");
     public static final ResourceLocation GUI_INVENTORY_SEARCHER = new ResourceLocation(GUI_LOCATION + "GuiInventorySearcher.png");
     public static final ResourceLocation GUI_TUBE_MODULE = new ResourceLocation(GUI_LOCATION + "GuiTubeModule.png");

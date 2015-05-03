@@ -5,6 +5,7 @@ import java.util.Map;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import pneumaticCraft.api.client.pneumaticHelmet.IBlockTrackEntry;
@@ -18,12 +19,12 @@ import thaumcraft.api.nodes.INode;
  */
 public class BlockTrackEntryThaumcraft implements IBlockTrackEntry{
     @Override
-    public boolean shouldTrackWithThisEntry(IBlockAccess world, int x, int y, int z, Block block){
-        return world.getTileEntity(x, y, z) instanceof IAspectContainer;
+    public boolean shouldTrackWithThisEntry(IBlockAccess world, int x, int y, int z, Block block, TileEntity te){
+        return te instanceof IAspectContainer;
     }
 
     @Override
-    public boolean shouldBeUpdatedFromServer(){
+    public boolean shouldBeUpdatedFromServer(TileEntity te){
         return false;
     }
 
@@ -33,21 +34,23 @@ public class BlockTrackEntryThaumcraft implements IBlockTrackEntry{
     }
 
     @Override
-    public void addInformation(World world, int x, int y, int z, List<String> infoList){
-        IAspectContainer container = (IAspectContainer)world.getTileEntity(x, y, z);
-        AspectList aspects = container.getAspects();
-        if(aspects.size() > 0) {
-            infoList.add("blockTracker.info.thaumcraft");
-            for(Map.Entry<Aspect, Integer> entry : aspects.aspects.entrySet()) {
-                infoList.add("-" + entry.getValue() + "x " + entry.getKey().getName());
+    public void addInformation(World world, int x, int y, int z, TileEntity te, List<String> infoList){
+        if(te instanceof IAspectContainer) {
+            IAspectContainer container = (IAspectContainer)te;
+            AspectList aspects = container.getAspects();
+            if(aspects.size() > 0) {
+                infoList.add("blockTracker.info.thaumcraft");
+                for(Map.Entry<Aspect, Integer> entry : aspects.aspects.entrySet()) {
+                    infoList.add("-" + entry.getValue() + "x " + entry.getKey().getName());
+                }
+            } else {
+                infoList.add(I18n.format("blockTracker.info.thaumcraft") + " -");
             }
-        } else {
-            infoList.add(I18n.format("blockTracker.info.thaumcraft") + " -");
-        }
-        if(container instanceof INode) {
-            INode node = (INode)container;
-            infoList.add(I18n.format("blockTracker.info.thaumcraft.nodetype") + " " + I18n.format("nodetype." + node.getNodeType() + ".name"));
-            if(node.getNodeModifier() != null) infoList.add(I18n.format("blockTracker.info.thaumcraft.nodeModifier") + " " + I18n.format("nodemod." + node.getNodeModifier() + ".name"));
+            if(container instanceof INode) {
+                INode node = (INode)container;
+                infoList.add(I18n.format("blockTracker.info.thaumcraft.nodetype") + " " + I18n.format("nodetype." + node.getNodeType() + ".name"));
+                if(node.getNodeModifier() != null) infoList.add(I18n.format("blockTracker.info.thaumcraft.nodeModifier") + " " + I18n.format("nodemod." + node.getNodeModifier() + ".name"));
+            }
         }
     }
 

@@ -32,6 +32,7 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.IFluidBlock;
 import net.minecraftforge.oredict.OreDictionary;
@@ -460,16 +461,22 @@ public class PneumaticCraftUtils{
         return PneumaticCraftAPIHandler.getInstance().concealableRenderIds.contains(renderID);
     }
 
-    public static int getProtectingSecurityStations(World world, int x, int y, int z, EntityPlayer player, boolean showRangeLines){
+    public static int getProtectingSecurityStations(World world, int x, int y, int z, EntityPlayer player, boolean showRangeLines, boolean placementRange){
         int blockingStations = 0;
-        for(TileEntity te : (List<TileEntity>)world.loadedTileEntityList) {
-            if(te instanceof TileEntitySecurityStation) {
-                TileEntitySecurityStation station = (TileEntitySecurityStation)te;
-                if(station.hasValidNetwork()) {
-                    if(Math.abs(station.xCoord - x) <= station.getSecurityRange() && Math.abs(station.yCoord - y) <= station.getSecurityRange() && Math.abs(station.zCoord - z) <= station.getSecurityRange()) {
-                        if(!station.doesAllowPlayer(player)) {
-                            blockingStations++;
-                            if(showRangeLines) station.showRangeLines();
+        int range = placementRange ? 32 : 16;
+        for(int i = x - range; i <= x + range; i += 16) {
+            for(int j = z - range; j <= z + range; j += 16) {
+                Chunk chunk = world.getChunkFromBlockCoords(i, j);
+                for(TileEntity te : (Iterable<TileEntity>)chunk.chunkTileEntityMap.values()) {
+                    if(te instanceof TileEntitySecurityStation) {
+                        TileEntitySecurityStation station = (TileEntitySecurityStation)te;
+                        if(station.hasValidNetwork()) {
+                            if(Math.abs(station.xCoord - x) <= station.getSecurityRange() + (placementRange ? 16 : 0) && Math.abs(station.yCoord - y) <= station.getSecurityRange() + (placementRange ? 16 : 0) && Math.abs(station.zCoord - z) <= station.getSecurityRange() + (placementRange ? 16 : 0)) {
+                                if(!station.doesAllowPlayer(player)) {
+                                    blockingStations++;
+                                    if(showRangeLines) station.showRangeLines();
+                                }
+                            }
                         }
                     }
                 }

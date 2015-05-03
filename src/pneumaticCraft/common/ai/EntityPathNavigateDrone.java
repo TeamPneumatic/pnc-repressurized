@@ -72,7 +72,7 @@ public class EntityPathNavigateDrone extends PathNavigate{
         return getEntityPathToXYZ(par1Entity, (int)Math.floor(par2Entity.posX), (int)Math.floor(par2Entity.posY), (int)Math.floor(par2Entity.posZ), par3, par4, par5, par6, par7);
     }
 
-    private PathEntity getEntityPathToXYZ(EntityDrone par1Entity, int par2, int par3, int par4, float par5, boolean par6, boolean par7, boolean par8, boolean par9){
+    public PathEntity getEntityPathToXYZ(EntityDrone par1Entity, int par2, int par3, int par4, float par5, boolean par6, boolean par7, boolean par8, boolean par9){
         if(!par1Entity.isBlockValidPathfindBlock(par2, par3, par4)) return null;
         PathEntity pathentity = null;
         int l = MathHelper.floor_double(par1Entity.posX);

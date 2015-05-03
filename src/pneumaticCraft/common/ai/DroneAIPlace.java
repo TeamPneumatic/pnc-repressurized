@@ -40,6 +40,7 @@ public class DroneAIPlace extends DroneAIBlockInteraction{
                                     }
                                 }
                             }
+                            failedOnPlacement = true;
                         }
                     } else {
                         failedOnPlacement = true;

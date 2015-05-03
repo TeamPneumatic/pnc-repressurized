@@ -181,6 +181,7 @@ item.regulatorTubeModule.name=Regulator Tube Module
 item.chargingModule.name=Charging Module
 
 # Programming Puzzles
+programmingPuzzle.comment.name=Comment
 programmingPuzzle.start.name=Start
 programmingPuzzle.entityAttack.name=Entity Attack
 programmingPuzzle.area.name=Area
@@ -212,6 +213,8 @@ programmingPuzzle.crafting.name=Crafting
 programmingPuzzle.standby.name=Standby
 programmingPuzzle.coordinate.name=Coordinate
 programmingPuzzle.coordinateOperator.name=Coordinate Operator
+programmingPuzzle.itemAssign.name=Item Assignment
+programmingPuzzle.conditionItem=Condition: Item Filter
 programmingPuzzle.conditionCoordinate.name=Condition: Coordinate
 programmingPuzzle.conditionRedstone.name=Condition: Redstone
 programmingPuzzle.conditionItemInventory.name=Condition: Items
@@ -299,6 +302,8 @@ pneumaticHelmet.hacking.finished.resumedTasks=Resumed tasks
 
 # Info
 gui.tab.info=Information
+gui.tab.info.assistIGW=For more info, install the In-Game Wiki Mod.
+
 gui.tab.info.tubeModule=§0In this interface you can exactly define how a module should behave dependent on the redstone signal. You can define a formula.
 gui.tab.info.heat=This machine requires or produces heat. Heat can be applied by placing a block that generates heat next to this machine. Think of a Vortex Tube (fast, but requires power), but also Lava (slow) and Torches (very slow). To cool down a machine, remove the heat sources and/or speed up the process by placing down Ice.
 gui.tab.info.items=Add plastic in the bottom slot. In this slot plastic also will be put when it cools down into plastic. Add dye in the top slot. Note that when mixing dye with plastic, dye has a much lower effect than mixing another color of Plastic.
@@ -479,6 +484,9 @@ gui.progWidget.coordinate.constant=Constant
 gui.progWidget.coordinate.variable=Variable
 gui.progWidget.coordinate.variableName=Variable name:
 gui.progWidget.coordinateOperator.operator=Operator:
+gui.progWidget.comment.tooltip.freeToUse=§aThis piece is free to use
+gui.progWidget.area.extraInfo=Extra parameter:
+gui.progWidget.area.extraInfo.tooltip=Used by certain area types: \n \nGrid: The spacing of the grid, in blocks. \nRandom: The amount of randomly selected blocks
 gui.pastebin.button.login=Log In
 gui.pastebin.button.logout=Log Out
 gui.pastebin.button.upload=Upload to Pastebin
@@ -492,6 +500,7 @@ gui.pastebin.invalidLogin=Invalid login
 gui.pastebin.loggingIn=Logging in...
 gui.pastebin.uploadingToPastebin=Uploading to Pastebin...
 gui.pastebin.retrievingFromPastebin=Retrieving from Pastebin...
+gui.securityStation.test=Test Security
 
 
 gui.liquid.empty=Empty
@@ -509,6 +518,9 @@ pneumaticHelmet.upgrade.coreComponents=Helmet
 
 pneumaticHelmet.message.enableSetting=%s Enabled
 pneumaticHelmet.message.disableSetting=%s Disabled
+pneumaticHelmet.message.coordinateTracker.routeFound=Successfully found a route to the surface!
+pneumaticHelmet.message.coordinateTracker.harderRouteFound=Found a non-ideal route (requires actions like nerd poling)
+pneumaticHelmet.message.coordinateTracker.noRouteFound=Unable to find a route to the surface!
 
 blockTracker.module.hackables=Hackables
 blockTracker.module.inventories=Inventories
@@ -552,6 +564,8 @@ waila.temperature.down=Bottom Temperature
 # Misc
 itemGroup.tabPneumaticCraft=PneumaticCraft
 message.date.ironman=Today an Iron Man movie went in premiere!
+message.securityStation.accessPrevented=§cAccess is prevented by %s Security Station(s).
+message.securityStation.stationPlacementPrevented=§cYou can't place a Security Station here: %s Security Station(s) are too close by!
 
 # Death Messages
 death.attack.pressure1=%1$s is as flat as a pancake!

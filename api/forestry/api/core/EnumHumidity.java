@@ -24,20 +24,20 @@ public enum EnumHumidity {
 	}
 
 	/**
-	 * Determines the EnumHumidity given a floating point representation of Minecraft Rainfall
+	 * Determines the EnumHumidity given a floating point representation of Minecraft Rainfall.
+	 * To check if rainfall is possible in a biome, use BiomeHelper.canRainOrSnow().
 	 * @param rawHumidity raw rainfall value
 	 * @return EnumHumidity corresponding to rainfall value
 	 */
 	public static EnumHumidity getFromValue(float rawHumidity) {
-		EnumHumidity value = EnumHumidity.ARID;
-		
 		if (rawHumidity > 0.85f) { // matches BiomeGenBase.isHighHumidity()
-			value = EnumHumidity.DAMP;
+			return DAMP;
 		}
 		else if (rawHumidity >= 0.3f) {
-			value = EnumHumidity.NORMAL;
+			return NORMAL;
 		}
-
-		return value;
+		else {
+			return ARID;
+		}
 	}
 }

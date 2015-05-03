@@ -55,28 +55,28 @@ public class ItemGPSTool extends ItemPneumatic{
     // case)
     @Override
     public void addInformation(ItemStack stack, EntityPlayer player, List infoList, boolean par4){
-        if(stack.stackTagCompound == null) {
-            stack.setTagCompound(new NBTTagCompound());
-        }
         NBTTagCompound compound = stack.stackTagCompound;
-        int x = compound.getInteger("x");
-        int y = compound.getInteger("y");
-        int z = compound.getInteger("z");
-        if(x != 0 || y != 0 || z != 0) {
-            infoList.add("\u00a72Set to " + x + ", " + y + ", " + z);
+        if(compound != null) {
+            int x = compound.getInteger("x");
+            int y = compound.getInteger("y");
+            int z = compound.getInteger("z");
+            if(x != 0 || y != 0 || z != 0) {
+                infoList.add("\u00a72Set to " + x + ", " + y + ", " + z);
+            }
         }
     }
 
     public static ChunkPosition getGPSLocation(ItemStack gpsTool){
-        if(gpsTool.stackTagCompound == null) {
-            gpsTool.setTagCompound(new NBTTagCompound());
-        }
         NBTTagCompound compound = gpsTool.stackTagCompound;
-        int x = compound.getInteger("x");
-        int y = compound.getInteger("y");
-        int z = compound.getInteger("z");
-        if(x != 0 || y != 0 || z != 0) {
-            return new ChunkPosition(x, y, z);
+        if(compound != null) {
+            int x = compound.getInteger("x");
+            int y = compound.getInteger("y");
+            int z = compound.getInteger("z");
+            if(x != 0 || y != 0 || z != 0) {
+                return new ChunkPosition(x, y, z);
+            } else {
+                return null;
+            }
         } else {
             return null;
         }

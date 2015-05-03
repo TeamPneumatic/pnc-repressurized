@@ -16,6 +16,7 @@ import pneumaticCraft.common.thirdparty.buildcraft.BuildCraft;
 import pneumaticCraft.common.thirdparty.cofh.CoFHCore;
 import pneumaticCraft.common.thirdparty.computercraft.ComputerCraft;
 import pneumaticCraft.common.thirdparty.computercraft.OpenComputers;
+import pneumaticCraft.common.thirdparty.ee3.EE3;
 import pneumaticCraft.common.thirdparty.fmp.FMPLoader;
 import pneumaticCraft.common.thirdparty.forestry.Forestry;
 import pneumaticCraft.common.thirdparty.hydraulicraft.Hydraulicraft;
@@ -61,6 +62,7 @@ public class ThirdPartyManager implements IGuiHandler{
         thirdPartyClasses.put(ModIds.OPEN_BLOCKS, OpenBlocks.class);
         thirdPartyClasses.put(ModIds.COFH_CORE, CoFHCore.class);
         thirdPartyClasses.put(ModIds.NOT_ENOUGH_KEYS, NotEnoughKeys.class);
+        thirdPartyClasses.put(ModIds.EE3, EE3.class);
         DramaSplash.newDrama();
 
         List<String> enabledThirdParty = new ArrayList<String>();

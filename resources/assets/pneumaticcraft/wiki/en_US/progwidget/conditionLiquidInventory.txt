@@ -1,0 +1,3 @@
+This is a Condition. [link{progwidget/conditions}]Click here[link{}] to read general information about Conditions.
+
+The Condition: Liquid piece allows you to check a tank for a certain amount of liquid. It will only count the liquid that's allowed by a connected Liquid Filter (or no filter to allow every liquid).

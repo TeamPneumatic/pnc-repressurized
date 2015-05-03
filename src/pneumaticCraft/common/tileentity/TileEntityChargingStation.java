@@ -21,6 +21,7 @@ import pneumaticCraft.api.item.IPressurizable;
 import pneumaticCraft.api.tileentity.IPneumaticMachine;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.inventory.ContainerChargingStationItemInventory;
+import pneumaticCraft.common.inventory.InventoryPneumaticInventoryItem;
 import pneumaticCraft.common.item.IChargingStationGUIHolderItem;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.Itemss;
@@ -34,6 +35,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class TileEntityChargingStation extends TileEntityPneumaticBase implements ISidedInventory, IRedstoneControl{
     @DescSynced
     private ItemStack[] inventory;
+    private InventoryPneumaticInventoryItem chargeableInventory;
 
     private final int INVENTORY_SIZE = 5;
 
@@ -174,13 +176,17 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
         return AxisAlignedBB.getBoundingBox(xCoord, yCoord, zCoord, xCoord + 1, yCoord + 1, zCoord + 1);
     }
 
+    public InventoryPneumaticInventoryItem getChargeableInventory(){
+        return worldObj.isRemote ? new InventoryPneumaticInventoryItem(this) : chargeableInventory;
+    }
+
     /**
      * Returns the number of slots in the inventory.
      */
     @Override
     public int getSizeInventory(){
 
-        return inventory.length;
+        return inventory.length + (chargeableInventory != null ? chargeableInventory.getSizeInventory() : 0);
     }
 
     /**
@@ -188,8 +194,11 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
      */
     @Override
     public ItemStack getStackInSlot(int slot){
-
-        return inventory[slot];
+        if(slot < inventory.length) {
+            return inventory[slot];
+        } else {
+            return chargeableInventory.getStackInSlot(slot - inventory.length);
+        }
     }
 
     @Override
@@ -222,12 +231,24 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
 
     @Override
     public void setInventorySlotContents(int slot, ItemStack itemStack){
+        if(!worldObj.isRemote && chargeableInventory != null && slot == CHARGE_INVENTORY_INDEX) {
+            chargeableInventory.writeToNBT();
+            chargeableInventory = null;
+        }
 
-        inventory[slot] = itemStack;
+        if(slot < inventory.length) {
+            inventory[slot] = itemStack;
+        } else {
+            chargeableInventory.setInventorySlotContents(slot - inventory.length, itemStack);
+        }
+
         if(itemStack != null && itemStack.stackSize > getInventoryStackLimit()) {
             itemStack.stackSize = getInventoryStackLimit();
         }
         if(slot == CHARGE_INVENTORY_INDEX && !worldObj.isRemote) {
+            if(itemStack != null && itemStack.getItem() instanceof IChargingStationGUIHolderItem) {
+                chargeableInventory = new InventoryPneumaticInventoryItem(this);
+            }
             List<EntityPlayer> players = worldObj.playerEntities;
             for(EntityPlayer player : players) {
                 if(player.openContainer instanceof ContainerChargingStationItemInventory && ((ContainerChargingStationItemInventory)player.openContainer).te == this) {
@@ -280,12 +301,19 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
                 inventory[slot] = ItemStack.loadItemStackFromNBT(tagCompound);
             }
         }
+        ItemStack chargeSlot = inventory[CHARGE_INVENTORY_INDEX];
+        if(chargeSlot != null && chargeSlot.getItem() instanceof IChargingStationGUIHolderItem) {
+            chargeableInventory = new InventoryPneumaticInventoryItem(this);
+        }
     }
 
     @Override
     public void writeToNBT(NBTTagCompound nbtTagCompound){
 
         super.writeToNBT(nbtTagCompound);
+
+        if(chargeableInventory != null) chargeableInventory.writeToNBT();
+
         // Write the ItemStacks in the inventory to NBT
         nbtTagCompound.setInteger("redstoneMode", redstoneMode);
         NBTTagList tagList = new NBTTagList();
@@ -301,15 +329,33 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     }
 
     @Override
-    public boolean isItemValidForSlot(int i, ItemStack itemstack){
-        return i == 0 || itemstack != null && itemstack.getItem() == Itemss.machineUpgrade;
+    public boolean isItemValidForSlot(int slot, ItemStack itemstack){
+        if(itemstack == null) return true;
+        if(slot < inventory.length) {
+            if(slot == 0) {
+                return itemstack.getItem() instanceof IPressurizable;
+            } else {
+                return itemstack.getItem() == Itemss.machineUpgrade;
+            }
+        } else {
+            return chargeableInventory.isItemValidForSlot(slot - inventory.length, itemstack);
+        }
     }
 
     @Override
     // upgrades in bottom, fuel in the rest.
     public int[] getAccessibleSlotsFromSide(int var1){
         if(var1 == 0) return new int[]{1, 2, 3, 4};
-        return new int[]{0};
+        if(chargeableInventory != null) {
+            int[] slots = new int[chargeableInventory.getSizeInventory() + 1];
+            slots[0] = 0;
+            for(int i = 0; i < chargeableInventory.getSizeInventory(); i++) {
+                slots[i + 1] = i + inventory.length;
+            }
+            return slots;
+        } else {
+            return new int[]{0};
+        }
     }
 
     @Override
@@ -325,6 +371,12 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     @Override
     public boolean hasCustomInventoryName(){
         return false;
+    }
+
+    @Override
+    public void markDirty(){
+        super.markDirty();
+        if(chargeableInventory != null) chargeableInventory.markDirty();
     }
 
     @Override

@@ -10,6 +10,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -25,6 +26,7 @@ import cpw.mods.fml.client.FMLClientHandler;
 public class GuiButtonSpecial extends GuiButton implements IGuiWidget{
 
     private ItemStack[] renderedStacks;
+    private ResourceLocation resLoc;
     private List<String> tooltipText = new ArrayList<String>();
     private final RenderItem itemRenderer = new RenderItem();
     private int invisibleHoverColor;
@@ -45,6 +47,10 @@ public class GuiButtonSpecial extends GuiButton implements IGuiWidget{
 
     public void setRenderStacks(ItemStack... renderedStacks){
         this.renderedStacks = renderedStacks;
+    }
+
+    public void setRenderedIcon(ResourceLocation resLoc){
+        this.resLoc = resLoc;
     }
 
     public void setTooltipText(List<String> tooltip){
@@ -91,6 +97,10 @@ public class GuiButtonSpecial extends GuiButton implements IGuiWidget{
                 }
                 RenderHelper.disableStandardItemLighting();
                 GL11.glDisable(GL12.GL_RESCALE_NORMAL);
+            }
+            if(resLoc != null) {
+                mc.getTextureManager().bindTexture(resLoc);
+                func_146110_a(xPosition + width / 2 - 8, yPosition + 2, 0, 0, 16, 16, 16, 16);
             }
             if(enabled && !thisVisible && x >= xPosition && y >= yPosition && x < xPosition + width && y < yPosition + height) {
                 Gui.drawRect(xPosition, yPosition, xPosition + width, yPosition + height, invisibleHoverColor);

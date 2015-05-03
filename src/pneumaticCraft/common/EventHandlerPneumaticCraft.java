@@ -18,10 +18,11 @@ import net.minecraft.entity.projectile.EntityPotion;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ChatComponentTranslation;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.ServerChatEvent;
@@ -59,6 +60,7 @@ import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.TileEntityConstants;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.eventhandler.Event.Result;
+import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.relauncher.Side;
@@ -138,7 +140,7 @@ public class EventHandlerPneumaticCraft{
         }
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onEnderTeleport(EnderTeleportEvent event){
         if(!HackableEnderman.onEndermanTeleport(event.entity)) {
             event.setCanceled(true);
@@ -208,10 +210,12 @@ public class EventHandlerPneumaticCraft{
         if(!event.entityPlayer.capabilities.isCreativeMode || !event.entityPlayer.canCommandSenderUseCommand(2, "securityStation")) {
             if(event.action != PlayerInteractEvent.Action.RIGHT_CLICK_AIR && event.world != null && !event.world.isRemote) {
                 if(interactedBlock != Blockss.securityStation || event.action == PlayerInteractEvent.Action.LEFT_CLICK_BLOCK) {
-                    int blockingStations = PneumaticCraftUtils.getProtectingSecurityStations(event.entity.worldObj, event.x, event.y, event.z, event.entityPlayer, true);
+                    ItemStack heldItem = event.entityPlayer.getCurrentEquippedItem();
+                    boolean tryingToPlaceSecurityStation = heldItem != null && heldItem.getItem() instanceof ItemBlock && ((ItemBlock)heldItem.getItem()).field_150939_a == Blockss.securityStation;
+                    int blockingStations = PneumaticCraftUtils.getProtectingSecurityStations(event.entity.worldObj, event.x, event.y, event.z, event.entityPlayer, true, tryingToPlaceSecurityStation);
                     if(blockingStations > 0) {
                         event.setCanceled(true);
-                        event.entityPlayer.addChatComponentMessage(new ChatComponentTranslation(EnumChatFormatting.RED + "Access is prevented by " + blockingStations + " Security Station(s)."));
+                        event.entityPlayer.addChatComponentMessage(new ChatComponentText(StatCollector.translateToLocalFormatted(tryingToPlaceSecurityStation ? "message.securityStation.stationPlacementPrevented" : "message.securityStation.accessPrevented", blockingStations)));
                     }
                 }
             }

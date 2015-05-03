@@ -5,13 +5,15 @@
  ******************************************************************************/
 package forestry.api.core;
 
+import java.security.InvalidParameterException;
+
 import net.minecraft.util.IIcon;
 import net.minecraft.world.biome.BiomeGenBase;
 
+import net.minecraftforge.common.BiomeDictionary;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-
-import net.minecraftforge.common.BiomeDictionary;
 
 /**
  *  Many things Forestry use temperature and humidity of a biome to determine whether they can or how they can work or spawn at a given location.
@@ -40,49 +42,70 @@ public enum EnumTemperature {
 	}
 
 	/**
-	 * Determines if a given BiomeGenBase is of HELLISH temperature, since it is treated seperatly from actual temperature values.
+	 * Determines if a given BiomeGenBase is of HELLISH temperature, since it is treated separately from actual temperature values.
 	 * Uses the BiomeDictionary.
 	 * @param biomeGen BiomeGenBase of the biome in question
 	 * @return true, if the BiomeGenBase is a Nether-type biome; false otherwise.
+	 * @deprecated since 3.2. Use BiomeHelper.isBiomeHellish(BiomeGenBase biomeGen)
 	 */
+	@Deprecated
 	public static boolean isBiomeHellish(BiomeGenBase biomeGen) {
-		return BiomeDictionary.isBiomeOfType(biomeGen, BiomeDictionary.Type.NETHER);
+		return BiomeHelper.isBiomeHellish(biomeGen);
 	}
 
 	/**
-	 * Determines if a given biomeID is of HELLISH temperature, since it is treated seperatly from actual temperature values.
+	 * Determines if a given biomeID is of HELLISH temperature, since it is treated separately from actual temperature values.
 	 * Uses the BiomeDictionary.
 	 * @param biomeID ID of the BiomeGenBase in question
 	 * @return true, if the biomeID is a Nether-type biome; false otherwise.
+	 * @deprecated since 3.2. Use BiomeHelper.isBiomeHellish(BiomeGenBase biomeGen)
 	 */
+	@Deprecated
+	@SuppressWarnings("deprecated")
 	public static boolean isBiomeHellish(int biomeID) {
-		return BiomeDictionary.isBiomeRegistered(biomeID) && BiomeDictionary.isBiomeOfType(BiomeGenBase.getBiome(biomeID), BiomeDictionary.Type.NETHER);
+		return BiomeHelper.isBiomeHellish(biomeID);
 	}
 
 	/**
 	 * Determines the EnumTemperature given a floating point representation of
 	 * Minecraft temperature. Hellish biomes are handled based on their biome
-	 * type - check isBiomeHellish.
+	 * type - check BiomeHelper.isBiomeHellish.
 	 * @param rawTemp raw temperature value
 	 * @return EnumTemperature corresponding to value of rawTemp
 	 */
 	public static EnumTemperature getFromValue(float rawTemp) {
-		EnumTemperature value = EnumTemperature.ICY;
+		if (rawTemp > 1.00f) {
+			return HOT;
+		}
+		else if (rawTemp > 0.80f) {
+			return WARM;
+		}
+		else if (rawTemp > 0.30f) {
+			return NORMAL;
+		}
+		else if (rawTemp > 0.0f) {
+			return COLD;
+		}
+		else {
+			return ICY;
+		}
+	}
 
-		if (rawTemp >= 1.8f) {
-			value = EnumTemperature.HOT;
+	public static EnumTemperature getFromBiome(BiomeGenBase biomeGenBase) {
+		if (BiomeHelper.isBiomeHellish(biomeGenBase)) {
+			return HELLISH;
 		}
-		else if (rawTemp >= 0.95f) {
-			value = EnumTemperature.WARM;
-		}
-		else if (rawTemp >= 0.2f) {
-			value = EnumTemperature.NORMAL;
-		}
-		else if (rawTemp >= 0.05f) {
-			value = EnumTemperature.COLD;
-		}
+		return getFromValue(biomeGenBase.temperature);
+	}
 
-		return value;
+	/**
+	 * @deprecated since Forestry 3.2. Use getFromBiome(BiomeGenBase biomeGenBase)
+	 */
+	@Deprecated
+	public static EnumTemperature getFromBiome(int biomeID) {
+		if (BiomeDictionary.isBiomeRegistered(biomeID))
+			throw new InvalidParameterException("BiomeID is not registered: " + biomeID);
+		return getFromBiome(BiomeGenBase.getBiome(biomeID));
 	}
 
 }

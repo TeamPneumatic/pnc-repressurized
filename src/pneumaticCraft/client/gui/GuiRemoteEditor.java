@@ -88,7 +88,8 @@ public class GuiRemoteEditor extends GuiRemote{
 
         GuiButtonSpecial pastebinButton = new GuiButtonSpecial(1, guiLeft - 24, guiTop + 44, 20, 20, "");
         pastebinButton.setTooltipText(I18n.format("gui.remote.button.pastebinButton"));
-        pastebinButton.setRenderStacks(new ItemStack(Itemss.advancedPCB));
+        //pastebinButton.setRenderStacks(new ItemStack(Itemss.advancedPCB));
+        pastebinButton.setRenderedIcon(Textures.GUI_PASTEBIN_ICON_LOCATION);
         buttonList.add(pastebinButton);
 
     }

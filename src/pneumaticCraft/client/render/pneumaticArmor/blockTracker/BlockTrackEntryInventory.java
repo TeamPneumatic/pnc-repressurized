@@ -8,10 +8,14 @@ import net.minecraft.block.Block;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import pneumaticCraft.api.client.pneumaticHelmet.IBlockTrackEntry;
 import pneumaticCraft.client.render.pneumaticArmor.HUDHandler;
+import pneumaticCraft.common.network.NetworkHandler;
+import pneumaticCraft.common.network.PacketDescriptionPacketRequest;
+import pneumaticCraft.common.util.IOHelper;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.Log;
 import cpw.mods.fml.relauncher.ReflectionHelper;
@@ -29,7 +33,7 @@ public class BlockTrackEntryInventory implements IBlockTrackEntry{
     }
 
     @Override
-    public boolean shouldTrackWithThisEntry(IBlockAccess world, int x, int y, int z, Block block){
+    public boolean shouldTrackWithThisEntry(IBlockAccess world, int x, int y, int z, Block block, TileEntity te){
         if(tileEntityClassToNameMapping == null) {
             try {
                 tileEntityClassToNameMapping = (Map)ReflectionHelper.findField(TileEntity.class, "field_145853_j", "classToNameMap").get(null);
@@ -38,12 +42,20 @@ public class BlockTrackEntryInventory implements IBlockTrackEntry{
                 e.printStackTrace();
             }
         }
-        TileEntity te = world.getTileEntity(x, y, z);
+        if(te instanceof TileEntityChest) {
+            TileEntityChest chest = (TileEntityChest)te;
+            if(chest.adjacentChestXNeg != null || chest.adjacentChestZNeg != null) return false;
+        }
         return te != null && !invBlackList.contains(tileEntityClassToNameMapping.get(te.getClass())) && te instanceof IInventory;
     }
 
     @Override
-    public boolean shouldBeUpdatedFromServer(){
+    public boolean shouldBeUpdatedFromServer(TileEntity te){
+        if(te instanceof TileEntityChest) {
+            TileEntityChest chest = (TileEntityChest)te;
+            if(chest.adjacentChestXPos != null) NetworkHandler.sendToServer(new PacketDescriptionPacketRequest(chest.adjacentChestXPos.xCoord, chest.adjacentChestXPos.yCoord, chest.adjacentChestXPos.zCoord));
+            if(chest.adjacentChestZPos != null) NetworkHandler.sendToServer(new PacketDescriptionPacketRequest(chest.adjacentChestZPos.xCoord, chest.adjacentChestZPos.yCoord, chest.adjacentChestZPos.zCoord));
+        }
         return true;
     }
 
@@ -53,8 +65,8 @@ public class BlockTrackEntryInventory implements IBlockTrackEntry{
     }
 
     @Override
-    public void addInformation(World world, int x, int y, int z, List<String> infoList){
-        IInventory inventory = (IInventory)world.getTileEntity(x, y, z);
+    public void addInformation(World world, int x, int y, int z, TileEntity te, List<String> infoList){
+        IInventory inventory = IOHelper.getInventoryForTE(te);
         boolean empty = true;
         ItemStack[] inventoryStacks = new ItemStack[inventory.getSizeInventory()];
         for(int i = 0; i < inventory.getSizeInventory(); i++) {

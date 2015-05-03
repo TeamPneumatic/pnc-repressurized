@@ -185,7 +185,7 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
         Item item = GameRegistry.findItem(itemParts[0], itemParts[1]);
         if(item == null) throw new IllegalArgumentException("Item not found for the name \"" + itemName + "\"!");
         ProgWidgetItemFilter itemFilter = new ProgWidgetItemFilter();
-        itemFilter.filter = new ItemStack(item, 1, damage);
+        itemFilter.setFilter(new ItemStack(item, 1, damage));
         itemFilter.specificMeta = damage;
         itemFilter.useMetadata = useMetadata;
         itemFilter.useNBT = useNBT;
@@ -242,7 +242,7 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
 
     @Override
     public boolean isEntityValid(Entity entity){
-        return whitelistFilter.isEntityApplicable(entity) && !blacklistFilter.isEntityApplicable(entity);
+        return (whitelistFilter == null || whitelistFilter.isEntityApplicable(entity)) && (blacklistFilter == null || !blacklistFilter.isEntityApplicable(entity));
     }
 
     private ChunkPosition getMinPos(){
@@ -423,7 +423,7 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
     public void setCraftingGrid(String[] stackStrings){
         ItemStack[] grid = new ItemStack[9];
         for(int i = 0; i < 9; i++) {
-            if(stackStrings[i] != null) grid[i] = getItemFilter(stackStrings[i], 0, false, false, false, false).filter;
+            if(stackStrings[i] != null) grid[i] = getItemFilter(stackStrings[i], 0, false, false, false, false).getFilter();
         }
         craftingGrid = grid;
     }

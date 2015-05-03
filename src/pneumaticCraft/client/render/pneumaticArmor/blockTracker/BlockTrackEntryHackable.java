@@ -4,6 +4,7 @@ import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import pneumaticCraft.PneumaticCraft;
@@ -17,12 +18,12 @@ import pneumaticCraft.client.render.pneumaticArmor.hacking.HackableHandler;
 public class BlockTrackEntryHackable implements IBlockTrackEntry{
 
     @Override
-    public boolean shouldTrackWithThisEntry(IBlockAccess world, int x, int y, int z, Block block){
+    public boolean shouldTrackWithThisEntry(IBlockAccess world, int x, int y, int z, Block block, TileEntity te){
         return HackUpgradeRenderHandler.enabledForPlayer(PneumaticCraft.proxy.getPlayer()) && HackableHandler.getHackableForCoord(world, x, y, z, PneumaticCraft.proxy.getPlayer()) != null;
     }
 
     @Override
-    public boolean shouldBeUpdatedFromServer(){
+    public boolean shouldBeUpdatedFromServer(TileEntity te){
         return false;
     }
 
@@ -32,7 +33,7 @@ public class BlockTrackEntryHackable implements IBlockTrackEntry{
     }
 
     @Override
-    public void addInformation(World world, int x, int y, int z, List<String> infoList){
+    public void addInformation(World world, int x, int y, int z, TileEntity te, List<String> infoList){
         IHackableBlock hackableBlock = HackableHandler.getHackableForCoord(world, x, y, z, PneumaticCraft.proxy.getPlayer());
         int hackTime = HUDHandler.instance().getSpecificRenderer(BlockTrackUpgradeHandler.class).getTargetForCoord(x, y, z).getHackTime();
         if(hackTime == 0) {

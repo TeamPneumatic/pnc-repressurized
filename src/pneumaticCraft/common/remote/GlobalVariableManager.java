@@ -3,6 +3,7 @@ package pneumaticCraft.common.remote;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.ChunkPosition;
@@ -16,6 +17,7 @@ public class GlobalVariableManager extends WorldSavedData{
 
     //   private static GlobalVariableManager INSTANCE = new GlobalVariableManager();
     private static Map<String, ChunkPosition> globalVars = new HashMap<String, ChunkPosition>();
+    private static Map<String, ItemStack> globalItemVars = new HashMap<String, ItemStack>();
     public static World overworld;
     public static final String DATA_KEY = "PneumaticCraftGlobalVariables";
 
@@ -33,6 +35,15 @@ public class GlobalVariableManager extends WorldSavedData{
 
     public static void set(String varName, ChunkPosition pos){
         globalVars.put(varName, pos);
+        save();
+    }
+
+    public static void set(String varName, ItemStack item){
+        globalItemVars.put(varName, item);
+        save();
+    }
+
+    private static void save(){
         if(overworld != null) {
             GlobalVariableManager manager = (GlobalVariableManager)overworld.loadItemData(GlobalVariableManager.class, DATA_KEY);
             if(manager == null) {
@@ -57,6 +68,10 @@ public class GlobalVariableManager extends WorldSavedData{
         return pos != null ? pos : new ChunkPosition(0, 0, 0);
     }
 
+    public static ItemStack getItem(String varName){
+        return globalItemVars.get(varName);
+    }
+
     public GlobalVariableManager(String dataKey){
         super(dataKey);
     }
@@ -68,6 +83,17 @@ public class GlobalVariableManager extends WorldSavedData{
         for(int i = 0; i < list.tagCount(); i++) {
             NBTTagCompound t = list.getCompoundTagAt(i);
             globalVars.put(t.getString("varName"), new ChunkPosition(t.getInteger("x"), t.getInteger("y"), t.getInteger("z")));
+        }
+
+        readItemVars(tag, globalItemVars);
+    }
+
+    public static void readItemVars(NBTTagCompound tag, Map<String, ItemStack> map){
+        map.clear();
+        NBTTagList list = tag.getTagList("globalItemVars", 10);
+        for(int i = 0; i < list.tagCount(); i++) {
+            NBTTagCompound t = list.getCompoundTagAt(i);
+            map.put(t.getString("varName"), ItemStack.loadItemStackFromNBT(t.getCompoundTag("item")));
         }
     }
 
@@ -84,5 +110,20 @@ public class GlobalVariableManager extends WorldSavedData{
             list.appendTag(t);
         }
         tag.setTag("globalVars", list);
+
+        writeItemVars(tag, globalItemVars);
+    }
+
+    public static void writeItemVars(NBTTagCompound tag, Map<String, ItemStack> map){
+        NBTTagList list = new NBTTagList();
+        for(Map.Entry<String, ItemStack> entry : globalItemVars.entrySet()) {
+            NBTTagCompound t = new NBTTagCompound();
+            t.setString("varName", entry.getKey());
+            NBTTagCompound itemTag = new NBTTagCompound();
+            entry.getValue().writeToNBT(itemTag);
+            t.setTag("item", itemTag);
+            list.appendTag(t);
+        }
+        tag.setTag("globalItemVars", list);
     }
 }

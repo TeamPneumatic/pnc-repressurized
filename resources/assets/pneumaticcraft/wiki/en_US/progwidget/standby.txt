@@ -1,0 +1,4 @@
+Programming Puzzles are used in [link{block/programmer}]programmers [link{}].
+
+[prefix{l}]The Standby piece [prefix{}]
+When executed, the Drone will turn off its propellers, and fall down. This piece can be used to save power, as the Drone doesn't use power in standby mode. The Drone will continue executing other commands though. As soon as it gets a command to move, the Drone will turn on the propellers again.
