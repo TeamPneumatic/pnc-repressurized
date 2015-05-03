@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.profiler.Profiler;
@@ -44,6 +45,7 @@ public class DroneAIManager{
     private boolean stopWhenEndReached;
 
     private final Map<String, ChunkPosition> coordinateVariables = new HashMap<String, ChunkPosition>();
+    private final Map<String, ItemStack> itemVariables = new HashMap<String, ItemStack>();
 
     public DroneAIManager(EntityDrone drone){
         theProfiler = drone.worldObj.theProfiler;
@@ -87,6 +89,8 @@ public class DroneAIManager{
             tagList.appendTag(t);
         }
         tag.setTag("coords", tagList);
+
+        GlobalVariableManager.writeItemVars(tag, itemVariables);
     }
 
     public void readFromNBT(NBTTagCompound tag){
@@ -96,12 +100,14 @@ public class DroneAIManager{
             NBTTagCompound t = tagList.getCompoundTagAt(i);
             coordinateVariables.put(t.getString("key"), new ChunkPosition(t.getInteger("x"), t.getInteger("y"), t.getInteger("z")));
         }
+
+        GlobalVariableManager.readItemVars(tag, itemVariables);
     }
 
     public ChunkPosition getCoordinate(String varName){
         ChunkPosition pos;
         if(varName.startsWith("$")) {
-            SpecialVariableRetrievalEvent event = new SpecialVariableRetrievalEvent(drone, varName.substring(1));
+            SpecialVariableRetrievalEvent.CoordinateVariable.Drone event = new SpecialVariableRetrievalEvent.CoordinateVariable.Drone(drone, varName.substring(1));
             MinecraftForge.EVENT_BUS.post(event);
             pos = event.coordinate;
         } else if(varName.startsWith("#")) {
@@ -116,6 +122,26 @@ public class DroneAIManager{
         if(varName.startsWith("#")) {
             GlobalVariableManager.set(varName.substring(1), coord);
         } else if(!varName.startsWith("$")) coordinateVariables.put(varName, coord);
+    }
+
+    public ItemStack getStack(String varName){
+        ItemStack item;
+        if(varName.startsWith("$")) {
+            SpecialVariableRetrievalEvent.ItemVariable.Drone event = new SpecialVariableRetrievalEvent.ItemVariable.Drone(drone, varName.substring(1));
+            MinecraftForge.EVENT_BUS.post(event);
+            item = event.item;
+        } else if(varName.startsWith("#")) {
+            item = GlobalVariableManager.getItem(varName.substring(1));
+        } else {
+            item = itemVariables.get(varName);
+        }
+        return item;
+    }
+
+    public void setItem(String varName, ItemStack item){
+        if(varName.startsWith("#")) {
+            GlobalVariableManager.set(varName.substring(1), item);
+        } else if(!varName.startsWith("$")) itemVariables.put(varName, item);
     }
 
     private void updateWidgetFlow(){

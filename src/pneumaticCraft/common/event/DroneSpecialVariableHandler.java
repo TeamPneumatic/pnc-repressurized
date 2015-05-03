@@ -11,7 +11,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 public class DroneSpecialVariableHandler{
 
     @SubscribeEvent
-    public void onSpecialVariableRetrieving(SpecialVariableRetrievalEvent event){
+    public void onSpecialVariableRetrieving(SpecialVariableRetrievalEvent.CoordinateVariable.Drone event){
         if(event.specialVarName.equalsIgnoreCase("owner")) {
             EntityDrone drone = (EntityDrone)event.drone;
             EntityPlayer player = drone.getOwner();

@@ -127,6 +127,7 @@ public class Textures{
     public static final ResourceLocation PROG_WIDGET_COORDINATE = new ResourceLocation(PROG_WIDGET_LOCATION + "coordinatePiece.png");
     public static final ResourceLocation PROG_WIDGET_COORDINATE_OPERATION_PLUS_MINUS = new ResourceLocation(PROG_WIDGET_LOCATION + "coordinateOperationPlusMinus.png");
     public static final ResourceLocation PROG_WIDGET_COORDINATE_OPERATION_MULTIPLY_DIVIDE = new ResourceLocation(PROG_WIDGET_LOCATION + "coordinateOperationMultiplyDivide.png");
+    public static final ResourceLocation PROG_WIDGET_ITEM_ASSIGN = new ResourceLocation(PROG_WIDGET_LOCATION + "itemAssignPiece.png");
     public static final ResourceLocation PROG_WIDGET_CONDITION_REDSTONE = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionRedstonePiece.png");
     public static final ResourceLocation PROG_WIDGET_CONDITION_ENTITY = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionEntityPiece.png");
     public static final ResourceLocation PROG_WIDGET_CONDITION_LIQUID_INVENTORY = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionLiquidInventoryPiece.png");
@@ -135,6 +136,7 @@ public class Textures{
     public static final ResourceLocation PROG_WIDGET_CONDITION_RF = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionRFPiece.png");
     public static final ResourceLocation PROG_WIDGET_CONDITION_PRESSURE = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionPressurePiece.png");
     public static final ResourceLocation PROG_WIDGET_CONDITION_COORDINATE = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionCoordinatePiece.png");
+    public static final ResourceLocation PROG_WIDGET_CONDITION_ITEM = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionItem.png");
     public static final ResourceLocation PROG_WIDGET_CONDITION_DRONE_ENTITY = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionDroneEntityPiece.png");
     public static final ResourceLocation PROG_WIDGET_CONDITION_DRONE_LIQUID_INVENTORY = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionDroneLiquidPiece.png");
     public static final ResourceLocation PROG_WIDGET_CONDITION_DRONE_ITEM_INVENTORY = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionDroneInventoryPiece.png");

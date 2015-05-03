@@ -47,6 +47,8 @@ import pneumaticCraft.common.progwidgets.ProgWidgetExternalProgram;
 import pneumaticCraft.common.progwidgets.ProgWidgetGoToLocation;
 import pneumaticCraft.common.progwidgets.ProgWidgetInventoryExport;
 import pneumaticCraft.common.progwidgets.ProgWidgetInventoryImport;
+import pneumaticCraft.common.progwidgets.ProgWidgetItemAssign;
+import pneumaticCraft.common.progwidgets.ProgWidgetItemCondition;
 import pneumaticCraft.common.progwidgets.ProgWidgetItemFilter;
 import pneumaticCraft.common.progwidgets.ProgWidgetItemInventoryCondition;
 import pneumaticCraft.common.progwidgets.ProgWidgetJump;
@@ -92,6 +94,7 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory{
         registeredWidgets.add(new ProgWidgetArea());
         registeredWidgets.add(new ProgWidgetString());
         registeredWidgets.add(new ProgWidgetItemFilter());
+        registeredWidgets.add(new ProgWidgetItemAssign());
         registeredWidgets.add(new ProgWidgetLiquidFilter());
         registeredWidgets.add(new ProgWidgetCoordinate());
         registeredWidgets.add(new ProgWidgetCoordinateOperator());
@@ -126,6 +129,7 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory{
         registeredWidgets.add(new ProgWidgetLiquidInventoryCondition());
         registeredWidgets.add(new ProgWidgetEntityCondition());
         registeredWidgets.add(new ProgWidgetPressureCondition());
+        registeredWidgets.add(new ProgWidgetItemCondition());
         registeredWidgets.add(new ProgWidgetDroneConditionItem());
         registeredWidgets.add(new ProgWidgetDroneConditionLiquid());
         registeredWidgets.add(new ProgWidgetDroneConditionEntity());
