@@ -20,6 +20,7 @@ public interface ITreeGenData {
 	boolean canGrow(World world, int x, int y, int z, int expectedGirth, int expectedHeight);
 
 	void setLeaves(World world, GameProfile owner, int x, int y, int z);
+	void setLeavesDecorative(World world, GameProfile owner, int x, int y, int z);
 
 	boolean allowsFruitBlocks();
 

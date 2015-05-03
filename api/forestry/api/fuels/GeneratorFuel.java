@@ -5,8 +5,6 @@
  ******************************************************************************/
 package forestry.api.fuels;
 
-import java.util.HashMap;
-
 import net.minecraftforge.fluids.FluidStack;
 
 public class GeneratorFuel {

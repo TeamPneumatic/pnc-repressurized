@@ -1,8 +1,20 @@
 /*******************************************************************************
  * Copyright 2011-2014 SirSengir
- * 
+ *
  * This work (the API) is licensed under the "MIT" License, see LICENSE.txt for details.
  ******************************************************************************/
-@API(apiVersion="2.3.0", owner="ForestryAPI|core", provides="ForestryAPI|storage")
-package forestry.api.storage;
-import cpw.mods.fml.common.API;
+package forestry.api.genetics;
+
+import net.minecraft.block.Block;
+
+public interface IFlower extends Comparable<IFlower> {
+
+	Block getBlock();
+	int getMeta();
+
+	double getWeight();
+	void setWeight(double weight);
+
+	boolean isPlantable();
+
+}

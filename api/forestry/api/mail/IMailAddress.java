@@ -6,9 +6,8 @@
 package forestry.api.mail;
 
 import com.mojang.authlib.GameProfile;
+
 import forestry.api.core.INBTTagable;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.world.World;
 
 public interface IMailAddress extends INBTTagable {
 

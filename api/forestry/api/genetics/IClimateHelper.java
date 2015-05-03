@@ -19,6 +19,9 @@ public interface IClimateHelper {
 	boolean isWithinLimits(EnumTemperature temperature, EnumHumidity humidity,
 			EnumTemperature baseTemp, EnumTolerance tolTemp,
 			EnumHumidity baseHumid, EnumTolerance tolHumid);
+
+	boolean isWithinLimits(EnumTemperature temperature, EnumTemperature baseTemp, EnumTolerance tolTemp);
+	boolean isWithinLimits(EnumHumidity humidity, EnumHumidity baseHumid, EnumTolerance tolHumid);
 	
 	/**
 	 * Gets a collection of humidities which fit the given parameters.
