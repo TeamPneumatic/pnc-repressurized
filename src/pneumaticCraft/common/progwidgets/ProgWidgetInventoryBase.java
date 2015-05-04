@@ -16,6 +16,17 @@ public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase imp
     private int count = 1;
 
     @Override
+    public void addErrors(List<String> curInfo){
+        super.addErrors(curInfo);
+
+        boolean sideActive = false;
+        for(boolean bool : accessingSides) {
+            sideActive |= bool;
+        }
+        if(!sideActive) curInfo.add("gui.progWidget.general.error.noSideActive");
+    }
+
+    @Override
     public void setSides(boolean[] sides){
         accessingSides = sides;
     }

@@ -34,6 +34,22 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
     private int count;
 
     @Override
+    public void addErrors(List<String> curInfo){
+        super.addErrors(curInfo);
+        boolean usingVariables = false;
+        for(int y = 0; y < 3; y++) {
+            ProgWidgetItemFilter itemFilter = (ProgWidgetItemFilter)getConnectedParameters()[y];
+            for(int x = 0; x < 3 && itemFilter != null; x++) {
+                if(!itemFilter.getVariable().equals("")) usingVariables = true;
+                itemFilter = (ProgWidgetItemFilter)itemFilter.getConnectedParameters()[0];
+            }
+        }
+        if(!usingVariables && getRecipeResult(PneumaticCraft.proxy.getClientWorld()) == null) {
+            curInfo.add("gui.progWidget.crafting.error.noCraftingRecipe");
+        }
+    }
+
+    @Override
     public boolean hasStepInput(){
         return true;
     }

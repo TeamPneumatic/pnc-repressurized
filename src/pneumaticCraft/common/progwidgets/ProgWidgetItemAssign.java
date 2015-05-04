@@ -54,6 +54,14 @@ public class ProgWidgetItemAssign extends ProgWidget implements IVariableWidget{
     }
 
     @Override
+    public void addErrors(List<String> curInfo){
+        super.addErrors(curInfo);
+        if(variable.equals("")) {
+            curInfo.add("gui.progWidget.general.error.emptyVariable");
+        }
+    }
+
+    @Override
     protected ResourceLocation getTexture(){
         return Textures.PROG_WIDGET_ITEM_ASSIGN;
     }

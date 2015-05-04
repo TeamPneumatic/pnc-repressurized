@@ -11,6 +11,12 @@ import pneumaticCraft.lib.Textures;
 public class ProgWidgetJump extends ProgWidget implements IJump{
 
     @Override
+    public void addErrors(List<String> curInfo){
+        super.addErrors(curInfo);
+        if(getConnectedParameters()[0] == null) curInfo.add("gui.progWidget.label.error.noJumpLocation");
+    }
+
+    @Override
     public boolean hasStepInput(){
         return true;
     }

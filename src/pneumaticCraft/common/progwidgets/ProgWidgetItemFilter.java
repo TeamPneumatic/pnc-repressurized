@@ -33,6 +33,14 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget{
     private static RenderItem itemRender;
 
     @Override
+    public void addErrors(List<String> curInfo){
+        super.addErrors(curInfo);
+        if(variable.equals("") && filter == null) {
+            curInfo.add("gui.progWidget.itemFilter.error.noFilter");
+        }
+    }
+
+    @Override
     public void renderExtraInfo(){
         if(variable.equals("")) {
             if(filter != null) {
@@ -75,6 +83,7 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget{
         RenderHelper.enableGUIStandardItemLighting();
         // zLevel = 0.0F;
         //  itemRender.zLevel = 0.0F;
+        GL11.glDisable(GL11.GL_LIGHTING);
     }
 
     @Override

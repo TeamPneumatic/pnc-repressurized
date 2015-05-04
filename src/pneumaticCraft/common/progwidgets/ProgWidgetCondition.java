@@ -29,6 +29,14 @@ public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implem
     }
 
     @Override
+    public void addErrors(List<String> curInfo){
+        super.addErrors(curInfo);
+        if(getConnectedParameters()[getParameters().length - 1] == null && getConnectedParameters()[getParameters().length * 2 - 1] == null) {
+            curInfo.add("gui.progWidget.condition.error.noFlowControl");
+        }
+    }
+
+    @Override
     public abstract Class<? extends IProgWidget>[] getParameters();
 
     protected abstract DroneAIBlockCondition getEvaluator(EntityDrone drone, IProgWidget widget);
@@ -38,7 +46,7 @@ public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implem
         if(evaluator != null) {
             return ProgWidgetJump.jumpToLabel(allWidgets, this, evaluate(drone, this));
         } else {
-            Log.error("Shouldn't be happening!");
+            Log.error("Shouldn't be happening! ProgWidgetCondition");
             return super.getOutputWidget(drone, allWidgets);
         }
     }

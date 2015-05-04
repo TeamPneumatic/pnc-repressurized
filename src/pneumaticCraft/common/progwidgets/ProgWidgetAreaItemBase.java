@@ -39,6 +39,14 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
         return new Class[]{ProgWidgetArea.class, ProgWidgetItemFilter.class};
     }
 
+    @Override
+    public void addErrors(List<String> curInfo){
+        super.addErrors(curInfo);
+        if(getConnectedParameters()[0] == null) {
+            curInfo.add("gui.progWidget.area.error.noArea");
+        }
+    }
+
     public static IBlockAccess getCache(Collection<ChunkPosition> area, World world){
         if(area.size() == 0) return world;
         int minX, minY, minZ, maxX, maxY, maxZ;

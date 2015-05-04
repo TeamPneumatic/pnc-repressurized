@@ -102,7 +102,7 @@ public class ThirdPartyManager implements IGuiHandler{
         for(IThirdParty thirdParty : thirdPartyMods) {
             try {
                 thirdParty.preInit();
-            } catch(Exception e) {
+            } catch(Throwable e) {
                 Log.error("PneumaticCraft wasn't able to load third party content from the third party class " + thirdParty.getClass() + " in the PreInit phase!");
                 e.printStackTrace();
             }
@@ -113,7 +113,7 @@ public class ThirdPartyManager implements IGuiHandler{
         for(IThirdParty thirdParty : thirdPartyMods) {
             try {
                 thirdParty.init();
-            } catch(Exception e) {
+            } catch(Throwable e) {
                 Log.error("PneumaticCraft wasn't able to load third party content from the third party class " + thirdParty.getClass() + " in the Init phase!");
                 e.printStackTrace();
             }
@@ -124,7 +124,7 @@ public class ThirdPartyManager implements IGuiHandler{
         for(IThirdParty thirdParty : thirdPartyMods) {
             try {
                 thirdParty.postInit();
-            } catch(Exception e) {
+            } catch(Throwable e) {
                 Log.error("PneumaticCraft wasn't able to load third party content from the third party class " + thirdParty.getClass() + " in the PostInit phase!");
                 e.printStackTrace();
             }
@@ -135,7 +135,7 @@ public class ThirdPartyManager implements IGuiHandler{
         for(IThirdParty thirdParty : thirdPartyMods) {
             try {
                 thirdParty.clientSide();
-            } catch(Exception e) {
+            } catch(Throwable e) {
                 Log.error("PneumaticCraft wasn't able to load third party content from the third party class " + thirdParty.getClass() + " client side!");
                 e.printStackTrace();
             }
@@ -146,7 +146,7 @@ public class ThirdPartyManager implements IGuiHandler{
         for(IThirdParty thirdParty : thirdPartyMods) {
             try {
                 thirdParty.clientInit();
-            } catch(Exception e) {
+            } catch(Throwable e) {
                 Log.error("PneumaticCraft wasn't able to load third party content from the third party class " + thirdParty.getClass() + " client side on the init!");
                 e.printStackTrace();
             }

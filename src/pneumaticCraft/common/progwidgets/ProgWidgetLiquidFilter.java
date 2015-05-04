@@ -20,6 +20,12 @@ public class ProgWidgetLiquidFilter extends ProgWidget{
     private Fluid fluid;
 
     @Override
+    public void addErrors(List<String> curInfo){
+        super.addErrors(curInfo);
+        if(fluid == null) curInfo.add("gui.progWidget.liquidFilter.error.noLiquid");
+    }
+
+    @Override
     public boolean hasStepInput(){
         return false;
     }

@@ -28,9 +28,11 @@ public interface IProgWidget{
 
     public void getTooltip(List<String> curTooltip);
 
-    public void renderExtraInfo();
+    public void addWarnings(List<String> curInfo);
 
-    public void addCompileErrors(List<String> curErrors);
+    public void addErrors(List<String> curInfo);
+
+    public void renderExtraInfo();
 
     public boolean hasStepInput();
 

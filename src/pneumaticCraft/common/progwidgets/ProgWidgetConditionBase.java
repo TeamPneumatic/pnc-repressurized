@@ -24,6 +24,14 @@ public abstract class ProgWidgetConditionBase extends ProgWidget implements IJum
     }
 
     @Override
+    public void addErrors(List<String> curInfo){
+        super.addErrors(curInfo);
+        if(getConnectedParameters()[getParameters().length - 1] == null && getConnectedParameters()[getParameters().length * 2 - 1] == null) {
+            curInfo.add("gui.progWidget.condition.error.noFlowControl");
+        }
+    }
+
+    @Override
     public List<String> getPossibleJumpLocations(){
         ProgWidgetString textWidget = (ProgWidgetString)getConnectedParameters()[getParameters().length - 1];
         ProgWidgetString textWidget2 = (ProgWidgetString)getConnectedParameters()[getParameters().length * 2 - 1];
