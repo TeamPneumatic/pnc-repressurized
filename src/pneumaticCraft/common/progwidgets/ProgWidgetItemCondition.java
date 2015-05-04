@@ -1,5 +1,7 @@
 package pneumaticCraft.common.progwidgets;
 
+import java.util.List;
+
 import net.minecraft.util.ResourceLocation;
 import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.lib.Textures;
@@ -14,6 +16,17 @@ public class ProgWidgetItemCondition extends ProgWidgetConditionBase{
     @Override
     public String getWidgetString(){
         return "conditionItem";
+    }
+
+    @Override
+    public void addErrors(List<String> curInfo){
+        super.addErrors(curInfo);
+        if(getConnectedParameters()[0] == null && getConnectedParameters()[3] == null) {
+            curInfo.add("gui.progWidget.conditionItem.error.noCheckingItem");
+        }
+        if(getConnectedParameters()[1] == null && getConnectedParameters()[4] == null) {
+            curInfo.add("gui.progWidget.conditionItem.error.noFilter");
+        }
     }
 
     @Override

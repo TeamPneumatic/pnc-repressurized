@@ -1,10 +1,18 @@
 package pneumaticCraft.common.progwidgets;
 
+import java.util.List;
+
 import net.minecraft.util.ResourceLocation;
 import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.lib.Textures;
 
 public class ProgWidgetLabel extends ProgWidget implements ILabel{
+
+    @Override
+    public void addErrors(List<String> curInfo){
+        super.addErrors(curInfo);
+        if(getConnectedParameters()[0] == null) curInfo.add("gui.progWidget.label.error.noLabel");
+    }
 
     @Override
     public boolean hasStepInput(){

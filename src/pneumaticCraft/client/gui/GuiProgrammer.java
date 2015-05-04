@@ -19,6 +19,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
 
+import org.apache.commons.lang3.text.WordUtils;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -218,6 +219,31 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
                     if(widget != draggingWidget && (x - translatedX) / scale - guiLeft >= widget.getX() && (y - translatedY) / scale - guiTop >= widget.getY() && (x - translatedX) / scale - guiLeft <= widget.getX() + widget.getWidth() / 2 && (y - translatedY) / scale - guiTop <= widget.getY() + widget.getHeight() / 2) {
                         List<String> tooltip = new ArrayList<String>();
                         widget.getTooltip(tooltip);
+
+                        List<String> errors = new ArrayList<String>();
+                        widget.addErrors(errors);
+                        if(errors.size() > 0) {
+                            tooltip.add(EnumChatFormatting.RED + I18n.format("gui.programmer.errors"));
+                            for(String s : errors) {
+                                String[] lines = WordUtils.wrap("-" + I18n.format(s), 30).split(System.getProperty("line.separator"));
+                                for(String line : lines) {
+                                    tooltip.add(EnumChatFormatting.RED + "   " + line);
+                                }
+                            }
+                        }
+
+                        List<String> warnings = new ArrayList<String>();
+                        widget.addWarnings(warnings);
+                        if(warnings.size() > 0) {
+                            tooltip.add(EnumChatFormatting.YELLOW + I18n.format("gui.programmer.warnings"));
+                            for(String s : warnings) {
+                                String[] lines = WordUtils.wrap("-" + I18n.format(s), 30).split(System.getProperty("line.separator"));
+                                for(String line : lines) {
+                                    tooltip.add(EnumChatFormatting.YELLOW + "   " + line);
+                                }
+                            }
+                        }
+
                         if(igwLoaded) tooltip.add(I18n.format("gui.programmer.pressIForInfo"));
                         if(tooltip.size() > 0) drawHoveringString(tooltip, x - guiLeft, y - guiTop, fontRendererObj);
                     }
@@ -331,6 +357,21 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
             widget.render();
             GL11.glPopMatrix();
         }
+
+        for(IProgWidget widget : te.progWidgets) {
+            List<String> errors = new ArrayList<String>();
+            widget.addErrors(errors);
+            if(errors.size() > 0) {
+                drawBorder(widget, 0xFFFF0000);
+            } else {
+                List<String> warnings = new ArrayList<String>();
+                widget.addWarnings(warnings);
+                if(warnings.size() > 0) {
+                    drawBorder(widget, 0xFFFFFF00);
+                }
+            }
+        }
+        GL11.glColor4d(1, 1, 1, 1);
 
         if(showInfo.checked && showingWidgetProgress == 0) {
             for(IProgWidget widget : te.progWidgets) {
@@ -447,6 +488,17 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         wasClicking = isLeftClicking || isMiddleClicking;
         lastMouseX = origX;
         lastMouseY = origY;
+    }
+
+    private void drawBorder(IProgWidget widget, int color){
+        GL11.glPushMatrix();
+        GL11.glTranslated(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
+        GL11.glScaled(0.5, 0.5, 1);
+        drawVerticalLine(0, 0, widget.getHeight(), color);
+        drawVerticalLine(widget.getWidth(), 0, widget.getHeight(), color);
+        drawHorizontalLine(widget.getWidth(), 0, 0, color);
+        drawHorizontalLine(widget.getWidth(), 0, widget.getHeight(), color);
+        GL11.glPopMatrix();
     }
 
     private void showFlow(){
@@ -707,9 +759,16 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
             if(showingWidgetProgress < 0) showingWidgetProgress = 0;
         }
 
+        List<String> errors = new ArrayList<String>();
+        List<String> warnings = new ArrayList<String>();
+        for(IProgWidget w : te.progWidgets) {
+            w.addErrors(errors);
+            w.addWarnings(warnings);
+        }
+
         boolean isDeviceInserted = te.getStackInSlot(TileEntityProgrammer.PROGRAM_SLOT) != null;
         importButton.enabled = isDeviceInserted;
-        exportButton.enabled = isDeviceInserted;
+        exportButton.enabled = isDeviceInserted && errors.size() == 0;
 
         List<String> exportButtonTooltip = new ArrayList<String>();
         exportButtonTooltip.add("Export program");
@@ -730,7 +789,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
                         prefix = EnumChatFormatting.GREEN.toString();
                     } else {
                         prefix = EnumChatFormatting.RED.toString();
-                        exportButton.enabled = player.capabilities.isCreativeMode;
+                        exportButton.enabled = player.capabilities.isCreativeMode && errors.size() == 0;
                     }
                     exportButtonTooltip.add(prefix + "-" + stack.stackSize + "x " + rawList.get(0));
                 }
@@ -747,6 +806,10 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         } else {
             exportButtonTooltip.add("No programmable item inserted.");
         }
+
+        if(errors.size() > 0) exportButtonTooltip.add(EnumChatFormatting.RED + I18n.format("gui.programmer.errorCount", errors.size()));
+        if(warnings.size() > 0) exportButtonTooltip.add(EnumChatFormatting.YELLOW + I18n.format("gui.programmer.warningCount", warnings.size()));
+
         exportButton.setTooltipText(exportButtonTooltip);
     }
 

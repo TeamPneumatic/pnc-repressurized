@@ -19,6 +19,14 @@ import pneumaticCraft.lib.Textures;
 public class ProgWidgetEntityRightClick extends ProgWidget implements IEntityProvider{
 
     @Override
+    public void addErrors(List<String> curInfo){
+        super.addErrors(curInfo);
+        if(getConnectedParameters()[0] == null) {
+            curInfo.add("gui.progWidget.area.error.noArea");
+        }
+    }
+
+    @Override
     public boolean hasStepInput(){
         return true;
     }

@@ -41,6 +41,17 @@ public class ProgWidgetEmitRedstone extends ProgWidget implements IRedstoneEmiss
     }
 
     @Override
+    public void addErrors(List<String> curInfo){
+        super.addErrors(curInfo);
+
+        boolean sideActive = false;
+        for(boolean bool : accessingSides) {
+            sideActive |= bool;
+        }
+        if(!sideActive) curInfo.add("gui.progWidget.general.error.noSideActive");
+    }
+
+    @Override
     public void getTooltip(List<String> curTooltip){
         super.getTooltip(curTooltip);
         curTooltip.add("Affecting sides:");

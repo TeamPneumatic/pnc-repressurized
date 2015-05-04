@@ -51,6 +51,14 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
     }
 
     @Override
+    public void addErrors(List<String> curInfo){
+        super.addErrors(curInfo);
+        if(variable.equals("")) {
+            curInfo.add("gui.progWidget.general.error.emptyVariable");
+        }
+    }
+
+    @Override
     public IProgWidget getOutputWidget(EntityDrone drone, List<IProgWidget> allWidgets){
         if(!variable.equals("")) {
             ChunkPosition curPos = calculateCoordinate(this, 0, multiplyDivide);

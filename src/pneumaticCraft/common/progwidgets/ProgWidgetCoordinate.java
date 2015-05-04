@@ -37,6 +37,22 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget{
     }
 
     @Override
+    public void addWarnings(List<String> curInfo){
+        super.addWarnings(curInfo);
+        if(!useVariable && x == 0 && y == 0 && z == 0) {
+            curInfo.add("gui.progWidget.coordinate.warning.noCoordinate");
+        }
+    }
+
+    @Override
+    public void addErrors(List<String> curInfo){
+        super.addErrors(curInfo);
+        if(useVariable && variable.equals("")) {
+            curInfo.add("gui.progWidget.general.error.emptyVariable");
+        }
+    }
+
+    @Override
     public String getWidgetString(){
         return "coordinate";
     }

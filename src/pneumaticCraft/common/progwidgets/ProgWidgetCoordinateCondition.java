@@ -35,6 +35,12 @@ public class ProgWidgetCoordinateCondition extends ProgWidgetConditionBase{
     }
 
     @Override
+    public void addErrors(List<String> curInfo){
+        super.addErrors(curInfo);
+        if(!checkingAxis[0] && !checkingAxis[1] && !checkingAxis[2]) curInfo.add("gui.progWidget.conditionCoordinate.error.noAxisSelected");
+    }
+
+    @Override
     public boolean evaluate(EntityDrone drone, IProgWidget widget){
         ChunkPosition pos1 = ProgWidgetCoordinateOperator.calculateCoordinate(widget, 0, false);
         ChunkPosition pos2 = ProgWidgetCoordinateOperator.calculateCoordinate(widget, 1, false);

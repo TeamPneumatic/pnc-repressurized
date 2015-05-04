@@ -67,7 +67,14 @@ public abstract class ProgWidget implements IProgWidget{
     }
 
     @Override
-    public void addCompileErrors(List<String> curErrors){}
+    public void addWarnings(List<String> curInfo){}
+
+    @Override
+    public void addErrors(List<String> curInfo){
+        if(!hasStepInput() && hasStepOutput() && outputStepConnection == null) {
+            curInfo.add("gui.progWidget.general.error.noPieceConnected");
+        }
+    }
 
     @Override
     public int getX(){
