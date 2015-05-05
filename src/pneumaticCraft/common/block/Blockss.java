@@ -68,6 +68,7 @@ public class Blockss{
     public static Block etchingAcid;
     public static Block securityStation;
     public static Block universalSensor;
+    public static Block universalActuator;
     public static Block aerialInterface;
     public static Block electrostaticCompressor;
     public static Block aphorismTile;
@@ -123,6 +124,7 @@ public class Blockss{
         etchingAcid = new BlockFluidEtchingAcid().setBlockName("etchingAcid");
         securityStation = new BlockSecurityStation(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("securityStation");
         universalSensor = new BlockUniversalSensor(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("universalSensor");
+        universalActuator = new BlockUniversalActuator(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("universalActuator");
         aerialInterface = new BlockAerialInterface(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("aerialInterface");
         electrostaticCompressor = new BlockElectrostaticCompressor(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("electrostaticCompressor");
         aphorismTile = new BlockAphorismTile(Material.rock).setHardness(1.5F).setResistance(4.0F).setBlockName("aphorismTile");
@@ -182,6 +184,7 @@ public class Blockss{
         registerBlock(etchingAcid);
         registerBlock(securityStation);
         registerBlock(universalSensor);
+        registerBlock(universalActuator);
         registerBlock(aerialInterface);
         registerBlock(electrostaticCompressor);
         registerBlock(aphorismTile);

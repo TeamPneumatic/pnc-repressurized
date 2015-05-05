@@ -25,6 +25,7 @@ public class TileEntityRegistrator{
         GameRegistry.registerTileEntity(TileEntityUVLightBox.class, "TileEntityUVLightBox");
         GameRegistry.registerTileEntity(TileEntitySecurityStation.class, "TileEntitySecurityStation");
         GameRegistry.registerTileEntity(TileEntityUniversalSensor.class, "TileEntityUniversalSensor");
+        GameRegistry.registerTileEntity(TileEntityUniversalActuator.class, "PneumaticCraft_universalSensor");
         GameRegistry.registerTileEntity(TileEntityAerialInterface.class, "TileEntityAerialInterface");
         GameRegistry.registerTileEntity(TileEntityElectrostaticCompressor.class, "TileEntityElectrostaticCompressor");
         GameRegistry.registerTileEntity(TileEntityAphorismTile.class, "TileEntityAphorismTile");
