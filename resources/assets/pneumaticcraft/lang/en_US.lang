@@ -412,6 +412,7 @@ gui.tab.redstoneBehaviour.button.lowSignal=Low Signal
 gui.tab.redstoneBehaviour.button.never=Never
 gui.tab.redstoneBehaviour.aerialInterface.button.playerConnected=Player Connected
 gui.tab.redstoneBehaviour.airCannon.button.highSignalAndAngle=High Signal And Angle
+gui.tab.redstoneBehaviour.airCannon.button.highAndSpace=Signal and Space in inv.
 gui.tab.redstoneBehaviour.airCannon.fireUpon=Fire Upon
 gui.tab.redstoneBehaviour.chargingStation.button.doneDischarging=Done (dis)charging
 gui.tab.redstoneBehaviour.chargingStation.button.charging=Charging

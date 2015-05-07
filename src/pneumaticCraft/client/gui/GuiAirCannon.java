@@ -66,7 +66,16 @@ public class GuiAirCannon extends GuiPneumaticContainerBase<TileEntityAirCannon>
 
     @Override
     protected String getRedstoneButtonText(int mode){
-        return te.fireOnlyOnRightAngle ? "gui.tab.redstoneBehaviour.airCannon.button.highSignalAndAngle" : "gui.tab.redstoneBehaviour.button.highSignal";
+        switch(te.getRedstoneMode()){
+            case 0:
+                return "gui.tab.redstoneBehaviour.airCannon.button.highSignalAndAngle";
+            case 1:
+                return "gui.tab.redstoneBehaviour.button.highSignal";
+            case 2:
+                return "gui.tab.redstoneBehaviour.airCannon.button.highAndSpace";
+            default:
+                return "<ERROR>";
+        }
     }
 
     @Override
@@ -115,10 +124,13 @@ public class GuiAirCannon extends GuiPneumaticContainerBase<TileEntityAirCannon>
             textList.add("\u00a77can't be reached");
             textList.add("\u00a70Select a coordinate");
             textList.add("\u00a70closer to the cannon.");
-        } else if(te.fireOnlyOnRightAngle && !te.doneTurning) {
+        } else if(te.getRedstoneMode() == 0 && !te.doneTurning) {
             textList.add("\u00a77Cannon still turning");
-            textList.add("\u00a77Wait for the cannon");
+            textList.add("\u00a70Wait for the cannon");
+        } else if(te.getRedstoneMode() == 2 && !te.insertingInventoryHasSpace) {
+            textList.add("\u00a77The last shot inventory does not have space for the items in the Cannon.");
         }
+
         if(textList.size() == 0) {
             textList.add("\u00a77No problems");
             textList.add("\u00a70Apply a redstone");
