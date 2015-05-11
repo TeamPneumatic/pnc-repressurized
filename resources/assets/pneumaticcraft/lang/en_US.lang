@@ -58,6 +58,7 @@ tile.liquidCompressor.name=Liquid Compressor
 tile.advancedLiquidCompressor.name=Advanced Liquid Compressor
 tile.heatSink.name=Heat Sink
 tile.vortexTube.name=Vortex Tube
+tile.etchingAcid.name=Etching Acid
 
 tile.monsterStoneEgg.name=Silverfish
 
@@ -171,6 +172,7 @@ item.networkComponent5.name=Network Node
 
 # Fluid
 fluid.plastic=Liquid Plastic
+fluid.EtchAcid=Etching Acid
 
 # Tube Modules
 item.safetyTubeModule.name=Safety Tube Module

@@ -23,6 +23,7 @@ public class WidgetFluidFilter extends WidgetBase{
         if(fluid != null) {
             IIcon icon = fluid.getIcon();
             if(icon != null) {
+                GL11.glColor4d(1, 1, 1, 1);
                 GL11.glPushMatrix();
                 GL11.glTranslated(x, y, 0);
                 Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
