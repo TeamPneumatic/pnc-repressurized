@@ -25,7 +25,7 @@ public class TileEntityAdvancedLiquidCompressor extends TileEntityLiquidCompress
 
     @Override
     protected void onFuelBurn(int burnedFuel){
-        heatExchanger.addHeat(burnedFuel / 5);
+        heatExchanger.addHeat(burnedFuel / 20D);
     }
 
     @Override

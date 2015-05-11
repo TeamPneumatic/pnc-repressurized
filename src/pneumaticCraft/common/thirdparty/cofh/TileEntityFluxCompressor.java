@@ -56,7 +56,7 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase implements
             if(redstoneAllows() && getEnergyStored(ForgeDirection.UNKNOWN) >= rfPerTick) {
                 this.addAir(airPerTick, ForgeDirection.UNKNOWN);
                 energy.extractEnergy(rfPerTick, false);
-                heatExchanger.addHeat(rfPerTick / 5);
+                heatExchanger.addHeat(rfPerTick / 100D);
             }
         }
     }

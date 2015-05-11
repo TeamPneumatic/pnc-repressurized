@@ -290,7 +290,7 @@ public class TileEntityElectricCompressor extends TileEntityPneumaticBase implem
         double energyUsed = amount;
         int efficiency = Config.electricCompressorEfficiency;
         int airProduction = (int)(energyUsed / 0.25F * efficiency / 100F * getEfficiency() / 100);
-        heatExchanger.addHeat(energyUsed / 4);
+        heatExchanger.addHeat(energyUsed / 16);
         addAir(airProduction, ForgeDirection.UNKNOWN);
         curEnergyProduction += airProduction;
         boolean clientNeedsUpdate = outputTimer <= 0;

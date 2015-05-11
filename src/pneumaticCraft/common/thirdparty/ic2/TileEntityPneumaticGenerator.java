@@ -255,7 +255,7 @@ public class TileEntityPneumaticGenerator extends TileEntityPneumaticBase implem
         if(efficiency < 1) efficiency = 1;
         int airUsage = (int)(amount / 0.25F * 100F / efficiency);
         addAir(-airUsage, ForgeDirection.UNKNOWN);
-        heatExchanger.addHeat(airUsage / 10);
+        heatExchanger.addHeat(airUsage / 40);
         outputting = true;
         curEnergyProduction = (int)amount;
     }
