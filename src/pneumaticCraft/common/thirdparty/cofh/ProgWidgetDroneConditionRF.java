@@ -1,7 +1,7 @@
 package pneumaticCraft.common.thirdparty.cofh;
 
 import net.minecraft.util.ResourceLocation;
-import pneumaticCraft.common.entity.living.EntityDrone;
+import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetDroneEvaluation;
 import pneumaticCraft.common.progwidgets.ProgWidgetString;
@@ -20,7 +20,7 @@ public class ProgWidgetDroneConditionRF extends ProgWidgetDroneEvaluation{
     }
 
     @Override
-    protected int getCount(EntityDrone drone, IProgWidget widget){
+    protected int getCount(IDrone drone, IProgWidget widget){
         return CoFHCore.getEnergyStorage(drone).getEnergyStored();
     }
 

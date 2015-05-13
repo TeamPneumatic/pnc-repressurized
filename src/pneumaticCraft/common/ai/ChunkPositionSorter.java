@@ -2,18 +2,20 @@ package pneumaticCraft.common.ai;
 
 import java.util.Comparator;
 
-import net.minecraft.entity.Entity;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.ChunkPosition;
+import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 
 public class ChunkPositionSorter implements Comparator{
 
     private final double x, y, z;
 
-    public ChunkPositionSorter(Entity entity){
-        x = entity.posX;
-        y = entity.posY;
-        z = entity.posZ;
+    public ChunkPositionSorter(IDrone entity){
+        Vec3 vec = entity.getPosition();
+        x = vec.xCoord;
+        y = vec.yCoord;
+        z = vec.zCoord;
     }
 
     @Override

@@ -1,12 +1,12 @@
 package pneumaticCraft.common.thirdparty.cofh;
 
-import net.minecraft.entity.EntityCreature;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.ChunkPosition;
 import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.api.drone.IBlockInteractHandler;
 import pneumaticCraft.api.drone.ICustomBlockInteract;
+import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.lib.Textures;
 import cofh.api.energy.IEnergyProvider;
@@ -25,13 +25,13 @@ public class DroneInteractRFImport implements ICustomBlockInteract{
     }
 
     @Override
-    public boolean doInteract(ChunkPosition pos, EntityCreature drone, IBlockInteractHandler interactHandler, boolean simulate){
+    public boolean doInteract(ChunkPosition pos, IDrone drone, IBlockInteractHandler interactHandler, boolean simulate){
         IEnergyStorage droneEnergy = CoFHCore.getEnergyStorage(drone);
         if(droneEnergy.getEnergyStored() == droneEnergy.getMaxEnergyStored()) {
             interactHandler.abort();
             return false;
         } else {
-            TileEntity te = drone.worldObj.getTileEntity(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ);
+            TileEntity te = drone.getWorld().getTileEntity(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ);
             if(te instanceof IEnergyProvider) {
                 IEnergyProvider provider = (IEnergyProvider)te;
                 for(ForgeDirection d : ForgeDirection.VALID_DIRECTIONS) {

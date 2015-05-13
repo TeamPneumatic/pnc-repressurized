@@ -5,7 +5,7 @@ import net.minecraft.world.ChunkPosition;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidHandler;
-import pneumaticCraft.common.entity.living.EntityDrone;
+import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.common.progwidgets.ICountWidget;
 import pneumaticCraft.common.progwidgets.ILiquidFiltered;
 import pneumaticCraft.common.progwidgets.ISidedWidget;
@@ -13,7 +13,7 @@ import pneumaticCraft.common.progwidgets.ProgWidgetAreaItemBase;
 
 public class DroneAILiquidImport extends DroneAIImExBase{
 
-    public DroneAILiquidImport(EntityDrone drone, double speed, ProgWidgetAreaItemBase widget){
+    public DroneAILiquidImport(IDrone drone, double speed, ProgWidgetAreaItemBase widget){
         super(drone, speed, widget);
     }
 
@@ -32,7 +32,7 @@ public class DroneAILiquidImport extends DroneAIImExBase{
             abort();
             return false;
         } else {
-            TileEntity te = drone.worldObj.getTileEntity(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ);
+            TileEntity te = drone.getWorld().getTileEntity(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ);
             if(te instanceof IFluidHandler) {
                 IFluidHandler tank = (IFluidHandler)te;
                 for(int i = 0; i < 6; i++) {

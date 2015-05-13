@@ -4,8 +4,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.ChunkPosition;
 import net.minecraftforge.common.util.ForgeDirection;
+import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.common.ai.DroneAIBlockCondition;
-import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.progwidgets.ICondition;
 import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetArea;
@@ -29,12 +29,12 @@ public class ProgWidgetRFCondition extends ProgWidgetCondition{
     }
 
     @Override
-    protected DroneAIBlockCondition getEvaluator(EntityDrone drone, IProgWidget widget){
+    protected DroneAIBlockCondition getEvaluator(IDrone drone, IProgWidget widget){
         return new DroneAIBlockCondition(drone, (ProgWidgetAreaItemBase)widget){
 
             @Override
             protected boolean evaluate(ChunkPosition pos){
-                TileEntity te = drone.worldObj.getTileEntity(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ);
+                TileEntity te = drone.getWorld().getTileEntity(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ);
                 int energy = 0;
                 if(te instanceof IEnergyReceiver) {
                     for(ForgeDirection d : ForgeDirection.VALID_DIRECTIONS) {

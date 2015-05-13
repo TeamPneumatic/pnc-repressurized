@@ -7,11 +7,12 @@ import java.util.List;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.util.ForgeDirection;
+import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.api.item.IPressurizable;
-import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.ItemPneumaticArmor;
 import pneumaticCraft.common.item.Itemss;
@@ -26,7 +27,7 @@ import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.common.util.ThreadedSorter;
 
 public abstract class DroneAIBlockInteraction extends EntityAIBase{
-    protected final EntityDrone drone;
+    protected final IDrone drone;
     private final double speed;
     protected final ProgWidgetAreaItemBase widget;
     private final EnumOrder order;
@@ -50,14 +51,14 @@ public abstract class DroneAIBlockInteraction extends EntityAIBase{
      * @param speed
      * @param widget needs to implement IBlockOrdered
      */
-    public DroneAIBlockInteraction(EntityDrone drone, double speed, ProgWidgetAreaItemBase widget){
+    public DroneAIBlockInteraction(IDrone drone, double speed, ProgWidgetAreaItemBase widget){
         this.drone = drone;
         this.speed = speed;
         setMutexBits(63);//binary 111111, so it won't run along with other AI tasks.
         this.widget = widget;
         order = widget instanceof IBlockOrdered ? ((IBlockOrdered)widget).getOrder() : EnumOrder.CLOSEST;
         area = new ArrayList(widget.getArea());
-        worldCache = ProgWidgetAreaItemBase.getCache(area, drone.worldObj);
+        worldCache = ProgWidgetAreaItemBase.getCache(area, drone.getWorld());
         if(area.size() > 0) {
             Iterator<ChunkPosition> iterator = area.iterator();
             ChunkPosition pos = iterator.next();
@@ -127,7 +128,7 @@ public abstract class DroneAIBlockInteraction extends EntityAIBase{
                 firstRun = false;
                 while(!shouldAbort() && searchIndex < area.size()) {
                     ChunkPosition pos = area.get(searchIndex);
-                    if(isYValid(pos.chunkPosY) && !blacklist.contains(pos) && !DroneClaimManager.getInstance(drone.worldObj).isClaimed(pos)) {
+                    if(isYValid(pos.chunkPosY) && !blacklist.contains(pos) && !DroneClaimManager.getInstance(drone.getWorld()).isClaimed(pos)) {
                         indicateToListeningPlayers(pos);
                         if(isValidPosition(pos)) {
                             curPos = pos;
@@ -135,7 +136,7 @@ public abstract class DroneAIBlockInteraction extends EntityAIBase{
                                 if(moveIntoBlock()) {
                                     if(drone.getNavigator().tryMoveToXYZ(curPos.chunkPosX, curPos.chunkPosY + 0.5, curPos.chunkPosZ, speed)) {
                                         searching = false;
-                                        DroneClaimManager.getInstance(drone.worldObj).claim(pos);
+                                        DroneClaimManager.getInstance(drone.getWorld()).claim(pos);
                                         blacklist.clear();//clear the list for next time (maybe the blocks/rights have changed by the time there will be dug again).
                                         return true;
                                     }
@@ -143,7 +144,7 @@ public abstract class DroneAIBlockInteraction extends EntityAIBase{
                                     for(ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
                                         if(drone.getNavigator().tryMoveToXYZ(curPos.chunkPosX + dir.offsetX, curPos.chunkPosY + dir.offsetY + 0.5, curPos.chunkPosZ + dir.offsetZ, speed)) {
                                             searching = false;
-                                            DroneClaimManager.getInstance(drone.worldObj).claim(pos);
+                                            DroneClaimManager.getInstance(drone.getWorld()).claim(pos);
                                             blacklist.clear();//clear the list for next time (maybe the blocks/rights have changed by the time there will be dug again).
                                             return true;
                                         }
@@ -151,7 +152,7 @@ public abstract class DroneAIBlockInteraction extends EntityAIBase{
                                 }
                                 if(((EntityPathNavigateDrone)drone.getNavigator()).isGoingToTeleport()) {
                                     searching = false;
-                                    DroneClaimManager.getInstance(drone.worldObj).claim(pos);
+                                    DroneClaimManager.getInstance(drone.getWorld()).claim(pos);
                                     blacklist.clear();//clear the list for next time (maybe the blocks/rights have changed by the time there will be dug again).
                                     return true;
                                 }
@@ -169,10 +170,11 @@ public abstract class DroneAIBlockInteraction extends EntityAIBase{
             }
             return false;
         } else {
-            double dist = curPos != null ? PneumaticCraftUtils.distBetween(curPos.chunkPosX + 0.5, curPos.chunkPosY + 0.5, curPos.chunkPosZ + 0.5, drone.posX, drone.posY, drone.posZ) : 0;
+            Vec3 dronePos = drone.getPosition();
+            double dist = curPos != null ? PneumaticCraftUtils.distBetween(curPos.chunkPosX + 0.5, curPos.chunkPosY + 0.5, curPos.chunkPosZ + 0.5, dronePos.xCoord, dronePos.yCoord, dronePos.zCoord) : 0;
             if(curPos != null) {
                 if(!moveToPositions()) return doBlockInteraction(curPos, dist);
-                DroneClaimManager.getInstance(drone.worldObj).claim(curPos);
+                DroneClaimManager.getInstance(drone.getWorld()).claim(curPos);
                 if(dist < (moveIntoBlock() ? 1 : 2)) {
                     return doBlockInteraction(curPos, dist);
                 }
@@ -202,7 +204,7 @@ public abstract class DroneAIBlockInteraction extends EntityAIBase{
      * @param pos
      */
     private void indicateToListeningPlayers(ChunkPosition pos){
-        for(EntityPlayer player : (List<EntityPlayer>)drone.worldObj.playerEntities) {
+        for(EntityPlayer player : (List<EntityPlayer>)drone.getWorld().playerEntities) {
             if(player.getCurrentArmor(3) != null && player.getCurrentArmor(3).getItem() == Itemss.pneumaticHelmet && ItemPneumaticArmor.getUpgrades(ItemMachineUpgrade.UPGRADE_ENTITY_TRACKER, player.getCurrentArmor(3)) > 0 && ((IPressurizable)Itemss.pneumaticHelmet).getPressure(player.getCurrentArmor(3)) > 0) {
                 NetworkHandler.sendTo(new PacketSpawnParticle("reddust", pos.chunkPosX + 0.5, pos.chunkPosY + 0.5, pos.chunkPosZ + 0.5, 0, 0, 0), (EntityPlayerMP)player);
             }

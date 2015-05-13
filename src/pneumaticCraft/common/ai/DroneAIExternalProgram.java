@@ -11,8 +11,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.ChunkPosition;
+import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.api.item.IProgrammable;
-import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetAreaItemBase;
 import pneumaticCraft.common.tileentity.TileEntityProgrammer;
@@ -25,7 +25,7 @@ public class DroneAIExternalProgram extends DroneAIBlockInteraction{
     private int curSlot;
     private NBTTagCompound curProgramTag; //Used to see if changes have been made to the program while running it.
 
-    public DroneAIExternalProgram(EntityDrone drone, ProgWidgetAreaItemBase widget){
+    public DroneAIExternalProgram(IDrone drone, ProgWidgetAreaItemBase widget){
         super(drone, 0, widget);
         aiManager = new DroneAIManager(drone, new ArrayList<IProgWidget>());
     }
@@ -49,7 +49,7 @@ public class DroneAIExternalProgram extends DroneAIBlockInteraction{
     protected boolean isValidPosition(ChunkPosition pos){
         if(traversedPositions.add(pos)) {
             curSlot = 0;
-            TileEntity te = drone.worldObj.getTileEntity(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ);
+            TileEntity te = drone.getWorld().getTileEntity(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ);
             return te instanceof IInventory;
         }
         return false;
@@ -57,7 +57,7 @@ public class DroneAIExternalProgram extends DroneAIBlockInteraction{
 
     @Override
     protected boolean doBlockInteraction(ChunkPosition pos, double distToBlock){
-        IInventory inv = IOHelper.getInventoryForTE(drone.worldObj.getTileEntity(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ));
+        IInventory inv = IOHelper.getInventoryForTE(drone.getWorld().getTileEntity(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ));
         if(curProgramTag != null) {
             if(curSlot < inv.getSizeInventory()) {
                 ItemStack stack = inv.getStackInSlot(curSlot);

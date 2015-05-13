@@ -10,7 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.util.ForgeDirection;
-import pneumaticCraft.common.entity.living.EntityDrone;
+import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.common.progwidgets.ProgWidgetAreaItemBase;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.Log;
@@ -24,7 +24,7 @@ public class DroneAIDig extends DroneAIBlockInteraction{
      * @param speed
      * @param widget needs to implement IBlockOrdered.
      */
-    public DroneAIDig(EntityDrone drone, double speed, ProgWidgetAreaItemBase widget){
+    public DroneAIDig(IDrone drone, double speed, ProgWidgetAreaItemBase widget){
         super(drone, speed, widget);
     }
 
@@ -34,10 +34,10 @@ public class DroneAIDig extends DroneAIBlockInteraction{
         if(!worldCache.isAirBlock(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ) && !ignoreBlock(block)) {
             int meta = worldCache.getBlockMetadata(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ);
             List<ItemStack> droppedStacks;
-            if(block.canSilkHarvest(drone.worldObj, drone.getFakePlayer(), pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ, meta)) {
+            if(block.canSilkHarvest(drone.getWorld(), drone.getFakePlayer(), pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ, meta)) {
                 droppedStacks = Arrays.asList(new ItemStack[]{getSilkTouchBlock(block, meta)});
             } else {
-                droppedStacks = block.getDrops(drone.worldObj, pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ, meta, 0);
+                droppedStacks = block.getDrops(drone.getWorld(), pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ, meta, 0);
             }
             for(ItemStack droppedStack : droppedStacks) {
                 if(widget.isItemValidForFilters(droppedStack, meta)) {
@@ -60,7 +60,7 @@ public class DroneAIDig extends DroneAIBlockInteraction{
         ItemStack oldCurrentStack = drone.getInventory().getStackInSlot(0);
         for(int i = 0; i < drone.getInventory().getSizeInventory(); i++) {
             drone.getInventory().setInventorySlotContents(0, drone.getInventory().getStackInSlot(i));
-            float softness = block.getPlayerRelativeBlockHardness(drone.getFakePlayer(), drone.worldObj, pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ);
+            float softness = block.getPlayerRelativeBlockHardness(drone.getFakePlayer(), drone.getWorld(), pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ);
             if(softness > bestSoftness) {
                 bestSlot = i;
                 bestSoftness = softness;
@@ -83,7 +83,7 @@ public class DroneAIDig extends DroneAIBlockInteraction{
 
             Block block = worldCache.getBlock(x, y, z);
             if(!ignoreBlock(block) && isBlockValidForFilter(worldCache, drone, pos, widget)) {
-                if(block.getBlockHardness(drone.worldObj, x, y, z) < 0) {
+                if(block.getBlockHardness(drone.getWorld(), x, y, z) < 0) {
                     addToBlacklist(pos);
                     drone.setDugBlock(0, 0, 0);
                     return false;
@@ -105,7 +105,7 @@ public class DroneAIDig extends DroneAIBlockInteraction{
         }
     }
 
-    public static boolean isBlockValidForFilter(IBlockAccess worldCache, EntityDrone drone, ChunkPosition pos, ProgWidgetAreaItemBase widget){
+    public static boolean isBlockValidForFilter(IBlockAccess worldCache, IDrone drone, ChunkPosition pos, ProgWidgetAreaItemBase widget){
         int x = pos.chunkPosX;
         int y = pos.chunkPosY;
         int z = pos.chunkPosZ;
@@ -114,10 +114,10 @@ public class DroneAIDig extends DroneAIBlockInteraction{
         if(!block.isAir(worldCache, x, y, z)) {
             int meta = worldCache.getBlockMetadata(x, y, z);
             List<ItemStack> droppedStacks;
-            if(block.canSilkHarvest(drone.worldObj, drone.getFakePlayer(), x, y, z, meta)) {
+            if(block.canSilkHarvest(drone.getWorld(), drone.getFakePlayer(), x, y, z, meta)) {
                 droppedStacks = Arrays.asList(new ItemStack[]{getSilkTouchBlock(block, meta)});
             } else {
-                droppedStacks = block.getDrops(drone.worldObj, x, y, z, meta, 0);
+                droppedStacks = block.getDrops(drone.getWorld(), x, y, z, meta, 0);
             }
             for(ItemStack droppedStack : droppedStacks) {
                 if(widget.isItemValidForFilters(droppedStack, meta)) {

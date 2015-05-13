@@ -41,6 +41,7 @@ public class TileEntityRegistrator{
         GameRegistry.registerTileEntity(TileEntityCompressedIronBlock.class, "PneumaticCraft_compressedIronBlock");
         GameRegistry.registerTileEntity(TileEntityHeatSink.class, "PneumaticCraft_heatSink");
         GameRegistry.registerTileEntity(TileEntityVortexTube.class, "PneumaticCraft_vortexTube");
+        GameRegistry.registerTileEntity(TileEntityProgrammableController.class, "PneumaticCraft_programmableController");
     }
 
 }

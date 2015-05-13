@@ -4,7 +4,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.ChunkPosition;
-import pneumaticCraft.common.entity.living.EntityDrone;
+import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.common.progwidgets.ICountWidget;
 import pneumaticCraft.common.progwidgets.ISidedWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetAreaItemBase;
@@ -13,7 +13,7 @@ import pneumaticCraft.lib.PneumaticValues;
 
 public class DroneEntityAIInventoryExport extends DroneAIImExBase{
 
-    public DroneEntityAIInventoryExport(EntityDrone drone, double speed, ProgWidgetAreaItemBase widget){
+    public DroneEntityAIInventoryExport(IDrone drone, double speed, ProgWidgetAreaItemBase widget){
         super(drone, speed, widget);
     }
 
@@ -28,7 +28,7 @@ public class DroneEntityAIInventoryExport extends DroneAIImExBase{
     }
 
     private boolean export(ChunkPosition pos, boolean simulate){
-        IInventory inv = IOHelper.getInventoryForTE(drone.worldObj.getTileEntity(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ));
+        IInventory inv = IOHelper.getInventoryForTE(drone.getWorld().getTileEntity(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ));
         if(inv != null) {
             for(int i = 0; i < drone.getInventory().getSizeInventory(); i++) {
                 ItemStack droneStack = drone.getInventory().getStackInSlot(i);

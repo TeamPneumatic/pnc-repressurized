@@ -10,9 +10,9 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import org.apache.commons.lang3.math.NumberUtils;
 
+import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.client.gui.programmer.GuiProgWidgetEmitRedstone;
-import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.relauncher.Side;
@@ -166,16 +166,16 @@ public class ProgWidgetEmitRedstone extends ProgWidget implements IRedstoneEmiss
     }
 
     @Override
-    public EntityAIBase getWidgetAI(EntityDrone drone, IProgWidget widget){
+    public EntityAIBase getWidgetAI(IDrone drone, IProgWidget widget){
         return new DroneAIEmitRedstone(drone, widget);
     }
 
     private static class DroneAIEmitRedstone extends EntityAIBase{
 
         private final IProgWidget widget;
-        private final EntityDrone drone;
+        private final IDrone drone;
 
-        public DroneAIEmitRedstone(EntityDrone drone, IProgWidget widget){
+        public DroneAIEmitRedstone(IDrone drone, IProgWidget widget){
             this.widget = widget;
             this.drone = drone;
         }

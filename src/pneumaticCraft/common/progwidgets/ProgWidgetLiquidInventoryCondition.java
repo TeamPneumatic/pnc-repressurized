@@ -10,8 +10,8 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
+import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.common.ai.DroneAIBlockCondition;
-import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.lib.Textures;
 
 public class ProgWidgetLiquidInventoryCondition extends ProgWidgetCondition{
@@ -27,12 +27,12 @@ public class ProgWidgetLiquidInventoryCondition extends ProgWidgetCondition{
     }
 
     @Override
-    protected DroneAIBlockCondition getEvaluator(EntityDrone drone, IProgWidget widget){
+    protected DroneAIBlockCondition getEvaluator(IDrone drone, IProgWidget widget){
         return new DroneAIBlockCondition(drone, (ProgWidgetAreaItemBase)widget){
 
             @Override
             protected boolean evaluate(ChunkPosition pos){
-                TileEntity te = drone.worldObj.getTileEntity(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ);
+                TileEntity te = drone.getWorld().getTileEntity(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ);
                 if(te instanceof IFluidHandler) {
                     List<FluidStack> visitedStacks = new ArrayList<FluidStack>();
                     int count = 0;

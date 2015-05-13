@@ -84,6 +84,7 @@ public class Blockss{
     public static Block droneRedstoneEmitter;
     public static Block heatSink;
     public static Block vortexTube;
+    public static Block programmableController;
 
     public static void init(){
         pressureTube = new BlockPressureTube(Material.iron, PneumaticValues.DANGER_PRESSURE_PRESSURE_TUBE, PneumaticValues.MAX_PRESSURE_PRESSURE_TUBE, PneumaticValues.VOLUME_PRESSURE_TUBE).setHardness(3.0F).setResistance(3.0F).setBlockName("pressureTube");
@@ -139,6 +140,7 @@ public class Blockss{
         droneRedstoneEmitter = new BlockDroneRedstoneEmitter().setBlockName("droneRedstoneEmitter");
         heatSink = new BlockHeatSink(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("heatSink");
         vortexTube = new BlockVortexTube(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("vortexTube");
+        programmableController = new BlockProgrammableController(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("programmableController");
 
         registerBlocks();
 
@@ -199,6 +201,7 @@ public class Blockss{
         registerBlock(droneRedstoneEmitter);
         registerBlock(heatSink);
         registerBlock(vortexTube);
+        registerBlock(programmableController);
     }
 
     public static void registerBlock(Block block){

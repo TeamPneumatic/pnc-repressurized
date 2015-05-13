@@ -5,10 +5,10 @@ import java.util.List;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
+import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.client.gui.programmer.GuiProgWidgetCondition;
 import pneumaticCraft.common.ai.DroneAIBlockCondition;
-import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -26,13 +26,13 @@ public class ProgWidgetEntityCondition extends ProgWidgetCondition{
     }
 
     @Override
-    protected DroneAIBlockCondition getEvaluator(EntityDrone drone, IProgWidget widget){
+    protected DroneAIBlockCondition getEvaluator(IDrone drone, IProgWidget widget){
         return null;
     }
 
     @Override
-    public IProgWidget getOutputWidget(EntityDrone drone, List<IProgWidget> allWidgets){
-        List<Entity> entities = getValidEntities(drone.worldObj);
+    public IProgWidget getOutputWidget(IDrone drone, List<IProgWidget> allWidgets){
+        List<Entity> entities = getValidEntities(drone.getWorld());
         boolean result = getOperator() == Operator.EQUALS ? entities.size() == getRequiredCount() : entities.size() >= getRequiredCount();
         return ProgWidgetJump.jumpToLabel(allWidgets, this, result);
     }

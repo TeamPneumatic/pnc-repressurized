@@ -10,9 +10,9 @@ import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.common.ai.DroneAIBlockInteract;
 import pneumaticCraft.common.ai.DroneEntityBase;
-import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.lib.Textures;
 
@@ -62,7 +62,7 @@ public class ProgWidgetEntityRightClick extends ProgWidget implements IEntityPro
     }
 
     @Override
-    public EntityAIBase getWidgetAI(EntityDrone drone, IProgWidget widget){
+    public EntityAIBase getWidgetAI(IDrone drone, IProgWidget widget){
         return new DroneEntityBase<IProgWidget, EntityLivingBase>(drone, drone.getSpeed(), widget){
             private final List<Entity> visitedEntities = new ArrayList<Entity>();
 

@@ -1,7 +1,7 @@
 package pneumaticCraft.common.ai;
 
 import net.minecraft.world.ChunkPosition;
-import pneumaticCraft.common.entity.living.EntityDrone;
+import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.common.progwidgets.ICondition;
 import pneumaticCraft.common.progwidgets.ProgWidgetAreaItemBase;
 
@@ -9,7 +9,7 @@ public abstract class DroneAIBlockCondition extends DroneAIBlockInteraction{
 
     private boolean result;
 
-    public DroneAIBlockCondition(EntityDrone drone, ProgWidgetAreaItemBase widget){
+    public DroneAIBlockCondition(IDrone drone, ProgWidgetAreaItemBase widget){
         super(drone, 0, widget);
     }
 

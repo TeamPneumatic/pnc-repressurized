@@ -6,19 +6,19 @@ import java.util.List;
 
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.world.ChunkPosition;
-import pneumaticCraft.common.entity.living.EntityDrone;
+import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.common.progwidgets.IAreaProvider;
 import pneumaticCraft.common.progwidgets.IGotoWidget;
 import pneumaticCraft.common.progwidgets.ProgWidget;
 
 public class DroneEntityAIGoToLocation extends EntityAIBase{
-    protected final EntityDrone drone;
+    protected final IDrone drone;
     private final double speed;
     private final ProgWidget gotoWidget;
     private final ChunkPositionSorter positionSorter;
     private final List<ChunkPosition> validArea;
 
-    public DroneEntityAIGoToLocation(EntityDrone drone, double speed, ProgWidget gotoWidget){
+    public DroneEntityAIGoToLocation(IDrone drone, double speed, ProgWidget gotoWidget){
         this.drone = drone;
         this.speed = speed;
         setMutexBits(63);//binary 111111, so it won't run along with other AI tasks.
@@ -34,7 +34,7 @@ public class DroneEntityAIGoToLocation extends EntityAIBase{
     public boolean shouldExecute(){
         Collections.sort(validArea, positionSorter);
         for(ChunkPosition c : validArea) {
-            if(drone.getDistanceSq(c.chunkPosX + 0.5, c.chunkPosY + 0.5, c.chunkPosZ + 0.5) < 0.50) return false;
+            if(drone.getPosition().squareDistanceTo(c.chunkPosX + 0.5, c.chunkPosY + 0.5, c.chunkPosZ + 0.5) < 0.50) return false;
             if(drone.getNavigator().tryMoveToXYZ(c.chunkPosX, c.chunkPosY, c.chunkPosZ, speed)) {
                 return !((IGotoWidget)gotoWidget).doneWhenDeparting();
             }

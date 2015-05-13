@@ -22,6 +22,7 @@ import pneumaticCraft.client.gui.GuiPneumaticDoor;
 import pneumaticCraft.client.gui.GuiPneumaticHelmet;
 import pneumaticCraft.client.gui.GuiPressureChamber;
 import pneumaticCraft.client.gui.GuiPressureChamberInterface;
+import pneumaticCraft.client.gui.GuiProgrammableController;
 import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.client.gui.GuiRemote;
 import pneumaticCraft.client.gui.GuiRemoteEditor;
@@ -50,6 +51,7 @@ import pneumaticCraft.common.inventory.ContainerPlasticMixer;
 import pneumaticCraft.common.inventory.ContainerPneumaticDoor;
 import pneumaticCraft.common.inventory.ContainerPressureChamber;
 import pneumaticCraft.common.inventory.ContainerPressureChamberInterface;
+import pneumaticCraft.common.inventory.ContainerProgrammableController;
 import pneumaticCraft.common.inventory.ContainerProgrammer;
 import pneumaticCraft.common.inventory.ContainerRemote;
 import pneumaticCraft.common.inventory.ContainerSecurityStationHacking;
@@ -75,6 +77,7 @@ import pneumaticCraft.common.tileentity.TileEntityPlasticMixer;
 import pneumaticCraft.common.tileentity.TileEntityPneumaticDoorBase;
 import pneumaticCraft.common.tileentity.TileEntityPressureChamberInterface;
 import pneumaticCraft.common.tileentity.TileEntityPressureChamberValve;
+import pneumaticCraft.common.tileentity.TileEntityProgrammableController;
 import pneumaticCraft.common.tileentity.TileEntityProgrammer;
 import pneumaticCraft.common.tileentity.TileEntitySecurityStation;
 import pneumaticCraft.common.tileentity.TileEntityUVLightBox;
@@ -126,6 +129,7 @@ public class CommonProxy implements IGuiHandler{
     public static final int GUI_ID_ADVANCED_LIQUID_COMPRESSOR = 33;
     public static final int GUI_ID_REMOTE = 34;
     public static final int GUI_ID_REMOTE_EDITOR = 35;
+    public static final int GUI_ID_PROGRAMMABLE_CONTROLLER = 36;
 
     private final HackTickHandler serverHackTickHandler = new HackTickHandler();
 
@@ -215,6 +219,8 @@ public class CommonProxy implements IGuiHandler{
             case GUI_ID_REMOTE:
             case GUI_ID_REMOTE_EDITOR:
                 return new ContainerRemote(player.getCurrentEquippedItem());
+            case GUI_ID_PROGRAMMABLE_CONTROLLER:
+                return new ContainerProgrammableController(player.inventory, (TileEntityProgrammableController)world.getTileEntity(x, y, z));
         }
         return ThirdPartyManager.instance().getServerGuiElement(ID, player, world, x, y, z);
     }
@@ -280,6 +286,8 @@ public class CommonProxy implements IGuiHandler{
                 return new GuiRemote(player.getCurrentEquippedItem());
             case GUI_ID_REMOTE_EDITOR:
                 return new GuiRemoteEditor(player.getCurrentEquippedItem());
+            case GUI_ID_PROGRAMMABLE_CONTROLLER:
+                return new GuiProgrammableController(player.inventory, (TileEntityProgrammableController)world.getTileEntity(x, y, z));
         }
         return ThirdPartyManager.instance().getClientGuiElement(ID, player, world, x, y, z);
     }

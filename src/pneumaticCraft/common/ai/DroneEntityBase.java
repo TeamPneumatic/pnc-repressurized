@@ -5,18 +5,18 @@ import java.util.List;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
-import pneumaticCraft.common.entity.living.EntityDrone;
+import net.minecraft.util.Vec3;
+import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.common.progwidgets.IEntityProvider;
 import pneumaticCraft.common.progwidgets.IProgWidget;
 
 public abstract class DroneEntityBase<Widget extends IProgWidget, E extends Entity> extends EntityAIBase{
-    protected final EntityDrone drone;
+    protected final IDrone drone;
     private final double speed;
     protected final Widget widget;
     protected E targetedEntity;
 
-    public DroneEntityBase(EntityDrone drone, double speed, Widget widget){
+    public DroneEntityBase(IDrone drone, double speed, Widget widget){
         this.drone = drone;
         this.speed = speed;
         setMutexBits(63);//binary 111111, so it won't run along with other AI tasks.
@@ -28,9 +28,9 @@ public abstract class DroneEntityBase<Widget extends IProgWidget, E extends Enti
      */
     @Override
     public boolean shouldExecute(){
-        List<Entity> pickableItems = ((IEntityProvider)widget).getValidEntities(drone.worldObj);
+        List<Entity> pickableItems = ((IEntityProvider)widget).getValidEntities(drone.getWorld());
 
-        Collections.sort(pickableItems, new EntityAINearestAttackableTarget.Sorter(drone));
+        Collections.sort(pickableItems, new DistanceEntitySorter(drone));
         for(Entity ent : pickableItems) {
             if(ent != drone && isEntityValid(ent)) {
                 if(drone.getNavigator().tryMoveToEntityLiving(ent, speed)) {
@@ -51,7 +51,7 @@ public abstract class DroneEntityBase<Widget extends IProgWidget, E extends Enti
     @Override
     public boolean continueExecuting(){
         if(targetedEntity.isDead) return false;
-        if(targetedEntity.getDistanceToEntity(drone) < 1.5) {
+        if(Vec3.createVectorHelper(targetedEntity.posX, targetedEntity.posY, targetedEntity.posZ).distanceTo(drone.getPosition()) < 1.5) {
             return doAction();
         }
         return !drone.getNavigator().noPath();

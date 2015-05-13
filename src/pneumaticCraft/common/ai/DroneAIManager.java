@@ -13,8 +13,8 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.profiler.Profiler;
 import net.minecraft.world.ChunkPosition;
 import net.minecraftforge.common.MinecraftForge;
+import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.api.drone.SpecialVariableRetrievalEvent;
-import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.common.progwidgets.IVariableWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetStart;
@@ -37,7 +37,7 @@ public class DroneAIManager{
     private int tickCount;
     public static final int TICK_RATE = 3;
 
-    private final EntityDrone drone;
+    private final IDrone drone;
     private List<IProgWidget> progWidgets;
     private IProgWidget curActiveWidget;
     private EntityAIBase curWidgetAI;
@@ -47,14 +47,14 @@ public class DroneAIManager{
     private final Map<String, ChunkPosition> coordinateVariables = new HashMap<String, ChunkPosition>();
     private final Map<String, ItemStack> itemVariables = new HashMap<String, ItemStack>();
 
-    public DroneAIManager(EntityDrone drone){
-        theProfiler = drone.worldObj.theProfiler;
+    public DroneAIManager(IDrone drone){
+        theProfiler = drone.getWorld().theProfiler;
         this.drone = drone;
-        setWidgets(drone.progWidgets);
+        setWidgets(drone.getProgWidgets());
     }
 
-    public DroneAIManager(EntityDrone drone, List<IProgWidget> progWidgets){
-        theProfiler = drone.worldObj.theProfiler;
+    public DroneAIManager(IDrone drone, List<IProgWidget> progWidgets){
+        theProfiler = drone.getWorld().theProfiler;
         this.drone = drone;
         stopWhenEndReached = true;
         setWidgets(progWidgets);
@@ -207,9 +207,9 @@ public class DroneAIManager{
 
         curActiveWidget = widget;
         if(curWidgetAI != null) removeTask(curWidgetAI);
-        if(curWidgetTargetAI != null) drone.targetTasks.removeTask(curWidgetTargetAI);
+        if(curWidgetTargetAI != null) drone.getTargetAI().removeTask(curWidgetTargetAI);
         if(ai != null) addTask(2, ai);
-        if(targetAI != null) drone.targetTasks.addTask(2, targetAI);
+        if(targetAI != null) drone.getTargetAI().addTask(2, targetAI);
         curWidgetAI = ai;
         curWidgetTargetAI = targetAI;
     }
@@ -258,7 +258,7 @@ public class DroneAIManager{
     }
 
     public void onUpdateTasks(){
-        if(!drone.chargeAI.isExecuting && drone.gotoOwnerAI == null) {
+        if(!drone.isAIOverriden()) {
             ArrayList<EntityAITaskEntry> arraylist = new ArrayList<EntityAITaskEntry>();
             Iterator<EntityAITaskEntry> iterator;
             EntityAITaskEntry entityaitaskentry;

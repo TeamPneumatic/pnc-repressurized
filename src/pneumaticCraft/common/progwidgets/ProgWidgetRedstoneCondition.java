@@ -2,8 +2,8 @@ package pneumaticCraft.common.progwidgets;
 
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.ChunkPosition;
+import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.common.ai.DroneAIBlockCondition;
-import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.Textures;
 
@@ -25,12 +25,12 @@ public class ProgWidgetRedstoneCondition extends ProgWidgetCondition{
     }
 
     @Override
-    protected DroneAIBlockCondition getEvaluator(EntityDrone drone, IProgWidget widget){
+    protected DroneAIBlockCondition getEvaluator(IDrone drone, IProgWidget widget){
         return new DroneAIBlockCondition(drone, (ProgWidgetAreaItemBase)widget){
 
             @Override
             protected boolean evaluate(ChunkPosition pos){
-                int redstoneLevel = PneumaticCraftUtils.getRedstoneLevel(drone.worldObj, pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ);
+                int redstoneLevel = PneumaticCraftUtils.getRedstoneLevel(drone.getWorld(), pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ);
                 int requiredRedstone = ((ICondition)widget).getRequiredCount();
                 return ((ICondition)widget).getOperator() == ICondition.Operator.EQUALS ? requiredRedstone == redstoneLevel : redstoneLevel >= requiredRedstone;
             }

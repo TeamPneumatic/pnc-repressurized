@@ -3,7 +3,7 @@ package pneumaticCraft.common.progwidgets;
 import java.util.ArrayList;
 import java.util.List;
 
-import pneumaticCraft.common.entity.living.EntityDrone;
+import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.common.item.ItemPlasticPlants;
 
 public abstract class ProgWidgetConditionBase extends ProgWidget implements IJump{
@@ -42,11 +42,11 @@ public abstract class ProgWidgetConditionBase extends ProgWidget implements IJum
     }
 
     @Override
-    public IProgWidget getOutputWidget(EntityDrone drone, List<IProgWidget> allWidgets){
+    public IProgWidget getOutputWidget(IDrone drone, List<IProgWidget> allWidgets){
         return ProgWidgetJump.jumpToLabel(allWidgets, this, evaluate(drone, this));
     }
 
-    public abstract boolean evaluate(EntityDrone drone, IProgWidget widget);
+    public abstract boolean evaluate(IDrone drone, IProgWidget widget);
 
     @Override
     public int getCraftingColorIndex(){

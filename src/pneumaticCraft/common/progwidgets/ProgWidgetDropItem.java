@@ -10,10 +10,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.ChunkPosition;
+import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.client.gui.programmer.GuiProgWidgetDropItem;
 import pneumaticCraft.common.ai.DroneAIImExBase;
-import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.relauncher.Side;
@@ -61,7 +61,7 @@ public class ProgWidgetDropItem extends ProgWidgetInventoryBase implements IItem
     }
 
     @Override
-    public EntityAIBase getWidgetAI(EntityDrone drone, IProgWidget widget){
+    public EntityAIBase getWidgetAI(IDrone drone, IProgWidget widget){
         return new DroneAIImExBase(drone, drone.getSpeed(), (ProgWidgetAreaItemBase)widget){
 
             private final Set<ChunkPosition> visitedPositions = new HashSet<ChunkPosition>();
@@ -103,13 +103,13 @@ public class ProgWidgetDropItem extends ProgWidgetInventoryBase implements IItem
                             decreaseCount(stack.stackSize);
                             drone.getInventory().setInventorySlotContents(i, null);
                         }
-                        EntityItem item = new EntityItem(drone.worldObj, pos.chunkPosX + 0.5, pos.chunkPosY + 0.5, pos.chunkPosZ + 0.5, stack);
+                        EntityItem item = new EntityItem(drone.getWorld(), pos.chunkPosX + 0.5, pos.chunkPosY + 0.5, pos.chunkPosZ + 0.5, stack);
                         if(((IItemDropper)widget).dropStraight()) {
                             item.motionX = 0;
                             item.motionY = 0;
                             item.motionZ = 0;
                         }
-                        drone.worldObj.spawnEntityInWorld(item);
+                        drone.getWorld().spawnEntityInWorld(item);
                         if(useCount() && getRemainingCount() == 0) break;
                     }
                 }

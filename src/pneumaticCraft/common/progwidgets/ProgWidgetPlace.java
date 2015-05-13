@@ -7,10 +7,10 @@ import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.ForgeDirection;
+import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.client.gui.programmer.GuiProgWidgetPlace;
 import pneumaticCraft.common.ai.DroneAIPlace;
-import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.Log;
@@ -74,7 +74,7 @@ public class ProgWidgetPlace extends ProgWidgetDigAndPlace implements ISidedWidg
     }
 
     @Override
-    public EntityAIBase getWidgetAI(EntityDrone drone, IProgWidget widget){
+    public EntityAIBase getWidgetAI(IDrone drone, IProgWidget widget){
         return new DroneAIPlace(drone, drone.getSpeed(), (ProgWidgetAreaItemBase)widget);
     }
 

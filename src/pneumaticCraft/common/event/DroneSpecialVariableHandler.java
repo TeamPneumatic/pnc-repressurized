@@ -3,7 +3,9 @@ package pneumaticCraft.common.event;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.ChunkPosition;
+import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.api.drone.SpecialVariableRetrievalEvent;
 import pneumaticCraft.common.entity.living.EntityDrone;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -31,4 +33,11 @@ public class DroneSpecialVariableHandler{
         return new ChunkPosition(x, y, z);
     }
 
+    private ChunkPosition getPosForEntity(IDrone entity){
+        Vec3 pos = entity.getPosition();
+        int x = (int)Math.floor(pos.xCoord);
+        int y = (int)Math.floor(pos.yCoord) + 1;
+        int z = (int)Math.floor(pos.zCoord);
+        return new ChunkPosition(x, y, z);
+    }
 }

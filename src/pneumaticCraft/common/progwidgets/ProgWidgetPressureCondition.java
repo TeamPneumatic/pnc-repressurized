@@ -4,10 +4,10 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.ChunkPosition;
 import net.minecraftforge.common.util.ForgeDirection;
+import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.api.tileentity.IAirHandler;
 import pneumaticCraft.api.tileentity.IPneumaticMachine;
 import pneumaticCraft.common.ai.DroneAIBlockCondition;
-import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.lib.Textures;
 
 public class ProgWidgetPressureCondition extends ProgWidgetCondition{
@@ -23,12 +23,12 @@ public class ProgWidgetPressureCondition extends ProgWidgetCondition{
     }
 
     @Override
-    protected DroneAIBlockCondition getEvaluator(EntityDrone drone, IProgWidget widget){
+    protected DroneAIBlockCondition getEvaluator(IDrone drone, IProgWidget widget){
         return new DroneAIBlockCondition(drone, (ProgWidgetAreaItemBase)widget){
 
             @Override
             protected boolean evaluate(ChunkPosition pos){
-                TileEntity te = drone.worldObj.getTileEntity(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ);
+                TileEntity te = drone.getWorld().getTileEntity(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ);
                 if(te instanceof IPneumaticMachine) {
                     IAirHandler airHandler = ((IPneumaticMachine)te).getAirHandler();
                     float pressure = Float.MIN_VALUE;

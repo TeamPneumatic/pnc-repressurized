@@ -14,13 +14,14 @@ import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerDestroyItemEvent;
 import pneumaticCraft.PneumaticCraft;
+import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.client.gui.programmer.GuiProgWidgetImportExport;
-import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.common.util.IOHelper;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
@@ -131,23 +132,23 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
     }
 
     @Override
-    public EntityAIBase getWidgetAI(EntityDrone drone, IProgWidget widget){
+    public EntityAIBase getWidgetAI(IDrone drone, IProgWidget widget){
         return new DroneAICrafting(drone, (ICraftingWidget)widget);
     }
 
     public static class DroneAICrafting extends EntityAIBase{
 
         private final ICraftingWidget widget;
-        private final EntityDrone drone;
+        private final IDrone drone;
 
-        public DroneAICrafting(EntityDrone drone, ICraftingWidget widget){
+        public DroneAICrafting(IDrone drone, ICraftingWidget widget){
             this.drone = drone;
             this.widget = widget;
         }
 
         @Override
         public boolean shouldExecute(){
-            IRecipe recipe = ProgWidgetCrafting.getRecipe(drone.worldObj, widget);
+            IRecipe recipe = ProgWidgetCrafting.getRecipe(drone.getWorld(), widget);
             if(recipe == null) return false;
             InventoryCrafting craftingGrid = widget.getCraftingGrid();
             for(int crafted = 0; !((ICountWidget)widget).useCount() || crafted < ((ICountWidget)widget).getCount(); crafted++) {
@@ -183,7 +184,7 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
                         ItemStack stack = equivalentsList[i] == null ? null : equivalentsList[i].get(curIndexes[i]);
                         craftMatrix.setInventorySlotContents(i, stack);
                     }
-                    if(recipe.matches(craftMatrix, drone.worldObj)) {
+                    if(recipe.matches(craftMatrix, drone.getWorld())) {
                         if(craft(recipe.getCraftingResult(craftMatrix), craftMatrix)) {
                             hasCrafted = true;
                             break;
@@ -238,8 +239,9 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
 
                         ItemStack remainder = IOHelper.insert(drone.getInventory(), itemstack2.copy(), 0, false);
                         if(remainder != null) {
-                            EntityItem item = new EntityItem(drone.worldObj, drone.posX, drone.posY, drone.posZ, remainder);
-                            drone.worldObj.spawnEntityInWorld(item);
+                            Vec3 pos = drone.getPosition();
+                            EntityItem item = new EntityItem(drone.getWorld(), pos.xCoord, pos.yCoord, pos.zCoord, remainder);
+                            drone.getWorld().spawnEntityInWorld(item);
                         }
                     }
                     itemstack1.stackSize--;//As this stack references to the Drones stacks in its inventory, we can do this.
@@ -255,8 +257,9 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
 
             ItemStack remainder = IOHelper.insert(drone.getInventory(), craftedStack, 0, false);
             if(remainder != null) {
-                EntityItem item = new EntityItem(drone.worldObj, drone.posX, drone.posY, drone.posZ, remainder);
-                drone.worldObj.spawnEntityInWorld(item);
+                Vec3 pos = drone.getPosition();
+                EntityItem item = new EntityItem(drone.getWorld(), pos.xCoord, pos.yCoord, pos.zCoord, remainder);
+                drone.getWorld().spawnEntityInWorld(item);
             }
             return true;
         }

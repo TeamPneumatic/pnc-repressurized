@@ -6,10 +6,10 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.ChunkPosition;
+import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.client.gui.programmer.GuiProgWidgetCoordinateOperator;
 import pneumaticCraft.common.ai.DroneAIManager;
-import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.relauncher.Side;
@@ -59,7 +59,7 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
     }
 
     @Override
-    public IProgWidget getOutputWidget(EntityDrone drone, List<IProgWidget> allWidgets){
+    public IProgWidget getOutputWidget(IDrone drone, List<IProgWidget> allWidgets){
         if(!variable.equals("")) {
             ChunkPosition curPos = calculateCoordinate(this, 0, multiplyDivide);
             aiManager.setCoordinate(variable, curPos);

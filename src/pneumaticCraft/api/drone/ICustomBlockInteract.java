@@ -1,6 +1,5 @@
 package pneumaticCraft.api.drone;
 
-import net.minecraft.entity.EntityCreature;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.ChunkPosition;
 
@@ -31,12 +30,12 @@ public interface ICustomBlockInteract{
      * In the interface of the puzzle piece users can specify a 'use count' and fill in the maximum count they want to use. When not simulating, you should only import/export up to interactHandler.getRemainingCount(), and you should notify the removed/added count by doing interactHandler.decreaseCount(int count).
      * 
      * @param pos   current visited location
-     * @param drone can be casted to IDrone where necessary
+     * @param drone
      * @param interactHandler   object you can use to use to get accessible sides and give feedback about counts.
      * @param simulate  will be true when trying to figure out whether or not the drone should navigate to this block, false when next to this block.
      * @return
      */
-    public boolean doInteract(ChunkPosition pos, EntityCreature drone, IBlockInteractHandler interactHandler, boolean simulate);
+    public boolean doInteract(ChunkPosition pos, IDrone drone, IBlockInteractHandler interactHandler, boolean simulate);
 
     /**
      * Used for crafting, categorizes the puzzle piece.

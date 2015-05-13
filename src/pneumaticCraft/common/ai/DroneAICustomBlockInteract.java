@@ -2,13 +2,13 @@ package pneumaticCraft.common.ai;
 
 import net.minecraft.world.ChunkPosition;
 import pneumaticCraft.api.drone.ICustomBlockInteract;
-import pneumaticCraft.common.entity.living.EntityDrone;
+import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.common.progwidgets.ProgWidgetAreaItemBase;
 
 public class DroneAICustomBlockInteract extends DroneAIImExBase{
     private final ICustomBlockInteract blockInteractor;
 
-    public DroneAICustomBlockInteract(EntityDrone drone, double speed, ProgWidgetAreaItemBase widget,
+    public DroneAICustomBlockInteract(IDrone drone, double speed, ProgWidgetAreaItemBase widget,
             ICustomBlockInteract blockInteractor){
         super(drone, speed, widget);
         this.blockInteractor = blockInteractor;

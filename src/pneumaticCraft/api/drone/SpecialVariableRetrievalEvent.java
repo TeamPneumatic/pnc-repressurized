@@ -1,6 +1,5 @@
 package pneumaticCraft.api.drone;
 
-import net.minecraft.entity.EntityCreature;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.ChunkPosition;
 import cpw.mods.fml.common.eventhandler.Event;
@@ -33,9 +32,9 @@ public abstract class SpecialVariableRetrievalEvent extends Event{
         }
 
         public static class Drone extends CoordinateVariable{
-            public final EntityCreature drone;
+            public final IDrone drone;
 
-            public Drone(EntityCreature drone, String specialVarName){
+            public Drone(IDrone drone, String specialVarName){
                 super(specialVarName);
                 this.drone = drone;
             }
@@ -50,9 +49,9 @@ public abstract class SpecialVariableRetrievalEvent extends Event{
         }
 
         public static class Drone extends ItemVariable{
-            public final EntityCreature drone;
+            public final IDrone drone;
 
-            public Drone(EntityCreature drone, String specialVarName){
+            public Drone(IDrone drone, String specialVarName){
                 super(specialVarName);
                 this.drone = drone;
             }

@@ -58,6 +58,7 @@ tile.liquidCompressor.name=Liquid Compressor
 tile.advancedLiquidCompressor.name=Advanced Liquid Compressor
 tile.heatSink.name=Heat Sink
 tile.vortexTube.name=Vortex Tube
+tile.programmableController.name=Programmable Controller
 
 tile.monsterStoneEgg.name=Silverfish
 

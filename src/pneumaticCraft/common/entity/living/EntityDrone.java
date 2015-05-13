@@ -14,6 +14,8 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.entity.ai.EntityAITasks;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -38,11 +40,14 @@ import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.common.IExtendedEntityProperties;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidTank;
+import net.minecraftforge.fluids.IFluidTank;
 
 import org.lwjgl.opengl.GL11;
 
@@ -50,7 +55,6 @@ import pneumaticCraft.api.block.IPneumaticWrenchable;
 import pneumaticCraft.api.client.pneumaticHelmet.IHackableEntity;
 import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.api.drone.IPathfindHandler;
-import pneumaticCraft.api.item.IPressurizable;
 import pneumaticCraft.api.tileentity.IManoMeasurable;
 import pneumaticCraft.client.render.RenderLaser;
 import pneumaticCraft.client.render.RenderProgressingLine;
@@ -86,8 +90,8 @@ import cpw.mods.fml.relauncher.ReflectionHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class EntityDrone extends EntityCreature implements IPressurizable, IManoMeasurable, IInventoryHolder,
-        IPneumaticWrenchable, IEntityAdditionalSpawnData, IHackableEntity, IDrone{
+public class EntityDrone extends EntityCreature implements IManoMeasurable, IInventoryHolder, IPneumaticWrenchable,
+        IEntityAdditionalSpawnData, IHackableEntity, IDrone{
 
     private static final HashMap<String, Integer> colorMap = new HashMap<String, Integer>();
 
@@ -325,6 +329,7 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
         return x != 0 || y != 0 || z != 0 ? new ChunkPosition(x, y, z) : null;
     }
 
+    @Override
     public void setDugBlock(int x, int y, int z){
         dataWatcher.updateObject(18, x);
         dataWatcher.updateObject(19, y);
@@ -360,6 +365,7 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
         return dataWatcher.getWatchableObjectString(17);
     }
 
+    @Override
     public void setActiveProgram(IProgWidget widget){
         dataWatcher.updateObject(17, widget.getWidgetString());
     }
@@ -688,6 +694,7 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
         return upgrades;
     }
 
+    @Override
     public DroneFakePlayer getFakePlayer(){
         if(fakePlayer == null && !worldObj.isRemote) initializeFakePlayer();
         return fakePlayer;
@@ -716,6 +723,7 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
         return inventory;
     }
 
+    @Override
     public double getSpeed(){
         return speed;
     }
@@ -724,6 +732,7 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
         return emittingRedstoneValues[side.ordinal()];
     }
 
+    @Override
     public void setEmittingRedstone(ForgeDirection side, int value){
         if(emittingRedstoneValues[side.ordinal()] != value) {
             emittingRedstoneValues[side.ordinal()] = value;
@@ -731,6 +740,7 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
         }
     }
 
+    @Override
     public boolean isBlockValidPathfindBlock(int x, int y, int z){
         if(isBlockHigherThan1(worldObj, x, y - 1, z)) return false;
         if(worldObj.isAirBlock(x, y, z)) return true;
@@ -754,6 +764,7 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
         return false;
     }
 
+    @Override
     public void sendWireframeToClient(int x, int y, int z){
         NetworkHandler.sendToAllAround(new PacketShowWireframe(this, x, y, z), worldObj);
     }
@@ -950,7 +961,8 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
         return dataWatcher.getWatchableObjectByte(21) == (byte)1;
     }
 
-    public FluidTank getTank(){
+    @Override
+    public IFluidTank getTank(){
         return tank;
     }
 
@@ -966,4 +978,72 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
         this.standby = standby;
     }
 
+    @Override
+    public World getWorld(){
+        return worldObj;
+    }
+
+    @Override
+    public Vec3 getPosition(){
+        return Vec3.createVectorHelper(posX, posY, posZ);
+    }
+
+    @Override
+    public void dropItem(ItemStack stack){
+        entityDropItem(stack, 0);
+    }
+
+    @Override
+    public List<IProgWidget> getProgWidgets(){
+        return progWidgets;
+    }
+
+    @Override
+    public EntityAITasks getTargetAI(){
+        return targetTasks;
+    }
+
+    @Override
+    public boolean isProgramApplicable(IProgWidget widget){
+        return true;
+    }
+
+    @Override
+    public IExtendedEntityProperties getProperty(String key){
+        return getExtendedProperties(key);
+    }
+
+    @Override
+    public void setProperty(String key, IExtendedEntityProperties property){
+        registerExtendedProperties(key, property);
+    }
+
+    @Override
+    public void setName(String string){
+        setCustomNameTag(string);
+    }
+
+    @Override
+    public void setCarryingEntity(Entity entity){
+        if(entity == null) {
+            if(getCarryingEntity() != null) getCarryingEntity().mountEntity(null);
+        } else {
+            entity.mountEntity(this);
+        }
+    }
+
+    @Override
+    public Entity getCarryingEntity(){
+        return riddenByEntity;
+    }
+
+    @Override
+    public boolean isAIOverriden(){
+        return chargeAI.isExecuting || gotoOwnerAI != null;
+    }
+
+    @Override
+    public void onItemPickupEvent(EntityItem curPickingUpEntity, int stackSize){
+        onItemPickup(curPickingUpEntity, stackSize);
+    }
 }
