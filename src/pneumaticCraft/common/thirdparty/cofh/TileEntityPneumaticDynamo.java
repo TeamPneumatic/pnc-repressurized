@@ -65,7 +65,7 @@ public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implement
             boolean newEnabled;
             if(redstoneAllows() && getPressure(ForgeDirection.UNKNOWN) > PneumaticValues.MIN_PRESSURE_PNEUMATIC_DYNAMO && getMaxEnergyStored(ForgeDirection.UNKNOWN) - getEnergyStored(ForgeDirection.UNKNOWN) >= rfPerTick) {
                 this.addAir(-airPerTick, ForgeDirection.UNKNOWN);
-                heatExchanger.addHeat(airPerTick / 5);
+                heatExchanger.addHeat(airPerTick / 100D);
                 energy.receiveEnergy(rfPerTick, false);
                 newEnabled = true;
             } else {

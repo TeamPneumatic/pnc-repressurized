@@ -1,17 +1,6 @@
-This version is compatible with the new Equivalent Exchange 3!
+This version is compatible _again_ with the new Equivalent Exchange 3!
 
--The Charging Station can now be used to insert/extract items into items that are in it (like upgrading drones by inserting items via a Hopper).
--Minor update to the new Forge fluid system.
--Pneumatic Helmet's Coordinate Tracker upgrade now will try to navigate using the Drone's pathfinder if the default one fails. This makes it less specific.
--Pneumatic Helmet's Block Tracker now only tracks one of the two Chests if they are connected.
--Improved performance on the Block Tracker.
--Added Item variables, added 'Item Assign' and 'Condition: Item Filter' Programmer pieces for future use.
--Added Puzzle Piece panel in the Programmer GUI.
--More protected against third party content crashing.
--Added programming warnings/errors in the Programmer to assist with programming mistakes.
+-Rebalanced the heat system.
+-Added option for the Air Cannon to only shoot items when  the receiving inventory can accept it (when using a Block Tracker to shoot inserting items).
 
--Bugfix: Crash when removing a Security Station a Remote is bound to, and opening the Remote Editor UI afterwards.
--Bugfix: A few occasions where Enderman don't teleport, but create a big amount of Ender Plant seeds.
--Bugfix: Toggling the Programmer programming setting doesn't work when IGW-Mod is not installed.
--Bugfix: Programmer widgets reset when changing a program after importing it via Pastebin. Closes #449
--Bugfix: Rare NPE crash with the Block Tracker.
+-Bugfix: Liquid Filter is rendering liquids as black squares.

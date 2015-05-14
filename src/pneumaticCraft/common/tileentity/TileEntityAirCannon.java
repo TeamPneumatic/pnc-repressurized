@@ -39,6 +39,7 @@ import net.minecraft.item.ItemMonsterPlacer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.ChunkPosition;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -92,12 +93,16 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements ISid
     @GuiSynced
     public boolean coordWithinReach;
     @GuiSynced
-    public boolean fireOnlyOnRightAngle = true;
+    public int redstoneMode;
     private int oldRangeUpgrades;
     private boolean externalControl;//used in the CC API, to disallow the Cannon to update its angles when things like range upgrades / GPS Tool have changed.
     private boolean entityUpgradeInserted, dispenserUpgradeInserted;
     private final List<EntityItem> trackedItems = new ArrayList<EntityItem>();//Items that are being checked to be hoppering into inventories.
     private Set<UUID> trackedItemIds;
+    private ChunkPosition lastInsertingInventory; //Last coordinate where the item went into the inventory (as a result of the Block Tracker upgrade).
+    private ForgeDirection lastInsertingInventorySide;
+    @GuiSynced
+    public boolean insertingInventoryHasSpace = true;
 
     private final int INVENTORY_SIZE = 6;
     public final int CANNON_SLOT = 0;
@@ -213,22 +218,26 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements ISid
                 iterator.remove();
             } else {
                 Map<ChunkPosition, ForgeDirection> positions = new HashMap<ChunkPosition, ForgeDirection>();
-                double range = 0.1;
+                double range = 0.2;
                 for(ForgeDirection d : ForgeDirection.VALID_DIRECTIONS) {
-                    double posX = item.posX - d.offsetX * range;
-                    double posY = item.posY - d.offsetY * range;
-                    double posZ = item.posZ - d.offsetZ * range;
+                    double posX = item.posX + d.offsetX * range;
+                    double posY = item.posY + d.offsetY * range;
+                    double posZ = item.posZ + d.offsetZ * range;
                     positions.put(new ChunkPosition((int)Math.floor(posX), (int)Math.floor(posY), (int)Math.floor(posZ)), d.getOpposite());
                 }
                 for(Entry<ChunkPosition, ForgeDirection> entry : positions.entrySet()) {
                     ChunkPosition pos = entry.getKey();
-                    IInventory inv = IOHelper.getInventoryForTE(worldObj.getTileEntity(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ));
+                    TileEntity te = worldObj.getTileEntity(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ);
+                    IInventory inv = IOHelper.getInventoryForTE(te);
                     ItemStack remainder = IOHelper.insert(inv, item.getEntityItem(), entry.getValue().ordinal(), false);
                     if(remainder != null) {
                         item.setEntityItemStack(remainder);
                     } else {
                         item.setDead();
                         iterator.remove();
+                        lastInsertingInventory = new ChunkPosition(te.xCoord, te.yCoord, te.zCoord);
+                        lastInsertingInventorySide = entry.getValue();
+                        break;
                     }
                 }
             }
@@ -459,20 +468,25 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements ISid
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound nbtTagCompound){
-        super.readFromNBT(nbtTagCompound);
-        redstonePowered = nbtTagCompound.getBoolean("redstonePowered");
-        targetRotationAngle = nbtTagCompound.getFloat("targetRotationAngle");
-        targetHeightAngle = nbtTagCompound.getFloat("targetHeightAngle");
-        rotationAngle = nbtTagCompound.getFloat("rotationAngle");
-        heightAngle = nbtTagCompound.getFloat("heightAngle");
-        gpsX = nbtTagCompound.getInteger("gpsX");
-        gpsY = nbtTagCompound.getInteger("gpsY");
-        gpsZ = nbtTagCompound.getInteger("gpsZ");
-        fireOnlyOnRightAngle = nbtTagCompound.getBoolean("fireOnRightAngle");
-        coordWithinReach = nbtTagCompound.getBoolean("targetWithinReach");
+    public void readFromNBT(NBTTagCompound tag){
+        super.readFromNBT(tag);
+        redstonePowered = tag.getBoolean("redstonePowered");
+        targetRotationAngle = tag.getFloat("targetRotationAngle");
+        targetHeightAngle = tag.getFloat("targetHeightAngle");
+        rotationAngle = tag.getFloat("rotationAngle");
+        heightAngle = tag.getFloat("heightAngle");
+        gpsX = tag.getInteger("gpsX");
+        gpsY = tag.getInteger("gpsY");
+        gpsZ = tag.getInteger("gpsZ");
+        if(tag.hasKey("fireOnRightAngle")) {
+            redstoneMode = tag.getBoolean("fireOnRightAngle") ? 0 : 1; //TODO remove legacy
+        } else {
+            redstoneMode = tag.getByte("redstoneMode");
+        }
+
+        coordWithinReach = tag.getBoolean("targetWithinReach");
         // Read in the ItemStacks in the inventory from NBT
-        NBTTagList tagList = nbtTagCompound.getTagList("Items", 10);
+        NBTTagList tagList = tag.getTagList("Items", 10);
         inventory = new ItemStack[getSizeInventory()];
         for(int i = 0; i < tagList.tagCount(); ++i) {
             NBTTagCompound tagCompound = tagList.getCompoundTagAt(i);
@@ -483,26 +497,34 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements ISid
         }
 
         trackedItemIds = new HashSet<UUID>();
-        tagList = nbtTagCompound.getTagList("trackedItems", 10);
+        tagList = tag.getTagList("trackedItems", 10);
         for(int i = 0; i < tagList.tagCount(); i++) {
             NBTTagCompound t = tagList.getCompoundTagAt(i);
             trackedItemIds.add(new UUID(t.getLong("UUIDMost"), t.getLong("UUIDLeast")));
         }
+
+        if(tag.hasKey("inventoryX")) {
+            lastInsertingInventory = new ChunkPosition(tag.getInteger("inventoryX"), tag.getInteger("inventoryY"), tag.getInteger("inventoryZ"));
+            lastInsertingInventorySide = ForgeDirection.getOrientation(tag.getByte("inventorySide"));
+        } else {
+            lastInsertingInventory = null;
+            lastInsertingInventorySide = null;
+        }
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound nbtTagCompound){
-        super.writeToNBT(nbtTagCompound);
-        nbtTagCompound.setBoolean("redstonePowered", redstonePowered);
-        nbtTagCompound.setFloat("targetRotationAngle", targetRotationAngle);
-        nbtTagCompound.setFloat("targetHeightAngle", targetHeightAngle);
-        nbtTagCompound.setFloat("rotationAngle", rotationAngle);
-        nbtTagCompound.setFloat("heightAngle", heightAngle);
-        nbtTagCompound.setInteger("gpsX", gpsX);
-        nbtTagCompound.setInteger("gpsY", gpsY);
-        nbtTagCompound.setInteger("gpsZ", gpsZ);
-        nbtTagCompound.setBoolean("fireOnRightAngle", fireOnlyOnRightAngle);
-        nbtTagCompound.setBoolean("targetWithinReach", coordWithinReach);
+    public void writeToNBT(NBTTagCompound tag){
+        super.writeToNBT(tag);
+        tag.setBoolean("redstonePowered", redstonePowered);
+        tag.setFloat("targetRotationAngle", targetRotationAngle);
+        tag.setFloat("targetHeightAngle", targetHeightAngle);
+        tag.setFloat("rotationAngle", rotationAngle);
+        tag.setFloat("heightAngle", heightAngle);
+        tag.setInteger("gpsX", gpsX);
+        tag.setInteger("gpsY", gpsY);
+        tag.setInteger("gpsZ", gpsZ);
+        tag.setByte("redstoneMode", (byte)redstoneMode);
+        tag.setBoolean("targetWithinReach", coordWithinReach);
         // Write the ItemStacks in the inventory to NBT
         NBTTagList tagList = new NBTTagList();
         for(int currentIndex = 0; currentIndex < inventory.length; ++currentIndex) {
@@ -513,7 +535,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements ISid
                 tagList.appendTag(tagCompound);
             }
         }
-        nbtTagCompound.setTag("Items", tagList);
+        tag.setTag("Items", tagList);
 
         tagList = new NBTTagList();
         for(EntityItem entity : trackedItems) {
@@ -523,7 +545,14 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements ISid
             t.setLong("UUIDLeast", uuid.getLeastSignificantBits());
             tagList.appendTag(t);
         }
-        nbtTagCompound.setTag("trackedItems", tagList);
+        tag.setTag("trackedItems", tagList);
+
+        if(lastInsertingInventory != null) {
+            tag.setInteger("inventoryX", lastInsertingInventory.chunkPosX);
+            tag.setInteger("inventoryY", lastInsertingInventory.chunkPosY);
+            tag.setInteger("inventoryZ", lastInsertingInventory.chunkPosZ);
+            tag.setByte("inventorySide", (byte)lastInsertingInventorySide.ordinal());
+        }
     }
 
     @Override
@@ -562,16 +591,34 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements ISid
     @Override
     public void handleGUIButtonPress(int buttonID, EntityPlayer player){
         if(buttonID == 0) {
-            fireOnlyOnRightAngle = !fireOnlyOnRightAngle;
+            if(++redstoneMode > 2) redstoneMode = 0;
+            if(redstoneMode == 2 && getUpgrades(ItemMachineUpgrade.UPGRADE_BLOCK_TRACKER) == 0) redstoneMode = 0;
         }
     }
 
     public void onNeighbourBlockChange(int x, int y, int z, Block block){
-        if(!block.isAir(worldObj, x, y, z) && worldObj.isBlockIndirectlyGettingPowered(x, y, z) && !redstonePowered && (!fireOnlyOnRightAngle || doneTurning)) {
+        if(!block.isAir(worldObj, x, y, z) && worldObj.isBlockIndirectlyGettingPowered(x, y, z) && !redstonePowered && (redstoneMode != 0 || doneTurning) && (redstoneMode != 2 || inventoryCanCarry())) {
             fire();
             redstonePowered = true;
         } else if(!worldObj.isBlockIndirectlyGettingPowered(x, y, z) && redstonePowered) {
             redstonePowered = false;
+        }
+    }
+
+    private boolean inventoryCanCarry(){
+        insertingInventoryHasSpace = true;
+        if(lastInsertingInventory == null) return true;
+        if(inventory[0] == null) return true;
+        TileEntity te = worldObj.getTileEntity(lastInsertingInventory.chunkPosX, lastInsertingInventory.chunkPosY, lastInsertingInventory.chunkPosZ);
+        IInventory inv = IOHelper.getInventoryForTE(te);
+        if(inv != null) {
+            ItemStack remainder = IOHelper.insert(inv, inventory[0].copy(), lastInsertingInventorySide.ordinal(), true);
+            insertingInventoryHasSpace = remainder == null;
+            return insertingInventoryHasSpace;
+        } else {
+            lastInsertingInventory = null;
+            lastInsertingInventorySide = null;
+            return true;
         }
     }
 
@@ -807,6 +854,6 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements ISid
 
     @Override
     public int getRedstoneMode(){
-        return fireOnlyOnRightAngle ? 0 : 1;
+        return redstoneMode;
     }
 }

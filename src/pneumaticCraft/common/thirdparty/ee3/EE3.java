@@ -10,8 +10,8 @@ import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.common.thirdparty.IThirdParty;
 import pneumaticCraft.lib.Log;
 
-import com.pahimar.ee3.api.EnergyValueRegistryProxy;
-import com.pahimar.ee3.api.RecipeRegistryProxy;
+import com.pahimar.ee3.api.exchange.EnergyValueRegistryProxy;
+import com.pahimar.ee3.api.exchange.RecipeRegistryProxy;
 
 public class EE3 implements IThirdParty{
 

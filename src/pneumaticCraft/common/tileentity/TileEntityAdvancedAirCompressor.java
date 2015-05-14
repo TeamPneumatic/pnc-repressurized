@@ -25,7 +25,7 @@ public class TileEntityAdvancedAirCompressor extends TileEntityAirCompressor imp
 
     @Override
     protected void onFuelBurn(int burnedFuel){
-        heatExchanger.addHeat(burnedFuel * 2);
+        heatExchanger.addHeat(burnedFuel / 2D);
     }
 
     @Override
