@@ -17,14 +17,12 @@ import pneumaticCraft.lib.PneumaticValues;
 
 public class DroneGoToChargingStation extends EntityAIBase{
     private final EntityDrone drone;
-    private final double speed;
     public boolean isExecuting;
     public TileEntityChargingStation curCharger;
     private int chargingTime;
 
-    public DroneGoToChargingStation(EntityDrone drone, double par2){
+    public DroneGoToChargingStation(EntityDrone drone){
         this.drone = drone;
-        speed = par2;
         setMutexBits(63);//binary 111111, so it won't run along with other AI tasks.
     }
 
@@ -55,7 +53,7 @@ public class DroneGoToChargingStation extends EntityAIBase{
         });
 
         for(TileEntityChargingStation station : validChargingStations) {
-            if(PneumaticCraftUtils.getProtectingSecurityStations(drone.worldObj, station.xCoord, station.yCoord, station.zCoord, drone.getFakePlayer(), false, false) == 0 && drone.getNavigator().tryMoveToXYZ(station.xCoord, station.yCoord + 1.5, station.zCoord, speed) || ((EntityPathNavigateDrone)drone.getNavigator()).isGoingToTeleport()) {
+            if(PneumaticCraftUtils.getProtectingSecurityStations(drone.worldObj, station.xCoord, station.yCoord, station.zCoord, drone.getFakePlayer(), false, false) == 0 && drone.getPathNavigator().moveToXYZ(station.xCoord, station.yCoord + 1.5, station.zCoord) || ((EntityPathNavigateDrone)drone.getPathNavigator()).isGoingToTeleport()) {
                 isExecuting = true;
                 curCharger = station;
                 DroneClaimManager.getInstance(drone.worldObj).claim(new ChunkPosition(station.xCoord, station.yCoord, station.zCoord));

@@ -11,21 +11,18 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Vec3;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
-import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.common.EventHandlerPneumaticCraft;
 import pneumaticCraft.common.progwidgets.ProgWidgetAreaItemBase;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 
 public class DroneEntityAIPickupItems extends EntityAIBase{
-    private final IDrone drone;
-    private final double speed;
+    private final IDroneBase drone;
     private final ProgWidgetAreaItemBase itemPickupWidget;
     private EntityItem curPickingUpEntity;
     private final DistanceEntitySorter theNearestAttackableTargetSorter;
 
-    public DroneEntityAIPickupItems(IDrone drone, double speed, ProgWidgetAreaItemBase progWidgetPickupItem){
+    public DroneEntityAIPickupItems(IDroneBase drone, ProgWidgetAreaItemBase progWidgetPickupItem){
         this.drone = drone;
-        this.speed = speed;
         setMutexBits(63);//binary 111111, so it won't run along with other AI tasks.
         itemPickupWidget = progWidgetPickupItem;
         theNearestAttackableTargetSorter = new DistanceEntitySorter(drone);
@@ -50,7 +47,7 @@ public class DroneEntityAIPickupItems extends EntityAIBase{
                 for(int i = 0; i < drone.getInventory().getSizeInventory(); i++) {
                     ItemStack droneStack = drone.getInventory().getStackInSlot(i);
                     if(droneStack == null || droneStack.isItemEqual(stack) && droneStack.stackSize < droneStack.getMaxStackSize()) {
-                        if(drone.getNavigator().tryMoveToEntityLiving(ent, speed)) {
+                        if(drone.getPathNavigator().moveToEntity(ent)) {
                             curPickingUpEntity = (EntityItem)ent;
                             return true;
                         }
@@ -81,6 +78,6 @@ public class DroneEntityAIPickupItems extends EntityAIBase{
             }
             return false;
         }
-        return !drone.getNavigator().noPath();
+        return !drone.getPathNavigator().hasNoPath();
     }
 }

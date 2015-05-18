@@ -10,10 +10,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.ChunkPosition;
-import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.client.gui.programmer.GuiProgWidgetDropItem;
 import pneumaticCraft.common.ai.DroneAIImExBase;
+import pneumaticCraft.common.ai.IDroneBase;
 import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.relauncher.Side;
@@ -61,8 +61,8 @@ public class ProgWidgetDropItem extends ProgWidgetInventoryBase implements IItem
     }
 
     @Override
-    public EntityAIBase getWidgetAI(IDrone drone, IProgWidget widget){
-        return new DroneAIImExBase(drone, drone.getSpeed(), (ProgWidgetAreaItemBase)widget){
+    public EntityAIBase getWidgetAI(IDroneBase drone, IProgWidget widget){
+        return new DroneAIImExBase(drone, (ProgWidgetAreaItemBase)widget){
 
             private final Set<ChunkPosition> visitedPositions = new HashSet<ChunkPosition>();
 

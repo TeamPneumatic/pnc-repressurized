@@ -1,7 +1,7 @@
 package pneumaticCraft.common.progwidgets;
 
 import net.minecraft.util.ResourceLocation;
-import pneumaticCraft.api.drone.IDrone;
+import pneumaticCraft.common.ai.IDroneBase;
 import pneumaticCraft.lib.Textures;
 
 public class ProgWidgetDroneConditionPressure extends ProgWidgetDroneEvaluation{
@@ -17,7 +17,7 @@ public class ProgWidgetDroneConditionPressure extends ProgWidgetDroneEvaluation{
     }
 
     @Override
-    protected int getCount(IDrone drone, IProgWidget widget){
+    protected int getCount(IDroneBase drone, IProgWidget widget){
         return (int)drone.getPressure(null);
     }
 

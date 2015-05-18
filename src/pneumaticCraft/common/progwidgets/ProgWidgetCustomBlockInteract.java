@@ -3,8 +3,8 @@ package pneumaticCraft.common.progwidgets;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.util.ResourceLocation;
 import pneumaticCraft.api.drone.ICustomBlockInteract;
-import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.common.ai.DroneAICustomBlockInteract;
+import pneumaticCraft.common.ai.IDroneBase;
 
 public class ProgWidgetCustomBlockInteract extends ProgWidgetInventoryBase{
 
@@ -33,8 +33,8 @@ public class ProgWidgetCustomBlockInteract extends ProgWidgetInventoryBase{
     }
 
     @Override
-    public EntityAIBase getWidgetAI(IDrone drone, IProgWidget widget){
-        return new DroneAICustomBlockInteract(drone, drone.getSpeed(), (ProgWidgetAreaItemBase)widget, interactor);
+    public EntityAIBase getWidgetAI(IDroneBase drone, IProgWidget widget){
+        return new DroneAICustomBlockInteract(drone, (ProgWidgetAreaItemBase)widget, interactor);
     }
 
     @Override

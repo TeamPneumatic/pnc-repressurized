@@ -5,7 +5,6 @@ import net.minecraft.world.ChunkPosition;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidHandler;
-import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.common.progwidgets.ICountWidget;
 import pneumaticCraft.common.progwidgets.ILiquidFiltered;
 import pneumaticCraft.common.progwidgets.ISidedWidget;
@@ -13,8 +12,8 @@ import pneumaticCraft.common.progwidgets.ProgWidgetAreaItemBase;
 
 public class DroneAILiquidExport extends DroneAIImExBase{
 
-    public DroneAILiquidExport(IDrone drone, double speed, ProgWidgetAreaItemBase widget){
-        super(drone, speed, widget);
+    public DroneAILiquidExport(IDroneBase drone, ProgWidgetAreaItemBase widget){
+        super(drone, widget);
     }
 
     @Override

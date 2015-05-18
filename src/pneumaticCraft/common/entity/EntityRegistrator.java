@@ -20,7 +20,6 @@ public class EntityRegistrator{
         EntityRegistry.registerModEntity(EntityChopperSeeds.class, "Chopper Plant Seeds Entity", 2, PneumaticCraft.instance, 80, 1, true);
         EntityRegistry.registerModEntity(EntityPotionCloud.class, "Potion Cloud", 3, PneumaticCraft.instance, 80, 1, true);
         EntityRegistry.registerModEntity(EntityDrone.class, "Drone", 4, PneumaticCraft.instance, 80, 1, true);
-
         // Entity Eggs:
         // registerEntityEgg(EntityRook.class, 0xffffff, 0x000000);
     }

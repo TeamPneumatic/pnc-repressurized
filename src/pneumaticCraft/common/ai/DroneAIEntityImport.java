@@ -2,13 +2,12 @@ package pneumaticCraft.common.ai;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.common.progwidgets.IProgWidget;
 
 public class DroneAIEntityImport extends DroneEntityBase<IProgWidget, EntityLivingBase>{
 
-    public DroneAIEntityImport(IDrone drone, double speed, IProgWidget progWidget){
-        super(drone, speed, progWidget);
+    public DroneAIEntityImport(IDroneBase drone, IProgWidget progWidget){
+        super(drone, progWidget);
     }
 
     @Override

@@ -5,7 +5,6 @@ import java.util.Set;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.ChunkPosition;
-import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.common.progwidgets.ICountWidget;
 import pneumaticCraft.common.progwidgets.ISidedWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetAreaItemBase;
@@ -15,8 +14,8 @@ import pneumaticCraft.lib.PneumaticValues;
 
 public class DroneEntityAIInventoryImport extends DroneAIImExBase{
 
-    public DroneEntityAIInventoryImport(IDrone drone, double speed, ProgWidgetAreaItemBase widget){
-        super(drone, speed, widget);
+    public DroneEntityAIInventoryImport(IDroneBase drone, ProgWidgetAreaItemBase widget){
+        super(drone, widget);
     }
 
     @Override

@@ -4,14 +4,13 @@ import java.util.Comparator;
 
 import net.minecraft.util.Vec3;
 import net.minecraft.world.ChunkPosition;
-import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 
 public class ChunkPositionSorter implements Comparator{
 
     private final double x, y, z;
 
-    public ChunkPositionSorter(IDrone entity){
+    public ChunkPositionSorter(IDroneBase entity){
         Vec3 vec = entity.getPosition();
         x = vec.xCoord;
         y = vec.yCoord;

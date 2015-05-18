@@ -14,7 +14,6 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
-import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.common.progwidgets.ISidedWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetAreaItemBase;
 import pneumaticCraft.common.progwidgets.ProgWidgetPlace;
@@ -25,8 +24,8 @@ public class DroneAIBlockInteract extends DroneAIBlockInteraction{
 
     private final List<ChunkPosition> visitedPositions = new ArrayList<ChunkPosition>();
 
-    public DroneAIBlockInteract(IDrone drone, double speed, ProgWidgetAreaItemBase widget){
-        super(drone, speed, widget);
+    public DroneAIBlockInteract(IDroneBase drone, ProgWidgetAreaItemBase widget){
+        super(drone, widget);
     }
 
     @Override
@@ -45,7 +44,7 @@ public class DroneAIBlockInteract extends DroneAIBlockInteraction{
         return result;
     }
 
-    public static void transferToDroneFromFakePlayer(IDrone drone){
+    public static void transferToDroneFromFakePlayer(IDroneBase drone){
         //transfer items
         for(int j = 1; j < drone.getFakePlayer().inventory.mainInventory.length; j++) {
             ItemStack excessStack = drone.getFakePlayer().inventory.mainInventory[j];

@@ -7,10 +7,10 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.nbt.NBTTagCompound;
-import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.client.gui.programmer.GuiProgWidgetCondition;
 import pneumaticCraft.common.ai.DroneAIBlockCondition;
+import pneumaticCraft.common.ai.IDroneBase;
 import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.lib.Log;
 import cpw.mods.fml.relauncher.Side;
@@ -23,7 +23,7 @@ public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implem
     private ICondition.Operator operator = ICondition.Operator.HIGHER_THAN_EQUALS;
 
     @Override
-    public EntityAIBase getWidgetAI(IDrone drone, IProgWidget widget){
+    public EntityAIBase getWidgetAI(IDroneBase drone, IProgWidget widget){
         evaluator = getEvaluator(drone, widget);
         return evaluator;
     }
@@ -39,10 +39,10 @@ public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implem
     @Override
     public abstract Class<? extends IProgWidget>[] getParameters();
 
-    protected abstract DroneAIBlockCondition getEvaluator(IDrone drone, IProgWidget widget);
+    protected abstract DroneAIBlockCondition getEvaluator(IDroneBase drone, IProgWidget widget);
 
     @Override
-    public IProgWidget getOutputWidget(IDrone drone, List<IProgWidget> allWidgets){
+    public IProgWidget getOutputWidget(IDroneBase drone, List<IProgWidget> allWidgets){
         if(evaluator != null) {
             return ProgWidgetJump.jumpToLabel(allWidgets, this, evaluate(drone, this));
         } else {
@@ -52,7 +52,7 @@ public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implem
     }
 
     @Override
-    public boolean evaluate(IDrone drone, IProgWidget widget){
+    public boolean evaluate(IDroneBase drone, IProgWidget widget){
         return evaluator.getResult();
     }
 

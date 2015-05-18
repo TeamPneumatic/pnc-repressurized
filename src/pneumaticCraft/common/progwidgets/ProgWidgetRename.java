@@ -3,7 +3,7 @@ package pneumaticCraft.common.progwidgets;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.util.ResourceLocation;
-import pneumaticCraft.api.drone.IDrone;
+import pneumaticCraft.common.ai.IDroneBase;
 import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.lib.Textures;
 
@@ -45,15 +45,15 @@ public class ProgWidgetRename extends ProgWidget implements IRenamingWidget{
     }
 
     @Override
-    public EntityAIBase getWidgetAI(final IDrone drone, final IProgWidget widget){
+    public EntityAIBase getWidgetAI(final IDroneBase drone, final IProgWidget widget){
         return new DroneAIRename(drone, (IRenamingWidget)widget);
     }
 
     private class DroneAIRename extends EntityAIBase{
-        private final IDrone drone;
+        private final IDroneBase drone;
         private final IRenamingWidget widget;
 
-        public DroneAIRename(IDrone drone, IRenamingWidget widget){
+        public DroneAIRename(IDroneBase drone, IRenamingWidget widget){
             this.drone = drone;
             this.widget = widget;
         }

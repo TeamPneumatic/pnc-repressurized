@@ -19,8 +19,8 @@ import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
-import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.client.gui.GuiProgrammer;
+import pneumaticCraft.common.ai.IDroneBase;
 import pneumaticCraft.common.ai.StringFilterEntitySelector;
 import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.item.ItemPlasticPlants;
@@ -78,12 +78,12 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
     }
 
     @Override
-    public EntityAIBase getWidgetAI(IDrone drone, IProgWidget widget){
+    public EntityAIBase getWidgetAI(IDroneBase drone, IProgWidget widget){
         return new DroneAICC((EntityDrone)drone, (ProgWidgetCC)widget, false);
     }
 
     @Override
-    public EntityAIBase getWidgetTargetAI(IDrone drone, IProgWidget widget){
+    public EntityAIBase getWidgetTargetAI(IDroneBase drone, IProgWidget widget){
         return new DroneAICC((EntityDrone)drone, (ProgWidgetCC)widget, true);
     }
 
@@ -408,7 +408,7 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
     }
 
     @Override
-    public boolean evaluate(IDrone drone, IProgWidget widget){
+    public boolean evaluate(IDroneBase drone, IProgWidget widget){
         return false;
     }
 

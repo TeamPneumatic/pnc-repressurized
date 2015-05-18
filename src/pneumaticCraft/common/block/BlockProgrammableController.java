@@ -1,45 +1,17 @@
 package pneumaticCraft.common.block;
 
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
-import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.common.tileentity.TileEntityProgrammableController;
 import pneumaticCraft.lib.Textures;
 import pneumaticCraft.proxy.CommonProxy;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockProgrammableController extends BlockPneumaticCraft{
 
-    private IIcon topTexture;
-    private IIcon bottomTexture;
-
     public BlockProgrammableController(Material par2Material){
         super(par2Material);
-    }
-
-    @SideOnly(Side.CLIENT)
-    @Override
-    public void registerBlockIcons(IIconRegister par1IconRegister){
-        blockIcon = par1IconRegister.registerIcon(Textures.BLOCK_AERIAL_INTERFACE_SIDE);
-        topTexture = par1IconRegister.registerIcon(Textures.BLOCK_AERIAL_INTERFACE_TOP);
-        bottomTexture = par1IconRegister.registerIcon(Textures.BLOCK_AERIAL_INTERFACE_BOTTOM);
-    }
-
-    @SideOnly(Side.CLIENT)
-    @Override
-    public IIcon getIcon(int side, int meta){
-        switch(ForgeDirection.getOrientation(side)){
-            case UP:
-                return topTexture;
-            case DOWN:
-                return bottomTexture;
-            default:
-                return blockIcon;
-        }
+        setBlockTextureName(Textures.BLOCK_PROGRAMMABLE_CONTROLLER);
     }
 
     @Override
@@ -71,12 +43,10 @@ public class BlockProgrammableController extends BlockPneumaticCraft{
      */
     @Override
     public int isProvidingWeakPower(IBlockAccess par1IBlockAccess, int par2, int par3, int par4, int par5){
-
-        /*TileEntity te = par1IBlockAccess.getTileEntity(par2, par3, par4);
-        if(te instanceof TileEntityAerialInterface) {
-            TileEntityAerialInterface teAi = (TileEntityAerialInterface)te;
-            return teAi.shouldEmitRedstone() ? 15 : 0;
-        }*/
+        TileEntity te = par1IBlockAccess.getTileEntity(par2, par3, par4);
+        if(te instanceof TileEntityProgrammableController) {
+            return ((TileEntityProgrammableController)te).getEmittingRedstone(par5 ^ 1);
+        }
 
         return 0;
     }
@@ -92,6 +62,6 @@ public class BlockProgrammableController extends BlockPneumaticCraft{
      */
     @Override
     public boolean shouldCheckWeakPower(IBlockAccess world, int x, int y, int z, int side){
-        return true;
+        return false;
     }
 }

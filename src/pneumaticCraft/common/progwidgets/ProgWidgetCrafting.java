@@ -19,9 +19,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerDestroyItemEvent;
 import pneumaticCraft.PneumaticCraft;
-import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.client.gui.programmer.GuiProgWidgetImportExport;
+import pneumaticCraft.common.ai.IDroneBase;
 import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.common.util.IOHelper;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
@@ -132,16 +132,16 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
     }
 
     @Override
-    public EntityAIBase getWidgetAI(IDrone drone, IProgWidget widget){
+    public EntityAIBase getWidgetAI(IDroneBase drone, IProgWidget widget){
         return new DroneAICrafting(drone, (ICraftingWidget)widget);
     }
 
     public static class DroneAICrafting extends EntityAIBase{
 
         private final ICraftingWidget widget;
-        private final IDrone drone;
+        private final IDroneBase drone;
 
-        public DroneAICrafting(IDrone drone, ICraftingWidget widget){
+        public DroneAICrafting(IDroneBase drone, ICraftingWidget widget){
             this.drone = drone;
             this.widget = widget;
         }

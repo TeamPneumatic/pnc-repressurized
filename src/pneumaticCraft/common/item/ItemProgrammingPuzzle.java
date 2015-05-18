@@ -107,4 +107,11 @@ public class ItemProgrammingPuzzle extends ItemPneumatic{
         throw new IllegalArgumentException("Widget " + clazz.getCanonicalName() + " isn't registered!");
     }
 
+    public static IProgWidget getWidgetForName(String name){
+        for(IProgWidget widget : TileEntityProgrammer.registeredWidgets) {
+            if(widget.getWidgetString().equals(name)) return widget;
+        }
+        throw new IllegalArgumentException("Widget " + name + " isn't registered!");
+    }
+
 }

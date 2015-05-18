@@ -10,8 +10,8 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
-import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.common.ai.DroneAIBlockCondition;
+import pneumaticCraft.common.ai.IDroneBase;
 import pneumaticCraft.lib.Textures;
 
 public class ProgWidgetLiquidInventoryCondition extends ProgWidgetCondition{
@@ -27,7 +27,7 @@ public class ProgWidgetLiquidInventoryCondition extends ProgWidgetCondition{
     }
 
     @Override
-    protected DroneAIBlockCondition getEvaluator(IDrone drone, IProgWidget widget){
+    protected DroneAIBlockCondition getEvaluator(IDroneBase drone, IProgWidget widget){
         return new DroneAIBlockCondition(drone, (ProgWidgetAreaItemBase)widget){
 
             @Override

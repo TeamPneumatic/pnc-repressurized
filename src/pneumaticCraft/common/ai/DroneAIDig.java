@@ -10,7 +10,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.util.ForgeDirection;
-import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.common.progwidgets.ProgWidgetAreaItemBase;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.Log;
@@ -24,8 +23,8 @@ public class DroneAIDig extends DroneAIBlockInteraction{
      * @param speed
      * @param widget needs to implement IBlockOrdered.
      */
-    public DroneAIDig(IDrone drone, double speed, ProgWidgetAreaItemBase widget){
-        super(drone, speed, widget);
+    public DroneAIDig(IDroneBase drone, ProgWidgetAreaItemBase widget){
+        super(drone, widget);
     }
 
     @Override
@@ -105,7 +104,7 @@ public class DroneAIDig extends DroneAIBlockInteraction{
         }
     }
 
-    public static boolean isBlockValidForFilter(IBlockAccess worldCache, IDrone drone, ChunkPosition pos, ProgWidgetAreaItemBase widget){
+    public static boolean isBlockValidForFilter(IBlockAccess worldCache, IDroneBase drone, ChunkPosition pos, ProgWidgetAreaItemBase widget){
         int x = pos.chunkPosX;
         int y = pos.chunkPosY;
         int z = pos.chunkPosZ;

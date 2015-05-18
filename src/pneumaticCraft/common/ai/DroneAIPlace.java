@@ -8,7 +8,6 @@ import net.minecraft.util.Vec3;
 import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.common.progwidgets.ISidedWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetAreaItemBase;
 import pneumaticCraft.common.progwidgets.ProgWidgetPlace;
@@ -21,8 +20,8 @@ public class DroneAIPlace extends DroneAIBlockInteraction{
      * @param speed
      * @param widget needs to implement IBlockOrdered and IDirectionalWidget.
      */
-    public DroneAIPlace(IDrone drone, double speed, ProgWidgetAreaItemBase widget){
-        super(drone, speed, widget);
+    public DroneAIPlace(IDroneBase drone, ProgWidgetAreaItemBase widget){
+        super(drone, widget);
     }
 
     @Override
@@ -80,7 +79,7 @@ public class DroneAIPlace extends DroneAIBlockInteraction{
             }
             return false;
         } else {
-            return !drone.getNavigator().noPath();
+            return !drone.getPathNavigator().hasNoPath();
         }
     }
 

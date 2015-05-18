@@ -8,9 +8,9 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import pneumaticCraft.api.PneumaticRegistry;
+import pneumaticCraft.api.drone.DroneConstructingEvent;
 import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.client.model.ModelThirdPartyCompressor;
 import pneumaticCraft.common.block.Blockss;
@@ -89,10 +89,8 @@ public class CoFHCore implements IThirdParty, IGuiHandler{
     public void clientInit(){}
 
     @SubscribeEvent
-    public void onEntityConstruction(EntityConstructing event){
-        if(event.entity instanceof IDrone) {
-            getEnergyStorage((IDrone)event.entity);//will add an instance of ExtendedEntityProperties that can be loaded out of NBT.
-        }
+    public void onDroneConstruction(DroneConstructingEvent event){
+        getEnergyStorage(event.drone);//will add an instance of ExtendedEntityProperties that can be loaded out of NBT.
     }
 
     public static IEnergyStorage getEnergyStorage(IDrone entity){

@@ -5,7 +5,7 @@ import net.minecraft.util.ResourceLocation;
 
 import org.apache.commons.lang3.math.NumberUtils;
 
-import pneumaticCraft.api.drone.IDrone;
+import pneumaticCraft.common.ai.IDroneBase;
 import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.lib.Textures;
 
@@ -42,7 +42,7 @@ public class ProgWidgetWait extends ProgWidget{
     }
 
     @Override
-    public EntityAIBase getWidgetAI(IDrone drone, IProgWidget widget){
+    public EntityAIBase getWidgetAI(IDroneBase drone, IProgWidget widget){
         return widget instanceof ProgWidgetWait ? widget.getConnectedParameters()[0] != null ? new DroneAIWait((ProgWidgetString)widget.getConnectedParameters()[0]) : null : null;
     }
 

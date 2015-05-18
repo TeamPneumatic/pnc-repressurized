@@ -3,7 +3,7 @@ package pneumaticCraft.common.progwidgets;
 import java.util.List;
 
 import net.minecraft.util.ResourceLocation;
-import pneumaticCraft.api.drone.IDrone;
+import pneumaticCraft.common.ai.IDroneBase;
 import pneumaticCraft.lib.Textures;
 
 public class ProgWidgetItemCondition extends ProgWidgetConditionBase{
@@ -30,7 +30,7 @@ public class ProgWidgetItemCondition extends ProgWidgetConditionBase{
     }
 
     @Override
-    public boolean evaluate(IDrone drone, IProgWidget widget){
+    public boolean evaluate(IDroneBase drone, IProgWidget widget){
         ProgWidgetItemFilter checkedFilter = (ProgWidgetItemFilter)widget.getConnectedParameters()[0];
         while(checkedFilter != null) {
             if(checkedFilter.getFilter() != null) {

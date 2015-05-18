@@ -11,7 +11,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.ChunkPosition;
-import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.api.item.IProgrammable;
 import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetAreaItemBase;
@@ -25,8 +24,8 @@ public class DroneAIExternalProgram extends DroneAIBlockInteraction{
     private int curSlot;
     private NBTTagCompound curProgramTag; //Used to see if changes have been made to the program while running it.
 
-    public DroneAIExternalProgram(IDrone drone, ProgWidgetAreaItemBase widget){
-        super(drone, 0, widget);
+    public DroneAIExternalProgram(IDroneBase drone, ProgWidgetAreaItemBase widget){
+        super(drone, widget);
         aiManager = new DroneAIManager(drone, new ArrayList<IProgWidget>());
     }
 
@@ -80,9 +79,20 @@ public class DroneAIExternalProgram extends DroneAIBlockInteraction{
                     IProgrammable programmable = (IProgrammable)stack.getItem();
                     if(programmable.canProgram(stack) && programmable.usesPieces(stack)) {
                         List<IProgWidget> widgets = TileEntityProgrammer.getProgWidgets(stack);
-                        aiManager.setWidgets(widgets);
-                        curProgramTag = stack.getTagCompound();
-                        if(!aiManager.isIdling()) return true;
+
+                        boolean areWidgetsValid = true;
+                        for(IProgWidget widget : widgets) {
+                            if(!drone.isProgramApplicable(widget)) {
+                                areWidgetsValid = false;
+                                break;
+                            }
+                        }
+
+                        if(areWidgetsValid) {
+                            aiManager.setWidgets(widgets);
+                            curProgramTag = stack.getTagCompound();
+                            if(!aiManager.isIdling()) return true;
+                        }
                     }
                 }
                 curSlot++;

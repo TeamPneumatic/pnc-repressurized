@@ -4,6 +4,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.tileentity.TileEntityProgrammableController;
 
 public class ContainerProgrammableController extends ContainerPneumaticBase<TileEntityProgrammableController>{
@@ -11,12 +12,19 @@ public class ContainerProgrammableController extends ContainerPneumaticBase<Tile
     public ContainerProgrammableController(InventoryPlayer inventoryPlayer, final TileEntityProgrammableController te){
         super(te);
         // add the upgrade slots
-        addSlotToContainer(new Slot(te, 0, 10, 15){//326
+        addSlotToContainer(new Slot(te, 0, 71, 36){//326
             @Override
             public boolean isItemValid(ItemStack stack){
                 return te.isItemValidForSlot(0, stack);
             }
         });
+
+        // add the upgrade slots
+        for(int i = 0; i < 2; i++) {
+            for(int j = 0; j < 2; j++) {
+                addSlotToContainer(new SlotUpgrade(te, i * 2 + j + 1, 21 + j * 18, 29 + i * 18));
+            }
+        }
 
         // Add the player's inventory slots to the container
         for(int inventoryRowIndex = 0; inventoryRowIndex < 3; ++inventoryRowIndex) {
@@ -47,11 +55,14 @@ public class ContainerProgrammableController extends ContainerPneumaticBase<Tile
             ItemStack var5 = var4.getStack();
             var3 = var5.copy();
 
-            if(par2 == 0) {
-                if(!mergeItemStack(var5, 1, 36, false)) return null;
+            if(par2 < 5) {
+                if(!mergeItemStack(var5, 5, 40, false)) return null;
                 var4.onSlotChange(var5, var3);
             } else if(te.isItemValidForSlot(0, var3)) {
                 if(!mergeItemStack(var5, 0, 1, false)) return null;
+                var4.onSlotChange(var5, var3);
+            } else if(var3.getItem() == Itemss.machineUpgrade) {
+                if(!mergeItemStack(var5, 1, 5, false)) return null;
                 var4.onSlotChange(var5, var3);
             }
             if(var5.stackSize == 0) {

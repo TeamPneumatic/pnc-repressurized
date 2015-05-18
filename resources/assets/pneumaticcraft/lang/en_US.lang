@@ -355,6 +355,7 @@ gui.tab.info.tile.liquidCompressor=§0This machine can generate compressed air u
 gui.tab.info.tile.advancedLiquidCompressor=§0This machine is the tier two version of the Liquid Compressor. Like its less resistant brother it can generate compressed air using liquid fuel (all useable fuels can be seen in the 'Available Fuels' tab). However, this one generates at 50mL/tick, and also produces heat. The higher the heat, the lower the efficiency. The bottom arrow in the temperature gauge indicates where the efficiency will start to drop, and the top arrow indicates the 0%% efficiency mark. \n \nUnlike you might expect from this mod, this machine won't explode when the temperature gets too high.
 gui.tab.info.tile.plasticMixer=§0The Plastic Mixer is used to melt down Plastic into liquid plastic. It then can be mixed with other colors of plastic or Dye to create other colored Plastic. See other tabs for more info.
 gui.tab.info.tile.liquidHopper=§0The Liquid Hopper is a hopper which you can use to transfer liquids. Like the Omnidirectional Hopper it's omnidirectional. \n \nApart from transfer liquids from one tank to another, the Liquid Hopper will try to empty any liquid container (like a Bucket) lying at the input side. Likewise it'll try to fill any liquid container at the output side.
+gui.tab.info.tile.programmableController=§0A Programmable Controller is a machine you can use as a replacement for a Drone. Program either a Network API or Drone and place it in the gear slot. At a high air rate the machine will execute about any command. Items and liquids can be interfaced through the block as well as through commands. The benefit of the machine is that it does not involve any entity pathfinding.
 
 # Pressure
 gui.tab.pressure=Pressure
@@ -377,6 +378,8 @@ gui.tab.problems.plasticMixer.plasticOverflow=§7There's no inventory space to a
 gui.tab.problems.plasticMixer.plasticLiquidOverflow=§7There's no tank space to allow the solid plastic to melt into liquid plastic. \n§0Pump out the liquid plastic.
 gui.tab.problems.liquidCompressor.noFuel=§7The machine has no fuel. \n§0Add any of the fuels listed in the 'Available Fuels' tab.
 gui.tab.problems.advancedAirCompressor.efficiency=§7The Compressor is running at a suboptimal efficiency. Efficiency: %s \n§0Cool the machine down to under 50 degrees C.
+gui.tab.problems.programmableController.noProgram=§7No program inserted to run. \n§0Insert a programmed Network API or Drone.
+
 
 # Upgrades
 gui.tab.upgrades=Upgrades
@@ -404,6 +407,7 @@ gui.tab.upgrades.tile.fluxCompressor=§7-Speed Upgrade (max = 10) \n§0Increases
 gui.tab.upgrades.tile.pneumaticDynamo=§7-Speed Upgrade (max = 10) \n§0Increases the RF production rate. It also increases the air usage in a way that the machine will be more inefficient. Finally it increases the max RF output rate.
 gui.tab.upgrades.tile.liquidCompressor=§7-Speed Upgrade (max = 10) \n§0Increases the compressed air generated per tick. However this is at the expense of the efficiency.
 gui.tab.upgrades.tile.advancedLiquidCompressor=§7-Speed Upgrade (max = 10) \n§0Increases the compressed air generated per tick. However this is at the expense of the efficiency. \n§7-Dispenser Upgrade (max = 1) \n§0The Liquid hopper will try to pump in any liquid block at the input side. Likewise it'll try to place any liquid in the world on the output side (if it's an air block).
+gui.tab.upgrades.tile.programmableController=§7-Speed Upgrade (max = 10) \n§0Increases the travel speed of the Drone. \n§7-Dispenser Upgrade (max = 35) \n§0By default the Drone can transfer one stack of items. For every Dispenser Upgrade inserted, the Drone can transfer one additional stack. \n \nIt will also increase the internal liquid tank by 16000mB per upgrade, and 100000RF storage per upgrade (if installed). It also increases the rate at which the Drone can transfer RF (transfer = max storage / 100).
 
 # Redstone Behaviour
 gui.tab.redstoneBehaviour=Redstone Behaviour
@@ -572,6 +576,7 @@ blockTracker.message.stopSpam=Stopped spam on %s
 # Tooltips
 gui.tooltip.plasticPlant=Origin: %s
 gui.tooltip.plasticPlant.plant=Press 'Q' or right click to plant seed
+gui.tooltip.programmable.invalidPieces=Pieces displayed in red are not applicable in this application.
 
 # Waila
 hud.msg.state=State

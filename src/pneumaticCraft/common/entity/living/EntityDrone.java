@@ -9,7 +9,6 @@ import java.util.UUID;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -53,10 +52,9 @@ import org.lwjgl.opengl.GL11;
 
 import pneumaticCraft.api.block.IPneumaticWrenchable;
 import pneumaticCraft.api.client.pneumaticHelmet.IHackableEntity;
-import pneumaticCraft.api.drone.IDrone;
+import pneumaticCraft.api.drone.IPathNavigator;
 import pneumaticCraft.api.drone.IPathfindHandler;
 import pneumaticCraft.api.tileentity.IManoMeasurable;
-import pneumaticCraft.client.render.RenderLaser;
 import pneumaticCraft.client.render.RenderProgressingLine;
 import pneumaticCraft.common.Config;
 import pneumaticCraft.common.PneumaticCraftAPIHandler;
@@ -67,6 +65,7 @@ import pneumaticCraft.common.ai.DroneGoToOwner;
 import pneumaticCraft.common.ai.DroneMoveHelper;
 import pneumaticCraft.common.ai.EntityPathNavigateDrone;
 import pneumaticCraft.common.ai.FakePlayerItemInWorldManager;
+import pneumaticCraft.common.ai.IDroneBase;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.ItemGPSTool;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
@@ -90,8 +89,8 @@ import cpw.mods.fml.relauncher.ReflectionHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class EntityDrone extends EntityCreature implements IManoMeasurable, IInventoryHolder, IPneumaticWrenchable,
-        IEntityAdditionalSpawnData, IHackableEntity, IDrone{
+public class EntityDrone extends EntityDroneBase implements IManoMeasurable, IInventoryHolder, IPneumaticWrenchable,
+        IEntityAdditionalSpawnData, IHackableEntity, IDroneBase{
 
     private static final HashMap<String, Integer> colorMap = new HashMap<String, Integer>();
 
@@ -106,19 +105,13 @@ public class EntityDrone extends EntityCreature implements IManoMeasurable, IInv
     private final FluidTank tank = new FluidTank(Integer.MAX_VALUE);
     private ItemStack[] upgradeInventory = new ItemStack[9];
     private final int[] emittingRedstoneValues = new int[6];
-    public float oldPropRotation;
-    public float propRotation;
     private float propSpeed;
-    public float laserExtension; //How far the laser comes out of the drone. 1F is fully extended
-    public float oldLaserExtension;
     private static final float LASER_EXTEND_SPEED = 0.05F;
 
     private float currentAir; //the current held energy of the Drone;
     private float volume;
     private RenderProgressingLine targetLine;
     private RenderProgressingLine oldTargetLine;
-    @SideOnly(Side.CLIENT)
-    private RenderLaser digLaser;
     public List<IProgWidget> progWidgets = new ArrayList<IProgWidget>();
 
     private DroneFakePlayer fakePlayer;
@@ -144,7 +137,7 @@ public class EntityDrone extends EntityCreature implements IManoMeasurable, IInv
         setSize(0.7F, 0.35F);
         ReflectionHelper.setPrivateValue(EntityLiving.class, this, new EntityPathNavigateDrone(this, world), "navigator", "field_70699_by");
         ReflectionHelper.setPrivateValue(EntityLiving.class, this, new DroneMoveHelper(this), "moveHelper", "field_70765_h");
-        tasks.addTask(1, chargeAI = new DroneGoToChargingStation(this, 0.1D));
+        tasks.addTask(1, chargeAI = new DroneGoToChargingStation(this));
     }
 
     public EntityDrone(World world, EntityPlayer player){
@@ -225,7 +218,7 @@ public class EntityDrone extends EntityCreature implements IManoMeasurable, IInv
             volume = PneumaticValues.DRONE_VOLUME + getUpgrades(ItemMachineUpgrade.UPGRADE_VOLUME_DAMAGE) * PneumaticValues.VOLUME_VOLUME_UPGRADE;
             hasLiquidImmunity = getUpgrades(ItemMachineUpgrade.UPGRADE_SECURITY) > 0;
             if(hasLiquidImmunity) {
-                ((EntityPathNavigateDrone)getNavigator()).pathThroughLiquid = true;
+                ((EntityPathNavigateDrone)getPathNavigator()).pathThroughLiquid = true;
             }
             speed = 0.1 + Math.min(10, getUpgrades(ItemMachineUpgrade.UPGRADE_SPEED_DAMAGE)) * 0.01;
             lifeUpgrades = getUpgrades(ItemMachineUpgrade.UPGRADE_ITEM_LIFE);
@@ -322,7 +315,18 @@ public class EntityDrone extends EntityCreature implements IManoMeasurable, IInv
         dataWatcher.updateObject(16, z);
     }
 
-    private ChunkPosition getDugBlock(){
+    @Override
+    public int getLaserColor(){
+        if(colorMap.containsKey(getCustomNameTag().toLowerCase())) {
+            return colorMap.get(getCustomNameTag().toLowerCase());
+        } else if(colorMap.containsKey(playerName.toLowerCase())) {
+            return colorMap.get(playerName.toLowerCase());
+        }
+        return super.getLaserColor();
+    }
+
+    @Override
+    protected ChunkPosition getDugBlock(){
         int x = dataWatcher.getWatchableObjectInt(18);
         int y = dataWatcher.getWatchableObjectInt(19);
         int z = dataWatcher.getWatchableObjectInt(20);
@@ -374,6 +378,7 @@ public class EntityDrone extends EntityCreature implements IManoMeasurable, IInv
         dataWatcher.updateObject(13, (byte)(accelerating ? 1 : 0));
     }
 
+    @Override
     public boolean isAccelerating(){
         return dataWatcher.getWatchableObjectByte(13) == 1;
     }
@@ -382,6 +387,7 @@ public class EntityDrone extends EntityCreature implements IManoMeasurable, IInv
         dataWatcher.updateObject(22, color);
     }
 
+    @Override
     public int getDroneColor(){
         return dataWatcher.getWatchableObjectInt(22);
     }
@@ -441,6 +447,7 @@ public class EntityDrone extends EntityCreature implements IManoMeasurable, IInv
      * Method that's being called to render anything that has to for the Drone. The matrix is already translated to the drone's position.
      * @param partialTicks
      */
+    @Override
     @SideOnly(Side.CLIENT)
     public void renderExtras(double transX, double transY, double transZ, float partialTicks){
         if(targetLine != null && oldTargetLine != null) {
@@ -454,19 +461,6 @@ public class EntityDrone extends EntityCreature implements IManoMeasurable, IInv
             // GL11.glEnable(GL11.GL_LIGHTING);
             GL11.glEnable(GL11.GL_TEXTURE_2D);
             GL11.glPopMatrix();
-        }
-        ChunkPosition diggingPos = getDugBlock();
-        if(diggingPos != null) {
-            if(digLaser == null) {
-                int color = 0xFF0000;
-                if(colorMap.containsKey(getCustomNameTag().toLowerCase())) {
-                    color = colorMap.get(getCustomNameTag().toLowerCase());
-                } else if(colorMap.containsKey(playerName.toLowerCase())) {
-                    color = colorMap.get(playerName.toLowerCase());
-                }
-                digLaser = new RenderLaser(color);
-            }
-            digLaser.render(partialTicks, 0, 0.05, 0, diggingPos.chunkPosX + 0.5 - posX, diggingPos.chunkPosY + 0.45 - posY, diggingPos.chunkPosZ + 0.5 - posZ);
         }
     }
 
@@ -723,7 +717,6 @@ public class EntityDrone extends EntityCreature implements IManoMeasurable, IInv
         return inventory;
     }
 
-    @Override
     public double getSpeed(){
         return speed;
     }
@@ -811,18 +804,19 @@ public class EntityDrone extends EntityCreature implements IManoMeasurable, IInv
         }
     }
 
-    public class DroneFakePlayer extends EntityPlayerMP{
-        private final EntityDrone drone;
+    public static class DroneFakePlayer extends EntityPlayerMP{
+        private final IDroneBase drone;
 
-        public DroneFakePlayer(WorldServer world, GameProfile name, ItemInWorldManager itemManager, EntityDrone drone){
+        public DroneFakePlayer(WorldServer world, GameProfile name, ItemInWorldManager itemManager, IDroneBase drone){
             super(FMLCommonHandler.instance().getMinecraftServerInstance(), world, name, itemManager);
             this.drone = drone;
         }
 
         @Override
         public void addExperience(int amount){
-            EntityXPOrb orb = new EntityXPOrb(drone.worldObj, drone.posX, drone.posY, drone.posZ, amount);
-            drone.worldObj.spawnEntityInWorld(orb);
+            Vec3 pos = drone.getPosition();
+            EntityXPOrb orb = new EntityXPOrb(drone.getWorld(), pos.xCoord, pos.yCoord, pos.zCoord, amount);
+            drone.getWorld().spawnEntityInWorld(orb);
         }
 
         @Override
@@ -1045,5 +1039,10 @@ public class EntityDrone extends EntityCreature implements IManoMeasurable, IInv
     @Override
     public void onItemPickupEvent(EntityItem curPickingUpEntity, int stackSize){
         onItemPickup(curPickingUpEntity, stackSize);
+    }
+
+    @Override
+    public IPathNavigator getPathNavigator(){
+        return (IPathNavigator)getNavigator();
     }
 }

@@ -2,8 +2,8 @@ package pneumaticCraft.common.progwidgets;
 
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.util.ResourceLocation;
-import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.common.ai.DroneAIExternalProgram;
+import pneumaticCraft.common.ai.IDroneBase;
 import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.lib.Textures;
 
@@ -25,7 +25,7 @@ public class ProgWidgetExternalProgram extends ProgWidgetAreaItemBase{
     }
 
     @Override
-    public EntityAIBase getWidgetAI(IDrone drone, IProgWidget widget){
+    public EntityAIBase getWidgetAI(IDroneBase drone, IProgWidget widget){
         return new DroneAIExternalProgram(drone, (ProgWidgetAreaItemBase)widget);
     }
 

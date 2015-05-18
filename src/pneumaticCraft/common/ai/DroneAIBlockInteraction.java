@@ -11,7 +11,6 @@ import net.minecraft.util.Vec3;
 import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.util.ForgeDirection;
-import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.api.item.IPressurizable;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.ItemPneumaticArmor;
@@ -27,8 +26,7 @@ import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.common.util.ThreadedSorter;
 
 public abstract class DroneAIBlockInteraction extends EntityAIBase{
-    protected final IDrone drone;
-    private final double speed;
+    protected final IDroneBase drone;
     protected final ProgWidgetAreaItemBase widget;
     private final EnumOrder order;
     private ChunkPosition curPos;
@@ -51,9 +49,8 @@ public abstract class DroneAIBlockInteraction extends EntityAIBase{
      * @param speed
      * @param widget needs to implement IBlockOrdered
      */
-    public DroneAIBlockInteraction(IDrone drone, double speed, ProgWidgetAreaItemBase widget){
+    public DroneAIBlockInteraction(IDroneBase drone, ProgWidgetAreaItemBase widget){
         this.drone = drone;
-        this.speed = speed;
         setMutexBits(63);//binary 111111, so it won't run along with other AI tasks.
         this.widget = widget;
         order = widget instanceof IBlockOrdered ? ((IBlockOrdered)widget).getOrder() : EnumOrder.CLOSEST;
@@ -134,7 +131,7 @@ public abstract class DroneAIBlockInteraction extends EntityAIBase{
                             curPos = pos;
                             if(moveToPositions()) {
                                 if(moveIntoBlock()) {
-                                    if(drone.getNavigator().tryMoveToXYZ(curPos.chunkPosX, curPos.chunkPosY + 0.5, curPos.chunkPosZ, speed)) {
+                                    if(drone.getPathNavigator().moveToXYZ(curPos.chunkPosX, curPos.chunkPosY + 0.5, curPos.chunkPosZ)) {
                                         searching = false;
                                         DroneClaimManager.getInstance(drone.getWorld()).claim(pos);
                                         blacklist.clear();//clear the list for next time (maybe the blocks/rights have changed by the time there will be dug again).
@@ -142,7 +139,7 @@ public abstract class DroneAIBlockInteraction extends EntityAIBase{
                                     }
                                 } else {
                                     for(ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-                                        if(drone.getNavigator().tryMoveToXYZ(curPos.chunkPosX + dir.offsetX, curPos.chunkPosY + dir.offsetY + 0.5, curPos.chunkPosZ + dir.offsetZ, speed)) {
+                                        if(drone.getPathNavigator().moveToXYZ(curPos.chunkPosX + dir.offsetX, curPos.chunkPosY + dir.offsetY + 0.5, curPos.chunkPosZ + dir.offsetZ)) {
                                             searching = false;
                                             DroneClaimManager.getInstance(drone.getWorld()).claim(pos);
                                             blacklist.clear();//clear the list for next time (maybe the blocks/rights have changed by the time there will be dug again).
@@ -150,7 +147,7 @@ public abstract class DroneAIBlockInteraction extends EntityAIBase{
                                         }
                                     }
                                 }
-                                if(((EntityPathNavigateDrone)drone.getNavigator()).isGoingToTeleport()) {
+                                if(((EntityPathNavigateDrone)drone.getPathNavigator()).isGoingToTeleport()) {
                                     searching = false;
                                     DroneClaimManager.getInstance(drone.getWorld()).claim(pos);
                                     blacklist.clear();//clear the list for next time (maybe the blocks/rights have changed by the time there will be dug again).
@@ -179,7 +176,7 @@ public abstract class DroneAIBlockInteraction extends EntityAIBase{
                     return doBlockInteraction(curPos, dist);
                 }
             }
-            return !drone.getNavigator().noPath();
+            return !drone.getPathNavigator().hasNoPath();
         }
     }
 

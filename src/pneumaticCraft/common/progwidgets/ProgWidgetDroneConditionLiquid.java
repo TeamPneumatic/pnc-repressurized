@@ -2,7 +2,7 @@ package pneumaticCraft.common.progwidgets;
 
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.Fluid;
-import pneumaticCraft.api.drone.IDrone;
+import pneumaticCraft.common.ai.IDroneBase;
 import pneumaticCraft.lib.Textures;
 
 public class ProgWidgetDroneConditionLiquid extends ProgWidgetDroneEvaluation implements ILiquidFiltered{
@@ -18,7 +18,7 @@ public class ProgWidgetDroneConditionLiquid extends ProgWidgetDroneEvaluation im
     }
 
     @Override
-    protected int getCount(IDrone drone, IProgWidget widget){
+    protected int getCount(IDroneBase drone, IProgWidget widget){
         return drone.getTank().getFluid() != null && ((ILiquidFiltered)widget).isFluidValid(drone.getTank().getFluid().getFluid()) ? drone.getTank().getFluidAmount() : 0;
     }
 

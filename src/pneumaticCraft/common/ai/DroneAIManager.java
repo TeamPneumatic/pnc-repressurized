@@ -13,7 +13,6 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.profiler.Profiler;
 import net.minecraft.world.ChunkPosition;
 import net.minecraftforge.common.MinecraftForge;
-import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.api.drone.SpecialVariableRetrievalEvent;
 import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.common.progwidgets.IVariableWidget;
@@ -37,7 +36,7 @@ public class DroneAIManager{
     private int tickCount;
     public static final int TICK_RATE = 3;
 
-    private final IDrone drone;
+    private final IDroneBase drone;
     private List<IProgWidget> progWidgets;
     private IProgWidget curActiveWidget;
     private EntityAIBase curWidgetAI;
@@ -47,13 +46,13 @@ public class DroneAIManager{
     private final Map<String, ChunkPosition> coordinateVariables = new HashMap<String, ChunkPosition>();
     private final Map<String, ItemStack> itemVariables = new HashMap<String, ItemStack>();
 
-    public DroneAIManager(IDrone drone){
+    public DroneAIManager(IDroneBase drone){
         theProfiler = drone.getWorld().theProfiler;
         this.drone = drone;
         setWidgets(drone.getProgWidgets());
     }
 
-    public DroneAIManager(IDrone drone, List<IProgWidget> progWidgets){
+    public DroneAIManager(IDroneBase drone, List<IProgWidget> progWidgets){
         theProfiler = drone.getWorld().theProfiler;
         this.drone = drone;
         stopWhenEndReached = true;

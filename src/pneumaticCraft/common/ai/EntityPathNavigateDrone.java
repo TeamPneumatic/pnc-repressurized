@@ -10,13 +10,14 @@ import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.ChunkCache;
 import net.minecraft.world.World;
+import pneumaticCraft.api.drone.IPathNavigator;
 import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.PacketPlaySound;
 import pneumaticCraft.common.network.PacketSpawnParticle;
 import pneumaticCraft.lib.Sounds;
 
-public class EntityPathNavigateDrone extends PathNavigate{
+public class EntityPathNavigateDrone extends PathNavigate implements IPathNavigator{
 
     private final EntityDrone pathfindingEntity;
     public boolean pathThroughLiquid;
@@ -167,5 +168,20 @@ public class EntityPathNavigateDrone extends PathNavigate{
         pathfindingEntity.playSound("mob.endermen.portal", 1.0F, 1.0F);
 
         pathfindingEntity.setPosition(telX + 0.5, telY + 0.5, telZ + 0.5);
+    }
+
+    @Override
+    public boolean moveToXYZ(double x, double y, double z){
+        return tryMoveToXYZ(x, y, z, pathfindingEntity.getSpeed());
+    }
+
+    @Override
+    public boolean moveToEntity(Entity entity){
+        return tryMoveToEntityLiving(entity, pathfindingEntity.getSpeed());
+    }
+
+    @Override
+    public boolean hasNoPath(){
+        return noPath();
     }
 }

@@ -3,8 +3,8 @@ package pneumaticCraft.common.progwidgets;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.Fluid;
-import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.common.ai.DroneAILiquidImport;
+import pneumaticCraft.common.ai.IDroneBase;
 import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.lib.Textures;
 
@@ -31,8 +31,8 @@ public class ProgWidgetLiquidImport extends ProgWidgetInventoryBase implements I
     }
 
     @Override
-    public EntityAIBase getWidgetAI(IDrone drone, IProgWidget widget){
-        return new DroneAILiquidImport(drone, drone.getSpeed(), (ProgWidgetAreaItemBase)widget);
+    public EntityAIBase getWidgetAI(IDroneBase drone, IProgWidget widget){
+        return new DroneAILiquidImport(drone, (ProgWidgetAreaItemBase)widget);
     }
 
     @Override

@@ -4,12 +4,11 @@ import java.util.Comparator;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Vec3;
-import pneumaticCraft.api.drone.IDrone;
 
 public class DistanceEntitySorter implements Comparator{
-    private final IDrone drone;
+    private final IDroneBase drone;
 
-    public DistanceEntitySorter(IDrone drone){
+    public DistanceEntitySorter(IDroneBase drone){
         this.drone = drone;
     }
 

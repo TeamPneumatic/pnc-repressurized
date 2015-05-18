@@ -8,7 +8,8 @@ import net.minecraft.entity.EntityLivingBase;
 import org.lwjgl.opengl.GL11;
 
 import pneumaticCraft.client.util.RenderUtils;
-import pneumaticCraft.common.entity.living.EntityDrone;
+import pneumaticCraft.common.entity.EntityProgrammableController;
+import pneumaticCraft.common.entity.living.EntityDroneBase;
 
 public class ModelDrone extends ModelBase{
     //fields
@@ -198,9 +199,10 @@ public class ModelDrone extends ModelBase{
 
     @Override
     public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5){
+        if(entity instanceof EntityProgrammableController) f5 /= 2F;
         super.render(entity, f, f1, f2, f3, f4, f5);
         setRotationAngles(f, f1, f2, f3, f4, f5, entity);
-        if(entity != null) RenderUtils.glColorHex(0xFF000000 + ((EntityDrone)entity).getDroneColor());
+        if(entity != null) RenderUtils.glColorHex(0xFF000000 + ((EntityDroneBase)entity).getDroneColor());
         Base2.render(f5);
         Base3.render(f5);
         Base4.render(f5);
@@ -231,7 +233,7 @@ public class ModelDrone extends ModelBase{
 
     @Override
     public void setLivingAnimations(EntityLivingBase entity, float par2, float par3, float partialTicks){
-        EntityDrone drone = (EntityDrone)entity;
+        EntityDroneBase drone = (EntityDroneBase)entity;
         float propRotation = drone.oldPropRotation + (drone.propRotation - drone.oldPropRotation) * partialTicks;
         Prop1Part1.rotateAngleY = propRotation;
         Prop1Part2.rotateAngleY = propRotation;

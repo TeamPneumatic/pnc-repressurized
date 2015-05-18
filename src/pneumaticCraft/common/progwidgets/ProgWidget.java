@@ -17,8 +17,8 @@ import net.minecraft.util.ResourceLocation;
 import org.apache.commons.lang3.text.WordUtils;
 import org.lwjgl.opengl.GL11;
 
-import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.client.gui.GuiProgrammer;
+import pneumaticCraft.common.ai.IDroneBase;
 import pneumaticCraft.lib.Log;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.relauncher.Side;
@@ -138,12 +138,12 @@ public abstract class ProgWidget implements IProgWidget{
     }
 
     @Override
-    public EntityAIBase getWidgetTargetAI(IDrone drone, IProgWidget widget){
+    public EntityAIBase getWidgetTargetAI(IDroneBase drone, IProgWidget widget){
         return null;
     }
 
     @Override
-    public EntityAIBase getWidgetAI(IDrone drone, IProgWidget widget){
+    public EntityAIBase getWidgetAI(IDroneBase drone, IProgWidget widget){
         return null;
     }
 
@@ -180,7 +180,7 @@ public abstract class ProgWidget implements IProgWidget{
     }
 
     @Override
-    public IProgWidget getOutputWidget(IDrone drone, List<IProgWidget> allWidgets){
+    public IProgWidget getOutputWidget(IDroneBase drone, List<IProgWidget> allWidgets){
         return outputStepConnection;
     }
 

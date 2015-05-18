@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import net.minecraft.util.ResourceLocation;
-import pneumaticCraft.api.drone.IDrone;
+import pneumaticCraft.common.ai.IDroneBase;
 import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.lib.Textures;
 
@@ -27,7 +27,7 @@ public class ProgWidgetJump extends ProgWidget implements IJump{
     }
 
     @Override
-    public IProgWidget getOutputWidget(IDrone drone, List<IProgWidget> allWidgets){
+    public IProgWidget getOutputWidget(IDroneBase drone, List<IProgWidget> allWidgets){
         ProgWidgetString jumpedLabel = (ProgWidgetString)getConnectedParameters()[0];
         if(jumpedLabel != null) {
             return jumpToLabel(allWidgets, jumpedLabel.string);
