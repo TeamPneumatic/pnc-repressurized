@@ -5,7 +5,6 @@ import java.util.Set;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.ChunkPosition;
-import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.progwidgets.ICountWidget;
 import pneumaticCraft.common.progwidgets.ISidedWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetAreaItemBase;
@@ -15,8 +14,8 @@ import pneumaticCraft.lib.PneumaticValues;
 
 public class DroneEntityAIInventoryImport extends DroneAIImExBase{
 
-    public DroneEntityAIInventoryImport(EntityDrone drone, double speed, ProgWidgetAreaItemBase widget){
-        super(drone, speed, widget);
+    public DroneEntityAIInventoryImport(IDroneBase drone, ProgWidgetAreaItemBase widget){
+        super(drone, widget);
     }
 
     @Override
@@ -30,7 +29,7 @@ public class DroneEntityAIInventoryImport extends DroneAIImExBase{
     }
 
     private boolean importItems(ChunkPosition pos, boolean simulate){
-        IInventory inv = IOHelper.getInventoryForTE(drone.worldObj.getTileEntity(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ));
+        IInventory inv = IOHelper.getInventoryForTE(drone.getWorld().getTileEntity(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ));
         if(inv != null) {
             Set<Integer> accessibleSlots = PneumaticCraftUtils.getAccessibleSlotsForInventoryAndSides(inv, ((ISidedWidget)widget).getSides());
             for(Integer i : accessibleSlots) {

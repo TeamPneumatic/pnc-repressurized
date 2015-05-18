@@ -3,7 +3,7 @@ package pneumaticCraft.common.progwidgets;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.util.ResourceLocation;
 import pneumaticCraft.common.ai.DroneEntityAIInventoryImport;
-import pneumaticCraft.common.entity.living.EntityDrone;
+import pneumaticCraft.common.ai.IDroneBase;
 import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.lib.Textures;
 
@@ -20,8 +20,8 @@ public class ProgWidgetInventoryImport extends ProgWidgetInventoryBase{
     }
 
     @Override
-    public EntityAIBase getWidgetAI(EntityDrone drone, IProgWidget widget){
-        return new DroneEntityAIInventoryImport(drone, drone.getSpeed(), (ProgWidgetAreaItemBase)widget);
+    public EntityAIBase getWidgetAI(IDroneBase drone, IProgWidget widget){
+        return new DroneEntityAIInventoryImport(drone, (ProgWidgetAreaItemBase)widget);
     }
 
     @Override

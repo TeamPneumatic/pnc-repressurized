@@ -14,7 +14,6 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
-import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.progwidgets.ISidedWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetAreaItemBase;
 import pneumaticCraft.common.progwidgets.ProgWidgetPlace;
@@ -25,13 +24,13 @@ public class DroneAIBlockInteract extends DroneAIBlockInteraction{
 
     private final List<ChunkPosition> visitedPositions = new ArrayList<ChunkPosition>();
 
-    public DroneAIBlockInteract(EntityDrone drone, double speed, ProgWidgetAreaItemBase widget){
-        super(drone, speed, widget);
+    public DroneAIBlockInteract(IDroneBase drone, ProgWidgetAreaItemBase widget){
+        super(drone, widget);
     }
 
     @Override
     protected boolean isValidPosition(ChunkPosition pos){
-        return !visitedPositions.contains(pos) && (widget.isItemFilterEmpty() || DroneAIDig.isBlockValidForFilter(drone.worldObj, drone, pos, widget));
+        return !visitedPositions.contains(pos) && (widget.isItemFilterEmpty() || DroneAIDig.isBlockValidForFilter(drone.getWorld(), drone, pos, widget));
     }
 
     @Override
@@ -45,14 +44,14 @@ public class DroneAIBlockInteract extends DroneAIBlockInteraction{
         return result;
     }
 
-    public static void transferToDroneFromFakePlayer(EntityDrone drone){
+    public static void transferToDroneFromFakePlayer(IDroneBase drone){
         //transfer items
         for(int j = 1; j < drone.getFakePlayer().inventory.mainInventory.length; j++) {
             ItemStack excessStack = drone.getFakePlayer().inventory.mainInventory[j];
             if(excessStack != null) {
                 ItemStack remainder = PneumaticCraftUtils.exportStackToInventory(drone.getInventory(), excessStack, ForgeDirection.UNKNOWN);
                 if(remainder != null) {
-                    drone.entityDropItem(remainder, 0);
+                    drone.dropItem(remainder);
                 }
                 drone.getFakePlayer().inventory.mainInventory[j] = null;
             }
@@ -67,7 +66,7 @@ public class DroneAIBlockInteract extends DroneAIBlockInteraction{
 
         ForgeDirection faceDir = ProgWidgetPlace.getDirForSides(((ISidedWidget)widget).getSides());
         EntityPlayer player = drone.getFakePlayer();
-        World worldObj = drone.worldObj;
+        World worldObj = drone.getWorld();
         int dx = faceDir.offsetX;
         int dy = faceDir.offsetY;
         int dz = faceDir.offsetZ;

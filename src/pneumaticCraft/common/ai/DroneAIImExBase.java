@@ -2,7 +2,6 @@ package pneumaticCraft.common.ai;
 
 import net.minecraft.world.ChunkPosition;
 import pneumaticCraft.api.drone.IBlockInteractHandler;
-import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.progwidgets.ICountWidget;
 import pneumaticCraft.common.progwidgets.ISidedWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetAreaItemBase;
@@ -10,8 +9,8 @@ import pneumaticCraft.common.progwidgets.ProgWidgetAreaItemBase;
 public abstract class DroneAIImExBase extends DroneAIBlockInteraction implements IBlockInteractHandler{
     private int transportCount;
 
-    public DroneAIImExBase(EntityDrone drone, double speed, ProgWidgetAreaItemBase widget){
-        super(drone, speed, widget);
+    public DroneAIImExBase(IDroneBase drone, ProgWidgetAreaItemBase widget){
+        super(drone, widget);
         transportCount = ((ICountWidget)widget).getCount();
     }
 

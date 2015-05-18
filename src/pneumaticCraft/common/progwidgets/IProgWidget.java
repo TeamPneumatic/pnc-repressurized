@@ -7,7 +7,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.nbt.NBTTagCompound;
 import pneumaticCraft.client.gui.GuiProgrammer;
-import pneumaticCraft.common.entity.living.EntityDrone;
+import pneumaticCraft.common.ai.IDroneBase;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -44,9 +44,9 @@ public interface IProgWidget{
      * @param widget Will be 'this' most of the times, but not when controlled by ComputerCraft.
      * @return
      */
-    public EntityAIBase getWidgetTargetAI(EntityDrone drone, IProgWidget widget);
+    public EntityAIBase getWidgetTargetAI(IDroneBase drone, IProgWidget widget);
 
-    public EntityAIBase getWidgetAI(EntityDrone drone, IProgWidget widget);
+    public EntityAIBase getWidgetAI(IDroneBase drone, IProgWidget widget);
 
     public void setOutputWidget(IProgWidget widget);
 
@@ -58,7 +58,7 @@ public interface IProgWidget{
      * @param allWidgets
      * @return
      */
-    public IProgWidget getOutputWidget(EntityDrone drone, List<IProgWidget> allWidgets);
+    public IProgWidget getOutputWidget(IDroneBase drone, List<IProgWidget> allWidgets);
 
     public Class<? extends IProgWidget> returnType();//true for widgets that can give info to the widget left of it (like areas or filters)
 

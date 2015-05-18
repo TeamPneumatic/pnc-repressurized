@@ -1,13 +1,13 @@
 package pneumaticCraft.common.ai;
 
 import net.minecraft.entity.ai.EntityMoveHelper;
-import pneumaticCraft.common.entity.living.EntityDrone;
+import pneumaticCraft.common.entity.living.EntityDroneBase;
 
 public class DroneMoveHelper extends EntityMoveHelper{
-    private final EntityDrone entity;
+    private final EntityDroneBase entity;
     private double x, y, z, speed;
 
-    public DroneMoveHelper(EntityDrone par1EntityLiving){
+    public DroneMoveHelper(EntityDroneBase par1EntityLiving){
         super(par1EntityLiving);
         entity = par1EntityLiving;
         x = entity.posX;

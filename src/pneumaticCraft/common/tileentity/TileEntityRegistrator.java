@@ -25,6 +25,7 @@ public class TileEntityRegistrator{
         GameRegistry.registerTileEntity(TileEntityUVLightBox.class, "TileEntityUVLightBox");
         GameRegistry.registerTileEntity(TileEntitySecurityStation.class, "TileEntitySecurityStation");
         GameRegistry.registerTileEntity(TileEntityUniversalSensor.class, "TileEntityUniversalSensor");
+        GameRegistry.registerTileEntity(TileEntityUniversalActuator.class, "PneumaticCraft_universalSensor");
         GameRegistry.registerTileEntity(TileEntityAerialInterface.class, "TileEntityAerialInterface");
         GameRegistry.registerTileEntity(TileEntityElectrostaticCompressor.class, "TileEntityElectrostaticCompressor");
         GameRegistry.registerTileEntity(TileEntityAphorismTile.class, "TileEntityAphorismTile");
@@ -40,6 +41,7 @@ public class TileEntityRegistrator{
         GameRegistry.registerTileEntity(TileEntityCompressedIronBlock.class, "PneumaticCraft_compressedIronBlock");
         GameRegistry.registerTileEntity(TileEntityHeatSink.class, "PneumaticCraft_heatSink");
         GameRegistry.registerTileEntity(TileEntityVortexTube.class, "PneumaticCraft_vortexTube");
+        GameRegistry.registerTileEntity(TileEntityProgrammableController.class, "PneumaticCraft_programmableController");
     }
 
 }

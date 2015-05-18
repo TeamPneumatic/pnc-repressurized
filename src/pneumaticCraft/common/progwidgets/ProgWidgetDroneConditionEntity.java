@@ -8,6 +8,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import pneumaticCraft.client.gui.GuiProgrammer;
+import pneumaticCraft.common.ai.IDroneBase;
 import pneumaticCraft.common.ai.StringFilterEntitySelector;
 import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.lib.Textures;
@@ -27,7 +28,8 @@ public class ProgWidgetDroneConditionEntity extends ProgWidgetDroneEvaluation im
     }
 
     @Override
-    protected int getCount(EntityDrone drone, IProgWidget widget){
+    protected int getCount(IDroneBase d, IProgWidget widget){
+        EntityDrone drone = (EntityDrone)d;
         return drone.riddenByEntity == null || !((IEntityProvider)widget).isEntityValid(drone.riddenByEntity) ? 0 : 1;
     }
 

@@ -153,6 +153,7 @@ public class Textures{
     public static final String BLOCK_APHORISM_TILE = ICON_LOCATION + "AphorismTile";
     public static final String BLOCK_ELEVATOR_CALLER = ICON_LOCATION + "ElevatorCaller";
     public static final String BLOCK_CHARGE_PAD = ICON_LOCATION + "ChargePad";
+    public static final String BLOCK_PROGRAMMABLE_CONTROLLER = ICON_LOCATION + "programmableController";
 
     public static final String ITEM_GPS_TOOL = ICON_LOCATION + "GPSTool";
     public static final String ITEM_COMPRESSED_IRON_INGOT = "ingotIronCompressed";
@@ -238,6 +239,7 @@ public class Textures{
     public static final String GUI_ELEVATOR = GUI_LOCATION + "GuiElevator.png";
     public static final String GUI_REMOTE_EDITOR = GUI_LOCATION + "GuiRemoteEditor.png";
     public static final String GUI_WIDGET_OPTIONS_STRING = GUI_LOCATION + "GuiWidgetOptions.png";
+    public static final String GUI_PROGRAMMABLE_CONTROLLER = GUI_LOCATION + "GuiProgrammableController.png";
     public static final ResourceLocation GUI_WIDGET_OPTIONS = new ResourceLocation(GUI_WIDGET_OPTIONS_STRING);
     public static final ResourceLocation GUI_WIDGET_AREA = new ResourceLocation(GUI_LOCATION + "GuiWidgetArea.png");
     public static final ResourceLocation GUI_PASTEBIN = new ResourceLocation(GUI_LOCATION + "GuiPastebin.png");

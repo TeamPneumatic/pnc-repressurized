@@ -28,6 +28,7 @@ public class PneumaticCraftWikiTab extends BaseWikiTab{
         pageEntries.add("block/chargingStation");
         pageEntries.add("item/pneumaticHelmet");
         pageEntries.add("item/drone");
+        pageEntries.add("block/programmableController");
         pageEntries.add("item/remote");
         skipLine();
         pageEntries.add("printedCircuitBoards");

@@ -11,7 +11,7 @@ import net.minecraft.world.ChunkPosition;
 import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.client.gui.programmer.GuiProgWidgetGoto;
 import pneumaticCraft.common.ai.DroneEntityAIGoToLocation;
-import pneumaticCraft.common.entity.living.EntityDrone;
+import pneumaticCraft.common.ai.IDroneBase;
 import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.relauncher.Side;
@@ -56,8 +56,8 @@ public class ProgWidgetGoToLocation extends ProgWidget implements IGotoWidget, I
     }
 
     @Override
-    public EntityAIBase getWidgetAI(EntityDrone drone, IProgWidget widget){
-        return new DroneEntityAIGoToLocation(drone, 0.1, (ProgWidget)widget);
+    public EntityAIBase getWidgetAI(IDroneBase drone, IProgWidget widget){
+        return new DroneEntityAIGoToLocation(drone, (ProgWidget)widget);
     }
 
     @Override

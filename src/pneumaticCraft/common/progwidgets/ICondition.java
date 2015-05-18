@@ -1,6 +1,6 @@
 package pneumaticCraft.common.progwidgets;
 
-import pneumaticCraft.common.entity.living.EntityDrone;
+import pneumaticCraft.common.ai.IDroneBase;
 
 public interface ICondition{
     public boolean isAndFunction();
@@ -20,7 +20,7 @@ public interface ICondition{
      * @param drone TODO
      * @return
      */
-    public boolean evaluate(EntityDrone drone, IProgWidget widget);
+    public boolean evaluate(IDroneBase drone, IProgWidget widget);
 
     public enum Operator{
         EQUALS("="), HIGHER_THAN_EQUALS(">=");

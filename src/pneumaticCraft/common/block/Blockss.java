@@ -68,6 +68,7 @@ public class Blockss{
     public static Block etchingAcid;
     public static Block securityStation;
     public static Block universalSensor;
+    public static Block universalActuator;
     public static Block aerialInterface;
     public static Block electrostaticCompressor;
     public static Block aphorismTile;
@@ -83,6 +84,7 @@ public class Blockss{
     public static Block droneRedstoneEmitter;
     public static Block heatSink;
     public static Block vortexTube;
+    public static Block programmableController;
 
     public static void init(){
         pressureTube = new BlockPressureTube(Material.iron, PneumaticValues.DANGER_PRESSURE_PRESSURE_TUBE, PneumaticValues.MAX_PRESSURE_PRESSURE_TUBE, PneumaticValues.VOLUME_PRESSURE_TUBE).setHardness(3.0F).setResistance(3.0F).setBlockName("pressureTube");
@@ -123,6 +125,7 @@ public class Blockss{
         etchingAcid = new BlockFluidEtchingAcid().setBlockName("etchingAcid");
         securityStation = new BlockSecurityStation(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("securityStation");
         universalSensor = new BlockUniversalSensor(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("universalSensor");
+        universalActuator = new BlockUniversalActuator(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("universalActuator");
         aerialInterface = new BlockAerialInterface(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("aerialInterface");
         electrostaticCompressor = new BlockElectrostaticCompressor(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("electrostaticCompressor");
         aphorismTile = new BlockAphorismTile(Material.rock).setHardness(1.5F).setResistance(4.0F).setBlockName("aphorismTile");
@@ -137,6 +140,7 @@ public class Blockss{
         droneRedstoneEmitter = new BlockDroneRedstoneEmitter().setBlockName("droneRedstoneEmitter");
         heatSink = new BlockHeatSink(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("heatSink");
         vortexTube = new BlockVortexTube(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("vortexTube");
+        programmableController = new BlockProgrammableController(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("programmableController");
 
         registerBlocks();
 
@@ -182,6 +186,7 @@ public class Blockss{
         registerBlock(etchingAcid);
         registerBlock(securityStation);
         registerBlock(universalSensor);
+        registerBlock(universalActuator);
         registerBlock(aerialInterface);
         registerBlock(electrostaticCompressor);
         registerBlock(aphorismTile);
@@ -196,6 +201,7 @@ public class Blockss{
         registerBlock(droneRedstoneEmitter);
         registerBlock(heatSink);
         registerBlock(vortexTube);
+        registerBlock(programmableController);
     }
 
     public static void registerBlock(Block block){

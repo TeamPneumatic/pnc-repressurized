@@ -86,6 +86,7 @@ import pneumaticCraft.common.block.BlockPneumaticCraft;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.block.tubes.ModuleRegistrator;
 import pneumaticCraft.common.block.tubes.TubeModule;
+import pneumaticCraft.common.entity.EntityProgrammableController;
 import pneumaticCraft.common.entity.EntityRing;
 import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.entity.projectile.EntityChopperSeeds;
@@ -186,6 +187,7 @@ public class ClientProxy extends CommonProxy{
         // ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAdvancedPressureTube.class, new RenderAdvancedPressureTube());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAphorismTile.class, new RenderAphorismTile());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityElevatorCaller.class, new RenderElevatorCaller());
+        // ClientRegistry.bindTileEntitySpecialRenderer(TileEntityProgrammableController.class, new RenderProgrammableController());
 
         MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(Blockss.pressureTube), new RenderItemPressureTube(false));
         MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(Blockss.advancedPressureTube), new RenderItemPressureTube(true));
@@ -205,6 +207,7 @@ public class ClientProxy extends CommonProxy{
         RenderingRegistry.registerEntityRenderingHandler(EntityChopperSeeds.class, new RenderEntityChopperSeeds());
         RenderingRegistry.registerEntityRenderingHandler(EntityPotionCloud.class, new RenderEntityPotionCloud());
         RenderingRegistry.registerEntityRenderingHandler(EntityDrone.class, new RenderDrone());
+        RenderingRegistry.registerEntityRenderingHandler(EntityProgrammableController.class, new RenderDrone());
 
         RenderingRegistry.registerEntityRenderingHandler(EntityRing.class, new RenderEntityRing());
         EntityRegistry.registerModEntity(EntityRing.class, "Ring", 100, PneumaticCraft.instance, 80, 1, true);

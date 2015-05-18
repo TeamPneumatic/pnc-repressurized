@@ -24,6 +24,7 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
@@ -39,11 +40,13 @@ import net.minecraftforge.event.world.ExplosionEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.api.block.IPneumaticWrenchable;
+import pneumaticCraft.api.drone.DroneConstructingEvent;
 import pneumaticCraft.api.item.IPressurizable;
 import pneumaticCraft.client.render.pneumaticArmor.EntityTrackUpgradeHandler;
 import pneumaticCraft.client.render.pneumaticArmor.HUDHandler;
 import pneumaticCraft.client.render.pneumaticArmor.hacking.HackableHandler;
 import pneumaticCraft.client.render.pneumaticArmor.hacking.entity.HackableEnderman;
+import pneumaticCraft.common.ai.IDroneBase;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.block.pneumaticPlants.BlockPlants;
 import pneumaticCraft.common.block.pneumaticPlants.BlockPneumaticPlantBase;
@@ -109,6 +112,9 @@ public class EventHandlerPneumaticCraft{
     public void onEntityConstruction(EntityConstructing event){
         HackableHandler.onEntityConstruction(event.entity);
         ItemPlasticPlants.onEntityConstruction(event.entity);
+        if(event.entity instanceof IDroneBase) {
+            MinecraftForge.EVENT_BUS.post(new DroneConstructingEvent((IDroneBase)event.entity));
+        }
     }
 
     @SubscribeEvent

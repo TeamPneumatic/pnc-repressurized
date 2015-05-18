@@ -12,7 +12,7 @@ import net.minecraft.world.World;
 import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.client.gui.programmer.GuiProgWidgetAreaShow;
 import pneumaticCraft.common.ai.DroneAIEntityImport;
-import pneumaticCraft.common.entity.living.EntityDrone;
+import pneumaticCraft.common.ai.IDroneBase;
 import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.relauncher.Side;
@@ -45,8 +45,8 @@ public class ProgWidgetEntityImport extends ProgWidget implements IProgWidget, I
     }
 
     @Override
-    public EntityAIBase getWidgetAI(EntityDrone drone, IProgWidget widget){
-        return new DroneAIEntityImport(drone, drone.getSpeed(), widget);
+    public EntityAIBase getWidgetAI(IDroneBase drone, IProgWidget widget){
+        return new DroneAIEntityImport(drone, widget);
     }
 
     @Override

@@ -4,7 +4,7 @@ import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.ChunkPosition;
 import pneumaticCraft.common.ai.DroneAIBlockInteraction;
-import pneumaticCraft.common.entity.living.EntityDrone;
+import pneumaticCraft.common.ai.IDroneBase;
 import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.lib.Textures;
 
@@ -31,12 +31,12 @@ public class ProgWidgetEntityExport extends ProgWidgetAreaItemBase{
     }
 
     @Override
-    public EntityAIBase getWidgetAI(EntityDrone drone, IProgWidget widget){
-        return new DroneAIBlockInteraction(drone, drone.getSpeed(), (ProgWidgetAreaItemBase)widget){
+    public EntityAIBase getWidgetAI(IDroneBase drone, IProgWidget widget){
+        return new DroneAIBlockInteraction(drone, (ProgWidgetAreaItemBase)widget){
 
             @Override
             public boolean shouldExecute(){
-                return drone.riddenByEntity == null || !widget.isEntityValid(drone.riddenByEntity) ? false : super.shouldExecute();
+                return drone.getCarryingEntity() == null || !widget.isEntityValid(drone.getCarryingEntity()) ? false : super.shouldExecute();
             }
 
             @Override
@@ -51,7 +51,7 @@ public class ProgWidgetEntityExport extends ProgWidgetAreaItemBase{
 
             @Override
             protected boolean doBlockInteraction(ChunkPosition pos, double distToBlock){
-                if(drone.riddenByEntity != null) drone.riddenByEntity.mountEntity(null);
+                drone.setCarryingEntity(null);
                 return false;
             }
 

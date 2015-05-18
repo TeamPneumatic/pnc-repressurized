@@ -6,20 +6,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderBiped;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import pneumaticCraft.api.item.IProgrammable;
+import pneumaticCraft.client.gui.IGuiDrone;
 import pneumaticCraft.common.Config;
 import pneumaticCraft.common.DateEventHandler;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.fluid.Fluids;
+import pneumaticCraft.common.item.ItemProgrammingPuzzle;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.common.tileentity.TileEntityProgrammer;
@@ -33,10 +38,23 @@ public class ClientEventHandler{
         if(event.itemStack.getItem() instanceof IProgrammable) {
             IProgrammable programmable = (IProgrammable)event.itemStack.getItem();
             if(programmable.canProgram(event.itemStack) && programmable.showProgramTooltip()) {
+                boolean hasInvalidPrograms = false;
                 List<String> addedEntries = new ArrayList<String>();
                 Map<String, Integer> widgetMap = getPuzzleSummary(TileEntityProgrammer.getProgWidgets(event.itemStack));
                 for(Map.Entry<String, Integer> entry : widgetMap.entrySet()) {
-                    addedEntries.add("-" + entry.getValue() + "x " + I18n.format("programmingPuzzle." + entry.getKey() + ".name"));
+                    IProgWidget widget = ItemProgrammingPuzzle.getWidgetForName(entry.getKey());
+                    String prefix = "";
+                    GuiScreen curScreen = Minecraft.getMinecraft().currentScreen;
+                    if(curScreen instanceof IGuiDrone) {
+                        if(!((IGuiDrone)curScreen).getDrone().isProgramApplicable(widget)) {
+                            prefix = EnumChatFormatting.RED + "";
+                            hasInvalidPrograms = true;
+                        }
+                    }
+                    addedEntries.add(prefix + "-" + entry.getValue() + "x " + I18n.format("programmingPuzzle." + entry.getKey() + ".name"));
+                }
+                if(hasInvalidPrograms) {
+                    event.toolTip.add(EnumChatFormatting.RED + I18n.format("gui.tooltip.programmable.invalidPieces"));
                 }
                 Collections.sort(addedEntries);
                 event.toolTip.addAll(addedEntries);

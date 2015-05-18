@@ -9,7 +9,6 @@ import net.minecraft.server.management.ItemInWorldManager;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.event.world.BlockEvent;
-import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.lib.Log;
 import pneumaticCraft.lib.PneumaticValues;
 import cpw.mods.fml.relauncher.ReflectionHelper;
@@ -18,9 +17,9 @@ public class FakePlayerItemInWorldManager extends ItemInWorldManager{
 
     private static Field isDigging, acknowledged;
     public boolean isAccepted;
-    private final EntityDrone drone;
+    private final IDroneBase drone;
 
-    public FakePlayerItemInWorldManager(World par1World, EntityPlayerMP player, EntityDrone drone){
+    public FakePlayerItemInWorldManager(World par1World, EntityPlayerMP player, IDroneBase drone){
         super(par1World);
         thisPlayerMP = player;
         this.drone = drone;

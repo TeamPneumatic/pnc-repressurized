@@ -12,7 +12,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.ChunkPosition;
 import pneumaticCraft.api.item.IProgrammable;
-import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetAreaItemBase;
 import pneumaticCraft.common.tileentity.TileEntityProgrammer;
@@ -25,8 +24,8 @@ public class DroneAIExternalProgram extends DroneAIBlockInteraction{
     private int curSlot;
     private NBTTagCompound curProgramTag; //Used to see if changes have been made to the program while running it.
 
-    public DroneAIExternalProgram(EntityDrone drone, ProgWidgetAreaItemBase widget){
-        super(drone, 0, widget);
+    public DroneAIExternalProgram(IDroneBase drone, ProgWidgetAreaItemBase widget){
+        super(drone, widget);
         aiManager = new DroneAIManager(drone, new ArrayList<IProgWidget>());
     }
 
@@ -49,7 +48,7 @@ public class DroneAIExternalProgram extends DroneAIBlockInteraction{
     protected boolean isValidPosition(ChunkPosition pos){
         if(traversedPositions.add(pos)) {
             curSlot = 0;
-            TileEntity te = drone.worldObj.getTileEntity(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ);
+            TileEntity te = drone.getWorld().getTileEntity(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ);
             return te instanceof IInventory;
         }
         return false;
@@ -57,7 +56,7 @@ public class DroneAIExternalProgram extends DroneAIBlockInteraction{
 
     @Override
     protected boolean doBlockInteraction(ChunkPosition pos, double distToBlock){
-        IInventory inv = IOHelper.getInventoryForTE(drone.worldObj.getTileEntity(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ));
+        IInventory inv = IOHelper.getInventoryForTE(drone.getWorld().getTileEntity(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ));
         if(curProgramTag != null) {
             if(curSlot < inv.getSizeInventory()) {
                 ItemStack stack = inv.getStackInSlot(curSlot);
@@ -80,9 +79,20 @@ public class DroneAIExternalProgram extends DroneAIBlockInteraction{
                     IProgrammable programmable = (IProgrammable)stack.getItem();
                     if(programmable.canProgram(stack) && programmable.usesPieces(stack)) {
                         List<IProgWidget> widgets = TileEntityProgrammer.getProgWidgets(stack);
-                        aiManager.setWidgets(widgets);
-                        curProgramTag = stack.getTagCompound();
-                        if(!aiManager.isIdling()) return true;
+
+                        boolean areWidgetsValid = true;
+                        for(IProgWidget widget : widgets) {
+                            if(!drone.isProgramApplicable(widget)) {
+                                areWidgetsValid = false;
+                                break;
+                            }
+                        }
+
+                        if(areWidgetsValid) {
+                            aiManager.setWidgets(widgets);
+                            curProgramTag = stack.getTagCompound();
+                            if(!aiManager.isIdling()) return true;
+                        }
                     }
                 }
                 curSlot++;

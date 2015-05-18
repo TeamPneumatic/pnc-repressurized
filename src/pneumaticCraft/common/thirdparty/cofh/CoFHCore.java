@@ -2,16 +2,15 @@ package pneumaticCraft.common.thirdparty.cofh;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import pneumaticCraft.api.PneumaticRegistry;
+import pneumaticCraft.api.drone.DroneConstructingEvent;
 import pneumaticCraft.api.drone.IDrone;
 import pneumaticCraft.client.model.ModelThirdPartyCompressor;
 import pneumaticCraft.common.block.Blockss;
@@ -90,19 +89,17 @@ public class CoFHCore implements IThirdParty, IGuiHandler{
     public void clientInit(){}
 
     @SubscribeEvent
-    public void onEntityConstruction(EntityConstructing event){
-        if(event.entity instanceof IDrone) {
-            getEnergyStorage((EntityCreature)event.entity);//will add an instance of ExtendedEntityProperties that can be loaded out of NBT.
-        }
+    public void onDroneConstruction(DroneConstructingEvent event){
+        getEnergyStorage(event.drone);//will add an instance of ExtendedEntityProperties that can be loaded out of NBT.
     }
 
-    public static IEnergyStorage getEnergyStorage(EntityCreature entity){
-        ExtendedPropertyRF property = (ExtendedPropertyRF)entity.getExtendedProperties("PneumaticCraft_RF");
+    public static IEnergyStorage getEnergyStorage(IDrone entity){
+        ExtendedPropertyRF property = (ExtendedPropertyRF)entity.getProperty("PneumaticCraft_RF");
         if(property == null) {
             property = new ExtendedPropertyRF();
-            entity.registerExtendedProperties("PneumaticCraft_RF", property);
+            entity.setProperty("PneumaticCraft_RF", property);
         } else {
-            property.energy.setCapacity(100000 + 100000 * ((IDrone)entity).getUpgrades(ItemMachineUpgrade.UPGRADE_DISPENSER_DAMAGE));
+            property.energy.setCapacity(100000 + 100000 * entity.getUpgrades(ItemMachineUpgrade.UPGRADE_DISPENSER_DAMAGE));
             property.energy.setMaxExtract(property.energy.getMaxEnergyStored() / 100);
             property.energy.setMaxReceive(property.energy.getMaxExtract());
         }

@@ -9,11 +9,12 @@ import java.util.UUID;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.entity.ai.EntityAITasks;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -38,21 +39,22 @@ import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.common.IExtendedEntityProperties;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidTank;
+import net.minecraftforge.fluids.IFluidTank;
 
 import org.lwjgl.opengl.GL11;
 
 import pneumaticCraft.api.block.IPneumaticWrenchable;
 import pneumaticCraft.api.client.pneumaticHelmet.IHackableEntity;
-import pneumaticCraft.api.drone.IDrone;
+import pneumaticCraft.api.drone.IPathNavigator;
 import pneumaticCraft.api.drone.IPathfindHandler;
-import pneumaticCraft.api.item.IPressurizable;
 import pneumaticCraft.api.tileentity.IManoMeasurable;
-import pneumaticCraft.client.render.RenderLaser;
 import pneumaticCraft.client.render.RenderProgressingLine;
 import pneumaticCraft.common.Config;
 import pneumaticCraft.common.PneumaticCraftAPIHandler;
@@ -63,6 +65,7 @@ import pneumaticCraft.common.ai.DroneGoToOwner;
 import pneumaticCraft.common.ai.DroneMoveHelper;
 import pneumaticCraft.common.ai.EntityPathNavigateDrone;
 import pneumaticCraft.common.ai.FakePlayerItemInWorldManager;
+import pneumaticCraft.common.ai.IDroneBase;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.ItemGPSTool;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
@@ -86,8 +89,8 @@ import cpw.mods.fml.relauncher.ReflectionHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class EntityDrone extends EntityCreature implements IPressurizable, IManoMeasurable, IInventoryHolder,
-        IPneumaticWrenchable, IEntityAdditionalSpawnData, IHackableEntity, IDrone{
+public class EntityDrone extends EntityDroneBase implements IManoMeasurable, IInventoryHolder, IPneumaticWrenchable,
+        IEntityAdditionalSpawnData, IHackableEntity, IDroneBase{
 
     private static final HashMap<String, Integer> colorMap = new HashMap<String, Integer>();
 
@@ -102,19 +105,13 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
     private final FluidTank tank = new FluidTank(Integer.MAX_VALUE);
     private ItemStack[] upgradeInventory = new ItemStack[9];
     private final int[] emittingRedstoneValues = new int[6];
-    public float oldPropRotation;
-    public float propRotation;
     private float propSpeed;
-    public float laserExtension; //How far the laser comes out of the drone. 1F is fully extended
-    public float oldLaserExtension;
     private static final float LASER_EXTEND_SPEED = 0.05F;
 
     private float currentAir; //the current held energy of the Drone;
     private float volume;
     private RenderProgressingLine targetLine;
     private RenderProgressingLine oldTargetLine;
-    @SideOnly(Side.CLIENT)
-    private RenderLaser digLaser;
     public List<IProgWidget> progWidgets = new ArrayList<IProgWidget>();
 
     private DroneFakePlayer fakePlayer;
@@ -140,7 +137,7 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
         setSize(0.7F, 0.35F);
         ReflectionHelper.setPrivateValue(EntityLiving.class, this, new EntityPathNavigateDrone(this, world), "navigator", "field_70699_by");
         ReflectionHelper.setPrivateValue(EntityLiving.class, this, new DroneMoveHelper(this), "moveHelper", "field_70765_h");
-        tasks.addTask(1, chargeAI = new DroneGoToChargingStation(this, 0.1D));
+        tasks.addTask(1, chargeAI = new DroneGoToChargingStation(this));
     }
 
     public EntityDrone(World world, EntityPlayer player){
@@ -221,7 +218,7 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
             volume = PneumaticValues.DRONE_VOLUME + getUpgrades(ItemMachineUpgrade.UPGRADE_VOLUME_DAMAGE) * PneumaticValues.VOLUME_VOLUME_UPGRADE;
             hasLiquidImmunity = getUpgrades(ItemMachineUpgrade.UPGRADE_SECURITY) > 0;
             if(hasLiquidImmunity) {
-                ((EntityPathNavigateDrone)getNavigator()).pathThroughLiquid = true;
+                ((EntityPathNavigateDrone)getPathNavigator()).pathThroughLiquid = true;
             }
             speed = 0.1 + Math.min(10, getUpgrades(ItemMachineUpgrade.UPGRADE_SPEED_DAMAGE)) * 0.01;
             lifeUpgrades = getUpgrades(ItemMachineUpgrade.UPGRADE_ITEM_LIFE);
@@ -318,13 +315,25 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
         dataWatcher.updateObject(16, z);
     }
 
-    private ChunkPosition getDugBlock(){
+    @Override
+    public int getLaserColor(){
+        if(colorMap.containsKey(getCustomNameTag().toLowerCase())) {
+            return colorMap.get(getCustomNameTag().toLowerCase());
+        } else if(colorMap.containsKey(playerName.toLowerCase())) {
+            return colorMap.get(playerName.toLowerCase());
+        }
+        return super.getLaserColor();
+    }
+
+    @Override
+    protected ChunkPosition getDugBlock(){
         int x = dataWatcher.getWatchableObjectInt(18);
         int y = dataWatcher.getWatchableObjectInt(19);
         int z = dataWatcher.getWatchableObjectInt(20);
         return x != 0 || y != 0 || z != 0 ? new ChunkPosition(x, y, z) : null;
     }
 
+    @Override
     public void setDugBlock(int x, int y, int z){
         dataWatcher.updateObject(18, x);
         dataWatcher.updateObject(19, y);
@@ -360,6 +369,7 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
         return dataWatcher.getWatchableObjectString(17);
     }
 
+    @Override
     public void setActiveProgram(IProgWidget widget){
         dataWatcher.updateObject(17, widget.getWidgetString());
     }
@@ -368,6 +378,7 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
         dataWatcher.updateObject(13, (byte)(accelerating ? 1 : 0));
     }
 
+    @Override
     public boolean isAccelerating(){
         return dataWatcher.getWatchableObjectByte(13) == 1;
     }
@@ -376,6 +387,7 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
         dataWatcher.updateObject(22, color);
     }
 
+    @Override
     public int getDroneColor(){
         return dataWatcher.getWatchableObjectInt(22);
     }
@@ -435,6 +447,7 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
      * Method that's being called to render anything that has to for the Drone. The matrix is already translated to the drone's position.
      * @param partialTicks
      */
+    @Override
     @SideOnly(Side.CLIENT)
     public void renderExtras(double transX, double transY, double transZ, float partialTicks){
         if(targetLine != null && oldTargetLine != null) {
@@ -448,19 +461,6 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
             // GL11.glEnable(GL11.GL_LIGHTING);
             GL11.glEnable(GL11.GL_TEXTURE_2D);
             GL11.glPopMatrix();
-        }
-        ChunkPosition diggingPos = getDugBlock();
-        if(diggingPos != null) {
-            if(digLaser == null) {
-                int color = 0xFF0000;
-                if(colorMap.containsKey(getCustomNameTag().toLowerCase())) {
-                    color = colorMap.get(getCustomNameTag().toLowerCase());
-                } else if(colorMap.containsKey(playerName.toLowerCase())) {
-                    color = colorMap.get(playerName.toLowerCase());
-                }
-                digLaser = new RenderLaser(color);
-            }
-            digLaser.render(partialTicks, 0, 0.05, 0, diggingPos.chunkPosX + 0.5 - posX, diggingPos.chunkPosY + 0.45 - posY, diggingPos.chunkPosZ + 0.5 - posZ);
         }
     }
 
@@ -688,6 +688,7 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
         return upgrades;
     }
 
+    @Override
     public DroneFakePlayer getFakePlayer(){
         if(fakePlayer == null && !worldObj.isRemote) initializeFakePlayer();
         return fakePlayer;
@@ -724,6 +725,7 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
         return emittingRedstoneValues[side.ordinal()];
     }
 
+    @Override
     public void setEmittingRedstone(ForgeDirection side, int value){
         if(emittingRedstoneValues[side.ordinal()] != value) {
             emittingRedstoneValues[side.ordinal()] = value;
@@ -731,6 +733,7 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
         }
     }
 
+    @Override
     public boolean isBlockValidPathfindBlock(int x, int y, int z){
         if(isBlockHigherThan1(worldObj, x, y - 1, z)) return false;
         if(worldObj.isAirBlock(x, y, z)) return true;
@@ -754,6 +757,7 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
         return false;
     }
 
+    @Override
     public void sendWireframeToClient(int x, int y, int z){
         NetworkHandler.sendToAllAround(new PacketShowWireframe(this, x, y, z), worldObj);
     }
@@ -800,18 +804,19 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
         }
     }
 
-    public class DroneFakePlayer extends EntityPlayerMP{
-        private final EntityDrone drone;
+    public static class DroneFakePlayer extends EntityPlayerMP{
+        private final IDroneBase drone;
 
-        public DroneFakePlayer(WorldServer world, GameProfile name, ItemInWorldManager itemManager, EntityDrone drone){
+        public DroneFakePlayer(WorldServer world, GameProfile name, ItemInWorldManager itemManager, IDroneBase drone){
             super(FMLCommonHandler.instance().getMinecraftServerInstance(), world, name, itemManager);
             this.drone = drone;
         }
 
         @Override
         public void addExperience(int amount){
-            EntityXPOrb orb = new EntityXPOrb(drone.worldObj, drone.posX, drone.posY, drone.posZ, amount);
-            drone.worldObj.spawnEntityInWorld(orb);
+            Vec3 pos = drone.getPosition();
+            EntityXPOrb orb = new EntityXPOrb(drone.getWorld(), pos.xCoord, pos.yCoord, pos.zCoord, amount);
+            drone.getWorld().spawnEntityInWorld(orb);
         }
 
         @Override
@@ -950,7 +955,8 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
         return dataWatcher.getWatchableObjectByte(21) == (byte)1;
     }
 
-    public FluidTank getTank(){
+    @Override
+    public IFluidTank getTank(){
         return tank;
     }
 
@@ -966,4 +972,77 @@ public class EntityDrone extends EntityCreature implements IPressurizable, IMano
         this.standby = standby;
     }
 
+    @Override
+    public World getWorld(){
+        return worldObj;
+    }
+
+    @Override
+    public Vec3 getPosition(){
+        return Vec3.createVectorHelper(posX, posY, posZ);
+    }
+
+    @Override
+    public void dropItem(ItemStack stack){
+        entityDropItem(stack, 0);
+    }
+
+    @Override
+    public List<IProgWidget> getProgWidgets(){
+        return progWidgets;
+    }
+
+    @Override
+    public EntityAITasks getTargetAI(){
+        return targetTasks;
+    }
+
+    @Override
+    public boolean isProgramApplicable(IProgWidget widget){
+        return true;
+    }
+
+    @Override
+    public IExtendedEntityProperties getProperty(String key){
+        return getExtendedProperties(key);
+    }
+
+    @Override
+    public void setProperty(String key, IExtendedEntityProperties property){
+        registerExtendedProperties(key, property);
+    }
+
+    @Override
+    public void setName(String string){
+        setCustomNameTag(string);
+    }
+
+    @Override
+    public void setCarryingEntity(Entity entity){
+        if(entity == null) {
+            if(getCarryingEntity() != null) getCarryingEntity().mountEntity(null);
+        } else {
+            entity.mountEntity(this);
+        }
+    }
+
+    @Override
+    public Entity getCarryingEntity(){
+        return riddenByEntity;
+    }
+
+    @Override
+    public boolean isAIOverriden(){
+        return chargeAI.isExecuting || gotoOwnerAI != null;
+    }
+
+    @Override
+    public void onItemPickupEvent(EntityItem curPickingUpEntity, int stackSize){
+        onItemPickup(curPickingUpEntity, stackSize);
+    }
+
+    @Override
+    public IPathNavigator getPathNavigator(){
+        return (IPathNavigator)getNavigator();
+    }
 }

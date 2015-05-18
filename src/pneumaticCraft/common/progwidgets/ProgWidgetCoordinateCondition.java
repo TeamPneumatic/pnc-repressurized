@@ -8,7 +8,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.ChunkPosition;
 import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.client.gui.programmer.GuiWidgetCoordinateCondition;
-import pneumaticCraft.common.entity.living.EntityDrone;
+import pneumaticCraft.common.ai.IDroneBase;
 import pneumaticCraft.common.progwidgets.ICondition.Operator;
 import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.relauncher.Side;
@@ -41,7 +41,7 @@ public class ProgWidgetCoordinateCondition extends ProgWidgetConditionBase{
     }
 
     @Override
-    public boolean evaluate(EntityDrone drone, IProgWidget widget){
+    public boolean evaluate(IDroneBase drone, IProgWidget widget){
         ChunkPosition pos1 = ProgWidgetCoordinateOperator.calculateCoordinate(widget, 0, false);
         ChunkPosition pos2 = ProgWidgetCoordinateOperator.calculateCoordinate(widget, 1, false);
         if(checkingAxis[0] && !evaluate(pos1.chunkPosX, pos2.chunkPosX)) return false;

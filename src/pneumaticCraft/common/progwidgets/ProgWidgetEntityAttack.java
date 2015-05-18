@@ -14,6 +14,7 @@ import net.minecraft.world.World;
 import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.client.gui.programmer.GuiProgWidgetAreaShow;
 import pneumaticCraft.common.ai.DroneAINearestAttackableTarget;
+import pneumaticCraft.common.ai.IDroneBase;
 import pneumaticCraft.common.ai.StringFilterEntitySelector;
 import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.item.ItemPlasticPlants;
@@ -37,13 +38,13 @@ public class ProgWidgetEntityAttack extends ProgWidget implements IAreaProvider,
     }
 
     @Override
-    public EntityAIBase getWidgetAI(EntityDrone drone, IProgWidget widget){
-        return new EntityAIAttackOnCollide(drone, 0.1D, false);
+    public EntityAIBase getWidgetAI(IDroneBase drone, IProgWidget widget){
+        return new EntityAIAttackOnCollide((EntityDrone)drone, 0.1D, false);
     }
 
     @Override
-    public EntityAIBase getWidgetTargetAI(EntityDrone drone, IProgWidget widget){
-        return new DroneAINearestAttackableTarget(drone, 0, false, (ProgWidget)widget);
+    public EntityAIBase getWidgetTargetAI(IDroneBase drone, IProgWidget widget){
+        return new DroneAINearestAttackableTarget((EntityDrone)drone, 0, false, (ProgWidget)widget);
     }
 
     @Override

@@ -6,7 +6,7 @@ import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.nbt.NBTTagCompound;
 import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.client.gui.programmer.GuiProgWidgetCondition;
-import pneumaticCraft.common.entity.living.EntityDrone;
+import pneumaticCraft.common.ai.IDroneBase;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -27,15 +27,15 @@ public abstract class ProgWidgetDroneEvaluation extends ProgWidgetConditionBase 
     }
 
     @Override
-    public boolean evaluate(EntityDrone drone, IProgWidget widget){
+    public boolean evaluate(IDroneBase drone, IProgWidget widget){
         int count = getCount(drone, widget);
         return getOperator() == Operator.EQUALS ? count == getRequiredCount() : count >= getRequiredCount();
     }
 
-    protected abstract int getCount(EntityDrone drone, IProgWidget widget);
+    protected abstract int getCount(IDroneBase drone, IProgWidget widget);
 
     @Override
-    public EntityAIBase getWidgetAI(EntityDrone drone, IProgWidget widget){
+    public EntityAIBase getWidgetAI(IDroneBase drone, IProgWidget widget){
         if(widget instanceof ProgWidgetDroneEvaluation) {
             return null;
         } else {

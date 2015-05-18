@@ -4,10 +4,10 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.progwidgets.ISidedWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetAreaItemBase;
 import pneumaticCraft.common.progwidgets.ProgWidgetPlace;
@@ -20,20 +20,20 @@ public class DroneAIPlace extends DroneAIBlockInteraction{
      * @param speed
      * @param widget needs to implement IBlockOrdered and IDirectionalWidget.
      */
-    public DroneAIPlace(EntityDrone drone, double speed, ProgWidgetAreaItemBase widget){
-        super(drone, speed, widget);
+    public DroneAIPlace(IDroneBase drone, ProgWidgetAreaItemBase widget){
+        super(drone, widget);
     }
 
     @Override
     protected boolean isValidPosition(ChunkPosition pos){
-        if(drone.worldObj.isAirBlock(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ)) {
+        if(drone.getWorld().isAirBlock(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ)) {
             boolean failedOnPlacement = false;
             for(int i = 0; i < drone.getInventory().getSizeInventory(); i++) {
                 ItemStack droneStack = drone.getInventory().getStackInSlot(i);
                 if(droneStack != null && droneStack.getItem() instanceof ItemBlock) {
-                    if(((ItemBlock)droneStack.getItem()).field_150939_a.canPlaceBlockOnSide(drone.worldObj, pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ, ProgWidgetPlace.getDirForSides(((ISidedWidget)widget).getSides()).ordinal())) {
+                    if(((ItemBlock)droneStack.getItem()).field_150939_a.canPlaceBlockOnSide(drone.getWorld(), pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ, ProgWidgetPlace.getDirForSides(((ISidedWidget)widget).getSides()).ordinal())) {
                         if(widget.isItemValidForFilters(droneStack)) {
-                            if(drone.worldObj.canPlaceEntityOnSide(((ItemBlock)droneStack.getItem()).field_150939_a, pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ, false, 0, null, droneStack)) {
+                            if(drone.getWorld().canPlaceEntityOnSide(((ItemBlock)droneStack.getItem()).field_150939_a, pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ, false, 0, null, droneStack)) {
                                 for(ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
                                     if(drone.isBlockValidPathfindBlock(pos.chunkPosX + dir.offsetX, pos.chunkPosY + dir.offsetY, pos.chunkPosZ + dir.offsetZ)) {
                                         return true;
@@ -58,16 +58,16 @@ public class DroneAIPlace extends DroneAIBlockInteraction{
             ForgeDirection side = ProgWidgetPlace.getDirForSides(((ISidedWidget)widget).getSides());
             for(int i = 0; i < drone.getInventory().getSizeInventory(); i++) {
                 ItemStack droneStack = drone.getInventory().getStackInSlot(i);
-                if(droneStack != null && droneStack.getItem() instanceof ItemBlock && ((ItemBlock)droneStack.getItem()).field_150939_a.canPlaceBlockOnSide(drone.worldObj, pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ, ProgWidgetPlace.getDirForSides(((ISidedWidget)widget).getSides()).ordinal())) {
+                if(droneStack != null && droneStack.getItem() instanceof ItemBlock && ((ItemBlock)droneStack.getItem()).field_150939_a.canPlaceBlockOnSide(drone.getWorld(), pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ, ProgWidgetPlace.getDirForSides(((ISidedWidget)widget).getSides()).ordinal())) {
                     if(widget.isItemValidForFilters(droneStack)) {
-                        if(drone.worldObj.canPlaceEntityOnSide(((ItemBlock)droneStack.getItem()).field_150939_a, pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ, false, 0, null, droneStack)) {
+                        if(drone.getWorld().canPlaceEntityOnSide(((ItemBlock)droneStack.getItem()).field_150939_a, pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ, false, 0, null, droneStack)) {
                             Block block = Block.getBlockFromItem(droneStack.getItem());
                             int meta = droneStack.getItem().getMetadata(droneStack.getItemDamage());
-                            int newMeta = block.onBlockPlaced(drone.worldObj, pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ, side.ordinal(), side.offsetX, side.offsetY, side.offsetZ, meta);
+                            int newMeta = block.onBlockPlaced(drone.getWorld(), pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ, side.ordinal(), side.offsetX, side.offsetY, side.offsetZ, meta);
                             setFakePlayerAccordingToDir();
-                            if(placeBlockAt(droneStack, drone.getFakePlayer(), drone.worldObj, pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ, side.ordinal(), 0, 0, 0, newMeta)) {
+                            if(placeBlockAt(droneStack, drone.getFakePlayer(), drone.getWorld(), pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ, side.ordinal(), 0, 0, 0, newMeta)) {
                                 drone.addAir(null, -PneumaticValues.DRONE_USAGE_PLACE);
-                                drone.worldObj.playSoundEffect(pos.chunkPosX + 0.5F, pos.chunkPosY + 0.5F, pos.chunkPosZ + 0.5F, block.stepSound.func_150496_b(), (block.stepSound.getVolume() + 1.0F) / 2.0F, block.stepSound.getPitch() * 0.8F);
+                                drone.getWorld().playSoundEffect(pos.chunkPosX + 0.5F, pos.chunkPosY + 0.5F, pos.chunkPosZ + 0.5F, block.stepSound.func_150496_b(), (block.stepSound.getVolume() + 1.0F) / 2.0F, block.stepSound.getPitch() * 0.8F);
                                 if(--droneStack.stackSize <= 0) {
                                     drone.getInventory().setInventorySlotContents(i, null);
                                 }
@@ -79,38 +79,39 @@ public class DroneAIPlace extends DroneAIBlockInteraction{
             }
             return false;
         } else {
-            return !drone.getNavigator().noPath();
+            return !drone.getPathNavigator().hasNoPath();
         }
     }
 
     private void setFakePlayerAccordingToDir(){
         EntityPlayer fakePlayer = drone.getFakePlayer();
-        fakePlayer.posX = drone.posX;
-        fakePlayer.posZ = drone.posZ;
+        Vec3 pos = drone.getPosition();
+        fakePlayer.posX = pos.xCoord;
+        fakePlayer.posZ = pos.zCoord;
         switch(ProgWidgetPlace.getDirForSides(((ISidedWidget)widget).getSides())){
             case UP:
                 fakePlayer.rotationPitch = -90;
-                fakePlayer.posY = drone.posY - 10;//do this for PistonBase.determineDirection()
+                fakePlayer.posY = pos.yCoord - 10;//do this for PistonBase.determineDirection()
                 return;
             case DOWN:
                 fakePlayer.rotationPitch = 90;
-                fakePlayer.posY = drone.posY + 10;//do this for PistonBase.determineDirection()
+                fakePlayer.posY = pos.yCoord + 10;//do this for PistonBase.determineDirection()
                 return;
             case NORTH:
                 fakePlayer.rotationYaw = 180;
-                fakePlayer.posY = drone.posY;//do this for PistonBase.determineDirection()
+                fakePlayer.posY = pos.yCoord;//do this for PistonBase.determineDirection()
                 break;
             case EAST:
                 fakePlayer.rotationYaw = 270;
-                fakePlayer.posY = drone.posY;//do this for PistonBase.determineDirection()
+                fakePlayer.posY = pos.yCoord;//do this for PistonBase.determineDirection()
                 break;
             case SOUTH:
                 fakePlayer.rotationYaw = 0;
-                fakePlayer.posY = drone.posY;//do this for PistonBase.determineDirection()
+                fakePlayer.posY = pos.yCoord;//do this for PistonBase.determineDirection()
                 break;
             case WEST:
                 fakePlayer.rotationYaw = 90;
-                fakePlayer.posY = drone.posY;//do this for PistonBase.determineDirection()
+                fakePlayer.posY = pos.yCoord;//do this for PistonBase.determineDirection()
                 break;
         }
     }
