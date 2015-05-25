@@ -135,7 +135,7 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
             }
         }
 
-        if(getUpgrades(ItemMachineUpgrade.UPGRADE_DISPENSER_DAMAGE) > 0) {
+        if(getUpgrades(ItemMachineUpgrade.UPGRADE_DISPENSER_DAMAGE) > 0 && worldObj.getBlockMetadata(xCoord + inputDir.offsetX, yCoord + inputDir.offsetY, zCoord + inputDir.offsetZ) == 0) {
             Fluid fluid = FluidRegistry.lookupFluidForBlock(worldObj.getBlock(xCoord + inputDir.offsetX, yCoord + inputDir.offsetY, zCoord + inputDir.offsetZ));
             if(fluid != null) {
                 if(fill(ForgeDirection.UNKNOWN, new FluidStack(fluid, 1000), false) == 1000) {
