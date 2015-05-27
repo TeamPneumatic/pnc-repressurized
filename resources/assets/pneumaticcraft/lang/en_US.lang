@@ -60,6 +60,7 @@ tile.heatSink.name=Heat Sink
 tile.vortexTube.name=Vortex Tube
 tile.etchingAcid.name=Etching Acid
 tile.programmableController.name=Programmable Controller
+tile.gasLift.name=Gas Lift
 
 tile.monsterStoneEgg.name=Silverfish
 
@@ -356,6 +357,7 @@ gui.tab.info.tile.advancedLiquidCompressor=§0This machine is the tier two versi
 gui.tab.info.tile.plasticMixer=§0The Plastic Mixer is used to melt down Plastic into liquid plastic. It then can be mixed with other colors of plastic or Dye to create other colored Plastic. See other tabs for more info.
 gui.tab.info.tile.liquidHopper=§0The Liquid Hopper is a hopper which you can use to transfer liquids. Like the Omnidirectional Hopper it's omnidirectional. \n \nApart from transfer liquids from one tank to another, the Liquid Hopper will try to empty any liquid container (like a Bucket) lying at the input side. Likewise it'll try to fill any liquid container at the output side.
 gui.tab.info.tile.programmableController=§0A Programmable Controller is a machine you can use as a replacement for a Drone. Program either a Network API or Drone and place it in the gear slot. At a high air rate the machine will execute about any command. Items and liquids can be interfaced through the block as well as through commands. The benefit of the machine is that it does not involve any entity pathfinding.
+gui.tab.info.tile.gasLift=§0A Gas Lift is a type of pump which uses pressure to pump up liquids. When placed down it requires pressure and Pressure Tubes to operate. The Gas Lift will place Pressure Tubes downwards until it hits a liquid. When solid blocks are encountered they will be dug. The pressure required to operate increases proportionally to the working depth.
 
 # Pressure
 gui.tab.pressure=Pressure
@@ -379,7 +381,9 @@ gui.tab.problems.plasticMixer.plasticLiquidOverflow=§7There's no tank space to 
 gui.tab.problems.liquidCompressor.noFuel=§7The machine has no fuel. \n§0Add any of the fuels listed in the 'Available Fuels' tab.
 gui.tab.problems.advancedAirCompressor.efficiency=§7The Compressor is running at a suboptimal efficiency. Efficiency: %s \n§0Cool the machine down to under 50 degrees C.
 gui.tab.problems.programmableController.noProgram=§7No program inserted to run. \n§0Insert a programmed Network API or Drone.
-
+gui.tab.problems.gasLift.noLiquidSpace=§7Not enough tank space to pump. \n§0Connect up a tank.
+gui.tab.problems.gasLift.noTubes=§7No tubes! \n§0Place Pressure Tubes in the inventory.
+gui.tab.problems.gasLift.noTubeSpace=§7No space for tubes! \n§0Remove the Pressure Tubes from the inventory.
 
 # Upgrades
 gui.tab.upgrades=Upgrades
@@ -445,6 +449,17 @@ gui.tab.hopperStatus.itemTransferPerTick=§7Item Transfer Speed: \n§0%s items/t
 gui.tab.hopperStatus.itemTransferPerSecond=§7Item Transfer Speed: \n§0%s items/s
 gui.tab.hopperStatus.liquidTransferPerTick=§7Liquid Transfer Speed: \n§0%s mL/tick
 gui.tab.hopperStatus.liquidTransferPerSecond=§7Liquid Transfer Speed: \n§0%s mL/s
+gui.tab.status=Status
+gui.tab.status.gasLift.action=§7Action
+gui.tab.status.gasLift.action.idling=§0Idling
+gui.tab.status.gasLift.action.pumping=§0Pumping %s
+gui.tab.status.gasLift.action.diggingDown=§0Digging down
+gui.tab.status.gasLift.currentDepth=§7Current Depth \n§0%s meter
+gui.tab.gasLift.mode=Mode
+gui.tab.gasLift.mode.pumpEmpty=Pump and allow empty tank
+gui.tab.gasLift.mode.pumpLeave=Pump and leave liquid in tank (used as filter)
+gui.tab.gasLift.mode.drawIn=Draw in tubes
+
 gui.programmer.button.export.programmingWhen=§cProgramming when: %s
 gui.programmer.button.export.pressingButton=Pressing button
 gui.programmer.button.export.onItemInsert=Item inserted

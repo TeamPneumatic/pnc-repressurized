@@ -60,6 +60,7 @@ import pneumaticCraft.common.network.PacketSetMobTarget;
 import pneumaticCraft.common.remote.GlobalVariableManager;
 import pneumaticCraft.common.thirdparty.ModInteractionUtilImplementation;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
+import pneumaticCraft.common.worldgen.OilTracker;
 import pneumaticCraft.lib.TileEntityConstants;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.eventhandler.Event.Result;
@@ -280,9 +281,12 @@ public class EventHandlerPneumaticCraft{
 
     @SubscribeEvent
     public void onWorldLoad(WorldEvent.Load event){
-        if(!event.world.isRemote && event.world.provider.dimensionId == 0) {
-            GlobalVariableManager.overworld = event.world;
-            event.world.loadItemData(GlobalVariableManager.class, GlobalVariableManager.DATA_KEY);
+        if(!event.world.isRemote) {
+            if(event.world.provider.dimensionId == 0) {
+                GlobalVariableManager.overworld = event.world;
+                event.world.loadItemData(GlobalVariableManager.class, GlobalVariableManager.DATA_KEY);
+            }
+            event.world.loadItemData(OilTracker.class, OilTracker.DATA_KEY);
         }
     }
 }

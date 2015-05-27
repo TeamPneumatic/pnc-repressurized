@@ -47,6 +47,7 @@ public class Itemss{
     public static Item programmingPuzzle;
     public static Item advancedPCB;
     public static Item remote;
+    public static Item seismicSensor;
 
     public static void init(){
         GPSTool = new ItemGPSTool().setUnlocalizedName("gpsTool");
@@ -82,6 +83,7 @@ public class Itemss{
         programmingPuzzle = new ItemProgrammingPuzzle().setUnlocalizedName("programmingPuzzle")/*.setTextureName("pneumaticcraft:programmingPuzzles/entityAttack")*/;
         advancedPCB = new ItemPneumatic(Textures.ITEM_ADVANCED_PCB).setUnlocalizedName("advancedPCB");
         remote = new ItemRemote("remote").setUnlocalizedName("remote");
+        seismicSensor = new ItemSeismicSensor().setUnlocalizedName("seismicSensor");
 
         registerItems();
 
@@ -122,6 +124,7 @@ public class Itemss{
         registerItem(programmingPuzzle);
         registerItem(advancedPCB);
         registerItem(remote);
+        registerItem(seismicSensor);
     }
 
     public static void registerItem(Item item){

@@ -84,6 +84,9 @@ public class ClientEventHandler{
     public void onTextureStitchEventPre(TextureStitchEvent.Pre event){
         if(event.map.getTextureType() == 0) {
             Fluids.plastic.setIcons(event.map.registerIcon("pneumaticcraft:plastic_still"), event.map.registerIcon("pneumaticcraft:plastic_flow"));
+            if(Fluids.isUsingNativeOil) {
+                Fluids.oil.setIcons(event.map.registerIcon("pneumaticcraft:oil_still"), event.map.registerIcon("pneumaticcraft:oil_flow"));
+            }
         }
     }
 
