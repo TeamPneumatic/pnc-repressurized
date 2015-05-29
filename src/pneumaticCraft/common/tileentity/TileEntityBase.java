@@ -24,6 +24,7 @@ import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.NetworkUtils;
 import pneumaticCraft.common.network.PacketDescription;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
+import pneumaticCraft.common.util.TileEntityCache;
 import pneumaticCraft.lib.ModIds;
 import pneumaticCraft.lib.PneumaticValues;
 import cpw.mods.fml.common.Optional;
@@ -38,6 +39,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
     private boolean descriptionPacketScheduled;
     private List<SyncedField> descriptionFields;
     protected int poweredRedstone; //The redstone strength currently applied to the block.
+    private TileEntityCache[] tileCache;
 
     public TileEntityBase(){
 
@@ -319,6 +321,14 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
 
     public void onNeighborTileUpdate(){
         initializeIfHeatExchanger();
+        for(TileEntityCache cache : getTileCache()) {
+            cache.update();
+        }
+    }
+
+    public TileEntityCache[] getTileCache(){
+        if(tileCache == null) tileCache = TileEntityCache.getDefaultCache(worldObj, xCoord, yCoord, zCoord);
+        return tileCache;
     }
 
     public void onNeighborBlockUpdate(){

@@ -45,7 +45,7 @@ public class WidgetTank extends WidgetBase{
         int height = 64;
         int width = 16;
 
-        if(fluid != null && amt > 0 && capacity > 0) {
+        if(fluid != null && icon != null && amt > 0 && capacity > 0) {
             Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.locationBlocksTexture);
 
             double fluidPercentage = amt / (double)capacity;

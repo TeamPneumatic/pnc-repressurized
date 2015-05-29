@@ -25,6 +25,7 @@ import pneumaticCraft.client.gui.GuiPressureChamber;
 import pneumaticCraft.client.gui.GuiPressureChamberInterface;
 import pneumaticCraft.client.gui.GuiProgrammableController;
 import pneumaticCraft.client.gui.GuiProgrammer;
+import pneumaticCraft.client.gui.GuiRefinery;
 import pneumaticCraft.client.gui.GuiRemote;
 import pneumaticCraft.client.gui.GuiRemoteEditor;
 import pneumaticCraft.client.gui.GuiSecurityStationHacking;
@@ -55,6 +56,7 @@ import pneumaticCraft.common.inventory.ContainerPressureChamber;
 import pneumaticCraft.common.inventory.ContainerPressureChamberInterface;
 import pneumaticCraft.common.inventory.ContainerProgrammableController;
 import pneumaticCraft.common.inventory.ContainerProgrammer;
+import pneumaticCraft.common.inventory.ContainerRefinery;
 import pneumaticCraft.common.inventory.ContainerRemote;
 import pneumaticCraft.common.inventory.ContainerSecurityStationHacking;
 import pneumaticCraft.common.inventory.ContainerSecurityStationInventory;
@@ -82,6 +84,7 @@ import pneumaticCraft.common.tileentity.TileEntityPressureChamberInterface;
 import pneumaticCraft.common.tileentity.TileEntityPressureChamberValve;
 import pneumaticCraft.common.tileentity.TileEntityProgrammableController;
 import pneumaticCraft.common.tileentity.TileEntityProgrammer;
+import pneumaticCraft.common.tileentity.TileEntityRefinery;
 import pneumaticCraft.common.tileentity.TileEntitySecurityStation;
 import pneumaticCraft.common.tileentity.TileEntityUVLightBox;
 import pneumaticCraft.common.tileentity.TileEntityUniversalSensor;
@@ -134,6 +137,7 @@ public class CommonProxy implements IGuiHandler{
     public static final int GUI_ID_REMOTE_EDITOR = 35;
     public static final int GUI_ID_PROGRAMMABLE_CONTROLLER = 36;
     public static final int GUI_ID_GAS_LIFT = 37;
+    public static final int GUI_ID_REFINERY = 38;
 
     private final HackTickHandler serverHackTickHandler = new HackTickHandler();
 
@@ -227,6 +231,8 @@ public class CommonProxy implements IGuiHandler{
                 return new ContainerProgrammableController(player.inventory, (TileEntityProgrammableController)world.getTileEntity(x, y, z));
             case GUI_ID_GAS_LIFT:
                 return new ContainerGasLift(player.inventory, (TileEntityGasLift)world.getTileEntity(x, y, z));
+            case GUI_ID_REFINERY:
+                return new ContainerRefinery(player.inventory, (TileEntityRefinery)world.getTileEntity(x, y, z));
         }
         return ThirdPartyManager.instance().getServerGuiElement(ID, player, world, x, y, z);
     }
@@ -296,6 +302,8 @@ public class CommonProxy implements IGuiHandler{
                 return new GuiProgrammableController(player.inventory, (TileEntityProgrammableController)world.getTileEntity(x, y, z));
             case GUI_ID_GAS_LIFT:
                 return new GuiGasLift(player.inventory, (TileEntityGasLift)world.getTileEntity(x, y, z));
+            case GUI_ID_REFINERY:
+                return new GuiRefinery(player.inventory, (TileEntityRefinery)world.getTileEntity(x, y, z));
         }
         return ThirdPartyManager.instance().getClientGuiElement(ID, player, world, x, y, z);
     }

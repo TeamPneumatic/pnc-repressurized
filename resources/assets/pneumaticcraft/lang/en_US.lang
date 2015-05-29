@@ -175,6 +175,10 @@ item.networkComponent5.name=Network Node
 # Fluid
 fluid.plastic=Liquid Plastic
 fluid.EtchAcid=Etching Acid
+fluid.lpg=LPG
+fluid.gasoline=Gasoline
+fluid.kerosine=Kerosine
+fluid.diesel=Diesel
 
 # Tube Modules
 item.safetyTubeModule.name=Safety Tube Module

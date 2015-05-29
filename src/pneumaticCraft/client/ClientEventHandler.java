@@ -18,6 +18,7 @@ import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
+import net.minecraftforge.fluids.Fluid;
 import pneumaticCraft.api.item.IProgrammable;
 import pneumaticCraft.client.gui.IGuiDrone;
 import pneumaticCraft.common.Config;
@@ -84,6 +85,9 @@ public class ClientEventHandler{
     public void onTextureStitchEventPre(TextureStitchEvent.Pre event){
         if(event.map.getTextureType() == 0) {
             Fluids.plastic.setIcons(event.map.registerIcon("pneumaticcraft:plastic_still"), event.map.registerIcon("pneumaticcraft:plastic_flow"));
+            for(Fluid fluid : Fluids.textureRegisteredFluids) {
+                fluid.setIcons(event.map.registerIcon("pneumaticcraft:" + fluid.getName() + "_still"), event.map.registerIcon("pneumaticcraft:" + fluid.getName() + "_flow"));
+            }
             if(Fluids.isUsingNativeOil) {
                 Fluids.oil.setIcons(event.map.registerIcon("pneumaticcraft:oil_still"), event.map.registerIcon("pneumaticcraft:oil_flow"));
             }
