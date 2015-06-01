@@ -18,9 +18,14 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
+
+import org.apache.commons.lang3.tuple.Pair;
+
+import pneumaticCraft.api.tileentity.IPneumaticMachine;
 import pneumaticCraft.common.ai.ChunkPositionSorter;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.Itemss;
+import pneumaticCraft.common.network.DescSynced;
 import pneumaticCraft.common.network.GuiSynced;
 import pneumaticCraft.common.util.IOHelper;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
@@ -37,6 +42,8 @@ public class TileEntityGasLift extends TileEntityPneumaticBase implements IMinWo
     public int currentDepth;
     @GuiSynced
     public int redstoneMode, status, mode;
+    @DescSynced
+    public boolean[] sidesConnected = new boolean[6];
     private int workTimer;
     private int ticker;
     private List<ChunkPosition> pumpingLake;
@@ -49,6 +56,17 @@ public class TileEntityGasLift extends TileEntityPneumaticBase implements IMinWo
     @Override
     public boolean isConnectedTo(ForgeDirection d){
         return d != ForgeDirection.DOWN;
+    }
+
+    @Override
+    public void onNeighborTileUpdate(){
+        super.onNeighborTileUpdate();
+        List<Pair<ForgeDirection, IPneumaticMachine>> connections = getConnectedPneumatics();
+        for(int i = 0; i < sidesConnected.length; i++)
+            sidesConnected[i] = false;
+        for(Pair<ForgeDirection, IPneumaticMachine> entry : connections) {
+            sidesConnected[entry.getKey().ordinal()] = true;
+        }
     }
 
     @Override

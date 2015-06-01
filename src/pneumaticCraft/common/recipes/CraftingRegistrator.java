@@ -9,6 +9,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.RecipeSorter;
 import net.minecraftforge.oredict.RecipeSorter.Category;
@@ -19,6 +20,7 @@ import pneumaticCraft.api.recipe.PressureChamberRecipe;
 import pneumaticCraft.common.Config;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.block.tubes.ModuleRegistrator;
+import pneumaticCraft.common.fluid.Fluids;
 import pneumaticCraft.common.item.ItemNetworkComponents;
 import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.common.item.ItemProgrammingPuzzle;
@@ -170,6 +172,7 @@ public class CraftingRegistrator{
 
         addPressureChamberRecipes();
         addAssemblyRecipes();
+        addThermopneumaticProcessingPlantRecipes();
     }
 
     public static void addProgrammingPuzzleRecipes(){
@@ -261,5 +264,13 @@ public class CraftingRegistrator{
                 }
             }
         }
+    }
+
+    public static void addThermopneumaticProcessingPlantRecipes(){
+        PneumaticRecipeRegistry registry = PneumaticRecipeRegistry.getInstance();
+        registry.registerThermopneumaticProcessingPlantRecipe(new FluidStack(Fluids.lpg, 100), new ItemStack(Items.coal), new FluidStack(Fluids.plastic, 1000));
+        registry.registerThermopneumaticProcessingPlantRecipe(new FluidStack(Fluids.diesel, 100), null, new FluidStack(Fluids.kerosene, 60));
+        registry.registerThermopneumaticProcessingPlantRecipe(new FluidStack(Fluids.kerosene, 100), null, new FluidStack(Fluids.gasoline, 60));
+        registry.registerThermopneumaticProcessingPlantRecipe(new FluidStack(Fluids.gasoline, 100), null, new FluidStack(Fluids.lpg, 60));
     }
 }

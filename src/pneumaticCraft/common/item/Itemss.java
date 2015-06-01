@@ -83,7 +83,7 @@ public class Itemss{
         programmingPuzzle = new ItemProgrammingPuzzle().setUnlocalizedName("programmingPuzzle")/*.setTextureName("pneumaticcraft:programmingPuzzles/entityAttack")*/;
         advancedPCB = new ItemPneumatic(Textures.ITEM_ADVANCED_PCB).setUnlocalizedName("advancedPCB");
         remote = new ItemRemote("remote").setUnlocalizedName("remote");
-        seismicSensor = new ItemSeismicSensor().setUnlocalizedName("seismicSensor");
+        seismicSensor = new ItemSeismicSensor();
 
         registerItems();
 

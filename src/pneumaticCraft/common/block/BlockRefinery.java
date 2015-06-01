@@ -29,4 +29,9 @@ public class BlockRefinery extends BlockPneumaticCraftModeled{
     protected int getGuiID(){
         return CommonProxy.GUI_ID_REFINERY;
     }
+
+    @Override
+    public boolean isRotatable(){
+        return true;
+    }
 }

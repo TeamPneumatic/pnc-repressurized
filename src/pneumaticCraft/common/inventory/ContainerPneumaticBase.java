@@ -1,5 +1,6 @@
 package pneumaticCraft.common.inventory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -16,19 +17,22 @@ import cpw.mods.fml.common.network.simpleimpl.IMessage;
 public class ContainerPneumaticBase<Tile extends TileEntityBase> extends Container{
 
     public Tile te;
-    private final List<SyncedField> syncedFields;
+    private final List<SyncedField> syncedFields = new ArrayList<SyncedField>();
 
     public ContainerPneumaticBase(Tile te){
         this.te = te;
-        syncedFields = NetworkUtils.getSyncedFields(te, GuiSynced.class);
+        addSyncedFields(te);
     }
 
     protected void addSyncedField(SyncedField field){
         syncedFields.add(field);
+        field.setLazy(false);
     }
 
     protected void addSyncedFields(Object annotatedObject){
-        syncedFields.addAll(NetworkUtils.getSyncedFields(annotatedObject, GuiSynced.class));
+        List<SyncedField> fields = NetworkUtils.getSyncedFields(annotatedObject, GuiSynced.class);
+        for(SyncedField field : fields)
+            addSyncedField(field);
     }
 
     public void updateField(int index, Object value){

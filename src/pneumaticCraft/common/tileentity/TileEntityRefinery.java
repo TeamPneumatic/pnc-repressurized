@@ -14,7 +14,9 @@ import pneumaticCraft.api.IHeatExchangerLogic;
 import pneumaticCraft.api.PneumaticRegistry;
 import pneumaticCraft.api.tileentity.IHeatExchanger;
 import pneumaticCraft.common.fluid.Fluids;
+import pneumaticCraft.common.network.DescSynced;
 import pneumaticCraft.common.network.GuiSynced;
+import pneumaticCraft.common.network.LazySynced;
 import pneumaticCraft.lib.PneumaticValues;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -22,11 +24,17 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class TileEntityRefinery extends TileEntityBase implements IFluidHandler, IHeatExchanger{
 
     @GuiSynced
+    @DescSynced
+    @LazySynced
     private final FluidTank oilTank = new FluidTank(PneumaticValues.NORMAL_TANK_CAPACITY);
     @GuiSynced
+    @DescSynced
+    @LazySynced
     private final FluidTank outputTank = new FluidTank(PneumaticValues.NORMAL_TANK_CAPACITY);
     @GuiSynced
     private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatExchangerLogic();
+    @DescSynced
+    private int oilTankAmount, outputTankAmount;//amount divided by 100 to decrease network load.
 
     /**
      * The amounts of LPG, Gasoline, Kerosine and Diesel produced per 10mL Oil, depending on how many refineries are stacked on top of eachother.
@@ -38,29 +46,33 @@ public class TileEntityRefinery extends TileEntityBase implements IFluidHandler,
      * Diesel            | 4 | 2 | 2
      */
     public static final int[][] REFINING_TABLE = new int[][]{{4, 0, 0, 2}, {2, 3, 0, 2}, {2, 3, 3, 2}};
-    private final Fluid[] refiningFluids = new Fluid[]{Fluids.diesel, Fluids.kerosine, Fluids.gasoline, Fluids.lpg};
+    private final Fluid[] refiningFluids = new Fluid[]{Fluids.diesel, Fluids.kerosene, Fluids.gasoline, Fluids.lpg};
 
     public TileEntityRefinery(){
-        setUpgradeSlots(0, 1, 2, 3);
+        //  setUpgradeSlots(0, 1, 2, 3);
     }
 
     @Override
     public void updateEntity(){
         super.updateEntity();
-        if(!worldObj.isRemote && isMaster() && worldObj.getWorldTime() % 10 == 0 && oilTank.getFluidAmount() >= 10 && heatExchanger.getTemperature() >= 573D) {
+        if(!worldObj.isRemote) {
+            oilTankAmount = oilTank.getFluidAmount() / 100;
+            outputTankAmount = outputTank.getFluidAmount() / 100;
+            if(isMaster() && worldObj.getWorldTime() % 10 == 0 && oilTank.getFluidAmount() >= 10 && heatExchanger.getTemperature() >= 573D) {
 
-            List<TileEntityRefinery> refineries = new ArrayList<TileEntityRefinery>();
-            refineries.add(this);
-            TileEntityRefinery refinery = this;
-            while(refinery.getTileCache()[ForgeDirection.UP.ordinal()].getTileEntity() instanceof TileEntityRefinery) {
-                refinery = (TileEntityRefinery)refinery.getTileCache()[ForgeDirection.UP.ordinal()].getTileEntity();
-                refineries.add(refinery);
-            }
+                List<TileEntityRefinery> refineries = new ArrayList<TileEntityRefinery>();
+                refineries.add(this);
+                TileEntityRefinery refinery = this;
+                while(refinery.getTileCache()[ForgeDirection.UP.ordinal()].getTileEntity() instanceof TileEntityRefinery) {
+                    refinery = (TileEntityRefinery)refinery.getTileCache()[ForgeDirection.UP.ordinal()].getTileEntity();
+                    refineries.add(refinery);
+                }
 
-            if(refineries.size() > 1 && refineries.size() <= refiningFluids.length && refine(refineries, true)) {
-                refine(refineries, false);
-                oilTank.drain(10, true);
-                heatExchanger.addHeat(-10);
+                if(refineries.size() > 1 && refineries.size() <= refiningFluids.length && refine(refineries, true)) {
+                    refine(refineries, false);
+                    oilTank.drain(10, true);
+                    heatExchanger.addHeat(-10);
+                }
             }
         }
     }

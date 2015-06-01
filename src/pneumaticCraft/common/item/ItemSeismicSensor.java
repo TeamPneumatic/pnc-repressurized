@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentTranslation;
@@ -15,19 +14,11 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.worldgen.OilTracker;
-import pneumaticCraft.lib.Textures;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class ItemSeismicSensor extends ItemPneumatic{
     public ItemSeismicSensor(){
+        super("seismicSensor");
         setMaxStackSize(1);
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public void registerIcons(IIconRegister par1IconRegister){
-        itemIcon = par1IconRegister.registerIcon(Textures.ITEM_GPS_TOOL);
     }
 
     @Override
@@ -37,7 +28,7 @@ public class ItemSeismicSensor extends ItemPneumatic{
             boolean containsOil = OilTracker.containsReserves(world, x, z);
             if(containsOil) {
                 int testingY = y;
-                player.addChatComponentMessage(new ChatComponentTranslation(EnumChatFormatting.GREEN + "[Seismic Sensor] Potentientally oil found! Scanning..." + containsOil));
+                player.addChatComponentMessage(new ChatComponentTranslation("message.seismicSensor.foundOil"));
                 while(testingY > 0) {
                     testingY--;
                     if(world.getBlock(x, testingY, z) == Blockss.oil) {
@@ -53,15 +44,13 @@ public class ItemSeismicSensor extends ItemPneumatic{
                                 }
                             }
                         }
-                        player.addChatComponentMessage(new ChatComponentTranslation(EnumChatFormatting.GREEN + "[Seismic Sensor] Found oil %sm below. It contains about %s buckets of oil.", y - testingY, oilPositions.size() / 10 * 10));
+                        player.addChatComponentMessage(new ChatComponentTranslation("message.seismicSensor.foundOilDetails", EnumChatFormatting.GREEN.toString() + (y - testingY), EnumChatFormatting.GREEN.toString() + oilPositions.size() / 10 * 10));
                         return true;
                     }
                 }
-                player.addChatComponentMessage(new ChatComponentTranslation(EnumChatFormatting.GREEN + "[Seismic Sensor] No oil found"));
-
+                player.addChatComponentMessage(new ChatComponentTranslation("message.seismicSensor.noOilFound"));
             } else {
-                player.addChatComponentMessage(new ChatComponentTranslation(EnumChatFormatting.GREEN + "[Seismic Sensor] No oil found"));
-
+                player.addChatComponentMessage(new ChatComponentTranslation("message.seismicSensor.noOilFound"));
             }
         }
         return true; // we don't want to use the item.

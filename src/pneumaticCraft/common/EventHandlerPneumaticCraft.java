@@ -1,6 +1,7 @@
 package pneumaticCraft.common;
 
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Random;
 
 import net.minecraft.block.Block;
@@ -50,6 +51,7 @@ import pneumaticCraft.common.ai.IDroneBase;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.block.pneumaticPlants.BlockPlants;
 import pneumaticCraft.common.block.pneumaticPlants.BlockPneumaticPlantBase;
+import pneumaticCraft.common.fluid.Fluids;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.common.item.ItemPneumaticArmor;
@@ -191,7 +193,8 @@ public class EventHandlerPneumaticCraft{
 
     @SubscribeEvent
     public void FillBucket(FillBucketEvent event){
-        if(event.current == null || event.current.getItem() != Items.bucket) return;
+        MovingObjectPosition p = event.target;
+        if(event.current == null || event.current.getItem() != Items.bucket || event.world.getBlockMetadata(p.blockX, p.blockY, p.blockZ) != 0) return;
         ItemStack result = attemptFill(event.world, event.target);
         if(result != null) {
             event.result = result;
@@ -202,10 +205,13 @@ public class EventHandlerPneumaticCraft{
     private ItemStack attemptFill(World world, MovingObjectPosition p){
         Block id = world.getBlock(p.blockX, p.blockY, p.blockZ);
         if(id == Blockss.etchingAcid) {
-            if(world.getBlockMetadata(p.blockX, p.blockY, p.blockZ) == 0) // Check that it is a source block
-            {
-                world.setBlock(p.blockX, p.blockY, p.blockZ, net.minecraft.init.Blocks.air); // Remove the fluid block
-                return new ItemStack(Itemss.bucketEtchingAcid); // Return the filled bucked item here.
+            world.setBlock(p.blockX, p.blockY, p.blockZ, net.minecraft.init.Blocks.air); // Remove the fluid block
+            return new ItemStack(Itemss.bucketEtchingAcid); // Return the filled bucked item here.
+        }
+        for(Map.Entry<Block, Item> entry : Fluids.fluidBlockToBucketMap.entrySet()) {
+            if(id == entry.getKey()) {
+                world.setBlock(p.blockX, p.blockY, p.blockZ, Blocks.air);
+                return new ItemStack(entry.getValue());
             }
         }
         return null;

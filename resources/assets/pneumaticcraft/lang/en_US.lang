@@ -61,6 +61,12 @@ tile.vortexTube.name=Vortex Tube
 tile.etchingAcid.name=Etching Acid
 tile.programmableController.name=Programmable Controller
 tile.gasLift.name=Gas Lift
+tile.refinery.name=Refinery
+tile.thermopneumaticProcessingPlant.name=Thermopneumatic Processing Plant
+tile.gasoline.name=Gasoline
+tile.lpg.name=LPG
+tile.kerosene.name=Kerosene
+tile.diesel.name=Diesel
 
 tile.monsterStoneEgg.name=Silverfish
 
@@ -98,6 +104,11 @@ item.drone.name=Drone
 item.programmingPuzzle.name=Programming Puzzle
 item.advancedPCB.name=Advanced PCB
 item.remote.name=Remote
+item.seismicSensor.name=Seismic Sensor
+item.lpgBucket.name=LPG Bucket
+item.gasolineBucket.name=Gasoline Bucket
+item.keroseneBucket.name=Kerosene Bucket
+item.dieselBucket.name=Diesel Bucket
 
 item.plasticPlant0.name=Squid Plant Seeds
 item.plasticPlant1.name=Fire Flower Seeds
@@ -177,7 +188,7 @@ fluid.plastic=Liquid Plastic
 fluid.EtchAcid=Etching Acid
 fluid.lpg=LPG
 fluid.gasoline=Gasoline
-fluid.kerosine=Kerosine
+fluid.kerosene=Kerosene
 fluid.diesel=Diesel
 
 # Tube Modules
@@ -615,6 +626,9 @@ itemGroup.tabPneumaticCraft=PneumaticCraft
 message.date.ironman=Today an Iron Man movie went in premiere!
 message.securityStation.accessPrevented=§cAccess is prevented by %s Security Station(s).
 message.securityStation.stationPlacementPrevented=§cYou can't place a Security Station here: %s Security Station(s) are too close by!
+message.seismicSensor.foundOil=§a[Seismic Sensor] Potentientally oil found! Scanning...
+message.seismicSensor.foundOilDetails=§a[Seismic Sensor] Found oil %s§am below. It contains about %s§a buckets of oil.
+message.seismicSensor.noOilFound=§c[Seismic Sensor] No oil found.
 
 # Death Messages
 death.attack.pressure1=%1$s is as flat as a pancake!

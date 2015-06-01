@@ -16,6 +16,7 @@ import pneumaticCraft.api.client.pneumaticHelmet.IHackableEntity;
 import pneumaticCraft.api.drone.ICustomBlockInteract;
 import pneumaticCraft.api.drone.IPathfindHandler;
 import pneumaticCraft.api.item.IInventoryItem;
+import pneumaticCraft.api.recipe.IPneumaticRecipeRegistry;
 
 /**
  * This class can be used to register and access various things to and from the mod.
@@ -37,6 +38,8 @@ public class PneumaticRegistry{
     }
 
     public static interface IPneumaticCraftInterface{
+
+        public IPneumaticRecipeRegistry getRecipeRegistry();
 
         /*
          * ------------- Pneumatic Helmet --------------

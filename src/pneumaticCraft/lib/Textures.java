@@ -54,6 +54,9 @@ public class Textures{
     public static final ResourceLocation MODEL_PNEUMATIC_DYNAMO_OFF = new ResourceLocation(MODEL_LOCATION + "pneumaticDynamoOff.png");
     public static final ResourceLocation MODEL_PLASTIC_MIXER = new ResourceLocation(MODEL_LOCATION + "plasticMixer.png");
     public static final ResourceLocation MODEL_HEAT_SINK = new ResourceLocation(MODEL_LOCATION + "heatSink.png");
+    public static final ResourceLocation MODEL_THERMOPNEUMATIC_PROCESSING_PLANT = new ResourceLocation(MODEL_LOCATION + "thermopneumaticProcessingPlant.png");
+    public static final ResourceLocation MODEL_REFINERY = new ResourceLocation(MODEL_LOCATION + "refinery.png");
+    public static final ResourceLocation MODEL_GAS_LIFT = new ResourceLocation(MODEL_LOCATION + "gasLift.png");
 
     public static final ResourceLocation MODEL_FLOW_DETECTOR = new ResourceLocation(TUBE_MODULE_MODEL_LOCATION + "flowDetector.png");
     public static final ResourceLocation MODEL_GAUGE = new ResourceLocation(TUBE_MODULE_MODEL_LOCATION + "gaugeModule.png");
@@ -242,6 +245,7 @@ public class Textures{
     public static final String GUI_PROGRAMMABLE_CONTROLLER = GUI_LOCATION + "GuiProgrammableController.png";
     public static final String GUI_GAS_LIFT = GUI_LOCATION + "GuiGasLift.png";
     public static final String GUI_REFINERY = GUI_LOCATION + "GuiRefinery.png";
+    public static final String GUI_THERMOPNEUMATIC_PROCESSING_PLANT = GUI_LOCATION + "GuiThermopneumaticProcessingPlant.png";
     public static final ResourceLocation GUI_WIDGET_OPTIONS = new ResourceLocation(GUI_WIDGET_OPTIONS_STRING);
     public static final ResourceLocation GUI_WIDGET_AREA = new ResourceLocation(GUI_LOCATION + "GuiWidgetArea.png");
     public static final ResourceLocation GUI_PASTEBIN = new ResourceLocation(GUI_LOCATION + "GuiPastebin.png");

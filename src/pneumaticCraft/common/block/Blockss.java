@@ -89,6 +89,7 @@ public class Blockss{
     public static Block oil;
     public static Block gasLift;
     public static Block refinery;
+    public static Block thermopneumaticProcessingPlant;
 
     public static void init(){
         pressureTube = new BlockPressureTube(Material.iron, PneumaticValues.DANGER_PRESSURE_PRESSURE_TUBE, PneumaticValues.MAX_PRESSURE_PRESSURE_TUBE, PneumaticValues.VOLUME_PRESSURE_TUBE).setHardness(3.0F).setResistance(3.0F).setBlockName("pressureTube");
@@ -148,6 +149,7 @@ public class Blockss{
         if(Fluids.oil.getBlock() == null) oil = new BlockFluidOil().setBlockName("oil");
         gasLift = new BlockGasLift(Material.iron).setHardness(3.0F).setBlockName("gasLift");
         refinery = new BlockRefinery(Material.iron).setHardness(3.0F).setBlockName("refinery");
+        thermopneumaticProcessingPlant = new BlockThermopneumaticProcessingPlant(Material.iron).setHardness(3.0F).setBlockName("thermopneumaticProcessingPlant");
 
         registerBlocks();
 
@@ -214,6 +216,7 @@ public class Blockss{
         if(oil != null) registerBlock(oil);
         registerBlock(gasLift);
         registerBlock(refinery);
+        registerBlock(thermopneumaticProcessingPlant);
     }
 
     public static void registerBlock(Block block){
