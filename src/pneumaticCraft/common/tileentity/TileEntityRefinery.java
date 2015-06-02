@@ -64,26 +64,29 @@ public class TileEntityRefinery extends TileEntityBase implements IFluidHandler,
         if(!worldObj.isRemote) {
             oilTankAmount = oilTank.getFluidAmount() / 100;
             outputTankAmount = outputTank.getFluidAmount() / 100;
-            workTimer += Math.max(0, heatExchanger.getTemperature() - 395);
-            while(isMaster() && redstoneAllows() && workTimer > 200 && oilTank.getFluidAmount() >= 10) {
-                workTimer -= 200;
-                List<TileEntityRefinery> refineries = new ArrayList<TileEntityRefinery>();
-                refineries.add(this);
-                TileEntityRefinery refinery = this;
-                while(refinery.getTileCache()[ForgeDirection.UP.ordinal()].getTileEntity() instanceof TileEntityRefinery) {
-                    refinery = (TileEntityRefinery)refinery.getTileCache()[ForgeDirection.UP.ordinal()].getTileEntity();
-                    refineries.add(refinery);
-                }
 
-                if(refineries.size() > 1 && refineries.size() <= refiningFluids.length && refine(refineries, true)) {
-                    refine(refineries, false);
-                    oilTank.drain(10, true);
-                    heatExchanger.addHeat(-5);
-                    for(int i = 0; i < 5; i++)
-                        NetworkHandler.sendToAllAround(new PacketSpawnParticle("largesmoke", xCoord + worldObj.rand.nextDouble(), yCoord + refineries.size(), zCoord + worldObj.rand.nextDouble(), 0, 0, 0), worldObj);
-                } else {
-                    workTimer = 0;
-                    break;
+            if(isMaster() && redstoneAllows() && oilTank.getFluidAmount() >= 10) {
+                workTimer += Math.max(0, heatExchanger.getTemperature() - 395);
+                while(workTimer >= 200 && oilTank.getFluidAmount() >= 10) {
+                    workTimer -= 200;
+                    List<TileEntityRefinery> refineries = new ArrayList<TileEntityRefinery>();
+                    refineries.add(this);
+                    TileEntityRefinery refinery = this;
+                    while(refinery.getTileCache()[ForgeDirection.UP.ordinal()].getTileEntity() instanceof TileEntityRefinery) {
+                        refinery = (TileEntityRefinery)refinery.getTileCache()[ForgeDirection.UP.ordinal()].getTileEntity();
+                        refineries.add(refinery);
+                    }
+
+                    if(refineries.size() > 1 && refineries.size() <= refiningFluids.length && refine(refineries, true)) {
+                        refine(refineries, false);
+                        oilTank.drain(10, true);
+                        heatExchanger.addHeat(-5);
+                        for(int i = 0; i < 5; i++)
+                            NetworkHandler.sendToAllAround(new PacketSpawnParticle("largesmoke", xCoord + worldObj.rand.nextDouble(), yCoord + refineries.size(), zCoord + worldObj.rand.nextDouble(), 0, 0, 0), worldObj);
+                    } else {
+                        workTimer = 0;
+                        break;
+                    }
                 }
             }
         }
