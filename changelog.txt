@@ -1,1 +1,2 @@
 -Added Programmable Controller!
+-Change to OpenComputers integration: Every block except for the Drone Interface now requires an Adapter placed next to it for the block to provide the functions it used to provide.
