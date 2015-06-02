@@ -8,6 +8,7 @@ import java.util.Map;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.MaterialLiquid;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBucket;
@@ -88,10 +89,18 @@ public class Fluids{
             Block fluidBlock = fluid.getBlock();
             if(fluidBlock == null) {
                 fluidBlock = new BlockFluidClassic(fluid, new MaterialLiquid(MapColor.waterColor)){
+                    private IIcon flowingIcon, stillIcon;
+
+                    @Override
+                    public void registerBlockIcons(IIconRegister register){
+                        flowingIcon = register.registerIcon("pneumaticcraft:" + fluid.getName() + "_flow");
+                        stillIcon = register.registerIcon("pneumaticcraft:" + fluid.getName() + "_still");
+                    }
+
                     @Override
                     @SideOnly(Side.CLIENT)
                     public IIcon getIcon(int side, int meta){
-                        return side != 0 && side != 1 ? fluid.getFlowingIcon() : fluid.getStillIcon();
+                        return side != 0 && side != 1 ? flowingIcon : stillIcon;
                     }
                 }.setBlockName(fluid.getName());
                 Blockss.registerBlock(fluidBlock);

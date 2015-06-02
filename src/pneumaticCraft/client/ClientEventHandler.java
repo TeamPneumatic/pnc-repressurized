@@ -90,6 +90,13 @@ public class ClientEventHandler{
     @SubscribeEvent
     public void onTextureStitchEventPost(TextureStitchEvent.Post event){
         Fluids.EtchAcid.setIcons(Blockss.etchingAcid.getIcon(0, 0), Blockss.etchingAcid.getIcon(1, 0));
+        for(int i = 0; i < Fluids.fluids.size(); i++) {
+            if(Fluids.nativeFluids.get(i)) {
+                Fluid fluid = Fluids.fluids.get(i);
+                fluid.setIcons(fluid.getBlock().getIcon(0, 0), fluid.getBlock().getIcon(1, 0));
+                //fluid.setIcons(event.map.registerIcon("pneumaticcraft:" + fluid.getName() + "_still"), event.map.registerIcon("pneumaticcraft:" + fluid.getName() + "_flow"));
+            }
+        }
 
     }
 
@@ -97,12 +104,7 @@ public class ClientEventHandler{
     public void onTextureStitchEventPre(TextureStitchEvent.Pre event){
         if(event.map.getTextureType() == 0) {
             Fluids.plastic.setIcons(event.map.registerIcon("pneumaticcraft:plastic_still"), event.map.registerIcon("pneumaticcraft:plastic_flow"));
-            for(int i = 0; i < Fluids.fluids.size(); i++) {
-                if(Fluids.nativeFluids.get(i)) {
-                    Fluid fluid = Fluids.fluids.get(i);
-                    fluid.setIcons(event.map.registerIcon("pneumaticcraft:" + fluid.getName() + "_still"), event.map.registerIcon("pneumaticcraft:" + fluid.getName() + "_flow"));
-                }
-            }
+
         }
     }
 

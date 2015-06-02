@@ -191,6 +191,7 @@ fluid.lpg=LPG
 fluid.fuel=Gasoline
 fluid.kerosene=Kerosene
 fluid.diesel=Diesel
+fluid.oil=Oil
 
 # Tube Modules
 item.safetyTubeModule.name=Safety Tube Module
