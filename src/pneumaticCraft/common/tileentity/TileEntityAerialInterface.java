@@ -228,7 +228,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
                         ItemStack remainingItem = itemStack.onFoodEaten(player.worldObj, player);
                         remainingItem = ForgeEventFactory.onItemUseFinish(player, itemStack, 0, remainingItem);
                         if(remainingItem != null && remainingItem.stackSize > 0 && (remainingItem != itemStack || remainingItem.stackSize != startValue)) {
-                            if(!player.inventory.addItemStackToInventory(remainingItem)) {
+                            if(!player.inventory.addItemStackToInventory(remainingItem) && remainingItem.stackSize > 0) {
                                 player.dropPlayerItemWithRandomChoice(remainingItem, false);
                             }
                         }
