@@ -12,6 +12,8 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.Packet;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.IFluidHandler;
 import pneumaticCraft.api.IHeatExchangerLogic;
 import pneumaticCraft.api.tileentity.IHeatExchanger;
 import pneumaticCraft.api.tileentity.IPneumaticMachine;
@@ -364,5 +366,22 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
      */
     protected ForgeDirection[] getConnectedHeatExchangerSides(){
         return new ForgeDirection[0];
+    }
+
+    public void autoExportLiquid(){
+        FluidStack extractedStack = ((IFluidHandler)this).drain(ForgeDirection.UNKNOWN, Integer.MAX_VALUE, false);
+        if(extractedStack != null) {
+            for(ForgeDirection d : ForgeDirection.VALID_DIRECTIONS) {
+                TileEntity te = getTileCache()[d.ordinal()].getTileEntity();
+                if(te instanceof IFluidHandler) {
+                    if(((IFluidHandler)te).canFill(d.getOpposite(), extractedStack.getFluid())) {
+                        int filledAmount = ((IFluidHandler)te).fill(d.getOpposite(), extractedStack, true);
+                        ((IFluidHandler)this).drain(ForgeDirection.UNKNOWN, filledAmount, true);
+                        extractedStack.amount -= filledAmount;
+                        if(extractedStack.amount <= 0) break;
+                    }
+                }
+            }
+        }
     }
 }

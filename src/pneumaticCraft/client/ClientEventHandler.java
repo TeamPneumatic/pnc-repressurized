@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.entity.RenderBiped;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
@@ -29,10 +30,21 @@ import pneumaticCraft.common.item.ItemProgrammingPuzzle;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.common.tileentity.TileEntityProgrammer;
+import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
 
 public class ClientEventHandler{
     public static float playerRenderPartialTick;
+    private static boolean firstTick = true;
+
+    @SubscribeEvent
+    public void onPlayerJoin(TickEvent.PlayerTickEvent event){
+        if(Config.shouldDisplayChangeNotification && firstTick && event.player.worldObj.isRemote && event.player == FMLClientHandler.instance().getClientPlayerEntity()) {
+            event.player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.GREEN + "[PneumaticCraft] Disabled world generation of plants and plant mob drops in your config automatically, oil is turned on as replacement. This is only done once, you can change it as you wish now."));
+            firstTick = false;
+        }
+    }
 
     @SubscribeEvent
     public void onItemTooltip(ItemTooltipEvent event){
@@ -85,11 +97,11 @@ public class ClientEventHandler{
     public void onTextureStitchEventPre(TextureStitchEvent.Pre event){
         if(event.map.getTextureType() == 0) {
             Fluids.plastic.setIcons(event.map.registerIcon("pneumaticcraft:plastic_still"), event.map.registerIcon("pneumaticcraft:plastic_flow"));
-            for(Fluid fluid : Fluids.textureRegisteredFluids) {
-                fluid.setIcons(event.map.registerIcon("pneumaticcraft:" + fluid.getName() + "_still"), event.map.registerIcon("pneumaticcraft:" + fluid.getName() + "_flow"));
-            }
-            if(Fluids.isUsingNativeOil) {
-                Fluids.oil.setIcons(event.map.registerIcon("pneumaticcraft:oil_still"), event.map.registerIcon("pneumaticcraft:oil_flow"));
+            for(int i = 0; i < Fluids.fluids.size(); i++) {
+                if(Fluids.nativeFluids.get(i)) {
+                    Fluid fluid = Fluids.fluids.get(i);
+                    fluid.setIcons(event.map.registerIcon("pneumaticcraft:" + fluid.getName() + "_still"), event.map.registerIcon("pneumaticcraft:" + fluid.getName() + "_flow"));
+                }
             }
         }
     }

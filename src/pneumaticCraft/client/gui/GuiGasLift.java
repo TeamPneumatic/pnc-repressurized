@@ -26,7 +26,7 @@ public class GuiGasLift extends GuiPneumaticContainerBase<TileEntityGasLift>{
     @Override
     public void initGui(){
         super.initGui();
-        addWidget(new WidgetTank(0, guiLeft + 80, guiTop + 15, te.getTank()));
+        addWidget(new WidgetTank(-1, guiLeft + 80, guiTop + 15, te.getTank()));
         statusStat = addAnimatedStat("gui.tab.status", new ItemStack(Blockss.gasLift), 0xFFFFAA00, false);
 
         GuiAnimatedStat optionStat = addAnimatedStat("gui.tab.gasLift.mode", new ItemStack(Blockss.pressureTube), 0xFFFFCC00, false);
@@ -52,6 +52,13 @@ public class GuiGasLift extends GuiPneumaticContainerBase<TileEntityGasLift>{
         button.setTooltipText(I18n.format("gui.tab.gasLift.mode.drawIn"));
         optionStat.addWidget(button);
         modeButtons[2] = button;
+    }
+
+    @Override
+    protected void drawGuiContainerForegroundLayer(int x, int y){
+
+        super.drawGuiContainerForegroundLayer(x, y);
+        fontRendererObj.drawString("Upgr.", 17, 19, 4210752);
     }
 
     @Override
@@ -81,6 +88,9 @@ public class GuiGasLift extends GuiPneumaticContainerBase<TileEntityGasLift>{
                 break;
             case 2:
                 status += "diggingDown";
+                break;
+            case 3:
+                status += "retracting";
         }
         textList.add(I18n.format(status, te.getTank().getFluid() != null ? te.getTank().getFluid().getLocalizedName() : ""));
         textList.add(I18n.format("gui.tab.status.gasLift.currentDepth", te.currentDepth));

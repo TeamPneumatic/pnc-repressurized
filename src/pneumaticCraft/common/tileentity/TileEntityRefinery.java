@@ -3,6 +3,7 @@ package pneumaticCraft.common.tileentity;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
@@ -17,11 +18,13 @@ import pneumaticCraft.common.fluid.Fluids;
 import pneumaticCraft.common.network.DescSynced;
 import pneumaticCraft.common.network.GuiSynced;
 import pneumaticCraft.common.network.LazySynced;
+import pneumaticCraft.common.network.NetworkHandler;
+import pneumaticCraft.common.network.PacketSpawnParticle;
 import pneumaticCraft.lib.PneumaticValues;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityRefinery extends TileEntityBase implements IFluidHandler, IHeatExchanger{
+public class TileEntityRefinery extends TileEntityBase implements IFluidHandler, IHeatExchanger, IRedstoneControlled{
 
     @GuiSynced
     @DescSynced
@@ -35,6 +38,9 @@ public class TileEntityRefinery extends TileEntityBase implements IFluidHandler,
     private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatExchangerLogic();
     @DescSynced
     private int oilTankAmount, outputTankAmount;//amount divided by 100 to decrease network load.
+    @GuiSynced
+    private int redstoneMode;
+    private int workTimer = 0;
 
     /**
      * The amounts of LPG, Gasoline, Kerosine and Diesel produced per 10mL Oil, depending on how many refineries are stacked on top of eachother.
@@ -58,8 +64,9 @@ public class TileEntityRefinery extends TileEntityBase implements IFluidHandler,
         if(!worldObj.isRemote) {
             oilTankAmount = oilTank.getFluidAmount() / 100;
             outputTankAmount = outputTank.getFluidAmount() / 100;
-            if(isMaster() && worldObj.getWorldTime() % 10 == 0 && oilTank.getFluidAmount() >= 10 && heatExchanger.getTemperature() >= 573D) {
-
+            workTimer += Math.max(0, heatExchanger.getTemperature() - 395);
+            while(isMaster() && redstoneAllows() && workTimer > 200 && oilTank.getFluidAmount() >= 10) {
+                workTimer -= 200;
                 List<TileEntityRefinery> refineries = new ArrayList<TileEntityRefinery>();
                 refineries.add(this);
                 TileEntityRefinery refinery = this;
@@ -71,13 +78,18 @@ public class TileEntityRefinery extends TileEntityBase implements IFluidHandler,
                 if(refineries.size() > 1 && refineries.size() <= refiningFluids.length && refine(refineries, true)) {
                     refine(refineries, false);
                     oilTank.drain(10, true);
-                    heatExchanger.addHeat(-10);
+                    heatExchanger.addHeat(-5);
+                    for(int i = 0; i < 5; i++)
+                        NetworkHandler.sendToAllAround(new PacketSpawnParticle("largesmoke", xCoord + worldObj.rand.nextDouble(), yCoord + refineries.size(), zCoord + worldObj.rand.nextDouble(), 0, 0, 0), worldObj);
+                } else {
+                    workTimer = 0;
+                    break;
                 }
             }
         }
     }
 
-    private boolean refine(List<TileEntityRefinery> refineries, boolean simulate){
+    public boolean refine(List<TileEntityRefinery> refineries, boolean simulate){
         int[] outputTable = REFINING_TABLE[refineries.size() - 2];
 
         int i = 0;
@@ -157,6 +169,8 @@ public class TileEntityRefinery extends TileEntityBase implements IFluidHandler,
         tankTag = new NBTTagCompound();
         outputTank.writeToNBT(tankTag);
         tag.setTag("outputTank", tankTag);
+
+        tag.setByte("redstoneMode", (byte)redstoneMode);
     }
 
     @Override
@@ -164,10 +178,24 @@ public class TileEntityRefinery extends TileEntityBase implements IFluidHandler,
         super.readFromNBT(tag);
         oilTank.readFromNBT(tag.getCompoundTag("oilTank"));
         outputTank.readFromNBT(tag.getCompoundTag("outputTank"));
+        redstoneMode = tag.getByte("redstoneMode");
     }
 
     @Override
     public IHeatExchangerLogic getHeatExchangerLogic(ForgeDirection side){
         return heatExchanger;
+    }
+
+    @Override
+    public int getRedstoneMode(){
+        return redstoneMode;
+    }
+
+    @Override
+    public void handleGUIButtonPress(int buttonID, EntityPlayer player){
+        if(buttonID == 0) {
+            redstoneMode++;
+            if(redstoneMode > 2) redstoneMode = 0;
+        }
     }
 }

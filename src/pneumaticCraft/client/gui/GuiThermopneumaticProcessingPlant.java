@@ -1,27 +1,25 @@
 package pneumaticCraft.client.gui;
 
 import java.awt.Point;
-import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.lwjgl.opengl.GL11;
 
-import pneumaticCraft.client.gui.widget.GuiAnimatedStat;
 import pneumaticCraft.client.gui.widget.WidgetTank;
 import pneumaticCraft.client.gui.widget.WidgetTemperature;
-import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.inventory.ContainerThermopneumaticProcessingPlant;
 import pneumaticCraft.common.tileentity.TileEntityThermopneumaticProcessingPlant;
 import pneumaticCraft.lib.Textures;
 
 public class GuiThermopneumaticProcessingPlant extends
         GuiPneumaticContainerBase<TileEntityThermopneumaticProcessingPlant>{
-    private GuiAnimatedStat statusStat;
+
+    private WidgetTemperature tempWidget;
 
     public GuiThermopneumaticProcessingPlant(InventoryPlayer player, TileEntityThermopneumaticProcessingPlant te){
         super(new ContainerThermopneumaticProcessingPlant(player, te), te, Textures.GUI_THERMOPNEUMATIC_PROCESSING_PLANT);
@@ -31,16 +29,15 @@ public class GuiThermopneumaticProcessingPlant extends
     @Override
     public void initGui(){
         super.initGui();
-        addWidget(new WidgetTank(0, guiLeft + 13, guiTop + 15, te.getInputTank()));
-        addWidget(new WidgetTank(0, guiLeft + 79, guiTop + 15, te.getOutputTank()));
-        addWidget(new WidgetTemperature(0, guiLeft + 98, guiTop + 15, 273, 673, te.getHeatExchangerLogic(ForgeDirection.UNKNOWN), 573));
-        statusStat = addAnimatedStat("gui.tab.hopperStatus", new ItemStack(Blockss.omnidirectionalHopper), 0xFFFFAA00, false);
+        addWidget(new WidgetTank(-1, guiLeft + 13, guiTop + 15, te.getInputTank()));
+        addWidget(new WidgetTank(-1, guiLeft + 79, guiTop + 15, te.getOutputTank()));
+        addWidget(tempWidget = new WidgetTemperature(-1, guiLeft + 98, guiTop + 15, 273, 673, te.getHeatExchangerLogic(ForgeDirection.UNKNOWN), (int)te.requiredTemperature));
     }
 
     @Override
     public void updateScreen(){
+        tempWidget.setScales((int)te.requiredTemperature);
         super.updateScreen();
-        statusStat.setText(getStatus());
     }
 
     @Override
@@ -55,6 +52,7 @@ public class GuiThermopneumaticProcessingPlant extends
 
     @Override
     protected void drawGuiContainerForegroundLayer(int x, int y){
+        fontRendererObj.drawString(I18n.format("gui.tab.upgrades"), 91, 83, 4210752);
         String containerName = te.hasCustomInventoryName() ? te.getInventoryName() : StatCollector.translateToLocal(te.getInventoryName() + ".name");
         GL11.glPushMatrix();
         GL11.glScaled(0.97, 0.97, 1);
@@ -76,9 +74,15 @@ public class GuiThermopneumaticProcessingPlant extends
         return new Point(xStart + xSize * 3 / 4 + 10, yStart + ySize * 1 / 4);
     }
 
-    private List<String> getStatus(){
-        List<String> textList = new ArrayList<String>();
+    @Override
+    public void addProblems(List<String> curInfo){
+        super.addProblems(curInfo);
 
-        return textList;
+        if(!te.hasRecipe) {
+            curInfo.add("gui.tab.problems.thermopneumaticProcessingPlant.noSufficientIngredients");
+        } else if(te.getHeatExchangerLogic(ForgeDirection.UNKNOWN).getTemperature() < te.requiredTemperature) {
+            curInfo.add("gui.tab.problems.notEnoughHeat");
+        }
     }
+
 }

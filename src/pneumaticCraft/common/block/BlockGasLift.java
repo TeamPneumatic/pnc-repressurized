@@ -9,6 +9,7 @@ public class BlockGasLift extends BlockPneumaticCraftModeled{
 
     protected BlockGasLift(Material par2Material){
         super(par2Material);
+        setBlockBounds(0, 0, 0, 1, 10 / 16F, 1);
     }
 
     @Override

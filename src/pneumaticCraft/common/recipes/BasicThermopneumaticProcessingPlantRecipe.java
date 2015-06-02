@@ -9,12 +9,16 @@ public class BasicThermopneumaticProcessingPlantRecipe implements IThermopneumat
 
     private final FluidStack inputLiquid, outputLiquid;
     private final ItemStack inputItem;
+    private final float requiredPressure;
+    private final double requiredTemperature;
 
     public BasicThermopneumaticProcessingPlantRecipe(FluidStack inputLiquid, ItemStack inputItem,
-            FluidStack outputLiquid){
+            FluidStack outputLiquid, double requiredTemperature, float requiredPressure){
         this.inputItem = inputItem;
         this.inputLiquid = inputLiquid;
         this.outputLiquid = outputLiquid;
+        this.requiredTemperature = requiredTemperature;
+        this.requiredPressure = requiredPressure;
     }
 
     @Override
@@ -41,6 +45,26 @@ public class BasicThermopneumaticProcessingPlantRecipe implements IThermopneumat
     public void useRecipeItems(FluidStack inputTank, ItemStack inputItem){
         if(inputLiquid != null) inputTank.amount -= inputLiquid.amount;
         if(this.inputItem != null) inputItem.stackSize -= this.inputItem.stackSize;
+    }
+
+    @Override
+    public double getRequiredTemperature(FluidStack inputTank, ItemStack inputItem){
+        return requiredTemperature;
+    }
+
+    @Override
+    public float getRequiredPressure(FluidStack inputTank, ItemStack inputItem){
+        return requiredPressure;
+    }
+
+    @Override
+    public double heatUsed(FluidStack inputTank, ItemStack inputItem){
+        return (requiredTemperature - 295) / 10D;
+    }
+
+    @Override
+    public int airUsed(FluidStack inputTank, ItemStack inputItem){
+        return (int)(requiredPressure * 50);
     }
 
 }

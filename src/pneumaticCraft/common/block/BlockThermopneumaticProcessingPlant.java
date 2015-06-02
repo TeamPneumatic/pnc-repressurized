@@ -9,10 +9,12 @@ public class BlockThermopneumaticProcessingPlant extends BlockPneumaticCraftMode
 
     public BlockThermopneumaticProcessingPlant(Material par2Material){
         super(par2Material);
+        setBlockBounds(0, 0, 0, 1, 10 / 16F, 1);
     }
 
     @Override
     protected Class<? extends TileEntity> getTileEntityClass(){
+        setBlockBounds(0, 0, 0, 1, 12 / 16F, 1);
         return TileEntityThermopneumaticProcessingPlant.class;
     }
 

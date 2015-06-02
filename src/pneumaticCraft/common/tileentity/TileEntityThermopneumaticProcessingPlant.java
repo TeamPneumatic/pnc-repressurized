@@ -15,6 +15,7 @@ import pneumaticCraft.api.PneumaticRegistry;
 import pneumaticCraft.api.recipe.IThermopneumaticProcessingPlantRecipe;
 import pneumaticCraft.api.tileentity.IHeatExchanger;
 import pneumaticCraft.common.block.Blockss;
+import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.network.DescSynced;
 import pneumaticCraft.common.network.GuiSynced;
@@ -38,12 +39,19 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
     public int redstoneMode;
     @GuiSynced
     private int craftingProgress;
+    @GuiSynced
+    public boolean hasRecipe;
+    @GuiSynced
+    public float requiredPressure;
+    @GuiSynced
+    public double requiredTemperature;
     private final ItemStack[] inventory = new ItemStack[5];
     private static final int CRAFTING_TIME = 60;
 
     public TileEntityThermopneumaticProcessingPlant(){
         super(5, 7, 3000);
-        //   setUpgradeSlots(0, 1, 2, 3);
+        heatExchanger.setThermalResistance(10);
+        setUpgradeSlots(0, 1, 2, 3);
     }
 
     @Override
@@ -56,21 +64,29 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
         super.updateEntity();
         if(!worldObj.isRemote) {
             IThermopneumaticProcessingPlantRecipe recipe = getValidRecipe();
-            if(recipe != null) {
-                if(heatExchanger.getTemperature() >= 573D && getPressure(ForgeDirection.UNKNOWN) > getMinWorkingPressure()) {
+            hasRecipe = recipe != null;
+            if(hasRecipe) {
+                requiredPressure = recipe.getRequiredPressure(inputTank.getFluid(), inventory[4]);
+                requiredTemperature = recipe.getRequiredTemperature(inputTank.getFluid(), inventory[4]);
+                if(heatExchanger.getTemperature() >= requiredTemperature && getPressure(ForgeDirection.UNKNOWN) >= getMinWorkingPressure()) {
                     craftingProgress++;
                     if(craftingProgress >= CRAFTING_TIME) {
                         outputTank.fill(recipe.getRecipeOutput(inputTank.getFluid(), inventory[4]).copy(), true);
                         recipe.useRecipeItems(inputTank.getFluid(), inventory[4]);
+                        addAir(-recipe.airUsed(inputTank.getFluid(), inventory[4]), ForgeDirection.UNKNOWN);
+                        heatExchanger.addHeat(-recipe.heatUsed(inputTank.getFluid(), inventory[4]));
                         if(inputTank.getFluid() != null && inputTank.getFluid().amount <= 0) inputTank.setFluid(null);
                         if(inventory[4] != null && inventory[4].stackSize <= 0) inventory[4] = null;
                         craftingProgress = 0;
                     }
-                    addAir(-3, ForgeDirection.UNKNOWN);
-                    heatExchanger.addHeat(-1);
                 }
             } else {
                 craftingProgress = 0;
+                requiredTemperature = 273;
+                requiredPressure = 0;
+            }
+            if(getUpgrades(ItemMachineUpgrade.UPGRADE_DISPENSER_DAMAGE) > 0) {
+                autoExportLiquid();
             }
         }
     }
@@ -182,7 +198,7 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
 
     @Override
     public float getMinWorkingPressure(){
-        return 2;
+        return requiredPressure;
     }
 
     /**

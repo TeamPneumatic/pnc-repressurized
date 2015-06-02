@@ -34,7 +34,7 @@ public class CraftingRegistrator{
         ItemStack swiftnessPotion = new ItemStack(Items.potionitem, 1, 8194);//3.00m variant
         ItemStack cobbleSlab = new ItemStack(Blocks.stone_slab, 1, 3);
         // tubes
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Blockss.pressureTube, 4, 0 /* normal */), "igi", 'i', Names.INGOT_IRON_COMPRESSED, 'g', "blockGlass"));
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Blockss.pressureTube, 8, 0 /* normal */), "igi", 'i', Names.INGOT_IRON_COMPRESSED, 'g', "blockGlass"));
         GameRegistry.addRecipe(new ItemStack(ModuleRegistrator.getModuleItem(Names.MODULE_FLOW_DETECTOR)), "bbb", "btb", "bbb", 'b', Itemss.turbineBlade, 't', new ItemStack(Blockss.pressureTube, 1, 0));
         GameRegistry.addRecipe(new ItemStack(ModuleRegistrator.getModuleItem(Names.MODULE_SAFETY_VALVE)), " g ", "ltl", 'g', Itemss.pressureGauge, 'l', Blocks.lever, 't', new ItemStack(Blockss.pressureTube, 1, 0));
         GameRegistry.addRecipe(new ItemStack(ModuleRegistrator.getModuleItem(Names.MODULE_REGULATOR)), "sts", 's', ModuleRegistrator.getModuleItem(Names.MODULE_SAFETY_VALVE), 't', new ItemStack(Blockss.pressureTube, 1, 0));
@@ -46,12 +46,18 @@ public class CraftingRegistrator{
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Itemss.pressureGauge), " g ", "gig", " g ", 'g', Items.gold_ingot, 'i', Names.INGOT_IRON_COMPRESSED));
 
         // pressure chamber
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Blockss.pressureChamberWall, 4, 0), "iii", "i i", "iii", 'i', Names.INGOT_IRON_COMPRESSED));
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Blockss.pressureChamberWall, 4, 6), "iii", "igi", "iii", 'i', Names.INGOT_IRON_COMPRESSED, 'g', "blockGlass"));
-        GameRegistry.addShapelessRecipe(new ItemStack(Blockss.pressureChamberWall, 4, 6), new ItemStack(Blockss.pressureChamberWall, 1, 0), new ItemStack(Blockss.pressureChamberWall, 1, 0), new ItemStack(Blockss.pressureChamberWall, 1, 0), new ItemStack(Blockss.pressureChamberWall, 1, 0), Blocks.glass);
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Blockss.pressureChamberValve, 4, 0), "iii", "iti", "iii", 'i', Names.INGOT_IRON_COMPRESSED, 't', new ItemStack(Blockss.pressureTube, 1, 0)));
-        GameRegistry.addShapelessRecipe(new ItemStack(Blockss.pressureChamberValve, 4, 0), new ItemStack(Blockss.pressureChamberWall, 1, 0), new ItemStack(Blockss.pressureChamberWall, 1, 0), new ItemStack(Blockss.pressureChamberWall, 1, 0), new ItemStack(Blockss.pressureChamberWall, 1, 0), new ItemStack(Blockss.pressureTube, 1, 0));
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Blockss.pressureChamberInterface, 4, 0), "ici", "ihi", "ici", 'i', Names.INGOT_IRON_COMPRESSED, 'c', new ItemStack(Itemss.pneumaticCylinder, 1, 0), 'h', Blocks.hopper));
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Blockss.pressureChamberWall, 16, 0), "iii", "i i", "iii", 'i', Names.INGOT_IRON_COMPRESSED));
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Blockss.pressureChamberWall, 16, 6), "iii", "igi", "iii", 'i', Names.INGOT_IRON_COMPRESSED, 'g', "blockGlass"));
+        GameRegistry.addShapelessRecipe(new ItemStack(Blockss.pressureChamberWall, 16, 6), new ItemStack(Blockss.pressureChamberWall, 1, 0), new ItemStack(Blockss.pressureChamberWall, 1, 0), new ItemStack(Blockss.pressureChamberWall, 1, 0), new ItemStack(Blockss.pressureChamberWall, 1, 0), Blocks.glass);
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Blockss.pressureChamberValve, 16, 0), "iii", "iti", "iii", 'i', Names.INGOT_IRON_COMPRESSED, 't', new ItemStack(Blockss.pressureTube, 1, 0)));
+        GameRegistry.addShapelessRecipe(new ItemStack(Blockss.pressureChamberValve, 16, 0), new ItemStack(Blockss.pressureChamberWall, 1, 0), new ItemStack(Blockss.pressureChamberWall, 1, 0), new ItemStack(Blockss.pressureChamberWall, 1, 0), new ItemStack(Blockss.pressureChamberWall, 1, 0), new ItemStack(Blockss.pressureTube, 1, 0));
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Blockss.pressureChamberInterface, 16, 0), "ici", "ihi", "ici", 'i', Names.INGOT_IRON_COMPRESSED, 'c', new ItemStack(Itemss.pneumaticCylinder, 1, 0), 'h', Blocks.hopper));
+
+        //Oil related
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Itemss.seismicSensor), " t ", "grg", "gcg", 't', Blocks.redstone_torch, 'g', "blockGlass", 'r', Items.repeater, 'c', Items.coal));
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Blockss.refinery), "iii", "gdg", "iii", 'i', Names.INGOT_IRON_COMPRESSED, 'g', "blockGlass", 'd', "gemDiamond"));
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Blockss.thermopneumaticProcessingPlant), "igi", "tri", "igi", 'i', Names.INGOT_IRON_COMPRESSED, 'g', "blockGlass", 'r', "dustRedstone", 't', Blockss.pressureTube));
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Blockss.gasLift), " t ", "tgt", "iii", 'i', Names.INGOT_IRON_COMPRESSED, 'g', "blockGlass", 't', Blockss.pressureTube));
 
         // cannon
         GameRegistry.addRecipe(new ItemStack(Blockss.airCannon), " b ", " st", "hhh", 'b', Itemss.cannonBarrel, 's', Itemss.stoneBase, 't', new ItemStack(Blockss.pressureTube, 1, 0 /* normal */), 'h', cobbleSlab);
@@ -268,9 +274,9 @@ public class CraftingRegistrator{
 
     public static void addThermopneumaticProcessingPlantRecipes(){
         PneumaticRecipeRegistry registry = PneumaticRecipeRegistry.getInstance();
-        registry.registerThermopneumaticProcessingPlantRecipe(new FluidStack(Fluids.lpg, 100), new ItemStack(Items.coal), new FluidStack(Fluids.plastic, 1000));
-        registry.registerThermopneumaticProcessingPlantRecipe(new FluidStack(Fluids.diesel, 100), null, new FluidStack(Fluids.kerosene, 60));
-        registry.registerThermopneumaticProcessingPlantRecipe(new FluidStack(Fluids.kerosene, 100), null, new FluidStack(Fluids.gasoline, 60));
-        registry.registerThermopneumaticProcessingPlantRecipe(new FluidStack(Fluids.gasoline, 100), null, new FluidStack(Fluids.lpg, 60));
+        registry.registerThermopneumaticProcessingPlantRecipe(new FluidStack(Fluids.lpg, 100), new ItemStack(Items.coal), new FluidStack(Fluids.plastic, 1000), 373, 0);
+        registry.registerThermopneumaticProcessingPlantRecipe(new FluidStack(Fluids.diesel, 100), null, new FluidStack(Fluids.kerosene, 80), 573, 2);
+        registry.registerThermopneumaticProcessingPlantRecipe(new FluidStack(Fluids.kerosene, 100), null, new FluidStack(Fluids.gasoline, 80), 573, 2);
+        registry.registerThermopneumaticProcessingPlantRecipe(new FluidStack(Fluids.gasoline, 100), null, new FluidStack(Fluids.lpg, 80), 573, 2);
     }
 }
