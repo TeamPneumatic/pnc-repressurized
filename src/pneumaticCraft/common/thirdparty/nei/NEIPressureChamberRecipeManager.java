@@ -1,4 +1,4 @@
-package pneumaticCraft.common.nei;
+package pneumaticCraft.common.thirdparty.nei;
 
 import java.awt.Rectangle;
 import java.util.ArrayList;

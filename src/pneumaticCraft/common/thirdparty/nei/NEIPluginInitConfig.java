@@ -1,4 +1,4 @@
-package pneumaticCraft.common.nei;
+package pneumaticCraft.common.thirdparty.nei;
 
 import net.minecraft.item.ItemStack;
 import pneumaticCraft.common.block.Blockss;

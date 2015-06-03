@@ -1,4 +1,4 @@
-package pneumaticCraft.common.nei;
+package pneumaticCraft.common.thirdparty.nei;
 
 import java.util.ArrayList;
 import java.util.List;
