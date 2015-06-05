@@ -83,9 +83,7 @@ public class Fluids{
         for(final Fluid fluid : fluids) {
             boolean nativeFluid = FluidRegistry.getFluid(fluid.getName()) == null;
             nativeFluids.add(nativeFluid);
-            if(nativeFluid) {
-                FluidRegistry.registerFluid(fluid);
-            }
+            FluidRegistry.registerFluid(fluid);
             Block fluidBlock = fluid.getBlock();
             if(fluidBlock == null) {
                 fluidBlock = new BlockFluidClassic(fluid, new MaterialLiquid(MapColor.waterColor)){
