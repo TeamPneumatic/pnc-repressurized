@@ -16,7 +16,7 @@ import pneumaticCraft.lib.TileEntityConstants;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ItemEmptyPCB extends ItemPneumatic{
+public class ItemEmptyPCB extends ItemNonDespawning{
     private static Random rand = new Random();
 
     public ItemEmptyPCB(){
@@ -37,6 +37,7 @@ public class ItemEmptyPCB extends ItemPneumatic{
 
     @Override
     public void addInformation(ItemStack stack, EntityPlayer player, List infoList, boolean par4){
+        super.addInformation(stack, player, infoList, par4);
         if(stack.getItemDamage() < 100) {
             infoList.add("Etch success chance: " + (100 - stack.getItemDamage()) + "%");
         } else {

@@ -619,6 +619,7 @@ blockTracker.message.stopSpam=Stopped spam on %s
 gui.tooltip.plasticPlant=Origin: %s
 gui.tooltip.plasticPlant.plant=Press 'Q' or right click to plant seed
 gui.tooltip.programmable.invalidPieces=Pieces displayed in red are not applicable in this application.
+gui.tooltip.doesNotDespawn=§aThis item does not despawn (anymore).
 
 # Waila
 hud.msg.state=State
@@ -638,7 +639,7 @@ itemGroup.tabPneumaticCraft=PneumaticCraft
 message.date.ironman=Today an Iron Man movie went in premiere!
 message.securityStation.accessPrevented=§cAccess is prevented by %s Security Station(s).
 message.securityStation.stationPlacementPrevented=§cYou can't place a Security Station here: %s Security Station(s) are too close by!
-message.seismicSensor.foundOil=§a[Seismic Sensor] Potentientally oil found! Scanning...
+message.seismicSensor.foundOil=§a[Seismic Sensor] Oil potentially found! Scanning...
 message.seismicSensor.foundOilDetails=§a[Seismic Sensor] Found oil %s§am below. It contains about %s§a buckets of oil.
 message.seismicSensor.noOilFound=§c[Seismic Sensor] No oil found.
 

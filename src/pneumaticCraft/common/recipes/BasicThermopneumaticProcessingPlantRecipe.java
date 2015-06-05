@@ -67,4 +67,15 @@ public class BasicThermopneumaticProcessingPlantRecipe implements IThermopneumat
         return (int)(requiredPressure * 50);
     }
 
+    public FluidStack getInputLiquid(){
+        return inputLiquid;
+    }
+
+    public FluidStack getOutputLiquid(){
+        return outputLiquid;
+    }
+
+    public ItemStack getInputItem(){
+        return inputItem;
+    }
 }

@@ -12,6 +12,7 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.IFluidTank;
 
 import org.lwjgl.opengl.GL11;
@@ -20,6 +21,8 @@ import pneumaticCraft.common.fluid.FluidPlastic;
 import pneumaticCraft.common.fluid.Fluids;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.lib.Textures;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 /**
  * This class is derived from BluePower and edited by MineMaarten:
@@ -32,6 +35,11 @@ public class WidgetTank extends WidgetBase{
     public WidgetTank(int id, int x, int y, IFluidTank tank){
         super(id, x, y, 16, 64);
         this.tank = tank;
+    }
+
+    public WidgetTank(int x, int y, FluidStack stack){
+        super(-1, x, y, 16, 64);
+        tank = new FluidTank(stack, 16000);
     }
 
     @Override
@@ -102,5 +110,14 @@ public class WidgetTank extends WidgetBase{
                 Itemss.plastic.addInformation(new ItemStack(Itemss.plastic, 1, FluidPlastic.getPlasticMeta(tank.getFluid())), null, curTip, false);
             }
         }
+    }
+
+    public FluidStack getFluid(){
+        return tank.getFluid();
+    }
+
+    @SideOnly(Side.CLIENT)
+    public FluidTank getTank(){
+        return (FluidTank)tank;
     }
 }
