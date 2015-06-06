@@ -1,5 +1,6 @@
 package pneumaticCraft.common.worldgen;
 
+import java.awt.Point;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -7,8 +8,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSavedData;
-
-import org.lwjgl.util.Point;
 
 public class OilTracker extends WorldSavedData{
     public static final String DATA_KEY = "PneumaticCraftOilReserves";
@@ -62,8 +61,8 @@ public class OilTracker extends WorldSavedData{
         NBTTagList list = new NBTTagList();
         for(Point p : oilRichChunks) {
             NBTTagCompound t = new NBTTagCompound();
-            t.setInteger("x", p.getX());
-            t.setInteger("y", p.getY());
+            t.setInteger("x", p.x);
+            t.setInteger("y", p.y);
             list.appendTag(t);
         }
         tag.setTag("chunks", list);
