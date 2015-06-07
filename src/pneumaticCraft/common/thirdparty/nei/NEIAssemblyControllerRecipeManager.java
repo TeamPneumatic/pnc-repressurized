@@ -1,6 +1,8 @@
 package pneumaticCraft.common.thirdparty.nei;
 
 import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.List;
 
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
@@ -166,6 +168,11 @@ public class NEIAssemblyControllerRecipeManager extends PneumaticCraftPlugins{
         FontRenderer fontRenderer = FMLClientHandler.instance().getClient().fontRenderer;
         fontRenderer.drawString("Required Machines", 5, 15, 4210752);
         fontRenderer.drawString("Prog.", 129, 9, 4210752);
+    }
+
+    @Override
+    protected List<MultipleInputOutputRecipe> getAllRecipes(){
+        return new ArrayList<MultipleInputOutputRecipe>();
     }
 
 }

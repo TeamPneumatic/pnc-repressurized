@@ -9,39 +9,38 @@ import java.util.List;
 
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.util.StatCollector;
+import net.minecraftforge.fluids.FluidStack;
 
 import org.lwjgl.opengl.GL11;
 
-import pneumaticCraft.api.recipe.IThermopneumaticProcessingPlantRecipe;
-import pneumaticCraft.client.gui.GuiThermopneumaticProcessingPlant;
+import pneumaticCraft.client.gui.GuiRefinery;
 import pneumaticCraft.common.block.Blockss;
-import pneumaticCraft.common.recipes.BasicThermopneumaticProcessingPlantRecipe;
-import pneumaticCraft.common.recipes.PneumaticRecipeRegistry;
+import pneumaticCraft.common.fluid.Fluids;
+import pneumaticCraft.common.tileentity.TileEntityRefinery;
 import pneumaticCraft.lib.Textures;
-import codechicken.nei.PositionedStack;
 
-public class NEIThermopneumaticProcessingPlantManager extends PneumaticCraftPlugins{
+public class NEIRefineryManager extends PneumaticCraftPlugins{
 
     @Override
     public String getRecipeName(){
-        return StatCollector.translateToLocal(Blockss.thermopneumaticProcessingPlant.getUnlocalizedName() + ".name");
+        return StatCollector.translateToLocal(Blockss.refinery.getUnlocalizedName() + ".name");
     }
 
     @Override
     public String getGuiTexture(){
-        return Textures.GUI_THERMOPNEUMATIC_PROCESSING_PLANT;
+        return Textures.GUI_REFINERY;
     }
 
     @Override
     public void drawBackground(int recipe){
         GL11.glColor4f(1, 1, 1, 1);
         changeTexture(getGuiTexture());
-        drawTexturedModalRect(0, 0, 5, 11, 166, 70);
+        drawTexturedModalRect(0, 0, 6, 3, 166, 79);
     }
 
     @Override
     public Class<? extends GuiContainer> getGuiClass(){
-        return GuiThermopneumaticProcessingPlant.class;
+        return GuiRefinery.class;
     }
 
     @Override
@@ -56,11 +55,20 @@ public class NEIThermopneumaticProcessingPlantManager extends PneumaticCraftPlug
            Point relMouse = new Point(pos.x - gui.guiLeft - offsetx, pos.y - gui.guiTop - offsety);
        }*/
 
-    private class ThermoNEIRecipe extends MultipleInputOutputRecipe{
-        private ThermoNEIRecipe(BasicThermopneumaticProcessingPlantRecipe recipe){
-            addInputLiquid(recipe.getInputLiquid(), 8, 4);
-            addOutputLiquid(recipe.getOutputLiquid(), 74, 4);
-            if(recipe.getInputItem() != null) this.addIngredient(new PositionedStack(recipe.getInputItem(), 41, 3));
+    private class RefineryNEIRecipe extends MultipleInputOutputRecipe{
+        public final int refineries;
+
+        private RefineryNEIRecipe(int refineries, int[] outputs){
+            this.refineries = refineries;
+            addInputLiquid(new FluidStack(Fluids.oil, 10), 2, 10);
+            int x = 69;
+            int y = 18;
+            for(int i = 0; i < outputs.length; i++) {
+                if(outputs[i] == 0) continue;
+                x += 20;
+                y -= 4;
+                addOutputLiquid(new FluidStack(TileEntityRefinery.getRefiningFluids()[i], outputs[i]), x, y);
+            }
         }
 
     }
@@ -68,8 +76,8 @@ public class NEIThermopneumaticProcessingPlantManager extends PneumaticCraftPlug
     @Override
     protected List<MultipleInputOutputRecipe> getAllRecipes(){
         List<MultipleInputOutputRecipe> recipes = new ArrayList<MultipleInputOutputRecipe>();
-        for(IThermopneumaticProcessingPlantRecipe recipe : PneumaticRecipeRegistry.getInstance().thermopneumaticProcessingPlantRecipes) {
-            if(recipe instanceof BasicThermopneumaticProcessingPlantRecipe) recipes.add(new ThermoNEIRecipe((BasicThermopneumaticProcessingPlantRecipe)recipe));
+        for(int i = 0; i < TileEntityRefinery.REFINING_TABLE.length; i++) {
+            recipes.add(new RefineryNEIRecipe(2 + i, TileEntityRefinery.REFINING_TABLE[i]));
         }
         return recipes;
     }

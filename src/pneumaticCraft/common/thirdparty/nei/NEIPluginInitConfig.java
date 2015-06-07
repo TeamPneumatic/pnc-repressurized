@@ -27,6 +27,10 @@ public class NEIPluginInitConfig implements IConfigureNEI{
         API.registerRecipeHandler(new NEIThermopneumaticProcessingPlantManager());
         API.registerUsageHandler(new NEIThermopneumaticProcessingPlantManager());
 
+        //Refinery
+        API.registerRecipeHandler(new NEIRefineryManager());
+        API.registerUsageHandler(new NEIRefineryManager());
+
         GuiContainerManager.addDrawHandler(new ItemDrawHandler());
 
         //handle drop down windows

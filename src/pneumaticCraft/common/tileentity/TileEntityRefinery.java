@@ -52,10 +52,14 @@ public class TileEntityRefinery extends TileEntityBase implements IFluidHandler,
      * Diesel            | 4 | 2 | 2
      */
     public static final int[][] REFINING_TABLE = new int[][]{{4, 0, 0, 2}, {2, 3, 0, 2}, {2, 3, 3, 2}};
-    private final Fluid[] refiningFluids = new Fluid[]{Fluids.diesel, Fluids.kerosene, Fluids.gasoline, Fluids.lpg};
+    private final Fluid[] refiningFluids = getRefiningFluids();
 
     public TileEntityRefinery(){
         //  setUpgradeSlots(0, 1, 2, 3);
+    }
+
+    public static Fluid[] getRefiningFluids(){
+        return new Fluid[]{Fluids.diesel, Fluids.kerosene, Fluids.gasoline, Fluids.lpg};
     }
 
     @Override

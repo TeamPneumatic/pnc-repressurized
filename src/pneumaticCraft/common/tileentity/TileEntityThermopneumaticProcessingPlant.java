@@ -68,7 +68,7 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
             if(hasRecipe) {
                 requiredPressure = recipe.getRequiredPressure(inputTank.getFluid(), inventory[4]);
                 requiredTemperature = recipe.getRequiredTemperature(inputTank.getFluid(), inventory[4]);
-                if(heatExchanger.getTemperature() >= requiredTemperature && getPressure(ForgeDirection.UNKNOWN) >= getMinWorkingPressure()) {
+                if(redstoneAllows() && heatExchanger.getTemperature() >= requiredTemperature && getPressure(ForgeDirection.UNKNOWN) >= getMinWorkingPressure()) {
                     craftingProgress++;
                     if(craftingProgress >= CRAFTING_TIME) {
                         outputTank.fill(recipe.getRecipeOutput(inputTank.getFluid(), inventory[4]).copy(), true);
