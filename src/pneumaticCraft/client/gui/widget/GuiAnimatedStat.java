@@ -349,6 +349,7 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
                 }
             } else if(gui != null || !(iStack.getItem() instanceof ItemBlock)) {
                 if(itemRenderer == null) itemRenderer = new RenderItem();
+                itemRenderer.zLevel = 1;
                 GL11.glPushMatrix();
                 GL11.glTranslated(0, 0, -50);
                 GL11.glEnable(GL12.GL_RESCALE_NORMAL);
