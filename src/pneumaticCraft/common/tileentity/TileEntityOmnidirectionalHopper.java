@@ -24,6 +24,8 @@ public class TileEntityOmnidirectionalHopper extends TileEntityBase implements I
     @GuiSynced
     public int redstoneMode;
     private int cooldown;
+    @GuiSynced
+    protected boolean leaveMaterial;//leave items/liquids (used as filter)
 
     public TileEntityOmnidirectionalHopper(){
         setUpgradeSlots(5, 6, 7, 8);
@@ -54,8 +56,9 @@ public class TileEntityOmnidirectionalHopper extends TileEntityBase implements I
         TileEntity neighbor = IOHelper.getNeighbor(this, dir);
         for(int i = 0; i < 5; i++) {
             ItemStack stack = inventory[i];
-            if(stack != null) {
+            if(stack != null && (!leaveMaterial || stack.stackSize > 1)) {
                 ItemStack exportedStack = stack.copy();
+                if(leaveMaterial) exportedStack.stackSize--;
                 if(exportedStack.stackSize > maxItems) exportedStack.stackSize = maxItems;
                 int count = exportedStack.stackSize;
 
@@ -137,6 +140,7 @@ public class TileEntityOmnidirectionalHopper extends TileEntityBase implements I
         super.writeToNBT(tag);
         tag.setInteger("inputDir", inputDir.ordinal());
         tag.setInteger("redstoneMode", redstoneMode);
+        tag.setBoolean("leaveMaterial", leaveMaterial);
 
         NBTTagList tagList = new NBTTagList();
         for(int currentIndex = 0; currentIndex < inventory.length; ++currentIndex) {
@@ -155,6 +159,7 @@ public class TileEntityOmnidirectionalHopper extends TileEntityBase implements I
         super.readFromNBT(tag);
         inputDir = ForgeDirection.getOrientation(tag.getInteger("inputDir"));
         redstoneMode = tag.getInteger("redstoneMode");
+        leaveMaterial = tag.getBoolean("leaveMaterial");
 
         NBTTagList tagList = tag.getTagList("Inventory", 10);
         inventory = new ItemStack[inventory.length];
@@ -229,6 +234,10 @@ public class TileEntityOmnidirectionalHopper extends TileEntityBase implements I
         if(buttonID == 0) {
             redstoneMode++;
             if(redstoneMode > 2) redstoneMode = 0;
+        } else if(buttonID == 1) {
+            leaveMaterial = false;
+        } else if(buttonID == 2) {
+            leaveMaterial = true;
         }
     }
 
@@ -278,5 +287,9 @@ public class TileEntityOmnidirectionalHopper extends TileEntityBase implements I
     @Override
     public int getRedstoneMode(){
         return redstoneMode;
+    }
+
+    public boolean doesLeaveMaterial(){
+        return leaveMaterial;
     }
 }

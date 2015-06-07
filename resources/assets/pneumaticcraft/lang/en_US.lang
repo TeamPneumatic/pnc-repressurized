@@ -486,6 +486,10 @@ gui.tab.gasLift.mode=Mode
 gui.tab.gasLift.mode.pumpEmpty=Pump and allow empty tank
 gui.tab.gasLift.mode.pumpLeave=Pump and leave liquid in tank (used as filter)
 gui.tab.gasLift.mode.drawIn=Draw in tubes
+gui.tab.liquidHopper.mode.empty=Empty out tank.
+gui.tab.liquidHopper.mode.leaveLiquid=Leave 1000mB in tank, to filter.
+gui.tab.omnidirectionalHopper.mode.empty=Normal hopper operation
+gui.tab.omnidirectionalHopper.mode.leaveItem=Leave one item per slot, to filter.
 
 gui.programmer.button.export.programmingWhen=§cProgramming when: %s
 gui.programmer.button.export.pressingButton=Pressing button
