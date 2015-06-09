@@ -184,7 +184,7 @@ public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHand
     public int fill(ForgeDirection from, FluidStack resource, boolean doFill){
         if(resource == null || resource.getFluid() != Fluids.plastic) return 0;
         int fillingAmount = Math.min(tank.getCapacity() - tank.getFluidAmount(), resource.amount);
-        if(doFill) {
+        if(doFill && fillingAmount > 0) {
             tank.setFluid(FluidPlastic.mixFluid(tank.getFluid(), new FluidStack(resource, fillingAmount)));
             liquidLogic.setTemperature(FluidPlastic.getTemperatureS(tank.getFluid()));
             sendDescriptionPacket();
