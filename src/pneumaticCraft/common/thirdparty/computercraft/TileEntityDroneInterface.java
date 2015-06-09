@@ -751,8 +751,20 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral,
 
     @Override
     @Optional.Method(modid = ModIds.COMPUTERCRAFT)
-    public boolean equals(IPeripheral other){//TODO await documention on the method, so it can be correctly implemented.
-        return equals((Object)other);
+    public boolean equals(IPeripheral other){
+        if(other == null) {
+            return false;
+        }
+        if(this == other) {
+            return true;
+        }
+        if(other instanceof TileEntity) {
+            TileEntity tother = (TileEntity) other;
+            return tother.getWorldObj().equals(worldObj)
+                && tother.xCoord == this.xCoord && tother.yCoord == this.yCoord && tother.zCoord == this.zCoord;
+        }
+
+        return false;
     }
 
     private void sendEvent(String name, Object... parms){

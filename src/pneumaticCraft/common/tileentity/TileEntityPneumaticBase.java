@@ -4,10 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import li.cil.oc.api.machine.Arguments;
-import li.cil.oc.api.machine.Context;
-import li.cil.oc.api.network.ManagedPeripheral;
-import li.cil.oc.api.network.SimpleComponent;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -44,9 +40,9 @@ import dan200.computercraft.api.lua.LuaException;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import dan200.computercraft.api.peripheral.IPeripheral;
 
-@Optional.InterfaceList({@Optional.Interface(iface = "dan200.computercraft.api.peripheral.IPeripheral", modid = ModIds.COMPUTERCRAFT), @Optional.Interface(iface = "li.cil.oc.api.network.ManagedPeripheral", modid = ModIds.OPEN_COMPUTERS), @Optional.Interface(iface = "li.cil.oc.api.network.SimpleComponent", modid = ModIds.OPEN_COMPUTERS)})
+@Optional.InterfaceList({@Optional.Interface(iface = "dan200.computercraft.api.peripheral.IPeripheral", modid = ModIds.COMPUTERCRAFT)})
 public class TileEntityPneumaticBase extends TileEntityBase implements IManoMeasurable, IAirHandler,
-        IPneumaticPosProvider, IPeripheral, ManagedPeripheral, SimpleComponent{
+        IPneumaticPosProvider, IPeripheral{
     public float maxPressure;
     @GuiSynced
     public int volume;
@@ -413,16 +409,6 @@ public class TileEntityPneumaticBase extends TileEntityBase implements IManoMeas
     }
 
     @Override
-    public String getComponentName(){
-        return getType();
-    }
-
-    @Override
-    public String[] methods(){
-        return getMethodNames();
-    }
-
-    @Override
     public String[] getMethodNames(){
         String[] methodNames = new String[luaMethods.size()];
         for(int i = 0; i < methodNames.length; i++) {
@@ -431,16 +417,8 @@ public class TileEntityPneumaticBase extends TileEntityBase implements IManoMeas
         return methodNames;
     }
 
-    @Override
-    @Optional.Method(modid = ModIds.OPEN_COMPUTERS)
-    public Object[] invoke(String method, Context context, Arguments args) throws Exception{
-        if("greet".equals(method)) return new Object[]{String.format("Hello, %s!", args.checkString(0))};
-        for(ILuaMethod m : luaMethods) {
-            if(m.getMethodName().equals(method)) {
-                return m.call(args.toArray());
-            }
-        }
-        throw new IllegalArgumentException("Can't invoke method with name \"" + method + "\". not registered");
+    public List<ILuaMethod> getLuaMethods(){
+        return this.luaMethods;
     }
 
     @Override
@@ -463,8 +441,20 @@ public class TileEntityPneumaticBase extends TileEntityBase implements IManoMeas
 
     @Override
     @Optional.Method(modid = ModIds.COMPUTERCRAFT)
-    public boolean equals(IPeripheral other){//TODO await documention on the method, so it can be correctly implemented.
-        return this.equals((Object)other);
+    public boolean equals(IPeripheral other){
+        if(other == null) {
+            return false;
+        }
+        if(this == other) {
+            return true;
+        }
+        if(other instanceof TileEntity) {
+            TileEntity tother = (TileEntity) other;
+            return tother.getWorldObj().equals(worldObj)
+                && tother.xCoord == this.xCoord && tother.yCoord == this.yCoord && tother.zCoord == this.zCoord;
+        }
+
+        return false;
     }
 
     protected void addLuaMethods(){
