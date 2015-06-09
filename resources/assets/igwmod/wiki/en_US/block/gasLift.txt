@@ -1,0 +1,19 @@
+A Gas Lift is a pump, basically. It uses pressure to decrease the density of a liquid to 'force' it upwards.
+
+When placed down and pressurized, it will lay down Pressure Tubes (when provided) downwards until it hits any liquid at which point it will pump it. When a solid block is found it will be dug (without yield). This makes it perfect for Oil yielding, as Oil might be deep underground.
+
+The pressure required scales linearly with the depth it is digging/pumping at.
+
+[prefix{l}]Mode tab[prefix{}]
+The Gas Lift can be put in 3 modes:
+
+"Pump and allow empty tank",
+will do as described above. It will lay down Pressure Tubes, and pump liquids when it hits them.
+
+"Pump and leave liquid in filter",
+will do the same as the "empty tank" option. The difference is that when liquids are being taken out of the Gas Lift, the Gas Lift will make sure to always leave 1000mB in the tank. This is useful when pumping for a certain liquid, to make sure no other liquids will be pumped.
+
+"Draw in tubes",
+will make the Gas Lift stop pumping, and retract any tubes it put down. This could be used to prepare for a move of the Gas Lift.
+
+[crafting{200, 360, key=block/gasLift}]

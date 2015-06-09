@@ -9,7 +9,7 @@ import pneumaticCraft.common.block.Blockss;
 public class PneumaticCraftWikiTab extends BaseWikiTab{
 
     public PneumaticCraftWikiTab(){
-        pageEntries.add("worldgen");
+        pageEntries.add("oil");
         pageEntries.add("baseConcepts");
         pageEntries.add("machineUpgrades");
         pageEntries.add("generatingPressure");

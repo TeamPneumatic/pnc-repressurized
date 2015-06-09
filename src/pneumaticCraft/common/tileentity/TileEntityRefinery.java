@@ -83,8 +83,8 @@ public class TileEntityRefinery extends TileEntityBase implements IFluidHandler,
                     progress = Math.min(5, progress);
                     heatExchanger.addHeat(-progress * 1);
                     workTimer += progress;
-                    while(workTimer >= 100 && oilTank.getFluidAmount() >= 10) {
-                        workTimer -= 100;
+                    while(workTimer >= 20 && oilTank.getFluidAmount() >= 10) {
+                        workTimer -= 20;
 
                         refine(refineries, false);
                         oilTank.drain(10, true);

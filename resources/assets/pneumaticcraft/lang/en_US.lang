@@ -655,6 +655,7 @@ death.attack.acid2=%1$s turned into a PCB!
 death.attack.securityStation1=%1$s failed to hack a Security Station and died!
 
 # IGW pages
+igwtab.entry.oil=Oil
 igwtab.entry.worldgen=Worldgen
 igwtab.entry.baseConcepts=Base Concepts
 igwtab.entry.machineUpgrades=Machine Upgrades

@@ -1,0 +1,16 @@
+[image{200,20,0.143,igwmod:textures/seismicSensor.png}]
+A Seismic Sensor is an early game item used to track down Oil. The sensor does not use air. Upon right click, it will show whether or not Oil was found directly under where the sensor was clicked on. This will only work for Oil deposits spawned by PneumaticCraft.
+
+A Seismic Sensor can have 3 results:
+
+"No Oil found."
+No Oil is found in this chunk (16x16 block 'radius').
+
+"Oil potentially found."
+"No Oil found."
+Oil potentially is in this chunk. However it's not directly beneath the block that was clicked on (so not suitable for [link{block/gasLift}]Gas Lift[link{}] placement). Try again somewhere else in the chunk.
+Another reason for this message might be the oil deposit to be fully exhausted. The chunk still is marked as containing Oil, even though containing none.
+
+"Oil potentially found."
+"Found Oil <distance> m below. It contains about <amount> buckets of Oil."
+Oil is found! The clicked block would be a suitable place to put a Gas Lift. It will be able to pump the amount of Oil buckets specified by the <amount>.
