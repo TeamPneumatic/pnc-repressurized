@@ -13,7 +13,7 @@ import pneumaticCraft.lib.Textures;
 
 public class WidgetTemperature extends WidgetBase{
 
-    private final int[] scales;
+    private int[] scales;
     private final IHeatExchangerLogic logic;
     private final int minTemp, maxTemp;
 
@@ -23,6 +23,10 @@ public class WidgetTemperature extends WidgetBase{
         this.logic = logic;
         this.minTemp = minTemp;
         this.maxTemp = maxTemp - 273;
+    }
+
+    public void setScales(int... scales){
+        this.scales = scales;
     }
 
     @Override

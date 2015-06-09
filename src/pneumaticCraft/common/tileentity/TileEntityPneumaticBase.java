@@ -33,7 +33,6 @@ import pneumaticCraft.common.thirdparty.computercraft.ILuaMethod;
 import pneumaticCraft.common.thirdparty.computercraft.LuaConstant;
 import pneumaticCraft.common.thirdparty.computercraft.LuaMethod;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
-import pneumaticCraft.common.util.TileEntityCache;
 import pneumaticCraft.lib.Log;
 import pneumaticCraft.lib.ModIds;
 import pneumaticCraft.lib.PneumaticValues;
@@ -57,7 +56,6 @@ public class TileEntityPneumaticBase extends TileEntityBase implements IManoMeas
     public int currentAir;
     public int soundCounter;
     public TileEntity parentTile;
-    private TileEntityCache[] tileCache;
     protected List<ILuaMethod> luaMethods = new ArrayList<ILuaMethod>();
 
     public TileEntityPneumaticBase(float dangerPressure, float criticalPressure, int volume){
@@ -254,11 +252,6 @@ public class TileEntityPneumaticBase extends TileEntityBase implements IManoMeas
         return teList;
     }
 
-    public TileEntityCache[] getTileCache(){
-        if(tileCache == null) tileCache = TileEntityCache.getDefaultCache(worldObj, xCoord, yCoord, zCoord);
-        return tileCache;
-    }
-
     /**
      * Returns if TE's is connected to the given side of this TE.
      * @param side
@@ -393,14 +386,6 @@ public class TileEntityPneumaticBase extends TileEntityBase implements IManoMeas
     @Override
     public int getZCoord(){
         return zCoord;
-    }
-
-    @Override
-    public void onNeighborTileUpdate(){
-        super.onNeighborTileUpdate();
-        for(TileEntityCache cache : getTileCache()) {
-            cache.update();
-        }
     }
 
     /*

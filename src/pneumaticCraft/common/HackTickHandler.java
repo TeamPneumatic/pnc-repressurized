@@ -48,13 +48,17 @@ public class HackTickHandler{
     @SubscribeEvent
     public void worldTick(TickEvent.WorldTickEvent event){
         if(event.phase == TickEvent.Phase.END) {
-            for(Entity entity : (List<Entity>)event.world.loadedEntityList) {
-                HackingEntityProperties hackingProps = (HackingEntityProperties)entity.getExtendedProperties("PneumaticCraftHacking");
-                if(hackingProps != null) {
-                    hackingProps.update(entity);
-                } else {
-                    Log.warning("Extended entity props HackingEntityProperties couldn't be found in the entity " + entity.getCommandSenderName());
+            try {
+                for(Entity entity : (List<Entity>)event.world.loadedEntityList) {
+                    HackingEntityProperties hackingProps = (HackingEntityProperties)entity.getExtendedProperties("PneumaticCraftHacking");
+                    if(hackingProps != null) {
+                        hackingProps.update(entity);
+                    } else {
+                        Log.warning("Extended entity props HackingEntityProperties couldn't be found in the entity " + entity.getCommandSenderName());
+                    }
                 }
+            } catch(Throwable e) {
+                //Catching a CME which I have no clue on what might cause it.
             }
         }
     }

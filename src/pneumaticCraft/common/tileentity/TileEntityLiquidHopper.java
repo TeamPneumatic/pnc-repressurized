@@ -57,10 +57,12 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
                 IFluidHandler fluidHandler = (IFluidHandler)neighbor;
                 if(fluidHandler.canFill(dir.getOpposite(), tank.getFluid().getFluid())) {
                     FluidStack fluid = tank.getFluid().copy();
-                    fluid.amount = Math.min(maxItems * 100, tank.getFluid().amount);
-                    tank.getFluid().amount -= fluidHandler.fill(dir.getOpposite(), fluid, true);
-                    if(tank.getFluidAmount() <= 0) tank.setFluid(null);
-                    return true;
+                    fluid.amount = Math.min(maxItems * 100, tank.getFluid().amount - (leaveMaterial ? 1000 : 0));
+                    if(fluid.amount > 0) {
+                        tank.getFluid().amount -= fluidHandler.fill(dir.getOpposite(), fluid, true);
+                        if(tank.getFluidAmount() <= 0) tank.setFluid(null);
+                        return true;
+                    }
                 }
             }
         }
@@ -135,7 +137,7 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
             }
         }
 
-        if(getUpgrades(ItemMachineUpgrade.UPGRADE_DISPENSER_DAMAGE) > 0) {
+        if(getUpgrades(ItemMachineUpgrade.UPGRADE_DISPENSER_DAMAGE) > 0 && worldObj.getBlockMetadata(xCoord + inputDir.offsetX, yCoord + inputDir.offsetY, zCoord + inputDir.offsetZ) == 0) {
             Fluid fluid = FluidRegistry.lookupFluidForBlock(worldObj.getBlock(xCoord + inputDir.offsetX, yCoord + inputDir.offsetY, zCoord + inputDir.offsetZ));
             if(fluid != null) {
                 if(fill(ForgeDirection.UNKNOWN, new FluidStack(fluid, 1000), false) == 1000) {
@@ -156,12 +158,12 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
 
     @Override
     public FluidStack drain(ForgeDirection from, FluidStack resource, boolean doDrain){
-        return tank.getFluid() != null && tank.getFluid().isFluidEqual(resource) ? tank.drain(resource.amount, doDrain) : null;
+        return tank.getFluid() != null && tank.getFluid().isFluidEqual(resource) ? drain(ForgeDirection.UNKNOWN, resource.amount, doDrain) : null;
     }
 
     @Override
     public FluidStack drain(ForgeDirection from, int maxDrain, boolean doDrain){
-        return tank.drain(maxDrain, doDrain);
+        return tank.drain(leaveMaterial ? Math.min(maxDrain, tank.getFluidAmount() - 1000) : maxDrain, doDrain);
     }
 
     @Override

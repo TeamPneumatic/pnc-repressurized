@@ -1,4 +1,4 @@
-package pneumaticCraft.common.nei;
+package pneumaticCraft.common.thirdparty.nei;
 
 import java.awt.Rectangle;
 import java.util.ArrayList;
@@ -17,7 +17,6 @@ import pneumaticCraft.api.recipe.PressureChamberRecipe;
 import pneumaticCraft.client.gui.GuiPressureChamber;
 import pneumaticCraft.lib.PneumaticValues;
 import pneumaticCraft.lib.Textures;
-import codechicken.nei.NEIClientUtils;
 import codechicken.nei.PositionedStack;
 import cpw.mods.fml.client.FMLClientHandler;
 
@@ -53,21 +52,9 @@ public class NEIPressureChamberRecipeManager extends PneumaticCraftPlugins{
         drawAnimatedPressureGauge(120, 27, -1, recipePressure, PneumaticValues.DANGER_PRESSURE_PRESSURE_CHAMBER, PneumaticValues.MAX_PRESSURE_PRESSURE_CHAMBER, cycleticks % 48 / 48F);
     }
 
-    private String getRecipesID(){
-        return "PressureChamber";
-    }
-
     @Override
     public void loadTransferRects(){
-        transferRects.add(new RecipeTransferRect(new Rectangle(100, 7, 40, 40), getRecipesID()));
-    }
-
-    @Override
-    public void loadCraftingRecipes(String outputId, Object... results){
-        if(outputId.equals(getRecipesID())) {
-            for(PressureChamberRecipe pressureRecipe : PressureChamberRecipe.chamberRecipes)
-                arecipes.add(getShape(pressureRecipe));
-        } else super.loadCraftingRecipes(outputId, results);
+        addTransferRect(new Rectangle(100, 7, 40, 40));
     }
 
     protected ChamberRecipe getShape(PressureChamberRecipe recipe){
@@ -104,30 +91,6 @@ public class NEIPressureChamberRecipeManager extends PneumaticCraftPlugins{
     }
 
     @Override
-    public void loadCraftingRecipes(ItemStack result){
-        for(PressureChamberRecipe recipe : PressureChamberRecipe.chamberRecipes) {
-            for(ItemStack outputStack : recipe.output) {
-                if(NEIClientUtils.areStacksSameTypeCrafting(outputStack, result)) {
-                    arecipes.add(getShape(recipe));
-                    break;
-                }
-            }
-        }
-    }
-
-    @Override
-    public void loadUsageRecipes(ItemStack ingredient){
-        for(PressureChamberRecipe recipe : PressureChamberRecipe.chamberRecipes) {
-            for(ItemStack input : recipe.input) {
-                if(NEIClientUtils.areStacksSameTypeCrafting(input, ingredient)) {
-                    arecipes.add(getShape(recipe));
-                    break;
-                }
-            }
-        }
-    }
-
-    @Override
     public Class<? extends GuiContainer> getGuiClass(){
         return GuiPressureChamber.class;
     }
@@ -135,6 +98,15 @@ public class NEIPressureChamberRecipeManager extends PneumaticCraftPlugins{
     @Override
     public boolean hasOverlay(GuiContainer gui, Container container, int recipe){
         return false;
+    }
+
+    @Override
+    protected List<MultipleInputOutputRecipe> getAllRecipes(){
+        List<MultipleInputOutputRecipe> recipes = new ArrayList<MultipleInputOutputRecipe>();
+        for(PressureChamberRecipe recipe : PressureChamberRecipe.chamberRecipes) {
+            recipes.add(getShape(recipe));
+        }
+        return recipes;
     }
 
 }

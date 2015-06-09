@@ -62,7 +62,7 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
     private IGuiAnimatedStat lastLeftStat, lastRightStat;
 
     private GuiAnimatedStat pressureStat;
-    private GuiAnimatedStat problemTab;
+    protected GuiAnimatedStat problemTab;
     private GuiAnimatedStat redstoneTab;
     protected GuiButtonSpecial redstoneButton;
 

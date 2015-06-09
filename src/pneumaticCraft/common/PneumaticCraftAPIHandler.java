@@ -25,6 +25,7 @@ import pneumaticCraft.api.client.pneumaticHelmet.IHackableEntity;
 import pneumaticCraft.api.drone.ICustomBlockInteract;
 import pneumaticCraft.api.drone.IPathfindHandler;
 import pneumaticCraft.api.item.IInventoryItem;
+import pneumaticCraft.api.recipe.IPneumaticRecipeRegistry;
 import pneumaticCraft.api.tileentity.IHeatExchanger;
 import pneumaticCraft.client.render.pneumaticArmor.blockTracker.BlockTrackEntryList;
 import pneumaticCraft.client.render.pneumaticArmor.hacking.HackableHandler.HackingEntityProperties;
@@ -42,6 +43,7 @@ import pneumaticCraft.common.progwidgets.ProgWidgetDropItem;
 import pneumaticCraft.common.progwidgets.ProgWidgetGoToLocation;
 import pneumaticCraft.common.progwidgets.ProgWidgetStart;
 import pneumaticCraft.common.progwidgets.ProgWidgetSuicide;
+import pneumaticCraft.common.recipes.PneumaticRecipeRegistry;
 import pneumaticCraft.common.tileentity.TileEntityProgrammer;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.Log;
@@ -298,5 +300,10 @@ public class PneumaticCraftAPIHandler implements IPneumaticCraftInterface{
         }
         world.spawnEntityInWorld(drone);
         return drone;
+    }
+
+    @Override
+    public IPneumaticRecipeRegistry getRecipeRegistry(){
+        return PneumaticRecipeRegistry.getInstance();
     }
 }

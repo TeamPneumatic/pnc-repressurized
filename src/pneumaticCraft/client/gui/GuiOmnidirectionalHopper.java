@@ -5,6 +5,7 @@ import java.util.List;
 
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import pneumaticCraft.client.gui.widget.GuiAnimatedStat;
 import pneumaticCraft.common.block.Blockss;
@@ -18,6 +19,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class GuiOmnidirectionalHopper extends GuiPneumaticContainerBase<TileEntityOmnidirectionalHopper>{
     private GuiAnimatedStat statusStat;
+    private final GuiButtonSpecial[] modeButtons = new GuiButtonSpecial[2];
 
     public GuiOmnidirectionalHopper(InventoryPlayer player, TileEntityOmnidirectionalHopper te){
 
@@ -28,6 +30,24 @@ public class GuiOmnidirectionalHopper extends GuiPneumaticContainerBase<TileEnti
     public void initGui(){
         super.initGui();
         statusStat = addAnimatedStat("gui.tab.hopperStatus", new ItemStack(Blockss.omnidirectionalHopper), 0xFFFFAA00, false);
+
+        GuiAnimatedStat optionStat = addAnimatedStat("gui.tab.gasLift.mode", new ItemStack(net.minecraft.init.Blocks.lever), 0xFFFFCC00, false);
+        List<String> text = new ArrayList<String>();
+        for(int i = 0; i < 4; i++)
+            text.add("               ");
+        optionStat.setTextWithoutCuttingString(text);
+
+        GuiButtonSpecial button = new GuiButtonSpecial(1, 5, 20, 20, 20, "");
+        button.setRenderStacks(new ItemStack(Items.bucket));
+        button.setTooltipText(I18n.format("gui.tab.omnidirectionalHopper.mode.empty"));
+        optionStat.addWidget(button);
+        modeButtons[0] = button;
+
+        button = new GuiButtonSpecial(2, 30, 20, 20, 20, "");
+        button.setRenderStacks(new ItemStack(Items.water_bucket));
+        button.setTooltipText(I18n.format("gui.tab.omnidirectionalHopper.mode.leaveItem"));
+        optionStat.addWidget(button);
+        modeButtons[1] = button;
     }
 
     @Override
@@ -40,6 +60,8 @@ public class GuiOmnidirectionalHopper extends GuiPneumaticContainerBase<TileEnti
     public void updateScreen(){
         super.updateScreen();
         statusStat.setText(getStatus());
+        modeButtons[0].enabled = te.doesLeaveMaterial();
+        modeButtons[1].enabled = !te.doesLeaveMaterial();
     }
 
     private List<String> getStatus(){

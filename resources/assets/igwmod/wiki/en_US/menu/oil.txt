@@ -1,0 +1,11 @@
+[image{200,20,0.143,igwmod:textures/oil.png}]
+In PneumaticCraft there is only one thing that's being generated, and that's Oil. It is spawned similarly to how Water lakes are spawned. The difference is that Oil lakes are far more likely to spawn deep underground than they are to spawn on the surface. Because of this, assistence from tools like a [link{item/seismicSensor}]Seismic Sensor[link{}] is highly recommended.
+
+The Oil its main purpose it to create Plastic. Plastic is used in a lot of recipes of PneumaticCraft.
+
+[prefix{l}]Creating Plastic[prefix{}]
+To create plastic, the first step is to refine the Oil in a [link{block/refinery}]Refinery [link{}].
+
+One of the products is LPG. This liquid combined with Coal processed in a [link{thermopneumaticProcessingPlant}]Thermopneumatic Processing Plant[link{}] will yield Plastic.
+
+This all sounds quite extensive, however it is all early game. The machines are fairly cheap.

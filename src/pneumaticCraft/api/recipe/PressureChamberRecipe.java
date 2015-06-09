@@ -5,6 +5,10 @@ import java.util.List;
 
 import net.minecraft.item.ItemStack;
 
+/**
+ * @Deprecated Access via {@link pneumaticCraft.api.recipe.IPneumaticRecipeRegistry}
+ */
+@Deprecated
 public class PressureChamberRecipe{
     public static List<PressureChamberRecipe> chamberRecipes = new ArrayList<PressureChamberRecipe>();
     public static List<IPressureChamberRecipe> specialRecipes = new ArrayList<IPressureChamberRecipe>();

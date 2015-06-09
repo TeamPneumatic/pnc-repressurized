@@ -1,4 +1,4 @@
-package pneumaticCraft.common.nei;
+package pneumaticCraft.common.thirdparty.nei;
 
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.inventory.GuiContainer;

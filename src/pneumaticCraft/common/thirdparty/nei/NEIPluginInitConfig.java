@@ -1,4 +1,4 @@
-package pneumaticCraft.common.nei;
+package pneumaticCraft.common.thirdparty.nei;
 
 import net.minecraft.item.ItemStack;
 import pneumaticCraft.common.block.Blockss;
@@ -22,6 +22,14 @@ public class NEIPluginInitConfig implements IConfigureNEI{
         //Assembly Controller Handler
         API.registerUsageHandler(new NEIAssemblyControllerRecipeManager());
         API.registerRecipeHandler(new NEIAssemblyControllerRecipeManager());
+
+        //Thermopneumatic handler
+        API.registerRecipeHandler(new NEIThermopneumaticProcessingPlantManager());
+        API.registerUsageHandler(new NEIThermopneumaticProcessingPlantManager());
+
+        //Refinery
+        API.registerRecipeHandler(new NEIRefineryManager());
+        API.registerUsageHandler(new NEIRefineryManager());
 
         GuiContainerManager.addDrawHandler(new ItemDrawHandler());
 

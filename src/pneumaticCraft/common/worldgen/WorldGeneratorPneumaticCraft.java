@@ -6,6 +6,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.ChunkProviderFlat;
+import net.minecraft.world.gen.feature.WorldGenLakes;
 import pneumaticCraft.common.Config;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.block.pneumaticPlants.BlockPneumaticPlantBase;
@@ -36,6 +37,16 @@ public class WorldGeneratorPneumaticCraft implements IWorldGenerator{
     }
 
     public void generateSurface(World world, Random rand, int chunkX, int chunkZ){
+        if(rand.nextDouble() < Config.oilGenerationChance / 100D) {
+            int y = rand.nextInt(rand.nextInt(128) + 8);
+            if(new WorldGenLakes(Blockss.oil).generate(world, rand, chunkX + 8, y, chunkZ + 8)) {
+                OilTracker.setContainingReserves(world, chunkX >> 4, chunkZ >> 4, true);
+            }
+            //new WorldGenLakes(Blockss.etchingAcid).generate(world, random, chunkX * 16 + distance, y, chunkZ * 16);
+            // new WorldGenLakes(Blockss.etchingAcid).generate(world, random, chunkX * 16 + distance, y, chunkZ * 16 + distance);
+            //new WorldGenLakes(Blockss.etchingAcid).generate(world, random, chunkX * 16, y, chunkZ * 16 + distance);
+        }
+
         for(int j = 0; j < 16; j++) {
             if(rand.nextDouble() < Config.configPlantGenerationChance[j] && j != ItemPlasticPlants.HELIUM_PLANT_DAMAGE && j != ItemPlasticPlants.FIRE_FLOWER_DAMAGE) {
                 int plantsInGroup = 7 + rand.nextInt(8); //beteen 7 and 14 plants per group.

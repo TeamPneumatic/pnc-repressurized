@@ -17,6 +17,12 @@ public class ChunkPositionSorter implements Comparator{
         z = vec.zCoord;
     }
 
+    public ChunkPositionSorter(double x, double y, double z){
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
+
     @Override
     public int compare(Object arg0, Object arg1){
         ChunkPosition c1 = (ChunkPosition)arg0;

@@ -18,6 +18,7 @@ import pneumaticCraft.common.block.pneumaticPlants.BlockRainPlant;
 import pneumaticCraft.common.block.pneumaticPlants.BlockRepulsionPlant;
 import pneumaticCraft.common.block.pneumaticPlants.BlockSlimePlant;
 import pneumaticCraft.common.block.pneumaticPlants.BlockSquidPlant;
+import pneumaticCraft.common.fluid.Fluids;
 import pneumaticCraft.common.itemBlock.ItemBlockAdvancedPressureTube;
 import pneumaticCraft.common.itemBlock.ItemBlockPressureChamberWall;
 import pneumaticCraft.common.itemBlock.ItemBlockPressureTube;
@@ -85,6 +86,10 @@ public class Blockss{
     public static Block heatSink;
     public static Block vortexTube;
     public static Block programmableController;
+    public static Block oil;
+    public static Block gasLift;
+    public static Block refinery;
+    public static Block thermopneumaticProcessingPlant;
 
     public static void init(){
         pressureTube = new BlockPressureTube(Material.iron, PneumaticValues.DANGER_PRESSURE_PRESSURE_TUBE, PneumaticValues.MAX_PRESSURE_PRESSURE_TUBE, PneumaticValues.VOLUME_PRESSURE_TUBE).setHardness(3.0F).setResistance(3.0F).setBlockName("pressureTube");
@@ -141,8 +146,14 @@ public class Blockss{
         heatSink = new BlockHeatSink(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("heatSink");
         vortexTube = new BlockVortexTube(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("vortexTube");
         programmableController = new BlockProgrammableController(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("programmableController");
+        if(Fluids.oil.getBlock() == null) oil = new BlockFluidOil().setBlockName("oil");
+        gasLift = new BlockGasLift(Material.iron).setHardness(3.0F).setBlockName("gasLift");
+        refinery = new BlockRefinery(Material.iron).setHardness(3.0F).setBlockName("refinery");
+        thermopneumaticProcessingPlant = new BlockThermopneumaticProcessingPlant(Material.iron).setHardness(3.0F).setBlockName("thermopneumaticProcessingPlant");
 
         registerBlocks();
+
+        if(oil == null) oil = Fluids.oil.getBlock();
 
         OreDictionary.registerOre(Names.BLOCK_IRON_COMPRESSED, compressedIron);
     }
@@ -202,6 +213,10 @@ public class Blockss{
         registerBlock(heatSink);
         registerBlock(vortexTube);
         registerBlock(programmableController);
+        if(oil != null) registerBlock(oil);
+        registerBlock(gasLift);
+        registerBlock(refinery);
+        registerBlock(thermopneumaticProcessingPlant);
     }
 
     public static void registerBlock(Block block){

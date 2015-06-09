@@ -14,6 +14,7 @@ import pneumaticCraft.client.gui.GuiChargingStation;
 import pneumaticCraft.client.gui.GuiDrone;
 import pneumaticCraft.client.gui.GuiElectrostaticCompressor;
 import pneumaticCraft.client.gui.GuiElevator;
+import pneumaticCraft.client.gui.GuiGasLift;
 import pneumaticCraft.client.gui.GuiLiquidCompressor;
 import pneumaticCraft.client.gui.GuiLiquidHopper;
 import pneumaticCraft.client.gui.GuiOmnidirectionalHopper;
@@ -24,10 +25,12 @@ import pneumaticCraft.client.gui.GuiPressureChamber;
 import pneumaticCraft.client.gui.GuiPressureChamberInterface;
 import pneumaticCraft.client.gui.GuiProgrammableController;
 import pneumaticCraft.client.gui.GuiProgrammer;
+import pneumaticCraft.client.gui.GuiRefinery;
 import pneumaticCraft.client.gui.GuiRemote;
 import pneumaticCraft.client.gui.GuiRemoteEditor;
 import pneumaticCraft.client.gui.GuiSecurityStationHacking;
 import pneumaticCraft.client.gui.GuiSecurityStationInventory;
+import pneumaticCraft.client.gui.GuiThermopneumaticProcessingPlant;
 import pneumaticCraft.client.gui.GuiUVLightBox;
 import pneumaticCraft.client.gui.GuiUniversalSensor;
 import pneumaticCraft.client.gui.GuiVacuumPump;
@@ -44,6 +47,7 @@ import pneumaticCraft.common.inventory.ContainerAssemblyController;
 import pneumaticCraft.common.inventory.ContainerChargingStation;
 import pneumaticCraft.common.inventory.ContainerChargingStationItemInventory;
 import pneumaticCraft.common.inventory.ContainerElevator;
+import pneumaticCraft.common.inventory.ContainerGasLift;
 import pneumaticCraft.common.inventory.ContainerLiquidCompressor;
 import pneumaticCraft.common.inventory.ContainerLiquidHopper;
 import pneumaticCraft.common.inventory.ContainerOmnidirectionalHopper;
@@ -53,9 +57,11 @@ import pneumaticCraft.common.inventory.ContainerPressureChamber;
 import pneumaticCraft.common.inventory.ContainerPressureChamberInterface;
 import pneumaticCraft.common.inventory.ContainerProgrammableController;
 import pneumaticCraft.common.inventory.ContainerProgrammer;
+import pneumaticCraft.common.inventory.ContainerRefinery;
 import pneumaticCraft.common.inventory.ContainerRemote;
 import pneumaticCraft.common.inventory.ContainerSecurityStationHacking;
 import pneumaticCraft.common.inventory.ContainerSecurityStationInventory;
+import pneumaticCraft.common.inventory.ContainerThermopneumaticProcessingPlant;
 import pneumaticCraft.common.inventory.ContainerUVLightBox;
 import pneumaticCraft.common.inventory.ContainerUniversalSensor;
 import pneumaticCraft.common.inventory.ContainerVacuumPump;
@@ -70,6 +76,7 @@ import pneumaticCraft.common.tileentity.TileEntityAssemblyController;
 import pneumaticCraft.common.tileentity.TileEntityChargingStation;
 import pneumaticCraft.common.tileentity.TileEntityElectrostaticCompressor;
 import pneumaticCraft.common.tileentity.TileEntityElevatorBase;
+import pneumaticCraft.common.tileentity.TileEntityGasLift;
 import pneumaticCraft.common.tileentity.TileEntityLiquidCompressor;
 import pneumaticCraft.common.tileentity.TileEntityLiquidHopper;
 import pneumaticCraft.common.tileentity.TileEntityOmnidirectionalHopper;
@@ -79,7 +86,9 @@ import pneumaticCraft.common.tileentity.TileEntityPressureChamberInterface;
 import pneumaticCraft.common.tileentity.TileEntityPressureChamberValve;
 import pneumaticCraft.common.tileentity.TileEntityProgrammableController;
 import pneumaticCraft.common.tileentity.TileEntityProgrammer;
+import pneumaticCraft.common.tileentity.TileEntityRefinery;
 import pneumaticCraft.common.tileentity.TileEntitySecurityStation;
+import pneumaticCraft.common.tileentity.TileEntityThermopneumaticProcessingPlant;
 import pneumaticCraft.common.tileentity.TileEntityUVLightBox;
 import pneumaticCraft.common.tileentity.TileEntityUniversalSensor;
 import pneumaticCraft.common.tileentity.TileEntityVacuumPump;
@@ -130,6 +139,9 @@ public class CommonProxy implements IGuiHandler{
     public static final int GUI_ID_REMOTE = 34;
     public static final int GUI_ID_REMOTE_EDITOR = 35;
     public static final int GUI_ID_PROGRAMMABLE_CONTROLLER = 36;
+    public static final int GUI_ID_GAS_LIFT = 37;
+    public static final int GUI_ID_REFINERY = 38;
+    public static final int GUI_ID_THERMOPNEUMATIC_PROCESSING_PLANT = 39;
 
     private final HackTickHandler serverHackTickHandler = new HackTickHandler();
 
@@ -221,6 +233,12 @@ public class CommonProxy implements IGuiHandler{
                 return new ContainerRemote(player.getCurrentEquippedItem());
             case GUI_ID_PROGRAMMABLE_CONTROLLER:
                 return new ContainerProgrammableController(player.inventory, (TileEntityProgrammableController)world.getTileEntity(x, y, z));
+            case GUI_ID_GAS_LIFT:
+                return new ContainerGasLift(player.inventory, (TileEntityGasLift)world.getTileEntity(x, y, z));
+            case GUI_ID_REFINERY:
+                return new ContainerRefinery(player.inventory, (TileEntityRefinery)world.getTileEntity(x, y, z));
+            case GUI_ID_THERMOPNEUMATIC_PROCESSING_PLANT:
+                return new ContainerThermopneumaticProcessingPlant(player.inventory, (TileEntityThermopneumaticProcessingPlant)world.getTileEntity(x, y, z));
         }
         return ThirdPartyManager.instance().getServerGuiElement(ID, player, world, x, y, z);
     }
@@ -288,6 +306,12 @@ public class CommonProxy implements IGuiHandler{
                 return new GuiRemoteEditor(player.getCurrentEquippedItem());
             case GUI_ID_PROGRAMMABLE_CONTROLLER:
                 return new GuiProgrammableController(player.inventory, (TileEntityProgrammableController)world.getTileEntity(x, y, z));
+            case GUI_ID_GAS_LIFT:
+                return new GuiGasLift(player.inventory, (TileEntityGasLift)world.getTileEntity(x, y, z));
+            case GUI_ID_REFINERY:
+                return new GuiRefinery(player.inventory, (TileEntityRefinery)world.getTileEntity(x, y, z));
+            case GUI_ID_THERMOPNEUMATIC_PROCESSING_PLANT:
+                return new GuiThermopneumaticProcessingPlant(player.inventory, (TileEntityThermopneumaticProcessingPlant)world.getTileEntity(x, y, z));
         }
         return ThirdPartyManager.instance().getClientGuiElement(ID, player, world, x, y, z);
     }

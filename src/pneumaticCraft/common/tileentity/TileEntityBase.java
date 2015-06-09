@@ -12,6 +12,8 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.Packet;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.IFluidHandler;
 import pneumaticCraft.api.IHeatExchangerLogic;
 import pneumaticCraft.api.tileentity.IHeatExchanger;
 import pneumaticCraft.api.tileentity.IPneumaticMachine;
@@ -24,6 +26,7 @@ import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.NetworkUtils;
 import pneumaticCraft.common.network.PacketDescription;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
+import pneumaticCraft.common.util.TileEntityCache;
 import pneumaticCraft.lib.ModIds;
 import pneumaticCraft.lib.PneumaticValues;
 import cpw.mods.fml.common.Optional;
@@ -38,6 +41,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
     private boolean descriptionPacketScheduled;
     private List<SyncedField> descriptionFields;
     protected int poweredRedstone; //The redstone strength currently applied to the block.
+    private TileEntityCache[] tileCache;
 
     public TileEntityBase(){
 
@@ -319,6 +323,14 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
 
     public void onNeighborTileUpdate(){
         initializeIfHeatExchanger();
+        for(TileEntityCache cache : getTileCache()) {
+            cache.update();
+        }
+    }
+
+    public TileEntityCache[] getTileCache(){
+        if(tileCache == null) tileCache = TileEntityCache.getDefaultCache(worldObj, xCoord, yCoord, zCoord);
+        return tileCache;
     }
 
     public void onNeighborBlockUpdate(){
@@ -354,5 +366,22 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
      */
     protected ForgeDirection[] getConnectedHeatExchangerSides(){
         return new ForgeDirection[0];
+    }
+
+    public void autoExportLiquid(){
+        FluidStack extractedStack = ((IFluidHandler)this).drain(ForgeDirection.UNKNOWN, Integer.MAX_VALUE, false);
+        if(extractedStack != null) {
+            for(ForgeDirection d : ForgeDirection.VALID_DIRECTIONS) {
+                TileEntity te = getTileCache()[d.ordinal()].getTileEntity();
+                if(te instanceof IFluidHandler) {
+                    if(((IFluidHandler)te).canFill(d.getOpposite(), extractedStack.getFluid())) {
+                        int filledAmount = ((IFluidHandler)te).fill(d.getOpposite(), extractedStack, true);
+                        ((IFluidHandler)this).drain(ForgeDirection.UNKNOWN, filledAmount, true);
+                        extractedStack.amount -= filledAmount;
+                        if(extractedStack.amount <= 0) break;
+                    }
+                }
+            }
+        }
     }
 }

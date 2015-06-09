@@ -44,6 +44,7 @@ import pneumaticCraft.client.model.ModelAssemblyPlatform;
 import pneumaticCraft.client.model.ModelChargingStation;
 import pneumaticCraft.client.model.ModelComputer;
 import pneumaticCraft.client.model.ModelElevatorBase;
+import pneumaticCraft.client.model.ModelGasLift;
 import pneumaticCraft.client.model.ModelHeatSink;
 import pneumaticCraft.client.model.ModelLiquidHopper;
 import pneumaticCraft.client.model.ModelOmnidirectionalHopper;
@@ -51,6 +52,8 @@ import pneumaticCraft.client.model.ModelPlasticMixer;
 import pneumaticCraft.client.model.ModelPneumaticDoor;
 import pneumaticCraft.client.model.ModelPneumaticDoorBase;
 import pneumaticCraft.client.model.ModelPressureChamberInterface;
+import pneumaticCraft.client.model.ModelRefinery;
+import pneumaticCraft.client.model.ModelThermopneumaticProcessingPlant;
 import pneumaticCraft.client.model.ModelUVLightBox;
 import pneumaticCraft.client.model.ModelUniversalSensor;
 import pneumaticCraft.client.model.ModelVacuumPump;
@@ -110,6 +113,7 @@ import pneumaticCraft.common.tileentity.TileEntityCreativeCompressor;
 import pneumaticCraft.common.tileentity.TileEntityElectrostaticCompressor;
 import pneumaticCraft.common.tileentity.TileEntityElevatorBase;
 import pneumaticCraft.common.tileentity.TileEntityElevatorCaller;
+import pneumaticCraft.common.tileentity.TileEntityGasLift;
 import pneumaticCraft.common.tileentity.TileEntityHeatSink;
 import pneumaticCraft.common.tileentity.TileEntityLiquidCompressor;
 import pneumaticCraft.common.tileentity.TileEntityLiquidHopper;
@@ -120,7 +124,9 @@ import pneumaticCraft.common.tileentity.TileEntityPneumaticDoorBase;
 import pneumaticCraft.common.tileentity.TileEntityPressureChamberInterface;
 import pneumaticCraft.common.tileentity.TileEntityPressureTube;
 import pneumaticCraft.common.tileentity.TileEntityProgrammer;
+import pneumaticCraft.common.tileentity.TileEntityRefinery;
 import pneumaticCraft.common.tileentity.TileEntitySecurityStation;
+import pneumaticCraft.common.tileentity.TileEntityThermopneumaticProcessingPlant;
 import pneumaticCraft.common.tileentity.TileEntityUVLightBox;
 import pneumaticCraft.common.tileentity.TileEntityUniversalSensor;
 import pneumaticCraft.common.tileentity.TileEntityVacuumPump;
@@ -180,6 +186,9 @@ public class ClientProxy extends CommonProxy{
         registerBaseModelRenderer(Blockss.advancedLiquidCompressor, TileEntityAdvancedLiquidCompressor.class, new BaseModel("liquidCompressor.obj", "advancedLiquidCompressor.png"));
         registerBaseModelRenderer(Blockss.heatSink, TileEntityHeatSink.class, new ModelHeatSink());
         registerBaseModelRenderer(Blockss.vortexTube, TileEntityVortexTube.class, new ModelVortexTube());
+        registerBaseModelRenderer(Blockss.thermopneumaticProcessingPlant, TileEntityThermopneumaticProcessingPlant.class, new ModelThermopneumaticProcessingPlant());
+        registerBaseModelRenderer(Blockss.refinery, TileEntityRefinery.class, new ModelRefinery());
+        registerBaseModelRenderer(Blockss.gasLift, TileEntityGasLift.class, new ModelGasLift());
 
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPressureTube.class, new RenderPressureTube());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAirCannon.class, new RenderAirCannon());
@@ -239,6 +248,7 @@ public class ClientProxy extends CommonProxy{
     public void registerHandlers(){
         super.registerHandlers();
         MinecraftForge.EVENT_BUS.register(new ClientEventHandler());
+        FMLCommonHandler.instance().bus().register(new ClientEventHandler());
 
         MinecraftForge.EVENT_BUS.register(HUDHandler.instance());
         FMLCommonHandler.instance().bus().register(HUDHandler.instance());

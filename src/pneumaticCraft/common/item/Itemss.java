@@ -47,6 +47,7 @@ public class Itemss{
     public static Item programmingPuzzle;
     public static Item advancedPCB;
     public static Item remote;
+    public static Item seismicSensor;
 
     public static void init(){
         GPSTool = new ItemGPSTool().setUnlocalizedName("gpsTool");
@@ -66,13 +67,13 @@ public class Itemss{
         turbineRotor = new pneumaticCraft.common.item.ItemPneumatic(Textures.ITEM_TURBINE_ROTOR).setUnlocalizedName("turbineRotor");
         assemblyProgram = new ItemAssemblyProgram().setUnlocalizedName("assemblyProgram");
         emptyPCB = new ItemEmptyPCB().setUnlocalizedName("emptyPCB");
-        unassembledPCB = new ItemPneumatic(Textures.ITEM_UNASSEMBLED_PCB).setUnlocalizedName("unassembledPCB");
+        unassembledPCB = new ItemNonDespawning(Textures.ITEM_UNASSEMBLED_PCB).setUnlocalizedName("unassembledPCB");
         PCBBlueprint = new ItemPneumatic(Textures.ITEM_PCB_BLUEPRINT).setUnlocalizedName("pcbBlueprint");
         bucketEtchingAcid = new ItemBucket(Blockss.etchingAcid).setTextureName(Textures.ICON_LOCATION + Textures.ITEM_BUCKET_ETCHING_ACID).setUnlocalizedName("etchingAcidBucket");
         transistor = new ItemPneumatic(Textures.ITEM_TRANSISTOR).setUnlocalizedName("transistor");
         capacitor = new ItemPneumatic(Textures.ITEM_CAPACITOR).setUnlocalizedName("capacitor");
         printedCircuitBoard = new ItemPneumatic(Textures.ITEM_PRINTED_CIRCUIT_BOARD).setUnlocalizedName("printedCircuitBoard");
-        failedPCB = new ItemPneumatic(Textures.ITEM_FAILED_PCB).setUnlocalizedName("failedPCB");
+        failedPCB = new ItemNonDespawning(Textures.ITEM_FAILED_PCB).setUnlocalizedName("failedPCB");
         networkComponent = new ItemNetworkComponents().setUnlocalizedName("networkComponent");
         stopWorm = new ItemPneumatic(Textures.ITEM_STOP_WORM).setUnlocalizedName("stopWorm");
         nukeVirus = new ItemPneumatic(Textures.ITEM_NUKE_VIRUS).setUnlocalizedName("nukeVirus");
@@ -82,6 +83,7 @@ public class Itemss{
         programmingPuzzle = new ItemProgrammingPuzzle().setUnlocalizedName("programmingPuzzle")/*.setTextureName("pneumaticcraft:programmingPuzzles/entityAttack")*/;
         advancedPCB = new ItemPneumatic(Textures.ITEM_ADVANCED_PCB).setUnlocalizedName("advancedPCB");
         remote = new ItemRemote("remote").setUnlocalizedName("remote");
+        seismicSensor = new ItemSeismicSensor();
 
         registerItems();
 
@@ -122,6 +124,7 @@ public class Itemss{
         registerItem(programmingPuzzle);
         registerItem(advancedPCB);
         registerItem(remote);
+        registerItem(seismicSensor);
     }
 
     public static void registerItem(Item item){
