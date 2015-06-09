@@ -141,6 +141,11 @@ sourceSets {
 }
 }
 
+apply plugin: 'idea'
+idea {
+    module.outputDir = sourceSets.main.output.classesDir
+}
+
 processResources
 {
     // replace stuff in mcmod.info, nothing else
