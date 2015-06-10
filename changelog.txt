@@ -1,18 +1,1 @@
-The PneumaticCraft Oil update!
-
--Added Oil.
--Added Gas Lift, Refinery and Thermopneumatic Processing Plant.
--Added LPG, Gasoline, Kerosine and Diesel.
--Added 'leave liquid/item' option in Liquid Hopper and Omnidirectional Hopper to allow for filtering.
--Rebalanced liquid heat values to nerf lava being used to power Refineries / Thermopneumatic Processing Plants.
--Change to OpenComputers integration: Every block except for the Drone Interface now requires an Adapter placed next to it for the block to provide the functions it used to provide.
--Drones now will turn themselves on whenever they fall off a Charging Station.
-
--Bugfix: Drone Interface returns 'inf' when invoking getPressure when connected to a drone right at world load.
--Bugfix: Aerial Interface causes null item stack warnings sometimes when trying to feed a player with a full inventory.
--Bugfix: Pressure Chamber rarely breaks when a server restarts.
--Bugfix: Plastic Mixer gets stuck when automatically filling it with liquid Plastic.
--Bugfix: non 3D items don't render in GUI tabs.
--Bugfix: Very strange ConcurrentModificationException with certain modset.
--Bugfix: Liquid dupe with the Liquid Hopper.
--Bugfix: Client crash with Thaumcraft helmet integration.
+-Bugfix: Crash when having ComputerCraft installed, but not OpenComputers.
