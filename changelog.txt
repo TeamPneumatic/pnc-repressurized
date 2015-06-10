@@ -1,6 +1,1 @@
-This version is compatible _again_ with the new Equivalent Exchange 3!
-
--Rebalanced the heat system.
--Added option for the Air Cannon to only shoot items when  the receiving inventory can accept it (when using a Block Tracker to shoot inserting items).
-
--Bugfix: Liquid Filter is rendering liquids as black squares.
+-Bugfix: Crash when having ComputerCraft installed, but not OpenComputers.

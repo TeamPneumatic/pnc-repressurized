@@ -124,6 +124,10 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
                     accessoryValves.add((TileEntityPressureChamberValve)te);
                 }
             }
+            if(accessoryValves.isEmpty()) {//Hacky solution for an unexplainable bug.
+                invalidateMultiBlock();
+                checkIfProperlyFormed(worldObj, xCoord, yCoord, zCoord);
+            }
             if(worldObj.isRemote) worldObj.markBlockRangeForRenderUpdate(xCoord, yCoord, zCoord, xCoord, yCoord, zCoord);
         }
 

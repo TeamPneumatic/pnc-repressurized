@@ -578,6 +578,7 @@ public class EntityDrone extends EntityDroneBase implements IManoMeasurable, IIn
         tag.setBoolean("hackedByOwner", gotoOwnerAI != null);
         tag.setInteger("color", getDroneColor());
         tag.setBoolean("standby", standby);
+        tag.setFloat("volume", volume);
 
         NBTTagCompound variableTag = new NBTTagCompound();
         aiManager.writeToNBT(variableTag);
@@ -618,6 +619,7 @@ public class EntityDrone extends EntityDroneBase implements IManoMeasurable, IIn
         progWidgets = TileEntityProgrammer.getWidgetsFromNBT(tag);
         naturallySpawned = tag.getBoolean("naturallySpawned");
         currentAir = tag.getFloat("currentAir");
+        volume = tag.getFloat("volume");
         dataWatcher.updateObject(12, currentAir / volume);
         propSpeed = tag.getFloat("propSpeed");
         disabledByHacking = tag.getBoolean("disabledByHacking");

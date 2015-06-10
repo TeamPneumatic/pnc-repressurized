@@ -38,7 +38,7 @@ public class BlockTrackEntryThaumcraft implements IBlockTrackEntry{
         if(te instanceof IAspectContainer) {
             IAspectContainer container = (IAspectContainer)te;
             AspectList aspects = container.getAspects();
-            if(aspects.size() > 0) {
+            if(aspects != null && aspects.size() > 0) {
                 infoList.add("blockTracker.info.thaumcraft");
                 for(Map.Entry<Aspect, Integer> entry : aspects.aspects.entrySet()) {
                     infoList.add("-" + entry.getValue() + "x " + entry.getKey().getName());

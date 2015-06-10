@@ -76,7 +76,14 @@ public class DroneGoToChargingStation extends EntityAIBase{
             isExecuting = drone.getPressure(null) < 9.9F && curCharger.getPressure(ForgeDirection.UNKNOWN) > drone.getPressure(null) + 0.1F;
             if(isExecuting) {
                 chargingTime++;
-                if(chargingTime > 20) drone.setStandby(true);
+                if(chargingTime > 20) {
+                    drone.getPathNavigator().moveToXYZ(curCharger.xCoord, curCharger.yCoord + 1.5, curCharger.zCoord);
+                    if(drone.getNavigator().getPath() == null || drone.getNavigator().getPath().isFinished()) {
+                        drone.setStandby(true);
+                    } else {
+                        chargingTime = 0;
+                    }
+                }
                 DroneClaimManager.getInstance(drone.worldObj).claim(new ChunkPosition(curCharger.xCoord, curCharger.yCoord, curCharger.zCoord));
             }
             return isExecuting;

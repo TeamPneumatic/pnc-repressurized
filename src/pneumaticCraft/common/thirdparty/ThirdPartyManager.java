@@ -45,25 +45,30 @@ public class ThirdPartyManager implements IGuiHandler{
 
     public void index(){
         Map<String, Class<? extends IThirdParty>> thirdPartyClasses = new HashMap<String, Class<? extends IThirdParty>>();
-        thirdPartyClasses.put(ModIds.INDUSTRIALCRAFT, IC2.class);
-        thirdPartyClasses.put(ModIds.BUILDCRAFT, BuildCraft.class);
-        thirdPartyClasses.put(ModIds.IGWMOD, IGWMod.class);
-        thirdPartyClasses.put(ModIds.COMPUTERCRAFT, ComputerCraft.class);
-        if(!Loader.isModLoaded(ModIds.COMPUTERCRAFT)) thirdPartyClasses.put(ModIds.OPEN_COMPUTERS, OpenComputers.class);
-        thirdPartyClasses.put(ModIds.FMP, FMPLoader.class);
-        thirdPartyClasses.put(ModIds.WAILA, Waila.class);
-        thirdPartyClasses.put(ModIds.HC, Hydraulicraft.class);
-        thirdPartyClasses.put(ModIds.THAUMCRAFT, Thaumcraft.class);
-        thirdPartyClasses.put(ModIds.BLOOD_MAGIC, BloodMagic.class);
-        thirdPartyClasses.put(ModIds.AE2, AE2.class);
-        thirdPartyClasses.put(ModIds.CHISEL, Chisel.class);
-        thirdPartyClasses.put(ModIds.FORESTRY, Forestry.class);
-        thirdPartyClasses.put(ModIds.MFR, MFR.class);
-        thirdPartyClasses.put(ModIds.OPEN_BLOCKS, OpenBlocks.class);
-        thirdPartyClasses.put(ModIds.COFH_CORE, CoFHCore.class);
-        thirdPartyClasses.put(ModIds.NOT_ENOUGH_KEYS, NotEnoughKeys.class);
-        thirdPartyClasses.put(ModIds.EE3, EE3.class);
-        DramaSplash.newDrama();
+        try {
+            thirdPartyClasses.put(ModIds.INDUSTRIALCRAFT, IC2.class);
+            thirdPartyClasses.put(ModIds.BUILDCRAFT, BuildCraft.class);
+            thirdPartyClasses.put(ModIds.IGWMOD, IGWMod.class);
+            thirdPartyClasses.put(ModIds.COMPUTERCRAFT, ComputerCraft.class);
+            if(!Loader.isModLoaded(ModIds.COMPUTERCRAFT)) thirdPartyClasses.put(ModIds.OPEN_COMPUTERS, OpenComputers.class);
+            thirdPartyClasses.put(ModIds.FMP, FMPLoader.class);
+            thirdPartyClasses.put(ModIds.WAILA, Waila.class);
+            thirdPartyClasses.put(ModIds.HC, Hydraulicraft.class);
+            thirdPartyClasses.put(ModIds.THAUMCRAFT, Thaumcraft.class);
+            thirdPartyClasses.put(ModIds.BLOOD_MAGIC, BloodMagic.class);
+            thirdPartyClasses.put(ModIds.AE2, AE2.class);
+            thirdPartyClasses.put(ModIds.CHISEL, Chisel.class);
+            thirdPartyClasses.put(ModIds.FORESTRY, Forestry.class);
+            thirdPartyClasses.put(ModIds.MFR, MFR.class);
+            thirdPartyClasses.put(ModIds.OPEN_BLOCKS, OpenBlocks.class);
+            thirdPartyClasses.put(ModIds.COFH_CORE, CoFHCore.class);
+            thirdPartyClasses.put(ModIds.NOT_ENOUGH_KEYS, NotEnoughKeys.class);
+            thirdPartyClasses.put(ModIds.EE3, EE3.class);
+            DramaSplash.newDrama();
+        } catch(Throwable e) {
+            Log.error("A class loader loaded a class where MineMaarten didn't expect it to do so! Please report, as third party content is broken.");
+            e.printStackTrace();
+        }
 
         List<String> enabledThirdParty = new ArrayList<String>();
         Config.config.addCustomCategoryComment("third_party_enabling", "With these options you can disable third party content by mod. Useful if something in the mod changes and causes crashes.");
@@ -78,7 +83,7 @@ public class ThirdPartyManager implements IGuiHandler{
             if(enabledThirdParty.contains(entry.getKey()) && Loader.isModLoaded(entry.getKey())) {
                 try {
                     thirdPartyMods.add(entry.getValue().newInstance());
-                } catch(Exception e) {
+                } catch(Throwable e) {
                     Log.error("Failed to instantiate third party handler!");
                     e.printStackTrace();
                 }
