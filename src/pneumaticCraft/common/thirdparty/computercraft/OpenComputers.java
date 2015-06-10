@@ -1,5 +1,6 @@
 package pneumaticCraft.common.thirdparty.computercraft;
 
+import cpw.mods.fml.common.Optional;
 import li.cil.oc.api.Driver;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -33,6 +34,13 @@ public class OpenComputers implements IThirdParty{
         if(!Loader.isModLoaded(ModIds.COMPUTERCRAFT)) {
             GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(droneInterface), true, " u ", "mp ", "iii", 'u', new ItemStack(Itemss.machineUpgrade, 1, ItemMachineUpgrade.UPGRADE_RANGE), 'm', Items.ender_pearl, 'p', Itemss.printedCircuitBoard, 'i', Names.INGOT_IRON_COMPRESSED));
         }
+        if(Loader.isModLoaded(ModIds.OPEN_COMPUTERS)) {
+            initializeDrivers();
+        }
+    }
+
+    @Optional.Method(modid = ModIds.OPEN_COMPUTERS)
+    private void initializeDrivers(){
         Driver.add(new DriverPneumaticCraft());
     }
 
