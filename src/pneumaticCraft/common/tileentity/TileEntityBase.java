@@ -270,11 +270,11 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
         return upgradeSlots;
     }
 
-    protected void writeInventoryToNBT(NBTTagCompound tag, ItemStack[] stacks){
+    public static void writeInventoryToNBT(NBTTagCompound tag, ItemStack[] stacks){
         writeInventoryToNBT(tag, stacks, "Items");
     }
 
-    protected void writeInventoryToNBT(NBTTagCompound tag, IInventory inventory, String tagName){
+    public static void writeInventoryToNBT(NBTTagCompound tag, IInventory inventory, String tagName){
         ItemStack[] stacks = new ItemStack[inventory.getSizeInventory()];
         for(int i = 0; i < stacks.length; i++) {
             stacks[i] = inventory.getStackInSlot(i);
@@ -282,7 +282,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
         writeInventoryToNBT(tag, stacks, tagName);
     }
 
-    protected void writeInventoryToNBT(NBTTagCompound tag, ItemStack[] stacks, String tagName){
+    public static void writeInventoryToNBT(NBTTagCompound tag, ItemStack[] stacks, String tagName){
         NBTTagList tagList = new NBTTagList();
         for(int i = 0; i < stacks.length; i++) {
             if(stacks[i] != null) {
@@ -295,11 +295,11 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
         tag.setTag(tagName, tagList);
     }
 
-    protected void readInventoryFromNBT(NBTTagCompound tag, ItemStack[] stacks){
+    public static void readInventoryFromNBT(NBTTagCompound tag, ItemStack[] stacks){
         readInventoryFromNBT(tag, stacks, "Items");
     }
 
-    protected void readInventoryFromNBT(NBTTagCompound tag, IInventory inventory, String tagName){
+    public static void readInventoryFromNBT(NBTTagCompound tag, IInventory inventory, String tagName){
         ItemStack[] stacks = new ItemStack[inventory.getSizeInventory()];
         readInventoryFromNBT(tag, stacks, tagName);
         for(int i = 0; i < stacks.length; i++) {
@@ -307,7 +307,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
         }
     }
 
-    protected void readInventoryFromNBT(NBTTagCompound tag, ItemStack[] stacks, String tagName){
+    public static void readInventoryFromNBT(NBTTagCompound tag, ItemStack[] stacks, String tagName){
         for(int i = 0; i < stacks.length; i++) {
             stacks[i] = null;
         }

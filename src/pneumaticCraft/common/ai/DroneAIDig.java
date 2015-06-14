@@ -53,6 +53,11 @@ public class DroneAIDig extends DroneAIBlockInteraction{
         return false;
     }
 
+    @Override
+    protected boolean respectClaims(){
+        return true;
+    }
+
     private void swapBestItemToFirstSlot(Block block, ChunkPosition pos){
         int bestSlot = 0;
         float bestSoftness = Float.MIN_VALUE;

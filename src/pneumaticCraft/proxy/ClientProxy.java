@@ -70,6 +70,7 @@ import pneumaticCraft.client.render.item.RenderItemDrone;
 import pneumaticCraft.client.render.item.RenderItemPneumaticCilinder;
 import pneumaticCraft.client.render.item.RenderItemPneumaticHelmet;
 import pneumaticCraft.client.render.item.RenderItemProgrammingPuzzle;
+import pneumaticCraft.client.render.item.RenderItemSemiBlock;
 import pneumaticCraft.client.render.item.RenderItemVortexCannon;
 import pneumaticCraft.client.render.itemblock.RenderItemPressureTube;
 import pneumaticCraft.client.render.itemblock.RenderItemTubeModule;
@@ -82,6 +83,7 @@ import pneumaticCraft.client.render.tileentity.RenderAphorismTile;
 import pneumaticCraft.client.render.tileentity.RenderElevatorCaller;
 import pneumaticCraft.client.render.tileentity.RenderModelBase;
 import pneumaticCraft.client.render.tileentity.RenderPressureTube;
+import pneumaticCraft.client.semiblock.ClientSemiBlockManager;
 import pneumaticCraft.common.CommonHUDHandler;
 import pneumaticCraft.common.Config;
 import pneumaticCraft.common.HackTickHandler;
@@ -96,6 +98,7 @@ import pneumaticCraft.common.entity.projectile.EntityChopperSeeds;
 import pneumaticCraft.common.entity.projectile.EntityPotionCloud;
 import pneumaticCraft.common.entity.projectile.EntityVortex;
 import pneumaticCraft.common.item.Itemss;
+import pneumaticCraft.common.semiblock.ItemSemiBlockBase;
 import pneumaticCraft.common.thirdparty.ThirdPartyManager;
 import pneumaticCraft.common.thirdparty.igwmod.IGWSupportNotifier;
 import pneumaticCraft.common.tileentity.TileEntityAdvancedAirCompressor;
@@ -255,6 +258,7 @@ public class ClientProxy extends CommonProxy{
         FMLCommonHandler.instance().bus().register(ClientTickHandler.instance());
         FMLCommonHandler.instance().bus().register(getHackTickHandler());
         FMLCommonHandler.instance().bus().register(clientHudHandler = new CommonHUDHandler());
+        MinecraftForge.EVENT_BUS.register(new ClientSemiBlockManager());
 
         MinecraftForge.EVENT_BUS.register(HUDHandler.instance().getSpecificRenderer(CoordTrackUpgradeHandler.class));
         MinecraftForge.EVENT_BUS.register(AreaShowManager.getInstance());
@@ -370,5 +374,10 @@ public class ClientProxy extends CommonProxy{
     @Override
     public HackTickHandler getHackTickHandler(){
         return clientHackTickHandler;
+    }
+
+    @Override
+    public void registerSemiBlockRenderer(ItemSemiBlockBase semiBlock){
+        MinecraftForgeClient.registerItemRenderer(semiBlock, new RenderItemSemiBlock(semiBlock.semiBlockId));
     }
 }

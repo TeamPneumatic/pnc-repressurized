@@ -48,6 +48,8 @@ public class Itemss{
     public static Item advancedPCB;
     public static Item remote;
     public static Item seismicSensor;
+    public static Item logisticsConfigurator;
+    public static Item logisticsFrameRequester;
 
     public static void init(){
         GPSTool = new ItemGPSTool().setUnlocalizedName("gpsTool");
@@ -84,6 +86,8 @@ public class Itemss{
         advancedPCB = new ItemPneumatic(Textures.ITEM_ADVANCED_PCB).setUnlocalizedName("advancedPCB");
         remote = new ItemRemote("remote").setUnlocalizedName("remote");
         seismicSensor = new ItemSeismicSensor();
+        logisticsConfigurator = new ItemLogisticsConfigurator(Textures.ITEM_AIR_CANISTER, PneumaticValues.AIR_CANISTER_MAX_AIR, PneumaticValues.AIR_CANISTER_VOLUME).setUnlocalizedName("logisticsConfigurator");
+        logisticsFrameRequester = new ItemLogisticsFrameRequester().setCreativeTab(PneumaticCraft.tabPneumaticCraft);
 
         registerItems();
 
@@ -125,6 +129,8 @@ public class Itemss{
         registerItem(advancedPCB);
         registerItem(remote);
         registerItem(seismicSensor);
+        registerItem(logisticsConfigurator);
+        registerItem(logisticsFrameRequester);
     }
 
     public static void registerItem(Item item){
