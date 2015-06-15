@@ -390,7 +390,7 @@ public class TileEntityPneumaticBase extends TileEntityBase implements IManoMeas
 
     @Override
     public String getType(){
-        return "pneumaticMachine";
+        return getBlockType().getUnlocalizedName().substring(5);
     }
 
     @Override
@@ -403,7 +403,7 @@ public class TileEntityPneumaticBase extends TileEntityBase implements IManoMeas
     }
 
     public List<ILuaMethod> getLuaMethods(){
-        return this.luaMethods;
+        return luaMethods;
     }
 
     @Override
@@ -434,9 +434,8 @@ public class TileEntityPneumaticBase extends TileEntityBase implements IManoMeas
             return true;
         }
         if(other instanceof TileEntity) {
-            TileEntity tother = (TileEntity) other;
-            return tother.getWorldObj().equals(worldObj)
-                && tother.xCoord == this.xCoord && tother.yCoord == this.yCoord && tother.zCoord == this.zCoord;
+            TileEntity tother = (TileEntity)other;
+            return tother.getWorldObj().equals(worldObj) && tother.xCoord == xCoord && tother.yCoord == yCoord && tother.zCoord == zCoord;
         }
 
         return false;
