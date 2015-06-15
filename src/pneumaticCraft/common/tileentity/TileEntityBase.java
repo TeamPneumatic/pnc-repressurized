@@ -124,23 +124,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
     }
 
     protected void updateNeighbours(){
-        int oldMeta = getBlockMetadata();
-        worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 15, 3);
-        worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, oldMeta, 3);
-        /*
-         * worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord - 1, zCoord,
-         * PneumaticCraft.BlockChargingStation.blockID);
-         * worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord + 1, zCoord,
-         * PneumaticCraft.BlockChargingStation.blockID);
-         * worldObj.notifyBlocksOfNeighborChange(xCoord - 1, yCoord, zCoord,
-         * PneumaticCraft.BlockChargingStation.blockID);
-         * worldObj.notifyBlocksOfNeighborChange(xCoord + 1, yCoord, zCoord,
-         * PneumaticCraft.BlockChargingStation.blockID);
-         * worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord, zCoord - 1,
-         * PneumaticCraft.BlockChargingStation.blockID);
-         * worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord, zCoord + 1,
-         * PneumaticCraft.BlockChargingStation.blockID);
-         */
+        worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord, zCoord, getBlockType());
     }
 
     public void onBlockRotated(){}

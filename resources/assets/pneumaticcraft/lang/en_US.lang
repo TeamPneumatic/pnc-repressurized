@@ -498,6 +498,7 @@ gui.programmer.button.export.pressRToChange=§cPress 'R' to change
 
 # Universal Sensor descriptions
 gui.universalSensor.desc.userSetSensor=This is a 'sensor' you can use to emit a constant redstone value. The value emitted is the numeric value inserted into the textbox.
+gui.universalSensor.desc.heatSensor=The coordinate marked by the GPS Tool is monitored for heat. When the temperature of the monitored block is higher than the temperature put in the text box (in degrees C) the sensor will emit a redstone strength of 15 and 0 if not. If the textbox is empty, the output level will be linear to the temperature, scaling from 0 through 400 degrees C.
 
 # GUI strings
 gui.entityFilter=Entity filter ('Pig', or '@mob')

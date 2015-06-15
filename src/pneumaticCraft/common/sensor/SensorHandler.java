@@ -26,6 +26,7 @@ import pneumaticCraft.common.sensor.eventSensors.BlockInteractSensor;
 import pneumaticCraft.common.sensor.eventSensors.PlayerAttackSensor;
 import pneumaticCraft.common.sensor.eventSensors.PlayerItemPickupSensor;
 import pneumaticCraft.common.sensor.pollSensors.BlockComparatorSensor;
+import pneumaticCraft.common.sensor.pollSensors.BlockHeatSensor;
 import pneumaticCraft.common.sensor.pollSensors.BlockLightLevelSensor;
 import pneumaticCraft.common.sensor.pollSensors.BlockMetadataSensor;
 import pneumaticCraft.common.sensor.pollSensors.BlockPresenceSensor;
@@ -70,6 +71,7 @@ public class SensorHandler implements ISensorRegistrator{
         SensorRegistrator.sensorRegistrator.registerSensor(new BlockComparatorSensor());
         SensorRegistrator.sensorRegistrator.registerSensor(new BlockRedstoneSensor());
         SensorRegistrator.sensorRegistrator.registerSensor(new BlockLightLevelSensor());
+        SensorRegistrator.sensorRegistrator.registerSensor(new BlockHeatSensor());
         SensorRegistrator.sensorRegistrator.registerSensor(new UserSetSensor());
         SensorRegistrator.sensorRegistrator.registerSensor(new TwitchStreamerSensor());
     }

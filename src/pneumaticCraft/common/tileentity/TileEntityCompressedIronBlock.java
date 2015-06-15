@@ -11,6 +11,7 @@ public class TileEntityCompressedIronBlock extends TileEntityBase implements IHe
     protected final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatExchangerLogic();
     @DescSynced
     private int heatLevel = 10;
+    private int oldComparatorOutput = 0;
     private static final int MIN_HEAT_LEVEL_TEMPERATURE = -200 + 273;
     private static final int MAX_HEAT_LEVEL_TEMPERATURE = 200 + 273;
 
@@ -33,6 +34,12 @@ public class TileEntityCompressedIronBlock extends TileEntityBase implements IHe
 
         if(!worldObj.isRemote) {
             heatLevel = getHeatLevelForTemperature(heatExchanger.getTemperature());
+
+            int comparatorOutput = getComparatorOutput((int)heatExchanger.getTemperature());
+            if(oldComparatorOutput != comparatorOutput) {
+                oldComparatorOutput = comparatorOutput;
+                updateNeighbours();
+            }
         }
     }
 
@@ -59,5 +66,16 @@ public class TileEntityCompressedIronBlock extends TileEntityBase implements IHe
     @Override
     protected boolean shouldRerenderChunkOnDescUpdate(){
         return true;
+    }
+
+    public static int getComparatorOutput(int temperature){
+        temperature = temperature - 200;
+        if(temperature < MIN_HEAT_LEVEL_TEMPERATURE) {
+            return 0;
+        } else if(temperature > MAX_HEAT_LEVEL_TEMPERATURE) {
+            return 15;
+        } else {
+            return (temperature - MIN_HEAT_LEVEL_TEMPERATURE) * 16 / (MAX_HEAT_LEVEL_TEMPERATURE - MIN_HEAT_LEVEL_TEMPERATURE);
+        }
     }
 }
