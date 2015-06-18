@@ -323,6 +323,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
     }
 
     public boolean redstoneAllows(){
+        if(worldObj.isRemote) onNeighborBlockUpdate();
         switch(((IRedstoneControl)this).getRedstoneMode()){
             case 0:
                 return true;
