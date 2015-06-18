@@ -28,6 +28,8 @@ import pneumaticCraft.common.CommonHUDHandler;
 import pneumaticCraft.common.Config;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.Itemss;
+import pneumaticCraft.common.network.NetworkHandler;
+import pneumaticCraft.common.network.PacketDescriptionPacketRequest;
 import pneumaticCraft.lib.PneumaticValues;
 
 public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler{
@@ -110,6 +112,15 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler{
                         }
                     }
                     if(!inList) {
+                        boolean sentUpdate = false;
+                        for(IBlockTrackEntry entry : entries) {
+                            if(entry.shouldBeUpdatedFromServer(te)) {
+                                if(!sentUpdate) {
+                                    NetworkHandler.sendToServer(new PacketDescriptionPacketRequest(i, j, k));
+                                    sentUpdate = true;
+                                }
+                            }
+                        }
                         addBlockTarget(new RenderBlockTarget(player.worldObj, player, i, j, k, te, this));
                         for(IBlockTrackEntry entry : entries) {
                             if(countBlockTrackersOfType(entry) == entry.spamThreshold() + 1) {

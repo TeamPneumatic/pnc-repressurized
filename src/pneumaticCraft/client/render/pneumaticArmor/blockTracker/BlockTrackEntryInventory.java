@@ -11,7 +11,9 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 import pneumaticCraft.api.client.pneumaticHelmet.IBlockTrackEntry;
+import pneumaticCraft.api.client.pneumaticHelmet.InventoryTrackEvent;
 import pneumaticCraft.client.render.pneumaticArmor.HUDHandler;
 import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.PacketDescriptionPacketRequest;
@@ -46,7 +48,7 @@ public class BlockTrackEntryInventory implements IBlockTrackEntry{
             TileEntityChest chest = (TileEntityChest)te;
             if(chest.adjacentChestXNeg != null || chest.adjacentChestZNeg != null) return false;
         }
-        return te != null && !invBlackList.contains(tileEntityClassToNameMapping.get(te.getClass())) && te instanceof IInventory;
+        return te != null && !invBlackList.contains(tileEntityClassToNameMapping.get(te.getClass())) && te instanceof IInventory && !MinecraftForge.EVENT_BUS.post(new InventoryTrackEvent(te));
     }
 
     @Override
