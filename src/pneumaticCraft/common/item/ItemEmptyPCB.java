@@ -58,6 +58,7 @@ public class ItemEmptyPCB extends ItemNonDespawning{
 
     @Override
     public boolean onEntityItemUpdate(EntityItem entityItem){
+        super.onEntityItemUpdate(entityItem);
         ItemStack stack = entityItem.getEntityItem();
         if(entityItem.worldObj.getBlock((int)Math.floor(entityItem.posX), (int)Math.floor(entityItem.posY), (int)Math.floor(entityItem.posZ)) == Blockss.etchingAcid) {
             if(!stack.hasTagCompound()) {
