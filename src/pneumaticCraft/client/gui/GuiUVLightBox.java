@@ -32,9 +32,9 @@ public class GuiUVLightBox extends GuiPneumaticContainerBase<TileEntityUVLightBo
         if(mode == 0) {
             return "gui.tab.redstoneBehaviour.button.never";
         } else if(mode == 4) {
-            return I18n.format("gui.tab.redstoneBehaviour.uvLightBox.button.chance") + " = 100%";
+            return I18n.format("gui.tab.redstoneBehaviour.uvLightBox.button.chance") + " = 100%%";
         } else {
-            return I18n.format("gui.tab.redstoneBehaviour.uvLightBox.button.chance") + " > " + (10 * mode + 60) + "%";
+            return I18n.format("gui.tab.redstoneBehaviour.uvLightBox.button.chance") + " > " + (10 * mode + 60) + "%%";
         }
     }
 
