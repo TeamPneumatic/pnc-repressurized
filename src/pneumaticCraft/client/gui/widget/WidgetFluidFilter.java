@@ -12,7 +12,7 @@ import net.minecraftforge.fluids.FluidStack;
 import org.lwjgl.opengl.GL11;
 
 public class WidgetFluidFilter extends WidgetBase{
-    private Fluid fluid;
+    protected Fluid fluid;
 
     public WidgetFluidFilter(int id, int x, int y){
         super(id, x, y, 16, 16);

@@ -108,7 +108,7 @@ public class EntityDrone extends EntityDroneBase implements IManoMeasurable, IIn
     private float propSpeed;
     private static final float LASER_EXTEND_SPEED = 0.05F;
 
-    private float currentAir; //the current held energy of the Drone;
+    protected float currentAir; //the current held energy of the Drone;
     private float volume;
     private RenderProgressingLine targetLine;
     private RenderProgressingLine oldTargetLine;
@@ -516,16 +516,21 @@ public class EntityDrone extends EntityDroneBase implements IManoMeasurable, IIn
         if(naturallySpawned) {
 
         } else {
-            NBTTagCompound tag = new NBTTagCompound();
-            writeEntityToNBT(tag);
-            ItemStack drone = new ItemStack(Itemss.drone);
-            drone.setTagCompound(tag);
+            ItemStack drone = getDroppedStack();
             if(hasCustomNameTag()) drone.setStackDisplayName(getCustomNameTag());
 
             entityDropItem(drone, 0);
         }
         if(!worldObj.isRemote) ((FakePlayerItemInWorldManager)getFakePlayer().theItemInWorldManager).cancelDigging();
         super.onDeath(par1DamageSource);
+    }
+
+    protected ItemStack getDroppedStack(){
+        NBTTagCompound tag = new NBTTagCompound();
+        writeEntityToNBT(tag);
+        ItemStack drone = new ItemStack(Itemss.drone);
+        drone.setTagCompound(tag);
+        return drone;
     }
 
     @Override

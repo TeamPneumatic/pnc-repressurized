@@ -9,7 +9,6 @@ import pneumaticCraft.common.block.Blockss;
 public class PneumaticCraftWikiTab extends BaseWikiTab{
 
     public PneumaticCraftWikiTab(){
-        pageEntries.add("oil");
         pageEntries.add("baseConcepts");
         pageEntries.add("machineUpgrades");
         pageEntries.add("generatingPressure");
@@ -18,14 +17,16 @@ public class PneumaticCraftWikiTab extends BaseWikiTab{
         skipLine();
         pageEntries.add("block/omnidirectionalHopper");
         pageEntries.add("block/liquidHopper");
-        pageEntries.add("block/plasticMixer");
         pageEntries.add("block/airCannon");
-        pageEntries.add("elevator");
         pageEntries.add("pneumaticDoor");
-        pageEntries.add("block/universalSensor");
-        pageEntries.add("block/aerialInterface");
-        skipLine();
         pageEntries.add("block/chargingStation");
+        skipLine();
+        pageEntries.add("oil");
+        pageEntries.add("block/plasticMixer");
+        pageEntries.add("elevator");
+        pageEntries.add("block/universalSensor");
+        pageEntries.add("item/logisticDrone");
+        skipLine();
         pageEntries.add("item/pneumaticHelmet");
         pageEntries.add("item/drone");
         pageEntries.add("block/programmableController");
@@ -35,6 +36,7 @@ public class PneumaticCraftWikiTab extends BaseWikiTab{
         pageEntries.add("assemblyMachines");
         pageEntries.add("block/aphorismTile");
         pageEntries.add("block/securityStation");
+        pageEntries.add("block/aerialInterface");
         skipLine();
         pageEntries.add("ic2Integration");
         pageEntries.add("cofhIntegration");

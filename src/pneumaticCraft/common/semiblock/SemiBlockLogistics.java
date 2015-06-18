@@ -1,18 +1,43 @@
 package pneumaticCraft.common.semiblock;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidTank;
+import net.minecraftforge.fluids.IFluidHandler;
+import net.minecraftforge.fluids.IFluidTank;
+import pneumaticCraft.PneumaticCraft;
+import pneumaticCraft.common.item.ItemLogisticsFrame;
+import pneumaticCraft.common.network.GuiSynced;
+import pneumaticCraft.common.tileentity.TileEntityBase;
 
 public abstract class SemiBlockLogistics extends SemiBlockBasic{
     protected final Map<ItemStack, Integer> incomingStacks = new HashMap<ItemStack, Integer>();
+    protected final Map<FluidStackWrapper, Integer> incomingFluid = new HashMap<FluidStackWrapper, Integer>();
+    private final IInventory filters = new InventoryBasic("filters", true, 27);//Filters and requests
+    @GuiSynced
+    private final FluidTank[] fluidFilters = new FluidTank[9];
+
+    public SemiBlockLogistics(){
+        for(int i = 0; i < fluidFilters.length; i++) {
+            fluidFilters[i] = new FluidTank(canFilterStack() ? 64000 : 1000);
+        }
+    }
 
     @Override
     public boolean canPlace(){
-        return getTileEntity() instanceof IInventory;
+        return getTileEntity() instanceof IInventory || getTileEntity() instanceof IFluidHandler;
     }
 
     public abstract int getColor();
@@ -36,6 +61,16 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic{
                 entry.setValue(counter + 1);
             }
         }
+        Iterator<Map.Entry<FluidStackWrapper, Integer>> it = incomingFluid.entrySet().iterator();
+        while(it.hasNext()) {
+            Map.Entry<FluidStackWrapper, Integer> entry = it.next();
+            int counter = entry.getValue();
+            if(counter > 10) {
+                it.remove();
+            } else {
+                entry.setValue(counter + 1);
+            }
+        }
     }
 
     public void informIncomingStack(ItemStack stack){
@@ -46,4 +81,147 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic{
         incomingStacks.remove(stack);
     }
 
+    public void informIncomingStack(FluidStackWrapper stack){
+        incomingFluid.put(stack, 0);
+    }
+
+    public void clearIncomingStack(FluidStackWrapper stack){
+        incomingFluid.remove(stack);
+    }
+
+    @Override
+    public void writeToNBT(NBTTagCompound tag){
+        super.writeToNBT(tag);
+        TileEntityBase.writeInventoryToNBT(tag, filters, "filters");
+
+        NBTTagList tagList = new NBTTagList();
+        for(FluidTank filter : fluidFilters) {
+            NBTTagCompound t = new NBTTagCompound();
+            filter.writeToNBT(t);
+            tagList.appendTag(t);
+        }
+        tag.setTag("fluidFilters", tagList);
+    }
+
+    @Override
+    public void readFromNBT(NBTTagCompound tag){
+        super.readFromNBT(tag);
+        TileEntityBase.readInventoryFromNBT(tag, filters, "filters");
+
+        NBTTagList tagList = tag.getTagList("fluidFilters", 10);
+        for(int i = 0; i < tagList.tagCount(); i++) {
+            fluidFilters[i].readFromNBT(tagList.getCompoundTagAt(i));
+        }
+    }
+
+    public void setFilter(int filterIndex, FluidStack stack){
+        fluidFilters[filterIndex].setFluid(stack);
+    }
+
+    public IFluidTank getTankFilter(int filterIndex){
+        return fluidFilters[filterIndex];
+    }
+
+    public IInventory getFilters(){
+        return filters;
+    }
+
+    @Override
+    public void addDrops(List<ItemStack> drops){
+        super.addDrops(drops);
+
+        boolean shouldAddTag = false;
+        for(int i = 0; i < filters.getSizeInventory(); i++) {
+            if(filters.getStackInSlot(i) != null) {//Only set a tag when there are requests.
+                shouldAddTag = true;
+                break;
+            }
+        }
+
+        for(FluidTank fluidFilter : fluidFilters) {
+            if(fluidFilter.getFluidAmount() > 0) {
+                shouldAddTag = true;
+                break;
+            }
+        }
+
+        if(shouldAddTag) {
+            ItemStack drop = drops.get(0);
+            NBTTagCompound tag = new NBTTagCompound();
+            writeToNBT(tag);
+            drop.setTagCompound(tag);
+        }
+    }
+
+    @Override
+    public void onPlaced(EntityPlayer player, ItemStack stack){
+        NBTTagCompound tag = stack.getTagCompound();
+        if(tag != null) {
+            readFromNBT(tag);
+        }
+    }
+
+    @Override
+    public boolean onRightClickWithConfigurator(EntityPlayer player){
+        if(getGuiID() >= 0) player.openGui(PneumaticCraft.instance, getGuiID(), world, pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ);
+        return true;
+    }
+
+    public int getGuiID(){
+        return -1;
+    }
+
+    public boolean canFilterStack(){
+        return false;
+    }
+
+    protected boolean isItemEqual(ItemStack s1, ItemStack s2){
+        return s1.isItemEqual(s2);
+    }
+
+    protected boolean passesFilter(ItemStack stack){
+        boolean hasStack = false;
+        for(int i = 0; i < filters.getSizeInventory(); i++) {
+            ItemStack s = filters.getStackInSlot(i);
+            if(s != null) {
+                if(isItemEqual(s, stack)) return true;
+                hasStack = true;
+            }
+        }
+        return !hasStack;
+    }
+
+    protected boolean passesFilter(Fluid fluid){
+        boolean hasFilter = false;
+        for(FluidTank filter : fluidFilters) {
+            if(filter.getFluidAmount() > 0) {
+                if(filter.getFluid().getFluid() == fluid) return true;
+                hasFilter = true;
+            }
+        }
+        return !hasFilter;
+    }
+
+    @Override
+    public void addWailaTooltip(List<String> curInfo, NBTTagCompound tag){
+        super.addWailaTooltip(curInfo, tag);
+        // readFromNBT(tag);
+        List<ItemStack> drops = new ArrayList<ItemStack>();
+        addDrops(drops);
+        drops.get(0).setTagCompound(tag);
+        ItemLogisticsFrame.addTooltip(drops.get(0), PneumaticCraft.proxy.getPlayer(), curInfo, true);
+    }
+
+    @Override
+    public void addWailaInfoToTag(NBTTagCompound tag){
+        writeToNBT(tag);
+    }
+
+    public static class FluidStackWrapper{
+        public final FluidStack stack;
+
+        public FluidStackWrapper(FluidStack stack){
+            this.stack = stack;
+        }
+    }
 }

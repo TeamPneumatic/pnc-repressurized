@@ -18,8 +18,8 @@ public class RenderItemDrone implements IItemRenderer{
 
     private final ModelDrone model;
 
-    public RenderItemDrone(){
-        model = new ModelDrone();
+    public RenderItemDrone(boolean isLogisticsDrone){
+        model = new ModelDrone(isLogisticsDrone);
     }
 
     @Override

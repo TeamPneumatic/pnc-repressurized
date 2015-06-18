@@ -1,1 +1,2 @@
--Bugfix: Crash when having ComputerCraft installed, but not OpenComputers.
+-Added Logistic Drones and Logistic Frames!
+-Changed recipes for balance sake for the Liquid Compressor, Electrostatic Compressor, Universal Sensor, Charging Station, Vortex Cannon and Pneumatic Wrench.

@@ -314,7 +314,7 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
 
     @Override
     protected void actionPerformed(GuiButton button){
-        NetworkHandler.sendToServer(new PacketGuiButton(te, button.id));
+        if(te != null) NetworkHandler.sendToServer(new PacketGuiButton(te, button.id));
     }
 
     protected String getRedstoneButtonText(int mode){
@@ -390,7 +390,7 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
                 }
             }
         }
-        NetworkHandler.sendToServer(new PacketGuiButton(te, widget.getID()));
+        if(te != null) NetworkHandler.sendToServer(new PacketGuiButton(te, widget.getID()));
     }
 
     @Override

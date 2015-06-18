@@ -64,7 +64,8 @@ public class NetworkHandler{
         INSTANCE.registerMessage(PacketSetGlobalVariable.class, PacketSetGlobalVariable.class, discriminant++, Side.SERVER);
         INSTANCE.registerMessage(PacketSetGlobalVariable.class, PacketSetGlobalVariable.class, discriminant++, Side.CLIENT);
         INSTANCE.registerMessage(PacketSetSemiBlock.class, PacketSetSemiBlock.class, discriminant++, Side.CLIENT);
-        INSTANCE.registerMessage(PacketSetRequesterStack.class, PacketSetRequesterStack.class, discriminant++, Side.SERVER);
+        INSTANCE.registerMessage(PacketSetLogisticsFilterStack.class, PacketSetLogisticsFilterStack.class, discriminant++, Side.SERVER);
+        INSTANCE.registerMessage(PacketSetLogisticsFluidFilterStack.class, PacketSetLogisticsFluidFilterStack.class, discriminant++, Side.SERVER);
 
         INSTANCE.registerMessage(PacketHackingBlockStart.class, PacketHackingBlockStart.class, discriminant++, Side.SERVER);
         INSTANCE.registerMessage(PacketHackingBlockStart.class, PacketHackingBlockStart.class, discriminant++, Side.CLIENT);

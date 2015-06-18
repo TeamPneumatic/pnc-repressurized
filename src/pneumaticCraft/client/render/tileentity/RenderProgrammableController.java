@@ -19,7 +19,7 @@ public class RenderProgrammableController extends TileEntitySpecialRenderer{
     @Override
     public void renderTileEntityAt(TileEntity tileentity, double d0, double d1, double d2, float f){
         if(renderDrone == null) {
-            renderDrone = new RenderDrone();
+            renderDrone = new RenderDrone(false);
             renderDrone.setRenderManager(RenderManager.instance);
             drone = new EntityDrone(tileentity.getWorldObj());
         }

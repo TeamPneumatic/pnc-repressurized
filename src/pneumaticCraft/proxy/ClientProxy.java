@@ -94,6 +94,7 @@ import pneumaticCraft.common.block.tubes.TubeModule;
 import pneumaticCraft.common.entity.EntityProgrammableController;
 import pneumaticCraft.common.entity.EntityRing;
 import pneumaticCraft.common.entity.living.EntityDrone;
+import pneumaticCraft.common.entity.living.EntityLogisticsDrone;
 import pneumaticCraft.common.entity.projectile.EntityChopperSeeds;
 import pneumaticCraft.common.entity.projectile.EntityPotionCloud;
 import pneumaticCraft.common.entity.projectile.EntityVortex;
@@ -211,15 +212,17 @@ public class ClientProxy extends CommonProxy{
         MinecraftForgeClient.registerItemRenderer(Itemss.stoneBase, new RenderItemCannonParts(true));
         MinecraftForgeClient.registerItemRenderer(Itemss.pneumaticCylinder, new RenderItemPneumaticCilinder());
         //   MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(Blockss.advancedPressureTube), new RenderItemAdvancedPressureTube());
-        MinecraftForgeClient.registerItemRenderer(Itemss.drone, new RenderItemDrone());
+        MinecraftForgeClient.registerItemRenderer(Itemss.drone, new RenderItemDrone(false));
+        MinecraftForgeClient.registerItemRenderer(Itemss.logisticsDrone, new RenderItemDrone(true));
         MinecraftForgeClient.registerItemRenderer(Itemss.programmingPuzzle, new RenderItemProgrammingPuzzle());
         if(Config.useHelmetModel) MinecraftForgeClient.registerItemRenderer(Itemss.pneumaticHelmet, new RenderItemPneumaticHelmet());
 
         RenderingRegistry.registerEntityRenderingHandler(EntityVortex.class, new RenderEntityVortex());
         RenderingRegistry.registerEntityRenderingHandler(EntityChopperSeeds.class, new RenderEntityChopperSeeds());
         RenderingRegistry.registerEntityRenderingHandler(EntityPotionCloud.class, new RenderEntityPotionCloud());
-        RenderingRegistry.registerEntityRenderingHandler(EntityDrone.class, new RenderDrone());
-        RenderingRegistry.registerEntityRenderingHandler(EntityProgrammableController.class, new RenderDrone());
+        RenderingRegistry.registerEntityRenderingHandler(EntityDrone.class, new RenderDrone(false));
+        RenderingRegistry.registerEntityRenderingHandler(EntityLogisticsDrone.class, new RenderDrone(true));
+        RenderingRegistry.registerEntityRenderingHandler(EntityProgrammableController.class, new RenderDrone(false));
 
         RenderingRegistry.registerEntityRenderingHandler(EntityRing.class, new RenderEntityRing());
         EntityRegistry.registerModEntity(EntityRing.class, "Ring", 100, PneumaticCraft.instance, 80, 1, true);

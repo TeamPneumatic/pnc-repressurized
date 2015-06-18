@@ -1,59 +1,18 @@
 package pneumaticCraft.common.semiblock;
 
-import java.util.List;
-
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import pneumaticCraft.PneumaticCraft;
-import pneumaticCraft.common.tileentity.TileEntityBase;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidTankInfo;
+import net.minecraftforge.fluids.IFluidHandler;
 import pneumaticCraft.common.util.IOHelper;
 import pneumaticCraft.proxy.CommonProxy;
 
 public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificRequester{
 
-    public static final String ID = "logisticsFrameRequester";
-    private final IInventory requests = new InventoryBasic("requests", true, 45);
-
-    @Override
-    public void writeToNBT(NBTTagCompound tag){
-        super.writeToNBT(tag);
-        TileEntityBase.writeInventoryToNBT(tag, requests, "requests");
-    }
-
-    @Override
-    public void readFromNBT(NBTTagCompound tag){
-        super.readFromNBT(tag);
-        TileEntityBase.readInventoryFromNBT(tag, requests, "requests");
-    }
-
-    public IInventory getRequests(){
-        return requests;
-    }
-
-    @Override
-    public void addDrops(List<ItemStack> drops){
-        super.addDrops(drops);
-        for(int i = 0; i < requests.getSizeInventory(); i++) {
-            if(requests.getStackInSlot(i) != null) {//Only set a tag when there are requests.
-                ItemStack drop = drops.get(0);
-                NBTTagCompound tag = new NBTTagCompound();
-                TileEntityBase.writeInventoryToNBT(tag, requests, "requests");
-                drop.setTagCompound(tag);
-                break;
-            }
-        }
-    }
-
-    @Override
-    public void onPlaced(EntityPlayer player, ItemStack stack){
-        NBTTagCompound tag = stack.getTagCompound();
-        if(tag != null && tag.hasKey("requests")) {
-            TileEntityBase.readInventoryFromNBT(tag, requests, "requests");
-        }
-    }
+    public static final String ID = "logisticFrameRequester";
 
     @Override
     public int getColor(){
@@ -87,8 +46,8 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
 
     private int getTotalRequestedAmount(ItemStack stack){
         int requesting = 0;
-        for(int i = 0; i < requests.getSizeInventory(); i++) {
-            ItemStack requestingStack = requests.getStackInSlot(i);
+        for(int i = 0; i < getFilters().getSizeInventory(); i++) {
+            ItemStack requestingStack = getFilters().getStackInSlot(i);
             if(requestingStack != null && isItemEqual(stack, requestingStack)) {
                 requesting += requestingStack.stackSize;
             }
@@ -96,8 +55,49 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
         return requesting;
     }
 
-    private boolean isItemEqual(ItemStack s1, ItemStack s2){
-        return s1.isItemEqual(s2);
+    @Override
+    public int amountRequested(FluidStack stack){
+        int totalRequestingAmount = getTotalRequestedAmount(stack);
+        if(totalRequestingAmount > 0) {
+            TileEntity te = getTileEntity();
+            if(te instanceof IFluidHandler) {
+
+                int count = 0;
+
+                for(ForgeDirection d : ForgeDirection.VALID_DIRECTIONS) {
+                    FluidTankInfo[] infos = ((IFluidHandler)te).getTankInfo(d);
+                    if(infos != null) {
+                        for(FluidTankInfo info : infos) {
+                            if(info.fluid != null && info.fluid.getFluid() == stack.getFluid()) {
+                                count += info.fluid.amount;
+                            }
+                        }
+                        if(count > 0) break;
+                    }
+                }
+
+                for(FluidStackWrapper s : incomingFluid.keySet()) {
+                    if(s.stack.getFluid() == stack.getFluid()) {
+                        count += s.stack.amount;
+                    }
+                }
+                int requested = Math.max(0, Math.min(stack.amount, totalRequestingAmount - count));
+                return requested;
+            }
+
+        }
+        return 0;
+    }
+
+    private int getTotalRequestedAmount(FluidStack stack){
+        int requesting = 0;
+        for(int i = 0; i < 9; i++) {
+            FluidStack requestingStack = getTankFilter(i).getFluid();
+            if(requestingStack != null && requestingStack.getFluid() == stack.getFluid()) {
+                requesting += requestingStack.amount;
+            }
+        }
+        return requesting;
     }
 
     @Override
@@ -106,8 +106,13 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
     }
 
     @Override
-    public boolean onRightClickWithConfigurator(EntityPlayer player){
-        player.openGui(PneumaticCraft.instance, CommonProxy.GUI_ID_LOGISTICS_REQUESTER, world, pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ);
+    public int getGuiID(){
+        return CommonProxy.GUI_ID_LOGISTICS_REQUESTER;
+    }
+
+    @Override
+    public boolean canFilterStack(){
         return true;
     }
+
 }

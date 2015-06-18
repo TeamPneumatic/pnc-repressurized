@@ -40,7 +40,7 @@ public class ContainerPneumaticBase<Tile extends TileEntityBase> extends Contain
 
     public void updateField(int index, Object value){
         syncedFields.get(index).setValue(value);
-        te.onGuiUpdate();
+        if(te != null) te.onGuiUpdate();
     }
 
     @Override
@@ -73,7 +73,7 @@ public class ContainerPneumaticBase<Tile extends TileEntityBase> extends Contain
     public ItemStack slotClick(int slotNum, int modifier, int mouseButton, EntityPlayer player){
         Slot slot = slotNum < 0 ? null : (Slot)inventorySlots.get(slotNum);
         if(slot instanceof IPhantomSlot) {
-            return slotClickPhantom(slot, mouseButton, modifier, player);
+            return slotClickPhantom(slot, modifier, mouseButton, player);
         }
         return super.slotClick(slotNum, modifier, mouseButton, player);
     }

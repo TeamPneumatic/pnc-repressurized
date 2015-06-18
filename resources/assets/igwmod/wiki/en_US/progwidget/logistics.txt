@@ -1,0 +1,4 @@
+Programming Puzzles are used in [link{block/programmer}]programmers [link{}].
+
+[prefix{l}]Logistics piece [prefix{}]
+The Logistics Piece will execute one full cycle of [link{item/logisticDrone}]logistics tasks[link{}], with the area selected being the area the drone will be looking for Logistics Frames.

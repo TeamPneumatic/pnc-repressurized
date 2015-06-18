@@ -73,12 +73,12 @@ public class CraftingRegistrator{
         // compressor
         addRecipe(new ItemStack(Blockss.airCompressor), true, "iii", "i t", "ifi", 'i', Names.INGOT_IRON_COMPRESSED, 't', new ItemStack(Blockss.pressureTube, 1, 0), 'f', Blocks.furnace);
         addRecipe(new ItemStack(Blockss.advancedAirCompressor), true, "iii", "i t", "ifi", 'i', Names.INGOT_IRON_COMPRESSED, 't', new ItemStack(Blockss.advancedPressureTube, 1, 0), 'f', Blockss.airCompressor);
-        addRecipe(new ItemStack(Blockss.liquidCompressor), true, "iii", "ibi", "ici", 'i', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.FIRE_FLOWER_DAMAGE), 'b', Items.bucket, 'c', Blockss.airCompressor);
+        addRecipe(new ItemStack(Blockss.liquidCompressor), true, "pbp", "lcl", 'p', Blockss.pressureTube, 'l', Items.leather, 'b', Items.bucket, 'c', Blockss.airCompressor);
         addRecipe(new ItemStack(Blockss.advancedLiquidCompressor), true, "iii", "ibt", "ici", 'i', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.RAIN_PLANT_DAMAGE), 'b', Items.bucket, 'c', Blockss.liquidCompressor, 't', Blockss.advancedPressureTube);
-        addRecipe(new ItemStack(Blockss.electrostaticCompressor), "bpb", "dra", "bcb", 'b', Blocks.iron_bars, 'p', Itemss.printedCircuitBoard, 'd', Items.diamond, 'r', Itemss.turbineRotor, 'a', new ItemStack(Blockss.advancedPressureTube), 'c', Blockss.airCompressor);
+        addRecipe(new ItemStack(Blockss.electrostaticCompressor), "bpb", "prp", "bcb", 'b', Blocks.iron_bars, 'p', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.BURST_PLANT_DAMAGE), 'r', Itemss.turbineRotor, 'c', Blockss.airCompressor);
 
         // Charging Station
-        addRecipe(new ItemStack(Blockss.chargingStation), "  t", "ppp", "sss", 's', cobbleSlab, 't', new ItemStack(Blockss.pressureTube, 1, 0), 'p', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.FIRE_FLOWER_DAMAGE));
+        addRecipe(new ItemStack(Blockss.chargingStation), "  t", "ppp", "sss", 's', cobbleSlab, 't', new ItemStack(Blockss.pressureTube, 1, 0), 'p', Items.brick);
 
         addRecipe(new ItemStack(Blockss.elevatorFrame, 4, 0), "i i", "i i", "i i", 'i', Names.INGOT_IRON_COMPRESSED);
         addRecipe(new ItemStack(Itemss.pneumaticCylinder), "pip", "pip", "pbp", 'p', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.RAIN_PLANT_DAMAGE), 'i', Names.INGOT_IRON_COMPRESSED, 'b', Itemss.cannonBarrel);
@@ -114,14 +114,16 @@ public class CraftingRegistrator{
         addRecipe(new ItemStack(Blockss.vacuumPump), "grg", "trt", "sss", 'g', Itemss.pressureGauge, 'r', Itemss.turbineRotor, 's', cobbleSlab, 't', new ItemStack(Blockss.pressureTube, 1, 0));
 
         // NEI support recipes
-        addRecipe(new ItemStack(Itemss.vortexCannon, 1, Itemss.vortexCannon.getMaxDamage()), "ppp", "c  ", "plp", 'p', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.HELIUM_PLANT_DAMAGE), 'l', Blocks.lever, 'c', new ItemStack(Itemss.airCanister, 1, Itemss.airCanister.getMaxDamage()));
-        addRecipe(new ItemStack(Itemss.pneumaticWrench, 1, Itemss.pneumaticWrench.getMaxDamage()), "ppp", "c  ", "plp", 'p', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.BURST_PLANT_DAMAGE), 'l', Blocks.lever, 'c', new ItemStack(Itemss.airCanister, 1, Itemss.airCanister.getMaxDamage()));
+        addRecipe(new ItemStack(Itemss.vortexCannon, 1, Itemss.vortexCannon.getMaxDamage()), "idi", "c  ", "ili", 'd', "dyeYellow", 'i', Itemss.ingotIronCompressed, 'l', Blocks.lever, 'c', new ItemStack(Itemss.airCanister, 1, Itemss.airCanister.getMaxDamage()));
+        addRecipe(new ItemStack(Itemss.pneumaticWrench, 1, Itemss.pneumaticWrench.getMaxDamage()), "idi", "c  ", "ili", 'd', "dyeOrange", 'i', Itemss.ingotIronCompressed, 'l', Blocks.lever, 'c', new ItemStack(Itemss.airCanister, 1, Itemss.airCanister.getMaxDamage()));
+        addRecipe(new ItemStack(Itemss.logisticsConfigurator, 1, Itemss.logisticsConfigurator.getMaxDamage()), "idi", "c  ", "ili", 'd', "dyeRed", 'i', Itemss.ingotIronCompressed, 'l', Blocks.lever, 'c', new ItemStack(Itemss.airCanister, 1, Itemss.airCanister.getMaxDamage()));
         addRecipe(new ItemStack(Itemss.pneumaticHelmet, 1, Itemss.pneumaticHelmet.getMaxDamage()), "cec", "c c", 'e', Itemss.printedCircuitBoard, 'c', new ItemStack(Itemss.airCanister, 1, Itemss.airCanister.getMaxDamage()));
         addShapelessRecipe(new ItemStack(Itemss.manometer, 1, Itemss.manometer.getMaxDamage()), new ItemStack(Itemss.airCanister, 1, Itemss.airCanister.getMaxDamage()), Itemss.pressureGauge);
 
         // Pneumatic Items
-        GameRegistry.addRecipe(new RecipeGun(ItemPlasticPlants.HELIUM_PLANT_DAMAGE, Itemss.vortexCannon));
-        GameRegistry.addRecipe(new RecipeGun(ItemPlasticPlants.BURST_PLANT_DAMAGE, Itemss.pneumaticWrench));
+        GameRegistry.addRecipe(new RecipeGun("dyeYellow", Itemss.vortexCannon));
+        GameRegistry.addRecipe(new RecipeGun("dyeOrange", Itemss.pneumaticWrench));
+        GameRegistry.addRecipe(new RecipeGun("dyeRed", Itemss.logisticsConfigurator));
         GameRegistry.addRecipe(new RecipePneumaticHelmet());
         GameRegistry.addRecipe(new RecipeManometer());
         GameRegistry.addRecipe(new RecipeColorDrone());
@@ -160,7 +162,7 @@ public class CraftingRegistrator{
             addShapelessRecipe(new ItemStack(Items.dye, 1, i), new ItemStack(Itemss.plasticPlant, 1, i));
             addShapelessRecipe(new ItemStack(Items.dye, 1, i), new ItemStack(Itemss.plasticPlant, 1, i + 16));//TODO remove legacy
         }
-        addRecipe(new ItemStack(Blockss.universalSensor), "plp", "lpl", "pcp", 'p', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.ENDER_PLANT_DAMAGE), 'l', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.CHOPPER_PLANT_DAMAGE), 'c', Itemss.printedCircuitBoard);
+        addRecipe(new ItemStack(Blockss.universalSensor), "plp", "lpl", "pcp", 'p', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.ENDER_PLANT_DAMAGE), 'l', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.CHOPPER_PLANT_DAMAGE), 'c', "dustRedstone");
         addRecipe(new ItemStack(Blockss.aerialInterface), "whw", "ese", "wtw", 'w', Blockss.pressureChamberWall, 'h', Blocks.hopper, 'e', Items.ender_pearl, 's', new ItemStack(Items.skull, 1, 1), 't', new ItemStack(Blockss.advancedPressureTube, 1, 0));
         addRecipe(new ItemStack(Blockss.omnidirectionalHopper), "i i", "ici", " i ", 'i', Names.INGOT_IRON_COMPRESSED, 'c', Blocks.chest);
         addRecipe(new ItemStack(Blockss.liquidHopper), "i i", "ici", " i ", 'i', "blockGlass", 'c', Blocks.hopper);
@@ -172,6 +174,12 @@ public class CraftingRegistrator{
         addRecipe(new ItemStack(Blockss.programmableController), "iri", "cdp", "ini", 'i', Names.INGOT_IRON_COMPRESSED, 'c', Itemss.printedCircuitBoard, 'r', Itemss.remote, 'd', Itemss.drone, 'p', Blockss.advancedPressureTube, 'n', new ItemStack(Itemss.networkComponent, 1, ItemNetworkComponents.NETWORK_REGISTRY));
 
         addRecipe(new ItemStack(Blockss.programmer), "gbg", "tpt", "ggg", 'g', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.FIRE_FLOWER_DAMAGE), 'b', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.SQUID_PLANT_DAMAGE), 't', Itemss.turbineRotor, 'p', Itemss.printedCircuitBoard);
+
+        addRecipe(new ItemStack(Itemss.logisticsDrone), " b ", "bcb", " b ", 'b', Itemss.turbineRotor, 'c', "dustRedstone");
+        addRecipe(new ItemStack(Itemss.logisticsFramePassiveProvider), "ppp", "p p", "ppp", 'p', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.FIRE_FLOWER_DAMAGE));
+        addRecipe(new ItemStack(Itemss.logisticsFrameActiveProvider), "ppp", "p p", "ppp", 'p', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.ENDER_PLANT_DAMAGE));
+        addRecipe(new ItemStack(Itemss.logisticsFrameRequester), "ppp", "p p", "ppp", 'p', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.RAIN_PLANT_DAMAGE));
+        addRecipe(new ItemStack(Itemss.logisticsFrameStorage), "ppp", "p p", "ppp", 'p', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.HELIUM_PLANT_DAMAGE));
 
         //Temporary recipes
         addRecipe(new ItemStack(Itemss.PCBBlueprint), true, "eee", "eie", "eee", 'e', Items.emerald, 'i', Names.INGOT_IRON_COMPRESSED);

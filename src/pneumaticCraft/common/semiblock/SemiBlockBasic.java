@@ -8,6 +8,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.World;
 
@@ -100,5 +102,13 @@ public class SemiBlockBasic implements ISemiBlock{
     @Override
     public boolean onRightClickWithConfigurator(EntityPlayer player){
         return false;
+    }
+
+    public void addWailaTooltip(List<String> curInfo, NBTTagCompound tag){
+        curInfo.add(EnumChatFormatting.YELLOW + "[" + StatCollector.translateToLocal(SemiBlockManager.getItemForSemiBlock(this).getUnlocalizedName() + ".name") + "]");
+    }
+
+    public void addWailaInfoToTag(NBTTagCompound tag){
+
     }
 }

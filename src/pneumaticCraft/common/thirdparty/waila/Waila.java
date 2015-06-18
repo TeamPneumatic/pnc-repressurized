@@ -1,6 +1,7 @@
 package pneumaticCraft.common.thirdparty.waila;
 
 import mcp.mobius.waila.api.IWailaRegistrar;
+import net.minecraft.block.Block;
 import pneumaticCraft.api.tileentity.IHeatExchanger;
 import pneumaticCraft.api.tileentity.IPneumaticMachine;
 import pneumaticCraft.common.block.pneumaticPlants.BlockPneumaticPlantBase;
@@ -30,6 +31,7 @@ public class Waila implements IThirdParty{
         registrar.registerBodyProvider(new WailaPneumaticHandler(), IPneumaticMachine.class);
         registrar.registerBodyProvider(new WailaHeatHandler(), IHeatExchanger.class);
         registrar.registerBodyProvider(new WailaPlantHandler(), BlockPneumaticPlantBase.class);
+        registrar.registerBodyProvider(new WailaSemiBlockHandler(), Block.class);
 
         //registrar.registerSyncedNBTKey("pneumatic", IPneumaticMachine.class);
 
@@ -38,6 +40,7 @@ public class Waila implements IThirdParty{
         registrar.registerNBTProvider(new WailaPneumaticHandler(), IPneumaticMachine.class);
         registrar.registerNBTProvider(new WailaHeatHandler(), IHeatExchanger.class);
         registrar.registerNBTProvider(new WailaTubeModuleHandler(), TileEntityPressureTube.class);
+        registrar.registerNBTProvider(new WailaSemiBlockHandler(), Block.class);
         //TODO registrar.registerBodyProvider(new WailaHandler(), TileMultipart.class);
     }
 

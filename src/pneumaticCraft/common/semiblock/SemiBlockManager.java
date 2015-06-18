@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -39,7 +40,7 @@ public class SemiBlockManager{
     private final Map<Chunk, Set<EntityPlayerMP>> syncList = new HashMap<Chunk, Set<EntityPlayerMP>>();
     private static final int SYNC_DISTANCE = 64;
     private static final HashBiMap<String, Class<? extends ISemiBlock>> registeredTypes = HashBiMap.create();
-    private static final Map<Class<? extends ISemiBlock>, Item> semiBlockToItems = new HashMap<Class<? extends ISemiBlock>, Item>();
+    private static final HashBiMap<Class<? extends ISemiBlock>, Item> semiBlockToItems = HashBiMap.create();
     private static final SemiBlockManager INSTANCE = new SemiBlockManager();
     private static final SemiBlockManager CLIENT_INSTANCE = new SemiBlockManager();
 
@@ -72,6 +73,10 @@ public class SemiBlockManager{
 
     public static Item getItemForSemiBlock(ISemiBlock semiBlock){
         return semiBlockToItems.get(semiBlock.getClass());
+    }
+
+    public static Class<? extends ISemiBlock> getSemiBlockForItem(Item item){
+        return semiBlockToItems.inverse().get(item);
     }
 
     public static String getKeyForSemiBlock(ISemiBlock semiBlock){
@@ -244,7 +249,11 @@ public class SemiBlockManager{
             ItemStack curItem = event.entityPlayer.getCurrentEquippedItem();
             if(curItem != null && curItem.getItem() instanceof ISemiBlockItem) {
                 if(getSemiBlock(event.world, event.x, event.y, event.z) != null) {
-                    breakSemiBlock(event.world, event.x, event.y, event.z);
+                    if(event.entityPlayer.capabilities.isCreativeMode) {
+                        setSemiBlock(event.world, event.x, event.y, event.z, null);
+                    } else {
+                        breakSemiBlock(event.world, event.x, event.y, event.z);
+                    }
                     event.setCanceled(true);
                 } else {
                     ISemiBlock newBlock = ((ISemiBlockItem)curItem.getItem()).getSemiBlock(event.world, event.x, event.y, event.z, curItem);
@@ -252,6 +261,7 @@ public class SemiBlockManager{
                     if(newBlock.canPlace()) {
                         setSemiBlock(event.world, event.x, event.y, event.z, newBlock);
                         newBlock.onPlaced(event.entityPlayer, curItem);
+                        event.world.playSoundEffect(event.x + 0.5, event.y + 0.5, event.z + 0.5, Block.soundTypeGlass.func_150496_b(), (Block.soundTypeGlass.getVolume() + 1.0F) / 2.0F, Block.soundTypeGlass.getPitch() * 0.8F);
                         if(!event.entityPlayer.capabilities.isCreativeMode) {
                             curItem.stackSize--;
                             if(curItem.stackSize <= 0) event.entityPlayer.setCurrentItemOrArmor(0, null);

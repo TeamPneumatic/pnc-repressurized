@@ -18,22 +18,36 @@ public class SemiBlockRendererLogistics implements ISemiBlockRenderer<SemiBlockL
         //GL11.glColor4d(1, 0, 0, 1);
         RenderUtils.glColorHex(semiBlock.getColor());
         double fw = 1 / 32D;
-        renderOffsetAABB(AxisAlignedBB.getBoundingBox(0 + fw, -fw, -fw, 1 - fw, fw, fw), 0, 0, 0);
-        renderOffsetAABB(AxisAlignedBB.getBoundingBox(0 + fw, 1 - fw, -fw, 1 - fw, 1 + fw, fw), 0, 0, 0);
-        renderOffsetAABB(AxisAlignedBB.getBoundingBox(0 + fw, -fw, 1 - fw, 1 - fw, fw, 1 + fw), 0, 0, 0);
-        renderOffsetAABB(AxisAlignedBB.getBoundingBox(0 + fw, 1 - fw, 1 - fw, 1 - fw, 1 + fw, 1 + fw), 0, 0, 0);
+        AxisAlignedBB aabb;
+        if(semiBlock.getWorld() != null) {
+            semiBlock.getBlock().setBlockBoundsBasedOnState(semiBlock.getWorld(), semiBlock.getPos().chunkPosX, semiBlock.getPos().chunkPosY, semiBlock.getPos().chunkPosZ);
+            aabb = semiBlock.getBlock().getSelectedBoundingBoxFromPool(semiBlock.getWorld(), semiBlock.getPos().chunkPosX, semiBlock.getPos().chunkPosY, semiBlock.getPos().chunkPosZ);
+        } else {
+            aabb = AxisAlignedBB.getBoundingBox(0 + fw, 0 + fw, 0 + fw, 1 - fw, 1 - fw, 1 - fw);
+        }
 
-        renderOffsetAABB(AxisAlignedBB.getBoundingBox(-fw, -fw, 0 + fw, fw, fw, 1 - fw), 0, 0, 0);
-        renderOffsetAABB(AxisAlignedBB.getBoundingBox(-fw, 1 - fw, 0 + fw, fw, 1 + fw, 1 - fw), 0, 0, 0);
-        renderOffsetAABB(AxisAlignedBB.getBoundingBox(1 - fw, -fw, 0 + fw, 1 + fw, fw, 1 - fw), 0, 0, 0);
-        renderOffsetAABB(AxisAlignedBB.getBoundingBox(1 - fw, 1 - fw, 0 + fw, 1 + fw, 1 + fw, 1 - fw), 0, 0, 0);
+        if(semiBlock.getPos() != null) GL11.glTranslated(-semiBlock.getPos().chunkPosX, -semiBlock.getPos().chunkPosY, -semiBlock.getPos().chunkPosZ);
 
-        renderOffsetAABB(AxisAlignedBB.getBoundingBox(-fw, 0 - fw, -fw, fw, 1 + fw, fw), 0, 0, 0);
-        renderOffsetAABB(AxisAlignedBB.getBoundingBox(1 - fw, 0 - fw, -fw, 1 + fw, 1 + fw, fw), 0, 0, 0);
-        renderOffsetAABB(AxisAlignedBB.getBoundingBox(-fw, 0 - fw, 1 - fw, fw, 1 + fw, 1 + fw), 0, 0, 0);
-        renderOffsetAABB(AxisAlignedBB.getBoundingBox(1 - fw, 0 - fw, 1 - fw, 1 + fw, 1 + fw, 1 + fw), 0, 0, 0);
+        renderFrame(aabb, fw);
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glColor4d(1, 1, 1, 1);
+    }
+
+    public static void renderFrame(AxisAlignedBB aabb, double fw){
+        renderOffsetAABB(AxisAlignedBB.getBoundingBox(aabb.minX + fw, aabb.minY - fw, aabb.minZ - fw, aabb.maxX - fw, aabb.minY + fw, aabb.minZ + fw), 0, 0, 0);
+        renderOffsetAABB(AxisAlignedBB.getBoundingBox(aabb.minX + fw, aabb.maxY - fw, aabb.minZ - fw, aabb.maxX - fw, aabb.maxY + fw, aabb.minZ + fw), 0, 0, 0);
+        renderOffsetAABB(AxisAlignedBB.getBoundingBox(aabb.minX + fw, aabb.minY - fw, aabb.maxZ - fw, aabb.maxX - fw, aabb.minY + fw, aabb.maxZ + fw), 0, 0, 0);
+        renderOffsetAABB(AxisAlignedBB.getBoundingBox(aabb.minX + fw, aabb.maxY - fw, aabb.maxZ - fw, aabb.maxX - fw, aabb.maxY + fw, aabb.maxZ + fw), 0, 0, 0);
+
+        renderOffsetAABB(AxisAlignedBB.getBoundingBox(aabb.minX - fw, aabb.minY - fw, aabb.minZ + fw, aabb.minX + fw, aabb.minY + fw, aabb.maxZ - fw), 0, 0, 0);
+        renderOffsetAABB(AxisAlignedBB.getBoundingBox(aabb.minX - fw, aabb.maxY - fw, aabb.minZ + fw, aabb.minX + fw, aabb.maxY + fw, aabb.maxZ - fw), 0, 0, 0);
+        renderOffsetAABB(AxisAlignedBB.getBoundingBox(aabb.maxX - fw, aabb.minY - fw, aabb.minZ + fw, aabb.maxX + fw, aabb.minY + fw, aabb.maxZ - fw), 0, 0, 0);
+        renderOffsetAABB(AxisAlignedBB.getBoundingBox(aabb.maxX - fw, aabb.maxY - fw, aabb.minZ + fw, aabb.maxX + fw, aabb.maxY + fw, aabb.maxZ - fw), 0, 0, 0);
+
+        renderOffsetAABB(AxisAlignedBB.getBoundingBox(aabb.minX - fw, aabb.minY - fw, aabb.minZ - fw, aabb.minX + fw, aabb.maxY + fw, aabb.minZ + fw), 0, 0, 0);
+        renderOffsetAABB(AxisAlignedBB.getBoundingBox(aabb.maxX - fw, aabb.minY - fw, aabb.minZ - fw, aabb.maxX + fw, aabb.maxY + fw, aabb.minZ + fw), 0, 0, 0);
+        renderOffsetAABB(AxisAlignedBB.getBoundingBox(aabb.minX - fw, aabb.minY - fw, aabb.maxZ - fw, aabb.minX + fw, aabb.maxY + fw, aabb.maxZ + fw), 0, 0, 0);
+        renderOffsetAABB(AxisAlignedBB.getBoundingBox(aabb.maxX - fw, aabb.minY - fw, aabb.maxZ - fw, aabb.maxX + fw, aabb.maxY + fw, aabb.maxZ + fw), 0, 0, 0);
     }
 
     public static void renderOffsetAABB(AxisAlignedBB p_76978_0_, double p_76978_1_, double p_76978_3_, double p_76978_5_){

@@ -15,9 +15,9 @@ import pneumaticCraft.lib.Textures;
 public class RenderDrone extends RendererLivingEntity{
     private final ModelDrone model;
 
-    public RenderDrone(){
+    public RenderDrone(boolean isLogisticsDrone){
         super(null, 0);
-        model = new ModelDrone();
+        model = new ModelDrone(isLogisticsDrone);
     }
 
     public void renderDrone(EntityDroneBase drone, double par2, double par4, double par6, float par8, float par9){

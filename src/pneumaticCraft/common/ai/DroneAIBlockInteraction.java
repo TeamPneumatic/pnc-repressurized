@@ -161,7 +161,7 @@ public abstract class DroneAIBlockInteraction extends EntityAIBase{
                         searchedBlocks++;
                     }
                     searchIndex++;
-                    if(searchedBlocks >= LOOKUPS_PER_SEARCH_TICK) return true;
+                    if(searchedBlocks >= lookupsPerSearch()) return true;
                 }
                 if(curPos == null) updateY();
             }
@@ -178,6 +178,10 @@ public abstract class DroneAIBlockInteraction extends EntityAIBase{
             }
             return !drone.getPathNavigator().hasNoPath();
         }
+    }
+
+    protected int lookupsPerSearch(){
+        return LOOKUPS_PER_SEARCH_TICK;
     }
 
     protected boolean respectClaims(){
@@ -204,7 +208,7 @@ public abstract class DroneAIBlockInteraction extends EntityAIBase{
      * Sends particle spawn packets to any close player that has a charged pneumatic helmet with entity tracker.
      * @param pos
      */
-    private void indicateToListeningPlayers(ChunkPosition pos){
+    protected void indicateToListeningPlayers(ChunkPosition pos){
         for(EntityPlayer player : (List<EntityPlayer>)drone.getWorld().playerEntities) {
             if(player.getCurrentArmor(3) != null && player.getCurrentArmor(3).getItem() == Itemss.pneumaticHelmet && ItemPneumaticArmor.getUpgrades(ItemMachineUpgrade.UPGRADE_ENTITY_TRACKER, player.getCurrentArmor(3)) > 0 && ((IPressurizable)Itemss.pneumaticHelmet).getPressure(player.getCurrentArmor(3)) > 0) {
                 NetworkHandler.sendTo(new PacketSpawnParticle("reddust", pos.chunkPosX + 0.5, pos.chunkPosY + 0.5, pos.chunkPosZ + 0.5, 0, 0, 0), (EntityPlayerMP)player);

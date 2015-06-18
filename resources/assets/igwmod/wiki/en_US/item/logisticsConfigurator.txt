@@ -1,0 +1,4 @@
+The Logistics Configurator's pure purpose is to help out with configuring a [link{item/logisticDrone}]Logistics Network[link{}]. By right clicking it on any Logistic Frame it can configure various filters. Sneak right-clicking removes the frame.
+
+
+[crafting{200, 110, key=item/logisticsConfigurator}]

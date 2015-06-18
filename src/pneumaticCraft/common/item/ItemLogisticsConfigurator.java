@@ -14,9 +14,19 @@ public class ItemLogisticsConfigurator extends ItemPressurizable{
 
     @Override
     public boolean onItemUseFirst(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float hitVecX, float hitVecY, float hitVecZ){
-        if(!world.isRemote) {
+        if(!world.isRemote && getMaxDamage() - stack.getItemDamage() >= 100) {
             ISemiBlock semiBlock = SemiBlockManager.getInstance().getSemiBlock(world, x, y, z);
-            if(semiBlock != null) return semiBlock.onRightClickWithConfigurator(player);
+            if(semiBlock != null) {
+                if(player.isSneaking()) {
+                    SemiBlockManager.getInstance().breakSemiBlock(world, x, y, z);
+                    return true;
+                } else {
+                    if(semiBlock.onRightClickWithConfigurator(player)) {
+                        addAir(stack, -100);
+                        return true;
+                    }
+                }
+            }
         }
         return false;
     }

@@ -1,6 +1,7 @@
 package pneumaticCraft.common.semiblock;
 
-public class SemiBlockPassiveProvider extends SemiBlockLogistics{
+public class SemiBlockPassiveProvider extends SemiBlockActiveProvider{
+    public static String ID = "logisticFramePassiveProvider";
 
     @Override
     public int getColor(){
@@ -8,8 +9,7 @@ public class SemiBlockPassiveProvider extends SemiBlockLogistics{
     }
 
     @Override
-    public int getPriority(){
-        return 0;
+    public boolean shouldProvideTo(int priority){
+        return priority > 1;
     }
-
 }
