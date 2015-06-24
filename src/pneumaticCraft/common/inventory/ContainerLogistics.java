@@ -86,9 +86,9 @@ public class ContainerLogistics extends ContainerPneumaticBase{
 
         Slot var4 = (Slot)inventorySlots.get(par2);
 
-        if(par2 >= 45 && var4 != null && var4.getHasStack()) {
+        if(par2 >= 27 && var4 != null && var4.getHasStack()) {
             ItemStack var5 = var4.getStack();
-            for(int i = 0; i < 45; i++) {
+            for(int i = 0; i < 27; i++) {
                 Slot slot = (Slot)inventorySlots.get(i);
                 if(!slot.getHasStack()) {
                     slot.putStack(var5.copy());
