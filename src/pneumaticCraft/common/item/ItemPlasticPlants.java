@@ -80,11 +80,13 @@ public class ItemPlasticPlants extends ItemPneumatic{
         texture[15] = registerSeed(reg, Textures.ICON_FLYING_FLOWER_LOCATION);
     }
 
+    @SideOnly(Side.CLIENT)
     public IIcon registerSeed(IIconRegister register, String texture){
         return register.registerIcon(texture + "Seeds");
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public IIcon getIconFromDamage(int meta){
         return texture[meta % 16];
     }
