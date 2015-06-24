@@ -7,7 +7,7 @@ import net.minecraft.inventory.IInventory;
  * 
  * @author CovertJaguar <http://www.railcraft.info>
  */
-class SlotPhantom extends SlotBase implements IPhantomSlot{
+public class SlotPhantom extends SlotBase implements IPhantomSlot{
 
     // used for filters
     SlotPhantom(IInventory par2IInventory, int par3, int par4, int par5){

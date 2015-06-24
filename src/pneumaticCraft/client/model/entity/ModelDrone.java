@@ -4,9 +4,11 @@ import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.util.AxisAlignedBB;
 
 import org.lwjgl.opengl.GL11;
 
+import pneumaticCraft.client.semiblock.SemiBlockRendererLogistics;
 import pneumaticCraft.client.util.RenderUtils;
 import pneumaticCraft.common.entity.EntityProgrammableController;
 import pneumaticCraft.common.entity.living.EntityDroneBase;
@@ -38,8 +40,10 @@ public class ModelDrone extends ModelBase{
     ModelRenderer LandingStand4;
     ModelRenderer LaserArm;
     ModelRenderer LaserSource;
+    private final boolean isLogisticsDrone;
 
-    public ModelDrone(){
+    public ModelDrone(boolean isLogisticsDrone){
+        this.isLogisticsDrone = isLogisticsDrone;
         textureWidth = 64;
         textureHeight = 32;
 
@@ -229,6 +233,14 @@ public class ModelDrone extends ModelBase{
         LandingStand4.render(f5);
         LaserArm.render(f5);
         LaserSource.render(f5);
+        if(isLogisticsDrone) {
+            GL11.glDisable(GL11.GL_TEXTURE_2D);
+            RenderUtils.glColorHex(0xFFFF0000);
+            double s = 3 / 16D;
+            double y = 17 / 16D;
+            SemiBlockRendererLogistics.renderFrame(AxisAlignedBB.getBoundingBox(-s, y - s, -s, s, y + s, s), 1 / 32D);
+            GL11.glEnable(GL11.GL_TEXTURE_2D);
+        }
     }
 
     @Override

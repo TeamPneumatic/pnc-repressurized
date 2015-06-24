@@ -34,6 +34,9 @@ import pneumaticCraft.client.gui.GuiThermopneumaticProcessingPlant;
 import pneumaticCraft.client.gui.GuiUVLightBox;
 import pneumaticCraft.client.gui.GuiUniversalSensor;
 import pneumaticCraft.client.gui.GuiVacuumPump;
+import pneumaticCraft.client.gui.semiblock.GuiLogisticsProvider;
+import pneumaticCraft.client.gui.semiblock.GuiLogisticsRequester;
+import pneumaticCraft.client.gui.semiblock.GuiLogisticsStorage;
 import pneumaticCraft.client.gui.tubemodule.GuiAirGrateModule;
 import pneumaticCraft.client.gui.tubemodule.GuiPressureModule;
 import pneumaticCraft.common.CommonHUDHandler;
@@ -50,6 +53,7 @@ import pneumaticCraft.common.inventory.ContainerElevator;
 import pneumaticCraft.common.inventory.ContainerGasLift;
 import pneumaticCraft.common.inventory.ContainerLiquidCompressor;
 import pneumaticCraft.common.inventory.ContainerLiquidHopper;
+import pneumaticCraft.common.inventory.ContainerLogistics;
 import pneumaticCraft.common.inventory.ContainerOmnidirectionalHopper;
 import pneumaticCraft.common.inventory.ContainerPlasticMixer;
 import pneumaticCraft.common.inventory.ContainerPneumaticDoor;
@@ -65,6 +69,12 @@ import pneumaticCraft.common.inventory.ContainerThermopneumaticProcessingPlant;
 import pneumaticCraft.common.inventory.ContainerUVLightBox;
 import pneumaticCraft.common.inventory.ContainerUniversalSensor;
 import pneumaticCraft.common.inventory.ContainerVacuumPump;
+import pneumaticCraft.common.semiblock.ItemSemiBlockBase;
+import pneumaticCraft.common.semiblock.SemiBlockActiveProvider;
+import pneumaticCraft.common.semiblock.SemiBlockLogistics;
+import pneumaticCraft.common.semiblock.SemiBlockManager;
+import pneumaticCraft.common.semiblock.SemiBlockRequester;
+import pneumaticCraft.common.semiblock.SemiBlockStorage;
 import pneumaticCraft.common.thirdparty.ThirdPartyManager;
 import pneumaticCraft.common.tileentity.TileEntityAdvancedAirCompressor;
 import pneumaticCraft.common.tileentity.TileEntityAdvancedLiquidCompressor;
@@ -142,6 +152,9 @@ public class CommonProxy implements IGuiHandler{
     public static final int GUI_ID_GAS_LIFT = 37;
     public static final int GUI_ID_REFINERY = 38;
     public static final int GUI_ID_THERMOPNEUMATIC_PROCESSING_PLANT = 39;
+    public static final int GUI_ID_LOGISTICS_REQUESTER = 40;
+    public static final int GUI_ID_LOGISTICS_STORAGE = 41;
+    public static final int GUI_ID_LOGISTICS_PASSIVE_PROVIDER = 42;
 
     private final HackTickHandler serverHackTickHandler = new HackTickHandler();
 
@@ -239,6 +252,10 @@ public class CommonProxy implements IGuiHandler{
                 return new ContainerRefinery(player.inventory, (TileEntityRefinery)world.getTileEntity(x, y, z));
             case GUI_ID_THERMOPNEUMATIC_PROCESSING_PLANT:
                 return new ContainerThermopneumaticProcessingPlant(player.inventory, (TileEntityThermopneumaticProcessingPlant)world.getTileEntity(x, y, z));
+            case GUI_ID_LOGISTICS_REQUESTER:
+            case GUI_ID_LOGISTICS_STORAGE:
+            case GUI_ID_LOGISTICS_PASSIVE_PROVIDER:
+                return new ContainerLogistics(player.inventory, (SemiBlockLogistics)SemiBlockManager.getInstance().getSemiBlock(world, x, y, z));
         }
         return ThirdPartyManager.instance().getServerGuiElement(ID, player, world, x, y, z);
     }
@@ -312,6 +329,12 @@ public class CommonProxy implements IGuiHandler{
                 return new GuiRefinery(player.inventory, (TileEntityRefinery)world.getTileEntity(x, y, z));
             case GUI_ID_THERMOPNEUMATIC_PROCESSING_PLANT:
                 return new GuiThermopneumaticProcessingPlant(player.inventory, (TileEntityThermopneumaticProcessingPlant)world.getTileEntity(x, y, z));
+            case GUI_ID_LOGISTICS_REQUESTER:
+                return new GuiLogisticsRequester(player.inventory, (SemiBlockRequester)SemiBlockManager.getClientInstance().getSemiBlock(world, x, y, z));
+            case GUI_ID_LOGISTICS_STORAGE:
+                return new GuiLogisticsStorage(player.inventory, (SemiBlockStorage)SemiBlockManager.getClientInstance().getSemiBlock(world, x, y, z));
+            case GUI_ID_LOGISTICS_PASSIVE_PROVIDER:
+                return new GuiLogisticsProvider(player.inventory, (SemiBlockActiveProvider)SemiBlockManager.getClientInstance().getSemiBlock(world, x, y, z));
         }
         return ThirdPartyManager.instance().getClientGuiElement(ID, player, world, x, y, z);
     }
@@ -335,4 +358,8 @@ public class CommonProxy implements IGuiHandler{
     }
 
     public void init(){}
+
+    public void registerSemiBlockRenderer(ItemSemiBlockBase semiBlock){
+
+    }
 }

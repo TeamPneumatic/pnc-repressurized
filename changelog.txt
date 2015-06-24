@@ -1,9 +1,2 @@
--Added Comparator support to the Compressed Iron Block and added Heat Sensor to the Universal Sensor.
--The name of PneumaticCraft computer peripherals are now correctly named to the device, instead of a generic "pneumaticMachine".
-
--API: Added InventoryTrackEvent.
-
--Bugfix: Lightning and Potion plants still can appear providing the right conditions.
--Bugfix: Format error in UV Lightbox GUI.
--Bugfix: PCB actually do despawn.
--Bugfix: GUI tabs show redstone problem even if the redstone condition is met.
+-Added Logistic Drones and Logistic Frames!
+-Changed recipes for balance sake for the Liquid Compressor, Electrostatic Compressor, Universal Sensor, Charging Station, Vortex Cannon and Pneumatic Wrench.

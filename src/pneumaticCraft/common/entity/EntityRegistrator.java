@@ -5,6 +5,7 @@ import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityList.EntityEggInfo;
 import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.common.entity.living.EntityDrone;
+import pneumaticCraft.common.entity.living.EntityLogisticsDrone;
 import pneumaticCraft.common.entity.projectile.EntityChopperSeeds;
 import pneumaticCraft.common.entity.projectile.EntityPotionCloud;
 import pneumaticCraft.common.entity.projectile.EntityVortex;
@@ -20,6 +21,7 @@ public class EntityRegistrator{
         EntityRegistry.registerModEntity(EntityChopperSeeds.class, "Chopper Plant Seeds Entity", 2, PneumaticCraft.instance, 80, 1, true);
         EntityRegistry.registerModEntity(EntityPotionCloud.class, "Potion Cloud", 3, PneumaticCraft.instance, 80, 1, true);
         EntityRegistry.registerModEntity(EntityDrone.class, "Drone", 4, PneumaticCraft.instance, 80, 1, true);
+        EntityRegistry.registerModEntity(EntityLogisticsDrone.class, "logisticDrone", 5, PneumaticCraft.instance, 80, 1, true);
         // Entity Eggs:
         // registerEntityEgg(EntityRook.class, 0xffffff, 0x000000);
     }

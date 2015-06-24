@@ -28,6 +28,7 @@ import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.recipes.CraftingHandler;
 import pneumaticCraft.common.recipes.CraftingRegistrator;
+import pneumaticCraft.common.semiblock.SemiBlockInitializer;
 import pneumaticCraft.common.sensor.SensorHandler;
 import pneumaticCraft.common.thirdparty.ThirdPartyManager;
 import pneumaticCraft.common.tileentity.TileEntityRegistrator;
@@ -87,6 +88,7 @@ public class PneumaticCraft{
         CraftingRegistrator.init();
         VillagerHandler.instance().init();
         GameRegistry.registerWorldGenerator(new WorldGeneratorPneumaticCraft(), 0);
+        SemiBlockInitializer.init();
 
         proxy.registerRenders();
         proxy.registerHandlers();

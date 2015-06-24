@@ -6,6 +6,7 @@ import net.minecraft.item.ItemBucket;
 import net.minecraftforge.oredict.OreDictionary;
 import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.common.block.Blockss;
+import pneumaticCraft.common.semiblock.SemiBlockActiveProvider;
 import pneumaticCraft.common.thirdparty.ThirdPartyManager;
 import pneumaticCraft.lib.Names;
 import pneumaticCraft.lib.PneumaticValues;
@@ -48,6 +49,12 @@ public class Itemss{
     public static Item advancedPCB;
     public static Item remote;
     public static Item seismicSensor;
+    public static Item logisticsConfigurator;
+    public static Item logisticsFrameRequester;
+    public static Item logisticsFrameStorage;
+    public static Item logisticsFramePassiveProvider;
+    public static Item logisticsFrameActiveProvider;
+    public static Item logisticsDrone;
 
     public static void init(){
         GPSTool = new ItemGPSTool().setUnlocalizedName("gpsTool");
@@ -84,6 +91,12 @@ public class Itemss{
         advancedPCB = new ItemPneumatic(Textures.ITEM_ADVANCED_PCB).setUnlocalizedName("advancedPCB");
         remote = new ItemRemote("remote").setUnlocalizedName("remote");
         seismicSensor = new ItemSeismicSensor();
+        logisticsConfigurator = new ItemLogisticsConfigurator("logisticsConfigurator", PneumaticValues.AIR_CANISTER_MAX_AIR, PneumaticValues.AIR_CANISTER_VOLUME).setUnlocalizedName("logisticsConfigurator");
+        logisticsFrameRequester = new ItemLogisticsFrameRequester().setCreativeTab(PneumaticCraft.tabPneumaticCraft);
+        logisticsFrameStorage = new ItemLogisticsFrameStorage().setCreativeTab(PneumaticCraft.tabPneumaticCraft);
+        logisticsFramePassiveProvider = new ItemLogisticsFramePassiveProvider().setCreativeTab(PneumaticCraft.tabPneumaticCraft);
+        logisticsFrameActiveProvider = new ItemLogisticsFrame(SemiBlockActiveProvider.ID).setCreativeTab(PneumaticCraft.tabPneumaticCraft);
+        logisticsDrone = new ItemLogisticsDrone().setUnlocalizedName("logisticDrone");
 
         registerItems();
 
@@ -125,6 +138,12 @@ public class Itemss{
         registerItem(advancedPCB);
         registerItem(remote);
         registerItem(seismicSensor);
+        registerItem(logisticsConfigurator);
+        registerItem(logisticsFrameRequester);
+        registerItem(logisticsFrameStorage);
+        registerItem(logisticsFramePassiveProvider);
+        registerItem(logisticsFrameActiveProvider);
+        registerItem(logisticsDrone);
     }
 
     public static void registerItem(Item item){

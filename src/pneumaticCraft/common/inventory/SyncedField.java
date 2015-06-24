@@ -37,7 +37,7 @@ public abstract class SyncedField<T> {
 
     public boolean update(){
         try {
-            T value = arrayIndex >= 0 ? getValueForArray(retrieveValue(field, te), arrayIndex) : retrieveValue(field, te);
+            T value = arrayIndex >= 0 ? getValueForArray(field.get(te), arrayIndex) : retrieveValue(field, te);
             if(lastValue == null && value != null || lastValue != null && !equals(lastValue, value)) {
                 lastValue = value == null ? null : copyWhenNecessary(value);
                 return !isLazy;
@@ -77,7 +77,7 @@ public abstract class SyncedField<T> {
     public void setValue(T value){
         try {
             if(arrayIndex >= 0) {
-                setValueForArray(retrieveValue(field, te), arrayIndex, value);
+                setValueForArray(field.get(te), arrayIndex, value);
             } else {
                 injectValue(field, te, value);
             }

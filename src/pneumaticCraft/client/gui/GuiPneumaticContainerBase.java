@@ -141,8 +141,7 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
                 String info = "gui.tab.info." + ((IInventory)te).getInventoryName();
                 String translatedInfo = I18n.format(info);
                 if(!translatedInfo.equals(info)) {
-                    if(!Loader.isModLoaded(ModIds.IGWMOD)) translatedInfo += " \\n \\n" + I18n.format("gui.tab.info.assistIGW");
-                    addAnimatedStat("gui.tab.info", Textures.GUI_INFO_LOCATION, 0xFF8888FF, true).setText(translatedInfo);
+                    addInfoTab(translatedInfo);
                 }
             }
             if(te instanceof IHeatExchanger) {
@@ -164,6 +163,11 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
                 if(upgradeText.size() > 0) addAnimatedStat("gui.tab.upgrades", Textures.GUI_UPGRADES_LOCATION, 0xFF0000FF, true).setText(upgradeText);
             }
         }
+    }
+
+    protected void addInfoTab(String info){
+        if(!Loader.isModLoaded(ModIds.IGWMOD)) info += " \\n \\n" + I18n.format("gui.tab.info.assistIGW");
+        addAnimatedStat("gui.tab.info", Textures.GUI_INFO_LOCATION, 0xFF8888FF, true).setText(info);
     }
 
     protected boolean shouldAddRedstoneTab(){
@@ -310,7 +314,7 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
 
     @Override
     protected void actionPerformed(GuiButton button){
-        NetworkHandler.sendToServer(new PacketGuiButton(te, button.id));
+        if(te != null) NetworkHandler.sendToServer(new PacketGuiButton(te, button.id));
     }
 
     protected String getRedstoneButtonText(int mode){
@@ -386,7 +390,7 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
                 }
             }
         }
-        NetworkHandler.sendToServer(new PacketGuiButton(te, widget.getID()));
+        if(te != null) NetworkHandler.sendToServer(new PacketGuiButton(te, widget.getID()));
     }
 
     @Override

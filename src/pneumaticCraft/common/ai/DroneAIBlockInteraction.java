@@ -29,7 +29,7 @@ public abstract class DroneAIBlockInteraction extends EntityAIBase{
     protected final IDroneBase drone;
     protected final ProgWidgetAreaItemBase widget;
     private final EnumOrder order;
-    private ChunkPosition curPos;
+    protected ChunkPosition curPos;
     private final List<ChunkPosition> area;
     protected final IBlockAccess worldCache;
     private final List<ChunkPosition> blacklist = new ArrayList<ChunkPosition>();//a list of position which weren't allowed to be digged in the past.
@@ -39,7 +39,7 @@ public abstract class DroneAIBlockInteraction extends EntityAIBase{
     private ThreadedSorter<ChunkPosition> sorter;
     private boolean aborted;
 
-    private boolean searching; //true while the drone is searching for a coordinate, false if traveling/processing a coordinate.
+    protected boolean searching; //true while the drone is searching for a coordinate, false if traveling/processing a coordinate.
     private int searchIndex;//The current index in the area list the drone is searching at.
     private static final int LOOKUPS_PER_SEARCH_TICK = 30; //How many blocks does the drone access per AI update.
 
@@ -125,7 +125,7 @@ public abstract class DroneAIBlockInteraction extends EntityAIBase{
                 firstRun = false;
                 while(!shouldAbort() && searchIndex < area.size()) {
                     ChunkPosition pos = area.get(searchIndex);
-                    if(isYValid(pos.chunkPosY) && !blacklist.contains(pos) && !DroneClaimManager.getInstance(drone.getWorld()).isClaimed(pos)) {
+                    if(isYValid(pos.chunkPosY) && !blacklist.contains(pos) && (!respectClaims() || !DroneClaimManager.getInstance(drone.getWorld()).isClaimed(pos))) {
                         indicateToListeningPlayers(pos);
                         if(isValidPosition(pos)) {
                             curPos = pos;
@@ -133,7 +133,7 @@ public abstract class DroneAIBlockInteraction extends EntityAIBase{
                                 if(moveIntoBlock()) {
                                     if(drone.getPathNavigator().moveToXYZ(curPos.chunkPosX, curPos.chunkPosY + 0.5, curPos.chunkPosZ)) {
                                         searching = false;
-                                        DroneClaimManager.getInstance(drone.getWorld()).claim(pos);
+                                        if(respectClaims()) DroneClaimManager.getInstance(drone.getWorld()).claim(pos);
                                         blacklist.clear();//clear the list for next time (maybe the blocks/rights have changed by the time there will be dug again).
                                         return true;
                                     }
@@ -141,7 +141,7 @@ public abstract class DroneAIBlockInteraction extends EntityAIBase{
                                     for(ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
                                         if(drone.getPathNavigator().moveToXYZ(curPos.chunkPosX + dir.offsetX, curPos.chunkPosY + dir.offsetY + 0.5, curPos.chunkPosZ + dir.offsetZ)) {
                                             searching = false;
-                                            DroneClaimManager.getInstance(drone.getWorld()).claim(pos);
+                                            if(respectClaims()) DroneClaimManager.getInstance(drone.getWorld()).claim(pos);
                                             blacklist.clear();//clear the list for next time (maybe the blocks/rights have changed by the time there will be dug again).
                                             return true;
                                         }
@@ -149,7 +149,7 @@ public abstract class DroneAIBlockInteraction extends EntityAIBase{
                                 }
                                 if(((EntityPathNavigateDrone)drone.getPathNavigator()).isGoingToTeleport()) {
                                     searching = false;
-                                    DroneClaimManager.getInstance(drone.getWorld()).claim(pos);
+                                    if(respectClaims()) DroneClaimManager.getInstance(drone.getWorld()).claim(pos);
                                     blacklist.clear();//clear the list for next time (maybe the blocks/rights have changed by the time there will be dug again).
                                     return true;
                                 }
@@ -161,7 +161,7 @@ public abstract class DroneAIBlockInteraction extends EntityAIBase{
                         searchedBlocks++;
                     }
                     searchIndex++;
-                    if(searchedBlocks >= LOOKUPS_PER_SEARCH_TICK) return true;
+                    if(searchedBlocks >= lookupsPerSearch()) return true;
                 }
                 if(curPos == null) updateY();
             }
@@ -171,13 +171,21 @@ public abstract class DroneAIBlockInteraction extends EntityAIBase{
             double dist = curPos != null ? PneumaticCraftUtils.distBetween(curPos.chunkPosX + 0.5, curPos.chunkPosY + 0.5, curPos.chunkPosZ + 0.5, dronePos.xCoord, dronePos.yCoord, dronePos.zCoord) : 0;
             if(curPos != null) {
                 if(!moveToPositions()) return doBlockInteraction(curPos, dist);
-                DroneClaimManager.getInstance(drone.getWorld()).claim(curPos);
+                if(respectClaims()) DroneClaimManager.getInstance(drone.getWorld()).claim(curPos);
                 if(dist < (moveIntoBlock() ? 1 : 2)) {
                     return doBlockInteraction(curPos, dist);
                 }
             }
             return !drone.getPathNavigator().hasNoPath();
         }
+    }
+
+    protected int lookupsPerSearch(){
+        return LOOKUPS_PER_SEARCH_TICK;
+    }
+
+    protected boolean respectClaims(){
+        return false;
     }
 
     protected boolean moveIntoBlock(){
@@ -200,7 +208,7 @@ public abstract class DroneAIBlockInteraction extends EntityAIBase{
      * Sends particle spawn packets to any close player that has a charged pneumatic helmet with entity tracker.
      * @param pos
      */
-    private void indicateToListeningPlayers(ChunkPosition pos){
+    protected void indicateToListeningPlayers(ChunkPosition pos){
         for(EntityPlayer player : (List<EntityPlayer>)drone.getWorld().playerEntities) {
             if(player.getCurrentArmor(3) != null && player.getCurrentArmor(3).getItem() == Itemss.pneumaticHelmet && ItemPneumaticArmor.getUpgrades(ItemMachineUpgrade.UPGRADE_ENTITY_TRACKER, player.getCurrentArmor(3)) > 0 && ((IPressurizable)Itemss.pneumaticHelmet).getPressure(player.getCurrentArmor(3)) > 0) {
                 NetworkHandler.sendTo(new PacketSpawnParticle("reddust", pos.chunkPosX + 0.5, pos.chunkPosY + 0.5, pos.chunkPosZ + 0.5, 0, 0, 0), (EntityPlayerMP)player);

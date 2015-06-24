@@ -57,6 +57,7 @@ import pneumaticCraft.common.progwidgets.ProgWidgetLiquidExport;
 import pneumaticCraft.common.progwidgets.ProgWidgetLiquidFilter;
 import pneumaticCraft.common.progwidgets.ProgWidgetLiquidImport;
 import pneumaticCraft.common.progwidgets.ProgWidgetLiquidInventoryCondition;
+import pneumaticCraft.common.progwidgets.ProgWidgetLogistics;
 import pneumaticCraft.common.progwidgets.ProgWidgetPickupItem;
 import pneumaticCraft.common.progwidgets.ProgWidgetPlace;
 import pneumaticCraft.common.progwidgets.ProgWidgetPressureCondition;
@@ -122,6 +123,7 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory{
         registeredWidgets.add(new ProgWidgetExternalProgram());
         registeredWidgets.add(new ProgWidgetCrafting());
         registeredWidgets.add(new ProgWidgetStandby());
+        registeredWidgets.add(new ProgWidgetLogistics());
         registeredWidgets.add(new ProgWidgetCoordinateCondition());
         registeredWidgets.add(new ProgWidgetRedstoneCondition());
         registeredWidgets.add(new ProgWidgetItemInventoryCondition());

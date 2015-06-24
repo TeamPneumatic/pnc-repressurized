@@ -70,6 +70,7 @@ import pneumaticCraft.client.render.item.RenderItemDrone;
 import pneumaticCraft.client.render.item.RenderItemPneumaticCilinder;
 import pneumaticCraft.client.render.item.RenderItemPneumaticHelmet;
 import pneumaticCraft.client.render.item.RenderItemProgrammingPuzzle;
+import pneumaticCraft.client.render.item.RenderItemSemiBlock;
 import pneumaticCraft.client.render.item.RenderItemVortexCannon;
 import pneumaticCraft.client.render.itemblock.RenderItemPressureTube;
 import pneumaticCraft.client.render.itemblock.RenderItemTubeModule;
@@ -82,6 +83,7 @@ import pneumaticCraft.client.render.tileentity.RenderAphorismTile;
 import pneumaticCraft.client.render.tileentity.RenderElevatorCaller;
 import pneumaticCraft.client.render.tileentity.RenderModelBase;
 import pneumaticCraft.client.render.tileentity.RenderPressureTube;
+import pneumaticCraft.client.semiblock.ClientSemiBlockManager;
 import pneumaticCraft.common.CommonHUDHandler;
 import pneumaticCraft.common.Config;
 import pneumaticCraft.common.HackTickHandler;
@@ -92,10 +94,12 @@ import pneumaticCraft.common.block.tubes.TubeModule;
 import pneumaticCraft.common.entity.EntityProgrammableController;
 import pneumaticCraft.common.entity.EntityRing;
 import pneumaticCraft.common.entity.living.EntityDrone;
+import pneumaticCraft.common.entity.living.EntityLogisticsDrone;
 import pneumaticCraft.common.entity.projectile.EntityChopperSeeds;
 import pneumaticCraft.common.entity.projectile.EntityPotionCloud;
 import pneumaticCraft.common.entity.projectile.EntityVortex;
 import pneumaticCraft.common.item.Itemss;
+import pneumaticCraft.common.semiblock.ItemSemiBlockBase;
 import pneumaticCraft.common.thirdparty.ThirdPartyManager;
 import pneumaticCraft.common.thirdparty.igwmod.IGWSupportNotifier;
 import pneumaticCraft.common.tileentity.TileEntityAdvancedAirCompressor;
@@ -208,15 +212,17 @@ public class ClientProxy extends CommonProxy{
         MinecraftForgeClient.registerItemRenderer(Itemss.stoneBase, new RenderItemCannonParts(true));
         MinecraftForgeClient.registerItemRenderer(Itemss.pneumaticCylinder, new RenderItemPneumaticCilinder());
         //   MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(Blockss.advancedPressureTube), new RenderItemAdvancedPressureTube());
-        MinecraftForgeClient.registerItemRenderer(Itemss.drone, new RenderItemDrone());
+        MinecraftForgeClient.registerItemRenderer(Itemss.drone, new RenderItemDrone(false));
+        MinecraftForgeClient.registerItemRenderer(Itemss.logisticsDrone, new RenderItemDrone(true));
         MinecraftForgeClient.registerItemRenderer(Itemss.programmingPuzzle, new RenderItemProgrammingPuzzle());
         if(Config.useHelmetModel) MinecraftForgeClient.registerItemRenderer(Itemss.pneumaticHelmet, new RenderItemPneumaticHelmet());
 
         RenderingRegistry.registerEntityRenderingHandler(EntityVortex.class, new RenderEntityVortex());
         RenderingRegistry.registerEntityRenderingHandler(EntityChopperSeeds.class, new RenderEntityChopperSeeds());
         RenderingRegistry.registerEntityRenderingHandler(EntityPotionCloud.class, new RenderEntityPotionCloud());
-        RenderingRegistry.registerEntityRenderingHandler(EntityDrone.class, new RenderDrone());
-        RenderingRegistry.registerEntityRenderingHandler(EntityProgrammableController.class, new RenderDrone());
+        RenderingRegistry.registerEntityRenderingHandler(EntityDrone.class, new RenderDrone(false));
+        RenderingRegistry.registerEntityRenderingHandler(EntityLogisticsDrone.class, new RenderDrone(true));
+        RenderingRegistry.registerEntityRenderingHandler(EntityProgrammableController.class, new RenderDrone(false));
 
         RenderingRegistry.registerEntityRenderingHandler(EntityRing.class, new RenderEntityRing());
         EntityRegistry.registerModEntity(EntityRing.class, "Ring", 100, PneumaticCraft.instance, 80, 1, true);
@@ -255,6 +261,7 @@ public class ClientProxy extends CommonProxy{
         FMLCommonHandler.instance().bus().register(ClientTickHandler.instance());
         FMLCommonHandler.instance().bus().register(getHackTickHandler());
         FMLCommonHandler.instance().bus().register(clientHudHandler = new CommonHUDHandler());
+        MinecraftForge.EVENT_BUS.register(new ClientSemiBlockManager());
 
         MinecraftForge.EVENT_BUS.register(HUDHandler.instance().getSpecificRenderer(CoordTrackUpgradeHandler.class));
         MinecraftForge.EVENT_BUS.register(AreaShowManager.getInstance());
@@ -370,5 +377,10 @@ public class ClientProxy extends CommonProxy{
     @Override
     public HackTickHandler getHackTickHandler(){
         return clientHackTickHandler;
+    }
+
+    @Override
+    public void registerSemiBlockRenderer(ItemSemiBlockBase semiBlock){
+        MinecraftForgeClient.registerItemRenderer(semiBlock, new RenderItemSemiBlock(semiBlock.semiBlockId));
     }
 }

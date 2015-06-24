@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import pneumaticCraft.common.inventory.ContainerPneumaticBase;
 import pneumaticCraft.common.inventory.SyncedField;
@@ -62,7 +63,7 @@ public class PacketUpdateGui extends AbstractPacket<PacketUpdateGui>{
                 return ByteBufUtils.readItemStack(buf);
             case 7:
                 if(!buf.readBoolean()) return null;
-                return new FluidStack(buf.readInt(), buf.readInt(), ByteBufUtils.readTag(buf));
+                return new FluidStack(FluidRegistry.getFluid(ByteBufUtils.readUTF8String(buf)), buf.readInt(), ByteBufUtils.readTag(buf));
         }
         throw new IllegalArgumentException("Invalid sync type! " + type);
     }
@@ -94,7 +95,7 @@ public class PacketUpdateGui extends AbstractPacket<PacketUpdateGui>{
                 buf.writeBoolean(value != null);
                 if(value != null) {
                     FluidStack stack = (FluidStack)value;
-                    buf.writeInt(stack.getFluid().getID());
+                    ByteBufUtils.writeUTF8String(buf, stack.getFluid().getName());
                     buf.writeInt(stack.amount);
                     ByteBufUtils.writeTag(buf, stack.tag);
                 }

@@ -25,8 +25,10 @@ public class GuiProgWidgetOptionBase<Widget extends IProgWidget> extends GuiPneu
         super.keyTyped(key, keyCode);
         if(keyCode == 1) {
             onGuiClosed();
-            NetworkHandler.sendToServer(new PacketProgrammerUpdate(guiProgrammer.te));
-            mc.displayGuiScreen(guiProgrammer);
+            if(guiProgrammer != null) {
+                NetworkHandler.sendToServer(new PacketProgrammerUpdate(guiProgrammer.te));
+                mc.displayGuiScreen(guiProgrammer);
+            }
         }
     }
 

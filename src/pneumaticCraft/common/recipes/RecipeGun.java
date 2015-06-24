@@ -1,47 +1,39 @@
 package pneumaticCraft.common.recipes;
 
+import net.minecraft.init.Blocks;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.world.World;
+import net.minecraftforge.oredict.OreDictionary;
+import net.minecraftforge.oredict.ShapedOreRecipe;
 import pneumaticCraft.common.item.Itemss;
 
 public class RecipeGun implements IRecipe{
-    private final int plasticMeta;
+    private final String dyeName;
     private final Item output;
 
-    public RecipeGun(int plasticMeta, Item output){
-        this.plasticMeta = plasticMeta;
+    public RecipeGun(String dyeName, Item output){
+        this.dyeName = dyeName;
         this.output = output;
     }
 
     @Override
     public boolean matches(InventoryCrafting inventory, World world){
-        if(inventory.getSizeInventory() < 9) return false;
-        for(int i = 0; i < inventory.getSizeInventory(); i++) {
-            if(i != 4 && i != 5) {
-                if(inventory.getStackInSlot(i) == null) return false;
-            } else {
-                if(inventory.getStackInSlot(i) != null) return false;
-            }
-        }
-        ItemStack yellowPlastic = new ItemStack(Itemss.plastic, 1, plasticMeta);
-        if(!inventory.getStackInRowAndColumn(0, 0).isItemEqual(yellowPlastic)) return false;
-        if(!inventory.getStackInRowAndColumn(1, 0).isItemEqual(yellowPlastic)) return false;
-        if(!inventory.getStackInRowAndColumn(2, 0).isItemEqual(yellowPlastic)) return false;
-        if(!inventory.getStackInRowAndColumn(0, 1).isItemEqual(yellowPlastic)) return false;
-        if(!inventory.getStackInRowAndColumn(0, 2).isItemEqual(yellowPlastic)) return false;
-        if(!inventory.getStackInRowAndColumn(1, 2).isItemEqual(yellowPlastic)) return false;
-        if(!inventory.getStackInRowAndColumn(2, 2).isItemEqual(yellowPlastic)) return false;
-        return true;
+        ShapedOreRecipe recipe = new ShapedOreRecipe(new ItemStack(Itemss.pneumaticWrench, 1, Itemss.pneumaticWrench.getMaxDamage()), "idi", "c  ", "ili", 'd', dyeName, 'i', Itemss.ingotIronCompressed, 'l', Blocks.lever, 'c', new ItemStack(Itemss.airCanister, 1, OreDictionary.WILDCARD_VALUE));
+        return recipe.matches(inventory, world);
     }
 
     @Override
     public ItemStack getCraftingResult(InventoryCrafting inventory){
         if(!matches(inventory, null)) return null;
         ItemStack output = getRecipeOutput();
-        output.setItemDamage(inventory.getStackInRowAndColumn(0, 1).getItemDamage());
+        for(int i = 0; i < inventory.getSizeInventory(); i++) {
+            if(inventory.getStackInSlot(i) != null && inventory.getStackInSlot(i).getItem() == Itemss.airCanister) {
+                output.setItemDamage(inventory.getStackInSlot(i).getItemDamage());
+            }
+        }
         return output;
     }
 

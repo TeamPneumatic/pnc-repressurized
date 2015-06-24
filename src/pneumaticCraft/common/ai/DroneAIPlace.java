@@ -25,6 +25,11 @@ public class DroneAIPlace extends DroneAIBlockInteraction{
     }
 
     @Override
+    protected boolean respectClaims(){
+        return true;
+    }
+
+    @Override
     protected boolean isValidPosition(ChunkPosition pos){
         if(drone.getWorld().isAirBlock(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ)) {
             boolean failedOnPlacement = false;

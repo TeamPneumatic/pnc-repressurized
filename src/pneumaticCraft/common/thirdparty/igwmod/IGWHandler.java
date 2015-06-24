@@ -7,6 +7,7 @@ import java.util.List;
 
 import net.minecraft.item.ItemStack;
 import pneumaticCraft.common.block.Blockss;
+import pneumaticCraft.common.entity.living.EntityLogisticsDrone;
 import pneumaticCraft.common.item.ItemProgrammingPuzzle;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.lib.Log;
@@ -59,6 +60,12 @@ public class IGWHandler{
         WikiRegistry.registerBlockAndItemPageEntry(Itemss.failedPCB, "item/etchingAcidBucket");
 
         WikiRegistry.registerBlockAndItemPageEntry(Itemss.networkComponent, "block/securityStation");
+
+        WikiRegistry.registerEntityPageEntry(EntityLogisticsDrone.class, "item/logisticDrone");
+        WikiRegistry.registerBlockAndItemPageEntry(Itemss.logisticsFrameActiveProvider, "item/logisticDrone");
+        WikiRegistry.registerBlockAndItemPageEntry(Itemss.logisticsFramePassiveProvider, "item/logisticDrone");
+        WikiRegistry.registerBlockAndItemPageEntry(Itemss.logisticsFrameRequester, "item/logisticDrone");
+        WikiRegistry.registerBlockAndItemPageEntry(Itemss.logisticsFrameStorage, "item/logisticDrone");
 
         Log.info("Loaded PneumaticCraft IGW-Mod plug-in! Thanks IGW-Mod!");
     }
