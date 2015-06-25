@@ -1,2 +1,9 @@
 -Added Logistic Drones and Logistic Frames!
 -Changed recipes for balance sake for the Liquid Compressor, Electrostatic Compressor, Universal Sensor, Charging Station, Vortex Cannon and Pneumatic Wrench.
+-Added Plastic bucket/block.
+
+-Bugfix: Rare crash with Pneumatic Helmet Block Tracker.
+-Bugfix: Every Pressure Chamber recipe is using Ore dict, allowing a dupe bug with Buckets with some instances.
+-Bugfix: Drones can't teleport to Charging Stations and cause lag because of this.
+-Bugfix: Right clicking an XU Drum with a PneumaticCraft liquid bucket will lose the bucket.
+-Bugfix: Oil is registered twice?

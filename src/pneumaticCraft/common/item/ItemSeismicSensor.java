@@ -12,7 +12,7 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-import pneumaticCraft.common.block.Blockss;
+import pneumaticCraft.common.fluid.Fluids;
 import pneumaticCraft.common.worldgen.OilTracker;
 
 public class ItemSeismicSensor extends ItemPneumatic{
@@ -31,7 +31,7 @@ public class ItemSeismicSensor extends ItemPneumatic{
                 player.addChatComponentMessage(new ChatComponentTranslation("message.seismicSensor.foundOil"));
                 while(testingY > 0) {
                     testingY--;
-                    if(world.getBlock(x, testingY, z) == Blockss.oil) {
+                    if(world.getBlock(x, testingY, z) == Fluids.oil.getBlock()) {
                         Set<ChunkPosition> oilPositions = new HashSet<ChunkPosition>();
                         Stack<ChunkPosition> pendingPositions = new Stack<ChunkPosition>();
                         pendingPositions.add(new ChunkPosition(x, testingY, z));
@@ -39,7 +39,7 @@ public class ItemSeismicSensor extends ItemPneumatic{
                             ChunkPosition checkingPos = pendingPositions.pop();
                             for(ForgeDirection d : ForgeDirection.VALID_DIRECTIONS) {
                                 ChunkPosition newPos = new ChunkPosition(checkingPos.chunkPosX + d.offsetX, checkingPos.chunkPosY + d.offsetY, checkingPos.chunkPosZ + d.offsetZ);
-                                if(world.getBlock(newPos.chunkPosX, newPos.chunkPosY, newPos.chunkPosZ) == Blockss.oil && world.getBlockMetadata(newPos.chunkPosX, newPos.chunkPosY, newPos.chunkPosZ) == 0 && oilPositions.add(newPos)) {
+                                if(world.getBlock(newPos.chunkPosX, newPos.chunkPosY, newPos.chunkPosZ) == Fluids.oil.getBlock() && world.getBlockMetadata(newPos.chunkPosX, newPos.chunkPosY, newPos.chunkPosZ) == 0 && oilPositions.add(newPos)) {
                                     pendingPositions.add(newPos);
                                 }
                             }
