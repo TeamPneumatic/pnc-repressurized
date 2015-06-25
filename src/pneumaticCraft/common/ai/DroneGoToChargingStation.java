@@ -69,10 +69,10 @@ public class DroneGoToChargingStation extends EntityAIBase{
      */
     @Override
     public boolean continueExecuting(){
-        if(drone.getNavigator().getPath() == null || curCharger.getUpgrades(ItemMachineUpgrade.UPGRADE_DISPENSER_DAMAGE) == 0 || curCharger.isInvalid()) {//If our path was blocked.
+        if(!((EntityPathNavigateDrone)drone.getPathNavigator()).isGoingToTeleport() && drone.getNavigator().getPath() == null || curCharger.getUpgrades(ItemMachineUpgrade.UPGRADE_DISPENSER_DAMAGE) == 0 || curCharger.isInvalid()) {//If our path was blocked.
             isExecuting = false;
             return false;
-        } else if(drone.getNavigator().getPath().isFinished()) {
+        } else if(!((EntityPathNavigateDrone)drone.getPathNavigator()).isGoingToTeleport() && (drone.getNavigator().getPath() == null || drone.getNavigator().getPath().isFinished())) {
             isExecuting = drone.getPressure(null) < 9.9F && curCharger.getPressure(ForgeDirection.UNKNOWN) > drone.getPressure(null) + 0.1F;
             if(isExecuting) {
                 chargingTime++;
