@@ -24,7 +24,6 @@ import pneumaticCraft.api.item.IProgrammable;
 import pneumaticCraft.client.gui.IGuiDrone;
 import pneumaticCraft.common.Config;
 import pneumaticCraft.common.DateEventHandler;
-import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.fluid.Fluids;
 import pneumaticCraft.common.item.ItemProgrammingPuzzle;
 import pneumaticCraft.common.item.Itemss;
@@ -89,7 +88,6 @@ public class ClientEventHandler{
 
     @SubscribeEvent
     public void onTextureStitchEventPost(TextureStitchEvent.Post event){
-        Fluids.EtchAcid.setIcons(Blockss.etchingAcid.getIcon(0, 0), Blockss.etchingAcid.getIcon(1, 0));
         for(int i = 0; i < Fluids.fluids.size(); i++) {
             if(Fluids.nativeFluids.get(i)) {
                 Fluid fluid = Fluids.fluids.get(i);

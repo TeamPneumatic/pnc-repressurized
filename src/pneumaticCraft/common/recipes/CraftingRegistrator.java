@@ -226,7 +226,7 @@ public class CraftingRegistrator{
         // Empty PCB
         registry.registerPressureChamberRecipe(new Object[]{new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.CREEPER_PLANT_DAMAGE), new ImmutablePair("ingotIronCompressed", 1)}, 1.5F, new ItemStack[]{new ItemStack(Itemss.emptyPCB, 1, Itemss.emptyPCB.getMaxDamage())});
         // Etching Acid Bucket
-        registry.registerPressureChamberRecipe(new ItemStack[]{new ItemStack(Itemss.plastic, 2, ItemPlasticPlants.CREEPER_PLANT_DAMAGE), new ItemStack(Items.rotten_flesh, 2, 0), new ItemStack(Items.gunpowder, 2, 0), new ItemStack(Items.spider_eye, 2, 0), new ItemStack(Items.water_bucket)}, 1.0F, new ItemStack[]{new ItemStack(Itemss.bucketEtchingAcid)});
+        registry.registerPressureChamberRecipe(new ItemStack[]{new ItemStack(Itemss.plastic, 2, ItemPlasticPlants.CREEPER_PLANT_DAMAGE), new ItemStack(Items.rotten_flesh, 2, 0), new ItemStack(Items.gunpowder, 2, 0), new ItemStack(Items.spider_eye, 2, 0), new ItemStack(Items.water_bucket)}, 1.0F, new ItemStack[]{new ItemStack(Fluids.fluidBlockToBucketMap.get(Fluids.etchingAcid))});
         // Transistor
         registry.registerPressureChamberRecipe(new Object[]{new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.SQUID_PLANT_DAMAGE), new ImmutablePair("ingotIronCompressed", 1), new ImmutablePair("dustRedstone", 1)}, 1.0F, new ItemStack[]{new ItemStack(Itemss.transistor)});
         // Capacitor

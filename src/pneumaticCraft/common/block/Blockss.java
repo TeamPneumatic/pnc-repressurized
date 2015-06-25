@@ -66,7 +66,6 @@ public class Blockss{
     public static Block advancedPressureTube;
     public static Block compressedIron;
     public static Block uvLightBox;
-    public static Block etchingAcid;
     public static Block securityStation;
     public static Block universalSensor;
     public static Block universalActuator;
@@ -127,7 +126,6 @@ public class Blockss{
         assemblyController = new BlockAssemblyController(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("assemblyController");
         compressedIron = new BlockCompressedIron(Material.iron).setBlockTextureName(Textures.BLOCK_COMPRESSED_IRON).setStepSound(Block.soundTypeMetal).setHardness(3.0F).setResistance(10.0F).setBlockName("compressedIronBlock");
         uvLightBox = new BlockUVLightBox(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("uvLightBox");
-        etchingAcid = new BlockFluidEtchingAcid().setBlockName("etchingAcid");
         securityStation = new BlockSecurityStation(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("securityStation");
         universalSensor = new BlockUniversalSensor(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("universalSensor");
         universalActuator = new BlockUniversalActuator(Material.iron).setHardness(3.0F).setResistance(10.0F).setBlockName("universalActuator");
@@ -194,7 +192,6 @@ public class Blockss{
         registerBlock(advancedPressureTube, ItemBlockAdvancedPressureTube.class);//TODO legacy remove item block.
         registerBlock(compressedIron);
         registerBlock(uvLightBox);
-        registerBlock(etchingAcid);
         registerBlock(securityStation);
         registerBlock(universalSensor);
         registerBlock(universalActuator);

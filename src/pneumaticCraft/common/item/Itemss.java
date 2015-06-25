@@ -2,10 +2,8 @@ package pneumaticCraft.common.item;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
-import net.minecraft.item.ItemBucket;
 import net.minecraftforge.oredict.OreDictionary;
 import pneumaticCraft.PneumaticCraft;
-import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.semiblock.SemiBlockActiveProvider;
 import pneumaticCraft.common.thirdparty.ThirdPartyManager;
 import pneumaticCraft.lib.Names;
@@ -34,7 +32,6 @@ public class Itemss{
     public static Item emptyPCB;
     public static Item unassembledPCB;
     public static Item PCBBlueprint;
-    public static Item bucketEtchingAcid;
     public static Item transistor;
     public static Item capacitor;
     public static Item printedCircuitBoard;
@@ -76,7 +73,6 @@ public class Itemss{
         emptyPCB = new ItemEmptyPCB().setUnlocalizedName("emptyPCB");
         unassembledPCB = new ItemNonDespawning(Textures.ITEM_UNASSEMBLED_PCB).setUnlocalizedName("unassembledPCB");
         PCBBlueprint = new ItemPneumatic(Textures.ITEM_PCB_BLUEPRINT).setUnlocalizedName("pcbBlueprint");
-        bucketEtchingAcid = new ItemBucket(Blockss.etchingAcid).setTextureName(Textures.ICON_LOCATION + Textures.ITEM_BUCKET_ETCHING_ACID).setUnlocalizedName("etchingAcidBucket");
         transistor = new ItemPneumatic(Textures.ITEM_TRANSISTOR).setUnlocalizedName("transistor");
         capacitor = new ItemPneumatic(Textures.ITEM_CAPACITOR).setUnlocalizedName("capacitor");
         printedCircuitBoard = new ItemPneumatic(Textures.ITEM_PRINTED_CIRCUIT_BOARD).setUnlocalizedName("printedCircuitBoard");
@@ -123,7 +119,6 @@ public class Itemss{
         registerItem(emptyPCB);
         registerItem(unassembledPCB);
         registerItem(PCBBlueprint);
-        registerItem(bucketEtchingAcid);
         registerItem(transistor);
         registerItem(capacitor);
         registerItem(printedCircuitBoard);

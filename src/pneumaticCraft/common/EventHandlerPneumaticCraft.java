@@ -204,10 +204,6 @@ public class EventHandlerPneumaticCraft{
 
     private ItemStack attemptFill(World world, MovingObjectPosition p){
         Block id = world.getBlock(p.blockX, p.blockY, p.blockZ);
-        if(id == Blockss.etchingAcid) {
-            world.setBlock(p.blockX, p.blockY, p.blockZ, net.minecraft.init.Blocks.air); // Remove the fluid block
-            return new ItemStack(Itemss.bucketEtchingAcid); // Return the filled bucked item here.
-        }
         for(Map.Entry<Block, Item> entry : Fluids.fluidBlockToBucketMap.entrySet()) {
             if(id == entry.getKey()) {
                 world.setBlock(p.blockX, p.blockY, p.blockZ, Blocks.air);

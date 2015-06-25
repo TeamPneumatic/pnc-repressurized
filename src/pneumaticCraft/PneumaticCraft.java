@@ -33,6 +33,7 @@ import pneumaticCraft.common.sensor.SensorHandler;
 import pneumaticCraft.common.thirdparty.ThirdPartyManager;
 import pneumaticCraft.common.tileentity.TileEntityRegistrator;
 import pneumaticCraft.common.worldgen.WorldGeneratorPneumaticCraft;
+import pneumaticCraft.lib.Log;
 import pneumaticCraft.lib.ModIds;
 import pneumaticCraft.lib.Names;
 import pneumaticCraft.lib.Versions;
@@ -44,6 +45,8 @@ import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLMissingMappingsEvent;
+import cpw.mods.fml.common.event.FMLMissingMappingsEvent.MissingMapping;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
@@ -145,5 +148,20 @@ public class PneumaticCraft{
 
         ThirdPartyManager.instance().postInit();
         proxy.postInit();
+    }
+
+    @EventHandler
+    public void onMissingMapping(FMLMissingMappingsEvent event){
+        for(MissingMapping mapping : event.get()) {
+            if(mapping.type == GameRegistry.Type.BLOCK && mapping.name.equals("PneumaticCraft:etchingAcid")) {
+                mapping.remap(Fluids.etchingAcid.getBlock());
+                Log.info("Remapping Etching Acid");
+            }
+            if(mapping.type == GameRegistry.Type.ITEM && mapping.name.equals("PneumaticCraft:etchingAcidBucket")) {
+                mapping.remap(Fluids.fluidBlockToBucketMap.get(Fluids.etchingAcid.getBlock()));
+                Log.info("Remapping Etching Acid Bucket");
+            }
+
+        }
     }
 }

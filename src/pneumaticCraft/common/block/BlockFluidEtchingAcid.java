@@ -17,13 +17,12 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class BlockFluidEtchingAcid extends BlockFluidClassic{
 
     public BlockFluidEtchingAcid(){
-        super(Fluids.EtchAcid, new MaterialLiquid(MapColor.waterColor){
+        super(Fluids.etchingAcid, new MaterialLiquid(MapColor.waterColor){
             @Override
             public int getMaterialMobility(){
                 return 1;
             }
         });
-        Fluids.EtchAcid.setBlock(this); // Set the fluids block ID to this block.
     }
 
     @Override
