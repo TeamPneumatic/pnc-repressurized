@@ -1,5 +1,6 @@
 package pneumaticCraft.common.thirdparty.ee3;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -7,6 +8,7 @@ import net.minecraft.item.ItemStack;
 import pneumaticCraft.api.recipe.AssemblyRecipe;
 import pneumaticCraft.api.recipe.PressureChamberRecipe;
 import pneumaticCraft.common.item.ItemPlasticPlants;
+import pneumaticCraft.common.recipes.PneumaticRecipeRegistry;
 import pneumaticCraft.common.thirdparty.IThirdParty;
 import pneumaticCraft.lib.Log;
 
@@ -31,7 +33,11 @@ public class EE3 implements IThirdParty{
     public void postInit(){
         for(PressureChamberRecipe recipe : PressureChamberRecipe.chamberRecipes) {
             if(recipe.output.length == 1) {
-                RecipeRegistryProxy.addRecipe(recipe.output[0], Arrays.asList(recipe.input));
+                List<ItemStack> stacks = new ArrayList<ItemStack>();
+                for(Object o : recipe.input) {
+                    stacks.add(PneumaticRecipeRegistry.getSingleStack(o));
+                }
+                RecipeRegistryProxy.addRecipe(recipe.output[0], stacks);
             } else {
                 Log.info("Found a Pressure Chamber recipe that has more than one output. This will cause problems with DynEMC!");
             }

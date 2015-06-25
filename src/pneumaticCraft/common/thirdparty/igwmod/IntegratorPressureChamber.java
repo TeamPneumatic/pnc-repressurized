@@ -25,6 +25,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import pneumaticCraft.api.recipe.PressureChamberRecipe;
 import pneumaticCraft.common.Config;
+import pneumaticCraft.common.recipes.PneumaticRecipeRegistry;
 
 public class IntegratorPressureChamber implements IRecipeIntegrator{
 
@@ -73,7 +74,7 @@ public class IntegratorPressureChamber implements IRecipeIntegrator{
             locatedStrings.add(new LocatedString(foundRecipe.pressure + " bar", x + 215, y + 20, 0xFF000000, false));
 
             for(int i = 0; i < foundRecipe.input.length; i++) {
-                LocatedStack stack = new LocatedStack(foundRecipe.input[i], (int)((x + 36 + i % 3 * 34) * GuiWiki.TEXT_SCALE), (int)((y + 102 - i / 3 * 34) * GuiWiki.TEXT_SCALE));
+                LocatedStack stack = new LocatedStack(PneumaticRecipeRegistry.getSingleStack(foundRecipe.input[i]), (int)((x + 36 + i % 3 * 34) * GuiWiki.TEXT_SCALE), (int)((y + 102 - i / 3 * 34) * GuiWiki.TEXT_SCALE));
                 locatedStacks.add(stack);
             }
 

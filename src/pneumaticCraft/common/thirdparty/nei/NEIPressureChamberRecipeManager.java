@@ -9,12 +9,13 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.oredict.OreDictionary;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.opengl.GL11;
 
 import pneumaticCraft.api.recipe.PressureChamberRecipe;
 import pneumaticCraft.client.gui.GuiPressureChamber;
+import pneumaticCraft.common.util.OreDictionaryHelper;
 import pneumaticCraft.lib.PneumaticValues;
 import pneumaticCraft.lib.Textures;
 import codechicken.nei.PositionedStack;
@@ -64,16 +65,14 @@ public class NEIPressureChamberRecipeManager extends PneumaticCraftPlugins{
             int posX = 19 + i % 3 * 17;
             int posY = 93 - i / 3 * 17;
 
-            int[] oreIDs = OreDictionary.getOreIDs(recipe.input[i]);
-            if(oreIDs.length > 0) {
+            if(recipe.input[i] instanceof Pair) {
                 List<ItemStack> oreInputs = new ArrayList<ItemStack>();
 
-                for(int oreID : oreIDs) {
-                    for(ItemStack oreInput : OreDictionary.getOres(OreDictionary.getOreName(oreID))) {
-                        oreInput = oreInput.copy();
-                        oreInput.stackSize = recipe.input[i].stackSize;
-                        oreInputs.add(oreInput);
-                    }
+                Pair<String, Integer> oreDictEntry = (Pair<String, Integer>)recipe.input[i];
+                for(ItemStack s : OreDictionaryHelper.getOreDictEntries(oreDictEntry.getKey())) {
+                    s = s.copy();
+                    s.stackSize = oreDictEntry.getValue();
+                    oreInputs.add(s);
                 }
                 stack = new PositionedStack(oreInputs, posX, posY, true);
             } else {

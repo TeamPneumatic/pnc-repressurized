@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.passive.EntityVillager;
@@ -31,7 +30,7 @@ import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.network.DescSynced;
 import pneumaticCraft.common.network.GuiSynced;
-import pneumaticCraft.common.util.PneumaticCraftUtils;
+import pneumaticCraft.common.recipes.PneumaticRecipeRegistry;
 import pneumaticCraft.lib.PneumaticValues;
 
 public class TileEntityPressureChamberValve extends TileEntityPneumaticBase implements IInventory, IMinWorkingPressure{
@@ -214,7 +213,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
                 if(isSufficientPressureInChamberFlag) isSufficientPressureInChamber = true;
                 if(isValidRecipeInChamberFlag && isSufficientPressureInChamberFlag && areEntitiesDoneMoving) {
                     double[] outputPosition = clearStacksInChamber(recipe.input);
-                    giveOutput(recipe.output, recipe.outputAsBlock, outputPosition);
+                    giveOutput(recipe.output, outputPosition);
                 }
             }
             //special recipes
@@ -231,7 +230,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
                 if(isSufficientPressureInChamberFlag) isSufficientPressureInChamber = true;
                 if(isValidRecipeInChamberFlag && isSufficientPressureInChamberFlag && areEntitiesDoneMoving) {
                     double[] outputPosition = clearStacksInChamber(removedStacks);
-                    giveOutput(recipe.craftRecipe(stacksInChamber, removedStacks), false, outputPosition);
+                    giveOutput(recipe.craftRecipe(stacksInChamber, removedStacks), outputPosition);
                 }
             }
 
@@ -304,13 +303,13 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
     }
 
     private boolean canBeCompressed(PressureChamberRecipe recipe, ItemStack[] items){
-        for(ItemStack in : recipe.input) {
+        for(Object in : recipe.input) {
             if(in != null) {
                 int amount = 0;
                 for(ItemStack item : items) {
-                    if(item != null && isItemOredictEqual(in, item)) amount += item.stackSize;
+                    if(item != null && PneumaticRecipeRegistry.isItemEqual(in, item)) amount += item.stackSize;
                 }
-                if(amount < in.stackSize) return false;
+                if(amount < PneumaticRecipeRegistry.getItemAmount(in)) return false;
             }
         }
         return true;
@@ -349,33 +348,13 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
                                                                    // list
     }
 
-    public double[] clearStacksInChamber(ItemStack... stacksToClear){
+    public double[] clearStacksInChamber(Object... stacksToClear){
         int[] stackSizes = new int[stacksToClear.length];
         for(int i = 0; i < stacksToClear.length; i++) {
-            stackSizes[i] = stacksToClear[i].stackSize;
+            stackSizes[i] = PneumaticRecipeRegistry.getItemAmount(stacksToClear[i]);
         }
         // default the output position to the middle of the chamber.
         double[] outputPosition = new double[]{multiBlockX + multiBlockSize / 2D, multiBlockY + 1.2D, multiBlockZ + multiBlockSize / 2D};
-        // get the in world blocks
-        /* for(int i = 0; i < multiBlockSize - 2; i++) {
-             for(int j = multiBlockSize - 3; j >= 0; j--) {
-                 for(int k = 0; k < multiBlockSize - 2; k++) {
-                     Block blockID = worldObj.getBlock(i + multiBlockX + 1, j + multiBlockY + 1, k + multiBlockZ + 1);
-                     if(!blockID.isAir(worldObj, i + multiBlockX + 1, j + multiBlockY + 1, k + multiBlockZ + 1)) {
-                         for(int l = 0; l < stacksToClear.length; l++) {
-                             if(Block.getBlockFromItem(stacksToClear[l].getItem()) == blockID && stackSizes[l] > 0) {
-                                 worldObj.func_147480_a(i + multiBlockX + 1, j + multiBlockY + 1, k + multiBlockZ + 1, false);
-                                 stackSizes[l]--;
-                                 outputPosition[0] = i + multiBlockX + 1.5D;
-                                 outputPosition[1] = j + multiBlockY + 1.5D;
-                                 outputPosition[2] = k + multiBlockZ + 1.5D;
-                                 break;
-                             }
-                         }
-                     }
-                 }
-             }
-         }*/
 
         // get the in world EntityItems
         AxisAlignedBB bbBox = AxisAlignedBB.getBoundingBox(multiBlockX, multiBlockY, multiBlockZ, multiBlockX + multiBlockSize, multiBlockY + multiBlockSize, multiBlockZ + multiBlockSize);
@@ -384,7 +363,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
             if(entity.isDead) continue;
             ItemStack entityStack = entity.getEntityItem();
             for(int l = 0; l < stacksToClear.length; l++) {
-                if(isItemOredictEqual(stacksToClear[l], entityStack) && stackSizes[l] > 0) {
+                if(PneumaticRecipeRegistry.isItemEqual(stacksToClear[l], entityStack) && stackSizes[l] > 0) {
                     outputPosition[0] = entity.posX;
                     outputPosition[1] = entity.posY;
                     outputPosition[2] = entity.posZ;
@@ -399,58 +378,10 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
         return outputPosition;
     }
 
-    private boolean isItemOredictEqual(ItemStack stack1, ItemStack stack2){
-        return stack1.isItemEqual(stack2) || PneumaticCraftUtils.isSameOreDictStack(stack1, stack2);
-    }
-
-    private void giveOutput(ItemStack[] output, boolean outputAsBlock, double[] outputPosition){
+    private void giveOutput(ItemStack[] output, double[] outputPosition){
         for(ItemStack iStack : output) {
-
-            if(outputAsBlock)// when the output is a block.
-            {
-                int stackSize = iStack.stackSize;
-                for(int i = 0; i < multiBlockSize - 2; i++) {
-                    for(int j = 0; j < multiBlockSize - 2; j++) {
-                        for(int k = 0; k < multiBlockSize - 2; k++) {
-                            if(stackSize <= 0) continue;
-                            if(worldObj.isAirBlock(j + multiBlockX + 1, i + multiBlockY + 1, k + multiBlockZ + 1)) {
-                                worldObj.setBlock(j + multiBlockX + 1, i + multiBlockY + 1, k + multiBlockZ + 1, Block.getBlockFromItem(iStack.getItem()), iStack.getItemDamage(), 3);
-                                stackSize--;
-                            }
-                        }
-                    }
-                }
-            } else {
-
-                EntityItem item = new EntityItem(worldObj, outputPosition[0], outputPosition[1], outputPosition[2], iStack.copy());
-                worldObj.spawnEntityInWorld(item);
-            }
-        }
-    }
-
-    private void addStackToList(List<ItemStack> list, ItemStack stack){
-        for(ItemStack listStack : list) {
-            if(canCombineStacks(listStack, stack)) {
-                listStack.stackSize += stack.stackSize;
-                return;
-            }
-        }
-        list.add(stack);
-    }
-
-    private boolean canCombineStacks(ItemStack iStack1, ItemStack iStack2){
-        if(iStack1.getItem() != iStack2.getItem()) {
-            return false;
-        } else if(iStack1.hasTagCompound() ^ iStack2.hasTagCompound()) {
-            return false;
-        } else if(iStack1.hasTagCompound() && !iStack1.getTagCompound().equals(iStack2.getTagCompound())) {
-            return false;
-        } else if(iStack1.getItem().getHasSubtypes() && iStack1.getItemDamage() != iStack2.getItemDamage()) {
-            return false;
-        } else if(iStack1.stackSize + iStack2.stackSize > iStack1.getMaxStackSize()) {
-            return false;
-        } else {
-            return true;
+            EntityItem item = new EntityItem(worldObj, outputPosition[0], outputPosition[1], outputPosition[2], iStack.copy());
+            worldObj.spawnEntityInWorld(item);
         }
     }
 

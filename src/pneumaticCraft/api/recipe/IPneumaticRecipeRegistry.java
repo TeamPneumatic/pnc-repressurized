@@ -40,11 +40,11 @@ public interface IPneumaticRecipeRegistry{
 
     /**
      * Adds a recipe to the Pressure Chamber.
-     * @param input
+     * @param input , either of type ItemStack or Pair<String, Integer>, where the String is the Ore dictionary entry and Integer is the amount (stack size)
      * @param pressureRequired negative pressures for negative pressure needs.
      * @param output
      */
-    public void registerPressureChamberRecipe(ItemStack[] input, float pressureRequired, ItemStack[] output);
+    public void registerPressureChamberRecipe(Object[] input, float pressureRequired, ItemStack[] output);
 
     /**
      * Allows for registry of a recipe which allows for all your custom needs.

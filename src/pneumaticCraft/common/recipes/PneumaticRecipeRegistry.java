@@ -7,11 +7,16 @@ import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.oredict.OreDictionary;
+
+import org.apache.commons.lang3.tuple.Pair;
+
 import pneumaticCraft.api.recipe.AssemblyRecipe;
 import pneumaticCraft.api.recipe.IPneumaticRecipeRegistry;
 import pneumaticCraft.api.recipe.IPressureChamberRecipe;
 import pneumaticCraft.api.recipe.IThermopneumaticProcessingPlantRecipe;
 import pneumaticCraft.api.recipe.PressureChamberRecipe;
+import pneumaticCraft.common.util.OreDictionaryHelper;
 
 public class PneumaticRecipeRegistry implements IPneumaticRecipeRegistry{
     public List<IThermopneumaticProcessingPlantRecipe> thermopneumaticProcessingPlantRecipes = new ArrayList<IThermopneumaticProcessingPlantRecipe>();
@@ -49,10 +54,36 @@ public class PneumaticRecipeRegistry implements IPneumaticRecipeRegistry{
     }
 
     @Override
-    public void registerPressureChamberRecipe(ItemStack[] input, float pressureRequired, ItemStack[] output){
+    public void registerPressureChamberRecipe(Object[] input, float pressureRequired, ItemStack[] output){
         if(output == null) throw new NullPointerException("Output can't be null!");
         if(input == null) throw new NullPointerException("Input can't be null!");
-        PressureChamberRecipe.chamberRecipes.add(new PressureChamberRecipe(input, pressureRequired, output, false));
+        PressureChamberRecipe.chamberRecipes.add(new PressureChamberRecipe(input, pressureRequired, output));
+    }
+
+    public static boolean isItemEqual(Object o, ItemStack stack){
+
+        if(o instanceof ItemStack) {
+            return OreDictionary.itemMatches((ItemStack)o, stack, false);
+        } else {
+            String oreDict = (String)((Pair)o).getKey();
+            return OreDictionaryHelper.isItemEqual(oreDict, stack);
+        }
+    }
+
+    public static int getItemAmount(Object o){
+        return o instanceof ItemStack ? ((ItemStack)o).stackSize : (Integer)((Pair)o).getValue();
+    }
+
+    public static ItemStack getSingleStack(Object o){
+        if(o instanceof ItemStack) {
+            return (ItemStack)o;
+        } else {
+            Pair<String, Integer> pair = (Pair)o;
+            ItemStack s = OreDictionaryHelper.getOreDictEntries(pair.getKey()).get(0);
+            s = s.copy();
+            s.stackSize = pair.getValue();
+            return s;
+        }
     }
 
     @Override

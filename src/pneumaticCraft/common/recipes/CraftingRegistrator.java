@@ -17,7 +17,12 @@ import net.minecraftforge.oredict.RecipeSorter;
 import net.minecraftforge.oredict.RecipeSorter.Category;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
+
+import org.apache.commons.lang3.tuple.ImmutablePair;
+
+import pneumaticCraft.api.PneumaticRegistry;
 import pneumaticCraft.api.recipe.AssemblyRecipe;
+import pneumaticCraft.api.recipe.IPneumaticRecipeRegistry;
 import pneumaticCraft.api.recipe.PressureChamberRecipe;
 import pneumaticCraft.common.Config;
 import pneumaticCraft.common.block.Blockss;
@@ -205,29 +210,29 @@ public class CraftingRegistrator{
     }
 
     private static void addPressureChamberRecipes(){
+        IPneumaticRecipeRegistry registry = PneumaticRegistry.getInstance().getRecipeRegistry();
         // diamond
-        if(Config.enableCoalToDiamondsRecipe) PressureChamberRecipe.chamberRecipes.add(new PressureChamberRecipe(new ItemStack[]{new ItemStack(Blocks.coal_block, 8, 0)}, 4.0F, new ItemStack[]{new ItemStack(Items.diamond, 1, 0)}, false));
+        if(Config.enableCoalToDiamondsRecipe) registry.registerPressureChamberRecipe(new ItemStack[]{new ItemStack(Blocks.coal_block, 8, 0)}, 4.0F, new ItemStack[]{new ItemStack(Items.diamond, 1, 0)});
         // compressed iron
-        PressureChamberRecipe.chamberRecipes.add(new PressureChamberRecipe(new ItemStack[]{new ItemStack(Items.iron_ingot, 1, 0)}, 2F, new ItemStack[]{new ItemStack(Itemss.ingotIronCompressed, 1, 0)}, false));
-        PressureChamberRecipe.chamberRecipes.add(new PressureChamberRecipe(new ItemStack[]{new ItemStack(Blocks.iron_block, 1, 0)}, 2F, new ItemStack[]{new ItemStack(Blockss.compressedIron, 1, 0)}, false));
+        registry.registerPressureChamberRecipe(new Object[]{new ImmutablePair("ingotIron", 1)}, 2F, new ItemStack[]{new ItemStack(Itemss.ingotIronCompressed, 1, 0)});
+        registry.registerPressureChamberRecipe(new Object[]{new ImmutablePair("blockIron", 1)}, 2F, new ItemStack[]{new ItemStack(Blockss.compressedIron, 1, 0)});
 
         // turbine blade
-        PressureChamberRecipe.chamberRecipes.add(new PressureChamberRecipe(new ItemStack[]{new ItemStack(Items.redstone, 2, 0), new ItemStack(Items.gold_ingot, 1, 0)}, 1F, new ItemStack[]{new ItemStack(Itemss.turbineBlade, 1, 0)}, false));
+        registry.registerPressureChamberRecipe(new Object[]{new ImmutablePair("dustRedstone", 2), new ImmutablePair("ingotGold", 1)}, 1F, new ItemStack[]{new ItemStack(Itemss.turbineBlade, 1, 0)});
         // plastic
         for(int i = 0; i < 16; i++) {
-            PressureChamberRecipe.chamberRecipes.add(new PressureChamberRecipe(new ItemStack[]{new ItemStack(Itemss.plasticPlant, 1, i)}, 0.5F, new ItemStack[]{new ItemStack(Itemss.plastic, 1, i)}, false));
-            PressureChamberRecipe.chamberRecipes.add(new PressureChamberRecipe(new ItemStack[]{new ItemStack(Itemss.plasticPlant, 1, i + 16)}, 0.5F, new ItemStack[]{new ItemStack(Itemss.plastic, 1, i)}, false));//TODO remove legacy
+            registry.registerPressureChamberRecipe(new ItemStack[]{new ItemStack(Itemss.plasticPlant, 1, i)}, 0.5F, new ItemStack[]{new ItemStack(Itemss.plastic, 1, i)});
         }
         // Empty PCB
-        PressureChamberRecipe.chamberRecipes.add(new PressureChamberRecipe(new ItemStack[]{new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.CREEPER_PLANT_DAMAGE), new ItemStack(Itemss.ingotIronCompressed, 1, 0)}, 1.5F, new ItemStack[]{new ItemStack(Itemss.emptyPCB, 1, Itemss.emptyPCB.getMaxDamage())}, false));
+        registry.registerPressureChamberRecipe(new Object[]{new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.CREEPER_PLANT_DAMAGE), new ImmutablePair("ingotIronCompressed", 1)}, 1.5F, new ItemStack[]{new ItemStack(Itemss.emptyPCB, 1, Itemss.emptyPCB.getMaxDamage())});
         // Etching Acid Bucket
-        PressureChamberRecipe.chamberRecipes.add(new PressureChamberRecipe(new ItemStack[]{new ItemStack(Itemss.plastic, 2, ItemPlasticPlants.CREEPER_PLANT_DAMAGE), new ItemStack(Items.rotten_flesh, 2, 0), new ItemStack(Items.gunpowder, 2, 0), new ItemStack(Items.spider_eye, 2, 0), new ItemStack(Items.water_bucket)}, 1.0F, new ItemStack[]{new ItemStack(Itemss.bucketEtchingAcid)}, false));
+        registry.registerPressureChamberRecipe(new ItemStack[]{new ItemStack(Itemss.plastic, 2, ItemPlasticPlants.CREEPER_PLANT_DAMAGE), new ItemStack(Items.rotten_flesh, 2, 0), new ItemStack(Items.gunpowder, 2, 0), new ItemStack(Items.spider_eye, 2, 0), new ItemStack(Items.water_bucket)}, 1.0F, new ItemStack[]{new ItemStack(Itemss.bucketEtchingAcid)});
         // Transistor
-        PressureChamberRecipe.chamberRecipes.add(new PressureChamberRecipe(new ItemStack[]{new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.SQUID_PLANT_DAMAGE), new ItemStack(Itemss.ingotIronCompressed), new ItemStack(Items.redstone)}, 1.0F, new ItemStack[]{new ItemStack(Itemss.transistor)}, false));
+        registry.registerPressureChamberRecipe(new Object[]{new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.SQUID_PLANT_DAMAGE), new ImmutablePair("ingotIronCompressed", 1), new ImmutablePair("dustRedstone", 1)}, 1.0F, new ItemStack[]{new ItemStack(Itemss.transistor)});
         // Capacitor
-        PressureChamberRecipe.chamberRecipes.add(new PressureChamberRecipe(new ItemStack[]{new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.LIGHTNING_PLANT_DAMAGE), new ItemStack(Itemss.ingotIronCompressed), new ItemStack(Items.redstone)}, 1.0F, new ItemStack[]{new ItemStack(Itemss.capacitor)}, false));
+        registry.registerPressureChamberRecipe(new Object[]{new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.LIGHTNING_PLANT_DAMAGE), new ImmutablePair("ingotIronCompressed", 1), new ImmutablePair("dustRedstone", 1)}, 1.0F, new ItemStack[]{new ItemStack(Itemss.capacitor)});
         //Vacuum dis-enchanting
-        PressureChamberRecipe.specialRecipes.add(new PressureChamberVacuumEnchantHandler());
+        registry.registerPressureChamberRecipe(new PressureChamberVacuumEnchantHandler());
     }
 
     private static void addAssemblyRecipes(){
