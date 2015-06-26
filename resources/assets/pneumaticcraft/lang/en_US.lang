@@ -561,6 +561,8 @@ gui.progWidget.coordinateOperator.operator=Operator:
 gui.progWidget.comment.tooltip.freeToUse=§aThis piece is free to use
 gui.progWidget.area.extraInfo=Extra parameter:
 gui.progWidget.area.extraInfo.tooltip=Used by certain area types: \n \nGrid: The spacing of the grid, in blocks. \nRandom: The amount of randomly selected blocks
+gui.progWidget.blockRightClick.sneaking=Sneaking
+gui.progWidget.blockRightClick.sneaking.tooltip=When checked, the Drone will sneak while right clicking.
 
 gui.progWidget.area.error.noArea=No area specified.
 gui.progWidget.general.error.emptyVariable=Variable is empty. Specify a valid variable.

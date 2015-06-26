@@ -14,6 +14,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
+import pneumaticCraft.common.progwidgets.IBlockRightClicker;
 import pneumaticCraft.common.progwidgets.ISidedWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetAreaItemBase;
 import pneumaticCraft.common.progwidgets.ProgWidgetPlace;
@@ -26,6 +27,7 @@ public class DroneAIBlockInteract extends DroneAIBlockInteraction{
 
     public DroneAIBlockInteract(IDroneBase drone, ProgWidgetAreaItemBase widget){
         super(drone, widget);
+        drone.getFakePlayer().setSneaking(((IBlockRightClicker)widget).isSneaking());
     }
 
     @Override

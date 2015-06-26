@@ -6,12 +6,11 @@ import java.util.List;
 import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.client.gui.widget.GuiRadioButton;
 import pneumaticCraft.client.gui.widget.IGuiWidget;
-import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetDigAndPlace;
 
-public class GuiProgWidgetDigAndPlace extends GuiProgWidgetAreaShow{
+public class GuiProgWidgetDigAndPlace<Widget extends ProgWidgetDigAndPlace> extends GuiProgWidgetAreaShow<Widget>{
 
-    public GuiProgWidgetDigAndPlace(IProgWidget widget, GuiProgrammer guiProgrammer){
+    public GuiProgWidgetDigAndPlace(Widget widget, GuiProgrammer guiProgrammer){
         super(widget, guiProgrammer);
     }
 
@@ -23,7 +22,7 @@ public class GuiProgWidgetDigAndPlace extends GuiProgWidgetAreaShow{
         ProgWidgetDigAndPlace.EnumOrder[] orders = ProgWidgetDigAndPlace.EnumOrder.values();
         for(int i = 0; i < orders.length; i++) {
             GuiRadioButton radioButton = new GuiRadioButton(i, guiLeft + 4, guiTop + 30 + i * 12, 0xFF000000, orders[i].getLocalizedName());
-            radioButton.checked = orders[i] == ((ProgWidgetDigAndPlace)widget).getOrder();
+            radioButton.checked = orders[i] == widget.getOrder();
             addWidget(radioButton);
             radioButtons.add(radioButton);
             radioButton.otherChoices = radioButtons;
@@ -32,7 +31,7 @@ public class GuiProgWidgetDigAndPlace extends GuiProgWidgetAreaShow{
 
     @Override
     public void actionPerformed(IGuiWidget guiWidget){
-        if(guiWidget.getID() >= 0 && guiWidget.getID() < ProgWidgetDigAndPlace.EnumOrder.values().length) ((ProgWidgetDigAndPlace)widget).setOrder(ProgWidgetDigAndPlace.EnumOrder.values()[guiWidget.getID()]);
+        if(guiWidget.getID() >= 0 && guiWidget.getID() < ProgWidgetDigAndPlace.EnumOrder.values().length) widget.setOrder(ProgWidgetDigAndPlace.EnumOrder.values()[guiWidget.getID()]);
         super.actionPerformed(guiWidget);
     }
 

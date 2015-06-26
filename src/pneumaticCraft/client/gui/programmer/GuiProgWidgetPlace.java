@@ -7,13 +7,12 @@ import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.client.gui.widget.GuiRadioButton;
 import pneumaticCraft.client.gui.widget.IGuiWidget;
-import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetPlace;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 
-public class GuiProgWidgetPlace extends GuiProgWidgetDigAndPlace{
+public class GuiProgWidgetPlace<Widget extends ProgWidgetPlace> extends GuiProgWidgetDigAndPlace<Widget>{
 
-    public GuiProgWidgetPlace(IProgWidget widget, GuiProgrammer guiProgrammer){
+    public GuiProgWidgetPlace(Widget widget, GuiProgrammer guiProgrammer){
         super(widget, guiProgrammer);
     }
 
@@ -23,7 +22,7 @@ public class GuiProgWidgetPlace extends GuiProgWidgetDigAndPlace{
         List<GuiRadioButton> radioButtons = new ArrayList<GuiRadioButton>();
         for(int i = 0; i < 6; i++) {
             GuiRadioButton radioButton = new GuiRadioButton(i + 10, guiLeft + 4, guiTop + 80 + i * 12, 0xFF000000, PneumaticCraftUtils.getOrientationName(ForgeDirection.getOrientation(i)));
-            radioButton.checked = ((ProgWidgetPlace)widget).placeDir.ordinal() == i;
+            radioButton.checked = widget.placeDir.ordinal() == i;
             addWidget(radioButton);
             radioButtons.add(radioButton);
             radioButton.otherChoices = radioButtons;
@@ -32,7 +31,7 @@ public class GuiProgWidgetPlace extends GuiProgWidgetDigAndPlace{
 
     @Override
     public void actionPerformed(IGuiWidget guiWidget){
-        if(guiWidget.getID() >= 10 && guiWidget.getID() < 16) ((ProgWidgetPlace)widget).placeDir = ForgeDirection.getOrientation(guiWidget.getID() - 10);
+        if(guiWidget.getID() >= 10 && guiWidget.getID() < 16) widget.placeDir = ForgeDirection.getOrientation(guiWidget.getID() - 10);
         super.actionPerformed(guiWidget);
     }
 

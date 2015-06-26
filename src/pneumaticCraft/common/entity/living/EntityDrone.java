@@ -813,6 +813,7 @@ public class EntityDrone extends EntityDroneBase implements IManoMeasurable, IIn
 
     public static class DroneFakePlayer extends EntityPlayerMP{
         private final IDroneBase drone;
+        private boolean sneaking;
 
         public DroneFakePlayer(WorldServer world, GameProfile name, ItemInWorldManager itemManager, IDroneBase drone){
             super(FMLCommonHandler.instance().getMinecraftServerInstance(), world, name, itemManager);
@@ -883,6 +884,16 @@ public class EntityDrone extends EntityDroneBase implements IManoMeasurable, IIn
         @Override
         public void func_147100_a(C15PacketClientSettings pkt){
             return;
+        }
+
+        @Override
+        public boolean isSneaking(){
+            return sneaking;
+        }
+
+        @Override
+        public void setSneaking(boolean sneaking){
+            this.sneaking = sneaking;
         }
     }
 
