@@ -29,16 +29,6 @@ public class BlockPressureChamberInterface extends BlockPressureChamberWall{
     }
 
     @Override
-    public boolean renderAsNormalBlock(){
-        return false;
-    }
-
-    @Override
-    public boolean isOpaqueCube(){
-        return false;
-    }
-
-    @Override
     protected Class<? extends TileEntity> getTileEntityClass(){
         return TileEntityPressureChamberInterface.class;
     }
