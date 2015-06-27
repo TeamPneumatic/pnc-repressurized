@@ -34,7 +34,7 @@ public class DroneEntityAIInventoryImport extends DroneAIImExBase{
             Set<Integer> accessibleSlots = PneumaticCraftUtils.getAccessibleSlotsForInventoryAndSides(inv, ((ISidedWidget)widget).getSides());
             for(Integer i : accessibleSlots) {
                 ItemStack stack = inv.getStackInSlot(i);
-                if(stack != null && widget.isItemValidForFilters(stack)) {
+                if(stack != null && widget.isItemValidForFilters(stack) && IOHelper.canExtractItemFromInventory(inv, stack, i, ((ISidedWidget)widget).getSides())) {
                     ItemStack importedStack = stack.copy();
                     if(((ICountWidget)widget).useCount()) importedStack.stackSize = Math.min(importedStack.stackSize, getRemainingCount());
                     ItemStack remainder = IOHelper.insert(drone.getInventory(), importedStack.copy(), 0, simulate);

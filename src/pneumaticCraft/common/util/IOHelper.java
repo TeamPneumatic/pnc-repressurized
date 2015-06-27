@@ -281,6 +281,20 @@ public class IOHelper{
         return itemStack;
     }
 
+    public static boolean canInsertItemToInventory(IInventory inventory, ItemStack itemStack, int slot, boolean[] sides){
+        for(int i = 0; i < sides.length; i++) {
+            if(sides[i] && canInsertItemToInventory(inventory, itemStack, slot, i)) return true;
+        }
+        return false;
+    }
+
+    public static boolean canExtractItemFromInventory(IInventory inventory, ItemStack itemStack, int slot, boolean[] sides){
+        for(int i = 0; i < sides.length; i++) {
+            if(sides[i] && canExtractItemFromInventory(inventory, itemStack, slot, i)) return true;
+        }
+        return false;
+    }
+
     public static boolean canInsertItemToInventory(IInventory inventory, ItemStack itemStack, int slot, int side){
 
         return inventory.isItemValidForSlot(slot, itemStack) && (!(inventory instanceof ISidedInventory) || ((ISidedInventory)inventory).canInsertItem(slot, itemStack, side));
