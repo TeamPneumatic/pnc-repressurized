@@ -50,7 +50,7 @@ public class GuiProgWidgetImportExport extends GuiProgWidgetAreaShow{
 
     @Override
     public void actionPerformed(IGuiWidget checkBox){
-        if(checkBox.getID() < 6) {
+        if(checkBox.getID() < 6 && checkBox.getID() >= 0) {
             ((ProgWidgetInventoryBase)widget).getSides()[checkBox.getID()] = ((GuiCheckBox)checkBox).checked;
         } else if(checkBox.getID() == 6) {
             ((ICountWidget)widget).setUseCount(((GuiCheckBox)checkBox).checked);

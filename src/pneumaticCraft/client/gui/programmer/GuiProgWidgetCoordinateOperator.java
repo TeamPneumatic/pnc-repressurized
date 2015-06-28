@@ -41,7 +41,10 @@ public class GuiProgWidgetCoordinateOperator extends GuiProgWidgetAreaShow<ProgW
 
     @Override
     public void actionPerformed(IGuiWidget guiWidget){
-        widget.setMultiplyDividing(guiWidget.getID() == 1);
+        if(guiWidget.getID() == 0 || guiWidget.getID() == 1) {
+            widget.setMultiplyDividing(guiWidget.getID() == 1);
+        }
+        super.actionPerformed(guiWidget);
     }
 
     @Override

@@ -35,7 +35,9 @@ public class GuiProgWidgetGoto extends GuiProgWidgetAreaShow{
 
     @Override
     public void actionPerformed(IGuiWidget guiWidget){
-        ((ProgWidgetGoToLocation)widget).doneWhenDeparting = guiWidget.getID() == 1;
+        if(guiWidget.getID() == 0 || guiWidget.getID() == 1) {
+            ((ProgWidgetGoToLocation)widget).doneWhenDeparting = guiWidget.getID() == 1;
+        }
         super.actionPerformed(guiWidget);
     }
 

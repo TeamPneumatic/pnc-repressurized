@@ -99,8 +99,10 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea>{
 
     @Override
     public void actionPerformed(IGuiWidget guiWidget){
-        widget.type = ProgWidgetArea.EnumAreaType.values()[guiWidget.getID()];
-        typeInfoField.setEnabled(widget.type.utilizesTypeInfo);
+        if(guiWidget instanceof GuiRadioButton) {
+            widget.type = ProgWidgetArea.EnumAreaType.values()[guiWidget.getID()];
+            typeInfoField.setEnabled(widget.type.utilizesTypeInfo);
+        }
         super.actionPerformed(guiWidget);
     }
 

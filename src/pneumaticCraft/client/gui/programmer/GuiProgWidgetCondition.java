@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiLabel;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.apache.commons.lang3.math.NumberUtils;
@@ -89,18 +90,20 @@ public class GuiProgWidgetCondition extends GuiProgWidgetAreaShow<ProgWidget>{
 
     @Override
     public void actionPerformed(IGuiWidget checkBox){
-        if(checkBox.getID() < 6) {
-            ((ISidedWidget)widget).getSides()[checkBox.getID()] = ((GuiCheckBox)checkBox).checked;
-        } else {
-            switch(checkBox.getID()){
-                case 6:
-                    ((ICondition)widget).setAndFunction(false);
-                    break;
-                case 7:
-                    ((ICondition)widget).setAndFunction(true);
-                    break;
-                default:
-                    ((ICondition)widget).setOperator(ICondition.Operator.values()[checkBox.getID() - 8]);
+        if(!(checkBox instanceof GuiLabel)) {
+            if(checkBox.getID() < 6) {
+                ((ISidedWidget)widget).getSides()[checkBox.getID()] = ((GuiCheckBox)checkBox).checked;
+            } else {
+                switch(checkBox.getID()){
+                    case 6:
+                        ((ICondition)widget).setAndFunction(false);
+                        break;
+                    case 7:
+                        ((ICondition)widget).setAndFunction(true);
+                        break;
+                    default:
+                        ((ICondition)widget).setOperator(ICondition.Operator.values()[checkBox.getID() - 8]);
+                }
             }
         }
         super.actionPerformed(checkBox);

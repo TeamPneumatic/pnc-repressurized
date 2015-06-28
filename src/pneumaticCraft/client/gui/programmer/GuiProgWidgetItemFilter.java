@@ -107,32 +107,34 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase{
 
     @Override
     public void actionPerformed(IGuiWidget guiWidget){
-        GuiCheckBox checkBox = (GuiCheckBox)guiWidget;
-        switch(checkBox.getID()){
-            case 0:
-                widg.useMetadata = checkBox.checked;
-                incButton.enabled = checkBoxUseDamage.enabled && checkBoxUseDamage.checked;
-                decButton.enabled = checkBoxUseDamage.enabled && checkBoxUseDamage.checked;
-                break;
-            case 2:
-                widg.useNBT = checkBox.checked;
-                break;
-            case 3:
-                widg.useOreDict = checkBox.checked;
-                checkBoxUseDamage.enabled = !checkBox.checked;
-                checkBoxUseNBT.enabled = !checkBox.checked;
-                checkBoxUseModSimilarity.enabled = !checkBox.checked;
-                incButton.enabled = checkBoxUseDamage.enabled && checkBoxUseDamage.checked;
-                decButton.enabled = checkBoxUseDamage.enabled && checkBoxUseDamage.checked;
-                break;
-            case 4:
-                widg.useModSimilarity = checkBox.checked;
-                checkBoxUseDamage.enabled = !checkBox.checked;
-                checkBoxUseNBT.enabled = !checkBox.checked;
-                checkBoxUseOreDict.enabled = !checkBox.checked;
-                incButton.enabled = checkBoxUseDamage.enabled && checkBoxUseDamage.checked;
-                decButton.enabled = checkBoxUseDamage.enabled && checkBoxUseDamage.checked;
-                break;
+        if(guiWidget instanceof GuiCheckBox) {
+            GuiCheckBox checkBox = (GuiCheckBox)guiWidget;
+            switch(checkBox.getID()){
+                case 0:
+                    widg.useMetadata = checkBox.checked;
+                    incButton.enabled = checkBoxUseDamage.enabled && checkBoxUseDamage.checked;
+                    decButton.enabled = checkBoxUseDamage.enabled && checkBoxUseDamage.checked;
+                    break;
+                case 2:
+                    widg.useNBT = checkBox.checked;
+                    break;
+                case 3:
+                    widg.useOreDict = checkBox.checked;
+                    checkBoxUseDamage.enabled = !checkBox.checked;
+                    checkBoxUseNBT.enabled = !checkBox.checked;
+                    checkBoxUseModSimilarity.enabled = !checkBox.checked;
+                    incButton.enabled = checkBoxUseDamage.enabled && checkBoxUseDamage.checked;
+                    decButton.enabled = checkBoxUseDamage.enabled && checkBoxUseDamage.checked;
+                    break;
+                case 4:
+                    widg.useModSimilarity = checkBox.checked;
+                    checkBoxUseDamage.enabled = !checkBox.checked;
+                    checkBoxUseNBT.enabled = !checkBox.checked;
+                    checkBoxUseOreDict.enabled = !checkBox.checked;
+                    incButton.enabled = checkBoxUseDamage.enabled && checkBoxUseDamage.checked;
+                    decButton.enabled = checkBoxUseDamage.enabled && checkBoxUseDamage.checked;
+                    break;
+            }
         }
         super.actionPerformed(guiWidget);
     }

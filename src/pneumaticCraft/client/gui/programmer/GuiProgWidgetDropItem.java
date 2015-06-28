@@ -40,7 +40,9 @@ public class GuiProgWidgetDropItem extends GuiProgWidgetImportExport{
 
     @Override
     public void actionPerformed(IGuiWidget guiWidget){
-        ((ProgWidgetDropItem)widget).setDropStraight(guiWidget.getID() == 8);
+        if(guiWidget.getID() == 7 || guiWidget.getID() == 8) {
+            ((ProgWidgetDropItem)widget).setDropStraight(guiWidget.getID() == 8);
+        }
         super.actionPerformed(guiWidget);
     }
 

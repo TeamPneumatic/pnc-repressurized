@@ -27,7 +27,7 @@ public class GuiProgWidgetEmitRedstone extends GuiProgWidgetOptionBase<ProgWidge
 
     @Override
     public void actionPerformed(IGuiWidget checkBox){
-        if(checkBox.getID() < 6) {
+        if(checkBox.getID() < 6 && checkBox.getID() >= 0) {
             widget.getSides()[checkBox.getID()] = ((GuiCheckBox)checkBox).checked;
         }
         super.actionPerformed(checkBox);
