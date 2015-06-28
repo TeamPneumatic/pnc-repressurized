@@ -44,16 +44,20 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
     public EnumInterfaceMode interfaceMode = EnumInterfaceMode.NONE;
     @GuiSynced
     private boolean enoughAir = true;
-    @GuiSynced
+    @DescSynced
     public EnumFilterMode filterMode = EnumFilterMode.ITEM;
     @GuiSynced
     public int creativeTabID;
-    @GuiSynced
+    @DescSynced
     public String itemNameFilter = "";
     private boolean isOpeningI;//used to determine sounds.
     private boolean isOpeningO;//used to determine sounds.
+    @DescSynced
+    private boolean shouldOpenInput, shouldOpenOutput;
     @GuiSynced
     public int redstoneMode;
+    private int inputTimeOut;
+    private int oldItemCount;
 
     public enum EnumInterfaceMode{
         NONE, IMPORT, EXPORT;
@@ -70,63 +74,67 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
     @Override
     public void updateEntity(){
         super.updateEntity();
+
         boolean wasOpeningI = isOpeningI;
         boolean wasOpeningO = isOpeningO;
         oldInputProgress = inputProgress;
         oldOutputProgress = outputProgress;
         TileEntityPressureChamberValve core = getCore();
+
         if(!worldObj.isRemote) {
+            int itemCount = inventory[0] != null ? inventory[0].stackSize : 0;
+            if(oldItemCount != itemCount) {
+                oldItemCount = itemCount;
+                inputTimeOut = 0;
+            }
+
             interfaceMode = getInterfaceMode(core);
             enoughAir = true;
+
+            if(interfaceMode != EnumInterfaceMode.NONE) {
+                if(inventory[0] != null && ++inputTimeOut > 10) {
+                    shouldOpenInput = false;
+                    if(inputProgress == 0) {
+                        shouldOpenOutput = true;
+                        if(outputProgress == MAX_PROGRESS) {
+                            if(interfaceMode == EnumInterfaceMode.IMPORT) {
+                                outputInChamber();
+                            } else {
+                                exportToInventory();
+                            }
+                        }
+                    }
+                } else {
+                    shouldOpenOutput = false;
+                    if(outputProgress == 0) {
+                        shouldOpenInput = true;
+                        if(interfaceMode == EnumInterfaceMode.EXPORT && inputProgress == MAX_PROGRESS && redstoneAllows()) {
+                            importFromChamber(core);
+                        }
+                    }
+                }
+            } else {
+                shouldOpenInput = false;
+                shouldOpenOutput = false;
+            }
         }
 
         int speed = (int)getSpeedMultiplierFromUpgrades(getUpgradeSlots());
-        if(interfaceMode == EnumInterfaceMode.IMPORT) { // when the valve is in import mode.
-            if(inventory[0] != null) {
-                inputProgress = Math.max(inputProgress - speed, 0);
-                isOpeningI = false;
-                if(inputProgress == 0) {
-                    outputProgress = Math.min(outputProgress + speed, MAX_PROGRESS);
-                    isOpeningO = true;
-                    if(!worldObj.isRemote && outputProgress == MAX_PROGRESS) {
-                        outputInChamber();
-                    }
-                }
-            } else {
-                outputProgress = Math.max(outputProgress - speed, 0);
-                isOpeningO = false;
-                if(outputProgress == 0) {
-                    inputProgress = Math.min(inputProgress + speed, MAX_PROGRESS);
-                    isOpeningI = true;
-                }
-            }
-        } else if(interfaceMode == EnumInterfaceMode.EXPORT) {// when the valve is in export mode.
-            if(inventory[0] != null) {
-                inputProgress = Math.max(inputProgress - speed, 0);
-                isOpeningI = false;
-                if(inputProgress == 0) {
-                    outputProgress = Math.min(outputProgress + speed, MAX_PROGRESS);
-                    isOpeningO = true;
-                    if(!worldObj.isRemote && outputProgress == MAX_PROGRESS) {
-                        exportToInventory();
-                    }
-                }
-            } else {
-                outputProgress = Math.max(outputProgress - speed, 0);
-                isOpeningO = false;
-                if(outputProgress == 0) {
-                    inputProgress = Math.min(inputProgress + speed, MAX_PROGRESS);
-                    isOpeningI = true;
-                    if(!worldObj.isRemote && inputProgress == MAX_PROGRESS && redstoneAllows()) {
-                        importFromChamber(core);
-                    }
-                }
-            }
-        } else {// when the interface is not properly configured, close both doors.
-            outputProgress = Math.max(outputProgress - speed, 0);
+
+        if(shouldOpenInput) {
+            inputProgress = Math.min(inputProgress + speed, MAX_PROGRESS);
+            isOpeningI = true;
+        } else {
             inputProgress = Math.max(inputProgress - speed, 0);
-            isOpeningO = false;
             isOpeningI = false;
+        }
+
+        if(shouldOpenOutput) {
+            outputProgress = Math.min(outputProgress + speed, MAX_PROGRESS);
+            isOpeningO = true;
+        } else {
+            outputProgress = Math.max(outputProgress - speed, 0);
+            isOpeningO = false;
         }
 
         if(worldObj.isRemote && (wasOpeningI != isOpeningI || wasOpeningO != isOpeningO)) {
@@ -221,15 +229,19 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
         if(interfaceMode == EnumInterfaceMode.NONE) {
             textList.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a77The Interface can't work.", GuiConstants.maxCharPerLineLeft));
             textList.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a70-The Interface is not in a properly formed Pressure Chamber, and/or", GuiConstants.maxCharPerLineLeft));
-            textList.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a70-The Interface is not attached to an air block of the Pressure Chamber, and/or", GuiConstants.maxCharPerLineLeft));
+            textList.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a70-The Interface is not adjacent to an air block of the Pressure Chamber, and/or", GuiConstants.maxCharPerLineLeft));
             textList.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a70-The Interface isn't orientated right.", GuiConstants.maxCharPerLineLeft));
         } else if(!redstoneAllows()) {
             textList.add("gui.tab.problems.redstoneDisallows");
         } else if(!enoughAir) {
             textList.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a77There's not enough pressure in the Pressure Chamber to move the items.", GuiConstants.maxCharPerLineLeft));
-            textList.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a70Apply more pressure to the Pressure Chamber.", GuiConstants.maxCharPerLineLeft));
+            textList.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a70Apply more pressure to the Pressure Chamber. The required pressure is dependent on the amount of items being transported.", GuiConstants.maxCharPerLineLeft));
         }
         return textList;
+    }
+
+    public boolean hasEnoughPressure(){
+        return enoughAir;
     }
 
     @Override
@@ -416,12 +428,12 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
 
     @Override
     public boolean canInsertItem(int i, ItemStack itemstack, int j){
-        return inputProgress == MAX_PROGRESS && redstoneAllows();
+        return inputProgress == MAX_PROGRESS && j == getRotation().getOpposite().ordinal() && redstoneAllows();
     }
 
     @Override
     public boolean canExtractItem(int i, ItemStack itemstack, int j){
-        return outputProgress == MAX_PROGRESS;
+        return outputProgress == MAX_PROGRESS && j == getRotation().getOpposite().ordinal();
     }
 
     @Override

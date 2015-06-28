@@ -35,6 +35,7 @@ public class GuiPressureChamberInterface extends GuiPneumaticContainerBase<TileE
     private GuiButtonSpecial filterButton;
     private GuiButton creativeTabButton;
     private GuiTextField nameFilterField;
+    private boolean hasEnoughPressure = true;
 
     public GuiPressureChamberInterface(InventoryPlayer player, TileEntityPressureChamberInterface te){
 
@@ -151,6 +152,12 @@ public class GuiPressureChamberInterface extends GuiPneumaticContainerBase<TileE
         super.updateScreen();
         statusStat.setText(getStatusText());
         filterButton.visible = filterStat.isDoneExpanding();
+        if(hasEnoughPressure && !te.hasEnoughPressure()) {
+            hasEnoughPressure = false;
+            problemTab.openWindow();
+        } else if(te.hasEnoughPressure()) {
+            hasEnoughPressure = true;
+        }
     }
 
     private List<String> getStatusText(){
