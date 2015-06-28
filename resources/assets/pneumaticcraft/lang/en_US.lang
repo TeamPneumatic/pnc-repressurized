@@ -90,7 +90,7 @@ item.assemblyProgram.name=Assembly Program
 item.emptyPCB.name=Empty PCB
 item.unassembledPCB.name=Unassembled PCB
 item.pcbBlueprint.name=PCB Blueprint
-item.etchingAcidBucket.name=Etching Acid Bucket
+item.etchacidBucket.name=Etching Acid Bucket
 item.transistor.name=Transistor
 item.capacitor.name=Capacitor
 item.printedCircuitBoard.name=Printed Circuit Board
@@ -110,6 +110,7 @@ item.fuelBucket.name=Gasoline Bucket
 item.keroseneBucket.name=Kerosene Bucket
 item.dieselBucket.name=Diesel Bucket
 item.oilBucket.name=Oil Bucket
+item.plasticBucket.name=Plastic Bucket
 item.logisticsConfigurator.name=Logistics Configurator
 item.logisticFrameRequester.name=Logistic Requester Frame
 item.logisticFramePassiveProvider.name=Logistic Passive Provider Frame
@@ -192,7 +193,7 @@ item.networkComponent5.name=Network Node
 
 # Fluid
 fluid.plastic=Liquid Plastic
-fluid.EtchAcid=Etching Acid
+fluid.etchacid=Etching Acid
 fluid.lpg=LPG
 fluid.fuel=Gasoline
 fluid.kerosene=Kerosene
