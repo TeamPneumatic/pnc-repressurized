@@ -9,6 +9,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import pneumaticCraft.common.NBTUtil;
 import pneumaticCraft.common.tileentity.TileEntityChargingStation;
+import pneumaticCraft.lib.Log;
 
 public class InventoryPneumaticInventoryItem extends InventoryBasic{
     // the title of the backpack
@@ -77,11 +78,11 @@ public class InventoryPneumaticInventoryItem extends InventoryBasic{
     /**
      * Returns if an Inventory is saved in the NBT.
      * 
-     * @return True when the NBT is not null and the NBT has key "Inventory"
+     * @return True when the NBT is not null and the NBT has key "UpgradeInventory"
      *         otherwise false.
      */
     protected boolean hasInventory(){
-        return NBTUtil.hasTag(armorStack, "Inventory");
+        return NBTUtil.hasTag(armorStack, "UpgradeInventory");
     }
 
     /**
@@ -131,7 +132,8 @@ public class InventoryPneumaticInventoryItem extends InventoryBasic{
         // save content in Inventory->Items
         NBTTagCompound inventory = new NBTTagCompound();
         inventory.setTag("Items", itemList);
-        NBTUtil.setCompoundTag(armorStack, "Inventory", inventory);
+        NBTUtil.setCompoundTag(armorStack, "UpgradeInventory", inventory);
+        NBTUtil.removeTag(armorStack, "Inventory");
         // return outerTag;
     }
 
@@ -143,7 +145,12 @@ public class InventoryPneumaticInventoryItem extends InventoryBasic{
      */
     protected void readFromNBT(){
         reading = true;
-        NBTTagList itemList = NBTUtil.getCompoundTag(armorStack, "Inventory").getTagList("Items", 10);
+        if(NBTUtil.hasTag(armorStack, "Inventory") && armorStack.getTagCompound().getTag("Inventory") instanceof NBTTagCompound) {
+            Log.info("Converting 'Inventory' tag to 'UpgradeInventory' in Pneumatic items");
+            armorStack.getTagCompound().setTag("UpgradeInventory", armorStack.getTagCompound().getTag("Inventory"));
+            armorStack.getTagCompound().removeTag("Inventory");
+        }
+        NBTTagList itemList = NBTUtil.getCompoundTag(armorStack, "UpgradeInventory").getTagList("Items", 10);
         for(int i = 0; i < itemList.tagCount(); i++) {
             NBTTagCompound slotEntry = itemList.getCompoundTagAt(i);
             int j = slotEntry.getByte("Slot");
