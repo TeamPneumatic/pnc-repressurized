@@ -56,7 +56,7 @@ public class PacketDescription extends LocationIntPacket<PacketDescription>{
 
     @Override
     public void handleClientSide(PacketDescription message, EntityPlayer player){
-        TileEntity te = message.getTileEntity(player.worldObj);
+        TileEntity te = player.worldObj.blockExists(message.x, message.y, message.z) ? message.getTileEntity(player.worldObj) : null;
         if(te instanceof TileEntityBase) {
             List<SyncedField> descFields = ((TileEntityBase)te).getDescriptionFields();
             if(descFields != null && descFields.size() == message.types.length) {

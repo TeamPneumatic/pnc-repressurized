@@ -1,9 +1,11 @@
--Added Logistic Drones and Logistic Frames!
--Changed recipes for balance sake for the Liquid Compressor, Electrostatic Compressor, Universal Sensor, Charging Station, Vortex Cannon and Pneumatic Wrench.
--Added Plastic bucket/block.
+-Added 'Sneaking' option to the Block Right Click drone command.
+-Changed Pressure Chamber Interface texture.
+-Pressure Chamber Interface now waits half a second for more items to go in before shutting the gate, allowing mechanics like Hoppers to insert multiple items per cycle.
 
--Bugfix: Rare crash with Pneumatic Helmet Block Tracker.
--Bugfix: Every Pressure Chamber recipe is using Ore dict, allowing a dupe bug with Buckets with some instances.
--Bugfix: Drones can't teleport to Charging Stations and cause lag because of this.
--Bugfix: Right clicking an XU Drum with a PneumaticCraft liquid bucket will lose the bucket.
--Bugfix: Oil is registered twice?
+-Bugfix: Drone inventory import ignores inventory rules on special occasions.
+-Bugfix: Desync issue with Pressure Chamber Interface.
+-Bugfix: Client crash when clicking on text in a Programmer piece GUI.
+-Bugfix: Etching Acid recipe is borked.
+-Bugfix: Localization derp on Etching Acid Bucket and Plastic Bucket.
+-Bugfix: Strange client crash with Pneumatic Helmet upgrade inventory.
+-Bugfix (hopefully): Client crash when loading world.
