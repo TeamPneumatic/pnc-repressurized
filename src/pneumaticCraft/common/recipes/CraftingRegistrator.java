@@ -122,7 +122,7 @@ public class CraftingRegistrator{
         addRecipe(new ItemStack(Itemss.vortexCannon, 1, Itemss.vortexCannon.getMaxDamage()), "idi", "c  ", "ili", 'd', "dyeYellow", 'i', Itemss.ingotIronCompressed, 'l', Blocks.lever, 'c', new ItemStack(Itemss.airCanister, 1, Itemss.airCanister.getMaxDamage()));
         addRecipe(new ItemStack(Itemss.pneumaticWrench, 1, Itemss.pneumaticWrench.getMaxDamage()), "idi", "c  ", "ili", 'd', "dyeOrange", 'i', Itemss.ingotIronCompressed, 'l', Blocks.lever, 'c', new ItemStack(Itemss.airCanister, 1, Itemss.airCanister.getMaxDamage()));
         addRecipe(new ItemStack(Itemss.logisticsConfigurator, 1, Itemss.logisticsConfigurator.getMaxDamage()), "idi", "c  ", "ili", 'd', "dyeRed", 'i', Itemss.ingotIronCompressed, 'l', Blocks.lever, 'c', new ItemStack(Itemss.airCanister, 1, Itemss.airCanister.getMaxDamage()));
-        addRecipe(new ItemStack(Itemss.pneumaticHelmet, 1, Itemss.pneumaticHelmet.getMaxDamage()), "cec", "c c", 'e', Itemss.printedCircuitBoard, 'c', new ItemStack(Itemss.airCanister, 1, Itemss.airCanister.getMaxDamage()));
+        addRecipe(new ItemStack(Itemss.pneumaticHelmet, 1), "cec", "c c", 'e', Itemss.printedCircuitBoard, 'c', new ItemStack(Itemss.airCanister, 1, Itemss.airCanister.getMaxDamage()));
         addShapelessRecipe(new ItemStack(Itemss.manometer, 1, Itemss.manometer.getMaxDamage()), new ItemStack(Itemss.airCanister, 1, Itemss.airCanister.getMaxDamage()), Itemss.pressureGauge);
 
         // Pneumatic Items
