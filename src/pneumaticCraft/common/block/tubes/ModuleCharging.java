@@ -38,6 +38,7 @@ public class ModuleCharging extends TubeModule{
         if(inv != null) {
             int[] accessibleSlots = IOHelper.getAccessibleSlotsForInventory(inv, dir.getOpposite());
             for(int i = 0; i < (upgraded ? 10 : 1) * PneumaticValues.CHARGING_STATION_CHARGE_RATE; i++) {
+                boolean charged = false;
                 for(int slot : accessibleSlots) {
                     ItemStack chargedItem = inv.getStackInSlot(slot);
                     if(chargedItem != null && chargedItem.getItem() instanceof IPressurizable) {
@@ -47,12 +48,15 @@ public class ModuleCharging extends TubeModule{
                         if(chargingItem.getPressure(chargedItem) > airHandler.getPressure(ForgeDirection.UNKNOWN) + 0.01F && chargingItem.getPressure(chargedItem) > 0F) {
                             chargingItem.addAir(chargedItem, -1);
                             airHandler.addAir(1, ForgeDirection.UNKNOWN);
+                            charged = true;
                         } else if(chargingItem.getPressure(chargedItem) < airHandler.getPressure(ForgeDirection.UNKNOWN) - 0.01F && chargingItem.getPressure(chargedItem) < chargingItem.maxPressure(chargedItem)) {// if there is pressure, and the item isn't fully charged yet..
                             chargingItem.addAir(chargedItem, 1);
                             airHandler.addAir(-1, ForgeDirection.UNKNOWN);
+                            charged = true;
                         }
                     }
                 }
+                if(!charged) break;
             }
         }
     }

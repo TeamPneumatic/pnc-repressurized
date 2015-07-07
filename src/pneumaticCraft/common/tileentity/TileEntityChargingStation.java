@@ -96,6 +96,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
         }
         int speedMultiplier = (int)getSpeedMultiplierFromUpgrades(getUpgradeSlots());
         for(int i = 0; i < PneumaticValues.CHARGING_STATION_CHARGE_RATE * speedMultiplier; i++) {
+            boolean charged = false;
             for(int j = 0; j < chargingItems.size(); j++) {
                 IPressurizable chargingItem = chargingItems.get(j);
                 ItemStack chargedItem = chargedStacks.get(j);
@@ -107,6 +108,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
                     if(renderAirProgress < 0.0F) {
                         renderAirProgress += 1F;
                     }
+                    charged = true;
                 } else if(chargingItem.getPressure(chargedItem) < getPressure(ForgeDirection.UNKNOWN) - 0.01F && chargingItem.getPressure(chargedItem) < chargingItem.maxPressure(chargedItem)) {// if there is pressure, and the item isn't fully charged yet..
                     chargingItem.addAir(chargedItem, 1);
                     addAir(-1, ForgeDirection.UNKNOWN);
@@ -115,8 +117,10 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
                     if(renderAirProgress > 1.0F) {
                         renderAirProgress -= 1F;
                     }
+                    charged = true;
                 }
             }
+            if(!charged) break;
         }
 
         if(!worldObj.isRemote && oldRedstoneStatus != shouldEmitRedstone()) {
