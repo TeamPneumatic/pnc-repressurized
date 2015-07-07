@@ -59,7 +59,7 @@ public class CraftingRegistrator{
         addShapelessRecipe(new ItemStack(Blockss.pressureChamberWall, 16, 6), new ItemStack(Blockss.pressureChamberWall, 1, 0), new ItemStack(Blockss.pressureChamberWall, 1, 0), new ItemStack(Blockss.pressureChamberWall, 1, 0), new ItemStack(Blockss.pressureChamberWall, 1, 0), Blocks.glass);
         addRecipe(new ItemStack(Blockss.pressureChamberValve, 16, 0), "iii", "iti", "iii", 'i', Names.INGOT_IRON_COMPRESSED, 't', new ItemStack(Blockss.pressureTube, 1, 0));
         addShapelessRecipe(new ItemStack(Blockss.pressureChamberValve, 16, 0), new ItemStack(Blockss.pressureChamberWall, 1, 0), new ItemStack(Blockss.pressureChamberWall, 1, 0), new ItemStack(Blockss.pressureChamberWall, 1, 0), new ItemStack(Blockss.pressureChamberWall, 1, 0), new ItemStack(Blockss.pressureTube, 1, 0));
-        addRecipe(new ItemStack(Blockss.pressureChamberInterface, 16, 0), "ici", "ihi", "ici", 'i', Names.INGOT_IRON_COMPRESSED, 'c', new ItemStack(Itemss.pneumaticCylinder, 1, 0), 'h', Blocks.hopper);
+        addShapelessRecipe(new ItemStack(Blockss.pressureChamberInterface), Blockss.pressureChamberWall, Blocks.hopper);
 
         //Oil related
         addRecipe(new ItemStack(Itemss.seismicSensor), " t ", "grg", "gcg", 't', Blocks.redstone_torch, 'g', "blockGlass", 'r', Items.repeater, 'c', Items.coal);
