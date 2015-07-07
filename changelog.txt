@@ -1,11 +1,5 @@
--Added 'Sneaking' option to the Block Right Click drone command.
--Changed Pressure Chamber Interface texture.
--Pressure Chamber Interface now waits half a second for more items to go in before shutting the gate, allowing mechanics like Hoppers to insert multiple items per cycle.
-
--Bugfix: Drone inventory import ignores inventory rules on special occasions.
--Bugfix: Desync issue with Pressure Chamber Interface.
--Bugfix: Client crash when clicking on text in a Programmer piece GUI.
--Bugfix: Etching Acid recipe is borked.
--Bugfix: Localization derp on Etching Acid Bucket and Plastic Bucket.
--Bugfix: Strange client crash with Pneumatic Helmet upgrade inventory.
--Bugfix (hopefully): Client crash when loading world.
+-Rebalanced Pressure Chamber Interface recipe to not require plastic (as that's a higher tier now).
+-Performance increases for the Charging Station and Charging Module.
+-Bugfix: Crash with Better Storage Crate and Pneumatic Helmet Block Tracker.
+-Bugfix: Weird client crash (StackOverFlowException) on logging in on server.
+-Bugfix: Crafting a Pneumatic Helmet with completely empty Air Canisters will yield you a helmet with no durability.
