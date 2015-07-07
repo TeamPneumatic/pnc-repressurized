@@ -205,17 +205,21 @@ public abstract class BlockPneumaticCraft extends BlockContainer implements IPne
      */
     @Override
     public void onNeighborChange(IBlockAccess world, int x, int y, int z, int tileX, int tileY, int tileZ){
-        TileEntity te = world.getTileEntity(x, y, z);
-        if(te instanceof TileEntityBase) {
-            ((TileEntityBase)te).onNeighborTileUpdate();
+        if(world instanceof World && !((World)world).isRemote) {
+            TileEntity te = world.getTileEntity(x, y, z);
+            if(te instanceof TileEntityBase) {
+                ((TileEntityBase)te).onNeighborTileUpdate();
+            }
         }
     }
 
     @Override
     public void onNeighborBlockChange(World world, int x, int y, int z, Block block){
-        TileEntity te = world.getTileEntity(x, y, z);
-        if(te instanceof TileEntityBase) {
-            ((TileEntityBase)te).onNeighborBlockUpdate();
+        if(world instanceof World && !world.isRemote) {
+            TileEntity te = world.getTileEntity(x, y, z);
+            if(te instanceof TileEntityBase) {
+                ((TileEntityBase)te).onNeighborBlockUpdate();
+            }
         }
     }
 
