@@ -169,29 +169,34 @@ public class SearchUpgradeHandler implements IUpgradeRenderHandler{
      * @param te TileEntity that already has been checked on if it implements IInventory, so it's save to cast it to IInventory.
      */
     public void checkInventoryForItems(TileEntity te){
-        ItemStack searchStack = ItemPneumaticArmor.getSearchedStack(FMLClientHandler.instance().getClient().thePlayer.getCurrentArmor(3));
-        IInventory inventory = (IInventory)te;
-        boolean hasFoundItem = false;
-        for(int l = 0; l < inventory.getSizeInventory(); l++) {
-            if(inventory.getStackInSlot(l) != null && searchStack != null) {
-                int items = RenderSearchItemBlock.getSearchedItemCount(inventory.getStackInSlot(l), searchStack);
-                if(items > 0) {
-                    hasFoundItem = true;
-                    searchedItemCounter += items;
+        try {
+            ItemStack searchStack = ItemPneumaticArmor.getSearchedStack(FMLClientHandler.instance().getClient().thePlayer.getCurrentArmor(3));
+            IInventory inventory = (IInventory)te;
+            boolean hasFoundItem = false;
+            if(searchStack != null) {
+                for(int l = 0; l < inventory.getSizeInventory(); l++) {
+                    if(inventory.getStackInSlot(l) != null) {
+                        int items = RenderSearchItemBlock.getSearchedItemCount(inventory.getStackInSlot(l), searchStack);
+                        if(items > 0) {
+                            hasFoundItem = true;
+                            searchedItemCounter += items;
+                        }
+                    }
                 }
             }
-        }
-        if(hasFoundItem) {
-            boolean inList = false;
-            for(RenderSearchItemBlock trackedBlock : searchedBlocks) {
-                if(trackedBlock.isAlreadyTrackingCoord(te.xCoord, te.yCoord, te.zCoord)) {
-                    inList = true;
-                    break;
+            if(hasFoundItem) {
+                boolean inList = false;
+                for(RenderSearchItemBlock trackedBlock : searchedBlocks) {
+                    if(trackedBlock.isAlreadyTrackingCoord(te.xCoord, te.yCoord, te.zCoord)) {
+                        inList = true;
+                        break;
+                    }
                 }
+                if(!inList) searchedBlocks.add(new RenderSearchItemBlock(te.getWorldObj(), te.xCoord, te.yCoord, te.zCoord));
             }
-            if(!inList) searchedBlocks.add(new RenderSearchItemBlock(te.getWorldObj(), te.xCoord, te.yCoord, te.zCoord));
-        }
+        } catch(Throwable e) {
 
+        }
     }
 
     @Override
