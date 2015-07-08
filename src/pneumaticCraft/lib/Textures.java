@@ -57,6 +57,7 @@ public class Textures{
     public static final ResourceLocation MODEL_THERMOPNEUMATIC_PROCESSING_PLANT = new ResourceLocation(MODEL_LOCATION + "thermopneumaticProcessingPlant.png");
     public static final ResourceLocation MODEL_REFINERY = new ResourceLocation(MODEL_LOCATION + "refinery.png");
     public static final ResourceLocation MODEL_GAS_LIFT = new ResourceLocation(MODEL_LOCATION + "gasLift.png");
+    public static final ResourceLocation MODEL_DRONE_MINIGUN = new ResourceLocation(MODEL_LOCATION + "droneMinigun.png");
 
     public static final ResourceLocation MODEL_FLOW_DETECTOR = new ResourceLocation(TUBE_MODULE_MODEL_LOCATION + "flowDetector.png");
     public static final ResourceLocation MODEL_GAUGE = new ResourceLocation(TUBE_MODULE_MODEL_LOCATION + "gaugeModule.png");

@@ -132,11 +132,13 @@ public class CraftingRegistrator{
         GameRegistry.addRecipe(new RecipePneumaticHelmet());
         GameRegistry.addRecipe(new RecipeManometer());
         GameRegistry.addRecipe(new RecipeColorDrone());
+        GameRegistry.addRecipe(new RecipeGunAmmo());
 
         RecipeSorter.register("pneumaticcraft:gun", RecipeGun.class, Category.SHAPED, "after:minecraft:shaped");
         RecipeSorter.register("pneumaticcraft:pneumaticHelmet", RecipePneumaticHelmet.class, Category.SHAPED, "after:minecraft:shaped");
         RecipeSorter.register("pneumaticcraft:manometer", RecipeManometer.class, Category.SHAPED, "after:minecraft:shaped");
         RecipeSorter.register("pneumaticcraft:colorDrone", RecipeColorDrone.class, Category.SHAPELESS, "after:minecraft:shapeless");
+        RecipeSorter.register("pneumaticcraft:gunAmmo", RecipeGunAmmo.class, Category.SHAPELESS, "after:minecraft:shapeless");
 
         //Heat related
         addRecipe(new ItemStack(Blockss.heatSink), "bbb", "igi", 'i', Names.INGOT_IRON_COMPRESSED, 'b', Blocks.iron_bars, 'g', "ingotGold");
@@ -150,6 +152,7 @@ public class CraftingRegistrator{
         addRecipe(new ItemStack(Itemss.advancedPCB), "rpr", "pcp", "rpr", 'c', Itemss.printedCircuitBoard, 'r', Items.redstone, 'p', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.HELIUM_PLANT_DAMAGE));
         addRecipe(new ItemStack(Itemss.advancedPCB), "prp", "rcr", "prp", 'c', Itemss.printedCircuitBoard, 'r', Items.redstone, 'p', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.HELIUM_PLANT_DAMAGE));
         addRecipe(new ItemStack(Blockss.uvLightBox), "lll", "ibt", "iii", 'l', Blocks.redstone_lamp, 'b', Itemss.PCBBlueprint, 'i', Names.INGOT_IRON_COMPRESSED, 't', new ItemStack(Blockss.pressureTube, 1, 0));
+        addShapelessRecipe(new ItemStack(Itemss.gunAmmo), new ItemStack(Items.gunpowder), Names.INGOT_IRON_COMPRESSED, "ingotGold");
 
         //Assembly Machines
         addRecipe(new ItemStack(Blockss.assemblyDrill), true, "dcc", "  c", "ipi", 'd', Items.diamond, 'c', Itemss.pneumaticCylinder, 'i', Names.INGOT_IRON_COMPRESSED, 'p', Itemss.printedCircuitBoard);
@@ -224,7 +227,7 @@ public class CraftingRegistrator{
             registry.registerPressureChamberRecipe(new ItemStack[]{new ItemStack(Itemss.plasticPlant, 1, i)}, 0.5F, new ItemStack[]{new ItemStack(Itemss.plastic, 1, i)});
         }
         // Empty PCB
-        registry.registerPressureChamberRecipe(new Object[]{new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.CREEPER_PLANT_DAMAGE), new ImmutablePair("ingotIronCompressed", 1)}, 1.5F, new ItemStack[]{new ItemStack(Itemss.emptyPCB, 1, Itemss.emptyPCB.getMaxDamage())});
+        registry.registerPressureChamberRecipe(new Object[]{new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.CREEPER_PLANT_DAMAGE), new ImmutablePair(Names.INGOT_IRON_COMPRESSED, 1)}, 1.5F, new ItemStack[]{new ItemStack(Itemss.emptyPCB, 1, Itemss.emptyPCB.getMaxDamage())});
         // Etching Acid Bucket
         registry.registerPressureChamberRecipe(new ItemStack[]{new ItemStack(Itemss.plastic, 2, ItemPlasticPlants.CREEPER_PLANT_DAMAGE), new ItemStack(Items.rotten_flesh, 2, 0), new ItemStack(Items.gunpowder, 2, 0), new ItemStack(Items.spider_eye, 2, 0), new ItemStack(Items.water_bucket)}, 1.0F, new ItemStack[]{new ItemStack(Fluids.fluidBlockToBucketMap.get(Fluids.etchingAcid.getBlock()))});
         // Transistor

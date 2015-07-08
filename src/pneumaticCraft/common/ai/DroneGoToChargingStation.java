@@ -13,6 +13,7 @@ import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.tileentity.TileEntityChargingStation;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
+import pneumaticCraft.lib.Log;
 import pneumaticCraft.lib.PneumaticValues;
 
 public class DroneGoToChargingStation extends EntityAIBase{
@@ -70,6 +71,7 @@ public class DroneGoToChargingStation extends EntityAIBase{
     @Override
     public boolean continueExecuting(){
         if(!((EntityPathNavigateDrone)drone.getPathNavigator()).isGoingToTeleport() && drone.getNavigator().getPath() == null || curCharger.getUpgrades(ItemMachineUpgrade.UPGRADE_DISPENSER_DAMAGE) == 0 || curCharger.isInvalid()) {//If our path was blocked.
+            Log.info("canceling");
             isExecuting = false;
             return false;
         } else if(!((EntityPathNavigateDrone)drone.getPathNavigator()).isGoingToTeleport() && (drone.getNavigator().getPath() == null || drone.getNavigator().getPath().isFinished())) {

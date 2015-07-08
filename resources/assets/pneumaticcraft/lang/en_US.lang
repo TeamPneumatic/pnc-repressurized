@@ -115,8 +115,10 @@ item.logisticsConfigurator.name=Logistics Configurator
 item.logisticFrameRequester.name=Logistic Requester Frame
 item.logisticFramePassiveProvider.name=Logistic Passive Provider Frame
 item.logisticFrameActiveProvider.name=Logistic Active Provider Frame
+item.logisticFrameActiveProvider.name=Logistic Active Provider Frame
 item.logisticFrameStorage.name=Logistic Storage Frame
 item.logisticDrone.name=Logistic Drone
+item.gunAmmo.name=Gun Ammo
 
 item.plasticPlant0.name=Squid Plant Seeds
 item.plasticPlant1.name=Fire Flower Seeds
@@ -363,6 +365,8 @@ gui.tab.info.item.drone.dispenserUpgrade=§0By default the Drone can transfer on
 gui.tab.info.item.drone.itemLifeUpgrade=§0With the Item Life Upgrade inserted, the Drone will be able to auto-repair. It will regen health over time. The more upgrades you insert, the stronger the effect (up to 6 upgrades).
 gui.tab.info.item.drone.securityUpgrade=§0With one of this upgrade inserted, the Drone will be capable of being immune to liquids. Liquids around the Drone will be removed by the Drone's forcefield.
 gui.tab.info.item.drone.volumeUpgrade=§0For each upgrade inserted, the Drone's volume will be increased by 5000mL. This could be used for long travels.
+gui.tab.info.item.drone.entityUpgrade=§0When inserted, the Drone will have a minigun attached to it, allowing it to perform ranged attacks (up to 16 blocks from the target) when an Entity Attack piece is used. Gun Ammo is required to fire, which needs to be imported with an Inventory Import piece.
+gui.tab.info.item.drone.rangeUpgrade=§0Increases the range of the ranged attacks of the Drone (requiring an Entity Tracker Upgrade) by one block per upgrade (up to 16 upgrades).
 gui.tab.info.tile.pressureChamberInterface=§0This block can be used to export and import items in and out of a Pressure Chamber. You select whether it's exporting or importing by how you place the block. The 'I' means it's Importing on that side, 'O' means it's Outputting. Use the filter slots to select which items are allowed to be imported/exported.
 gui.tab.info.tile.vacuumPump=§0This machine is used to achieve a vacuum. To do this this machine uses pressurized air. Apply pressurized air at the '+' tube, and when 2 bar is reached, air at the '-' tube will be sucked.
 gui.tab.info.tile.assemblyController=§0This machine is used to control other assembly machines. It can control any connected assembly machine, and the machines connecting these assembly machines, and so on... To start the assembly put a program in the program slot.
@@ -650,6 +654,8 @@ gui.tooltip.plasticPlant=Origin: %s
 gui.tooltip.plasticPlant.plant=Press 'Q' or right click to plant seed
 gui.tooltip.programmable.invalidPieces=Pieces displayed in red are not applicable in this application.
 gui.tooltip.doesNotDespawn=§aThis item does not despawn (anymore).
+gui.tooltip.gunAmmo=Ammo type:
+gui.tooltip.gunAmmo.combineWithPotion=Craft with any Potion to tip the bullets with that effect.
 
 # Waila
 hud.msg.state=State

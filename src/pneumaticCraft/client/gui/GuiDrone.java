@@ -32,7 +32,10 @@ public class GuiDrone extends GuiPneumaticInventoryItem{
         addAnimatedStat(securityUpgrade.getDisplayName(), securityUpgrade, 0xFF0000FF, true).setText("gui.tab.info.item.drone.securityUpgrade");
         ItemStack volumeUpgrade = new ItemStack(Itemss.machineUpgrade, 1, ItemMachineUpgrade.UPGRADE_VOLUME_DAMAGE);
         addAnimatedStat(volumeUpgrade.getDisplayName(), volumeUpgrade, 0xFF0000FF, true).setText("gui.tab.info.item.drone.volumeUpgrade");
-
+        ItemStack entityUpgrade = new ItemStack(Itemss.machineUpgrade, 1, ItemMachineUpgrade.UPGRADE_ENTITY_TRACKER);
+        addAnimatedStat(entityUpgrade.getDisplayName(), entityUpgrade, 0xFF0000FF, true).setText("gui.tab.info.item.drone.entityUpgrade");
+        ItemStack rangeUpgrade = new ItemStack(Itemss.machineUpgrade, 1, ItemMachineUpgrade.UPGRADE_RANGE);
+        addAnimatedStat(rangeUpgrade.getDisplayName(), rangeUpgrade, 0xFF0000FF, true).setText("gui.tab.info.item.drone.rangeUpgrade");
     }
 
     @Override

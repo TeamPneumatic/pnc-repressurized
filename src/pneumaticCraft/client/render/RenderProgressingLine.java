@@ -46,8 +46,9 @@ public class RenderProgressingLine{
         return progress;
     }
 
-    public void setProgress(float progress){
+    public RenderProgressingLine setProgress(float progress){
         this.progress = progress;
+        return this;
     }
 
     /**

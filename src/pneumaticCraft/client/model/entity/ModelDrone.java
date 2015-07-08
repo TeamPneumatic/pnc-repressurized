@@ -11,6 +11,7 @@ import org.lwjgl.opengl.GL11;
 import pneumaticCraft.client.semiblock.SemiBlockRendererLogistics;
 import pneumaticCraft.client.util.RenderUtils;
 import pneumaticCraft.common.entity.EntityProgrammableController;
+import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.entity.living.EntityDroneBase;
 
 public class ModelDrone extends ModelBase{
@@ -40,6 +41,7 @@ public class ModelDrone extends ModelBase{
     ModelRenderer LandingStand4;
     ModelRenderer LaserArm;
     ModelRenderer LaserSource;
+    ModelDroneMinigun minigun = new ModelDroneMinigun();
     private final boolean isLogisticsDrone;
 
     public ModelDrone(boolean isLogisticsDrone){
@@ -233,6 +235,7 @@ public class ModelDrone extends ModelBase{
         LandingStand4.render(f5);
         LaserArm.render(f5);
         LaserSource.render(f5);
+        if(entity instanceof EntityDrone && ((EntityDrone)entity).hasMinigun()) minigun.render(entity, f, f1, f2, f3, f4, f5);
         if(isLogisticsDrone) {
             GL11.glDisable(GL11.GL_TEXTURE_2D);
             RenderUtils.glColorHex(0xFFFF0000);

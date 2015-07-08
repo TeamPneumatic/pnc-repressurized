@@ -6,13 +6,13 @@ import java.util.Set;
 
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.ai.EntityAIAttackOnCollide;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.World;
 import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.client.gui.programmer.GuiProgWidgetAreaShow;
+import pneumaticCraft.common.ai.DroneAIAttackEntity;
 import pneumaticCraft.common.ai.DroneAINearestAttackableTarget;
 import pneumaticCraft.common.ai.IDroneBase;
 import pneumaticCraft.common.ai.StringFilterEntitySelector;
@@ -39,7 +39,7 @@ public class ProgWidgetEntityAttack extends ProgWidget implements IAreaProvider,
 
     @Override
     public EntityAIBase getWidgetAI(IDroneBase drone, IProgWidget widget){
-        return new EntityAIAttackOnCollide((EntityDrone)drone, 0.1D, false);
+        return new DroneAIAttackEntity((EntityDrone)drone, 0.1D, false);
     }
 
     @Override

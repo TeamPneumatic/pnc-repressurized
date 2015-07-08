@@ -42,6 +42,7 @@ public class DroneAIManager{
     private EntityAIBase curWidgetAI;
     private EntityAIBase curWidgetTargetAI;
     private boolean stopWhenEndReached;
+    private boolean wasAIOveridden;
 
     private final Map<String, ChunkPosition> coordinateVariables = new HashMap<String, ChunkPosition>();
     private final Map<String, ItemStack> itemVariables = new HashMap<String, ItemStack>();
@@ -258,6 +259,8 @@ public class DroneAIManager{
 
     public void onUpdateTasks(){
         if(!drone.isAIOverriden()) {
+            if(wasAIOveridden && curWidgetTargetAI != null) drone.getTargetAI().addTask(2, curWidgetTargetAI);
+            wasAIOveridden = false;
             ArrayList<EntityAITaskEntry> arraylist = new ArrayList<EntityAITaskEntry>();
             Iterator<EntityAITaskEntry> iterator;
             EntityAITaskEntry entityaitaskentry;
@@ -318,6 +321,10 @@ public class DroneAIManager{
 
             theProfiler.endSection();
         } else {//drone charging ai is running
+            if(!wasAIOveridden && curWidgetTargetAI != null) {
+                drone.getTargetAI().removeTask(curWidgetTargetAI);
+            }
+            wasAIOveridden = true;
             for(EntityAITaskEntry ai : executingTaskEntries) {
                 ai.action.resetTask();
             }

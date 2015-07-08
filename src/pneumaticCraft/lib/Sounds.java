@@ -14,4 +14,6 @@ public class Sounds{
     public static final String HUD_ENTITY_LOCK = MOD_ID + "hudEntityLock";
     public static final String SCIFI = MOD_ID + "sciFi";
     public static final String PNEUMATIC_WRENCH = MOD_ID + "pneumaticWrench";
+    public static final String MINIGUN = MOD_ID + "minigun";
+    public static final String MINIGUN_STOP = MOD_ID + "minigunStop";
 }

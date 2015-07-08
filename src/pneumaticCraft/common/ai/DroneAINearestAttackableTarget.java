@@ -38,6 +38,7 @@ public class DroneAINearestAttackableTarget extends EntityAITarget{
      */
     @Override
     public boolean shouldExecute(){
+        if(drone.hasMinigun() && drone.getAmmo() == null) return false;
         List<Entity> list = ((IEntityProvider)widget).getValidEntities(drone.worldObj);
         Collections.sort(list, theNearestAttackableTargetSorter);
         for(Entity entity : list) {

@@ -4,6 +4,7 @@ import java.util.List;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -17,6 +18,7 @@ import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.common.tileentity.TileEntityProgrammer;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
+import pneumaticCraft.lib.Log;
 import pneumaticCraft.lib.PneumaticValues;
 import pneumaticCraft.proxy.CommonProxy;
 import cpw.mods.fml.relauncher.Side;
@@ -46,7 +48,7 @@ public class ItemDrone extends ItemPneumatic implements IPressurizable, IChargin
                 entityTag.setTag("widgets", stackTag.getTagList("widgets", 10).copy());
                 entityTag.setFloat("currentAir", stackTag.getFloat("currentAir"));
                 entityTag.setInteger("color", stackTag.getInteger("color"));
-                NBTTagCompound invTag = stackTag.getCompoundTag("Inventory");
+                NBTTagCompound invTag = stackTag.getCompoundTag("UpgradeInventory");
                 if(invTag != null) entityTag.setTag("Inventory", invTag.copy());
             }
             drone.readEntityFromNBT(entityTag);
@@ -124,4 +126,18 @@ public class ItemDrone extends ItemPneumatic implements IPressurizable, IChargin
     public boolean showProgramTooltip(){
         return true;
     }
+
+    /**
+     * Called each tick as long the item is on a player inventory. Uses by maps to check if is on a player hand and
+     * update it's contents.
+     */
+    @Override
+    public void onUpdate(ItemStack iStack, World world, Entity p_77663_3_, int p_77663_4_, boolean p_77663_5_){
+        if(!world.isRemote && NBTUtil.hasTag(iStack, "Inventory") && iStack.getTagCompound().getTag("Inventory") instanceof NBTTagCompound) {
+            Log.info("Converting 'Inventory' tag to 'UpgradeInventory' in Pneumatic items");
+            iStack.getTagCompound().setTag("UpgradeInventory", iStack.getTagCompound().getTag("Inventory"));
+            iStack.getTagCompound().removeTag("Inventory");
+        }
+    }
+
 }
