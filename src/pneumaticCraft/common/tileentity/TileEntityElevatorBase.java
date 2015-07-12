@@ -57,6 +57,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
     public int redstoneMode;
     public int[] floorHeights = new int[0];//list of every floor of Elevator Callers.
     private HashMap<Integer, String> floorNames = new HashMap<Integer, String>();
+    @GuiSynced
     private int maxFloorHeight;
     private int redstoneInputLevel;//current redstone input level
 
@@ -161,11 +162,13 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
                 worldObj.playSound(xCoord + 0.5, yCoord + 0.5, zCoord + 0.5, soundName, 0.1F, 1.0F, true);
                 soundCounter = 10;
             }
-            if(!worldObj.isRemote && oldExtension != extension) {
-                sendDescPacket(256);
-            }
-        }
 
+        } else {
+            extension = 0;
+        }
+        if(!worldObj.isRemote && oldExtension != extension) {
+            sendDescPacket(256);
+        }
     }
 
     private void movePlayerDown(){
