@@ -28,6 +28,7 @@ import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.network.DescSynced;
 import pneumaticCraft.common.network.GuiSynced;
 import pneumaticCraft.common.network.LazySynced;
+import pneumaticCraft.common.network.PacketServerTickTime;
 import pneumaticCraft.common.thirdparty.computercraft.LuaConstant;
 import pneumaticCraft.common.thirdparty.computercraft.LuaMethod;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
@@ -92,6 +93,9 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
                 if(oldTargetExtension != targetExtension) sendDescPacketFromAllElevators();
             }
             float speedMultiplier = getSpeedMultiplierFromUpgrades(getUpgradeSlots());
+            if(worldObj.isRemote) {
+                speedMultiplier = (float)(speedMultiplier * PacketServerTickTime.tickTimeMultiplier);
+            }
 
             String soundName = null;
             if(extension < targetExtension) {
@@ -156,6 +160,9 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
             if(soundName != null && worldObj.isRemote && soundCounter == 0) {
                 worldObj.playSound(xCoord + 0.5, yCoord + 0.5, zCoord + 0.5, soundName, 0.1F, 1.0F, true);
                 soundCounter = 10;
+            }
+            if(!worldObj.isRemote && oldExtension != extension) {
+                sendDescPacket(256);
             }
         }
 
