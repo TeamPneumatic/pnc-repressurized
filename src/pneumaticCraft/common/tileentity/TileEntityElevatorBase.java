@@ -89,7 +89,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
 
                 targetExtension = redstoneInput * maxExtension / 15;
                 if(targetExtension > oldExtension && getPressure(ForgeDirection.UNKNOWN) < PneumaticValues.MIN_PRESSURE_ELEVATOR) targetExtension = oldExtension; // only ascent when there's enough pressure
-                if(oldTargetExtension != targetExtension) sendDescPacket(256D);
+                if(oldTargetExtension != targetExtension) sendDescPacketFromAllElevators();
             }
             float speedMultiplier = getSpeedMultiplierFromUpgrades(getUpgradeSlots());
 
@@ -506,7 +506,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
         if(getCoreElevator().isControlledByRedstone()) getCoreElevator().handleGUIButtonPress(0, null);
         if(floor >= 0 && floor < floorHeights.length) setTargetHeight(floorHeights[floor]);
         updateFloors();
-        sendDescPacket(256D);
+        sendDescPacketFromAllElevators();
     }
 
     private void setTargetHeight(float height){
@@ -526,6 +526,16 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
         if(newFrameCamo != frameCamo) {
             frameCamo = newFrameCamo;
             rerenderChunk();
+        }
+    }
+
+    private void sendDescPacketFromAllElevators(){
+        if(multiElevators != null) {
+            for(TileEntityElevatorBase base : multiElevators) {
+                base.sendDescPacket(256);
+            }
+        } else {
+            sendDescPacket(256);
         }
     }
 
@@ -735,7 +745,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
                 if(args.length == 1) {
                     setTargetHeight(((Double)args[0]).floatValue());
                     if(getCoreElevator().isControlledByRedstone()) getCoreElevator().handleGUIButtonPress(0, null);
-                    getCoreElevator().sendDescPacket(256D);
+                    getCoreElevator().sendDescPacketFromAllElevators();
                     return null;
                 } else {
                     throw new IllegalArgumentException("setHeight does take one argument (height)");
