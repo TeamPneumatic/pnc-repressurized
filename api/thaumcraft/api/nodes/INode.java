@@ -27,13 +27,13 @@ public interface INode extends IAspectContainer {
 	public void setNodeType(NodeType nodeType);
 
 	/**
-	 * Return the node modifier
+	 * Set the node modifier
 	 * @return
 	 */
 	public void setNodeModifier(NodeModifier nodeModifier);
 	
 	/**
-	 * Set the node modifier
+	 * Return the node modifier
 	 * @return
 	 */
 	public NodeModifier getNodeModifier();

@@ -1,18 +1,21 @@
 package thaumcraft.api.visnet;
 
 import java.lang.ref.WeakReference;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.MovingObjectPosition.MovingObjectType;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
+import thaumcraft.api.ThaumcraftApi;
+import thaumcraft.api.ThaumcraftApiHelper;
 import thaumcraft.api.WorldCoordinates;
 import thaumcraft.api.aspects.Aspect;
-import cpw.mods.fml.common.FMLLog;
 
 public class VisNetHandler {
 
-	// / NODE DRAINING
+	// NODE DRAINING
 	/**
 	 * This method drains vis from a relay or source near the passed in
 	 * location. The amount received can be less than the amount requested so
@@ -23,7 +26,7 @@ public class VisNetHandler {
 	 * @param y the y position of the draining block or entity
 	 * @param z the z position of the draining block or entity
 	 * @param aspect what aspect to drain
-	 * @param vis how much to drain
+	 * @param amount how much to drain
 	 * @return how much was actually drained
 	 */
 	public static int drainVis(World world, int x, int y, int z, Aspect aspect, int amount) {
@@ -59,17 +62,8 @@ public class VisNetHandler {
 		return drainedAmount;
 	}
 	
-	static Method generateVisEffect;
 	public static void generateVisEffect(int dim, int x, int y, int z, int x2, int y2, int z2, int color) {
-		try {
-	        if(generateVisEffect == null) {
-	            Class fake = Class.forName("thaumcraft.common.lib.Utils");
-	            generateVisEffect = fake.getMethod("generateVisEffect", int.class, int.class, int.class, int.class, int.class, int.class, int.class, int.class);
-	        }
-	        generateVisEffect.invoke(null, dim, x,y,z,x2,y2,z2,color);
-	    } catch(Exception ex) { 
-	    	FMLLog.warning("[Thaumcraft API] Could not invoke thaumcraft.common.lib.Utils method generateVisEffect");
-	    }
+		ThaumcraftApi.internalMethods.generateVisEffect(dim, x, y, z, x2, y2, z2, color);
 	}
 
 	public static HashMap<Integer, HashMap<WorldCoordinates, WeakReference<TileVisNode>>> sources = new HashMap<Integer, HashMap<WorldCoordinates, WeakReference<TileVisNode>>>();
@@ -114,17 +108,21 @@ public class VisNetHandler {
 			if (r > 0) {
 				nearby.add(new Object[] { source, r - vn.getRange() * 2 });
 			}
+			
 			nearby = findClosestNodes(vn, source, nearby);
+			cache.clear();
 		}
 
 		float dist = Float.MAX_VALUE;
 		TileVisNode closest = null;
 		if (nearby.size() > 0) {
 			for (Object[] o : nearby) {
-				if ((Float) o[1] < dist) {// && canNodeBeSeen(vn,(TileVisNode)
-											// o[0])) {
+				if ((Float) o[1] < dist &&
+					(vn.getAttunement() == -1 || ((TileVisNode) o[0]).getAttunement() == -1 || 
+						vn.getAttunement() == ((TileVisNode) o[0]).getAttunement())//) {
+					 && canNodeBeSeen(vn,(TileVisNode)o[0])) {
 					dist = (Float) o[1];
-					closest = (TileVisNode) o[0];
+					closest = (TileVisNode) o[0];					
 				}
 			}
 		}
@@ -137,26 +135,24 @@ public class VisNetHandler {
 		return null;
 	}
 
+	static ArrayList<WorldCoordinates> cache = new ArrayList<WorldCoordinates>();
 	public static ArrayList<Object[]> findClosestNodes(TileVisNode target,
-			TileVisNode root, ArrayList<Object[]> in) {
-		TileVisNode closestChild = null;
+			TileVisNode parent, ArrayList<Object[]> in) {
+		
+		if (cache.size() > 512 || cache.contains(new WorldCoordinates(parent))) return in;
+		cache.add(new WorldCoordinates(parent));
+		
+		for (WeakReference<TileVisNode> childWR : parent.getChildren()) {
+			TileVisNode child = childWR.get();
 
-		for (WeakReference<TileVisNode> child : root.getChildren()) {
-			TileVisNode n = child.get();
-
-			if (n != null
-					&& !n.equals(target)
-					&& !n.equals(root)
-					&& (target.getAttunement() == -1 || n.getAttunement() == -1 || n
-							.getAttunement() == target.getAttunement())) {
-
-				float r2 = inRange(n.getWorldObj(), n.getLocation(),
+			if (child != null && !child.equals(target) && !child.equals(parent)) {
+				float r2 = inRange(child.getWorldObj(), child.getLocation(),
 						target.getLocation(), target.getRange());
 				if (r2 > 0) {
-					in.add(new Object[] { n, r2 });
+					in.add(new Object[] { child, r2 });
 				}
-
-				in = findClosestNodes(target, n, in);
+				
+				in = findClosestNodes(target, child, in);
 			}
 		}
 		return in;
@@ -230,28 +226,30 @@ public class VisNetHandler {
 	private static ArrayList<WeakReference<TileVisNode>> getAllChildren(TileVisNode source, ArrayList<WeakReference<TileVisNode>> list) {
 		for (WeakReference<TileVisNode> child : source.getChildren()) {
 			TileVisNode n = child.get();
-			if (n != null) {
+			
+			if (n != null && n.getWorldObj()!=null && isChunkLoaded(n.getWorldObj(), n.xCoord, n.zCoord)) {
 				list.add(child);
 				list = getAllChildren(n,list);
 			}
 		}
 		return list;
 	}
+	
+	public static boolean isChunkLoaded(World world, int x, int z) {
+		int xx = x >> 4;
+		int zz = z >> 4;
+		return world.getChunkProvider().chunkExists(xx, zz);
+	}
 
-	// public static boolean canNodeBeSeen(TileVisNode source,TileVisNode
-	// target)
-	// {
-	// double d = Math.sqrt(source.getDistanceFrom(target.xCoord, target.yCoord,
-	// target.zCoord));
-	// double xd = (source.xCoord-target.xCoord) / d;
-	// double yd = (source.yCoord-target.yCoord) / d;
-	// double zd = (source.zCoord-target.zCoord) / d;
-	// return source.getWorldObj().rayTraceBlocks(
-	// Vec3.createVectorHelper(source.xCoord-xd+.5+.5, source.yCoord-yd,
-	// source.zCoord-zd),
-	// Vec3.createVectorHelper(target.xCoord+.5, target.yCoord+.5,
-	// target.zCoord+.5)) == null;
-	// }
+	 public static boolean canNodeBeSeen(TileVisNode source,TileVisNode target)
+	 {		 
+		 MovingObjectPosition mop = ThaumcraftApiHelper.rayTraceIgnoringSource(source.getWorldObj(), 
+				 Vec3.createVectorHelper(source.xCoord+.5, source.yCoord+.5,source.zCoord+.5),
+				 Vec3.createVectorHelper(target.xCoord+.5, target.yCoord+.5,target.zCoord+.5),
+				 false, true, false);
+		 return  mop == null || (mop.typeOfHit==MovingObjectType.BLOCK &&
+				 mop.blockX==target.xCoord && mop.blockY==target.yCoord && mop.blockZ==target.zCoord);
+	 }
 
 	// public static HashMap<WorldCoordinates,WeakReference<TileVisNode>>
 	// noderef = new HashMap<WorldCoordinates,WeakReference<TileVisNode>>();

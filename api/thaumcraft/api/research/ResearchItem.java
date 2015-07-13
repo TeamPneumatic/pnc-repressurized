@@ -91,8 +91,7 @@ public class ResearchItem
      */
     private boolean isVirtual;    
     
-    @Deprecated
-    private boolean isLost;
+    
     
     /**
      * Concealed research does not display in the thaumonomicon until parent researches are discovered.
@@ -103,6 +102,11 @@ public class ResearchItem
      * Hidden research can only be discovered via scanning or knowledge fragments 
      */
     private boolean isHidden;
+    
+    /**
+     * This is the same as isHidden, except it cannot be discovered with knowledge fragments, only scanning.  
+     */
+    private boolean isLost;
     
     /**
      * These research items will automatically unlock for all players on game start
@@ -179,7 +183,6 @@ public class ResearchItem
         return this;
     }
     
-    @Deprecated
     public ResearchItem setLost()
     {
         this.isLost = true;
@@ -290,7 +293,6 @@ public class ResearchItem
         return this.isStub;
     }
         
-    @Deprecated
     public boolean isLost()
     {
         return this.isLost;

@@ -136,7 +136,7 @@ public abstract class TileVisNode extends TileThaumcraft {
 			//check for changes
 			if (!nodeRefresh && children.size()>0) {
 				for (WeakReference<TileVisNode> n:children) {
-					if (n==null || n.get()==null) {
+					if (n==null || n.get()==null || !VisNetHandler.canNodeBeSeen(this, n.get())) {
 						nodeRefresh=true;
 						break;
 					}

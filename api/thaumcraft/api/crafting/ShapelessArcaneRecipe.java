@@ -125,9 +125,13 @@ public class ShapelessArcaneRecipe implements IArcaneRecipe
 
     private boolean checkItemEquals(ItemStack target, ItemStack input)
     {
-        return (target.getItem() == input.getItem() &&
-        		(!target.hasTagCompound() || ItemStack.areItemStackTagsEqual(target, input)) &&
-        		(target.getItemDamage() == OreDictionary.WILDCARD_VALUE || target.getItemDamage() == input.getItemDamage()));
+        if (input == null && target != null || input != null && target == null)
+        {
+            return false;
+        }
+        return (target.getItem() == input.getItem() && 
+        		(!target.hasTagCompound() || ThaumcraftApiHelper.areItemStackTagsEqualForCrafting(input,target)) &&
+        		(target.getItemDamage() == OreDictionary.WILDCARD_VALUE|| target.getItemDamage() == input.getItemDamage()));
     }
 
     /**

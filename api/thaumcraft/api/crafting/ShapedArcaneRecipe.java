@@ -224,7 +224,7 @@ public class ShapedArcaneRecipe implements IArcaneRecipe
             return false;
         }
         return (target.getItem() == input.getItem() && 
-        		(!target.hasTagCompound() || ItemStack.areItemStackTagsEqual(target, input)) &&
+        		(!target.hasTagCompound() || ThaumcraftApiHelper.areItemStackTagsEqualForCrafting(input,target)) &&
         		(target.getItemDamage() == OreDictionary.WILDCARD_VALUE|| target.getItemDamage() == input.getItemDamage()));
     }
 
