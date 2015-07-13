@@ -208,7 +208,7 @@ public class ItemPlasticPlants extends ItemPneumatic{
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, EntityPlayer player, List infoList, boolean par4){
         infoList.add(EnumChatFormatting.RED + "Plastic plants are being removed in favor of Oil!");
-        infoList.add(EnumChatFormatting.RED + "The only exist still to provide a smooth transition towards the Oil system!");
+        infoList.add(EnumChatFormatting.RED + "They only exist still to provide a smooth transition towards the Oil system!");
         switch(stack.getItemDamage()){
             case SQUID_PLANT_DAMAGE:
                 infoList.add("Soil: Water");

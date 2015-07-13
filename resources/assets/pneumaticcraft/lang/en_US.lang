@@ -246,7 +246,7 @@ programmingPuzzle.coordinate.name=Coordinate
 programmingPuzzle.coordinateOperator.name=Coordinate Operator
 programmingPuzzle.itemAssign.name=Item Assignment
 programmingPuzzle.logistics.name=Logistics
-programmingPuzzle.conditionItem=Condition: Item Filter
+programmingPuzzle.conditionItem.name=Condition: Item Filter
 programmingPuzzle.conditionCoordinate.name=Condition: Coordinate
 programmingPuzzle.conditionRedstone.name=Condition: Redstone
 programmingPuzzle.conditionItemInventory.name=Condition: Items
@@ -444,7 +444,7 @@ gui.tab.upgrades.tile.assemblyController=§7-Speed Upgrade (max = 10) \n§0All a
 gui.tab.upgrades.tile.chargingStation=§7-Speed Upgrade (max = 10) \n§0The Charging Station will be able to (dis)charge items faster. \n§7-Dispenser Upgrade \n§0Adds a charge pad onto the Charging Station, allowing it to (dis)charge any Drones, items, and player inventory items that are on top of the Charging Station.
 gui.tab.upgrades.tile.elevatorBase=§7-Speed Upgrade (max = 10) \n§0The elevator will ascend/descent faster (at a higher energy cost).
 gui.tab.upgrades.tile.omnidirectionalHopper=§7-Speed Upgrade (max = 13) \n§0Increases the speed at which the Hopper transfers items.
-gui.tab.upgrades.tile.liquidHopper=§7-Speed Upgrade (max = 13) \n§0Increases the speed at which the Hopper transfers liquid.
+gui.tab.upgrades.tile.liquidHopper=§7-Speed Upgrade (max = 13) \n§0Increases the speed at which the Hopper transfers liquid. \n§7Dispenser Upgrade \n§0Sucks any liquid block at the input side of the Hopper, and places down any liquid at the output side. Can be used for example as water pump.
 gui.tab.upgrades.tile.pneumaticDoor=§7-Range Upgrade \n§0Increases the player detection range by one block for every upgrade. \n§7Speed Upgrade \n§0Increases the speed at which the door opens/closes.
 gui.tab.upgrades.tile.pressureChamberInterface=§7-Speed Upgrade (max = 10) \n§0The floodgates of the Interface will open/close faster, meaning items can be transported quicker.
 gui.tab.upgrades.tile.pressureChamberValve=§7-Item Life Upgrade \n§0Items in the pressure chamber with this upgrade cannot despawn (their age is paused).

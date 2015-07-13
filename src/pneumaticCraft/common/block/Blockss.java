@@ -189,7 +189,7 @@ public class Blockss{
         registerBlock(uvLightBox);
         registerBlock(securityStation);
         registerBlock(universalSensor);
-        registerBlock(universalActuator);
+        //     registerBlock(universalActuator);
         registerBlock(aerialInterface);
         registerBlock(electrostaticCompressor);
         registerBlock(aphorismTile);
