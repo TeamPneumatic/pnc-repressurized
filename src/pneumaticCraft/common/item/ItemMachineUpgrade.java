@@ -12,7 +12,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.sensor.SensorHandler;
+import pneumaticCraft.lib.ModIds;
 import pneumaticCraft.lib.Textures;
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -73,7 +75,7 @@ public class ItemMachineUpgrade extends ItemPneumatic{
     @SideOnly(Side.CLIENT)
     public void getSubItems(Item par1, CreativeTabs tab, List subItems){
         for(int i = 0; i < UPGRADES_AMOUNT; i++) {
-            subItems.add(new ItemStack(this, 1, i));
+            if(i != UPGRADE_THAUMCRAFT || Loader.isModLoaded(ModIds.THAUMCRAFT)) subItems.add(new ItemStack(this, 1, i));
         }
     }
 
@@ -139,7 +141,7 @@ public class ItemMachineUpgrade extends ItemPneumatic{
                 infoList.add("-" + Names.UV_LIGHT_BOX);*/
                 break;
             case 10:
-                infoList.add(Itemss.pneumaticHelmet.getUnlocalizedName());
+                unlocalized.add(Itemss.pneumaticHelmet.getUnlocalizedName());
                 break;
         }
 

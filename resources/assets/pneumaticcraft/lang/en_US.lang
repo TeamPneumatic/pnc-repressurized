@@ -181,6 +181,7 @@ item.machineUpgrade6.name=Item Search Upgrade
 item.machineUpgrade7.name=Coordinate Tracker Upgrade
 item.machineUpgrade8.name=Range Upgrade
 item.machineUpgrade9.name=Security Upgrade
+item.machineUpgrade10.name=Thaumcraft Upgrade
 
 item.assemblyProgram0.name=Assembly Program: Drill
 item.assemblyProgram1.name=Assembly Program: Laser

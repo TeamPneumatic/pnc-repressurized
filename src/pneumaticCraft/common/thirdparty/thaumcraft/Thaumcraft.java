@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.block.Block;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import pneumaticCraft.api.PneumaticRegistry;
@@ -11,12 +12,14 @@ import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.thirdparty.IRegistryListener;
 import pneumaticCraft.common.thirdparty.IThirdParty;
+import pneumaticCraft.lib.Log;
 import pneumaticCraft.lib.ModIds;
 import pneumaticCraft.lib.Names;
 import thaumcraft.api.ThaumcraftApi;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import cpw.mods.fml.common.event.FMLInterModComms;
+import cpw.mods.fml.common.registry.GameRegistry;
 
 public class Thaumcraft implements IThirdParty, IRegistryListener{
     private final List<Item> pcItems = new ArrayList<Item>();
@@ -36,7 +39,13 @@ public class Thaumcraft implements IThirdParty, IRegistryListener{
 
     @Override
     public void init(){
-
+        ItemStack lapis = new ItemStack(Items.dye, 1, 4);
+        Item shard = GameRegistry.findItem(ModIds.THAUMCRAFT, "ItemShard");
+        if(shard != null) {
+            GameRegistry.addRecipe(new ItemStack(Itemss.machineUpgrade, 1, 10), "lal", "bcd", "lel", 'l', lapis, 'a', new ItemStack(shard, 1, 0), 'b', new ItemStack(shard, 1, 1), 'c', new ItemStack(shard, 1, 6), 'd', new ItemStack(shard, 1, 3), 'e', new ItemStack(shard, 1, 4));
+        } else {
+            Log.error("Thaumcraft shard item couldn't be found! Registry name has changed? Thaumcraft Upgrade has no recipe!");
+        }
     }
 
     @Override

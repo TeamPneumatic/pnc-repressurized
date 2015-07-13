@@ -17,6 +17,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
@@ -206,6 +207,8 @@ public class ItemPlasticPlants extends ItemPneumatic{
     @Override
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, EntityPlayer player, List infoList, boolean par4){
+        infoList.add(EnumChatFormatting.RED + "Plastic plants are being removed in favor of Oil!");
+        infoList.add(EnumChatFormatting.RED + "The only exist still to provide a smooth transition towards the Oil system!");
         switch(stack.getItemDamage()){
             case SQUID_PLANT_DAMAGE:
                 infoList.add("Soil: Water");
