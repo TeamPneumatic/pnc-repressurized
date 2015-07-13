@@ -34,7 +34,7 @@ public class ProgWidgetBlockRightClick extends ProgWidgetPlace implements IBlock
 
     @Override
     public EntityAIBase getWidgetAI(IDroneBase drone, IProgWidget widget){
-        return new DroneAIBlockInteract(drone, (ProgWidgetAreaItemBase)widget);
+        return setupMaxActions(new DroneAIBlockInteract(drone, (ProgWidgetAreaItemBase)widget), (IMaxActions)widget);
     }
 
     @Override

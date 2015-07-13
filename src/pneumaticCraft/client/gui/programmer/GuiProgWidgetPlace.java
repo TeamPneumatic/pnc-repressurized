@@ -30,6 +30,11 @@ public class GuiProgWidgetPlace<Widget extends ProgWidgetPlace> extends GuiProgW
     }
 
     @Override
+    protected boolean moveActionsToSide(){
+        return true;
+    }
+
+    @Override
     public void actionPerformed(IGuiWidget guiWidget){
         if(guiWidget.getID() >= 10 && guiWidget.getID() < 16) widget.placeDir = ForgeDirection.getOrientation(guiWidget.getID() - 10);
         super.actionPerformed(guiWidget);

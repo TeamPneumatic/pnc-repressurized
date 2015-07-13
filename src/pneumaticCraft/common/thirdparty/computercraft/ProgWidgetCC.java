@@ -32,6 +32,7 @@ import pneumaticCraft.common.progwidgets.IEntityProvider;
 import pneumaticCraft.common.progwidgets.IGotoWidget;
 import pneumaticCraft.common.progwidgets.IItemDropper;
 import pneumaticCraft.common.progwidgets.ILiquidFiltered;
+import pneumaticCraft.common.progwidgets.IMaxActions;
 import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.common.progwidgets.IRedstoneEmissionWidget;
 import pneumaticCraft.common.progwidgets.IRenamingWidget;
@@ -48,7 +49,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdered, ISidedWidget, IGotoWidget,
         IEntityProvider, ITextWidget, ICondition, ICountWidget, IItemDropper, ILiquidFiltered, IRedstoneEmissionWidget,
-        IRenamingWidget, ICraftingWidget{
+        IRenamingWidget, ICraftingWidget, IMaxActions{
     private EnumOrder order = EnumOrder.CLOSEST;
     private boolean[] sides = new boolean[6];
     private final Set<ChunkPosition> area = new HashSet<ChunkPosition>();
@@ -60,6 +61,8 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
     private boolean dropItemStraight;
     private boolean useCount;
     private int count;
+    private boolean useMaxActions;
+    private int maxActions;
     private boolean isAndFunction;
     private Operator operator;
     private final List<ProgWidgetLiquidFilter> liquidBlacklist = new ArrayList<ProgWidgetLiquidFilter>();
@@ -440,6 +443,26 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
         for(int i = 0; i < 9; i++)
             invCrafting.setInventorySlotContents(i, craftingGrid[i]);
         return invCrafting;
+    }
+
+    @Override
+    public void setMaxActions(int maxActions){
+        this.maxActions = maxActions;
+    }
+
+    @Override
+    public int getMaxActions(){
+        return maxActions;
+    }
+
+    @Override
+    public void setUseMaxActions(boolean useMaxActions){
+        this.useMaxActions = useMaxActions;
+    }
+
+    @Override
+    public boolean useMaxActions(){
+        return useMaxActions;
     }
 
 }

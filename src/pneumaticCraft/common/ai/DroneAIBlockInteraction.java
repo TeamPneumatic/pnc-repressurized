@@ -42,6 +42,8 @@ public abstract class DroneAIBlockInteraction extends EntityAIBase{
     protected boolean searching; //true while the drone is searching for a coordinate, false if traveling/processing a coordinate.
     private int searchIndex;//The current index in the area list the drone is searching at.
     private static final int LOOKUPS_PER_SEARCH_TICK = 30; //How many blocks does the drone access per AI update.
+    private int totalActions;
+    private int maxActions = -1;
 
     /**
      * 
@@ -78,7 +80,7 @@ public abstract class DroneAIBlockInteraction extends EntityAIBase{
      */
     @Override
     public boolean shouldExecute(){
-        if(aborted) {
+        if(aborted || maxActions >= 0 && totalActions >= maxActions) {
             return false;
         } else {
             if(!searching) {
@@ -107,6 +109,11 @@ public abstract class DroneAIBlockInteraction extends EntityAIBase{
         return order == ProgWidgetPlace.EnumOrder.CLOSEST || y == curY;
     }
 
+    public DroneAIBlockInteraction setMaxActions(int maxActions){
+        this.maxActions = maxActions;
+        return this;
+    }
+
     protected abstract boolean isValidPosition(ChunkPosition pos);
 
     protected abstract boolean doBlockInteraction(ChunkPosition pos, double distToBlock);
@@ -133,6 +140,7 @@ public abstract class DroneAIBlockInteraction extends EntityAIBase{
                                 if(moveIntoBlock()) {
                                     if(drone.getPathNavigator().moveToXYZ(curPos.chunkPosX, curPos.chunkPosY + 0.5, curPos.chunkPosZ)) {
                                         searching = false;
+                                        totalActions++;
                                         if(respectClaims()) DroneClaimManager.getInstance(drone.getWorld()).claim(pos);
                                         blacklist.clear();//clear the list for next time (maybe the blocks/rights have changed by the time there will be dug again).
                                         return true;
@@ -141,6 +149,7 @@ public abstract class DroneAIBlockInteraction extends EntityAIBase{
                                     for(ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
                                         if(drone.getPathNavigator().moveToXYZ(curPos.chunkPosX + dir.offsetX, curPos.chunkPosY + dir.offsetY + 0.5, curPos.chunkPosZ + dir.offsetZ)) {
                                             searching = false;
+                                            totalActions++;
                                             if(respectClaims()) DroneClaimManager.getInstance(drone.getWorld()).claim(pos);
                                             blacklist.clear();//clear the list for next time (maybe the blocks/rights have changed by the time there will be dug again).
                                             return true;
@@ -149,12 +158,14 @@ public abstract class DroneAIBlockInteraction extends EntityAIBase{
                                 }
                                 if(((EntityPathNavigateDrone)drone.getPathNavigator()).isGoingToTeleport()) {
                                     searching = false;
+                                    totalActions++;
                                     if(respectClaims()) DroneClaimManager.getInstance(drone.getWorld()).claim(pos);
                                     blacklist.clear();//clear the list for next time (maybe the blocks/rights have changed by the time there will be dug again).
                                     return true;
                                 }
                             } else {
                                 searching = false;
+                                totalActions++;
                                 return true;
                             }
                         }

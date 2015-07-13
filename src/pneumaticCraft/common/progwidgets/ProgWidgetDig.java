@@ -25,7 +25,7 @@ public class ProgWidgetDig extends ProgWidgetDigAndPlace{
 
     @Override
     public EntityAIBase getWidgetAI(IDroneBase drone, IProgWidget widget){
-        return new DroneAIDig(drone, (ProgWidgetAreaItemBase)widget);
+        return setupMaxActions(new DroneAIDig(drone, (ProgWidgetAreaItemBase)widget), (IMaxActions)widget);
     }
 
     @Override

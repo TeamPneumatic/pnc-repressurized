@@ -75,7 +75,7 @@ public class ProgWidgetPlace extends ProgWidgetDigAndPlace implements ISidedWidg
 
     @Override
     public EntityAIBase getWidgetAI(IDroneBase drone, IProgWidget widget){
-        return new DroneAIPlace(drone, (ProgWidgetAreaItemBase)widget);
+        return setupMaxActions(new DroneAIPlace(drone, (ProgWidgetAreaItemBase)widget), (IMaxActions)widget);
     }
 
     @Override

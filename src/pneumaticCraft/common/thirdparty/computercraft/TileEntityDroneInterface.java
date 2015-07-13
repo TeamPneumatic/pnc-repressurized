@@ -547,6 +547,32 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral,
             }
         });
 
+        luaMethods.add(new LuaMethod("setUseMaxActions"){
+            @Override
+            public Object[] call(Object[] args) throws Exception{
+                if(args.length == 1) {
+                    getWidget().setUseMaxActions((Boolean)args[0]);
+                    messageToDrone(0xFFFFFFFF);
+                    return null;
+                } else {
+                    throw new IllegalArgumentException("setUseMaxActions takes 1 argument (boolean use max actions true/false!");
+                }
+            }
+        });
+
+        luaMethods.add(new LuaMethod("setMaxActions"){
+            @Override
+            public Object[] call(Object[] args) throws Exception{
+                if(args.length == 1) {
+                    getWidget().setMaxActions(((Double)args[0]).intValue());
+                    messageToDrone(0xFFFFFFFF);
+                    return null;
+                } else {
+                    throw new IllegalArgumentException("setMaxActions takes 1 argument (actions)!");
+                }
+            }
+        });
+
         luaMethods.add(new LuaMethod("setAction"){
             @Override
             public Object[] call(Object[] args) throws Exception{
@@ -759,9 +785,8 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral,
             return true;
         }
         if(other instanceof TileEntity) {
-            TileEntity tother = (TileEntity) other;
-            return tother.getWorldObj().equals(worldObj)
-                && tother.xCoord == this.xCoord && tother.yCoord == this.yCoord && tother.zCoord == this.zCoord;
+            TileEntity tother = (TileEntity)other;
+            return tother.getWorldObj().equals(worldObj) && tother.xCoord == xCoord && tother.yCoord == yCoord && tother.zCoord == zCoord;
         }
 
         return false;
