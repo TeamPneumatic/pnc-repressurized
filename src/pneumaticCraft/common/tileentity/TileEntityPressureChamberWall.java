@@ -39,14 +39,16 @@ public class TileEntityPressureChamberWall extends TileEntityBase implements IMa
 
     public void setCore(TileEntityPressureChamberValve te){
 
-        if(te != null) {
-            valveX = te.xCoord;
-            valveY = te.yCoord;
-            valveZ = te.zCoord;
-        } else {
-            valveX = 0;
-            valveY = 0;
-            valveZ = 0;
+        if(!worldObj.isRemote) {
+            if(te != null) {
+                valveX = te.xCoord;
+                valveY = te.yCoord;
+                valveZ = te.zCoord;
+            } else {
+                valveX = 0;
+                valveY = 0;
+                valveZ = 0;
+            }
         }
         teValve = te;
     }
