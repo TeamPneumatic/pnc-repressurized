@@ -145,7 +145,7 @@ public class TileEntityGasLift extends TileEntityPneumaticBase implements IMinWo
     public boolean suckLiquid(){
         Block block = worldObj.getBlock(xCoord, yCoord - currentDepth - 1, zCoord);
         Fluid fluid = FluidRegistry.lookupFluidForBlock(block);
-        if(fluid != null && worldObj.getBlockMetadata(xCoord, yCoord - currentDepth - 1, zCoord) == 0) {
+        if(fluid != null) {
             if(fill(ForgeDirection.UNKNOWN, new FluidStack(fluid, 1000), false) == 1000) {
                 if(pumpingLake == null) {
                     pumpingLake = new ArrayList<ChunkPosition>();
@@ -156,6 +156,7 @@ public class TileEntityGasLift extends TileEntityPneumaticBase implements IMinWo
                     while(!pendingPositions.empty()) {
                         ChunkPosition checkingPos = pendingPositions.pop();
                         for(ForgeDirection d : ForgeDirection.VALID_DIRECTIONS) {
+                            if(d == ForgeDirection.DOWN) continue;
                             ChunkPosition newPos = new ChunkPosition(checkingPos.chunkPosX + d.offsetX, checkingPos.chunkPosY + d.offsetY, checkingPos.chunkPosZ + d.offsetZ);
                             if(PneumaticCraftUtils.distBetween(newPos, xCoord + 0.5, yCoord - currentDepth - 1, zCoord + 0.5) <= MAX_PUMP_RANGE && worldObj.getBlock(newPos.chunkPosX, newPos.chunkPosY, newPos.chunkPosZ) == block && !pumpingLake.contains(newPos)) {
                                 pendingPositions.add(newPos);
@@ -167,16 +168,18 @@ public class TileEntityGasLift extends TileEntityPneumaticBase implements IMinWo
                     Collections.reverse(pumpingLake);
                 }
                 ChunkPosition curPos = null;
+                boolean foundSource = false;
                 while(pumpingLake.size() > 0) {
                     curPos = pumpingLake.get(0);
                     if(worldObj.getBlock(curPos.chunkPosX, curPos.chunkPosY, curPos.chunkPosZ) == block && worldObj.getBlockMetadata(curPos.chunkPosX, curPos.chunkPosY, curPos.chunkPosZ) == 0) {
+                        foundSource = true;
                         break;
                     }
                     pumpingLake.remove(0);
                 }
                 if(pumpingLake.size() == 0) {
                     pumpingLake = null;
-                } else {
+                } else if(foundSource) {
                     worldObj.setBlockToAir(curPos.chunkPosX, curPos.chunkPosY, curPos.chunkPosZ);
                     fill(ForgeDirection.UNKNOWN, new FluidStack(fluid, 1000), true);
                     addAir(-100, ForgeDirection.UNKNOWN);
