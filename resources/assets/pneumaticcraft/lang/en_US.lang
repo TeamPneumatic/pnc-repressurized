@@ -348,6 +348,8 @@ gui.tab.info.tile.aerialInterface=§0By using an advanced technology which compr
 gui.tab.info.tile.airCannon=§0This machine can be used to transport items through the air. To be able to use it you'll have to make a GPS Tool. Once made, right click with it on the block you want the items to travel to, and insert the GPS Tool in the GPS slot.
 gui.tab.info.aerialInterface.liquidXp.info.title=Interfacing XP
 gui.tab.info.aerialInterface.liquidXp.info=§0When you've got a Dispenser Upgrade installed in the Aerial Interface, you can pump liquid XP into or out of the Aerial Interface. When there are multiple options, you can learn the Interface which one to pump out by pumping a bit of the liquid you want in. The supported liquids you can use in your instance are:
+gui.tab.info.aerialInterface.interfacingRF.info.title=Interfacing RF
+gui.tab.info.aerialInterface.interfacingRF.info=The Aerial Interface is able to accept RF. The RF stored in its internal buffer (100,000RF) is used to charge any chargeable RF item in the player's inventory (and armor slots).
 
 gui.tab.info.tile.pressureChamberValve=§0This multi-block structure can be used as air storage. The main feature however is to compress various materials into others. Like coal into diamonds.
 gui.tab.info.tile.airCompressor=§0This machine is used to generate compressed air. To do this insert any item that can burn in a Furnace in the fuel slot.

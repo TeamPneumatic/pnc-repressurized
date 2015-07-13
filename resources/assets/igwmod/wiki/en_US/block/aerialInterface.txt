@@ -18,6 +18,9 @@ Note that upgrades for the Aerial Interface can be pumped in/out the top, main i
 
 
 
+[prefix{l}]Interfacing RF[prefix{}]
+An Aerial Interface will accept RF. The RF stored in its internal buffer (100,000RF) is used to charge any chargeable RF item in the player's inventory (and armor slots).
+
 [prefix{l}]Auto-feeding [prefix{}]
 By inserting a Dispenser Upgrade you can make the Aerial Interface act like a remote auto-feeder. Only food items will be accepted through the Aerial Interface, and only when the player is hungry enough to fully utilize the provided meal. Note that when an inventory offers a stack of >1, the Interface waits until the player can consume that amount. To make sure the smallest amount of food can be utilized use slow inserting inventories like [link{block/hopper}]Hoppers [link{}].
 

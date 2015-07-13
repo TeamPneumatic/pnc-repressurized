@@ -26,12 +26,21 @@ import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.network.GuiSynced;
 import pneumaticCraft.lib.Log;
+import pneumaticCraft.lib.ModIds;
 import pneumaticCraft.lib.PneumaticValues;
+import cofh.api.energy.EnergyStorage;
+import cofh.api.energy.IEnergyContainerItem;
+import cofh.api.energy.IEnergyReceiver;
+import cofh.api.tileentity.IEnergyInfo;
 
 import com.mojang.authlib.GameProfile;
 
+import cpw.mods.fml.common.Loader;
+import cpw.mods.fml.common.Optional;
+
+@Optional.InterfaceList({@Optional.Interface(iface = "cofh.api.energy.IEnergyHandler", modid = ModIds.COFH_CORE), @Optional.Interface(iface = "cofh.api.tileentity.IEnergyInfo", modid = ModIds.COFH_CORE)})
 public class TileEntityAerialInterface extends TileEntityPneumaticBase implements ISidedInventory, IFluidHandler,
-        IMinWorkingPressure, IRedstoneControl{
+        IMinWorkingPressure, IRedstoneControl, IEnergyReceiver, IEnergyInfo{
     private ItemStack[] inventory;
 
     private final int INVENTORY_SIZE = 4;
@@ -57,6 +66,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
         super(PneumaticValues.DANGER_PRESSURE_AERIAL_INTERFACE, PneumaticValues.MAX_PRESSURE_AERIAL_INTERFACE, PneumaticValues.VOLUME_AERIAL_INTERFACE);
         inventory = new ItemStack[INVENTORY_SIZE];
         setUpgradeSlots(new int[]{UPGRADE_SLOT_START, 1, 2, UPGRADE_SLOT_END});
+        if(isRFAvailable()) initRF();
     }
 
     public void setPlayer(GameProfile gameProfile){
@@ -77,6 +87,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
         }
         if(!worldObj.isRemote) {
             if(getPressure(ForgeDirection.UNKNOWN) > PneumaticValues.MIN_PRESSURE_AERIAL_INTERFACE && isConnectedToPlayer) {
+                if(energyRF != null) tickRF();
                 addAir(-PneumaticValues.USAGE_AERIAL_INTERFACE, ForgeDirection.UNKNOWN);
                 if(worldObj.getWorldTime() % 40 == 0) dispenserUpgradeInserted = getUpgrades(ItemMachineUpgrade.UPGRADE_DISPENSER_DAMAGE) > 0;
             }
@@ -270,6 +281,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
         setPlayer(nbtTagCompound.getString("playerName"), nbtTagCompound.getString("playerUUID"));
         isConnectedToPlayer = nbtTagCompound.getBoolean("connected");
         if(nbtTagCompound.hasKey("curXpFluid")) curXpFluid = FluidRegistry.getFluid(nbtTagCompound.getString("curXpFluid"));
+        if(energyRF != null) readRF(nbtTagCompound);
 
         NBTTagList tagList = nbtTagCompound.getTagList("Items", 10);
         inventory = new ItemStack[4];
@@ -291,6 +303,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
         nbtTagCompound.setString("playerName", playerName);
         nbtTagCompound.setString("playerUUID", playerUUID);
         if(curXpFluid != null) nbtTagCompound.setString("curXpFluid", curXpFluid.getName());
+        if(energyRF != null) saveRF(nbtTagCompound);
 
         nbtTagCompound.setBoolean("connected", isConnectedToPlayer);
         NBTTagList tagList = new NBTTagList();
@@ -515,6 +528,95 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
     @Override
     public int getRedstoneMode(){
         return redstoneMode;
+    }
+
+    /**
+     * RF integration
+     */
+
+    private Object energyRF;
+    private static final int RF_PER_TICK = 1000;
+
+    private boolean isRFAvailable(){
+        return Loader.isModLoaded(ModIds.COFH_CORE);
+    }
+
+    private void initRF(){
+        energyRF = new EnergyStorage(100000);
+    }
+
+    private void saveRF(NBTTagCompound tag){
+        getEnergy().writeToNBT(tag);
+    }
+
+    private void readRF(NBTTagCompound tag){
+        getEnergy().readFromNBT(tag);
+    }
+
+    private void tickRF(){
+
+        if(getEnergyStored(null) > 0) {
+            InventoryPlayer inv = getPlayerInventory();
+            if(inv != null) {
+                for(int i = 0; i < inv.getSizeInventory(); i++) {
+                    ItemStack stack = inv.getStackInSlot(i);
+                    if(stack != null && stack.getItem() instanceof IEnergyContainerItem) {
+                        IEnergyContainerItem chargingItem = (IEnergyContainerItem)stack.getItem();
+                        int energyLeft = getEnergyStored(null);
+                        if(energyLeft > 0) {
+                            getEnergy().extractEnergy(chargingItem.receiveEnergy(stack, energyLeft, false), false);
+                        } else {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @Optional.Method(modid = ModIds.COFH_CORE)
+    private EnergyStorage getEnergy(){
+        return (EnergyStorage)energyRF;
+    }
+
+    @Override
+    public boolean canConnectEnergy(ForgeDirection from){
+        return true;
+    }
+
+    @Override
+    public int getInfoEnergyPerTick(){
+        return RF_PER_TICK;
+    }
+
+    @Override
+    public int getInfoMaxEnergyPerTick(){
+        return RF_PER_TICK;
+    }
+
+    @Override
+    public int getInfoEnergyStored(){
+        return getEnergy().getEnergyStored();
+    }
+
+    @Override
+    public int getInfoMaxEnergyStored(){
+        return getEnergy().getMaxEnergyStored();
+    }
+
+    @Override
+    public int receiveEnergy(ForgeDirection from, int maxReceive, boolean simulate){
+        return getEnergy().receiveEnergy(maxReceive, simulate);
+    }
+
+    @Override
+    public int getEnergyStored(ForgeDirection from){
+        return getEnergy().getEnergyStored();
+    }
+
+    @Override
+    public int getMaxEnergyStored(ForgeDirection from){
+        return getEnergy().getMaxEnergyStored();
     }
 
 }

@@ -15,8 +15,10 @@ import pneumaticCraft.common.PneumaticCraftAPIHandler;
 import pneumaticCraft.common.inventory.Container4UpgradeSlots;
 import pneumaticCraft.common.tileentity.TileEntityAerialInterface;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
+import pneumaticCraft.lib.ModIds;
 import pneumaticCraft.lib.PneumaticValues;
 import pneumaticCraft.lib.Textures;
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -32,6 +34,9 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<TileEntityAeri
     public void initGui(){
         super.initGui();
         if(PneumaticCraftAPIHandler.getInstance().liquidXPs.size() > 0) addAnimatedStat("gui.tab.info.aerialInterface.liquidXp.info.title", new ItemStack(Items.water_bucket), 0xFF55FF55, false).setText(getLiquidXPText());
+        if(Loader.isModLoaded(ModIds.COFH_CORE)) {
+            addAnimatedStat("gui.tab.info.aerialInterface.interfacingRF.info.title", new ItemStack(Items.glowstone_dust), 0xFFFF2222, false).setText("gui.tab.info.aerialInterface.interfacingRF.info");
+        }
     }
 
     private List<String> getLiquidXPText(){
