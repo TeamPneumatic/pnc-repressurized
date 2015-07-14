@@ -10,9 +10,11 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.ChunkPosition;
 import net.minecraftforge.common.util.ForgeDirection;
+import pneumaticCraft.api.tileentity.IPneumaticMachine;
 import pneumaticCraft.api.universalSensor.IEventSensorSetting;
 import pneumaticCraft.api.universalSensor.IPollSensorSetting;
 import pneumaticCraft.api.universalSensor.ISensorSetting;
@@ -22,6 +24,7 @@ import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.ItemGPSTool;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.Itemss;
+import pneumaticCraft.common.network.DescSynced;
 import pneumaticCraft.common.network.GuiSynced;
 import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.PacketRenderRangeLines;
@@ -41,6 +44,8 @@ import dan200.computercraft.api.peripheral.IComputerAccess;
 public class TileEntityUniversalSensor extends TileEntityPneumaticBase implements IInventory, IRangeLineShower,
         IGUITextFieldSensitive, IMinWorkingPressure, IRedstoneControl{
 
+    @DescSynced
+    public boolean[] sidesConnected = new boolean[6];
     private ItemStack[] inventory = new ItemStack[5];
     public static final int UPGRADE_SLOT_1 = 0;
     public static final int UPGRADE_SLOT_4 = 3;
@@ -56,7 +61,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
     public float dishSpeed;
     @GuiSynced
     public boolean invertedRedstone;
-    @GuiSynced
+    @DescSynced
     public boolean isSensorActive;
     @GuiSynced
     private String sensorGuiText = ""; //optional parameter text for sensors.
@@ -279,6 +284,19 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
             }
         }
         return true;
+    }
+
+    @Override
+    public void onNeighborTileUpdate(){
+        super.onNeighborTileUpdate();
+        for(ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
+            TileEntity te = worldObj.getTileEntity(xCoord + direction.offsetX, yCoord + direction.offsetY, zCoord + direction.offsetZ);
+            if(te instanceof IPneumaticMachine) {
+                sidesConnected[direction.ordinal()] = ((IPneumaticMachine)te).isConnectedTo(direction.getOpposite());
+            } else {
+                sidesConnected[direction.ordinal()] = false;
+            }
+        }
     }
 
     // INVENTORY METHODS- && NBT

@@ -1,5 +1,12 @@
--Rebalanced Pressure Chamber Interface recipe to not require plastic (as that's a higher tier now).
--Performance increases for the Charging Station and Charging Module.
--Bugfix: Crash with Better Storage Crate and Pneumatic Helmet Block Tracker.
--Bugfix: Weird client crash (StackOverFlowException) on logging in on server.
--Bugfix: Crafting a Pneumatic Helmet with completely empty Air Canisters will yield you a helmet with no durability.
+-Added ranged attacks for Drones (Miniguns!).
+-Added option to break out of Dig and Place commands after x actions, to allow for example for checking of tool durability.
+-Added RF support to the Aerial Interface, energy supplied will be used to charge any chargeable item in the Player inventory.
+-Added recipe for the Thaumcraft Update (about time).
+-Adjusted the Gas Lift to pump the highest liquid blocks first, and to allow pumping when on top of non-source blocks.
+-Updated the Universal Sensor model.
+
+-Fixed most of the derpyness with Elevators when a server is laggy.
+-Bugfix: Multiblock Elevators sometimes have desynced elevator floors.
+-Bugfix: Elevator Status tab doesn't display the right maximum height.
+-Bugfix: Pressure Chamber breaks partially visually when on a chunk border.
+
