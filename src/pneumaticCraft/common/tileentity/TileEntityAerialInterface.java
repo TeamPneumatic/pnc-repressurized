@@ -38,7 +38,7 @@ import com.mojang.authlib.GameProfile;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Optional;
 
-@Optional.InterfaceList({@Optional.Interface(iface = "cofh.api.energy.IEnergyHandler", modid = ModIds.COFH_CORE), @Optional.Interface(iface = "cofh.api.tileentity.IEnergyInfo", modid = ModIds.COFH_CORE)})
+@Optional.InterfaceList({@Optional.Interface(iface = "cofh.api.energy.IEnergyReceiver", modid = ModIds.COFH_CORE), @Optional.Interface(iface = "cofh.api.tileentity.IEnergyInfo", modid = ModIds.COFH_CORE)})
 public class TileEntityAerialInterface extends TileEntityPneumaticBase implements ISidedInventory, IFluidHandler,
         IMinWorkingPressure, IRedstoneControl, IEnergyReceiver, IEnergyInfo{
     private ItemStack[] inventory;
