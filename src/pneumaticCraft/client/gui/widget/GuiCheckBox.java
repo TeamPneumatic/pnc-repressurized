@@ -82,15 +82,17 @@ public class GuiCheckBox extends Gui implements IGuiWidget{
 
     }
 
-    public void setTooltip(String tooltip){
+    public GuiCheckBox setTooltip(String tooltip){
         this.tooltip.clear();
         if(tooltip != null && !tooltip.equals("")) {
             this.tooltip.add(tooltip);
         }
+        return this;
     }
 
-    public void setTooltip(List<String> tooltip){
+    public GuiCheckBox setTooltip(List<String> tooltip){
         this.tooltip = tooltip;
+        return this;
     }
 
     @Override

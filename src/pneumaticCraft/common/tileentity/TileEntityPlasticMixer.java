@@ -1,7 +1,7 @@
 package pneumaticCraft.common.tileentity;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemDye;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -26,9 +26,9 @@ import pneumaticCraft.lib.PneumaticValues;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHandler, IInventory, IHeatExchanger{
+public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHandler, ISidedInventory, IHeatExchanger{
     private final FluidTank tank = new FluidTank(PneumaticValues.NORMAL_TANK_CAPACITY);
-    private final ItemStack[] inventory = new ItemStack[6];
+    private final ItemStack[] inventory = new ItemStack[9];
     private int lastTickInventoryStacksize;
     private static int BASE_TEMPERATURE = FluidRegistry.WATER.getTemperature();
     @GuiSynced
@@ -36,18 +36,21 @@ public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHand
     @GuiSynced
     private final IHeatExchangerLogic itemLogic = PneumaticRegistry.getInstance().getHeatExchangerLogic();
     @GuiSynced
-    private final IHeatExchangerLogic liquidLogic = PneumaticRegistry.getInstance().getHeatExchangerLogic();
+    public int selectedPlastic = -1;
+    @GuiSynced
+    public boolean lockSelection;
+    @GuiSynced
+    public int[] dyeBuffers = new int[3];
+    public static final int DYE_PER_DYE = 0xFF * 10;
+    public static final int DYE_BUFFER_MAX = 0xFF * 2 * PneumaticValues.NORMAL_TANK_CAPACITY / 1000;
 
     public static final String[] DYES = {"dyeBlack", "dyeRed", "dyeGreen", "dyeBrown", "dyeBlue", "dyePurple", "dyeCyan", "dyeLightGray", "dyeGray", "dyePink", "dyeLime", "dyeYellow", "dyeLightBlue", "dyeMagenta", "dyeOrange", "dyeWhite"};
-
-    private static final int INV_ITEM = 4, INV_DYE = 5;
+    private static final int[] SLOTS = {0, 1, 2, 3, 4, 5, 6, 7, 8};
+    public static final int INV_INPUT = 4, INV_OUTPUT = 5, INV_DYE_RED = 6, INV_DYE_GREEN = 7, INV_DYE_BLUE = 8;
 
     public TileEntityPlasticMixer(){
         super(0, 1, 2, 3);
         hullLogic.addConnectedExchanger(itemLogic);
-        hullLogic.addConnectedExchanger(liquidLogic);
-        itemLogic.addConnectedExchanger(liquidLogic);
-
         hullLogic.setThermalCapacity(100);
     }
 
@@ -58,8 +61,6 @@ public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHand
                 return hullLogic;
             case 1:
                 return itemLogic;
-            case 2:
-                return liquidLogic;
         }
         throw new IllegalArgumentException("Invalid index: " + index);
     }
@@ -73,69 +74,78 @@ public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHand
     public void updateEntity(){
         super.updateEntity();
         if(!worldObj.isRemote) {
-
+            refillDyeBuffers();
             itemLogic.update();
-            liquidLogic.update();
-            if(tank.getFluid() != null) {
-                //  tank.getFluid().tag.setInteger("temperature", 500/*(int)liquidLogic.getTemperature()*/);
-            }
-
             if(worldObj.getWorldTime() % 20 == 0) {//We don't need to run _that_ often.
-                if(inventory[INV_ITEM] != null && inventory[INV_ITEM].stackSize > lastTickInventoryStacksize) {
-                    int stackIncrease = inventory[INV_ITEM].stackSize - lastTickInventoryStacksize;
-                    double ratio = (double)inventory[INV_ITEM].stackSize / (inventory[INV_ITEM].stackSize + stackIncrease);
+                if(inventory[INV_INPUT] != null && inventory[INV_INPUT].stackSize > lastTickInventoryStacksize) {
+                    int stackIncrease = inventory[INV_INPUT].stackSize - lastTickInventoryStacksize;
+                    double ratio = (double)inventory[INV_INPUT].stackSize / (inventory[INV_INPUT].stackSize + stackIncrease);
                     itemLogic.setTemperature((int)(ratio * itemLogic.getTemperature() + (1 - ratio) * BASE_TEMPERATURE));
-                } else if(inventory[INV_ITEM] == null) {
+                } else if(inventory[INV_INPUT] == null) {
                     itemLogic.setTemperature(BASE_TEMPERATURE);
                 }
 
                 if(itemLogic.getTemperature() >= PneumaticValues.PLASTIC_MIXER_MELTING_TEMP) {
-                    NBTTagCompound tag = new NBTTagCompound();
-                    //tag.setInteger("temperature", (int)itemLogic.getTemperature());
-                    tag.setInteger("color", ItemDye.field_150922_c[inventory[INV_ITEM].getItemDamage()]);
-                    FluidStack moltenPlastic = new FluidStack(Fluids.plastic.getID(), inventory[INV_ITEM].stackSize * 1000, tag);
+                    FluidStack moltenPlastic = new FluidStack(Fluids.plastic, inventory[INV_INPUT].stackSize * 1000);
                     int maxFill = fill(ForgeDirection.UNKNOWN, moltenPlastic, false) / 1000;
                     if(maxFill > 0) {
-                        inventory[INV_ITEM].stackSize -= maxFill;
-                        if(inventory[INV_ITEM].stackSize <= 0) inventory[INV_ITEM] = null;
-                        int oldAmount = tank.getFluidAmount();
+                        inventory[INV_INPUT].stackSize -= maxFill;
+                        if(inventory[INV_INPUT].stackSize <= 0) inventory[INV_INPUT] = null;
                         fill(ForgeDirection.UNKNOWN, new FluidStack(moltenPlastic, maxFill * 1000), true);
-                        double ratio = (double)oldAmount / (oldAmount + maxFill * 1000);
-
-                        liquidLogic.setTemperature(ratio * liquidLogic.getTemperature() + (1 - ratio) * FluidPlastic.getTemperatureS(tank.getFluid()));
                     }
                 }
-                if(tank.getFluid() != null && liquidLogic.getTemperature() < PneumaticValues.PLASTIC_MIXER_MELTING_TEMP) {
-                    ItemStack solidifiedStack = new ItemStack(Itemss.plastic, tank.getFluid().amount / 1000, FluidPlastic.getPlasticMeta(tank.getFluid()));
+                if(tank.getFluid() != null && selectedPlastic >= 0) {
+                    ItemStack solidifiedStack = new ItemStack(Itemss.plastic, tank.getFluid().amount / 1000, selectedPlastic);
                     if(solidifiedStack.stackSize > 0) {
-                        if(inventory[INV_ITEM] == null) {
-                            inventory[INV_ITEM] = solidifiedStack;
-                            itemLogic.setTemperature(liquidLogic.getTemperature());
-                            tank.drain(inventory[INV_ITEM].stackSize * 1000, true);
-                            sendDescriptionPacket();
-                        } else if(solidifiedStack.isItemEqual(inventory[INV_ITEM])) {
-                            int solidifiedItems = Math.min(64 - inventory[INV_ITEM].stackSize, solidifiedStack.stackSize);
-                            double ratio = (double)inventory[INV_ITEM].stackSize / (inventory[INV_ITEM].stackSize + solidifiedItems);
-                            itemLogic.setTemperature((int)(ratio * itemLogic.getTemperature() + (1 - ratio) * liquidLogic.getTemperature()));
-                            inventory[INV_ITEM].stackSize += solidifiedItems;
+                        if(inventory[INV_OUTPUT] == null) {
+                            solidifiedStack.stackSize = useDye(solidifiedStack.stackSize);
+                            if(solidifiedStack.stackSize > 0) {
+                                inventory[INV_OUTPUT] = solidifiedStack;
+                                tank.drain(inventory[INV_OUTPUT].stackSize * 1000, true);
+                                sendDescriptionPacket();
+                            }
+                        } else if(solidifiedStack.isItemEqual(inventory[INV_OUTPUT])) {
+                            int solidifiedItems = Math.min(64 - inventory[INV_OUTPUT].stackSize, solidifiedStack.stackSize);
+                            solidifiedItems = useDye(solidifiedItems);
+                            inventory[INV_OUTPUT].stackSize += solidifiedItems;
                             tank.drain(solidifiedItems * 1000, true);
                             sendDescriptionPacket();
                         }
                     }
-                } else if(tank.getFluid() != null && inventory[INV_DYE] != null) {
-                    while(inventory[INV_DYE] != null) {
-                        FluidPlastic.addDye(tank.getFluid(), getDyeIndex());
-                        inventory[INV_DYE].stackSize--;
-                        if(inventory[INV_DYE].stackSize <= 0) inventory[INV_DYE] = null;
-                    }
-                    sendDescriptionPacket();
                 }
-                lastTickInventoryStacksize = inventory[INV_ITEM] != null ? inventory[INV_ITEM].stackSize : 0;
+                if(!lockSelection) selectedPlastic = -1;
+                lastTickInventoryStacksize = inventory[INV_INPUT] != null ? inventory[INV_INPUT].stackSize : 0;
 
-                itemLogic.setThermalCapacity(inventory[INV_ITEM] == null ? 0 : inventory[INV_ITEM].stackSize);
-                liquidLogic.setThermalCapacity(tank.getFluid() == null ? 0 : tank.getFluid().amount / 1000D);
+                itemLogic.setThermalCapacity(inventory[INV_INPUT] == null ? 0 : inventory[INV_INPUT].stackSize);
             }
         }
+    }
+
+    private void refillDyeBuffers(){
+        for(int i = 0; i < 3; i++) {
+            if(getStackInSlot(INV_DYE_RED + i) != null && dyeBuffers[i] <= DYE_BUFFER_MAX - DYE_PER_DYE) {
+                decrStackSize(INV_DYE_RED + i, 1);
+                dyeBuffers[i] += DYE_PER_DYE;
+            }
+        }
+    }
+
+    private int useDye(int maxItems){
+        int desiredColor = ItemDye.field_150922_c[selectedPlastic];
+        if(selectedPlastic == 15) return maxItems;//Converting to white plastic is free.
+        for(int i = 0; i < 3; i++) {
+            int colorComponent = desiredColor >> 8 * i & 0xFF;
+            colorComponent = 0xFF - colorComponent;//Invert, because we start out with white, and we darken the plastic.
+            if(colorComponent > 0) {
+                maxItems = Math.min(maxItems, dyeBuffers[i] / colorComponent);
+            }
+        }
+        for(int i = 0; i < 3; i++) {
+            int colorComponent = desiredColor >> 8 * i & 0xFF;
+            colorComponent = 0xFF - colorComponent;//Invert, because we start out with white, and we darken the plastic.
+            dyeBuffers[i] -= colorComponent * maxItems;
+        }
+        return maxItems;
     }
 
     @Override
@@ -143,9 +153,13 @@ public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHand
         super.readFromNBT(tag);
         readInventoryFromNBT(tag, inventory, "Items");
         lastTickInventoryStacksize = tag.getInteger("lastTickInventoryStacksize");
+        selectedPlastic = tag.getInteger("selectedPlastic");
+        lockSelection = tag.getBoolean("lockSelection");
+        dyeBuffers[0] = tag.getInteger("dyeBuffer0");
+        dyeBuffers[1] = tag.getInteger("dyeBuffer1");
+        dyeBuffers[2] = tag.getInteger("dyeBuffer2");
 
         itemLogic.readFromNBT(tag.getCompoundTag("itemLogic"));
-        liquidLogic.readFromNBT(tag.getCompoundTag("liquidLogic"));
     }
 
     @Override
@@ -153,14 +167,15 @@ public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHand
         super.writeToNBT(tag);
         writeInventoryToNBT(tag, inventory, "Items");
         tag.setInteger("lastTickInventoryStacksize", lastTickInventoryStacksize);
+        tag.setInteger("selectedPlastic", selectedPlastic);
+        tag.setBoolean("lockSelection", lockSelection);
+        tag.setInteger("dyeBuffer0", dyeBuffers[0]);
+        tag.setInteger("dyeBuffer1", dyeBuffers[1]);
+        tag.setInteger("dyeBuffer2", dyeBuffers[2]);
 
         NBTTagCompound heatTag = new NBTTagCompound();
         itemLogic.writeToNBT(heatTag);
         tag.setTag("itemLogic", heatTag);
-
-        heatTag = new NBTTagCompound();
-        liquidLogic.writeToNBT(heatTag);
-        tag.setTag("liquidLogic", heatTag);
     }
 
     @Override
@@ -186,7 +201,6 @@ public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHand
         int fillingAmount = Math.min(tank.getCapacity() - tank.getFluidAmount(), resource.amount);
         if(doFill && fillingAmount > 0) {
             tank.setFluid(FluidPlastic.mixFluid(tank.getFluid(), new FluidStack(resource, fillingAmount)));
-            liquidLogic.setTemperature(FluidPlastic.getTemperatureS(tank.getFluid()));
             sendDescriptionPacket();
         }
         return fillingAmount;
@@ -292,7 +306,21 @@ public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHand
 
     @Override
     public boolean isItemValidForSlot(int i, ItemStack itemstack){
-        return itemstack != null && (i < 4 && itemstack.getItem() == Itemss.machineUpgrade || i == INV_ITEM && itemstack.getItem() == Itemss.plastic || i == INV_DYE && getDyeIndex(itemstack) >= 0);
+        if(itemstack == null) return true;
+        switch(i){
+            case INV_INPUT:
+                return itemstack.getItem() == Itemss.plastic;
+            case INV_OUTPUT:
+                return false;
+            case INV_DYE_RED:
+                return getDyeIndex(itemstack) == 1;
+            case INV_DYE_GREEN:
+                return getDyeIndex(itemstack) == 2;
+            case INV_DYE_BLUE:
+                return getDyeIndex(itemstack) == 4;
+            default:
+                return itemstack.getItem() == Itemss.machineUpgrade;
+        }
     }
 
     @Override
@@ -310,10 +338,6 @@ public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHand
         return hullLogic;
     }
 
-    private int getDyeIndex(){
-        return getDyeIndex(inventory[INV_DYE]);
-    }
-
     public static int getDyeIndex(ItemStack stack){
         int[] ids = OreDictionary.getOreIDs(stack);
         for(int id : ids) {
@@ -323,5 +347,33 @@ public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHand
             }
         }
         return -1;
+    }
+
+    @Override
+    public int[] getAccessibleSlotsFromSide(int side){
+        return SLOTS;
+    }
+
+    @Override
+    public boolean canInsertItem(int slot, ItemStack stack, int side){
+        return isItemValidForSlot(slot, stack);
+    }
+
+    @Override
+    public boolean canExtractItem(int slot, ItemStack stack, int side){
+        return slot == INV_OUTPUT;
+    }
+
+    @Override
+    public void handleGUIButtonPress(int guiID, EntityPlayer player){
+        if(guiID >= 0 && guiID < 16) {
+            if(selectedPlastic != guiID) {
+                selectedPlastic = guiID;
+            } else {
+                selectedPlastic = -1;
+            }
+        } else if(guiID == 16) {
+            lockSelection = !lockSelection;
+        }
     }
 }

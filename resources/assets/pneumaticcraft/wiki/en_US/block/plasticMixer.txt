@@ -1,6 +1,6 @@
-The Plastic Mixer is a machine you can use to transform one color of plastic into another. It uses heat and dye to do so.
+The Plastic Mixer is a machine you can use to transform one color of plastic into another. It uses heat and dye to do so. A different use is to solidify liquid plastic gotten from a [link{block/thermopneumaticProcessingPlant}]Thermopneumatic Processing Plant[link{}]. This does not require heat.
 [image{370, 5, 0.3,igwmod:textures/plasticMixer.png}]
-[image{200, 125,0.8, igwmod:textures/plasticMixerGUI.png}]
+[image{200, 125,0.4, igwmod:textures/plasticMixerGUI.png}]
 
 
 
@@ -17,15 +17,9 @@ The Plastic Mixer is a machine you can use to transform one color of plastic int
 
 
 
+The Plastic Mixer needs [link{menu/heat}]heat [link{}] to melt down solid Plastic. It will heat up any Plastic put in the top slot of the 'Item' section. When the temperature of the plastic hits 150C, it will melt down and go into the liquid tank.
 
+[prefix{l}]Solidifying Plastic[prefix{}]
+First open up the 'Plastic Selection' tab. A panel with 16 buttons will appear. Just click the button of the Plastic color you want. The dye required will be mixed with the Liquid Plastic and will solidify into the output slot. Note that White Plastic does not require any dye. By checking the 'Lock Selection', the plastic selection will be locked. This can be used to automate the Plastic Mixer to produce a specific type of plastic.
 
-
-
-The Plastic Mixer needs [link{menu/heat}]heat [link{}] to work. It will heat up any plastic put in the bottom slot of the 'Item' section. When the temperature of the plastic hits 150C, it will melt down and go into the liquid tank.
-
-Now, you can add dye to that liquid plastic. The color of the plastic will change gradually. Depending on the amount of liquid plastic you need more dye. To see which type of plastic the liquid will cool down into you can look at the tooltip of the tank.
-
-When you're happy with the color you should remove the heat source (and optionally speed up the cooling process by placing down Ice). The liquid plastic will transform back into its item form.
-
-You can automate this whole process by using two Plastic Mixers: one to heat up, and one to cool down. You can use any type of liquid transport to transfer the plastic.
-[crafting{200, 480, key=block/plasticMixer}]
+[crafting{200, 440, key=block/plasticMixer}]

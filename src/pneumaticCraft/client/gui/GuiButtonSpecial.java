@@ -45,23 +45,26 @@ public class GuiButtonSpecial extends GuiButton implements IGuiWidget{
         invisibleHoverColor = color;
     }
 
-    public void setRenderStacks(ItemStack... renderedStacks){
+    public GuiButtonSpecial setRenderStacks(ItemStack... renderedStacks){
         this.renderedStacks = renderedStacks;
+        return this;
     }
 
     public void setRenderedIcon(ResourceLocation resLoc){
         this.resLoc = resLoc;
     }
 
-    public void setTooltipText(List<String> tooltip){
+    public GuiButtonSpecial setTooltipText(List<String> tooltip){
         tooltipText = tooltip;
+        return this;
     }
 
-    public void setTooltipText(String tooltip){
+    public GuiButtonSpecial setTooltipText(String tooltip){
         tooltipText.clear();
         if(tooltip != null && !tooltip.equals("")) {
             tooltipText.add(tooltip);
         }
+        return this;
     }
 
     public void getTooltip(List<String> curTooltip){

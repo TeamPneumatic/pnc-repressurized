@@ -4,7 +4,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.tileentity.TileEntityPlasticMixer;
 
 public class ContainerPlasticMixer extends ContainerPneumaticBase<TileEntityPlasticMixer>{
@@ -19,8 +18,11 @@ public class ContainerPlasticMixer extends ContainerPneumaticBase<TileEntityPlas
             }
         }
 
-        addSlotToContainer(new SlotItemSpecific(te, Itemss.plastic, 4, 98, 58));
-        addSlotToContainer(new SlotItemSpecific(te, "dye", 5, 98, 38));
+        addSlotToContainer(new SlotInventoryLimiting(te, TileEntityPlasticMixer.INV_INPUT, 98, 26));
+        addSlotToContainer(new SlotInventoryLimiting(te, TileEntityPlasticMixer.INV_OUTPUT, 98, 58));
+        for(int i = 0; i < 3; i++) {
+            addSlotToContainer(new SlotInventoryLimiting(te, TileEntityPlasticMixer.INV_DYE_RED + i, 127, 22 + i * 18));
+        }
 
         // Add the player's inventory slots to the container
         for(int inventoryRowIndex = 0; inventoryRowIndex < 3; ++inventoryRowIndex) {
@@ -58,15 +60,17 @@ public class ContainerPlasticMixer extends ContainerPneumaticBase<TileEntityPlas
             ItemStack var5 = var4.getStack();
             var3 = var5.copy();
 
-            if(par2 < 6) {
-                if(!mergeItemStack(var5, 6, 42, false)) return null;
+            if(par2 < 9) {
+                if(!mergeItemStack(var5, 9, 45, false)) return null;
 
                 var4.onSlotChange(var5, var3);
             } else {
-                if(var5.getItem() == Itemss.machineUpgrade) {
-                    if(!mergeItemStack(var5, 0, 4, false)) return null;
-                } else if(TileEntityPlasticMixer.getDyeIndex(var5) >= 0 && !mergeItemStack(var5, 5, 6, false)) return null;
-                else if(var5.getItem() == Itemss.plastic && !mergeItemStack(var5, 4, 5, false)) return null;
+                for(int i = 0; i < 9; i++) {
+                    Slot slot = (Slot)inventorySlots.get(i);
+                    if(slot.isItemValid(var5)) {
+                        if(!mergeItemStack(var5, i, i + 1, false)) return null;
+                    }
+                }
                 var4.onSlotChange(var5, var3);
             }
 

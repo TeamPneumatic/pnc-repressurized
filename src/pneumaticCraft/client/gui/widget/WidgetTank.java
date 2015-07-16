@@ -7,7 +7,6 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
 import net.minecraftforge.fluids.Fluid;
@@ -17,9 +16,6 @@ import net.minecraftforge.fluids.IFluidTank;
 
 import org.lwjgl.opengl.GL11;
 
-import pneumaticCraft.common.fluid.FluidPlastic;
-import pneumaticCraft.common.fluid.Fluids;
-import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -106,9 +102,6 @@ public class WidgetTank extends WidgetBase{
         } else {
             curTip.add(amt + "/" + capacity + " mb");
             curTip.add(EnumChatFormatting.GRAY + fluid.getLocalizedName(new FluidStack(fluid, amt)));
-            if(fluid == Fluids.plastic) {
-                Itemss.plastic.addInformation(new ItemStack(Itemss.plastic, 1, FluidPlastic.getPlasticMeta(tank.getFluid())), null, curTip, false);
-            }
         }
     }
 
