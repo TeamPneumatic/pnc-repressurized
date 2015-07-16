@@ -1,12 +1,3 @@
--Added ranged attacks for Drones (Miniguns!).
--Added option to break out of Dig and Place commands after x actions, to allow for example for checking of tool durability.
--Added RF support to the Aerial Interface, energy supplied will be used to charge any chargeable item in the Player inventory.
--Added recipe for the Thaumcraft Update (about time).
--Adjusted the Gas Lift to pump the highest liquid blocks first, and to allow pumping when on top of non-source blocks.
--Updated the Universal Sensor model.
-
--Fixed most of the derpyness with Elevators when a server is laggy.
--Bugfix: Multiblock Elevators sometimes have desynced elevator floors.
--Bugfix: Elevator Status tab doesn't display the right maximum height.
--Bugfix: Pressure Chamber breaks partially visually when on a chunk border.
-
+-Plastic now has the name "<color> Plastic"
+-Changed how the Plastic Mixer works so it's more suitable for larger amounts of Plastic.
+-Removed 8x plastic + dye = 8x plastic with the color of the dye, as this was temporary while the Plastic Mixer was changed.

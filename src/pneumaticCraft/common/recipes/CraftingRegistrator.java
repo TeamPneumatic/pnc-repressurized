@@ -2,9 +2,7 @@ package pneumaticCraft.common.recipes;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -32,7 +30,6 @@ import pneumaticCraft.common.item.ItemNetworkComponents;
 import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.common.item.ItemProgrammingPuzzle;
 import pneumaticCraft.common.item.Itemss;
-import pneumaticCraft.common.tileentity.TileEntityPlasticMixer;
 import pneumaticCraft.lib.Names;
 import cpw.mods.fml.common.registry.GameRegistry;
 
@@ -168,7 +165,6 @@ public class CraftingRegistrator{
 
         for(int i = 0; i < 16; i++) {
             addShapelessRecipe(new ItemStack(Items.dye, 1, i), new ItemStack(Itemss.plasticPlant, 1, i));
-            addShapelessRecipe(new ItemStack(Items.dye, 1, i), new ItemStack(Itemss.plasticPlant, 1, i + 16));//TODO remove legacy
         }
         addRecipe(new ItemStack(Blockss.universalSensor), "plp", "lpl", "pcp", 'p', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.ENDER_PLANT_DAMAGE), 'l', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.CHOPPER_PLANT_DAMAGE), 'c', "dustRedstone");
         addRecipe(new ItemStack(Blockss.aerialInterface), "whw", "ese", "wtw", 'w', Blockss.pressureChamberWall, 'h', Blocks.hopper, 'e', Items.ender_pearl, 's', new ItemStack(Items.skull, 1, 1), 't', new ItemStack(Blockss.advancedPressureTube, 1, 0));
@@ -194,9 +190,6 @@ public class CraftingRegistrator{
         addRecipe(new ItemStack(Itemss.assemblyProgram, 1, 0), "eee", "eie", "eee", 'e', Items.emerald, 'i', Items.diamond);
         addRecipe(new ItemStack(Itemss.assemblyProgram, 1, 1), "eee", "eie", "eee", 'e', Items.emerald, 'i', new ItemStack(Items.dye, 1, 1));
         addShapelessRecipe(new ItemStack(Itemss.assemblyProgram, 1, 2), new ItemStack(Itemss.assemblyProgram, 1, 0), new ItemStack(Itemss.assemblyProgram, 1, 1));
-        for(Map.Entry<Block, ItemStack> entry : ItemPlasticPlants.getBlockToSeedMap().entrySet()) {
-            addRecipe(new ItemStack(Itemss.plastic, 8, entry.getValue().getItemDamage()), "ppp", "pdp", "ppp", 'p', new ItemStack(Itemss.plastic, 1, OreDictionary.WILDCARD_VALUE), 'd', TileEntityPlasticMixer.DYES[entry.getValue().getItemDamage()]);
-        }
 
         addPressureChamberRecipes();
         addAssemblyRecipes();
