@@ -39,13 +39,14 @@ public class Fluids{
     public static List<Fluid> fluids = new ArrayList<Fluid>();
     public static List<Boolean> nativeFluids = new ArrayList<Boolean>();
     public static Map<Block, Item> fluidBlockToBucketMap = new HashMap<Block, Item>();
+    public static Map<Fluid, Block> fluidToBlockMap = new HashMap<Fluid, Block>();//you could theoretically use fluid.getBlock(), but other mods like GregTech break it for some reason.
 
     public static void initFluids(){
         plastic = new FluidPlastic("plastic");
         etchingAcid = new Fluid("etchacid"){
             @Override
             public int getColor(){
-                return getBlock().colorMultiplier(null, 0, 0, 0);
+                return fluidToBlockMap.get(this).colorMultiplier(null, 0, 0, 0);
             }
         };
 
@@ -113,6 +114,7 @@ public class Fluids{
                 Blockss.registerBlock(fluidBlock);
                 fluid.setBlock(fluidBlock);
             }
+            fluidToBlockMap.put(fluid, fluidBlock);
 
             Item fluidBucket = new ItemBucket(fluidBlock).setContainerItem(Items.bucket).setCreativeTab(PneumaticCraft.tabPneumaticCraft).setTextureName(Textures.ICON_LOCATION + fluid.getName() + "Bucket").setUnlocalizedName(fluid.getName() + "Bucket");
 

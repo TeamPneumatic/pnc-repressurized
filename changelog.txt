@@ -1,3 +1,1 @@
--Plastic now has the name "<color> Plastic"
--Changed how the Plastic Mixer works so it's more suitable for larger amounts of Plastic.
--Removed 8x plastic + dye = 8x plastic with the color of the dye, as this was temporary while the Plastic Mixer was changed.
+-Bugfix: Crash on oil worldgen when GregTech is in the instance.
