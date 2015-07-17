@@ -130,7 +130,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
                         extension = startingExtension + moveBy;
                     }
                     */
-                    moveEntities(TileEntityConstants.ELEVATOR_SPEED_SLOW);
+                    // moveEntities(TileEntityConstants.ELEVATOR_SPEED_SLOW);
                 }
                 addAir((int)((oldExtension - extension) * PneumaticValues.USAGE_ELEVATOR * (getSpeedUsageMultiplierFromUpgrades(getUpgradeSlots()) / speedMultiplier)), ForgeDirection.UNKNOWN);// substract the ascended distance from the air reservoir.
             }
@@ -149,7 +149,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
                     soundName = Sounds.ELEVATOR_START;
                     isStopped = false;
                 }
-                movePlayerDown();
+                //  movePlayerDown();
             }
             if(oldExtension == extension && !isStopped) {
                 soundName = Sounds.ELEVATOR_STOP;
@@ -195,16 +195,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
         List<Entity> entityList = worldObj.getEntitiesWithinAABBExcludingEntity(null, aabb);
         for(Entity entity : entityList) {
             if(entity instanceof EntityPlayer) {
-                if(worldObj.isRemote) {
-                    // moveEntityToCenter(entity);
-                    double posX = entity.posX;
-                    double posZ = entity.posZ;
-                    if(posX >= xCoord && posX < xCoord + 1 && posZ >= zCoord && posZ < zCoord + 1) {
-                        entity.motionX *= 0.6;
-                        entity.motionZ *= 0.6;
-                        entity.moveEntity(0, moveBy + 0.05F, 0);
-                    }
-                }
+
             } else entity.moveEntity(0, moveBy + 0.05F, 0);
         }
     }
