@@ -1,1 +1,1 @@
--Bugfix: Crash on oil worldgen when GregTech is in the instance.
+-Bugfix: Crash on oil worldgen after my derp..

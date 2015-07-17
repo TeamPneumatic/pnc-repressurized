@@ -130,9 +130,9 @@ Use a [link{block/pressureChamberInterface}]Pressure Chamber Interface[link{}] t
 
 
 Any color Plastic Seeds --> same color Plastic
-[pressureChamber{190,1660, item/plastic}]
+[pressureChamber{190,1660, item/plastic.white}]
 [pressureChamber{190,1840, item/turbineBlade}]
-[pressureChamber{190,2020, item/etchingAcidBucket}]
+[pressureChamber{190,2020, item/etchacidBucket}]
 [pressureChamber{190,2200, item/emptyPCB}]
 [pressureChamber{190,2380, item/transistor}]
 [pressureChamber{190,2560, item/capacitor}]

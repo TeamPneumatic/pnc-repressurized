@@ -104,10 +104,11 @@ public class Fluids{
     }
 
     private static void initializeFluidBlocksAndBuckets(){
-        for(final Fluid fluid : fluids) {
+        for(Fluid fluid : fluids) {
             boolean nativeFluid = FluidRegistry.getFluid(fluid.getName()) == null;
             nativeFluids.add(nativeFluid);
             FluidRegistry.registerFluid(fluid);
+            fluid = FluidRegistry.getFluid(fluid.getName());
             Block fluidBlock = fluid.getBlock();
             if(fluidBlock == null) {
                 fluidBlock = getBlockForFluid(fluid);
