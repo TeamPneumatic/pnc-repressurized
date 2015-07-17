@@ -292,6 +292,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
                 inventory[slot] = ItemStack.loadItemStackFromNBT(tagCompound);
             }
         }
+        dispenserUpgradeInserted = getUpgrades(ItemMachineUpgrade.UPGRADE_DISPENSER_DAMAGE) > 0;
     }
 
     @Override
