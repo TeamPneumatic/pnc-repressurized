@@ -1,1 +1,4 @@
--Bugfix: Crash on oil worldgen after my derp..
+-Sped up Logistic Drones' calculation time.
+
+-Bugfix: Aerial Interface feeding only kicks in after a few seconds after world load.
+-Bugfix: Elevator derpyness (hopefully it's completely fixed now :D).

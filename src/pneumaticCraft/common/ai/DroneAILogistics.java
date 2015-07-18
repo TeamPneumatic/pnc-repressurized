@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import net.minecraft.entity.ai.EntityAIBase;
@@ -13,6 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.ChunkPosition;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
@@ -29,61 +31,54 @@ import pneumaticCraft.common.semiblock.SemiBlockLogistics.FluidStackWrapper;
 import pneumaticCraft.common.semiblock.SemiBlockManager;
 import pneumaticCraft.common.util.IOHelper;
 
-public class DroneAILogistics extends DroneAIBlockInteraction{
+public class DroneAILogistics extends EntityAIBase{
     private final List<SemiBlockLogistics>[] logistics = new List[3];
     private EntityAIBase curAI;
     private ItemStack transportingStack;
     private FluidStackWrapper transportingFluid;
     private SemiBlockLogistics requestingBlock;
+    private final IDroneBase drone;
+    private final ProgWidgetAreaItemBase widget;
 
     public DroneAILogistics(IDroneBase drone, ProgWidgetAreaItemBase widget){
-        super(drone, widget);
+        this.drone = drone;
+        this.widget = widget;
         for(int i = 0; i < logistics.length; i++) {
             logistics[i] = new ArrayList<SemiBlockLogistics>();
         }
     }
 
     @Override
-    protected boolean moveToPositions(){
-        return false;
-    }
-
-    @Override
-    protected int lookupsPerSearch(){
-        return 200;
-    }
-
-    @Override
-    protected void indicateToListeningPlayers(ChunkPosition pos){
-        if(drone.getWorld().rand.nextInt(20) == 0) super.indicateToListeningPlayers(pos);
-    }
-
-    @Override
     public boolean shouldExecute(){
 
-        boolean shouldExecute = super.shouldExecute();
-        if(shouldExecute) {
-            for(List<SemiBlockLogistics> list : logistics) {
-                list.clear();
-            }
-        } else {
-            if(doLogistics()) {
-                searching = false;
-                curPos = new ChunkPosition(0, 0, 0);
-                return true;
-            }
+        for(List<SemiBlockLogistics> list : logistics) {
+            list.clear();
         }
-        return shouldExecute;
-    }
+        Set<ChunkPosition> area = widget.getArea();
+        if(area.size() == 0) return false;
+        int minX = Integer.MAX_VALUE, maxX = Integer.MIN_VALUE, minZ = Integer.MAX_VALUE, maxZ = Integer.MIN_VALUE;
+        for(ChunkPosition pos : area) {
+            minX = Math.min(minX, pos.chunkPosX);
+            maxX = Math.max(maxX, pos.chunkPosX);
+            minZ = Math.min(minZ, pos.chunkPosZ);
+            maxZ = Math.max(maxZ, pos.chunkPosZ);
+        }
 
-    @Override
-    protected boolean isValidPosition(ChunkPosition pos){
-        ISemiBlock semiBlock = SemiBlockManager.getInstance().getSemiBlock(drone.getWorld(), pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ);
-        if(semiBlock instanceof SemiBlockLogistics) {
-            SemiBlockLogistics logisticsBlock = (SemiBlockLogistics)semiBlock;
-            logistics[logisticsBlock.getPriority()].add(logisticsBlock);
+        for(int x = minX; x < maxX + 16; x += 16) {
+            for(int z = minZ; z < maxZ + 16; z += 16) {
+                Chunk chunk = drone.getWorld().getChunkFromBlockCoords(x, z);
+                Map<ChunkPosition, ISemiBlock> map = SemiBlockManager.getInstance().getSemiBlocks().get(chunk);
+                if(map != null) {
+                    for(Map.Entry<ChunkPosition, ISemiBlock> entry : map.entrySet()) {
+                        if(entry.getValue() instanceof SemiBlockLogistics && area.contains(entry.getKey())) {
+                            SemiBlockLogistics logisticsBlock = (SemiBlockLogistics)entry.getValue();
+                            logistics[logisticsBlock.getPriority()].add(logisticsBlock);
+                        }
+                    }
+                }
+            }
         }
-        return false;
+        return doLogistics();
     }
 
     private boolean doLogistics(){
@@ -132,7 +127,7 @@ public class DroneAILogistics extends DroneAIBlockInteraction{
     }
 
     @Override
-    protected boolean doBlockInteraction(ChunkPosition pos, double distToBlock){
+    public boolean continueExecuting(){
         if(!curAI.continueExecuting()) {
             if(curAI instanceof DroneEntityAIInventoryImport) {
                 requestingBlock.clearIncomingStack(transportingStack);
