@@ -433,7 +433,7 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
 
     @Override
     public boolean canExtractItem(int i, ItemStack itemstack, int j){
-        return outputProgress == MAX_PROGRESS && j == getRotation().getOpposite().ordinal();
+        return outputProgress == MAX_PROGRESS && j == getRotation().ordinal();
     }
 
     @Override
