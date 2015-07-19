@@ -82,17 +82,35 @@ public class TileEntityOmnidirectionalHopper extends TileEntityBase implements I
 
         //Suck from input inventory.
         for(int i = 0; i < maxItems; i++) {
-            ItemStack extracted = IOHelper.extractOneItem(inputInv, inputDir.getOpposite(), true);//simulate extraction from the neighbor.
-            if(extracted != null) {
-                ItemStack inserted = IOHelper.insert(this, extracted, ForgeDirection.UNKNOWN, false);//if we can insert the item in this hopper.
-                if(inserted == null) {
-                    IOHelper.extractOneItem(inputInv, inputDir.getOpposite(), false); //actually retrieve it from the neighbor.
-                    success = true;
+            if(hasEmptySlot()) {
+                ItemStack extracted = IOHelper.extractOneItem(inputInv, inputDir.getOpposite(), true);//simulate extraction from the neighbor.
+                if(extracted != null) {
+                    ItemStack inserted = IOHelper.insert(this, extracted, ForgeDirection.UNKNOWN, false);//if we can insert the item in this hopper.
+                    if(inserted == null) {
+                        IOHelper.extractOneItem(inputInv, inputDir.getOpposite(), false); //actually retrieve it from the neighbor.
+                        success = true;
+                    } else {
+                        break;
+                    }
                 } else {
                     break;
                 }
             } else {
-                break;
+                for(int slot = 0; slot < 5; slot++) {
+                    ItemStack stack = inventory[slot];
+                    stack = stack.copy();
+                    stack.stackSize = 1;
+                    ItemStack extracted = IOHelper.extract(inputInv, inputDir.getOpposite(), stack, true, true);//simulate extraction from the neighbor.
+                    if(extracted != null) {
+                        ItemStack inserted = IOHelper.insert(this, extracted, ForgeDirection.UNKNOWN, false);//if we can insert the item in this hopper.
+                        if(inserted == null) {
+                            IOHelper.extract(inputInv, inputDir.getOpposite(), stack, true, false); //actually retrieve it from the neighbor.
+                            success = true;
+                            break;
+                        }
+                    }
+                }
+                if(!success) break;
             }
         }
 
@@ -107,6 +125,13 @@ public class TileEntityOmnidirectionalHopper extends TileEntityBase implements I
         }
 
         return success;
+    }
+
+    private boolean hasEmptySlot(){
+        for(int i = 0; i < 5; i++) {
+            if(inventory[i] == null) return true;
+        }
+        return false;
     }
 
     public static List<EntityItem> getNeighborItems(TileEntity te, ForgeDirection inputDir){
