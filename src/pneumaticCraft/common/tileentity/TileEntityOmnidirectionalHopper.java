@@ -116,15 +116,15 @@ public class TileEntityOmnidirectionalHopper extends TileEntityBase implements I
 
     public int getMaxItems(){
         int upgrades = getUpgrades(ItemMachineUpgrade.UPGRADE_SPEED_DAMAGE, getUpgradeSlots());
-        if(upgrades > 5) {
-            return Math.min((int)Math.pow(2, upgrades - 5), 256);
+        if(upgrades > 3) {
+            return Math.min((int)Math.pow(2, upgrades - 3), 256);
         } else {
             return 1;
         }
     }
 
     public int getItemTransferInterval(){
-        return 8 / (1 + getUpgrades(ItemMachineUpgrade.UPGRADE_SPEED_DAMAGE, getUpgradeSlots()));
+        return 8 / (int)Math.pow(2, getUpgrades(ItemMachineUpgrade.UPGRADE_SPEED_DAMAGE, getUpgradeSlots()));
     }
 
     public void setDirection(ForgeDirection dir){
