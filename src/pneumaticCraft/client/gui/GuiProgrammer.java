@@ -736,8 +736,8 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
     private void gotoPiece(IProgWidget widget){
         scaleScroll.currentScroll = 0;
         lastZoom = 0;
-        translatedX = -widget.getX() * 2 + 294 / 4;
-        translatedY = -widget.getY() * 2 + 166 / 2;
+        translatedX = -widget.getX() * 2 + 294 / 2 - guiLeft;
+        translatedY = -widget.getY() * 2 + 166 / 2 - guiTop;
     }
 
     @Override
