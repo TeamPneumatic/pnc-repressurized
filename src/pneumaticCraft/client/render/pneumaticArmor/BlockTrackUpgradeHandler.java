@@ -108,6 +108,7 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler{
                         if(blockTargets.get(l).isSameTarget(player.worldObj, i, j, k)) {
                             inList = true;
                             blockTargets.get(l).ticksExisted = Math.abs(blockTargets.get(l).ticksExisted);// cancel lost targets
+                            blockTargets.get(l).setTileEntity(te);
                             break;
                         }
                     }

@@ -77,6 +77,10 @@ public class RenderBlockTarget{
         stat.setMinDimensionsAndReset(0, 0);
     }
 
+    public void setTileEntity(TileEntity te){
+        this.te = te;
+    }
+
     public boolean isTargetStillValid(){
         return getApplicableEntries().size() > 0;
     }
