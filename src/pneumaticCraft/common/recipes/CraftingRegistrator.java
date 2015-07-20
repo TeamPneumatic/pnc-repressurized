@@ -290,7 +290,7 @@ public class CraftingRegistrator{
     public static void addThermopneumaticProcessingPlantRecipes(){
         PneumaticRecipeRegistry registry = PneumaticRecipeRegistry.getInstance();
         registry.registerThermopneumaticProcessingPlantRecipe(new FluidStack(Fluids.lpg, 100), new ItemStack(Items.coal), new FluidStack(Fluids.plastic, 1000), 373, 0);
-        registry.registerThermopneumaticProcessingPlantRecipe(new FluidStack(Fluids.kerosene, 1000), new ItemStack(Items.redstone), new FluidStack(Fluids.lubricant, 1000), 373, 0);
+        registry.registerThermopneumaticProcessingPlantRecipe(new FluidStack(Fluids.diesel, 1000), new ItemStack(Items.redstone), new FluidStack(Fluids.lubricant, 1000), 373, 0);
         registry.registerThermopneumaticProcessingPlantRecipe(new FluidStack(Fluids.diesel, 100), null, new FluidStack(Fluids.kerosene, 80), 573, 2);
         registry.registerThermopneumaticProcessingPlantRecipe(new FluidStack(Fluids.kerosene, 100), null, new FluidStack(Fluids.gasoline, 80), 573, 2);
         registry.registerThermopneumaticProcessingPlantRecipe(new FluidStack(Fluids.gasoline, 100), null, new FluidStack(Fluids.lpg, 80), 573, 2);
