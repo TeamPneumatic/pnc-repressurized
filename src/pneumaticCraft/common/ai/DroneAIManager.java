@@ -2,9 +2,11 @@ package pneumaticCraft.common.ai;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.item.ItemStack;
@@ -185,7 +187,9 @@ public class DroneAIManager{
             boolean first = widget instanceof ProgWidgetStart;
             targetAI = widget.getWidgetTargetAI(drone, widget);
             ai = widget.getWidgetAI(drone, widget);
-            while(targetAI == null && ai == null) {
+            Set<IProgWidget> visitedWidgets = new HashSet<IProgWidget>();//Prevent endless loops
+            while(!visitedWidgets.contains(widget) && targetAI == null && ai == null) {
+                visitedWidgets.add(widget);
                 widget = widget.getOutputWidget(drone, progWidgets);
                 if(widget == null) {
                     if(first) {
