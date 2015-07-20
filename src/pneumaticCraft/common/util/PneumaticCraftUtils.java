@@ -42,6 +42,7 @@ import org.lwjgl.opengl.GL11;
 
 import pneumaticCraft.api.item.IInventoryItem;
 import pneumaticCraft.common.PneumaticCraftAPIHandler;
+import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.thirdparty.ModInteractionUtils;
 import pneumaticCraft.common.tileentity.TileEntitySecurityStation;
 import pneumaticCraft.lib.Log;
@@ -581,6 +582,8 @@ public class PneumaticCraftUtils{
                 typeClass = EntityItem.class;
             } else if(filter.equals("minecart")) {
                 typeClass = EntityMinecart.class;
+            } else if(filter.equals("drone")) {
+                typeClass = EntityDrone.class;
             }
             if(typeClass != null) {
                 return typeClass.isAssignableFrom(entity.getClass());

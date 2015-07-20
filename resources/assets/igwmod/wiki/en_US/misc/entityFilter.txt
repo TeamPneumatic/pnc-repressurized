@@ -9,5 +9,6 @@ Entity Filters are used at a few locations in PneumaticCraft. They all work the 
 @minecart --> allows minecarts only
 @living --> allows all living entities only
 @item --> allows item entities only
+@drone --> allows drone entities only
 Creeper --> allows Creepers only
 MineMaarten --> allows MineMaarten only

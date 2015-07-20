@@ -1,4 +1,4 @@
-With a Remote you can create your own GUI (Graphical User Interface). This user interface can be used to remotely control [link{item/drone}]Drones [link{}] or [link{block/universalSensor}]Universal Sensors[link{}] via [link{progwidget/variableOperation}]variable [link{}] manipulation. Note that with Universal Sensors, you can use these Remotes to create wireless redstone!
+With a Remote you can create your own GUI (Graphical User Interface). This user interface can be used to remotely control [link{item/drone}]Drones [link{}] or [link{block/universalSensor}]Universal Sensors[link{}] via [link{progwidget/coordinateOperator}]variable [link{}] manipulation. Note that with Universal Sensors, you can use these Remotes to create wireless redstone!
 
 [image{200,85,0.33,igwmod:textures/remoteExample.png}]
 
