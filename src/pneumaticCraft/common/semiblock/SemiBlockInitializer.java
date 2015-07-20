@@ -8,8 +8,8 @@ import cpw.mods.fml.common.FMLCommonHandler;
 
 public class SemiBlockInitializer{
     public static void init(){
-        MinecraftForge.EVENT_BUS.register(SemiBlockManager.getInstance());
-        FMLCommonHandler.instance().bus().register(SemiBlockManager.getInstance());
+        MinecraftForge.EVENT_BUS.register(SemiBlockManager.getServerInstance());
+        FMLCommonHandler.instance().bus().register(SemiBlockManager.getServerInstance());
 
         registerSemiBlock(SemiBlockActiveProvider.ID, SemiBlockActiveProvider.class, false);
         registerSemiBlock(SemiBlockPassiveProvider.ID, SemiBlockPassiveProvider.class, false);

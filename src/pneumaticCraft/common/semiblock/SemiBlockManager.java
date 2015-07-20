@@ -24,6 +24,7 @@ import net.minecraftforge.event.world.ChunkDataEvent;
 import net.minecraftforge.event.world.ChunkEvent;
 import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.common.network.NetworkHandler;
+import pneumaticCraft.common.network.PacketDescription;
 import pneumaticCraft.common.network.PacketSetSemiBlock;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.Log;
@@ -38,18 +39,22 @@ public class SemiBlockManager{
     private final Map<Chunk, Map<ChunkPosition, ISemiBlock>> semiBlocks = new HashMap<Chunk, Map<ChunkPosition, ISemiBlock>>();
     private final List<ISemiBlock> addingBlocks = new ArrayList<ISemiBlock>();
     private final Map<Chunk, Set<EntityPlayerMP>> syncList = new HashMap<Chunk, Set<EntityPlayerMP>>();
-    private static final int SYNC_DISTANCE = 64;
+    public static final int SYNC_DISTANCE = 64;
     private static final HashBiMap<String, Class<? extends ISemiBlock>> registeredTypes = HashBiMap.create();
     private static final HashBiMap<Class<? extends ISemiBlock>, Item> semiBlockToItems = HashBiMap.create();
     private static final SemiBlockManager INSTANCE = new SemiBlockManager();
     private static final SemiBlockManager CLIENT_INSTANCE = new SemiBlockManager();
 
-    public static SemiBlockManager getInstance(){
+    public static SemiBlockManager getServerInstance(){
         return INSTANCE;
     }
 
-    public static SemiBlockManager getClientInstance(){
+    public static SemiBlockManager getClientOldInstance(){
         return CLIENT_INSTANCE;
+    }
+
+    public static SemiBlockManager getInstance(World world){
+        return world.isRemote ? CLIENT_INSTANCE : INSTANCE;
     }
 
     public static Item registerSemiBlock(String key, Class<? extends ISemiBlock> semiBlock, boolean addItem){
@@ -160,6 +165,8 @@ public class SemiBlockManager{
 
             for(EntityPlayerMP player : syncList.get(chunk)) {
                 NetworkHandler.sendTo(new PacketSetSemiBlock(semiBlock), player);
+                PacketDescription descPacket = semiBlock.getDescriptionPacket();
+                if(descPacket != null) NetworkHandler.sendTo(descPacket, player);
             }
         }
         addingBlocks.clear();
@@ -179,7 +186,7 @@ public class SemiBlockManager{
 
     @SubscribeEvent
     public void onClientTick(TickEvent.ClientTickEvent event){
-        if(this == getInstance()) getClientInstance().onClientTick(event);
+        if(this == getServerInstance()) getClientOldInstance().onClientTick(event);
         else {
             EntityPlayer player = PneumaticCraft.proxy.getPlayer();
             if(player != null) {
@@ -232,7 +239,11 @@ public class SemiBlockManager{
                     if(dist < SYNC_DISTANCE) {
                         if(syncedPlayers.add(player)) {
                             for(ISemiBlock semiBlock : semiBlocks.get(chunk).values()) {
-                                if(!semiBlock.isInvalid()) NetworkHandler.sendTo(new PacketSetSemiBlock(semiBlock), player);
+                                if(!semiBlock.isInvalid()) {
+                                    NetworkHandler.sendTo(new PacketSetSemiBlock(semiBlock), player);
+                                    PacketDescription descPacket = semiBlock.getDescriptionPacket();
+                                    if(descPacket != null) NetworkHandler.sendTo(descPacket, player);
+                                }
                             }
                         }
                     } else if(dist > SYNC_DISTANCE + 5) {
@@ -318,6 +329,10 @@ public class SemiBlockManager{
     }
 
     public ISemiBlock getSemiBlock(World world, int x, int y, int z){
+        for(ISemiBlock semiBlock : addingBlocks) {
+            if(semiBlock.getWorld() == world && semiBlock.getPos().equals(new ChunkPosition(x, y, z))) return semiBlock;
+        }
+
         Chunk chunk = world.getChunkFromBlockCoords(x, z);
         Map<ChunkPosition, ISemiBlock> map = semiBlocks.get(chunk);
         if(map != null) {

@@ -29,20 +29,20 @@ public class ContainerLogistics extends ContainerPneumaticBase{
         IInventory requests = logistics.getFilters();
         for(int y = 0; y < 3; y++) {
             for(int x = 0; x < 9; x++) {
-                addSlotToContainer(logistics.canFilterStack() ? new SlotPhantom(requests, y * 9 + x, x * 18 + 8, y * 18 + 18) : new SlotPhantomUnstackable(requests, y * 9 + x, x * 18 + 8, y * 18 + 18));
+                addSlotToContainer(logistics.canFilterStack() ? new SlotPhantom(requests, y * 9 + x, x * 18 + 8, y * 18 + 29) : new SlotPhantomUnstackable(requests, y * 9 + x, x * 18 + 8, y * 18 + 29));
             }
         }
 
         // Add the player's inventory slots to the container
         for(int inventoryRowIndex = 0; inventoryRowIndex < 3; ++inventoryRowIndex) {
             for(int inventoryColumnIndex = 0; inventoryColumnIndex < 9; ++inventoryColumnIndex) {
-                addSlotToContainer(new Slot(inventoryPlayer, inventoryColumnIndex + inventoryRowIndex * 9 + 9, 8 + inventoryColumnIndex * 18, 123 + inventoryRowIndex * 18));
+                addSlotToContainer(new Slot(inventoryPlayer, inventoryColumnIndex + inventoryRowIndex * 9 + 9, 8 + inventoryColumnIndex * 18, 134 + inventoryRowIndex * 18));
             }
         }
 
         // Add the player's action bar slots to the container
         for(int actionBarSlotIndex = 0; actionBarSlotIndex < 9; ++actionBarSlotIndex) {
-            addSlotToContainer(new Slot(inventoryPlayer, actionBarSlotIndex, 8 + actionBarSlotIndex * 18, 181));
+            addSlotToContainer(new Slot(inventoryPlayer, actionBarSlotIndex, 8 + actionBarSlotIndex * 18, 192));
         }
     }
 
@@ -63,12 +63,16 @@ public class ContainerLogistics extends ContainerPneumaticBase{
             logistics.addDrops(drops);
             NBTTagCompound settingTag = drops.get(0).getTagCompound();
             if(player.getCurrentEquippedItem().hasTagCompound()) {
+                NBTTagCompound itemTag = player.getCurrentEquippedItem().getTagCompound();
                 if(settingTag != null) {
-                    player.getCurrentEquippedItem().getTagCompound().setTag("filters", settingTag.getTagList("filters", 10));
-                    player.getCurrentEquippedItem().getTagCompound().setTag("fluidFilters", settingTag.getTagList("fluidFilters", 10));
+                    itemTag.setTag("filters", settingTag.getTagList("filters", 10));
+                    itemTag.setTag("fluidFilters", settingTag.getTagList("fluidFilters", 10));
+                    itemTag.setBoolean("invisible", settingTag.getBoolean("invisible"));
                 } else {
-                    player.getCurrentEquippedItem().getTagCompound().removeTag("filters");
-                    player.getCurrentEquippedItem().getTagCompound().removeTag("fluidFilters");
+                    itemTag.removeTag("filters");
+                    itemTag.removeTag("fluidFilters");
+                    itemTag.removeTag("invisible");
+
                 }
             } else {
                 player.getCurrentEquippedItem().setTagCompound(settingTag);

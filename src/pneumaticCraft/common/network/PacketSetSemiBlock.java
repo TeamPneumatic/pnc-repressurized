@@ -40,7 +40,7 @@ public class PacketSetSemiBlock extends LocationIntPacket<PacketSetSemiBlock>{
 
     @Override
     public void handleClientSide(PacketSetSemiBlock message, EntityPlayer player){
-        SemiBlockManager.getClientInstance().setSemiBlock(player.worldObj, message.x, message.y, message.z, message.id.equals("") ? null : SemiBlockManager.getSemiBlockForKey(message.id));
+        SemiBlockManager.getInstance(player.worldObj).setSemiBlock(player.worldObj, message.x, message.y, message.z, message.id.equals("") ? null : SemiBlockManager.getSemiBlockForKey(message.id));
     }
 
     @Override

@@ -2,28 +2,31 @@ package pneumaticCraft.common.network;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.tileentity.TileEntity;
 import pneumaticCraft.common.tileentity.IGUIButtonSensitive;
 
 public class PacketGuiButton extends LocationIntPacket<PacketGuiButton>{
     private int buttonID;
+    private IDescSynced.Type type;
 
     public PacketGuiButton(){}
 
-    public PacketGuiButton(TileEntity te, int buttonID){
-        super(te.xCoord, te.yCoord, te.zCoord);
+    public PacketGuiButton(IGUIButtonSensitive te, int buttonID){
+        super(te.getX(), te.getY(), te.getZ());
         this.buttonID = buttonID;
+        type = te.getSyncType();
     }
 
     @Override
     public void toBytes(ByteBuf buffer){
         super.toBytes(buffer);
+        buffer.writeByte(type.ordinal());
         buffer.writeInt(buttonID);
     }
 
     @Override
     public void fromBytes(ByteBuf buffer){
         super.fromBytes(buffer);
+        type = IDescSynced.Type.values()[buffer.readByte()];
         buttonID = buffer.readInt();
     }
 
@@ -32,9 +35,9 @@ public class PacketGuiButton extends LocationIntPacket<PacketGuiButton>{
 
     @Override
     public void handleServerSide(PacketGuiButton message, EntityPlayer player){
-        TileEntity te = player.worldObj.getTileEntity(message.x, message.y, message.z);
-        if(te instanceof IGUIButtonSensitive) {
-            ((IGUIButtonSensitive)te).handleGUIButtonPress(message.buttonID, player);
+        Object syncable = PacketDescription.getSyncableForType(message, player, message.type);
+        if(syncable instanceof IGUIButtonSensitive) {
+            ((IGUIButtonSensitive)syncable).handleGUIButtonPress(message.buttonID, player);
         }
     }
 

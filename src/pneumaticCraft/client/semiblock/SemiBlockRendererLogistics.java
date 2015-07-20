@@ -12,11 +12,13 @@ public class SemiBlockRendererLogistics implements ISemiBlockRenderer<SemiBlockL
 
     @Override
     public void render(SemiBlockLogistics semiBlock, float partialTick){
-
+        int alpha = semiBlock.getAlpha();
+        if(alpha == 0) return;
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         //GL11.glEnable(GL11.GL_LIGHTING);
         //GL11.glColor4d(1, 0, 0, 1);
-        RenderUtils.glColorHex(semiBlock.getColor());
+        if(alpha < 255) GL11.glEnable(GL11.GL_BLEND);
+        RenderUtils.glColorHex((alpha << 24 | 0x00FFFFFF) & semiBlock.getColor());
         double fw = 1 / 32D;
         AxisAlignedBB aabb;
         if(semiBlock.getWorld() != null) {
@@ -30,6 +32,7 @@ public class SemiBlockRendererLogistics implements ISemiBlockRenderer<SemiBlockL
 
         renderFrame(aabb, fw);
         GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glDisable(GL11.GL_BLEND);
         GL11.glColor4d(1, 1, 1, 1);
     }
 

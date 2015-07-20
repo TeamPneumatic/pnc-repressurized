@@ -255,7 +255,7 @@ public class CommonProxy implements IGuiHandler{
             case GUI_ID_LOGISTICS_REQUESTER:
             case GUI_ID_LOGISTICS_STORAGE:
             case GUI_ID_LOGISTICS_PASSIVE_PROVIDER:
-                return new ContainerLogistics(player.inventory, (SemiBlockLogistics)SemiBlockManager.getInstance().getSemiBlock(world, x, y, z));
+                return new ContainerLogistics(player.inventory, (SemiBlockLogistics)SemiBlockManager.getInstance(world).getSemiBlock(world, x, y, z));
         }
         return ThirdPartyManager.instance().getServerGuiElement(ID, player, world, x, y, z);
     }
@@ -330,11 +330,11 @@ public class CommonProxy implements IGuiHandler{
             case GUI_ID_THERMOPNEUMATIC_PROCESSING_PLANT:
                 return new GuiThermopneumaticProcessingPlant(player.inventory, (TileEntityThermopneumaticProcessingPlant)world.getTileEntity(x, y, z));
             case GUI_ID_LOGISTICS_REQUESTER:
-                return new GuiLogisticsRequester(player.inventory, (SemiBlockRequester)SemiBlockManager.getClientInstance().getSemiBlock(world, x, y, z));
+                return new GuiLogisticsRequester(player.inventory, (SemiBlockRequester)SemiBlockManager.getInstance(world).getSemiBlock(world, x, y, z));
             case GUI_ID_LOGISTICS_STORAGE:
-                return new GuiLogisticsStorage(player.inventory, (SemiBlockStorage)SemiBlockManager.getClientInstance().getSemiBlock(world, x, y, z));
+                return new GuiLogisticsStorage(player.inventory, (SemiBlockStorage)SemiBlockManager.getInstance(world).getSemiBlock(world, x, y, z));
             case GUI_ID_LOGISTICS_PASSIVE_PROVIDER:
-                return new GuiLogisticsProvider(player.inventory, (SemiBlockActiveProvider)SemiBlockManager.getClientInstance().getSemiBlock(world, x, y, z));
+                return new GuiLogisticsProvider(player.inventory, (SemiBlockActiveProvider)SemiBlockManager.getInstance(world).getSemiBlock(world, x, y, z));
         }
         return ThirdPartyManager.instance().getClientGuiElement(ID, player, world, x, y, z);
     }

@@ -1,5 +1,7 @@
 package pneumaticCraft.client.gui.semiblock;
 
+import java.util.Arrays;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -7,11 +9,13 @@ import net.minecraft.inventory.Slot;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
 
+import org.apache.commons.lang3.text.WordUtils;
 import org.lwjgl.input.Mouse;
 
 import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.client.gui.GuiPneumaticContainerBase;
 import pneumaticCraft.client.gui.GuiSearcher;
+import pneumaticCraft.client.gui.widget.GuiCheckBox;
 import pneumaticCraft.client.gui.widget.IGuiWidget;
 import pneumaticCraft.client.gui.widget.WidgetFluidStack;
 import pneumaticCraft.client.gui.widget.WidgetLabel;
@@ -29,11 +33,12 @@ public class GuiLogisticsBase extends GuiPneumaticContainerBase{
     private GuiSearcher searchGui;
     private GuiLogisticsLiquidFilter fluidSearchGui;
     private int editingSlot; //either fluid or item search.
+    private GuiCheckBox invisible;
 
     public GuiLogisticsBase(InventoryPlayer invPlayer, SemiBlockLogistics requester){
         super(new ContainerLogistics(invPlayer, requester), null, Textures.GUI_LOGISTICS_REQUESTER);
         logistics = ((ContainerLogistics)inventorySlots).logistics;
-        ySize = 205;
+        ySize = 216;
     }
 
     @Override
@@ -51,10 +56,13 @@ public class GuiLogisticsBase extends GuiPneumaticContainerBase{
             NetworkHandler.sendToServer(new PacketSetLogisticsFluidFilterStack(logistics, filter, editingSlot));
             fluidSearchGui = null;
         }
-        addWidget(new WidgetLabel(guiLeft + 8, guiTop + 7, I18n.format(String.format("gui.%s.filters", SemiBlockManager.getKeyForSemiBlock(logistics)))));
-        addWidget(new WidgetLabel(guiLeft + 8, guiTop + 79, I18n.format("gui.logisticFrame.liquid")));
+        String invisibleText = I18n.format("gui.logisticFrame.invisible");
+        addWidget(invisible = new GuiCheckBox(0, guiLeft + xSize - 15 - fontRendererObj.getStringWidth(invisibleText), guiTop + 7, 0xFF000000, invisibleText));
+        invisible.setTooltip(Arrays.asList(WordUtils.wrap(I18n.format("gui.logisticFrame.invisible.tooltip"), 40).split(System.getProperty("line.separator"))));
+        addWidget(new WidgetLabel(guiLeft + 8, guiTop + 18, I18n.format(String.format("gui.%s.filters", SemiBlockManager.getKeyForSemiBlock(logistics)))));
+        addWidget(new WidgetLabel(guiLeft + 8, guiTop + 90, I18n.format("gui.logisticFrame.liquid")));
         for(int i = 0; i < 9; i++) {
-            addWidget(new WidgetFluidStack(i, guiLeft + i * 18 + 8, guiTop + 90, logistics.getTankFilter(i)));
+            addWidget(new WidgetFluidStack(i, guiLeft + i * 18 + 8, guiTop + 101, logistics.getTankFilter(i)));
         }
         addInfoTab(I18n.format("gui.tab.info." + SemiBlockManager.getKeyForSemiBlock(logistics)));
     }
@@ -62,6 +70,12 @@ public class GuiLogisticsBase extends GuiPneumaticContainerBase{
     @Override
     protected boolean shouldAddProblemTab(){
         return false;
+    }
+
+    @Override
+    public void updateScreen(){
+        super.updateScreen();
+        invisible.checked = logistics.isInvisible();
     }
 
     @Override
@@ -89,6 +103,8 @@ public class GuiLogisticsBase extends GuiPneumaticContainerBase{
                 editingSlot = widget.getID();
                 mc.displayGuiScreen(fluidSearchGui);
             }
+        } else if(widget.getID() == 0) {
+            sendPacketToServer(logistics, 0);
         }
     }
 

@@ -12,12 +12,21 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.World;
+import pneumaticCraft.common.inventory.SyncedField;
+import pneumaticCraft.common.network.DescSynced;
+import pneumaticCraft.common.network.IDescSynced;
+import pneumaticCraft.common.network.NetworkHandler;
+import pneumaticCraft.common.network.NetworkUtils;
+import pneumaticCraft.common.network.PacketDescription;
+import pneumaticCraft.common.tileentity.IGUIButtonSensitive;
 
-public class SemiBlockBasic implements ISemiBlock{
+public class SemiBlockBasic implements ISemiBlock, IDescSynced, IGUIButtonSensitive{
     protected World world;
     protected ChunkPosition pos;
     private boolean isInvalid;
     private TileEntity cachedTE;
+    private List<SyncedField> descriptionFields;
+    private boolean descriptionPacketScheduled;
 
     @Override
     public void initialize(World world, ChunkPosition pos){
@@ -38,10 +47,32 @@ public class SemiBlockBasic implements ISemiBlock{
     @Override
     public void update(){
         if(!world.isRemote && !canStay()) drop();
+        if(!world.isRemote) {
+            if(descriptionFields == null) descriptionPacketScheduled = true;
+            for(SyncedField field : getDescriptionFields()) {
+                if(field.update()) {
+                    descriptionPacketScheduled = true;
+                }
+            }
+
+            if(descriptionPacketScheduled) {
+                descriptionPacketScheduled = false;
+                sendDescriptionPacket();
+            }
+        }
+    }
+
+    private void sendDescriptionPacket(){
+        NetworkHandler.sendToAllAround(getDescriptionPacket(), world);
+    }
+
+    @Override
+    public PacketDescription getDescriptionPacket(){
+        return new PacketDescription(this);
     }
 
     protected void drop(){
-        SemiBlockManager.getInstance().breakSemiBlock(world, pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ);
+        SemiBlockManager.getInstance(world).breakSemiBlock(world, pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ);
     }
 
     protected boolean isAirBlock(){
@@ -109,6 +140,57 @@ public class SemiBlockBasic implements ISemiBlock{
     }
 
     public void addWailaInfoToTag(NBTTagCompound tag){
+
+    }
+
+    @Override
+    public Type getSyncType(){
+        return Type.SEMI_BLOCK;
+    }
+
+    @Override
+    public List<SyncedField> getDescriptionFields(){
+        if(descriptionFields == null) {
+            descriptionFields = NetworkUtils.getSyncedFields(this, DescSynced.class);
+            for(SyncedField field : descriptionFields) {
+                field.update();
+            }
+        }
+        return descriptionFields;
+    }
+
+    @Override
+    public void writeToPacket(NBTTagCompound tag){
+
+    }
+
+    @Override
+    public void readFromPacket(NBTTagCompound tag){
+
+    }
+
+    @Override
+    public int getX(){
+        return pos.chunkPosX;
+    }
+
+    @Override
+    public int getY(){
+        return pos.chunkPosY;
+    }
+
+    @Override
+    public int getZ(){
+        return pos.chunkPosZ;
+    }
+
+    @Override
+    public void onDescUpdate(){
+
+    }
+
+    @Override
+    public void handleGUIButtonPress(int guiID, EntityPlayer player){
 
     }
 }

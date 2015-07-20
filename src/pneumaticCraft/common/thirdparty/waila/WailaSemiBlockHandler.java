@@ -31,7 +31,7 @@ public class WailaSemiBlockHandler implements IWailaDataProvider{
         int x = accessor.getPosition().blockX;
         int y = accessor.getPosition().blockY;
         int z = accessor.getPosition().blockZ;
-        ISemiBlock semiBlock = SemiBlockManager.getClientInstance().getSemiBlock(accessor.getWorld(), x, y, z);
+        ISemiBlock semiBlock = SemiBlockManager.getInstance(accessor.getWorld()).getSemiBlock(accessor.getWorld(), x, y, z);
         if(semiBlock instanceof SemiBlockBasic) {
             ((SemiBlockBasic)semiBlock).addWailaTooltip(currenttip, accessor.getNBTData());
         }
@@ -45,7 +45,7 @@ public class WailaSemiBlockHandler implements IWailaDataProvider{
 
     @Override
     public NBTTagCompound getNBTData(EntityPlayerMP player, TileEntity te, NBTTagCompound tag, World world, int x, int y, int z){
-        ISemiBlock semiBlock = SemiBlockManager.getInstance().getSemiBlock(world, x, y, z);
+        ISemiBlock semiBlock = SemiBlockManager.getInstance(world).getSemiBlock(world, x, y, z);
         if(semiBlock instanceof SemiBlockBasic) {
             ((SemiBlockBasic)semiBlock).addWailaInfoToTag(tag);
         }

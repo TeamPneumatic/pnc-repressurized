@@ -42,7 +42,7 @@ public class ClientSemiBlockManager{
         //  GL11.glEnable(GL11.GL_LIGHTING);
         RenderHelper.enableStandardItemLighting();
 
-        for(Map<ChunkPosition, ISemiBlock> map : SemiBlockManager.getClientInstance().getSemiBlocks().values()) {
+        for(Map<ChunkPosition, ISemiBlock> map : SemiBlockManager.getInstance(player.worldObj).getSemiBlocks().values()) {
             for(ISemiBlock semiBlock : map.values()) {
                 ISemiBlockRenderer renderer = getRenderer(semiBlock);
                 if(renderer != null) {

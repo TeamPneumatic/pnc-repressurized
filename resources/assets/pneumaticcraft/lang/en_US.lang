@@ -628,6 +628,8 @@ gui.logisticFrameActiveProvider.hasFilters=§eContains custom providing. Sneak f
 gui.logisticFrameStorage.filters=Interfacing items:
 gui.logisticFrameStorage.hasFilters=§eContains custom interfacing items. Sneak for more info.
 gui.logisticFrame.liquid=Liquid Filters:
+gui.logisticFrame.invisible=Invisible
+gui.logisticFrame.invisible.tooltip=Turns the Logistic Frame invisible (unless you have a Logistic item in your hand)
 gui.plasticMixer.lockSelection=Lock Selection
 gui.plasticMixer.lockSelection.tooltip=Locks the selected plastic
 

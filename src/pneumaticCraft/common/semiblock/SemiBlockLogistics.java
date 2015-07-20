@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryBasic;
@@ -19,8 +20,12 @@ import net.minecraftforge.fluids.IFluidHandler;
 import net.minecraftforge.fluids.IFluidTank;
 import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.common.item.ItemLogisticsFrame;
+import pneumaticCraft.common.item.Itemss;
+import pneumaticCraft.common.network.DescSynced;
 import pneumaticCraft.common.network.GuiSynced;
 import pneumaticCraft.common.tileentity.TileEntityBase;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public abstract class SemiBlockLogistics extends SemiBlockBasic{
     protected final Map<ItemStack, Integer> incomingStacks = new HashMap<ItemStack, Integer>();
@@ -28,6 +33,10 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic{
     private final IInventory filters = new InventoryBasic("filters", true, 27);//Filters and requests
     @GuiSynced
     private final FluidTank[] fluidFilters = new FluidTank[9];
+    @DescSynced
+    @GuiSynced
+    private boolean invisible;
+    private int alpha = 255;
 
     public SemiBlockLogistics(){
         for(int i = 0; i < fluidFilters.length; i++) {
@@ -48,29 +57,57 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic{
         return true;
     }
 
+    public void setInvisible(boolean invisible){
+        this.invisible = invisible;
+    }
+
+    public boolean isInvisible(){
+        return invisible;
+    }
+
+    public int getAlpha(){
+        return alpha;
+    }
+
     @Override
     public void update(){
         super.update();
-        Iterator<Map.Entry<ItemStack, Integer>> iterator = incomingStacks.entrySet().iterator();
-        while(iterator.hasNext()) {
-            Map.Entry<ItemStack, Integer> entry = iterator.next();
-            int counter = entry.getValue();
-            if(counter > 10) {
-                iterator.remove();
+        if(!world.isRemote) {
+            Iterator<Map.Entry<ItemStack, Integer>> iterator = incomingStacks.entrySet().iterator();
+            while(iterator.hasNext()) {
+                Map.Entry<ItemStack, Integer> entry = iterator.next();
+                int counter = entry.getValue();
+                if(counter > 10) {
+                    iterator.remove();
+                } else {
+                    entry.setValue(counter + 1);
+                }
+            }
+            Iterator<Map.Entry<FluidStackWrapper, Integer>> it = incomingFluid.entrySet().iterator();
+            while(it.hasNext()) {
+                Map.Entry<FluidStackWrapper, Integer> entry = it.next();
+                int counter = entry.getValue();
+                if(counter > 10) {
+                    it.remove();
+                } else {
+                    entry.setValue(counter + 1);
+                }
+            }
+
+        } else {
+            if(invisible && !playerIsHoldingLogisticItems()) {
+                alpha = Math.max(0, alpha - 3);
             } else {
-                entry.setValue(counter + 1);
+                alpha = Math.min(255, alpha + 3);
             }
         }
-        Iterator<Map.Entry<FluidStackWrapper, Integer>> it = incomingFluid.entrySet().iterator();
-        while(it.hasNext()) {
-            Map.Entry<FluidStackWrapper, Integer> entry = it.next();
-            int counter = entry.getValue();
-            if(counter > 10) {
-                it.remove();
-            } else {
-                entry.setValue(counter + 1);
-            }
-        }
+    }
+
+    @SideOnly(Side.CLIENT)
+    private boolean playerIsHoldingLogisticItems(){
+        EntityPlayer player = Minecraft.getMinecraft().thePlayer;
+        ItemStack stack = player.getCurrentEquippedItem();
+        return stack != null && (stack.getItem() == Itemss.logisticsConfigurator || stack.getItem() instanceof ItemLogisticsFrame);
     }
 
     public void informIncomingStack(ItemStack stack){
@@ -95,12 +132,18 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic{
         TileEntityBase.writeInventoryToNBT(tag, filters, "filters");
 
         NBTTagList tagList = new NBTTagList();
-        for(FluidTank filter : fluidFilters) {
-            NBTTagCompound t = new NBTTagCompound();
-            filter.writeToNBT(t);
-            tagList.appendTag(t);
+        for(int i = 0; i < fluidFilters.length; i++) {
+            FluidTank filter = fluidFilters[i];
+            if(filter.getFluid() != null) {
+                NBTTagCompound t = new NBTTagCompound();
+                t.setInteger("index", i);
+                filter.writeToNBT(t);
+                tagList.appendTag(t);
+            }
         }
         tag.setTag("fluidFilters", tagList);
+
+        tag.setBoolean("invisible", invisible);
     }
 
     @Override
@@ -110,8 +153,10 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic{
 
         NBTTagList tagList = tag.getTagList("fluidFilters", 10);
         for(int i = 0; i < tagList.tagCount(); i++) {
-            fluidFilters[i].readFromNBT(tagList.getCompoundTagAt(i));
+            fluidFilters[tagList.getCompoundTagAt(i).getInteger("index")].readFromNBT(tagList.getCompoundTagAt(i));
         }
+
+        invisible = tag.getBoolean("invisible");
     }
 
     public void setFilter(int filterIndex, FluidStack stack){
@@ -144,6 +189,8 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic{
                 break;
             }
         }
+
+        if(invisible) shouldAddTag = true;
 
         if(shouldAddTag) {
             ItemStack drop = drops.get(0);
@@ -200,6 +247,13 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic{
             }
         }
         return !hasFilter;
+    }
+
+    @Override
+    public void handleGUIButtonPress(int guiID, EntityPlayer player){
+        if(guiID == 0) {
+            invisible = !invisible;
+        }
     }
 
     @Override

@@ -2,6 +2,7 @@ package pneumaticCraft.common.item;
 
 import java.util.List;
 
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
@@ -38,25 +39,29 @@ public class ItemLogisticsFrame extends ItemSemiBlockBase{
     }
 
     public static void addTooltip(ItemStack stack, EntityPlayer player, List<String> curInfo, boolean sneaking){
-        if(stack.getTagCompound() != null && (stack.getTagCompound().hasKey("filters") && stack.getTagCompound().getTagList("filters", 10).tagCount() > 0 || stack.getTagCompound().hasKey("fluidFilters") && stack.getTagCompound().getTagList("fluidFilters", 10).tagCount() > 0)) {
-            String key = SemiBlockManager.getKeyForSemiBlock(SemiBlockManager.getSemiBlockForItem(stack.getItem()));
-            if(sneaking) {
-                curInfo.add(StatCollector.translateToLocal(String.format("gui.%s.filters", key)));
-                SemiBlockRequester requester = new SemiBlockRequester();
-                requester.onPlaced(player, stack);
-                ItemStack[] stacks = new ItemStack[requester.getFilters().getSizeInventory()];
-                for(int i = 0; i < stacks.length; i++) {
-                    stacks[i] = requester.getFilters().getStackInSlot(i);
-                }
-                PneumaticCraftUtils.sortCombineItemStacksAndToString(curInfo, stacks);
-                for(int i = 0; i < 9; i++) {
-                    FluidStack fluid = requester.getTankFilter(i).getFluid();
-                    if(fluid != null) {
-                        curInfo.add("-" + fluid.amount / 1000 + "B " + fluid.getLocalizedName());
+
+        if(stack.getTagCompound() != null) {
+            if(stack.getTagCompound().getBoolean("invisible")) curInfo.add(I18n.format("gui.logisticFrame.invisible"));
+            if(stack.getTagCompound().hasKey("filters") && stack.getTagCompound().getTagList("filters", 10).tagCount() > 0 || stack.getTagCompound().hasKey("fluidFilters") && stack.getTagCompound().getTagList("fluidFilters", 10).tagCount() > 0) {
+                String key = SemiBlockManager.getKeyForSemiBlock(SemiBlockManager.getSemiBlockForItem(stack.getItem()));
+                if(sneaking) {
+                    curInfo.add(StatCollector.translateToLocal(String.format("gui.%s.filters", key)));
+                    SemiBlockRequester requester = new SemiBlockRequester();
+                    requester.onPlaced(player, stack);
+                    ItemStack[] stacks = new ItemStack[requester.getFilters().getSizeInventory()];
+                    for(int i = 0; i < stacks.length; i++) {
+                        stacks[i] = requester.getFilters().getStackInSlot(i);
                     }
+                    PneumaticCraftUtils.sortCombineItemStacksAndToString(curInfo, stacks);
+                    for(int i = 0; i < 9; i++) {
+                        FluidStack fluid = requester.getTankFilter(i).getFluid();
+                        if(fluid != null) {
+                            curInfo.add("-" + fluid.amount / 1000 + "B " + fluid.getLocalizedName());
+                        }
+                    }
+                } else {
+                    curInfo.add(StatCollector.translateToLocal(String.format("gui.%s.hasFilters", key)));
                 }
-            } else {
-                curInfo.add(StatCollector.translateToLocal(String.format("gui.%s.hasFilters", key)));
             }
         }
     }

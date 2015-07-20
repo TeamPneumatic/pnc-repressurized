@@ -22,6 +22,7 @@ import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.network.DescPacketHandler;
 import pneumaticCraft.common.network.DescSynced;
+import pneumaticCraft.common.network.IDescSynced;
 import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.NetworkUtils;
 import pneumaticCraft.common.network.PacketDescription;
@@ -32,7 +33,7 @@ import pneumaticCraft.lib.PneumaticValues;
 import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
-public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
+public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, IDescSynced{
     /**
      * True only the first time updateEntity invokes in a session.
      */
@@ -61,6 +62,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
         return 64;
     }
 
+    @Override
     public List<SyncedField> getDescriptionFields(){
         if(descriptionFields == null) {
             descriptionFields = NetworkUtils.getSyncedFields(this, DescSynced.class);
@@ -142,6 +144,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
      * Used as last resort, using @DescSynced is preferred.
      * @param tag
      */
+    @Override
     public void writeToPacket(NBTTagCompound tag){}
 
     /**
@@ -149,6 +152,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
      * Used as last resort, using @DescSynced is preferred.
      * @param tag
      */
+    @Override
     public void readFromPacket(NBTTagCompound tag){}
 
     @Override
@@ -175,6 +179,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
         scheduleDescriptionPacket();
     }
 
+    @Override
     public void onDescUpdate(){
         if(shouldRerenderChunkOnDescUpdate()) rerenderChunk();
     }
@@ -368,5 +373,25 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive{
                 }
             }
         }
+    }
+
+    @Override
+    public Type getSyncType(){
+        return Type.TILE_ENTITY;
+    }
+
+    @Override
+    public int getX(){
+        return xCoord;
+    }
+
+    @Override
+    public int getY(){
+        return yCoord;
+    }
+
+    @Override
+    public int getZ(){
+        return zCoord;
     }
 }
