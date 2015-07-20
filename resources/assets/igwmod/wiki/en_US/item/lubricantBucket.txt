@@ -1,0 +1,1 @@
+Lubricant is created in a [link{block/thermopneumaticProcessingPlant}]Thermopneumatic Processing Plant[link{}].

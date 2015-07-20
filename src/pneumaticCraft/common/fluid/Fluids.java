@@ -36,6 +36,7 @@ public class Fluids{
     public static Fluid gasoline;
     public static Fluid kerosene;
     public static Fluid diesel;
+    public static Fluid lubricant;
     public static List<Fluid> fluids = new ArrayList<Fluid>();
     public static List<Boolean> nativeFluids = new ArrayList<Boolean>();
     public static Map<Block, Item> fluidBlockToBucketMap = new HashMap<Block, Item>();
@@ -55,6 +56,7 @@ public class Fluids{
         gasoline = new Fluid("fuel");
         kerosene = new Fluid("kerosene");
         diesel = new Fluid("diesel");
+        lubricant = new Fluid("lubricant");
 
         fluids.add(plastic);
         fluids.add(etchingAcid);
@@ -63,6 +65,7 @@ public class Fluids{
         fluids.add(kerosene);
         fluids.add(diesel);
         fluids.add(oil);
+        fluids.add(lubricant);
 
         initializeFluidBlocksAndBuckets();
 
@@ -73,6 +76,7 @@ public class Fluids{
         kerosene = FluidRegistry.getFluid("kerosene");
         diesel = FluidRegistry.getFluid("diesel");
         oil = FluidRegistry.getFluid("oil");
+        lubricant = FluidRegistry.getFluid("lubricant");
 
         PneumaticRegistry.getInstance().registerFuel(oil, 150000);
         PneumaticRegistry.getInstance().registerFuel(diesel, 700000);

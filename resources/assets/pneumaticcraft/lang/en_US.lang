@@ -67,6 +67,8 @@ tile.fuel.name=Gasoline
 tile.lpg.name=LPG
 tile.kerosene.name=Kerosene
 tile.diesel.name=Diesel
+tile.oil.name=Oil
+tile.lubricant.name=Lubricant
 
 tile.monsterStoneEgg.name=Silverfish
 
@@ -109,6 +111,7 @@ item.fuelBucket.name=Gasoline Bucket
 item.keroseneBucket.name=Kerosene Bucket
 item.dieselBucket.name=Diesel Bucket
 item.oilBucket.name=Oil Bucket
+item.lubricantBucket.name=Lubricant Bucket
 item.plasticBucket.name=Plastic Bucket
 item.logisticsConfigurator.name=Logistics Configurator
 item.logisticFrameRequester.name=Logistic Requester Frame
@@ -218,6 +221,7 @@ fluid.fuel=Gasoline
 fluid.kerosene=Kerosene
 fluid.diesel=Diesel
 fluid.oil=Oil
+fluid.lubricant=Lubricant
 
 # Tube Modules
 item.safetyTubeModule.name=Safety Tube Module

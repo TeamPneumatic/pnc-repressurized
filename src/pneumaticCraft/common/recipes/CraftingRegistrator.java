@@ -104,7 +104,7 @@ public class CraftingRegistrator{
         addRecipe(new ItemStack(Itemss.machineUpgrade, 1, 2), "lal", "aca", "lal", 'l', lapis, 'a', Items.apple, 'c', Items.clock);
         addRecipe(new ItemStack(Itemss.machineUpgrade, 1, 3), "lbl", "bsb", "lbl", 'l', lapis, 'b', Items.bone, 's', Items.fermented_spider_eye);
         addRecipe(new ItemStack(Itemss.machineUpgrade, 1, 4), "lwl", "wsw", "lwl", 'l', lapis, 'w', Blockss.pressureChamberWall, 's', Items.fermented_spider_eye);
-        addRecipe(new ItemStack(Itemss.machineUpgrade, 1, 5), "lsl", "scs", "lsl", 'l', lapis, 's', swiftnessPotion, 'c', Items.cake);
+        addRecipe(new ItemStack(Itemss.machineUpgrade, 1, 5), "lsl", "scs", "lsl", 'l', lapis, 's', Items.sugar, 'c', Fluids.fluidBlockToBucketMap.get(Fluids.fluidToBlockMap.get(Fluids.lubricant)));
         addRecipe(new ItemStack(Itemss.machineUpgrade, 1, 6), "lel", "ege", "lel", 'l', lapis, 'e', Items.ender_eye, 'g', Items.golden_carrot);
         addRecipe(new ItemStack(Itemss.machineUpgrade, 1, 7), "lrl", "rgr", "lrl", 'l', lapis, 'r', Items.redstone, 'g', Itemss.GPSTool);
         addRecipe(new ItemStack(Itemss.machineUpgrade, 1, 8), "lal", "aba", "lal", 'l', lapis, 'a', Items.arrow, 'b', Items.bow);
@@ -290,6 +290,7 @@ public class CraftingRegistrator{
     public static void addThermopneumaticProcessingPlantRecipes(){
         PneumaticRecipeRegistry registry = PneumaticRecipeRegistry.getInstance();
         registry.registerThermopneumaticProcessingPlantRecipe(new FluidStack(Fluids.lpg, 100), new ItemStack(Items.coal), new FluidStack(Fluids.plastic, 1000), 373, 0);
+        registry.registerThermopneumaticProcessingPlantRecipe(new FluidStack(Fluids.kerosene, 1000), new ItemStack(Items.redstone), new FluidStack(Fluids.lubricant, 1000), 373, 0);
         registry.registerThermopneumaticProcessingPlantRecipe(new FluidStack(Fluids.diesel, 100), null, new FluidStack(Fluids.kerosene, 80), 573, 2);
         registry.registerThermopneumaticProcessingPlantRecipe(new FluidStack(Fluids.kerosene, 100), null, new FluidStack(Fluids.gasoline, 80), 573, 2);
         registry.registerThermopneumaticProcessingPlantRecipe(new FluidStack(Fluids.gasoline, 100), null, new FluidStack(Fluids.lpg, 80), 573, 2);
