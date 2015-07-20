@@ -16,6 +16,7 @@ import net.minecraft.profiler.Profiler;
 import net.minecraft.world.ChunkPosition;
 import net.minecraftforge.common.MinecraftForge;
 import pneumaticCraft.api.drone.SpecialVariableRetrievalEvent;
+import pneumaticCraft.common.Config;
 import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.common.progwidgets.IVariableWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetStart;
@@ -262,6 +263,7 @@ public class DroneAIManager{
     }
 
     public void onUpdateTasks(){
+        if(Config.stopDroneAI) return;
         if(!drone.isAIOverriden()) {
             if(wasAIOveridden && curWidgetTargetAI != null) drone.getTargetAI().addTask(2, curWidgetTargetAI);
             wasAIOveridden = false;

@@ -24,6 +24,7 @@ public class Config{
 
     public static double oilGenerationChance;
     public static boolean shouldDisplayChangeNotification;
+    public static boolean stopDroneAI;
 
     public static int configCompressedIngotLossRate;
     public static int elevatorBaseBlocksPerBase;
@@ -143,6 +144,10 @@ public class Config{
         property = config.get("advanced", "Convert Multiparts to Blocks", false);
         property.comment = "ONLY SET TO TRUE WHEN YOU KNOW WHAT YOU'RE DOING. When set to true, this will convert any Pressure Tube in the world that was a FMP to its block variant. Handy when you're about to remove FMP from the instance. This will remove any other parts from the block like covers. Exception are tube modules.";
         convertMultipartsToBlocks = property.getBoolean(true);
+
+        property = config.get("advanced", "Stop Drone AI", false);
+        property.comment = "When set to true, Drones will not execute any program. This is useful to set to true when due to a bug Drones are lagging your server or crashing it. Please report the bug if you encounter it.";
+        stopDroneAI = property.getBoolean(true);
 
         enableUpdateChecker = config.get(Configuration.CATEGORY_GENERAL, "Enable Update Checker", true).getBoolean(true);
 
