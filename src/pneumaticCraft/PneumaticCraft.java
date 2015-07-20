@@ -39,6 +39,7 @@ import pneumaticCraft.lib.Names;
 import pneumaticCraft.lib.Versions;
 import pneumaticCraft.proxy.CommonProxy;
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.IFuelHandler;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
@@ -163,5 +164,14 @@ public class PneumaticCraft{
             }
 
         }
+    }
+
+    public void registerFuel(final ItemStack fuelStack, final int fuelValue){
+        GameRegistry.registerFuelHandler(new IFuelHandler(){
+            @Override
+            public int getBurnTime(ItemStack fuel){
+                return fuel != null && fuel.isItemEqual(fuelStack) ? fuelValue : 0;
+            }
+        });
     }
 }

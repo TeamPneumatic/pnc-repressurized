@@ -84,6 +84,12 @@ public class Fluids{
         PneumaticRegistry.getInstance().registerFuel(gasoline, 1500000);
         PneumaticRegistry.getInstance().registerFuel(lpg, 1800000);
 
+        PneumaticCraft.instance.registerFuel(new ItemStack(fluidBlockToBucketMap.get(fluidToBlockMap.get(oil))), 150000 / 2);
+        PneumaticCraft.instance.registerFuel(new ItemStack(fluidBlockToBucketMap.get(fluidToBlockMap.get(diesel))), 700000 / 2);
+        PneumaticCraft.instance.registerFuel(new ItemStack(fluidBlockToBucketMap.get(fluidToBlockMap.get(kerosene))), 1100000 / 2);
+        PneumaticCraft.instance.registerFuel(new ItemStack(fluidBlockToBucketMap.get(fluidToBlockMap.get(gasoline))), 1500000 / 2);
+        PneumaticCraft.instance.registerFuel(new ItemStack(fluidBlockToBucketMap.get(fluidToBlockMap.get(lpg))), 1800000 / 2);
+
     }
 
     private static Block getBlockForFluid(final Fluid fluid){
