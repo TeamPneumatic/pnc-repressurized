@@ -1,4 +1,18 @@
--Sped up Logistic Drones' calculation time.
+-Added Lubricant.
+-Changed Speed Upgrade recipe to use Lubricant.
+-Added option to make Logistic Frames invisible.
+-Added config option that allows to stop Drones from executing any program, used when drones cause lag / crashes.
+-Added @drone entity filter.
+-Added feeding options to the Aerial Interface.
+-Added refinery fuels as Furnace fuel (solid fuel).
+-Fixed a few typo's and dead links in In-Game Wiki.
 
--Bugfix: Aerial Interface feeding only kicks in after a few seconds after world load.
--Bugfix: Elevator derpyness (hopefully it's completely fixed now :D).
+-API: Added BlockTrackEvent and EntityTrackEvent.
+
+-Bugfix: Block Tracker Upgrade keeps showing 'Target lost' when you break and replace a tracked block.
+-Bugfix: Programmer's 'Show Start' and 'Show Latest' button focus on pieces with an offset depending on the resolution of the monitor.
+-Bugfix: You can't extract items out of a Pressure Chamber Interface (only let it eject into an inventory).
+-Bugfix: For the Omnidirectional Hopper and Liquid Hopper 2 or 3 Speed Upgrades gives you the same speed, as well as 4 and 5 upgrades.
+-Bugfix: Omnidirectional Hopper stops extracting from an inventory if it can't fit in the item found in the first non empty slot.
+-Bugfix: Drone program goes into an endless loop with certain conditions.
+-Bugfix: Entity Tracker glitches out with the Programmable Controller.
