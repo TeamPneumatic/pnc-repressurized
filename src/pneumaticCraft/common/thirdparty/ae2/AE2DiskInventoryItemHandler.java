@@ -18,7 +18,7 @@ public class AE2DiskInventoryItemHandler implements IInventoryItem{
 
     @Override
     public void getStacksInItem(ItemStack stack, List<ItemStack> curStacks){
-        IMEInventoryHandler<IAEItemStack> cellInventoryHandler = cellRegistry.getCellInventory(stack, StorageChannel.ITEMS);
+        IMEInventoryHandler<IAEItemStack> cellInventoryHandler = cellRegistry.getCellInventory(stack, null, StorageChannel.ITEMS);
         if(cellInventoryHandler != null) {
             IItemList<IAEItemStack> cellItemList = storageHelper.createItemList();
             cellInventoryHandler.getAvailableItems(cellItemList);
