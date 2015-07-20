@@ -41,6 +41,7 @@ import net.minecraftforge.event.world.ExplosionEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.api.block.IPneumaticWrenchable;
+import pneumaticCraft.api.client.pneumaticHelmet.EntityTrackEvent;
 import pneumaticCraft.api.drone.DroneConstructingEvent;
 import pneumaticCraft.api.item.IPressurizable;
 import pneumaticCraft.client.render.pneumaticArmor.EntityTrackUpgradeHandler;
@@ -51,6 +52,7 @@ import pneumaticCraft.common.ai.IDroneBase;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.block.pneumaticPlants.BlockPlants;
 import pneumaticCraft.common.block.pneumaticPlants.BlockPneumaticPlantBase;
+import pneumaticCraft.common.entity.EntityProgrammableController;
 import pneumaticCraft.common.fluid.Fluids;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.ItemPlasticPlants;
@@ -290,5 +292,10 @@ public class EventHandlerPneumaticCraft{
             }
             event.world.loadItemData(OilTracker.class, OilTracker.DATA_KEY);
         }
+    }
+
+    @SubscribeEvent
+    public void onEntityTracking(EntityTrackEvent event){
+        if(event.trackingEntity instanceof EntityProgrammableController) event.setCanceled(true);
     }
 }
