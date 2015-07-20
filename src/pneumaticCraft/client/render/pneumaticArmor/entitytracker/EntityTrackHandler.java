@@ -34,16 +34,16 @@ public class EntityTrackHandler{
     private static List<IEntityTrackEntry> trackEntries = new ArrayList<IEntityTrackEntry>();
 
     public static void registerDefaultEntries(){
-        PneumaticRegistry.instance.registerEntityTrackEntry(EntityTrackEntryLivingBase.class);
-        PneumaticRegistry.instance.registerEntityTrackEntry(EntityTrackEntryHackable.class);
-        PneumaticRegistry.instance.registerEntityTrackEntry(EntityTrackEntryDrone.class);
-        PneumaticRegistry.instance.registerEntityTrackEntry(EntityTrackEntryPressurizable.class);
-        PneumaticRegistry.instance.registerEntityTrackEntry(EntityTrackEntryAgeable.class);
-        PneumaticRegistry.instance.registerEntityTrackEntry(EntityTrackEntryTameable.class);
-        PneumaticRegistry.instance.registerEntityTrackEntry(EntityTrackEntryCreeper.class);
-        PneumaticRegistry.instance.registerEntityTrackEntry(EntityTrackEntrySlime.class);
-        PneumaticRegistry.instance.registerEntityTrackEntry(EntityTrackEntryPlayer.class);
-        PneumaticRegistry.instance.registerEntityTrackEntry(EntityTrackEntryMob.class);
+        PneumaticRegistry.getInstance().registerEntityTrackEntry(EntityTrackEntryLivingBase.class);
+        PneumaticRegistry.getInstance().registerEntityTrackEntry(EntityTrackEntryHackable.class);
+        PneumaticRegistry.getInstance().registerEntityTrackEntry(EntityTrackEntryDrone.class);
+        PneumaticRegistry.getInstance().registerEntityTrackEntry(EntityTrackEntryPressurizable.class);
+        PneumaticRegistry.getInstance().registerEntityTrackEntry(EntityTrackEntryAgeable.class);
+        PneumaticRegistry.getInstance().registerEntityTrackEntry(EntityTrackEntryTameable.class);
+        PneumaticRegistry.getInstance().registerEntityTrackEntry(EntityTrackEntryCreeper.class);
+        PneumaticRegistry.getInstance().registerEntityTrackEntry(EntityTrackEntrySlime.class);
+        PneumaticRegistry.getInstance().registerEntityTrackEntry(EntityTrackEntryPlayer.class);
+        PneumaticRegistry.getInstance().registerEntityTrackEntry(EntityTrackEntryMob.class);
     }
 
     public static void init(){

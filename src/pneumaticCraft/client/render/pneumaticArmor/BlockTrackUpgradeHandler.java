@@ -14,10 +14,12 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.ChunkCache;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.client.event.MouseEvent;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 
 import org.lwjgl.opengl.GL11;
 
+import pneumaticCraft.api.client.pneumaticHelmet.BlockTrackEvent;
 import pneumaticCraft.api.client.pneumaticHelmet.IBlockTrackEntry;
 import pneumaticCraft.api.client.pneumaticHelmet.IOptionPage;
 import pneumaticCraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
@@ -98,6 +100,7 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler{
                 for(int k = baseZ; k <= baseZ + 2 * blockTrackRange; k++) {
                     if(player.getDistance(i, j, k) > blockTrackRange) continue;
                     TileEntity te = chunkCache.getTileEntity(i, j, k);
+                    if(MinecraftForge.EVENT_BUS.post(new BlockTrackEvent(player.worldObj, i, j, k, te))) continue;
                     if(searchHandler != null && te instanceof IInventory) {
                         searchHandler.checkInventoryForItems(te);
                     }

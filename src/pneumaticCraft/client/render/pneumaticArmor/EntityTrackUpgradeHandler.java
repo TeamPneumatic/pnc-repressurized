@@ -18,7 +18,9 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.Vec3;
 import net.minecraftforge.client.event.MouseEvent;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
+import pneumaticCraft.api.client.pneumaticHelmet.EntityTrackEvent;
 import pneumaticCraft.api.client.pneumaticHelmet.IOptionPage;
 import pneumaticCraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
 import pneumaticCraft.client.gui.pneumaticHelmet.GuiEntityTrackOptions;
@@ -65,7 +67,7 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler{
         List<Entity> mobs = player.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, bbBox);
         if(mobs.contains(player)) mobs.remove(player);
         for(int i = 0; i < mobs.size(); i++) {
-            if(player.getDistanceToEntity(mobs.get(i)) > entityTrackRange || !PneumaticCraftUtils.isEntityValidForFilter(entityFilter, mobs.get(i))) continue;
+            if(player.getDistanceToEntity(mobs.get(i)) > entityTrackRange || !PneumaticCraftUtils.isEntityValidForFilter(entityFilter, mobs.get(i)) || MinecraftForge.EVENT_BUS.post(new EntityTrackEvent(mobs.get(i)))) continue;
             boolean inList = false;
             for(int j = 0; j < targets.size(); j++) {
                 if(targets.get(j).entity == mobs.get(i)) {
