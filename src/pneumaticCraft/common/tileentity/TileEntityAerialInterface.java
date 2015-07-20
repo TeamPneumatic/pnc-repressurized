@@ -56,6 +56,8 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
 
     @GuiSynced
     public int redstoneMode;
+    @GuiSynced
+    public int feedMode;
     private boolean oldRedstoneStatus;
     private boolean updateNeighbours;
     @GuiSynced
@@ -109,6 +111,8 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
             redstoneMode++;
             if(redstoneMode > 1) redstoneMode = 0;
             // updateNeighbours();
+        } else if(buttonID >= 1 && buttonID < 4) {
+            feedMode = buttonID - 1;
         }
     }
 
@@ -272,18 +276,19 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound nbtTagCompound){
+    public void readFromNBT(NBTTagCompound tag){
 
-        super.readFromNBT(nbtTagCompound);
+        super.readFromNBT(tag);
         // Read in the ItemStacks in the inventory from NBT
 
-        redstoneMode = nbtTagCompound.getInteger("redstoneMode");
-        setPlayer(nbtTagCompound.getString("playerName"), nbtTagCompound.getString("playerUUID"));
-        isConnectedToPlayer = nbtTagCompound.getBoolean("connected");
-        if(nbtTagCompound.hasKey("curXpFluid")) curXpFluid = FluidRegistry.getFluid(nbtTagCompound.getString("curXpFluid"));
-        if(energyRF != null) readRF(nbtTagCompound);
+        redstoneMode = tag.getInteger("redstoneMode");
+        feedMode = tag.getInteger("feedMode");
+        setPlayer(tag.getString("playerName"), tag.getString("playerUUID"));
+        isConnectedToPlayer = tag.getBoolean("connected");
+        if(tag.hasKey("curXpFluid")) curXpFluid = FluidRegistry.getFluid(tag.getString("curXpFluid"));
+        if(energyRF != null) readRF(tag);
 
-        NBTTagList tagList = nbtTagCompound.getTagList("Items", 10);
+        NBTTagList tagList = tag.getTagList("Items", 10);
         inventory = new ItemStack[4];
         for(int i = 0; i < tagList.tagCount(); ++i) {
             NBTTagCompound tagCompound = tagList.getCompoundTagAt(i);
@@ -296,17 +301,18 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound nbtTagCompound){
+    public void writeToNBT(NBTTagCompound tag){
 
-        super.writeToNBT(nbtTagCompound);
+        super.writeToNBT(tag);
         // Write the ItemStacks in the inventory to NBT
-        nbtTagCompound.setInteger("redstoneMode", redstoneMode);
-        nbtTagCompound.setString("playerName", playerName);
-        nbtTagCompound.setString("playerUUID", playerUUID);
-        if(curXpFluid != null) nbtTagCompound.setString("curXpFluid", curXpFluid.getName());
-        if(energyRF != null) saveRF(nbtTagCompound);
+        tag.setInteger("redstoneMode", redstoneMode);
+        tag.setInteger("feedMode", feedMode);
+        tag.setString("playerName", playerName);
+        tag.setString("playerUUID", playerUUID);
+        if(curXpFluid != null) tag.setString("curXpFluid", curXpFluid.getName());
+        if(energyRF != null) saveRF(tag);
 
-        nbtTagCompound.setBoolean("connected", isConnectedToPlayer);
+        tag.setBoolean("connected", isConnectedToPlayer);
         NBTTagList tagList = new NBTTagList();
         for(int currentIndex = 0; currentIndex < inventory.length; ++currentIndex) {
             if(inventory[currentIndex] != null) {
@@ -316,7 +322,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
                 tagList.appendTag(tagCompound);
             }
         }
-        nbtTagCompound.setTag("Items", tagList);
+        tag.setTag("Items", tagList);
     }
 
     @Override
@@ -355,9 +361,17 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
                 return i < 40 || itemstack != null && itemstack.getItem() instanceof ItemArmor && ((ItemArmor)itemstack.getItem()).armorType == 43 - i;
             } else {
                 if(i == 4 + player.inventory.getSizeInventory() && getFoodValue(itemstack) > 0) {
+                    int foodValue = getFoodValue(itemstack);
                     int curFoodLevel = player.getFoodStats().getFoodLevel();
-                    if(20 - curFoodLevel >= getFoodValue(itemstack) * itemstack.stackSize) {
-                        return true;
+                    int feedMode = this.feedMode;
+                    if(feedMode == 2) {
+                        feedMode = player.getMaxHealth() - player.getHealth() > 0 ? 1 : 0;
+                    }
+                    switch(feedMode){
+                        case 0:
+                            return 20 - curFoodLevel >= foodValue * itemstack.stackSize;
+                        case 1:
+                            return 20 - curFoodLevel >= foodValue * (itemstack.stackSize - 1) + 1;
                     }
                 }
                 return false;

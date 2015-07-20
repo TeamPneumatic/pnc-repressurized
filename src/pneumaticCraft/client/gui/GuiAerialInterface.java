@@ -1,6 +1,7 @@
 package pneumaticCraft.client.gui;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import net.minecraft.client.resources.I18n;
@@ -11,8 +12,13 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
+
+import org.apache.commons.lang3.text.WordUtils;
+
+import pneumaticCraft.client.gui.widget.GuiAnimatedStat;
 import pneumaticCraft.common.PneumaticCraftAPIHandler;
 import pneumaticCraft.common.inventory.Container4UpgradeSlots;
+import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.tileentity.TileEntityAerialInterface;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.ModIds;
@@ -24,6 +30,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class GuiAerialInterface extends GuiPneumaticContainerBase<TileEntityAerialInterface>{
+    private final GuiButtonSpecial[] modeButtons = new GuiButtonSpecial[3];
 
     public GuiAerialInterface(InventoryPlayer player, TileEntityAerialInterface te){
 
@@ -36,6 +43,51 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<TileEntityAeri
         if(PneumaticCraftAPIHandler.getInstance().liquidXPs.size() > 0) addAnimatedStat("gui.tab.info.aerialInterface.liquidXp.info.title", new ItemStack(Items.water_bucket), 0xFF55FF55, false).setText(getLiquidXPText());
         if(Loader.isModLoaded(ModIds.COFH_CORE)) {
             addAnimatedStat("gui.tab.info.aerialInterface.interfacingRF.info.title", new ItemStack(Items.glowstone_dust), 0xFFFF2222, false).setText("gui.tab.info.aerialInterface.interfacingRF.info");
+        }
+
+        if(te.getUpgrades(ItemMachineUpgrade.UPGRADE_DISPENSER_DAMAGE) > 0) {
+            GuiAnimatedStat optionStat = addAnimatedStat("gui.tab.aerialInterface.feedMode", new ItemStack(Items.beef), 0xFFFFCC00, false);
+            List<String> text = new ArrayList<String>();
+            for(int i = 0; i < 4; i++)
+                text.add("                 ");
+            optionStat.setTextWithoutCuttingString(text);
+
+            GuiButtonSpecial button = new GuiButtonSpecial(1, 5, 20, 20, 20, "");
+            button.setRenderStacks(new ItemStack(Items.beef));
+            button.setTooltipText(I18n.format("gui.tab.aerialInterface.feedMode.feedFullyUtilize"));
+            optionStat.addWidget(button);
+            modeButtons[0] = button;
+
+            button = new GuiButtonSpecial(2, 30, 20, 20, 20, "");
+            button.setRenderStacks(new ItemStack(Items.apple));
+            button.setTooltipText(I18n.format("gui.tab.aerialInterface.feedMode.feedWhenPossible"));
+            optionStat.addWidget(button);
+            modeButtons[1] = button;
+
+            button = new GuiButtonSpecial(3, 55, 20, 20, 20, "");
+            button.setRenderStacks(new ItemStack(Items.golden_apple));
+            button.setTooltipText(Arrays.asList(WordUtils.wrap(I18n.format("gui.tab.aerialInterface.feedMode.utilizeFullHealthElsePossible"), 40).split(System.getProperty("line.separator"))));
+            optionStat.addWidget(button);
+            modeButtons[2] = button;
+        } else {
+            for(int i = 0; i < modeButtons.length; i++)
+                modeButtons[i] = null;
+        }
+    }
+
+    @Override
+    public void updateScreen(){
+        super.updateScreen();
+        if(te.getUpgrades(ItemMachineUpgrade.UPGRADE_DISPENSER_DAMAGE) > 0) {
+            if(modeButtons[0] != null) {
+                for(int i = 0; i < modeButtons.length; i++) {
+                    modeButtons[i].enabled = te.feedMode != i;
+                }
+            } else {
+                refreshScreen();
+            }
+        } else if(modeButtons[0] != null) {
+            refreshScreen();
         }
     }
 

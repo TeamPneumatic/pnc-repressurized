@@ -8,6 +8,7 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
@@ -536,4 +537,15 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
 
     }
 
+    protected void refreshScreen(){
+        ScaledResolution scaledresolution = new ScaledResolution(Minecraft.getMinecraft(), Minecraft.getMinecraft().displayWidth, Minecraft.getMinecraft().displayHeight);
+        int i = scaledresolution.getScaledWidth();
+        int j = scaledresolution.getScaledHeight();
+        setWorldAndResolution(Minecraft.getMinecraft(), i, j);
+        for(IGuiWidget widget : widgets) {
+            if(widget instanceof GuiAnimatedStat) {
+                widget.update();
+            }
+        }
+    }
 }
