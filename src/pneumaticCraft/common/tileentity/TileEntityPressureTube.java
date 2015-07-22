@@ -207,17 +207,21 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase{
 
     public void updateConnections(World world, int x, int y, int z){
         sidesConnected = new boolean[6];
+        boolean hasModule = false;
         for(ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
             IPneumaticMachine machine = ModInteractionUtils.getInstance().getMachine(getTileCache()[direction.ordinal()].getTileEntity());
             if(machine != null) {
                 sidesConnected[direction.ordinal()] = isConnectedTo(direction) && machine.isConnectedTo(direction.getOpposite());
+            }
+            if(modules[direction.ordinal()] != null) {
+                hasModule = true;
             }
         }
         int sidesCount = 0;
         for(boolean bool : sidesConnected) {
             if(bool) sidesCount++;
         }
-        if(sidesCount == 1) {
+        if(sidesCount == 1 && !hasModule) {
             for(int i = 0; i < 6; i++) {
                 if(sidesConnected[i]) {
                     if(modules[i ^ 1] == null) sidesConnected[i ^ 1] = true;
