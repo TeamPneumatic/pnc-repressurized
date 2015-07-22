@@ -2,12 +2,15 @@ package pneumaticCraft.client.render.tileentity;
 
 import java.util.Arrays;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.MovingObjectPosition;
 
 import org.lwjgl.opengl.GL11;
 
 import pneumaticCraft.client.model.ModelPressureTube;
+import pneumaticCraft.common.block.BlockPressureTube;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.block.tubes.TubeModule;
 import pneumaticCraft.common.tileentity.TileEntityPressureTube;
@@ -39,6 +42,7 @@ public class RenderPressureTube extends TileEntitySpecialRenderer{
         GL11.glRotatef(0, 0.0F, 1.0F, 0.0F);
 
         GL11.glScalef(1.0F, -1F, -1F);
+        attachFakeModule(tile);
         boolean[] renderSides = Arrays.copyOf(tile.sidesConnected, tile.sidesConnected.length);
         for(int i = 0; i < 6; i++) {
             if(tile.modules[i] != null && tile.modules[i].isInline()) {
@@ -49,8 +53,23 @@ public class RenderPressureTube extends TileEntitySpecialRenderer{
         // GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glPopMatrix(); // end
 
-        for(TubeModule module : tile.modules) {
-            if(module != null) module.renderDynamic(d, d1, d2, f, 0, false);
+        GL11.glEnable(GL11.GL_BLEND);
+        for(int i = 0; i < tile.modules.length; i++) {
+            TubeModule module = tile.modules[i];
+            if(module != null) {
+                GL11.glColor4d(1, 1, 1, module.isFake() ? 0.5 : 1);
+                module.renderDynamic(d, d1, d2, f, 0, false);
+                if(module.isFake()) tile.modules[i] = null;
+            }
+        }
+        GL11.glColor4d(1, 1, 1, 1);
+        GL11.glDisable(GL11.GL_BLEND);
+    }
+
+    private void attachFakeModule(TileEntityPressureTube tile){
+        MovingObjectPosition pos = Minecraft.getMinecraft().objectMouseOver;
+        if(pos != null && pos.blockX == tile.xCoord && pos.blockY == tile.yCoord && pos.blockZ == tile.zCoord) {
+            ((BlockPressureTube)Blockss.pressureTube).tryPlaceModule(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().theWorld, tile.xCoord, tile.yCoord, tile.zCoord, pos.sideHit, true);
         }
     }
 

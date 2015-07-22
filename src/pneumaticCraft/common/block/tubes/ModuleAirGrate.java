@@ -226,6 +226,10 @@ public class ModuleAirGrate extends TubeModule{
         GL11.glPushMatrix();
         GL11.glTranslated(0, 0, 2);
         rangeLineRenderer.render();
+        if(isFake()) {
+            GL11.glEnable(GL11.GL_BLEND);
+            GL11.glColor4d(1, 1, 1, 0.5);
+        }
         GL11.glPopMatrix();
     }
 

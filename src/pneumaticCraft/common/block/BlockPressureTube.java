@@ -63,35 +63,42 @@ public class BlockPressureTube extends BlockPneumaticCraftModeled{
     @Override
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int par6, float par7, float par8, float par9){
         if(!world.isRemote) {
-            if(player.getCurrentEquippedItem() != null) {
-                if(player.getCurrentEquippedItem().getItem() instanceof ItemTubeModule) {
-                    TileEntityPressureTube pressureTube = (TileEntityPressureTube)world.getTileEntity(x, y, z);
-                    if(pressureTube.modules[par6] == null) {
-                        TubeModule module = ModuleRegistrator.getModule(((ItemTubeModule)player.getCurrentEquippedItem().getItem()).moduleName);
-                        pressureTube.setModule(module, ForgeDirection.getOrientation(par6));
-                        onNeighborBlockChange(world, x, y, z, this);
-                        world.notifyBlocksOfNeighborChange(x, y, z, this, ForgeDirection.getOrientation(par6).getOpposite().ordinal());
-                        if(!player.capabilities.isCreativeMode) player.getCurrentEquippedItem().stackSize--;
-                        world.playSoundEffect(x + 0.5, y + 0.5, z + 0.5, Block.soundTypeGlass.getStepResourcePath(), Block.soundTypeGlass.getVolume() * 5.0F, Block.soundTypeGlass.getPitch() * .9F);
-                        return true;
-                    }
-                } else if(player.getCurrentEquippedItem().getItem() == Itemss.advancedPCB) {
-                    TubeModule module = BlockPressureTube.getLookedModule(world, x, y, z, player);
-                    if(module != null && !module.isUpgraded() && module.canUpgrade()) {
-                        if(!world.isRemote) {
-                            module.upgrade();
-                            if(!player.capabilities.isCreativeMode) player.getCurrentEquippedItem().stackSize--;
-                        }
-                        return true;
-                    }
-                }
-            }
-
+            if(tryPlaceModule(player, world, x, y, z, par6, false)) return true;
         }
         if(!player.isSneaking()) {
             TubeModule module = getLookedModule(world, x, y, z, player);
             if(module != null) {
                 return module.onActivated(player);
+            }
+        }
+        return false;
+    }
+
+    public boolean tryPlaceModule(EntityPlayer player, World world, int x, int y, int z, int par6, boolean simulate){
+        if(player.getCurrentEquippedItem() != null) {
+            if(player.getCurrentEquippedItem().getItem() instanceof ItemTubeModule) {
+                TileEntityPressureTube pressureTube = (TileEntityPressureTube)world.getTileEntity(x, y, z);
+                if(pressureTube.modules[par6] == null) {
+                    TubeModule module = ModuleRegistrator.getModule(((ItemTubeModule)player.getCurrentEquippedItem().getItem()).moduleName);
+                    if(simulate) module.markFake();
+                    pressureTube.setModule(module, ForgeDirection.getOrientation(par6));
+                    if(!simulate) {
+                        onNeighborBlockChange(world, x, y, z, this);
+                        world.notifyBlocksOfNeighborChange(x, y, z, this, ForgeDirection.getOrientation(par6).getOpposite().ordinal());
+                        if(!player.capabilities.isCreativeMode) player.getCurrentEquippedItem().stackSize--;
+                        world.playSoundEffect(x + 0.5, y + 0.5, z + 0.5, Block.soundTypeGlass.getStepResourcePath(), Block.soundTypeGlass.getVolume() * 5.0F, Block.soundTypeGlass.getPitch() * .9F);
+                    }
+                    return true;
+                }
+            } else if(player.getCurrentEquippedItem().getItem() == Itemss.advancedPCB && !simulate) {
+                TubeModule module = BlockPressureTube.getLookedModule(world, x, y, z, player);
+                if(module != null && !module.isUpgraded() && module.canUpgrade()) {
+                    if(!world.isRemote) {
+                        module.upgrade();
+                        if(!player.capabilities.isCreativeMode) player.getCurrentEquippedItem().stackSize--;
+                    }
+                    return true;
+                }
             }
         }
         return false;

@@ -84,6 +84,5 @@ public class RenderRangeLines{
         GL11.glColor4d(1, 1, 1, 1);
         GL11.glDisable(GL11.GL_BLEND);
         GL11.glEnable(GL11.GL_TEXTURE_2D);
-
     }
 }

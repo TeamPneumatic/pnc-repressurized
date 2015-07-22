@@ -31,6 +31,7 @@ public abstract class TubeModule implements ISidedPart{
     public AxisAlignedBB[] boundingBoxes = new AxisAlignedBB[6];
     protected boolean upgraded;
     public float lowerBound = 7.5F, higherBound = 0, maxValue = 30;
+    private boolean fake;
 
     public TubeModule(){
         double width = getWidth() / 2;
@@ -42,6 +43,14 @@ public abstract class TubeModule implements ISidedPart{
         boundingBoxes[3] = AxisAlignedBB.getBoundingBox(0.5 - width, 0.5 - width, BBConstants.PRESSURE_PIPE_MAX_POS, 0.5 + width, 0.5 + width, BBConstants.PRESSURE_PIPE_MAX_POS + height);
         boundingBoxes[4] = AxisAlignedBB.getBoundingBox(BBConstants.PRESSURE_PIPE_MIN_POS - height, 0.5 - width, 0.5 - width, BBConstants.PRESSURE_PIPE_MIN_POS, 0.5 + width, 0.5 + width);
         boundingBoxes[5] = AxisAlignedBB.getBoundingBox(BBConstants.PRESSURE_PIPE_MAX_POS, 0.5 - width, 0.5 - width, BBConstants.PRESSURE_PIPE_MAX_POS + height, 0.5 + width, 0.5 + width);
+    }
+
+    public void markFake(){
+        fake = true;
+    }
+
+    public boolean isFake(){
+        return fake;
     }
 
     public void setTube(IPneumaticPosProvider pressureTube){
