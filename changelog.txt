@@ -1,1 +1,6 @@
--Changed Lubricant recipe to use Diesel instead of Kerosene so it's available a little earlier in the tech tree.
+-Pressure Tubes will now stop leaving an 'open end' when a module is connected. Example: https://www.dropbox.com/s/xwex6f7vb2oq4ke/2015-07-22_23.40.28.png?dl=0
+-Added placement previewer for tube modules.
+-Rebalanced minigun damage.
+
+-Bugfix: Chisel compatibility broke.
+-Bugfix: Crash when using minigun drones on a server.

@@ -184,7 +184,7 @@ public class EntityDrone extends EntityDroneBase implements IManoMeasurable, IIn
         dataWatcher.addObject(22, 0);
         dataWatcher.addObject(23, (byte)0);
         dataWatcher.addObject(24, (byte)0);
-        dataWatcher.addObject(25, 0);
+        dataWatcher.addObjectByDataType(25, 5);
     }
 
     @Override
@@ -431,10 +431,11 @@ public class EntityDrone extends EntityDroneBase implements IManoMeasurable, IIn
     }
 
     public int getAmmoColor(){
-        return dataWatcher.getWatchableObjectInt(25);
+        ItemStack ammo = dataWatcher.getWatchableObjectItemStack(25);
+        return ammo != null ? ammo.getItem().getColorFromItemStack(ammo, 1) : 0xFF313131;
     }
 
-    public void setAmmoColor(int color){
+    public void setAmmoColor(ItemStack color){
         dataWatcher.updateObject(25, color);
     }
 
@@ -1148,7 +1149,7 @@ public class EntityDrone extends EntityDroneBase implements IManoMeasurable, IIn
             setMinigunActivated(minigunTriggerTimeOut > 0);
 
             ItemStack ammo = getAmmo();
-            setAmmoColor(ammo != null ? ammo.getItem().getColorFromItemStack(ammo, 1) : 0xFF313131);
+            setAmmoColor(ammo);
 
             if(minigunTriggerTimeOut > 0) {
                 minigunTriggerTimeOut--;
@@ -1260,8 +1261,7 @@ public class EntityDrone extends EntityDroneBase implements IManoMeasurable, IIn
                         }
                     }
                 } else {
-                    attackEntityAsMob(target);
-                    getFakePlayer().attackTargetEntityWithCurrentItem(target);
+                    target.attackEntityFrom(DamageSource.causePlayerDamage(getFakePlayer()), 4);
                 }
             }
         }
