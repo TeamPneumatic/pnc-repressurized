@@ -125,6 +125,29 @@ public class TileEntityRefinery extends TileEntityBase implements IFluidHandler,
     }
 
     @Override
+    public boolean redstoneAllows(){
+        if(worldObj.isRemote) onNeighborBlockUpdate();
+        boolean isPoweredByRedstone = poweredRedstone > 0;
+
+        TileEntityRefinery refinery = this;
+        while(poweredRedstone == 0 && refinery.getTileCache()[ForgeDirection.UP.ordinal()].getTileEntity() instanceof TileEntityRefinery) {
+            refinery = (TileEntityRefinery)refinery.getTileCache()[ForgeDirection.UP.ordinal()].getTileEntity();
+            refinery.onNeighborBlockUpdate();
+            isPoweredByRedstone = refinery.poweredRedstone > 0;
+        }
+
+        switch(((IRedstoneControl)this).getRedstoneMode()){
+            case 0:
+                return true;
+            case 1:
+                return isPoweredByRedstone;
+            case 2:
+                return !isPoweredByRedstone;
+        }
+        return false;
+    }
+
+    @Override
     public int fill(ForgeDirection from, FluidStack resource, boolean doFill){
         if(isMaster()) {
             return oilTank.fill(resource, doFill);
