@@ -53,17 +53,24 @@ public class RenderPressureTube extends TileEntitySpecialRenderer{
         // GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glPopMatrix(); // end
 
-        GL11.glEnable(GL11.GL_BLEND);
         for(int i = 0; i < tile.modules.length; i++) {
             TubeModule module = tile.modules[i];
             if(module != null) {
-                GL11.glColor4d(1, 1, 1, module.isFake() ? 0.5 : 1);
+                if(module.isFake()) {
+                    GL11.glEnable(GL11.GL_BLEND);
+                    GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_DST_ALPHA);
+                    GL11.glColor4d(1, 1, 1, 0.3);
+                }
+
                 module.renderDynamic(d, d1, d2, f, 0, false);
-                if(module.isFake()) tile.modules[i] = null;
+                if(module.isFake()) {
+                    tile.modules[i] = null;
+                    GL11.glDisable(GL11.GL_BLEND);
+                    GL11.glColor4d(1, 1, 1, 1);
+                }
             }
         }
         GL11.glColor4d(1, 1, 1, 1);
-        GL11.glDisable(GL11.GL_BLEND);
     }
 
     private void attachFakeModule(TileEntityPressureTube tile){
