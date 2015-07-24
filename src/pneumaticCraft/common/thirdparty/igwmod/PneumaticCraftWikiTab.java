@@ -65,8 +65,8 @@ public class PneumaticCraftWikiTab extends BaseWikiTab{
 
     @Override
     protected String getPageLocation(String pageEntry){
-        if(pageEntry.startsWith("item") || pageEntry.startsWith("block")) return pageEntry; //TODO return "pneumaticcraft:" + pageEntry;
-        return "menu/" + pageEntry; //TODO return "pneumaticcraft:menu/" + pageEntry;  (as this is recommended for the recent version of IGW-Mod)
+        if(pageEntry.startsWith("item") || pageEntry.startsWith("block")) return "pneumaticcraft:" + pageEntry;
+        return "pneumaticcraft:menu/" + pageEntry;
     }
 
 }

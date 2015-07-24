@@ -104,6 +104,12 @@ Sets the specific side to be accessible or not. Used in the Inventory Im- and Ex
 [prefix{l}]setSides(<down>, <up>, <north>, <south>, <east>, <west>) [prefix{}] 
 Same as above, now in one function to set all sides at once (6x boolean).
 
+[prefix{l}]setUseMaxActions(<true/false>) [prefix{}] 
+This says whether or not the Drone has a maximum actions performed on a block at a time before the command is considered 'done'. Applies to the Place, Dig and Right-Click block program. If true, also use setMaxActions().
+
+[prefix{l}]setMaxActions(<amount>) [prefix{}] 
+This configures the maximum amount of actions performed on blocks before the command is considered 'done'. This applies to the Place, Dig an Right-Click block program. Be sure to also call setUseMaxActions(true) to enable usage of this.
+
 [prefix{l}]setCraftingGrid(<item/block name>, <item/block name>, ...(9x)) [prefix{}] 
 Sets up the crafting grid so when the Crafting instruction is called, this recipe will be used. You need to specify all 9 items making up the recipe. For empty spaces supply nil. The naming format is the same as for supplying item filters.
 

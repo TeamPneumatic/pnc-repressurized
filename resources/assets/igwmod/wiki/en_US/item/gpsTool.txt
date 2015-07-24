@@ -1,5 +1,0 @@
-The GPS Tool is an item that when right click saves a coordinate. This data can be used by a couple of things in PneumaticCraft. These are the current users:
-
-[link{block/airCannon}]-Air Cannon[link{}]
-[link{block/universalSensor}]-Universal Sensor[link{}]
-[link{item/drone}]-Drones [link{}]

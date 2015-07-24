@@ -2,9 +2,13 @@ package pneumaticCraft.common.thirdparty.igwmod;
 
 import java.awt.Desktop;
 import java.io.File;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandBase;
@@ -16,6 +20,11 @@ import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.config.Configuration;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -34,6 +43,7 @@ import cpw.mods.fml.relauncher.Side;
 public class IGWSupportNotifier{
     private String supportingMod;
     private static final String LATEST_DL_URL = "http://minecraft.curseforge.com/mc-mods/223815-in-game-wiki-mod/files/latest";
+    private static final String DL_URL_1_7_10 = "http://minecraft.curseforge.com/mc-mods/223815-in-game-wiki-mod/files/2247673/download";
 
     /**
      * Needs to be instantiated somewhere in your mod's loading stage.
@@ -106,16 +116,35 @@ public class IGWSupportNotifier{
             try {
                 if(Minecraft.getMinecraft().thePlayer != null) Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("Downloading IGW-Mod..."));
 
-                URL url = new URL(LATEST_DL_URL);
+                URL url = new URL(Loader.MC_VERSION.equals("1.7.10") ? DL_URL_1_7_10 : LATEST_DL_URL);
                 URLConnection connection = url.openConnection();
                 connection.connect();
-                String fileName = "IGW-Mod.jar";//connection.getHeaderField("Content-Disposition").replace("attachment; filename=", "").replace("\"", "");
                 File dir = new File(".", "mods");
-                File f = new File(dir, fileName);
-                FileUtils.copyURLToFile(url, f);
-                if(Minecraft.getMinecraft().thePlayer != null) Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Successfully downloaded. Restart Minecraft to apply."));
+                File tempFile = File.createTempFile("IGW-Mod.jar", "");
+                FileUtils.copyURLToFile(url, tempFile);
 
+                ZipFile jar = new ZipFile(tempFile.getAbsolutePath());
+                Enumeration<? extends ZipEntry> entries = jar.entries();
+                InputStream mcmodInfo = null;
+                while(entries.hasMoreElements()) {
+                    ZipEntry entry = entries.nextElement();
+                    if(entry.getName().equals("mcmod.info")) {
+                        mcmodInfo = jar.getInputStream(entry);
+                        break;
+                    }
+                }
+                JsonParser parser = new JsonParser();
+                JsonObject obj = (JsonObject)((JsonArray)parser.parse(IOUtils.toString(mcmodInfo))).get(0);
+                jar.close();
+                String version = obj.get("version").getAsString();
+                String mcVersion = obj.get("mcversion").getAsString();
+                File renamedFile = new File(String.format("." + File.separator + "mods" + File.separator + "IGW-Mod-%s-%s-universal.jar", mcVersion, version));
+                FileUtils.copyFile(tempFile, renamedFile);
+                if(Minecraft.getMinecraft().thePlayer != null) Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Successfully downloaded. Restart Minecraft to apply."));
                 Desktop.getDesktop().open(dir);
+                if(!Loader.MC_VERSION.equals(mcVersion)) {
+                    if(Minecraft.getMinecraft().thePlayer != null) Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "The version of Minecraft you are running doesn't seem to match the version of IGW-Mod that has been downloaded. The mod may not work."));
+                }
 
                 finalize();
             } catch(Throwable e) {
@@ -128,6 +157,5 @@ public class IGWSupportNotifier{
                 }
             }
         }
-
     }
 }

@@ -19,53 +19,53 @@ public class IGWHandler{
         List<ItemStack> programmingPuzzles = new ArrayList<ItemStack>();
         ItemProgrammingPuzzle.addItems(programmingPuzzles);
         for(ItemStack stack : programmingPuzzles) {
-            WikiRegistry.registerBlockAndItemPageEntry(stack, "block/programmer");
+            WikiRegistry.registerBlockAndItemPageEntry(stack, "pneumaticcraft:block/programmer");
         }
 
         WikiRegistry.registerRecipeIntegrator(new IntegratorPressureChamber());
         WikiRegistry.registerRecipeIntegrator(new IntegratorAssembly());
 
         //Add redirections, so if you click on a Pressure Chamber Wall you'll see the general page about Pressure Chambers.
-        WikiRegistry.registerBlockAndItemPageEntry(Blockss.pressureTube, "menu/pressureTubes");
-        WikiRegistry.registerBlockAndItemPageEntry(Blockss.advancedPressureTube, "menu/pressureTubes");
+        WikiRegistry.registerBlockAndItemPageEntry(Blockss.pressureTube, "pneumaticcraft:menu/pressureTubes");
+        WikiRegistry.registerBlockAndItemPageEntry(Blockss.advancedPressureTube, "pneumaticcraft:menu/pressureTubes");
 
-        WikiRegistry.registerBlockAndItemPageEntry(Itemss.cannonBarrel, "block/airCannon");
-        WikiRegistry.registerBlockAndItemPageEntry(Itemss.stoneBase, "block/airCannon");
+        WikiRegistry.registerBlockAndItemPageEntry(Itemss.cannonBarrel, "pneumaticcraft:block/airCannon");
+        WikiRegistry.registerBlockAndItemPageEntry(Itemss.stoneBase, "pneumaticcraft:block/airCannon");
 
-        WikiRegistry.registerBlockAndItemPageEntry(Itemss.ingotIronCompressed, "menu/baseConcepts");
+        WikiRegistry.registerBlockAndItemPageEntry(Itemss.ingotIronCompressed, "pneumaticcraft:menu/baseConcepts");
 
-        WikiRegistry.registerBlockAndItemPageEntry(Blockss.pressureChamberValve, "menu/pressureChamber");
-        WikiRegistry.registerBlockAndItemPageEntry(new ItemStack(Blockss.pressureChamberWall, 0, 0), "menu/pressureChamber");
-        WikiRegistry.registerBlockAndItemPageEntry(new ItemStack(Blockss.pressureChamberWall, 0, 6), "menu/pressureChamber");
+        WikiRegistry.registerBlockAndItemPageEntry(Blockss.pressureChamberValve, "pneumaticcraft:menu/pressureChamber");
+        WikiRegistry.registerBlockAndItemPageEntry(new ItemStack(Blockss.pressureChamberWall, 0, 0), "pneumaticcraft:menu/pressureChamber");
+        WikiRegistry.registerBlockAndItemPageEntry(new ItemStack(Blockss.pressureChamberWall, 0, 6), "pneumaticcraft:menu/pressureChamber");
 
-        WikiRegistry.registerBlockAndItemPageEntry(Blockss.elevatorBase, "menu/elevator");
-        WikiRegistry.registerBlockAndItemPageEntry(Blockss.elevatorFrame, "menu/elevator");
+        WikiRegistry.registerBlockAndItemPageEntry(Blockss.elevatorBase, "pneumaticcraft:menu/elevator");
+        WikiRegistry.registerBlockAndItemPageEntry(Blockss.elevatorFrame, "pneumaticcraft:menu/elevator");
 
-        WikiRegistry.registerBlockAndItemPageEntry(Blockss.pneumaticDoor, "menu/pneumaticDoor");
-        WikiRegistry.registerBlockAndItemPageEntry(Blockss.pneumaticDoorBase, "menu/pneumaticDoor");
+        WikiRegistry.registerBlockAndItemPageEntry(Blockss.pneumaticDoor, "pneumaticcraft:menu/pneumaticDoor");
+        WikiRegistry.registerBlockAndItemPageEntry(Blockss.pneumaticDoorBase, "pneumaticcraft:menu/pneumaticDoor");
 
-        WikiRegistry.registerBlockAndItemPageEntry(Blockss.assemblyController, "menu/assemblyMachines");
-        WikiRegistry.registerBlockAndItemPageEntry(Blockss.assemblyDrill, "menu/assemblyMachines");
-        WikiRegistry.registerBlockAndItemPageEntry(Blockss.assemblyIOUnit, "menu/assemblyMachines");
-        WikiRegistry.registerBlockAndItemPageEntry(Blockss.assemblyLaser, "menu/assemblyMachines");
-        WikiRegistry.registerBlockAndItemPageEntry(Blockss.assemblyPlatform, "menu/assemblyMachines");
-        WikiRegistry.registerBlockAndItemPageEntry(Itemss.assemblyProgram, "menu/assemblyMachines");
+        WikiRegistry.registerBlockAndItemPageEntry(Blockss.assemblyController, "pneumaticcraft:menu/assemblyMachines");
+        WikiRegistry.registerBlockAndItemPageEntry(Blockss.assemblyDrill, "pneumaticcraft:menu/assemblyMachines");
+        WikiRegistry.registerBlockAndItemPageEntry(Blockss.assemblyIOUnit, "pneumaticcraft:menu/assemblyMachines");
+        WikiRegistry.registerBlockAndItemPageEntry(Blockss.assemblyLaser, "pneumaticcraft:menu/assemblyMachines");
+        WikiRegistry.registerBlockAndItemPageEntry(Blockss.assemblyPlatform, "pneumaticcraft:menu/assemblyMachines");
+        WikiRegistry.registerBlockAndItemPageEntry(Itemss.assemblyProgram, "pneumaticcraft:menu/assemblyMachines");
 
-        WikiRegistry.registerBlockAndItemPageEntry(Itemss.machineUpgrade, "menu/machineUpgrades");
+        WikiRegistry.registerBlockAndItemPageEntry(Itemss.machineUpgrade, "pneumaticcraft:menu/machineUpgrades");
 
-        WikiRegistry.registerBlockAndItemPageEntry(Itemss.PCBBlueprint, "menu/printedCircuitBoards");
-        WikiRegistry.registerBlockAndItemPageEntry(Itemss.emptyPCB, "menu/printedCircuitBoards");
-        WikiRegistry.registerBlockAndItemPageEntry(Itemss.unassembledPCB, "menu/printedCircuitBoards");
-        WikiRegistry.registerBlockAndItemPageEntry(Itemss.printedCircuitBoard, "menu/printedCircuitBoards");
-        WikiRegistry.registerBlockAndItemPageEntry(Itemss.failedPCB, "item/etchingAcidBucket");
+        WikiRegistry.registerBlockAndItemPageEntry(Itemss.PCBBlueprint, "pneumaticcraft:menu/printedCircuitBoards");
+        WikiRegistry.registerBlockAndItemPageEntry(Itemss.emptyPCB, "pneumaticcraft:menu/printedCircuitBoards");
+        WikiRegistry.registerBlockAndItemPageEntry(Itemss.unassembledPCB, "pneumaticcraft:menu/printedCircuitBoards");
+        WikiRegistry.registerBlockAndItemPageEntry(Itemss.printedCircuitBoard, "pneumaticcraft:menu/printedCircuitBoards");
+        WikiRegistry.registerBlockAndItemPageEntry(Itemss.failedPCB, "pneumaticcraft:item/etchingAcidBucket");
 
-        WikiRegistry.registerBlockAndItemPageEntry(Itemss.networkComponent, "block/securityStation");
+        WikiRegistry.registerBlockAndItemPageEntry(Itemss.networkComponent, "pneumaticcraft:block/securityStation");
 
-        WikiRegistry.registerEntityPageEntry(EntityLogisticsDrone.class, "item/logisticDrone");
-        WikiRegistry.registerBlockAndItemPageEntry(Itemss.logisticsFrameActiveProvider, "item/logisticDrone");
-        WikiRegistry.registerBlockAndItemPageEntry(Itemss.logisticsFramePassiveProvider, "item/logisticDrone");
-        WikiRegistry.registerBlockAndItemPageEntry(Itemss.logisticsFrameRequester, "item/logisticDrone");
-        WikiRegistry.registerBlockAndItemPageEntry(Itemss.logisticsFrameStorage, "item/logisticDrone");
+        WikiRegistry.registerEntityPageEntry(EntityLogisticsDrone.class, "pneumaticcraft:item/logisticDrone");
+        WikiRegistry.registerBlockAndItemPageEntry(Itemss.logisticsFrameActiveProvider, "pneumaticcraft:item/logisticDrone");
+        WikiRegistry.registerBlockAndItemPageEntry(Itemss.logisticsFramePassiveProvider, "pneumaticcraft:item/logisticDrone");
+        WikiRegistry.registerBlockAndItemPageEntry(Itemss.logisticsFrameRequester, "pneumaticcraft:item/logisticDrone");
+        WikiRegistry.registerBlockAndItemPageEntry(Itemss.logisticsFrameStorage, "pneumaticcraft:item/logisticDrone");
 
         Log.info("Loaded PneumaticCraft IGW-Mod plug-in! Thanks IGW-Mod!");
     }
