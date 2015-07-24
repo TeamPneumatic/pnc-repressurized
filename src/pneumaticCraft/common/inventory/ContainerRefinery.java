@@ -5,7 +5,6 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.util.ForgeDirection;
-import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.tileentity.TileEntityRefinery;
 
 public class ContainerRefinery extends ContainerPneumaticBase<TileEntityRefinery>{
@@ -63,15 +62,11 @@ public class ContainerRefinery extends ContainerPneumaticBase<TileEntityRefinery
             ItemStack var5 = var4.getStack();
             var3 = var5.copy();
 
-            if(par2 < 4) {
-                if(!mergeItemStack(var5, 4, 40, false)) return null;
-
+            if(par2 < 27) {
+                if(!mergeItemStack(var5, 27, 36, false)) return null;
                 var4.onSlotChange(var5, var3);
             } else {
-
-                if(var5.getItem() == Itemss.machineUpgrade) {
-                    if(!mergeItemStack(var5, 0, 4, false)) return null;
-                }
+                if(!mergeItemStack(var5, 0, 27, false)) return null;
                 var4.onSlotChange(var5, var3);
             }
 
