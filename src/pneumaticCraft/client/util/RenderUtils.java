@@ -17,6 +17,7 @@ import net.minecraftforge.fluids.FluidTankInfo;
 
 import org.lwjgl.opengl.GL11;
 
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 import cpw.mods.fml.client.FMLClientHandler;
 
 public class RenderUtils extends Render{
@@ -289,4 +290,46 @@ public class RenderUtils extends Render{
         GL11.glColor4d(red, green, blue, alpha);
     }
 
+    public static void render3DArrow(){
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        double arrowTipLength = 0.2;
+        double arrowTipRadius = 0.25;
+        double baseLength = 0.3;
+        double baseRadius = 0.15;
+
+        Tessellator t = Tessellator.instance;
+        t.startDrawing(GL11.GL_POLYGON);
+        for(int i = PneumaticCraftUtils.sin.length - 1; i >= 0; i--) {
+            double sin = PneumaticCraftUtils.sin[i] * baseRadius;
+            double cos = PneumaticCraftUtils.cos[i] * baseRadius;
+            t.addVertex(sin, 0, cos);
+        }
+        t.draw();
+        t.startDrawing(GL11.GL_POLYGON);
+        for(int i = PneumaticCraftUtils.sin.length - 1; i >= 0; i--) {
+            double sin = PneumaticCraftUtils.sin[i] * arrowTipRadius;
+            double cos = PneumaticCraftUtils.cos[i] * arrowTipRadius;
+            t.addVertex(sin, baseLength, cos);
+        }
+        t.draw();
+        t.startDrawing(GL11.GL_QUAD_STRIP);
+        for(int i = PneumaticCraftUtils.sin.length - 1; i >= 0; i--) {
+            double sin = PneumaticCraftUtils.sin[i] * baseRadius;
+            double cos = PneumaticCraftUtils.cos[i] * baseRadius;
+            t.addVertex(sin, 0, cos);
+            t.addVertex(sin, baseLength, cos);
+        }
+        t.draw();
+
+        t.startDrawing(GL11.GL_TRIANGLE_FAN);
+        t.addVertex(0, baseLength + arrowTipLength, 0);
+        for(int i = 0; i < PneumaticCraftUtils.sin.length; i++) {
+            double sin = PneumaticCraftUtils.sin[i] * arrowTipRadius;
+            double cos = PneumaticCraftUtils.cos[i] * arrowTipRadius;
+            t.addVertex(sin, baseLength, cos);
+        }
+        t.addVertex(0, baseLength, arrowTipRadius);
+        t.draw();
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+    }
 }

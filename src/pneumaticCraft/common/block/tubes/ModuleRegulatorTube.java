@@ -12,13 +12,21 @@ import org.lwjgl.opengl.GL12;
 
 import pneumaticCraft.api.tileentity.IAirHandler;
 import pneumaticCraft.api.tileentity.IPneumaticMachine;
+import pneumaticCraft.client.ClientTickHandler;
 import pneumaticCraft.client.model.BaseModel;
 import pneumaticCraft.client.model.IBaseModel;
+import pneumaticCraft.client.util.RenderUtils;
+import pneumaticCraft.common.network.NetworkHandler;
+import pneumaticCraft.common.network.PacketDescriptionPacketRequest;
+import pneumaticCraft.common.tileentity.TileEntityPneumaticBase;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.Names;
 
 public class ModuleRegulatorTube extends TubeModuleRedstoneReceiving implements IInfluenceDispersing{
     private boolean renderItem;
+    public static boolean hasTicked;
+    public static boolean inLine;
+    public static boolean inverted;
 
     private IBaseModel model;
 
@@ -26,6 +34,40 @@ public class ModuleRegulatorTube extends TubeModuleRedstoneReceiving implements 
     public void renderDynamic(double x, double y, double z, float partialTicks, int renderPass, boolean itemRender){
         renderItem = itemRender;
         super.renderDynamic(x, y, z, partialTicks, renderPass, itemRender);
+    }
+
+    @Override
+    protected void renderModule(){
+        super.renderModule();
+        if(isFake()) {
+            if(!hasTicked) {
+                TileEntityPneumaticBase tile = (TileEntityPneumaticBase)getTube();
+                NetworkHandler.sendToServer(new PacketDescriptionPacketRequest(tile.xCoord, tile.yCoord, tile.zCoord));
+                TileEntity neighbor = tile.getWorldObj().getTileEntity(tile.xCoord + dir.offsetX, tile.yCoord + dir.offsetY, tile.zCoord + dir.offsetZ);
+                inLine = neighbor instanceof IPneumaticMachine;
+                if(inLine) {
+                    inverted = ((IPneumaticMachine)neighbor).getAirHandler().getPressure(dir) > tile.getPressure(ForgeDirection.UNKNOWN);
+                    NetworkHandler.sendToServer(new PacketDescriptionPacketRequest(neighbor.xCoord, neighbor.yCoord, neighbor.zCoord));
+                }
+                hasTicked = true;
+            }
+
+            GL11.glEnable(GL11.GL_BLEND);
+            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+            if(inLine && !inverted) {
+                GL11.glColor4d(0, 1, 0, 0.3);
+            } else {
+                GL11.glColor4d(1, 0, 0, 0.3);
+            }
+            GL11.glPushMatrix();
+            GL11.glTranslated(0, 1, 0.2 + ClientTickHandler.TICKS % 20 * 0.015);
+            GL11.glRotated(90, 1, 0, 0);
+
+            RenderUtils.render3DArrow();
+            GL11.glColor4d(1, 1, 1, 1);
+            GL11.glPopMatrix();
+            GL11.glDisable(GL11.GL_BLEND);
+        }
     }
 
     @Override

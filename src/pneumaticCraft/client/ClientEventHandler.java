@@ -7,7 +7,9 @@ import java.util.List;
 import java.util.Map;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderBiped;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -20,10 +22,12 @@ import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fluids.Fluid;
+import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.api.item.IProgrammable;
 import pneumaticCraft.client.gui.IGuiDrone;
 import pneumaticCraft.common.Config;
 import pneumaticCraft.common.DateEventHandler;
+import pneumaticCraft.common.block.tubes.ModuleRegulatorTube;
 import pneumaticCraft.common.fluid.Fluids;
 import pneumaticCraft.common.item.ItemProgrammingPuzzle;
 import pneumaticCraft.common.item.Itemss;
@@ -135,5 +139,16 @@ public class ClientEventHandler{
     @SubscribeEvent
     public void onPlayerRender(RenderPlayerEvent.Post event){
         event.renderer.modelBipedMain.bipedHead.showModel = true;
+    }
+
+    @SubscribeEvent
+    public void tickEnd(TickEvent.RenderTickEvent event){
+        if(event.phase == TickEvent.Phase.END && FMLClientHandler.instance().getClient().inGameHasFocus && PneumaticCraft.proxy.getPlayer().worldObj != null && (ModuleRegulatorTube.inverted || !ModuleRegulatorTube.inLine)) {
+            Minecraft mc = FMLClientHandler.instance().getClient();
+            ScaledResolution sr = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
+            FontRenderer fontRenderer = FMLClientHandler.instance().getClient().fontRenderer;
+            String warning = EnumChatFormatting.RED + I18n.format("gui.regulatorTube.hudMessage." + (ModuleRegulatorTube.inverted ? "inverted" : "notInLine"));
+            fontRenderer.drawStringWithShadow(warning, sr.getScaledWidth() / 2 - fontRenderer.getStringWidth(warning) / 2, sr.getScaledHeight() / 2 + 30, 0xFFFFFFFF);
+        }
     }
 }

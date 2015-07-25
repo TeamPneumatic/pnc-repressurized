@@ -711,6 +711,8 @@ message.securityStation.stationPlacementPrevented=§cYou can't place a Security 
 message.seismicSensor.foundOil=§a[Seismic Sensor] Oil potentially found! Scanning...
 message.seismicSensor.foundOilDetails=§a[Seismic Sensor] Found oil %s§am below. It contains about %s§a buckets of oil.
 message.seismicSensor.noOilFound=§c[Seismic Sensor] No oil found.
+gui.regulatorTube.hudMessage.notInLine=§cA Regulator Tube Module only regulates air in line of the module.
+gui.regulatorTube.hudMessage.inverted=§cA Regulator Tube Module only regulates air in the direction of the arrow.
 
 # Death Messages
 death.attack.pressure1=%1$s is as flat as a pancake!
@@ -739,7 +741,7 @@ igwmod.pressureChamber.requiredPressure=Required Pressure
 
 # commands
 command.deliverAmazon.args=Not enough arguments
-command.deliverAmazon.coords=Included invalide coords. They need to be integers.
+command.deliverAmazon.coords=Included invalid coords. They need to be integers.
 command.deliverAmazon.playerName=No such player name found.
 command.deliverAmazon.noItems=The specified inventory doesn't contain items.
 command.deliverAmazon.noInventory=The specified coordinate doesn't have an inventory.

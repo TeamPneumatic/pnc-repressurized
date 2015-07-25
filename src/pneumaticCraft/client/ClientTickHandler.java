@@ -5,11 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pneumaticCraft.client.gui.INeedTickUpdate;
+import pneumaticCraft.common.block.tubes.ModuleRegulatorTube;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 
 public class ClientTickHandler{
     private static final ClientTickHandler INSTANCE = new ClientTickHandler();
+    public static int TICKS;
 
     private final List<WeakReference<INeedTickUpdate>> updatedObjects = new ArrayList<WeakReference<INeedTickUpdate>>();//using weak references so we don't create a memory leak of unused GuiAnimatedStats.
 
@@ -43,6 +45,10 @@ public class ClientTickHandler{
     @SubscribeEvent
     public void tickEnd(TickEvent.ClientTickEvent event){
         if(event.phase == TickEvent.Phase.END) {
+            TICKS++;
+            ModuleRegulatorTube.hasTicked = false;
+            ModuleRegulatorTube.inverted = false;
+            ModuleRegulatorTube.inLine = true;
             for(int i = 0; i < updatedObjects.size(); i++) {
                 INeedTickUpdate updatedObject = updatedObjects.get(i).get();
                 if(updatedObject != null) {
@@ -54,5 +60,4 @@ public class ClientTickHandler{
             }
         }
     }
-
 }
