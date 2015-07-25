@@ -55,7 +55,9 @@ public class AreaShowManager{
             if(gpsLocation != null) {
                 Set<ChunkPosition> set = new HashSet<ChunkPosition>();
                 set.add(gpsLocation);
+                GL11.glDisable(GL11.GL_DEPTH_TEST);
                 new AreaShowHandler(set, 0xFFFF00, null).render();
+                GL11.glEnable(GL11.GL_DEPTH_TEST);
             }
         }
 
