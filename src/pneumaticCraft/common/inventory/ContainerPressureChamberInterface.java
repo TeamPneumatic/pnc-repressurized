@@ -24,7 +24,12 @@ public class ContainerPressureChamberInterface extends ContainerPneumaticBase<Ti
         // add the export filter slots
         for(int i = 0; i < 3; i++) {
             for(int j = 0; j < 3; j++) {
-                addSlotToContainer(new SlotPhantomUnstackable(te, i * 3 + j + 5, 115 + j * 18, 25 + i * 18));
+                addSlotToContainer(new SlotPhantomUnstackable(te, i * 3 + j + 5, 115 + j * 18, 25 + i * 18){
+                    @Override
+                    public boolean isItemValid(ItemStack stack){
+                        return true;
+                    }
+                });
             }
         }
 

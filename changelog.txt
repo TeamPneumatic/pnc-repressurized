@@ -1,6 +1,11 @@
--Pressure Tubes will now stop leaving an 'open end' when a module is connected. Example: https://www.dropbox.com/s/xwex6f7vb2oq4ke/2015-07-22_23.40.28.png?dl=0
--Added placement previewer for tube modules.
--Rebalanced minigun damage.
+-Updated Oil textures to look better. Thanks again Glassmaker!
+-Updated to the newest IGW-Mod conventions.
+-Added warning to placement of the Regulator Tube (as it's being understood wrongly too often).
+-The GPS Tool renderer of which block is selected now will render through blocks.
+-Added a way to configurate a tube module with an Advanced PCB in a simple way, the most common configurations.
 
--Bugfix: Chisel compatibility broke.
--Bugfix: Crash when using minigun drones on a server.
+-Bugfix: Crash when shift-clicking in a Refinery.
+-Bugfix: Refinery only responds to redstone applied to the bottommost Refinery.
+-Bugfix: Preview render causes artifacts for existing tube modules.
+-Bugfix: Pressure Tube releases air even though it has a module on a tube.
+-Bugfix: Pressure Chamber Interface only allows setting a filter for one item.
