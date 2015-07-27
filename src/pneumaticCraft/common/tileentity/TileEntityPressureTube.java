@@ -102,7 +102,14 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase{
 
         List<Pair<ForgeDirection, IPneumaticMachine>> teList = getConnectedPneumatics();
 
-        if(teList.size() == 1 && !worldObj.isRemote) {
+        boolean hasModules = false;
+        for(TubeModule module : modules) {
+            if(module != null) {
+                hasModules = true;
+                break;
+            }
+        }
+        if(!hasModules && teList.size() == 1 && !worldObj.isRemote) {
             for(Pair<ForgeDirection, IPneumaticMachine> entry : teList) {
                 if(modules[entry.getKey().getOpposite().ordinal()] == null) airLeak(entry.getKey().getOpposite());
             }
