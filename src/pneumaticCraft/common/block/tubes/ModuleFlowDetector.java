@@ -16,6 +16,7 @@ public class ModuleFlowDetector extends TubeModuleRedstoneEmitting implements II
 
     @Override
     public void update(){
+        super.update();
         oldRotation = rotation;
         rotation += getRedstoneLevel() / 100F;
 

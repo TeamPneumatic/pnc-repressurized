@@ -9,7 +9,11 @@ public abstract class GuiTubeModule extends GuiPneumaticScreenBase{
     protected final TubeModule module;
 
     public GuiTubeModule(EntityPlayer player, int x, int y, int z){
-        module = BlockPressureTube.getLookedModule(player.worldObj, x, y, z, player);
+        this(BlockPressureTube.getLookedModule(player.worldObj, x, y, z, player));
+    }
+
+    public GuiTubeModule(TubeModule module){
+        this.module = module;
         xSize = 183;
     }
 

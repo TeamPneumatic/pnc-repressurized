@@ -24,6 +24,7 @@ public class ModulePressureGauge extends TubeModuleRedstoneEmitting{
 
     @Override
     public void update(){
+        super.update();
         if(!pressureTube.world().isRemote) {
             if(pressureTube.world().getWorldTime() % 20 == 0) sendDescriptionPacket();
             setRedstone(getRedstone(pressureTube.getAirHandler().getPressure(ForgeDirection.UNKNOWN)));

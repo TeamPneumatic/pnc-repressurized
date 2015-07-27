@@ -47,4 +47,12 @@ public abstract class TubeModuleRedstoneReceiving extends TubeModule{
     protected int getGuiId(){
         return CommonProxy.GUI_ID_PRESSURE_MODULE;
     }
+
+    @Override
+    public void update(){
+        if(upgraded && !advancedConfig && higherBound != lowerBound) {
+            higherBound = lowerBound;
+            sendDescriptionPacket();
+        }
+    }
 }

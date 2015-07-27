@@ -66,6 +66,7 @@ public class ModuleAirGrate extends TubeModule{
 
     @Override
     public void update(){
+        super.update();
         World worldObj = pressureTube.world();
         int xCoord = pressureTube.x();
         int yCoord = pressureTube.y();

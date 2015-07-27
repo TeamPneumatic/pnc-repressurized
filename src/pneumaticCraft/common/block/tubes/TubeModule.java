@@ -32,6 +32,7 @@ public abstract class TubeModule implements ISidedPart{
     protected boolean upgraded;
     public float lowerBound = 7.5F, higherBound = 0, maxValue = 30;
     private boolean fake;
+    public boolean advancedConfig;
 
     public TubeModule(){
         double width = getWidth() / 2;
@@ -100,6 +101,7 @@ public abstract class TubeModule implements ISidedPart{
         upgraded = nbt.getBoolean("upgraded");
         lowerBound = nbt.getFloat("lowerBound");
         higherBound = nbt.getFloat("higherBound");
+        advancedConfig = nbt.hasKey("advancedConfig") ? nbt.getBoolean("advancedConfig") : true;
     }
 
     public void writeToNBT(NBTTagCompound nbt){
@@ -107,6 +109,7 @@ public abstract class TubeModule implements ISidedPart{
         nbt.setBoolean("upgraded", upgraded);
         nbt.setFloat("lowerBound", lowerBound);
         nbt.setFloat("higherBound", higherBound);
+        nbt.setBoolean("advancedConfig", advancedConfig);
     }
 
     @Optional.Method(modid = ModIds.FMP)

@@ -34,6 +34,7 @@ public class ModuleCharging extends TubeModule{
 
     @Override
     public void update(){
+        super.update();
         IInventory inv = getConnectedInventory();
         if(inv != null) {
             int[] accessibleSlots = IOHelper.getAccessibleSlotsForInventory(inv, dir.getOpposite());
