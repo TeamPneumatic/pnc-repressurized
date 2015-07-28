@@ -9,6 +9,7 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -23,9 +24,11 @@ import org.apache.commons.lang3.tuple.Pair;
 import pneumaticCraft.api.recipe.IPressureChamberRecipe;
 import pneumaticCraft.api.recipe.PressureChamberRecipe;
 import pneumaticCraft.api.tileentity.IPneumaticMachine;
+import pneumaticCraft.common.AchievementHandler;
 import pneumaticCraft.common.Config;
 import pneumaticCraft.common.DamageSourcePneumaticCraft;
 import pneumaticCraft.common.block.Blockss;
+import pneumaticCraft.common.fluid.Fluids;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.network.DescSynced;
@@ -53,6 +56,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
     public boolean areEntitiesDoneMoving;
     @GuiSynced
     public float recipePressure;
+    private final Item etchingAcid = Fluids.getBucket(Fluids.etchingAcid);
 
     private ItemStack[] inventory = new ItemStack[4];
     public static final int UPGRADE_SLOT_1 = 0;
@@ -380,6 +384,11 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
 
     private void giveOutput(ItemStack[] output, double[] outputPosition){
         for(ItemStack iStack : output) {
+            if(iStack.getItem() == etchingAcid) {
+                for(EntityPlayer player : (List<EntityPlayer>)worldObj.getEntitiesWithinAABB(EntityPlayer.class, AxisAlignedBB.getBoundingBox(xCoord - 32, yCoord - 32, zCoord - 32, xCoord + 32, yCoord + 32, zCoord + 32))) {
+                    AchievementHandler.giveAchievement(player, new ItemStack(etchingAcid));
+                }
+            }
             EntityItem item = new EntityItem(worldObj, outputPosition[0], outputPosition[1], outputPosition[2], iStack.copy());
             worldObj.spawnEntityInWorld(item);
         }

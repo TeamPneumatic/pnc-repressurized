@@ -17,6 +17,7 @@ import net.minecraftforge.oredict.OreDictionary;
 import pneumaticCraft.api.IHeatExchangerLogic;
 import pneumaticCraft.api.PneumaticRegistry;
 import pneumaticCraft.api.tileentity.IHeatExchanger;
+import pneumaticCraft.common.AchievementHandler;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.fluid.FluidPlastic;
 import pneumaticCraft.common.fluid.Fluids;
@@ -369,6 +370,9 @@ public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHand
         if(guiID >= 0 && guiID < 16) {
             if(selectedPlastic != guiID) {
                 selectedPlastic = guiID;
+                if(tank.getFluidAmount() >= 1000) {
+                    AchievementHandler.giveAchievement(player, new ItemStack(Itemss.plastic));
+                }
             } else {
                 selectedPlastic = -1;
             }
