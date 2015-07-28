@@ -783,7 +783,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
                 if(player.capabilities.isCreativeMode) exportButtonTooltip.add("(Creative mode, so the following is free)");
                 for(ItemStack stack : requiredPieces) {
                     List<String> rawList = new ArrayList<String>();
-                    stack.getItem().addInformation(stack, null, rawList, false);
+                    rawList.add(stack.getDisplayName());
                     String prefix;
                     if(te.hasEnoughPuzzleStacks(player, stack)) {
                         prefix = EnumChatFormatting.GREEN.toString();
