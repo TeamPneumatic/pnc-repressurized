@@ -16,7 +16,12 @@ import dan200.computercraft.api.peripheral.IPeripheralProvider;
 public class BlockTrackEntryPeripheral implements IBlockTrackEntry{
     @Override
     public boolean shouldTrackWithThisEntry(IBlockAccess world, int x, int y, int z, Block block, TileEntity te){
-        return block instanceof IPeripheralProvider;
+        if(block instanceof IPeripheralProvider) {
+            IPeripheral peripheral = ((IPeripheralProvider)block).getPeripheral(te.getWorldObj(), x, y, z, 0);
+            return peripheral != null && peripheral.getMethodNames().length != 0;
+        } else {
+            return false;
+        }
     }
 
     @Override

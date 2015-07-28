@@ -48,7 +48,7 @@ public class BlockTrackEntryInventory implements IBlockTrackEntry{
             TileEntityChest chest = (TileEntityChest)te;
             if(chest.adjacentChestXNeg != null || chest.adjacentChestZNeg != null) return false;
         }
-        return te != null && !invBlackList.contains(tileEntityClassToNameMapping.get(te.getClass())) && te instanceof IInventory && !MinecraftForge.EVENT_BUS.post(new InventoryTrackEvent(te));
+        return te != null && !invBlackList.contains(tileEntityClassToNameMapping.get(te.getClass())) && te instanceof IInventory && ((IInventory)te).getSizeInventory() > 0 && !MinecraftForge.EVENT_BUS.post(new InventoryTrackEvent(te));
     }
 
     @Override
