@@ -25,32 +25,38 @@ public class ContainerLogistics extends ContainerPneumaticBase{
             logistics = getLogistics(inventoryPlayer.player, inventoryPlayer.getCurrentItem());
         }
         this.logistics = logistics;
-        addSyncedFields(logistics);
-        IInventory requests = logistics.getFilters();
-        for(int y = 0; y < 3; y++) {
-            for(int x = 0; x < 9; x++) {
-                addSlotToContainer(logistics.canFilterStack() ? new SlotPhantom(requests, y * 9 + x, x * 18 + 8, y * 18 + 29) : new SlotPhantomUnstackable(requests, y * 9 + x, x * 18 + 8, y * 18 + 29));
+        if(logistics != null) {
+            addSyncedFields(logistics);
+            IInventory requests = logistics.getFilters();
+            for(int y = 0; y < 3; y++) {
+                for(int x = 0; x < 9; x++) {
+                    addSlotToContainer(logistics.canFilterStack() ? new SlotPhantom(requests, y * 9 + x, x * 18 + 8, y * 18 + 29) : new SlotPhantomUnstackable(requests, y * 9 + x, x * 18 + 8, y * 18 + 29));
+                }
             }
-        }
 
-        // Add the player's inventory slots to the container
-        for(int inventoryRowIndex = 0; inventoryRowIndex < 3; ++inventoryRowIndex) {
-            for(int inventoryColumnIndex = 0; inventoryColumnIndex < 9; ++inventoryColumnIndex) {
-                addSlotToContainer(new Slot(inventoryPlayer, inventoryColumnIndex + inventoryRowIndex * 9 + 9, 8 + inventoryColumnIndex * 18, 134 + inventoryRowIndex * 18));
+            // Add the player's inventory slots to the container
+            for(int inventoryRowIndex = 0; inventoryRowIndex < 3; ++inventoryRowIndex) {
+                for(int inventoryColumnIndex = 0; inventoryColumnIndex < 9; ++inventoryColumnIndex) {
+                    addSlotToContainer(new Slot(inventoryPlayer, inventoryColumnIndex + inventoryRowIndex * 9 + 9, 8 + inventoryColumnIndex * 18, 134 + inventoryRowIndex * 18));
+                }
             }
-        }
 
-        // Add the player's action bar slots to the container
-        for(int actionBarSlotIndex = 0; actionBarSlotIndex < 9; ++actionBarSlotIndex) {
-            addSlotToContainer(new Slot(inventoryPlayer, actionBarSlotIndex, 8 + actionBarSlotIndex * 18, 192));
+            // Add the player's action bar slots to the container
+            for(int actionBarSlotIndex = 0; actionBarSlotIndex < 9; ++actionBarSlotIndex) {
+                addSlotToContainer(new Slot(inventoryPlayer, actionBarSlotIndex, 8 + actionBarSlotIndex * 18, 192));
+            }
         }
     }
 
     public static SemiBlockLogistics getLogistics(EntityPlayer player, ItemStack itemRequester){
-        SemiBlockLogistics logistics = (SemiBlockLogistics)SemiBlockManager.getSemiBlockForKey(((ItemLogisticsFrame)itemRequester.getItem()).semiBlockId);
-        logistics.initialize(player.worldObj, new ChunkPosition(0, 0, 0));
-        logistics.onPlaced(player, itemRequester);
-        return logistics;
+        if(itemRequester != null && itemRequester.getItem() instanceof ItemLogisticsFrame) {
+            SemiBlockLogistics logistics = (SemiBlockLogistics)SemiBlockManager.getSemiBlockForKey(((ItemLogisticsFrame)itemRequester.getItem()).semiBlockId);
+            logistics.initialize(player.worldObj, new ChunkPosition(0, 0, 0));
+            logistics.onPlaced(player, itemRequester);
+            return logistics;
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -58,7 +64,7 @@ public class ContainerLogistics extends ContainerPneumaticBase{
      */
     @Override
     public void onContainerClosed(EntityPlayer player){
-        if(itemContainer) {
+        if(itemContainer && logistics != null) {
             List<ItemStack> drops = new ArrayList<ItemStack>();
             logistics.addDrops(drops);
             NBTTagCompound settingTag = drops.get(0).getTagCompound();
@@ -82,7 +88,7 @@ public class ContainerLogistics extends ContainerPneumaticBase{
 
     @Override
     public boolean canInteractWith(EntityPlayer player){
-        return !logistics.isInvalid();
+        return logistics != null && !logistics.isInvalid();
     }
 
     @Override
