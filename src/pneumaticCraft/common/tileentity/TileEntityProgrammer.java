@@ -15,7 +15,6 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.ChunkPosition;
 import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.api.item.IProgrammable;
-import pneumaticCraft.client.AreaShowHandler;
 import pneumaticCraft.client.AreaShowManager;
 import pneumaticCraft.common.NBTUtil;
 import pneumaticCraft.common.block.Blockss;
@@ -71,14 +70,10 @@ import pneumaticCraft.common.progwidgets.ProgWidgetTeleport;
 import pneumaticCraft.common.progwidgets.ProgWidgetWait;
 import pneumaticCraft.common.util.IOHelper;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityProgrammer extends TileEntityBase implements IInventory{
     public List<IProgWidget> progWidgets = new ArrayList<IProgWidget>();
     public static List<IProgWidget> registeredWidgets = new ArrayList<IProgWidget>();
-    @SideOnly(Side.CLIENT)
-    private static AreaShowHandler previewedArea;
     @GuiSynced
     public int redstoneMode;//for later use
     private ItemStack[] inventory = new ItemStack[1];
@@ -548,9 +543,8 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory{
     public boolean previewArea(int widgetX, int widgetY){
         for(IProgWidget w : progWidgets) {
             if(w.getX() == widgetX && w.getY() == widgetY && w instanceof IAreaProvider) {
-                AreaShowManager.getInstance().removeHandler(previewedArea);
                 Set<ChunkPosition> area = ((IAreaProvider)w).getArea();
-                previewedArea = AreaShowManager.getInstance().showArea(area, 0x00FF00, this);
+                AreaShowManager.getInstance().showArea(area, 0x00FF00, this);
             }
         }
         return true;

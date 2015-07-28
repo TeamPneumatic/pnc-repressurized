@@ -3,7 +3,6 @@ package pneumaticCraft.client;
 import java.util.Set;
 
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.ChunkPosition;
 
 import org.lwjgl.opengl.GL11;
@@ -12,12 +11,10 @@ public class AreaShowHandler{
     private final Set<ChunkPosition> showingPositions;
     private final int color;
     private int renderList;
-    public final TileEntity areaShower;
 
-    public AreaShowHandler(Set<ChunkPosition> area, int color, TileEntity areaShower){
+    public AreaShowHandler(Set<ChunkPosition> area, int color){
         showingPositions = area;
         this.color = color;
-        this.areaShower = areaShower;
         compileRenderList();
     }
 
