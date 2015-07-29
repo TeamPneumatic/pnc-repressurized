@@ -179,7 +179,7 @@ public class ModelAssemblyLaser extends ModelBase implements IBaseModel{
 
     @Override
     public ResourceLocation getModelTexture(TileEntity tile){
-        return Textures.MODEL_ASSEMBLY_ROBOT_ORANGE;
+        return Textures.MODEL_ASSEMBLY_LASER_AND_DRILL;
     }
 
     @Override

@@ -1,11 +1,11 @@
--Updated Oil textures to look better. Thanks again Glassmaker!
--Updated to the newest IGW-Mod conventions.
--Added warning to placement of the Regulator Tube (as it's being understood wrongly too often).
--The GPS Tool renderer of which block is selected now will render through blocks.
--Added a way to configurate a tube module with an Advanced PCB in a simple way, the most common configurations.
+-Improved the way areas are shown to make sure it works properly for long range use.
+-The Programmer now refers to the required Programming Puzzle type by its color rather than the seed it originates from.
+-Minor changes to the Inventory block tracker and ComputerCraft block tracker to not track blocks that don't have any slots/methods.
+-You can now rename Drones in the Programmer.
+-Retexture of the base of the Assembly machines.
 
--Bugfix: Crash when shift-clicking in a Refinery.
--Bugfix: Refinery only responds to redstone applied to the bottommost Refinery.
--Bugfix: Preview render causes artifacts for existing tube modules.
--Bugfix: Pressure Tube releases air even though it has a module on a tube.
--Bugfix: Pressure Chamber Interface only allows setting a filter for one item.
+-Bugfix: Rare crash with Logistic Drones working with liquids.
+-Bugfix: Crash when right clicking a Logistic Frame and switching to a different item before the interface actually opens.
+-Bugfix: The Programmer doesn't update well when wearing a Pneumatic Helmet.
+-Bugfix: Coordinate puzzle pieces couldn't be set.
+-Bugfix: Client crash when clicking on 'Bottom' radio button in the Place puzzle piece.
