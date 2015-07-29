@@ -35,7 +35,7 @@ public class ItemLogisticsDrone extends ItemDrone{
             if(stackTag != null) {
                 entityTag.setFloat("currentAir", stackTag.getFloat("currentAir"));
                 entityTag.setInteger("color", stackTag.getInteger("color"));
-                NBTTagCompound invTag = stackTag.getCompoundTag("Inventory");
+                NBTTagCompound invTag = stackTag.getCompoundTag("UpgradeInventory");
                 if(invTag != null) entityTag.setTag("Inventory", invTag.copy());
             }
             drone.readEntityFromNBT(entityTag);
