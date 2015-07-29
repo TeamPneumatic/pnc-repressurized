@@ -35,7 +35,7 @@ public class GuiProgWidgetDigAndPlace<Widget extends ProgWidgetDigAndPlace> exte
             radioButton.otherChoices = radioButtons;
         }
 
-        useMaxActions = new GuiCheckBox(10, guiLeft + (moveActionsToSide() ? 54 : 4), guiTop + 115, 0xFF000000, I18n.format("gui.progWidget.digAndPlace.useMaxActions"));
+        useMaxActions = new GuiCheckBox(16, guiLeft + (moveActionsToSide() ? 54 : 4), guiTop + 115, 0xFF000000, I18n.format("gui.progWidget.digAndPlace.useMaxActions"));
         useMaxActions.setTooltip("gui.progWidget.digAndPlace.useMaxActions.tooltip");
         useMaxActions.checked = widget.useMaxActions();
         addWidget(useMaxActions);
@@ -52,7 +52,7 @@ public class GuiProgWidgetDigAndPlace<Widget extends ProgWidgetDigAndPlace> exte
     @Override
     public void actionPerformed(IGuiWidget guiWidget){
         if(guiWidget.getID() >= 0 && guiWidget.getID() < ProgWidgetDigAndPlace.EnumOrder.values().length) widget.setOrder(ProgWidgetDigAndPlace.EnumOrder.values()[guiWidget.getID()]);
-        if(guiWidget.getID() == 10) {
+        if(guiWidget.getID() == 16) {
             widget.setUseMaxActions(((GuiCheckBox)guiWidget).checked);
             textField.setEnabled(widget.useMaxActions());
         }
