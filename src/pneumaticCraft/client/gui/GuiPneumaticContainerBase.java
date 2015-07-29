@@ -29,6 +29,7 @@ import pneumaticCraft.api.tileentity.IHeatExchanger;
 import pneumaticCraft.client.gui.widget.GuiAnimatedStat;
 import pneumaticCraft.client.gui.widget.IGuiWidget;
 import pneumaticCraft.client.gui.widget.IWidgetListener;
+import pneumaticCraft.client.gui.widget.WidgetLabel;
 import pneumaticCraft.client.gui.widget.WidgetTextField;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.network.NetworkHandler;
@@ -111,6 +112,10 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
         for(IGuiWidget widget : widgets) {
             addWidget(widget);
         }
+    }
+
+    protected void addLabel(String text, int x, int y){
+        addWidget(new WidgetLabel(x, y, text));
     }
 
     protected void removeWidget(IGuiWidget widget){

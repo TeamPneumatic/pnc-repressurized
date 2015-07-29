@@ -71,7 +71,7 @@ import pneumaticCraft.common.progwidgets.ProgWidgetWait;
 import pneumaticCraft.common.util.IOHelper;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 
-public class TileEntityProgrammer extends TileEntityBase implements IInventory{
+public class TileEntityProgrammer extends TileEntityBase implements IInventory, IGUITextFieldSensitive{
     public List<IProgWidget> progWidgets = new ArrayList<IProgWidget>();
     public static List<IProgWidget> registeredWidgets = new ArrayList<IProgWidget>();
     @GuiSynced
@@ -297,6 +297,18 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory{
                 break;
         }
         sendDescriptionPacket();
+    }
+
+    @Override
+    public void setText(int textFieldID, String text){
+        if(textFieldID == 0 && inventory[PROGRAM_SLOT] != null) {
+            inventory[PROGRAM_SLOT].setStackDisplayName(text);
+        }
+    }
+
+    @Override
+    public String getText(int textFieldID){
+        return inventory[PROGRAM_SLOT] != null ? inventory[PROGRAM_SLOT].getDisplayName() : "";
     }
 
     private void tryProgramDrone(EntityPlayer player){
