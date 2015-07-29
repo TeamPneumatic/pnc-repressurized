@@ -2,10 +2,12 @@ package pneumaticCraft.common.sensor.eventSensors;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.world.ChunkPosition;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
 import org.lwjgl.util.Rectangle;
@@ -30,17 +32,15 @@ public class BlockInteractSensor implements IBlockAndCoordinateEventSensor{
     @Override
     public List<String> getDescription(){
         List<String> text = new ArrayList<String>();
-        text.add(EnumChatFormatting.BLACK + "Emits a redstone pulse when a player right clicks the block at the coordinate selected by the GPS Tool (within range).");
+        text.add(EnumChatFormatting.BLACK + "Emits a redstone pulse when a player right clicks the block at the coordinate(s) selected by the GPS Tool(s) (within range).");
         return text;
     }
 
     @Override
-    public int emitRedstoneOnEvent(Event event, TileEntity sensor, int range, int toolX, int toolY, int toolZ){
+    public int emitRedstoneOnEvent(Event event, TileEntity sensor, int range, Set<ChunkPosition> positions){
         if(event instanceof PlayerInteractEvent) {
             PlayerInteractEvent interactEvent = (PlayerInteractEvent)event;
-            if(interactEvent.x == toolX && interactEvent.y == toolY && interactEvent.z == toolZ) {
-                return 15;
-            }
+            return positions.contains(new ChunkPosition(interactEvent.x, interactEvent.y, interactEvent.z)) ? 15 : 0;
         }
         return 0;
     }

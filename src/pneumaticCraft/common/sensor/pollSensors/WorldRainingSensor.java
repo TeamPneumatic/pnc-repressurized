@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
 
@@ -33,7 +34,7 @@ public class WorldRainingSensor implements IPollSensorSetting{
     }
 
     @Override
-    public int getPollFrequency(){
+    public int getPollFrequency(TileEntity te){
         return 40;
     }
 

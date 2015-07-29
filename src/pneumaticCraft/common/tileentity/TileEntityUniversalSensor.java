@@ -1,7 +1,9 @@
 package pneumaticCraft.common.tileentity;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -14,6 +16,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.ChunkPosition;
 import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import pneumaticCraft.api.tileentity.IPneumaticMachine;
 import pneumaticCraft.api.universalSensor.IEventSensorSetting;
 import pneumaticCraft.api.universalSensor.IPollSensorSetting;
@@ -66,6 +69,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
     @GuiSynced
     private String sensorGuiText = ""; //optional parameter text for sensors.
     private boolean requestPollPullEvent;
+    private Set<ChunkPosition> positions;
 
     private int oldSensorRange; //range used by the range line renderer, to figure out if the range has been changed.
     private final RenderRangeLines rangeLineRenderer = new RenderRangeLines(0x330000FF);
@@ -104,7 +108,8 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
                 isSensorActive = true;
                 addAir(-PneumaticValues.USAGE_UNIVERSAL_SENSOR, ForgeDirection.UNKNOWN);
                 if(sensor instanceof IPollSensorSetting) {
-                    if(ticksExisted % ((IPollSensorSetting)sensor).getPollFrequency() == 0) {
+
+                    if(ticksExisted % ((IPollSensorSetting)sensor).getPollFrequency(this) == 0) {
                         int newRedstoneStrength = ((IPollSensorSetting)sensor).getRedstoneValue(worldObj, xCoord, yCoord, zCoord, getRange(), sensorGuiText);
                         if(invertedRedstone) newRedstoneStrength = 15 - newRedstoneStrength;
                         if(newRedstoneStrength != redstoneStrength) {
@@ -166,7 +171,14 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
             int newRedstoneStrength = ((IEventSensorSetting)sensor).emitRedstoneOnEvent(event, this, getRange(), sensorGuiText);
             if(newRedstoneStrength != 0) eventTimer = ((IEventSensorSetting)sensor).getRedstonePulseLength();
             if(invertedRedstone) newRedstoneStrength = 15 - newRedstoneStrength;
-            if(eventTimer > 0 && ThirdPartyManager.computerCraftLoaded) notifyComputers(newRedstoneStrength);
+            if(eventTimer > 0 && ThirdPartyManager.computerCraftLoaded) {
+                if(event instanceof PlayerInteractEvent) {
+                    PlayerInteractEvent e = (PlayerInteractEvent)event;
+                    notifyComputers(newRedstoneStrength, e.x, e.y, e.z);
+                } else {
+                    notifyComputers(newRedstoneStrength);
+                }
+            }
             if(newRedstoneStrength != redstoneStrength) {
                 redstoneStrength = newRedstoneStrength;
                 updateNeighbours();
@@ -379,6 +391,44 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
         if(!worldObj.isRemote && !getSensorSetting().equals("") && !areGivenUpgradesInserted(SensorHandler.instance().getRequiredStacksFromText(getSensorSetting()))) {
             setSensorSetting("");
         }
+        positions = getGPSPositionsStatic(this, getRange());
+    }
+
+    public Set<ChunkPosition> getGPSPositions(){
+        return positions;
+    }
+
+    private static Set<ChunkPosition> getGPSPositionsStatic(TileEntityUniversalSensor teUs, int sensorRange){
+        List<ChunkPosition> gpsPositions = new ArrayList<ChunkPosition>();
+        for(int i = TileEntityUniversalSensor.UPGRADE_SLOT_1; i <= TileEntityUniversalSensor.UPGRADE_SLOT_4; i++) {
+            ItemStack gps = teUs.getStackInSlot(i);
+            if(gps != null && gps.getItem() == Itemss.GPSTool) {
+                ChunkPosition pos = ItemGPSTool.getGPSLocation(gps);
+                if(pos != null && Math.abs(pos.chunkPosX - teUs.xCoord) <= sensorRange && Math.abs(pos.chunkPosY - teUs.yCoord) <= sensorRange && Math.abs(pos.chunkPosZ - teUs.zCoord) <= sensorRange) {
+                    gpsPositions.add(pos);
+                }
+            }
+        }
+        if(gpsPositions.size() == 1) {
+            return new HashSet(gpsPositions);
+        } else if(gpsPositions.size() > 1) {
+            int minX = Math.min(gpsPositions.get(0).chunkPosX, gpsPositions.get(1).chunkPosX);
+            int minY = Math.min(gpsPositions.get(0).chunkPosY, gpsPositions.get(1).chunkPosY);
+            int minZ = Math.min(gpsPositions.get(0).chunkPosZ, gpsPositions.get(1).chunkPosZ);
+            int maxX = Math.max(gpsPositions.get(0).chunkPosX, gpsPositions.get(1).chunkPosX);
+            int maxY = Math.max(gpsPositions.get(0).chunkPosY, gpsPositions.get(1).chunkPosY);
+            int maxZ = Math.max(gpsPositions.get(0).chunkPosZ, gpsPositions.get(1).chunkPosZ);
+            Set<ChunkPosition> positions = new HashSet<ChunkPosition>();
+            for(int x = minX; x <= maxX; x++) {
+                for(int y = Math.min(255, maxY); y >= minY && y >= 0; y--) {
+                    for(int z = minZ; z <= maxZ; z++) {
+                        positions.add(new ChunkPosition(x, y, z));
+                    }
+                }
+            }
+            return positions;
+        }
+        return null;
     }
 
     @Override
@@ -579,9 +629,9 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
      * @param newRedstoneStrength
      */
     @Optional.Method(modid = ModIds.COMPUTERCRAFT)
-    private void notifyComputers(int newRedstoneStrength){
+    private void notifyComputers(Object... arguments){
         for(IComputerAccess computer : attachedComputers) {
-            computer.queueEvent(getType(), new Object[]{newRedstoneStrength});
+            computer.queueEvent(getType(), arguments);
         }
     }
 

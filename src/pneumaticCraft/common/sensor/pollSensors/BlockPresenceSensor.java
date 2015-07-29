@@ -2,9 +2,11 @@ package pneumaticCraft.common.sensor.pollSensors;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.World;
 
 import org.lwjgl.util.Rectangle;
@@ -33,13 +35,16 @@ public class BlockPresenceSensor implements IBlockAndCoordinatePollSensor{
     @Override
     public List<String> getDescription(){
         List<String> text = new ArrayList<String>();
-        text.add(EnumChatFormatting.BLACK + "Emits a redstone signal if there's a block (no air) at the location stored in the GPS Tool.");
+        text.add(EnumChatFormatting.BLACK + "Emits a redstone signal if there's a block (no air) at the location stored in the GPS Tool. In case of multiple locations, if any of the locations contains a block a redstone signal will be emitted.");
         return text;
     }
 
     @Override
-    public int getRedstoneValue(World world, int x, int y, int z, int sensorRange, String textBoxText, int toolX, int toolY, int toolZ){
-        return world.isAirBlock(toolX, toolY, toolZ) ? 0 : 15;
+    public int getRedstoneValue(World world, int x, int y, int z, int sensorRange, String textBoxText, Set<ChunkPosition> positions){
+        for(ChunkPosition pos : positions) {
+            if(!world.isAirBlock(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ)) return 15;
+        }
+        return 0;
     }
 
     @Override

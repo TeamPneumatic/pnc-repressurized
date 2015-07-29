@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.EnumSkyBlock;
@@ -35,7 +36,7 @@ public class WorldDayLightSensor implements IPollSensorSetting{
     }
 
     @Override
-    public int getPollFrequency(){
+    public int getPollFrequency(TileEntity te){
         return 40;
     }
 

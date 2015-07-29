@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
 import org.lwjgl.util.Rectangle;
@@ -20,7 +21,7 @@ public class UserSetSensor implements IPollSensorSetting{
     }
 
     @Override
-    public int getPollFrequency(){
+    public int getPollFrequency(TileEntity te){
         return 1;
     }
 
