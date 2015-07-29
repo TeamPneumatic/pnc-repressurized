@@ -770,3 +770,21 @@ command.deliverAmazon.playerName=No such player name found.
 command.deliverAmazon.noItems=The specified inventory doesn't contain items.
 command.deliverAmazon.noInventory=The specified coordinate doesn't have an inventory.
 command.deliverAmazon.success=Delivering items!
+
+#Achievements
+achievement.ingotIronCompressed=The First Explosion (of many)
+achievement.ingotIronCompressed.desc=Throw Iron on the ground and create an explosion close to it.
+achievement.airCompressor=Building up the Pressure!
+achievement.airCompressor.desc=Acquire an Air Compressor.
+achievement.oilBucket=Black Gold
+achievement.oilBucket.desc=Scoop up Oil found underground in lakes (sometimes above ground).
+achievement.refinery=Refining
+achievement.refinery.desc=Acquire a Refinery.
+achievement.plastic=Plastic!
+achievement.plastic.desc=Create Plastic by putting LPG and Coal in a Thermopneumatic Processing Plant
+achievement.etchacidBucket=Don't Spill It On Your Shirt!
+achievement.etchacidBucket.desc=Acquire an Etching Acid Bucket. Throw Empty PCB's in to process.
+achievement.uvLightBox=Don't Forget To Wear Sunglasses!
+achievement.uvLightBox.desc=Acquire a UV Light Box
+achievement.dw9x9=The Perfect Size
+achievement.dw9x9.desc=Build a 9x9 house made out of Cobblestone, the perfect size according to Direwolf20.

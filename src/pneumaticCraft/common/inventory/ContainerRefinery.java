@@ -5,6 +5,8 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.util.ForgeDirection;
+import pneumaticCraft.common.AchievementHandler;
+import pneumaticCraft.common.fluid.Fluids;
 import pneumaticCraft.common.tileentity.TileEntityRefinery;
 
 public class ContainerRefinery extends ContainerPneumaticBase<TileEntityRefinery>{
@@ -30,6 +32,10 @@ public class ContainerRefinery extends ContainerPneumaticBase<TileEntityRefinery
         // Add the player's action bar slots to the container
         for(int actionBarSlotIndex = 0; actionBarSlotIndex < 9; ++actionBarSlotIndex) {
             addSlotToContainer(new Slot(inventoryPlayer, actionBarSlotIndex, 8 + actionBarSlotIndex * 18, 142));
+        }
+
+        if(te.getTankInfo(ForgeDirection.UP)[0].fluid != null && te.getTankInfo(ForgeDirection.UP)[0].fluid.getFluid() == Fluids.oil) {
+            AchievementHandler.giveAchievement(inventoryPlayer.player, new ItemStack(Fluids.getBucket(Fluids.oil)));
         }
     }
 

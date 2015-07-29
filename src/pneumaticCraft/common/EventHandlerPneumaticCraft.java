@@ -1,6 +1,7 @@
 package pneumaticCraft.common;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -21,6 +22,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.StatCollector;
@@ -109,6 +111,9 @@ public class EventHandlerPneumaticCraft{
                         }
                         ((EntityItem)entity).setEntityItemStack(newStack);
                         iterator.remove();
+                        for(EntityPlayer player : (List<EntityPlayer>)event.world.getEntitiesWithinAABB(EntityPlayer.class, AxisAlignedBB.getBoundingBox(event.explosion.explosionX - 32, event.explosion.explosionY - 32, event.explosion.explosionZ - 32, event.explosion.explosionX + 32, event.explosion.explosionY + 32, event.explosion.explosionZ + 32))) {
+                            AchievementHandler.giveAchievement(player, newStack);
+                        }
                     }
                 }
             }
@@ -126,14 +131,7 @@ public class EventHandlerPneumaticCraft{
 
     @SubscribeEvent
     public void onPlayerPickup(EntityItemPickupEvent event){
-        if(event.item != null && event.item.getEntityItem() != null && event.item.getEntityItem().getItem() == Itemss.plasticPlant && event.item.getEntityItem().getItemDamage() > 15) {
-            event.item.getEntityItem().setItemDamage(event.item.getEntityItem().getItemDamage() - 16);
-        }
-        /* if(event.item != null && event.item.getEntityItem() != null && event.item.getEntityItem().getItem() == Items.skull) {
-             NBTTagCompound tag = new NBTTagCompound();
-             tag.setString("SkullOwner", "MineMaarten");
-             event.item.getEntityItem().setTagCompound(tag);
-         }*/
+        if(event.item != null && event.entityPlayer != null) AchievementHandler.giveAchievement(event.entityPlayer, event.item.getEntityItem());
     }
 
     // add slime seeds as mobdrop to Slimes.
@@ -202,6 +200,7 @@ public class EventHandlerPneumaticCraft{
         ItemStack result = attemptFill(event.world, event.target);
         if(result != null) {
             event.result = result;
+            AchievementHandler.giveAchievement(event.entityPlayer, result);
             event.setResult(Result.ALLOW);
         }
     }
@@ -246,6 +245,10 @@ public class EventHandlerPneumaticCraft{
                     ((IPneumaticWrenchable)interactedBlock).rotateBlock(event.world, event.entityPlayer, event.x, event.y, event.z, ForgeDirection.getOrientation(event.face));
                 }
             }
+        }
+
+        if(!event.isCanceled() && interactedBlock == Blocks.cobblestone) {
+            AchievementHandler.checkFor9x9(event.entityPlayer, event.x, event.y, event.z);
         }
     }
 

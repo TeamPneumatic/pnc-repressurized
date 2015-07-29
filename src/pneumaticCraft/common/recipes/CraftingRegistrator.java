@@ -104,7 +104,7 @@ public class CraftingRegistrator{
         addRecipe(new ItemStack(Itemss.machineUpgrade, 1, 2), "lal", "aca", "lal", 'l', lapis, 'a', Items.apple, 'c', Items.clock);
         addRecipe(new ItemStack(Itemss.machineUpgrade, 1, 3), "lbl", "bsb", "lbl", 'l', lapis, 'b', Items.bone, 's', Items.fermented_spider_eye);
         addRecipe(new ItemStack(Itemss.machineUpgrade, 1, 4), "lwl", "wsw", "lwl", 'l', lapis, 'w', Blockss.pressureChamberWall, 's', Items.fermented_spider_eye);
-        addRecipe(new ItemStack(Itemss.machineUpgrade, 1, 5), "lsl", "scs", "lsl", 'l', lapis, 's', Items.sugar, 'c', Fluids.fluidBlockToBucketMap.get(Fluids.fluidToBlockMap.get(Fluids.lubricant)));
+        addRecipe(new ItemStack(Itemss.machineUpgrade, 1, 5), "lsl", "scs", "lsl", 'l', lapis, 's', Items.sugar, 'c', Fluids.getBucket(Fluids.lubricant));
         addRecipe(new ItemStack(Itemss.machineUpgrade, 1, 6), "lel", "ege", "lel", 'l', lapis, 'e', Items.ender_eye, 'g', Items.golden_carrot);
         addRecipe(new ItemStack(Itemss.machineUpgrade, 1, 7), "lrl", "rgr", "lrl", 'l', lapis, 'r', Items.redstone, 'g', Itemss.GPSTool);
         addRecipe(new ItemStack(Itemss.machineUpgrade, 1, 8), "lal", "aba", "lal", 'l', lapis, 'a', Items.arrow, 'b', Items.bow);
@@ -222,7 +222,7 @@ public class CraftingRegistrator{
         // Empty PCB
         registry.registerPressureChamberRecipe(new Object[]{new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.CREEPER_PLANT_DAMAGE), new ImmutablePair(Names.INGOT_IRON_COMPRESSED, 1)}, 1.5F, new ItemStack[]{new ItemStack(Itemss.emptyPCB, 1, Itemss.emptyPCB.getMaxDamage())});
         // Etching Acid Bucket
-        registry.registerPressureChamberRecipe(new ItemStack[]{new ItemStack(Itemss.plastic, 2, ItemPlasticPlants.CREEPER_PLANT_DAMAGE), new ItemStack(Items.rotten_flesh, 2, 0), new ItemStack(Items.gunpowder, 2, 0), new ItemStack(Items.spider_eye, 2, 0), new ItemStack(Items.water_bucket)}, 1.0F, new ItemStack[]{new ItemStack(Fluids.fluidBlockToBucketMap.get(Fluids.etchingAcid.getBlock()))});
+        registry.registerPressureChamberRecipe(new ItemStack[]{new ItemStack(Itemss.plastic, 2, ItemPlasticPlants.CREEPER_PLANT_DAMAGE), new ItemStack(Items.rotten_flesh, 2, 0), new ItemStack(Items.gunpowder, 2, 0), new ItemStack(Items.spider_eye, 2, 0), new ItemStack(Items.water_bucket)}, 1.0F, new ItemStack[]{new ItemStack(Fluids.getBucket(Fluids.etchingAcid))});
         // Transistor
         registry.registerPressureChamberRecipe(new Object[]{new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.SQUID_PLANT_DAMAGE), new ImmutablePair("ingotIronCompressed", 1), new ImmutablePair("dustRedstone", 1)}, 1.0F, new ItemStack[]{new ItemStack(Itemss.transistor)});
         // Capacitor

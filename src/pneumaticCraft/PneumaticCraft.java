@@ -10,6 +10,7 @@ import pneumaticCraft.api.PneumaticRegistry;
 import pneumaticCraft.client.CreativeTabPneumaticCraft;
 import pneumaticCraft.client.render.pneumaticArmor.UpgradeRenderHandlerList;
 import pneumaticCraft.client.render.pneumaticArmor.hacking.HackableHandler;
+import pneumaticCraft.common.AchievementHandler;
 import pneumaticCraft.common.Config;
 import pneumaticCraft.common.EventHandlerPneumaticCraft;
 import pneumaticCraft.common.EventHandlerUniversalSensor;
@@ -93,6 +94,7 @@ public class PneumaticCraft{
         VillagerHandler.instance().init();
         GameRegistry.registerWorldGenerator(new WorldGeneratorPneumaticCraft(), 0);
         SemiBlockInitializer.init();
+        AchievementHandler.init();
 
         proxy.registerRenders();
         proxy.registerHandlers();
@@ -159,7 +161,7 @@ public class PneumaticCraft{
                 Log.info("Remapping Etching Acid");
             }
             if(mapping.type == GameRegistry.Type.ITEM && mapping.name.equals("PneumaticCraft:etchingAcidBucket")) {
-                mapping.remap(Fluids.fluidBlockToBucketMap.get(Fluids.etchingAcid.getBlock()));
+                mapping.remap(Fluids.getBucket(Fluids.etchingAcid));
                 Log.info("Remapping Etching Acid Bucket");
             }
 
