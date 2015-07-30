@@ -1,4 +1,14 @@
 -Added basic achievements to help with progression through the mod.
 -Added fr_FR localization for item/block names (Thanks to Mazdallier).
+-Added option to the Universal Sensor to measure multiple coordinates at once.
+-Added 1x Redstone -> 5x Rose Red as drill recipe for the Assembly line to provide an easy source of red dye, used in the Plastic Mixer.
+-The Laser&Drill Assembly program now actually can do any program, rather than just recipes that require drilling _and_ lasering.
+-The Assembly system will now only start when all items required are provided (instead of some amount).
+-Added tooltips to about all blocks/items.
+-Manometer now gives information about heat blocks.
+-Finished up the NEI plugins for the Thermopneumatic Processing Plant and Refinery.
+-The Vortex Tube now connects the cold and hot side with eathother with a high resistance, meaning that it works better when you vent the cold side to produce more heat. Let me know about the balance of this change :).
+-Added hard limits to temperature (max 2000C, min -273C).
 
 -Bugfix: Crash with Lycanite's Mob's and Entity Tracker.
+-Bugfix: You can't use upgrades in Logistic Drones.

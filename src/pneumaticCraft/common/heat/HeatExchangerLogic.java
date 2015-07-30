@@ -138,6 +138,7 @@ public class HeatExchangerLogic implements IHeatExchangerLogic{
     @Override
     public void addHeat(double amount){
         temperature += amount / getThermalCapacity();
+        temperature = Math.max(0, Math.min(2273, temperature));
     }
 
 }
