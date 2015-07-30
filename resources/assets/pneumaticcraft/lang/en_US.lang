@@ -447,7 +447,7 @@ gui.tab.info.tile.elevatorCaller=§0This block is used in combination with Eleva
 gui.tab.info.tile.programmer=§0This block is required to program Drones. It uses puzzle pieces to define a program.
 gui.tab.info.tile.creativeCompressor=§0A creative-only block used to generate any pressure you would like to test set-ups.
 gui.tab.info.tile.heatSink=§0Block that disperses heat into the air. It only connects to the block it's on (not simply adjacent to). When an Air Grate Tube Module is pointed at its effectiveness is increased greatly.
-gui.tab.info.tile.vortexTube=§0Splits air coming in into a heat and cold component. One side will be heated, the other cooled down. Its air usage is dependent on the pressure.
+gui.tab.info.tile.vortexTube=§0Splits air coming in into a heat and cold component. One side will be heated, the other cooled down. Its air usage is dependent on the pressure. Mind that the hot and cold side are connected, so it's more efficient to vent the cold side when you want to utilize the heat, and vice versa if you want to use the cold.
 gui.tab.info.tile.droneInterface=§0A block that allows ComputerCraft and OpenComputers to interface with Drones.
 
 gui.tab.info.logisticFrameRequester=§0In here you can specify which items and amounts logistical Drones should keep supplied in the framed inventory. Either put in items from your inventory or search for an item by right clicking an empty slot.
