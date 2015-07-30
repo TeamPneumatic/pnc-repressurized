@@ -12,6 +12,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.api.recipe.AssemblyRecipe;
 import pneumaticCraft.common.network.DescSynced;
 import pneumaticCraft.common.network.LazySynced;
+import pneumaticCraft.common.util.IOHelper;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.TileEntityConstants;
 
@@ -372,8 +373,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
                 if(dir != ForgeDirection.UP && dir != ForgeDirection.DOWN) {
                     TileEntity te = worldObj.getTileEntity(xCoord + dir.offsetX, yCoord, zCoord + dir.offsetZ);
                     if(te instanceof IInventory) {
-                        int slot = getInventoryStackLocation(searchedItem, (IInventory)te);
-                        if(slot >= 0) return new ForgeDirection[]{dir, ForgeDirection.UNKNOWN};
+                        if(IOHelper.extract(te, ForgeDirection.UP, searchedItem, true, true) != null) return new ForgeDirection[]{dir, ForgeDirection.UNKNOWN};
                     }
                 }
             }
@@ -382,36 +382,13 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
                     for(ForgeDirection primDir : new ForgeDirection[]{ForgeDirection.NORTH, ForgeDirection.SOUTH}) {
                         TileEntity te = worldObj.getTileEntity(xCoord + primDir.offsetX + secDir.offsetX, yCoord, zCoord + primDir.offsetZ + secDir.offsetZ);
                         if(te instanceof IInventory) {
-                            int slot = getInventoryStackLocation(searchedItem, (IInventory)te);
-                            if(slot >= 0) return new ForgeDirection[]{primDir, secDir};
+                            if(IOHelper.extract(te, ForgeDirection.UP, searchedItem, true, true) != null) return new ForgeDirection[]{primDir, secDir};
                         }
                     }
                 }
             }
         }
         return null;
-    }
-
-    /**
-     *
-     * @param searchedItem
-     * @param inventory where the item is being tried to be extracted from the top (respects ISidedInventory)
-     * @return returns -1 when the item can't be found / accessed, else it returns the slot the requested stack is in.
-     */
-    public static int getInventoryStackLocation(ItemStack searchedItem, IInventory inventory){
-        if(inventory instanceof ISidedInventory) {
-            int[] slotsInTop = ((ISidedInventory)inventory).getAccessibleSlotsFromSide(ForgeDirection.UP.ordinal());
-            for(int slot : slotsInTop) {
-                ItemStack stack = inventory.getStackInSlot(slot);
-                if(stack != null && stack.stackSize > 0 && stack.isItemEqual(searchedItem) && ((ISidedInventory)inventory).canExtractItem(slot, stack, ForgeDirection.UP.ordinal())) return slot;
-            }
-        } else {
-            for(int slot = 0; slot < inventory.getSizeInventory(); slot++) {
-                ItemStack stack = inventory.getStackInSlot(slot);
-                if(stack != null && stack.stackSize > 0 && stack.isItemEqual(searchedItem)) return slot;
-            }
-        }
-        return -1;
     }
 
     /**
