@@ -1,7 +1,6 @@
 package pneumaticCraft.common.item;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
@@ -56,12 +55,4 @@ public class ItemSeismicSensor extends ItemPneumatic{
         return true; // we don't want to use the item.
 
     }
-
-    // the information displayed as tooltip info. (saved coordinates in this
-    // case)
-    @Override
-    public void addInformation(ItemStack stack, EntityPlayer player, List infoList, boolean par4){
-
-    }
-
 }

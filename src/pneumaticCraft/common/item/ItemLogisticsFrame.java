@@ -36,6 +36,7 @@ public class ItemLogisticsFrame extends ItemSemiBlockBase{
     public void addInformation(ItemStack stack, EntityPlayer player, List curInfo, boolean extraInfo){
         super.addInformation(stack, player, curInfo, extraInfo);
         addTooltip(stack, player, curInfo, PneumaticCraft.proxy.isSneakingInGui());
+        ItemPneumatic.addTooltip(stack, player, curInfo);
     }
 
     public static void addTooltip(ItemStack stack, EntityPlayer player, List<String> curInfo, boolean sneaking){

@@ -1,11 +1,4 @@
--Improved the way areas are shown to make sure it works properly for long range use.
--The Programmer now refers to the required Programming Puzzle type by its color rather than the seed it originates from.
--Minor changes to the Inventory block tracker and ComputerCraft block tracker to not track blocks that don't have any slots/methods.
--You can now rename Drones in the Programmer.
--Retexture of the base of the Assembly machines.
+-Added basic achievements to help with progression through the mod.
+-Added fr_FR localization for item/block names (Thanks to Mazdallier).
 
--Bugfix: Rare crash with Logistic Drones working with liquids.
--Bugfix: Crash when right clicking a Logistic Frame and switching to a different item before the interface actually opens.
--Bugfix: The Programmer doesn't update well when wearing a Pneumatic Helmet.
--Bugfix: Coordinate puzzle pieces couldn't be set.
--Bugfix: Client crash when clicking on 'Bottom' radio button in the Place puzzle piece.
+-Bugfix: Crash with Lycanite's Mob's and Entity Tracker.

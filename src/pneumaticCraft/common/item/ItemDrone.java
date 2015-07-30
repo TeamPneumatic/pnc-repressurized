@@ -82,6 +82,7 @@ public class ItemDrone extends ItemPneumatic implements IPressurizable, IChargin
      */
     public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean par4){
         list.add("Pressure: " + PneumaticCraftUtils.roundNumberTo(getPressure(stack), 1) + " bar");
+        super.addInformation(stack, player, list, par4);
     }
 
     @Override

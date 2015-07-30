@@ -7,6 +7,7 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -14,6 +15,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -22,11 +24,15 @@ import pneumaticCraft.api.block.IPneumaticWrenchable;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.thirdparty.ModInteractionUtils;
 import pneumaticCraft.common.tileentity.TileEntityBase;
+import pneumaticCraft.common.tileentity.TileEntityPneumaticBase;
 import pneumaticCraft.common.util.FluidUtils;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.ModIds;
 import pneumaticCraft.lib.Textures;
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Optional;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import dan200.computercraft.api.peripheral.IPeripheral;
 import dan200.computercraft.api.peripheral.IPeripheralProvider;
 
@@ -233,5 +239,28 @@ public abstract class BlockPneumaticCraft extends BlockContainer implements IPne
     public IPeripheral getPeripheral(World world, int x, int y, int z, int side){
         TileEntity te = world.getTileEntity(x, y, z);
         return te instanceof IPeripheral ? (IPeripheral)te : null;
+    }
+
+    @SideOnly(Side.CLIENT)
+    public void addInformation(ItemStack stack, EntityPlayer player, List curInfo, boolean extraInfo){
+        if(PneumaticCraft.proxy.isSneakingInGui()) {
+            TileEntity te = createNewTileEntity(player.worldObj, 0);
+            if(te instanceof TileEntityPneumaticBase) {
+                float pressure = ((TileEntityPneumaticBase)te).DANGER_PRESSURE;
+                curInfo.add(EnumChatFormatting.YELLOW + I18n.format("gui.tooltip.maxPressure", pressure));
+            }
+        }
+
+        String info = "gui.tab.info." + stack.getUnlocalizedName();
+        String translatedInfo = I18n.format(info);
+        if(!translatedInfo.equals(info)) {
+            if(PneumaticCraft.proxy.isSneakingInGui()) {
+                translatedInfo = EnumChatFormatting.AQUA + translatedInfo.substring(2);
+                if(!Loader.isModLoaded(ModIds.IGWMOD)) translatedInfo += " \\n \\n" + I18n.format("gui.tab.info.assistIGW");
+                curInfo.addAll(PneumaticCraftUtils.convertStringIntoList(translatedInfo, 60));
+            } else {
+                curInfo.add(EnumChatFormatting.AQUA + I18n.format("gui.tooltip.sneakForInfo"));
+            }
+        }
     }
 }

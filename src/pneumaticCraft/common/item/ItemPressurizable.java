@@ -41,6 +41,7 @@ public class ItemPressurizable extends ItemPneumatic implements IPressurizable{
     @Override
     public void addInformation(ItemStack stack, EntityPlayer player, List infoList, boolean par4){
         infoList.add("Pressure: " + Math.round(getPressure(stack) * 10D) / 10D + " bar");
+        super.addInformation(stack, player, infoList, par4);
     }
 
     @Override

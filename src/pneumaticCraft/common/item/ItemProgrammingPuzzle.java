@@ -34,6 +34,7 @@ public class ItemProgrammingPuzzle extends ItemPneumatic{
      * allows items to add custom lines of information to the mouseover description
      */
     public void addInformation(ItemStack stack, EntityPlayer player, List par3List, boolean par4){
+        super.addInformation(stack, player, par3List, par4);
         par3List.add(new ItemStack(Itemss.plastic, 1, stack.getItemDamage()).getDisplayName());
     }
 

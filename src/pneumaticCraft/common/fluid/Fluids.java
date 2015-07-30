@@ -23,6 +23,7 @@ import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.api.PneumaticRegistry;
 import pneumaticCraft.common.block.BlockFluidEtchingAcid;
 import pneumaticCraft.common.block.Blockss;
+import pneumaticCraft.common.item.ItemPneumatic;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.relauncher.Side;
@@ -131,7 +132,13 @@ public class Fluids{
             }
             fluidToBlockMap.put(fluid, fluidBlock);
 
-            Item fluidBucket = new ItemBucket(fluidBlock).setContainerItem(Items.bucket).setCreativeTab(PneumaticCraft.tabPneumaticCraft).setTextureName(Textures.ICON_LOCATION + fluid.getName() + "Bucket").setUnlocalizedName(fluid.getName() + "Bucket");
+            Item fluidBucket = new ItemBucket(fluidBlock){
+                @Override
+                public void addInformation(ItemStack p_77624_1_, net.minecraft.entity.player.EntityPlayer p_77624_2_, List p_77624_3_, boolean p_77624_4_){
+                    super.addInformation(p_77624_1_, p_77624_2_, p_77624_3_, p_77624_4_);
+                    ItemPneumatic.addTooltip(p_77624_1_, p_77624_2_, p_77624_3_);
+                };
+            }.setContainerItem(Items.bucket).setCreativeTab(PneumaticCraft.tabPneumaticCraft).setTextureName(Textures.ICON_LOCATION + fluid.getName() + "Bucket").setUnlocalizedName(fluid.getName() + "Bucket");
 
             Itemss.registerItem(fluidBucket);
 
