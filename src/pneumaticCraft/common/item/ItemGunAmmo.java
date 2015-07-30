@@ -77,7 +77,7 @@ public class ItemGunAmmo extends ItemPneumatic{
         ItemStack potion = getPotion(stack);
         if(potion != null) {
             potion.getItem().addInformation(potion, player, infoList, extraInfo);
-            infoList.set(2, I18n.format("gui.tooltip.gunAmmo") + " " + infoList.get(2));
+            if(infoList.size() > 2) infoList.set(2, I18n.format("gui.tooltip.gunAmmo") + " " + infoList.get(2));
         }
         super.addInformation(stack, player, infoList, extraInfo);
     }

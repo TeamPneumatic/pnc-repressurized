@@ -3,6 +3,7 @@ package pneumaticCraft.common.item;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -10,7 +11,10 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
+import pneumaticCraft.api.IHeatExchangerLogic;
 import pneumaticCraft.api.item.IPressurizable;
+import pneumaticCraft.api.tileentity.IHeatExchanger;
 import pneumaticCraft.api.tileentity.IManoMeasurable;
 import pneumaticCraft.api.tileentity.IPneumaticMachine;
 import pneumaticCraft.common.thirdparty.ModInteractionUtils;
@@ -27,8 +31,8 @@ public class ItemManometer extends ItemPressurizable{
      * True if something happen and false if it don't. This is for ITEMS, not BLOCKS
      */
     @Override
-    public boolean onItemUse(ItemStack iStack, EntityPlayer player, World world, int x, int y, int z, int side, float par8, float par9, float par10){
-        if(world.isRemote) return true;
+    public boolean onItemUseFirst(ItemStack iStack, EntityPlayer player, World world, int x, int y, int z, int side, float par8, float par9, float par10){
+        if(world.isRemote) return false;
         if(((IPressurizable)iStack.getItem()).getPressure(iStack) > 0F) {
             TileEntity te = world.getTileEntity(x, y, z);
             IPneumaticMachine machine = ModInteractionUtils.getInstance().getMachine(te);
@@ -37,6 +41,19 @@ public class ItemManometer extends ItemPressurizable{
                 ((IManoMeasurable)te).printManometerMessage(player, curInfo);
             } else if(machine != null) {
                 machine.getAirHandler().printManometerMessage(player, curInfo);
+            }
+            if(te instanceof IHeatExchanger) {
+                IHeatExchangerLogic exchanger = ((IHeatExchanger)te).getHeatExchangerLogic(ForgeDirection.getOrientation(side));
+                if(exchanger != null) {
+                    curInfo.add(I18n.format("waila.temperature") + ": " + ((int)exchanger.getTemperature() - 273) + "C");
+                } else {
+                    for(ForgeDirection d : ForgeDirection.VALID_DIRECTIONS) {
+                        exchanger = ((IHeatExchanger)te).getHeatExchangerLogic(d);
+                        if(exchanger != null) {
+                            curInfo.add(I18n.format("waila.temperature." + d.toString().toLowerCase()) + ": " + ((int)exchanger.getTemperature() - 273) + "C");
+                        }
+                    }
+                }
             }
             if(curInfo.size() > 0) {
                 ((IPressurizable)iStack.getItem()).addAir(iStack, -30);
