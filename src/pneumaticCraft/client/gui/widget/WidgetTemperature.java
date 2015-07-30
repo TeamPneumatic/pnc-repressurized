@@ -29,6 +29,10 @@ public class WidgetTemperature extends WidgetBase{
         this.scales = scales;
     }
 
+    public int[] getScales(){
+        return scales;
+    }
+
     @Override
     public void render(int mouseX, int mouseY, float partialTick){
         GL11.glDisable(GL11.GL_LIGHTING);

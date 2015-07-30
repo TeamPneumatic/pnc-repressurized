@@ -69,6 +69,7 @@ public class NEIRefineryManager extends PneumaticCraftPlugins{
                 y -= 4;
                 addOutputLiquid(new FluidStack(TileEntityRefinery.getRefiningFluids()[i], outputs[i]), x, y);
             }
+            setUsedTemperature(26, 18, 373);
         }
 
     }

@@ -61,8 +61,9 @@ public class NEIThermopneumaticProcessingPlantManager extends PneumaticCraftPlug
             addInputLiquid(recipe.getInputLiquid(), 8, 4);
             addOutputLiquid(recipe.getOutputLiquid(), 74, 4);
             if(recipe.getInputItem() != null) this.addIngredient(new PositionedStack(recipe.getInputItem(), 41, 3));
+            setUsedPressure(136, 42, recipe.getRequiredPressure(null, null));
+            setUsedTemperature(92, 12, recipe.getRequiredTemperature(null, null));
         }
-
     }
 
     @Override
@@ -73,4 +74,11 @@ public class NEIThermopneumaticProcessingPlantManager extends PneumaticCraftPlug
         }
         return recipes;
     }
+
+    @Override
+    public void drawExtras(int recipe){
+        this.drawProgressBar(25, 20, 176, 0, 48, 22, cycleticks % 48 / 48F, 0);
+        super.drawExtras(recipe);
+    }
+
 }
