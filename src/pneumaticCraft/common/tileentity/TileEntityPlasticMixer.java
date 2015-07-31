@@ -95,30 +95,32 @@ public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHand
                         fill(ForgeDirection.UNKNOWN, new FluidStack(moltenPlastic, maxFill * 1000), true);
                     }
                 }
-                if(tank.getFluid() != null && selectedPlastic >= 0) {
-                    ItemStack solidifiedStack = new ItemStack(Itemss.plastic, tank.getFluid().amount / 1000, selectedPlastic);
-                    if(solidifiedStack.stackSize > 0) {
-                        if(inventory[INV_OUTPUT] == null) {
-                            solidifiedStack.stackSize = useDye(solidifiedStack.stackSize);
-                            if(solidifiedStack.stackSize > 0) {
-                                inventory[INV_OUTPUT] = solidifiedStack;
-                                tank.drain(inventory[INV_OUTPUT].stackSize * 1000, true);
-                                sendDescriptionPacket();
-                            }
-                        } else if(solidifiedStack.isItemEqual(inventory[INV_OUTPUT])) {
-                            int solidifiedItems = Math.min(64 - inventory[INV_OUTPUT].stackSize, solidifiedStack.stackSize);
-                            solidifiedItems = useDye(solidifiedItems);
-                            inventory[INV_OUTPUT].stackSize += solidifiedItems;
-                            tank.drain(solidifiedItems * 1000, true);
-                            sendDescriptionPacket();
-                        }
-                    }
-                }
-                if(!lockSelection) selectedPlastic = -1;
+
                 lastTickInventoryStacksize = inventory[INV_INPUT] != null ? inventory[INV_INPUT].stackSize : 0;
 
                 itemLogic.setThermalCapacity(inventory[INV_INPUT] == null ? 0 : inventory[INV_INPUT].stackSize);
             }
+            if(tank.getFluid() != null && selectedPlastic >= 0) {
+                ItemStack solidifiedStack = new ItemStack(Itemss.plastic, tank.getFluid().amount / 1000, selectedPlastic);
+                if(solidifiedStack.stackSize > 0) {
+                    solidifiedStack.stackSize = 1;
+                    if(inventory[INV_OUTPUT] == null) {
+                        solidifiedStack.stackSize = useDye(solidifiedStack.stackSize);
+                        if(solidifiedStack.stackSize > 0) {
+                            inventory[INV_OUTPUT] = solidifiedStack;
+                            tank.drain(inventory[INV_OUTPUT].stackSize * 1000, true);
+                            sendDescriptionPacket();
+                        }
+                    } else if(solidifiedStack.isItemEqual(inventory[INV_OUTPUT])) {
+                        int solidifiedItems = Math.min(64 - inventory[INV_OUTPUT].stackSize, solidifiedStack.stackSize);
+                        solidifiedItems = useDye(solidifiedItems);
+                        inventory[INV_OUTPUT].stackSize += solidifiedItems;
+                        tank.drain(solidifiedItems * 1000, true);
+                        sendDescriptionPacket();
+                    }
+                }
+            }
+            if(!lockSelection) selectedPlastic = -1;
         }
     }
 

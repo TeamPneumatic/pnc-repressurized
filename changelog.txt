@@ -1,4 +1,5 @@
 -Added basic achievements to help with progression through the mod.
+-The Plastic Mixer now creates one plastic at a time instead of as much as it can create.
 -Added fr_FR localization for item/block names (Thanks to Mazdallier).
 -Added option to the Universal Sensor to measure multiple coordinates at once.
 -Added 1x Redstone -> 5x Rose Red as drill recipe for the Assembly line to provide an easy source of red dye, used in the Plastic Mixer.
