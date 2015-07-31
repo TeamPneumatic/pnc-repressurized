@@ -349,7 +349,6 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     @Override
     // upgrades in bottom, fuel in the rest.
     public int[] getAccessibleSlotsFromSide(int var1){
-        if(var1 == 0) return new int[]{1, 2, 3, 4};
         if(chargeableInventory != null) {
             int[] slots = new int[chargeableInventory.getSizeInventory() + 1];
             slots[0] = 0;

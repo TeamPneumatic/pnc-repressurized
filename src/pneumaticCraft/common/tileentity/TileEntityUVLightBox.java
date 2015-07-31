@@ -204,7 +204,6 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements ISi
     @Override
     // upgrades in bottom, fuel in the rest.
     public int[] getAccessibleSlotsFromSide(int var1){
-        if(var1 == 0) return new int[]{1, 2, 3, 4};
         return new int[]{0};
     }
 
