@@ -53,6 +53,7 @@ public class Itemss{
     public static Item logisticsFrameActiveProvider;
     public static Item logisticsDrone;
     public static Item gunAmmo;
+    public static Item amadronTablet;
 
     public static void init(){
         GPSTool = new ItemGPSTool().setUnlocalizedName("gpsTool");
@@ -95,6 +96,7 @@ public class Itemss{
         logisticsFrameActiveProvider = new ItemLogisticsFrame(SemiBlockActiveProvider.ID).setCreativeTab(PneumaticCraft.tabPneumaticCraft);
         logisticsDrone = new ItemLogisticsDrone().setUnlocalizedName("logisticDrone");
         gunAmmo = new ItemGunAmmo().setUnlocalizedName("gunAmmo");
+        amadronTablet = new ItemAmadronTablet("amadronTablet", PneumaticValues.AIR_CANISTER_MAX_AIR, PneumaticValues.AIR_CANISTER_VOLUME).setUnlocalizedName("amadronTablet");
 
         registerItems();
 
@@ -142,6 +144,7 @@ public class Itemss{
         registerItem(logisticsFrameActiveProvider);
         registerItem(logisticsDrone);
         registerItem(gunAmmo);
+        registerItem(amadronTablet);
     }
 
     public static void registerItem(Item item){

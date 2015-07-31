@@ -3,12 +3,15 @@ package pneumaticCraft.common.recipes;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;
+import net.minecraft.village.MerchantRecipe;
+import net.minecraft.village.MerchantRecipeList;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.RecipeSorter;
@@ -195,6 +198,7 @@ public class CraftingRegistrator{
         addPressureChamberRecipes();
         addAssemblyRecipes();
         addThermopneumaticProcessingPlantRecipes();
+        registerAmadronOffers();
     }
 
     public static void addProgrammingPuzzleRecipes(){
@@ -296,6 +300,22 @@ public class CraftingRegistrator{
         registry.registerThermopneumaticProcessingPlantRecipe(new FluidStack(Fluids.diesel, 100), null, new FluidStack(Fluids.kerosene, 80), 573, 2);
         registry.registerThermopneumaticProcessingPlantRecipe(new FluidStack(Fluids.kerosene, 100), null, new FluidStack(Fluids.gasoline, 80), 573, 2);
         registry.registerThermopneumaticProcessingPlantRecipe(new FluidStack(Fluids.gasoline, 100), null, new FluidStack(Fluids.lpg, 80), 573, 2);
+    }
+
+    private static void registerAmadronOffers(){
+        PneumaticRecipeRegistry registry = PneumaticRecipeRegistry.getInstance();
+        registry.registerAmadronOffer(new ItemStack(Items.emerald, 8), new ItemStack(Itemss.PCBBlueprint));
+        registry.registerAmadronOffer(new FluidStack(Fluids.oil, 1000), new ItemStack(Items.emerald, 8));
+
+        for(int i = 0; i < 256; i++) {
+            EntityVillager villager = new EntityVillager(null, i);
+            MerchantRecipeList list = villager.getRecipes(null);
+            for(MerchantRecipe recipe : (List<MerchantRecipe>)list) {
+                if(recipe.getSecondItemToBuy() == null) {
+                    registry.registerAmadronOffer(recipe.getItemToBuy(), recipe.getItemToSell());
+                }
+            }
+        }
     }
 
     private static void addRecipe(ItemStack result, Object... recipe){
