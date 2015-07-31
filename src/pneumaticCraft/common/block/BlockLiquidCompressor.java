@@ -22,7 +22,7 @@ public class BlockLiquidCompressor extends BlockPneumaticCraftModeled{
     }
 
     @Override
-    protected int getGuiID(){
+    public int getGuiID(){
         return CommonProxy.GUI_ID_LIQUID_COMPRESSOR;
     }
 

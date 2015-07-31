@@ -19,7 +19,7 @@ public class BlockThermopneumaticProcessingPlant extends BlockPneumaticCraftMode
     }
 
     @Override
-    protected int getGuiID(){
+    public int getGuiID(){
         return CommonProxy.GUI_ID_THERMOPNEUMATIC_PROCESSING_PLANT;
     }
 

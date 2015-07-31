@@ -108,7 +108,7 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<TileEntityAeri
     }
 
     @Override
-    protected String getRedstoneButtonText(int mode){
+    public String getRedstoneButtonText(int mode){
         return te.redstoneMode == 0 ? "gui.tab.redstoneBehaviour.button.never" : "gui.tab.redstoneBehaviour.aerialInterface.button.playerConnected";
     }
 

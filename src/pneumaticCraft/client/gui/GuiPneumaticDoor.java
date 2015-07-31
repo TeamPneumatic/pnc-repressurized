@@ -23,7 +23,7 @@ public class GuiPneumaticDoor extends GuiPneumaticContainerBase<TileEntityPneuma
     }
 
     @Override
-    protected String getRedstoneButtonText(int mode){
+    public String getRedstoneButtonText(int mode){
         switch(mode){
             case 0:
                 return "gui.tab.redstoneBehaviour.pneumaticDoor.button.playerNearby";
@@ -36,7 +36,7 @@ public class GuiPneumaticDoor extends GuiPneumaticContainerBase<TileEntityPneuma
     }
 
     @Override
-    protected String getRedstoneString(){
+    public String getRedstoneString(){
         return "gui.tab.redstoneBehaviour.pneumaticDoor.openWhen";
     }
 }

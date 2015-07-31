@@ -20,7 +20,7 @@ public class BlockProgrammableController extends BlockPneumaticCraft{
     }
 
     @Override
-    protected int getGuiID(){
+    public int getGuiID(){
         return CommonProxy.GUI_ID_PROGRAMMABLE_CONTROLLER;
     }
 

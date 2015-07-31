@@ -517,7 +517,7 @@ gui.tab.upgrades.tile.thermopneumaticProcessingPlant=§7-Dispenser Upgrade (max 
 
 # Redstone Behaviour
 gui.tab.redstoneBehaviour=Redstone Behaviour
-gui.tab.redstoneBehaviour.enableOn=§0Enable on
+gui.tab.redstoneBehaviour.enableOn=Enable on
 gui.tab.redstoneBehaviour.emitRedstoneWhen=Emit Redstone When
 gui.tab.redstoneBehaviour.button.anySignal=Any Signal
 gui.tab.redstoneBehaviour.button.highSignal=High Signal
@@ -540,7 +540,7 @@ gui.tab.redstoneBehaviour.pneumaticDoor.button.playerNearbyAndLooking=Nearby and
 gui.tab.redstoneBehaviour.pneumaticDoor.button.woodenDoor=Wooden Door Behaviour
 gui.tab.redstoneBehaviour.securityStation.button.hacked=Hacked
 gui.tab.redstoneBehaviour.securityStation.button.doneRebooting=Done Rebooting
-gui.tab.redstoneBehaviour.universalSensor.redstoneEmission=Redstone emission:
+gui.tab.redstoneBehaviour.universalSensor.redstoneEmission=Redstone emission
 gui.tab.redstoneBehaviour.universalSensor.button.inverted=Inverted
 gui.tab.redstoneBehaviour.universalSensor.button.normal=Normal
 gui.tab.redstoneBehaviour.uvLightBox.button.chance=Success Chance

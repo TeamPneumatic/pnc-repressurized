@@ -65,7 +65,7 @@ public class GuiAirCannon extends GuiPneumaticContainerBase<TileEntityAirCannon>
     }
 
     @Override
-    protected String getRedstoneButtonText(int mode){
+    public String getRedstoneButtonText(int mode){
         switch(te.getRedstoneMode()){
             case 0:
                 return "gui.tab.redstoneBehaviour.airCannon.button.highSignalAndAngle";
@@ -79,7 +79,7 @@ public class GuiAirCannon extends GuiPneumaticContainerBase<TileEntityAirCannon>
     }
 
     @Override
-    protected String getRedstoneString(){
+    public String getRedstoneString(){
         return "gui.tab.redstoneBehaviour.airCannon.fireUpon";
     }
 

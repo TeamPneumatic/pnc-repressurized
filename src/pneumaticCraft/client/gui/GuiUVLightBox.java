@@ -28,7 +28,7 @@ public class GuiUVLightBox extends GuiPneumaticContainerBase<TileEntityUVLightBo
     }
 
     @Override
-    protected String getRedstoneButtonText(int mode){
+    public String getRedstoneButtonText(int mode){
         if(mode == 0) {
             return "gui.tab.redstoneBehaviour.button.never";
         } else if(mode == 4) {

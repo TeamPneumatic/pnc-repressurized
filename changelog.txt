@@ -12,6 +12,7 @@
 -Added hard limits to temperature (max 2000C, min -273C).
 -Added Logistic Drone + PCB = Drone recipe, to allow upgrading of Logistic Drones.
 -Adjusted the ISidedness of the UV Light Box, Charging Station, (Advanced) Air Compressor and Air Cannon to not allow upgrades to be interfaced through the bottom, allowing other items to be interfaced.
+-Added redstone configuration of machines to Waila.
 
 -Bugfix: Crash with Lycanite's Mob's and Entity Tracker.
 -Bugfix: You can't use upgrades in Logistic Drones.

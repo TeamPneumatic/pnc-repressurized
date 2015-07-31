@@ -130,6 +130,11 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
     }
 
     @Override
+    protected boolean shouldAddInfoTab(){
+        return false;
+    }
+
+    @Override
     public void initGui(){
         if(pastebinGui != null && pastebinGui.outputTag != null) {
             te.readProgWidgetsFromNBT(pastebinGui.outputTag);

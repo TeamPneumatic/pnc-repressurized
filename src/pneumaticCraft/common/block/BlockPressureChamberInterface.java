@@ -34,7 +34,7 @@ public class BlockPressureChamberInterface extends BlockPressureChamberWall{
     }
 
     @Override
-    protected int getGuiID(){
+    public int getGuiID(){
         return CommonProxy.GUI_ID_PRESSURE_CHAMBER_INTERFACE;
     }
 

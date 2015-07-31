@@ -324,7 +324,7 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
         if(te != null) sendPacketToServer(te, button.id);
     }
 
-    protected String getRedstoneButtonText(int mode){
+    public String getRedstoneButtonText(int mode){
         switch(mode){
             case 0:
                 return "gui.tab.redstoneBehaviour.button.anySignal";
@@ -336,7 +336,7 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
         return "<ERROR>";
     }
 
-    protected String getRedstoneString(){
+    public String getRedstoneString(){
         return te instanceof IRedstoneControlled ? "gui.tab.redstoneBehaviour.enableOn" : "gui.tab.redstoneBehaviour.emitRedstoneWhen";
     }
 

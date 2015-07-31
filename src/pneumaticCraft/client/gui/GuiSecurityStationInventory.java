@@ -93,7 +93,7 @@ public class GuiSecurityStationInventory extends GuiSecurityStationBase{
     }
 
     @Override
-    protected String getRedstoneButtonText(int mode){
+    public String getRedstoneButtonText(int mode){
         switch(mode){
             case 0:
                 return "gui.tab.redstoneBehaviour.button.never";

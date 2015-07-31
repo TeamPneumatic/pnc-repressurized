@@ -12,7 +12,7 @@ public class BlockAdvancedAirCompressor extends BlockAirCompressor{
     }
 
     @Override
-    protected int getGuiID(){
+    public int getGuiID(){
         return CommonProxy.GUI_ID_ADVANCED_AIR_COMPRESSOR;
     }
 

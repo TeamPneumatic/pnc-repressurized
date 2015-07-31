@@ -35,7 +35,7 @@ public class BlockElevatorBase extends BlockPneumaticCraftModeled{
     }
 
     @Override
-    protected int getGuiID(){
+    public int getGuiID(){
         return CommonProxy.GUI_ID_ELEVATOR;
     }
 

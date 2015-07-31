@@ -57,7 +57,7 @@ public abstract class BlockPneumaticCraft extends BlockContainer implements IPne
 
     protected abstract Class<? extends TileEntity> getTileEntityClass();
 
-    protected int getGuiID(){
+    public int getGuiID(){
         return -1;
     }
 

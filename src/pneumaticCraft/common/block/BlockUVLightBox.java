@@ -44,7 +44,7 @@ public class BlockUVLightBox extends BlockPneumaticCraftModeled{
     }
 
     @Override
-    protected int getGuiID(){
+    public int getGuiID(){
         return CommonProxy.GUI_ID_UV_LIGHT_BOX;
     }
 

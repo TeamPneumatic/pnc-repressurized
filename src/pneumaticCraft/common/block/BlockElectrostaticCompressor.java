@@ -17,7 +17,7 @@ public class BlockElectrostaticCompressor extends BlockPneumaticCraftModeled{
     }
 
     @Override
-    protected int getGuiID(){
+    public int getGuiID(){
         return CommonProxy.GUI_ID_ELECTROSTATIC_COMPRESSOR;
     }
 
