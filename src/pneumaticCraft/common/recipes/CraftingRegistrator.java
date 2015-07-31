@@ -128,12 +128,14 @@ public class CraftingRegistrator{
         GameRegistry.addRecipe(new RecipePneumaticHelmet());
         GameRegistry.addRecipe(new RecipeManometer());
         GameRegistry.addRecipe(new RecipeColorDrone());
+        GameRegistry.addRecipe(new RecipeLogisticToDrone());
         GameRegistry.addRecipe(new RecipeGunAmmo());
 
         RecipeSorter.register("pneumaticcraft:gun", RecipeGun.class, Category.SHAPED, "after:minecraft:shaped");
         RecipeSorter.register("pneumaticcraft:pneumaticHelmet", RecipePneumaticHelmet.class, Category.SHAPED, "after:minecraft:shaped");
         RecipeSorter.register("pneumaticcraft:manometer", RecipeManometer.class, Category.SHAPED, "after:minecraft:shaped");
         RecipeSorter.register("pneumaticcraft:colorDrone", RecipeColorDrone.class, Category.SHAPELESS, "after:minecraft:shapeless");
+        RecipeSorter.register("pneumaticcraft:logisticToDrone", RecipeLogisticToDrone.class, Category.SHAPELESS, "after:minecraft:shapeless");
         RecipeSorter.register("pneumaticcraft:gunAmmo", RecipeGunAmmo.class, Category.SHAPELESS, "after:minecraft:shapeless");
 
         //Heat related
@@ -300,7 +302,7 @@ public class CraftingRegistrator{
         GameRegistry.addRecipe(new ShapedOreRecipe(result, recipe));
     }
 
-    private static void addShapelessRecipe(ItemStack result, Object... recipe){
+    public static void addShapelessRecipe(ItemStack result, Object... recipe){
         GameRegistry.addRecipe(new ShapelessOreRecipe(result, recipe));
     }
 }
