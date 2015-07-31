@@ -36,7 +36,7 @@ public class BlockPneumaticDoorBase extends BlockPneumaticCraftModeled{
     }
 
     @Override
-    protected int getGuiID(){
+    public int getGuiID(){
         return CommonProxy.GUI_ID_PNEUMATIC_DOOR;
     }
 

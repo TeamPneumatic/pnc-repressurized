@@ -111,7 +111,7 @@ public class DroneAILogistics extends EntityAIBase{
                                 if(curAI.shouldExecute()) {
                                     if(transportingStack != null) {
                                         requester.informIncomingStack(transportingStack);
-                                    } else {
+                                    } else if(transportingFluid != null) {
                                         requester.informIncomingStack(transportingFluid);
                                     }
                                     requestingBlock = requester;

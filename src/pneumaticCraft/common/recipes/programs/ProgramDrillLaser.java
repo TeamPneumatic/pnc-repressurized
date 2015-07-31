@@ -1,5 +1,6 @@
 package pneumaticCraft.common.recipes.programs;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
@@ -31,7 +32,13 @@ public class ProgramDrillLaser extends AssemblyProgram{
                 useAir = ioUnitExport.pickupItem(null);
             }
         } else if(!ioUnitExport.isIdle()) useAir = ioUnitExport.pickupItem(null);
-        else useAir = ioUnitImport.pickupItem(getRecipeList());
+        else {
+            List<AssemblyRecipe> recipes = new ArrayList<AssemblyRecipe>();
+            recipes.addAll(getRecipeList());
+            recipes.addAll(new ProgramDrill().getRecipeList());
+            recipes.addAll(new ProgramLaser().getRecipeList());
+            useAir = ioUnitImport.pickupItem(recipes);
+        }
 
         return useAir;
     }

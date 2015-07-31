@@ -3,6 +3,7 @@ package pneumaticCraft.api.universalSensor;
 import java.util.List;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 
@@ -14,7 +15,7 @@ public abstract class EntityPollSensor implements IPollSensorSetting{
     }
 
     @Override
-    public int getPollFrequency(){
+    public int getPollFrequency(TileEntity te){
         return 1;
     }
 

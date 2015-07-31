@@ -2,12 +2,13 @@ package pneumaticCraft.common.sensor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.World;
 
 import org.lwjgl.util.Rectangle;
@@ -240,18 +241,8 @@ public class SensorHandler implements ISensorRegistrator{
         @Override
         public int emitRedstoneOnEvent(Event event, TileEntity tile, int sensorRange, String textboxText){
             TileEntityUniversalSensor teUs = (TileEntityUniversalSensor)tile;
-            for(int i = TileEntityUniversalSensor.UPGRADE_SLOT_1; i <= TileEntityUniversalSensor.UPGRADE_SLOT_4; i++) {
-                if(teUs.getStackInSlot(i) != null && teUs.getStackInSlot(i).getItem() == Itemss.GPSTool && teUs.getStackInSlot(i).hasTagCompound()) {
-                    NBTTagCompound gpsTag = teUs.getStackInSlot(i).getTagCompound();
-                    int toolX = gpsTag.getInteger("x");
-                    int toolY = gpsTag.getInteger("y");
-                    int toolZ = gpsTag.getInteger("z");
-                    if(Math.abs(toolX - teUs.xCoord) <= sensorRange && Math.abs(toolY - teUs.yCoord) <= sensorRange && Math.abs(toolZ - teUs.zCoord) <= sensorRange) {
-                        return coordinateSensor.emitRedstoneOnEvent(event, teUs, sensorRange, toolX, toolY, toolZ);
-                    }
-                }
-            }
-            return 0;
+            Set<ChunkPosition> positions = teUs.getGPSPositions();
+            return positions == null ? 0 : coordinateSensor.emitRedstoneOnEvent(event, teUs, sensorRange, positions);
         }
 
         @Override
@@ -294,8 +285,11 @@ public class SensorHandler implements ISensorRegistrator{
         }
 
         @Override
-        public int getPollFrequency(){
-            return coordinateSensor.getPollFrequency();
+        public int getPollFrequency(TileEntity te){
+            TileEntityUniversalSensor us = (TileEntityUniversalSensor)te;
+            Set<ChunkPosition> positions = us.getGPSPositions();
+            int mult = positions == null ? 1 : positions.size();
+            return coordinateSensor.getPollFrequency() * mult;
         }
 
         @Override
@@ -303,18 +297,8 @@ public class SensorHandler implements ISensorRegistrator{
             TileEntity te = world.getTileEntity(x, y, z);
             if(te instanceof TileEntityUniversalSensor) {
                 TileEntityUniversalSensor teUs = (TileEntityUniversalSensor)te;
-
-                for(int i = TileEntityUniversalSensor.UPGRADE_SLOT_1; i <= TileEntityUniversalSensor.UPGRADE_SLOT_4; i++) {
-                    if(teUs.getStackInSlot(i) != null && teUs.getStackInSlot(i).getItem() == Itemss.GPSTool && teUs.getStackInSlot(i).hasTagCompound()) {
-                        NBTTagCompound gpsTag = teUs.getStackInSlot(i).getTagCompound();
-                        int toolX = gpsTag.getInteger("x");
-                        int toolY = gpsTag.getInteger("y");
-                        int toolZ = gpsTag.getInteger("z");
-                        if(Math.abs(toolX - x) <= sensorRange && Math.abs(toolY - y) <= sensorRange && Math.abs(toolZ - z) <= sensorRange) {
-                            return coordinateSensor.getRedstoneValue(world, x, y, z, sensorRange, textBoxText, toolX, toolY, toolZ);
-                        }
-                    }
-                }
+                Set<ChunkPosition> positions = teUs.getGPSPositions();
+                return positions == null ? 0 : coordinateSensor.getRedstoneValue(world, x, y, z, sensorRange, textBoxText, positions);
             }
             return 0;
         }

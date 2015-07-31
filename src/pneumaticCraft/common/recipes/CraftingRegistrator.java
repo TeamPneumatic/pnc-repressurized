@@ -36,7 +36,6 @@ import cpw.mods.fml.common.registry.GameRegistry;
 public class CraftingRegistrator{
     public static void init(){
         ItemStack lapis = new ItemStack(Items.dye, 1, 4);
-        ItemStack swiftnessPotion = new ItemStack(Items.potionitem, 1, 8194);//3.00m variant
         ItemStack cobbleSlab = new ItemStack(Blocks.stone_slab, 1, 3);
         // tubes
         addRecipe(new ItemStack(Blockss.pressureTube, 8, 0 /* normal */), "igi", 'i', Names.INGOT_IRON_COMPRESSED, 'g', "blockGlass");
@@ -129,12 +128,14 @@ public class CraftingRegistrator{
         GameRegistry.addRecipe(new RecipePneumaticHelmet());
         GameRegistry.addRecipe(new RecipeManometer());
         GameRegistry.addRecipe(new RecipeColorDrone());
+        GameRegistry.addRecipe(new RecipeLogisticToDrone());
         GameRegistry.addRecipe(new RecipeGunAmmo());
 
         RecipeSorter.register("pneumaticcraft:gun", RecipeGun.class, Category.SHAPED, "after:minecraft:shaped");
         RecipeSorter.register("pneumaticcraft:pneumaticHelmet", RecipePneumaticHelmet.class, Category.SHAPED, "after:minecraft:shaped");
         RecipeSorter.register("pneumaticcraft:manometer", RecipeManometer.class, Category.SHAPED, "after:minecraft:shaped");
         RecipeSorter.register("pneumaticcraft:colorDrone", RecipeColorDrone.class, Category.SHAPELESS, "after:minecraft:shapeless");
+        RecipeSorter.register("pneumaticcraft:logisticToDrone", RecipeLogisticToDrone.class, Category.SHAPELESS, "after:minecraft:shapeless");
         RecipeSorter.register("pneumaticcraft:gunAmmo", RecipeGunAmmo.class, Category.SHAPELESS, "after:minecraft:shapeless");
 
         //Heat related
@@ -233,10 +234,11 @@ public class CraftingRegistrator{
 
     private static void addAssemblyRecipes(){
         AssemblyRecipe.addLaserRecipe(new ItemStack(Itemss.emptyPCB, 1, Itemss.emptyPCB.getMaxDamage()), Itemss.unassembledPCB);
-        AssemblyRecipe.addLaserRecipe(new ItemStack(Blockss.pressureChamberValve, 4, 0), new ItemStack(Blockss.advancedPressureTube, 8, 0));
+        AssemblyRecipe.addLaserRecipe(new ItemStack(Blockss.pressureChamberValve, 20, 0), new ItemStack(Blockss.advancedPressureTube, 8, 0));
         AssemblyRecipe.addLaserRecipe(Blocks.quartz_block, new ItemStack(Blockss.aphorismTile, 4, 0));
 
-        AssemblyRecipe.addDrillRecipe(new ItemStack(Blockss.compressedIron, 1, 0), new ItemStack(Blockss.pressureChamberValve, 4, 0));
+        AssemblyRecipe.addDrillRecipe(new ItemStack(Blockss.compressedIron, 1, 0), new ItemStack(Blockss.pressureChamberValve, 20, 0));
+        AssemblyRecipe.addDrillRecipe(new ItemStack(Items.redstone, 1, 0), new ItemStack(Items.dye, 5, 1));
     }
 
     public static void addAssemblyCombinedRecipes(){
@@ -300,7 +302,7 @@ public class CraftingRegistrator{
         GameRegistry.addRecipe(new ShapedOreRecipe(result, recipe));
     }
 
-    private static void addShapelessRecipe(ItemStack result, Object... recipe){
+    public static void addShapelessRecipe(ItemStack result, Object... recipe){
         GameRegistry.addRecipe(new ShapelessOreRecipe(result, recipe));
     }
 }

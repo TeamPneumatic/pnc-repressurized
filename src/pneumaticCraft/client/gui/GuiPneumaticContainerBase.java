@@ -29,6 +29,7 @@ import pneumaticCraft.api.tileentity.IHeatExchanger;
 import pneumaticCraft.client.gui.widget.GuiAnimatedStat;
 import pneumaticCraft.client.gui.widget.IGuiWidget;
 import pneumaticCraft.client.gui.widget.IWidgetListener;
+import pneumaticCraft.client.gui.widget.WidgetLabel;
 import pneumaticCraft.client.gui.widget.WidgetTextField;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.network.NetworkHandler;
@@ -111,6 +112,10 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
         for(IGuiWidget widget : widgets) {
             addWidget(widget);
         }
+    }
+
+    protected void addLabel(String text, int x, int y){
+        addWidget(new WidgetLabel(x, y, text));
     }
 
     protected void removeWidget(IGuiWidget widget){
@@ -319,7 +324,7 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
         if(te != null) sendPacketToServer(te, button.id);
     }
 
-    protected String getRedstoneButtonText(int mode){
+    public String getRedstoneButtonText(int mode){
         switch(mode){
             case 0:
                 return "gui.tab.redstoneBehaviour.button.anySignal";
@@ -331,7 +336,7 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
         return "<ERROR>";
     }
 
-    protected String getRedstoneString(){
+    public String getRedstoneString(){
         return te instanceof IRedstoneControlled ? "gui.tab.redstoneBehaviour.enableOn" : "gui.tab.redstoneBehaviour.emitRedstoneWhen";
     }
 

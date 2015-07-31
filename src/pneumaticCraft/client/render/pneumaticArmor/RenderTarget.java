@@ -9,6 +9,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityUtils;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
@@ -50,8 +51,14 @@ public class RenderTarget{
         trackEntries = EntityTrackHandler.getTrackersForEntity(entity);
         circle1 = new RenderTargetCircle();
         circle2 = new RenderTargetCircle();
-        if(entity instanceof EntityLiving && EntityUtils.getLivingDropID((EntityLiving)entity) != null) {
-            stat = new GuiAnimatedStat(null, entity.getCommandSenderName(), new ItemStack(EntityUtils.getLivingDropID((EntityLiving)entity), 1, 0), 20, -20, 0x3000AA00, null, false);
+        Item droppedItem = null;
+        if(entity instanceof EntityLiving) {
+            try {
+                droppedItem = EntityUtils.getLivingDrop((EntityLiving)entity);
+            } catch(Throwable e) {}
+        }
+        if(droppedItem != null) {
+            stat = new GuiAnimatedStat(null, entity.getCommandSenderName(), new ItemStack(droppedItem, 1, 0), 20, -20, 0x3000AA00, null, false);
         } else {
             stat = new GuiAnimatedStat(null, entity.getCommandSenderName(), "", 20, -20, 0x3000AA00, null, false);
         }

@@ -1,9 +1,11 @@
 package pneumaticCraft.api.universalSensor;
 
 import java.util.List;
+import java.util.Set;
 
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.ChunkPosition;
 
 import org.lwjgl.util.Rectangle;
 
@@ -17,16 +19,14 @@ public interface IBlockAndCoordinateEventSensor{
     public String getSensorPath();
 
     /**
-     * Extended version of the normal emitRedstoneOnEvent. This method will only invoke with a valid GPS tool, and when the coordinate is within range.
+     * Extended version of the normal emitRedstoneOnEvent. This method will only invoke with a valid GPS tool, and when all the coordinates are within range.
      * @param event
      * @param sensor
      * @param range
-     * @param toolX
-     * @param toolY
-     * @param toolZ
+     * @param positions When only one GPS Tool is inserted this contains the position of just that tool. If two GPS Tools are inserted, These are both corners of a box, and every coordinate in this box is added to the positions argument.
      * @return
      */
-    public int emitRedstoneOnEvent(Event event, TileEntity sensor, int range, int toolX, int toolY, int toolZ);
+    public int emitRedstoneOnEvent(Event event, TileEntity sensor, int range, Set<ChunkPosition> positions);
 
     /**
      * See {@link IEventSensorSetting#getRedstonePulseLength()}

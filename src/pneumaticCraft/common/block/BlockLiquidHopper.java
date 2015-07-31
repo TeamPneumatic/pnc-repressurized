@@ -17,7 +17,7 @@ public class BlockLiquidHopper extends BlockOmnidirectionalHopper{
     }
 
     @Override
-    protected int getGuiID(){
+    public int getGuiID(){
         return CommonProxy.GUI_ID_LIQUID_HOPPER;
     }
 }

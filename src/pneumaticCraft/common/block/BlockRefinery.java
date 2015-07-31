@@ -26,7 +26,7 @@ public class BlockRefinery extends BlockPneumaticCraftModeled{
     }
 
     @Override
-    protected int getGuiID(){
+    public int getGuiID(){
         return CommonProxy.GUI_ID_REFINERY;
     }
 

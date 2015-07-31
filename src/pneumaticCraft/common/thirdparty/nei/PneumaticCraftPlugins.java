@@ -7,8 +7,11 @@ import java.util.List;
 
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
+import pneumaticCraft.api.IHeatExchangerLogic;
+import pneumaticCraft.api.PneumaticRegistry;
 import pneumaticCraft.client.gui.GuiUtils;
 import pneumaticCraft.client.gui.widget.WidgetTank;
+import pneumaticCraft.client.gui.widget.WidgetTemperature;
 import codechicken.lib.gui.GuiDraw;
 import codechicken.nei.NEIClientUtils;
 import codechicken.nei.PositionedStack;
@@ -23,6 +26,11 @@ public abstract class PneumaticCraftPlugins extends TemplateRecipeHandler{
         private final List<PositionedStack> output = new ArrayList<PositionedStack>();
         private final List<WidgetTank> inputLiquids = new ArrayList<WidgetTank>();
         private final List<WidgetTank> outputLiquids = new ArrayList<WidgetTank>();
+        private float pressure;
+        private boolean usePressure;
+        private int gaugeX, gaugeY;
+        private WidgetTemperature tempWidget;
+        private IHeatExchangerLogic heatExchanger;
 
         public void addIngredient(PositionedStack stack){
             input.add(stack);
@@ -87,8 +95,19 @@ public abstract class PneumaticCraftPlugins extends TemplateRecipeHandler{
             for(WidgetTank w : outputLiquids) {
                 w.getTank().setCapacity(maxFluid);
             }
-
         }
+
+        protected void setUsedPressure(int x, int y, float pressure){
+            usePressure = true;
+            this.pressure = pressure;
+            gaugeX = x;
+            gaugeY = y;
+        }
+
+        protected void setUsedTemperature(int x, int y, double temperature){
+            tempWidget = new WidgetTemperature(0, x, y, 273, 673, heatExchanger = PneumaticRegistry.getInstance().getHeatExchangerLogic(), (int)temperature);
+        }
+
     }
 
     @Override
@@ -175,6 +194,12 @@ public abstract class PneumaticCraftPlugins extends TemplateRecipeHandler{
                     tank.addTooltip(mouse.x, mouse.y, currenttip, false);
                 }
             }
+            if(r.tempWidget != null) {
+                if(r.tempWidget.getBounds().contains(relMouse)) {
+                    r.heatExchanger.setTemperature(r.tempWidget.getScales()[0]);
+                    r.tempWidget.addTooltip(mouse.x, mouse.y, currenttip, false);
+                }
+            }
         }
         return currenttip;
     }
@@ -188,6 +213,13 @@ public abstract class PneumaticCraftPlugins extends TemplateRecipeHandler{
         }
         for(WidgetTank tank : r.outputLiquids) {
             tank.render(0, 0, 0);
+        }
+        if(r.usePressure) {
+            drawAnimatedPressureGauge(r.gaugeX, r.gaugeY, -1, r.pressure, 5, 7, cycleticks % 48 / 48F);
+        }
+        if(r.tempWidget != null) {
+            r.heatExchanger.setTemperature(cycleticks % 48 / 48F * (r.tempWidget.getScales()[0] - 273) + 273);
+            r.tempWidget.render(0, 0, 0);
         }
     }
 
@@ -249,4 +281,5 @@ public abstract class PneumaticCraftPlugins extends TemplateRecipeHandler{
             arecipes.add(recipe);
         }
     }
+
 }

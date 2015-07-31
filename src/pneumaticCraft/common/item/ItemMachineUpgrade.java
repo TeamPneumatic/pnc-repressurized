@@ -148,6 +148,7 @@ public class ItemMachineUpgrade extends ItemPneumatic{
         for(String unloc : unlocalized) {
             infoList.add("-" + I18n.format(unloc + ".name"));
         }
+        super.addInformation(stack, player, infoList, par4);
     }
 
 }

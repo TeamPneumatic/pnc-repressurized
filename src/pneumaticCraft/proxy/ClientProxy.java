@@ -99,6 +99,7 @@ import pneumaticCraft.common.entity.projectile.EntityChopperSeeds;
 import pneumaticCraft.common.entity.projectile.EntityPotionCloud;
 import pneumaticCraft.common.entity.projectile.EntityVortex;
 import pneumaticCraft.common.item.Itemss;
+import pneumaticCraft.common.recipes.CraftingRegistrator;
 import pneumaticCraft.common.semiblock.ItemSemiBlockBase;
 import pneumaticCraft.common.thirdparty.ThirdPartyManager;
 import pneumaticCraft.common.thirdparty.igwmod.IGWSupportNotifier;
@@ -314,6 +315,7 @@ public class ClientProxy extends CommonProxy{
             drone.setTagCompound(tag);
             GameRegistry.addRecipe(new ShapelessOreRecipe(drone, Itemss.drone, TileEntityPlasticMixer.DYES[i]));
         }
+        CraftingRegistrator.addShapelessRecipe(new ItemStack(Itemss.drone), new ItemStack(Itemss.logisticsDrone), Itemss.printedCircuitBoard);
 
         ThirdPartyManager.instance().clientInit();
     }

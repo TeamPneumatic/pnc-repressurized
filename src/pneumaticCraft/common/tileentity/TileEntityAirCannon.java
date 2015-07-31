@@ -563,11 +563,8 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements ISid
     }
 
     @Override
-    // upgrades and GPS can be inserted/extracted from and into the bottom,
-    // other sides are cannon slots.
     public int[] getAccessibleSlotsFromSide(int var1){
-        if(var1 == 0) return new int[]{1, 2, 3, 4, 5};
-        return new int[]{0};
+        return new int[]{1, 2, 3, 4, 5, 0};
     }
 
     @Override

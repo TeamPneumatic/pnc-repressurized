@@ -44,6 +44,7 @@ import net.minecraftforge.event.world.WorldEvent;
 import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.api.block.IPneumaticWrenchable;
 import pneumaticCraft.api.client.pneumaticHelmet.EntityTrackEvent;
+import pneumaticCraft.api.client.pneumaticHelmet.InventoryTrackEvent;
 import pneumaticCraft.api.drone.DroneConstructingEvent;
 import pneumaticCraft.api.item.IPressurizable;
 import pneumaticCraft.client.render.pneumaticArmor.EntityTrackUpgradeHandler;
@@ -65,6 +66,7 @@ import pneumaticCraft.common.network.PacketPlaySound;
 import pneumaticCraft.common.network.PacketSetMobTarget;
 import pneumaticCraft.common.remote.GlobalVariableManager;
 import pneumaticCraft.common.thirdparty.ModInteractionUtilImplementation;
+import pneumaticCraft.common.tileentity.TileEntityProgrammer;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.common.worldgen.OilTracker;
 import pneumaticCraft.lib.TileEntityConstants;
@@ -300,5 +302,10 @@ public class EventHandlerPneumaticCraft{
     @SubscribeEvent
     public void onEntityTracking(EntityTrackEvent event){
         if(event.trackingEntity instanceof EntityProgrammableController) event.setCanceled(true);
+    }
+
+    @SubscribeEvent
+    public void onInventoryTracking(InventoryTrackEvent event){
+        if(event.getTileEntity() instanceof TileEntityProgrammer) event.setCanceled(true);
     }
 }

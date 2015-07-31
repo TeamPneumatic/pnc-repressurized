@@ -30,8 +30,9 @@ public class Textures{
     public static final ResourceLocation MODEL_VACUUM_PUMP = new ResourceLocation(MODEL_LOCATION + "vacuumPump.png");
     public static final ResourceLocation MODEL_PNEUMATIC_DOOR = new ResourceLocation(MODEL_LOCATION + "PneumaticDoor.png");
     public static final ResourceLocation MODEL_PNEUMATIC_DOOR_BASE = new ResourceLocation(MODEL_LOCATION + "PneumaticDoorBase.png");
-    public static final ResourceLocation MODEL_ASSEMBLY_ROBOT_ORANGE = new ResourceLocation(MODEL_LOCATION + "AssemblyRobotOrange.png");
-    public static final ResourceLocation MODEL_ASSEMBLY_ROBOT_BLUE = new ResourceLocation(MODEL_LOCATION + "AssemblyRobotBlue.png");
+    public static final ResourceLocation MODEL_ASSEMBLY_IO_EXPORT = new ResourceLocation(MODEL_LOCATION + "AssemblyIOExport.png");
+    public static final ResourceLocation MODEL_ASSEMBLY_IO_IMPORT = new ResourceLocation(MODEL_LOCATION + "AssemblyIOImport.png");
+    public static final ResourceLocation MODEL_ASSEMBLY_LASER_AND_DRILL = new ResourceLocation(MODEL_LOCATION + "AssemblyLaserAndDrill.png");
     public static final ResourceLocation MODEL_ASSEMBLY_PLATFORM = new ResourceLocation(MODEL_LOCATION + "AssemblyPlatform.png");
     public static final ResourceLocation MODEL_ASSEMBLY_CONTROLLER = new ResourceLocation(MODEL_LOCATION + "AssemblyController.png");
     public static final ResourceLocation MODEL_UV_LIGHTBOX = new ResourceLocation(MODEL_LOCATION + "UVLightBox.png");

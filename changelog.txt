@@ -1,11 +1,18 @@
--Updated Oil textures to look better. Thanks again Glassmaker!
--Updated to the newest IGW-Mod conventions.
--Added warning to placement of the Regulator Tube (as it's being understood wrongly too often).
--The GPS Tool renderer of which block is selected now will render through blocks.
--Added a way to configurate a tube module with an Advanced PCB in a simple way, the most common configurations.
+-Added basic achievements to help with progression through the mod.
+-The Plastic Mixer now creates one plastic at a time instead of as much as it can create.
+-Added fr_FR localization for item/block names (Thanks to Mazdallier).
+-Added option to the Universal Sensor to measure multiple coordinates at once.
+-Added 1x Redstone -> 5x Rose Red as drill recipe for the Assembly line to provide an easy source of red dye, used in the Plastic Mixer.
+-The Laser&Drill Assembly program now actually can do any program, rather than just recipes that require drilling _and_ lasering.
+-The Assembly system will now only start when all items required are provided (instead of some amount).
+-Added tooltips to about all blocks/items.
+-Manometer now gives information about heat blocks.
+-Finished up the NEI plugins for the Thermopneumatic Processing Plant and Refinery.
+-The Vortex Tube now connects the cold and hot side with eathother with a high resistance, meaning that it works better when you vent the cold side to produce more heat. Let me know about the balance of this change :).
+-Added hard limits to temperature (max 2000C, min -273C).
+-Added Logistic Drone + PCB = Drone recipe, to allow upgrading of Logistic Drones.
+-Adjusted the ISidedness of the UV Light Box, Charging Station, (Advanced) Air Compressor and Air Cannon to not allow upgrades to be interfaced through the bottom, allowing other items to be interfaced.
+-Added redstone configuration of machines to Waila.
 
--Bugfix: Crash when shift-clicking in a Refinery.
--Bugfix: Refinery only responds to redstone applied to the bottommost Refinery.
--Bugfix: Preview render causes artifacts for existing tube modules.
--Bugfix: Pressure Tube releases air even though it has a module on a tube.
--Bugfix: Pressure Chamber Interface only allows setting a filter for one item.
+-Bugfix: Crash with Lycanite's Mob's and Entity Tracker.
+-Bugfix: You can't use upgrades in Logistic Drones.

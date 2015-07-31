@@ -1,10 +1,9 @@
 package pneumaticCraft.common.itemBlock;
 
 import net.minecraft.block.Block;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 
-public class ItemBlockPressureChamberWall extends ItemBlock{
+public class ItemBlockPressureChamberWall extends ItemBlockPneumaticCraft{
 
     public ItemBlockPressureChamberWall(Block block){
         super(block);

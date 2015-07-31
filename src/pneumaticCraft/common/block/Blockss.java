@@ -2,7 +2,6 @@ package pneumaticCraft.common.block;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.item.ItemBlock;
 import net.minecraftforge.oredict.OreDictionary;
 import pneumaticCraft.common.block.pneumaticPlants.BlockBurstPlant;
 import pneumaticCraft.common.block.pneumaticPlants.BlockChopperPlant;
@@ -18,9 +17,8 @@ import pneumaticCraft.common.block.pneumaticPlants.BlockRainPlant;
 import pneumaticCraft.common.block.pneumaticPlants.BlockRepulsionPlant;
 import pneumaticCraft.common.block.pneumaticPlants.BlockSlimePlant;
 import pneumaticCraft.common.block.pneumaticPlants.BlockSquidPlant;
-import pneumaticCraft.common.itemBlock.ItemBlockAdvancedPressureTube;
+import pneumaticCraft.common.itemBlock.ItemBlockPneumaticCraft;
 import pneumaticCraft.common.itemBlock.ItemBlockPressureChamberWall;
-import pneumaticCraft.common.itemBlock.ItemBlockPressureTube;
 import pneumaticCraft.common.thirdparty.ThirdPartyManager;
 import pneumaticCraft.lib.Names;
 import pneumaticCraft.lib.PneumaticValues;
@@ -152,7 +150,7 @@ public class Blockss{
     }
 
     private static void registerBlocks(){
-        registerBlock(pressureTube, ItemBlockPressureTube.class);
+        registerBlock(pressureTube);
         registerBlock(airCompressor);
         registerBlock(advancedAirCompressor);
         registerBlock(airCannon);
@@ -184,7 +182,7 @@ public class Blockss{
         registerBlock(assemblyDrill);
         registerBlock(assemblyLaser);
         registerBlock(assemblyController);
-        registerBlock(advancedPressureTube, ItemBlockAdvancedPressureTube.class);//TODO legacy remove item block.
+        registerBlock(advancedPressureTube);//TODO legacy remove item block.
         registerBlock(compressedIron);
         registerBlock(uvLightBox);
         registerBlock(securityStation);
@@ -211,10 +209,10 @@ public class Blockss{
     }
 
     public static void registerBlock(Block block){
-        registerBlock(block, ItemBlock.class);
+        registerBlock(block, ItemBlockPneumaticCraft.class);
     }
 
-    private static void registerBlock(Block block, Class<? extends ItemBlock> itemBlockClass){
+    private static void registerBlock(Block block, Class<? extends ItemBlockPneumaticCraft> itemBlockClass){
         GameRegistry.registerBlock(block, itemBlockClass, block.getUnlocalizedName().substring("tile.".length()));
         ThirdPartyManager.instance().onBlockRegistry(block);
     }

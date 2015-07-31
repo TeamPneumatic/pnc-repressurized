@@ -6,6 +6,7 @@ import pneumaticCraft.api.tileentity.IHeatExchanger;
 import pneumaticCraft.api.tileentity.IPneumaticMachine;
 import pneumaticCraft.common.block.pneumaticPlants.BlockPneumaticPlantBase;
 import pneumaticCraft.common.thirdparty.IThirdParty;
+import pneumaticCraft.common.tileentity.IRedstoneControl;
 import pneumaticCraft.common.tileentity.TileEntityPressureTube;
 import cpw.mods.fml.common.event.FMLInterModComms;
 
@@ -32,6 +33,7 @@ public class Waila implements IThirdParty{
         registrar.registerBodyProvider(new WailaHeatHandler(), IHeatExchanger.class);
         registrar.registerBodyProvider(new WailaPlantHandler(), BlockPneumaticPlantBase.class);
         registrar.registerBodyProvider(new WailaSemiBlockHandler(), Block.class);
+        registrar.registerBodyProvider(new WailaRedstoneControl(), IRedstoneControl.class);
 
         //registrar.registerSyncedNBTKey("pneumatic", IPneumaticMachine.class);
 
@@ -41,6 +43,7 @@ public class Waila implements IThirdParty{
         registrar.registerNBTProvider(new WailaHeatHandler(), IHeatExchanger.class);
         registrar.registerNBTProvider(new WailaTubeModuleHandler(), TileEntityPressureTube.class);
         registrar.registerNBTProvider(new WailaSemiBlockHandler(), Block.class);
+        registrar.registerNBTProvider(new WailaRedstoneControl(), IRedstoneControl.class);
         //TODO registrar.registerBodyProvider(new WailaHandler(), TileMultipart.class);
     }
 

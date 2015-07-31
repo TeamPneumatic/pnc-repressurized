@@ -98,12 +98,12 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<TileEntityUniv
     }
 
     @Override
-    protected String getRedstoneButtonText(int mode){
+    public String getRedstoneButtonText(int mode){
         return te.invertedRedstone ? "gui.tab.redstoneBehaviour.universalSensor.button.inverted" : "gui.tab.redstoneBehaviour.universalSensor.button.normal";
     }
 
     @Override
-    protected String getRedstoneString(){
+    public String getRedstoneString(){
         return "gui.tab.redstoneBehaviour.universalSensor.redstoneEmission";
     }
 

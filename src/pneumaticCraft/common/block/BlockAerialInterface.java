@@ -57,7 +57,7 @@ public class BlockAerialInterface extends BlockPneumaticCraft{
     }
 
     @Override
-    protected int getGuiID(){
+    public int getGuiID(){
         return CommonProxy.GUI_ID_AERIAL_INTERFACE;
     }
 

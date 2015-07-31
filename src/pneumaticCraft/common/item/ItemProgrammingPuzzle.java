@@ -4,12 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemDye;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.common.NBTUtil;
@@ -33,7 +34,13 @@ public class ItemProgrammingPuzzle extends ItemPneumatic{
      * allows items to add custom lines of information to the mouseover description
      */
     public void addInformation(ItemStack stack, EntityPlayer player, List par3List, boolean par4){
-        par3List.add(I18n.format("gui.tooltip.plasticPlant", I18n.format(Itemss.plasticPlant.getUnlocalizedName(stack) + ".name")));
+        super.addInformation(stack, player, par3List, par4);
+        par3List.add(new ItemStack(Itemss.plastic, 1, stack.getItemDamage()).getDisplayName());
+    }
+
+    @Override
+    public String getUnlocalizedName(ItemStack stack){
+        return super.getUnlocalizedName(stack) + "." + ItemDye.field_150923_a[MathHelper.clamp_int(stack.getItemDamage(), 0, 15)];
     }
 
     @Override

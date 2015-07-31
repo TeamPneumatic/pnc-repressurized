@@ -15,7 +15,6 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.ChunkPosition;
 import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.api.item.IProgrammable;
-import pneumaticCraft.client.AreaShowHandler;
 import pneumaticCraft.client.AreaShowManager;
 import pneumaticCraft.common.NBTUtil;
 import pneumaticCraft.common.block.Blockss;
@@ -71,14 +70,10 @@ import pneumaticCraft.common.progwidgets.ProgWidgetTeleport;
 import pneumaticCraft.common.progwidgets.ProgWidgetWait;
 import pneumaticCraft.common.util.IOHelper;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityProgrammer extends TileEntityBase implements IInventory{
+public class TileEntityProgrammer extends TileEntityBase implements IInventory, IGUITextFieldSensitive{
     public List<IProgWidget> progWidgets = new ArrayList<IProgWidget>();
     public static List<IProgWidget> registeredWidgets = new ArrayList<IProgWidget>();
-    @SideOnly(Side.CLIENT)
-    private static AreaShowHandler previewedArea;
     @GuiSynced
     public int redstoneMode;//for later use
     private ItemStack[] inventory = new ItemStack[1];
@@ -302,6 +297,18 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory{
                 break;
         }
         sendDescriptionPacket();
+    }
+
+    @Override
+    public void setText(int textFieldID, String text){
+        if(textFieldID == 0 && inventory[PROGRAM_SLOT] != null) {
+            inventory[PROGRAM_SLOT].setStackDisplayName(text);
+        }
+    }
+
+    @Override
+    public String getText(int textFieldID){
+        return inventory[PROGRAM_SLOT] != null ? inventory[PROGRAM_SLOT].getDisplayName() : "";
     }
 
     private void tryProgramDrone(EntityPlayer player){
@@ -548,9 +555,8 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory{
     public boolean previewArea(int widgetX, int widgetY){
         for(IProgWidget w : progWidgets) {
             if(w.getX() == widgetX && w.getY() == widgetY && w instanceof IAreaProvider) {
-                AreaShowManager.getInstance().removeHandler(previewedArea);
                 Set<ChunkPosition> area = ((IAreaProvider)w).getArea();
-                previewedArea = AreaShowManager.getInstance().showArea(area, 0x00FF00, this);
+                AreaShowManager.getInstance().showArea(area, 0x00FF00, this);
             }
         }
         return true;

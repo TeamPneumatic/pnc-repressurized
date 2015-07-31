@@ -8,7 +8,7 @@ public class EntityUtils{
      * @param entity
      * @return
      */
-    public static Item getLivingDropID(EntityLiving entity){
+    public static Item getLivingDrop(EntityLiving entity){
         return entity.getDropItem();
     }
 }

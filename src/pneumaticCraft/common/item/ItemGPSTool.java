@@ -55,6 +55,7 @@ public class ItemGPSTool extends ItemPneumatic{
     // case)
     @Override
     public void addInformation(ItemStack stack, EntityPlayer player, List infoList, boolean par4){
+        super.addInformation(stack, player, infoList, par4);
         NBTTagCompound compound = stack.stackTagCompound;
         if(compound != null) {
             int x = compound.getInteger("x");

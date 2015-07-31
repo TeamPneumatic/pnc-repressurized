@@ -1,8 +1,11 @@
 package pneumaticCraft.api.universalSensor;
 
 import java.util.List;
+import java.util.Set;
 
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.World;
 
 import org.lwjgl.util.Rectangle;
@@ -34,22 +37,20 @@ public interface IBlockAndCoordinatePollSensor{
 
     /**
      * See {@link IPollSensorSetting#getRedstoneValue(World, int, int, int, int, String)} , but this has the GPS tracked coordinates
-     * as extra parameters. This method will only be called when the coordinate is within the Universal Sensor's range.
+     * as extra parameters. This method will only invoke with a valid GPS tool, and when all the coordinates are within range.
      * @param world
      * @param x
      * @param y
      * @param z
      * @param sensorRange
      * @param textBoxText
-     * @param toolX
-     * @param toolY
-     * @param toolZ
+     * @param positions When only one GPS Tool is inserted this contains the position of just that tool. If two GPS Tools are inserted, These are both corners of a box, and every coordinate in this box is added to the positions argument.
      * @return
      */
-    public int getRedstoneValue(World world, int x, int y, int z, int sensorRange, String textBoxText, int toolX, int toolY, int toolZ);
+    public int getRedstoneValue(World world, int x, int y, int z, int sensorRange, String textBoxText, Set<ChunkPosition> positions);
 
     /**
-     * See {@link IPollSensorSetting#getPollFrequency()}
+     * See {@link IPollSensorSetting#getPollFrequency(TileEntity)}
      * @return
      */
     public int getPollFrequency();

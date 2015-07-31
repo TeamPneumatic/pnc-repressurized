@@ -25,8 +25,8 @@ public class AchievementHandler{
         registerAcquire(4, 0, Fluids.getBucket(Fluids.oil), getAchieve(Itemss.ingotIronCompressed));
         registerAcquire(6, 0, Blockss.refinery, getAchieve(Fluids.getBucket(Fluids.oil)));
         registerAcquire(8, 0, Itemss.plastic, getAchieve(Blockss.refinery));
-        registerAcquire(10, 0, Fluids.getBucket(Fluids.etchingAcid), getAchieve(Itemss.plastic));
-        registerAcquire(12, 0, Blockss.uvLightBox, getAchieve(Fluids.getBucket(Fluids.etchingAcid)));
+        registerAcquire(10, 0, Blockss.uvLightBox, getAchieve(Itemss.plastic));
+        registerAcquire(12, 0, Fluids.getBucket(Fluids.etchingAcid), getAchieve(Blockss.uvLightBox));
 
         register("dw9x9", 0, 2, new ItemStack(Blocks.cobblestone), null).setSpecial();
 

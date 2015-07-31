@@ -24,7 +24,7 @@ public class BlockProgrammer extends BlockPneumaticCraftModeled{
     }
 
     @Override
-    protected int getGuiID(){
+    public int getGuiID(){
         return CommonProxy.GUI_ID_PROGRAMMER;
     }
 

@@ -33,7 +33,7 @@ public class ModelAssemblyController extends ModelBase implements IBaseModel{
         textureWidth = 64;
         textureHeight = 32;
 
-        Base = new ModelRenderer(this, 8, 15);
+        Base = new ModelRenderer(this, 0, 15);
         Base.addBox(0F, 0F, 0F, 16, 1, 16);
         Base.setRotationPoint(-8F, 23F, -8F);
         Base.setTextureSize(64, 32);

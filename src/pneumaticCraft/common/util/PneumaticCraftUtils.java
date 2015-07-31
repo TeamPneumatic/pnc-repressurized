@@ -216,7 +216,12 @@ public class PneumaticCraftUtils{
      * @return
      */
     public static String roundNumberTo(double value, int decimals){
-        return "" + roundNumberToDouble(value, decimals);
+        double ret = roundNumberToDouble(value, decimals);
+        if(decimals == 0) {
+            return "" + (int)ret;
+        } else {
+            return "" + ret;
+        }
     }
 
     public static double roundNumberToDouble(double value, int decimals){

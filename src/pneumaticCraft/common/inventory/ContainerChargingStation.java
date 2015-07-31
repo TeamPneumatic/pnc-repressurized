@@ -13,7 +13,12 @@ public class ContainerChargingStation extends ContainerPneumaticBase<TileEntityC
         super(te);
 
         // add the cannoned slot.
-        addSlotToContainer(new Slot(te, 0, 91, 39));
+        addSlotToContainer(new Slot(te, 0, 91, 39){
+            @Override
+            public int getSlotStackLimit(){
+                return 1;
+            }
+        });
 
         // add the upgrade slots
         for(int i = 0; i < 2; i++) {

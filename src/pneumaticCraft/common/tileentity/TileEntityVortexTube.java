@@ -10,6 +10,7 @@ import pneumaticCraft.common.network.DescSynced;
 public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHeatExchanger{
     private final IHeatExchangerLogic coldHeatExchanger = PneumaticRegistry.getInstance().getHeatExchangerLogic();
     private final IHeatExchangerLogic hotHeatExchanger = PneumaticRegistry.getInstance().getHeatExchangerLogic();
+    private final IHeatExchangerLogic connectingExchanger = PneumaticRegistry.getInstance().getHeatExchangerLogic();
     private int visualizationTimer = 60;
 
     @DescSynced
@@ -23,6 +24,9 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
         super(20, 25, 2000);
         coldHeatExchanger.setThermalResistance(0.01);
         hotHeatExchanger.setThermalResistance(0.01);
+        connectingExchanger.setThermalResistance(100);
+        connectingExchanger.addConnectedExchanger(coldHeatExchanger);
+        connectingExchanger.addConnectedExchanger(hotHeatExchanger);
     }
 
     @Override
@@ -122,7 +126,8 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
     public void updateEntity(){
         super.updateEntity();
         if(!worldObj.isRemote) {
-            coldHeatExchanger.update();//Only update the cold side, the hot side is handled in TileEntityBase.
+            connectingExchanger.update();
+            coldHeatExchanger.update();//Only update the cold and connecting side, the hot side is handled in TileEntityBase.
             int usedAir = (int)(getPressure(ForgeDirection.UNKNOWN) * 10);
             if(usedAir > 0) {
                 addAir(-usedAir, ForgeDirection.UNKNOWN);

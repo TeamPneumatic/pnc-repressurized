@@ -21,6 +21,9 @@ public class EntityLogisticsDrone extends EntityDrone{
         NBTTagCompound tag = new NBTTagCompound();
         tag.setFloat("currentAir", currentAir);
         tag.setInteger("color", getDroneColor());
+        NBTTagCompound invTag = new NBTTagCompound();
+        writeEntityToNBT(invTag);
+        tag.setTag("UpgradeInventory", invTag.getTag("Inventory"));
         ItemStack drone = new ItemStack(Itemss.logisticsDrone);
         drone.setTagCompound(tag);
         return drone;

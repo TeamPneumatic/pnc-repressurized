@@ -18,6 +18,7 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.StatCollector;
 
 import org.apache.commons.lang3.text.WordUtils;
 import org.lwjgl.input.Keyboard;
@@ -27,12 +28,14 @@ import org.lwjgl.opengl.GL11;
 import pneumaticCraft.client.gui.widget.GuiCheckBox;
 import pneumaticCraft.client.gui.widget.GuiRadioButton;
 import pneumaticCraft.client.gui.widget.IGuiWidget;
+import pneumaticCraft.client.gui.widget.WidgetTextField;
 import pneumaticCraft.client.gui.widget.WidgetVerticalScrollbar;
 import pneumaticCraft.common.Config;
 import pneumaticCraft.common.inventory.ContainerProgrammer;
 import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.PacketGuiButton;
 import pneumaticCraft.common.network.PacketProgrammerUpdate;
+import pneumaticCraft.common.network.PacketUpdateTextfield;
 import pneumaticCraft.common.progwidgets.IJump;
 import pneumaticCraft.common.progwidgets.ILabel;
 import pneumaticCraft.common.progwidgets.IProgWidget;
@@ -58,10 +61,12 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
     private GuiButtonSpecial allWidgetsButton;
     private List<GuiRadioButton> difficultyButtons;
     private GuiCheckBox showInfo, showFlow;
+    private WidgetTextField nameField;
 
     private final List<IProgWidget> visibleSpawnWidgets = new ArrayList<IProgWidget>();
 
     private boolean wasClicking;
+    private boolean wasFocused;
     private IProgWidget draggingWidget;
     private int dragMouseStartX, dragMouseStartY;
     private int dragWidgetStartX, dragWidgetStartY;
@@ -76,6 +81,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
     private boolean showingAllWidgets;
     private int showingWidgetProgress;
     private int oldShowingWidgetProgress;
+    private static final int PROGRAMMING_START_Y = 17;
 
     public GuiProgrammer(InventoryPlayer player, TileEntityProgrammer te){
 
@@ -121,6 +127,11 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
             widgetPage = maxPage;
             updateVisibleProgWidgets();
         }
+    }
+
+    @Override
+    protected boolean shouldAddInfoTab(){
+        return false;
     }
 
     @Override
@@ -176,6 +187,15 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
 
         scaleScroll = new WidgetVerticalScrollbar(xStart + 302, yStart + 40, 129).setStates(9).setCurrentState(te.zoomState).setListening(true);
         addWidget(scaleScroll);
+
+        String containerName = te.hasCustomInventoryName() ? te.getInventoryName() : StatCollector.translateToLocal(te.getInventoryName() + ".name");
+        addLabel(containerName, guiLeft + 7, guiTop + 5);
+
+        nameField = new WidgetTextField(fontRendererObj, guiLeft + 200, guiTop + 5, 98, fontRendererObj.FONT_HEIGHT);
+        addWidget(nameField);
+
+        String name = I18n.format("gui.programmer.name");
+        addLabel(name, guiLeft + 197 - fontRendererObj.getStringWidth(name), guiTop + 5);
 
         lastZoom = te.zoomState;
         translatedX = te.translatedX;
@@ -319,6 +339,8 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
 
         super.drawGuiContainerBackgroundLayer(partialTicks, x, y);
 
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+
         int origX = x;
         int origY = y;
         x -= translatedX;
@@ -329,7 +351,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
 
         if(scaleScroll.getState() != lastZoom) {
             float shift = SCALE_PER_STEP * (scaleScroll.getState() - lastZoom);
-            if(new Rectangle(guiLeft + 5, guiTop + 5, 294, 166).contains(origX, origY)) {
+            if(new Rectangle(guiLeft + 5, guiTop + PROGRAMMING_START_Y, 294, 171 - PROGRAMMING_START_Y).contains(origX, origY)) {
                 translatedX += shift * x;
                 translatedY += shift * y;
             } else {
@@ -340,7 +362,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         lastZoom = scaleScroll.getState();
 
         ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft(), Minecraft.getMinecraft().displayWidth, Minecraft.getMinecraft().displayHeight);
-        GL11.glScissor((guiLeft + 5) * sr.getScaleFactor(), (sr.getScaledHeight() - 166 - (guiTop + 5)) * sr.getScaleFactor(), 294 * sr.getScaleFactor(), 166 * sr.getScaleFactor());
+        GL11.glScissor((guiLeft + 5) * sr.getScaleFactor(), (sr.getScaledHeight() - (171 - PROGRAMMING_START_Y) - (guiTop + PROGRAMMING_START_Y)) * sr.getScaleFactor(), 294 * sr.getScaleFactor(), (171 - PROGRAMMING_START_Y) * sr.getScaleFactor());
         GL11.glEnable(GL11.GL_SCISSOR_TEST);
 
         GL11.glPushMatrix();
@@ -423,7 +445,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
 
         if(draggingWidget != null) {
             setConnectingWidgetsToXY(draggingWidget, x - dragMouseStartX + dragWidgetStartX - guiLeft, y - dragMouseStartY + dragWidgetStartY - guiTop);
-        } else if(isLeftClicking && wasClicking && new Rectangle(guiLeft + 5, guiTop + 5, 294, 166).contains(origX, origY)) {
+        } else if(isLeftClicking && wasClicking && new Rectangle(guiLeft + 5, guiTop + PROGRAMMING_START_Y, 294, 171 - PROGRAMMING_START_Y).contains(origX, origY)) {
             translatedX += origX - lastMouseX;
             translatedY += origY - lastMouseY;
         }
@@ -628,7 +650,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         x += translatedX - guiLeft;
         y += translatedY - guiTop;
 
-        return x < 5 || x + widget.getWidth() * scale / 2 > xSize - 51 || y < 5 || y + widget.getHeight() * scale / 2 > 171;
+        return x < 5 || x + widget.getWidth() * scale / 2 > xSize - 51 || y < PROGRAMMING_START_Y || y + widget.getHeight() * scale / 2 > 171;
     }
 
     private void setConnectingWidgetsToXY(IProgWidget widget, int x, int y){
@@ -744,6 +766,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
     public void updateScreen(){
         super.updateScreen();
 
+        ItemStack programmedItem = te.getStackInSlot(TileEntityProgrammer.PROGRAM_SLOT);
         oldShowingWidgetProgress = showingWidgetProgress;
         if(showingAllWidgets) {
             int maxProgress = maxPage * 22;
@@ -766,7 +789,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
             w.addWarnings(warnings);
         }
 
-        boolean isDeviceInserted = te.getStackInSlot(TileEntityProgrammer.PROGRAM_SLOT) != null;
+        boolean isDeviceInserted = programmedItem != null;
         importButton.enabled = isDeviceInserted;
         exportButton.enabled = isDeviceInserted && errors.size() == 0;
 
@@ -774,7 +797,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         exportButtonTooltip.add("Export program");
         exportButtonTooltip.add(I18n.format("gui.programmer.button.export.programmingWhen", I18n.format("gui.programmer.button.export." + (te.redstoneMode == 0 ? "pressingButton" : "onItemInsert"))));
         exportButtonTooltip.add(I18n.format("gui.programmer.button.export.pressRToChange"));
-        if(te.getStackInSlot(TileEntityProgrammer.PROGRAM_SLOT) != null) {
+        if(programmedItem != null) {
             List<ItemStack> requiredPieces = te.getRequiredPuzzleStacks();
             List<ItemStack> returnedPieces = te.getReturnedPuzzleStacks();
             if(!requiredPieces.isEmpty() || !returnedPieces.isEmpty()) exportButtonTooltip.add("");
@@ -783,7 +806,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
                 if(player.capabilities.isCreativeMode) exportButtonTooltip.add("(Creative mode, so the following is free)");
                 for(ItemStack stack : requiredPieces) {
                     List<String> rawList = new ArrayList<String>();
-                    stack.getItem().addInformation(stack, null, rawList, false);
+                    rawList.add(stack.getDisplayName());
                     String prefix;
                     if(te.hasEnoughPuzzleStacks(player, stack)) {
                         prefix = EnumChatFormatting.GREEN.toString();
@@ -811,10 +834,32 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         if(warnings.size() > 0) exportButtonTooltip.add(EnumChatFormatting.YELLOW + I18n.format("gui.programmer.warningCount", warnings.size()));
 
         exportButton.setTooltipText(exportButtonTooltip);
+        if(programmedItem != null) {
+            nameField.setEnabled(true);
+            if(!nameField.isFocused()) {
+                if(wasFocused) {
+                    programmedItem.setStackDisplayName(nameField.getText());
+                    NetworkHandler.sendToServer(new PacketUpdateTextfield(te, 0));
+                }
+                nameField.setText(programmedItem.getDisplayName());
+                wasFocused = false;
+            } else {
+                wasFocused = true;
+            }
+        } else {
+            nameField.setEnabled(false);
+            nameField.setText("");
+            wasFocused = false;
+        }
     }
 
     @Override
     protected void mouseClicked(int x, int y, int par3){
+        ItemStack programmedItem = te.getStackInSlot(TileEntityProgrammer.PROGRAM_SLOT);
+        if(nameField.isFocused() && programmedItem != null) {
+            programmedItem.setStackDisplayName(nameField.getText());
+            NetworkHandler.sendToServer(new PacketUpdateTextfield(te, 0));
+        }
         super.mouseClicked(x, y, par3);
 
         if(par3 == 1 && showingWidgetProgress == 0) {

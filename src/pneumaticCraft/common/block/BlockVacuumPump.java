@@ -37,7 +37,7 @@ public class BlockVacuumPump extends BlockPneumaticCraftModeled{
     }
 
     @Override
-    protected int getGuiID(){
+    public int getGuiID(){
         return CommonProxy.GUI_ID_VACUUM_PUMP;
     }
 

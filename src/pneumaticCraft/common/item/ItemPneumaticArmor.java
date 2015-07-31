@@ -112,7 +112,7 @@ public class ItemPneumaticArmor extends ItemArmor implements IPressurizable, ICh
                 }
             }
         }
-
+        ItemPneumatic.addTooltip(iStack, player, textList);
     }
 
     /**

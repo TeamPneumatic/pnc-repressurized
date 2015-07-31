@@ -291,7 +291,7 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
 
     @Override
     public String getInventoryName(){
-        return Blockss.pneumaticDoor.getUnlocalizedName();
+        return Blockss.pneumaticDoorBase.getUnlocalizedName();
     }
 
     @Override
