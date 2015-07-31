@@ -2,7 +2,7 @@ package pneumaticCraft.common.semiblock;
 
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
-import pneumaticCraft.proxy.CommonProxy;
+import pneumaticCraft.proxy.CommonProxy.EnumGuiId;
 
 public class SemiBlockActiveProvider extends SemiBlockLogistics implements ISpecificProvider{
     public static String ID = "logisticFrameActiveProvider";
@@ -18,8 +18,8 @@ public class SemiBlockActiveProvider extends SemiBlockLogistics implements ISpec
     }
 
     @Override
-    public int getGuiID(){
-        return CommonProxy.GUI_ID_LOGISTICS_PASSIVE_PROVIDER;
+    public EnumGuiId getGuiID(){
+        return EnumGuiId.LOGISTICS_PASSIVE_PROVIDER;
     }
 
     @Override

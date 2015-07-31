@@ -12,7 +12,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityHopper;
 import net.minecraft.world.World;
 import pneumaticCraft.common.tileentity.TileEntityElevatorBase;
-import pneumaticCraft.proxy.CommonProxy;
+import pneumaticCraft.proxy.CommonProxy.EnumGuiId;
 
 public class BlockElevatorBase extends BlockPneumaticCraftModeled{
 
@@ -35,8 +35,8 @@ public class BlockElevatorBase extends BlockPneumaticCraftModeled{
     }
 
     @Override
-    public int getGuiID(){
-        return CommonProxy.GUI_ID_ELEVATOR;
+    public EnumGuiId getGuiID(){
+        return EnumGuiId.ELEVATOR;
     }
 
     @Override

@@ -27,7 +27,7 @@ public class ItemLogisticsFrame extends ItemSemiBlockBase{
     @Override
     public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player){
         if(!world.isRemote) {
-            player.openGui(PneumaticCraft.instance, ((SemiBlockLogistics)getSemiBlock(world, 0, 0, 0, stack)).getGuiID(), world, 0, 0, 0);
+            player.openGui(PneumaticCraft.instance, ((SemiBlockLogistics)getSemiBlock(world, 0, 0, 0, stack)).getGuiID().ordinal(), world, 0, 0, 0);
         }
         return stack;
     }

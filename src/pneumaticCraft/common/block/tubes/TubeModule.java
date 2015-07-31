@@ -20,6 +20,7 @@ import pneumaticCraft.common.thirdparty.ModInteractionUtils;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.BBConstants;
 import pneumaticCraft.lib.ModIds;
+import pneumaticCraft.proxy.CommonProxy.EnumGuiId;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import cpw.mods.fml.client.FMLClientHandler;
@@ -196,13 +197,13 @@ public abstract class TubeModule implements ISidedPart{
     }
 
     public boolean onActivated(EntityPlayer player){
-        if(!player.worldObj.isRemote && upgraded && getGuiId() != 0) {
-            NetworkHandler.sendTo(new PacketOpenTubeModuleGui(getGuiId(), pressureTube.x(), pressureTube.y(), pressureTube.z()), (EntityPlayerMP)player);
+        if(!player.worldObj.isRemote && upgraded && getGuiId() != null) {
+            NetworkHandler.sendTo(new PacketOpenTubeModuleGui(getGuiId().ordinal(), pressureTube.x(), pressureTube.y(), pressureTube.z()), (EntityPlayerMP)player);
             return true;
         }
         return false;
     }
 
-    protected abstract int getGuiId();
+    protected abstract EnumGuiId getGuiId();
 
 }

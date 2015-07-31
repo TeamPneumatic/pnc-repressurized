@@ -10,7 +10,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import pneumaticCraft.common.tileentity.TileEntityVacuumPump;
 import pneumaticCraft.lib.BBConstants;
-import pneumaticCraft.proxy.CommonProxy;
+import pneumaticCraft.proxy.CommonProxy.EnumGuiId;
 
 public class BlockVacuumPump extends BlockPneumaticCraftModeled{
 
@@ -37,8 +37,8 @@ public class BlockVacuumPump extends BlockPneumaticCraftModeled{
     }
 
     @Override
-    public int getGuiID(){
-        return CommonProxy.GUI_ID_VACUUM_PUMP;
+    public EnumGuiId getGuiID(){
+        return EnumGuiId.VACUUM_PUMP;
     }
 
     @Override

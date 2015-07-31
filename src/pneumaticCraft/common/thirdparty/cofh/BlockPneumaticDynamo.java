@@ -3,7 +3,7 @@ package pneumaticCraft.common.thirdparty.cofh;
 import net.minecraft.block.material.Material;
 import net.minecraft.tileentity.TileEntity;
 import pneumaticCraft.common.block.BlockPneumaticCraftModeled;
-import pneumaticCraft.proxy.CommonProxy;
+import pneumaticCraft.proxy.CommonProxy.EnumGuiId;
 
 public class BlockPneumaticDynamo extends BlockPneumaticCraftModeled{
 
@@ -17,8 +17,8 @@ public class BlockPneumaticDynamo extends BlockPneumaticCraftModeled{
     }
 
     @Override
-    public int getGuiID(){
-        return CommonProxy.GUI_ID_PNEUMATIC_DYNAMO;
+    public EnumGuiId getGuiID(){
+        return EnumGuiId.PNEUMATIC_DYNAMO;
     }
 
     @Override

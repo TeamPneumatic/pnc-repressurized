@@ -44,7 +44,7 @@ public class WailaRedstoneControl implements IWailaDataProvider{
 
         if(tag.hasKey("redstoneMode")) {
             int mode = tag.getInteger("redstoneMode");
-            GuiPneumaticContainerBase gui = (GuiPneumaticContainerBase)PneumaticCraft.proxy.getClientGuiElement(((BlockPneumaticCraft)accessor.getBlock()).getGuiID(), accessor.getPlayer(), accessor.getWorld(), accessor.getPosition().blockX, accessor.getPosition().blockY, accessor.getPosition().blockZ);
+            GuiPneumaticContainerBase gui = (GuiPneumaticContainerBase)PneumaticCraft.proxy.getClientGuiElement(((BlockPneumaticCraft)accessor.getBlock()).getGuiID().ordinal(), accessor.getPlayer(), accessor.getWorld(), accessor.getPosition().blockX, accessor.getPosition().blockY, accessor.getPosition().blockZ);
             if(gui != null) {
                 values.put(gui.getRedstoneString(), gui.getRedstoneButtonText(mode));
             }

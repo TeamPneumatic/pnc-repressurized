@@ -4,7 +4,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 import pneumaticCraft.common.tileentity.TileEntityElectrostaticCompressor;
-import pneumaticCraft.proxy.CommonProxy;
+import pneumaticCraft.proxy.CommonProxy.EnumGuiId;
 
 public class BlockElectrostaticCompressor extends BlockPneumaticCraftModeled{
     public BlockElectrostaticCompressor(Material par2Material){
@@ -17,8 +17,8 @@ public class BlockElectrostaticCompressor extends BlockPneumaticCraftModeled{
     }
 
     @Override
-    public int getGuiID(){
-        return CommonProxy.GUI_ID_ELECTROSTATIC_COMPRESSOR;
+    public EnumGuiId getGuiID(){
+        return EnumGuiId.ELECTROSTATIC_COMPRESSOR;
     }
 
     /**

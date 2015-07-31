@@ -16,7 +16,7 @@ import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.common.tileentity.TileEntityAphorismTile;
 import pneumaticCraft.lib.BBConstants;
 import pneumaticCraft.lib.Textures;
-import pneumaticCraft.proxy.CommonProxy;
+import pneumaticCraft.proxy.CommonProxy.EnumGuiId;
 
 public class BlockAphorismTile extends BlockPneumaticCraft{
     public BlockAphorismTile(Material par2Material){
@@ -70,7 +70,7 @@ public class BlockAphorismTile extends BlockPneumaticCraft{
             }
         }
         if(world.isRemote && entityLiving instanceof EntityPlayer) {
-            ((EntityPlayer)entityLiving).openGui(PneumaticCraft.instance, CommonProxy.GUI_ID_APHORISM_TILE, world, x, y, z);
+            ((EntityPlayer)entityLiving).openGui(PneumaticCraft.instance, EnumGuiId.APHORISM_TILE.ordinal(), world, x, y, z);
         }
     }
 

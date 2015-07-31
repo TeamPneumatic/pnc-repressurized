@@ -11,7 +11,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import pneumaticCraft.common.tileentity.TileEntityAssemblyController;
 import pneumaticCraft.lib.BBConstants;
-import pneumaticCraft.proxy.CommonProxy;
+import pneumaticCraft.proxy.CommonProxy.EnumGuiId;
 
 public class BlockAssemblyController extends BlockPneumaticCraftModeled{
 
@@ -37,8 +37,8 @@ public class BlockAssemblyController extends BlockPneumaticCraftModeled{
     }
 
     @Override
-    public int getGuiID(){
-        return CommonProxy.GUI_ID_ASSEMBLY_CONTROLLER;
+    public EnumGuiId getGuiID(){
+        return EnumGuiId.ASSEMBLY_CONTROLLER;
     }
 
     @Override

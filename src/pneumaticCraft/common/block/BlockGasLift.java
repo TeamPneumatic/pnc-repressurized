@@ -3,7 +3,7 @@ package pneumaticCraft.common.block;
 import net.minecraft.block.material.Material;
 import net.minecraft.tileentity.TileEntity;
 import pneumaticCraft.common.tileentity.TileEntityGasLift;
-import pneumaticCraft.proxy.CommonProxy;
+import pneumaticCraft.proxy.CommonProxy.EnumGuiId;
 
 public class BlockGasLift extends BlockPneumaticCraftModeled{
 
@@ -18,8 +18,8 @@ public class BlockGasLift extends BlockPneumaticCraftModeled{
     }
 
     @Override
-    public int getGuiID(){
-        return CommonProxy.GUI_ID_GAS_LIFT;
+    public EnumGuiId getGuiID(){
+        return EnumGuiId.GAS_LIFT;
     }
 
 }

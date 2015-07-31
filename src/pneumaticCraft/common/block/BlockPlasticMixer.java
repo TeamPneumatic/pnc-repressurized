@@ -10,7 +10,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import pneumaticCraft.common.tileentity.TileEntityPlasticMixer;
 import pneumaticCraft.lib.BBConstants;
-import pneumaticCraft.proxy.CommonProxy;
+import pneumaticCraft.proxy.CommonProxy.EnumGuiId;
 
 public class BlockPlasticMixer extends BlockPneumaticCraftModeled{
 
@@ -24,8 +24,8 @@ public class BlockPlasticMixer extends BlockPneumaticCraftModeled{
     }
 
     @Override
-    public int getGuiID(){
-        return CommonProxy.GUI_ID_PLASTIC_MIXER;
+    public EnumGuiId getGuiID(){
+        return EnumGuiId.PLASTIC_MIXER;
     }
 
     @Override

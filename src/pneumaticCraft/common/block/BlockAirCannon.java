@@ -13,7 +13,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import pneumaticCraft.common.tileentity.TileEntityAirCannon;
 import pneumaticCraft.lib.BBConstants;
-import pneumaticCraft.proxy.CommonProxy;
+import pneumaticCraft.proxy.CommonProxy.EnumGuiId;
 
 public class BlockAirCannon extends BlockPneumaticCraftModeled{
 
@@ -34,8 +34,8 @@ public class BlockAirCannon extends BlockPneumaticCraftModeled{
     }
 
     @Override
-    public int getGuiID(){
-        return CommonProxy.GUI_ID_AIR_CANNON;
+    public EnumGuiId getGuiID(){
+        return EnumGuiId.AIR_CANNON;
     }
 
     @Override

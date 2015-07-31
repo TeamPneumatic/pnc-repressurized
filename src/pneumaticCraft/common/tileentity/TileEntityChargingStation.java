@@ -28,7 +28,7 @@ import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.network.DescSynced;
 import pneumaticCraft.common.network.GuiSynced;
 import pneumaticCraft.lib.PneumaticValues;
-import pneumaticCraft.proxy.CommonProxy;
+import pneumaticCraft.proxy.CommonProxy.EnumGuiId;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -151,7 +151,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
             if(redstoneMode > 3) redstoneMode = 0;
             updateNeighbours();
         } else if((buttonID == 1 || buttonID == 2) && inventory[CHARGE_INVENTORY_INDEX] != null && inventory[CHARGE_INVENTORY_INDEX].getItem() instanceof IChargingStationGUIHolderItem) {
-            player.openGui(PneumaticCraft.instance, buttonID == 1 ? ((IChargingStationGUIHolderItem)inventory[CHARGE_INVENTORY_INDEX].getItem()).getGuiID() : CommonProxy.GUI_ID_CHARGING_STATION, worldObj, xCoord, yCoord, zCoord);
+            player.openGui(PneumaticCraft.instance, buttonID == 1 ? ((IChargingStationGUIHolderItem)inventory[CHARGE_INVENTORY_INDEX].getItem()).getGuiID().ordinal() : EnumGuiId.CHARGING_STATION.ordinal(), worldObj, xCoord, yCoord, zCoord);
         }
     }
 
@@ -259,7 +259,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
                     if(itemStack != null && itemStack.getItem() instanceof IChargingStationGUIHolderItem) {
                         // player.openGui(PneumaticCraft.instance, CommonProxy.GUI_ID_PNEUMATIC_ARMOR, worldObj, xCoord, yCoord, zCoord);
                     } else {
-                        player.openGui(PneumaticCraft.instance, CommonProxy.GUI_ID_CHARGING_STATION, worldObj, xCoord, yCoord, zCoord);
+                        player.openGui(PneumaticCraft.instance, EnumGuiId.CHARGING_STATION.ordinal(), worldObj, xCoord, yCoord, zCoord);
                     }
                 }
             }

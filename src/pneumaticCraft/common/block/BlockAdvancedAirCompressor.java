@@ -3,7 +3,7 @@ package pneumaticCraft.common.block;
 import net.minecraft.block.material.Material;
 import net.minecraft.tileentity.TileEntity;
 import pneumaticCraft.common.tileentity.TileEntityAdvancedAirCompressor;
-import pneumaticCraft.proxy.CommonProxy;
+import pneumaticCraft.proxy.CommonProxy.EnumGuiId;
 
 public class BlockAdvancedAirCompressor extends BlockAirCompressor{
 
@@ -12,8 +12,8 @@ public class BlockAdvancedAirCompressor extends BlockAirCompressor{
     }
 
     @Override
-    public int getGuiID(){
-        return CommonProxy.GUI_ID_ADVANCED_AIR_COMPRESSOR;
+    public EnumGuiId getGuiID(){
+        return EnumGuiId.ADVANCED_AIR_COMPRESSOR;
     }
 
     @Override

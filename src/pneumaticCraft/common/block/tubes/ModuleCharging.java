@@ -12,6 +12,7 @@ import pneumaticCraft.common.util.IOHelper;
 import pneumaticCraft.common.util.TileEntityCache;
 import pneumaticCraft.lib.Names;
 import pneumaticCraft.lib.PneumaticValues;
+import pneumaticCraft.proxy.CommonProxy.EnumGuiId;
 
 public class ModuleCharging extends TubeModule{
     private final IBaseModel model = new ModelCharging();
@@ -28,8 +29,8 @@ public class ModuleCharging extends TubeModule{
     }
 
     @Override
-    protected int getGuiId(){
-        return 0;
+    protected EnumGuiId getGuiId(){
+        return null;
     }
 
     @Override

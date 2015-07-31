@@ -19,7 +19,7 @@ import pneumaticCraft.common.item.ItemPneumaticArmor;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.tileentity.TileEntitySecurityStation;
 import pneumaticCraft.lib.BBConstants;
-import pneumaticCraft.proxy.CommonProxy;
+import pneumaticCraft.proxy.CommonProxy.EnumGuiId;
 
 public class BlockSecurityStation extends BlockPneumaticCraftModeled{
 
@@ -69,7 +69,7 @@ public class BlockSecurityStation extends BlockPneumaticCraftModeled{
                 TileEntitySecurityStation te = (TileEntitySecurityStation)world.getTileEntity(x, y, z);
                 if(te != null) {
                     if(te.isPlayerOnWhiteList(player)) {
-                        player.openGui(PneumaticCraft.instance, CommonProxy.GUI_ID_SECURITY_STATION_INVENTORY, world, x, y, z);
+                        player.openGui(PneumaticCraft.instance, EnumGuiId.SECURITY_STATION_INVENTORY.ordinal(), world, x, y, z);
                     } else if(!te.hasValidNetwork()) {
                         player.addChatComponentMessage(new ChatComponentTranslation(EnumChatFormatting.GREEN + "This Security Station is out of order: Its network hasn't been properly configured."));
                     } else if(te.hasPlayerHacked(player)) {
@@ -77,7 +77,7 @@ public class BlockSecurityStation extends BlockPneumaticCraftModeled{
                     } else if(getPlayerHackLevel(player) < te.getSecurityLevel()) {
                         player.addChatComponentMessage(new ChatComponentTranslation(EnumChatFormatting.RED + "You can't access or hack this Security Station. To hack it you need at least a Pneumatic Helmet upgraded with " + te.getSecurityLevel() + " Security upgrade(s)."));
                     } else {
-                        player.openGui(PneumaticCraft.instance, CommonProxy.GUI_ID_HACKING, world, x, y, z);
+                        player.openGui(PneumaticCraft.instance, EnumGuiId.HACKING.ordinal(), world, x, y, z);
                     }
                 }
             }

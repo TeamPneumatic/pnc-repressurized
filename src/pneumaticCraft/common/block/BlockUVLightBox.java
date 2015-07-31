@@ -12,7 +12,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.common.tileentity.TileEntityUVLightBox;
 import pneumaticCraft.lib.BBConstants;
-import pneumaticCraft.proxy.CommonProxy;
+import pneumaticCraft.proxy.CommonProxy.EnumGuiId;
 
 public class BlockUVLightBox extends BlockPneumaticCraftModeled{
 
@@ -44,8 +44,8 @@ public class BlockUVLightBox extends BlockPneumaticCraftModeled{
     }
 
     @Override
-    public int getGuiID(){
-        return CommonProxy.GUI_ID_UV_LIGHT_BOX;
+    public EnumGuiId getGuiID(){
+        return EnumGuiId.UV_LIGHT_BOX;
     }
 
     @Override

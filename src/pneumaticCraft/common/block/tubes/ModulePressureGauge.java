@@ -9,7 +9,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.client.model.IBaseModel;
 import pneumaticCraft.client.model.tubemodules.ModelGauge;
 import pneumaticCraft.lib.Names;
-import pneumaticCraft.proxy.CommonProxy;
+import pneumaticCraft.proxy.CommonProxy.EnumGuiId;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -88,7 +88,7 @@ public class ModulePressureGauge extends TubeModuleRedstoneEmitting{
     }
 
     @Override
-    protected int getGuiId(){
-        return CommonProxy.GUI_ID_PRESSURE_MODULE;
+    protected EnumGuiId getGuiId(){
+        return EnumGuiId.PRESSURE_MODULE;
     }
 }
