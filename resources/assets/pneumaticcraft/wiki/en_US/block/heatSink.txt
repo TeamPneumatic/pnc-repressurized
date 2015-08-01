@@ -1,4 +1,4 @@
-The Heat Sink is a block used to get rid of [link{menu/heat}]heat [link{}]. It has a reasonably low resistance to the air, which is used to get rid of the heat. Its general purpose is to help cool down compressors which create heat.
+The Heat Sink is a block used to get rid of [link{pneumaticcraft:menu/heat}]heat [link{}]. It has a reasonably low resistance to the air, which is used to get rid of the heat. Its general purpose is to help cool down compressors which create heat.
 [image{200,5,0.60,igwmod:textures/heatSink.png}]
  
 Heat Sinks are only connecting heat wise on the single solid side of the Heat Sink. So to connect up a row of Heat Sinks, conductors like a [link{block/compressedIronBlock}]Blocks of Compressed Iron[link{}] are required.

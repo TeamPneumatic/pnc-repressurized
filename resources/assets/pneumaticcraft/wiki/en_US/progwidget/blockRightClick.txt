@@ -7,4 +7,4 @@ You could use this piece to place down regular blocks. However, it is not recomm
 1. A Drone doesn't know when it's 'done' right clicking the block. For every 'Right Click Block' cycle it will visit all blocks to right click them, regardless of whether they've got a block already.
 2. When a Drone right clicks a position where a block exists already, it will right click the block, resulting in placing down a block next to this block. This could very well be in an unwanted position.
 
-for these reasons the use of the [link{progwidget/place}]Place piece[link{}] is preferred. There are some situations (like with trying to place down Nether Wart or Seeds) where this piece is required.
+for these reasons the use of the [link{pneumaticcraft:progwidget/place}]Place piece[link{}] is preferred. There are some situations (like with trying to place down Nether Wart or Seeds) where this piece is required.

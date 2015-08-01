@@ -1,4 +1,4 @@
-Etching Acid is used to chemically develop [link{menu/printedCircuitBoards}]PCB's [link{}]. Etching Acid is made in a Pressure Chamber:
+Etching Acid is used to chemically develop [link{pneumaticcraft:menu/printedCircuitBoards}]PCB's [link{}]. Etching Acid is made in a Pressure Chamber:
 
 [pressureChamber{190, 60, item/etchingAcidBucket}]
 

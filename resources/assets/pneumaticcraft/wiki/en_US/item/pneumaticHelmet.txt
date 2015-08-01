@@ -20,7 +20,7 @@ Upgrades need to be installed by putting the Helmet in a Charging Station and by
 
 [image{350, 500, 0.4, igwmod:textures/entityTracker.png}]
 [prefix{l}]Entity Tracker[prefix{}]
-Any living creatures within a range of 16 blocks will automatically be tracked. This works through walls. When this entity is an aggressive mob you'll get a warning. This allows you to prepare for battle (or escape). You can filter which entities need to be tracked in the GUI. This follows the [link{misc/entityFilter}]entity filter[link{}] standard.
+Any living creatures within a range of 16 blocks will automatically be tracked. This works through walls. When this entity is an aggressive mob you'll get a warning. This allows you to prepare for battle (or escape). You can filter which entities need to be tracked in the GUI. This follows the [link{pneumaticcraft:misc/entityFilter}]entity filter[link{}] standard.
 
 [image{200, 600, 0.9, igwmod:textures/blockTracker.png}]
 [prefix{l}]Block Tracker[prefix{}]

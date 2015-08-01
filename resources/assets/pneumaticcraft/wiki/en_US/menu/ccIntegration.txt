@@ -18,7 +18,7 @@ Apart from the methods that apply to any pneumatic machine, you can also use the
 -getMinWorkingPressure() - Returns the minimal pressure needed to fire the cannon (the yellow to green threshold in the GUI).
 -fire() - Will fire the Air Cannon, provided that there's enough pressure to do so, and when there are items inserted. Returns true if successful.
 
-[link{menu/elevator}]Elevator (Base)[link{}]
+[link{pneumaticcraft:menu/elevator}]Elevator (Base)[link{}]
 Apart from the methods that apply to any pneumatic machine, you can also use the following functions when connected to any Elevator Base:
 -setExternalControl(<true/false>) - When parsed true, this will set the Elevator's 'redstone mode' to 'Elevator Caller' mode, which is also applicable for ComputerCraft control. You don't have to set it prior to calling setTargetHeight though: The mode will be changed to external control automatically.
 -getMinWorkingPressure() - Returns the minimal pressure needed to extend the Elevator (the yellow to green threshold in the GUI). Making the Elevator go down is free.

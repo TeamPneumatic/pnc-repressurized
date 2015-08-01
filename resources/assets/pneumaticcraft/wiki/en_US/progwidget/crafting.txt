@@ -1,7 +1,7 @@
 Programming Puzzles are used in [link{block/programmer}]programmers [link{}].
 
 [prefix{l}]The Crafting piece [prefix{}]
-The Drone will items using items it has in its inventory. To specify a crafting recipe, place [link{progwidget/itemFilter}]Item Filter[link{}] on the right side of the Crafting widget, in the pattern of the crafting recipe.
+The Drone will items using items it has in its inventory. To specify a crafting recipe, place [link{pneumaticcraft:progwidget/itemFilter}]Item Filter[link{}] on the right side of the Crafting widget, in the pattern of the crafting recipe.
 [image{200,95,0.97,igwmod:textures/craftingPiece.png}]
 
 You are not obliged to use exactly nine Item Filters: As long as you can create the recipe pattern it will work.
