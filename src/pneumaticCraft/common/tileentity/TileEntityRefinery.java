@@ -79,7 +79,7 @@ public class TileEntityRefinery extends TileEntityBase implements IFluidHandler,
                 }
 
                 if(refineries.size() > 1 && refineries.size() <= refiningFluids.length && refine(refineries, true)) {
-                    int progress = Math.max(0, ((int)heatExchanger.getTemperature() - 365) / 30);
+                    int progress = Math.max(0, ((int)heatExchanger.getTemperature() - 343) / 30);
                     progress = Math.min(5, progress);
                     heatExchanger.addHeat(-progress * 1);
                     workTimer += progress;
