@@ -28,16 +28,16 @@ import pneumaticCraft.common.semiblock.SemiBlockLogistics;
 import pneumaticCraft.common.semiblock.SemiBlockManager;
 import pneumaticCraft.lib.Textures;
 
-public class GuiLogisticsBase extends GuiPneumaticContainerBase{
-    private final SemiBlockLogistics logistics;
+public class GuiLogisticsBase<Logistics extends SemiBlockLogistics> extends GuiPneumaticContainerBase{
+    protected final Logistics logistics;
     private GuiSearcher searchGui;
     private GuiLogisticsLiquidFilter fluidSearchGui;
     private int editingSlot; //either fluid or item search.
     private GuiCheckBox invisible;
 
-    public GuiLogisticsBase(InventoryPlayer invPlayer, SemiBlockLogistics requester){
+    public GuiLogisticsBase(InventoryPlayer invPlayer, Logistics requester){
         super(new ContainerLogistics(invPlayer, requester), null, Textures.GUI_LOGISTICS_REQUESTER);
-        logistics = ((ContainerLogistics)inventorySlots).logistics;
+        logistics = (Logistics)((ContainerLogistics)inventorySlots).logistics;
         ySize = 216;
     }
 

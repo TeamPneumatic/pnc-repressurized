@@ -1,26 +1,32 @@
 package pneumaticCraft.common.semiblock;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 import pneumaticCraft.common.item.Itemss;
+import pneumaticCraft.common.network.GuiSynced;
 import pneumaticCraft.common.util.IOHelper;
 import pneumaticCraft.lib.Log;
 import pneumaticCraft.lib.ModIds;
 import pneumaticCraft.proxy.CommonProxy;
 import appeng.api.AEApi;
+import appeng.api.config.AccessRestriction;
+import appeng.api.config.Actionable;
 import appeng.api.exceptions.FailedConnection;
 import appeng.api.networking.GridFlags;
 import appeng.api.networking.GridNotification;
@@ -34,10 +40,17 @@ import appeng.api.networking.crafting.ICraftingProvider;
 import appeng.api.networking.crafting.ICraftingProviderHelper;
 import appeng.api.networking.crafting.ICraftingWatcher;
 import appeng.api.networking.crafting.ICraftingWatcherHost;
+import appeng.api.networking.events.MENetworkCellArrayUpdate;
 import appeng.api.networking.events.MENetworkCraftingPatternChange;
 import appeng.api.networking.security.BaseActionSource;
 import appeng.api.networking.storage.IStackWatcher;
 import appeng.api.networking.storage.IStackWatcherHost;
+import appeng.api.networking.ticking.IGridTickable;
+import appeng.api.networking.ticking.TickRateModulation;
+import appeng.api.networking.ticking.TickingRequest;
+import appeng.api.storage.ICellContainer;
+import appeng.api.storage.IMEInventory;
+import appeng.api.storage.IMEInventoryHandler;
 import appeng.api.storage.StorageChannel;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IAEStack;
@@ -53,9 +66,14 @@ import cpw.mods.fml.common.Optional.Interface;
 
 @Optional.InterfaceList({@Interface(iface = "appeng.api.networking.IGridHost", modid = ModIds.AE2), @Interface(iface = "appeng.api.networking.IGridBlock", modid = ModIds.AE2), @Interface(iface = "appeng.api.networking.crafting.ICraftingProvider", modid = ModIds.AE2), @Interface(iface = "appeng.api.networking.crafting.ICraftingWatcherHost", modid = ModIds.AE2), @Interface(iface = "appeng.api.networking.storage.IStackWatcherHost", modid = ModIds.AE2)})
 public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificRequester, IProvidingInventoryListener,
-        IGridHost, IGridBlock, ICraftingProvider, ICraftingWatcherHost, IStackWatcherHost{
+        IGridHost, IGridBlock, ICraftingProvider, ICraftingWatcherHost, IStackWatcherHost,
+        IMEInventoryHandler<IAEItemStack>, ICellContainer, IGridTickable{
 
     public static final String ID = "logisticFrameRequester";
+
+    //AE2 integration
+    @GuiSynced
+    private boolean aeMode;
     private Object gridNode;
     private Object craftingGrid;
     private Object stackWatcher;
@@ -172,15 +190,15 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
     public void update(){
         super.update();
 
-        if(needToCheckForInterface) {
-            if(Loader.isModLoaded(ModIds.AE2) && !world.isRemote && gridNode == null) {
-                needToCheckForInterface = checkForInterface();
-            } else {
-                needToCheckForInterface = false;
-            }
-        }
-
         if(!world.isRemote) {
+            if(needToCheckForInterface) {
+                if(Loader.isModLoaded(ModIds.AE2) && !world.isRemote && aeMode && gridNode == null) {
+                    needToCheckForInterface = checkForInterface();
+                } else {
+                    needToCheckForInterface = false;
+                }
+            }
+
             Iterator<Map.Entry<TileEntity, Integer>> iterator = providingInventories.entrySet().iterator();
             while(iterator.hasNext()) {
                 Map.Entry<TileEntity, Integer> entry = iterator.next();
@@ -190,13 +208,35 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
                     entry.setValue(entry.getValue() - 1);
                 }
             }
-            if(world.getWorldTime() % 100 == 0) {//We need to update on interval, as the contents of inventories can change without us knowing.
-                //updateProvidingItems();
-                if(Loader.isModLoaded(ModIds.AE2)) {
-                    notifyNetworkOfCraftingChange();
-                }
+        }
+    }
+
+    @Override
+    public void handleGUIButtonPress(int guiID, EntityPlayer player){
+        if(guiID == 1) {
+            aeMode = !aeMode;
+            needToCheckForInterface = aeMode;
+            if(!aeMode && gridNode != null) {
+                disconnectFromInterface();
             }
         }
+        super.handleGUIButtonPress(guiID, player);
+    }
+
+    public boolean isIntegrationEnabled(){
+        return aeMode;
+    }
+
+    @Override
+    public void writeToNBT(NBTTagCompound tag){
+        super.writeToNBT(tag);
+        tag.setBoolean("aeMode", aeMode);
+    }
+
+    @Override
+    public void readFromNBT(NBTTagCompound tag){
+        super.readFromNBT(tag);
+        aeMode = tag.getBoolean("aeMode");
     }
 
     @Override
@@ -207,11 +247,15 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
         }
     }
 
+    public boolean isPlacedOnInterface(){
+        return getTileEntity() instanceof TileInterface;
+    }
+
     private boolean checkForInterface(){
         TileEntity te = getTileEntity();
         if(te instanceof TileInterface) {
-            if(getGridNode(null) == null) return true;
             if(((TileInterface)te).getGridNode(null) == null) return true;
+            if(getGridNode(null) == null) return true;
             try {
                 AEApi.instance().createGridConnection(getGridNode(null), ((TileInterface)te).getGridNode(null));
             } catch(FailedConnection e) {
@@ -224,6 +268,7 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
 
     private void disconnectFromInterface(){
         ((IGridNode)gridNode).destroy();
+        gridNode = null;
     }
 
     //IGridHost
@@ -255,7 +300,7 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
 
     @Override
     public EnumSet<GridFlags> getFlags(){
-        return EnumSet.noneOf(GridFlags.class);
+        return EnumSet.of(GridFlags.REQUIRE_CHANNEL);
     }
 
     @Override
@@ -284,10 +329,7 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
     }
 
     @Override
-    public void gridChanged(){
-        // TODO Auto-generated method stub
-
-    }
+    public void gridChanged(){}
 
     @Override
     public boolean isWorldAccessible(){
@@ -295,16 +337,10 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
     }
 
     @Override
-    public void onGridNotification(GridNotification arg0){
-        // TODO Auto-generated method stub
-
-    }
+    public void onGridNotification(GridNotification arg0){}
 
     @Override
-    public void setNetworkStatus(IGrid arg0, int arg1){
-        // TODO Auto-generated method stub
-
-    }
+    public void setNetworkStatus(IGrid arg0, int arg1){}
 
     //ICraftingProvider
 
@@ -417,4 +453,95 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
         }
         return stacks;
     }
+
+    //IMEInventoryHandler
+    @Override
+    public IAEItemStack extractItems(IAEItemStack arg0, Actionable arg1, BaseActionSource arg2){
+        return null;
+    }
+
+    @Override
+    public IItemList<IAEItemStack> getAvailableItems(IItemList<IAEItemStack> arg0){
+        for(AEItemStack stack : getProvidingItems()) {
+            arg0.add(stack);
+        }
+        return arg0;
+    }
+
+    @Override
+    public StorageChannel getChannel(){
+        return StorageChannel.ITEMS;
+    }
+
+    @Override
+    public IAEItemStack injectItems(IAEItemStack arg0, Actionable arg1, BaseActionSource arg2){
+        return arg0;
+    }
+
+    @Override
+    public boolean canAccept(IAEItemStack arg0){
+        return false;
+    }
+
+    @Override
+    public AccessRestriction getAccess(){
+        return AccessRestriction.NO_ACCESS;
+    }
+
+    @Override
+    public int getSlot(){
+        return 0;
+    }
+
+    @Override
+    public boolean isPrioritized(IAEItemStack arg0){
+        return false;
+    }
+
+    @Override
+    public boolean validForPass(int arg0){
+        return true;
+    }
+
+    //ICellContainer
+
+    @Override
+    public IGridNode getActionableNode(){
+        return getGridNode(null);
+    }
+
+    @Override
+    public List<IMEInventoryHandler> getCellArray(StorageChannel channel){
+        if(channel == StorageChannel.ITEMS) {
+            return Arrays.asList((IMEInventoryHandler)this);
+        } else {
+            return new ArrayList<IMEInventoryHandler>();
+        }
+    }
+
+    @Override
+    public void saveChanges(IMEInventory arg0){
+
+    }
+
+    @Override
+    public void blinkCell(int arg0){
+
+    }
+
+    //IGridTickable
+    @Override
+    public TickingRequest getTickingRequest(IGridNode node){
+        return new TickingRequest(120, 120, false, false);
+    }
+
+    @Override
+    public TickRateModulation tickingRequest(IGridNode arg0, int arg1){
+        notifyNetworkOfCraftingChange();
+        if(gridNode != null) {
+            getGridNode(null).getGrid().postEvent(new MENetworkCellArrayUpdate());//Doing it on interval, as doing it right after  AEApi.instance().createGridConnection doesn't seem to work..
+        }
+        return TickRateModulation.SAME;
+    }
+
 }
