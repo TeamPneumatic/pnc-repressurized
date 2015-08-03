@@ -7,6 +7,7 @@ import pneumaticCraft.lib.Versions;
 import codechicken.nei.api.API;
 import codechicken.nei.api.IConfigureNEI;
 import codechicken.nei.guihook.GuiContainerManager;
+import codechicken.nei.recipe.TemplateRecipeHandler;
 
 public class NEIPluginInitConfig implements IConfigureNEI{
 
@@ -15,21 +16,12 @@ public class NEIPluginInitConfig implements IConfigureNEI{
 
         Log.info("Initializing " + getName() + "...");
 
-        //Pressure Chamber handler
-        API.registerUsageHandler(new NEIPressureChamberRecipeManager());
-        API.registerRecipeHandler(new NEIPressureChamberRecipeManager());
-
-        //Assembly Controller Handler
-        API.registerUsageHandler(new NEIAssemblyControllerRecipeManager());
-        API.registerRecipeHandler(new NEIAssemblyControllerRecipeManager());
-
-        //Thermopneumatic handler
-        API.registerRecipeHandler(new NEIThermopneumaticProcessingPlantManager());
-        API.registerUsageHandler(new NEIThermopneumaticProcessingPlantManager());
-
-        //Refinery
-        API.registerRecipeHandler(new NEIRefineryManager());
-        API.registerUsageHandler(new NEIRefineryManager());
+        registerHandler(new NEIPressureChamberRecipeManager());
+        registerHandler(new NEIAssemblyControllerRecipeManager());
+        registerHandler(new NEIThermopneumaticProcessingPlantManager());
+        registerHandler(new NEIRefineryManager());
+        registerHandler(new NEIEtchingAcidManager());
+        registerHandler(new NEIUVLightBoxManager());
 
         GuiContainerManager.addDrawHandler(new ItemDrawHandler());
 
@@ -57,6 +49,11 @@ public class NEIPluginInitConfig implements IConfigureNEI{
         API.hideItem(new ItemStack(Blockss.repulsionPlant));
         API.hideItem(new ItemStack(Blockss.slimePlant));
         API.hideItem(new ItemStack(Blockss.squidPlant));
+    }
+
+    public void registerHandler(TemplateRecipeHandler handler){
+        API.registerRecipeHandler(handler);
+        API.registerUsageHandler(handler);
     }
 
     @Override
