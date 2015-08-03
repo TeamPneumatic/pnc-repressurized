@@ -96,4 +96,8 @@ public class BlockUVLightBox extends BlockPneumaticCraftModeled{
         return 0;
     }
 
+    @Override
+    public boolean canProvidePower(){
+        return true;
+    }
 }

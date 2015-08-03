@@ -18,6 +18,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.common.block.tubes.ModuleRegistrator;
 import pneumaticCraft.common.block.tubes.TubeModule;
+import pneumaticCraft.common.block.tubes.TubeModuleRedstoneEmitting;
 import pneumaticCraft.common.item.ItemTubeModule;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.tileentity.TileEntityPressureTube;
@@ -321,6 +322,36 @@ public class BlockPressureTube extends BlockPneumaticCraftModeled{
             return redstoneLevel;
         }
         return 0;
+    }
+
+    /**
+     * Determine if this block can make a redstone connection on the side provided,
+     * Useful to control which sides are inputs and outputs for redstone wires.
+     *
+     * Side:
+     *  -1: UP
+     *   0: NORTH
+     *   1: EAST
+     *   2: SOUTH
+     *   3: WEST
+     *
+     * @param world The current world
+     * @param x X Position
+     * @param y Y Position
+     * @param z Z Position
+     * @param side The side that is trying to make the connection
+     * @return True to make the connection
+     */
+    @Override
+    public boolean canConnectRedstone(IBlockAccess world, int x, int y, int z, int side){
+        if(side < 0 || side > 3) return false;
+        TileEntityPressureTube tube = (TileEntityPressureTube)world.getTileEntity(x, y, z);
+        ForgeDirection d = ForgeDirection.NORTH;
+        for(int i = 0; i < side; i++) {
+            d = d.getRotation(ForgeDirection.UP);
+        }
+        TubeModule module = tube.modules[d.ordinal()];
+        return module instanceof TubeModuleRedstoneEmitting;
     }
 
 }

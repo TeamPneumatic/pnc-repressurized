@@ -113,6 +113,11 @@ public class BlockAerialInterface extends BlockPneumaticCraft{
     }
 
     @Override
+    public boolean canProvidePower(){
+        return true;
+    }
+
+    @Override
     protected int getInventoryDropEndSlot(IInventory inventory){
         return 4;
     }

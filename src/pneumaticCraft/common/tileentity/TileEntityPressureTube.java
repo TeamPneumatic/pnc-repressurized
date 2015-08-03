@@ -90,6 +90,9 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase{
             module.readFromNBT(moduleTag);
             setModule(module, ForgeDirection.getOrientation(moduleTag.getInteger("side")));
         }
+        if(worldObj != null && worldObj.isRemote) {
+            rerenderChunk();
+        }
     }
 
     @Override
@@ -186,7 +189,9 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase{
             module.setTube(this);
         }
         modules[side.ordinal()] = module;
-        if(worldObj != null && !worldObj.isRemote) sendDescriptionPacket();
+        if(worldObj != null && !worldObj.isRemote) {
+            sendDescriptionPacket();
+        }
     }
 
     @Override

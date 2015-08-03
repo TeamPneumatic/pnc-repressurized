@@ -8,6 +8,9 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.client.model.IBaseModel;
 import pneumaticCraft.client.model.tubemodules.ModelGauge;
+import pneumaticCraft.common.network.NetworkHandler;
+import pneumaticCraft.common.network.PacketUpdatePressureBlock;
+import pneumaticCraft.common.tileentity.TileEntityPneumaticBase;
 import pneumaticCraft.lib.Names;
 import pneumaticCraft.proxy.CommonProxy;
 import cpw.mods.fml.relauncher.Side;
@@ -26,7 +29,7 @@ public class ModulePressureGauge extends TubeModuleRedstoneEmitting{
     public void update(){
         super.update();
         if(!pressureTube.world().isRemote) {
-            if(pressureTube.world().getWorldTime() % 20 == 0) sendDescriptionPacket();
+            if(pressureTube.world().getWorldTime() % 20 == 0) NetworkHandler.sendToAllAround(new PacketUpdatePressureBlock((TileEntityPneumaticBase)getTube()), getTube().world());
             setRedstone(getRedstone(pressureTube.getAirHandler().getPressure(ForgeDirection.UNKNOWN)));
         }
     }
