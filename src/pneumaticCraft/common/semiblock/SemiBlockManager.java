@@ -263,7 +263,7 @@ public class SemiBlockManager{
                     if(event.entityPlayer.capabilities.isCreativeMode) {
                         setSemiBlock(event.world, event.x, event.y, event.z, null);
                     } else {
-                        breakSemiBlock(event.world, event.x, event.y, event.z);
+                        breakSemiBlock(event.world, event.x, event.y, event.z, event.entityPlayer);
                     }
                     event.setCanceled(true);
                 } else {
@@ -295,12 +295,18 @@ public class SemiBlockManager{
     }
 
     public void breakSemiBlock(World world, int x, int y, int z){
+        breakSemiBlock(world, x, y, z, null);
+    }
+
+    public void breakSemiBlock(World world, int x, int y, int z, EntityPlayer player){
         ISemiBlock semiBlock = getSemiBlock(world, x, y, z);
         if(semiBlock != null) {
             List<ItemStack> drops = new ArrayList<ItemStack>();
             semiBlock.addDrops(drops);
             for(ItemStack stack : drops) {
-                world.spawnEntityInWorld(new EntityItem(world, x + 0.5, y + 0.5, z + 0.5, stack));
+                EntityItem item = new EntityItem(world, x + 0.5, y + 0.5, z + 0.5, stack);
+                world.spawnEntityInWorld(item);
+                if(player != null) item.onCollideWithPlayer(player);
             }
             setSemiBlock(world, x, y, z, null);
         }
