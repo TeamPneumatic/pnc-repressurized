@@ -21,6 +21,7 @@ public class ContainerPneumaticBase<Tile extends TileEntityBase> extends Contain
 
     public Tile te;
     private final List<SyncedField> syncedFields = new ArrayList<SyncedField>();
+    private boolean firstTick = true;
 
     public ContainerPneumaticBase(Tile te){
         this.te = te;
@@ -52,10 +53,11 @@ public class ContainerPneumaticBase<Tile extends TileEntityBase> extends Contain
     public void detectAndSendChanges(){
         super.detectAndSendChanges();
         for(int i = 0; i < syncedFields.size(); i++) {
-            if(syncedFields.get(i).update()) {
+            if(syncedFields.get(i).update() || firstTick) {
                 sendToCrafters(new PacketUpdateGui(i, syncedFields.get(i)));
             }
         }
+        firstTick = false;
     }
 
     protected void sendToCrafters(IMessage message){
