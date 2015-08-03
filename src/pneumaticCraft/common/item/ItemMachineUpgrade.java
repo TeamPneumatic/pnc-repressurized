@@ -99,7 +99,7 @@ public class ItemMachineUpgrade extends ItemPneumatic{
                 break;
             case 2:
                 unlocalized.add(Blockss.airCannon.getUnlocalizedName());
-                infoList.add(I18n.format("gui.pressureChamber"));
+                infoList.add("-" + I18n.format("gui.pressureChamber"));
                 unlocalized.add(Itemss.drone.getUnlocalizedName());
                 break;
             case 3:
