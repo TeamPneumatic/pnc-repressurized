@@ -1,4 +1,4 @@
-# de_DE localization - PneumaticCraft V. 1.1.7
+ï»¿# de_DE localization - PneumaticCraft V. 1.1.7
 # Translated by Cakestory
 # Feel free to extend, change and use this file.
 
@@ -7,7 +7,7 @@
 #It was added to make this language list consistant with the en_US language.
  
 # Blocks
-tile.pressureTube.name=Druckröhre
+tile.pressureTube.name=DruckrÃ¶hre
 tile.airCompressor.name=Druckluftkompressor
 tile.airCannon.name=Luftdruckkanone
 tile.pressureWall.name=Druckkammer Wand
@@ -24,7 +24,7 @@ tile.burstPlant.name=Explosivpflanze
 tile.potionPlant.name=Trankpflanze
 tile.heliumPlant.name=Heliumpflanze
 tile.propulsionPlant.name=Antriebspflanze
-tile.repulsionPlant.name=Rückstoßpflanze
+tile.repulsionPlant.name=RÃ¼ckstoÃŸpflanze
 tile.flyingFlower.name=Fliegende Blume
 tile.chopperPlant.name=Pulsformerpflanze
 tile.chargingStation.name=Ladestation
@@ -32,15 +32,15 @@ tile.elevatorBase.name=Aufzugbasis
 tile.elevatorFrame.name=Aufzugrahmen
 tile.pressureChamberInterface.name=Druckkammer-Schnittstelle
 tile.vacuumPump.name=Vakuum-Pumpe
-tile.pneumaticDoorBase.name=Pneumatische Türbasis
-tile.pneumaticDoor.name=Pneumatische Tür
-tile.etchingAcid.name=Ätzende Säure
+tile.pneumaticDoorBase.name=Pneumatische TÃ¼rbasis
+tile.pneumaticDoor.name=Pneumatische TÃ¼r
+tile.etchingAcid.name=Ã„tzende SÃ¤ure
 tile.assemblyIOUnit.name=Montage IO Einheit
-tile.assemblyPlatform.name=Montagebühne
+tile.assemblyPlatform.name=MontagebÃ¼hne
 tile.assemblyDrill.name=Montagebohrer
 tile.assemblyLaser.name=Montagelaser
 tile.assemblyController.name=Montagekonsole
-tile.advancedPressureTube.name=Erwiterte Druckröhre
+tile.advancedPressureTube.name=Erwiterte DruckrÃ¶hre
 tile.compressedIronBlock.name=Kompremierter Eisenblock
 tile.uvLightBox.name=UV-Licht-Box
 tile.securityStation.name=Sicherheitsterminal
@@ -62,13 +62,13 @@ tile.wheatHarvester.plasticPlants.name=Plastik Plants Harvester Dolley
 tile.fluxCompressor.name=Flux Kompressor
 tile.pneumaticDynamo.name=Pneumatischer Dynamo
 tile.plasticMixer.name=Plastik Mixer
-tile.liquidCompressor.name=Flüssigkeiten Kompressor
-tile.advancedLiquidCompressor.name=Fortgeschrittener Flüssigkeiten Kompressor
+tile.liquidCompressor.name=FlÃ¼ssigkeiten Kompressor
+tile.advancedLiquidCompressor.name=Fortgeschrittener FlÃ¼ssigkeiten Kompressor
 #/TOCHANGE
 tile.heatSink.name=Heat Sink
 tile.vortexTube.name=Vortex Tube
 #TOCHANGE/
-tile.etchingAcid.name=Ätzsäure
+tile.etchingAcid.name=Ã„tzsÃ¤ure
 tile.programmableController.name=Programmable Controller
 tile.gasLift.name=Gasheber
 tile.refinery.name=Raffinerie
@@ -77,13 +77,13 @@ tile.fuel.name=Benzin
 tile.lpg.name=LPG
 tile.kerosene.name=Kerosin
 tile.diesel.name=Diesel
-tile.oil.name=Öl
+tile.oil.name=Ã–l
 tile.lubricant.name=Gleitmittel
  
 tile.monsterStoneEgg.name=Silberfisch
  
 # Items
-item.gpsTool.name=GPS-Gerät
+item.gpsTool.name=GPS-GerÃ¤t
 item.machineUpgrade.name=Maschienen-Erweiterung
 item.ingotIronCompressed.name=Komprimierter Eisenbarren
 item.pressureGauge.name=Luftdruckmesser
@@ -102,7 +102,7 @@ item.assemblyProgram.name=Montageprogramm
 item.emptyPCB.name=Leerer PCB
 item.unassembledPCB.name=Unbearbeiteter PCB
 item.pcbBlauesprint.name=PCB Blaupause
-item.etchingAcidBucket.name=Eimer mit ätzender Säure
+item.etchingAcidBucket.name=Eimer mit Ã¤tzender SÃ¤ure
 item.transistor.name=Transistor
 item.capacitor.name=Kondensator
 item.printedCircuitBoard.name=Leiterplatine
@@ -121,7 +121,7 @@ item.lpgBucket.name=LPG Eimer
 item.fuelBucket.name=Bezin Eimer
 item.keroseneBucket.name=Kerosin Eimer
 item.dieselBucket.name=Dieseleimer
-item.oilBucket.name=Öl Eimer
+item.oilBucket.name=Ã–l Eimer
 item.lubricantBucket.name=Eimer mit Gleitmittel
 item.plasticBucket.name=Plastik Eimer
 item.logisticsConfigurator.name=Logistik Konfigurator
@@ -136,7 +136,7 @@ item.gunAmmo.name=Minigun Munition
 
 item.programmingPuzzle.black.name=Schwarzes Programmier-Puzzle
 item.programmingPuzzle.red.name=Rotes Programmier-Puzzle
-item.programmingPuzzle.green.name=Grünes Programmier-Puzzle
+item.programmingPuzzle.green.name=GrÃ¼nes Programmier-Puzzle
 item.programmingPuzzle.brown.name=Braunes Programmier-Puzzle
 item.programmingPuzzle.blue.name=Blaues Programmier-Puzzle
 item.programmingPuzzle.purple.name=Lilanes Programmier-Puzzle
@@ -144,16 +144,16 @@ item.programmingPuzzle.cyan.name=Cyanes Programmier-Puzzle
 item.programmingPuzzle.silver.name=Hellgraues Programmier-Puzzle
 item.programmingPuzzle.gray.name=Graues Programmier-Puzzle
 item.programmingPuzzle.pink.name=Pinkes Programmier-Puzzle
-item.programmingPuzzle.lime.name=Hellgrünes Programmier-Puzzle
+item.programmingPuzzle.lime.name=HellgrÃ¼nes Programmier-Puzzle
 item.programmingPuzzle.yellow.name=Gelbes Programmier-Puzzle
 item.programmingPuzzle.lightBlaues.name=Hellblaues Programmier-Puzzle
 item.programmingPuzzle.magenta.name=Magenta-Programmier-Puzzle
 item.programmingPuzzle.orange.name=Orangenes Programmier-Puzzle
-item.programmingPuzzle.white.name=Weißes Programmier-Puzzle
+item.programmingPuzzle.white.name=WeiÃŸes Programmier-Puzzle
 
 item.plastic.black.name=Schwarzes Plastik
 item.plastic.red.name=Rotes Plastik
-item.plastic.green.name=Grünes Plastik
+item.plastic.green.name=GrÃ¼nes Plastik
 item.plastic.brown.name=Braunes Plastik
 item.plastic.blue.name=Blaues Plastik
 item.plastic.purple.name=Lilanes Plastik
@@ -161,12 +161,12 @@ item.plastic.cyan.name=Cyanes Plastik
 item.plastic.silver.name=Hellgraues Plastik
 item.plastic.gray.name=Graues Plastik
 item.plastic.pink.name=Pinkes Plastik
-item.plastic.lime.name=Hellgrünes Plastik
+item.plastic.lime.name=HellgrÃ¼nes Plastik
 item.plastic.yellow.name=Gelbes Plastik
 item.plastic.lightBlaues.name=Hellblaues Plastik
 item.plastic.magenta.name=Magenta-Plastik
 item.plastic.orange.name=Orangenes Plastik
-item.plastic.white.name=Weißes Plastik
+item.plastic.white.name=WeiÃŸes Plastik
 
 
 programmingPuzzle.start.name=Start
@@ -192,8 +192,8 @@ item.programmingPuzzle_start.name=Programmier-Puzzle: Start
 item.programmingPuzzle_Inv-E.name=Programmier-Puzzle: Inventar Einlagern
 item.programmingPuzzle_Inv-I.name=Programmier-Puzzle: Inventar Auslagern
 item.programmingPuzzle_I-pick.name=Programmier-Puzzle: Sammle Items
-item.programmingPuzzle_dig.name=Programmier-Puzzle: Blöcke abbauen
-item.programmingPuzzle_place.name=Programmier-Puzzle: Blöcke platzieren
+item.programmingPuzzle_dig.name=Programmier-Puzzle: BlÃ¶cke abbauen
+item.programmingPuzzle_place.name=Programmier-Puzzle: BlÃ¶cke platzieren
 item.programmingPuzzle_goto.name=Programmier-Puzzle: Gehe zu Position
 item.programmingPuzzle_attk.name=Programmier-Puzzle: Angriff
 item.programmingPuzzle_I-ftr.name=Programmier-Puzzle: Item-Filter
