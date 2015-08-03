@@ -300,7 +300,7 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
 
     @Override
     public EnumSet<GridFlags> getFlags(){
-        return EnumSet.of(GridFlags.REQUIRE_CHANNEL);
+        return EnumSet.noneOf(GridFlags.class);
     }
 
     @Override
@@ -463,7 +463,7 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
     @Override
     public IItemList<IAEItemStack> getAvailableItems(IItemList<IAEItemStack> arg0){
         for(AEItemStack stack : getProvidingItems()) {
-            arg0.add(stack);
+            arg0.addRequestable(stack);
         }
         return arg0;
     }
@@ -485,7 +485,7 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
 
     @Override
     public AccessRestriction getAccess(){
-        return AccessRestriction.NO_ACCESS;
+        return AccessRestriction.READ;
     }
 
     @Override
