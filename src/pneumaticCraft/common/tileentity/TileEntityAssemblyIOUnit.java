@@ -29,6 +29,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
     private ItemStack searchedItemStack;
     private byte state = 0;
     private byte tickCounter = 0;
+    private boolean hasSwitchedThisTick;
 
     private final static byte SLEEP_TICKS = 50;
 
@@ -42,7 +43,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
     @Override
     public void updateEntity(){
         super.updateEntity();
-
+        hasSwitchedThisTick = false;
         if(worldObj.isRemote) {
             if(!isClawDone()) moveClaw();
         } else {
@@ -334,7 +335,10 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot{
 
     public boolean switchMode(){
         if(state <= STATE_SEARCH_SRC) {
-            worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 1 - getBlockMetadata(), 3);
+            if(!hasSwitchedThisTick) {
+                worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 1 - getBlockMetadata(), 3);
+                hasSwitchedThisTick = true;
+            }
             return true;
         } else {
             return false;
