@@ -1,12 +1,17 @@
 # de_DE localization - PneumaticCraft V. 1.1.7
 # Translated by Cakestory
 # Feel free to extend, change and use this file.
+
+#Fayti1703 Note:
+#If there is a "#TOCHANGE" line above a line, that line is still to be translated.
+#It was added to make this language list consistant with the en_US language.
  
 # Blocks
 tile.pressureTube.name=Druckröhre
 tile.airCompressor.name=Druckluftkompressor
 tile.airCannon.name=Luftdruckkanone
-tile.pressureWall.name=Druckkammer Wand/Fenster
+tile.pressureWall.name=Druckkammer Wand
+tile.pressureWindow.name=Druckkammer Fenster
 tile.pressureChamberValve.name=Druckkammer-Ventil
 tile.slimePlant.name=Schleimpflanze
 tile.creeperPlant.name=Creeperpflanze
@@ -50,6 +55,30 @@ tile.aphorismTile.name=Sinnspruch-Platte
 tile.omnidirectionalHopper.name=Ungerichteter Trichter
 tile.elevatorCaller.name=Aufzugschalter
 tile.programmer.name=Programmierer
+tile.droneInterface.name=Drohen-Interface
+tile.creativeCompressor.name=Kreativ-Kompressor
+#TOCHANGE
+tile.wheatHarvester.plasticPlants.name=Plastik Plants Harvester Dolley
+tile.fluxCompressor.name=Flux Kompressor
+tile.pneumaticDynamo.name=Pneumatischer Dynamo
+tile.plasticMixer.name=Plastik Mixer
+tile.liquidCompressor.name=Flüssigkeiten Kompressor
+tile.advancedLiquidCompressor.name=Fortgeschrittener Flüssigkeiten Kompressor
+#/TOCHANGE
+tile.heatSink.name=Heat Sink
+tile.vortexTube.name=Vortex Tube
+#TOCHANGE/
+tile.etchingAcid.name=Ätzsäure
+tile.programmableController.name=Programmable Controller
+tile.gasLift.name=Gasheber
+tile.refinery.name=Raffinerie
+tile.thermopneumaticProcessingPlant.name=Thermopneumatische Aufbereitungsanlage
+tile.fuel.name=Benzin
+tile.lpg.name=LPG
+tile.kerosene.name=Kerosin
+tile.diesel.name=Diesel
+tile.oil.name=Öl
+tile.lubricant.name=Gleitmittel
  
 tile.monsterStoneEgg.name=Silberfisch
  
@@ -72,7 +101,7 @@ item.turbineRotor.name=Turbinenrotor
 item.assemblyProgram.name=Montageprogramm
 item.emptyPCB.name=Leerer PCB
 item.unassembledPCB.name=Unbearbeiteter PCB
-item.pcbBlueprint.name=PCB Blaupause
+item.pcbBlauesprint.name=PCB Blaupause
 item.etchingAcidBucket.name=Eimer mit ätzender Säure
 item.transistor.name=Transistor
 item.capacitor.name=Kondensator
@@ -80,16 +109,69 @@ item.printedCircuitBoard.name=Leiterplatine
 item.failedPCB.name=Defekter PCB
 item.networkComponent.name=Netzwerkkomponente
 item.stopWorm.name=STOP! - Wurm
-item.nukeVirus.name=Nuclearwaffen-Virus
-item.compressedIronGear.name=Kompremiertes Eisenzahnrad
+item.nukeVirus.name=Nuke Virus
 item.pneumaticWrench.name=Druckluftschrauber
 item.drone.name=Drohne
 item.programmingPuzzle.name=Programmier-Puzzle
+item.compressedIronGear.name=Kompremiertes Eisenzahnrad
+item.advancedPCB.name=Fortgeschrittener PCB
+item.remote.name=Fernbedienung
+item.seismicSensor.name=Seismischer Sensor
+item.lpgBucket.name=LPG Eimer
+item.fuelBucket.name=Bezin Eimer
+item.keroseneBucket.name=Kerosin Eimer
+item.dieselBucket.name=Dieseleimer
+item.oilBucket.name=Öl Eimer
+item.lubricantBucket.name=Eimer mit Gleitmittel
+item.plasticBucket.name=Plastik Eimer
+item.logisticsConfigurator.name=Logistik Konfigurator
+item.logisticFrameRequester.name=Logistischer Anforderungs Rahmen
+item.logisticFramePassiveProvider.name=Logistischer Passiver Versorger Rahmen
+item.logisticFrameActiveProvider.name=Logistischer Aktiver Versorger Rahmen
+item.logisticFrameStorage.name=Logistischer Lagerungs Rahmen
+item.logisticDrone.name=Logistische Drohne
+item.gunAmmo.name=Minigun Munition
  
-# Programming Puzzles
+# Programmier-Puzzles
+
+item.programmingPuzzle.black.name=Schwarzes Programmier-Puzzle
+item.programmingPuzzle.red.name=Rotes Programmier-Puzzle
+item.programmingPuzzle.green.name=Grünes Programmier-Puzzle
+item.programmingPuzzle.brown.name=Braunes Programmier-Puzzle
+item.programmingPuzzle.blue.name=Blaues Programmier-Puzzle
+item.programmingPuzzle.purple.name=Lilanes Programmier-Puzzle
+item.programmingPuzzle.cyan.name=Cyanes Programmier-Puzzle
+item.programmingPuzzle.silver.name=Hellgraues Programmier-Puzzle
+item.programmingPuzzle.gray.name=Graues Programmier-Puzzle
+item.programmingPuzzle.pink.name=Pinkes Programmier-Puzzle
+item.programmingPuzzle.lime.name=Hellgrünes Programmier-Puzzle
+item.programmingPuzzle.yellow.name=Gelbes Programmier-Puzzle
+item.programmingPuzzle.lightBlaues.name=Hellblaues Programmier-Puzzle
+item.programmingPuzzle.magenta.name=Magenta-Programmier-Puzzle
+item.programmingPuzzle.orange.name=Orangenes Programmier-Puzzle
+item.programmingPuzzle.white.name=Weißes Programmier-Puzzle
+
+item.plastic.black.name=Schwarzes Plastik
+item.plastic.red.name=Rotes Plastik
+item.plastic.green.name=Grünes Plastik
+item.plastic.brown.name=Braunes Plastik
+item.plastic.blue.name=Blaues Plastik
+item.plastic.purple.name=Lilanes Plastik
+item.plastic.cyan.name=Cyanes Plastik
+item.plastic.silver.name=Hellgraues Plastik
+item.plastic.gray.name=Graues Plastik
+item.plastic.pink.name=Pinkes Plastik
+item.plastic.lime.name=Hellgrünes Plastik
+item.plastic.yellow.name=Gelbes Plastik
+item.plastic.lightBlaues.name=Hellblaues Plastik
+item.plastic.magenta.name=Magenta-Plastik
+item.plastic.orange.name=Orangenes Plastik
+item.plastic.white.name=Weißes Plastik
+
+
 programmingPuzzle.start.name=Start
 programmingPuzzle.attk.name=Angriff
-programmingPuzzle.  area.name=Bereich
+programmingPuzzle.area.name=Bereich
 programmingPuzzle.text.name=Text
 programmingPuzzle.I-ftr.name=Item-Filter
 programmingPuzzle.dig.name=Ausheben
