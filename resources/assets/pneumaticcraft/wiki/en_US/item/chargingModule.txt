@@ -1,5 +1,5 @@
 [image{200,100,0.45,igwmod:textures/chargingModule.png}]
-This item is a [link{menu/pressureTubes}]Tube Module[link{}]. this means that it can be placed on a Pressure Tube only. For general information about Tube Modules click the link.
+This item is a [link{pneumaticcraft:menu/pressureTubes}]Tube Module[link{}]. this means that it can be placed on a Pressure Tube only. For general information about Tube Modules click the link.
 
 The Charging Module allows you to (dis)charge any item in any inventory it's pointing towards. By default it can (dis)charge up to 10mL/tick/item.
 

@@ -45,7 +45,7 @@ Any Logistic Frame in a 16 block range from the location where the Logistic Dron
 [prefix{l}]Item/fluid filtering[prefix{}]
 By right-clicking a Logistic Frame item on anything other than an inventory/tank or by right clicking an existing frame with a [link{item/logisticsConfigurator}]Logistics Configurator[link{}] an interface will open. By leaving the interface empty, any item/liquid is allowed by the filter. Or when it's concerning a Requester Frame, nothing will be requested. When having an item/fluid in a slot, only that item is allowed to be provided/stored. Requester frames will request that item and amount. The amount can be adjusted by right clicking to increase or left clicking to decrease the amount. For more info open up the 'Slot interaction' tab.
 
-Logistic behaviour can also be acquired by normal [link{item/drone}]Drones [link{}]. A [link{progwidget/logistics}]Logistics command [link{}] exists for this purpose.
+Logistic behaviour can also be acquired by normal [link{item/drone}]Drones [link{}]. A [link{pneumaticcraft:progwidget/logistics}]Logistics command [link{}] exists for this purpose.
 
 (Logistics) Drones need compressed air. You can charge Drones in a [link{block/chargingStation}]Charging Station [link{}]. Now, when you place down a charged Logistics Drone, it will execute the logistical task described above.
 

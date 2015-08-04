@@ -1,5 +1,5 @@
 [image{200,10,0.245,igwmod:textures/thermopneumaticProcessor.png}]
-A Thermopneumatic Processing Plant uses pressure and [link{menu/heat}]heat [link{}] to process materials. It has a few uses.
+A Thermopneumatic Processing Plant uses pressure and [link{pneumaticcraft:menu/heat}]heat [link{}] to process materials. It has a few uses.
 
 [prefix{l}]Creating Plastic[prefix{}]
 It can take LPG (100mB) and Coal (1) to create Liquid Plastic (1000mB). It does not use pressure to do so. This Liquid Plastic can then be converted into its solid state using a [link{block/plasticMixer}]Plastic Mixer[link{}]. To do this no pressure is required, just heat.

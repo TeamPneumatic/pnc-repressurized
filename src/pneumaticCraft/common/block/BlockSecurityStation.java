@@ -122,4 +122,8 @@ public class BlockSecurityStation extends BlockPneumaticCraftModeled{
         return 0;
     }
 
+    @Override
+    public boolean canProvidePower(){
+        return true;
+    }
 }

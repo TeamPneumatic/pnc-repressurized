@@ -18,7 +18,7 @@ public class ItemLogisticsConfigurator extends ItemPressurizable{
             ISemiBlock semiBlock = SemiBlockManager.getInstance(world).getSemiBlock(world, x, y, z);
             if(semiBlock != null) {
                 if(player.isSneaking()) {
-                    SemiBlockManager.getInstance(world).breakSemiBlock(world, x, y, z);
+                    SemiBlockManager.getInstance(world).breakSemiBlock(world, x, y, z, player);
                     return true;
                 } else {
                     if(semiBlock.onRightClickWithConfigurator(player)) {

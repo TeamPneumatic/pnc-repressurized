@@ -28,7 +28,7 @@ public class GuiRefinery extends GuiPneumaticContainerBase<TileEntityRefinery>{
     public void initGui(){
         super.initGui();
 
-        addWidget(new WidgetTemperature(-1, guiLeft + 32, guiTop + 20, 273, 673, te.getHeatExchangerLogic(ForgeDirection.UNKNOWN), 395));
+        addWidget(new WidgetTemperature(-1, guiLeft + 32, guiTop + 20, 273, 673, te.getHeatExchangerLogic(ForgeDirection.UNKNOWN), 373));
 
         addWidget(new WidgetTank(-1, guiLeft + 8, guiTop + 13, te.getOilTank()));
 

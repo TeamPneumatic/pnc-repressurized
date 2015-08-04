@@ -1,4 +1,4 @@
-This item is a [link{menu/pressureTubes}]Tube Module[link{}]. this means that it can be placed on a Pressure Tube only. For general information about Tube Modules click the link.
+This item is a [link{pneumaticcraft:menu/pressureTubes}]Tube Module[link{}]. this means that it can be placed on a Pressure Tube only. For general information about Tube Modules click the link.
 
 The Regulator Tube Module is used to limit the pressure going through the tube. The threshold pressure is determined like the [link{item/safetyTubeModule}]Safety Valve Tube[link{}], which is by the formula:
 

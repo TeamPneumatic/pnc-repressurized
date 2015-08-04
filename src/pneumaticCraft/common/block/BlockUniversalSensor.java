@@ -73,4 +73,9 @@ public class BlockUniversalSensor extends BlockPneumaticCraftModeled{
 
         return 0;
     }
+
+    @Override
+    public boolean canProvidePower(){
+        return true;
+    }
 }

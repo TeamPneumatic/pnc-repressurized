@@ -13,7 +13,7 @@ You can allow other people to interact within the secured area. To do this, you 
 When someone hacks your Security Station, you can see that in the problems and status tab, and it also shows who has hacked your system. These users now can interact with blocks within the area, but only these users. To prevent access again from these users, you'll have to reboot the Security System. To do this press the button in the Security Station. This process will take one minute, and in this time the area isn't secured.
 
 [prefix{l}]Hacking [prefix{}]
-When you open up a Security Station that isn't yours, you need a [link{item/pneumaticHelmet}]Pneumatic Helmet[link{}] with a [link{menu/machineUpgrades}]Security Upgrade[link{}] installed in the helmet. When you do this, a GUI similar to below appears. Watch the video at the beginning of this wikipage for a guide on how to hack. To capture a node, left-click it. To fortify a node, right-click an already captured node.
+When you open up a Security Station that isn't yours, you need a [link{item/pneumaticHelmet}]Pneumatic Helmet[link{}] with a [link{pneumaticcraft:menu/machineUpgrades}]Security Upgrade[link{}] installed in the helmet. When you do this, a GUI similar to below appears. Watch the video at the beginning of this wikipage for a guide on how to hack. To capture a node, left-click it. To fortify a node, right-click an already captured node.
 
 [image{190, 700, 0.5, igwmod:textures/hacking1.png}]
 [image{335, 700, 0.5, igwmod:textures/hacking2.png}]

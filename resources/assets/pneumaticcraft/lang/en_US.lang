@@ -840,3 +840,7 @@ achievement.etchacidBucket=Don't Spill It On Your Shirt!
 achievement.etchacidBucket.desc=Acquire an Etching Acid Bucket. Throw in PCB's that have been processed in a UV Light Box to process and to create Unassembled PCB's.
 achievement.dw9x9=The Perfect Size
 achievement.dw9x9.desc=Build a 9x9 house made out of Cobblestone, the perfect size according to Direwolf20.
+
+#NEI
+gui.nei.recipe.etchingAcid=Place down a block of Etching Acid. Throw in an Empty PCB that has been exposed by UV light by a UV Light Box. This process will take 5 minutes.
+gui.nei.recipe.uvLightBox=Create a UV Light Box, power it with air, and put in an Empty PCB. This process takes about 10 minutes (without any Speed Upgrades).

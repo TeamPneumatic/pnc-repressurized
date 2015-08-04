@@ -13,6 +13,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
@@ -25,6 +26,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
+import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.client.gui.widget.GuiCheckBox;
 import pneumaticCraft.client.gui.widget.GuiRadioButton;
 import pneumaticCraft.client.gui.widget.IGuiWidget;
@@ -441,7 +443,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         GL11.glPopMatrix();
 
         boolean isLeftClicking = Mouse.isButtonDown(0);
-        boolean isMiddleClicking = Mouse.isButtonDown(2);
+        boolean isMiddleClicking = GameSettings.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindPickBlock);
 
         if(draggingWidget != null) {
             setConnectingWidgetsToXY(draggingWidget, x - dragMouseStartX + dragWidgetStartX - guiLeft, y - dragMouseStartY + dragWidgetStartY - guiTop);
@@ -486,6 +488,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
                         dragMouseStartY = 0;
                         dragWidgetStartX = widget.getX() - (x - guiLeft);
                         dragWidgetStartY = widget.getY() - (y - guiTop);
+                        if(PneumaticCraft.proxy.isSneakingInGui()) copyAndConnectConnectingWidgets(widget, draggingWidget);
                         break;
                     }
                 }
@@ -676,6 +679,27 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         }
         IProgWidget outputWidget = widget.getOutputWidget();
         if(outputWidget != null) setConnectingWidgetsToXY(outputWidget, x, y + widget.getHeight() / 2);
+    }
+
+    private void copyAndConnectConnectingWidgets(IProgWidget original, IProgWidget copy){
+        IProgWidget[] connectingWidgets = original.getConnectedParameters();
+        if(connectingWidgets != null) {
+            for(int i = 0; i < connectingWidgets.length; i++) {
+                if(connectingWidgets[i] != null) {
+                    IProgWidget c = connectingWidgets[i].copy();
+                    te.progWidgets.add(c);
+                    copy.setParameter(i, c);
+                    copyAndConnectConnectingWidgets(connectingWidgets[i], c);
+                }
+            }
+        }
+        IProgWidget outputWidget = original.getOutputWidget();
+        if(outputWidget != null) {
+            IProgWidget c = outputWidget.copy();
+            te.progWidgets.add(c);
+            copy.setOutputWidget(c);
+            copyAndConnectConnectingWidgets(outputWidget, c);
+        }
     }
 
     private void deleteConnectingWidgets(IProgWidget widget){

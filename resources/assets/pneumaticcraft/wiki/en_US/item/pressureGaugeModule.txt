@@ -1,4 +1,4 @@
-This item is a [link{menu/pressureTubes}]Tube Module[link{}]. this means that it can be placed on a Pressure Tube only. For general information about Tube Modules click the link.
+This item is a [link{pneumaticcraft:menu/pressureTubes}]Tube Module[link{}]. this means that it can be placed on a Pressure Tube only. For general information about Tube Modules click the link.
 
 This module shows the pressure currently in the network. It also emits a (directional) redstone signal of which the strenght equals:
 

@@ -116,7 +116,7 @@ Sets up the crafting grid so when the Crafting instruction is called, this recip
 [prefix{l}]setVariable(<variable name>, <true/false>) [prefix{}]
 [prefix{l}]setVariable(<variable name>, <x>) [prefix{}]
 [prefix{l}]setVariable(<variable name>, <x>, <y>, <z>) [prefix{}]
-Sets the[link{progWidget/coordinateOperator}] variable[link{}] of this Drone. When passing 'true', the coordinate will be set to (1,0,0). Alternatively, false will be setting it to (0,0,0). It is possible to set global variables (#) as well.
+Sets the[link{pneumaticcraft:progwidget/coordinateOperator}] variable[link{}] of this Drone. When passing 'true', the coordinate will be set to (1,0,0). Alternatively, false will be setting it to (0,0,0). It is possible to set global variables (#) as well.
 
 [prefix{l}]getVariable(<variable name>) [prefix{}]
 Returns the value of the variable from this Drone (x, y and z). It is possible to get global (#) and special variables ($) as well.
