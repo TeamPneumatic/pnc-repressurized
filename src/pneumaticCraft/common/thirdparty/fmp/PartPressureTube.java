@@ -18,6 +18,7 @@ import org.lwjgl.opengl.GL11;
 
 import pneumaticCraft.api.tileentity.IAirHandler;
 import pneumaticCraft.api.tileentity.IPneumaticMachine;
+import pneumaticCraft.api.tileentity.ISidedPneumaticMachine;
 import pneumaticCraft.client.model.ModelPressureTube;
 import pneumaticCraft.common.Config;
 import pneumaticCraft.common.block.Blockss;
@@ -129,10 +130,10 @@ public class PartPressureTube extends TMultiPart implements IPneumaticPosProvide
 
         airHandler.updateEntityI();
 
-        List<Pair<ForgeDirection, IPneumaticMachine>> teList = airHandler.getConnectedPneumatics();
+        List<Pair<ForgeDirection, IAirHandler>> teList = airHandler.getConnectedPneumatics();
 
         if(teList.size() == 1 && !world().isRemote) {
-            for(Pair<ForgeDirection, IPneumaticMachine> entry : teList) {
+            for(Pair<ForgeDirection, IAirHandler> entry : teList) {
                 if(isConnectedTo(entry.getKey().getOpposite())) airHandler.airLeak(entry.getKey().getOpposite());
             }
         }
@@ -178,6 +179,8 @@ public class PartPressureTube extends TMultiPart implements IPneumaticPosProvide
                 IPneumaticMachine machine = ModInteractionUtils.getInstance().getMachine(te);
                 if(machine != null) {
                     sidesConnected[direction.ordinal()] = machine.isConnectedTo(direction.getOpposite());
+                } else if(te instanceof ISidedPneumaticMachine) {
+                    sidesConnected[direction.ordinal()] = ((ISidedPneumaticMachine)te).getAirHandler(direction.getOpposite()) != null;
                 }
             }
         }

@@ -21,7 +21,7 @@ import net.minecraftforge.fluids.IFluidHandler;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-import pneumaticCraft.api.tileentity.IPneumaticMachine;
+import pneumaticCraft.api.tileentity.IAirHandler;
 import pneumaticCraft.common.ai.ChunkPositionSorter;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
@@ -63,10 +63,10 @@ public class TileEntityGasLift extends TileEntityPneumaticBase implements IMinWo
     @Override
     public void onNeighborTileUpdate(){
         super.onNeighborTileUpdate();
-        List<Pair<ForgeDirection, IPneumaticMachine>> connections = getConnectedPneumatics();
+        List<Pair<ForgeDirection, IAirHandler>> connections = getConnectedPneumatics();
         for(int i = 0; i < sidesConnected.length; i++)
             sidesConnected[i] = false;
-        for(Pair<ForgeDirection, IPneumaticMachine> entry : connections) {
+        for(Pair<ForgeDirection, IAirHandler> entry : connections) {
             sidesConnected[entry.getKey().ordinal()] = true;
         }
     }

@@ -20,6 +20,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+import pneumaticCraft.api.tileentity.IAirHandler;
 import pneumaticCraft.api.tileentity.IPneumaticMachine;
 import pneumaticCraft.common.Config;
 import pneumaticCraft.common.block.BlockElevatorBase;
@@ -687,8 +688,8 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
     }
 
     @Override
-    public List<Pair<ForgeDirection, IPneumaticMachine>> getConnectedPneumatics(){
-        List<Pair<ForgeDirection, IPneumaticMachine>> connectedMachines = super.getConnectedPneumatics();
+    public List<Pair<ForgeDirection, IAirHandler>> getConnectedPneumatics(){
+        List<Pair<ForgeDirection, IAirHandler>> connectedMachines = super.getConnectedPneumatics();
         TileEntity te = getTileCache()[ForgeDirection.DOWN.ordinal()].getTileEntity();
         if(te instanceof TileEntityElevatorBase) {
             connectedMachines.addAll(((TileEntityElevatorBase)te).getConnectedPneumatics());

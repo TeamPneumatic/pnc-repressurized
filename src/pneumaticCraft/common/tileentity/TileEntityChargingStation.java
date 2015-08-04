@@ -18,7 +18,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.api.item.IPressurizable;
-import pneumaticCraft.api.tileentity.IPneumaticMachine;
+import pneumaticCraft.api.tileentity.IAirHandler;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.inventory.ContainerChargingStationItemInventory;
 import pneumaticCraft.common.inventory.InventoryPneumaticInventoryItem;
@@ -135,7 +135,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     @Override
     protected void disperseAir(){
         super.disperseAir();
-        List<Pair<ForgeDirection, IPneumaticMachine>> teList = getConnectedPneumatics();
+        List<Pair<ForgeDirection, IAirHandler>> teList = getConnectedPneumatics();
         if(teList.size() == 0) airLeak(ForgeDirection.getOrientation(getBlockMetadata()));
     }
 

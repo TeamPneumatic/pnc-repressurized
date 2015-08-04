@@ -5,6 +5,7 @@ import java.util.List;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
@@ -12,7 +13,9 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+import pneumaticCraft.api.tileentity.IAirHandler;
 import pneumaticCraft.api.tileentity.IPneumaticMachine;
+import pneumaticCraft.api.tileentity.ISidedPneumaticMachine;
 import pneumaticCraft.common.block.tubes.IInfluenceDispersing;
 import pneumaticCraft.common.block.tubes.ModuleAirGrate;
 import pneumaticCraft.common.block.tubes.ModuleFlowDetector;
@@ -103,7 +106,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase{
             if(module != null) module.update();
         }
 
-        List<Pair<ForgeDirection, IPneumaticMachine>> teList = getConnectedPneumatics();
+        List<Pair<ForgeDirection, IAirHandler>> teList = getConnectedPneumatics();
 
         boolean hasModules = false;
         for(TubeModule module : modules) {
@@ -113,7 +116,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase{
             }
         }
         if(!hasModules && teList.size() == 1 && !worldObj.isRemote) {
-            for(Pair<ForgeDirection, IPneumaticMachine> entry : teList) {
+            for(Pair<ForgeDirection, IAirHandler> entry : teList) {
                 if(modules[entry.getKey().getOpposite().ordinal()] == null) airLeak(entry.getKey().getOpposite());
             }
         }
@@ -221,9 +224,12 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase{
         sidesConnected = new boolean[6];
         boolean hasModule = false;
         for(ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
-            IPneumaticMachine machine = ModInteractionUtils.getInstance().getMachine(getTileCache()[direction.ordinal()].getTileEntity());
+            TileEntity te = getTileCache()[direction.ordinal()].getTileEntity();
+            IPneumaticMachine machine = ModInteractionUtils.getInstance().getMachine(te);
             if(machine != null) {
                 sidesConnected[direction.ordinal()] = isConnectedTo(direction) && machine.isConnectedTo(direction.getOpposite());
+            } else if(te instanceof ISidedPneumaticMachine) {
+                sidesConnected[direction.ordinal()] = ((ISidedPneumaticMachine)te).getAirHandler(direction.getOpposite()) != null;
             }
             if(modules[direction.ordinal()] != null) {
                 hasModule = true;

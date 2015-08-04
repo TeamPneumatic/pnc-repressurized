@@ -10,7 +10,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-import pneumaticCraft.api.tileentity.IPneumaticMachine;
+import pneumaticCraft.api.tileentity.IAirHandler;
 import pneumaticCraft.client.gui.widget.GuiAnimatedStat;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.inventory.ContainerAirCannon;
@@ -102,7 +102,7 @@ public class GuiAirCannon extends GuiPneumaticContainerBase<TileEntityAirCannon>
 
     @Override
     protected void addProblems(List<String> textList){
-        List<Pair<ForgeDirection, IPneumaticMachine>> teSurrounding = te.getConnectedPneumatics();
+        List<Pair<ForgeDirection, IAirHandler>> teSurrounding = te.getConnectedPneumatics();
         super.addProblems(textList);
 
         if(teSurrounding.isEmpty()) {

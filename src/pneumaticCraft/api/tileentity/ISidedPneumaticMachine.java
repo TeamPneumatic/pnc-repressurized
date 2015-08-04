@@ -2,11 +2,7 @@ package pneumaticCraft.api.tileentity;
 
 import net.minecraftforge.common.util.ForgeDirection;
 
-/**
- * Deprecated: Use ISidedPneumaticMachine in favor of this one. In Minecraft 1.8+ that ISidedPneumaticMachine will be renamed to IPneumaticMachine, and therefore will be sided by default.
- */
-@Deprecated
-public interface IPneumaticMachine{
+public interface ISidedPneumaticMachine{
 
     /**
      * In your TileEntity class which is implementing this interface you should keep a reference of an IAirHandler.
@@ -21,14 +17,7 @@ public interface IPneumaticMachine{
      * to the IAirHandler.
      * Apart from that you'll need to forward {@link net.minecraft.block.Block#onNeighborChange(net.minecraft.world.IBlockAccess, int, int, int, int, int, int)}
      * from the implementing block to the IAirHandler.
-     * @return
+     * @return a valid IAirHandler when connectable on this side. If not, return null.
      */
-    public IAirHandler getAirHandler();
-
-    /**
-     * Returns true if the pneumatic logic is connected to the given side.
-     * @param side
-     * @return
-     */
-    public boolean isConnectedTo(ForgeDirection side);
+    public IAirHandler getAirHandler(ForgeDirection side);
 }

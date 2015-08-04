@@ -101,9 +101,9 @@ public class ModuleRegulatorTube extends TubeModuleRedstoneReceiving implements 
     @Override
     public int getMaxDispersion(){
         IAirHandler connectedHandler = null;
-        for(Pair<ForgeDirection, IPneumaticMachine> entry : pressureTube.getAirHandler().getConnectedPneumatics()) {
+        for(Pair<ForgeDirection, IAirHandler> entry : pressureTube.getAirHandler().getConnectedPneumatics()) {
             if(entry.getKey().equals(dir)) {
-                connectedHandler = entry.getValue().getAirHandler();
+                connectedHandler = entry.getValue();
                 break;
             }
         }

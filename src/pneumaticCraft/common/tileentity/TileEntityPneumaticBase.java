@@ -1,8 +1,10 @@
 package pneumaticCraft.common.tileentity;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -18,6 +20,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import pneumaticCraft.api.tileentity.IAirHandler;
 import pneumaticCraft.api.tileentity.IManoMeasurable;
 import pneumaticCraft.api.tileentity.IPneumaticMachine;
+import pneumaticCraft.api.tileentity.ISidedPneumaticMachine;
 import pneumaticCraft.common.block.tubes.IPneumaticPosProvider;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.network.GuiSynced;
@@ -52,6 +55,7 @@ public class TileEntityPneumaticBase extends TileEntityBase implements IManoMeas
     public int currentAir;
     public int soundCounter;
     public TileEntity parentTile;
+    private final Set<IAirHandler> specialConnectedHandlers = new HashSet<IAirHandler>();
     protected List<ILuaMethod> luaMethods = new ArrayList<ILuaMethod>();
 
     public TileEntityPneumaticBase(float dangerPressure, float criticalPressure, int volume){
@@ -108,7 +112,7 @@ public class TileEntityPneumaticBase extends TileEntityBase implements IManoMeas
         disperseAir(getConnectedPneumatics());
     }
 
-    private void disperseAir(List<Pair<ForgeDirection, IPneumaticMachine>> teList){
+    private void disperseAir(List<Pair<ForgeDirection, IAirHandler>> teList){
 
         boolean shouldRepeat = false;
         List<Pair<Integer, Integer>> dispersion = new ArrayList<Pair<Integer, Integer>>();
@@ -117,16 +121,16 @@ public class TileEntityPneumaticBase extends TileEntityBase implements IManoMeas
             //Add up every volume and air.
             int totalVolume = getVolume();
             int totalAir = currentAir;
-            for(Pair<ForgeDirection, IPneumaticMachine> entry : teList) {
-                IAirHandler airHandler = entry.getValue().getAirHandler();
+            for(Pair<ForgeDirection, IAirHandler> entry : teList) {
+                IAirHandler airHandler = entry.getValue();
                 totalVolume += airHandler.getVolume();
                 totalAir += airHandler.getCurrentAir(entry.getKey().getOpposite());
             }
             //Only go push based, ignore any machines that have a higher pressure than this block.
-            Iterator<Pair<ForgeDirection, IPneumaticMachine>> iterator = teList.iterator();
+            Iterator<Pair<ForgeDirection, IAirHandler>> iterator = teList.iterator();
             while(iterator.hasNext()) {
-                Pair<ForgeDirection, IPneumaticMachine> entry = iterator.next();
-                IAirHandler airHandler = entry.getValue().getAirHandler();
+                Pair<ForgeDirection, IAirHandler> entry = iterator.next();
+                IAirHandler airHandler = entry.getValue();
                 int totalMachineAir = (int)((long)totalAir * airHandler.getVolume() / totalVolume);//Calculate the total air the machine is going to get.
                 int airDispersed = totalMachineAir - airHandler.getCurrentAir(entry.getKey().getOpposite());
                 if(airDispersed < 0) {
@@ -166,11 +170,11 @@ public class TileEntityPneumaticBase extends TileEntityBase implements IManoMeas
         }
 
         for(int i = 0; i < teList.size(); i++) {
-            IPneumaticMachine neighbor = teList.get(i).getValue();
+            IAirHandler neighbor = teList.get(i).getValue();
             int transferedAir = dispersion.get(i).getValue();
 
             onAirDispersion(transferedAir, teList.get(i).getKey());
-            neighbor.getAirHandler().addAir(transferedAir, teList.get(i).getKey().getOpposite());
+            neighbor.addAir(transferedAir, teList.get(i).getKey().getOpposite());
             addAir(-transferedAir, teList.get(i).getKey());
         }
     }
@@ -236,13 +240,21 @@ public class TileEntityPneumaticBase extends TileEntityBase implements IManoMeas
         * @return
         */
     @Override
-    public List<Pair<ForgeDirection, IPneumaticMachine>> getConnectedPneumatics(){
-        List<Pair<ForgeDirection, IPneumaticMachine>> teList = new ArrayList<Pair<ForgeDirection, IPneumaticMachine>>();
+    public List<Pair<ForgeDirection, IAirHandler>> getConnectedPneumatics(){
+        List<Pair<ForgeDirection, IAirHandler>> teList = new ArrayList<Pair<ForgeDirection, IAirHandler>>();
+        for(IAirHandler specialConnection : specialConnectedHandlers) {
+            teList.add(new ImmutablePair(ForgeDirection.UNKNOWN, specialConnection));
+        }
         for(ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
             TileEntity te = getTileCache()[direction.ordinal()].getTileEntity();
             IPneumaticMachine machine = ModInteractionUtils.getInstance().getMachine(te);
             if(machine != null && isConnectedTo(direction) && machine.isConnectedTo(direction.getOpposite())) {
-                teList.add(new ImmutablePair(direction, machine));
+                teList.add(new ImmutablePair(direction, machine.getAirHandler()));
+            } else if(te instanceof ISidedPneumaticMachine) {
+                IAirHandler handler = ((ISidedPneumaticMachine)te).getAirHandler(direction.getOpposite());
+                if(handler != null) {
+                    teList.add(new ImmutablePair(direction, handler));
+                }
             }
         }
         return teList;
@@ -259,8 +271,10 @@ public class TileEntityPneumaticBase extends TileEntityBase implements IManoMeas
             return true;
         } else if(ModInteractionUtils.getInstance().isMultipart(parentTile)) {
             return ModInteractionUtils.getInstance().isMultipartWiseConnected(parentTile, side);
-        } else {
+        } else if(parentTile instanceof IPneumaticMachine) {
             return ((IPneumaticMachine)parentTile).isConnectedTo(side);
+        } else {
+            return ((ISidedPneumaticMachine)parentTile).getAirHandler(side) != null;
         }
     }
 
@@ -511,5 +525,21 @@ public class TileEntityPneumaticBase extends TileEntityBase implements IManoMeas
     @Override
     public int z(){
         return zCoord;
+    }
+
+    @Override
+    public void createConnection(IAirHandler otherHandler){
+        if(otherHandler == null) throw new NullPointerException("Can't connect with a null air handler!");
+        if(specialConnectedHandlers.add(otherHandler)) {
+            otherHandler.createConnection(this);
+        }
+    }
+
+    @Override
+    public void removeConnection(IAirHandler otherHandler){
+        if(otherHandler == null) throw new NullPointerException("Can't disconnect a null air handler!");
+        if(specialConnectedHandlers.remove(otherHandler)) {
+            otherHandler.removeConnection(this);
+        }
     }
 }

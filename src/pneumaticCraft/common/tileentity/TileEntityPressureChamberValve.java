@@ -23,7 +23,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import pneumaticCraft.api.recipe.IPressureChamberRecipe;
 import pneumaticCraft.api.recipe.PressureChamberRecipe;
-import pneumaticCraft.api.tileentity.IPneumaticMachine;
+import pneumaticCraft.api.tileentity.IAirHandler;
 import pneumaticCraft.common.AchievementHandler;
 import pneumaticCraft.common.Config;
 import pneumaticCraft.common.DamageSourcePneumaticCraft;
@@ -97,11 +97,11 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
     }
 
     @Override
-    public List<Pair<ForgeDirection, IPneumaticMachine>> getConnectedPneumatics(){
-        List<Pair<ForgeDirection, IPneumaticMachine>> teList = super.getConnectedPneumatics();
+    public List<Pair<ForgeDirection, IAirHandler>> getConnectedPneumatics(){
+        List<Pair<ForgeDirection, IAirHandler>> teList = super.getConnectedPneumatics();
         if(accessoryValves != null) {
             for(TileEntityPressureChamberValve valve : accessoryValves) {
-                if(valve != this) teList.add(new ImmutablePair(ForgeDirection.UNKNOWN, valve));
+                if(valve != this) teList.add(new ImmutablePair(ForgeDirection.UNKNOWN, valve.getAirHandler()));
             }
         }
 
@@ -154,8 +154,8 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
                     connected[ForgeDirection.WEST.ordinal()] = false;
                     break;
             }
-            List<Pair<ForgeDirection, IPneumaticMachine>> teList = super.getConnectedPneumatics();//we need the super method, as the overridden method adds the other valves.
-            for(Pair<ForgeDirection, IPneumaticMachine> entry : teList) {
+            List<Pair<ForgeDirection, IAirHandler>> teList = super.getConnectedPneumatics();//we need the super method, as the overridden method adds the other valves.
+            for(Pair<ForgeDirection, IAirHandler> entry : teList) {
                 connected[entry.getKey().ordinal()] = true;
             }
             //retrieve the valve that is controlling the (potential) chamber.

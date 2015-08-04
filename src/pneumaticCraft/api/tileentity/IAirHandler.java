@@ -49,7 +49,7 @@ public interface IAirHandler extends IManoMeasurable{
     /**
      * Returns a list of all the connecting pneumatics. It takes sides in account.
      */
-    public List<Pair<ForgeDirection, IPneumaticMachine>> getConnectedPneumatics();
+    public List<Pair<ForgeDirection, IAirHandler>> getConnectedPneumatics();
 
     /**
      * Adds air to the tank of the given side of this TE. It also updates clients where needed (when they have a GUI opened).
@@ -110,5 +110,17 @@ public interface IAirHandler extends IManoMeasurable{
      * Needs to be forwarded from the implementing _Block_! Forward the Block's "onNeighborChange" method to this handler.
      */
     public void onNeighborChange();
+
+    /**
+     * Creates an air connection with another handler. Can be used to connect up pneumatic machines that aren't neighboring, like AE2's P2P tunnels.
+     * @param otherHandler
+     */
+    public void createConnection(IAirHandler otherHandler);
+
+    /**
+     * Remove a connection created with createConnection. You need to call this when one of the hosts of this IAirHandlers is invalidated.
+     * @param otherHandler
+     */
+    public void removeConnection(IAirHandler otherHandler);
 
 }

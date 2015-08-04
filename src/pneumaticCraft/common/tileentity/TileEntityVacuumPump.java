@@ -16,7 +16,9 @@ import net.minecraftforge.common.util.ForgeDirection;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
+import pneumaticCraft.api.tileentity.IAirHandler;
 import pneumaticCraft.api.tileentity.IPneumaticMachine;
+import pneumaticCraft.api.tileentity.ISidedPneumaticMachine;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.network.DescSynced;
@@ -31,13 +33,18 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements IIn
     @GuiSynced
     private final TileEntityPneumaticBase vacuumHandler = new TileEntityPneumaticBase(5, 7, PneumaticValues.VOLUME_VACUUM_PUMP){
         @Override
-        public List<Pair<ForgeDirection, IPneumaticMachine>> getConnectedPneumatics(){
-            List<Pair<ForgeDirection, IPneumaticMachine>> teList = new ArrayList<Pair<ForgeDirection, IPneumaticMachine>>();
+        public List<Pair<ForgeDirection, IAirHandler>> getConnectedPneumatics(){
+            List<Pair<ForgeDirection, IAirHandler>> teList = new ArrayList<Pair<ForgeDirection, IAirHandler>>();
             ForgeDirection direction = getVacuumSide();
             TileEntity te = getTileCache()[direction.ordinal()].getTileEntity();
             IPneumaticMachine machine = ModInteractionUtils.getInstance().getMachine(te);
             if(machine != null && isConnectedTo(direction) && machine.isConnectedTo(direction.getOpposite())) {
-                teList.add(new ImmutablePair(direction, machine));
+                teList.add(new ImmutablePair(direction, machine.getAirHandler()));
+            } else if(te instanceof ISidedPneumaticMachine) {
+                IAirHandler handler = ((ISidedPneumaticMachine)te).getAirHandler(direction);
+                if(handler != null) {
+                    teList.add(new ImmutablePair(direction, handler));
+                }
             }
             return teList;
         }
@@ -82,13 +89,18 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements IIn
     }
 
     @Override
-    public List<Pair<ForgeDirection, IPneumaticMachine>> getConnectedPneumatics(){
-        List<Pair<ForgeDirection, IPneumaticMachine>> teList = new ArrayList<Pair<ForgeDirection, IPneumaticMachine>>();
+    public List<Pair<ForgeDirection, IAirHandler>> getConnectedPneumatics(){
+        List<Pair<ForgeDirection, IAirHandler>> teList = new ArrayList<Pair<ForgeDirection, IAirHandler>>();
         ForgeDirection direction = getInputSide();
         TileEntity te = getTileCache()[direction.ordinal()].getTileEntity();
         IPneumaticMachine machine = ModInteractionUtils.getInstance().getMachine(te);
         if(machine != null && isConnectedTo(direction) && machine.isConnectedTo(direction.getOpposite())) {
-            teList.add(new ImmutablePair(direction, machine));
+            teList.add(new ImmutablePair(direction, machine.getAirHandler()));
+        } else if(te instanceof ISidedPneumaticMachine) {
+            IAirHandler handler = ((ISidedPneumaticMachine)te).getAirHandler(direction);
+            if(handler != null) {
+                teList.add(new ImmutablePair(direction, handler));
+            }
         }
         return teList;
     }
@@ -159,7 +171,7 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements IIn
 
         super.updateEntity();
         vacuumHandler.updateEntityI();
-        List<Pair<ForgeDirection, IPneumaticMachine>> teList = getConnectedPneumatics();
+        List<Pair<ForgeDirection, IAirHandler>> teList = getConnectedPneumatics();
         if(teList.size() == 0) airLeak(getInputSide());
         teList = vacuumHandler.getConnectedPneumatics();
         if(teList.size() == 0) vacuumHandler.airLeak(getVacuumSide());

@@ -10,7 +10,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.opengl.GL11;
 
-import pneumaticCraft.api.tileentity.IPneumaticMachine;
+import pneumaticCraft.api.tileentity.IAirHandler;
 import pneumaticCraft.common.inventory.ContainerAirCompressor;
 import pneumaticCraft.common.tileentity.TileEntityAirCompressor;
 import pneumaticCraft.lib.Textures;
@@ -71,7 +71,7 @@ public class GuiAirCompressor extends GuiPneumaticContainerBase<TileEntityAirCom
             textList.add("\u00a77No fuel!");
             textList.add("\u00a70Insert any burnable item.");
         }
-        List<Pair<ForgeDirection, IPneumaticMachine>> teSurrounding = te.getConnectedPneumatics();
+        List<Pair<ForgeDirection, IAirHandler>> teSurrounding = te.getConnectedPneumatics();
         if(teSurrounding.isEmpty()) {
             textList.add("\u00a77Air leaking!");
             textList.add("\u00a70Add pipes / machines");
