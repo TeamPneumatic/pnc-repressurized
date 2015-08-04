@@ -3,15 +3,12 @@ package pneumaticCraft.common.recipes;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;
-import net.minecraft.village.MerchantRecipe;
-import net.minecraft.village.MerchantRecipeList;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.RecipeSorter;
@@ -306,8 +303,13 @@ public class CraftingRegistrator{
         PneumaticRecipeRegistry registry = PneumaticRecipeRegistry.getInstance();
         registry.registerAmadronOffer(new ItemStack(Items.emerald, 8), new ItemStack(Itemss.PCBBlueprint));
         registry.registerAmadronOffer(new FluidStack(Fluids.oil, 1000), new ItemStack(Items.emerald, 8));
+        registry.registerAmadronOffer(new ItemStack(Items.emerald), new FluidStack(Fluids.oil, 1000));
 
-        for(int i = 0; i < 256; i++) {
+        for(int i = 1; i <= 62; i++) {
+            registry.registerAmadronOffer(new ItemStack(Items.stick, i), new ItemStack(Items.stick, i));
+        }
+
+        /*for(int i = 0; i < 256; i++) {
             EntityVillager villager = new EntityVillager(null, i);
             MerchantRecipeList list = villager.getRecipes(null);
             for(MerchantRecipe recipe : (List<MerchantRecipe>)list) {
@@ -315,7 +317,7 @@ public class CraftingRegistrator{
                     registry.registerAmadronOffer(recipe.getItemToBuy(), recipe.getItemToSell());
                 }
             }
-        }
+        }*/
     }
 
     private static void addRecipe(ItemStack result, Object... recipe){

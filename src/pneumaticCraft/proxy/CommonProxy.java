@@ -9,9 +9,11 @@ import pneumaticCraft.client.gui.GuiAerialInterface;
 import pneumaticCraft.client.gui.GuiAirCannon;
 import pneumaticCraft.client.gui.GuiAirCompressor;
 import pneumaticCraft.client.gui.GuiAmadron;
+import pneumaticCraft.client.gui.GuiAmadronAddTrade;
 import pneumaticCraft.client.gui.GuiAphorismTile;
 import pneumaticCraft.client.gui.GuiAssemblyController;
 import pneumaticCraft.client.gui.GuiChargingStation;
+import pneumaticCraft.client.gui.GuiCreativeCompressor;
 import pneumaticCraft.client.gui.GuiDrone;
 import pneumaticCraft.client.gui.GuiElectrostaticCompressor;
 import pneumaticCraft.client.gui.GuiElevator;
@@ -48,6 +50,7 @@ import pneumaticCraft.common.inventory.ContainerAdvancedLiquidCompressor;
 import pneumaticCraft.common.inventory.ContainerAirCannon;
 import pneumaticCraft.common.inventory.ContainerAirCompressor;
 import pneumaticCraft.common.inventory.ContainerAmadron;
+import pneumaticCraft.common.inventory.ContainerAmadronAddTrade;
 import pneumaticCraft.common.inventory.ContainerAssemblyController;
 import pneumaticCraft.common.inventory.ContainerChargingStation;
 import pneumaticCraft.common.inventory.ContainerChargingStationItemInventory;
@@ -58,6 +61,7 @@ import pneumaticCraft.common.inventory.ContainerLiquidHopper;
 import pneumaticCraft.common.inventory.ContainerLogistics;
 import pneumaticCraft.common.inventory.ContainerOmnidirectionalHopper;
 import pneumaticCraft.common.inventory.ContainerPlasticMixer;
+import pneumaticCraft.common.inventory.ContainerPneumaticBase;
 import pneumaticCraft.common.inventory.ContainerPneumaticDoor;
 import pneumaticCraft.common.inventory.ContainerPressureChamber;
 import pneumaticCraft.common.inventory.ContainerPressureChamberInterface;
@@ -85,7 +89,9 @@ import pneumaticCraft.common.tileentity.TileEntityAirCannon;
 import pneumaticCraft.common.tileentity.TileEntityAirCompressor;
 import pneumaticCraft.common.tileentity.TileEntityAphorismTile;
 import pneumaticCraft.common.tileentity.TileEntityAssemblyController;
+import pneumaticCraft.common.tileentity.TileEntityBase;
 import pneumaticCraft.common.tileentity.TileEntityChargingStation;
+import pneumaticCraft.common.tileentity.TileEntityCreativeCompressor;
 import pneumaticCraft.common.tileentity.TileEntityElectrostaticCompressor;
 import pneumaticCraft.common.tileentity.TileEntityElevatorBase;
 import pneumaticCraft.common.tileentity.TileEntityGasLift;
@@ -117,7 +123,7 @@ public class CommonProxy implements IGuiHandler{
     public int PneumaticHelmetRenderID = 0;
 
     public static enum EnumGuiId{
-        AIR_COMPRESSOR, AIR_CANNON, PRESSURE_CHAMBER, CHARGING_STATION, ELEVATOR, PNEUMATIC_HELMET, PRESSURE_CHAMBER_INTERFACE, VACUUM_PUMP, PNEUMATIC_DOOR, ASSEMBLY_CONTROLLER, UV_LIGHT_BOX, SECURITY_STATION_INVENTORY, HACKING, UNIVERSAL_SENSOR, PNEUMATIC_GENERATOR, ELECTRIC_COMPRESSOR, PNEUMATIC_ENGINE, KINETIC_COMPRESSOR, AERIAL_INTERFACE, ELECTROSTATIC_COMPRESSOR, APHORISM_TILE, OMNIDIRECTIONAL_HOPPER, PROGRAMMER, DRONE, PRESSURE_MODULE, AIR_GRATE_MODULE, PNEUMATIC_DYNAMO, FLUX_COMPRESSOR, PLASTIC_MIXER, LIQUID_COMPRESSOR, ADVANCED_AIR_COMPRESSOR, LIQUID_HOPPER, ADVANCED_LIQUID_COMPRESSOR, REMOTE, REMOTE_EDITOR, PROGRAMMABLE_CONTROLLER, GAS_LIFT, REFINERY, THERMOPNEUMATIC_PROCESSING_PLANT, LOGISTICS_REQUESTER, LOGISTICS_STORAGE, LOGISTICS_PASSIVE_PROVIDER, AMADRON;
+        AIR_COMPRESSOR, AIR_CANNON, PRESSURE_CHAMBER, CHARGING_STATION, ELEVATOR, PNEUMATIC_HELMET, PRESSURE_CHAMBER_INTERFACE, VACUUM_PUMP, PNEUMATIC_DOOR, ASSEMBLY_CONTROLLER, UV_LIGHT_BOX, SECURITY_STATION_INVENTORY, HACKING, UNIVERSAL_SENSOR, PNEUMATIC_GENERATOR, ELECTRIC_COMPRESSOR, PNEUMATIC_ENGINE, KINETIC_COMPRESSOR, AERIAL_INTERFACE, ELECTROSTATIC_COMPRESSOR, APHORISM_TILE, OMNIDIRECTIONAL_HOPPER, PROGRAMMER, DRONE, PRESSURE_MODULE, AIR_GRATE_MODULE, PNEUMATIC_DYNAMO, FLUX_COMPRESSOR, PLASTIC_MIXER, LIQUID_COMPRESSOR, ADVANCED_AIR_COMPRESSOR, LIQUID_HOPPER, ADVANCED_LIQUID_COMPRESSOR, REMOTE, REMOTE_EDITOR, PROGRAMMABLE_CONTROLLER, GAS_LIFT, REFINERY, THERMOPNEUMATIC_PROCESSING_PLANT, LOGISTICS_REQUESTER, LOGISTICS_STORAGE, LOGISTICS_PASSIVE_PROVIDER, AMADRON, AMADRON_ADD_TRADE, CREATIVE_COMPRESSOR;
     }
 
     private final HackTickHandler serverHackTickHandler = new HackTickHandler();
@@ -221,7 +227,11 @@ public class CommonProxy implements IGuiHandler{
             case LOGISTICS_PASSIVE_PROVIDER:
                 return new ContainerLogistics(player.inventory, (SemiBlockLogistics)SemiBlockManager.getInstance(world).getSemiBlock(world, x, y, z));
             case AMADRON:
-                return new ContainerAmadron();
+                return new ContainerAmadron(player);
+            case AMADRON_ADD_TRADE:
+                return new ContainerAmadronAddTrade();
+            case CREATIVE_COMPRESSOR:
+                return new ContainerPneumaticBase((TileEntityBase)world.getTileEntity(x, y, z));
         }
         return ThirdPartyManager.instance().getServerGuiElement(ID, player, world, x, y, z);
     }
@@ -303,6 +313,10 @@ public class CommonProxy implements IGuiHandler{
                 return new GuiLogisticsProvider(player.inventory, (SemiBlockActiveProvider)SemiBlockManager.getInstance(world).getSemiBlock(world, x, y, z));
             case AMADRON:
                 return new GuiAmadron(player.inventory);
+            case AMADRON_ADD_TRADE:
+                return new GuiAmadronAddTrade();
+            case CREATIVE_COMPRESSOR:
+                return new GuiCreativeCompressor((TileEntityCreativeCompressor)world.getTileEntity(x, y, z));
         }
         return ThirdPartyManager.instance().getClientGuiElement(ID, player, world, x, y, z);
     }

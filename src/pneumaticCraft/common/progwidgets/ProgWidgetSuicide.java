@@ -3,6 +3,8 @@ package pneumaticCraft.common.progwidgets;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.MinecraftForge;
+import pneumaticCraft.api.drone.DroneSuicideEvent;
 import pneumaticCraft.common.ai.IDroneBase;
 import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.item.ItemPlasticPlants;
@@ -69,6 +71,7 @@ public class ProgWidgetSuicide extends ProgWidget{
 
         @Override
         public boolean shouldExecute(){
+            MinecraftForge.EVENT_BUS.post(new DroneSuicideEvent(drone));
             drone.setCustomNameTag("");
             drone.attackEntityFrom(DamageSource.outOfWorld, 2000.0F);
             return false;

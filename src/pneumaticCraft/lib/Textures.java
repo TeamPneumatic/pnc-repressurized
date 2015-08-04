@@ -261,6 +261,7 @@ public class Textures{
     public static final ResourceLocation GUI_MODULE_SIMPLE = new ResourceLocation(GUI_LOCATION + "GuiTubeModuleSimple.png");
     public static final ResourceLocation WIDGET_TEMPERATURE = new ResourceLocation(WIDGET_LOCATION + "WidgetTemperature.png");
     public static final ResourceLocation WIDGET_TANK = new ResourceLocation(WIDGET_LOCATION + "WidgetTank.png");
+    public static final ResourceLocation WIDGET_AMADRON_OFFER = new ResourceLocation(WIDGET_LOCATION + "WidgetAmadronOffer.png");
 
     public static final String VANILLA_ITEM_TEXTURE_SHEET = "/gui/items.png";
     public static final String VANILLA_BLOCK_TEXTURE_SHEET = "/terrain.png";

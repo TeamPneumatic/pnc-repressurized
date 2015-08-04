@@ -84,7 +84,7 @@ public abstract class GuiPneumaticInventoryItem extends GuiPneumaticContainerBas
      */
     @Override
     protected void actionPerformed(GuiButton button){
-        NetworkHandler.sendToServer(new PacketGuiButton(te, button.id));
+        NetworkHandler.sendToServer(new PacketGuiButton(button.id));
     }
 
     @Override

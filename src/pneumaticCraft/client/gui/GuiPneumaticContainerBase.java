@@ -34,7 +34,6 @@ import pneumaticCraft.client.gui.widget.WidgetTextField;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.PacketGuiButton;
-import pneumaticCraft.common.tileentity.IGUIButtonSensitive;
 import pneumaticCraft.common.tileentity.IMinWorkingPressure;
 import pneumaticCraft.common.tileentity.IRedstoneControl;
 import pneumaticCraft.common.tileentity.IRedstoneControlled;
@@ -321,7 +320,7 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
 
     @Override
     protected void actionPerformed(GuiButton button){
-        if(te != null) sendPacketToServer(te, button.id);
+        sendPacketToServer(button.id);
     }
 
     public String getRedstoneButtonText(int mode){
@@ -397,11 +396,11 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
                 }
             }
         }
-        if(te != null) sendPacketToServer(te, widget.getID());
+        sendPacketToServer(widget.getID());
     }
 
-    protected void sendPacketToServer(IGUIButtonSensitive instance, int id){
-        NetworkHandler.sendToServer(new PacketGuiButton(instance, id));
+    protected void sendPacketToServer(int id){
+        NetworkHandler.sendToServer(new PacketGuiButton(id));
     }
 
     @Override

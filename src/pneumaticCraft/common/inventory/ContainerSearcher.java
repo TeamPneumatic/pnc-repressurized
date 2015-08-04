@@ -72,6 +72,9 @@ public class ContainerSearcher extends Container{
     }
 
     @Override
+    public void putStacksInSlots(ItemStack[] p_75131_1_){}
+
+    @Override
     public void putStackInSlot(int par1, ItemStack par2ItemStack){} //override this to do nothing, as NEI tries to place items in this container which makes it crash.
 
 }

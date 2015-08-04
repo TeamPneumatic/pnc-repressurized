@@ -1,24 +1,17 @@
 package pneumaticCraft.client.gui;
 
+import java.awt.Point;
+
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.ForgeDirection;
-import pneumaticCraft.common.network.NetworkHandler;
-import pneumaticCraft.common.network.PacketGuiButton;
+import pneumaticCraft.common.inventory.ContainerPneumaticBase;
 import pneumaticCraft.common.tileentity.TileEntityCreativeCompressor;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 
-public class GuiCreativeCompressor extends GuiPneumaticScreenBase{
-
-    private final TileEntityCreativeCompressor te;
+public class GuiCreativeCompressor extends GuiPneumaticContainerBase<TileEntityCreativeCompressor>{
 
     public GuiCreativeCompressor(TileEntityCreativeCompressor te){
-        this.te = te;
-    }
-
-    @Override
-    protected ResourceLocation getTexture(){
-        return null;
+        super(new ContainerPneumaticBase(te), te, null);
     }
 
     @Override
@@ -37,14 +30,18 @@ public class GuiCreativeCompressor extends GuiPneumaticScreenBase{
     }
 
     @Override
-    protected void actionPerformed(GuiButton button){
-        NetworkHandler.sendToServer(new PacketGuiButton(te, button.id));
+    public void drawScreen(int x, int y, float partialTicks){
+        super.drawScreen(x, y, partialTicks);
+        drawCenteredString(fontRendererObj, PneumaticCraftUtils.roundNumberTo(te.getPressure(ForgeDirection.UNKNOWN), 1) + " bar", width / 2, height / 2, 0xFFFFFF);
     }
 
     @Override
-    public void drawScreen(int x, int y, float partialTicks){
-        drawDefaultBackground();
-        super.drawScreen(x, y, partialTicks);
-        drawCenteredString(fontRendererObj, PneumaticCraftUtils.roundNumberTo(te.getPressure(ForgeDirection.UNKNOWN), 1) + " bar", width / 2, height / 2, 0xFFFFFF);
+    protected boolean shouldDrawBackground(){
+        return false;
+    }
+
+    @Override
+    protected Point getInvTextOffset(){
+        return null;
     }
 }

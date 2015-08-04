@@ -484,6 +484,12 @@ gui.tab.problems.refinery.outputBlocked=§7No space for fuels to be outputted. \
 gui.tab.problems.refinery.notEnoughRefineries=§7Not enough Refineries. \n§0Refineries need to be stacked on top of each other, ranging from 2 to 4 Refineries.
 gui.tab.problems.refinery.tooManyRefineries=§7Too many Refineries. \n§0Refineries need to be stacked on top of each other, ranging from 2 to 4 Refineries.
 gui.tab.problems.thermopneumaticProcessingPlant.noSufficientIngredients=§7No (valid) ingredients, or no room for output! \n§0Add (the right) ingredients or empty the output tank.
+gui.tab.problems.amadron.noItemProvider=§7No item inventory selected. \n§0Right-click an inventory with your Amadron Tablet.
+gui.tab.problems.amadron.noFluidProvider=§7No tank selected. \n§0Right-click a tank with your Amadron Tablet.
+gui.tab.problems.amadron.notEnoughItemSpace=§7Can't store more items than currently buying. \n§0Create space in the bound inventory.
+gui.tab.problems.amadron.notEnoughFluidSpace=§7Can't store more fluid than currently buying. \n§0Bind a bigger tank and make sure no other fluid is in this tank.
+gui.tab.problems.amadron.notEnoughItems=§7Out of items to sell! \n§0Add more items in the bound inventory.
+gui.tab.problems.amadron.notEnoughFluid=§7Out of fluid to sell! \n§0Add more fluid in the bound tank. Or bind a bigger tank.
 
 # Upgrades
 gui.tab.upgrades=Upgrades
@@ -734,6 +740,10 @@ gui.tooltip.gunAmmo=Ammo type:
 gui.tooltip.gunAmmo.combineWithPotion=Craft with any Potion to tip the bullets with that effect.
 gui.tooltip.sneakForInfo=Sneak for info
 gui.tooltip.maxPressure=Max pressure: %s bar
+gui.tooltip.amadronTablet.itemLocation=Item Providing Location: %s, %s, %s in dimension %s
+gui.tooltip.amadronTablet.fluidLocation=Fluid Providing Location: %s, %s, %s in dimension %s
+gui.tooltip.amadronTablet.selectItemLocation=Right click an inventory to allow it to provide items to sellers.
+gui.tooltip.amadronTablet.selectFluidLocation=Right click a tank to allow it to provide fluids to sellers.
 
 # Item tooltips
 gui.tooltip.item.plasticBucket=Put in a Plastic Mixer to solidify into solid Plastic.
@@ -787,6 +797,8 @@ message.securityStation.stationPlacementPrevented=§cYou can't place a Security 
 message.seismicSensor.foundOil=§a[Seismic Sensor] Oil potentially found! Scanning...
 message.seismicSensor.foundOilDetails=§a[Seismic Sensor] Found oil %s§am below. It contains about %s§a buckets of oil.
 message.seismicSensor.noOilFound=§c[Seismic Sensor] No oil found.
+message.amadronTable.setItemProvidingLocation=[Amadron Tablet] Set the item providing location to %s, %s, %s in dimension %s (%s)
+message.amadronTable.setLiquidProvidingLocation=[Amadron Tablet] Set the liquid providing location to %s, %s, %s in dimension %s (%s)
 gui.regulatorTube.hudMessage.notInLine=§cA Regulator Tube Module only regulates air in line of the module.
 gui.regulatorTube.hudMessage.inverted=§cA Regulator Tube Module only regulates air in the direction of the arrow.
 
@@ -844,3 +856,12 @@ achievement.dw9x9.desc=Build a 9x9 house made out of Cobblestone, the perfect si
 #NEI
 gui.nei.recipe.etchingAcid=Place down a block of Etching Acid. Throw in an Empty PCB that has been exposed by UV light by a UV Light Box. This process will take 5 minutes.
 gui.nei.recipe.uvLightBox=Create a UV Light Box, power it with air, and put in an Empty PCB. This process takes about 10 minutes (without any Speed Upgrades).
+
+#Amadron
+drone.amadronDeliveryDrone=Amadron Delivery Drone
+gui.amadron=Amadron
+gui.amadron.button.order=Order
+gui.amadron.amadronWidget.vendor=§6Vendor: %s
+gui.amadron.amadronWidget.buying=§aBuying: %s
+gui.amadron.amadronWidget.selling=§9Selling: %s
+gui.amadron.amadronWidget.inBasket=§8In basket: %s

@@ -293,7 +293,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         }
         if(Keyboard.KEY_R == keyCode) {
             if(exportButton.getBounds().contains(lastMouseX, lastMouseY)) {
-                NetworkHandler.sendToServer(new PacketGuiButton(te, 0));
+                NetworkHandler.sendToServer(new PacketGuiButton(0));
             }
         }
         if(Keyboard.KEY_SPACE == keyCode) {
@@ -752,7 +752,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
                 break;
         }
 
-        NetworkHandler.sendToServer(new PacketGuiButton(te, button.id));
+        NetworkHandler.sendToServer(new PacketGuiButton(button.id));
     }
 
     private void toggleShowWidgets(){

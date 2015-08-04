@@ -1,6 +1,7 @@
 package pneumaticCraft.common;
 
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 
 public class NBTUtil{
@@ -395,7 +396,7 @@ public class NBTUtil{
      *            The value which should be set to the given tag as a
      *            {@link NBTTagCompound}.
      */
-    public static void setCompoundTag(ItemStack itemStack, String tagName, NBTTagCompound tagValue){
+    public static void setCompoundTag(ItemStack itemStack, String tagName, NBTBase tagValue){
         initNBTTagCompound(itemStack);
         itemStack.stackTagCompound.setTag(tagName, tagValue);
     }
