@@ -5,6 +5,7 @@ import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import org.lwjgl.opengl.GL11;
 
@@ -84,7 +85,7 @@ public class ModelGauge extends ModelBase implements IBaseModel{
         float critPressure = 7;
         if(gaugeModule != null && gaugeModule.getTube() != null) {
             TileEntityPneumaticBase base = (TileEntityPneumaticBase)((IPneumaticMachine)gaugeModule.getTube()).getAirHandler();
-            pressure = gaugeModule.getPressure();
+            pressure = base.getPressure(ForgeDirection.UNKNOWN);
             dangerPressure = base.DANGER_PRESSURE;
             critPressure = base.CRITICAL_PRESSURE;
         }
@@ -96,5 +97,4 @@ public class ModelGauge extends ModelBase implements IBaseModel{
         GuiUtils.drawPressureGauge(FMLClientHandler.instance().getClient().fontRenderer, -1, critPressure, dangerPressure, -1, pressure, 0, 0, 0);
         GL11.glEnable(GL11.GL_LIGHTING);
     }
-
 }
