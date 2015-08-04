@@ -64,7 +64,7 @@ import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.common.Optional.Interface;
 
-@Optional.InterfaceList({@Interface(iface = "appeng.api.networking.IGridHost", modid = ModIds.AE2), @Interface(iface = "appeng.api.networking.IGridBlock", modid = ModIds.AE2), @Interface(iface = "appeng.api.networking.crafting.ICraftingProvider", modid = ModIds.AE2), @Interface(iface = "appeng.api.networking.crafting.ICraftingWatcherHost", modid = ModIds.AE2), @Interface(iface = "appeng.api.networking.storage.IStackWatcherHost", modid = ModIds.AE2)})
+@Optional.InterfaceList({@Interface(iface = "appeng.api.networking.IGridHost", modid = ModIds.AE2), @Interface(iface = "appeng.api.networking.IGridBlock", modid = ModIds.AE2), @Interface(iface = "appeng.api.networking.crafting.ICraftingProvider", modid = ModIds.AE2), @Interface(iface = "appeng.api.networking.crafting.ICraftingWatcherHost", modid = ModIds.AE2), @Interface(iface = "appeng.api.networking.storage.IStackWatcherHost", modid = ModIds.AE2), @Interface(iface = "appeng.api.storage.IMEInventoryHandler", modid = ModIds.AE2), @Interface(iface = "appeng.api.storage.ICellContainer", modid = ModIds.AE2), @Interface(iface = "appeng.api.networking.ticking.IGridTickable", modid = ModIds.AE2)})
 public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificRequester, IProvidingInventoryListener,
         IGridHost, IGridBlock, ICraftingProvider, ICraftingWatcherHost, IStackWatcherHost,
         IMEInventoryHandler<IAEItemStack>, ICellContainer, IGridTickable{
@@ -310,7 +310,7 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
 
     @Override
     public double getIdlePowerUsage(){
-        return 0;
+        return 1;
     }
 
     @Override
@@ -463,6 +463,7 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
     @Override
     public IItemList<IAEItemStack> getAvailableItems(IItemList<IAEItemStack> arg0){
         for(AEItemStack stack : getProvidingItems()) {
+            stack.setCountRequestable(stack.getStackSize());
             arg0.addRequestable(stack);
         }
         return arg0;
