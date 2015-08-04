@@ -274,7 +274,7 @@ public class TileEntityPneumaticBase extends TileEntityBase implements IManoMeas
         } else if(parentTile instanceof IPneumaticMachine) {
             return ((IPneumaticMachine)parentTile).isConnectedTo(side);
         } else {
-            return ((ISidedPneumaticMachine)parentTile).getAirHandler(side) != null;
+            return ((ISidedPneumaticMachine)parentTile).getAirHandler(side) == this;
         }
     }
 
