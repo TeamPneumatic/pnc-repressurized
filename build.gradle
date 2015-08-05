@@ -195,11 +195,14 @@ task userdevJar(type: Jar) {
 
 // Create API library jar
 task apiJar(type: Jar) {
-    from(sourceSets.main.java) {
-        include 'pneumaticCraft/api/**'
-        appendix = "${project.ext.mcVersion}"
-        classifier = "api"
-    }
+	from sourceSets.main.java
+    include "pneumaticCraft/api/**"
+
+    from sourceSets.main.output
+    include "pneumaticCraft/api/**"
+
+	appendix = "${project.ext.mcVersion}"
+    classifier = 'api'
 }
 
 artifacts {
