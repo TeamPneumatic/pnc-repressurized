@@ -70,8 +70,8 @@ public class ProgWidgetEntityImport extends ProgWidget implements IProgWidget, I
     }
 
     @Override
-    public Set<ChunkPosition> getArea(){
-        return ProgWidgetAreaItemBase.getArea((ProgWidgetArea)getConnectedParameters()[0], (ProgWidgetArea)getConnectedParameters()[2]);
+    public void getArea(Set<ChunkPosition> area){
+        ProgWidgetAreaItemBase.getArea(area, (ProgWidgetArea)getConnectedParameters()[0], (ProgWidgetArea)getConnectedParameters()[2]);
     }
 
     @Override

@@ -2,7 +2,9 @@ package pneumaticCraft.common.ai;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.world.ChunkPosition;
@@ -20,7 +22,9 @@ public class DroneEntityAIGoToLocation extends EntityAIBase{
         this.drone = drone;
         setMutexBits(63);//binary 111111, so it won't run along with other AI tasks.
         this.gotoWidget = gotoWidget;
-        validArea = new ArrayList<ChunkPosition>(((IAreaProvider)gotoWidget).getArea());
+        Set<ChunkPosition> set = new HashSet<ChunkPosition>();
+        ((IAreaProvider)gotoWidget).getArea(set);
+        validArea = new ArrayList<ChunkPosition>(set);
         positionSorter = new ChunkPositionSorter(drone);
     }
 

@@ -54,7 +54,8 @@ public class DroneAILogistics extends EntityAIBase{
         for(List<SemiBlockLogistics> list : logistics) {
             list.clear();
         }
-        Set<ChunkPosition> area = widget.getArea();
+        Set<ChunkPosition> area = new HashSet<ChunkPosition>();
+        widget.getArea(area);
         if(area.size() == 0) return false;
         int minX = Integer.MAX_VALUE, maxX = Integer.MIN_VALUE, minZ = Integer.MAX_VALUE, maxZ = Integer.MIN_VALUE;
         for(ChunkPosition pos : area) {
@@ -267,8 +268,8 @@ public class DroneAILogistics extends EntityAIBase{
         }
 
         @Override
-        public Set<ChunkPosition> getArea(){
-            return area;
+        public void getArea(Set<ChunkPosition> area){
+            area.addAll(this.area);
         }
 
         @Override

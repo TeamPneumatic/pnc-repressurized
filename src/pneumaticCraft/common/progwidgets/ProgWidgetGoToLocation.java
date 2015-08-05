@@ -76,8 +76,8 @@ public class ProgWidgetGoToLocation extends ProgWidget implements IGotoWidget, I
     }
 
     @Override
-    public Set<ChunkPosition> getArea(){
-        return ProgWidgetAreaItemBase.getArea((ProgWidgetArea)getConnectedParameters()[0], null);
+    public void getArea(Set<ChunkPosition> area){
+        ProgWidgetAreaItemBase.getArea(area, (ProgWidgetArea)getConnectedParameters()[0], null);
     }
 
     @Override

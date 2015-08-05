@@ -68,24 +68,24 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
     }
 
     @Override
-    public Set<ChunkPosition> getArea(){
-        return getArea((ProgWidgetArea)getConnectedParameters()[0], (ProgWidgetArea)getConnectedParameters()[getParameters().length]);
+    public void getArea(Set<ChunkPosition> area){
+        getArea(area, (ProgWidgetArea)getConnectedParameters()[0], (ProgWidgetArea)getConnectedParameters()[getParameters().length]);
     }
 
-    public static Set<ChunkPosition> getArea(ProgWidgetArea whitelistWidget, ProgWidgetArea blacklistWidget){
-        if(whitelistWidget == null) return new HashSet<ChunkPosition>();
-        Set<ChunkPosition> area = new HashSet<ChunkPosition>();
+    public static void getArea(Set<ChunkPosition> area, ProgWidgetArea whitelistWidget, ProgWidgetArea blacklistWidget){
+        if(whitelistWidget == null) return;
         ProgWidgetArea widget = whitelistWidget;
         while(widget != null) {
-            area.addAll(widget.getArea());
+            widget.getArea(area);
             widget = (ProgWidgetArea)widget.getConnectedParameters()[0];
         }
         widget = blacklistWidget;
         while(widget != null) {
-            area.removeAll(widget.getArea());
+            Set<ChunkPosition> blacklistedArea = new HashSet<ChunkPosition>();
+            widget.getArea(area);
+            area.removeAll(blacklistedArea);
             widget = (ProgWidgetArea)widget.getConnectedParameters()[0];
         }
-        return new HashSet<ChunkPosition>(area);
     }
 
     @Override

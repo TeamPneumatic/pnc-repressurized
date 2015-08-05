@@ -2,6 +2,7 @@ package pneumaticCraft.common.tileentity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -555,7 +556,8 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory, 
     public boolean previewArea(int widgetX, int widgetY){
         for(IProgWidget w : progWidgets) {
             if(w.getX() == widgetX && w.getY() == widgetY && w instanceof IAreaProvider) {
-                Set<ChunkPosition> area = ((IAreaProvider)w).getArea();
+                Set<ChunkPosition> area = new HashSet<ChunkPosition>();
+                ((IAreaProvider)w).getArea(area);
                 AreaShowManager.getInstance().showArea(area, 0x00FF00, this);
             }
         }

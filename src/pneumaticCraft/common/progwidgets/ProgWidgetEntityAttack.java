@@ -82,18 +82,17 @@ public class ProgWidgetEntityAttack extends ProgWidget implements IAreaProvider,
     }
 
     @Override
-    public Set<ChunkPosition> getArea(){
-        return getArea((ProgWidgetArea)getConnectedParameters()[0], (ProgWidgetArea)getConnectedParameters()[2]);
+    public void getArea(Set<ChunkPosition> area){
+        getArea(area, (ProgWidgetArea)getConnectedParameters()[0], (ProgWidgetArea)getConnectedParameters()[2]);
     }
 
-    public static Set<ChunkPosition> getArea(ProgWidgetArea whitelistWidget, ProgWidgetArea blacklistWidget){
-        if(whitelistWidget == null) return new HashSet<ChunkPosition>();
-        Set<ChunkPosition> area = new HashSet<ChunkPosition>();
+    public static void getArea(Set<ChunkPosition> area, ProgWidgetArea whitelistWidget, ProgWidgetArea blacklistWidget){
+        if(whitelistWidget == null) return;
         ProgWidgetArea widget = whitelistWidget;
         while(widget != null) {
             ProgWidgetArea.EnumAreaType oldAreaType = widget.type;
             widget.type = ProgWidgetArea.EnumAreaType.FILL;
-            area.addAll(widget.getArea());
+            widget.getArea(area);
             widget.type = oldAreaType;
             widget = (ProgWidgetArea)widget.getConnectedParameters()[0];
         }
@@ -101,11 +100,12 @@ public class ProgWidgetEntityAttack extends ProgWidget implements IAreaProvider,
         while(widget != null) {
             ProgWidgetArea.EnumAreaType oldAreaType = widget.type;
             widget.type = ProgWidgetArea.EnumAreaType.FILL;
-            area.removeAll(widget.getArea());
+            Set<ChunkPosition> blacklistedArea = new HashSet<ChunkPosition>();
+            widget.getArea(area);
+            area.removeAll(blacklistedArea);
             widget.type = oldAreaType;
             widget = (ProgWidgetArea)widget.getConnectedParameters()[0];
         }
-        return new HashSet<ChunkPosition>(area);
     }
 
     @Override

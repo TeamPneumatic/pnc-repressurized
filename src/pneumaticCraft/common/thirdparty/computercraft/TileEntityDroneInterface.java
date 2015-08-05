@@ -1,7 +1,9 @@
 package pneumaticCraft.common.thirdparty.computercraft;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Context;
@@ -232,7 +234,9 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral,
             @Override
             public Object[] call(Object[] args) throws Exception{
                 if(args.length == 0) {
-                    NetworkHandler.sendToAllAround(new PacketShowArea(xCoord, yCoord, zCoord, getWidget().getArea()), worldObj);
+                    Set<ChunkPosition> area = new HashSet<ChunkPosition>();
+                    getWidget().getArea(area);
+                    NetworkHandler.sendToAllAround(new PacketShowArea(xCoord, yCoord, zCoord, area), worldObj);
                     return null;
                 } else {
                     throw new IllegalArgumentException("showArea doesn't take any arguments!");

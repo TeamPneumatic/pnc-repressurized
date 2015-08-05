@@ -148,10 +148,9 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     }
 
     @Override
-    public Set<ChunkPosition> getArea(){
-        Set<ChunkPosition> area = new HashSet<ChunkPosition>();
+    public void getArea(Set<ChunkPosition> area){
         ChunkPosition[] areaPoints = getAreaPoints();
-        if(areaPoints[0] == null && areaPoints[1] == null) return area;
+        if(areaPoints[0] == null && areaPoints[1] == null) return;
 
         int minX;
         int minY;
@@ -455,9 +454,14 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
                 break;
             case RANDOM:
                 type = EnumAreaType.FILL;
-                Set<ChunkPosition> filledArea = getArea();
+
+                Set<ChunkPosition> filledArea = new HashSet<ChunkPosition>();
+                getArea(filledArea);
                 type = EnumAreaType.RANDOM;
-                if(typeInfo >= filledArea.size()) return filledArea;
+                if(typeInfo >= filledArea.size()) {
+                    area.addAll(filledArea);
+                    return;
+                }
                 Random rand = new Random();
                 Set<Integer> randomIndexes = new HashSet<Integer>();
                 while(randomIndexes.size() < typeInfo) {
@@ -470,7 +474,6 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
                 }
                 break;
         }
-        return area;
     }
 
     private AxisAlignedBB getAABB(){

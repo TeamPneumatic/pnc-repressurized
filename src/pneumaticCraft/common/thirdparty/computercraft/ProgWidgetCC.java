@@ -91,7 +91,9 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
     }
 
     public Set<ChunkPosition> getInterfaceArea(){
-        return getArea((ProgWidgetArea)getConnectedParameters()[0], (ProgWidgetArea)getConnectedParameters()[1]);
+        Set<ChunkPosition> area = new HashSet<ChunkPosition>();
+        getArea(area, (ProgWidgetArea)getConnectedParameters()[0], (ProgWidgetArea)getConnectedParameters()[1]);
+        return area;
     }
 
     @Override
@@ -133,8 +135,8 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
     }
 
     @Override
-    public synchronized Set<ChunkPosition> getArea(){
-        return area;
+    public synchronized void getArea(Set<ChunkPosition> area){
+        area.addAll(this.area);
     }
 
     private Set<ChunkPosition> getArea(int x1, int y1, int z1, int x2, int y2, int z2, String areaType) throws IllegalArgumentException{
@@ -154,7 +156,9 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
         helperWidget.y2 = y2;
         helperWidget.z2 = z2;
         helperWidget.type = type;
-        return helperWidget.getArea();
+        Set<ChunkPosition> a = new HashSet<ChunkPosition>();
+        helperWidget.getArea(a);
+        return a;
     }
 
     @Override
