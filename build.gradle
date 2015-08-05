@@ -44,7 +44,7 @@ apply plugin: 'forge'
 project.ext {
 	massive = "1"
     major = "9"
-    minor = "14"
+    minor = "15"
     mcVersion = "1.7.10"
 }
 
@@ -193,8 +193,8 @@ task userdevJar(type: Jar) {
     classifier = "userdev"
 }
 
-// Create API library zip
-task apiZip(type: Zip) {
+// Create API library jar
+task apiJar(type: Jar) {
     from(sourceSets.main.java) {
         include 'pneumaticCraft/api/**'
         appendix = "${project.ext.mcVersion}"
@@ -204,5 +204,5 @@ task apiZip(type: Zip) {
 
 artifacts {
     archives userdevJar
-	archives apiZip
+	archives apiJar
 }
