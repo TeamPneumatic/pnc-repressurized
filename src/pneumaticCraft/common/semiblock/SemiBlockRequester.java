@@ -299,11 +299,13 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
     }
 
     @Override
+    @Optional.Method(modid = ModIds.AE2)
     public EnumSet<GridFlags> getFlags(){
         return EnumSet.noneOf(GridFlags.class);
     }
 
     @Override
+    @Optional.Method(modid = ModIds.AE2)
     public AEColor getGridColor(){
         return AEColor.Transparent;
     }
@@ -314,11 +316,13 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
     }
 
     @Override
+    @Optional.Method(modid = ModIds.AE2)
     public DimensionalCoord getLocation(){
         return new DimensionalCoord(world, getX(), getY(), getZ());
     }
 
     @Override
+    @Optional.Method(modid = ModIds.AE2)
     public IGridHost getMachine(){
         return this;
     }
@@ -337,9 +341,11 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
     }
 
     @Override
+    @Optional.Method(modid = ModIds.AE2)
     public void onGridNotification(GridNotification arg0){}
 
     @Override
+    @Optional.Method(modid = ModIds.AE2)
     public void setNetworkStatus(IGrid arg0, int arg1){}
 
     //ICraftingProvider
@@ -350,11 +356,13 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
     }
 
     @Override
+    @Optional.Method(modid = ModIds.AE2)
     public boolean pushPattern(ICraftingPatternDetails details, InventoryCrafting inventoryCrafting){
         return false;
     }
 
     @Override
+    @Optional.Method(modid = ModIds.AE2)
     public void provideCrafting(ICraftingProviderHelper helper){
         updateProvidingItems(helper);
     }
@@ -362,6 +370,7 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
     //ICraftingWatcherHost
 
     @Override
+    @Optional.Method(modid = ModIds.AE2)
     public void onRequestChange(ICraftingGrid grid, IAEItemStack aeStack){
         craftingGrid = grid;
         ItemStack stack = aeStack.getItemStack().copy();
@@ -384,6 +393,7 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
     }
 
     @Override
+    @Optional.Method(modid = ModIds.AE2)
     public void updateWatcher(ICraftingWatcher watcher){
         craftingWatcher = watcher;
         updateProvidingItems();
@@ -391,6 +401,7 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
 
     //IStackWatcherHost
     @Override
+    @Optional.Method(modid = ModIds.AE2)
     public void onStackChange(IItemList arg0, IAEStack arg1, IAEStack arg2, BaseActionSource arg3, StorageChannel arg4){
         if(craftingGrid != null) {
             ICraftingGrid grid = (ICraftingGrid)craftingGrid;
@@ -407,6 +418,7 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
     }
 
     @Override
+    @Optional.Method(modid = ModIds.AE2)
     public void updateWatcher(IStackWatcher watcher){
         stackWatcher = watcher;
         updateProvidingItems();
@@ -423,6 +435,7 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
         }
     }
 
+    @Optional.Method(modid = ModIds.AE2)
     private void updateProvidingItems(ICraftingProviderHelper cHelper){
         IStackWatcher sWatcher = (IStackWatcher)stackWatcher;
         ICraftingWatcher cWatcher = (ICraftingWatcher)craftingWatcher;
@@ -440,6 +453,7 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
         if(gridNode != null) providingInventories.put(te, 40);
     }
 
+    @Optional.Method(modid = ModIds.AE2)
     private List<IAEItemStack> getProvidingItems(){
         List<IAEItemStack> stacks = new ArrayList<IAEItemStack>();
         for(TileEntity te : providingInventories.keySet()) {
@@ -456,11 +470,13 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
 
     //IMEInventoryHandler
     @Override
+    @Optional.Method(modid = ModIds.AE2)
     public IAEItemStack extractItems(IAEItemStack arg0, Actionable arg1, BaseActionSource arg2){
         return null;
     }
 
     @Override
+    @Optional.Method(modid = ModIds.AE2)
     public IItemList<IAEItemStack> getAvailableItems(IItemList<IAEItemStack> arg0){
         for(IAEItemStack stack : getProvidingItems()) {
             stack.setCountRequestable(stack.getStackSize());
@@ -470,21 +486,25 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
     }
 
     @Override
+    @Optional.Method(modid = ModIds.AE2)
     public StorageChannel getChannel(){
         return StorageChannel.ITEMS;
     }
 
     @Override
+    @Optional.Method(modid = ModIds.AE2)
     public IAEItemStack injectItems(IAEItemStack arg0, Actionable arg1, BaseActionSource arg2){
         return arg0;
     }
 
     @Override
+    @Optional.Method(modid = ModIds.AE2)
     public boolean canAccept(IAEItemStack arg0){
         return false;
     }
 
     @Override
+    @Optional.Method(modid = ModIds.AE2)
     public AccessRestriction getAccess(){
         return AccessRestriction.READ;
     }
@@ -495,6 +515,7 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
     }
 
     @Override
+    @Optional.Method(modid = ModIds.AE2)
     public boolean isPrioritized(IAEItemStack arg0){
         return false;
     }
@@ -507,11 +528,13 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
     //ICellContainer
 
     @Override
+    @Optional.Method(modid = ModIds.AE2)
     public IGridNode getActionableNode(){
         return getGridNode(null);
     }
 
     @Override
+    @Optional.Method(modid = ModIds.AE2)
     public List<IMEInventoryHandler> getCellArray(StorageChannel channel){
         if(channel == StorageChannel.ITEMS) {
             return Arrays.asList((IMEInventoryHandler)this);
@@ -521,6 +544,7 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
     }
 
     @Override
+    @Optional.Method(modid = ModIds.AE2)
     public void saveChanges(IMEInventory arg0){
 
     }
@@ -532,11 +556,13 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
 
     //IGridTickable
     @Override
+    @Optional.Method(modid = ModIds.AE2)
     public TickingRequest getTickingRequest(IGridNode node){
         return new TickingRequest(120, 120, false, false);
     }
 
     @Override
+    @Optional.Method(modid = ModIds.AE2)
     public TickRateModulation tickingRequest(IGridNode arg0, int arg1){
         notifyNetworkOfCraftingChange();
         if(gridNode != null) {
