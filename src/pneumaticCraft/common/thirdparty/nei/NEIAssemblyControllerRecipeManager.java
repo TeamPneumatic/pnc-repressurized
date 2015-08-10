@@ -14,7 +14,6 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
 import pneumaticCraft.api.recipe.AssemblyRecipe;
-import pneumaticCraft.client.gui.GuiAssemblyController;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.ItemAssemblyProgram;
 import pneumaticCraft.common.item.Itemss;
@@ -152,10 +151,10 @@ public class NEIAssemblyControllerRecipeManager extends PneumaticCraftPlugins{
         }
     }
 
-    @Override
-    public Class<? extends GuiContainer> getGuiClass(){
-        return GuiAssemblyController.class;
-    }
+    /*  @Override
+      public Class<? extends GuiContainer> getGuiClass(){
+          return GuiAssemblyController.class;
+      }*/
 
     @Override
     public boolean hasOverlay(GuiContainer gui, Container container, int recipe){
