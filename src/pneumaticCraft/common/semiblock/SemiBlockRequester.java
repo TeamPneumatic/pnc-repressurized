@@ -245,10 +245,12 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
         }
     }
 
+    @Optional.Method(modid = ModIds.AE2)
     public boolean isPlacedOnInterface(){
         return getTileEntity() != null && AEApi.instance().definitions().blocks().iface().maybeBlock().get() == getTileEntity().getBlockType();
     }
 
+    @Optional.Method(modid = ModIds.AE2)
     private boolean checkForInterface(){
         if(isPlacedOnInterface()) {
             TileEntity te = getTileEntity();
@@ -266,6 +268,7 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
         return false;
     }
 
+    @Optional.Method(modid = ModIds.AE2)
     private void disconnectFromInterface(){
         ((IGridNode)gridNode).destroy();
         gridNode = null;
@@ -428,6 +431,7 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
         updateProvidingItems(null);
     }
 
+    @Optional.Method(modid = ModIds.AE2)
     private void notifyNetworkOfCraftingChange(){
         if(gridNode != null) {
             IGrid grid = ((IGridNode)gridNode).getGrid();
