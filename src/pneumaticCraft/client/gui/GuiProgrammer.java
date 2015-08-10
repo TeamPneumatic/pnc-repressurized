@@ -312,7 +312,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
                 if(widget != draggingWidget && (x - translatedX) / scale - guiLeft >= widget.getX() && (y - translatedY) / scale - guiTop >= widget.getY() && (x - translatedX) / scale - guiLeft <= widget.getX() + widget.getWidth() / 2 && (y - translatedY) / scale - guiTop <= widget.getY() + widget.getHeight() / 2) {
                     GuiWiki gui = new GuiWiki();
                     FMLClientHandler.instance().showGuiScreen(gui);
-                    gui.setCurrentFile("progwidget/" + widget.getWidgetString());
+                    gui.setCurrentFile("pneumaticcraft:progwidget/" + widget.getWidgetString());
                 }
             }
         }
@@ -321,7 +321,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
             if(widget != draggingWidget && x - guiLeft >= widget.getX() && y - guiTop >= widget.getY() && x - guiLeft <= widget.getX() + widget.getWidth() / 2 && y - guiTop <= widget.getY() + widget.getHeight() / 2) {
                 GuiWiki gui = new GuiWiki();
                 FMLClientHandler.instance().showGuiScreen(gui);
-                gui.setCurrentFile("progwidget/" + widget.getWidgetString());
+                gui.setCurrentFile("pneumaticcraft:progwidget/" + widget.getWidgetString());
             }
         }
     }
