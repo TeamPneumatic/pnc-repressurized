@@ -42,6 +42,7 @@ public class CoordTrackUpgradeHandler implements IUpgradeRenderHandler{
     //gigantic lag, as it uses much performance to find a path when it doesn't have anything cached.
     private int pathCalculateCooldown;
     public int pathUpdateSetting;
+    public static final int SEARCH_RANGE = 150;
 
     public enum EnumNavigationResult{
         NO_PATH, EASY_PATH, DRONE_PATH;
@@ -147,7 +148,7 @@ public class CoordTrackUpgradeHandler implements IUpgradeRenderHandler{
     public EnumNavigationResult navigateToSurface(EntityPlayer player){
         World worldObj = player.worldObj;
         int y = worldObj.getHeightValue((int)player.posX, (int)player.posZ);
-        PathEntity path = worldObj.getEntityPathToXYZ(player, (int)player.posX, y, (int)player.posZ, 300, true, true, false, true);
+        PathEntity path = worldObj.getEntityPathToXYZ(player, (int)player.posX, y, (int)player.posZ, SEARCH_RANGE, true, true, false, true);
         EnumNavigationResult result = path != null ? EnumNavigationResult.EASY_PATH : EnumNavigationResult.DRONE_PATH;
         if(path != null) {
             for(int i = 0; i < path.getCurrentPathLength(); i++) {
@@ -177,7 +178,7 @@ public class CoordTrackUpgradeHandler implements IUpgradeRenderHandler{
         World worldObj = player.worldObj;
         EntityDrone drone = new EntityDrone(worldObj);
         drone.setPosition(player.posX, player.posY - 2, player.posZ);
-        return new EntityPathNavigateDrone(drone, worldObj).getEntityPathToXYZ(drone, x, y, z, 300, true, true, false, true);
+        return new EntityPathNavigateDrone(drone, worldObj).getEntityPathToXYZ(drone, x, y, z, SEARCH_RANGE, true, true, false, true);
     }
 
     @Override
