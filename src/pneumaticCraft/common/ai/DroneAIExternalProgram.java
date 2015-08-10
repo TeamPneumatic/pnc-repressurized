@@ -57,6 +57,7 @@ public class DroneAIExternalProgram extends DroneAIBlockInteraction{
     @Override
     protected boolean doBlockInteraction(ChunkPosition pos, double distToBlock){
         IInventory inv = IOHelper.getInventoryForTE(drone.getWorld().getTileEntity(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ));
+        if(inv == null) return false;
         if(curProgramTag != null) {
             if(curSlot < inv.getSizeInventory()) {
                 ItemStack stack = inv.getStackInSlot(curSlot);
