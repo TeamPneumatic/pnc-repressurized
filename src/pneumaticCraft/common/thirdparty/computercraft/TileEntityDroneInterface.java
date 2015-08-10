@@ -577,6 +577,19 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral,
             }
         });
 
+        luaMethods.add(new LuaMethod("setSneaking"){
+            @Override
+            public Object[] call(Object[] args) throws Exception{
+                if(args.length == 1) {
+                    getWidget().setSneaking((Boolean)args[0]);
+                    messageToDrone(0xFFFFFFFF);
+                    return null;
+                } else {
+                    throw new IllegalArgumentException("setSneaking takes 1 argument (boolean is sneaking true/false!");
+                }
+            }
+        });
+
         luaMethods.add(new LuaMethod("setAction"){
             @Override
             public Object[] call(Object[] args) throws Exception{

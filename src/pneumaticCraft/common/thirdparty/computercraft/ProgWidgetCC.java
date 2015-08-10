@@ -25,6 +25,7 @@ import pneumaticCraft.common.ai.StringFilterEntitySelector;
 import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.common.progwidgets.IBlockOrdered;
+import pneumaticCraft.common.progwidgets.IBlockRightClicker;
 import pneumaticCraft.common.progwidgets.ICondition;
 import pneumaticCraft.common.progwidgets.ICountWidget;
 import pneumaticCraft.common.progwidgets.ICraftingWidget;
@@ -49,7 +50,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdered, ISidedWidget, IGotoWidget,
         IEntityProvider, ITextWidget, ICondition, ICountWidget, IItemDropper, ILiquidFiltered, IRedstoneEmissionWidget,
-        IRenamingWidget, ICraftingWidget, IMaxActions{
+        IRenamingWidget, ICraftingWidget, IMaxActions, IBlockRightClicker{
     private EnumOrder order = EnumOrder.CLOSEST;
     private boolean[] sides = new boolean[6];
     private final Set<ChunkPosition> area = new HashSet<ChunkPosition>();
@@ -69,6 +70,7 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
     private final List<ProgWidgetLiquidFilter> liquidWhitelist = new ArrayList<ProgWidgetLiquidFilter>();
     private String renamingName;
     private ItemStack[] craftingGrid = new ItemStack[9];
+    private boolean sneaking;
 
     @Override
     public Class<? extends IProgWidget>[] getParameters(){
@@ -467,6 +469,15 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
     @Override
     public boolean useMaxActions(){
         return useMaxActions;
+    }
+
+    public void setSneaking(boolean sneaking){
+        this.sneaking = sneaking;
+    }
+
+    @Override
+    public boolean isSneaking(){
+        return sneaking;
     }
 
 }

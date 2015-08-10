@@ -113,6 +113,9 @@ This configures the maximum amount of actions performed on blocks before the com
 [prefix{l}]setCraftingGrid(<item/block name>, <item/block name>, ...(9x)) [prefix{}] 
 Sets up the crafting grid so when the Crafting instruction is called, this recipe will be used. You need to specify all 9 items making up the recipe. For empty spaces supply nil. The naming format is the same as for supplying item filters.
 
+[prefix{l}]setSneaking(<true/false>) [prefix{}]
+Only used in the right click command, this will set whether or not the fake player is sneaking while right clicking.
+
 [prefix{l}]setVariable(<variable name>, <true/false>) [prefix{}]
 [prefix{l}]setVariable(<variable name>, <x>) [prefix{}]
 [prefix{l}]setVariable(<variable name>, <x>, <y>, <z>) [prefix{}]
