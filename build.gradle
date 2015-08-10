@@ -80,7 +80,7 @@ dependencies {
 	compile "igwmod:IGW-Mod-1.7.10:1.1.3-18:userdev"
 	compile "li.cil.oc:OpenComputers:MC1.7.10-1.4.5.28:api"
 	compile "com.pahimar.ee3:EquivalentExchange3:1.7.10-0.3.505:dev"
-	compile "appeng:appliedenergistics2:rv2-stable-10:dev"
+//	compile "appeng:appliedenergistics2:rv2-stable-10:dev" Don't use the AE2 maven, as of the time of writing this it didn't work.
 
 	println("  Finished adding dependencies!")
 }
