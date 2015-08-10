@@ -4,6 +4,7 @@ import java.util.List;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.IBlockAccess;
@@ -78,6 +79,11 @@ public class BlockChargingStation extends BlockPneumaticCraftModeled{
     @Override
     public boolean canProvidePower(){
         return true;
+    }
+
+    @Override
+    protected int getInventoryDropEndSlot(IInventory inventory){
+        return 5;
     }
 
 }

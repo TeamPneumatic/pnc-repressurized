@@ -1,1 +1,12 @@
--Bugfix: Pressure Gauge Tube Module doesn't update the shown value.
+-Added 'setSneaking(<true/false>)' to the Drone Interface. Fixes the 'getAllActions()' method.
+-Increased performance majorly for the Coordinate Tracker Upgrade.
+
+-Bugfix: External Program command crashes when removing the inventory it's looking at.
+-Bugfix: Crash when connecting a Label piece to a condition piece.
+-Bugfix: Broken links when pressing 'i' when navigating to IGW while having the Programmer GUI open.
+-Bugfix: Universal Sensor forgets GPS location on world reload.
+-Bugfix: The GUI of the Assembly Controller has a clickable area for NEI where it isn't desired.
+-Bugfix: Clicking one of the output tanks in the Refinery switches the redstone mode.
+-Bugfix: Drone can get stuck, causing things like running out of charge.
+-Bugfix: Drones are wonky when having >7 speed upgrades.
+-Bugfix: Dupe bug with Charging Station.
