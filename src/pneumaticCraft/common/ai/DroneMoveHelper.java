@@ -6,6 +6,7 @@ import pneumaticCraft.common.entity.living.EntityDroneBase;
 public class DroneMoveHelper extends EntityMoveHelper{
     private final EntityDroneBase entity;
     private double x, y, z, speed;
+    private int timeoutTimer;
 
     public DroneMoveHelper(EntityDroneBase par1EntityLiving){
         super(par1EntityLiving);
@@ -17,21 +18,28 @@ public class DroneMoveHelper extends EntityMoveHelper{
 
     @Override
     public void setMoveTo(double x, double y, double z, double speed){
-        this.x = x;
-        this.y = y + 0.5 - 0.17;
-        this.z = z;
+
+        double newY = y + 0.5 - 0.17;
+        if(x != this.x || newY != this.y || z != this.z) {
+            this.x = x;
+            this.y = newY;
+            this.z = z;
+            timeoutTimer = 0;
+        }
         this.speed = speed;
     }
 
     @Override
     public void onUpdateMoveHelper(){
         if(entity.isAccelerating()) {
-            if(x - 0.1D > entity.posX) entity.motionX = speed;
-            else if(x + 0.1D < entity.posX) entity.motionX = -speed;
-            if(y - 0.1D > entity.posY) entity.motionY = speed;
-            else if(y + 0.1D < entity.posY) entity.motionY = -speed;
-            if(z - 0.1D > entity.posZ) entity.motionZ = speed;
-            else if(z + 0.1D < entity.posZ) entity.motionZ = -speed;
+            entity.motionX = Math.max(-speed, Math.min(speed, x - entity.posX));
+            entity.motionY = Math.max(-speed, Math.min(speed, y - entity.posY));
+            entity.motionZ = Math.max(-speed, Math.min(speed, z - entity.posZ));
+
+            if(timeoutTimer++ > 40) {
+                entity.getNavigator().clearPathEntity();
+                timeoutTimer = 0;
+            }
         }
     }
 

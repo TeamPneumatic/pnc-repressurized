@@ -34,7 +34,7 @@ public class GuiRefinery extends GuiPneumaticContainerBase<TileEntityRefinery>{
 
         int x = guiLeft + 95;
         int y = guiTop + 17;
-        addWidget(new WidgetTank(0, x, y, te.getOutputTank()));
+        addWidget(new WidgetTank(-1, x, y, te.getOutputTank()));
 
         refineries = new ArrayList<TileEntityRefinery>();
         refineries.add(te);

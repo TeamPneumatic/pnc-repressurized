@@ -8,6 +8,7 @@ import net.minecraft.pathfinding.PathFinderDrone;
 import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.ChunkCache;
 import net.minecraft.world.World;
 import pneumaticCraft.api.drone.IPathNavigator;
@@ -183,5 +184,10 @@ public class EntityPathNavigateDrone extends PathNavigate implements IPathNaviga
     @Override
     public boolean hasNoPath(){
         return noPath();
+    }
+
+    @Override
+    public boolean isDirectPathBetweenPoints(Vec3 p_75493_1_, Vec3 p_75493_2_, int p_75493_3_, int p_75493_4_, int p_75493_5_){
+        return false;
     }
 }

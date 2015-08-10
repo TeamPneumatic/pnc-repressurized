@@ -184,6 +184,9 @@ task("uploadJars", dependsOn:"reobf") {
 jar {
     appendix = "${project.ext.mcVersion}"
     classifier = "universal"
+	manifest {
+        attributes 'FMLAT': 'PneumaticCraft_at.cfg'
+    }
 }
 
 task userdevJar(type: Jar) {
