@@ -252,7 +252,7 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
     private boolean checkForInterface(){
         if(isPlacedOnInterface()) {
             TileEntity te = getTileEntity();
-            if(te instanceof IGridNode) {
+            if(te instanceof IGridHost) {
                 if(((IGridHost)te).getGridNode(null) == null) return true;
                 if(getGridNode(null) == null) return true;
                 try {

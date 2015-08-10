@@ -1,1 +1,2 @@
--Bugfix: Applied Energistics integration checkbox in the Requester Frame can't be toggled.
+-Added Amadron Tablet, used to order items that used to have 'temporary' recipes.
+-Added Applied Energistics 2 compatibility for the Logistics system. More info: https://www.youtube.com/watch?v=3m9QT00X4MA
