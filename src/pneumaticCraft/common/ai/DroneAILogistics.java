@@ -23,6 +23,7 @@ import pneumaticCraft.common.progwidgets.ICountWidget;
 import pneumaticCraft.common.progwidgets.ILiquidFiltered;
 import pneumaticCraft.common.progwidgets.ISidedWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetAreaItemBase;
+import pneumaticCraft.common.semiblock.IProvidingInventoryListener;
 import pneumaticCraft.common.semiblock.ISemiBlock;
 import pneumaticCraft.common.semiblock.ISpecificProvider;
 import pneumaticCraft.common.semiblock.ISpecificRequester;
@@ -174,6 +175,7 @@ public class DroneAILogistics extends EntityAIBase{
     private void tryProvide(SemiBlockLogistics provider, SemiBlockLogistics requester){
         IInventory providingInventory = IOHelper.getInventoryForTE(provider.getTileEntity());
         if(providingInventory != null) {
+            if(requester instanceof IProvidingInventoryListener) ((IProvidingInventoryListener)requester).notify(provider.getTileEntity());
             for(int i = 0; i < providingInventory.getSizeInventory(); i++) {
                 ItemStack providingStack = providingInventory.getStackInSlot(i);
                 if(providingStack != null && (!(provider instanceof ISpecificProvider) || ((ISpecificProvider)provider).canProvide(providingStack)) && IOHelper.canExtractItemFromInventory(providingInventory, providingStack, i, 0)) {

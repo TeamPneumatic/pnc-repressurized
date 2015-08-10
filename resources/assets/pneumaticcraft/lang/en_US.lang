@@ -578,6 +578,9 @@ gui.tab.aerialInterface.feedMode=Feed Mode
 gui.tab.aerialInterface.feedMode.feedFullyUtilize=Feed only when the provided food can be fully utilized.
 gui.tab.aerialInterface.feedMode.feedWhenPossible=Feed as soon as the player is not fully fed.
 gui.tab.aerialInterface.feedMode.utilizeFullHealthElsePossible=When the player has full health, only feed when the food can be fully utilized. When the player does not have full health, feed when the player is not fully fed.
+gui.tab.info.logisticsRequester.aeIntegration.title=AE2 Integration
+gui.tab.info.logisticsRequester.aeIntegration=When checked, Logistic Drones will inform the AE Network about providable items (which then can be 'crafted'). When asked to craft, the Requester Frame is set up to request the requested items.
+gui.tab.info.logisticsRequester.aeIntegration.enable=Enable Integration
 
 gui.programmer.button.export.programmingWhen=§cProgramming when: %s
 gui.programmer.button.export.pressingButton=Pressing button
