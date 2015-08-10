@@ -107,7 +107,8 @@ public class PneumaticRecipeRegistry implements IPneumaticRecipeRegistry{
 
     @Override
     public void registerAmadronOffer(Object input, Object output){
-        amadronOffers.add(new AmadronOffer(input, output));
+        AmadronOffer offer = new AmadronOffer(input, output);
+        if(!amadronOffers.contains(offer)) amadronOffers.add(offer);
     }
 
 }

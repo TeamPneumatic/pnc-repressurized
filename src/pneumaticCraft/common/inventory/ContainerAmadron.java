@@ -10,6 +10,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -17,6 +18,7 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidHandler;
 import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.api.PneumaticRegistry;
+import pneumaticCraft.api.item.IPressurizable;
 import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.item.ItemAmadronTablet;
 import pneumaticCraft.common.item.Itemss;
@@ -40,7 +42,6 @@ public class ContainerAmadron extends ContainerPneumaticBase{
     private final int[] shoppingAmounts = new int[8];
     @GuiSynced
     public boolean[] buyableOffers = new boolean[offers.size()];
-
     @GuiSynced
     public EnumProblemState problemState = EnumProblemState.NO_PROBLEMS;
 
@@ -63,8 +64,8 @@ public class ContainerAmadron extends ContainerPneumaticBase{
         super(null);
         for(int y = 0; y < ROWS; y++) {
             for(int x = 0; x < 2; x++) {
-                addSlotToContainer(new SlotUntouchable(inv, y * 4 + x * 2, x * 74 + 12, y * 36 + 68));
-                addSlotToContainer(new SlotUntouchable(inv, y * 4 + x * 2 + 1, x * 74 + 57, y * 36 + 68));
+                addSlotToContainer(new SlotUntouchable(inv, y * 4 + x * 2, x * 73 + 12, y * 35 + 70));
+                addSlotToContainer(new SlotUntouchable(inv, y * 4 + x * 2 + 1, x * 73 + 57, y * 35 + 70));
             }
         }
         addSyncedFields(this);
@@ -110,7 +111,15 @@ public class ContainerAmadron extends ContainerPneumaticBase{
 
     @Override
     public boolean canInteractWith(EntityPlayer player){
-        return player.getCurrentEquippedItem() != null && player.getCurrentEquippedItem().getItem() == Itemss.amadronTablet;
+        if(player.getCurrentEquippedItem() != null && player.getCurrentEquippedItem().getItem() == Itemss.amadronTablet) {
+            IPressurizable pressurizable = (IPressurizable)Itemss.amadronTablet;
+            pressurizable.addAir(player.getCurrentEquippedItem(), -1);
+            if(pressurizable.getPressure(player.getCurrentEquippedItem()) > 0) return true;
+            else {
+                player.addChatMessage(new ChatComponentTranslation("gui.tab.problems.notEnoughPressure"));
+            }
+        }
+        return false;
     }
 
     public void clearStacks(){

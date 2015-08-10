@@ -252,6 +252,7 @@ public class Textures{
     public static final String GUI_LOGISTICS_REQUESTER = GUI_LOCATION + "GuiLogisticsRequester.png";
     public static final String GUI_AMADRON = GUI_LOCATION + "GuiAmadron.png";
     public static final String GUI_NEI_MISC_RECIPES = GUI_LOCATION + "GuiNEIMiscRecipes.png";
+    public static final String WIDGET_AMADRON_OFFER_STRING = WIDGET_LOCATION + "WidgetAmadronOffer.png";
     public static final ResourceLocation GUI_WIDGET_OPTIONS = new ResourceLocation(GUI_WIDGET_OPTIONS_STRING);
     public static final ResourceLocation GUI_WIDGET_AREA = new ResourceLocation(GUI_LOCATION + "GuiWidgetArea.png");
     public static final ResourceLocation GUI_PASTEBIN = new ResourceLocation(GUI_LOCATION + "GuiPastebin.png");
@@ -261,7 +262,7 @@ public class Textures{
     public static final ResourceLocation GUI_MODULE_SIMPLE = new ResourceLocation(GUI_LOCATION + "GuiTubeModuleSimple.png");
     public static final ResourceLocation WIDGET_TEMPERATURE = new ResourceLocation(WIDGET_LOCATION + "WidgetTemperature.png");
     public static final ResourceLocation WIDGET_TANK = new ResourceLocation(WIDGET_LOCATION + "WidgetTank.png");
-    public static final ResourceLocation WIDGET_AMADRON_OFFER = new ResourceLocation(WIDGET_LOCATION + "WidgetAmadronOffer.png");
+    public static final ResourceLocation WIDGET_AMADRON_OFFER = new ResourceLocation(WIDGET_AMADRON_OFFER_STRING);
 
     public static final String VANILLA_ITEM_TEXTURE_SHEET = "/gui/items.png";
     public static final String VANILLA_BLOCK_TEXTURE_SHEET = "/terrain.png";

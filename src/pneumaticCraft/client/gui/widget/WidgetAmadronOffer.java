@@ -21,35 +21,43 @@ public class WidgetAmadronOffer extends WidgetBase{
     private int shoppingAmount;
     private final boolean canBuy;
     private final Rectangle[] tooltipRectangles = new Rectangle[2];
+    private boolean renderBackground = true;
 
     public WidgetAmadronOffer(int id, int x, int y, AmadronOffer offer, boolean canBuy){
         super(id, x, y, 73, 35);
         this.offer = offer;
         if(offer.getInput() instanceof FluidStack) {
-            widgets.add(new WidgetFluidStack(0, x + 6, y + 16, (FluidStack)offer.getInput()));
+            widgets.add(new WidgetFluidStack(0, x + 6, y + 15, (FluidStack)offer.getInput()));
         }
         if(offer.getOutput() instanceof FluidStack) {
-            widgets.add(new WidgetFluidStack(0, x + 51, y + 16, (FluidStack)offer.getOutput()));
+            widgets.add(new WidgetFluidStack(0, x + 51, y + 15, (FluidStack)offer.getOutput()));
         }
         this.canBuy = canBuy;
-        tooltipRectangles[0] = new Rectangle(x + 6, y + 16, 16, 16);
-        tooltipRectangles[1] = new Rectangle(x + 51, y + 16, 16, 16);
+        tooltipRectangles[0] = new Rectangle(x + 6, y + 15, 16, 16);
+        tooltipRectangles[1] = new Rectangle(x + 51, y + 15, 16, 16);
     }
 
     @Override
     public void render(int mouseX, int mouseY, float partialTick){
         GL11.glDisable(GL11.GL_LIGHTING);
-        Minecraft.getMinecraft().getTextureManager().bindTexture(Textures.WIDGET_AMADRON_OFFER);
-        GL11.glColor4d(1, canBuy ? 1 : 0.4, canBuy ? 1 : 0.4, 1);
-        Gui.func_146110_a(x, y, 0, 0, getBounds().width, getBounds().height, 256, 256);
+        if(renderBackground) {
+            Minecraft.getMinecraft().getTextureManager().bindTexture(Textures.WIDGET_AMADRON_OFFER);
+            GL11.glColor4d(1, canBuy ? 1 : 0.4, canBuy ? 1 : 0.4, 1);
+            Gui.func_146110_a(x, y, 0, 0, getBounds().width, getBounds().height, 256, 256);
+        }
         for(IGuiWidget widget : widgets) {
             widget.render(mouseX, mouseY, partialTick);
         }
         Minecraft.getMinecraft().fontRenderer.drawString(offer.getVendor(), x + 2, y + 2, 0xFF000000);
         if(shoppingAmount > 0) {
-            Minecraft.getMinecraft().fontRenderer.drawString(shoppingAmount + "", x + 36 - Minecraft.getMinecraft().fontRenderer.getStringWidth("" + shoppingAmount) / 2, y + 21, 0xFF000000);
+            Minecraft.getMinecraft().fontRenderer.drawString(shoppingAmount + "", x + 36 - Minecraft.getMinecraft().fontRenderer.getStringWidth("" + shoppingAmount) / 2, y + 20, 0xFF000000);
 
         }
+    }
+
+    public WidgetAmadronOffer setDrawBackground(boolean drawBackground){
+        renderBackground = drawBackground;
+        return this;
     }
 
     @Override

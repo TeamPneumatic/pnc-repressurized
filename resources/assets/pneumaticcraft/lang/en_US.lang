@@ -120,6 +120,7 @@ item.logisticFrameActiveProvider.name=Logistic Active Provider Frame
 item.logisticFrameStorage.name=Logistic Storage Frame
 item.logisticDrone.name=Logistic Drone
 item.gunAmmo.name=Gun Ammo
+item.amadronTablet.name=Amadron Tablet
 
 item.programmingPuzzle.black.name=Black Programming Puzzle
 item.programmingPuzzle.red.name=Red Programming Puzzle
@@ -742,8 +743,8 @@ gui.tooltip.sneakForInfo=Sneak for info
 gui.tooltip.maxPressure=Max pressure: %s bar
 gui.tooltip.amadronTablet.itemLocation=Item Providing Location: %s, %s, %s in dimension %s
 gui.tooltip.amadronTablet.fluidLocation=Fluid Providing Location: %s, %s, %s in dimension %s
-gui.tooltip.amadronTablet.selectItemLocation=Right click an inventory to allow it to provide items to sellers.
-gui.tooltip.amadronTablet.selectFluidLocation=Right click a tank to allow it to provide fluids to sellers.
+gui.tooltip.amadronTablet.selectItemLocation=Right click an inventory to allow it to provide items to vendors.
+gui.tooltip.amadronTablet.selectFluidLocation=Right click a tank to allow it to provide fluids to vendors.
 
 # Item tooltips
 gui.tooltip.item.plasticBucket=Put in a Plastic Mixer to solidify into solid Plastic.
@@ -775,6 +776,7 @@ gui.tooltip.item.logisticFramePassiveProvider=Provides items to a Logistic Netwo
 gui.tooltip.item.logisticFrameActiveProvider=Provides items to a Logistic Network. Provides to both Requester Frames and Storage Frames.
 gui.tooltip.item.logisticDrone=Robot which performs logistic tasks. Logistic Frames are used to define these tasks.
 gui.tooltip.item.gunAmmo=Bullets used by Drones when they have an Entity Tracker Upgrade inserted, giving them a Minigun.
+gui.tooltip.item.amadronTablet=Item used to order items/fluids. It is comparable to Villager trading. Items/fluids are picked up and delivered via Drones. A pick-up/drop-off location is required to be specified by right-clicking with an inventory and/or tank.
 
 # Waila
 hud.msg.state=State
@@ -801,6 +803,7 @@ message.amadronTable.setItemProvidingLocation=[Amadron Tablet] Set the item prov
 message.amadronTable.setLiquidProvidingLocation=[Amadron Tablet] Set the liquid providing location to %s, %s, %s in dimension %s (%s)
 gui.regulatorTube.hudMessage.notInLine=§cA Regulator Tube Module only regulates air in line of the module.
 gui.regulatorTube.hudMessage.inverted=§cA Regulator Tube Module only regulates air in the direction of the arrow.
+gui.search=Search:
 
 # Death Messages
 death.attack.pressure1=%1$s is as flat as a pancake!
@@ -861,7 +864,12 @@ gui.nei.recipe.uvLightBox=Create a UV Light Box, power it with air, and put in a
 drone.amadronDeliveryDrone=Amadron Delivery Drone
 gui.amadron=Amadron
 gui.amadron.button.order=Order
+gui.amadron.button.order.tooltip=Order the items in the basket. A drone will come to pick up your items, and another to bring your purchased items.
+gui.amadron.button.addTrade=Add trade
+gui.amadron.button.addTrade.tooltip=[WIP] Put your own items to be available for purchase to other players.
 gui.amadron.amadronWidget.vendor=§6Vendor: %s
 gui.amadron.amadronWidget.buying=§aBuying: %s
 gui.amadron.amadronWidget.selling=§9Selling: %s
 gui.amadron.amadronWidget.inBasket=§8In basket: %s
+gui.tab.amadron.disclaimer.title=Disclaimer
+gui.tab.amadron.disclaimer=Amadron cannot accept responsibility for any loss or damage arising from the use of the delivery service. When a partial payment arrives at Amadron it has the right to keep the items that would have been sold to the buyer otherwise.

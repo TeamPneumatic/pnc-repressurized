@@ -10,6 +10,7 @@ import net.minecraftforge.fluids.FluidStack;
 import pneumaticCraft.api.IHeatExchangerLogic;
 import pneumaticCraft.api.PneumaticRegistry;
 import pneumaticCraft.client.gui.GuiUtils;
+import pneumaticCraft.client.gui.widget.IGuiWidget;
 import pneumaticCraft.client.gui.widget.WidgetTank;
 import pneumaticCraft.client.gui.widget.WidgetTemperature;
 import codechicken.lib.gui.GuiDraw;
@@ -26,6 +27,7 @@ public abstract class PneumaticCraftPlugins extends TemplateRecipeHandler{
         private final List<PositionedStack> output = new ArrayList<PositionedStack>();
         private final List<WidgetTank> inputLiquids = new ArrayList<WidgetTank>();
         private final List<WidgetTank> outputLiquids = new ArrayList<WidgetTank>();
+        private final List<IGuiWidget> tooltipWidgets = new ArrayList<IGuiWidget>();
         private float pressure;
         private boolean usePressure;
         private int gaugeX, gaugeY;
@@ -62,12 +64,24 @@ public abstract class PneumaticCraftPlugins extends TemplateRecipeHandler{
         }
 
         protected void addInputLiquid(FluidStack liquid, int x, int y){
-            inputLiquids.add(new WidgetTank(x, y, liquid));
+            WidgetTank tank = new WidgetTank(x, y, liquid);
+            addInputLiquid(tank);
+        }
+
+        protected void addInputLiquid(WidgetTank tank){
+            inputLiquids.add(tank);
+            tooltipWidgets.add(tank);
             recalculateTankSizes();
         }
 
         protected void addOutputLiquid(FluidStack liquid, int x, int y){
-            outputLiquids.add(new WidgetTank(x, y, liquid));
+            WidgetTank tank = new WidgetTank(x, y, liquid);
+            addOutputLiquid(tank);
+        }
+
+        protected void addOutputLiquid(WidgetTank tank){
+            outputLiquids.add(tank);
+            tooltipWidgets.add(tank);
             recalculateTankSizes();
         }
 
@@ -95,6 +109,10 @@ public abstract class PneumaticCraftPlugins extends TemplateRecipeHandler{
             for(WidgetTank w : outputLiquids) {
                 w.getTank().setCapacity(maxFluid);
             }
+        }
+
+        protected void addWidget(IGuiWidget widget){
+            tooltipWidgets.add(widget);
         }
 
         protected void setUsedPressure(int x, int y, float pressure){
@@ -184,14 +202,9 @@ public abstract class PneumaticCraftPlugins extends TemplateRecipeHandler{
             Point offset = guiRecipe.getRecipePosition(recipe);
             Point relMouse = new Point(mouse.x - (guiRecipe.width - 176) / 2 - offset.x, mouse.y - (guiRecipe.height - 166) / 2 - offset.y);
 
-            for(WidgetTank tank : r.inputLiquids) {
-                if(tank.getBounds().contains(relMouse)) {
-                    tank.addTooltip(mouse.x, mouse.y, currenttip, false);
-                }
-            }
-            for(WidgetTank tank : r.outputLiquids) {
-                if(tank.getBounds().contains(relMouse)) {
-                    tank.addTooltip(mouse.x, mouse.y, currenttip, false);
+            for(IGuiWidget widget : r.tooltipWidgets) {
+                if(widget.getBounds().contains(relMouse)) {
+                    widget.addTooltip(mouse.x, mouse.y, currenttip, false);
                 }
             }
             if(r.tempWidget != null) {
@@ -208,11 +221,8 @@ public abstract class PneumaticCraftPlugins extends TemplateRecipeHandler{
     public void drawExtras(int recipe){
         MultipleInputOutputRecipe r = (MultipleInputOutputRecipe)arecipes.get(recipe);
         // drawAnimatedPressureGauge(120, 27, -1, r.getRequiredPressure(null, null), PneumaticValues.DANGER_PRESSURE_PRESSURE_CHAMBER, PneumaticValues.MAX_PRESSURE_PRESSURE_CHAMBER, cycleticks % 48 / 48F);
-        for(WidgetTank tank : r.inputLiquids) {
-            tank.render(0, 0, 0);
-        }
-        for(WidgetTank tank : r.outputLiquids) {
-            tank.render(0, 0, 0);
+        for(IGuiWidget widget : r.tooltipWidgets) {
+            widget.render(0, 0, 0);
         }
         if(r.usePressure) {
             drawAnimatedPressureGauge(r.gaugeX, r.gaugeY, -1, r.pressure, 5, 7, cycleticks % 48 / 48F);
