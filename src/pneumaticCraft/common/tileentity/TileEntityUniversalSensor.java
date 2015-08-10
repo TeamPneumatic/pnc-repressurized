@@ -255,6 +255,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
                 inventory[slot] = ItemStack.loadItemStackFromNBT(tagCompound);
             }
         }
+        positions = getGPSPositionsStatic(this, getRange());
     }
 
     @Override
