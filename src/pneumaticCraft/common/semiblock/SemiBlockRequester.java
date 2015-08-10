@@ -25,8 +25,6 @@ import pneumaticCraft.lib.Log;
 import pneumaticCraft.lib.ModIds;
 import pneumaticCraft.proxy.CommonProxy.EnumGuiId;
 import appeng.api.AEApi;
-import appeng.api.config.AccessRestriction;
-import appeng.api.config.Actionable;
 import appeng.api.exceptions.FailedConnection;
 import appeng.api.networking.GridFlags;
 import appeng.api.networking.GridNotification;
@@ -62,10 +60,10 @@ import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.common.Optional.Interface;
 
-@Optional.InterfaceList({@Interface(iface = "appeng.api.networking.IGridHost", modid = ModIds.AE2), @Interface(iface = "appeng.api.networking.IGridBlock", modid = ModIds.AE2), @Interface(iface = "appeng.api.networking.crafting.ICraftingProvider", modid = ModIds.AE2), @Interface(iface = "appeng.api.networking.crafting.ICraftingWatcherHost", modid = ModIds.AE2), @Interface(iface = "appeng.api.networking.storage.IStackWatcherHost", modid = ModIds.AE2), @Interface(iface = "appeng.api.storage.IMEInventoryHandler", modid = ModIds.AE2), @Interface(iface = "appeng.api.storage.ICellContainer", modid = ModIds.AE2), @Interface(iface = "appeng.api.networking.ticking.IGridTickable", modid = ModIds.AE2)})
+@Optional.InterfaceList({@Interface(iface = "appeng.api.networking.IGridHost", modid = ModIds.AE2), @Interface(iface = "appeng.api.networking.IGridBlock", modid = ModIds.AE2), @Interface(iface = "appeng.api.networking.crafting.ICraftingProvider", modid = ModIds.AE2), @Interface(iface = "appeng.api.networking.crafting.ICraftingWatcherHost", modid = ModIds.AE2), @Interface(iface = "appeng.api.networking.storage.IStackWatcherHost", modid = ModIds.AE2), @Interface(iface = "pneumaticCraft.common.semiblock.MEInventoryExtension", modid = ModIds.AE2), @Interface(iface = "appeng.api.storage.ICellContainer", modid = ModIds.AE2), @Interface(iface = "appeng.api.networking.ticking.IGridTickable", modid = ModIds.AE2)})
 public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificRequester, IProvidingInventoryListener,
-        IGridHost, IGridBlock, ICraftingProvider, ICraftingWatcherHost, IStackWatcherHost,
-        IMEInventoryHandler<IAEItemStack>, ICellContainer, IGridTickable{
+        IGridHost, IGridBlock, ICraftingProvider, ICraftingWatcherHost, IStackWatcherHost, ICellContainer,
+        IGridTickable{
 
     public static final String ID = "logisticFrameRequester";
 
@@ -185,6 +183,7 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
      */
 
     @Override
+    @Optional.Method(modid = ModIds.AE2)
     public void update(){
         super.update();
 
@@ -210,6 +209,7 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
     }
 
     @Override
+    @Optional.Method(modid = ModIds.AE2)
     public void handleGUIButtonPress(int guiID, EntityPlayer player){
         if(guiID == 1) {
             aeMode = !aeMode;
@@ -238,6 +238,7 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
     }
 
     @Override
+    @Optional.Method(modid = ModIds.AE2)
     public void invalidate(){
         super.invalidate();
         if(gridNode != null) {
@@ -291,12 +292,14 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
     }
 
     @Override
+    @Optional.Method(modid = ModIds.AE2)
     public void securityBreak(){
         drop();
     }
 
     //IGridBlock
     @Override
+    @Optional.Method(modid = ModIds.AE2)
     public EnumSet<ForgeDirection> getConnectableSides(){
         return null;//Shouldn't be called as isWorldAccessible is false.
     }
@@ -427,6 +430,7 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
         updateProvidingItems();
     }
 
+    @Optional.Method(modid = ModIds.AE2)
     private void updateProvidingItems(){
         updateProvidingItems(null);
     }
@@ -458,7 +462,7 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
     }
 
     @Optional.Method(modid = ModIds.AE2)
-    private List<IAEItemStack> getProvidingItems(){
+    public List<IAEItemStack> getProvidingItems(){
         List<IAEItemStack> stacks = new ArrayList<IAEItemStack>();
         for(TileEntity te : providingInventories.keySet()) {
             IInventory inv = IOHelper.getInventoryForTE(te);
@@ -470,63 +474,6 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
             }
         }
         return stacks;
-    }
-
-    //IMEInventoryHandler
-    @Override
-    @Optional.Method(modid = ModIds.AE2)
-    public IAEItemStack extractItems(IAEItemStack arg0, Actionable arg1, BaseActionSource arg2){
-        return null;
-    }
-
-    @Override
-    @Optional.Method(modid = ModIds.AE2)
-    public IItemList<IAEItemStack> getAvailableItems(IItemList<IAEItemStack> arg0){
-        for(IAEItemStack stack : getProvidingItems()) {
-            stack.setCountRequestable(stack.getStackSize());
-            arg0.addRequestable(stack);
-        }
-        return arg0;
-    }
-
-    @Override
-    @Optional.Method(modid = ModIds.AE2)
-    public StorageChannel getChannel(){
-        return StorageChannel.ITEMS;
-    }
-
-    @Override
-    @Optional.Method(modid = ModIds.AE2)
-    public IAEItemStack injectItems(IAEItemStack arg0, Actionable arg1, BaseActionSource arg2){
-        return arg0;
-    }
-
-    @Override
-    @Optional.Method(modid = ModIds.AE2)
-    public boolean canAccept(IAEItemStack arg0){
-        return false;
-    }
-
-    @Override
-    @Optional.Method(modid = ModIds.AE2)
-    public AccessRestriction getAccess(){
-        return AccessRestriction.READ;
-    }
-
-    @Override
-    public int getSlot(){
-        return 0;
-    }
-
-    @Override
-    @Optional.Method(modid = ModIds.AE2)
-    public boolean isPrioritized(IAEItemStack arg0){
-        return false;
-    }
-
-    @Override
-    public boolean validForPass(int arg0){
-        return true;
     }
 
     //ICellContainer

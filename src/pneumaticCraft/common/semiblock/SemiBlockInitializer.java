@@ -4,20 +4,23 @@ import net.minecraft.item.Item;
 import net.minecraftforge.common.MinecraftForge;
 import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.common.item.Itemss;
+import pneumaticCraft.lib.ModIds;
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.Loader;
 
 public class SemiBlockInitializer{
     public static void init(){
         MinecraftForge.EVENT_BUS.register(SemiBlockManager.getServerInstance());
         FMLCommonHandler.instance().bus().register(SemiBlockManager.getServerInstance());
+        Class requesterClass = Loader.isModLoaded(ModIds.AE2) ? SemiBlockRequesterAE.class : SemiBlockRequester.class;
 
         registerSemiBlock(SemiBlockActiveProvider.ID, SemiBlockActiveProvider.class, false);
         registerSemiBlock(SemiBlockPassiveProvider.ID, SemiBlockPassiveProvider.class, false);
         registerSemiBlock(SemiBlockStorage.ID, SemiBlockStorage.class, false);
-        registerSemiBlock(SemiBlockRequester.ID, SemiBlockRequester.class, false);
+        registerSemiBlock(SemiBlockRequester.ID, requesterClass, false);
 
         PneumaticCraft.proxy.registerSemiBlockRenderer((ItemSemiBlockBase)Itemss.logisticsFrameRequester);
-        SemiBlockManager.registerSemiBlockToItemMapping(SemiBlockRequester.class, Itemss.logisticsFrameRequester);
+        SemiBlockManager.registerSemiBlockToItemMapping(requesterClass, Itemss.logisticsFrameRequester);
 
         PneumaticCraft.proxy.registerSemiBlockRenderer((ItemSemiBlockBase)Itemss.logisticsFrameStorage);
         SemiBlockManager.registerSemiBlockToItemMapping(SemiBlockStorage.class, Itemss.logisticsFrameStorage);
