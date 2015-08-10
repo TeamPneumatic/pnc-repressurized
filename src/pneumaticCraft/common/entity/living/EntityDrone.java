@@ -79,6 +79,7 @@ import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.PacketShowWireframe;
 import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetGoToLocation;
+import pneumaticCraft.common.recipes.AmadronOffer;
 import pneumaticCraft.common.tileentity.TileEntityPlasticMixer;
 import pneumaticCraft.common.tileentity.TileEntityProgrammer;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
@@ -147,6 +148,9 @@ public class EntityDrone extends EntityDroneBase implements IManoMeasurable, IIn
     private boolean gunAimedAtTarget;
     private static final double MAX_GUN_YAW_CHANGE = 10;
     private static final double MAX_GUN_PITCH_CHANGE = 10;
+    private AmadronOffer handlingOffer;
+    private int offerTimes;
+    private ItemStack usedTablet;//Tablet used to place the order.
 
     public EntityDrone(World world){
         super(world);
@@ -693,6 +697,14 @@ public class EntityDrone extends EntityDroneBase implements IManoMeasurable, IIn
         tag.setTag("Inventory", inv);
 
         tank.writeToNBT(tag);
+
+        if(handlingOffer != null) {
+            NBTTagCompound subTag = new NBTTagCompound();
+            handlingOffer.writeToNBT(subTag);
+            tag.setTag("amadronOffer", subTag);
+            tag.setInteger("offerTimes", offerTimes);
+            usedTablet.writeToNBT(subTag);
+        }
     }
 
     @Override
@@ -738,6 +750,16 @@ public class EntityDrone extends EntityDroneBase implements IManoMeasurable, IIn
 
         tank.setCapacity(PneumaticValues.DRONE_TANK_SIZE * (1 + getUpgrades(ItemMachineUpgrade.UPGRADE_DISPENSER_DAMAGE)));
         tank.readFromNBT(tag);
+
+        if(tag.hasKey("amadronOffer")) {
+            NBTTagCompound subTag = tag.getCompoundTag("amadronOffer");
+            handlingOffer = AmadronOffer.loadFromNBT(subTag);
+            usedTablet = ItemStack.loadItemStackFromNBT(subTag);
+        } else {
+            handlingOffer = null;
+            usedTablet = null;
+        }
+        offerTimes = tag.getInteger("offerTimes");
     }
 
     /**
@@ -1275,5 +1297,23 @@ public class EntityDrone extends EntityDroneBase implements IManoMeasurable, IIn
             }
         }
         return null;
+    }
+
+    public void setHandlingOffer(AmadronOffer offer, int times, ItemStack usedTablet){
+        handlingOffer = offer;
+        offerTimes = times;
+        this.usedTablet = usedTablet.copy();
+    }
+
+    public AmadronOffer getHandlingOffer(){
+        return handlingOffer;
+    }
+
+    public int getOfferTimes(){
+        return offerTimes;
+    }
+
+    public ItemStack getUsedTablet(){
+        return usedTablet;
     }
 }

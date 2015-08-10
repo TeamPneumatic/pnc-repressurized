@@ -20,6 +20,7 @@ import pneumaticCraft.common.util.OreDictionaryHelper;
 
 public class PneumaticRecipeRegistry implements IPneumaticRecipeRegistry{
     public List<IThermopneumaticProcessingPlantRecipe> thermopneumaticProcessingPlantRecipes = new ArrayList<IThermopneumaticProcessingPlantRecipe>();
+    public List<AmadronOffer> amadronOffers = new ArrayList<AmadronOffer>();
 
     private static final PneumaticRecipeRegistry INSTANCE = new PneumaticRecipeRegistry();
 
@@ -102,6 +103,12 @@ public class PneumaticRecipeRegistry implements IPneumaticRecipeRegistry{
         } else {
             throw new IllegalArgumentException("object needs to be of type Block, Item or ItemStack");
         }
+    }
+
+    @Override
+    public void registerAmadronOffer(Object input, Object output){
+        AmadronOffer offer = new AmadronOffer(input, output);
+        if(!amadronOffers.contains(offer)) amadronOffers.add(offer);
     }
 
 }

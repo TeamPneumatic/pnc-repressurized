@@ -9,6 +9,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidStack;
 import pneumaticCraft.api.client.pneumaticHelmet.IBlockTrackEntry;
 import pneumaticCraft.api.client.pneumaticHelmet.IEntityTrackEntry;
 import pneumaticCraft.api.client.pneumaticHelmet.IHackableBlock;
@@ -82,21 +83,54 @@ public class PneumaticRegistry{
         public void registerCustomBlockInteractor(ICustomBlockInteract interactor);
 
         /**
-         * Will spawn in a Drone a distance away from the given coordinate. The drone is programmed to travel to go to 5 blocks above the specified
+         * Will spawn in a Drone a distance away from the given coordinate. When there is an inventory at the given x,y,z the drone will export the items in there. If there isn't or items don't fit, the drone will travel to 5 blocks above the specified
          * y level, and drop the deliveredStacks. When there isn't a clear path for the items to fall these 5 blocks the Drone will deliver at a
          * y level above the specified y that _is_ clear. If no clear blocks can be found (when there are only solid blocks), the Drone will
          * drop the items very high up in the air instead, and drop them there.
          * 
-         * When the Drone is tried to be catched by a player (by wrenching it), the drone will only the drop the items that it was delivering (or
+         * When the Drone is tried to be caught by a player (by wrenching it), the drone will only the drop the items that it was delivering (or
          * none if it dropped those items already). The Drone itself never will be dropped.
          * 
          * @param x
          * @param y
          * @param z
-         * @param deliveredStacks stacks that are delivered by the drone. When no stacks, or more than 65 stacks are given, this will generate a IllegalArgumentException.
-         * @return the drone. You can use this to set a custom name for example (defaults to "Amazon Delivery Drone").
+         * @param deliveredStacks stacks that are delivered by the drone. When no stacks, or more than 65 stacks are given, this will generate an IllegalArgumentException.
+         * @return the drone. You can use this to set a custom name for example (defaults to "Amadron Delivery Drone").
          */
         public EntityCreature deliverItemsAmazonStyle(World world, int x, int y, int z, ItemStack... deliveredStacks);
+
+        /**
+         * The opposite of deliverItemsAmazonStyle. Will retrieve the queried items from an inventory at the specified location.
+         * @param world
+         * @param x
+         * @param y
+         * @param z
+         * @param queriedStacks
+         * @return
+         */
+        public EntityCreature retrieveItemsAmazonStyle(World world, int x, int y, int z, ItemStack... queriedStacks);
+
+        /**
+         * Similar to deliverItemsAmazonStyle, but with Fluids. Will spawn in a Drone that will fill an IFluidHandler at the given x,y,z. If the fluid doesn't fit or there isn't a IFluidHandler, the fluid is lost.
+         * @param world
+         * @param x
+         * @param y
+         * @param z
+         * @param deliveredFluid
+         * @return
+         */
+        public EntityCreature deliverFluidAmazonStyle(World world, int x, int y, int z, FluidStack deliveredFluid);
+
+        /**
+         * The opposite of deliverFluidAmazonStyle. Will retrieve the queried fluid from an IFluidHandler at the specified location.
+         * @param world
+         * @param x
+         * @param y
+         * @param z
+         * @param queriedStacks
+         * @return
+         */
+        public EntityCreature retrieveFluidAmazonStyle(World world, int x, int y, int z, FluidStack queriedFluid);
 
         /*
          * --------------- Items -------------------

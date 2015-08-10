@@ -10,9 +10,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
@@ -29,23 +26,15 @@ import pneumaticCraft.api.recipe.IPneumaticRecipeRegistry;
 import pneumaticCraft.api.tileentity.IHeatExchanger;
 import pneumaticCraft.client.render.pneumaticArmor.blockTracker.BlockTrackEntryList;
 import pneumaticCraft.client.render.pneumaticArmor.hacking.HackableHandler.HackingEntityProperties;
-import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.heat.HeatExchangerLogic;
 import pneumaticCraft.common.heat.HeatExchangerLogicConstant;
 import pneumaticCraft.common.heat.HeatExchangerManager;
 import pneumaticCraft.common.heat.SimpleHeatExchanger;
-import pneumaticCraft.common.item.ItemMachineUpgrade;
-import pneumaticCraft.common.item.Itemss;
-import pneumaticCraft.common.progwidgets.IProgWidget;
-import pneumaticCraft.common.progwidgets.ProgWidgetArea;
 import pneumaticCraft.common.progwidgets.ProgWidgetCustomBlockInteract;
-import pneumaticCraft.common.progwidgets.ProgWidgetDropItem;
-import pneumaticCraft.common.progwidgets.ProgWidgetGoToLocation;
-import pneumaticCraft.common.progwidgets.ProgWidgetStart;
-import pneumaticCraft.common.progwidgets.ProgWidgetSuicide;
 import pneumaticCraft.common.recipes.PneumaticRecipeRegistry;
 import pneumaticCraft.common.tileentity.TileEntityProgrammer;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
+import pneumaticCraft.common.util.ProgrammedDroneUtils;
 import pneumaticCraft.lib.Log;
 
 /**
@@ -209,101 +198,27 @@ public class PneumaticCraftAPIHandler implements IPneumaticCraftInterface{
 
     @Override
     public EntityCreature deliverItemsAmazonStyle(World world, int x, int y, int z, ItemStack... deliveredStacks){
-        if(world.isRemote) return null;
-        if(deliveredStacks.length == 0) throw new IllegalArgumentException("You need to deliver at least 1 stack!");
-        if(deliveredStacks.length > 65) throw new IllegalArgumentException("You can only deliver up to 65 stacks at once!");
-        for(ItemStack stack : deliveredStacks) {
-            if(stack == null) throw new IllegalArgumentException("You can't supply a null stack to be delivered!");
-            if(stack.getItem() == null) throw new IllegalArgumentException("You can't supply a stack with a null item to be delivered!");
-        }
+        return ProgrammedDroneUtils.deliverItemsAmazonStyle(world, x, y, z, deliveredStacks);
+    }
 
-        EntityDrone drone = new EntityDrone(world);
+    @Override
+    public EntityCreature retrieveItemsAmazonStyle(World world, int x, int y, int z, ItemStack... queriedStacks){
+        return ProgrammedDroneUtils.retrieveItemsAmazonStyle(world, x, y, z, queriedStacks);
+    }
 
-        NBTTagCompound tag = new NBTTagCompound();
-        drone.writeEntityToNBT(tag);
+    @Override
+    public EntityCreature deliverFluidAmazonStyle(World world, int x, int y, int z, FluidStack deliveredFluid){
+        return ProgrammedDroneUtils.deliverFluidAmazonStyle(world, x, y, z, deliveredFluid);
+    }
 
-        int requiredDispenserUpgrades = deliveredStacks.length - 1;
-        NBTTagList upgradeList = new NBTTagList();
-        NBTTagCompound slotEntry = new NBTTagCompound();
-        slotEntry.setByte("Slot", (byte)0);
-        new ItemStack(Itemss.machineUpgrade, requiredDispenserUpgrades, ItemMachineUpgrade.UPGRADE_DISPENSER_DAMAGE).writeToNBT(slotEntry);
-        upgradeList.appendTag(slotEntry);
-
-        slotEntry = new NBTTagCompound();
-        slotEntry.setByte("Slot", (byte)1);
-        new ItemStack(Itemss.machineUpgrade, 10, ItemMachineUpgrade.UPGRADE_SPEED_DAMAGE).writeToNBT(slotEntry);
-        upgradeList.appendTag(slotEntry);
-
-        NBTTagCompound inv = new NBTTagCompound();
-
-        inv.setTag("Items", upgradeList);
-        tag.setTag("Inventory", inv);
-        tag.setFloat("currentAir", 100000);
-
-        drone.readEntityFromNBT(tag);
-        drone.setCustomNameTag(StatCollector.translateToLocal("drone.amazonDeliveryDrone"));
-
-        //Program the drone
-        int startY = world.getHeightValue(x + 30, z) + 30;
-        drone.setPosition(x + 30, startY, z);
-        List<IProgWidget> widgets = drone.progWidgets;
-
-        drone.naturallySpawned = true;//Don't let the drone be dropped when wrenching it.
-
-        ProgWidgetStart start = new ProgWidgetStart();
-        start.setX(92);
-        start.setY(41);
-        widgets.add(start);
-
-        ProgWidgetDropItem drop = new ProgWidgetDropItem();
-        drop.setX(92);
-        drop.setY(52);
-        widgets.add(drop);
-
-        ProgWidgetGoToLocation gotoPiece = new ProgWidgetGoToLocation();
-        gotoPiece.setX(92);
-        gotoPiece.setY(74);
-        widgets.add(gotoPiece);
-
-        ProgWidgetSuicide suicide = new ProgWidgetSuicide();
-        suicide.setX(92);
-        suicide.setY(85);
-        widgets.add(suicide);
-
-        ProgWidgetArea area = new ProgWidgetArea();
-        area.setX(107);
-        area.setY(52);
-        area.x1 = x;
-        area.z1 = z;
-        if(drone.isBlockValidPathfindBlock(x, y, z)) {
-            for(int i = 0; i < 5 && drone.isBlockValidPathfindBlock(area.x1, i + y + 1, area.z1); i++) {
-                area.y1 = y + i;
-            }
-        } else {
-            area.y1 = world.getHeightValue(x, z) + 10;
-            if(!drone.isBlockValidPathfindBlock(area.x1, area.y1, area.z1)) area.y1 = 260;//Worst case scenario, there are definately no blocks here.
-        }
-        widgets.add(area);
-
-        area = new ProgWidgetArea();
-        area.setX(107);
-        area.setY(74);
-        area.x1 = x + 30;
-        area.y1 = startY;
-        area.z1 = z;
-        widgets.add(area);
-
-        TileEntityProgrammer.updatePuzzleConnections(widgets);
-
-        for(int i = 0; i < deliveredStacks.length; i++) {
-            drone.getInventory().setInventorySlotContents(i, deliveredStacks[i].copy());
-        }
-        world.spawnEntityInWorld(drone);
-        return drone;
+    @Override
+    public EntityCreature retrieveFluidAmazonStyle(World world, int x, int y, int z, FluidStack queriedFluid){
+        return ProgrammedDroneUtils.retrieveFluidAmazonStyle(world, x, y, z, queriedFluid);
     }
 
     @Override
     public IPneumaticRecipeRegistry getRecipeRegistry(){
         return PneumaticRecipeRegistry.getInstance();
     }
+
 }

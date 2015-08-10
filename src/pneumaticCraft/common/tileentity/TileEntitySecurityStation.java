@@ -22,7 +22,7 @@ import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.PacketRenderRangeLines;
 import pneumaticCraft.lib.Log;
 import pneumaticCraft.lib.TileEntityConstants;
-import pneumaticCraft.proxy.CommonProxy;
+import pneumaticCraft.proxy.CommonProxy.EnumGuiId;
 
 import com.mojang.authlib.GameProfile;
 
@@ -122,7 +122,7 @@ public class TileEntitySecurityStation extends TileEntityBase implements ISidedI
             if(!hasValidNetwork()) {
                 player.addChatComponentMessage(new ChatComponentTranslation(EnumChatFormatting.GREEN + "This Security Station is out of order: Its network hasn't been properly configured."));
             } else {
-                player.openGui(PneumaticCraft.instance, CommonProxy.GUI_ID_HACKING, worldObj, xCoord, yCoord, zCoord);
+                player.openGui(PneumaticCraft.instance, EnumGuiId.HACKING.ordinal(), worldObj, xCoord, yCoord, zCoord);
             }
         } else if(buttonID > 3 && buttonID - 4 < sharedUsers.size()) {
             sharedUsers.remove(buttonID - 4);

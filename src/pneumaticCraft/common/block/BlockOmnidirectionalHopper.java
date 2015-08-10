@@ -12,7 +12,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.common.tileentity.TileEntityOmnidirectionalHopper;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
-import pneumaticCraft.proxy.CommonProxy;
+import pneumaticCraft.proxy.CommonProxy.EnumGuiId;
 
 public class BlockOmnidirectionalHopper extends BlockPneumaticCraftModeled{
 
@@ -26,8 +26,8 @@ public class BlockOmnidirectionalHopper extends BlockPneumaticCraftModeled{
     }
 
     @Override
-    public int getGuiID(){
-        return CommonProxy.GUI_ID_OMNIDIRECTIONAL_HOPPER;
+    public EnumGuiId getGuiID(){
+        return EnumGuiId.OMNIDIRECTIONAL_HOPPER;
     }
 
     /**

@@ -3,12 +3,15 @@ package pneumaticCraft.common.recipes;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;
+import net.minecraft.village.MerchantRecipe;
+import net.minecraft.village.MerchantRecipeList;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.RecipeSorter;
@@ -118,6 +121,7 @@ public class CraftingRegistrator{
         addRecipe(new ItemStack(Itemss.vortexCannon, 1, Itemss.vortexCannon.getMaxDamage()), "idi", "c  ", "ili", 'd', "dyeYellow", 'i', Itemss.ingotIronCompressed, 'l', Blocks.lever, 'c', new ItemStack(Itemss.airCanister, 1, Itemss.airCanister.getMaxDamage()));
         addRecipe(new ItemStack(Itemss.pneumaticWrench, 1, Itemss.pneumaticWrench.getMaxDamage()), "idi", "c  ", "ili", 'd', "dyeOrange", 'i', Itemss.ingotIronCompressed, 'l', Blocks.lever, 'c', new ItemStack(Itemss.airCanister, 1, Itemss.airCanister.getMaxDamage()));
         addRecipe(new ItemStack(Itemss.logisticsConfigurator, 1, Itemss.logisticsConfigurator.getMaxDamage()), "idi", "c  ", "ili", 'd', "dyeRed", 'i', Itemss.ingotIronCompressed, 'l', Blocks.lever, 'c', new ItemStack(Itemss.airCanister, 1, Itemss.airCanister.getMaxDamage()));
+        addRecipe(new ItemStack(Itemss.amadronTablet, 1, Itemss.amadronTablet.getMaxDamage()), "ppp", "pgp", "pcp", 'p', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.BURST_PLANT_DAMAGE), 'g', Itemss.GPSTool, 'c', new ItemStack(Itemss.airCanister, 1, Itemss.airCanister.getMaxDamage()));
         addRecipe(new ItemStack(Itemss.pneumaticHelmet, 1), "cec", "c c", 'e', Itemss.printedCircuitBoard, 'c', new ItemStack(Itemss.airCanister, 1, Itemss.airCanister.getMaxDamage()));
         addShapelessRecipe(new ItemStack(Itemss.manometer, 1, Itemss.manometer.getMaxDamage()), new ItemStack(Itemss.airCanister, 1, Itemss.airCanister.getMaxDamage()), Itemss.pressureGauge);
 
@@ -130,8 +134,10 @@ public class CraftingRegistrator{
         GameRegistry.addRecipe(new RecipeColorDrone());
         GameRegistry.addRecipe(new RecipeLogisticToDrone());
         GameRegistry.addRecipe(new RecipeGunAmmo());
+        GameRegistry.addRecipe(new RecipeAmadronTablet());
 
         RecipeSorter.register("pneumaticcraft:gun", RecipeGun.class, Category.SHAPED, "after:minecraft:shaped");
+        RecipeSorter.register("pneumaticcraft:amadronTablet", RecipeAmadronTablet.class, Category.SHAPED, "after:minecraft:shaped");
         RecipeSorter.register("pneumaticcraft:pneumaticHelmet", RecipePneumaticHelmet.class, Category.SHAPED, "after:minecraft:shaped");
         RecipeSorter.register("pneumaticcraft:manometer", RecipeManometer.class, Category.SHAPED, "after:minecraft:shaped");
         RecipeSorter.register("pneumaticcraft:colorDrone", RecipeColorDrone.class, Category.SHAPELESS, "after:minecraft:shapeless");
@@ -186,15 +192,12 @@ public class CraftingRegistrator{
         addRecipe(new ItemStack(Itemss.logisticsFrameRequester), "ppp", "p p", "ppp", 'p', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.RAIN_PLANT_DAMAGE));
         addRecipe(new ItemStack(Itemss.logisticsFrameStorage), "ppp", "p p", "ppp", 'p', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.HELIUM_PLANT_DAMAGE));
 
-        //Temporary recipes
-        addRecipe(new ItemStack(Itemss.PCBBlueprint), true, "eee", "eie", "eee", 'e', Items.emerald, 'i', Names.INGOT_IRON_COMPRESSED);
-        addRecipe(new ItemStack(Itemss.assemblyProgram, 1, 0), "eee", "eie", "eee", 'e', Items.emerald, 'i', Items.diamond);
-        addRecipe(new ItemStack(Itemss.assemblyProgram, 1, 1), "eee", "eie", "eee", 'e', Items.emerald, 'i', new ItemStack(Items.dye, 1, 1));
         addShapelessRecipe(new ItemStack(Itemss.assemblyProgram, 1, 2), new ItemStack(Itemss.assemblyProgram, 1, 0), new ItemStack(Itemss.assemblyProgram, 1, 1));
 
         addPressureChamberRecipes();
         addAssemblyRecipes();
         addThermopneumaticProcessingPlantRecipes();
+        registerAmadronOffers();
     }
 
     public static void addProgrammingPuzzleRecipes(){
@@ -296,6 +299,34 @@ public class CraftingRegistrator{
         registry.registerThermopneumaticProcessingPlantRecipe(new FluidStack(Fluids.diesel, 100), null, new FluidStack(Fluids.kerosene, 80), 573, 2);
         registry.registerThermopneumaticProcessingPlantRecipe(new FluidStack(Fluids.kerosene, 100), null, new FluidStack(Fluids.gasoline, 80), 573, 2);
         registry.registerThermopneumaticProcessingPlantRecipe(new FluidStack(Fluids.gasoline, 100), null, new FluidStack(Fluids.lpg, 80), 573, 2);
+    }
+
+    private static void registerAmadronOffers(){
+        PneumaticRecipeRegistry registry = PneumaticRecipeRegistry.getInstance();
+        registry.registerAmadronOffer(new ItemStack(Items.emerald, 8), new ItemStack(Itemss.PCBBlueprint));
+        registry.registerAmadronOffer(new ItemStack(Items.emerald, 8), new ItemStack(Itemss.assemblyProgram, 1, 0));
+        registry.registerAmadronOffer(new ItemStack(Items.emerald, 8), new ItemStack(Itemss.assemblyProgram, 1, 1));
+        registry.registerAmadronOffer(new ItemStack(Items.emerald, 14), new ItemStack(Itemss.assemblyProgram, 1, 2));
+        registry.registerAmadronOffer(new FluidStack(Fluids.oil, 5000), new ItemStack(Items.emerald, 1));
+        registry.registerAmadronOffer(new FluidStack(Fluids.diesel, 4000), new ItemStack(Items.emerald, 1));
+        registry.registerAmadronOffer(new FluidStack(Fluids.lubricant, 2500), new ItemStack(Items.emerald, 1));
+        registry.registerAmadronOffer(new FluidStack(Fluids.kerosene, 3000), new ItemStack(Items.emerald, 1));
+        registry.registerAmadronOffer(new FluidStack(Fluids.gasoline, 2000), new ItemStack(Items.emerald, 1));
+        registry.registerAmadronOffer(new FluidStack(Fluids.lpg, 1000), new ItemStack(Items.emerald, 1));
+        registry.registerAmadronOffer(new ItemStack(Items.emerald), new FluidStack(Fluids.oil, 1000));
+        registry.registerAmadronOffer(new ItemStack(Items.emerald, 5), new FluidStack(Fluids.lubricant, 1000));
+
+        for(int i = 0; i < 256; i++) {
+            try {
+                EntityVillager villager = new EntityVillager(null, i);
+                MerchantRecipeList list = villager.getRecipes(null);
+                for(MerchantRecipe recipe : (List<MerchantRecipe>)list) {
+                    if(recipe.getSecondItemToBuy() == null) {
+                        registry.registerAmadronOffer(recipe.getItemToBuy(), recipe.getItemToSell());
+                    }
+                }
+            } catch(Throwable e) {}
+        }
     }
 
     private static void addRecipe(ItemStack result, Object... recipe){

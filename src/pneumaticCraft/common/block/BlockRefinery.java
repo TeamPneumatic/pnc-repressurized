@@ -5,7 +5,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import pneumaticCraft.common.tileentity.TileEntityRefinery;
-import pneumaticCraft.proxy.CommonProxy;
+import pneumaticCraft.proxy.CommonProxy.EnumGuiId;
 
 public class BlockRefinery extends BlockPneumaticCraftModeled{
 
@@ -26,8 +26,8 @@ public class BlockRefinery extends BlockPneumaticCraftModeled{
     }
 
     @Override
-    public int getGuiID(){
-        return CommonProxy.GUI_ID_REFINERY;
+    public EnumGuiId getGuiID(){
+        return EnumGuiId.REFINERY;
     }
 
     @Override

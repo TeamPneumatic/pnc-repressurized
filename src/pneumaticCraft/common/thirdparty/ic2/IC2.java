@@ -20,7 +20,7 @@ import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.thirdparty.IThirdParty;
 import pneumaticCraft.proxy.ClientProxy;
-import pneumaticCraft.proxy.CommonProxy;
+import pneumaticCraft.proxy.CommonProxy.EnumGuiId;
 import cpw.mods.fml.common.network.IGuiHandler;
 import cpw.mods.fml.common.registry.GameRegistry;
 
@@ -85,10 +85,10 @@ public class IC2 implements IThirdParty, IGuiHandler{
 
     @Override
     public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z){
-        switch(ID){
-            case CommonProxy.GUI_ID_PNEUMATIC_GENERATOR:
+        switch(EnumGuiId.values()[ID]){
+            case PNEUMATIC_GENERATOR:
                 return new ContainerPneumaticGenerator(player.inventory, (TileEntityPneumaticGenerator)world.getTileEntity(x, y, z));
-            case CommonProxy.GUI_ID_ELECTRIC_COMPRESSOR:
+            case ELECTRIC_COMPRESSOR:
                 return new ContainerElectricCompressor(player.inventory, (TileEntityElectricCompressor)world.getTileEntity(x, y, z));
         }
         return null;
@@ -96,10 +96,10 @@ public class IC2 implements IThirdParty, IGuiHandler{
 
     @Override
     public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z){
-        switch(ID){
-            case CommonProxy.GUI_ID_PNEUMATIC_GENERATOR:
+        switch(EnumGuiId.values()[ID]){
+            case PNEUMATIC_GENERATOR:
                 return new GuiPneumaticGenerator(player.inventory, (TileEntityPneumaticGenerator)world.getTileEntity(x, y, z));
-            case CommonProxy.GUI_ID_ELECTRIC_COMPRESSOR:
+            case ELECTRIC_COMPRESSOR:
                 return new GuiElectricCompressor(player.inventory, (TileEntityElectricCompressor)world.getTileEntity(x, y, z));
         }
         return null;

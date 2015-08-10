@@ -1,6 +1,8 @@
 package pneumaticCraft.client.gui.widget;
 
 import net.minecraft.client.Minecraft;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.IFluidTank;
 
 public class WidgetFluidStack extends WidgetFluidFilter{
@@ -9,6 +11,12 @@ public class WidgetFluidStack extends WidgetFluidFilter{
     public WidgetFluidStack(int id, int x, int y, IFluidTank tank){
         super(id, x, y);
         this.tank = tank;
+    }
+
+    public WidgetFluidStack(int id, int x, int y, FluidStack stack){
+        super(id, x, y);
+        tank = new FluidTank(stack.amount);
+        tank.fill(stack, true);
     }
 
     @Override

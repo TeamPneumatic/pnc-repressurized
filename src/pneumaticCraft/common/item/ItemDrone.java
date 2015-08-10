@@ -20,7 +20,7 @@ import pneumaticCraft.common.tileentity.TileEntityProgrammer;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.Log;
 import pneumaticCraft.lib.PneumaticValues;
-import pneumaticCraft.proxy.CommonProxy;
+import pneumaticCraft.proxy.CommonProxy.EnumGuiId;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -109,8 +109,8 @@ public class ItemDrone extends ItemPneumatic implements IPressurizable, IChargin
     }
 
     @Override
-    public int getGuiID(){
-        return CommonProxy.GUI_ID_DRONE;
+    public EnumGuiId getGuiID(){
+        return EnumGuiId.DRONE;
     }
 
     @Override

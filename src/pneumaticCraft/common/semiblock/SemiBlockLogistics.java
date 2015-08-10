@@ -24,6 +24,7 @@ import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.network.DescSynced;
 import pneumaticCraft.common.network.GuiSynced;
 import pneumaticCraft.common.tileentity.TileEntityBase;
+import pneumaticCraft.proxy.CommonProxy.EnumGuiId;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -210,12 +211,12 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic{
 
     @Override
     public boolean onRightClickWithConfigurator(EntityPlayer player){
-        if(getGuiID() >= 0) player.openGui(PneumaticCraft.instance, getGuiID(), world, pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ);
+        if(getGuiID() != null) player.openGui(PneumaticCraft.instance, getGuiID().ordinal(), world, pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ);
         return true;
     }
 
-    public int getGuiID(){
-        return -1;
+    public EnumGuiId getGuiID(){
+        return null;
     }
 
     public boolean canFilterStack(){

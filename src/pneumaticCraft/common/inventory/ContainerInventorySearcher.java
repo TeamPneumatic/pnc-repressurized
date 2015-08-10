@@ -41,6 +41,9 @@ public class ContainerInventorySearcher extends Container{
     public void putStackInSlot(int par1, ItemStack par2ItemStack){} //override this to do nothing, as NEI tries to place items in this container which makes it crash.
 
     @Override
+    public void putStacksInSlots(ItemStack[] p_75131_1_){}
+
+    @Override
     public boolean canInteractWith(EntityPlayer entityplayer){
         return true;
     }

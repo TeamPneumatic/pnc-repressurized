@@ -51,7 +51,10 @@ public class WidgetTextField extends GuiTextField implements IGuiWidget{
     @Override
     public void onMouseClicked(int mouseX, int mouseY, int button){
         mouseClicked(mouseX, mouseY, button);
-        if(isFocused() && button == 1) setText("");
+        if(isFocused() && button == 1) {
+            setText("");
+            listener.onKeyTyped(this);
+        }
     }
 
     @Override

@@ -21,7 +21,7 @@ import pneumaticCraft.common.tileentity.TileEntityPneumaticBase;
 import pneumaticCraft.common.tileentity.TileEntityProgrammer;
 import pneumaticCraft.lib.Names;
 import pneumaticCraft.proxy.ClientProxy;
-import pneumaticCraft.proxy.CommonProxy;
+import pneumaticCraft.proxy.CommonProxy.EnumGuiId;
 import cofh.api.energy.IEnergyStorage;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.network.IGuiHandler;
@@ -70,16 +70,16 @@ public class CoFHCore implements IThirdParty, IGuiHandler{
 
     @Override
     public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z){
-        if(ID == CommonProxy.GUI_ID_PNEUMATIC_DYNAMO || ID == CommonProxy.GUI_ID_FLUX_COMPRESSOR) return new ContainerRF(player.inventory, (TileEntityPneumaticBase)world.getTileEntity(x, y, z));
+        if(ID == EnumGuiId.PNEUMATIC_DYNAMO.ordinal() || ID == EnumGuiId.FLUX_COMPRESSOR.ordinal()) return new ContainerRF(player.inventory, (TileEntityPneumaticBase)world.getTileEntity(x, y, z));
         return null;
     }
 
     @Override
     public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z){
-        switch(ID){
-            case CommonProxy.GUI_ID_PNEUMATIC_DYNAMO:
+        switch(EnumGuiId.values()[ID]){
+            case PNEUMATIC_DYNAMO:
                 return new GuiPneumaticDynamo(player.inventory, (TileEntityPneumaticDynamo)world.getTileEntity(x, y, z));
-            case CommonProxy.GUI_ID_FLUX_COMPRESSOR:
+            case FLUX_COMPRESSOR:
                 return new GuiFluxCompressor(player.inventory, (TileEntityFluxCompressor)world.getTileEntity(x, y, z));
         }
         return null;

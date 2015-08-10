@@ -51,4 +51,11 @@ public interface IPneumaticRecipeRegistry{
      * @param recipe
      */
     public void registerPressureChamberRecipe(IPressureChamberRecipe recipe);
+
+    /**
+     * Adds an Amadron offer. Both the input and output can either be ItemStack or FluidStack. An exception will be thrown if this is not the case.
+     * @param input
+     * @param output
+     */
+    public void registerAmadronOffer(Object input, Object output);
 }

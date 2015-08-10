@@ -10,7 +10,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import pneumaticCraft.common.tileentity.TileEntityUniversalSensor;
 import pneumaticCraft.lib.BBConstants;
-import pneumaticCraft.proxy.CommonProxy;
+import pneumaticCraft.proxy.CommonProxy.EnumGuiId;
 
 public class BlockUniversalSensor extends BlockPneumaticCraftModeled{
 
@@ -37,8 +37,8 @@ public class BlockUniversalSensor extends BlockPneumaticCraftModeled{
     }
 
     @Override
-    public int getGuiID(){
-        return CommonProxy.GUI_ID_UNIVERSAL_SENSOR;
+    public EnumGuiId getGuiID(){
+        return EnumGuiId.UNIVERSAL_SENSOR;
     }
 
     protected boolean isRotable(){

@@ -13,7 +13,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.common.tileentity.TileEntityPressureChamberInterface;
-import pneumaticCraft.proxy.CommonProxy;
+import pneumaticCraft.proxy.CommonProxy.EnumGuiId;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -34,8 +34,8 @@ public class BlockPressureChamberInterface extends BlockPressureChamberWall{
     }
 
     @Override
-    public int getGuiID(){
-        return CommonProxy.GUI_ID_PRESSURE_CHAMBER_INTERFACE;
+    public EnumGuiId getGuiID(){
+        return EnumGuiId.PRESSURE_CHAMBER_INTERFACE;
     }
 
     @Override
@@ -46,13 +46,13 @@ public class BlockPressureChamberInterface extends BlockPressureChamberWall{
 
     @Override
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int par6, float par7, float par8, float par9){
-        if(player.isSneaking() || getGuiID() == -1) return false;
+        if(player.isSneaking() || getGuiID() == null) return false;
         else {
             if(!world.isRemote) {
                 TileEntity te = world.getTileEntity(x, y, z);
 
                 if(te != null) {
-                    player.openGui(PneumaticCraft.instance, getGuiID(), world, x, y, z);
+                    player.openGui(PneumaticCraft.instance, getGuiID().ordinal(), world, x, y, z);
                 }
             }
 

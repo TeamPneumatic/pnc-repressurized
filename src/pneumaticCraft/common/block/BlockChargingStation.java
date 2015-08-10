@@ -11,7 +11,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import pneumaticCraft.common.tileentity.TileEntityChargingStation;
 import pneumaticCraft.lib.BBConstants;
-import pneumaticCraft.proxy.CommonProxy;
+import pneumaticCraft.proxy.CommonProxy.EnumGuiId;
 
 public class BlockChargingStation extends BlockPneumaticCraftModeled{
 
@@ -38,8 +38,8 @@ public class BlockChargingStation extends BlockPneumaticCraftModeled{
     }
 
     @Override
-    public int getGuiID(){
-        return CommonProxy.GUI_ID_CHARGING_STATION;
+    public EnumGuiId getGuiID(){
+        return EnumGuiId.CHARGING_STATION;
     }
 
     @Override

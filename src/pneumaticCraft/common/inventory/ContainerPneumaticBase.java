@@ -14,10 +14,11 @@ import pneumaticCraft.common.network.GuiSynced;
 import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.NetworkUtils;
 import pneumaticCraft.common.network.PacketUpdateGui;
+import pneumaticCraft.common.tileentity.IGUIButtonSensitive;
 import pneumaticCraft.common.tileentity.TileEntityBase;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 
-public class ContainerPneumaticBase<Tile extends TileEntityBase> extends Container{
+public class ContainerPneumaticBase<Tile extends TileEntityBase> extends Container implements IGUIButtonSensitive{
 
     public Tile te;
     private final List<SyncedField> syncedFields = new ArrayList<SyncedField>();
@@ -158,5 +159,12 @@ public class ContainerPneumaticBase<Tile extends TileEntityBase> extends Contain
         phantomStack.stackSize = stackSize;
 
         slot.putStack(phantomStack);
+    }
+
+    @Override
+    public void handleGUIButtonPress(int guiID, EntityPlayer player){
+        if(te instanceof IGUIButtonSensitive) {
+            ((IGUIButtonSensitive)te).handleGUIButtonPress(guiID, player);
+        }
     }
 }

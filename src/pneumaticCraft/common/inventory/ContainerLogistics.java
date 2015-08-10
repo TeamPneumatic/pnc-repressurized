@@ -13,6 +13,7 @@ import net.minecraft.world.ChunkPosition;
 import pneumaticCraft.common.item.ItemLogisticsFrame;
 import pneumaticCraft.common.semiblock.SemiBlockLogistics;
 import pneumaticCraft.common.semiblock.SemiBlockManager;
+import pneumaticCraft.common.tileentity.IGUIButtonSensitive;
 
 public class ContainerLogistics extends ContainerPneumaticBase{
     public final SemiBlockLogistics logistics;
@@ -83,6 +84,14 @@ public class ContainerLogistics extends ContainerPneumaticBase{
             } else {
                 player.getCurrentEquippedItem().setTagCompound(settingTag);
             }
+        }
+    }
+
+    @Override
+    public void handleGUIButtonPress(int guiID, EntityPlayer player){
+        super.handleGUIButtonPress(guiID, player);
+        if(logistics instanceof IGUIButtonSensitive) {
+            ((IGUIButtonSensitive)logistics).handleGUIButtonPress(guiID, player);
         }
     }
 

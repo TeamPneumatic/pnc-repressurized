@@ -5,7 +5,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 import pneumaticCraft.common.tileentity.TileEntityProgrammableController;
 import pneumaticCraft.lib.Textures;
-import pneumaticCraft.proxy.CommonProxy;
+import pneumaticCraft.proxy.CommonProxy.EnumGuiId;
 
 public class BlockProgrammableController extends BlockPneumaticCraft{
 
@@ -20,8 +20,8 @@ public class BlockProgrammableController extends BlockPneumaticCraft{
     }
 
     @Override
-    public int getGuiID(){
-        return CommonProxy.GUI_ID_PROGRAMMABLE_CONTROLLER;
+    public EnumGuiId getGuiID(){
+        return EnumGuiId.PROGRAMMABLE_CONTROLLER;
     }
 
     /**

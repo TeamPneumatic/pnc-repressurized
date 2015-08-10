@@ -29,6 +29,7 @@ import pneumaticCraft.common.util.FluidUtils;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.ModIds;
 import pneumaticCraft.lib.Textures;
+import pneumaticCraft.proxy.CommonProxy.EnumGuiId;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.relauncher.Side;
@@ -57,20 +58,20 @@ public abstract class BlockPneumaticCraft extends BlockContainer implements IPne
 
     protected abstract Class<? extends TileEntity> getTileEntityClass();
 
-    public int getGuiID(){
-        return -1;
+    public EnumGuiId getGuiID(){
+        return null;
     }
 
     @Override
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int par6, float par7, float par8, float par9){
-        if(player.isSneaking() || getGuiID() == -1 || isRotatable() && player.getCurrentEquippedItem() != null && (player.getCurrentEquippedItem().getItem() == Itemss.manometer || ModInteractionUtils.getInstance().isModdedWrench(player.getCurrentEquippedItem().getItem()))) return false;
+        if(player.isSneaking() || getGuiID() == null || isRotatable() && player.getCurrentEquippedItem() != null && (player.getCurrentEquippedItem().getItem() == Itemss.manometer || ModInteractionUtils.getInstance().isModdedWrench(player.getCurrentEquippedItem().getItem()))) return false;
         else {
             if(!world.isRemote) {
                 TileEntity te = world.getTileEntity(x, y, z);
 
                 List<ItemStack> returnedItems = new ArrayList<ItemStack>();
                 if(te != null && !FluidUtils.tryInsertingLiquid(te, player.getCurrentEquippedItem(), player.capabilities.isCreativeMode, returnedItems)) {
-                    player.openGui(PneumaticCraft.instance, getGuiID(), world, x, y, z);
+                    player.openGui(PneumaticCraft.instance, getGuiID().ordinal(), world, x, y, z);
                 } else {
                     if(player.getCurrentEquippedItem() != null && player.getCurrentEquippedItem().stackSize <= 0) {
                         player.setCurrentItemOrArmor(0, null);

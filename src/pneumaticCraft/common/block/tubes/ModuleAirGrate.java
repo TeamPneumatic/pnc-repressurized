@@ -35,7 +35,7 @@ import pneumaticCraft.common.network.PacketSpawnParticle;
 import pneumaticCraft.common.tileentity.TileEntityHeatSink;
 import pneumaticCraft.lib.Names;
 import pneumaticCraft.lib.PneumaticValues;
-import pneumaticCraft.proxy.CommonProxy;
+import pneumaticCraft.proxy.CommonProxy.EnumGuiId;
 
 public class ModuleAirGrate extends TubeModule{
     private final IBaseModel model = new ModelAirGrate();
@@ -251,7 +251,7 @@ public class ModuleAirGrate extends TubeModule{
     }
 
     @Override
-    protected int getGuiId(){
-        return CommonProxy.GUI_ID_AIR_GRATE_MODULE;
+    protected EnumGuiId getGuiId(){
+        return EnumGuiId.AIR_GRATE_MODULE;
     }
 }

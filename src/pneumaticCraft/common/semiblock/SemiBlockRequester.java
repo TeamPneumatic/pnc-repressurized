@@ -8,7 +8,7 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 import pneumaticCraft.common.util.IOHelper;
-import pneumaticCraft.proxy.CommonProxy;
+import pneumaticCraft.proxy.CommonProxy.EnumGuiId;
 
 public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificRequester{
 
@@ -106,8 +106,8 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
     }
 
     @Override
-    public int getGuiID(){
-        return CommonProxy.GUI_ID_LOGISTICS_REQUESTER;
+    public EnumGuiId getGuiID(){
+        return EnumGuiId.LOGISTICS_REQUESTER;
     }
 
     @Override

@@ -29,7 +29,7 @@ import pneumaticCraft.lib.Log;
 import pneumaticCraft.lib.ModIds;
 import pneumaticCraft.lib.PneumaticValues;
 import pneumaticCraft.lib.Textures;
-import pneumaticCraft.proxy.CommonProxy;
+import pneumaticCraft.proxy.CommonProxy.EnumGuiId;
 import thaumcraft.api.IGoggles;
 import thaumcraft.api.IRepairable;
 import thaumcraft.api.IVisDiscountGear;
@@ -213,8 +213,8 @@ public class ItemPneumaticArmor extends ItemArmor implements IPressurizable, ICh
     }
 
     @Override
-    public int getGuiID(){
-        return CommonProxy.GUI_ID_PNEUMATIC_HELMET;
+    public EnumGuiId getGuiID(){
+        return EnumGuiId.PNEUMATIC_HELMET;
     }
 
     /**

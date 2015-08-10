@@ -1,5 +1,6 @@
 package pneumaticCraft.common;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +27,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.StatCollector;
+import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -41,11 +43,15 @@ import net.minecraftforge.event.entity.player.FillBucketEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.ExplosionEvent;
 import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.fluids.FluidStack;
 import pneumaticCraft.PneumaticCraft;
+import pneumaticCraft.api.PneumaticRegistry;
 import pneumaticCraft.api.block.IPneumaticWrenchable;
 import pneumaticCraft.api.client.pneumaticHelmet.EntityTrackEvent;
 import pneumaticCraft.api.client.pneumaticHelmet.InventoryTrackEvent;
+import pneumaticCraft.api.drone.AmadronRetrievalEvent;
 import pneumaticCraft.api.drone.DroneConstructingEvent;
+import pneumaticCraft.api.drone.DroneSuicideEvent;
 import pneumaticCraft.api.item.IPressurizable;
 import pneumaticCraft.client.render.pneumaticArmor.EntityTrackUpgradeHandler;
 import pneumaticCraft.client.render.pneumaticArmor.HUDHandler;
@@ -56,7 +62,9 @@ import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.block.pneumaticPlants.BlockPlants;
 import pneumaticCraft.common.block.pneumaticPlants.BlockPneumaticPlantBase;
 import pneumaticCraft.common.entity.EntityProgrammableController;
+import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.fluid.Fluids;
+import pneumaticCraft.common.item.ItemAmadronTablet;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.common.item.ItemPneumaticArmor;
@@ -64,6 +72,7 @@ import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.PacketPlaySound;
 import pneumaticCraft.common.network.PacketSetMobTarget;
+import pneumaticCraft.common.recipes.AmadronOffer;
 import pneumaticCraft.common.remote.GlobalVariableManager;
 import pneumaticCraft.common.thirdparty.ModInteractionUtilImplementation;
 import pneumaticCraft.common.tileentity.TileEntityProgrammer;
@@ -307,5 +316,66 @@ public class EventHandlerPneumaticCraft{
     @SubscribeEvent
     public void onInventoryTracking(InventoryTrackEvent event){
         if(event.getTileEntity() instanceof TileEntityProgrammer) event.setCanceled(true);
+    }
+
+    @SubscribeEvent
+    public void onDroneSuicide(DroneSuicideEvent event){
+        if(event.drone instanceof EntityDrone) {
+            EntityDrone drone = (EntityDrone)event.drone;
+            AmadronOffer offer = drone.getHandlingOffer();
+            if(offer != null) {
+                int times = drone.getOfferTimes();
+                if(offer.getInput() instanceof ItemStack) {
+                    int requiredCount = ((ItemStack)offer.getInput()).stackSize * times;
+                    for(int i = 0; i < drone.getInventory().getSizeInventory(); i++) {
+                        if(drone.getInventory().getStackInSlot(i) != null) {
+                            requiredCount -= drone.getInventory().getStackInSlot(i).stackSize;
+                        }
+                    }
+                    if(requiredCount <= 0) {
+                        for(int i = 0; i < drone.getInventory().getSizeInventory(); i++) {
+                            drone.getInventory().setInventorySlotContents(i, null);
+                        }
+                        MinecraftForge.EVENT_BUS.post(new AmadronRetrievalEvent(event.drone));
+                    }
+                } else {
+                    int requiredCount = ((FluidStack)offer.getInput()).amount * times;
+                    if(drone.getTank().getFluidAmount() >= requiredCount) {
+                        MinecraftForge.EVENT_BUS.post(new AmadronRetrievalEvent(event.drone));
+                    }
+                }
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onAmadronSuccess(AmadronRetrievalEvent event){
+        EntityDrone drone = (EntityDrone)event.drone;
+        AmadronOffer offer = drone.getHandlingOffer();
+        ItemStack usedTablet = drone.getUsedTablet();
+        if(offer.getOutput() instanceof ItemStack) {
+            ItemStack offeringItems = (ItemStack)offer.getOutput();
+            int producedItems = offeringItems.stackSize * drone.getOfferTimes();
+            List<ItemStack> stacks = new ArrayList<ItemStack>();
+            while(producedItems > 0) {
+                ItemStack stack = offeringItems.copy();
+                stack.stackSize = Math.min(producedItems, stack.getMaxStackSize());
+                stacks.add(stack);
+                producedItems -= stack.stackSize;
+            }
+            ChunkPosition pos = ItemAmadronTablet.getItemProvidingLocation(usedTablet);
+            if(pos != null) {
+                World world = ItemAmadronTablet.getWorldForDimension(ItemAmadronTablet.getItemProvidingDimension(usedTablet));
+                PneumaticRegistry.getInstance().deliverItemsAmazonStyle(world, pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ, stacks.toArray(new ItemStack[stacks.size()]));
+            }
+        } else {
+            FluidStack offeringFluid = ((FluidStack)offer.getOutput()).copy();
+            offeringFluid.amount *= drone.getOfferTimes();
+            ChunkPosition pos = ItemAmadronTablet.getLiquidProvidingLocation(usedTablet);
+            if(pos != null) {
+                World world = ItemAmadronTablet.getWorldForDimension(ItemAmadronTablet.getLiquidProvidingDimension(usedTablet));
+                PneumaticRegistry.getInstance().deliverFluidAmazonStyle(world, pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ, offeringFluid);
+            }
+        }
     }
 }

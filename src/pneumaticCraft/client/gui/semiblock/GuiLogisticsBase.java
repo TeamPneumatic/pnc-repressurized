@@ -103,8 +103,6 @@ public class GuiLogisticsBase extends GuiPneumaticContainerBase{
                 editingSlot = widget.getID();
                 mc.displayGuiScreen(fluidSearchGui);
             }
-        } else if(widget.getID() == 0) {
-            sendPacketToServer(logistics, 0);
         }
     }
 

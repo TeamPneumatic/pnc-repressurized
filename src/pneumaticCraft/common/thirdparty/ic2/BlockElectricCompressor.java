@@ -3,7 +3,7 @@ package pneumaticCraft.common.thirdparty.ic2;
 import net.minecraft.block.material.Material;
 import net.minecraft.tileentity.TileEntity;
 import pneumaticCraft.common.block.BlockPneumaticCraftModeled;
-import pneumaticCraft.proxy.CommonProxy;
+import pneumaticCraft.proxy.CommonProxy.EnumGuiId;
 
 public class BlockElectricCompressor extends BlockPneumaticCraftModeled{
 
@@ -22,8 +22,8 @@ public class BlockElectricCompressor extends BlockPneumaticCraftModeled{
     }
 
     @Override
-    public int getGuiID(){
-        return CommonProxy.GUI_ID_ELECTRIC_COMPRESSOR;
+    public EnumGuiId getGuiID(){
+        return EnumGuiId.ELECTRIC_COMPRESSOR;
     }
 
     @Override

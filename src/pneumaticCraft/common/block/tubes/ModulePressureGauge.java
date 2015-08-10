@@ -11,7 +11,7 @@ import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.PacketUpdatePressureBlock;
 import pneumaticCraft.common.tileentity.TileEntityPneumaticBase;
 import pneumaticCraft.lib.Names;
-import pneumaticCraft.proxy.CommonProxy;
+import pneumaticCraft.proxy.CommonProxy.EnumGuiId;
 
 public class ModulePressureGauge extends TubeModuleRedstoneEmitting{
     private final IBaseModel model = new ModelGauge(this);
@@ -68,7 +68,7 @@ public class ModulePressureGauge extends TubeModuleRedstoneEmitting{
     }
 
     @Override
-    protected int getGuiId(){
-        return CommonProxy.GUI_ID_PRESSURE_MODULE;
+    protected EnumGuiId getGuiId(){
+        return EnumGuiId.PRESSURE_MODULE;
     }
 }

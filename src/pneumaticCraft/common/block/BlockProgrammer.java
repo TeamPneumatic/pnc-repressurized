@@ -10,7 +10,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import pneumaticCraft.common.tileentity.TileEntityProgrammer;
 import pneumaticCraft.lib.BBConstants;
-import pneumaticCraft.proxy.CommonProxy;
+import pneumaticCraft.proxy.CommonProxy.EnumGuiId;
 
 public class BlockProgrammer extends BlockPneumaticCraftModeled{
 
@@ -24,8 +24,8 @@ public class BlockProgrammer extends BlockPneumaticCraftModeled{
     }
 
     @Override
-    public int getGuiID(){
-        return CommonProxy.GUI_ID_PROGRAMMER;
+    public EnumGuiId getGuiID(){
+        return EnumGuiId.PROGRAMMER;
     }
 
     @Override

@@ -17,7 +17,7 @@ import org.apache.commons.lang3.text.WordUtils;
 
 import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.common.tileentity.TileEntitySecurityStation;
-import pneumaticCraft.proxy.CommonProxy;
+import pneumaticCraft.proxy.CommonProxy.EnumGuiId;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -94,10 +94,10 @@ public class ItemRemote extends ItemPneumatic{
     private void openGui(EntityPlayer player, ItemStack remote){
         if(player.isSneaking()) {
             if(isAllowedToEdit(player, remote)) {
-                player.openGui(PneumaticCraft.instance, CommonProxy.GUI_ID_REMOTE_EDITOR, player.worldObj, (int)player.posX, (int)player.posY, (int)player.posZ);
+                player.openGui(PneumaticCraft.instance, EnumGuiId.REMOTE_EDITOR.ordinal(), player.worldObj, (int)player.posX, (int)player.posY, (int)player.posZ);
             }
         } else {
-            player.openGui(PneumaticCraft.instance, CommonProxy.GUI_ID_REMOTE, player.worldObj, (int)player.posX, (int)player.posY, (int)player.posZ);
+            player.openGui(PneumaticCraft.instance, EnumGuiId.REMOTE.ordinal(), player.worldObj, (int)player.posX, (int)player.posY, (int)player.posZ);
         }
     }
 

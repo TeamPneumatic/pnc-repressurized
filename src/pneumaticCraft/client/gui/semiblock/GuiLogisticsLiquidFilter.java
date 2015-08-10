@@ -17,6 +17,10 @@ public class GuiLogisticsLiquidFilter extends GuiProgWidgetLiquidFilter{
         return widget.getFluid();
     }
 
+    public void setFilter(Fluid fluid){
+        widget.setFluid(fluid);
+    }
+
     @Override
     public void keyTyped(char key, int keyCode){
         super.keyTyped(key, keyCode);

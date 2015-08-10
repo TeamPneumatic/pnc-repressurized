@@ -2,7 +2,7 @@ package pneumaticCraft.common.semiblock;
 
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
-import pneumaticCraft.proxy.CommonProxy;
+import pneumaticCraft.proxy.CommonProxy.EnumGuiId;
 
 public class SemiBlockStorage extends SemiBlockLogistics implements ISpecificProvider, ISpecificRequester{
 
@@ -19,8 +19,8 @@ public class SemiBlockStorage extends SemiBlockLogistics implements ISpecificPro
     }
 
     @Override
-    public int getGuiID(){
-        return CommonProxy.GUI_ID_LOGISTICS_STORAGE;
+    public EnumGuiId getGuiID(){
+        return EnumGuiId.LOGISTICS_STORAGE;
     }
 
     @Override

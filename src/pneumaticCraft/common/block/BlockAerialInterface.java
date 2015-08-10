@@ -14,7 +14,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.common.tileentity.TileEntityAerialInterface;
 import pneumaticCraft.lib.ModIds;
 import pneumaticCraft.lib.Textures;
-import pneumaticCraft.proxy.CommonProxy;
+import pneumaticCraft.proxy.CommonProxy.EnumGuiId;
 import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -57,8 +57,8 @@ public class BlockAerialInterface extends BlockPneumaticCraft{
     }
 
     @Override
-    public int getGuiID(){
-        return CommonProxy.GUI_ID_AERIAL_INTERFACE;
+    public EnumGuiId getGuiID(){
+        return EnumGuiId.AERIAL_INTERFACE;
     }
 
     @Override

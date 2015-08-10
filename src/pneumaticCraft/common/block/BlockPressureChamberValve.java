@@ -15,6 +15,7 @@ import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.common.tileentity.TileEntityPressureChamberValve;
 import pneumaticCraft.lib.Textures;
 import pneumaticCraft.proxy.CommonProxy;
+import pneumaticCraft.proxy.CommonProxy.EnumGuiId;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -85,7 +86,7 @@ public class BlockPressureChamberValve extends BlockPneumaticCraft{
         TileEntity te = world.getTileEntity(x, y, z);
         if(!world.isRemote && te instanceof TileEntityPressureChamberValve) {
             if(((TileEntityPressureChamberValve)te).multiBlockSize > 0) {
-                player.openGui(PneumaticCraft.instance, CommonProxy.GUI_ID_PRESSURE_CHAMBER, world, x, y, z);
+                player.openGui(PneumaticCraft.instance, EnumGuiId.PRESSURE_CHAMBER.ordinal(), world, x, y, z);
             } else if(((TileEntityPressureChamberValve)te).accessoryValves.size() > 0) { // when
                                                                                          // this
                                                                                          // isn't
@@ -100,7 +101,7 @@ public class BlockPressureChamberValve extends BlockPneumaticCraft{
                 //  System.out.println("size: " + ((TileEntityPressureChamberValve)te).accessoryValves.size());
                 for(TileEntityPressureChamberValve valve : ((TileEntityPressureChamberValve)te).accessoryValves) {
                     if(valve.multiBlockSize > 0) {
-                        player.openGui(PneumaticCraft.instance, CommonProxy.GUI_ID_PRESSURE_CHAMBER, world, valve.xCoord, valve.yCoord, valve.zCoord);
+                        player.openGui(PneumaticCraft.instance, EnumGuiId.PRESSURE_CHAMBER.ordinal(), world, valve.xCoord, valve.yCoord, valve.zCoord);
                         break;
                     }
                 }

@@ -1,0 +1,5 @@
+The Amadron Tablet is an item that when charged can be used to order items and fluids. Offers can be selected in the interface and ordered. To do so, first an inventory needs to be right-clicked with the Amadron Tablet to bind it. This inventory will then be used to take items to pay with, and the items bought will be delivered into this inventory. The same goes for a tank.
+
+The Amadron Tablet GUI is smart enough to figure out what you can buy and how many by looking at the bound inventory and/or tank. When you order the items, a Drone will spawn to pick-up the items you use to pay with. After it picks up the items and disappears, and it has gotten all the items it needed for the order, a second drone will spawn to deliver the purchased items. It will deliver them and return.
+
+This item is a way to get items you can't get otherwise, like the PCB Blueprint and the Assembly Programs. It also adds some random Villager Trades.

@@ -3,7 +3,7 @@ package pneumaticCraft.common.block;
 import net.minecraft.block.material.Material;
 import net.minecraft.tileentity.TileEntity;
 import pneumaticCraft.common.tileentity.TileEntityLiquidHopper;
-import pneumaticCraft.proxy.CommonProxy;
+import pneumaticCraft.proxy.CommonProxy.EnumGuiId;
 
 public class BlockLiquidHopper extends BlockOmnidirectionalHopper{
 
@@ -17,7 +17,7 @@ public class BlockLiquidHopper extends BlockOmnidirectionalHopper{
     }
 
     @Override
-    public int getGuiID(){
-        return CommonProxy.GUI_ID_LIQUID_HOPPER;
+    public EnumGuiId getGuiID(){
+        return EnumGuiId.LIQUID_HOPPER;
     }
 }

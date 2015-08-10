@@ -38,6 +38,11 @@ public class WidgetTank extends WidgetBase{
         tank = new FluidTank(stack, 16000);
     }
 
+    public WidgetTank(int x, int y, int width, int height, FluidStack stack){
+        super(-1, x, y, width, height);
+        tank = new FluidTank(stack, stack.amount);
+    }
+
     @Override
     public void render(int mouseX, int mouseY, float partialTick){
         GL11.glDisable(GL11.GL_LIGHTING);

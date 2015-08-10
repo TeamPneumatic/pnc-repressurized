@@ -22,6 +22,7 @@ public class NEIPluginInitConfig implements IConfigureNEI{
         registerHandler(new NEIRefineryManager());
         registerHandler(new NEIEtchingAcidManager());
         registerHandler(new NEIUVLightBoxManager());
+        registerHandler(new NEIAmadronTradeManager());
 
         GuiContainerManager.addDrawHandler(new ItemDrawHandler());
 
@@ -49,6 +50,7 @@ public class NEIPluginInitConfig implements IConfigureNEI{
         API.hideItem(new ItemStack(Blockss.repulsionPlant));
         API.hideItem(new ItemStack(Blockss.slimePlant));
         API.hideItem(new ItemStack(Blockss.squidPlant));
+        API.hideItem(new ItemStack(Blockss.droneRedstoneEmitter));
     }
 
     public void registerHandler(TemplateRecipeHandler handler){

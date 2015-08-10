@@ -5,7 +5,7 @@ import java.util.List;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.common.util.ForgeDirection;
-import pneumaticCraft.proxy.CommonProxy;
+import pneumaticCraft.proxy.CommonProxy.EnumGuiId;
 
 public abstract class TubeModuleRedstoneReceiving extends TubeModule{
     protected int redstoneLevel;
@@ -44,8 +44,8 @@ public abstract class TubeModuleRedstoneReceiving extends TubeModule{
     }
 
     @Override
-    protected int getGuiId(){
-        return CommonProxy.GUI_ID_PRESSURE_MODULE;
+    protected EnumGuiId getGuiId(){
+        return EnumGuiId.PRESSURE_MODULE;
     }
 
     @Override

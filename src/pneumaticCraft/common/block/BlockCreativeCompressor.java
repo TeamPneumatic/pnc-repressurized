@@ -1,12 +1,9 @@
 package pneumaticCraft.common.block;
 
 import net.minecraft.block.material.Material;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
-import pneumaticCraft.client.gui.GuiCreativeCompressor;
 import pneumaticCraft.common.tileentity.TileEntityCreativeCompressor;
-import cpw.mods.fml.common.FMLCommonHandler;
+import pneumaticCraft.proxy.CommonProxy.EnumGuiId;
 
 public class BlockCreativeCompressor extends BlockPneumaticCraftModeled{
 
@@ -20,17 +17,8 @@ public class BlockCreativeCompressor extends BlockPneumaticCraftModeled{
     }
 
     @Override
-    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int par6, float par7, float par8, float par9){
-        if(player.isSneaking()) return false;
-        else {
-            if(world.isRemote) {
-                TileEntity te = world.getTileEntity(x, y, z);
-                if(te instanceof TileEntityCreativeCompressor) {
-                    FMLCommonHandler.instance().showGuiScreen(new GuiCreativeCompressor((TileEntityCreativeCompressor)te));
-                }
-            }
-            return true;
-        }
+    public EnumGuiId getGuiID(){
+        return EnumGuiId.CREATIVE_COMPRESSOR;
     }
 
 }
