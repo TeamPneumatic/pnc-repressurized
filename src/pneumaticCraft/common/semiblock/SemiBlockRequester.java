@@ -58,8 +58,6 @@ import appeng.api.storage.data.IItemList;
 import appeng.api.util.AECableType;
 import appeng.api.util.AEColor;
 import appeng.api.util.DimensionalCoord;
-import appeng.tile.misc.TileInterface;
-import appeng.util.item.AEItemStack;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.common.Optional.Interface;
@@ -248,19 +246,21 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
     }
 
     public boolean isPlacedOnInterface(){
-        return getTileEntity() instanceof TileInterface;
+        return getTileEntity() != null && AEApi.instance().definitions().blocks().iface().maybeBlock().get() == getTileEntity().getBlockType();
     }
 
     private boolean checkForInterface(){
-        TileEntity te = getTileEntity();
-        if(te instanceof TileInterface) {
-            if(((TileInterface)te).getGridNode(null) == null) return true;
-            if(getGridNode(null) == null) return true;
-            try {
-                AEApi.instance().createGridConnection(getGridNode(null), ((TileInterface)te).getGridNode(null));
-            } catch(FailedConnection e) {
-                Log.info("Couldn't connect to an ME Interface!");
-                e.printStackTrace();
+        if(isPlacedOnInterface()) {
+            TileEntity te = getTileEntity();
+            if(te instanceof IGridNode) {
+                if(((IGridHost)te).getGridNode(null) == null) return true;
+                if(getGridNode(null) == null) return true;
+                try {
+                    AEApi.instance().createGridConnection(getGridNode(null), ((IGridHost)te).getGridNode(null));
+                } catch(FailedConnection e) {
+                    Log.info("Couldn't connect to an ME Interface!");
+                    e.printStackTrace();
+                }
             }
         }
         return false;
@@ -397,7 +397,7 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
             for(int i = 0; i < getFilters().getSizeInventory(); i++) {
                 ItemStack s = getFilters().getStackInSlot(i);
                 if(s != null) {
-                    if(!grid.isRequesting(AEItemStack.create(s))) {
+                    if(!grid.isRequesting(AEApi.instance().storage().createItemStack(s))) {
                         getFilters().setInventorySlotContents(i, null);
                         notifyNetworkOfCraftingChange();
                     }
@@ -428,7 +428,7 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
         ICraftingWatcher cWatcher = (ICraftingWatcher)craftingWatcher;
         if(sWatcher != null) sWatcher.clear();
         if(cWatcher != null) cWatcher.clear();
-        for(AEItemStack stack : getProvidingItems()) {
+        for(IAEItemStack stack : getProvidingItems()) {
             if(sWatcher != null) sWatcher.add(stack);
             if(cWatcher != null) cWatcher.add(stack);
             if(cHelper != null) cHelper.setEmitable(stack);
@@ -440,14 +440,14 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
         if(gridNode != null) providingInventories.put(te, 40);
     }
 
-    private List<AEItemStack> getProvidingItems(){
-        List<AEItemStack> stacks = new ArrayList<AEItemStack>();
+    private List<IAEItemStack> getProvidingItems(){
+        List<IAEItemStack> stacks = new ArrayList<IAEItemStack>();
         for(TileEntity te : providingInventories.keySet()) {
             IInventory inv = IOHelper.getInventoryForTE(te);
             if(inv != null) {
                 for(int i = 0; i < inv.getSizeInventory(); i++) {
                     ItemStack stack = inv.getStackInSlot(i);
-                    if(stack != null) stacks.add(AEItemStack.create(stack));
+                    if(stack != null) stacks.add(AEApi.instance().storage().createItemStack(stack));
                 }
             }
         }
@@ -462,7 +462,7 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
 
     @Override
     public IItemList<IAEItemStack> getAvailableItems(IItemList<IAEItemStack> arg0){
-        for(AEItemStack stack : getProvidingItems()) {
+        for(IAEItemStack stack : getProvidingItems()) {
             stack.setCountRequestable(stack.getStackSize());
             arg0.addRequestable(stack);
         }
