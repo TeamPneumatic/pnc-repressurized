@@ -646,6 +646,7 @@ gui.progWidget.general.error.emptyVariable=Variable is empty. Specify a valid va
 gui.progWidget.general.error.noSideActive=Affecting no sides. Select at least one side.
 gui.progWidget.general.error.noPieceConnected=No piece connected (on the bottom).
 gui.progWidget.condition.error.noFlowControl=No output label selected. The flow will continue downwards, regardless of the outcome of the condition.
+gui.progWidget.condition.error.shouldConnectTextPieces=You should only connect Text puzzle pieces that reference a Label puzzle piece with a text piece.
 gui.progWidget.coordinate.warning.noCoordinate=No coordinate specified. If you are using this to set a variable to (0,0,0), you can use an empty Coordinate Operator command instead.
 gui.progWidget.conditionCoordinate.error.noAxisSelected=No checking axis selected. You need to check at least one condition for its value for the condition to work.
 gui.progWidget.conditionItem.error.noCheckingItem=No checking item. Add at least one Item Filter to the topmost slot.

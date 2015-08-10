@@ -26,15 +26,21 @@ public abstract class ProgWidgetConditionBase extends ProgWidget implements IJum
     @Override
     public void addErrors(List<String> curInfo){
         super.addErrors(curInfo);
-        if(getConnectedParameters()[getParameters().length - 1] == null && getConnectedParameters()[getParameters().length * 2 - 1] == null) {
+        IProgWidget widget = getConnectedParameters()[getParameters().length - 1];
+        IProgWidget widget2 = getConnectedParameters()[getParameters().length * 2 - 1];
+        if(widget == null && widget2 == null) {
             curInfo.add("gui.progWidget.condition.error.noFlowControl");
+        } else if(widget != null && !(widget instanceof ProgWidgetString) || widget2 != null && !(widget2 instanceof ProgWidgetString)) {
+            curInfo.add("gui.progWidget.condition.error.shouldConnectTextPieces");
         }
     }
 
     @Override
     public List<String> getPossibleJumpLocations(){
-        ProgWidgetString textWidget = (ProgWidgetString)getConnectedParameters()[getParameters().length - 1];
-        ProgWidgetString textWidget2 = (ProgWidgetString)getConnectedParameters()[getParameters().length * 2 - 1];
+        IProgWidget widget = getConnectedParameters()[getParameters().length - 1];
+        IProgWidget widget2 = getConnectedParameters()[getParameters().length * 2 - 1];
+        ProgWidgetString textWidget = widget != null ? (ProgWidgetString)widget : null;
+        ProgWidgetString textWidget2 = widget2 != null ? (ProgWidgetString)widget2 : null;
         List<String> locations = new ArrayList<String>();
         if(textWidget != null) locations.add(textWidget.string);
         if(textWidget2 != null) locations.add(textWidget2.string);
