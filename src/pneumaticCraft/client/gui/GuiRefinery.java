@@ -43,7 +43,7 @@ public class GuiRefinery extends GuiPneumaticContainerBase<TileEntityRefinery>{
             refinery = (TileEntityRefinery)refinery.getTileCache()[ForgeDirection.UP.ordinal()].getTileEntity();
             x += 20;
             y -= 4;
-            if(refineries.size() < 4) addWidget(new WidgetTank(0, x, y, refinery.getOutputTank()));
+            if(refineries.size() < 4) addWidget(new WidgetTank(-1, x, y, refinery.getOutputTank()));
             refineries.add(refinery);
         }
 
