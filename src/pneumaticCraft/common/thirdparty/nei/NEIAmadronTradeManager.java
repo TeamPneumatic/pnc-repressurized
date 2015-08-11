@@ -51,7 +51,9 @@ public class NEIAmadronTradeManager extends PneumaticCraftPlugins{
             if(offer.getOutput() instanceof ItemStack) addOutput(new PositionedStack(offer.getOutput(), 51, 15));
             if(offer.getInput() instanceof FluidStack) addInputLiquid(new WidgetCustomTank(6, 15, (FluidStack)offer.getInput()));
             if(offer.getOutput() instanceof FluidStack) addOutputLiquid(new WidgetCustomTank(51, 15, (FluidStack)offer.getOutput()));
-            addWidget(new WidgetAmadronOffer(0, 0, 0, offer, true).setDrawBackground(false));
+            WidgetAmadronOffer widget = new WidgetAmadronOffer(0, 0, 0, offer).setDrawBackground(false);
+            widget.setCanBuy(true);
+            addWidget(widget);
         }
     }
 
