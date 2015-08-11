@@ -71,22 +71,24 @@ public class ContainerAmadron extends ContainerPneumaticBase{
         addSyncedFields(this);
         Arrays.fill(shoppingItems, -1);
 
-        IInventory inv = ItemAmadronTablet.getItemProvider(player.getCurrentEquippedItem());
-        IFluidHandler fluidHandler = ItemAmadronTablet.getLiquidProvider(player.getCurrentEquippedItem());
-        for(int i = 0; i < offers.size(); i++) {
-            int amount = capShoppingAmount(i, 1, inv, fluidHandler);
-            buyableOffers[i] = amount > 0;
-        }
-        problemState = EnumProblemState.NO_PROBLEMS;
+        if(!player.worldObj.isRemote) {
+            IInventory inv = ItemAmadronTablet.getItemProvider(player.getCurrentEquippedItem());
+            IFluidHandler fluidHandler = ItemAmadronTablet.getLiquidProvider(player.getCurrentEquippedItem());
+            for(int i = 0; i < offers.size(); i++) {
+                int amount = capShoppingAmount(i, 1, inv, fluidHandler);
+                buyableOffers[i] = amount > 0;
+            }
+            problemState = EnumProblemState.NO_PROBLEMS;
 
-        Map<AmadronOffer, Integer> shoppingCart = ItemAmadronTablet.getShoppingCart(player.getCurrentEquippedItem());
-        for(Map.Entry<AmadronOffer, Integer> cartItem : shoppingCart.entrySet()) {
-            int offerId = offers.indexOf(cartItem.getKey());
-            if(offerId >= 0) {
-                int index = getCartSlot(offerId);
-                if(index >= 0) {
-                    shoppingItems[index] = offerId;
-                    shoppingAmounts[index] = cartItem.getValue();
+            Map<AmadronOffer, Integer> shoppingCart = ItemAmadronTablet.getShoppingCart(player.getCurrentEquippedItem());
+            for(Map.Entry<AmadronOffer, Integer> cartItem : shoppingCart.entrySet()) {
+                int offerId = offers.indexOf(cartItem.getKey());
+                if(offerId >= 0) {
+                    int index = getCartSlot(offerId);
+                    if(index >= 0) {
+                        shoppingItems[index] = offerId;
+                        shoppingAmounts[index] = cartItem.getValue();
+                    }
                 }
             }
         }
