@@ -261,7 +261,7 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
                 try {
                     AEApi.instance().createGridConnection(getGridNode(null), ((IGridHost)te).getGridNode(null));
                 } catch(FailedConnection e) {
-                    Log.info("Couldn't connect to an ME Interface!");
+                    Log.error("Couldn't connect to an ME Interface!");
                     e.printStackTrace();
                 }
             }

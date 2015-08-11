@@ -1,11 +1,11 @@
 package pneumaticCraft.common.ai;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Set;
 
 import net.minecraft.entity.ai.EntityAIBase;
@@ -35,9 +35,7 @@ import pneumaticCraft.common.util.IOHelper;
 public class DroneAILogistics extends EntityAIBase{
     private final List<SemiBlockLogistics>[] logistics = new List[3];
     private EntityAIBase curAI;
-    private ItemStack transportingStack;
-    private FluidStackWrapper transportingFluid;
-    private SemiBlockLogistics requestingBlock;
+    private LogisticsTask curTask;
     private final IDroneBase drone;
     private final ProgWidgetAreaItemBase widget;
 
@@ -80,12 +78,12 @@ public class DroneAILogistics extends EntityAIBase{
                 }
             }
         }
+        curTask = null;
         return doLogistics();
     }
 
     private boolean doLogistics(){
-        transportingFluid = null;
-        transportingStack = null;
+        PriorityQueue<LogisticsTask> tasks = new PriorityQueue<LogisticsTask>();
         for(int priority = logistics.length - 1; priority >= 0; priority--) {
             for(SemiBlockLogistics requester : logistics[priority]) {
                 for(int i = 0; i < priority; i++) {
@@ -94,68 +92,67 @@ public class DroneAILogistics extends EntityAIBase{
                             if(drone.getInventory().getStackInSlot(0) != null) {
                                 int requestedAmount = getRequestedAmount(requester, drone.getInventory().getStackInSlot(0));
                                 if(requestedAmount > 0) {
-                                    transportingStack = drone.getInventory().getStackInSlot(0).copy();
-                                    transportingStack.stackSize = requestedAmount;
-                                    curAI = new DroneEntityAIInventoryExport(drone, new FakeWidgetLogistics(requester.getPos(), transportingStack));
+                                    ItemStack stack = drone.getInventory().getStackInSlot(0).copy();
+                                    stack.stackSize = requestedAmount;
+                                    curTask = new LogisticsTask(provider, requester, stack);
+                                    curAI = new DroneEntityAIInventoryExport(drone, new FakeWidgetLogistics(requester.getPos(), stack));
                                 }
                             } else if(drone.getTank().getFluidAmount() > 0) {
                                 int requestedAmount = getRequestedAmount(requester, drone.getTank().getFluid());
                                 if(requestedAmount > 0) {
                                     FluidStack fluid = drone.getTank().getFluid().copy();
                                     fluid.amount = requestedAmount;
-                                    transportingFluid = new FluidStackWrapper(fluid);
+                                    curTask = new LogisticsTask(provider, requester, new FluidStackWrapper(fluid));
                                     curAI = new DroneAILiquidExport(drone, new FakeWidgetLogistics(requester.getPos(), fluid));
                                 }
                             } else {
-                                tryProvide(provider, requester);
+                                tryProvide(provider, requester, tasks);
                             }
-                            if(curAI != null) {
-                                if(curAI.shouldExecute()) {
-                                    if(transportingStack != null) {
-                                        requester.informIncomingStack(transportingStack);
-                                    } else if(transportingFluid != null) {
-                                        requester.informIncomingStack(transportingFluid);
-                                    }
-                                    requestingBlock = requester;
-                                    return true;
-                                }
+                            if(curAI != null && curAI.shouldExecute()) {
+                                curTask.informRequester();
+                                return true;
                             }
                         }
                     }
                 }
             }
         }
+        if(tasks.size() > 0) {
+            curTask = tasks.poll();
+            return curTask.execute();
+        }
         return false;
     }
 
     @Override
     public boolean continueExecuting(){
+        if(curTask == null) return false;
         if(!curAI.continueExecuting()) {
             if(curAI instanceof DroneEntityAIInventoryImport) {
-                requestingBlock.clearIncomingStack(transportingStack);
+                curTask.requester.clearIncomingStack(curTask.transportingItem);
                 return clearAIAndProvideAgain();
             } else if(curAI instanceof DroneAILiquidImport) {
-                requestingBlock.clearIncomingStack(transportingFluid);
+                curTask.requester.clearIncomingStack(curTask.transportingFluid);
                 return clearAIAndProvideAgain();
             } else {
                 curAI = null;
                 return false;
             }
         } else {
-            if(transportingStack != null) requestingBlock.informIncomingStack(transportingStack);
-            if(transportingFluid != null) requestingBlock.informIncomingStack(transportingFluid);
+            curTask.informRequester();
             return true;
         }
     }
 
     private boolean clearAIAndProvideAgain(){
         curAI = null;
-
-        SemiBlockSorter sorter = new SemiBlockSorter(drone);
-        for(List<SemiBlockLogistics> list : logistics) {
-            Collections.sort(list, sorter);
+        if(curTask.isStillValid()) {
+            curTask.execute();
+            return true;
+        } else {
+            curTask = null;
+            return doLogistics();
         }
-        return doLogistics();
     }
 
     private static class SemiBlockSorter implements Comparator<SemiBlockLogistics>{
@@ -172,7 +169,10 @@ public class DroneAILogistics extends EntityAIBase{
 
     }
 
-    private void tryProvide(SemiBlockLogistics provider, SemiBlockLogistics requester){
+    //curAI = new DroneAILiquidImport(drone, new FakeWidgetLogistics(provider.getPos(), providingStack));
+    // transportingFluid = new FluidStackWrapper(providingStack);
+
+    private void tryProvide(SemiBlockLogistics provider, SemiBlockLogistics requester, PriorityQueue<LogisticsTask> tasks){
         IInventory providingInventory = IOHelper.getInventoryForTE(provider.getTileEntity());
         if(providingInventory != null) {
             if(requester instanceof IProvidingInventoryListener) ((IProvidingInventoryListener)requester).notify(provider.getTileEntity());
@@ -181,10 +181,9 @@ public class DroneAILogistics extends EntityAIBase{
                 if(providingStack != null && (!(provider instanceof ISpecificProvider) || ((ISpecificProvider)provider).canProvide(providingStack)) && IOHelper.canExtractItemFromInventory(providingInventory, providingStack, i, 0)) {
                     int requestedAmount = getRequestedAmount(requester, providingStack);
                     if(requestedAmount > 0) {
-                        transportingStack = providingStack.copy();
-                        transportingStack.stackSize = requestedAmount;
-                        curAI = new DroneEntityAIInventoryImport(drone, new FakeWidgetLogistics(provider.getPos(), transportingStack));
-                        return;
+                        ItemStack stack = providingStack.copy();
+                        stack.stackSize = requestedAmount;
+                        tasks.add(new LogisticsTask(provider, requester, stack));
                     }
                 }
             }
@@ -196,11 +195,9 @@ public class DroneAILogistics extends EntityAIBase{
                 if(providingStack != null && (!(provider instanceof ISpecificProvider) || ((ISpecificProvider)provider).canProvide(providingStack)) && providingTank.canDrain(d, providingStack.getFluid())) {
                     int requestedAmount = getRequestedAmount(requester, providingStack);
                     if(requestedAmount > 0) {
-                        providingStack = providingStack.copy();
-                        providingStack.amount = requestedAmount;
-                        curAI = new DroneAILiquidImport(drone, new FakeWidgetLogistics(provider.getPos(), providingStack));
-                        transportingFluid = new FluidStackWrapper(providingStack);
-                        return;
+                        FluidStack stack = providingStack.copy();
+                        stack.amount = requestedAmount;
+                        tasks.add(new LogisticsTask(provider, requester, new FluidStackWrapper(stack)));
                     }
                 }
             }
@@ -311,6 +308,70 @@ public class DroneAILogistics extends EntityAIBase{
         @Override
         public boolean isFluidValid(Fluid fluid){
             return fluid == this.fluid.getFluid();
+        }
+
+    }
+
+    private class LogisticsTask implements Comparable<LogisticsTask>{
+
+        private final SemiBlockLogistics provider, requester;
+        private ItemStack transportingItem;
+        private FluidStackWrapper transportingFluid;
+
+        public LogisticsTask(SemiBlockLogistics provider, SemiBlockLogistics requester, ItemStack transportingItem){
+            this.provider = provider;
+            this.requester = requester;
+            this.transportingItem = transportingItem;
+        }
+
+        public LogisticsTask(SemiBlockLogistics provider, SemiBlockLogistics requester,
+                FluidStackWrapper transportingFluid){
+            this.provider = provider;
+            this.requester = requester;
+            this.transportingFluid = transportingFluid;
+        }
+
+        public void informRequester(){
+            if(transportingItem != null) {
+                requester.informIncomingStack(transportingItem);
+            } else {
+                requester.informIncomingStack(transportingFluid);
+            }
+        }
+
+        public boolean execute(){
+            if(drone.getInventory().getStackInSlot(0) != null) {
+                curAI = new DroneEntityAIInventoryExport(drone, new FakeWidgetLogistics(requester.getPos(), transportingItem));
+            } else if(drone.getTank().getFluidAmount() > 0) {
+                curAI = new DroneAILiquidExport(drone, new FakeWidgetLogistics(requester.getPos(), transportingFluid.stack));
+            } else if(transportingItem != null) {
+                curAI = new DroneEntityAIInventoryImport(drone, new FakeWidgetLogistics(provider.getPos(), transportingItem));
+            } else {
+                curAI = new DroneAILiquidImport(drone, new FakeWidgetLogistics(provider.getPos(), transportingFluid.stack));
+            }
+            if(curAI.shouldExecute()) {
+                informRequester();
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        public boolean isStillValid(){
+            if(transportingItem != null) {
+                int requestedAmount = getRequestedAmount(requester, drone.getInventory().getStackInSlot(0));
+                return requestedAmount == drone.getInventory().getStackInSlot(0).stackSize;
+            } else {
+                int requestedAmount = getRequestedAmount(requester, drone.getTank().getFluid());
+                return requestedAmount == drone.getTank().getFluidAmount();
+            }
+        }
+
+        @Override
+        public int compareTo(LogisticsTask task){
+            int value = transportingItem != null ? transportingItem.stackSize * 100 : transportingFluid.stack.amount;
+            int otherValue = task.transportingItem != null ? task.transportingItem.stackSize * 100 : task.transportingFluid.stack.amount;
+            return otherValue - value;
         }
 
     }
