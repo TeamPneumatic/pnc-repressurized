@@ -64,6 +64,7 @@ public class Textures{
     public static final ResourceLocation MODEL_GAUGE = new ResourceLocation(TUBE_MODULE_MODEL_LOCATION + "gaugeModule.png");
     public static final ResourceLocation MODEL_AIR_GRATE = new ResourceLocation(TUBE_MODULE_MODEL_LOCATION + "airGrate.png");
     public static final ResourceLocation MODEL_CHARGING_MODULE = new ResourceLocation(TUBE_MODULE_MODEL_LOCATION + "chargingModule.png");
+    public static final ResourceLocation MODEL_LOGISTICS = new ResourceLocation(TUBE_MODULE_MODEL_LOCATION + "logisticsModule.png");
 
     public static final ResourceLocation MODEL_DRONE = new ResourceLocation(ENTITY_LOCATION + "Drone.png");
 

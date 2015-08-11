@@ -18,6 +18,7 @@ public class ModuleRegistrator{
         registerModule(ModuleAirGrate.class);
         registerModule(ModuleRegulatorTube.class);
         registerModule(ModuleCharging.class);
+        registerModule(ModuleLogistics.class);
     }
 
     public static void registerModule(Class<? extends TubeModule> moduleClass){
