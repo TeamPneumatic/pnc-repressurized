@@ -108,7 +108,7 @@ public class DroneAILogistics extends EntityAIBase{
                             } else {
                                 tryProvide(provider, requester, tasks);
                             }
-                            if(curAI != null && curAI.shouldExecute()) {
+                            if(curAI != null && curAI.shouldExecute() && curTask != null) {
                                 curTask.informRequester();
                                 return true;
                             }
