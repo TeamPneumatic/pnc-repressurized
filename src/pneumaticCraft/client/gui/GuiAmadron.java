@@ -73,6 +73,7 @@ public class GuiAmadron extends GuiPneumaticContainerBase{
             setPage(scrollbar.getState());
         }
         for(WidgetAmadronOffer offer : widgetOffers) {
+            offer.setCanBuy(container.buyableOffers[container.offers.indexOf(offer.getOffer())]);
             offer.setShoppingAmount(container.getShoppingCartAmount(offer.getOffer()));
         }
         if(!hadProblem && container.problemState != EnumProblemState.NO_PROBLEMS) {
@@ -114,7 +115,7 @@ public class GuiAmadron extends GuiPneumaticContainerBase{
             if(offer.getInput() instanceof ItemStack) container.setStack(i * 2, (ItemStack)offer.getInput());
             if(offer.getOutput() instanceof ItemStack) container.setStack(i * 2 + 1, (ItemStack)offer.getOutput());
 
-            WidgetAmadronOffer widget = new WidgetAmadronOffer(i, guiLeft + 6 + 73 * (i % 2), guiTop + 55 + 35 * (i / 2), offer, container.buyableOffers[offers.indexOf(offer)]){
+            WidgetAmadronOffer widget = new WidgetAmadronOffer(i, guiLeft + 6 + 73 * (i % 2), guiTop + 55 + 35 * (i / 2), offer){
                 @Override
                 public void onMouseClicked(int mouseX, int mouseY, int button){
                     NetworkHandler.sendToServer(new PacketAmadronOrderUpdate(container.offers.indexOf(getOffer()), button, PneumaticCraft.proxy.isSneakingInGui()));

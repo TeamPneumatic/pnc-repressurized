@@ -252,7 +252,7 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic{
 
     @Override
     public void handleGUIButtonPress(int guiID, EntityPlayer player){
-        if(guiID == 0) {
+        if(guiID == 9) {
             invisible = !invisible;
         }
     }

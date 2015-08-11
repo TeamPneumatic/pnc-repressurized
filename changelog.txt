@@ -1,1 +1,4 @@
--Bugfix: Crash when not having AE2 in the instance.
+-The Logistic Drones now prioritize depending on the amount of fluid/items to be transported rather than distance. This prevents them getting obsessed on for example refilling a tank that is slowly draining.
+
+-Bugfix: Client crash on SMP with Amadron Tablet.
+-Bugfix: All Amadron Trades display red until you update the trades (scrolling/searching).
