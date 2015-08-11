@@ -10,23 +10,43 @@ import pneumaticCraft.lib.Textures;
 
 public class ModelLogisticsModule extends ModelBase implements IBaseModel{
     //fields
-    ModelRenderer base1;
+    public ModelRenderer base1;
     ModelRenderer base2;
     ModelRenderer Shape1;
     ModelRenderer Shape2;
     ModelRenderer Shape3;
     ModelRenderer Shape4;
+    public ModelRenderer notPowered, powered, action, notEnoughAir;
 
     public ModelLogisticsModule(){
         textureWidth = 128;
         textureHeight = 128;
 
-        base1 = new ModelRenderer(this, 69, 0);
-        base1.addBox(0F, 0F, 0F, 6, 2, 6);
-        base1.setRotationPoint(-3F, 13F, 4F);
-        base1.setTextureSize(128, 128);
-        base1.mirror = true;
-        setRotation(base1, -1.570796F, 0F, 0F);
+        notPowered = new ModelRenderer(this, 72, 0);
+        notPowered.addBox(0F, 0F, 0F, 6, 2, 6);
+        notPowered.setRotationPoint(-3F, 13F, 4F);
+        notPowered.setTextureSize(128, 128);
+        notPowered.mirror = true;
+        setRotation(notPowered, -1.570796F, 0F, 0F);
+        powered = new ModelRenderer(this, 48, 0);
+        powered.addBox(0F, 0F, 0F, 6, 2, 6);
+        powered.setRotationPoint(-3F, 13F, 4F);
+        powered.setTextureSize(128, 128);
+        powered.mirror = true;
+        setRotation(powered, -1.570796F, 0F, 0F);
+        action = new ModelRenderer(this, 24, 0);
+        action.addBox(0F, 0F, 0F, 6, 2, 6);
+        action.setRotationPoint(-3F, 13F, 4F);
+        action.setTextureSize(128, 128);
+        action.mirror = true;
+        setRotation(action, -1.570796F, 0F, 0F);
+        notEnoughAir = new ModelRenderer(this, 0, 0);
+        notEnoughAir.addBox(0F, 0F, 0F, 6, 2, 6);
+        notEnoughAir.setRotationPoint(-3F, 13F, 4F);
+        notEnoughAir.setTextureSize(128, 128);
+        notEnoughAir.mirror = true;
+        setRotation(notEnoughAir, -1.570796F, 0F, 0F);
+
         base2 = new ModelRenderer(this, 0, 25);
         base2.addBox(0F, 0F, 0F, 12, 2, 12);
         base2.setRotationPoint(-6F, 10F, 6F);
@@ -81,6 +101,10 @@ public class ModelLogisticsModule extends ModelBase implements IBaseModel{
     public void renderStatic(float size, TileEntity te){
         base1.render(size);
         base2.render(size);
+
+    }
+
+    public void renderChannelColorFrame(float size){
         Shape1.render(size);
         Shape2.render(size);
         Shape3.render(size);

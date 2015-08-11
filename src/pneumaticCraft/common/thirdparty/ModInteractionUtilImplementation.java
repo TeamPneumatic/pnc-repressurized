@@ -7,6 +7,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.api.tileentity.IPneumaticMachine;
 import pneumaticCraft.common.block.tubes.IPneumaticPosProvider;
 import pneumaticCraft.common.thirdparty.fmp.FMP;
+import pneumaticCraft.common.thirdparty.fmp.PartPressureTube;
 import pneumaticCraft.lib.ModIds;
 import buildcraft.api.tools.IToolWrench;
 import buildcraft.api.transport.IPipeTile;
@@ -103,5 +104,22 @@ public class ModInteractionUtilImplementation extends ModInteractionUtils{
         } else {
             super.sendDescriptionPacket(te);
         }
+    }
+
+    @Override
+    @Optional.Method(modid = ModIds.FMP)
+    public boolean[] getTubeConnections(IPneumaticPosProvider tube){
+        if(tube instanceof TileMultipart) {
+            PartPressureTube t = FMP.getMultiPart((TileMultipart)tube, PartPressureTube.class);
+            return t != null ? t.sidesConnected : new boolean[6];
+        } else {
+            return super.getTubeConnections(tube);
+        }
+    }
+
+    @Override
+    @Optional.Method(modid = ModIds.FMP)
+    public boolean isPneumaticTube(IPneumaticMachine machine){
+        return machine instanceof PartPressureTube || super.isPneumaticTube(machine);
     }
 }
