@@ -19,11 +19,11 @@ public class WidgetAmadronOffer extends WidgetBase{
     private final AmadronOffer offer;
     private final List<IGuiWidget> widgets = new ArrayList<IGuiWidget>();
     private int shoppingAmount;
-    private final boolean canBuy;
+    private boolean canBuy;
     private final Rectangle[] tooltipRectangles = new Rectangle[2];
     private boolean renderBackground = true;
 
-    public WidgetAmadronOffer(int id, int x, int y, AmadronOffer offer, boolean canBuy){
+    public WidgetAmadronOffer(int id, int x, int y, AmadronOffer offer){
         super(id, x, y, 73, 35);
         this.offer = offer;
         if(offer.getInput() instanceof FluidStack) {
@@ -32,7 +32,6 @@ public class WidgetAmadronOffer extends WidgetBase{
         if(offer.getOutput() instanceof FluidStack) {
             widgets.add(new WidgetFluidStack(0, x + 51, y + 15, (FluidStack)offer.getOutput()));
         }
-        this.canBuy = canBuy;
         tooltipRectangles[0] = new Rectangle(x + 6, y + 15, 16, 16);
         tooltipRectangles[1] = new Rectangle(x + 51, y + 15, 16, 16);
     }
@@ -58,6 +57,10 @@ public class WidgetAmadronOffer extends WidgetBase{
     public WidgetAmadronOffer setDrawBackground(boolean drawBackground){
         renderBackground = drawBackground;
         return this;
+    }
+
+    public void setCanBuy(boolean canBuy){
+        this.canBuy = canBuy;
     }
 
     @Override
