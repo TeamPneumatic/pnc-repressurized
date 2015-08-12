@@ -34,14 +34,14 @@ import pneumaticCraft.proxy.CommonProxy.EnumGuiId;
 public class ModuleLogistics extends TubeModule{
     private static final ModelLogisticsModule model = new ModelLogisticsModule();
     private SemiBlockLogistics cachedFrame;
-    private boolean ticked;
     private int colorChannel;
     private int ticksSinceAction = -1;//client sided timer used to display the blue color when doing a logistic task.
     private int ticksSinceNotEnoughAir = -1;
+    private int ticksUntilNextCycle;
     private boolean powered;
     private static final double MIN_PRESSURE = 3;
-    private static final double ITEM_TRANSPORT_COST = 0.1;
-    private static final double FLUID_TRANSPORT_COST = 0.001;
+    private static final double ITEM_TRANSPORT_COST = 5;
+    private static final double FLUID_TRANSPORT_COST = 0.1;
 
     @Override
     public double getWidth(){
@@ -148,15 +148,14 @@ public class ModuleLogistics extends TubeModule{
                 powered = !powered;
                 NetworkHandler.sendToAllAround(new PacketUpdateLogisticModule(this, 0), getTube().world());
             }
-            if(getTube().world().getWorldTime() % 20 == 0 && !ticked) {
-                // Log.info(ModuleNetworkManager.getInstance().getConnectedModules(this).size() + "");
+            if(--ticksUntilNextCycle <= 0) {
                 LogisticsManager manager = new LogisticsManager();
                 Map<SemiBlockLogistics, ModuleLogistics> frameToModuleMap = new HashMap<SemiBlockLogistics, ModuleLogistics>();
                 for(TubeModule module : ModuleNetworkManager.getInstance().getConnectedModules(this)) {
                     if(module instanceof ModuleLogistics) {
                         ModuleLogistics logistics = (ModuleLogistics)module;
                         if(logistics.getColorChannel() == getColorChannel() && logistics.getFrame() != null) {
-                            logistics.ticked = true;
+                            ticksUntilNextCycle = 100;//Make sure any connected module doesn't tick, set it to a 5 second timer. This is also a penalty value when no task is executed this tick.
                             if(logistics.hasPower()) {
                                 frameToModuleMap.put(logistics.getFrame(), logistics);
                                 manager.addLogisticFrame(logistics.getFrame());
@@ -176,13 +175,14 @@ public class ModuleLogistics extends TubeModule{
                                 if(extractedStack != null) {
                                     ModuleLogistics provider = frameToModuleMap.get(task.provider);
                                     ModuleLogistics requester = frameToModuleMap.get(task.requester);
-                                    int airUsed = (int)(ITEM_TRANSPORT_COST * extractedStack.stackSize * PneumaticCraftUtils.distBetweenSq(provider.getTube().x(), provider.getTube().y(), provider.getTube().z(), requester.getTube().x(), requester.getTube().y(), requester.getTube().z()));
-                                    if(provider.getTube().getAirHandler().getCurrentAir(null) >= airUsed && requester.getTube().getAirHandler().getCurrentAir(null) > airUsed) {
+                                    int airUsed = (int)(ITEM_TRANSPORT_COST * extractedStack.stackSize * Math.pow(PneumaticCraftUtils.distBetweenSq(provider.getTube().x(), provider.getTube().y(), provider.getTube().z(), requester.getTube().x(), requester.getTube().y(), requester.getTube().z()), 0.25));
+                                    if(requester.getTube().getAirHandler().getCurrentAir(null) > airUsed) {
                                         sendModuleUpdate(provider, true);
                                         sendModuleUpdate(requester, true);
-                                        provider.getTube().getAirHandler().addAir(-airUsed, null);
                                         requester.getTube().getAirHandler().addAir(-airUsed, null);
+                                        IOHelper.extract(task.provider.getTileEntity(), extractedStack, false);
                                         IOHelper.insert(task.requester.getTileEntity(), extractedStack, false);
+                                        ticksUntilNextCycle = 20;
                                     } else {
                                         sendModuleUpdate(provider, false);
                                         sendModuleUpdate(requester, false);
@@ -208,7 +208,7 @@ public class ModuleLogistics extends TubeModule{
                                         for(ForgeDirection d : ForgeDirection.VALID_DIRECTIONS) {
                                             extractedFluid = provider.drain(d, drainingFluid, false);
                                             if(extractedFluid != null) {
-                                                airUsed = (int)(FLUID_TRANSPORT_COST * extractedFluid.amount * PneumaticCraftUtils.distBetweenSq(p.getTube().x(), p.getTube().y(), p.getTube().z(), r.getTube().x(), r.getTube().y(), r.getTube().z()));
+                                                airUsed = (int)(FLUID_TRANSPORT_COST * extractedFluid.amount * PneumaticCraftUtils.distBetween(p.getTube().x(), p.getTube().y(), p.getTube().z(), r.getTube().x(), r.getTube().y(), r.getTube().z()));
                                                 if(p.getTube().getAirHandler().getCurrentAir(null) >= airUsed && r.getTube().getAirHandler().getCurrentAir(null) > airUsed) {
                                                     extractedFluid = provider.drain(d, drainingFluid, true);
                                                     break;
@@ -223,9 +223,9 @@ public class ModuleLogistics extends TubeModule{
                                         if(extractedFluid != null) {
                                             sendModuleUpdate(p, true);
                                             sendModuleUpdate(r, true);
-                                            p.getTube().getAirHandler().addAir(-airUsed, null);
                                             r.getTube().getAirHandler().addAir(-airUsed, null);
                                             requester.fill(di, extractedFluid, true);
+                                            ticksUntilNextCycle = 20;
                                         }
                                         break;
                                     }
@@ -245,10 +245,9 @@ public class ModuleLogistics extends TubeModule{
                 if(ticksSinceNotEnoughAir > 20) ticksSinceNotEnoughAir = -1;
             }
         }
-        ticked = false;
     }
 
     private void sendModuleUpdate(ModuleLogistics module, boolean enoughAir){
-        NetworkHandler.sendToAllAround(new PacketUpdateLogisticModule(module, enoughAir ? 2 : 1), module.getTube().world());
+        NetworkHandler.sendToAllAround(new PacketUpdateLogisticModule(module, enoughAir ? 1 : 2), module.getTube().world());
     }
 }

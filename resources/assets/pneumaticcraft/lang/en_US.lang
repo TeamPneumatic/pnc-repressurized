@@ -787,6 +787,7 @@ gui.tooltip.item.logisticFrameActiveProvider=Provides items to a Logistic Networ
 gui.tooltip.item.logisticDrone=Robot which performs logistic tasks. Logistic Frames are used to define these tasks.
 gui.tooltip.item.gunAmmo=Bullets used by Drones when they have an Entity Tracker Upgrade inserted, giving them a Minigun.
 gui.tooltip.item.amadronTablet=Item used to order items/fluids. It is comparable to Villager trading. Items/fluids are picked up and delivered via Drones. A pick-up/drop-off location is required to be specified by right-clicking with an inventory and/or tank.
+gui.tooltip.item.logisticsModule=This tube module when fitted on a tube will communicate with other Logistics Tube Modules on connected tubes. It will perform logistics tasks on inventories/tanks it is pointing towards, and are fitted with a Logistic Frame. It uses pressure to do so.
 
 # Waila
 hud.msg.state=State

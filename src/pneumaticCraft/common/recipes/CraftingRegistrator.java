@@ -48,6 +48,8 @@ public class CraftingRegistrator{
         addRecipe(new ItemStack(ModuleRegistrator.getModuleItem(Names.MODULE_AIR_GRATE)), " b ", "btb", " b ", 'b', Blocks.iron_bars, 't', new ItemStack(Blockss.pressureTube, 1, 0));
         addRecipe(new ItemStack(ModuleRegistrator.getModuleItem(Names.MODULE_GAUGE)), " g ", "rtr", 'g', Itemss.pressureGauge, 'r', Items.redstone, 't', new ItemStack(Blockss.pressureTube, 1, 0));
         addRecipe(new ItemStack(ModuleRegistrator.getModuleItem(Names.MODULE_CHARGING)), " r ", "rtr", " r ", 'r', Blockss.chargingStation, 't', new ItemStack(Blockss.pressureTube, 1, 0));
+        addRecipe(new ItemStack(ModuleRegistrator.getModuleItem(Names.MODULE_LOGISTICS), 4), "pip", "iri", "pip", 'i', Names.INGOT_IRON_COMPRESSED, 'p', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.SQUID_PLANT_DAMAGE), 'r', ModuleRegistrator.getModuleItem(Names.MODULE_REGULATOR));
+        addRecipe(new ItemStack(ModuleRegistrator.getModuleItem(Names.MODULE_LOGISTICS), 4), "ipi", "prp", "ipi", 'i', Names.INGOT_IRON_COMPRESSED, 'p', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.SQUID_PLANT_DAMAGE), 'r', ModuleRegistrator.getModuleItem(Names.MODULE_REGULATOR));
 
         // tube addons
         addRecipe(new ItemStack(Itemss.pressureGauge), " g ", "gig", " g ", 'g', Items.gold_ingot, 'i', Names.INGOT_IRON_COMPRESSED);
@@ -191,6 +193,7 @@ public class CraftingRegistrator{
         addRecipe(new ItemStack(Itemss.logisticsFrameActiveProvider), "ppp", "p p", "ppp", 'p', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.ENDER_PLANT_DAMAGE));
         addRecipe(new ItemStack(Itemss.logisticsFrameRequester), "ppp", "p p", "ppp", 'p', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.RAIN_PLANT_DAMAGE));
         addRecipe(new ItemStack(Itemss.logisticsFrameStorage), "ppp", "p p", "ppp", 'p', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.HELIUM_PLANT_DAMAGE));
+        addRecipe(new ItemStack(Itemss.logisticsFrameDefaultStorage), "ppp", "p p", "ppp", 'p', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.REPULSION_PLANT_DAMAGE));
 
         addShapelessRecipe(new ItemStack(Itemss.assemblyProgram, 1, 2), new ItemStack(Itemss.assemblyProgram, 1, 0), new ItemStack(Itemss.assemblyProgram, 1, 1));
 
