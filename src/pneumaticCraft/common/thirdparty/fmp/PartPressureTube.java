@@ -125,7 +125,10 @@ public class PartPressureTube extends TMultiPart implements IPneumaticPosProvide
             convertedModules = null;
         }
         if(ticksExisted++ == 2) {
-            if(!world().isRemote) world().notifyBlocksOfNeighborChange(x(), y(), z(), Blockss.pressureTube);
+            if(!world().isRemote) {
+                world().notifyBlocksOfNeighborChange(x(), y(), z(), Blockss.pressureTube);
+                updateConnections();
+            }
         }
 
         airHandler.updateEntityI();
