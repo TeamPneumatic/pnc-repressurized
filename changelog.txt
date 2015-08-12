@@ -1,2 +1,4 @@
--Bugfix: Nullpointer with Logistic Drones.
--Bugfix: Crash when connecting a Label piece to a condition piece.
+-Added Logistics Module.
+-Added Default Storage Frame.
+
+-Bugfix: Pressure Tube multipart visually disconnects on world load.

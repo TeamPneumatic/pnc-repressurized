@@ -109,9 +109,8 @@ public class ModInteractionUtilImplementation extends ModInteractionUtils{
     @Override
     @Optional.Method(modid = ModIds.FMP)
     public boolean[] getTubeConnections(IPneumaticPosProvider tube){
-        if(tube instanceof TileMultipart) {
-            PartPressureTube t = FMP.getMultiPart((TileMultipart)tube, PartPressureTube.class);
-            return t != null ? t.sidesConnected : new boolean[6];
+        if(tube instanceof PartPressureTube) {
+            return ((PartPressureTube)tube).sidesConnected;
         } else {
             return super.getTubeConnections(tube);
         }

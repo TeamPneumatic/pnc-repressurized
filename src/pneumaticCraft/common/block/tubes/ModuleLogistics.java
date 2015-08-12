@@ -1,6 +1,7 @@
 package pneumaticCraft.common.block.tubes;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 
@@ -154,9 +155,9 @@ public class ModuleLogistics extends TubeModule{
                 for(TubeModule module : ModuleNetworkManager.getInstance().getConnectedModules(this)) {
                     if(module instanceof ModuleLogistics) {
                         ModuleLogistics logistics = (ModuleLogistics)module;
-                        if(logistics.getColorChannel() == getColorChannel() && logistics.getFrame() != null) {
-                            ticksUntilNextCycle = 100;//Make sure any connected module doesn't tick, set it to a 5 second timer. This is also a penalty value when no task is executed this tick.
-                            if(logistics.hasPower()) {
+                        if(logistics.getColorChannel() == getColorChannel()) {
+                            logistics.ticksUntilNextCycle = 100;//Make sure any connected module doesn't tick, set it to a 5 second timer. This is also a penalty value when no task is executed this tick.
+                            if(logistics.hasPower() && logistics.getFrame() != null) {
                                 frameToModuleMap.put(logistics.getFrame(), logistics);
                                 manager.addLogisticFrame(logistics.getFrame());
                             }
@@ -209,7 +210,7 @@ public class ModuleLogistics extends TubeModule{
                                             extractedFluid = provider.drain(d, drainingFluid, false);
                                             if(extractedFluid != null) {
                                                 airUsed = (int)(FLUID_TRANSPORT_COST * extractedFluid.amount * PneumaticCraftUtils.distBetween(p.getTube().x(), p.getTube().y(), p.getTube().z(), r.getTube().x(), r.getTube().y(), r.getTube().z()));
-                                                if(p.getTube().getAirHandler().getCurrentAir(null) >= airUsed && r.getTube().getAirHandler().getCurrentAir(null) > airUsed) {
+                                                if(r.getTube().getAirHandler().getCurrentAir(null) > airUsed) {
                                                     extractedFluid = provider.drain(d, drainingFluid, true);
                                                     break;
                                                 } else {
@@ -249,5 +250,10 @@ public class ModuleLogistics extends TubeModule{
 
     private void sendModuleUpdate(ModuleLogistics module, boolean enoughAir){
         NetworkHandler.sendToAllAround(new PacketUpdateLogisticModule(module, enoughAir ? 1 : 2), module.getTube().world());
+    }
+
+    @Override
+    public void addInfo(List<String> curInfo){
+
     }
 }
