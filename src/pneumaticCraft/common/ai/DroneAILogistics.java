@@ -359,9 +359,11 @@ public class DroneAILogistics extends EntityAIBase{
 
         public boolean isStillValid(){
             if(transportingItem != null) {
+                if(drone.getInventory().getStackInSlot(0) == null) return false;
                 int requestedAmount = getRequestedAmount(requester, drone.getInventory().getStackInSlot(0));
                 return requestedAmount == drone.getInventory().getStackInSlot(0).stackSize;
             } else {
+                if(drone.getTank().getFluidAmount() == 0) return false;
                 int requestedAmount = getRequestedAmount(requester, drone.getTank().getFluid());
                 return requestedAmount == drone.getTank().getFluidAmount();
             }

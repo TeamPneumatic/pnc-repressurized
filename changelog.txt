@@ -1,1 +1,2 @@
 -Bugfix: Nullpointer with Logistic Drones.
+-Bugfix: Crash when connecting a Label piece to a condition piece.
