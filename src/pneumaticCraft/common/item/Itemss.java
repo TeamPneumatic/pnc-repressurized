@@ -49,6 +49,7 @@ public class Itemss{
     public static Item logisticsConfigurator;
     public static Item logisticsFrameRequester;
     public static Item logisticsFrameStorage;
+    public static Item logisticsFrameDefaultStorage;
     public static Item logisticsFramePassiveProvider;
     public static Item logisticsFrameActiveProvider;
     public static Item logisticsDrone;
@@ -92,6 +93,7 @@ public class Itemss{
         logisticsConfigurator = new ItemLogisticsConfigurator("logisticsConfigurator", PneumaticValues.AIR_CANISTER_MAX_AIR, PneumaticValues.AIR_CANISTER_VOLUME).setUnlocalizedName("logisticsConfigurator");
         logisticsFrameRequester = new ItemLogisticsFrameRequester().setCreativeTab(PneumaticCraft.tabPneumaticCraft);
         logisticsFrameStorage = new ItemLogisticsFrameStorage().setCreativeTab(PneumaticCraft.tabPneumaticCraft);
+        logisticsFrameDefaultStorage = new ItemLogisticsFrameDefaultStorage().setCreativeTab(PneumaticCraft.tabPneumaticCraft);
         logisticsFramePassiveProvider = new ItemLogisticsFramePassiveProvider().setCreativeTab(PneumaticCraft.tabPneumaticCraft);
         logisticsFrameActiveProvider = new ItemLogisticsFrame(SemiBlockActiveProvider.ID).setCreativeTab(PneumaticCraft.tabPneumaticCraft);
         logisticsDrone = new ItemLogisticsDrone().setUnlocalizedName("logisticDrone");
@@ -139,6 +141,7 @@ public class Itemss{
         registerItem(seismicSensor);
         registerItem(logisticsConfigurator);
         registerItem(logisticsFrameRequester);
+        registerItem(logisticsFrameDefaultStorage);
         registerItem(logisticsFrameStorage);
         registerItem(logisticsFramePassiveProvider);
         registerItem(logisticsFrameActiveProvider);

@@ -71,4 +71,12 @@ public class ModInteractionUtils{
     public void sendDescriptionPacket(IPneumaticPosProvider te){
         ((TileEntityPressureTube)te).sendDescriptionPacket();
     }
+
+    public boolean[] getTubeConnections(IPneumaticPosProvider tube){
+        return ((TileEntityPressureTube)tube).sidesConnected;
+    }
+
+    public boolean isPneumaticTube(IPneumaticMachine machine){
+        return machine instanceof TileEntityPressureTube;
+    }
 }

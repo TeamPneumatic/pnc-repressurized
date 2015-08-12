@@ -52,6 +52,22 @@ public class IOHelper{
         return te.getWorldObj().getTileEntity(te.xCoord + dir.offsetX, te.yCoord + dir.offsetY, te.zCoord + dir.offsetZ);
     }
 
+    /**
+     * Extracts an exact amount on all sides
+     * @param tile
+     * @param itemStack
+     * @param simulate
+     * @return
+     */
+    public static ItemStack extract(TileEntity tile, ItemStack itemStack, boolean simulate){
+        ItemStack extracted = null;
+        for(ForgeDirection d : ForgeDirection.VALID_DIRECTIONS) {
+            extracted = extract(tile, d, itemStack, true, simulate);
+            if(extracted != null) return extracted;
+        }
+        return null;
+    }
+
     public static ItemStack extract(TileEntity inventory, ForgeDirection direction, boolean simulate){
 
         IInventory inv = getInventoryForTE(inventory);
@@ -164,7 +180,9 @@ public class IOHelper{
                         itemsNeeded -= itemsSubstracted;
                         if(!simulate) {
                             stack.stackSize -= itemsSubstracted;
-                            if(stack.stackSize == 0) inv.setInventorySlotContents(slot, null);
+                            if(stack.stackSize == 0) {
+                                inv.setInventorySlotContents(slot, null);
+                            }
                             tile.markDirty();
                         }
                     }
@@ -206,6 +224,23 @@ public class IOHelper{
             }
         }
         return null;
+    }
+
+    /**
+     * Inserts on all sides
+     * @param tile
+     * @param itemStack
+     * @param simulate
+     * @return
+     */
+    public static ItemStack insert(TileEntity tile, ItemStack itemStack, boolean simulate){
+        IInventory inv = getInventoryForTE(tile);
+        ItemStack insertingStack = itemStack.copy();
+        for(int i = 0; i < 6; i++) {
+            insertingStack = insert(inv, insertingStack, i, simulate);
+            if(insertingStack == null || insertingStack.stackSize != itemStack.stackSize) return insertingStack;
+        }
+        return insertingStack;
     }
 
     public static ItemStack insert(TileEntity tile, ItemStack itemStack, ForgeDirection direction, boolean simulate){

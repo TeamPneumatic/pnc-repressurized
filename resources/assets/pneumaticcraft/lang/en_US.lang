@@ -118,6 +118,7 @@ item.logisticFramePassiveProvider.name=Logistic Passive Provider Frame
 item.logisticFrameActiveProvider.name=Logistic Active Provider Frame
 item.logisticFrameActiveProvider.name=Logistic Active Provider Frame
 item.logisticFrameStorage.name=Logistic Storage Frame
+item.logisticFrameDefaultStorage.name=Logistic Default Storage Frame
 item.logisticDrone.name=Logistic Drone
 item.gunAmmo.name=Gun Ammo
 item.amadronTablet.name=Amadron Tablet
@@ -247,6 +248,7 @@ item.flowDetectorModule.name=Flow Detector Tube Module
 item.airGrateModule.name=Air Grate Tube Module
 item.regulatorTubeModule.name=Regulator Tube Module
 item.chargingModule.name=Charging Module
+item.logisticsModule.name=Logistics Module
 
 # Programming Puzzles
 programmingPuzzle.comment.name=Comment
@@ -455,6 +457,7 @@ gui.tab.info.logisticFrameRequester=§0In here you can specify which items and a
 gui.tab.info.logisticFramePassiveProvider=§0By default the framed inventory will provide every item in the inventory. By adding items in this filter, only items specified will be provided. Either put in items from your inventory or search for an item by right clicking an empty slot.
 gui.tab.info.logisticFrameActiveProvider=§0By default the framed inventory will provide every item in the inventory. By adding items in this filter, only items specified will be provided. Either put in items from your inventory or search for an item by right clicking an empty slot.
 gui.tab.info.logisticFrameStorage=§0By default the framed inventory will provide every item in the inventory and accept any item from providing inventories. By adding items in this filter, only items specified will be provided to the network and only items specified can be put in via the network. Either put in items from your inventory or search for an item by right clicking an empty slot.
+gui.tab.info.logisticFrameDefaultStorage=§0By default the framed inventory will provide every item in the inventory and accept any item from providing inventories. By adding items in this filter, only items specified will be provided to the network and only items specified can be put in via the network. Either put in items from your inventory or search for an item by right clicking an empty slot.
 
 # Pressure
 gui.tab.pressure=Pressure
@@ -689,6 +692,8 @@ gui.logisticFrameActiveProvider.filters=Providing items:
 gui.logisticFrameActiveProvider.hasFilters=§eContains custom providing. Sneak for more info.
 gui.logisticFrameStorage.filters=Interfacing items:
 gui.logisticFrameStorage.hasFilters=§eContains custom interfacing items. Sneak for more info.
+gui.logisticFrameDefaultStorage.filters=Interfacing items:
+gui.logisticFrameDefaultStorage.hasFilters=§eContains custom interfacing items. Sneak for more info.
 gui.logisticFrame.liquid=Liquid Filters:
 gui.logisticFrame.invisible=Invisible
 gui.logisticFrame.invisible.tooltip=Turns the Logistic Frame invisible (unless you have a Logistic item in your hand)
@@ -776,11 +781,13 @@ gui.tooltip.item.seismicSensor=This item is used to track down Oil deposits. Upo
 gui.tooltip.item.logisticsConfigurator=This item is used to configure Logistic Frames. Shift-right-click to remove frames.
 gui.tooltip.item.logisticFrameRequester=Can be configured to request items from a Logistics Network.
 gui.tooltip.item.logisticFrameStorage=Stores items from a Logistics Network, provided by an Logistic Active Provider Frame.
+gui.tooltip.item.logisticFrameDefaultStorage=Like the Storage Frame, this stores items from a Logistics Network that are provided by an Logistic Active Provider Frame. It has a lower priority than a Storage Frame though, making it suitable to be used for 'misc chest' purposes. It can also provide items to Storage Frames.
 gui.tooltip.item.logisticFramePassiveProvider=Provides items to a Logistic Network. Only provides to Requester Frames.
 gui.tooltip.item.logisticFrameActiveProvider=Provides items to a Logistic Network. Provides to both Requester Frames and Storage Frames.
 gui.tooltip.item.logisticDrone=Robot which performs logistic tasks. Logistic Frames are used to define these tasks.
 gui.tooltip.item.gunAmmo=Bullets used by Drones when they have an Entity Tracker Upgrade inserted, giving them a Minigun.
 gui.tooltip.item.amadronTablet=Item used to order items/fluids. It is comparable to Villager trading. Items/fluids are picked up and delivered via Drones. A pick-up/drop-off location is required to be specified by right-clicking with an inventory and/or tank.
+gui.tooltip.item.logisticsModule=This tube module when fitted on a tube will communicate with other Logistics Tube Modules on connected tubes. It will perform logistics tasks on inventories/tanks it is pointing towards, and are fitted with a Logistic Frame. It uses pressure to do so.
 
 # Waila
 hud.msg.state=State

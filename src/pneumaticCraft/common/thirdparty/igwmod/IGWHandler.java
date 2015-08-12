@@ -66,6 +66,7 @@ public class IGWHandler{
         WikiRegistry.registerBlockAndItemPageEntry(Itemss.logisticsFramePassiveProvider, "pneumaticcraft:item/logisticDrone");
         WikiRegistry.registerBlockAndItemPageEntry(Itemss.logisticsFrameRequester, "pneumaticcraft:item/logisticDrone");
         WikiRegistry.registerBlockAndItemPageEntry(Itemss.logisticsFrameStorage, "pneumaticcraft:item/logisticDrone");
+        WikiRegistry.registerBlockAndItemPageEntry(Itemss.logisticsFrameDefaultStorage, "pneumaticcraft:item/logisticDrone");
 
         Log.info("Loaded PneumaticCraft IGW-Mod plug-in! Thanks IGW-Mod!");
     }

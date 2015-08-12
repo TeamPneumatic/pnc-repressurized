@@ -17,10 +17,14 @@ public class SemiBlockInitializer{
         registerSemiBlock(SemiBlockActiveProvider.ID, SemiBlockActiveProvider.class, false);
         registerSemiBlock(SemiBlockPassiveProvider.ID, SemiBlockPassiveProvider.class, false);
         registerSemiBlock(SemiBlockStorage.ID, SemiBlockStorage.class, false);
+        registerSemiBlock(SemiBlockDefaultStorage.ID, SemiBlockDefaultStorage.class, false);
         registerSemiBlock(SemiBlockRequester.ID, requesterClass, false);
 
         PneumaticCraft.proxy.registerSemiBlockRenderer((ItemSemiBlockBase)Itemss.logisticsFrameRequester);
         SemiBlockManager.registerSemiBlockToItemMapping(requesterClass, Itemss.logisticsFrameRequester);
+
+        PneumaticCraft.proxy.registerSemiBlockRenderer((ItemSemiBlockBase)Itemss.logisticsFrameDefaultStorage);
+        SemiBlockManager.registerSemiBlockToItemMapping(SemiBlockDefaultStorage.class, Itemss.logisticsFrameDefaultStorage);
 
         PneumaticCraft.proxy.registerSemiBlockRenderer((ItemSemiBlockBase)Itemss.logisticsFrameStorage);
         SemiBlockManager.registerSemiBlockToItemMapping(SemiBlockStorage.class, Itemss.logisticsFrameStorage);

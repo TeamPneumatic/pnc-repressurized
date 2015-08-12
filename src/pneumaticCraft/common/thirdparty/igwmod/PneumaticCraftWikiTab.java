@@ -26,6 +26,7 @@ public class PneumaticCraftWikiTab extends BaseWikiTab{
         pageEntries.add("elevator");
         pageEntries.add("block/universalSensor");
         pageEntries.add("item/logisticDrone");
+        pageEntries.add("item/logisticsModule");
         skipLine();
         pageEntries.add("item/pneumaticHelmet");
         pageEntries.add("item/drone");

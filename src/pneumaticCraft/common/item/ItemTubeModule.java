@@ -20,6 +20,7 @@ public class ItemTubeModule extends ItemPneumatic{
     @Override
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, List par3List, boolean par4){
+        super.addInformation(par1ItemStack, par2EntityPlayer, par3List, par4);
         TubeModule module = ModuleRegistrator.getModule(moduleName);
         module.addItemDescription(par3List);
         par3List.add(EnumChatFormatting.DARK_GRAY + "In line: " + (module.isInline() ? "Yes" : "No"));

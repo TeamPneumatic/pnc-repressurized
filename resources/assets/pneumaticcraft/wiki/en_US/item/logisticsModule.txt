@@ -1,0 +1,17 @@
+This item is a [link{pneumaticcraft:menu/pressureTubes}]Tube Module[link{}]. this means that it can be placed on a Pressure Tube only. For general information about Tube Modules click the link.
+
+A Logistics Module is a module that can perform logistics tasks. For more info about the Logistics system click [link{item/logisticDrone}]here [link{}].
+
+Every Logistics Module can manage the Logistic Frame that it is pointing at. A network of Logistics Modules is defined by all [link{pneumaticcraft:menu/pressureTubes}]Pressure Tubes[link{}] that connect to each other. A different pneumatic block in between splits the network. Additionally, you can right-click a Logistics Module with a dye to dye it. Different colored Logistics Modules can be considered different channels: Only Logistics Modules of the same color are part of the same network.
+
+Logistics Module need pressure: 3 bar is required to let the modules do their work. The air used is a multiplication of distance, amount transported and a constant. This means that it requires more air to transport a full stack of items, and also more to transport it long ways. The air is used at the receiving Logistics Module, simulating that the air actually is flowing towards that module.
+
+Indicator lights are fitted to signify the status:
+[prefix{cl}]Red: Not enough pressure, apply at least 3 bar.
+[prefix{6l}]Orange: More than 3 bar, however not enough pressure to transport the items/fluids this distance. Apply more pressure. If the pressure is close to the limit of the tubes, use the Advanced Tubes.
+[prefix{2l}]Green: Enough pressure, on standby.
+[prefix{9l}]Blue (pulse): Items/fluids are being transported.[prefix{}]
+
+[image{200, 405, 0.72, pneumaticcraft:textures/wiki/logisticsModule.png}]
+A set-up that refines [link{pneumaticcraft:menu/oil}]Oil [link{}] and puts the products in BuildCraft tanks.
+[crafting{200, 600, key=item/logisticsModule}]
