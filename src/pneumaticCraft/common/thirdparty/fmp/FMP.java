@@ -62,7 +62,7 @@ public class FMP implements IThirdParty, IPartFactory, IPartConverter{
 
     @Override
     public TMultiPart convert(World world, BlockCoord pos){
-        if(!world.isRemote && !Config.convertMultipartsToBlocks) {
+        if(!Config.convertMultipartsToBlocks) {
             if(world.getBlock(pos.x, pos.y, pos.z) == Blockss.pressureTube) return new PartPressureTube(((TileEntityPressureTube)world.getTileEntity(pos.x, pos.y, pos.z)).modules);
             if(world.getBlock(pos.x, pos.y, pos.z) == Blockss.advancedPressureTube) return new PartAdvancedPressureTube(((TileEntityPressureTube)world.getTileEntity(pos.x, pos.y, pos.z)).modules);
         }
