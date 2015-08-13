@@ -1,16 +1,25 @@
 package pneumaticCraft.common.thirdparty;
 
+import java.util.List;
+
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.util.ForgeDirection;
+import pneumaticCraft.api.block.IPneumaticWrenchable;
 import pneumaticCraft.api.tileentity.IPneumaticMachine;
+import pneumaticCraft.common.block.BlockPressureTube;
 import pneumaticCraft.common.block.tubes.IPneumaticPosProvider;
 import pneumaticCraft.common.thirdparty.fmp.FMP;
 import pneumaticCraft.common.thirdparty.fmp.PartPressureTube;
+import pneumaticCraft.common.tileentity.TileEntityPressureTube;
 import pneumaticCraft.lib.ModIds;
 import buildcraft.api.tools.IToolWrench;
 import buildcraft.api.transport.IPipeTile;
+import codechicken.lib.vec.Cuboid6;
+import codechicken.multipart.NormallyOccludedPart;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
 import cofh.api.item.IToolHammer;
@@ -72,17 +81,15 @@ public class ModInteractionUtilImplementation extends ModInteractionUtils{
         }
     }
 
-    /* @Override 
-     @Optional.Method(modid = ModIds.FMP)
-    FIXME public Item getModuleItem(String moduleName){
-         return Config.convertMultipartsToBlocks ? super.getModuleItem(moduleName) : new ItemPartTubeModule(moduleName);
-     }
-
     @Override
     @Optional.Method(modid = ModIds.FMP)
-    public void registerModulePart(String partName){
-        ThirdPartyManager.instance().registerPart(partName, PartTubeModule.class);
-    }*/
+    public IPneumaticWrenchable getWrenchable(TileEntity te){
+        if(te instanceof TileMultipart) {
+            return FMP.getMultiPart((TileMultipart)te, IPneumaticWrenchable.class);
+        } else {
+            return super.getWrenchable(te);
+        }
+    }
 
     @Override
     @Optional.Method(modid = ModIds.FMP)
@@ -92,8 +99,8 @@ public class ModInteractionUtilImplementation extends ModInteractionUtils{
 
     @Override
     @Optional.Method(modid = ModIds.FMP)
-    public boolean isMultipartWiseConnected(TileEntity te, ForgeDirection dir){
-        return FMP.getMultiPart((TileMultipart)te, IPneumaticMachine.class).isConnectedTo(dir);
+    public boolean isMultipartWiseConnected(Object part, ForgeDirection dir){
+        return ((PartPressureTube)part).passesOcclusionTest(dir);
     }
 
     @Override
@@ -108,17 +115,43 @@ public class ModInteractionUtilImplementation extends ModInteractionUtils{
 
     @Override
     @Optional.Method(modid = ModIds.FMP)
-    public boolean[] getTubeConnections(IPneumaticPosProvider tube){
-        if(tube instanceof PartPressureTube) {
-            return ((PartPressureTube)tube).sidesConnected;
+    public TileEntityPressureTube getTube(Object potentialTube){
+        if(potentialTube instanceof PartPressureTube) {
+            return ((PartPressureTube)potentialTube).getTube();
+        } else if(potentialTube instanceof TileMultipart) {
+            PartPressureTube tube = FMP.getMultiPart((TileMultipart)potentialTube, PartPressureTube.class);
+            return tube != null ? tube.getTube() : null;
         } else {
-            return super.getTubeConnections(tube);
+            return super.getTube(potentialTube);
         }
     }
 
     @Override
     @Optional.Method(modid = ModIds.FMP)
-    public boolean isPneumaticTube(IPneumaticMachine machine){
-        return machine instanceof PartPressureTube || super.isPneumaticTube(machine);
+    public void removeTube(TileEntity te){
+        if(te instanceof TileMultipart) {
+            PartPressureTube tube = FMP.getMultiPart((TileMultipart)te, PartPressureTube.class);
+            if(tube != null) {
+                List<ItemStack> drops = BlockPressureTube.getModuleDrops(tube.getTube());
+                for(ItemStack drop : drops) {
+                    EntityItem entity = new EntityItem(te.getWorldObj(), te.xCoord + 0.5, te.yCoord + 0.5, te.zCoord + 0.5);
+                    entity.setEntityItemStack(drop);
+                    te.getWorldObj().spawnEntityInWorld(entity);
+                }
+                ((TileMultipart)te).remPart(tube);
+            }
+        } else {
+            super.removeTube(te);
+        }
+    }
+
+    @Override
+    @Optional.Method(modid = ModIds.FMP)
+    public boolean occlusionTest(AxisAlignedBB aabb, TileEntity te){
+        if(te instanceof TileMultipart) {
+            return ((TileMultipart)te).occlusionTest(((TileMultipart)te).partList(), new NormallyOccludedPart(new Cuboid6(aabb)));
+        } else {
+            return super.occlusionTest(aabb, te);
+        }
     }
 }

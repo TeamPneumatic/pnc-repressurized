@@ -1,18 +1,15 @@
 package pneumaticCraft.common.thirdparty.fmp;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
 import pneumaticCraft.common.block.Blockss;
-import pneumaticCraft.common.block.tubes.TubeModule;
+import pneumaticCraft.common.tileentity.TileEntityPressureTube;
 import pneumaticCraft.lib.PneumaticValues;
-import pneumaticCraft.lib.Textures;
 
 public class PartAdvancedPressureTube extends PartPressureTube{
     public PartAdvancedPressureTube(){}
 
-    public PartAdvancedPressureTube(TubeModule[] tubeModules){
-        super(PneumaticValues.DANGER_PRESSURE_ADVANCED_PRESSURE_TUBE, PneumaticValues.MAX_PRESSURE_ADVANCED_PRESSURE_TUBE, PneumaticValues.VOLUME_ADVANCED_PRESSURE_TUBE);
-        convertedModules = tubeModules;
+    public PartAdvancedPressureTube(TileEntityPressureTube tube){
+        super(tube);
     }
 
     @Override
@@ -21,12 +18,12 @@ public class PartAdvancedPressureTube extends PartPressureTube{
     }
 
     @Override
-    protected ResourceLocation getTexture(){
-        return Textures.MODEL_ADVANCED_PRESSURE_TUBE;
+    public String getType(){
+        return "tile.advancedPressureTube";
     }
 
     @Override
-    public String getType(){
-        return "tile.advancedPressureTube";
+    protected TileEntityPressureTube getNewTube(){
+        return new TileEntityPressureTube(PneumaticValues.DANGER_PRESSURE_ADVANCED_PRESSURE_TUBE, PneumaticValues.MAX_PRESSURE_ADVANCED_PRESSURE_TUBE, PneumaticValues.VOLUME_ADVANCED_PRESSURE_TUBE);
     }
 }

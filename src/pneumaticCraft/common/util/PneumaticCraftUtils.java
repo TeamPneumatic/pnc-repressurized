@@ -38,6 +38,8 @@ import net.minecraftforge.fluids.IFluidBlock;
 import net.minecraftforge.oredict.OreDictionary;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.opengl.GL11;
 
 import pneumaticCraft.api.item.IInventoryItem;
@@ -500,6 +502,15 @@ public class PneumaticCraftUtils{
     }
 
     public static MovingObjectPosition getEntityLookedObject(EntityLivingBase entity, float maxDistance){
+        Pair<Vec3, Vec3> vecs = getStartAndEndLookVec(entity, maxDistance);
+        return entity.worldObj.rayTraceBlocks(vecs.getLeft(), vecs.getRight());
+    }
+
+    public static Pair<Vec3, Vec3> getStartAndEndLookVec(EntityLivingBase entity){
+        return getStartAndEndLookVec(entity, 4.5F);
+    }
+
+    public static Pair<Vec3, Vec3> getStartAndEndLookVec(EntityLivingBase entity, float maxDistance){
         Vec3 entityVec;
         if(entity.worldObj.isRemote && entity instanceof EntityPlayer) {
             entityVec = Vec3.createVectorHelper(entity.posX, entity.posY + 1.6200000000000001D - entity.yOffset, entity.posZ);
@@ -508,7 +519,7 @@ public class PneumaticCraftUtils{
         }
         Vec3 entityLookVec = entity.getLook(1.0F);
         Vec3 maxDistVec = entityVec.addVector(entityLookVec.xCoord * maxDistance, entityLookVec.yCoord * maxDistance, entityLookVec.zCoord * maxDistance);
-        return entity.worldObj.rayTraceBlocks(entityVec, maxDistVec);
+        return new ImmutablePair(entityVec, maxDistVec);
     }
 
     public static ChunkPosition getEntityLookedBlock(EntityLivingBase entity, float maxDistance){

@@ -52,7 +52,7 @@ public abstract class TubeModuleRedstoneReceiving extends TubeModule{
     public void update(){
         if(upgraded && !advancedConfig && higherBound != lowerBound) {
             higherBound = lowerBound;
-            sendDescriptionPacket();
+            if(!getTube().world().isRemote) sendDescriptionPacket();
         }
     }
 }

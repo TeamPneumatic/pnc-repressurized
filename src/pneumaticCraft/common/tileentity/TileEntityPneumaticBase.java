@@ -269,8 +269,6 @@ public class TileEntityPneumaticBase extends TileEntityBase implements IManoMeas
     public boolean isConnectedTo(ForgeDirection side){
         if(parentTile == null) {
             return true;
-        } else if(ModInteractionUtils.getInstance().isMultipart(parentTile)) {
-            return ModInteractionUtils.getInstance().isMultipartWiseConnected(parentTile, side);
         } else if(parentTile instanceof IPneumaticMachine) {
             return ((IPneumaticMachine)parentTile).isConnectedTo(side);
         } else {

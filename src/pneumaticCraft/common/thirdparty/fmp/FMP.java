@@ -11,8 +11,10 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 import pneumaticCraft.common.Config;
 import pneumaticCraft.common.block.Blockss;
+import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.thirdparty.IThirdParty;
 import pneumaticCraft.common.tileentity.TileEntityPressureTube;
 import pneumaticCraft.lib.Log;
@@ -22,6 +24,7 @@ import codechicken.multipart.MultiPartRegistry.IPartConverter;
 import codechicken.multipart.MultiPartRegistry.IPartFactory;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
+import cpw.mods.fml.relauncher.Side;
 
 public class FMP implements IThirdParty, IPartFactory, IPartConverter{
 
@@ -39,6 +42,8 @@ public class FMP implements IThirdParty, IPartFactory, IPartConverter{
 
         // Itemss.pressureTube = new ItemPart("tile.pressureTube").setUnlocalizedName("pressureTube").setCreativeTab(pneumaticCraftTab);
         //Itemss.registerItem(Itemss.pressureTube, "part.pressureTube");
+        MinecraftForge.EVENT_BUS.register(new FMPPlacementListener());
+        NetworkHandler.INSTANCE.registerMessage(PacketFMPPlacePart.class, PacketFMPPlacePart.class, NetworkHandler.discriminant++, Side.SERVER);
     }
 
     public void registerPart(String partName, Class<? extends TMultiPart> part){
@@ -63,8 +68,8 @@ public class FMP implements IThirdParty, IPartFactory, IPartConverter{
     @Override
     public TMultiPart convert(World world, BlockCoord pos){
         if(!Config.convertMultipartsToBlocks) {
-            if(world.getBlock(pos.x, pos.y, pos.z) == Blockss.pressureTube) return new PartPressureTube(((TileEntityPressureTube)world.getTileEntity(pos.x, pos.y, pos.z)).modules);
-            if(world.getBlock(pos.x, pos.y, pos.z) == Blockss.advancedPressureTube) return new PartAdvancedPressureTube(((TileEntityPressureTube)world.getTileEntity(pos.x, pos.y, pos.z)).modules);
+            if(world.getBlock(pos.x, pos.y, pos.z) == Blockss.pressureTube) return new PartPressureTube((TileEntityPressureTube)world.getTileEntity(pos.x, pos.y, pos.z));
+            if(world.getBlock(pos.x, pos.y, pos.z) == Blockss.advancedPressureTube) return new PartAdvancedPressureTube((TileEntityPressureTube)world.getTileEntity(pos.x, pos.y, pos.z));
         }
         return null;
     }

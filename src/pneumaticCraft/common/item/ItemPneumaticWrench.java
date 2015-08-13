@@ -9,6 +9,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.api.block.IPneumaticWrenchable;
 import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.PacketPlaySound;
+import pneumaticCraft.common.thirdparty.ModInteractionUtils;
 import pneumaticCraft.lib.ModIds;
 import pneumaticCraft.lib.PneumaticValues;
 import pneumaticCraft.lib.Sounds;
@@ -30,8 +31,14 @@ public class ItemPneumaticWrench extends ItemPressurizable implements IToolWrenc
     public boolean onItemUseFirst(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float hitVecX, float hitVecY, float hitVecZ){
         if(!world.isRemote) {
             Block block = world.getBlock(x, y, z);
-            if(block instanceof IPneumaticWrenchable && ((ItemPneumaticWrench)Itemss.pneumaticWrench).getPressure(stack) > 0) {
-                if(((IPneumaticWrenchable)block).rotateBlock(world, player, x, y, z, ForgeDirection.getOrientation(side))) {
+            IPneumaticWrenchable wrenchable = null;
+            if(block instanceof IPneumaticWrenchable) {
+                wrenchable = (IPneumaticWrenchable)block;
+            } else {
+                wrenchable = ModInteractionUtils.getInstance().getWrenchable(world.getTileEntity(x, y, z));
+            }
+            if(wrenchable != null && ((ItemPneumaticWrench)Itemss.pneumaticWrench).getPressure(stack) > 0) {
+                if(wrenchable.rotateBlock(world, player, x, y, z, ForgeDirection.getOrientation(side))) {
                     if(!player.capabilities.isCreativeMode) ((ItemPneumaticWrench)Itemss.pneumaticWrench).addAir(stack, -PneumaticValues.USAGE_PNEUMATIC_WRENCH);
                     NetworkHandler.sendToAllAround(new PacketPlaySound(Sounds.PNEUMATIC_WRENCH, x, y, z, 1.0F, 1.0F, false), world);
                     return true;

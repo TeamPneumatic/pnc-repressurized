@@ -27,30 +27,25 @@ public class ModuleNetworkManager{
 
     public Set<TubeModule> getConnectedModules(TubeModule module){
         Set<TubeModule> modules = new HashSet<TubeModule>();
-        Set<IPneumaticPosProvider> traversedTubes = new HashSet<IPneumaticPosProvider>();
-        Stack<IPneumaticPosProvider> pendingTubes = new Stack<IPneumaticPosProvider>();
-        pendingTubes.push(module.getTube());
+        Set<TileEntityPressureTube> traversedTubes = new HashSet<TileEntityPressureTube>();
+        Stack<TileEntityPressureTube> pendingTubes = new Stack<TileEntityPressureTube>();
+        pendingTubes.push((TileEntityPressureTube)module.getTube());
         while(!pendingTubes.isEmpty()) {
-            IPneumaticPosProvider tube = pendingTubes.pop();
-            for(TubeModule m : getTubeModules(tube)) {
+            TileEntityPressureTube tube = pendingTubes.pop();
+            for(TubeModule m : tube.modules) {
                 if(m != null) modules.add(m);
             }
-            boolean[] sidesConnected = ModInteractionUtils.getInstance().getTubeConnections(tube);
             TileEntityCache[] cache = ((TileEntityPneumaticBase)((IPneumaticMachine)tube).getAirHandler()).getTileCache();
             for(ForgeDirection d : ForgeDirection.VALID_DIRECTIONS) {
-                if(sidesConnected[d.ordinal()]) {
-                    IPneumaticMachine machine = ModInteractionUtils.getInstance().getMachine(cache[d.ordinal()].getTileEntity());
-                    if(ModInteractionUtils.getInstance().isPneumaticTube(machine) && !traversedTubes.contains(machine)) {
-                        pendingTubes.add((IPneumaticPosProvider)machine);
-                        traversedTubes.add(tube);
+                if(tube.sidesConnected[d.ordinal()]) {
+                    TileEntityPressureTube newTube = ModInteractionUtils.getInstance().getTube(cache[d.ordinal()].getTileEntity());
+                    if(newTube != null && !traversedTubes.contains(newTube)) {
+                        pendingTubes.add(newTube);
+                        traversedTubes.add(newTube);
                     }
                 }
             }
         }
         return modules;
-    }
-
-    private TubeModule[] getTubeModules(IPneumaticPosProvider tube){
-        return tube instanceof TileEntityPressureTube ? ((TileEntityPressureTube)tube).modules : new TubeModule[6];
     }
 }

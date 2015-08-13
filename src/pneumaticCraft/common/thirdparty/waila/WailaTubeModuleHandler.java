@@ -31,8 +31,13 @@ public class WailaTubeModuleHandler implements IWailaDataProvider{
     @Override
     public List<String> getWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config){
         ForgeDirection dir = (ForgeDirection)accessor.getPosition().hitInfo;
+        addModuleInfo(currenttip, accessor.getNBTData(), dir);
+        return currenttip;
+    }
+
+    public static void addModuleInfo(List<String> currenttip, NBTTagCompound tubeTag, ForgeDirection dir){
         if(dir != ForgeDirection.UNKNOWN) {
-            NBTTagList moduleList = accessor.getNBTData().getTagList("modules", 10);
+            NBTTagList moduleList = tubeTag.getTagList("modules", 10);
             for(int i = 0; i < moduleList.tagCount(); i++) {
                 NBTTagCompound moduleTag = moduleList.getCompoundTagAt(i);
                 if(dir == ForgeDirection.getOrientation(moduleTag.getInteger("side"))) {
@@ -42,7 +47,6 @@ public class WailaTubeModuleHandler implements IWailaDataProvider{
                 }
             }
         }
-        return currenttip;
     }
 
     @Override
