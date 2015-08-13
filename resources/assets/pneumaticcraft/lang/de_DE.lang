@@ -1,5 +1,5 @@
-﻿# de_DE localization - PneumaticCraft V. 1.1.7
-# Translated by Cakestory
+﻿# de_DE localization - PneumaticCraft V. 1.10.6
+# Translated by Cakestory, Fayti1703
 # Feel free to extend, change and use this file.
 
 #Fayti1703 Note:
@@ -10,8 +10,8 @@
 tile.pressureTube.name=Druckröhre
 tile.airCompressor.name=Druckluftkompressor
 tile.airCannon.name=Luftdruckkanone
-tile.pressureWall.name=Druckkammer Wand
-tile.pressureWindow.name=Druckkammer Fenster
+tile.pressureChamberWall.name=Druckkammer Wand
+tile.pressureChamberWindow.name=Druckkammer Fenster
 tile.pressureChamberValve.name=Druckkammer-Ventil
 tile.slimePlant.name=Schleimpflanze
 tile.creeperPlant.name=Creeperpflanze
@@ -101,7 +101,7 @@ item.turbineRotor.name=Turbinenrotor
 item.assemblyProgram.name=Montageprogramm
 item.emptyPCB.name=Leerer PCB
 item.unassembledPCB.name=Unbearbeiteter PCB
-item.pcbBlauesprint.name=PCB Blaupause
+item.pcbBlueprint.name=PCB Blaupause
 item.etchingAcidBucket.name=Eimer mit ätzender Säure
 item.transistor.name=Transistor
 item.capacitor.name=Kondensator
