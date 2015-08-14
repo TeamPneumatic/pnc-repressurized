@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
@@ -283,6 +284,26 @@ public class EntityDrone extends EntityDroneBase implements IManoMeasurable, IIn
                 laserExtension = Math.min(1, laserExtension + LASER_EXTEND_SPEED);
             } else {
                 laserExtension = Math.max(0, laserExtension - LASER_EXTEND_SPEED);
+            }
+
+            if(isAccelerating()) {
+                int x = (int)Math.floor(posX);
+                int y = (int)Math.floor(posY - 1);
+                int z = (int)Math.floor(posZ);
+                Block block = null;
+                for(int i = 0; i < 3; i++) {
+                    block = worldObj.getBlock(x, y, z);
+                    if(block.getMaterial() != Material.air) break;
+                    y--;
+                }
+
+                if(block.getMaterial() != Material.air) {
+                    for(int i = 0; i < 5; i++) {
+                        Vec3 vec = Vec3.createVectorHelper(posY - y, 0, 0);
+                        vec.rotateAroundY((float)(rand.nextFloat() * Math.PI * 2));
+                        worldObj.spawnParticle("blockcrack_" + Block.getIdFromBlock(block) + "_" + worldObj.getBlockMetadata(x, y, z), posX + vec.xCoord, y + 1, posZ + vec.zCoord, vec.xCoord, 0, vec.zCoord);
+                    }
+                }
             }
         }
         if(hasLiquidImmunity) {
