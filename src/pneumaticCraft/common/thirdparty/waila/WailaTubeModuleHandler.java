@@ -12,7 +12,6 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-import pneumaticCraft.common.block.tubes.ModuleRegistrator;
 import pneumaticCraft.common.block.tubes.TubeModule;
 import pneumaticCraft.common.tileentity.TileEntityPressureTube;
 
@@ -31,14 +30,17 @@ public class WailaTubeModuleHandler implements IWailaDataProvider{
     @Override
     public List<String> getWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config){
         ForgeDirection dir = (ForgeDirection)accessor.getPosition().hitInfo;
-        if(dir != ForgeDirection.UNKNOWN) {
+        if(dir != ForgeDirection.UNKNOWN && accessor.getTileEntity() instanceof TileEntityPressureTube) {
             NBTTagList moduleList = accessor.getNBTData().getTagList("modules", 10);
             for(int i = 0; i < moduleList.tagCount(); i++) {
                 NBTTagCompound moduleTag = moduleList.getCompoundTagAt(i);
                 if(dir == ForgeDirection.getOrientation(moduleTag.getInteger("side"))) {
-                    TubeModule module = ModuleRegistrator.getModule(moduleTag.getString("type"));
-                    module.readFromNBT(moduleTag);
-                    module.addInfo(currenttip);
+                    TileEntityPressureTube tube = (TileEntityPressureTube)accessor.getTileEntity();
+                    if(tube.modules[dir.ordinal()] != null) {
+                        TubeModule module = tube.modules[dir.ordinal()];
+                        module.readFromNBT(moduleTag);
+                        module.addInfo(currenttip);
+                    }
                 }
             }
         }

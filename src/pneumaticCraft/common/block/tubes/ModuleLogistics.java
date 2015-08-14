@@ -10,6 +10,7 @@ import net.minecraft.item.ItemDye;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidHandler;
@@ -254,6 +255,17 @@ public class ModuleLogistics extends TubeModule{
 
     @Override
     public void addInfo(List<String> curInfo){
-
+        super.addInfo(curInfo);
+        String status;
+        if(ticksSinceAction >= 0) {
+            status = "waila.logisticsModule.transporting";
+        } else if(ticksSinceNotEnoughAir >= 0) {
+            status = "waila.logisticsModule.notEnoughAir";
+        } else if(hasPower()) {
+            status = "waila.logisticsModule.powered";
+        } else {
+            status = "waila.logisticsModule.noPower";
+        }
+        curInfo.add(StatCollector.translateToLocal("hud.msg.state") + ": " + StatCollector.translateToLocal(status));
     }
 }
