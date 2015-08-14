@@ -101,8 +101,10 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
                 IPressurizable chargingItem = chargingItems.get(j);
                 ItemStack chargedItem = chargedStacks.get(j);
                 if(chargingItem.getPressure(chargedItem) > getPressure(ForgeDirection.UNKNOWN) + 0.01F && chargingItem.getPressure(chargedItem) > 0F) {
-                    chargingItem.addAir(chargedItem, -1);
-                    addAir(1, ForgeDirection.UNKNOWN);
+                    if(!worldObj.isRemote) {
+                        chargingItem.addAir(chargedItem, -1);
+                        addAir(1, ForgeDirection.UNKNOWN);
+                    }
                     disCharging = true;
                     renderAirProgress -= ANIMATION_AIR_SPEED;
                     if(renderAirProgress < 0.0F) {
@@ -110,8 +112,10 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
                     }
                     charged = true;
                 } else if(chargingItem.getPressure(chargedItem) < getPressure(ForgeDirection.UNKNOWN) - 0.01F && chargingItem.getPressure(chargedItem) < chargingItem.maxPressure(chargedItem)) {// if there is pressure, and the item isn't fully charged yet..
-                    chargingItem.addAir(chargedItem, 1);
-                    addAir(-1, ForgeDirection.UNKNOWN);
+                    if(!worldObj.isRemote) {
+                        chargingItem.addAir(chargedItem, 1);
+                        addAir(-1, ForgeDirection.UNKNOWN);
+                    }
                     charging = true;
                     renderAirProgress += ANIMATION_AIR_SPEED;
                     if(renderAirProgress > 1.0F) {

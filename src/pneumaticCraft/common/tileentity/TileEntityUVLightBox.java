@@ -78,30 +78,39 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements ISi
 
     @Override
     public void updateEntity(){
-        ticksExisted++;
         super.updateEntity();
-        if(getPressure(ForgeDirection.UNKNOWN) >= PneumaticValues.MIN_PRESSURE_UV_LIGHTBOX && inventory[0] != null && inventory[0].getItem() == Itemss.emptyPCB && inventory[0].getItemDamage() > 0) {
+        if(!worldObj.isRemote) {
+            ticksExisted++;
+            if(getPressure(ForgeDirection.UNKNOWN) >= PneumaticValues.MIN_PRESSURE_UV_LIGHTBOX && inventory[0] != null && inventory[0].getItem() == Itemss.emptyPCB && inventory[0].getItemDamage() > 0) {
 
-            addAir((int)(-PneumaticValues.USAGE_UV_LIGHTBOX * getSpeedUsageMultiplierFromUpgrades(getUpgradeSlots())), ForgeDirection.UNKNOWN);
-            if(ticksExisted % Math.max(1, (int)(TileEntityConstants.LIGHT_BOX_0_100_TIME / (5 * getSpeedMultiplierFromUpgrades(getUpgradeSlots())))) == 0) {
-                if(!areLightsOn) {
-                    areLightsOn = true;
-                    if(!worldObj.isRemote) {
+                addAir((int)(-PneumaticValues.USAGE_UV_LIGHTBOX * getSpeedUsageMultiplierFromUpgrades(getUpgradeSlots())), ForgeDirection.UNKNOWN);
+                if(ticksExisted % Math.max(1, (int)(TileEntityConstants.LIGHT_BOX_0_100_TIME / (5 * getSpeedMultiplierFromUpgrades(getUpgradeSlots())))) == 0) {
+                    if(!areLightsOn) {
+                        areLightsOn = true;
                         updateNeighbours();
                     }
+                    inventory[0].setItemDamage(Math.max(0, inventory[0].getItemDamage() - 1));
                 }
-                inventory[0].setItemDamage(Math.max(0, inventory[0].getItemDamage() - 1));
+            } else if(areLightsOn) {
+                areLightsOn = false;
+                updateNeighbours();
             }
-        } else if(areLightsOn) {
-            areLightsOn = false;
-            if(!worldObj.isRemote) {
+            if(oldRedstoneStatus != shouldEmitRedstone()) {
+                oldRedstoneStatus = !oldRedstoneStatus;
                 updateNeighbours();
             }
         }
-        if(!worldObj.isRemote && oldRedstoneStatus != shouldEmitRedstone()) {
-            oldRedstoneStatus = !oldRedstoneStatus;
-            updateNeighbours();
-        }
+    }
+
+    @Override
+    protected boolean shouldRerenderChunkOnDescUpdate(){
+        return true;
+    }
+
+    @Override
+    public void onNeighborTileUpdate(){
+        super.onNeighborTileUpdate();
+        updateConnections();
     }
 
     public int getLightLevel(){
