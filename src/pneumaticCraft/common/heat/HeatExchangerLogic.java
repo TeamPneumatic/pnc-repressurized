@@ -1,17 +1,23 @@
 package pneumaticCraft.common.heat;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.api.IHeatExchangerLogic;
+import pneumaticCraft.api.tileentity.HeatBehaviour;
+import pneumaticCraft.common.heat.behaviour.HeatBehaviourManager;
 import pneumaticCraft.common.network.GuiSynced;
 
 public class HeatExchangerLogic implements IHeatExchangerLogic{
     private final Set<IHeatExchangerLogic> hullExchangers = new HashSet<IHeatExchangerLogic>();
     private final Set<IHeatExchangerLogic> connectedExchangers = new HashSet<IHeatExchangerLogic>();
+    private final List<HeatBehaviour> behaviours = new ArrayList<HeatBehaviour>();
     @GuiSynced
     private double temperature = 295;//degrees Kelvin, 20 degrees by default.
     private double thermalResistance = 1;
@@ -24,8 +30,10 @@ public class HeatExchangerLogic implements IHeatExchangerLogic{
             removeConnectedExchanger(logic);
         }
         hullExchangers.clear();
+        behaviours.clear();
         for(ForgeDirection d : ForgeDirection.VALID_DIRECTIONS) {
             if(isSideValid(validSides, d)) {
+                HeatBehaviourManager.getInstance().addHeatBehaviours(world, x + d.offsetX, y + d.offsetY, z + d.offsetZ, this, behaviours);
                 IHeatExchangerLogic logic = HeatExchangerManager.getInstance().getLogic(world, x + d.offsetX, y + d.offsetY, z + d.offsetZ, d.getOpposite());
                 if(logic != null) {
                     hullExchangers.add(logic);
@@ -108,6 +116,15 @@ public class HeatExchangerLogic implements IHeatExchangerLogic{
         if(getThermalCapacity() < 0.1D) {
             temperature = 295;
             return;
+        }
+        Iterator<HeatBehaviour> iterator = behaviours.iterator();
+        while(iterator.hasNext()) {
+            HeatBehaviour behaviour = iterator.next();
+            if(behaviour.isApplicable()) {
+                behaviour.update();
+            } else {
+                iterator.remove();
+            }
         }
         for(IHeatExchangerLogic logic : connectedExchangers) {
             if(logic.getThermalCapacity() < 0.1D) {

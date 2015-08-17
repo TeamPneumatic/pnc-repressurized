@@ -18,6 +18,7 @@ import pneumaticCraft.api.drone.ICustomBlockInteract;
 import pneumaticCraft.api.drone.IPathfindHandler;
 import pneumaticCraft.api.item.IInventoryItem;
 import pneumaticCraft.api.recipe.IPneumaticRecipeRegistry;
+import pneumaticCraft.api.tileentity.HeatBehaviour;
 
 /**
  * This class can be used to register and access various things to and from the mod.
@@ -147,6 +148,8 @@ public class PneumaticRegistry{
         public IHeatExchangerLogic getHeatExchangerLogic();
 
         public void registerBlockExchanger(Block block, double temperature, double thermalResistance);
+
+        public void registerHeatBehaviour(Class<? extends HeatBehaviour> heatBehaviour);
 
         /*
          * ---------------- Power Generation -----------

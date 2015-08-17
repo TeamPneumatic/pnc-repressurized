@@ -23,6 +23,7 @@ import pneumaticCraft.api.drone.ICustomBlockInteract;
 import pneumaticCraft.api.drone.IPathfindHandler;
 import pneumaticCraft.api.item.IInventoryItem;
 import pneumaticCraft.api.recipe.IPneumaticRecipeRegistry;
+import pneumaticCraft.api.tileentity.HeatBehaviour;
 import pneumaticCraft.api.tileentity.IHeatExchanger;
 import pneumaticCraft.client.render.pneumaticArmor.blockTracker.BlockTrackEntryList;
 import pneumaticCraft.client.render.pneumaticArmor.hacking.HackableHandler.HackingEntityProperties;
@@ -30,6 +31,7 @@ import pneumaticCraft.common.heat.HeatExchangerLogic;
 import pneumaticCraft.common.heat.HeatExchangerLogicConstant;
 import pneumaticCraft.common.heat.HeatExchangerManager;
 import pneumaticCraft.common.heat.SimpleHeatExchanger;
+import pneumaticCraft.common.heat.behaviour.HeatBehaviourManager;
 import pneumaticCraft.common.progwidgets.ProgWidgetCustomBlockInteract;
 import pneumaticCraft.common.recipes.PneumaticRecipeRegistry;
 import pneumaticCraft.common.tileentity.TileEntityProgrammer;
@@ -221,4 +223,8 @@ public class PneumaticCraftAPIHandler implements IPneumaticCraftInterface{
         return PneumaticRecipeRegistry.getInstance();
     }
 
+    @Override
+    public void registerHeatBehaviour(Class<? extends HeatBehaviour> heatBehaviour){
+        HeatBehaviourManager.getInstance().registerBehaviour(heatBehaviour);
+    }
 }

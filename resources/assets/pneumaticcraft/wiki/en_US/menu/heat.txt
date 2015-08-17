@@ -21,3 +21,6 @@ Dynamic heat sources, used to control heat:
 -[link{block/vortexTube}]Vortex Tube[link{}]
 -[link{block/compressedIronBlock}]Block of Compressed Iron[link{}]
 -[link{block/heatSink}]Heat Sink[link{}]
+
+[prefix{l}]Heating a Furnace[prefix{}]
+When connecting a Furnace to any dynamic heat source (mentioned above, but also blocks like Compressors that produce heat), the heat will be used by the Furnace to fuel it. Additionally the Furnace will smelt double the speed. This can be stacked with multiple heat sources around the Furnace. This furnace fueling will start to work at 100 degrees C.

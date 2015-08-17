@@ -25,6 +25,7 @@ import pneumaticCraft.common.event.DroneSpecialVariableHandler;
 import pneumaticCraft.common.fluid.FluidFuelManager;
 import pneumaticCraft.common.fluid.Fluids;
 import pneumaticCraft.common.heat.HeatExchangerManager;
+import pneumaticCraft.common.heat.behaviour.HeatBehaviourManager;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.recipes.CraftingHandler;
@@ -95,6 +96,7 @@ public class PneumaticCraft{
         GameRegistry.registerWorldGenerator(new WorldGeneratorPneumaticCraft(), 0);
         SemiBlockInitializer.init();
         AchievementHandler.init();
+        HeatBehaviourManager.getInstance().init();
 
         proxy.registerRenders();
         proxy.registerHandlers();
