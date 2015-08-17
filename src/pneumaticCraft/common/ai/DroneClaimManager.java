@@ -12,15 +12,15 @@ import net.minecraft.world.World;
  */
 public class DroneClaimManager{
 
-    private static Map<World, DroneClaimManager> claimManagers = new HashMap<World, DroneClaimManager>();
+    private static Map<Integer, DroneClaimManager> claimManagers = new HashMap<Integer, DroneClaimManager>();
     private final Map<ChunkPosition, Integer> currentPositions = new HashMap<ChunkPosition, Integer>();
     private static final int TIMEOUT = DroneAIManager.TICK_RATE + 1;
 
     public static DroneClaimManager getInstance(World world){
-        DroneClaimManager manager = claimManagers.get(world);
+        DroneClaimManager manager = claimManagers.get(world.provider.dimensionId);
         if(manager == null) {
             manager = new DroneClaimManager();
-            claimManagers.put(world, manager);
+            claimManagers.put(world.provider.dimensionId, manager);
         }
         return manager;
     }
