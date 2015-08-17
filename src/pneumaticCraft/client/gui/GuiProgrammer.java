@@ -339,6 +339,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         int yStart = (height - ySize) / 2;
         func_146110_a(xStart, yStart, 0, 0, xSize, ySize, xSize, ySize);
 
+        scaleScroll.setEnabled(!showingAllWidgets);
         super.drawGuiContainerBackgroundLayer(partialTicks, x, y);
 
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
