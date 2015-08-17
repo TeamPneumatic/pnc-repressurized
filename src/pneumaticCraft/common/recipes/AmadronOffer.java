@@ -1,8 +1,8 @@
 package pneumaticCraft.common.recipes;
 
-import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.StatCollector;
 import net.minecraftforge.fluids.FluidStack;
 
 public class AmadronOffer{
@@ -39,7 +39,7 @@ public class AmadronOffer{
     }
 
     public String getVendor(){
-        return I18n.format("gui.amadron");
+        return StatCollector.translateToLocal("gui.amadron");//Hardcoded for now until inter-player trading is implemented.
     }
 
     public boolean passesQuery(String query){

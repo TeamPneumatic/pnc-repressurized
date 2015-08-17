@@ -1,4 +1,9 @@
--Added Logistics Module.
--Added Default Storage Frame.
+-You can now combine FMP tubes and tube modules.
+-Added 'dust' effect when drones are above blocks.
+-Added WAILA integration for the Logistics Modules.
 
--Bugfix: Pressure Tube multipart visually disconnects on world load.
+-Bugfix: Wonky looking pressure gauge in the UV Light Box and Charging Station when upgraded with Speed Upgrades.
+-Bugfix: UV Light Box doesn't render connections.
+-Bugfix: Memory leak with loading/unloading dimensions.
+-Bugfix: Crash with Amadron system.
+-Bugfix: When trying to place a FMP on a Pressure Tube, it won't render the preview render until the Pressure Tube is converted to a FMP.
