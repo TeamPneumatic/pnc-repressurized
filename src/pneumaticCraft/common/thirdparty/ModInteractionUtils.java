@@ -3,7 +3,9 @@ package pneumaticCraft.common.thirdparty;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.util.ForgeDirection;
+import pneumaticCraft.api.block.IPneumaticWrenchable;
 import pneumaticCraft.api.tileentity.IPneumaticMachine;
 import pneumaticCraft.common.block.tubes.IPneumaticPosProvider;
 import pneumaticCraft.common.item.ItemTubeModule;
@@ -38,6 +40,10 @@ public class ModInteractionUtils{
         return te instanceof IPneumaticMachine ? (IPneumaticMachine)te : null;
     }
 
+    public IPneumaticWrenchable getWrenchable(TileEntity te){
+        return null;
+    }
+
     public Item getModuleItem(String moduleName){
         return new ItemTubeModule(moduleName);
     }
@@ -64,19 +70,28 @@ public class ModInteractionUtils{
         return false;
     }
 
-    public boolean isMultipartWiseConnected(TileEntity te, ForgeDirection dir){
+    public boolean isMultipartWiseConnected(Object part, ForgeDirection dir){
         return false;
+    }
+
+    /**
+     * 
+     * @param potentialTube Either a TileMultipart, PartPressureTube or TileEntityPressureTube
+     * @return
+     */
+    public TileEntityPressureTube getTube(Object potentialTube){
+        return potentialTube instanceof TileEntityPressureTube ? (TileEntityPressureTube)potentialTube : null;
     }
 
     public void sendDescriptionPacket(IPneumaticPosProvider te){
         ((TileEntityPressureTube)te).sendDescriptionPacket();
     }
 
-    public boolean[] getTubeConnections(IPneumaticPosProvider tube){
-        return ((TileEntityPressureTube)tube).sidesConnected;
+    public void removeTube(TileEntity te){
+        te.getWorldObj().setBlockToAir(te.xCoord, te.yCoord, te.zCoord);
     }
 
-    public boolean isPneumaticTube(IPneumaticMachine machine){
-        return machine instanceof TileEntityPressureTube;
+    public boolean occlusionTest(AxisAlignedBB aabb, TileEntity te){
+        return true;
     }
 }

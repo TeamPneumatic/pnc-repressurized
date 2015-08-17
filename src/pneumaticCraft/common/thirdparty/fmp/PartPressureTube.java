@@ -1,62 +1,49 @@
 package pneumaticCraft.common.thirdparty.fmp;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-
-import org.apache.commons.lang3.tuple.Pair;
-import org.lwjgl.opengl.GL11;
-
+import pneumaticCraft.api.block.IPneumaticWrenchable;
 import pneumaticCraft.api.tileentity.IAirHandler;
-import pneumaticCraft.api.tileentity.IPneumaticMachine;
-import pneumaticCraft.api.tileentity.ISidedPneumaticMachine;
 import pneumaticCraft.client.model.ModelPressureTube;
 import pneumaticCraft.common.Config;
+import pneumaticCraft.common.block.BlockPressureTube;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.block.tubes.IPneumaticPosProvider;
 import pneumaticCraft.common.block.tubes.TubeModule;
-import pneumaticCraft.common.thirdparty.ModInteractionUtils;
-import pneumaticCraft.common.tileentity.TileEntityPneumaticBase;
+import pneumaticCraft.common.block.tubes.TubeModuleRedstoneEmitting;
 import pneumaticCraft.common.tileentity.TileEntityPressureTube;
 import pneumaticCraft.lib.BBConstants;
 import pneumaticCraft.lib.Log;
-import pneumaticCraft.lib.PneumaticValues;
-import pneumaticCraft.lib.Textures;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.raytracer.IndexedCuboid6;
-import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Vector3;
 import codechicken.microblock.ISidedHollowConnect;
+import codechicken.multipart.IRedstonePart;
 import codechicken.multipart.JNormalOcclusion;
-import codechicken.multipart.MultiPartRegistry;
 import codechicken.multipart.NormalOcclusionTest;
 import codechicken.multipart.NormallyOccludedPart;
 import codechicken.multipart.PartMap;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TSlottedPart;
-import codechicken.multipart.TileMultipart;
-import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class PartPressureTube extends TMultiPart implements IPneumaticPosProvider, TSlottedPart, JNormalOcclusion,
-        ISidedHollowConnect{
+public class PartPressureTube extends TMultiPart implements IPneumaticPosProvider, IPneumaticWrenchable, TSlottedPart,
+        JNormalOcclusion, ISidedHollowConnect, IRedstonePart{
 
-    private final TileEntityPneumaticBase airHandler;
-    public boolean[] sidesConnected;
-    protected TubeModule[] convertedModules;//only used while converting a non FMP to a FMP part.
-    private int ticksExisted;
+    private TileEntityPressureTube tube = getNewTube().setPart(this);
 
     private static final Cuboid6[] boundingBoxes = new Cuboid6[7];
     static {
@@ -69,33 +56,34 @@ public class PartPressureTube extends TMultiPart implements IPneumaticPosProvide
         boundingBoxes[6] = new Cuboid6(BBConstants.PRESSURE_PIPE_MIN_POS, BBConstants.PRESSURE_PIPE_MIN_POS, BBConstants.PRESSURE_PIPE_MIN_POS, BBConstants.PRESSURE_PIPE_MAX_POS, BBConstants.PRESSURE_PIPE_MAX_POS, BBConstants.PRESSURE_PIPE_MAX_POS);
     }
 
-    public PartPressureTube(){
-        this(PneumaticValues.DANGER_PRESSURE_PRESSURE_TUBE, PneumaticValues.MAX_PRESSURE_PRESSURE_TUBE, PneumaticValues.VOLUME_PRESSURE_TUBE);
-    }
+    public PartPressureTube(){}
 
-    public PartPressureTube(TubeModule[] tubeModules){
-        this();
-        convertedModules = tubeModules;
-    }
-
-    public PartPressureTube(float dangerPressurePressureTube, float maxPressurePressureTube, int volumePressureTube){
-        airHandler = new TileEntityPneumaticBase(dangerPressurePressureTube, maxPressurePressureTube, volumePressureTube);
-        sidesConnected = new boolean[6];
+    public PartPressureTube(TileEntityPressureTube tube){
+        this.tube = tube.setPart(this);
     }
 
     @Override
     public IAirHandler getAirHandler(){
-        return airHandler;
+        return tube.getAirHandler();
     }
 
     @Override
     public void load(NBTTagCompound nbt){
-        airHandler.readFromNBTI(nbt);
+        if(nbt.hasKey("tube")) {//TODO remove legacy
+            nbt = nbt.getCompoundTag("tube");
+        }
+        tube.readFromNBTI(nbt);
     }
 
     @Override
     public void save(NBTTagCompound nbt){
-        airHandler.writeToNBTI(nbt);
+        NBTTagCompound tag = new NBTTagCompound();
+        tube.writeToNBTI(tag);
+        nbt.setTag("tube", tag);
+    }
+
+    protected TileEntityPressureTube getNewTube(){
+        return new TileEntityPressureTube();
     }
 
     @Override
@@ -103,61 +91,41 @@ public class PartPressureTube extends TMultiPart implements IPneumaticPosProvide
         //Log.info("sides connected " + world().isRemote + ": " + Arrays.toString(sidesConnected));
         if(Config.convertMultipartsToBlocks && !world().isRemote) {
             Log.info("Converting Pressure Tube part to Pressure Tube block at " + x() + ", " + y() + ", " + z());
-            world().setBlock(x(), y(), z(), Block.getBlockFromItem(getItem().getItem()));
-            TileEntityPressureTube tube = (TileEntityPressureTube)world().getTileEntity(x(), y(), z());
-            for(PartTubeModule module : FMP.getMultiParts(tile(), PartTubeModule.class)) {
-                tube.setModule(module.getModule(), module.getModule().getDirection());
-                tube.updateConnections(world(), x(), y(), z());
-                world().notifyBlocksOfNeighborChange(x(), y(), z(), Blockss.pressureTube, module.getModule().getDirection().getOpposite().ordinal());
-            }
+            Block pressureTube = Block.getBlockFromItem(getItem().getItem());
+            world().setBlock(x(), y(), z(), pressureTube);
+            TileEntityPressureTube t = (TileEntityPressureTube)world().getTileEntity(x(), y(), z());
+            NBTTagCompound tag = new NBTTagCompound();
+            tube.writeToNBTI(tag);
+            t.readFromNBT(tag);
+            world().notifyBlocksOfNeighborChange(x(), y(), z(), pressureTube);
             return;
         }
-        if(convertedModules != null && !world().isRemote) {//when we convert a tube block to a tube part, look for attached modules.
-            for(TubeModule module : convertedModules) {
-                if(module != null) {
-                    PartTubeModule part = (PartTubeModule)MultiPartRegistry.createPart(module.getType(), false);
-                    part.setModule(module);
-                    part.setDirection(module.getDirection());
-                    module.setTube(this);
-                    TileMultipart.addPart(world(), new BlockCoord(x(), y(), z()), part);
-                }
-            }
-            convertedModules = null;
-        }
-        if(ticksExisted++ == 2) {
-            if(!world().isRemote) {
-                world().notifyBlocksOfNeighborChange(x(), y(), z(), Blockss.pressureTube);
-                updateConnections();
-            }
-        }
-
-        airHandler.updateEntityI();
-
-        List<Pair<ForgeDirection, IAirHandler>> teList = airHandler.getConnectedPneumatics();
-
-        if(teList.size() == 1 && !world().isRemote) {
-            for(Pair<ForgeDirection, IAirHandler> entry : teList) {
-                if(isConnectedTo(entry.getKey().getOpposite())) airHandler.airLeak(entry.getKey().getOpposite());
-            }
-        }
+        tube.updateEntityI();
     }
 
     @Override
     public boolean isConnectedTo(ForgeDirection side){
-        //if(getBlockMetadata() > 0 && getBlockMetadata() != BlockPressureTube.AIR_GRATE_TUBE_META) {
-        //   return sidesConnected[side.ordinal()];
-        // } else {
-        boolean[] tempConnections = sidesConnected;
-        sidesConnected = new boolean[6];
-        boolean canConnect = tile() != null && tile().canAddPart(new NormallyOccludedPart(boundingBoxes[side.ordinal()]));
-        sidesConnected = tempConnections;
-        return canConnect;
-        // }
+        return tube.isConnectedTo(side);
+    }
+
+    public boolean passesOcclusionTest(ForgeDirection side){
+        TubeModule[] modules = tube.modules;
+        tube.modules = new TubeModule[6];
+        boolean result = tile() != null && tile().canAddPart(new NormallyOccludedPart(boundingBoxes[side.ordinal()]));
+        tube.modules = modules;
+        return result;
+    }
+
+    public TileEntityPressureTube getTube(){
+        return tube;
     }
 
     @Override
     public void onWorldJoin(){
-        airHandler.validateI(getTile());
+        tube.setWorldObj(world());
+        tube.xCoord = x();
+        tube.yCoord = y();
+        tube.zCoord = z();
     }
 
     @Override
@@ -168,38 +136,18 @@ public class PartPressureTube extends TMultiPart implements IPneumaticPosProvide
     @Override
     public void onNeighborChanged(){
         if(!world().isRemote) {
-            airHandler.onNeighborTileUpdate();
-            airHandler.onNeighborChange();
-            updateConnections();
+            tube.onNeighborTileUpdate();
+            tube.onNeighborChange();
+            tube.onNeighborBlockUpdate();
+            sendDescriptionPacket();
         }
     }
 
-    public void updateConnections(){
-        sidesConnected = new boolean[6];
-        for(ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
-            if(isConnectedTo(direction)) {
-                TileEntity te = airHandler.getTileCache()[direction.ordinal()].getTileEntity();
-                IPneumaticMachine machine = ModInteractionUtils.getInstance().getMachine(te);
-                if(machine != null) {
-                    sidesConnected[direction.ordinal()] = machine.isConnectedTo(direction.getOpposite());
-                } else if(te instanceof ISidedPneumaticMachine) {
-                    sidesConnected[direction.ordinal()] = ((ISidedPneumaticMachine)te).getAirHandler(direction.getOpposite()) != null;
-                }
-            }
-        }
-        int sidesCount = 0;
-        for(int i = 0; i < 6; i++) {
-            if(sidesConnected[i]) sidesCount++;
-        }
-        if(sidesCount == 1) {
-            for(int i = 0; i < 6; i++) {
-                if(sidesConnected[i]) {
-                    if(isConnectedTo(ForgeDirection.getOrientation(i).getOpposite())) sidesConnected[i ^ 1] = true;
-                    break;
-                }
-            }
-        }
-        sendDescriptionPacket();
+    @Override
+    public boolean activate(EntityPlayer player, MovingObjectPosition hit, ItemStack item){
+        boolean result = Blockss.pressureTube.onBlockActivated(player.worldObj, x(), y(), z(), player, hit.sideHit, (float)hit.hitVec.xCoord, (float)hit.hitVec.yCoord, (float)hit.hitVec.zCoord);
+        if(result) onNeighborChanged();
+        return result ? true : super.activate(player, hit, item);
     }
 
     @Override
@@ -213,13 +161,18 @@ public class PartPressureTube extends TMultiPart implements IPneumaticPosProvide
     }
 
     @Override
-    public int getHollowSize(int arg0){
+    public int getHollowSize(int side){
+        if(tube.modules[side] != null) {
+            return Math.min(12, (int)(tube.modules[side].getWidth() * 16));
+        }
         return 4;
     }
 
     @Override
     public Iterable<ItemStack> getDrops(){
-        return Arrays.asList(new ItemStack[]{getItem()});
+        List<ItemStack> drops = BlockPressureTube.getModuleDrops(getTube());
+        drops.add(getItem());
+        return drops;
     }
 
     @Override
@@ -235,24 +188,24 @@ public class PartPressureTube extends TMultiPart implements IPneumaticPosProvide
     public Iterable<Cuboid6> getOcclusionBoxes(){
         List<Cuboid6> boxes = new ArrayList<Cuboid6>();
         boxes.add(boundingBoxes[6]);
+        for(int i = 0; i < 6; i++) {
+            if(tube.modules[i] != null) boxes.add(boundingBoxes[i]);//The full bounding box of modules is too big for hollow covers.
+        }
         return boxes;
     }
 
     @Override
     public boolean occlusionTest(TMultiPart npart){
-        if(convertedModules != null) {
-            for(TubeModule module : convertedModules) {
-                if(module != null) return false;//FIXME remove when FMP crash fixed
-            }
-        }
         return NormalOcclusionTest.apply(this, npart);
     }
 
     @Override
     public Iterable<Cuboid6> getCollisionBoxes(){
-        List<Cuboid6> boxes = (List<Cuboid6>)getOcclusionBoxes();
+        List<Cuboid6> boxes = new ArrayList<Cuboid6>();
+        boxes.add(boundingBoxes[6]);
         for(int i = 0; i < 6; i++) {
-            if(sidesConnected[i]) boxes.add(boundingBoxes[i]);
+            if(tube.sidesConnected[i]) boxes.add(boundingBoxes[i]);
+            if(tube.modules[i] != null) boxes.add(new Cuboid6(tube.modules[i].boundingBoxes[i]));
         }
         return boxes;
     }
@@ -278,27 +231,23 @@ public class PartPressureTube extends TMultiPart implements IPneumaticPosProvide
     @Override
     public void renderDynamic(Vector3 pos, float partialTicks, int renderPass){
         if(renderPass == 0) {
-            GL11.glPushMatrix(); // start
-            // GL11.glDisable(GL11.GL_TEXTURE_2D);
-            // GL11.glEnable(GL11.GL_BLEND);
-            // GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-            FMLClientHandler.instance().getClient().getTextureManager().bindTexture(getTexture());
+            /*   GL11.glPushMatrix(); // start
+               // GL11.glDisable(GL11.GL_TEXTURE_2D);
+               // GL11.glEnable(GL11.GL_BLEND);
+               // GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+               FMLClientHandler.instance().getClient().getTextureManager().bindTexture(getTexture());
 
-            // GL11.glColor4f(0.82F, 0.56F, 0.09F, 1.0F);
-            GL11.glTranslatef((float)pos.x + 0.5F, (float)pos.y + 1.5F, (float)pos.z + 0.5F); // size
-            GL11.glRotatef(0, 0.0F, 1.0F, 0.0F);
+               // GL11.glColor4f(0.82F, 0.56F, 0.09F, 1.0F);
+               GL11.glTranslatef((float)pos.x + 0.5F, (float)pos.y + 1.5F, (float)pos.z + 0.5F); // size
+               GL11.glRotatef(0, 0.0F, 1.0F, 0.0F);
 
-            GL11.glScalef(1.0F, -1F, -1F); // to make your block have a normal
-                                           // positioning. comment out to see what
-                                           // happens
-            if(tubeModel == null) tubeModel = new ModelPressureTube();
-            tubeModel.renderModel(0.0625F, sidesConnected);
-            GL11.glPopMatrix();
+               GL11.glScalef(1.0F, -1F, -1F);
+               if(tubeModel == null) tubeModel = new ModelPressureTube();
+               tubeModel.renderModel(0.0625F, tube.sidesConnected);
+               GL11.glPopMatrix();*/
+            TileEntityRendererDispatcher.instance.getSpecialRenderer(tube).renderTileEntityAt(tube, pos.x, pos.y, pos.z, partialTicks);
+
         }
-    }
-
-    protected ResourceLocation getTexture(){
-        return Textures.MODEL_PRESSURE_TUBE;
     }
 
     private void sendDescriptionPacket(){
@@ -308,14 +257,55 @@ public class PartPressureTube extends TMultiPart implements IPneumaticPosProvide
     @Override
     public void writeDesc(MCDataOutput packet){
         for(int i = 0; i < 6; i++) {
-            packet.writeBoolean(sidesConnected[i]);
+            packet.writeBoolean(tube.sidesConnected[i]);
         }
+        NBTTagCompound tag = new NBTTagCompound();
+        tube.writeToNBT(tag);
+        packet.writeNBTTagCompound(tag);
     }
 
     @Override
     public void readDesc(MCDataInput packet){
         for(int i = 0; i < 6; i++) {
-            sidesConnected[i] = packet.readBoolean();
+            tube.sidesConnected[i] = packet.readBoolean();
         }
+        tube.readFromNBT(packet.readNBTTagCompound());
+    }
+
+    @Override
+    public boolean canConnectRedstone(int side){
+        side = side ^ 1;
+        for(int i = 0; i < 6; i++) {
+            if(tube.modules[i] != null) {
+                if((side ^ 1) == i || i != side && tube.modules[i].isInline()) {//if we are on the same side, or when we have an 'in line' module that is not on the opposite side.
+                    if(tube.modules[i] instanceof TubeModuleRedstoneEmitting) return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public int strongPowerLevel(int side){
+        return 0;
+    }
+
+    @Override
+    public int weakPowerLevel(int side){
+        side = side ^ 1;
+        int redstoneLevel = 0;
+        for(int i = 0; i < 6; i++) {
+            if(tube.modules[i] != null) {
+                if((side ^ 1) == i || i != side && tube.modules[i].isInline()) {//if we are on the same side, or when we have an 'in line' module that is not on the opposite side.
+                    redstoneLevel = Math.max(redstoneLevel, tube.modules[i].getRedstoneLevel());
+                }
+            }
+        }
+        return redstoneLevel;
+    }
+
+    @Override
+    public boolean rotateBlock(World world, EntityPlayer player, int x, int y, int z, ForgeDirection side){
+        return ((IPneumaticWrenchable)Blockss.pressureTube).rotateBlock(world, player, x, y, z, side);
     }
 }

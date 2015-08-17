@@ -2,9 +2,9 @@ package pneumaticCraft.common.network;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.tileentity.TileEntity;
 import pneumaticCraft.common.block.tubes.ModuleLogistics;
 import pneumaticCraft.common.block.tubes.TubeModule;
+import pneumaticCraft.common.thirdparty.ModInteractionUtils;
 import pneumaticCraft.common.tileentity.TileEntityPressureTube;
 
 public class PacketUpdateLogisticModule extends LocationIntPacket<PacketUpdateLogisticModule>{
@@ -44,9 +44,9 @@ public class PacketUpdateLogisticModule extends LocationIntPacket<PacketUpdateLo
 
     @Override
     public void handleClientSide(PacketUpdateLogisticModule message, EntityPlayer player){
-        TileEntity te = message.getTileEntity(player.worldObj);
-        if(te instanceof TileEntityPressureTube) {
-            TubeModule module = ((TileEntityPressureTube)te).modules[message.side];
+        TileEntityPressureTube te = ModInteractionUtils.getInstance().getTube(message.getTileEntity(player.worldObj));
+        if(te != null) {
+            TubeModule module = te.modules[message.side];
             if(module instanceof ModuleLogistics) {
                 ((ModuleLogistics)module).onUpdatePacket(message.status, message.colorIndex);
             }

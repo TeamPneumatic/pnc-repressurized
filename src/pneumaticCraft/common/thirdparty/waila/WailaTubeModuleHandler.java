@@ -30,13 +30,17 @@ public class WailaTubeModuleHandler implements IWailaDataProvider{
     @Override
     public List<String> getWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config){
         ForgeDirection dir = (ForgeDirection)accessor.getPosition().hitInfo;
-        if(dir != ForgeDirection.UNKNOWN && accessor.getTileEntity() instanceof TileEntityPressureTube) {
-            NBTTagList moduleList = accessor.getNBTData().getTagList("modules", 10);
+        addModuleInfo(currenttip, (TileEntityPressureTube)accessor.getTileEntity(), accessor.getNBTData(), dir);
+        return currenttip;
+    }
+
+    public static void addModuleInfo(List<String> currenttip, TileEntityPressureTube tube, NBTTagCompound tubeTag, ForgeDirection dir){
+        if(dir != ForgeDirection.UNKNOWN) {
+            NBTTagList moduleList = tubeTag.getTagList("modules", 10);
             for(int i = 0; i < moduleList.tagCount(); i++) {
                 NBTTagCompound moduleTag = moduleList.getCompoundTagAt(i);
                 if(dir == ForgeDirection.getOrientation(moduleTag.getInteger("side"))) {
-                    TileEntityPressureTube tube = (TileEntityPressureTube)accessor.getTileEntity();
-                    if(tube.modules[dir.ordinal()] != null) {
+                    if(tube != null && tube.modules[dir.ordinal()] != null) {
                         TubeModule module = tube.modules[dir.ordinal()];
                         module.readFromNBT(moduleTag);
                         module.addInfo(currenttip);
@@ -44,7 +48,6 @@ public class WailaTubeModuleHandler implements IWailaDataProvider{
                 }
             }
         }
-        return currenttip;
     }
 
     @Override

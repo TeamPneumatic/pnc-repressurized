@@ -38,17 +38,24 @@ public class WailaPneumaticHandler implements IWailaDataProvider{
 
     public static void addTipToMachine(List<String> currenttip, IWailaDataAccessor accessor){
         NBTTagCompound tCompound = accessor.getNBTData();
+        TileEntity te = accessor.getTileEntity();
+        if(te instanceof IPneumaticMachine) {
+            addTipToMachine(currenttip, (IPneumaticMachine)te, tCompound.getFloat("pressure"));
+        }
+    }
+
+    public static void addTipToMachine(List<String> currenttip, IPneumaticMachine machine){
+        addTipToMachine(currenttip, machine, machine.getAirHandler().getPressure(ForgeDirection.UNKNOWN));
+    }
+
+    public static void addTipToMachine(List<String> currenttip, IPneumaticMachine machine, float pressure){
         //This is used so that we can split values later easier and have them all in the same layout.
         Map<String, String> values = new HashMap<String, String>();
 
-        String pressure = PneumaticCraftUtils.roundNumberTo(tCompound.getFloat("pressure"), 1);
-        values.put("Pressure", pressure + " bar");
+        values.put("Pressure", PneumaticCraftUtils.roundNumberTo(pressure, 1) + " bar");
 
-        TileEntity te = accessor.getTileEntity();
-        if(te instanceof IPneumaticMachine) {
-            TileEntityPneumaticBase base = (TileEntityPneumaticBase)((IPneumaticMachine)te).getAirHandler();
-            values.put("Max Pressure", base.DANGER_PRESSURE + " bar");
-        }
+        TileEntityPneumaticBase base = (TileEntityPneumaticBase)machine.getAirHandler();
+        values.put("Max Pressure", base.DANGER_PRESSURE + " bar");
 
         //Get all the values from the map and put them in the list.
         for(Map.Entry<String, String> entry : values.entrySet()) {

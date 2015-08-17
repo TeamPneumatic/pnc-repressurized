@@ -14,6 +14,7 @@ import pneumaticCraft.common.block.BlockPressureTube;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.block.tubes.TubeModule;
 import pneumaticCraft.common.tileentity.TileEntityPressureTube;
+import pneumaticCraft.lib.PneumaticValues;
 import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.client.FMLClientHandler;
 
@@ -35,7 +36,7 @@ public class RenderPressureTube extends TileEntitySpecialRenderer{
         // GL11.glDisable(GL11.GL_TEXTURE_2D);
         // GL11.glEnable(GL11.GL_BLEND);
         // GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        FMLClientHandler.instance().getClient().getTextureManager().bindTexture(tile.getBlockType() == Blockss.pressureTube ? Textures.MODEL_PRESSURE_TUBE : Textures.MODEL_ADVANCED_PRESSURE_TUBE);
+        FMLClientHandler.instance().getClient().getTextureManager().bindTexture(tile.CRITICAL_PRESSURE == PneumaticValues.MAX_PRESSURE_PRESSURE_TUBE ? Textures.MODEL_PRESSURE_TUBE : Textures.MODEL_ADVANCED_PRESSURE_TUBE);
 
         // GL11.glColor4f(0.82F, 0.56F, 0.09F, 1.0F);
         GL11.glTranslatef((float)d + 0.5F, (float)d1 + 1.5F, (float)d2 + 0.5F); // size

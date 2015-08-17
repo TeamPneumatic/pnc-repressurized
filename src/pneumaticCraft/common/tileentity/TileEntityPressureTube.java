@@ -26,9 +26,12 @@ import pneumaticCraft.common.block.tubes.ModuleSafetyValve;
 import pneumaticCraft.common.block.tubes.TubeModule;
 import pneumaticCraft.common.network.DescSynced;
 import pneumaticCraft.common.thirdparty.ModInteractionUtils;
+import pneumaticCraft.common.thirdparty.fmp.PartPressureTube;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.Log;
+import pneumaticCraft.lib.ModIds;
 import pneumaticCraft.lib.PneumaticValues;
+import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -37,6 +40,8 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase{
     public boolean[] sidesConnected = new boolean[6];
     public TubeModule[] modules = new TubeModule[6];
 
+    private Object part;
+
     public TileEntityPressureTube(){
         super(PneumaticValues.DANGER_PRESSURE_PRESSURE_TUBE, PneumaticValues.MAX_PRESSURE_PRESSURE_TUBE, PneumaticValues.VOLUME_PRESSURE_TUBE);
     }
@@ -44,6 +49,14 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase{
     public TileEntityPressureTube(float dangerPressurePressureTube, float maxPressurePressureTube,
             int volumePressureTube){
         super(dangerPressurePressureTube, maxPressurePressureTube, volumePressureTube);
+    }
+
+    public TileEntityPressureTube setPart(Object part){
+        this.part = part;
+        for(TubeModule module : modules) {
+            if(module != null) module.shouldDrop = false;
+        }
+        return this;
     }
 
     @Override
@@ -103,7 +116,10 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase{
         super.updateEntity();
 
         for(TubeModule module : modules) {
-            if(module != null) module.update();
+            if(module != null) {
+                module.shouldDrop = true;
+                module.update();
+            }
         }
 
         List<Pair<ForgeDirection, IAirHandler>> teList = getConnectedPneumatics();
@@ -117,7 +133,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase{
         }
         if(!hasModules && teList.size() == 1 && !worldObj.isRemote) {
             for(Pair<ForgeDirection, IAirHandler> entry : teList) {
-                if(modules[entry.getKey().getOpposite().ordinal()] == null) airLeak(entry.getKey().getOpposite());
+                if(modules[entry.getKey().getOpposite().ordinal()] == null && isConnectedTo(entry.getKey().getOpposite())) airLeak(entry.getKey().getOpposite());
             }
         }
     }
@@ -193,13 +209,14 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase{
         }
         modules[side.ordinal()] = module;
         if(worldObj != null && !worldObj.isRemote) {
+            if(part != null) updatePart();
             sendDescriptionPacket();
         }
     }
 
     @Override
     public boolean isConnectedTo(ForgeDirection side){
-        return modules[side.ordinal()] == null || modules[side.ordinal()].isInline();
+        return (modules[side.ordinal()] == null || modules[side.ordinal()].isInline()) && (part == null || ModInteractionUtils.getInstance().isMultipartWiseConnected(part, side));
     }
 
     @Override
@@ -242,7 +259,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase{
         if(sidesCount == 1 && !hasModule) {
             for(int i = 0; i < 6; i++) {
                 if(sidesConnected[i]) {
-                    if(modules[i ^ 1] == null) sidesConnected[i ^ 1] = true;
+                    if(isConnectedTo(ForgeDirection.getOrientation(i).getOpposite())) sidesConnected[i ^ 1] = true;
                     break;
                 }
             }
@@ -268,5 +285,19 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase{
                 modules[dir.ordinal()].addInfo(text);
             }
         }
+    }
+
+    @Override
+    @Optional.Method(modid = ModIds.FMP)
+    public void sendDescriptionPacket(){
+        if(part != null && !worldObj.isRemote) {
+            ((PartPressureTube)part).sendDescUpdate();
+        }
+        super.sendDescriptionPacket();
+    }
+
+    @Optional.Method(modid = ModIds.FMP)
+    public void updatePart(){
+        ((PartPressureTube)part).onNeighborChanged();
     }
 }

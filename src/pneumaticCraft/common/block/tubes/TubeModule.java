@@ -34,6 +34,7 @@ public abstract class TubeModule implements ISidedPart{
     public float lowerBound = 7.5F, higherBound = 0, maxValue = 30;
     private boolean fake;
     public boolean advancedConfig;
+    public boolean shouldDrop;
 
     public TubeModule(){
         double width = getWidth() / 2;
@@ -83,8 +84,10 @@ public abstract class TubeModule implements ISidedPart{
      */
     public List<ItemStack> getDrops(){
         List<ItemStack> drops = new ArrayList<ItemStack>();
-        drops.add(new ItemStack(ModuleRegistrator.getModuleItem(getType())));
-        if(upgraded) drops.add(new ItemStack(Itemss.advancedPCB));
+        if(shouldDrop) {
+            drops.add(new ItemStack(ModuleRegistrator.getModuleItem(getType())));
+            if(upgraded) drops.add(new ItemStack(Itemss.advancedPCB));
+        }
         return drops;
     }
 

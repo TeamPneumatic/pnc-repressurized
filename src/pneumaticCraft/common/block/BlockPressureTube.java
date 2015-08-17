@@ -1,5 +1,6 @@
 package pneumaticCraft.common.block;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -16,14 +17,19 @@ import net.minecraft.util.Vec3;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+
+import org.apache.commons.lang3.tuple.Pair;
+
 import pneumaticCraft.common.block.tubes.ModuleRegistrator;
 import pneumaticCraft.common.block.tubes.TubeModule;
 import pneumaticCraft.common.block.tubes.TubeModuleRedstoneEmitting;
 import pneumaticCraft.common.item.ItemTubeModule;
 import pneumaticCraft.common.item.Itemss;
+import pneumaticCraft.common.thirdparty.ModInteractionUtils;
 import pneumaticCraft.common.tileentity.TileEntityPressureTube;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.BBConstants;
+import pneumaticCraft.lib.PneumaticValues;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -78,8 +84,8 @@ public class BlockPressureTube extends BlockPneumaticCraftModeled{
     public boolean tryPlaceModule(EntityPlayer player, World world, int x, int y, int z, int par6, boolean simulate){
         if(player.getCurrentEquippedItem() != null) {
             if(player.getCurrentEquippedItem().getItem() instanceof ItemTubeModule) {
-                TileEntityPressureTube pressureTube = (TileEntityPressureTube)world.getTileEntity(x, y, z);
-                if(pressureTube.modules[par6] == null) {
+                TileEntityPressureTube pressureTube = ModInteractionUtils.getInstance().getTube(world.getTileEntity(x, y, z));
+                if(pressureTube.modules[par6] == null && ModInteractionUtils.getInstance().occlusionTest(boundingBoxes[par6], world.getTileEntity(x, y, z))) {
                     TubeModule module = ModuleRegistrator.getModule(((ItemTubeModule)player.getCurrentEquippedItem().getItem()).moduleName);
                     if(simulate) module.markFake();
                     pressureTube.setModule(module, ForgeDirection.getOrientation(par6));
@@ -106,9 +112,10 @@ public class BlockPressureTube extends BlockPneumaticCraftModeled{
     }
 
     public static TubeModule getLookedModule(World world, int x, int y, int z, EntityPlayer player){
-        MovingObjectPosition mop = PneumaticCraftUtils.getEntityLookedObject(player);
+        Pair<Vec3, Vec3> vecs = PneumaticCraftUtils.getStartAndEndLookVec(player);
+        MovingObjectPosition mop = Blockss.pressureTube.collisionRayTrace(world, x, y, z, vecs.getLeft(), vecs.getRight());
         if(mop != null && mop.hitInfo instanceof ForgeDirection && (ForgeDirection)mop.hitInfo != ForgeDirection.UNKNOWN) {
-            TileEntityPressureTube tube = (TileEntityPressureTube)world.getTileEntity(x, y, z);
+            TileEntityPressureTube tube = ModInteractionUtils.getInstance().getTube(world.getTileEntity(x, y, z));
             return tube.modules[((ForgeDirection)mop.hitInfo).ordinal()];
         }
         return null;
@@ -126,7 +133,7 @@ public class BlockPressureTube extends BlockPneumaticCraftModeled{
             bestAABB = AxisAlignedBB.getBoundingBox(minX, minY, minZ, maxX, maxY, maxZ);
         }
 
-        TileEntityPressureTube tube = (TileEntityPressureTube)world.getTileEntity(x, y, z);
+        TileEntityPressureTube tube = ModInteractionUtils.getInstance().getTube(world.getTileEntity(x, y, z));
         for(int i = 0; i < 6; i++) {
             if(tube.sidesConnected[i]) {
                 setBlockBounds(boundingBoxes[i]);
@@ -140,7 +147,7 @@ public class BlockPressureTube extends BlockPneumaticCraftModeled{
 
         if(bestMOP != null) bestMOP.hitInfo = ForgeDirection.UNKNOWN;//unknown indicates we hit the tube.
 
-        TubeModule[] modules = ((TileEntityPressureTube)world.getTileEntity(x, y, z)).modules;
+        TubeModule[] modules = tube.modules;
         for(ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
             if(modules[dir.ordinal()] != null) {
                 setBlockBounds(modules[dir.ordinal()].boundingBoxes[dir.ordinal()]);
@@ -178,42 +185,56 @@ public class BlockPressureTube extends BlockPneumaticCraftModeled{
 
     @Override
     public boolean rotateBlock(World world, EntityPlayer player, int x, int y, int z, ForgeDirection side){
+        TileEntityPressureTube tube = ModInteractionUtils.getInstance().getTube(world.getTileEntity(x, y, z));
         if(player.isSneaking()) {
-            MovingObjectPosition mop = PneumaticCraftUtils.getEntityLookedObject(player);
-            if(mop != null && mop.hitInfo instanceof ForgeDirection) {
-                if(mop.hitInfo != ForgeDirection.UNKNOWN) {
-                    TileEntityPressureTube tube = (TileEntityPressureTube)world.getTileEntity(x, y, z);
-                    if(!player.capabilities.isCreativeMode) {
-                        List<ItemStack> drops = tube.modules[((ForgeDirection)mop.hitInfo).ordinal()].getDrops();
-                        for(ItemStack drop : drops) {
-                            EntityItem entity = new EntityItem(world, x, y, z);
-                            entity.setEntityItemStack(drop);
-                            world.spawnEntityInWorld(entity);
-                        }
+            TubeModule module = getLookedModule(world, x, y, z, player);
+            if(module != null) {
+                if(!player.capabilities.isCreativeMode) {
+                    List<ItemStack> drops = module.getDrops();
+                    for(ItemStack drop : drops) {
+                        EntityItem entity = new EntityItem(world, x + 0.5, y + 0.5, z + 0.5);
+                        entity.setEntityItemStack(drop);
+                        world.spawnEntityInWorld(entity);
+                        entity.onCollideWithPlayer(player);
                     }
-                    tube.setModule(null, (ForgeDirection)mop.hitInfo);
-                    onNeighborBlockChange(world, x, y, z, this);
-                    world.notifyBlocksOfNeighborChange(x, y, z, this, ((ForgeDirection)mop.hitInfo).getOpposite().ordinal());
-                    return true;
                 }
+                tube.setModule(null, module.getDirection());
+                onNeighborBlockChange(world, x, y, z, this);
+                world.notifyBlocksOfNeighborChange(x, y, z, this, module.getDirection().getOpposite().ordinal());
+                return true;
             }
+            if(!player.capabilities.isCreativeMode) {
+                EntityItem entity = new EntityItem(world, x + 0.5, y + 0.5, z + 0.5, new ItemStack(tube.DANGER_PRESSURE == PneumaticValues.DANGER_PRESSURE_PRESSURE_TUBE ? Blockss.pressureTube : Blockss.advancedPressureTube));
+                world.spawnEntityInWorld(entity);
+                entity.onCollideWithPlayer(player);
+            }
+            ModInteractionUtils.getInstance().removeTube(world.getTileEntity(x, y, z));
+            return true;
+        } else {
+            return super.rotateBlock(world, player, x, y, z, side);
         }
-        return super.rotateBlock(world, player, x, y, z, side);
+
     }
 
     @Override
     public void breakBlock(World world, int x, int y, int z, Block block, int meta){
-        for(TubeModule module : ((TileEntityPressureTube)world.getTileEntity(x, y, z)).modules) {
-            if(module != null) {
-                List<ItemStack> drops = module.getDrops();
-                for(ItemStack drop : drops) {
-                    EntityItem entity = new EntityItem(world, x + 0.5, y + 0.5, z + 0.5);
-                    entity.setEntityItemStack(drop);
-                    world.spawnEntityInWorld(entity);
-                }
-            }
+        List<ItemStack> drops = getModuleDrops((TileEntityPressureTube)world.getTileEntity(x, y, z));
+        for(ItemStack drop : drops) {
+            EntityItem entity = new EntityItem(world, x + 0.5, y + 0.5, z + 0.5);
+            entity.setEntityItemStack(drop);
+            world.spawnEntityInWorld(entity);
         }
         super.breakBlock(world, x, y, z, block, meta);
+    }
+
+    public static List<ItemStack> getModuleDrops(TileEntityPressureTube tube){
+        List<ItemStack> drops = new ArrayList<ItemStack>();
+        for(TubeModule module : tube.modules) {
+            if(module != null) {
+                drops.addAll(module.getDrops());
+            }
+        }
+        return drops;
     }
 
     @Override
@@ -350,8 +371,15 @@ public class BlockPressureTube extends BlockPneumaticCraftModeled{
         for(int i = 0; i < side; i++) {
             d = d.getRotation(ForgeDirection.UP);
         }
-        TubeModule module = tube.modules[d.ordinal()];
-        return module instanceof TubeModuleRedstoneEmitting;
+        side = d.ordinal();
+        for(int i = 0; i < 6; i++) {
+            if(tube.modules[i] != null) {
+                if((side ^ 1) == i || i != side && tube.modules[i].isInline()) {//if we are on the same side, or when we have an 'in line' module that is not on the opposite side.
+                    if(tube.modules[i] instanceof TubeModuleRedstoneEmitting) return true;
+                }
+            }
+        }
+        return false;
     }
 
 }

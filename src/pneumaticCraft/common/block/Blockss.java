@@ -182,7 +182,7 @@ public class Blockss{
         registerBlock(assemblyDrill);
         registerBlock(assemblyLaser);
         registerBlock(assemblyController);
-        registerBlock(advancedPressureTube);//TODO legacy remove item block.
+        registerBlock(advancedPressureTube);
         registerBlock(compressedIron);
         registerBlock(uvLightBox);
         registerBlock(securityStation);
