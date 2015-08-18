@@ -44,4 +44,12 @@ public class BlockHeatSink extends BlockPneumaticCraftModeled{
     protected boolean canRotateToTopOrBottom(){
         return true;
     }
+
+    @Override
+    public void onEntityCollidedWithBlock(World world, int x, int y, int z, Entity entity){
+        TileEntityHeatSink heatSink = (TileEntityHeatSink)world.getTileEntity(x, y, z);
+        if(heatSink.getHeatExchangerLogic(ForgeDirection.UNKNOWN).getTemperature() > 323) {
+            entity.setFire(3);
+        }
+    }
 }
