@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.api.IHeatExchangerLogic;
@@ -17,7 +18,8 @@ import pneumaticCraft.common.network.GuiSynced;
 public class HeatExchangerLogic implements IHeatExchangerLogic{
     private final Set<IHeatExchangerLogic> hullExchangers = new HashSet<IHeatExchangerLogic>();
     private final Set<IHeatExchangerLogic> connectedExchangers = new HashSet<IHeatExchangerLogic>();
-    private final List<HeatBehaviour> behaviours = new ArrayList<HeatBehaviour>();
+    private List<HeatBehaviour> behaviours = new ArrayList<HeatBehaviour>();
+    private List<HeatBehaviour> newBehaviours;//Required to prevent a CME
     @GuiSynced
     private double temperature = 295;//degrees Kelvin, 20 degrees by default.
     private double thermalResistance = 1;
@@ -30,10 +32,10 @@ public class HeatExchangerLogic implements IHeatExchangerLogic{
             removeConnectedExchanger(logic);
         }
         hullExchangers.clear();
-        behaviours.clear();
+        newBehaviours = new ArrayList<HeatBehaviour>();
         for(ForgeDirection d : ForgeDirection.VALID_DIRECTIONS) {
             if(isSideValid(validSides, d)) {
-                HeatBehaviourManager.getInstance().addHeatBehaviours(world, x + d.offsetX, y + d.offsetY, z + d.offsetZ, this, behaviours);
+                HeatBehaviourManager.getInstance().addHeatBehaviours(world, x + d.offsetX, y + d.offsetY, z + d.offsetZ, this, newBehaviours);
                 IHeatExchangerLogic logic = HeatExchangerManager.getInstance().getLogic(world, x + d.offsetX, y + d.offsetY, z + d.offsetZ, d.getOpposite());
                 if(logic != null) {
                     hullExchangers.add(logic);
@@ -104,11 +106,29 @@ public class HeatExchangerLogic implements IHeatExchangerLogic{
     @Override
     public void writeToNBT(NBTTagCompound tag){
         tag.setDouble("temperature", temperature);
+        NBTTagList tagList = new NBTTagList();
+        for(HeatBehaviour behaviour : behaviours) {
+            NBTTagCompound t = new NBTTagCompound();
+            t.setString("id", behaviour.getId());
+            behaviour.writeToNBT(t);
+            tagList.appendTag(t);
+        }
+        tag.setTag("behaviours", tagList);
     }
 
     @Override
     public void readFromNBT(NBTTagCompound tag){
         temperature = tag.getDouble("temperature");
+        behaviours.clear();
+        NBTTagList tagList = tag.getTagList("behaviours", 10);
+        for(int i = 0; i < tagList.tagCount(); i++) {
+            NBTTagCompound t = tagList.getCompoundTagAt(i);
+            HeatBehaviour behaviour = HeatBehaviourManager.getInstance().getBehaviourForId(t.getString("id"));
+            if(behaviour != null) {
+                behaviour.readFromNBT(t);
+                behaviours.add(behaviour);
+            }
+        }
     }
 
     @Override
@@ -117,13 +137,28 @@ public class HeatExchangerLogic implements IHeatExchangerLogic{
             temperature = 295;
             return;
         }
+        if(newBehaviours != null) {
+            List<HeatBehaviour> oldBehaviours = behaviours;
+            behaviours = newBehaviours;
+            newBehaviours = null;
+            for(HeatBehaviour oldBehaviour : oldBehaviours) {//Transfer over equal heat behaviour's info.
+                int equalBehaviourIndex = behaviours.indexOf(oldBehaviour);
+                if(equalBehaviourIndex >= 0) {
+                    NBTTagCompound tag = new NBTTagCompound();
+                    oldBehaviour.writeToNBT(tag);
+                    behaviours.get(equalBehaviourIndex).readFromNBT(tag);
+                }
+            }
+        }
         Iterator<HeatBehaviour> iterator = behaviours.iterator();
         while(iterator.hasNext()) {
             HeatBehaviour behaviour = iterator.next();
-            if(behaviour.isApplicable()) {
-                behaviour.update();
-            } else {
-                iterator.remove();
+            if(behaviour.getWorld() != null) {//upon loading from NBT the world is null. gets initialized once 'initializeAsHull' is invoked.
+                if(behaviour.isApplicable()) {
+                    behaviour.update();
+                } else {
+                    iterator.remove();
+                }
             }
         }
         for(IHeatExchangerLogic logic : connectedExchangers) {
@@ -139,8 +174,8 @@ public class HeatExchangerLogic implements IHeatExchangerLogic{
 
             double maxDeltaTemp = (logic.getTemperature() * logic.getThermalCapacity() - temperature * getThermalCapacity()) / 2;//Calculate the heat needed to exactly equalize the heat.
             if(maxDeltaTemp >= 0 && deltaTemp > maxDeltaTemp || maxDeltaTemp <= 0 && deltaTemp < maxDeltaTemp) deltaTemp = maxDeltaTemp;
-            temperature += deltaTemp / getThermalCapacity();
-            logic.setTemperature(logic.getTemperature() - deltaTemp / logic.getThermalCapacity());
+            addHeat(deltaTemp);
+            logic.addHeat(-deltaTemp);
         }
     }
 

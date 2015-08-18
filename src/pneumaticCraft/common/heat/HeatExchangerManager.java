@@ -21,6 +21,7 @@ public class HeatExchangerManager{
      */
     private final Map<Block, IHeatExchanger> specialBlockExchangers = new HashMap<Block, IHeatExchanger>();
     private final IHeatExchangerLogic AIR_EXCHANGER = new HeatExchangerLogicConstant(295, 100);
+    public static final double FLUID_RESISTANCE = 10;
 
     private static HeatExchangerManager INSTANCE = new HeatExchangerManager();
 
@@ -38,7 +39,7 @@ public class HeatExchangerManager{
         Map<String, Fluid> fluids = FluidRegistry.getRegisteredFluids();
         for(Fluid fluid : fluids.values()) {
             if(fluid.getBlock() != null) {
-                PneumaticRegistry.getInstance().registerBlockExchanger(fluid.getBlock(), fluid.getTemperature(), 500);
+                PneumaticRegistry.getInstance().registerBlockExchanger(fluid.getBlock(), fluid.getTemperature(), FLUID_RESISTANCE);
             }
         }
         PneumaticRegistry.getInstance().registerBlockExchanger(Blocks.flowing_water, FluidRegistry.WATER.getTemperature(), 500);

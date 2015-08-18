@@ -19,6 +19,9 @@ public class HeatBehaviourManager{
 
     public void init(){
         registerBehaviour(HeatBehaviourFurnace.class);
+        registerBehaviour(HeatBehaviourLava.class);
+        registerBehaviour(HeatBehaviourWaterVaporate.class);
+        registerBehaviour(HeatBehaviourWaterSolidify.class);
     }
 
     public void registerBehaviour(Class<? extends HeatBehaviour> behaviour){
@@ -31,6 +34,21 @@ public class HeatBehaviourManager{
             throw new IllegalArgumentException("The behaviour class doesn't have a nullary constructor, or is abstract! Class: " + behaviour);
         } catch(IllegalAccessException e) {
             throw new IllegalArgumentException("Doesn't have access to the class (is it private?) Class: " + behaviour);
+        }
+    }
+
+    public HeatBehaviour getBehaviourForId(String id){
+        HeatBehaviour behaviour = behaviours.get(id);
+        if(behaviour != null) {
+            try {
+                return behaviour.getClass().newInstance();
+            } catch(Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        } else {
+            Log.warning("No heat behaviour found for id: " + id);
+            return null;
         }
     }
 

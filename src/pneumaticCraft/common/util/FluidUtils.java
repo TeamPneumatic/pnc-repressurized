@@ -5,6 +5,7 @@ import java.util.List;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidContainerRegistry.FluidContainerData;
@@ -108,5 +109,9 @@ public class FluidUtils{
             }
         }
         return false;
+    }
+
+    public static boolean isSourceBlock(World world, int x, int y, int z){
+        return world.getBlockMetadata(x, y, z) == 0;
     }
 }
