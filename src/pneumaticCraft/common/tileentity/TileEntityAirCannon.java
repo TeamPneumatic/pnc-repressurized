@@ -145,7 +145,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements ISid
             if(!externalControl) updateDestination();
         }
 
-        if(worldObj.getWorldTime() % 40 == 0) {
+        if(worldObj.getTotalWorldTime() % 40 == 0) {
             boolean isDispenserUpgradeInserted = getUpgrades(ItemMachineUpgrade.UPGRADE_DISPENSER_DAMAGE) > 0;
             boolean isEntityTrackerUpgradeInserted = getUpgrades(ItemMachineUpgrade.UPGRADE_ENTITY_TRACKER) > 0;
             if(dispenserUpgradeInserted != isDispenserUpgradeInserted || entityUpgradeInserted != isEntityTrackerUpgradeInserted) {

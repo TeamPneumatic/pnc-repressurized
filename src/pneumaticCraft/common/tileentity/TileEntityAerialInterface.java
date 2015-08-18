@@ -91,9 +91,9 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
             if(getPressure(ForgeDirection.UNKNOWN) > PneumaticValues.MIN_PRESSURE_AERIAL_INTERFACE && isConnectedToPlayer) {
                 if(energyRF != null) tickRF();
                 addAir(-PneumaticValues.USAGE_AERIAL_INTERFACE, ForgeDirection.UNKNOWN);
-                if(worldObj.getWorldTime() % 40 == 0) dispenserUpgradeInserted = getUpgrades(ItemMachineUpgrade.UPGRADE_DISPENSER_DAMAGE) > 0;
+                if(worldObj.getTotalWorldTime() % 40 == 0) dispenserUpgradeInserted = getUpgrades(ItemMachineUpgrade.UPGRADE_DISPENSER_DAMAGE) > 0;
             }
-            if(worldObj.getWorldTime() % 20 == 0) getPlayerInventory();
+            if(worldObj.getTotalWorldTime() % 20 == 0) getPlayerInventory();
         }
 
         if(oldRedstoneStatus != shouldEmitRedstone()) {

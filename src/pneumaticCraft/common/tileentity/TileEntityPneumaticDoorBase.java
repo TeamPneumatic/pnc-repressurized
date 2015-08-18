@@ -57,7 +57,7 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
         oldProgress = progress;
         if(!worldObj.isRemote) {
             if(getPressure(ForgeDirection.UNKNOWN) >= PneumaticValues.MIN_PRESSURE_PNEUMATIC_DOOR) {
-                if(worldObj.getWorldTime() % 60 == 0) {
+                if(worldObj.getTotalWorldTime() % 60 == 0) {
                     TileEntity te = worldObj.getTileEntity(orientation.offsetX * 3 + xCoord, yCoord, orientation.offsetZ * 3 + zCoord);
                     if(te instanceof TileEntityPneumaticDoorBase) {
                         doubleDoor = (TileEntityPneumaticDoorBase)te;

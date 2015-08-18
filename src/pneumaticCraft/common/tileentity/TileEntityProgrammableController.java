@@ -134,7 +134,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
             if(aiManager == null) {
                 aiManager = new DroneAIManager(this);
             }
-            if(worldObj.getWorldTime() % 40 == 0) {
+            if(worldObj.getTotalWorldTime() % 40 == 0) {
                 dispenserUpgrades = getUpgrades(ItemMachineUpgrade.UPGRADE_DISPENSER_DAMAGE);
                 speedUpgrades = getUpgrades(ItemMachineUpgrade.UPGRADE_SPEED_DAMAGE);
 

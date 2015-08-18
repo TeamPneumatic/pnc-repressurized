@@ -76,7 +76,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements I
     @Override
     public void updateEntity(){
         oldExtension = extension;
-        if(worldObj.isRemote && worldObj.getWorldTime() % 60 == 0) coreElevator = null;//reset this because the client doesn't get notified of neighbor block updates.
+        if(worldObj.isRemote && worldObj.getTotalWorldTime() % 60 == 0) coreElevator = null;//reset this because the client doesn't get notified of neighbor block updates.
         if(isCoreElevator()) {
             super.updateEntity();
             if(!worldObj.isRemote && isControlledByRedstone()) {

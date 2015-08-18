@@ -151,7 +151,7 @@ public class ModuleAirGrate extends TubeModule{
     }
 
     private void checkForPlantsAndFarm(World worldObj, int x, int y, int z, int plantCheckRange){
-        if(grateRange > 0 && worldObj.getWorldTime() % 5 == 0) {
+        if(grateRange > 0 && worldObj.getTotalWorldTime() % 5 == 0) {
             if(plantCheckX < x - plantCheckRange || plantCheckZ < z - plantCheckRange) {
                 plantCheckX = x - plantCheckRange;
                 plantCheckZ = z - plantCheckRange;
@@ -176,7 +176,7 @@ public class ModuleAirGrate extends TubeModule{
 
     private void coolHeatSinks(World world, int x, int y, int z, int range){
         if(grateRange > 2) {
-            int curTeIndex = (int)(world.getWorldTime() % 27);
+            int curTeIndex = (int)(world.getTotalWorldTime() % 27);
             x += dir.offsetX * 2;
             y += dir.offsetY * 2;
             z += dir.offsetZ * 2;

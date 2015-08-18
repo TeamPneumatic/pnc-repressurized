@@ -49,7 +49,7 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase implements
         super.updateEntity();
 
         if(!worldObj.isRemote) {
-            if(worldObj.getWorldTime() % 5 == 0) {
+            if(worldObj.getTotalWorldTime() % 5 == 0) {
                 airPerTick = (int)(40 * this.getSpeedUsageMultiplierFromUpgrades() * getEfficiency() * Config.fluxCompressorEfficiency / 100 / 100);
                 rfPerTick = (int)(40 * this.getSpeedUsageMultiplierFromUpgrades());
             }

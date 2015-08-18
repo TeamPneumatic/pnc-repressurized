@@ -44,7 +44,7 @@ public class ContainerProgrammer extends ContainerPneumaticBase<TileEntityProgra
     @Override
     public void detectAndSendChanges(){
         super.detectAndSendChanges();
-        if(te.getWorldObj().getWorldTime() % 20 == 0) {
+        if(te.getWorldObj().getTotalWorldTime() % 20 == 0) {
             for(ForgeDirection d : ForgeDirection.VALID_DIRECTIONS) {
                 TileEntity neighbor = te.getWorldObj().getTileEntity(te.xCoord + d.offsetX, te.yCoord + d.offsetY, te.zCoord + d.offsetZ);
                 if(neighbor instanceof IInventory) {

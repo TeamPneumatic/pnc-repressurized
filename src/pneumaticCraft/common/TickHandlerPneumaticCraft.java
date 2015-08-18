@@ -29,7 +29,7 @@ public class TickHandlerPneumaticCraft{
             World world = event.world;
             checkLightning(world);
             DroneClaimManager.getInstance(world).update();
-            if(!event.world.isRemote && event.world.getWorldTime() % 100 == 0) {
+            if(!event.world.isRemote && event.world.getTotalWorldTime() % 100 == 0) {
                 double tickTime = net.minecraft.util.MathHelper.average(MinecraftServer.getServer().tickTimeArray) * 1.0E-6D;//In case world are going to get their own thread: MinecraftServer.getServer().worldTickTimes.get(event.world.provider.dimensionId)
                 NetworkHandler.sendToDimension(new PacketServerTickTime(tickTime), event.world.provider.dimensionId);
             }

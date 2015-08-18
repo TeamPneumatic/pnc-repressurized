@@ -55,7 +55,7 @@ public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implement
         super.updateEntity();
 
         if(!worldObj.isRemote) {
-            if(worldObj.getWorldTime() % 20 == 0) {
+            if(worldObj.getTotalWorldTime() % 20 == 0) {
                 int efficiency = Config.pneumaticDynamoEfficiency;
                 if(efficiency < 1) efficiency = 1;
                 airPerTick = (int)(40 * this.getSpeedUsageMultiplierFromUpgrades() * 100 / efficiency);
@@ -71,7 +71,7 @@ public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implement
             } else {
                 newEnabled = false;
             }
-            if(worldObj.getWorldTime() % 20 == 0 && newEnabled != isEnabled) {
+            if(worldObj.getTotalWorldTime() % 20 == 0 && newEnabled != isEnabled) {
                 isEnabled = newEnabled;
                 sendDescriptionPacket();
             }

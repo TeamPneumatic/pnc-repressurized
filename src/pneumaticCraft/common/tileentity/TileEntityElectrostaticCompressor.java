@@ -35,7 +35,7 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase i
         /*
          * Most of the Electrostatic Compressor's logic can be found in TickHandlerPneumaticCraft#handleElectrostaticGeneration().
          */
-        if(worldObj.getWorldTime() % 40 == 0) {
+        if(worldObj.getTotalWorldTime() % 40 == 0) {
             for(ironBarsBeneath = 0; ironBarsBeneath < 128; ironBarsBeneath++) {
                 if(worldObj.getBlock(xCoord, yCoord - ironBarsBeneath - 1, zCoord) != Blocks.iron_bars) {
                     break;

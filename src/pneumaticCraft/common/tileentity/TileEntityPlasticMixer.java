@@ -77,7 +77,7 @@ public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHand
         if(!worldObj.isRemote) {
             refillDyeBuffers();
             itemLogic.update();
-            if(worldObj.getWorldTime() % 20 == 0) {//We don't need to run _that_ often.
+            if(worldObj.getTotalWorldTime() % 20 == 0) {//We don't need to run _that_ often.
                 if(inventory[INV_INPUT] != null && inventory[INV_INPUT].stackSize > lastTickInventoryStacksize) {
                     int stackIncrease = inventory[INV_INPUT].stackSize - lastTickInventoryStacksize;
                     double ratio = (double)inventory[INV_INPUT].stackSize / (inventory[INV_INPUT].stackSize + stackIncrease);
