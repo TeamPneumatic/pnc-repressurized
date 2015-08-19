@@ -59,10 +59,12 @@ public class CraftingRegistrator{
         // pressure chamber
         addRecipe(new ItemStack(Blockss.pressureChamberWall, 16, 0), "iii", "i i", "iii", 'i', Names.INGOT_IRON_COMPRESSED);
         addRecipe(new ItemStack(Blockss.pressureChamberWall, 16, 6), "iii", "igi", "iii", 'i', Names.INGOT_IRON_COMPRESSED, 'g', "blockGlass");
-        addShapelessRecipe(new ItemStack(Blockss.pressureChamberWall, 16, 6), new ItemStack(Blockss.pressureChamberWall, 1, 0), new ItemStack(Blockss.pressureChamberWall, 1, 0), new ItemStack(Blockss.pressureChamberWall, 1, 0), new ItemStack(Blockss.pressureChamberWall, 1, 0), Blocks.glass);
+        addShapelessRecipe(new ItemStack(Blockss.pressureChamberWall, 4, 6), new ItemStack(Blockss.pressureChamberWall, 1, 0), new ItemStack(Blockss.pressureChamberWall, 1, 0), new ItemStack(Blockss.pressureChamberWall, 1, 0), new ItemStack(Blockss.pressureChamberWall, 1, 0), Blocks.glass);
         addRecipe(new ItemStack(Blockss.pressureChamberValve, 16, 0), "iii", "iti", "iii", 'i', Names.INGOT_IRON_COMPRESSED, 't', new ItemStack(Blockss.pressureTube, 1, 0));
-        addShapelessRecipe(new ItemStack(Blockss.pressureChamberValve, 16, 0), new ItemStack(Blockss.pressureChamberWall, 1, 0), new ItemStack(Blockss.pressureChamberWall, 1, 0), new ItemStack(Blockss.pressureChamberWall, 1, 0), new ItemStack(Blockss.pressureChamberWall, 1, 0), new ItemStack(Blockss.pressureTube, 1, 0));
+        addShapelessRecipe(new ItemStack(Blockss.pressureChamberValve, 4, 0), new ItemStack(Blockss.pressureChamberWall, 1, 0), new ItemStack(Blockss.pressureChamberWall, 1, 0), new ItemStack(Blockss.pressureChamberWall, 1, 0), new ItemStack(Blockss.pressureChamberWall, 1, 0), new ItemStack(Blockss.pressureTube, 1, 0));
         addShapelessRecipe(new ItemStack(Blockss.pressureChamberInterface), Blockss.pressureChamberWall, Blocks.hopper);
+        addShapelessRecipe(new ItemStack(Blockss.pressureChamberValve, 1, 0), Blockss.pressureChamberWall, Blockss.pressureTube);
+        addShapelessRecipe(new ItemStack(Blockss.pressureChamberWall, 1, 6), new ItemStack(Blockss.pressureChamberWall, 1, 0), Blocks.glass);
 
         //Oil related
         addRecipe(new ItemStack(Itemss.seismicSensor), " t ", "grg", "gcg", 't', Blocks.redstone_torch, 'g', "blockGlass", 'r', Items.repeater, 'c', Items.coal);
