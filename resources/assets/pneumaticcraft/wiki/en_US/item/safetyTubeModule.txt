@@ -1,5 +1,5 @@
-[image{200,190,0.2,igwmod:textures/safetyValve1.png}]
-[image{340,190,0.2,igwmod:textures/safetyValve2.png}]
+[image{200,190,0.4,pneumaticcraft:textures/wiki/safetyValve1.png}]
+[image{340,190,0.4,pneumaticcraft:textures/wiki/safetyValve2.png}]
 This item is a [link{pneumaticcraft:menu/pressureTubes}]Tube Module[link{}]. this means that it can be placed on a Pressure Tube only. For general information about Tube Modules click the link.
 
 The Safety Valve Tube Module is used to limit the pressure in a tube network to a certain value. Any additional pressure will get dispersed into the open air, which means energy loss. To set the threshold pressure at which the Safety Valve Tube Module is going to disperse air, you can apply a redstone signal. This signal can be applied only from the side that the module is pointing at. On the [prefix{n}]left [prefix{}]you see redstone applied [prefix{n}]wrongly [prefix{}]. In the WAILA tooltip you can confirm this. On the [prefix{n}]right [prefix{}]you see a [prefix{n}]correctly [prefix{}]configurated Safety Valve module. Notice the "Threshold: 1.0 bar".
@@ -28,7 +28,7 @@ For instance, if you want to have a threshold pressure of 1.0 bar, you should ap
 [prefix{l}]Applying an    [link{item/advancedPCB}]Advanced PCB[link{}][prefix{}]
 When you apply an Advanced PCB to a Safety Valve Tube Module or [link{item/regulatorTubeModule}]Regulator Tube Module[link{}] you can control the pressure threshold using a GUI. You can configure it to respond to a redstone signal how you like, or just to be a constant threshold. When right-clicked, the following GUI appears:
 
-[image{200, 540, 0.36, igwmod:textures/thresholdGUI.png}]
+[image{200, 540, 0.36, pneumaticcraft:textures/wiki/thresholdGUI.png}]
 
 The red and blue have been photoshopped in to make it more clear what it's connected to what. Apart from the red line hovering at 5.
 

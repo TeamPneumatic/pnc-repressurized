@@ -1,10 +1,10 @@
 With a Remote you can create your own GUI (Graphical User Interface). This user interface can be used to remotely control [link{item/drone}]Drones [link{}] or [link{block/universalSensor}]Universal Sensors[link{}] via [link{pneumaticcraft:progwidget/coordinateOperator}]variable [link{}] manipulation. Note that with Universal Sensors, you can use these Remotes to create wireless redstone!
 
-[image{200,85,0.33,igwmod:textures/remoteExample.png}]
+[image{200,85,0.33,pneumaticcraft:textures/wiki/remoteExample.png}]
 
 To start creating your own GUI, sneak right click the Remote. This will open up the editor window. Filling in the window works similar to how programming in a [link{programmer}]Programmer [link{}] works. Simply click and drag widgets from the right panel into the main panel on the left. To copy a widget, middle click and drag an existing widget. To edit the properties of a widget, right click the widget. For a button, this will open up the following window:
 
-[image{200,465,0.35,igwmod:textures/remoteButton.png}]
+[image{200,465,0.35,pneumaticcraft:textures/wiki/remoteButton.png}]
 
 In this window you can configure how the button should look like and how it should behave.
 

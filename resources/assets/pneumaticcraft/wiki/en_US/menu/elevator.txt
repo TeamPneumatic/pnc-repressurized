@@ -1,4 +1,4 @@
-[image{357, 20, 0.7, igwmod:textures/elevator.png}]
+[image{357, 20, 0.7, pneumaticcraft:textures/wiki/elevator.png}]
 The Elevator is a machine that can be used to vertically transport any entities, whether it be an item, mob, animal or player. You need to place an Elevator Base at the bottom. You can stack multiple on top of each other. On top of this you can place Elevator Frames, which act as a support for the elevator. 
 
 Both the amount of Elevator Bases and the amount of Elevator Frames defines how far the Elevator can extend. The maximum height of an Elevator is:

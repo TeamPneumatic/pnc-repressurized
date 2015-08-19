@@ -1,4 +1,4 @@
-[image{200,10,0.26,igwmod:textures/pressureTubes.png}]
+[image{200,10,0.52,pneumaticcraft:textures/wiki/pressureTubes.png}]
 
 [link{block/pressureTube}]Pressure Tubes[link{}] are used to transport compressed air. These tubes are compatible with ForgeMultiPart.
 

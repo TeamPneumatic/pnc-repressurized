@@ -5,7 +5,7 @@ If you want to protect an area from people griefing your place, you can use the 
 [prefix{l}]Setting up a Security Station[prefix{}]
 To set up a Security Station, you need to place network components in the network grid to form a network. In every network there should be one Diagnostic Subroutine, one Network IO Port, and one Network Registry. These three all need to be connected with eachother, and you can do that with Network Nodes. Placing network components in stacks higher than one will increase its node rating, meaning it will take longer for a hacker (and the Subroutine) to capture it. In the upgrade slots you can put in Entity Tracker upgrades, which increase the chance for the hacker getting caught by 20% per upgrade. Another upgrade you can put in is the Security upgrade. People wanting to hack your Security Station need at least a Pneumatic Helmet with one Security upgrade installed. With the Security upgrade in your Security Station, people will need at least two Security upgrades themselves in their Pneumatic Helmet to be able to hack your Security Station. The last thing you can insert in the Security Station's upgrade slots are Range upgrades, which do as they say: They increase the secured range of the Security Station.
 
-[image{320, 410, 0.5, igwmod:textures/sharingRights.png}]
+[image{320, 410, 0.5, pneumaticcraft:textures/wiki/sharingRights.png}]
 [prefix{l}]Sharing rights[prefix{}]
 You can allow other people to interact within the secured area. To do this, you can add people's username to the list found in the access tab of the Security Station. You can delete people by clicking on their name in the list.
 
@@ -15,8 +15,8 @@ When someone hacks your Security Station, you can see that in the problems and s
 [prefix{l}]Hacking [prefix{}]
 When you open up a Security Station that isn't yours, you need a [link{item/pneumaticHelmet}]Pneumatic Helmet[link{}] with a [link{pneumaticcraft:menu/machineUpgrades}]Security Upgrade[link{}] installed in the helmet. When you do this, a GUI similar to below appears. Watch the video at the beginning of this wikipage for a guide on how to hack. To capture a node, left-click it. To fortify a node, right-click an already captured node.
 
-[image{190, 700, 0.5, igwmod:textures/hacking1.png}]
-[image{335, 700, 0.5, igwmod:textures/hacking2.png}]
+[image{190, 700, 0.5, pneumaticcraft:textures/wiki/hacking1.png}]
+[image{335, 700, 0.5, pneumaticcraft:textures/wiki/hacking2.png}]
 
 [crafting{200, 870, key=block/securityStation}]
 [crafting{200, 990, key=item/networkComponent0}]

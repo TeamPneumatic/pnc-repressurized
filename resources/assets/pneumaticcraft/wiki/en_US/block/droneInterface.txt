@@ -1,4 +1,4 @@
-[image{200, 20, 0.44,igwmod:textures/droneInterface.png}]
+[image{200, 20, 0.44,pneumaticcraft:textures/wiki/droneInterface.png}]
 The Drone Interface is a block that only gets added when ComputerCraft is installed. It's a peripheral that's used to communicate with Drones. To do so, program a Drone with a ComputerCraft puzzle piece. You can combine it with other puzzle pieces. When the Drone gets to the ComputerCraft piece, it'll try to connect to an available Drone Interface located within the selected area. Available, because a Drone Interface can connect to one Drone at a time only. The following functions apply:
 
 [prefix{l}]isConnectedToDrone() [prefix{}] 

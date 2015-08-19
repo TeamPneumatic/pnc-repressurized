@@ -17,6 +17,6 @@ Most of the machines in PneumaticCraft have a GUI (Graphical User Interface) whi
 -[prefix{n}]Upgrades [prefix{}]: In here you can read about the upgrades this machine accepts, and what they do in the machine's context.
 -[prefix{n}]Pressure Status[prefix{}]: Here you can find current pressure the machine is under and the volume of the machine.
 -[prefix{n}]Problems [prefix{}]: If the machine doesn't work, this tab will point you in the right direction about what's wrong.
-[image{320,70,0.5,igwmod:textures/compressedIron.png}]
-[image{380,370,0.5,igwmod:textures/pressureGauge.png}]
-[image{320,540,0.5,igwmod:textures/guiTabs.png}]
+[image{320,70,0.5,pneumaticcraft:textures/wiki/compressedIron.png}]
+[image{380,370,0.5,pneumaticcraft:textures/wiki/pressureGauge.png}]
+[image{320,540,0.5,pneumaticcraft:textures/wiki/guiTabs.png}]

@@ -1,4 +1,4 @@
-[image{325, 20,0.5, igwmod:textures/airCannon.png}]
+[image{325, 20,0.5, pneumaticcraft:textures/wiki/airCannon.png}]
 The Air Cannon is a device you can use to transport your items quite some distance, through the air. It uses compressed air as propellant.
 
 [crafting{200, 130, key=item/cannonBarrel}]

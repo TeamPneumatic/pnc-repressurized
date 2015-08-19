@@ -8,7 +8,7 @@ When this threshold has been reached this tube won’t let gasses through anymore.
 
 [prefix{l}]One-way behaviour[prefix{}]
 The Regulator tube will only regulate to one way, namely the direction it's pointing at. To the other side the gases are [prefix{l}]NOT [prefix{}] stopped! This can be used to create a one way valve.
-[image{200, 270, 0.4, igwmod:textures/regulatorTubeUsage.png}]
+[image{200, 270, 0.4, pneumaticcraft:textures/wiki/regulatorTubeUsage.png}]
 
 [prefix{l}]Applying an    [link{item/advancedPCB}]Advanced PCB[link{}][prefix{}]
 The Advanced PCB behaviour of the Regulator Tube Module is [prefix{n}]very [prefix{}]similar to that of the [link{item/safetyTubeModule}]Safety Valve Module[link{}]. I suggest to go to that linked page for info.

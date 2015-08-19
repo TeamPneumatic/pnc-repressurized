@@ -1,5 +1,5 @@
-[image{200,10,0.415,igwmod:textures/refineryGui.png}]
-[image{360,300,0.20,igwmod:textures/refinery.png}]
+[image{200,10,0.415,pneumaticcraft:textures/wiki/refineryGui.png}]
+[image{360,300,0.40,pneumaticcraft:textures/wiki/refinery.png}]
 A Refinery is a machine which is uses [link{pneumaticcraft:menu/heat}]heat [link{}] to refine Oil into various fuels. It starts to work at 100 degrees Celcius. The higher temperature applied, the faster it refines. All fuels that can be produced are, sorted from lightest to heaviest:
 
 -LPG (Liquefied Petroleum Gas)

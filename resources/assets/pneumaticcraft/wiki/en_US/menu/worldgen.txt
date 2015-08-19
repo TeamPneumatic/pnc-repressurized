@@ -1,4 +1,4 @@
-[image{200,20,0.28,igwmod:textures/worldgen.png}]
+[image{200,20,0.56,pneumaticcraft:textures/wiki/worldgen.png}]
 
 
 

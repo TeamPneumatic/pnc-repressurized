@@ -9,7 +9,6 @@ import igwmod.gui.IWidget;
 import igwmod.gui.LocatedStack;
 import igwmod.gui.LocatedString;
 import igwmod.gui.LocatedTexture;
-import igwmod.lib.Paths;
 
 import java.util.List;
 
@@ -17,6 +16,7 @@ import net.minecraft.item.ItemStack;
 import pneumaticCraft.api.recipe.AssemblyRecipe;
 import pneumaticCraft.common.item.ItemAssemblyProgram;
 import pneumaticCraft.common.item.Itemss;
+import pneumaticCraft.lib.Textures;
 
 public class IntegratorAssembly implements IRecipeIntegrator{
 
@@ -40,7 +40,7 @@ public class IntegratorAssembly implements IRecipeIntegrator{
         } catch(NumberFormatException e) {
             throw new IllegalArgumentException("The second parameter (the y coordinate) contains an invalid number. Check for invalid characters!");
         }
-        locatedTextures.add(new LocatedTexture(TextureSupplier.getTexture(Paths.MOD_ID_WITH_COLON + "textures/assemblyLineRecipe.png"), x, y, 1 / GuiWiki.TEXT_SCALE));
+        locatedTextures.add(new LocatedTexture(TextureSupplier.getTexture(Textures.ICON_LOCATION + "textures/wiki/assemblyLineRecipe.png"), x, y, 1 / GuiWiki.TEXT_SCALE));
 
         int recipeIndex = 0;
         if(arguments.length == 4) {

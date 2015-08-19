@@ -14,7 +14,7 @@ The Programmer is a block used to program [link{item/drone}]Drones [link{}]. Thi
 
 
 When you open up the interface of the Programmer you'll see something like the following:
-[image{200,200,0.35,igwmod:textures/ProgrammerInterface.png}]
+[image{200,200,0.20,pneumaticcraft:textures/wiki/programmerGUI.png}]
 
 
 
@@ -38,11 +38,11 @@ When you open up the interface of the Programmer you'll see something like the f
 On the right you can see a list of all available puzzle pieces. There are multiple pages of these. To begin, drag a 'Start' puzzle piece to somewhere on the screen. This is where every program starts. As you can see in the image, you can connect puzzle pieces. Let's explain what happens here:
 -The program starts at the 'Start' piece.
 -The program will perform the 'Inv-I' (Inventory Import) program. It has an 'Area' puzzle piece connected to it, which specifies where it should import items from.
--The program will perform the 'Place' program. The connected 'Area' piece specifies where to place.
+-The program will perform the 'Dig' program. The connected 'Area' piece specifies where to place. On the left of this piece an 'Item Filter' piece is connected. This tells the 'Dig' piece that it should not dig Oak Wood blocks. It is allowed to dig anything else.
 
 So vertically placed pieces are executed sequentially. Whether the Drone should execute the current program or move on to the next is dependent upon one condition: When the current running program is done. For every puzzle piece this is different, this will be explained.
 
-Horizontally placed pieces are parameters for the 'main' pieces (pieces that have a vertical input/output). These can be things like area's, item filters or texts. When each of these are placed on the right, this means it'll be added, whitelisted, to the piece. When placed on the left it will be blacklisted. for instance, if you have a Drone that you want to have attack every player but yourself, you could place a 'Text' piece on the right with '@player' (meaning every player). Then you place a 'Text' piece on the left with your player name. So every player will be added (on the right), and you will be substracted (from the left).
+Horizontally placed pieces are parameters for the 'main' pieces (pieces that have a vertical input/output). These can be things like area's, item filters or texts. When each of these are placed on the right, this means it'll be added, whitelisted, to the piece. When placed on the left it will be blacklisted. for instance, if you have a Drone that you want to have attack every player but yourself, you could place a 'Text' piece on the right with '@player' (meaning every player). Then you place a 'Text' piece on the left with your player name. So every player will be added (on the right), and you will be subtracted (from the left).
 
 The following is a list of all the different Programming Puzzles:
 [link{pneumaticcraft:progwidget/start}]-Start [link{}]
@@ -82,7 +82,7 @@ Just drag and drop pieces to make up your program. When you are done writing the
 
 You can press the 'Import' button to load the program stored in the Drone into the Programmer. This will override any program written in the Programmer.
 
-You can automate the programming of Drones by pressing 'R' while hovering over the 'Export' button. This will put the Programmer in 'program when inserting item' mode. When items are put in via a Hopper for example, the Drone will automatically be tried to be programmed.
+You can automate the programming of Drones by pressing 'R' while hovering over the 'Export' button. This will put the Programmer in 'program when inserting item' mode. When items are put in via a Hopper for example, the Drone will automatically be tried to be programmed (using the puzzle pieces in an adjacent inventory).
 
-There is a trick to speed up certain programming: Middle-click a puzzle piece to copy the piece along with its properties (so a copied 'area' piece will contain the area of the copied piece).
+There is a trick to speed up certain programming: Middle-click a puzzle piece to copy the piece along with its properties (so a copied 'area' piece will contain the area of the copied piece). Additionally, when you sneak + middle-click a piece, it will copy an entire branch.
 

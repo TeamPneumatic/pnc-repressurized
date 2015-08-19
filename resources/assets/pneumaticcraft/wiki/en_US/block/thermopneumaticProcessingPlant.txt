@@ -1,4 +1,4 @@
-[image{200,10,0.245,igwmod:textures/thermopneumaticProcessor.png}]
+[image{200,10,0.49,pneumaticcraft:textures/wiki/thermopneumaticProcessor.png}]
 A Thermopneumatic Processing Plant uses pressure and [link{pneumaticcraft:menu/heat}]heat [link{}] to process materials. It has a few uses.
 
 [prefix{l}]Creating Plastic[prefix{}]

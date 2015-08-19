@@ -1,4 +1,4 @@
-[image{380, 20, 0.3, igwmod:textures/chargingStation.png}]
+[image{380, 20, 0.3, pneumaticcraft:textures/wiki/chargingStation.png}]
 The Charging Station is a machine in which pneumatic items can be charged (or discharged). The interaction between the Charging Station and pneumatic items is the same as for the interaction between tubes/machines: Differences in pressures are tried to equalize. This means that you'll need a highly pressurized Charging Station to charge items to a high pressure.
 
 Most charged items have a maximum pressure of 10 bar. Don't worry for explosions though, items never can explode, they will simply stop charging beyond 10 bar.

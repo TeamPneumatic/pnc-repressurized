@@ -27,4 +27,4 @@ When the Drone's air runs out the propellers of the Drone will stop and the Dron
 
 [prefix{l}]Dyeing a Drone [prefix{}]
 You can dye a Drone by putting a Drone in a crafting table together with a piece of dye. You can also craft a Drone in-world, by right clicking it with a piece of dye.
-[image{200, 570, 0.16, igwmod:textures/droneDye.png}]
+[image{200, 570, 0.64, pneumaticcraft:textures/wiki/droneDye.png}]

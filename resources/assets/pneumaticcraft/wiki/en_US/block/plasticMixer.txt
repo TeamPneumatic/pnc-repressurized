@@ -1,6 +1,6 @@
 The Plastic Mixer is a machine you can use to transform one color of plastic into another. It uses heat and dye to do so. A different use is to solidify liquid plastic gotten from a [link{block/thermopneumaticProcessingPlant}]Thermopneumatic Processing Plant[link{}]. This does not require heat.
-[image{370, 5, 0.3,igwmod:textures/plasticMixer.png}]
-[image{200, 125,0.4, igwmod:textures/plasticMixerGUI.png}]
+[image{370, 5, 0.3,pneumaticcraft:textures/wiki/plasticMixer.png}]
+[image{200, 125,0.4, pneumaticcraft:textures/wiki/plasticMixerGUI.png}]
 
 
 
