@@ -19,6 +19,7 @@ public class SemiBlockInitializer{
         registerSemiBlock(SemiBlockStorage.ID, SemiBlockStorage.class, false);
         registerSemiBlock(SemiBlockDefaultStorage.ID, SemiBlockDefaultStorage.class, false);
         registerSemiBlock(SemiBlockRequester.ID, requesterClass, false);
+        registerSemiBlock("heatFrame", SemiBlockHeatFrame.class);
 
         PneumaticCraft.proxy.registerSemiBlockRenderer((ItemSemiBlockBase)Itemss.logisticsFrameRequester);
         SemiBlockManager.registerSemiBlockToItemMapping(requesterClass, Itemss.logisticsFrameRequester);

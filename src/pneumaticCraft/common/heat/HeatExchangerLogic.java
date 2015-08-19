@@ -162,21 +162,29 @@ public class HeatExchangerLogic implements IHeatExchangerLogic{
             }
         }
         for(IHeatExchangerLogic logic : connectedExchangers) {
-            if(logic.getThermalCapacity() < 0.1D) {
-                logic.setTemperature(295);
-                continue;
-            }
-            double deltaTemp = logic.getTemperature() - getTemperature();
-
-            double totalResistance = thermalResistance + logic.getThermalResistance();
-            deltaTemp /= getTickingHeatExchangers();//As the connected logics also will tick, we should prevent dispersing more when more are connected.
-            deltaTemp /= totalResistance;
-
-            double maxDeltaTemp = (logic.getTemperature() * logic.getThermalCapacity() - temperature * getThermalCapacity()) / 2;//Calculate the heat needed to exactly equalize the heat.
-            if(maxDeltaTemp >= 0 && deltaTemp > maxDeltaTemp || maxDeltaTemp <= 0 && deltaTemp < maxDeltaTemp) deltaTemp = maxDeltaTemp;
-            addHeat(deltaTemp);
-            logic.addHeat(-deltaTemp);
+            exchange(logic, this, getTickingHeatExchangers());//As the connected logics also will tick, we should prevent dispersing more when more are connected.
         }
+    }
+
+    public static void exchange(IHeatExchangerLogic logic, IHeatExchangerLogic logic2){
+        exchange(logic, logic2, 1);
+    }
+
+    public static void exchange(IHeatExchangerLogic logic, IHeatExchangerLogic logic2, double dispersionDivider){
+        if(logic.getThermalCapacity() < 0.1D) {
+            logic.setTemperature(295);
+            return;
+        }
+        double deltaTemp = logic.getTemperature() - logic2.getTemperature();
+
+        double totalResistance = logic2.getThermalResistance() + logic.getThermalResistance();
+        deltaTemp /= dispersionDivider;
+        deltaTemp /= totalResistance;
+
+        double maxDeltaTemp = (logic.getTemperature() * logic.getThermalCapacity() - logic2.getTemperature() * logic2.getThermalCapacity()) / 2;//Calculate the heat needed to exactly equalize the heat.
+        if(maxDeltaTemp >= 0 && deltaTemp > maxDeltaTemp || maxDeltaTemp <= 0 && deltaTemp < maxDeltaTemp) deltaTemp = maxDeltaTemp;
+        logic2.addHeat(deltaTemp);
+        logic.addHeat(-deltaTemp);
     }
 
     private int getTickingHeatExchangers(){

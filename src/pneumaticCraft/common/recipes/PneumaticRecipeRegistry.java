@@ -9,6 +9,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.OreDictionary;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
 import pneumaticCraft.api.recipe.AssemblyRecipe;
@@ -21,6 +22,7 @@ import pneumaticCraft.common.util.OreDictionaryHelper;
 public class PneumaticRecipeRegistry implements IPneumaticRecipeRegistry{
     public List<IThermopneumaticProcessingPlantRecipe> thermopneumaticProcessingPlantRecipes = new ArrayList<IThermopneumaticProcessingPlantRecipe>();
     public List<AmadronOffer> amadronOffers = new ArrayList<AmadronOffer>();
+    public List<Pair<Object, ItemStack>> heatFrameCoolingRecipes = new ArrayList<Pair<Object, ItemStack>>();
 
     private static final PneumaticRecipeRegistry INSTANCE = new PneumaticRecipeRegistry();
 
@@ -109,6 +111,19 @@ public class PneumaticRecipeRegistry implements IPneumaticRecipeRegistry{
     public void registerAmadronOffer(Object input, Object output){
         AmadronOffer offer = new AmadronOffer(input, output);
         if(!amadronOffers.contains(offer)) amadronOffers.add(offer);
+    }
+
+    @Override
+    public void registerHeatFrameCoolRecipe(Object input, ItemStack output){
+        if(input == null) throw new NullPointerException("Input can't be null!");
+        if(!(input instanceof ItemStack) && !(input instanceof Pair)) throw new IllegalArgumentException("Input needs to be of type ItemStack or (Apache's) Pair<String, Integer>. Violating object: " + input);
+        if(input instanceof Pair) {
+            Pair pair = (Pair)input;
+            if(!(pair.getKey() instanceof String)) throw new IllegalArgumentException("Pair key needs to be a String (ore dict entry)");
+            if(!(pair.getValue() instanceof Integer)) throw new IllegalArgumentException("Value key needs to be an Integer (amount)");
+        }
+        if(output == null) throw new NullPointerException("Output can't be null!");
+        heatFrameCoolingRecipes.add(new ImmutablePair(input, output));
     }
 
 }

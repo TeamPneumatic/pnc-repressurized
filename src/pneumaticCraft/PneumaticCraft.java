@@ -91,10 +91,10 @@ public class PneumaticCraft{
         ThirdPartyManager.instance().preInit();
         TileEntityRegistrator.init();
         EntityRegistrator.init();
+        SemiBlockInitializer.init();
         CraftingRegistrator.init();
         VillagerHandler.instance().init();
         GameRegistry.registerWorldGenerator(new WorldGeneratorPneumaticCraft(), 0);
-        SemiBlockInitializer.init();
         AchievementHandler.init();
         HeatBehaviourManager.getInstance().init();
 

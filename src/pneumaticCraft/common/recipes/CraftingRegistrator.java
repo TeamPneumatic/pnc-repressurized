@@ -33,6 +33,8 @@ import pneumaticCraft.common.item.ItemNetworkComponents;
 import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.common.item.ItemProgrammingPuzzle;
 import pneumaticCraft.common.item.Itemss;
+import pneumaticCraft.common.semiblock.SemiBlockHeatFrame;
+import pneumaticCraft.common.semiblock.SemiBlockManager;
 import pneumaticCraft.lib.Names;
 import cpw.mods.fml.common.registry.GameRegistry;
 
@@ -149,7 +151,7 @@ public class CraftingRegistrator{
         //Heat related
         addRecipe(new ItemStack(Blockss.heatSink), "bbb", "igi", 'i', Names.INGOT_IRON_COMPRESSED, 'b', Blocks.iron_bars, 'g', "ingotGold");
         addRecipe(new ItemStack(Blockss.vortexTube), "iti", "gtg", "iii", 'i', Names.INGOT_IRON_COMPRESSED, 'g', "ingotGold", 't', Blockss.pressureTube);
-
+        addRecipe(new ItemStack(SemiBlockManager.getItemForSemiBlock(SemiBlockHeatFrame.class)), "iii", "ifi", "iii", 'i', Names.INGOT_IRON_COMPRESSED, 'f', Blocks.furnace);
         //misc
         addRecipe(new ItemStack(Blockss.compressedIron), "iii", "iii", "iii", 'i', Names.INGOT_IRON_COMPRESSED);
         addShapelessRecipe(new ItemStack(Itemss.ingotIronCompressed, 9, 0), Names.BLOCK_IRON_COMPRESSED);
@@ -201,6 +203,7 @@ public class CraftingRegistrator{
         addAssemblyRecipes();
         addThermopneumaticProcessingPlantRecipes();
         registerAmadronOffers();
+        addCoolingRecipes();
     }
 
     public static void addProgrammingPuzzleRecipes(){
@@ -330,6 +333,11 @@ public class CraftingRegistrator{
                 }
             } catch(Throwable e) {}
         }
+    }
+
+    private static void addCoolingRecipes(){
+        PneumaticRecipeRegistry registry = PneumaticRecipeRegistry.getInstance();
+        registry.registerHeatFrameCoolRecipe(new ItemStack(Items.water_bucket), new ItemStack(Blocks.ice));
     }
 
     private static void addRecipe(ItemStack result, Object... recipe){

@@ -119,6 +119,7 @@ item.logisticFrameDefaultStorage.name=Logistic Default Storage Frame
 item.logisticDrone.name=Logistic Drone
 item.gunAmmo.name=Gun Ammo
 item.amadronTablet.name=Amadron Tablet
+item.heatFrame.name=Heat Frame
 
 item.programmingPuzzle.black.name=Black Programming Puzzle
 item.programmingPuzzle.red.name=Red Programming Puzzle

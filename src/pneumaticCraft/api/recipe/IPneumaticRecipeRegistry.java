@@ -58,4 +58,11 @@ public interface IPneumaticRecipeRegistry{
      * @param output
      */
     public void registerAmadronOffer(Object input, Object output);
+
+    /**
+     * Adds a behaviour for when an inventory is framed with a Heat Frame, and is cooled below 0 degrees C. If the input item is a container item it will be returned as well.
+     * @param input either of type ItemStack or Pair<String, Integer>, where the String is the Ore dictionary entry and Integer is the amount (stack size)
+     * @param output
+     */
+    public void registerHeatFrameCoolRecipe(Object input, ItemStack output);
 }

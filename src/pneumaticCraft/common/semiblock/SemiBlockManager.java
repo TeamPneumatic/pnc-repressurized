@@ -77,7 +77,11 @@ public class SemiBlockManager{
     }
 
     public static Item getItemForSemiBlock(ISemiBlock semiBlock){
-        return semiBlockToItems.get(semiBlock.getClass());
+        return getItemForSemiBlock(semiBlock.getClass());
+    }
+
+    public static Item getItemForSemiBlock(Class<? extends ISemiBlock> semiBlock){
+        return semiBlockToItems.get(semiBlock);
     }
 
     public static Class<? extends ISemiBlock> getSemiBlockForItem(Item item){

@@ -26,3 +26,6 @@ Dynamic heat sources, used to control heat:
 
 [prefix{l}]Heating a Furnace[prefix{}]
 When connecting a Furnace to any dynamic heat source (mentioned above, but also blocks like Compressors that produce heat), the heat will be used by the Furnace to fuel it. Additionally the Furnace will smelt double the speed. This can be stacked with multiple heat sources around the Furnace. This furnace fueling will start to work at 100 degrees C.
+
+[prefix{l}]Heat Frame[prefix{}]
+A [link{item/heatFrame}]Heat Frame[link{}] is an item that can be used to heat (or freeze) items in any inventory. For more info visit the relevant page.

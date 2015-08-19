@@ -14,6 +14,7 @@ import org.lwjgl.opengl.GL11;
 import pneumaticCraft.common.semiblock.ISemiBlock;
 import pneumaticCraft.common.semiblock.SemiBlockLogistics;
 import pneumaticCraft.common.semiblock.SemiBlockManager;
+import pneumaticCraft.common.semiblock.SemiBlockHeatFrame;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
@@ -22,6 +23,7 @@ public class ClientSemiBlockManager{
 
     static {
         registerRenderer(SemiBlockLogistics.class, new SemiBlockRendererLogistics());
+        registerRenderer(SemiBlockHeatFrame.class, new SemiBlockRendererHeatFrame());
     }
 
     public static void registerRenderer(Class<? extends ISemiBlock> semiBlock, ISemiBlockRenderer renderer){
