@@ -786,6 +786,7 @@ gui.tooltip.item.logisticDrone=Robot which performs logistic tasks. Logistic Fra
 gui.tooltip.item.gunAmmo=Bullets used by Drones when they have an Entity Tracker Upgrade inserted, giving them a Minigun.
 gui.tooltip.item.amadronTablet=Item used to order items/fluids. It is comparable to Villager trading. Items/fluids are picked up and delivered via Drones. A pick-up/drop-off location is required to be specified by right-clicking with an inventory and/or tank.
 gui.tooltip.item.logisticsModule=This tube module when fitted on a tube will communicate with other Logistics Tube Modules on connected tubes. It will perform logistics tasks on inventories/tanks it is pointing towards, and are fitted with a Logistic Frame. It uses pressure to do so.
+gui.tooltip.item.heatFrame=Can be placed on any inventory. When heated by an adjacent heat source it will try to smelt any item in the inventory as well as freeze it when cooled. It will only succeed when there is room in the inventory for the outputted item. The more heat applied, the faster the smelting process will be, up to a maximum of 1 item smelted per second. Similarly the more it's cooled, the faster it will freeze objects.
 
 # Waila
 hud.msg.state=State
