@@ -1,9 +1,11 @@
--You can now combine FMP tubes and tube modules.
--Added 'dust' effect when drones are above blocks.
--Added WAILA integration for the Logistics Modules.
+-You can now power (Vanilla) Furnaces by connecting a heat source.
+-Fluids with a temperature equal or higher than Lava will turn into Obsidian when too much heat is exhausted into blocks.
+-Fluids with a lower temperature than lava will turn into Stone when too much heat is absorbed, and will turn into Ice when too much heat is exhausted.
+-You will now catch fire when touching a hot Heat Sink.
+-Added Heat Frame.
+-IGW changes: Compressed a fair amount of images, moved the images to the PneumaticCraft assets, and updated a few screenshots to the current looks.
+-Added Pressure Chamber Wall + Glass = 1x Pressure Chamber Window recipe.
+-Added Pressure Chamber Wall + Pressure Tube = 1x Pressure Chamber Valve recipe.
 
--Bugfix: Wonky looking pressure gauge in the UV Light Box and Charging Station when upgraded with Speed Upgrades.
--Bugfix: UV Light Box doesn't render connections.
--Bugfix: Memory leak with loading/unloading dimensions.
--Bugfix: Crash with Amadron system.
--Bugfix: When trying to place a FMP on a Pressure Tube, it won't render the preview render until the Pressure Tube is converted to a FMP.
+-Bugfix: When grabbing a puzzle piece out of the Programmer's panel, you can accidentally zoom.
+-Bugfix: Various thing in the mod break when setting gamerule doDaylightCycle to false.
