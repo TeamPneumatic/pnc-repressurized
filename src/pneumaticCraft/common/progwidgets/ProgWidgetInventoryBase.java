@@ -59,9 +59,13 @@ public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase imp
     @Override
     public void getTooltip(List<String> curTooltip){
         super.getTooltip(curTooltip);
-        curTooltip.add("Accessing sides:");
+        if(isUsingSides()) curTooltip.add("Accessing sides:");
         curTooltip.add(getExtraStringInfo());
         if(useCount) curTooltip.add("Using count (" + count + ")");
+    }
+
+    protected boolean isUsingSides(){
+        return true;
     }
 
     @Override

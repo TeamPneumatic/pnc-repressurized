@@ -124,6 +124,11 @@ public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implem
     }
 
     @Override
+    protected boolean isUsingSides(){
+        return false;
+    }
+
+    @Override
     public String getExtraStringInfo(){
         String anyAll = I18n.format(isAndFunction() ? "gui.progWidget.condition.all" : "gui.progWidget.condition.any");
         return anyAll + " " + getOperator().toString() + " " + getRequiredCount();

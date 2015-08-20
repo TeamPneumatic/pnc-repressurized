@@ -123,4 +123,9 @@ public class ProgWidgetDropItem extends ProgWidgetInventoryBase implements IItem
     public int getCraftingColorIndex(){
         return ItemPlasticPlants.POTION_PLANT_DAMAGE;
     }
+
+    @Override
+    protected boolean isUsingSides(){
+        return false;
+    }
 }
