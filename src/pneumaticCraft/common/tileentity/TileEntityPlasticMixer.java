@@ -27,7 +27,8 @@ import pneumaticCraft.lib.PneumaticValues;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHandler, ISidedInventory, IHeatExchanger{
+public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHandler, ISidedInventory, IHeatExchanger,
+        IRedstoneControlled{
     private final FluidTank tank = new FluidTank(PneumaticValues.NORMAL_TANK_CAPACITY);
     private final ItemStack[] inventory = new ItemStack[9];
     private int lastTickInventoryStacksize;
@@ -38,6 +39,8 @@ public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHand
     private final IHeatExchangerLogic itemLogic = PneumaticRegistry.getInstance().getHeatExchangerLogic();
     @GuiSynced
     public int selectedPlastic = -1;
+    @GuiSynced
+    private int redstoneMode;
     @GuiSynced
     public boolean lockSelection;
     @GuiSynced
@@ -100,7 +103,7 @@ public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHand
 
                 itemLogic.setThermalCapacity(inventory[INV_INPUT] == null ? 0 : inventory[INV_INPUT].stackSize);
             }
-            if(tank.getFluid() != null && selectedPlastic >= 0) {
+            if(tank.getFluid() != null && selectedPlastic >= 0 && redstoneAllows()) {
                 ItemStack solidifiedStack = new ItemStack(Itemss.plastic, tank.getFluid().amount / 1000, selectedPlastic);
                 if(solidifiedStack.stackSize > 0) {
                     solidifiedStack.stackSize = 1;
@@ -121,6 +124,7 @@ public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHand
                 }
             }
             if(!lockSelection) selectedPlastic = -1;
+            if(redstoneMode == 3) selectedPlastic = poweredRedstone;
         }
     }
 
@@ -161,6 +165,7 @@ public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHand
         dyeBuffers[0] = tag.getInteger("dyeBuffer0");
         dyeBuffers[1] = tag.getInteger("dyeBuffer1");
         dyeBuffers[2] = tag.getInteger("dyeBuffer2");
+        redstoneMode = tag.getInteger("redstoneMode");
 
         itemLogic.readFromNBT(tag.getCompoundTag("itemLogic"));
     }
@@ -175,6 +180,7 @@ public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHand
         tag.setInteger("dyeBuffer0", dyeBuffers[0]);
         tag.setInteger("dyeBuffer1", dyeBuffers[1]);
         tag.setInteger("dyeBuffer2", dyeBuffers[2]);
+        tag.setInteger("redstoneMode", redstoneMode);
 
         NBTTagCompound heatTag = new NBTTagCompound();
         itemLogic.writeToNBT(heatTag);
@@ -369,17 +375,32 @@ public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHand
 
     @Override
     public void handleGUIButtonPress(int guiID, EntityPlayer player){
-        if(guiID >= 0 && guiID < 16) {
+        super.handleGUIButtonPress(guiID, player);
+        if(guiID == 0) {
+            if(++redstoneMode > 3) {
+                redstoneMode = 0;
+            }
+        } else if(guiID >= 1 && guiID < 17) {
             if(selectedPlastic != guiID) {
-                selectedPlastic = guiID;
+                selectedPlastic = guiID - 1;
                 if(tank.getFluidAmount() >= 1000) {
                     AchievementHandler.giveAchievement(player, new ItemStack(Itemss.plastic));
                 }
             } else {
                 selectedPlastic = -1;
             }
-        } else if(guiID == 16) {
+        } else if(guiID == 17) {
             lockSelection = !lockSelection;
         }
+    }
+
+    @Override
+    public int getRedstoneMode(){
+        return redstoneMode;
+    }
+
+    @Override
+    public boolean redstoneAllows(){
+        return redstoneMode == 3 ? true : super.redstoneAllows();
     }
 }

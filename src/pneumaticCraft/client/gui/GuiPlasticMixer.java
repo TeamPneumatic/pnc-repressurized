@@ -50,11 +50,16 @@ public class GuiPlasticMixer extends GuiPneumaticContainerBase<TileEntityPlastic
             for(int y = 0; y < 4; y++) {
                 int index = y * 4 + x;
                 ItemStack plastic = new ItemStack(Itemss.plastic, 1, index);
-                buttons[index] = new GuiButtonSpecial(index, x * 21 + 4, y * 21 + 30, 20, 20, "").setRenderStacks(plastic).setTooltipText(plastic.getDisplayName());
+                buttons[index] = new GuiButtonSpecial(index + 1, x * 21 + 4, y * 21 + 30, 20, 20, "").setRenderStacks(plastic).setTooltipText(plastic.getDisplayName());
                 stat.addWidget(buttons[index]);
             }
         }
-        stat.addWidget(lockSelection = new GuiCheckBox(16, 4, 18, 0xFF000000, "gui.plasticMixer.lockSelection").setChecked(te.lockSelection).setTooltip(I18n.format("gui.plasticMixer.lockSelection.tooltip")));
+        stat.addWidget(lockSelection = new GuiCheckBox(17, 4, 18, 0xFF000000, "gui.plasticMixer.lockSelection").setChecked(te.lockSelection).setTooltip(I18n.format("gui.plasticMixer.lockSelection.tooltip")));
+    }
+
+    @Override
+    public String getRedstoneButtonText(int mode){
+        return mode == 3 ? "gui.tab.redstoneBehaviour.plasticMixer.button.selectOnSignal" : super.getRedstoneButtonText(mode);
     }
 
     @Override

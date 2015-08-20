@@ -552,6 +552,7 @@ gui.tab.redstoneBehaviour.universalSensor.redstoneEmission=Redstone emission
 gui.tab.redstoneBehaviour.universalSensor.button.inverted=Inverted
 gui.tab.redstoneBehaviour.universalSensor.button.normal=Normal
 gui.tab.redstoneBehaviour.uvLightBox.button.chance=Success Chance
+gui.tab.redstoneBehaviour.plasticMixer.button.selectOnSignal=Select Plastic on Signal
 
 #misc
 gui.tab.hopperStatus=Hopper Status
