@@ -92,6 +92,13 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
                 if(energyRF != null) tickRF();
                 addAir(-PneumaticValues.USAGE_AERIAL_INTERFACE, ForgeDirection.UNKNOWN);
                 if(worldObj.getTotalWorldTime() % 40 == 0) dispenserUpgradeInserted = getUpgrades(ItemMachineUpgrade.UPGRADE_DISPENSER_DAMAGE) > 0;
+                if(worldObj.getTotalWorldTime() % 20 == 0) {
+                    EntityPlayer player = getPlayer();
+                    if(player != null && player.getAir() <= 280) {
+                        player.setAir(player.getAir() + 20);
+                        addAir(-4000, null);
+                    }
+                }
             }
             if(worldObj.getTotalWorldTime() % 20 == 0) getPlayerInventory();
         }

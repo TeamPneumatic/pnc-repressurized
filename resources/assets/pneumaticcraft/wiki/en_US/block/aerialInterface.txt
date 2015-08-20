@@ -18,6 +18,9 @@ Note that upgrades for the Aerial Interface can be pumped in/out the top, main i
 
 
 
+[prefix{l}]Water Breathing[prefix{}]
+Obviously, because we have something that can link to a player, which is powered by air, there should be something that allows us to transfer this air when necessary right? At a cost of 200mL/tick (equal to 4 Advanced Air Compressors) the player can breathe indefinitely under water.
+
 [prefix{l}]Interfacing RF[prefix{}]
 An Aerial Interface will accept RF. The RF stored in its internal buffer (100,000RF) is used to charge any chargeable RF item in the player's inventory (and armor slots).
 
