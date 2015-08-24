@@ -1,11 +1,7 @@
--You can now power (Vanilla) Furnaces by connecting a heat source.
--Fluids with a temperature equal or higher than Lava will turn into Obsidian when too much heat is exhausted into blocks.
--Fluids with a lower temperature than lava will turn into Stone when too much heat is absorbed, and will turn into Ice when too much heat is exhausted.
--You will now catch fire when touching a hot Heat Sink.
--Added Heat Frame.
--IGW changes: Compressed a fair amount of images, moved the images to the PneumaticCraft assets, and updated a few screenshots to the current looks.
--Added Pressure Chamber Wall + Glass = 1x Pressure Chamber Window recipe.
--Added Pressure Chamber Wall + Pressure Tube = 1x Pressure Chamber Valve recipe.
+-Compressed IGW images.
+-Added Redstone control to the Plastic Mixer.
+-You can now breathe indefinately under water when having an Aerial Interface connected (at a high air cost).
+-You can now show the area of a Right Click Entity piece.
 
--Bugfix: When grabbing a puzzle piece out of the Programmer's panel, you can accidentally zoom.
--Bugfix: Various thing in the mod break when setting gamerule doDaylightCycle to false.
+-Bugfix: Various puzzle pieces show a 'Accessing Sides:' in the tooltip even though they aren't using sides.
+-Bugfix: Logistic Frames disappear client-side and cause a crash when tried to be interacted with.

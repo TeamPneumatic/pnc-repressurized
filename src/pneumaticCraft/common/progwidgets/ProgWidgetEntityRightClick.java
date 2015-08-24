@@ -2,21 +2,28 @@ package pneumaticCraft.common.progwidgets;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.World;
+import pneumaticCraft.client.gui.GuiProgrammer;
+import pneumaticCraft.client.gui.programmer.GuiProgWidgetAreaShow;
 import pneumaticCraft.common.ai.DroneAIBlockInteract;
 import pneumaticCraft.common.ai.DroneEntityBase;
 import pneumaticCraft.common.ai.IDroneBase;
 import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.lib.Textures;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
-public class ProgWidgetEntityRightClick extends ProgWidget implements IEntityProvider{
+public class ProgWidgetEntityRightClick extends ProgWidget implements IAreaProvider, IEntityProvider{
 
     @Override
     public void addErrors(List<String> curInfo){
@@ -97,5 +104,16 @@ public class ProgWidgetEntityRightClick extends ProgWidget implements IEntityPro
     @Override
     public boolean isEntityValid(Entity entity){
         return ProgWidgetAreaItemBase.isEntityValid(entity, this);
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public GuiScreen getOptionWindow(GuiProgrammer guiProgrammer){
+        return new GuiProgWidgetAreaShow(this, guiProgrammer);
+    }
+
+    @Override
+    public void getArea(Set<ChunkPosition> area){
+        ProgWidgetEntityAttack.getArea(area, (ProgWidgetArea)getConnectedParameters()[0], (ProgWidgetArea)getConnectedParameters()[2]);
     }
 }
