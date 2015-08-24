@@ -340,6 +340,7 @@ public class CraftingRegistrator{
     private static void addCoolingRecipes(){
         PneumaticRecipeRegistry registry = PneumaticRecipeRegistry.getInstance();
         registry.registerHeatFrameCoolRecipe(new ItemStack(Items.water_bucket), new ItemStack(Blocks.ice));
+        registry.registerHeatFrameCoolRecipe(new ItemStack(Items.lava_bucket), new ItemStack(Blocks.obsidian));
     }
 
     private static void addRecipe(ItemStack result, Object... recipe){
