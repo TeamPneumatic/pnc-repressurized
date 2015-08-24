@@ -234,11 +234,11 @@ public class SemiBlockManager{
         List<EntityPlayerMP> players = world.playerEntities;
         for(Map.Entry<Chunk, Set<EntityPlayerMP>> entry : syncList.entrySet()) {
             Chunk chunk = entry.getKey();
-            if(chunk.worldObj == world) {
-                Set<EntityPlayerMP> syncedPlayers = entry.getValue();
-                int chunkX = chunk.xPosition * 16 - 8;
-                int chunkZ = chunk.zPosition * 16 - 8;
-                for(EntityPlayerMP player : players) {
+            Set<EntityPlayerMP> syncedPlayers = entry.getValue();
+            int chunkX = chunk.xPosition * 16 - 8;
+            int chunkZ = chunk.zPosition * 16 - 8;
+            for(EntityPlayerMP player : players) {
+                if(chunk.worldObj == world) {
                     double dist = PneumaticCraftUtils.distBetween(player.posX, 0, player.posZ, chunkX, 0, chunkZ);
                     if(dist < SYNC_DISTANCE) {
                         if(syncedPlayers.add(player)) {
@@ -253,6 +253,8 @@ public class SemiBlockManager{
                     } else if(dist > SYNC_DISTANCE + 5) {
                         syncedPlayers.remove(player);
                     }
+                } else {
+                    syncedPlayers.remove(player);
                 }
             }
         }
