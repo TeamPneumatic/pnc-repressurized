@@ -80,12 +80,12 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
             widget = (ProgWidgetArea)widget.getConnectedParameters()[0];
         }
         widget = blacklistWidget;
+        Set<ChunkPosition> blacklistedArea = new HashSet<ChunkPosition>();
         while(widget != null) {
-            Set<ChunkPosition> blacklistedArea = new HashSet<ChunkPosition>();
-            widget.getArea(area);
-            area.removeAll(blacklistedArea);
+            widget.getArea(blacklistedArea);
             widget = (ProgWidgetArea)widget.getConnectedParameters()[0];
         }
+        area.removeAll(blacklistedArea);
     }
 
     @Override
