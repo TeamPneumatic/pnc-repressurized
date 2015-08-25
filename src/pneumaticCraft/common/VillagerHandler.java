@@ -7,6 +7,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.village.MerchantRecipe;
 import net.minecraft.village.MerchantRecipeList;
 import pneumaticCraft.PneumaticCraft;
+import pneumaticCraft.common.config.Config;
 import pneumaticCraft.common.item.ItemAssemblyProgram;
 import pneumaticCraft.common.item.Itemss;
 import cpw.mods.fml.common.registry.VillagerRegistry;

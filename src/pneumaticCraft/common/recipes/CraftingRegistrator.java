@@ -25,9 +25,9 @@ import pneumaticCraft.api.PneumaticRegistry;
 import pneumaticCraft.api.recipe.AssemblyRecipe;
 import pneumaticCraft.api.recipe.IPneumaticRecipeRegistry;
 import pneumaticCraft.api.recipe.PressureChamberRecipe;
-import pneumaticCraft.common.Config;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.block.tubes.ModuleRegistrator;
+import pneumaticCraft.common.config.Config;
 import pneumaticCraft.common.fluid.Fluids;
 import pneumaticCraft.common.item.ItemNetworkComponents;
 import pneumaticCraft.common.item.ItemPlasticPlants;
@@ -311,26 +311,28 @@ public class CraftingRegistrator{
 
     private static void registerAmadronOffers(){
         PneumaticRecipeRegistry registry = PneumaticRecipeRegistry.getInstance();
-        registry.registerAmadronOffer(new ItemStack(Items.emerald, 8), new ItemStack(Itemss.PCBBlueprint));
-        registry.registerAmadronOffer(new ItemStack(Items.emerald, 8), new ItemStack(Itemss.assemblyProgram, 1, 0));
-        registry.registerAmadronOffer(new ItemStack(Items.emerald, 8), new ItemStack(Itemss.assemblyProgram, 1, 1));
-        registry.registerAmadronOffer(new ItemStack(Items.emerald, 14), new ItemStack(Itemss.assemblyProgram, 1, 2));
-        registry.registerAmadronOffer(new FluidStack(Fluids.oil, 5000), new ItemStack(Items.emerald, 1));
-        registry.registerAmadronOffer(new FluidStack(Fluids.diesel, 4000), new ItemStack(Items.emerald, 1));
-        registry.registerAmadronOffer(new FluidStack(Fluids.lubricant, 2500), new ItemStack(Items.emerald, 1));
-        registry.registerAmadronOffer(new FluidStack(Fluids.kerosene, 3000), new ItemStack(Items.emerald, 1));
-        registry.registerAmadronOffer(new FluidStack(Fluids.gasoline, 2000), new ItemStack(Items.emerald, 1));
-        registry.registerAmadronOffer(new FluidStack(Fluids.lpg, 1000), new ItemStack(Items.emerald, 1));
-        registry.registerAmadronOffer(new ItemStack(Items.emerald), new FluidStack(Fluids.oil, 1000));
-        registry.registerAmadronOffer(new ItemStack(Items.emerald, 5), new FluidStack(Fluids.lubricant, 1000));
+        registry.registerDefaultStaticAmadronOffer(new ItemStack(Items.emerald, 8), new ItemStack(Itemss.PCBBlueprint));
+        registry.registerDefaultStaticAmadronOffer(new ItemStack(Items.emerald, 8), new ItemStack(Itemss.assemblyProgram, 1, 0));
+        registry.registerDefaultStaticAmadronOffer(new ItemStack(Items.emerald, 8), new ItemStack(Itemss.assemblyProgram, 1, 1));
+        registry.registerDefaultStaticAmadronOffer(new ItemStack(Items.emerald, 14), new ItemStack(Itemss.assemblyProgram, 1, 2));
+        registry.registerDefaultStaticAmadronOffer(new FluidStack(Fluids.oil, 5000), new ItemStack(Items.emerald, 1));
+        registry.registerDefaultStaticAmadronOffer(new FluidStack(Fluids.diesel, 4000), new ItemStack(Items.emerald, 1));
+        registry.registerDefaultStaticAmadronOffer(new FluidStack(Fluids.lubricant, 2500), new ItemStack(Items.emerald, 1));
+        registry.registerDefaultStaticAmadronOffer(new FluidStack(Fluids.kerosene, 3000), new ItemStack(Items.emerald, 1));
+        registry.registerDefaultStaticAmadronOffer(new FluidStack(Fluids.gasoline, 2000), new ItemStack(Items.emerald, 1));
+        registry.registerDefaultStaticAmadronOffer(new FluidStack(Fluids.lpg, 1000), new ItemStack(Items.emerald, 1));
+        registry.registerDefaultStaticAmadronOffer(new ItemStack(Items.emerald), new FluidStack(Fluids.oil, 1000));
+        registry.registerDefaultStaticAmadronOffer(new ItemStack(Items.emerald, 5), new FluidStack(Fluids.lubricant, 1000));
 
         for(int i = 0; i < 256; i++) {
             try {
-                EntityVillager villager = new EntityVillager(null, i);
-                MerchantRecipeList list = villager.getRecipes(null);
-                for(MerchantRecipe recipe : (List<MerchantRecipe>)list) {
-                    if(recipe.getSecondItemToBuy() == null) {
-                        registry.registerAmadronOffer(recipe.getItemToBuy(), recipe.getItemToSell());
+                for(int j = 0; j < 10; j++) {
+                    EntityVillager villager = new EntityVillager(null, i);
+                    MerchantRecipeList list = villager.getRecipes(null);
+                    for(MerchantRecipe recipe : (List<MerchantRecipe>)list) {
+                        if(recipe.getSecondItemToBuy() == null) {
+                            registry.registerDefaultPeriodicAmadronOffer(recipe.getItemToBuy(), recipe.getItemToSell());
+                        }
                     }
                 }
             } catch(Throwable e) {}

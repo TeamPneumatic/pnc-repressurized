@@ -27,7 +27,7 @@ import pneumaticCraft.client.gui.pneumaticHelmet.GuiBlockTrackOptions;
 import pneumaticCraft.client.gui.widget.GuiAnimatedStat;
 import pneumaticCraft.client.render.pneumaticArmor.blockTracker.BlockTrackEntryList;
 import pneumaticCraft.common.CommonHUDHandler;
-import pneumaticCraft.common.Config;
+import pneumaticCraft.common.config.Config;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.network.NetworkHandler;

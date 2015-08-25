@@ -61,6 +61,7 @@ import pneumaticCraft.common.ai.IDroneBase;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.block.pneumaticPlants.BlockPlants;
 import pneumaticCraft.common.block.pneumaticPlants.BlockPneumaticPlantBase;
+import pneumaticCraft.common.config.Config;
 import pneumaticCraft.common.entity.EntityProgrammableController;
 import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.fluid.Fluids;
@@ -73,6 +74,8 @@ import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.PacketPlaySound;
 import pneumaticCraft.common.network.PacketSetMobTarget;
 import pneumaticCraft.common.recipes.AmadronOffer;
+import pneumaticCraft.common.recipes.AmadronOfferCustom;
+import pneumaticCraft.common.recipes.AmadronOfferManager;
 import pneumaticCraft.common.remote.GlobalVariableManager;
 import pneumaticCraft.common.thirdparty.ModInteractionUtilImplementation;
 import pneumaticCraft.common.tileentity.TileEntityProgrammer;
@@ -352,29 +355,48 @@ public class EventHandlerPneumaticCraft{
     public void onAmadronSuccess(AmadronRetrievalEvent event){
         EntityDrone drone = (EntityDrone)event.drone;
         AmadronOffer offer = drone.getHandlingOffer();
-        ItemStack usedTablet = drone.getUsedTablet();
-        if(offer.getOutput() instanceof ItemStack) {
-            ItemStack offeringItems = (ItemStack)offer.getOutput();
-            int producedItems = offeringItems.stackSize * drone.getOfferTimes();
-            List<ItemStack> stacks = new ArrayList<ItemStack>();
-            while(producedItems > 0) {
-                ItemStack stack = offeringItems.copy();
-                stack.stackSize = Math.min(producedItems, stack.getMaxStackSize());
-                stacks.add(stack);
-                producedItems -= stack.stackSize;
+
+        boolean shouldDeliver = false;
+        if(offer instanceof AmadronOfferCustom) {
+            AmadronOffer realOffer = AmadronOfferManager.getInstance().get(offer);
+            if(realOffer != null) {//If we find the non-inverted offer, that means the Drone just has completed trading with a different player.
+                ((AmadronOfferCustom)realOffer).addPayment(drone.getOfferTimes());
+                ((AmadronOfferCustom)realOffer).addStock(-drone.getOfferTimes());
+                realOffer.onTrade(drone.getOfferTimes(), drone.getBuyingPlayer());
+                shouldDeliver = true;
             }
-            ChunkPosition pos = ItemAmadronTablet.getItemProvidingLocation(usedTablet);
-            if(pos != null) {
-                World world = ItemAmadronTablet.getWorldForDimension(ItemAmadronTablet.getItemProvidingDimension(usedTablet));
-                PneumaticRegistry.getInstance().deliverItemsAmazonStyle(world, pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ, stacks.toArray(new ItemStack[stacks.size()]));
+            realOffer = AmadronOfferManager.getInstance().get(((AmadronOfferCustom)offer).copy().invert());
+            if(realOffer != null) {//If we find the inverted offer, that means the Drone has just restocked.
+                ((AmadronOfferCustom)realOffer).addStock(drone.getOfferTimes());
             }
         } else {
-            FluidStack offeringFluid = ((FluidStack)offer.getOutput()).copy();
-            offeringFluid.amount *= drone.getOfferTimes();
-            ChunkPosition pos = ItemAmadronTablet.getLiquidProvidingLocation(usedTablet);
-            if(pos != null) {
-                World world = ItemAmadronTablet.getWorldForDimension(ItemAmadronTablet.getLiquidProvidingDimension(usedTablet));
-                PneumaticRegistry.getInstance().deliverFluidAmazonStyle(world, pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ, offeringFluid);
+            shouldDeliver = true;
+        }
+        if(shouldDeliver) {
+            ItemStack usedTablet = drone.getUsedTablet();
+            if(offer.getOutput() instanceof ItemStack) {
+                ItemStack offeringItems = (ItemStack)offer.getOutput();
+                int producedItems = offeringItems.stackSize * drone.getOfferTimes();
+                List<ItemStack> stacks = new ArrayList<ItemStack>();
+                while(producedItems > 0) {
+                    ItemStack stack = offeringItems.copy();
+                    stack.stackSize = Math.min(producedItems, stack.getMaxStackSize());
+                    stacks.add(stack);
+                    producedItems -= stack.stackSize;
+                }
+                ChunkPosition pos = ItemAmadronTablet.getItemProvidingLocation(usedTablet);
+                if(pos != null) {
+                    World world = PneumaticCraftUtils.getWorldForDimension(ItemAmadronTablet.getItemProvidingDimension(usedTablet));
+                    PneumaticRegistry.getInstance().deliverItemsAmazonStyle(world, pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ, stacks.toArray(new ItemStack[stacks.size()]));
+                }
+            } else {
+                FluidStack offeringFluid = ((FluidStack)offer.getOutput()).copy();
+                offeringFluid.amount *= drone.getOfferTimes();
+                ChunkPosition pos = ItemAmadronTablet.getLiquidProvidingLocation(usedTablet);
+                if(pos != null) {
+                    World world = PneumaticCraftUtils.getWorldForDimension(ItemAmadronTablet.getLiquidProvidingDimension(usedTablet));
+                    PneumaticRegistry.getInstance().deliverFluidAmazonStyle(world, pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ, offeringFluid);
+                }
             }
         }
     }

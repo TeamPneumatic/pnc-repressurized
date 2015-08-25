@@ -2,17 +2,22 @@ package pneumaticCraft.client.gui.widget;
 
 import java.awt.Rectangle;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.fluids.FluidStack;
 
+import org.apache.commons.lang3.text.WordUtils;
 import org.lwjgl.opengl.GL11;
 
+import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.common.recipes.AmadronOffer;
+import pneumaticCraft.common.recipes.AmadronOfferCustom;
 import pneumaticCraft.lib.Textures;
 
 public class WidgetAmadronOffer extends WidgetBase{
@@ -48,9 +53,13 @@ public class WidgetAmadronOffer extends WidgetBase{
             widget.render(mouseX, mouseY, partialTick);
         }
         Minecraft.getMinecraft().fontRenderer.drawString(offer.getVendor(), x + 2, y + 2, 0xFF000000);
+        boolean customOffer = offer instanceof AmadronOfferCustom;
         if(shoppingAmount > 0) {
-            Minecraft.getMinecraft().fontRenderer.drawString(shoppingAmount + "", x + 36 - Minecraft.getMinecraft().fontRenderer.getStringWidth("" + shoppingAmount) / 2, y + 20, 0xFF000000);
-
+            Minecraft.getMinecraft().fontRenderer.drawString(shoppingAmount + "", x + 36 - Minecraft.getMinecraft().fontRenderer.getStringWidth("" + shoppingAmount) / 2, y + (customOffer ? 15 : 20), 0xFF000000);
+        }
+        if(customOffer) {
+            AmadronOfferCustom custom = (AmadronOfferCustom)offer;
+            Minecraft.getMinecraft().fontRenderer.drawString(EnumChatFormatting.DARK_BLUE.toString() + custom.getStock() + "", x + 36 - Minecraft.getMinecraft().fontRenderer.getStringWidth("" + custom.getStock()) / 2, y + 25, 0xFF000000);
         }
     }
 
@@ -68,7 +77,6 @@ public class WidgetAmadronOffer extends WidgetBase{
         super.addTooltip(mouseX, mouseY, curTip, shiftPressed);
         for(IGuiWidget widget : widgets) {
             if(widget.getBounds().contains(mouseX, mouseY)) {
-
                 widget.addTooltip(mouseX, mouseY, curTip, shiftPressed);
             }
         }
@@ -83,16 +91,24 @@ public class WidgetAmadronOffer extends WidgetBase{
             curTip.add(I18n.format("gui.amadron.amadronWidget.buying", getStringForObject(offer.getInput())));
             curTip.add(I18n.format("gui.amadron.amadronWidget.vendor", offer.getVendor()));
             curTip.add(I18n.format("gui.amadron.amadronWidget.inBasket", shoppingAmount));
+            if(offer.getStock() >= 0) curTip.add(I18n.format("gui.amadron.amadronWidget.stock", offer.getStock()));
+            if(offer.getVendor().equals(PneumaticCraft.proxy.getPlayer().getCommandSenderName())) {
+                curTip.addAll(Arrays.asList(WordUtils.wrap(I18n.format("gui.amadron.amadronWidget.sneakRightClickToRemove"), 40).split(System.getProperty("line.separator"))));
+            }
         }
     }
 
-    private String getStringForObject(Object o){
+    public static String getStringForObject(Object o){
+        return getStringForObject(o, 1);
+    }
+
+    public static String getStringForObject(Object o, int times){
         if(o instanceof ItemStack) {
             ItemStack stack = (ItemStack)o;
-            return stack.stackSize + "x " + stack.getDisplayName();
+            return times * stack.stackSize + "x " + stack.getDisplayName();
         } else {
             FluidStack stack = (FluidStack)o;
-            return stack.amount + "mB " + stack.getLocalizedName();
+            return times * stack.amount + "mB " + stack.getLocalizedName();
         }
     }
 

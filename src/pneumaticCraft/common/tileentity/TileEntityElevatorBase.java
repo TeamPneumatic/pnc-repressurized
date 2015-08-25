@@ -22,9 +22,9 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import pneumaticCraft.api.tileentity.IAirHandler;
 import pneumaticCraft.api.tileentity.IPneumaticMachine;
-import pneumaticCraft.common.Config;
 import pneumaticCraft.common.block.BlockElevatorBase;
 import pneumaticCraft.common.block.Blockss;
+import pneumaticCraft.common.config.Config;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.network.DescSynced;
 import pneumaticCraft.common.network.GuiSynced;

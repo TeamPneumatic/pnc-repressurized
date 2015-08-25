@@ -1,5 +1,6 @@
 package pneumaticCraft.common.inventory;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -19,13 +20,19 @@ import net.minecraftforge.fluids.IFluidHandler;
 import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.api.PneumaticRegistry;
 import pneumaticCraft.api.item.IPressurizable;
+import pneumaticCraft.common.config.AmadronOfferSettings;
+import pneumaticCraft.common.config.AmadronOfferStaticConfig;
 import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.item.ItemAmadronTablet;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.network.GuiSynced;
+import pneumaticCraft.common.network.NetworkHandler;
+import pneumaticCraft.common.network.PacketAmadronTradeRemoved;
 import pneumaticCraft.common.recipes.AmadronOffer;
-import pneumaticCraft.common.recipes.PneumaticRecipeRegistry;
+import pneumaticCraft.common.recipes.AmadronOfferCustom;
+import pneumaticCraft.common.recipes.AmadronOfferManager;
 import pneumaticCraft.common.util.IOHelper;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.proxy.CommonProxy;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -33,7 +40,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class ContainerAmadron extends ContainerPneumaticBase{
     public static final int ROWS = 4;
 
-    public List<AmadronOffer> offers = new ArrayList<AmadronOffer>(PneumaticRecipeRegistry.getInstance().amadronOffers);
+    public List<AmadronOffer> offers = new ArrayList<AmadronOffer>(AmadronOfferManager.getInstance().getAllOffers());
 
     private final InventoryBasic inv = new InventoryBasic("amadron", true, ROWS * 4);
     @GuiSynced
@@ -44,11 +51,15 @@ public class ContainerAmadron extends ContainerPneumaticBase{
     public boolean[] buyableOffers = new boolean[offers.size()];
     @GuiSynced
     public EnumProblemState problemState = EnumProblemState.NO_PROBLEMS;
+    @GuiSynced
+    public int maxOffers = 0;
+    @GuiSynced
+    public int currentOffers = 0;
 
     public static enum EnumProblemState{
         NO_PROBLEMS("noProblems"), NO_ITEM_PROVIDER("noItemProvider"), NO_FLUID_PROVIDER("noFluidProvider"), NOT_ENOUGH_ITEM_SPACE(
                 "notEnoughItemSpace"), NOT_ENOUGH_FLUID_SPACE("notEnoughFluidSpace"), NOT_ENOUGH_ITEMS("notEnoughItems") /*not a ChickenBones reference*/, NOT_ENOUGH_FLUID(
-                "notEnoughFluid");
+                "notEnoughFluid"), OUT_OF_STOCK("outOfStock");
         private final String locKey;
 
         private EnumProblemState(String locKey){
@@ -75,7 +86,7 @@ public class ContainerAmadron extends ContainerPneumaticBase{
             IInventory inv = ItemAmadronTablet.getItemProvider(player.getCurrentEquippedItem());
             IFluidHandler fluidHandler = ItemAmadronTablet.getLiquidProvider(player.getCurrentEquippedItem());
             for(int i = 0; i < offers.size(); i++) {
-                int amount = capShoppingAmount(i, 1, inv, fluidHandler);
+                int amount = capShoppingAmount(offers.get(i), 1, inv, fluidHandler, this);
                 buyableOffers[i] = amount > 0;
             }
             problemState = EnumProblemState.NO_PROBLEMS;
@@ -91,6 +102,8 @@ public class ContainerAmadron extends ContainerPneumaticBase{
                     }
                 }
             }
+            currentOffers = AmadronOfferManager.getInstance().countOffers(player.getGameProfile().getId().toString());
+            maxOffers = PneumaticCraftUtils.isPlayerOp(player) ? Integer.MAX_VALUE : AmadronOfferSettings.maxTradesPerPlayer;
         }
     }
 
@@ -148,6 +161,22 @@ public class ContainerAmadron extends ContainerPneumaticBase{
             } else if(sneaking) {
                 if(mouseButton == 0) shoppingAmounts[cartSlot] /= 2;
                 else {
+                    AmadronOffer offer = offers.get(offerId);
+                    if(offer instanceof AmadronOfferCustom) {
+                        AmadronOfferCustom custom = (AmadronOfferCustom)offer;
+                        if(custom.getPlayerId().equals(player.getGameProfile().getId().toString())) {
+                            if(AmadronOfferManager.getInstance().removeStaticOffer(custom)) {
+                                if(AmadronOfferSettings.notifyOfTradeRemoval) NetworkHandler.sendToAll(new PacketAmadronTradeRemoved(custom));
+                                custom.returnStock();
+                                try {
+                                    AmadronOfferStaticConfig.INSTANCE.writeToFile();
+                                } catch(IOException e) {
+                                    e.printStackTrace();
+                                }
+                                player.closeScreen();
+                            }
+                        }
+                    }
                     shoppingAmounts[cartSlot] *= 2;
                     if(shoppingAmounts[cartSlot] == 0) shoppingAmounts[cartSlot] = 1;
                 }
@@ -173,37 +202,21 @@ public class ContainerAmadron extends ContainerPneumaticBase{
             for(int i = 0; i < shoppingItems.length; i++) {
                 if(shoppingItems[i] >= 0) {
                     AmadronOffer offer = offers.get(shoppingItems[i]);
-                    if(offer.getInput() instanceof ItemStack) {
-                        ItemStack queryingItems = (ItemStack)offer.getInput();
-                        int amount = queryingItems.stackSize * shoppingAmounts[i];
-                        List<ItemStack> stacks = new ArrayList<ItemStack>();
-                        while(amount > 0) {
-                            ItemStack stack = queryingItems.copy();
-                            stack.stackSize = Math.min(amount, stack.getMaxStackSize());
-                            stacks.add(stack);
-                            amount -= stack.stackSize;
-                        }
-                        ChunkPosition pos = ItemAmadronTablet.getItemProvidingLocation(player.getCurrentEquippedItem());
-                        World world = null;
-                        if(pos == null) {
-                            pos = new ChunkPosition((int)player.posX, (int)player.posY, (int)player.posZ);
-                            world = player.worldObj;
-                        } else {
-                            world = ItemAmadronTablet.getWorldForDimension(ItemAmadronTablet.getItemProvidingDimension(player.getCurrentEquippedItem()));
-                        }
-                        EntityDrone drone = (EntityDrone)PneumaticRegistry.getInstance().retrieveItemsAmazonStyle(world, pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ, stacks.toArray(new ItemStack[stacks.size()]));
-                        drone.setHandlingOffer(offer, shoppingAmounts[i], player.getCurrentEquippedItem());
+                    ChunkPosition itemPos = ItemAmadronTablet.getItemProvidingLocation(player.getCurrentEquippedItem());
+                    World itemWorld = null;
+                    if(itemPos == null) {
+                        itemPos = new ChunkPosition((int)player.posX, (int)player.posY, (int)player.posZ);
+                        itemWorld = player.worldObj;
                     } else {
-                        FluidStack queryingFluid = ((FluidStack)offer.getInput()).copy();
-                        queryingFluid.amount *= shoppingAmounts[i];
-
-                        ChunkPosition pos = ItemAmadronTablet.getLiquidProvidingLocation(player.getCurrentEquippedItem());
-                        if(pos != null) {
-                            World world = ItemAmadronTablet.getWorldForDimension(ItemAmadronTablet.getLiquidProvidingDimension(player.getCurrentEquippedItem()));
-                            EntityDrone drone = (EntityDrone)PneumaticRegistry.getInstance().retrieveFluidAmazonStyle(world, pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ, queryingFluid);
-                            drone.setHandlingOffer(offer, shoppingAmounts[i], player.getCurrentEquippedItem());
-                        }
+                        itemWorld = PneumaticCraftUtils.getWorldForDimension(ItemAmadronTablet.getItemProvidingDimension(player.getCurrentEquippedItem()));
                     }
+                    ChunkPosition liquidPos = ItemAmadronTablet.getLiquidProvidingLocation(player.getCurrentEquippedItem());
+                    World liquidWorld = null;
+                    if(liquidPos != null) {
+                        liquidWorld = PneumaticCraftUtils.getWorldForDimension(ItemAmadronTablet.getLiquidProvidingDimension(player.getCurrentEquippedItem()));
+                    }
+                    EntityDrone drone = retrieveOrderItems(offer, shoppingAmounts[i], itemWorld, itemPos, liquidWorld, liquidPos);
+                    if(drone != null) drone.setHandlingOffer(offer, shoppingAmounts[i], player.getCurrentEquippedItem(), player.getCommandSenderName());
                 }
             }
             Arrays.fill(shoppingAmounts, 0);
@@ -213,77 +226,105 @@ public class ContainerAmadron extends ContainerPneumaticBase{
         }
     }
 
+    public static EntityDrone retrieveOrderItems(AmadronOffer offer, int times, World itemWorld, ChunkPosition itemPos, World liquidWorld, ChunkPosition liquidPos){
+        if(offer.getInput() instanceof ItemStack) {
+            if(itemWorld == null || itemPos == null) return null;
+            ItemStack queryingItems = (ItemStack)offer.getInput();
+            int amount = queryingItems.stackSize * times;
+            List<ItemStack> stacks = new ArrayList<ItemStack>();
+            while(amount > 0) {
+                ItemStack stack = queryingItems.copy();
+                stack.stackSize = Math.min(amount, stack.getMaxStackSize());
+                stacks.add(stack);
+                amount -= stack.stackSize;
+            }
+            return (EntityDrone)PneumaticRegistry.getInstance().retrieveItemsAmazonStyle(itemWorld, itemPos.chunkPosX, itemPos.chunkPosY, itemPos.chunkPosZ, stacks.toArray(new ItemStack[stacks.size()]));
+        } else {
+            if(liquidWorld == null || liquidPos == null) return null;
+            FluidStack queryingFluid = ((FluidStack)offer.getInput()).copy();
+            queryingFluid.amount *= times;
+            return (EntityDrone)PneumaticRegistry.getInstance().retrieveFluidAmazonStyle(liquidWorld, liquidPos.chunkPosX, liquidPos.chunkPosY, liquidPos.chunkPosZ, queryingFluid);
+        }
+    }
+
     public int capShoppingAmount(int offerId, int wantedAmount, EntityPlayer player){
         IInventory inv = ItemAmadronTablet.getItemProvider(player.getCurrentEquippedItem());
         IFluidHandler fluidHandler = ItemAmadronTablet.getLiquidProvider(player.getCurrentEquippedItem());
-        return capShoppingAmount(offerId, wantedAmount, inv, fluidHandler);
+        return capShoppingAmount(offers.get(offerId), wantedAmount, inv, fluidHandler, this);
     }
 
-    public int capShoppingAmount(int offerId, int wantedAmount, IInventory inv, IFluidHandler fluidHandler){
-        AmadronOffer offer = offers.get(offerId);
+    public static int capShoppingAmount(AmadronOffer offer, int wantedAmount, IInventory inv, IFluidHandler fluidHandler, ContainerAmadron container){
+        return capShoppingAmount(offer, wantedAmount, inv, inv, fluidHandler, fluidHandler, container);
+    }
+
+    public static int capShoppingAmount(AmadronOffer offer, int wantedAmount, IInventory inputInv, IInventory outputInv, IFluidHandler inputFluidHandler, IFluidHandler outputFluidHandler, ContainerAmadron container){
+        if(container != null && offer.getStock() >= 0 && wantedAmount > offer.getStock()) {
+            wantedAmount = offer.getStock();
+            container.problemState = EnumProblemState.OUT_OF_STOCK;
+        }
         if(offer.getInput() instanceof ItemStack) {
-            if(inv != null) {
+            if(inputInv != null) {
                 ItemStack searchingItem = (ItemStack)offer.getInput();
                 int count = 0;
-                for(int i = 0; i < inv.getSizeInventory(); i++) {
-                    if(inv.getStackInSlot(i) != null && inv.getStackInSlot(i).isItemEqual(searchingItem) && ItemStack.areItemStackTagsEqual(inv.getStackInSlot(i), searchingItem)) {
-                        count += inv.getStackInSlot(i).stackSize;
+                for(int i = 0; i < inputInv.getSizeInventory(); i++) {
+                    if(inputInv.getStackInSlot(i) != null && inputInv.getStackInSlot(i).isItemEqual(searchingItem) && ItemStack.areItemStackTagsEqual(inputInv.getStackInSlot(i), searchingItem)) {
+                        count += inputInv.getStackInSlot(i).stackSize;
                     }
                 }
                 int maxAmount = count / ((ItemStack)offer.getInput()).stackSize;
                 if(wantedAmount > maxAmount) {
-                    problemState = EnumProblemState.NOT_ENOUGH_ITEMS;
+                    if(container != null) container.problemState = EnumProblemState.NOT_ENOUGH_ITEMS;
                     wantedAmount = maxAmount;
                 }
-            } else {
+            } else if(outputInv == null) {
                 wantedAmount = 0;
-                problemState = EnumProblemState.NO_ITEM_PROVIDER;
+                if(container != null) container.problemState = EnumProblemState.NO_ITEM_PROVIDER;
             }
         } else {
-            if(fluidHandler != null) {
+            if(inputFluidHandler != null) {
                 FluidStack searchingFluid = ((FluidStack)offer.getInput()).copy();
                 searchingFluid.amount = Integer.MAX_VALUE;
-                FluidStack extracted = fluidHandler.drain(ForgeDirection.UP, searchingFluid, false);
+                FluidStack extracted = inputFluidHandler.drain(ForgeDirection.UP, searchingFluid, false);
                 int maxAmount = 0;
                 if(extracted != null) maxAmount = extracted.amount / ((FluidStack)offer.getInput()).amount;
                 if(wantedAmount > maxAmount) {
-                    problemState = EnumProblemState.NOT_ENOUGH_FLUID;
+                    if(container != null) container.problemState = EnumProblemState.NOT_ENOUGH_FLUID;
                     wantedAmount = maxAmount;
                 }
-            } else {
+            } else if(outputFluidHandler == null) {
                 wantedAmount = 0;
-                problemState = EnumProblemState.NO_FLUID_PROVIDER;
+                if(container != null) container.problemState = EnumProblemState.NO_FLUID_PROVIDER;
             }
         }
         if(offer.getOutput() instanceof ItemStack) {
-            if(inv != null) {
+            if(outputInv != null) {
                 ItemStack providingItem = ((ItemStack)offer.getOutput()).copy();
                 providingItem.stackSize *= wantedAmount;
-                ItemStack remainder = IOHelper.insert(inv, providingItem.copy(), 0, true);
+                ItemStack remainder = IOHelper.insert(outputInv, providingItem.copy(), 0, true);
                 if(remainder != null) {
                     int maxAmount = (providingItem.stackSize - remainder.stackSize) / ((ItemStack)offer.getOutput()).stackSize;
                     if(wantedAmount > maxAmount) {
                         wantedAmount = maxAmount;
-                        problemState = EnumProblemState.NOT_ENOUGH_ITEM_SPACE;
+                        if(container != null) container.problemState = EnumProblemState.NOT_ENOUGH_ITEM_SPACE;
                     }
                 }
-            } else {
+            } else if(inputInv == null) {
                 wantedAmount = 0;
-                problemState = EnumProblemState.NO_ITEM_PROVIDER;
+                if(container != null) container.problemState = EnumProblemState.NO_ITEM_PROVIDER;
             }
         } else {
-            if(fluidHandler != null) {
+            if(outputFluidHandler != null) {
                 FluidStack providingFluid = ((FluidStack)offer.getOutput()).copy();
                 providingFluid.amount *= wantedAmount;
-                int amountFilled = fluidHandler.fill(ForgeDirection.UP, providingFluid, false);
+                int amountFilled = outputFluidHandler.fill(ForgeDirection.UP, providingFluid, false);
                 int maxAmount = amountFilled / ((FluidStack)offer.getOutput()).amount;
                 if(wantedAmount > maxAmount) {
                     wantedAmount = maxAmount;
-                    problemState = EnumProblemState.NOT_ENOUGH_FLUID_SPACE;
+                    if(container != null) container.problemState = EnumProblemState.NOT_ENOUGH_FLUID_SPACE;
                 }
-            } else {
+            } else if(inputFluidHandler == null) {
                 wantedAmount = 0;
-                problemState = EnumProblemState.NO_FLUID_PROVIDER;
+                if(container != null) container.problemState = EnumProblemState.NO_FLUID_PROVIDER;
             }
         }
         return wantedAmount;

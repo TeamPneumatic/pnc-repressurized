@@ -12,6 +12,7 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraftforge.common.config.Configuration;
+import pneumaticCraft.common.config.Config;
 import pneumaticCraft.lib.Log;
 import pneumaticCraft.lib.Versions;
 import cpw.mods.fml.common.FMLCommonHandler;

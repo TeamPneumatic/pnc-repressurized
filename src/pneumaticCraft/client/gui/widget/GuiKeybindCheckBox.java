@@ -16,7 +16,7 @@ import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
 import pneumaticCraft.client.render.pneumaticArmor.HUDHandler;
 import pneumaticCraft.client.render.pneumaticArmor.UpgradeRenderHandlerList;
-import pneumaticCraft.common.Config;
+import pneumaticCraft.common.config.Config;
 import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.PacketToggleHelmetFeature;
 import pneumaticCraft.lib.Names;

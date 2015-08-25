@@ -15,7 +15,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.api.IHeatExchangerLogic;
 import pneumaticCraft.api.PneumaticRegistry;
 import pneumaticCraft.api.tileentity.IHeatExchanger;
-import pneumaticCraft.common.Config;
+import pneumaticCraft.common.config.Config;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.network.GuiSynced;
 import pneumaticCraft.common.tileentity.IRedstoneControlled;

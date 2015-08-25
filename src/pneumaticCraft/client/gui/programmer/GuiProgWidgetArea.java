@@ -16,7 +16,7 @@ import pneumaticCraft.client.gui.widget.IGuiWidget;
 import pneumaticCraft.client.gui.widget.WidgetLabel;
 import pneumaticCraft.client.gui.widget.WidgetTextField;
 import pneumaticCraft.client.gui.widget.WidgetTextFieldNumber;
-import pneumaticCraft.common.Config;
+import pneumaticCraft.common.config.Config;
 import pneumaticCraft.common.item.ItemGPSTool;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.progwidgets.ProgWidgetArea;

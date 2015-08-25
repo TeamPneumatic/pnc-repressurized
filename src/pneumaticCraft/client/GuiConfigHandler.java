@@ -7,7 +7,7 @@ import java.util.Set;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.common.config.ConfigElement;
-import pneumaticCraft.common.Config;
+import pneumaticCraft.common.config.Config;
 import pneumaticCraft.lib.Names;
 import cpw.mods.fml.client.IModGuiFactory;
 import cpw.mods.fml.client.config.DummyConfigElement.DummyCategoryElement;

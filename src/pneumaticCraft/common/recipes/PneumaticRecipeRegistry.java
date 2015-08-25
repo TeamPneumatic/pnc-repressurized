@@ -21,7 +21,6 @@ import pneumaticCraft.common.util.OreDictionaryHelper;
 
 public class PneumaticRecipeRegistry implements IPneumaticRecipeRegistry{
     public List<IThermopneumaticProcessingPlantRecipe> thermopneumaticProcessingPlantRecipes = new ArrayList<IThermopneumaticProcessingPlantRecipe>();
-    public List<AmadronOffer> amadronOffers = new ArrayList<AmadronOffer>();
     public List<Pair<Object, ItemStack>> heatFrameCoolingRecipes = new ArrayList<Pair<Object, ItemStack>>();
 
     private static final PneumaticRecipeRegistry INSTANCE = new PneumaticRecipeRegistry();
@@ -108,9 +107,15 @@ public class PneumaticRecipeRegistry implements IPneumaticRecipeRegistry{
     }
 
     @Override
-    public void registerAmadronOffer(Object input, Object output){
+    public void registerDefaultStaticAmadronOffer(Object input, Object output){
         AmadronOffer offer = new AmadronOffer(input, output);
-        if(!amadronOffers.contains(offer)) amadronOffers.add(offer);
+        AmadronOfferManager.getInstance().addStaticOffer(offer);
+    }
+
+    @Override
+    public void registerDefaultPeriodicAmadronOffer(Object input, Object output){
+        AmadronOffer offer = new AmadronOffer(input, output);
+        AmadronOfferManager.getInstance().addPeriodicOffer(offer);
     }
 
     @Override

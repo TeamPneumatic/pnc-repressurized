@@ -60,7 +60,6 @@ import pneumaticCraft.api.drone.IPathfindHandler;
 import pneumaticCraft.api.tileentity.IManoMeasurable;
 import pneumaticCraft.client.render.RenderProgressingLine;
 import pneumaticCraft.client.util.RenderUtils;
-import pneumaticCraft.common.Config;
 import pneumaticCraft.common.PneumaticCraftAPIHandler;
 import pneumaticCraft.common.ai.DroneAIManager;
 import pneumaticCraft.common.ai.DroneAIManager.EntityAITaskEntry;
@@ -71,6 +70,7 @@ import pneumaticCraft.common.ai.EntityPathNavigateDrone;
 import pneumaticCraft.common.ai.FakePlayerItemInWorldManager;
 import pneumaticCraft.common.ai.IDroneBase;
 import pneumaticCraft.common.block.Blockss;
+import pneumaticCraft.common.config.Config;
 import pneumaticCraft.common.item.ItemGPSTool;
 import pneumaticCraft.common.item.ItemGunAmmo;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
@@ -81,6 +81,7 @@ import pneumaticCraft.common.network.PacketShowWireframe;
 import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetGoToLocation;
 import pneumaticCraft.common.recipes.AmadronOffer;
+import pneumaticCraft.common.recipes.AmadronOfferCustom;
 import pneumaticCraft.common.tileentity.TileEntityPlasticMixer;
 import pneumaticCraft.common.tileentity.TileEntityProgrammer;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
@@ -152,6 +153,7 @@ public class EntityDrone extends EntityDroneBase implements IManoMeasurable, IIn
     private AmadronOffer handlingOffer;
     private int offerTimes;
     private ItemStack usedTablet;//Tablet used to place the order.
+    private String buyingPlayer;
 
     public EntityDrone(World world){
         super(world);
@@ -721,10 +723,12 @@ public class EntityDrone extends EntityDroneBase implements IManoMeasurable, IIn
 
         if(handlingOffer != null) {
             NBTTagCompound subTag = new NBTTagCompound();
+            subTag.setBoolean("isCustom", handlingOffer instanceof AmadronOfferCustom);
             handlingOffer.writeToNBT(subTag);
             tag.setTag("amadronOffer", subTag);
             tag.setInteger("offerTimes", offerTimes);
-            usedTablet.writeToNBT(subTag);
+            if(usedTablet != null) usedTablet.writeToNBT(subTag);
+            tag.setString("buyingPlayer", buyingPlayer);
         }
     }
 
@@ -774,11 +778,21 @@ public class EntityDrone extends EntityDroneBase implements IManoMeasurable, IIn
 
         if(tag.hasKey("amadronOffer")) {
             NBTTagCompound subTag = tag.getCompoundTag("amadronOffer");
-            handlingOffer = AmadronOffer.loadFromNBT(subTag);
-            usedTablet = ItemStack.loadItemStackFromNBT(subTag);
+            if(subTag.getBoolean("isCustom")) {
+                handlingOffer = AmadronOffer.loadFromNBT(subTag);
+            } else {
+                handlingOffer = AmadronOfferCustom.loadFromNBT(subTag);
+            }
+            if(subTag.hasKey("id")) {
+                usedTablet = ItemStack.loadItemStackFromNBT(subTag);
+            } else {
+                usedTablet = null;
+            }
+            buyingPlayer = subTag.getString("buyingPlayer");
         } else {
             handlingOffer = null;
             usedTablet = null;
+            buyingPlayer = null;
         }
         offerTimes = tag.getInteger("offerTimes");
     }
@@ -1320,10 +1334,11 @@ public class EntityDrone extends EntityDroneBase implements IManoMeasurable, IIn
         return null;
     }
 
-    public void setHandlingOffer(AmadronOffer offer, int times, ItemStack usedTablet){
+    public void setHandlingOffer(AmadronOffer offer, int times, ItemStack usedTablet, String buyingPlayer){
         handlingOffer = offer;
         offerTimes = times;
-        this.usedTablet = usedTablet.copy();
+        this.usedTablet = usedTablet != null ? usedTablet.copy() : null;
+        this.buyingPlayer = buyingPlayer;
     }
 
     public AmadronOffer getHandlingOffer(){
@@ -1336,5 +1351,9 @@ public class EntityDrone extends EntityDroneBase implements IManoMeasurable, IIn
 
     public ItemStack getUsedTablet(){
         return usedTablet;
+    }
+
+    public String getBuyingPlayer(){
+        return buyingPlayer;
     }
 }

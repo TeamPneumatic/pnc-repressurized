@@ -12,7 +12,7 @@ import pneumaticCraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
 import pneumaticCraft.client.gui.pneumaticHelmet.GuiHelmetMainOptions;
 import pneumaticCraft.client.gui.widget.GuiAnimatedStat;
 import pneumaticCraft.common.CommonHUDHandler;
-import pneumaticCraft.common.Config;
+import pneumaticCraft.common.config.Config;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

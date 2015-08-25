@@ -492,6 +492,7 @@ gui.tab.problems.amadron.notEnoughItemSpace=§7Can't store more items than curre
 gui.tab.problems.amadron.notEnoughFluidSpace=§7Can't store more fluid than currently buying. \n§0Bind a bigger tank and make sure no other fluid is in this tank.
 gui.tab.problems.amadron.notEnoughItems=§7Out of items to sell! \n§0Add more items in the bound inventory.
 gui.tab.problems.amadron.notEnoughFluid=§7Out of fluid to sell! \n§0Add more fluid in the bound tank. Or bind a bigger tank.
+gui.tab.problems.amadron.outOfStock=§7Out of stock! \n§0Come back later, maybe the vendor will resupply later.
 
 # Upgrades
 gui.tab.upgrades=Upgrades
@@ -805,6 +806,7 @@ waila.logisticsModule.transporting=§9Transporting
 waila.logisticsModule.notEnoughAir=§6Not enough pressure to transport the items/fluids over that distance.
 waila.logisticsModule.powered=§2Online
 waila.logisticsModule.noPower=§cOffline (apply at least 3 bar)
+waila.logisticsModule.channel=Channel:
 
 # Misc
 itemGroup.tabPneumaticCraft=PneumaticCraft
@@ -878,13 +880,27 @@ gui.nei.recipe.uvLightBox=Create a UV Light Box, power it with air, and put in a
 #Amadron
 drone.amadronDeliveryDrone=Amadron Delivery Drone
 gui.amadron=Amadron
+gui.amadron.addTrade.selling=Selling
+gui.amadron.addTrade.buying=Buying
+gui.amadron.addTrade.itemFluidAmount=Item/Fluid Amount
+gui.amadron.addTrade.problems.noSellingOrPayingBlock=§7No location selected to sell/pay out from. \n§0Either select an item/fluid location with the Amadron Tablet, or select a GPS Tool by clicking on the GPS button.
 gui.amadron.button.order=Order
 gui.amadron.button.order.tooltip=Order the items in the basket. A drone will come to pick up your items, and another to bring your purchased items.
 gui.amadron.button.addTrade=Add trade
-gui.amadron.button.addTrade.tooltip=[WIP] Put your own items to be available for purchase to other players.
+gui.amadron.button.addTrade.tooltip=Put your own items to be available for purchase to other players.
+gui.amadron.button.addTrade.tooltip.offerCount=%s/%s offers used.
+gui.amadron.button.selectSellingBlock.tooltip=Select the inventory/tank used to sell the item/fluid from. By default the inventory/tank selected by the Amadron Tablet is used.
+gui.amadron.button.selectPaymentBlock.tooltip=Select the inventory/tank used to receive payment of the the requested item/fluid. By default the inventory/tank selected by the Amadron Tablet is used.
 gui.amadron.amadronWidget.vendor=§6Vendor: %s
 gui.amadron.amadronWidget.buying=§aBuying: %s
 gui.amadron.amadronWidget.selling=§9Selling: %s
 gui.amadron.amadronWidget.inBasket=§8In basket: %s
+gui.amadron.amadronWidget.sneakRightClickToRemove=Sneak-right-click to remove (stock will be returned to the provider location. It is lost when failed).
+gui.amadron.amadronWidget.stock=§9Stock: %s
 gui.tab.amadron.disclaimer.title=Disclaimer
 gui.tab.amadron.disclaimer=Amadron cannot accept responsibility for any loss or damage arising from the use of the delivery service. When a partial payment arrives at Amadron it has the right to keep the items that would have been sold to the buyer otherwise.
+message.amadron.playerAddedTrade=§b[Amadron] §6%s§b is now selling §6%s§b for §6%s§b.
+message.amadron.playerRemovedTrade=§c[Amadron] §6%s§c is no longer selling §6%s§c for §6%s§c.
+message.amadron.duplicateOffer=§c[Amadron] Can't add trade: The same trade has been added already.
+message.amadron.duplicateReversedOffer=§c[Amadron] Can't add trade: You have a trade already with reversed trading items.
+message.amadron.playerBought=§a[Amadron] §6%s§b bought §6%s§b from you in exchange for §6%s§b.

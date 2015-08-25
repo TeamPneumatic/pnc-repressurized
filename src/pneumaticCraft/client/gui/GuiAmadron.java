@@ -9,6 +9,7 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumChatFormatting;
 import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.client.gui.widget.IGuiWidget;
 import pneumaticCraft.client.gui.widget.WidgetAmadronOffer;
@@ -29,6 +30,7 @@ public class GuiAmadron extends GuiPneumaticContainerBase{
     private final List<WidgetAmadronOffer> widgetOffers = new ArrayList<WidgetAmadronOffer>();
     private boolean needsRefreshing;
     private boolean hadProblem = false;
+    private GuiButtonSpecial addTradeButton;
 
     public GuiAmadron(InventoryPlayer playerInventory){
         super(new ContainerAmadron(playerInventory.player), null, Textures.GUI_AMADRON);
@@ -57,10 +59,8 @@ public class GuiAmadron extends GuiPneumaticContainerBase{
 
         List<String> tooltip = PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.amadron.button.order.tooltip"), 40);
         addWidget(new GuiButtonSpecial(1, guiLeft + 6, guiTop + 15, 72, 20, I18n.format("gui.amadron.button.order")).setTooltipText(tooltip));
-        tooltip = PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.amadron.button.addTrade.tooltip"), 40);
-        GuiButtonSpecial button = new GuiButtonSpecial(2, guiLeft + 80, guiTop + 15, 72, 20, I18n.format("gui.amadron.button.addTrade")).setTooltipText(tooltip);
-        button.enabled = false;
-        addWidget(button);
+        addTradeButton = new GuiButtonSpecial(2, guiLeft + 80, guiTop + 15, 72, 20, I18n.format("gui.amadron.button.addTrade"));
+        addWidget(addTradeButton);
 
         updateVisibleOffers();
     }
@@ -80,6 +80,10 @@ public class GuiAmadron extends GuiPneumaticContainerBase{
             problemTab.openWindow();
         }
         hadProblem = container.problemState != EnumProblemState.NO_PROBLEMS;
+        addTradeButton.enabled = container.currentOffers < container.maxOffers;
+        List<String> tooltip = PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.amadron.button.addTrade.tooltip"), 40);
+        tooltip.add((addTradeButton.enabled ? EnumChatFormatting.GRAY : EnumChatFormatting.RED) + I18n.format("gui.amadron.button.addTrade.tooltip.offerCount", container.currentOffers, container.maxOffers == Integer.MAX_VALUE ? "\u221E" : container.maxOffers));
+        addTradeButton.setTooltipText(tooltip);
     }
 
     public void setPage(int page){

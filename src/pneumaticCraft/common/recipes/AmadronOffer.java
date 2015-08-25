@@ -1,13 +1,21 @@
 package pneumaticCraft.common.recipes;
 
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.StatCollector;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
+import pneumaticCraft.lib.Log;
+
+import com.google.gson.JsonObject;
+
+import cpw.mods.fml.common.registry.GameData;
 
 public class AmadronOffer{
-    private final Object input;
-    private final Object output;
+    protected Object input;
+    protected Object output;
 
     public AmadronOffer(Object input, Object output){
         if(input == null) throw new NullPointerException("Input item can't be null!");
@@ -42,6 +50,10 @@ public class AmadronOffer{
         return StatCollector.translateToLocal("gui.amadron");//Hardcoded for now until inter-player trading is implemented.
     }
 
+    public int getStock(){
+        return -1;
+    }
+
     public boolean passesQuery(String query){
         String queryLow = query.toLowerCase();
         return getObjectName(getInput()).toLowerCase().contains(queryLow) || getObjectName(getOutput()).toLowerCase().contains(queryLow) || getVendor().toLowerCase().contains(queryLow);
@@ -50,6 +62,8 @@ public class AmadronOffer{
     private String getObjectName(Object object){
         return object instanceof ItemStack ? ((ItemStack)object).getDisplayName() : ((FluidStack)object).getLocalizedName();
     }
+
+    public void onTrade(int tradingAmount, String buyingPlayer){}
 
     public void writeToNBT(NBTTagCompound tag){
         NBTTagCompound subTag = new NBTTagCompound();
@@ -86,12 +100,93 @@ public class AmadronOffer{
         return new AmadronOffer(input, output);
     }
 
+    public JsonObject toJson(){
+        JsonObject object = new JsonObject();
+
+        JsonObject inputObject = new JsonObject();
+        if(input instanceof ItemStack) {
+            inputObject.addProperty("id", GameData.getItemRegistry().getNameForObject(((ItemStack)input).getItem()));
+            inputObject.addProperty("damage", ((ItemStack)input).getItemDamage());
+            inputObject.addProperty("amount", ((ItemStack)input).stackSize);
+        } else {
+            inputObject.addProperty("id", ((FluidStack)input).getFluid().getName());
+            inputObject.addProperty("amount", ((FluidStack)input).amount);
+        }
+        object.add("input", inputObject);
+
+        JsonObject outputObject = new JsonObject();
+        if(output instanceof ItemStack) {
+            outputObject.addProperty("id", GameData.getItemRegistry().getNameForObject(((ItemStack)output).getItem()));
+            outputObject.addProperty("damage", ((ItemStack)output).getItemDamage());
+            outputObject.addProperty("amount", ((ItemStack)output).stackSize);
+        } else {
+            outputObject.addProperty("id", ((FluidStack)output).getFluid().getName());
+            outputObject.addProperty("amount", ((FluidStack)output).amount);
+        }
+        object.add("output", outputObject);
+
+        return object;
+    }
+
+    public static AmadronOffer fromJson(JsonObject object){
+        JsonObject inputObject = object.getAsJsonObject("input");
+        Object input;
+        if(inputObject.has("damage")) {
+            Item item = GameData.getItemRegistry().getObject(inputObject.get("id").getAsString());
+            if(item != null) {
+                input = new ItemStack(item, inputObject.get("amount").getAsInt(), inputObject.get("damage").getAsInt());
+            } else {
+                Log.error("Invalid Amadron Offer input item. Invalid item name: " + inputObject.get("id").getAsString() + ". Offer will be skipped");
+                return null;
+            }
+        } else {
+            Fluid fluid = FluidRegistry.getFluid(inputObject.get("id").getAsString());
+            if(fluid != null) {
+                input = new FluidStack(fluid, inputObject.get("amount").getAsInt());
+            } else {
+                Log.error("Invalid Amadron Offer input fluid. Invalid fluid name: " + inputObject.get("id").getAsString() + ". Offer will be skipped");
+                return null;
+            }
+        }
+
+        JsonObject outputObject = object.getAsJsonObject("output");
+        Object output;
+        if(outputObject.has("damage")) {
+            Item item = GameData.getItemRegistry().getObject(outputObject.get("id").getAsString());
+            if(item != null) {
+                output = new ItemStack(item, outputObject.get("amount").getAsInt(), outputObject.get("damage").getAsInt());
+            } else {
+                Log.error("Invalid Amadron Offer output item. Invalid item name: " + outputObject.get("id").getAsString() + ". Offer will be skipped");
+                return null;
+            }
+        } else {
+            Fluid fluid = FluidRegistry.getFluid(outputObject.get("id").getAsString());
+            if(fluid != null) {
+                output = new FluidStack(fluid, outputObject.get("amount").getAsInt());
+            } else {
+                Log.error("Invalid Amadron Offer output fluid. Invalid fluid name: " + outputObject.get("id").getAsString() + ". Offer will be skipped");
+                return null;
+            }
+        }
+
+        return new AmadronOffer(input, output);
+    }
+
     @Override
     public int hashCode(){
-        int code = getInput().hashCode();
-        code = 31 * code + getOutput().hashCode();
+        int code = getObjectHashCode(getInput());
+        code = 31 * code + getObjectHashCode(getOutput());
         code = 31 * code + getVendor().hashCode();
         return code;
+    }
+
+    private int getObjectHashCode(Object o){
+        if(o instanceof FluidStack) {
+            return o.hashCode();
+        } else {
+            ItemStack stack = (ItemStack)o;
+            return GameData.getItemRegistry().getNameForObject(stack.getItem()).hashCode() + stack.stackSize * 19;
+        }
     }
 
     @Override
