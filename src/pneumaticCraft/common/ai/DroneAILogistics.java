@@ -10,6 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import pneumaticCraft.common.ai.LogisticsManager.LogisticsTask;
@@ -98,8 +99,7 @@ public class DroneAILogistics extends EntityAIBase{
 
     private boolean clearAIAndProvideAgain(){
         curAI = null;
-        if(curTask.isStillValid(drone.getInventory().getStackInSlot(0) != null ? drone.getInventory().getStackInSlot(0) : drone.getTank().getFluid())) {
-            execute(curTask);
+        if(curTask.isStillValid(drone.getInventory().getStackInSlot(0) != null ? drone.getInventory().getStackInSlot(0) : drone.getTank().getFluid()) && execute(curTask)) {
             return true;
         } else {
             curTask = null;
@@ -109,12 +109,16 @@ public class DroneAILogistics extends EntityAIBase{
 
     public boolean execute(LogisticsTask task){
         if(drone.getInventory().getStackInSlot(0) != null) {
+            if(!isPosPathfindable(task.requester.getPos())) return false;
             curAI = new DroneEntityAIInventoryExport(drone, new FakeWidgetLogistics(task.requester.getPos(), task.transportingItem));
         } else if(drone.getTank().getFluidAmount() > 0) {
+            if(!isPosPathfindable(task.requester.getPos())) return false;
             curAI = new DroneAILiquidExport(drone, new FakeWidgetLogistics(task.requester.getPos(), task.transportingFluid.stack));
         } else if(task.transportingItem != null) {
+            if(!isPosPathfindable(task.provider.getPos())) return false;
             curAI = new DroneEntityAIInventoryImport(drone, new FakeWidgetLogistics(task.provider.getPos(), task.transportingItem));
         } else {
+            if(!isPosPathfindable(task.provider.getPos())) return false;
             curAI = new DroneAILiquidImport(drone, new FakeWidgetLogistics(task.provider.getPos(), task.transportingFluid.stack));
         }
         if(curAI.shouldExecute()) {
@@ -123,6 +127,13 @@ public class DroneAILogistics extends EntityAIBase{
         } else {
             return false;
         }
+    }
+
+    private boolean isPosPathfindable(ChunkPosition pos){
+        for(ForgeDirection d : ForgeDirection.VALID_DIRECTIONS) {
+            if(drone.isBlockValidPathfindBlock(pos.chunkPosX + d.offsetX, pos.chunkPosY + d.offsetY, pos.chunkPosZ + d.offsetZ)) return true;
+        }
+        return false;
     }
 
     private static class FakeWidgetLogistics extends ProgWidgetAreaItemBase implements ISidedWidget, ICountWidget,
