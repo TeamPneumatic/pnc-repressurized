@@ -15,6 +15,7 @@ import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.monster.EntityGhast;
 import net.minecraft.entity.monster.EntityWitch;
+import net.minecraft.entity.passive.EntityBat;
 import net.minecraft.entity.passive.EntityCow;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
@@ -43,6 +44,7 @@ import pneumaticCraft.client.render.pneumaticArmor.hacking.block.HackableNoteblo
 import pneumaticCraft.client.render.pneumaticArmor.hacking.block.HackableSecurityStation;
 import pneumaticCraft.client.render.pneumaticArmor.hacking.block.HackableTNT;
 import pneumaticCraft.client.render.pneumaticArmor.hacking.block.HackableTripwire;
+import pneumaticCraft.client.render.pneumaticArmor.hacking.entity.HackableBat;
 import pneumaticCraft.client.render.pneumaticArmor.hacking.entity.HackableBlaze;
 import pneumaticCraft.client.render.pneumaticArmor.hacking.entity.HackableCaveSpider;
 import pneumaticCraft.client.render.pneumaticArmor.hacking.entity.HackableCow;
@@ -74,29 +76,30 @@ public class HackableHandler{
     }
 
     public static void addDefaultEntries(){
-        PneumaticRegistry.instance.addHackable(Blocks.tnt, HackableTNT.class);
-        PneumaticRegistry.instance.addHackable(Blocks.mob_spawner, HackableMobSpawner.class);
-        PneumaticRegistry.instance.addHackable(Blocks.lever, HackableLever.class);
-        PneumaticRegistry.instance.addHackable(Blocks.stone_button, HackableButton.class);
-        PneumaticRegistry.instance.addHackable(Blocks.wooden_button, HackableButton.class);
-        PneumaticRegistry.instance.addHackable(Blocks.wooden_door, HackableDoor.class);
-        PneumaticRegistry.instance.addHackable(Blocks.tripwire_hook, HackableTripwire.class);
-        PneumaticRegistry.instance.addHackable(Blocks.dispenser, HackableDispenser.class);
-        PneumaticRegistry.instance.addHackable(Blocks.dropper, HackableDispenser.class);
-        PneumaticRegistry.instance.addHackable(Blockss.securityStation, HackableSecurityStation.class);
-        PneumaticRegistry.instance.addHackable(Blocks.monster_egg, HackableTripwire.class);
-        PneumaticRegistry.instance.addHackable(Blocks.noteblock, HackableNoteblock.class);
-        PneumaticRegistry.instance.addHackable(Blocks.jukebox, HackableJukebox.class);
+        PneumaticRegistry.getInstance().addHackable(Blocks.tnt, HackableTNT.class);
+        PneumaticRegistry.getInstance().addHackable(Blocks.mob_spawner, HackableMobSpawner.class);
+        PneumaticRegistry.getInstance().addHackable(Blocks.lever, HackableLever.class);
+        PneumaticRegistry.getInstance().addHackable(Blocks.stone_button, HackableButton.class);
+        PneumaticRegistry.getInstance().addHackable(Blocks.wooden_button, HackableButton.class);
+        PneumaticRegistry.getInstance().addHackable(Blocks.wooden_door, HackableDoor.class);
+        PneumaticRegistry.getInstance().addHackable(Blocks.tripwire_hook, HackableTripwire.class);
+        PneumaticRegistry.getInstance().addHackable(Blocks.dispenser, HackableDispenser.class);
+        PneumaticRegistry.getInstance().addHackable(Blocks.dropper, HackableDispenser.class);
+        PneumaticRegistry.getInstance().addHackable(Blockss.securityStation, HackableSecurityStation.class);
+        PneumaticRegistry.getInstance().addHackable(Blocks.monster_egg, HackableTripwire.class);
+        PneumaticRegistry.getInstance().addHackable(Blocks.noteblock, HackableNoteblock.class);
+        PneumaticRegistry.getInstance().addHackable(Blocks.jukebox, HackableJukebox.class);
 
-        PneumaticRegistry.instance.addHackable(EntityCreeper.class, HackableCreeper.class);
-        PneumaticRegistry.instance.addHackable(EntityTameable.class, HackableTameable.class);
-        PneumaticRegistry.instance.addHackable(EntityCow.class, HackableCow.class);
-        PneumaticRegistry.instance.addHackable(EntityCaveSpider.class, HackableCaveSpider.class);
-        PneumaticRegistry.instance.addHackable(EntityBlaze.class, HackableBlaze.class);
-        PneumaticRegistry.instance.addHackable(EntityGhast.class, HackableGhast.class);
-        PneumaticRegistry.instance.addHackable(EntityWitch.class, HackableWitch.class);
-        PneumaticRegistry.instance.addHackable(EntityLiving.class, HackableLivingDisarm.class);
-        PneumaticRegistry.instance.addHackable(EntityEnderman.class, HackableEnderman.class);
+        PneumaticRegistry.getInstance().addHackable(EntityCreeper.class, HackableCreeper.class);
+        PneumaticRegistry.getInstance().addHackable(EntityTameable.class, HackableTameable.class);
+        PneumaticRegistry.getInstance().addHackable(EntityCow.class, HackableCow.class);
+        PneumaticRegistry.getInstance().addHackable(EntityCaveSpider.class, HackableCaveSpider.class);
+        PneumaticRegistry.getInstance().addHackable(EntityBlaze.class, HackableBlaze.class);
+        PneumaticRegistry.getInstance().addHackable(EntityGhast.class, HackableGhast.class);
+        PneumaticRegistry.getInstance().addHackable(EntityWitch.class, HackableWitch.class);
+        PneumaticRegistry.getInstance().addHackable(EntityLiving.class, HackableLivingDisarm.class);
+        PneumaticRegistry.getInstance().addHackable(EntityEnderman.class, HackableEnderman.class);
+        PneumaticRegistry.getInstance().addHackable(EntityBat.class, HackableBat.class);
     }
 
     public static IHackableEntity getHackableForEntity(Entity entity, EntityPlayer player){

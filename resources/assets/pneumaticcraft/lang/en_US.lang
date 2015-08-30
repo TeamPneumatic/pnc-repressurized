@@ -349,6 +349,7 @@ pneumaticHelmet.hacking.result.disable=Hack to disable
 pneumaticHelmet.hacking.result.stopTeleport=Hack to prevent teleporting
 pneumaticHelmet.hacking.result.callBack=Hack to call back
 pneumaticHelmet.hacking.result.resumeTasks=Hack to resume tasks
+pneumaticHelmet.hacking.result.kill=Hack to kill
 
 pneumaticHelmet.hacking.finished.disarmed=Disarmed
 pneumaticHelmet.hacking.finished.neutralized=Neutralized
@@ -367,6 +368,7 @@ pneumaticHelmet.hacking.finished.disabled=Disabled
 pneumaticHelmet.hacking.finished.stopTeleporting=Preventing teleports
 pneumaticHelmet.hacking.finished.calledBack=Called back
 pneumaticHelmet.hacking.finished.resumedTasks=Resumed tasks
+pneumaticHelmet.hacking.finished.killed=Killed
 
 ########## GUI tabs
 
