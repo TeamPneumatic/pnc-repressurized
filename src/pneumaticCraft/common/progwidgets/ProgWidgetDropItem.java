@@ -128,4 +128,9 @@ public class ProgWidgetDropItem extends ProgWidgetInventoryBase implements IItem
     protected boolean isUsingSides(){
         return false;
     }
+
+    @Override
+    public String getExtraStringInfo(){
+        return dropStraight() ? "Straight" : "Random";
+    }
 }
