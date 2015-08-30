@@ -830,8 +830,6 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
                 exportButtonTooltip.add("Required Programming Puzzles:");
                 if(player.capabilities.isCreativeMode) exportButtonTooltip.add("(Creative mode, so the following is free)");
                 for(ItemStack stack : requiredPieces) {
-                    List<String> rawList = new ArrayList<String>();
-                    rawList.add(stack.getDisplayName());
                     String prefix;
                     if(te.hasEnoughPuzzleStacks(player, stack)) {
                         prefix = EnumChatFormatting.GREEN.toString();
@@ -839,16 +837,14 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
                         prefix = EnumChatFormatting.RED.toString();
                         exportButton.enabled = player.capabilities.isCreativeMode && errors.size() == 0;
                     }
-                    exportButtonTooltip.add(prefix + "-" + stack.stackSize + "x " + rawList.get(0));
+                    exportButtonTooltip.add(prefix + "-" + stack.stackSize + "x " + stack.getDisplayName());
                 }
             }
             if(!returnedPieces.isEmpty()) {
                 exportButtonTooltip.add("Returned Programming Puzzles:");
                 if(player.capabilities.isCreativeMode) exportButtonTooltip.add("(Creative mode, nothing's given)");
                 for(ItemStack stack : returnedPieces) {
-                    List<String> rawList = new ArrayList<String>();
-                    stack.getItem().addInformation(stack, null, rawList, false);
-                    exportButtonTooltip.add("-" + stack.stackSize + "x " + rawList.get(0));
+                    exportButtonTooltip.add("-" + stack.stackSize + "x " + stack.getDisplayName());
                 }
             }
         } else {
