@@ -298,11 +298,9 @@ public class EntityDrone extends EntityDroneBase implements IManoMeasurable, IIn
                 }
 
                 if(block.getMaterial() != Material.air) {
-                    for(int i = 0; i < 5; i++) {
-                        Vec3 vec = Vec3.createVectorHelper(posY - y, 0, 0);
-                        vec.rotateAroundY((float)(rand.nextFloat() * Math.PI * 2));
-                        worldObj.spawnParticle("blockcrack_" + Block.getIdFromBlock(block) + "_" + worldObj.getBlockMetadata(x, y, z), posX + vec.xCoord, y + 1, posZ + vec.zCoord, vec.xCoord, 0, vec.zCoord);
-                    }
+                    Vec3 vec = Vec3.createVectorHelper(posY - y, 0, 0);
+                    vec.rotateAroundY((float)(rand.nextFloat() * Math.PI * 2));
+                    worldObj.spawnParticle("blockcrack_" + Block.getIdFromBlock(block) + "_" + worldObj.getBlockMetadata(x, y, z), posX + vec.xCoord, y + 1, posZ + vec.zCoord, vec.xCoord, 0, vec.zCoord);
                 }
             }
         }
