@@ -76,6 +76,7 @@ public class RenderTarget{
 
     public void update(){
         stat.update();
+        stat.setTitle(entity.getCommandSenderName());
         if(ticksExisted >= 30 && !didMakeLockSound) {
             didMakeLockSound = true;
             EntityPlayer player = FMLClientHandler.instance().getClient().thePlayer;
