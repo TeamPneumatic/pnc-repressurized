@@ -55,6 +55,7 @@ public class Config{
     public static boolean enableDroneSuffocationDamage;
     public static boolean enableCreeperDropExplosion;
     public static boolean enableSlimeSeedDrop, enableCreeperSeedDrop, enableSquidSeedDrop, enableEndermanSeedDrop;
+    public static boolean enableDungeonLoot;
 
     public static final String[] CATEGORIES = new String[]{Configuration.CATEGORY_GENERAL, "plant_full-grown_effects", "plant_generation_options", "machine_properties", "advanced", "recipe_enabling", "third_party_enabling"};
     public static List<String> NO_MC_RESTART_CATS = Arrays.asList(new String[]{"plant_full-grown_effects", "plant_generation_options", "machine_properties"});
@@ -117,6 +118,10 @@ public class Config{
         Property property = config.get(Configuration.CATEGORY_GENERAL, "Compressed Iron Loss Percentage", 20);
         property.comment = "Loss percentage (on average) of Compressed Iron ingots/blocks when exposed to an explosion.";
         configCompressedIngotLossRate = property.getInt();
+
+        property = config.get(Configuration.CATEGORY_GENERAL, "Enable Dungeon Loot generation", true);
+        property.comment = "Enables the dungeon loot generation of the Nuke Virus and Stop! Worm. Useless items when playing SSP.";
+        enableDungeonLoot = property.getBoolean();
 
         useHelmetModel = config.getBoolean("Use Pneumatic Helmet model", Configuration.CATEGORY_GENERAL, false, "When true, the Pneumatic Helmet will be a model. Warning: this model looks far too good to be in MC");
         programmerDifficulty = config.getInt("Programmer Difficulty", Configuration.CATEGORY_GENERAL, 0, 0, 2, "Defines the difficulty of the programmer shown to the user. 0 = easy, 1 = medium, 2 = advanced");
