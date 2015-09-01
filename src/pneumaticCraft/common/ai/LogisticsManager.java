@@ -116,11 +116,13 @@ public class LogisticsManager{
         providingStack = providingStack.copy();
         providingStack.stackSize = requestedAmount;
         ItemStack remainder = providingStack.copy();
+        remainder.stackSize += requester.getIncomingItems(providingStack);
         for(ForgeDirection d : ForgeDirection.VALID_DIRECTIONS) {
             remainder = IOHelper.insert(te, remainder, d, true);
             if(remainder == null) break;
         }
         if(remainder != null) providingStack.stackSize -= remainder.stackSize;
+        if(providingStack.stackSize <= 0) return 0;
         return providingStack.stackSize;
     }
 
@@ -130,15 +132,20 @@ public class LogisticsManager{
         providingStack = providingStack.copy();
         providingStack.amount = requestedAmount;
         FluidStack remainder = providingStack.copy();
+        remainder.amount += requester.getIncomingFluid(remainder.getFluid());
         TileEntity te = requester.getTileEntity();
         if(te instanceof IFluidHandler) {
             IFluidHandler fluidHandler = (IFluidHandler)te;
             for(ForgeDirection d : ForgeDirection.VALID_DIRECTIONS) {
-                remainder.amount -= fluidHandler.fill(d, remainder, false);
-                if(remainder.amount <= 0) break;
+                int fluidFilled = fluidHandler.fill(d, remainder, false);
+                if(fluidFilled > 0) {
+                    remainder.amount -= fluidFilled;
+                    break;
+                }
             }
         }
         providingStack.amount -= remainder.amount;
+        if(providingStack.amount <= 0) return 0;
         return providingStack.amount;
     }
 

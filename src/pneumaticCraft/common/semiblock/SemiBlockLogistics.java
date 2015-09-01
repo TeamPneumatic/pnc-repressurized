@@ -127,6 +127,24 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic{
         incomingFluid.remove(stack);
     }
 
+    public int getIncomingFluid(Fluid fluid){
+        int count = 0;
+        for(FluidStackWrapper wrapper : incomingFluid.keySet()) {
+            if(wrapper.stack.getFluid() == fluid) count += wrapper.stack.amount;
+        }
+        return count;
+    }
+
+    public int getIncomingItems(ItemStack stack){
+        int count = 0;
+        for(ItemStack s : incomingStacks.keySet()) {
+            if(isItemEqual(s, stack)) {
+                count += s.stackSize;
+            }
+        }
+        return count;
+    }
+
     @Override
     public void writeToNBT(NBTTagCompound tag){
         super.writeToNBT(tag);

@@ -95,11 +95,7 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
                         count += s.stackSize;
                     }
                 }
-                for(ItemStack s : incomingStacks.keySet()) {
-                    if(isItemEqual(s, stack)) {
-                        count += s.stackSize;
-                    }
-                }
+                count += getIncomingItems(stack);
                 int requested = Math.max(0, Math.min(stack.stackSize, totalRequestingAmount - count));
                 return requested;
             }
@@ -139,11 +135,7 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
                     }
                 }
 
-                for(FluidStackWrapper s : incomingFluid.keySet()) {
-                    if(s.stack.getFluid() == stack.getFluid()) {
-                        count += s.stack.amount;
-                    }
-                }
+                count += getIncomingFluid(stack.getFluid());
                 int requested = Math.max(0, Math.min(stack.amount, totalRequestingAmount - count));
                 return requested;
             }
