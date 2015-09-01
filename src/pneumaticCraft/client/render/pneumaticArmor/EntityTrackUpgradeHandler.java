@@ -49,11 +49,12 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler{
     private int statX;
     private int statY;
     private boolean statLeftSided;
+    public static String UPGRADE_NAME = "entityTracker";
 
     @Override
     @SideOnly(Side.CLIENT)
     public String getUpgradeName(){
-        return "entityTracker";
+        return UPGRADE_NAME;
     }
 
     @Override

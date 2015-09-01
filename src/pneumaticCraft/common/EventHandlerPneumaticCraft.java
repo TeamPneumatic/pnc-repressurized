@@ -53,6 +53,7 @@ import pneumaticCraft.api.drone.AmadronRetrievalEvent;
 import pneumaticCraft.api.drone.DroneConstructingEvent;
 import pneumaticCraft.api.drone.DroneSuicideEvent;
 import pneumaticCraft.api.item.IPressurizable;
+import pneumaticCraft.client.gui.widget.GuiKeybindCheckBox;
 import pneumaticCraft.client.render.pneumaticArmor.EntityTrackUpgradeHandler;
 import pneumaticCraft.client.render.pneumaticArmor.HUDHandler;
 import pneumaticCraft.client.render.pneumaticArmor.hacking.HackableHandler;
@@ -284,7 +285,7 @@ public class EventHandlerPneumaticCraft{
         EntityPlayer player = FMLClientHandler.instance().getClient().thePlayer;
         if(event.target == player && (event.entityLiving instanceof EntityGolem || event.entityLiving instanceof EntityMob)) {
             ItemStack helmetStack = player.getCurrentArmor(3);
-            if(helmetStack != null && helmetStack.getItem() == Itemss.pneumaticHelmet && ((IPressurizable)helmetStack.getItem()).getPressure(helmetStack) > 0 && ItemPneumaticArmor.getUpgrades(ItemMachineUpgrade.UPGRADE_ENTITY_TRACKER, helmetStack) > 0) {
+            if(helmetStack != null && helmetStack.getItem() == Itemss.pneumaticHelmet && ((IPressurizable)helmetStack.getItem()).getPressure(helmetStack) > 0 && ItemPneumaticArmor.getUpgrades(ItemMachineUpgrade.UPGRADE_ENTITY_TRACKER, helmetStack) > 0 && GuiKeybindCheckBox.trackedCheckboxes.get("pneumaticHelmet.upgrade.coreComponents").checked && GuiKeybindCheckBox.trackedCheckboxes.get("pneumaticHelmet.upgrade." + EntityTrackUpgradeHandler.UPGRADE_NAME).checked) {
                 HUDHandler.instance().getSpecificRenderer(EntityTrackUpgradeHandler.class).warnIfNecessary(event.entityLiving);
             }
         } else {
