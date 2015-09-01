@@ -17,7 +17,7 @@ import pneumaticCraft.client.gui.widget.WidgetAmadronOffer;
 import pneumaticCraft.client.gui.widget.WidgetTank;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.recipes.AmadronOffer;
-import pneumaticCraft.common.recipes.PneumaticRecipeRegistry;
+import pneumaticCraft.common.recipes.AmadronOfferManager;
 import pneumaticCraft.lib.Textures;
 import codechicken.nei.PositionedStack;
 
@@ -60,7 +60,7 @@ public class NEIAmadronTradeManager extends PneumaticCraftPlugins{
     @Override
     protected List<MultipleInputOutputRecipe> getAllRecipes(){
         List<MultipleInputOutputRecipe> recipes = new ArrayList<MultipleInputOutputRecipe>();
-        for(AmadronOffer recipe : PneumaticRecipeRegistry.getInstance().amadronOffers) {
+        for(AmadronOffer recipe : AmadronOfferManager.getInstance().getAllOffers()) {
             recipes.add(new AmadronNEIRecipe(recipe));
         }
         return recipes;

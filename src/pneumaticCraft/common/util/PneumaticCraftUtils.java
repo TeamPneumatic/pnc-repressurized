@@ -26,12 +26,14 @@ import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityHopper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.IFluidBlock;
@@ -788,5 +790,44 @@ public class PneumaticCraftUtils{
         entityItem.motionZ = rand.nextGaussian() * factor;
         world.spawnEntityInWorld(entityItem);
         stack.stackSize = 0;
+    }
+
+    public static World getWorldForDimension(int dimension){
+        for(WorldServer w : MinecraftServer.getServer().worldServers) {
+            if(w.provider.dimensionId == dimension) {
+                return w;
+            }
+        }
+        return null;
+    }
+
+    public static TileEntity getTileEntity(ChunkPosition pos, int dimension){
+        World world = getWorldForDimension(dimension);
+        if(world != null && world.blockExists(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ)) {
+            return world.getTileEntity(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ);
+        }
+        return null;
+    }
+
+    public static EntityPlayer getPlayerFromId(String uuid){
+        for(EntityPlayer checkingPlayer : (List<EntityPlayer>)MinecraftServer.getServer().getConfigurationManager().playerEntityList) {
+            if(checkingPlayer.getGameProfile().getId().toString().equals(uuid)) {
+                return checkingPlayer;
+            }
+        }
+        return null;
+    }
+
+    public static EntityPlayer getPlayerFromName(String name){
+        for(EntityPlayer checkingPlayer : (List<EntityPlayer>)MinecraftServer.getServer().getConfigurationManager().playerEntityList) {
+            if(checkingPlayer.getGameProfile().getName().equals(name)) {
+                return checkingPlayer;
+            }
+        }
+        return null;
+    }
+
+    public static boolean isPlayerOp(EntityPlayer player){
+        return player.canCommandSenderUseCommand(2, "PneumaticCraftIsPlayerOp");
     }
 }

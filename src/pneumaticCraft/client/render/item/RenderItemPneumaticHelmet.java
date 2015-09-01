@@ -11,7 +11,7 @@ import org.lwjgl.opengl.GL11;
 
 import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.client.ClientEventHandler;
-import pneumaticCraft.common.Config;
+import pneumaticCraft.common.config.Config;
 import pneumaticCraft.lib.Models;
 
 public class RenderItemPneumaticHelmet implements IItemRenderer{

@@ -9,7 +9,7 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.world.World;
-import pneumaticCraft.common.Config;
+import pneumaticCraft.common.config.Config;
 import pneumaticCraft.common.thirdparty.ae2.AE2;
 import pneumaticCraft.common.thirdparty.bloodmagic.BloodMagic;
 import pneumaticCraft.common.thirdparty.buildcraft.BuildCraft;

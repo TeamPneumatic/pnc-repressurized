@@ -11,20 +11,19 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
 import net.minecraftforge.fluids.IFluidHandler;
 import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.common.NBTUtil;
 import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.PacketSyncAmadronOffers;
 import pneumaticCraft.common.recipes.AmadronOffer;
-import pneumaticCraft.common.recipes.PneumaticRecipeRegistry;
+import pneumaticCraft.common.recipes.AmadronOfferManager;
 import pneumaticCraft.common.util.IOHelper;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.proxy.CommonProxy.EnumGuiId;
 
 public class ItemAmadronTablet extends ItemPressurizable implements IAmadronInterface{
@@ -40,7 +39,7 @@ public class ItemAmadronTablet extends ItemPressurizable implements IAmadronInte
     @Override
     public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player){
         if(!world.isRemote) {
-            NetworkHandler.sendTo(new PacketSyncAmadronOffers(PneumaticRecipeRegistry.getInstance().amadronOffers), (EntityPlayerMP)player);
+            NetworkHandler.sendTo(new PacketSyncAmadronOffers(AmadronOfferManager.getInstance().getAllOffers()), (EntityPlayerMP)player);
             player.openGui(PneumaticCraft.instance, EnumGuiId.AMADRON.ordinal(), player.worldObj, (int)player.posX, (int)player.posY, (int)player.posZ);
         }
         return stack;
@@ -91,25 +90,8 @@ public class ItemAmadronTablet extends ItemPressurizable implements IAmadronInte
         ChunkPosition pos = getItemProvidingLocation(tablet);
         if(pos != null) {
             int dimension = getItemProvidingDimension(tablet);
-            TileEntity te = getTileEntity(pos, dimension);
+            TileEntity te = PneumaticCraftUtils.getTileEntity(pos, dimension);
             return IOHelper.getInventoryForTE(te);
-        }
-        return null;
-    }
-
-    public static World getWorldForDimension(int dimension){
-        for(WorldServer w : MinecraftServer.getServer().worldServers) {
-            if(w.provider.dimensionId == dimension) {
-                return w;
-            }
-        }
-        return null;
-    }
-
-    private static TileEntity getTileEntity(ChunkPosition pos, int dimension){
-        World world = getWorldForDimension(dimension);
-        if(world != null) {
-            return world.getTileEntity(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ);
         }
         return null;
     }
@@ -145,7 +127,7 @@ public class ItemAmadronTablet extends ItemPressurizable implements IAmadronInte
         ChunkPosition pos = getLiquidProvidingLocation(tablet);
         if(pos != null) {
             int dimension = getLiquidProvidingDimension(tablet);
-            TileEntity te = getTileEntity(pos, dimension);
+            TileEntity te = PneumaticCraftUtils.getTileEntity(pos, dimension);
             if(te instanceof IFluidHandler) return (IFluidHandler)te;
         }
         return null;

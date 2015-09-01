@@ -11,7 +11,6 @@ import pneumaticCraft.client.CreativeTabPneumaticCraft;
 import pneumaticCraft.client.render.pneumaticArmor.UpgradeRenderHandlerList;
 import pneumaticCraft.client.render.pneumaticArmor.hacking.HackableHandler;
 import pneumaticCraft.common.AchievementHandler;
-import pneumaticCraft.common.Config;
 import pneumaticCraft.common.EventHandlerPneumaticCraft;
 import pneumaticCraft.common.EventHandlerUniversalSensor;
 import pneumaticCraft.common.PCCommandManager;
@@ -20,6 +19,7 @@ import pneumaticCraft.common.TickHandlerPneumaticCraft;
 import pneumaticCraft.common.VillagerHandler;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.block.tubes.ModuleRegistrator;
+import pneumaticCraft.common.config.Config;
 import pneumaticCraft.common.entity.EntityRegistrator;
 import pneumaticCraft.common.event.DroneSpecialVariableHandler;
 import pneumaticCraft.common.fluid.FluidFuelManager;
@@ -28,6 +28,7 @@ import pneumaticCraft.common.heat.HeatExchangerManager;
 import pneumaticCraft.common.heat.behaviour.HeatBehaviourManager;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.network.NetworkHandler;
+import pneumaticCraft.common.recipes.AmadronOfferManager;
 import pneumaticCraft.common.recipes.CraftingHandler;
 import pneumaticCraft.common.recipes.CraftingRegistrator;
 import pneumaticCraft.common.semiblock.SemiBlockInitializer;
@@ -153,6 +154,9 @@ public class PneumaticCraft{
 
         ThirdPartyManager.instance().postInit();
         proxy.postInit();
+        Config.postInit();
+        AmadronOfferManager.getInstance().shufflePeriodicOffers();
+        AmadronOfferManager.getInstance().recompileOffers();
     }
 
     @EventHandler

@@ -16,7 +16,7 @@ import net.minecraft.profiler.Profiler;
 import net.minecraft.world.ChunkPosition;
 import net.minecraftforge.common.MinecraftForge;
 import pneumaticCraft.api.drone.SpecialVariableRetrievalEvent;
-import pneumaticCraft.common.Config;
+import pneumaticCraft.common.config.Config;
 import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.common.progwidgets.IVariableWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetStart;

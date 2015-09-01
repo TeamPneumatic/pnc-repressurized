@@ -12,8 +12,10 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.common.ai.DroneClaimManager;
 import pneumaticCraft.common.block.Blockss;
+import pneumaticCraft.common.config.AmadronOfferPeriodicConfig;
 import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.PacketServerTickTime;
+import pneumaticCraft.common.recipes.AmadronOfferManager;
 import pneumaticCraft.common.tileentity.TileEntityElectrostaticCompressor;
 import pneumaticCraft.lib.PneumaticValues;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -29,9 +31,13 @@ public class TickHandlerPneumaticCraft{
             World world = event.world;
             checkLightning(world);
             DroneClaimManager.getInstance(world).update();
+            if(!event.world.isRemote && event.world.provider.dimensionId == 0 && event.world.getWorldTime() % (24000 / AmadronOfferPeriodicConfig.timesPerDay) == 1) {
+                AmadronOfferManager.getInstance().shufflePeriodicOffers();
+            }
             if(!event.world.isRemote && event.world.getTotalWorldTime() % 100 == 0) {
                 double tickTime = net.minecraft.util.MathHelper.average(MinecraftServer.getServer().tickTimeArray) * 1.0E-6D;//In case world are going to get their own thread: MinecraftServer.getServer().worldTickTimes.get(event.world.provider.dimensionId)
                 NetworkHandler.sendToDimension(new PacketServerTickTime(tickTime), event.world.provider.dimensionId);
+                if(event.world.getTotalWorldTime() % 600 == 0) AmadronOfferManager.getInstance().tryRestockCustomOffers();
             }
         }
     }

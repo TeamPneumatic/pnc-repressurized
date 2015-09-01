@@ -1,6 +1,7 @@
-package pneumaticCraft.common;
+package pneumaticCraft.common.config;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -57,6 +58,7 @@ public class Config{
 
     public static final String[] CATEGORIES = new String[]{Configuration.CATEGORY_GENERAL, "plant_full-grown_effects", "plant_generation_options", "machine_properties", "advanced", "recipe_enabling", "third_party_enabling"};
     public static List<String> NO_MC_RESTART_CATS = Arrays.asList(new String[]{"plant_full-grown_effects", "plant_generation_options", "machine_properties"});
+    private static ISubConfig[] subConfigs = new ISubConfig[]{new AmadronOfferSettings(), AmadronOfferStaticConfig.INSTANCE, new AmadronOfferPeriodicConfig()};
 
     @SubscribeEvent
     public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent eventArgs){
@@ -72,6 +74,18 @@ public class Config{
 
             config = new Configuration(configFile);
             config.load(); // get the actual data from the file.
+
+            for(ISubConfig subConfig : subConfigs) {
+                File subFolder = new File(configFile.getAbsolutePath().substring(0, configFile.getAbsolutePath().length() - 4) + File.separator);
+                subFolder.mkdirs();
+                File subFile = new File(subFolder, subConfig.getFolderName() + ".cfg");
+                try {
+                    subConfig.init(subFile);
+                } catch(IOException e) {
+                    Log.error("Config file " + subConfig.getFolderName() + " failed to create! Unexpected things can happen!");
+                    e.printStackTrace();
+                }
+            }
         }
 
         boolean foundConfigWithoutOil = !config.hasKey(Configuration.CATEGORY_GENERAL, "oil_generation_chance");
@@ -188,6 +202,17 @@ public class Config{
         PneumaticCraft.proxy.initConfig(config);
 
         config.save();// save the configuration file
+    }
+
+    public static void postInit(){
+        for(ISubConfig subConfig : subConfigs) {
+            try {
+                subConfig.postInit();
+            } catch(IOException e) {
+                Log.error("Config file " + subConfig.getFolderName() + " failed to create! Unexpected things can happen!");
+                e.printStackTrace();
+            }
+        }
     }
 
     public static void setProgrammerDifficulty(int difficulty){

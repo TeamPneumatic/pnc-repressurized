@@ -3,7 +3,6 @@ package pneumaticCraft.client.gui.widget;
 import java.awt.Rectangle;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.I18n;
 
 public class WidgetLabel extends WidgetBase{
     public String text;
@@ -20,7 +19,7 @@ public class WidgetLabel extends WidgetBase{
 
     @Override
     public Rectangle getBounds(){
-        return new Rectangle(x, y, Minecraft.getMinecraft().fontRenderer.getStringWidth(I18n.format(text)), Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT);
+        return new Rectangle(x, y, Minecraft.getMinecraft().fontRenderer.getStringWidth(text), Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT);
     }
 
 }

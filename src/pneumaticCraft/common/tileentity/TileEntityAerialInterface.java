@@ -1,7 +1,6 @@
 package pneumaticCraft.common.tileentity;
 
 import java.util.Iterator;
-import java.util.List;
 
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -12,7 +11,6 @@ import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.fluids.Fluid;
@@ -25,7 +23,7 @@ import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.network.GuiSynced;
-import pneumaticCraft.lib.Log;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.ModIds;
 import pneumaticCraft.lib.PneumaticValues;
 import cofh.api.energy.EnergyStorage;
@@ -145,28 +143,9 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
 
     private EntityPlayer getPlayer(){
         if(worldObj != null && !worldObj.isRemote) {
-            EntityPlayer player = null;
-            for(EntityPlayer checkingPlayer : (List<EntityPlayer>)MinecraftServer.getServer().getConfigurationManager().playerEntityList) {
-                if(playerUUID.equals("")) {//TODO remove legacy code.
-                    if(checkingPlayer.getCommandSenderName().equals(playerName)) {
-                        player = checkingPlayer;
-                        break;
-                    }
-                } else {
-                    if(checkingPlayer.getGameProfile().getId().toString().equals(playerUUID)) {
-                        player = checkingPlayer;
-                        break;
-                    }
-                }
-            }
+            EntityPlayer player = PneumaticCraftUtils.getPlayerFromId(playerUUID);
             isConnectedToPlayer = player != null;
-            if(isConnectedToPlayer) {
-                if(playerUUID.equals("")) {
-                    playerUUID = player.getGameProfile().getId().toString();
-                    Log.info("Legacy conversion: Aerial Interface username '" + player.getCommandSenderName() + "' is now using UUID '" + playerUUID + "'.");
-                }
-                return player;
-            }
+            return player;
         }
         return null;
     }

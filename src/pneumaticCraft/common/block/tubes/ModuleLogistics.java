@@ -10,6 +10,7 @@ import net.minecraft.item.ItemDye;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
@@ -267,5 +268,6 @@ public class ModuleLogistics extends TubeModule{
             status = "waila.logisticsModule.noPower";
         }
         curInfo.add(StatCollector.translateToLocal("hud.msg.state") + ": " + StatCollector.translateToLocal(status));
+        curInfo.add(StatCollector.translateToLocal("waila.logisticsModule.channel") + " " + EnumChatFormatting.YELLOW + StatCollector.translateToLocal("item.fireworksCharge." + ItemDye.field_150923_a[colorChannel]));
     }
 }
