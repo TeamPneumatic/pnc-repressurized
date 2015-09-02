@@ -648,6 +648,8 @@ gui.progWidget.coordinate.constant=Constant
 gui.progWidget.coordinate.variable=Variable
 gui.progWidget.coordinate.variableName=Variable name:
 gui.progWidget.coordinateOperator.operator=Operator:
+gui.progWidget.conditionBlock.checkForAir=Check for Air
+gui.progWidget.conditionBlock.checkForAir.tooltip=Special condition. When checked, all/any block(s) in the area need to be air.
 gui.progWidget.comment.tooltip.freeToUse=§aThis piece is free to use
 gui.progWidget.area.extraInfo=Extra parameter:
 gui.progWidget.area.extraInfo.tooltip=Used by certain area types: \n \nGrid: The spacing of the grid, in blocks. \nRandom: The amount of randomly selected blocks
@@ -671,6 +673,7 @@ gui.progWidget.label.error.noLabel=No label. Attach a Text puzzle piece.
 gui.progWidget.label.error.noJumpLocation=No place to jump to. Attach a Text puzzle piece.
 gui.progWidget.liquidFilter.error.noLiquid=No liquid selected in the filter.
 gui.progWidget.crafting.error.noCraftingRecipe=No valid crafting recipe set.
+gui.progWidget.conditionBlock.selectedAirAndItemFilter=Configured to look for air, yet Item Filters are connected!
 
 gui.pastebin.button.login=Log In
 gui.pastebin.button.logout=Log Out

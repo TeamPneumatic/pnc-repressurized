@@ -1,7 +1,17 @@
--Compressed IGW images.
--Added Redstone control to the Plastic Mixer.
--You can now breathe indefinately under water when having an Aerial Interface connected (at a high air cost).
--You can now show the area of a Right Click Entity piece.
+-Added player to player Amadron trading.
+-Amadron offers are now fully configurable in the config.
+-You can now hack Bats to kill them (because they can only be annoying ;))
+-Turned down the dust particles of Drones.
+-Added config option for dungeon loot spawns.
+-Added 'Check for Air' option for the Condition: Block piece.
 
--Bugfix: Various puzzle pieces show a 'Accessing Sides:' in the tooltip even though they aren't using sides.
--Bugfix: Logistic Frames disappear client-side and cause a crash when tried to be interacted with.
+-Bugfix: Area blacklisting with the Programmer/Drones is broken.
+-Bugfix: Programmer shows "Sneak for info" instead of the names of the returned puzzle pieces when programming a Drone.
+-Bugfix: Drop Item piece shows 'All Sides' even though it doesn't use sides.
+-Bugfix: Logistic Drone gets stuck when a Logistic Frame can't be reached (it's completely surrounded with blocks).
+-Bugfix: Old (pre FMP update) Advanced Pressure Tubes drop as regular Pressure Tubes.
+-Bugfix: Entity Tracker does not update the name of an Entity when it is changed while tracking.
+-Bugfix (hopefully): Drone gets stuck on a Charging Station when charged too fast.
+-Bugfix: Logistic Drones try to fill tanks beyond what they can hold, getting them stuck with liquid they want to dump.
+-Bugfix: Entity Tracker gives you a 'mob is targeting you' warning even when the Entity Tracker is disabled.
+-Bugfix: PneumaticCraft liquids don't behave as other liquids (no viscosity, no view depth changed when inside). This does introduce the fact that you can right-click the liquids with an empty bottle to get a water bottle again, but this is a Minecraft derp thing I can't control (except when using serious hacks).
