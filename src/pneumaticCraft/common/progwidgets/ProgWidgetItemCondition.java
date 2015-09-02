@@ -33,19 +33,13 @@ public class ProgWidgetItemCondition extends ProgWidgetConditionBase{
     public boolean evaluate(IDroneBase drone, IProgWidget widget){
         ProgWidgetItemFilter checkedFilter = (ProgWidgetItemFilter)widget.getConnectedParameters()[0];
         while(checkedFilter != null) {
-            if(checkedFilter.getFilter() != null) {
-                if(!ProgWidgetItemFilter.isItemValidForFilters(checkedFilter.getFilter(), ProgWidget.getConnectedWidgetList(this, 1), ProgWidget.getConnectedWidgetList(this, getParameters().length + 1), -1)) return false;
-            }
-
+            if(!ProgWidgetItemFilter.isItemValidForFilters(checkedFilter.getFilter(), ProgWidget.getConnectedWidgetList(this, 1), ProgWidget.getConnectedWidgetList(this, getParameters().length + 1), -1)) return false;
             checkedFilter = (ProgWidgetItemFilter)checkedFilter.getConnectedParameters()[0];
         }
 
         checkedFilter = (ProgWidgetItemFilter)widget.getConnectedParameters()[3];
         while(checkedFilter != null) {
-            if(checkedFilter.getFilter() != null) {
-                if(ProgWidgetItemFilter.isItemValidForFilters(checkedFilter.getFilter(), ProgWidget.getConnectedWidgetList(this, 1), ProgWidget.getConnectedWidgetList(this, getParameters().length + 1), -1)) return false;
-            }
-
+            if(ProgWidgetItemFilter.isItemValidForFilters(checkedFilter.getFilter(), ProgWidget.getConnectedWidgetList(this, 1), ProgWidget.getConnectedWidgetList(this, getParameters().length + 1), -1)) return false;
             checkedFilter = (ProgWidgetItemFilter)checkedFilter.getConnectedParameters()[0];
         }
         return true;

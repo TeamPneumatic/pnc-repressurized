@@ -162,7 +162,7 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget{
     public static boolean isItemValidForFilters(ItemStack item, List<ProgWidgetItemFilter> whitelist, List<ProgWidgetItemFilter> blacklist, int blockMeta){
         if(blacklist != null) {
             for(ProgWidgetItemFilter black : blacklist) {
-                if(PneumaticCraftUtils.areStacksEqual(black.filter, item, black.useMetadata && blockMeta == -1, black.useNBT, black.useOreDict, black.useModSimilarity)) {
+                if(PneumaticCraftUtils.areStacksEqual(black.getFilter(), item, black.useMetadata && blockMeta == -1, black.useNBT, black.useOreDict, black.useModSimilarity)) {
                     if(blockMeta == -1 || !black.useMetadata || black.specificMeta == blockMeta) {
                         return false;
                     }
@@ -173,7 +173,7 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget{
             return true;
         } else {
             for(ProgWidgetItemFilter white : whitelist) {
-                if(PneumaticCraftUtils.areStacksEqual(white.filter, item, white.useMetadata && blockMeta == -1, white.useNBT, white.useOreDict, white.useModSimilarity)) {
+                if(PneumaticCraftUtils.areStacksEqual(white.getFilter(), item, white.useMetadata && blockMeta == -1, white.useNBT, white.useOreDict, white.useModSimilarity)) {
                     if(blockMeta == -1 || !white.useMetadata || white.specificMeta == blockMeta) {
                         return true;
                     }
