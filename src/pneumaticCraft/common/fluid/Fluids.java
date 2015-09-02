@@ -6,8 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.material.MapColor;
-import net.minecraft.block.material.MaterialLiquid;
+import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -101,7 +100,7 @@ public class Fluids{
         if(fluid == etchingAcid) {
             return new BlockFluidEtchingAcid().setBlockName("etchingAcid");
         }
-        return new BlockFluidClassic(fluid, new MaterialLiquid(MapColor.waterColor)){
+        return new BlockFluidClassic(fluid, Material.water){
             private IIcon flowingIcon, stillIcon;
 
             @Override
