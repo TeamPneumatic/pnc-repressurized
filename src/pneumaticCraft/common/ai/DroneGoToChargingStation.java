@@ -13,7 +13,6 @@ import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.tileentity.TileEntityChargingStation;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
-import pneumaticCraft.lib.Log;
 import pneumaticCraft.lib.PneumaticValues;
 
 public class DroneGoToChargingStation extends EntityAIBase{
@@ -72,7 +71,6 @@ public class DroneGoToChargingStation extends EntityAIBase{
     public boolean continueExecuting(){
         if(curCharger.getUpgrades(ItemMachineUpgrade.UPGRADE_DISPENSER_DAMAGE) == 0 || curCharger.isInvalid()) {//If our path was blocked.
             isExecuting = false;
-            Log.info("Exit 1");
             return false;
         } else if(!((EntityPathNavigateDrone)drone.getPathNavigator()).isGoingToTeleport() && (drone.getNavigator().getPath() == null || drone.getNavigator().getPath().isFinished())) {
             isExecuting = drone.getPressure(null) < 9.9F && curCharger.getPressure(ForgeDirection.UNKNOWN) > drone.getPressure(null) + 0.1F;
@@ -88,12 +86,10 @@ public class DroneGoToChargingStation extends EntityAIBase{
                 }
                 DroneClaimManager.getInstance(drone.worldObj).claim(new ChunkPosition(curCharger.xCoord, curCharger.yCoord, curCharger.zCoord));
             }
-            if(!isExecuting) Log.info("Exit 2");
             return isExecuting;
         } else {
             chargingTime = 0;
             DroneClaimManager.getInstance(drone.worldObj).claim(new ChunkPosition(curCharger.xCoord, curCharger.yCoord, curCharger.zCoord));
-            if(!drone.isAccelerating()) Log.info("Exit 3");
             return drone.isAccelerating();
         }
     }
