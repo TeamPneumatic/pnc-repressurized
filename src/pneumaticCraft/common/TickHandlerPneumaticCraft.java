@@ -5,7 +5,6 @@ import java.util.List;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.EntityLightningBolt;
-import net.minecraft.entity.projectile.EntityPotion;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -22,8 +21,6 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 
 public class TickHandlerPneumaticCraft{
-
-    public List<EntityPotion> potionEntities = new ArrayList<EntityPotion>();
 
     @SubscribeEvent
     public void tickEnd(TickEvent.WorldTickEvent event){

@@ -17,7 +17,6 @@ import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.entity.passive.EntitySquid;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.projectile.EntityPotion;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -33,7 +32,6 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.EnderTeleportEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent;
@@ -44,7 +42,6 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.ExplosionEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fluids.FluidStack;
-import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.api.PneumaticRegistry;
 import pneumaticCraft.api.block.IPneumaticWrenchable;
 import pneumaticCraft.api.client.pneumaticHelmet.EntityTrackEvent;
@@ -92,17 +89,6 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class EventHandlerPneumaticCraft{
-
-    // piece of code to convert Q-ed seeds immediately into EntityItems that can
-    // plant themselves.
-    @SubscribeEvent
-    public void onEntityJoinWorld(EntityJoinWorldEvent event){
-        if(!event.entity.worldObj.isRemote && !event.entity.isDead) {
-            if(event.entity instanceof EntityPotion) {
-                PneumaticCraft.tickHandler.potionEntities.add((EntityPotion)event.entity);
-            }
-        }
-    }
 
     private static ItemStack IRON_INGOT = new ItemStack(Items.iron_ingot);
     private static ItemStack IRON_BLOCK = new ItemStack(Blocks.iron_block);
