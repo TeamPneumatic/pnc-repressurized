@@ -100,11 +100,9 @@ public class GuiRemoteEditor extends GuiRemote{
             invSearchGui = new GuiInventorySearcher(FMLClientHandler.instance().getClient().thePlayer);
             FMLClientHandler.instance().showGuiScreen(invSearchGui);
         } else if(button.id == 1) {
-            if(remote.getTagCompound() != null && remote.getTagCompound().hasKey("actionWidgets")) {
-                NBTTagCompound mainTag = new NBTTagCompound();
-                mainTag.setTag("main", remote.getTagCompound().getTagList("actionWidgets", 10));
-                FMLClientHandler.instance().showGuiScreen(pastebinGui = new GuiPastebin(this, mainTag));
-            }
+            NBTTagCompound mainTag = new NBTTagCompound();
+            mainTag.setTag("main", remote.getTagCompound() != null ? remote.getTagCompound().getTagList("actionWidgets", 10) : new NBTTagCompound());
+            FMLClientHandler.instance().showGuiScreen(pastebinGui = new GuiPastebin(this, mainTag));
         }
     }
 
