@@ -48,6 +48,8 @@ import pneumaticCraft.common.entity.living.EntityDrone.DroneFakePlayer;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.network.DescSynced;
 import pneumaticCraft.common.network.LazySynced;
+import pneumaticCraft.common.network.NetworkHandler;
+import pneumaticCraft.common.network.PacketSpawnParticle;
 import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetDroneConditionEntity;
 import pneumaticCraft.common.progwidgets.ProgWidgetEntityAttack;
@@ -579,10 +581,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
     }
 
     @Override
-    public void setActiveProgram(IProgWidget widget){
-        // TODO Auto-generated method stub
-
-    }
+    public void setActiveProgram(IProgWidget widget){}
 
     @Override
     public boolean isProgramApplicable(IProgWidget widget){
@@ -673,5 +672,12 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
     @Override
     public FluidTankInfo[] getTankInfo(ForgeDirection from){
         return new FluidTankInfo[]{new FluidTankInfo(tank)};
+    }
+
+    @Override
+    public void overload(){
+        for(int i = 0; i < 10; i++) {
+            NetworkHandler.sendToAllAround(new PacketSpawnParticle("largesmoke", xCoord + worldObj.rand.nextDouble(), yCoord + 1, zCoord + worldObj.rand.nextDouble(), 0, 0, 0), worldObj);
+        }
     }
 }

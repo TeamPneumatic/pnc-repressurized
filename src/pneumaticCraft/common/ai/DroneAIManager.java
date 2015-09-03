@@ -81,6 +81,10 @@ public class DroneAIManager{
         return curWidgetAI;
     }
 
+    public IDroneBase getDrone(){
+        return drone;
+    }
+
     public void writeToNBT(NBTTagCompound tag){
         NBTTagList tagList = new NBTTagList();
         for(Map.Entry<String, ChunkPosition> entry : coordinateVariables.entrySet()) {

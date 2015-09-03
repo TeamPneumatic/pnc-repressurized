@@ -13,4 +13,5 @@ public interface IDroneBase extends IDrone{
 
     public boolean isProgramApplicable(IProgWidget widget);
 
+    public void overload();
 }

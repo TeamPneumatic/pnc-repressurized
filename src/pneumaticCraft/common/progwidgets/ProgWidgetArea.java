@@ -170,6 +170,11 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
             minY = maxY = areaPoints[0].chunkPosY;
             minZ = maxZ = areaPoints[0].chunkPosZ;
         }
+        int size = (maxX - minX) * (maxY - minY) * (maxZ - minZ);
+        if(size > 100000) { //Prevent memory problems when getting to ridiculous areas.
+            if(aiManager != null) aiManager.getDrone().overload();
+            return;
+        }
 
         switch(type){
             case FILL:

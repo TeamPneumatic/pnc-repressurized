@@ -1354,4 +1354,9 @@ public class EntityDrone extends EntityDroneBase implements IManoMeasurable, IIn
     public String getBuyingPlayer(){
         return buyingPlayer;
     }
+
+    @Override
+    public void overload(){
+        attackEntityFrom(DamageSource.outOfWorld, 2000.0F);
+    }
 }
