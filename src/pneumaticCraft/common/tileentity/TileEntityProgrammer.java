@@ -23,60 +23,14 @@ import pneumaticCraft.common.item.ItemProgrammingPuzzle;
 import pneumaticCraft.common.network.GuiSynced;
 import pneumaticCraft.common.progwidgets.IAreaProvider;
 import pneumaticCraft.common.progwidgets.IProgWidget;
-import pneumaticCraft.common.progwidgets.ProgWidgetArea;
-import pneumaticCraft.common.progwidgets.ProgWidgetBlockCondition;
-import pneumaticCraft.common.progwidgets.ProgWidgetBlockRightClick;
-import pneumaticCraft.common.progwidgets.ProgWidgetComment;
-import pneumaticCraft.common.progwidgets.ProgWidgetCoordinate;
-import pneumaticCraft.common.progwidgets.ProgWidgetCoordinateCondition;
-import pneumaticCraft.common.progwidgets.ProgWidgetCoordinateOperator;
-import pneumaticCraft.common.progwidgets.ProgWidgetCrafting;
-import pneumaticCraft.common.progwidgets.ProgWidgetDig;
-import pneumaticCraft.common.progwidgets.ProgWidgetDroneConditionEntity;
-import pneumaticCraft.common.progwidgets.ProgWidgetDroneConditionItem;
-import pneumaticCraft.common.progwidgets.ProgWidgetDroneConditionLiquid;
-import pneumaticCraft.common.progwidgets.ProgWidgetDroneConditionPressure;
-import pneumaticCraft.common.progwidgets.ProgWidgetDropItem;
-import pneumaticCraft.common.progwidgets.ProgWidgetEmitRedstone;
-import pneumaticCraft.common.progwidgets.ProgWidgetEntityAttack;
-import pneumaticCraft.common.progwidgets.ProgWidgetEntityCondition;
-import pneumaticCraft.common.progwidgets.ProgWidgetEntityExport;
-import pneumaticCraft.common.progwidgets.ProgWidgetEntityImport;
-import pneumaticCraft.common.progwidgets.ProgWidgetEntityRightClick;
-import pneumaticCraft.common.progwidgets.ProgWidgetExternalProgram;
-import pneumaticCraft.common.progwidgets.ProgWidgetGoToLocation;
-import pneumaticCraft.common.progwidgets.ProgWidgetInventoryExport;
-import pneumaticCraft.common.progwidgets.ProgWidgetInventoryImport;
-import pneumaticCraft.common.progwidgets.ProgWidgetItemAssign;
-import pneumaticCraft.common.progwidgets.ProgWidgetItemCondition;
-import pneumaticCraft.common.progwidgets.ProgWidgetItemFilter;
-import pneumaticCraft.common.progwidgets.ProgWidgetItemInventoryCondition;
-import pneumaticCraft.common.progwidgets.ProgWidgetJump;
-import pneumaticCraft.common.progwidgets.ProgWidgetLabel;
-import pneumaticCraft.common.progwidgets.ProgWidgetLiquidExport;
-import pneumaticCraft.common.progwidgets.ProgWidgetLiquidFilter;
-import pneumaticCraft.common.progwidgets.ProgWidgetLiquidImport;
-import pneumaticCraft.common.progwidgets.ProgWidgetLiquidInventoryCondition;
-import pneumaticCraft.common.progwidgets.ProgWidgetLogistics;
-import pneumaticCraft.common.progwidgets.ProgWidgetPickupItem;
-import pneumaticCraft.common.progwidgets.ProgWidgetPlace;
-import pneumaticCraft.common.progwidgets.ProgWidgetPressureCondition;
-import pneumaticCraft.common.progwidgets.ProgWidgetRedstoneCondition;
-import pneumaticCraft.common.progwidgets.ProgWidgetRename;
-import pneumaticCraft.common.progwidgets.ProgWidgetStandby;
-import pneumaticCraft.common.progwidgets.ProgWidgetStart;
-import pneumaticCraft.common.progwidgets.ProgWidgetString;
-import pneumaticCraft.common.progwidgets.ProgWidgetSuicide;
-import pneumaticCraft.common.progwidgets.ProgWidgetTeleport;
-import pneumaticCraft.common.progwidgets.ProgWidgetWait;
+import pneumaticCraft.common.progwidgets.WidgetRegistrator;
 import pneumaticCraft.common.util.IOHelper;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 
 public class TileEntityProgrammer extends TileEntityBase implements IInventory, IGUITextFieldSensitive{
     public List<IProgWidget> progWidgets = new ArrayList<IProgWidget>();
-    public static List<IProgWidget> registeredWidgets = new ArrayList<IProgWidget>();
     @GuiSynced
-    public int redstoneMode;//for later use
+    public int redstoneMode;
     private ItemStack[] inventory = new ItemStack[1];
 
     public static final int PROGRAM_SLOT = 0;
@@ -84,55 +38,6 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory, 
     //Client side variables that are used to prevent resetting.
     public int translatedX, translatedY, zoomState;
     public boolean showInfo = true, showFlow = true;
-
-    static {
-        registeredWidgets.add(new ProgWidgetComment());
-        registeredWidgets.add(new ProgWidgetStart());
-        registeredWidgets.add(new ProgWidgetArea());
-        registeredWidgets.add(new ProgWidgetString());
-        registeredWidgets.add(new ProgWidgetItemFilter());
-        registeredWidgets.add(new ProgWidgetItemAssign());
-        registeredWidgets.add(new ProgWidgetLiquidFilter());
-        registeredWidgets.add(new ProgWidgetCoordinate());
-        registeredWidgets.add(new ProgWidgetCoordinateOperator());
-        registeredWidgets.add(new ProgWidgetEntityAttack());
-        registeredWidgets.add(new ProgWidgetDig());
-        registeredWidgets.add(new ProgWidgetPlace());
-        registeredWidgets.add(new ProgWidgetBlockRightClick());
-        registeredWidgets.add(new ProgWidgetEntityRightClick());
-        registeredWidgets.add(new ProgWidgetPickupItem());
-        registeredWidgets.add(new ProgWidgetDropItem());
-        registeredWidgets.add(new ProgWidgetInventoryExport());
-        registeredWidgets.add(new ProgWidgetInventoryImport());
-        registeredWidgets.add(new ProgWidgetLiquidExport());
-        registeredWidgets.add(new ProgWidgetLiquidImport());
-        registeredWidgets.add(new ProgWidgetEntityExport());
-        registeredWidgets.add(new ProgWidgetEntityImport());
-        registeredWidgets.add(new ProgWidgetGoToLocation());
-        registeredWidgets.add(new ProgWidgetTeleport());
-        registeredWidgets.add(new ProgWidgetEmitRedstone());
-        registeredWidgets.add(new ProgWidgetLabel());
-        registeredWidgets.add(new ProgWidgetJump());
-        registeredWidgets.add(new ProgWidgetWait());
-        registeredWidgets.add(new ProgWidgetRename());
-        registeredWidgets.add(new ProgWidgetSuicide());
-        registeredWidgets.add(new ProgWidgetExternalProgram());
-        registeredWidgets.add(new ProgWidgetCrafting());
-        registeredWidgets.add(new ProgWidgetStandby());
-        registeredWidgets.add(new ProgWidgetLogistics());
-        registeredWidgets.add(new ProgWidgetCoordinateCondition());
-        registeredWidgets.add(new ProgWidgetRedstoneCondition());
-        registeredWidgets.add(new ProgWidgetItemInventoryCondition());
-        registeredWidgets.add(new ProgWidgetBlockCondition());
-        registeredWidgets.add(new ProgWidgetLiquidInventoryCondition());
-        registeredWidgets.add(new ProgWidgetEntityCondition());
-        registeredWidgets.add(new ProgWidgetPressureCondition());
-        registeredWidgets.add(new ProgWidgetItemCondition());
-        registeredWidgets.add(new ProgWidgetDroneConditionItem());
-        registeredWidgets.add(new ProgWidgetDroneConditionLiquid());
-        registeredWidgets.add(new ProgWidgetDroneConditionEntity());
-        registeredWidgets.add(new ProgWidgetDroneConditionPressure());
-    }
 
     @Override
     public void readFromNBT(NBTTagCompound tag){
@@ -197,7 +102,7 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory, 
         for(int i = 0; i < widgetTags.tagCount(); i++) {
             NBTTagCompound widgetTag = widgetTags.getCompoundTagAt(i);
             String widgetName = widgetTag.getString("name");
-            for(IProgWidget widget : registeredWidgets) {
+            for(IProgWidget widget : WidgetRegistrator.registeredWidgets) {
                 if(widgetName.equals(widget.getWidgetString())) {//create the right progWidget for the given id tag.
                     IProgWidget addedWidget = widget.copy();
                     addedWidget.readFromNBT(widgetTag);

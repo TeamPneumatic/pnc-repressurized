@@ -33,8 +33,8 @@ import pneumaticCraft.common.heat.HeatExchangerManager;
 import pneumaticCraft.common.heat.SimpleHeatExchanger;
 import pneumaticCraft.common.heat.behaviour.HeatBehaviourManager;
 import pneumaticCraft.common.progwidgets.ProgWidgetCustomBlockInteract;
+import pneumaticCraft.common.progwidgets.WidgetRegistrator;
 import pneumaticCraft.common.recipes.PneumaticRecipeRegistry;
-import pneumaticCraft.common.tileentity.TileEntityProgrammer;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.common.util.ProgrammedDroneUtils;
 import pneumaticCraft.lib.Log;
@@ -195,7 +195,7 @@ public class PneumaticCraftAPIHandler implements IPneumaticCraftInterface{
 
     @Override
     public void registerCustomBlockInteractor(ICustomBlockInteract interactor){
-        TileEntityProgrammer.registeredWidgets.add(new ProgWidgetCustomBlockInteract().setInteractor(interactor));
+        WidgetRegistrator.register(new ProgWidgetCustomBlockInteract().setInteractor(interactor));
     }
 
     @Override

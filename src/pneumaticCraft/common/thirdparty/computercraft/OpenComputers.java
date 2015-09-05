@@ -1,6 +1,5 @@
 package pneumaticCraft.common.thirdparty.computercraft;
 
-import cpw.mods.fml.common.Optional;
 import li.cil.oc.api.Driver;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -10,12 +9,13 @@ import net.minecraftforge.oredict.ShapedOreRecipe;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.Itemss;
+import pneumaticCraft.common.progwidgets.WidgetRegistrator;
 import pneumaticCraft.common.thirdparty.IThirdParty;
-import pneumaticCraft.common.tileentity.TileEntityProgrammer;
 import pneumaticCraft.lib.ModIds;
 import pneumaticCraft.lib.Names;
 import pneumaticCraft.proxy.ClientProxy;
 import cpw.mods.fml.common.Loader;
+import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class OpenComputers implements IThirdParty{
@@ -26,7 +26,7 @@ public class OpenComputers implements IThirdParty{
         droneInterface = new BlockDroneInterface(Material.iron).setBlockName("droneInterface");
         Blockss.registerBlock(droneInterface);
         GameRegistry.registerTileEntity(TileEntityDroneInterface.class, "droneInterface");
-        TileEntityProgrammer.registeredWidgets.add(new ProgWidgetCC());
+        WidgetRegistrator.register(new ProgWidgetCC());
     }
 
     @Override

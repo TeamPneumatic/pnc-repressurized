@@ -59,7 +59,7 @@ public class Config{
 
     public static final String[] CATEGORIES = new String[]{Configuration.CATEGORY_GENERAL, "plant_full-grown_effects", "plant_generation_options", "machine_properties", "advanced", "recipe_enabling", "third_party_enabling"};
     public static List<String> NO_MC_RESTART_CATS = Arrays.asList(new String[]{"plant_full-grown_effects", "plant_generation_options", "machine_properties"});
-    private static ISubConfig[] subConfigs = new ISubConfig[]{new AmadronOfferSettings(), AmadronOfferStaticConfig.INSTANCE, new AmadronOfferPeriodicConfig()};
+    private static ISubConfig[] subConfigs = new ISubConfig[]{new AmadronOfferSettings(), AmadronOfferStaticConfig.INSTANCE, new AmadronOfferPeriodicConfig(), new ProgWidgetConfig()};
 
     @SubscribeEvent
     public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent eventArgs){

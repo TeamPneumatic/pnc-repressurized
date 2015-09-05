@@ -15,7 +15,7 @@ import net.minecraft.world.World;
 import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.common.NBTUtil;
 import pneumaticCraft.common.progwidgets.IProgWidget;
-import pneumaticCraft.common.tileentity.TileEntityProgrammer;
+import pneumaticCraft.common.progwidgets.WidgetRegistrator;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -50,7 +50,7 @@ public class ItemProgrammingPuzzle extends ItemPneumatic{
 
     public static void addItems(List<ItemStack> list){
         for(int i = 0; i < 16; i++) {
-            for(IProgWidget widget : TileEntityProgrammer.registeredWidgets) {
+            for(IProgWidget widget : WidgetRegistrator.registeredWidgets) {
                 if(widget.getCraftingColorIndex() == i) {
                     list.add(new ItemStack(Itemss.programmingPuzzle, 1, i));
                     break;
@@ -62,7 +62,7 @@ public class ItemProgrammingPuzzle extends ItemPneumatic{
     public static IProgWidget getWidgetForPiece(ItemStack stack){
         if(NBTUtil.hasTag(stack, "type")) {//TODO legacy remove
             String type = stack.getTagCompound().getString("type");
-            for(IProgWidget widget : TileEntityProgrammer.registeredWidgets) {
+            for(IProgWidget widget : WidgetRegistrator.registeredWidgets) {
                 if(widget.getWidgetString().equals(type)) return widget;
             }
             Exception e = new IllegalArgumentException("No widget registered with the name " + type + "! This is not possible?!");
@@ -81,7 +81,7 @@ public class ItemProgrammingPuzzle extends ItemPneumatic{
 
     private static List<IProgWidget> getWidgetsForColor(int color){
         List<IProgWidget> widgets = new ArrayList<IProgWidget>();
-        for(IProgWidget widget : TileEntityProgrammer.registeredWidgets) {
+        for(IProgWidget widget : WidgetRegistrator.registeredWidgets) {
             if(widget.getCraftingColorIndex() == color) {
                 widgets.add(widget);
             }
@@ -108,14 +108,14 @@ public class ItemProgrammingPuzzle extends ItemPneumatic{
     }
 
     public static IProgWidget getWidgetForClass(Class<? extends IProgWidget> clazz){
-        for(IProgWidget widget : TileEntityProgrammer.registeredWidgets) {
+        for(IProgWidget widget : WidgetRegistrator.registeredWidgets) {
             if(widget.getClass() == clazz) return widget;
         }
         throw new IllegalArgumentException("Widget " + clazz.getCanonicalName() + " isn't registered!");
     }
 
     public static IProgWidget getWidgetForName(String name){
-        for(IProgWidget widget : TileEntityProgrammer.registeredWidgets) {
+        for(IProgWidget widget : WidgetRegistrator.registeredWidgets) {
             if(widget.getWidgetString().equals(name)) return widget;
         }
         throw new IllegalArgumentException("Widget " + name + " isn't registered!");

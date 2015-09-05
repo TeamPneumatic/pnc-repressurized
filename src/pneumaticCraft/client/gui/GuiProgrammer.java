@@ -42,6 +42,7 @@ import pneumaticCraft.common.progwidgets.IJump;
 import pneumaticCraft.common.progwidgets.ILabel;
 import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetStart;
+import pneumaticCraft.common.progwidgets.WidgetRegistrator;
 import pneumaticCraft.common.tileentity.TileEntityProgrammer;
 import pneumaticCraft.lib.ModIds;
 import pneumaticCraft.lib.Textures;
@@ -108,7 +109,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
                 break;
             }
         }
-        for(IProgWidget widget : TileEntityProgrammer.registeredWidgets) {
+        for(IProgWidget widget : WidgetRegistrator.registeredWidgets) {
             if(difficulty >= widget.getDifficulty().ordinal()) {
                 widget.setY(y + 40);
                 widget.setX(showAllWidgets ? x : 322);

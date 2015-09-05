@@ -33,7 +33,7 @@ import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetArea;
 import pneumaticCraft.common.progwidgets.ProgWidgetItemFilter;
 import pneumaticCraft.common.progwidgets.ProgWidgetString;
-import pneumaticCraft.common.tileentity.TileEntityProgrammer;
+import pneumaticCraft.common.progwidgets.WidgetRegistrator;
 import pneumaticCraft.lib.ModIds;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Optional;
@@ -131,7 +131,7 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral,
             public Object[] call(Object[] args) throws Exception{
                 if(args.length == 0) {
                     List<String> actions = new ArrayList<String>();
-                    for(IProgWidget widget : TileEntityProgrammer.registeredWidgets) {
+                    for(IProgWidget widget : WidgetRegistrator.registeredWidgets) {
                         if(widget.getWidgetAI(new EntityDrone(worldObj), getWidget()) != null) {
                             actions.add(widget.getWidgetString());
                         }
@@ -595,7 +595,7 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral,
             public Object[] call(Object[] args) throws Exception{
                 if(args.length == 1) {
                     String widgetName = (String)args[0];
-                    for(IProgWidget widget : TileEntityProgrammer.registeredWidgets) {
+                    for(IProgWidget widget : WidgetRegistrator.registeredWidgets) {
                         if(widget.getWidgetString().equalsIgnoreCase(widgetName)) {
                             EntityAIBase ai = widget.getWidgetAI(drone, getWidget());
                             if(ai == null) throw new IllegalArgumentException("The parsed action is not a runnable action! Action: \"" + widget.getWidgetString() + "\".");

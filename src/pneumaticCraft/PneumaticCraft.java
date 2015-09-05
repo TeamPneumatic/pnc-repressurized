@@ -28,6 +28,7 @@ import pneumaticCraft.common.heat.HeatExchangerManager;
 import pneumaticCraft.common.heat.behaviour.HeatBehaviourManager;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.network.NetworkHandler;
+import pneumaticCraft.common.progwidgets.WidgetRegistrator;
 import pneumaticCraft.common.recipes.AmadronOfferManager;
 import pneumaticCraft.common.recipes.CraftingHandler;
 import pneumaticCraft.common.recipes.CraftingRegistrator;
@@ -89,6 +90,7 @@ public class PneumaticCraft{
         Itemss.init();
         HackableHandler.addDefaultEntries();
         ModuleRegistrator.init();
+        WidgetRegistrator.init();
         ThirdPartyManager.instance().preInit();
         TileEntityRegistrator.init();
         EntityRegistrator.init();
