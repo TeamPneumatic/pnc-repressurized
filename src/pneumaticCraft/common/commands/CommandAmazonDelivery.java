@@ -1,4 +1,4 @@
-package pneumaticCraft.common;
+package pneumaticCraft.common.commands;
 
 import java.util.ArrayList;
 import java.util.List;

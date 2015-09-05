@@ -1,7 +1,9 @@
 package pneumaticCraft.common.remote;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -125,5 +127,12 @@ public class GlobalVariableManager extends WorldSavedData{
             list.appendTag(t);
         }
         tag.setTag("globalItemVars", list);
+    }
+
+    public static String[] getAllActiveVariableNames(){
+        Set<String> varNames = new HashSet<String>();
+        varNames.addAll(globalVars.keySet());
+        varNames.addAll(globalItemVars.keySet());
+        return varNames.toArray(new String[varNames.size()]);
     }
 }

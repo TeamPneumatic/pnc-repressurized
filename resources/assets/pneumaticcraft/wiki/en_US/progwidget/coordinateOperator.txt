@@ -20,3 +20,5 @@ $player=<playername> = Gets the coordinate of the player inserted for '<playerna
 
 [prefix{l}]Global Variables (#)[prefix{}]
 Another special kind of variable is the global variable. They are prefixed with '#'. Normal variables are unique per Drone. They can't be shared. Global variables are variables that ARE shared. This allows Drones to communicate with each other. Additionally, the [link{block/universalSensor}]Universal Sensor[link{}] can look for global variables, and emit a redstone signal based on them.
+
+For convenience sake global variables can be set by using "/setGlobalVariable <varName> <x> <y> <z>". This is useful in custom maps or for debugging. The command execution is not just limited to OP's. To get the variable state (useful for debugging specifically), use "getGlobalVariable <varName>". This will get both the coordinate and item value.

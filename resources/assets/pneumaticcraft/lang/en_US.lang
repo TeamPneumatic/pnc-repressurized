@@ -859,6 +859,8 @@ command.deliverAmazon.playerName=No such player name found.
 command.deliverAmazon.noItems=The specified inventory doesn't contain items.
 command.deliverAmazon.noInventory=The specified coordinate doesn't have an inventory.
 command.deliverAmazon.success=Delivering items!
+command.getGlobalVariable.output=Variable name: "%s". Coordinate: (%s, %s, %s). Item: %s
+command.setGlobalVariable.output=Variable "%s" has been set to (%s, %s, %s).
 
 #Achievements
 achievement.ingotIronCompressed=The First Explosion (of many)

@@ -75,6 +75,7 @@ public class NetworkHandler{
         INSTANCE.registerMessage(PacketAmadronTradeNotifyDeal.class, PacketAmadronTradeNotifyDeal.class, discriminant++, Side.CLIENT);
         INSTANCE.registerMessage(PacketAmadronTradeRemoved.class, PacketAmadronTradeRemoved.class, discriminant++, Side.CLIENT);
         INSTANCE.registerMessage(PacketUpdateLogisticModule.class, PacketUpdateLogisticModule.class, discriminant++, Side.CLIENT);
+        INSTANCE.registerMessage(PacketCommandGetGlobalVariableOutput.class, PacketCommandGetGlobalVariableOutput.class, discriminant++, Side.CLIENT);
 
         INSTANCE.registerMessage(PacketHackingBlockStart.class, PacketHackingBlockStart.class, discriminant++, Side.SERVER);
         INSTANCE.registerMessage(PacketHackingBlockStart.class, PacketHackingBlockStart.class, discriminant++, Side.CLIENT);
