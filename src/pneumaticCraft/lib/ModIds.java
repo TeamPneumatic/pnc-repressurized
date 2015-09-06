@@ -21,4 +21,5 @@ public class ModIds{
     public static final String NOT_ENOUGH_KEYS = "notenoughkeys";
     public static final String OPEN_COMPUTERS = "OpenComputers|Core";
     public static final String EE3 = "EE3";
+    public static final String EIO = "EnderIO";
 }
