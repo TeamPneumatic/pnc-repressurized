@@ -1,7 +1,9 @@
 package pneumaticCraft.common.inventory;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -14,27 +16,29 @@ import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.PacketSetGlobalVariable;
 import pneumaticCraft.common.remote.GlobalVariableManager;
+import pneumaticCraft.common.remote.TextVariableParser;
 
 public class ContainerRemote extends Container{
     private final List<String> syncedVars;
     private final ChunkPosition[] lastValues;
 
     public ContainerRemote(ItemStack remote){
-        syncedVars = getRelevantVariableNames(remote);
+        syncedVars = new ArrayList<String>(getRelevantVariableNames(remote));
         lastValues = new ChunkPosition[syncedVars.size()];
     }
 
-    private static List<String> getRelevantVariableNames(ItemStack remote){
-        List<String> variables = new ArrayList<String>();
+    private static Set<String> getRelevantVariableNames(ItemStack remote){
+        Set<String> variables = new HashSet<String>();
         NBTTagCompound tag = remote.getTagCompound();
         if(tag != null) {
             NBTTagList tagList = tag.getTagList("actionWidgets", 10);
             for(int i = 0; i < tagList.tagCount(); i++) {
                 NBTTagCompound widgetTag = tagList.getCompoundTagAt(i);
-                String variable = widgetTag.getString("variableName");
-                if(!variables.contains(variable)) variables.add(variable);
-                String enableVariable = widgetTag.getString("enableVariable");
-                if(!variables.contains(enableVariable)) variables.add(enableVariable);
+                variables.add(widgetTag.getString("variableName"));
+                variables.add(widgetTag.getString("enableVariable"));
+                TextVariableParser parser = new TextVariableParser(widgetTag.getString("text"));
+                parser.parse();
+                variables.addAll(parser.getRelevantVariables());
             }
         }
         return variables;

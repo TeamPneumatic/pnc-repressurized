@@ -4,11 +4,10 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.nbt.NBTTagCompound;
 import pneumaticCraft.client.gui.GuiRemoteEditor;
 import pneumaticCraft.client.gui.remote.GuiRemoteOptionBase;
-import pneumaticCraft.client.gui.widget.WidgetLabel;
 
-public class ActionWidgetLabel extends ActionWidget<WidgetLabel> implements IActionWidgetLabeled{
+public class ActionWidgetLabel extends ActionWidget<WidgetLabelVariable> implements IActionWidgetLabeled{
 
-    public ActionWidgetLabel(WidgetLabel widget){
+    public ActionWidgetLabel(WidgetLabelVariable widget){
         super(widget);
     }
 
@@ -27,7 +26,7 @@ public class ActionWidgetLabel extends ActionWidget<WidgetLabel> implements IAct
     @Override
     public void readFromNBT(NBTTagCompound tag, int guiLeft, int guiTop){
         super.readFromNBT(tag, guiLeft, guiTop);
-        widget = new WidgetLabel(tag.getInteger("x") + guiLeft, tag.getInteger("y") + guiTop, tag.getString("text"));
+        widget = new WidgetLabelVariable(tag.getInteger("x") + guiLeft, tag.getInteger("y") + guiTop, tag.getString("text"));
         widget.setTooltipText(tag.getString("tooltip"));
     }
 

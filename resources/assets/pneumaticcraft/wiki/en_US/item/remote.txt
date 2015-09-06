@@ -10,6 +10,11 @@ In this window you can configure how the button should look like and how it shou
 
 [prefix{l}]Text: [prefix{}]
 The text displayed in the Button.
+For the Label widget this can include a special tag: You can include the value of [link{pneumaticcraft:progwidget/coordinateOperator}]variables [link{}] by including ${<varName>} in the name. For example:
+
+"Counter: ${counter}"
+
+When the counter is equal to x=1, y=2, z=3, the Label will be shown as "Counter: 1, 2, 3". This is nice for debugging purposes.
 
 [prefix{l}]Tooltip: [prefix{}]
 When it has text, this will show as tooltip text when the mouse hovers over this button.
@@ -37,4 +42,4 @@ You can copy a lay-out from an existing remote by clicking one of the buttons on
 [prefix{l}]Protecting a Remote[prefix{}]
 If you're borrowing your Remote you might not want to allow this user to modify your lay-out. By right clicking your Remote on a Security Station, editing the Remote lay-out is limited to the ones that have access to the Security Station.
 
-[crafting{200, 1250, key=item/remote}]
+[crafting{200, 1350, key=item/remote}]

@@ -135,4 +135,5 @@ public class GlobalVariableManager extends WorldSavedData{
         varNames.addAll(globalItemVars.keySet());
         return varNames.toArray(new String[varNames.size()]);
     }
+
 }

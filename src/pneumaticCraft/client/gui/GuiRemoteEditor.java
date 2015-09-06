@@ -15,7 +15,6 @@ import net.minecraft.util.ChatComponentTranslation;
 import org.lwjgl.input.Mouse;
 
 import pneumaticCraft.client.gui.widget.GuiCheckBox;
-import pneumaticCraft.client.gui.widget.WidgetLabel;
 import pneumaticCraft.common.item.ItemRemote;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.network.NetworkHandler;
@@ -26,6 +25,7 @@ import pneumaticCraft.common.remote.ActionWidgetCheckBox;
 import pneumaticCraft.common.remote.ActionWidgetLabel;
 import pneumaticCraft.common.remote.ActionWidgetVariable;
 import pneumaticCraft.common.remote.RemoteLayout;
+import pneumaticCraft.common.remote.WidgetLabelVariable;
 import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.client.FMLClientHandler;
 
@@ -74,7 +74,7 @@ public class GuiRemoteEditor extends GuiRemote{
         oldGuiTop = guiTop;
         visibleSpawnWidgets.clear();
         visibleSpawnWidgets.add(new ActionWidgetCheckBox(new GuiCheckBox(-1, guiLeft + 200, guiTop + 50, 0xFF000000, I18n.format("remote.checkbox.name"))));
-        visibleSpawnWidgets.add(new ActionWidgetLabel(new WidgetLabel(guiLeft + 200, guiTop + 70, I18n.format("remote.label.name"))));
+        visibleSpawnWidgets.add(new ActionWidgetLabel(new WidgetLabelVariable(guiLeft + 200, guiTop + 70, I18n.format("remote.label.name"))));
         visibleSpawnWidgets.add(new ActionWidgetButton(new GuiButtonSpecial(-1, guiLeft + 200, guiTop + 90, 50, 20, I18n.format("remote.button.name"))));
 
         for(ActionWidget actionWidget : visibleSpawnWidgets) {

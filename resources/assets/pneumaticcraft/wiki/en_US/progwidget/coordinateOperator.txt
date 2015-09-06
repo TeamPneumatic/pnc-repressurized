@@ -11,6 +11,8 @@ The end result is stored in a variable, defined by the name put in the Coordinat
 
 Variables only allow you to store coordinates. However, if you think about it more carefully, you will notice it allows you to work with integers (whole number variables) and booleans (true and false) as well. You just need to use only one axis, and in case of booleans, define something like '0' means false, and everything else means true. Have fun!
 
+You can debug a program by showing the value of variables using the [link{pneumaticcraft:progwidget/rename}]Rename [link{}] piece, or by using a Label in a [link{pneumaticcraft:item/remote}]Remote [link{}].
+
 [prefix{l}]Special Variables ($)[prefix{}]
 Apart from assigning variables yourself, there are a few special variables, which are set externally. They all are prefixed with '$':
 

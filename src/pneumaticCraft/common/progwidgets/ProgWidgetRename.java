@@ -3,11 +3,14 @@ package pneumaticCraft.common.progwidgets;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.util.ResourceLocation;
+import pneumaticCraft.common.ai.DroneAIManager;
 import pneumaticCraft.common.ai.IDroneBase;
 import pneumaticCraft.common.item.ItemPlasticPlants;
+import pneumaticCraft.common.remote.TextVariableParser;
 import pneumaticCraft.lib.Textures;
 
-public class ProgWidgetRename extends ProgWidget implements IRenamingWidget{
+public class ProgWidgetRename extends ProgWidget implements IRenamingWidget, IVariableWidget{
+    private DroneAIManager aiManager;
 
     @Override
     public boolean hasStepInput(){
@@ -68,7 +71,12 @@ public class ProgWidgetRename extends ProgWidget implements IRenamingWidget{
 
     @Override
     public String getNewName(){
-        return getConnectedParameters()[0] != null ? ((ProgWidgetString)getConnectedParameters()[0]).string : null;
+        return getConnectedParameters()[0] != null ? new TextVariableParser(((ProgWidgetString)getConnectedParameters()[0]).string, aiManager).parse() : null;
+    }
+
+    @Override
+    public void setAIManager(DroneAIManager aiManager){
+        this.aiManager = aiManager;
     }
 
 }
