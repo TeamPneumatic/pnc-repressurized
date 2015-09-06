@@ -48,7 +48,7 @@ public class ContainerRemote extends Container{
     public void detectAndSendChanges(){
         super.detectAndSendChanges();
         for(int i = 0; i < lastValues.length; i++) {
-            ChunkPosition newValue = GlobalVariableManager.getPos(syncedVars.get(i));
+            ChunkPosition newValue = GlobalVariableManager.getInstance().getPos(syncedVars.get(i));
             if(!newValue.equals(lastValues[i])) {
                 lastValues[i] = newValue;
                 for(Object o : crafters) {

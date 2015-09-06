@@ -41,7 +41,7 @@ public class TextVariableParser{
 
     private String getVariableValue(String variable){
         relevantVariables.add(variable);
-        ChunkPosition pos = variableHolder != null ? variableHolder.getCoordinate(variable) : GlobalVariableManager.getPos(variable.startsWith("#") ? variable.substring(1) : variable);
+        ChunkPosition pos = variableHolder != null ? variableHolder.getCoordinate(variable) : GlobalVariableManager.getInstance().getPos(variable.startsWith("#") ? variable.substring(1) : variable);
         return pos.chunkPosX + ", " + pos.chunkPosY + ", " + pos.chunkPosZ;
     }
 }

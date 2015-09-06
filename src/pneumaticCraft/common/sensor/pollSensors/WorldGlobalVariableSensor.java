@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.server.management.ServerConfigurationManager;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
@@ -13,7 +12,6 @@ import org.lwjgl.util.Rectangle;
 
 import pneumaticCraft.api.universalSensor.IPollSensorSetting;
 import pneumaticCraft.common.remote.GlobalVariableManager;
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -43,7 +41,7 @@ public class WorldGlobalVariableSensor implements IPollSensorSetting{
 
     @Override
     public int getRedstoneValue(World world, int x, int y, int z, int sensorRange, String textBoxText){
-        return GlobalVariableManager.getBoolean(textBoxText) ? 15 : 0;
+        return GlobalVariableManager.getInstance().getBoolean(textBoxText) ? 15 : 0;
     }
 
     @Override

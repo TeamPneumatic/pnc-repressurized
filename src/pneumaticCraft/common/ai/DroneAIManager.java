@@ -97,7 +97,7 @@ public class DroneAIManager{
         }
         tag.setTag("coords", tagList);
 
-        GlobalVariableManager.writeItemVars(tag, itemVariables);
+        GlobalVariableManager.getInstance().writeItemVars(tag, itemVariables);
     }
 
     public void readFromNBT(NBTTagCompound tag){
@@ -118,7 +118,7 @@ public class DroneAIManager{
             MinecraftForge.EVENT_BUS.post(event);
             pos = event.coordinate;
         } else if(varName.startsWith("#")) {
-            pos = GlobalVariableManager.getPos(varName.substring(1));
+            pos = GlobalVariableManager.getInstance().getPos(varName.substring(1));
         } else {
             pos = coordinateVariables.get(varName);
         }
@@ -127,7 +127,7 @@ public class DroneAIManager{
 
     public void setCoordinate(String varName, ChunkPosition coord){
         if(varName.startsWith("#")) {
-            GlobalVariableManager.set(varName.substring(1), coord);
+            GlobalVariableManager.getInstance().set(varName.substring(1), coord);
         } else if(!varName.startsWith("$")) coordinateVariables.put(varName, coord);
     }
 
@@ -138,7 +138,7 @@ public class DroneAIManager{
             MinecraftForge.EVENT_BUS.post(event);
             item = event.item;
         } else if(varName.startsWith("#")) {
-            item = GlobalVariableManager.getItem(varName.substring(1));
+            item = GlobalVariableManager.getInstance().getItem(varName.substring(1));
         } else {
             item = itemVariables.get(varName);
         }
@@ -147,7 +147,7 @@ public class DroneAIManager{
 
     public void setItem(String varName, ItemStack item){
         if(varName.startsWith("#")) {
-            GlobalVariableManager.set(varName.substring(1), item);
+            GlobalVariableManager.getInstance().set(varName.substring(1), item);
         } else if(!varName.startsWith("$")) itemVariables.put(varName, item);
     }
 

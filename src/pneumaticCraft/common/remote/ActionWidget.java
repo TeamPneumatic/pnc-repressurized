@@ -60,6 +60,6 @@ public abstract class ActionWidget<Widget extends IGuiWidget> {
     }
 
     public boolean isEnabled(){
-        return enableVariable.equals("") || GlobalVariableManager.getBoolean(enableVariable);
+        return enableVariable.equals("") || GlobalVariableManager.getInstance().getBoolean(enableVariable);
     }
 }

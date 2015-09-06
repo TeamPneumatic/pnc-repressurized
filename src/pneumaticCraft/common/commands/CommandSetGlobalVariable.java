@@ -30,8 +30,8 @@ public class CommandSetGlobalVariable extends CommandBase{
     public void processCommand(ICommandSender sender, String[] args){
         if(args.length != 4) throw new WrongUsageException("command.deliverAmazon.args");
         String varName = args[0].startsWith("#") ? args[0].substring(1) : args[0];
-        ChunkPosition newPos = new ChunkPosition(parseInt(sender, args[2]), parseInt(sender, args[1]), parseInt(sender, args[3]));
-        GlobalVariableManager.set(varName, newPos);
+        ChunkPosition newPos = new ChunkPosition(parseInt(sender, args[1]), parseInt(sender, args[2]), parseInt(sender, args[3]));
+        GlobalVariableManager.getInstance().set(varName, newPos);
         sender.addChatMessage(new ChatComponentTranslation("command.setGlobalVariable.output", varName, newPos.chunkPosX, newPos.chunkPosY, newPos.chunkPosZ));
     }
 
@@ -40,7 +40,7 @@ public class CommandSetGlobalVariable extends CommandBase{
      */
     @Override
     public List addTabCompletionOptions(ICommandSender p_71516_1_, String[] p_71516_2_){
-        return p_71516_2_.length >= 1 ? getListOfStringsMatchingLastWord(p_71516_2_, GlobalVariableManager.getAllActiveVariableNames()) : null;
+        return p_71516_2_.length >= 1 ? getListOfStringsMatchingLastWord(p_71516_2_, GlobalVariableManager.getInstance().getAllActiveVariableNames()) : null;
     }
 
 }

@@ -11,66 +11,74 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSavedData;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.relauncher.Side;
 
 /**
  * Manages global variables. These are prefixed with '#'.
  */
 public class GlobalVariableManager extends WorldSavedData{
 
-    //   private static GlobalVariableManager INSTANCE = new GlobalVariableManager();
-    private static Map<String, ChunkPosition> globalVars = new HashMap<String, ChunkPosition>();
-    private static Map<String, ItemStack> globalItemVars = new HashMap<String, ItemStack>();
-    public static World overworld;
     public static final String DATA_KEY = "PneumaticCraftGlobalVariables";
+    private static GlobalVariableManager CLIENT_INSTANCE = new GlobalVariableManager(DATA_KEY);
+    private final Map<String, ChunkPosition> globalVars = new HashMap<String, ChunkPosition>();
+    private final Map<String, ItemStack> globalItemVars = new HashMap<String, ItemStack>();
+    public static World overworld;
 
-    /*   public static GlobalVariableManager getInstance(){
-           return INSTANCE;
-       }*/
+    public static GlobalVariableManager getInstance(){
+        if(FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
+            return CLIENT_INSTANCE;
+        } else {
+            if(overworld != null) {
+                GlobalVariableManager manager = (GlobalVariableManager)overworld.loadItemData(GlobalVariableManager.class, DATA_KEY);
+                if(manager == null) {
+                    manager = new GlobalVariableManager(DATA_KEY);
+                    overworld.setItemData(DATA_KEY, manager);
+                }
+                return manager;
+            } else {
+                throw new IllegalStateException("Overworld not initialized");
+            }
+        }
+    }
 
-    public static void set(String varName, boolean value){
+    public void set(String varName, boolean value){
         set(varName, value ? 1 : 0);
     }
 
-    public static void set(String varName, int value){
+    public void set(String varName, int value){
         set(varName, new ChunkPosition(value, 0, 0));
     }
 
-    public static void set(String varName, ChunkPosition pos){
+    public void set(String varName, ChunkPosition pos){
         globalVars.put(varName, pos);
         save();
     }
 
-    public static void set(String varName, ItemStack item){
+    public void set(String varName, ItemStack item){
         globalItemVars.put(varName, item);
         save();
     }
 
-    private static void save(){
-        if(overworld != null) {
-            GlobalVariableManager manager = (GlobalVariableManager)overworld.loadItemData(GlobalVariableManager.class, DATA_KEY);
-            if(manager == null) {
-                manager = new GlobalVariableManager(DATA_KEY);
-                overworld.setItemData(DATA_KEY, manager);
-            }
-            manager.markDirty();
-        }
+    private void save(){
+        markDirty();
     }
 
-    public static boolean getBoolean(String varName){
+    public boolean getBoolean(String varName){
         return getInteger(varName) != 0;
     }
 
-    public static int getInteger(String varName){
+    public int getInteger(String varName){
         return getPos(varName).chunkPosX;
     }
 
-    public static ChunkPosition getPos(String varName){
+    public ChunkPosition getPos(String varName){
         ChunkPosition pos = globalVars.get(varName);
         //if(pos != null) Log.info("getting var: " + varName + " set to " + pos.chunkPosX + ", " + pos.chunkPosY + ", " + pos.chunkPosZ);
         return pos != null ? pos : new ChunkPosition(0, 0, 0);
     }
 
-    public static ItemStack getItem(String varName){
+    public ItemStack getItem(String varName){
         return globalItemVars.get(varName);
     }
 
@@ -116,7 +124,7 @@ public class GlobalVariableManager extends WorldSavedData{
         writeItemVars(tag, globalItemVars);
     }
 
-    public static void writeItemVars(NBTTagCompound tag, Map<String, ItemStack> map){
+    public void writeItemVars(NBTTagCompound tag, Map<String, ItemStack> map){
         NBTTagList list = new NBTTagList();
         for(Map.Entry<String, ItemStack> entry : globalItemVars.entrySet()) {
             NBTTagCompound t = new NBTTagCompound();
@@ -129,7 +137,7 @@ public class GlobalVariableManager extends WorldSavedData{
         tag.setTag("globalItemVars", list);
     }
 
-    public static String[] getAllActiveVariableNames(){
+    public String[] getAllActiveVariableNames(){
         Set<String> varNames = new HashSet<String>();
         varNames.addAll(globalVars.keySet());
         varNames.addAll(globalItemVars.keySet());

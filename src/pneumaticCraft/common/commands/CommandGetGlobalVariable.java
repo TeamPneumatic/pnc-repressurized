@@ -34,8 +34,8 @@ public class CommandGetGlobalVariable extends CommandBase{
         if(sender instanceof EntityPlayerMP) {
             if(args.length != 1) throw new WrongUsageException("command.deliverAmazon.args");
             String varName = args[0].startsWith("#") ? args[0].substring(1) : args[0];
-            ChunkPosition pos = GlobalVariableManager.getPos(varName);
-            ItemStack stack = GlobalVariableManager.getItem(varName);
+            ChunkPosition pos = GlobalVariableManager.getInstance().getPos(varName);
+            ItemStack stack = GlobalVariableManager.getInstance().getItem(varName);
             NetworkHandler.sendTo(new PacketCommandGetGlobalVariableOutput(varName, pos, stack), (EntityPlayerMP)sender);
         }
     }
@@ -45,7 +45,7 @@ public class CommandGetGlobalVariable extends CommandBase{
      */
     @Override
     public List addTabCompletionOptions(ICommandSender p_71516_1_, String[] p_71516_2_){
-        return p_71516_2_.length >= 1 ? getListOfStringsMatchingLastWord(p_71516_2_, GlobalVariableManager.getAllActiveVariableNames()) : null;
+        return p_71516_2_.length >= 1 ? getListOfStringsMatchingLastWord(p_71516_2_, GlobalVariableManager.getInstance().getAllActiveVariableNames()) : null;
     }
 
 }

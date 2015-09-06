@@ -70,7 +70,7 @@ public class GuiRemote extends GuiPneumaticContainerBase{
         widgets.clear();
         initGui();
         for(ActionWidget actionWidget : remoteLayout.getActionWidgets()) {
-            if(actionWidget instanceof ActionWidgetVariable && ((ActionWidgetVariable)actionWidget).getVariableName().equals(variable)) {
+            if(actionWidget instanceof ActionWidgetVariable) {
                 ((ActionWidgetVariable)actionWidget).onVariableChange();
             }
         }

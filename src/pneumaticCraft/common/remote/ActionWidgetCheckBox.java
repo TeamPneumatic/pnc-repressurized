@@ -54,7 +54,7 @@ public class ActionWidgetCheckBox extends ActionWidgetVariable<GuiCheckBox> impl
 
     @Override
     public void onVariableChange(){
-        widget.checked = GlobalVariableManager.getBoolean(getVariableName());
+        widget.checked = GlobalVariableManager.getInstance().getBoolean(getVariableName());
     }
 
     @Override

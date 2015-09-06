@@ -56,7 +56,7 @@ public class PacketSetGlobalVariable extends AbstractPacket<PacketSetGlobalVaria
 
     @Override
     public void handleServerSide(PacketSetGlobalVariable message, EntityPlayer player){
-        GlobalVariableManager.set(message.varName, message.value);
+        GlobalVariableManager.getInstance().set(message.varName, message.value);
     }
 
 }
