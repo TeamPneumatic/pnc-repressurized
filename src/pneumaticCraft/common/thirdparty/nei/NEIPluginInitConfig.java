@@ -23,6 +23,7 @@ public class NEIPluginInitConfig implements IConfigureNEI{
         registerHandler(new NEIEtchingAcidManager());
         registerHandler(new NEIUVLightBoxManager());
         registerHandler(new NEIAmadronTradeManager());
+        registerHandler(new NEIPlasticMixerManager());
 
         GuiContainerManager.addDrawHandler(new ItemDrawHandler());
 
