@@ -143,33 +143,29 @@ public class GuiRemoteEditor extends GuiRemote{
             }
             if(draggingWidget == null) {
                 for(ActionWidget widget : remoteLayout.getActionWidgets()) {
-                    if(!isOutsideProgrammingArea(widget)) {
-                        Rectangle bounds = widget.getWidget().getBounds();
-                        if(x >= bounds.x + guiLeft && y >= bounds.y + guiTop && x <= bounds.x + guiLeft + bounds.width && y <= bounds.y + guiTop + bounds.height) {
-                            draggingWidget = widget;
-                            dragMouseStartX = x - guiLeft;
-                            dragMouseStartY = y - guiTop;
-                            dragWidgetStartX = bounds.x;
-                            dragWidgetStartY = bounds.y;
-                            break;
-                        }
+                    Rectangle bounds = widget.getWidget().getBounds();
+                    if(x >= bounds.x + guiLeft && y >= bounds.y + guiTop && x <= bounds.x + guiLeft + bounds.width && y <= bounds.y + guiTop + bounds.height) {
+                        draggingWidget = widget;
+                        dragMouseStartX = x - guiLeft;
+                        dragMouseStartY = y - guiTop;
+                        dragWidgetStartX = bounds.x;
+                        dragWidgetStartY = bounds.y;
+                        break;
                     }
                 }
             }
         } else if(isMiddleClicking && !wasClicking) {
             for(ActionWidget widget : remoteLayout.getActionWidgets()) {
-                if(!isOutsideProgrammingArea(widget)) {
-                    Rectangle bounds = widget.getWidget().getBounds();
-                    if(x >= bounds.x + guiLeft && y >= bounds.y + guiTop && x <= bounds.x + guiLeft + bounds.width && y <= bounds.y + guiTop + bounds.height) {
-                        draggingWidget = widget.copy();
-                        remoteLayout.addWidget(draggingWidget);
-                        addWidget(draggingWidget.getWidget());
-                        dragMouseStartX = 0;
-                        dragMouseStartY = 0;
-                        dragWidgetStartX = bounds.x - (x - guiLeft);
-                        dragWidgetStartY = bounds.y - (y - guiTop);
-                        break;
-                    }
+                Rectangle bounds = widget.getWidget().getBounds();
+                if(x >= bounds.x + guiLeft && y >= bounds.y + guiTop && x <= bounds.x + guiLeft + bounds.width && y <= bounds.y + guiTop + bounds.height) {
+                    draggingWidget = widget.copy();
+                    remoteLayout.addWidget(draggingWidget);
+                    addWidget(draggingWidget.getWidget());
+                    dragMouseStartX = 0;
+                    dragMouseStartY = 0;
+                    dragWidgetStartX = bounds.x - (x - guiLeft);
+                    dragWidgetStartY = bounds.y - (y - guiTop);
+                    break;
                 }
             }
         }
