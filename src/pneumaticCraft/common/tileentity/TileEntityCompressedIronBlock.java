@@ -6,7 +6,7 @@ import pneumaticCraft.api.PneumaticRegistry;
 import pneumaticCraft.api.tileentity.IHeatExchanger;
 import pneumaticCraft.common.network.DescSynced;
 
-public class TileEntityCompressedIronBlock extends TileEntityBase implements IHeatExchanger{
+public class TileEntityCompressedIronBlock extends TileEntityBase implements IHeatExchanger, IComparatorSupport{
 
     protected final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatExchangerLogic();
     @DescSynced
@@ -78,4 +78,10 @@ public class TileEntityCompressedIronBlock extends TileEntityBase implements IHe
             return (temperature - MIN_HEAT_LEVEL_TEMPERATURE) * 16 / (MAX_HEAT_LEVEL_TEMPERATURE - MIN_HEAT_LEVEL_TEMPERATURE);
         }
     }
+
+    @Override
+    public int getComparatorValue(ForgeDirection side){
+        return getComparatorOutput((int)heatExchanger.getTemperature());
+    }
+
 }

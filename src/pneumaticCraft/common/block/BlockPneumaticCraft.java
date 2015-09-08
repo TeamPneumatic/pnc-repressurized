@@ -23,6 +23,7 @@ import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.api.block.IPneumaticWrenchable;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.thirdparty.ModInteractionUtils;
+import pneumaticCraft.common.tileentity.IComparatorSupport;
 import pneumaticCraft.common.tileentity.TileEntityBase;
 import pneumaticCraft.common.tileentity.TileEntityPneumaticBase;
 import pneumaticCraft.common.util.FluidUtils;
@@ -263,5 +264,23 @@ public abstract class BlockPneumaticCraft extends BlockContainer implements IPne
                 curInfo.add(EnumChatFormatting.AQUA + I18n.format("gui.tooltip.sneakForInfo"));
             }
         }
+    }
+
+    /**
+     * If this returns true, then comparators facing away from this block will use the value from
+     * getComparatorInputOverride instead of the actual redstone signal strength.
+     */
+    @Override
+    public boolean hasComparatorInputOverride(){
+        return IComparatorSupport.class.isAssignableFrom(getTileEntityClass());
+    }
+
+    /**
+     * If hasComparatorInputOverride returns true, the return value from this is used instead of the redstone signal
+     * strength when this block inputs to a comparator.
+     */
+    @Override
+    public int getComparatorInputOverride(World world, int x, int y, int z, int side){
+        return ((IComparatorSupport)world.getTileEntity(x, y, z)).getComparatorValue(ForgeDirection.getOrientation(side));
     }
 }

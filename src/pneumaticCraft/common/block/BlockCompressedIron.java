@@ -3,7 +3,6 @@ package pneumaticCraft.common.block;
 import net.minecraft.block.material.Material;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
 import pneumaticCraft.common.tileentity.TileEntityCompressedIronBlock;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -30,25 +29,6 @@ public class BlockCompressedIron extends BlockPneumaticCraft{
         int heatLevel = te.getHeatLevel();
         double[] color = TileEntityCompressedIronBlock.getColorForHeatLevel(heatLevel);
         return 0xFF000000 + ((int)(color[0] * 255) << 16) + ((int)(color[1] * 255) << 8) + (int)(color[2] * 255);
-    }
-
-    /**
-     * If this returns true, then comparators facing away from this block will use the value from
-     * getComparatorInputOverride instead of the actual redstone signal strength.
-     */
-    @Override
-    public boolean hasComparatorInputOverride(){
-        return true;
-    }
-
-    /**
-     * If hasComparatorInputOverride returns true, the return value from this is used instead of the redstone signal
-     * strength when this block inputs to a comparator.
-     */
-    @Override
-    public int getComparatorInputOverride(World world, int x, int y, int z, int side){
-        return TileEntityCompressedIronBlock.getComparatorOutput((int)((TileEntityCompressedIronBlock)world.getTileEntity(x, y, z)).getHeatExchangerLogic(null).getTemperature());
-
     }
 
 }

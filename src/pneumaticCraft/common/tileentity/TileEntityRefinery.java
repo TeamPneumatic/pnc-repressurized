@@ -24,7 +24,8 @@ import pneumaticCraft.lib.PneumaticValues;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityRefinery extends TileEntityBase implements IFluidHandler, IHeatExchanger, IRedstoneControlled{
+public class TileEntityRefinery extends TileEntityBase implements IFluidHandler, IHeatExchanger, IRedstoneControlled,
+        IComparatorSupport{
 
     @GuiSynced
     @DescSynced
@@ -41,6 +42,7 @@ public class TileEntityRefinery extends TileEntityBase implements IFluidHandler,
     @GuiSynced
     private int redstoneMode;
     private int workTimer = 0;
+    private int comparatorValue;
 
     /**
      * The amounts of LPG, Gasoline, Kerosine and Diesel produced per 10mL Oil, depending on how many refineries are stacked on top of eachother.
@@ -69,34 +71,41 @@ public class TileEntityRefinery extends TileEntityBase implements IFluidHandler,
             oilTankAmount = oilTank.getFluidAmount() / 100;
             outputTankAmount = outputTank.getFluidAmount() / 100;
 
-            if(isMaster() && redstoneAllows() && oilTank.getFluidAmount() >= 10) {
-                List<TileEntityRefinery> refineries = new ArrayList<TileEntityRefinery>();
-                refineries.add(this);
-                TileEntityRefinery refinery = this;
-                while(refinery.getTileCache()[ForgeDirection.UP.ordinal()].getTileEntity() instanceof TileEntityRefinery) {
-                    refinery = (TileEntityRefinery)refinery.getTileCache()[ForgeDirection.UP.ordinal()].getTileEntity();
-                    refineries.add(refinery);
-                }
+            if(isMaster()) {
+                List<TileEntityRefinery> refineries = getRefineries();
+                if(redstoneAllows() && oilTank.getFluidAmount() >= 10) {
+                    if(refineries.size() > 1 && refineries.size() <= refiningFluids.length && refine(refineries, true)) {
+                        int progress = Math.max(0, ((int)heatExchanger.getTemperature() - 343) / 30);
+                        progress = Math.min(5, progress);
+                        heatExchanger.addHeat(-progress * 1);
+                        workTimer += progress;
+                        while(workTimer >= 20 && oilTank.getFluidAmount() >= 10) {
+                            workTimer -= 20;
 
-                if(refineries.size() > 1 && refineries.size() <= refiningFluids.length && refine(refineries, true)) {
-                    int progress = Math.max(0, ((int)heatExchanger.getTemperature() - 343) / 30);
-                    progress = Math.min(5, progress);
-                    heatExchanger.addHeat(-progress * 1);
-                    workTimer += progress;
-                    while(workTimer >= 20 && oilTank.getFluidAmount() >= 10) {
-                        workTimer -= 20;
+                            refine(refineries, false);
+                            oilTank.drain(10, true);
+                            for(int i = 0; i < 5; i++)
+                                NetworkHandler.sendToAllAround(new PacketSpawnParticle("largesmoke", xCoord + worldObj.rand.nextDouble(), yCoord + refineries.size(), zCoord + worldObj.rand.nextDouble(), 0, 0, 0), worldObj);
 
-                        refine(refineries, false);
-                        oilTank.drain(10, true);
-                        for(int i = 0; i < 5; i++)
-                            NetworkHandler.sendToAllAround(new PacketSpawnParticle("largesmoke", xCoord + worldObj.rand.nextDouble(), yCoord + refineries.size(), zCoord + worldObj.rand.nextDouble(), 0, 0, 0), worldObj);
-
+                        }
+                    } else {
+                        workTimer = 0;
                     }
-                } else {
-                    workTimer = 0;
                 }
+                updateComparatorValue(refineries);
             }
         }
+    }
+
+    private List<TileEntityRefinery> getRefineries(){
+        List<TileEntityRefinery> refineries = new ArrayList<TileEntityRefinery>();
+        refineries.add(this);
+        TileEntityRefinery refinery = this;
+        while(refinery.getTileCache()[ForgeDirection.UP.ordinal()].getTileEntity() instanceof TileEntityRefinery) {
+            refinery = (TileEntityRefinery)refinery.getTileCache()[ForgeDirection.UP.ordinal()].getTileEntity();
+            refineries.add(refinery);
+        }
+        return refineries;
     }
 
     public boolean refine(List<TileEntityRefinery> refineries, boolean simulate){
@@ -230,5 +239,23 @@ public class TileEntityRefinery extends TileEntityBase implements IFluidHandler,
             redstoneMode++;
             if(redstoneMode > 2) redstoneMode = 0;
         }
+    }
+
+    public void updateComparatorValue(List<TileEntityRefinery> refineries){
+        int value;
+        if(oilTank.getFluidAmount() < 10 || refineries.size() < 2 || refineries.size() > refiningFluids.length) {
+            value = 0;
+        } else {
+            value = refine(refineries, true) ? 15 : 0;
+        }
+        if(value != comparatorValue) {
+            comparatorValue = value;
+            updateNeighbours();
+        }
+    }
+
+    @Override
+    public int getComparatorValue(ForgeDirection side){
+        return getMasterRefinery().comparatorValue;
     }
 }
