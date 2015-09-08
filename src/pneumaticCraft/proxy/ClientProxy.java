@@ -59,6 +59,7 @@ import pneumaticCraft.client.model.ModelUniversalSensor;
 import pneumaticCraft.client.model.ModelVacuumPump;
 import pneumaticCraft.client.model.ModelVortexTube;
 import pneumaticCraft.client.render.block.ISBRHPneumatic;
+import pneumaticCraft.client.render.block.RenderChargingStationPad;
 import pneumaticCraft.client.render.block.RenderElevatorFrame;
 import pneumaticCraft.client.render.entity.RenderDrone;
 import pneumaticCraft.client.render.entity.RenderEntityChopperSeeds;
@@ -158,6 +159,7 @@ public class ClientProxy extends CommonProxy{
     public void registerRenders(){
         SPECIAL_RENDER_TYPE_VALUE = RenderingRegistry.getNextAvailableRenderId();
         blockRenderers.add(new RenderElevatorFrame());
+        blockRenderers.add(new RenderChargingStationPad());
 
         for(ISBRHPneumatic renderer : blockRenderers) {
             RenderingRegistry.registerBlockHandler(renderer);

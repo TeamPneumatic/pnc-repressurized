@@ -236,8 +236,8 @@ public class EventHandlerPneumaticCraft{
          * Due to some weird quirk that causes Block#onBlockActivated not getting called on the server when the player is sneaking, this is a workaround.
          */
         if(!event.isCanceled() && event.action == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK && !event.world.isRemote) {
-            if(event.entityPlayer.isSneaking() && interactedBlock == Blockss.elevatorCaller) {
-                Blockss.elevatorCaller.onBlockActivated(event.world, event.x, event.y, event.z, event.entityPlayer, event.face, 0, 0, 0);
+            if(event.entityPlayer.isSneaking() && (interactedBlock == Blockss.elevatorCaller || interactedBlock == Blockss.chargingStation)) {
+                interactedBlock.onBlockActivated(event.world, event.x, event.y, event.z, event.entityPlayer, event.face, 0, 0, 0);
                 event.setCanceled(true);
             } else if(event.entityPlayer.getCurrentEquippedItem() != null && ModInteractionUtilImplementation.getInstance().isModdedWrench(event.entityPlayer.getCurrentEquippedItem().getItem())) {
                 if(interactedBlock instanceof IPneumaticWrenchable) {

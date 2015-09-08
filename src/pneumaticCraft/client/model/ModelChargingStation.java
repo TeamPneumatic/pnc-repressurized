@@ -192,6 +192,7 @@ public class ModelChargingStation extends ModelBase implements IBaseModel{
         if(te instanceof TileEntityChargingStation) {
             TileEntityChargingStation tile = (TileEntityChargingStation)te;
             if(tile.getUpgrades(ItemMachineUpgrade.UPGRADE_DISPENSER_DAMAGE) > 0) {
+                RenderManager.instance.renderEngine.bindTexture(Textures.MODEL_CHARGING_STATION_PAD);
                 chargePad.renderModel(size);
             }
             if(tile.getStackInSlot(TileEntityChargingStation.CHARGE_INVENTORY_INDEX) != null) {

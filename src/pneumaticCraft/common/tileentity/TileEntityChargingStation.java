@@ -3,11 +3,14 @@ package pneumaticCraft.common.tileentity;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.inventory.ISidedInventory;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -27,6 +30,7 @@ import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.network.DescSynced;
 import pneumaticCraft.common.network.GuiSynced;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.PneumaticValues;
 import pneumaticCraft.proxy.CommonProxy.EnumGuiId;
 import cpw.mods.fml.relauncher.Side;
@@ -52,11 +56,29 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     public int redstoneMode;
     private boolean oldRedstoneStatus;
     public float renderAirProgress;
+    @DescSynced
+    private ItemStack camoStack;
 
     public TileEntityChargingStation(){
         super(PneumaticValues.DANGER_PRESSURE_CHARGING_STATION, PneumaticValues.MAX_PRESSURE_CHARGING_STATION, PneumaticValues.VOLUME_CHARGING_STATION);
         inventory = new ItemStack[INVENTORY_SIZE];
         setUpgradeSlots(new int[]{UPGRADE_SLOT_START, 2, 3, UPGRADE_SLOT_END});
+    }
+
+    public ItemStack getCamoStack(){
+        if(camoStack == null || !(camoStack.getItem() instanceof ItemBlock)) {
+            return new ItemStack(Blocks.cobblestone);
+        }
+        Block block = ((ItemBlock)camoStack.getItem()).field_150939_a;
+        if(PneumaticCraftUtils.isRenderIDCamo(block.getRenderType())) {
+            return camoStack;
+        } else {
+            return new ItemStack(Blocks.cobblestone);
+        }
+    }
+
+    public void setCamoStack(ItemStack stack){
+        camoStack = stack;
     }
 
     @Override
@@ -294,13 +316,13 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     public void closeInventory(){}
 
     @Override
-    public void readFromNBT(NBTTagCompound nbtTagCompound){
+    public void readFromNBT(NBTTagCompound tag){
 
-        super.readFromNBT(nbtTagCompound);
+        super.readFromNBT(tag);
         // Read in the ItemStacks in the inventory from NBT
 
-        redstoneMode = nbtTagCompound.getInteger("redstoneMode");
-        NBTTagList tagList = nbtTagCompound.getTagList("Items", 10);
+        redstoneMode = tag.getInteger("redstoneMode");
+        NBTTagList tagList = tag.getTagList("Items", 10);
         inventory = new ItemStack[getSizeInventory()];
         for(int i = 0; i < tagList.tagCount(); ++i) {
             NBTTagCompound tagCompound = tagList.getCompoundTagAt(i);
@@ -313,17 +335,23 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
         if(chargeSlot != null && chargeSlot.getItem() instanceof IChargingStationGUIHolderItem) {
             chargeableInventory = new InventoryPneumaticInventoryItem(this);
         }
+
+        if(tag.hasKey("camoStack")) {
+            camoStack = ItemStack.loadItemStackFromNBT(tag.getCompoundTag("camoStack"));
+        } else {
+            camoStack = null;
+        }
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound nbtTagCompound){
+    public void writeToNBT(NBTTagCompound tag){
 
-        super.writeToNBT(nbtTagCompound);
+        super.writeToNBT(tag);
 
         if(chargeableInventory != null) chargeableInventory.writeToNBT();
 
         // Write the ItemStacks in the inventory to NBT
-        nbtTagCompound.setInteger("redstoneMode", redstoneMode);
+        tag.setInteger("redstoneMode", redstoneMode);
         NBTTagList tagList = new NBTTagList();
         for(int currentIndex = 0; currentIndex < inventory.length; ++currentIndex) {
             if(inventory[currentIndex] != null) {
@@ -333,7 +361,14 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
                 tagList.appendTag(tagCompound);
             }
         }
-        nbtTagCompound.setTag("Items", tagList);
+        tag.setTag("Items", tagList);
+
+        if(camoStack != null) {
+            NBTTagCompound subTag = new NBTTagCompound();
+            camoStack.writeToNBT(subTag);
+            tag.setTag("camoStack", subTag);
+        }
+
     }
 
     @Override
@@ -389,5 +424,10 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     @Override
     public int getRedstoneMode(){
         return redstoneMode;
+    }
+
+    @Override
+    protected boolean shouldRerenderChunkOnDescUpdate(){
+        return true;
     }
 }
