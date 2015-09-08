@@ -760,6 +760,7 @@ gui.tooltip.amadronTablet.itemLocation=Item Providing Location: %s, %s, %s in di
 gui.tooltip.amadronTablet.fluidLocation=Fluid Providing Location: %s, %s, %s in dimension %s
 gui.tooltip.amadronTablet.selectItemLocation=Right click an inventory to allow it to provide items to vendors.
 gui.tooltip.amadronTablet.selectFluidLocation=Right click a tank to allow it to provide fluids to vendors.
+gui.tooltip.gpsTool.variable=Linked variable: "#%s"
 
 # Item tooltips
 gui.tooltip.item.plasticBucket=Put in a Plastic Mixer to solidify into solid Plastic.

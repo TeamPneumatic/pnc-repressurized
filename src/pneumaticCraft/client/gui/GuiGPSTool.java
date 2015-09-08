@@ -1,42 +1,52 @@
 package pneumaticCraft.client.gui;
 
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.GuiTextField;
-import net.minecraft.util.MathHelper;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.ChunkPosition;
-
-import org.apache.commons.lang3.math.NumberUtils;
-
+import pneumaticCraft.client.gui.widget.WidgetTextField;
+import pneumaticCraft.client.gui.widget.WidgetTextFieldNumber;
+import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.PacketChangeGPSToolCoordinate;
 
-public class GuiGPSTool extends GuiScreen{
+public class GuiGPSTool extends GuiPneumaticScreenBase{
 
-    private final GuiTextField[] textFields = new GuiTextField[3];
+    private final WidgetTextFieldNumber[] textFields = new WidgetTextFieldNumber[3];
+    private WidgetTextField variableField;
     private static final int TEXTFIELD_WIDTH = 40;
     private final ChunkPosition oldGPSLoc;
+    private String oldVarName;
+    private static final int[] BUTTON_ACTIONS = {-10, -1, 1, 10};
 
-    public GuiGPSTool(ChunkPosition gpsLoc){
+    public GuiGPSTool(ChunkPosition gpsLoc, String oldVarName){
         oldGPSLoc = gpsLoc;
+        this.oldVarName = oldVarName;
     }
 
     @Override
     public void initGui(){
-        String[] oldText = new String[3];
+        super.initGui();
+        int[] oldText = new int[3];
         if(textFields[0] == null) {
-            oldText[0] = oldGPSLoc.chunkPosX + "";
-            oldText[1] = oldGPSLoc.chunkPosY + "";
-            oldText[2] = oldGPSLoc.chunkPosZ + "";
+            oldText[0] = oldGPSLoc.chunkPosX;
+            oldText[1] = oldGPSLoc.chunkPosY;
+            oldText[2] = oldGPSLoc.chunkPosZ;
         } else {
             for(int i = 0; i < 3; i++)
-                oldText[i] = textFields[i].getText();
+                oldText[i] = textFields[i].getValue();
         }
         int xMiddle = width / 2;
         int yMiddle = height / 2;
         for(int i = 0; i < 3; i++) {
-            textFields[i] = new GuiTextField(fontRendererObj, xMiddle - TEXTFIELD_WIDTH / 2, yMiddle - 27 + i * 22, TEXTFIELD_WIDTH, fontRendererObj.FONT_HEIGHT);
-            textFields[i].setText(oldText[i]);
+            textFields[i] = new WidgetTextFieldNumber(fontRendererObj, xMiddle - TEXTFIELD_WIDTH / 2, yMiddle - 27 + i * 22, TEXTFIELD_WIDTH, fontRendererObj.FONT_HEIGHT);
+            textFields[i].setValue(oldText[i]);
+            if(i == 1) {
+                textFields[i].minValue = 0;
+                textFields[i].maxValue = 255;
+            }
+            addWidget(textFields[i]);
         }
 
         for(int i = 0; i < 3; i++) {
@@ -45,79 +55,44 @@ public class GuiGPSTool extends GuiScreen{
             buttonList.add(new GuiButton(2 + i * 4, xMiddle + 3 + TEXTFIELD_WIDTH / 2, yMiddle - 32 + i * 22, 22, 20, "+1"));
             buttonList.add(new GuiButton(3 + i * 4, xMiddle + 27 + TEXTFIELD_WIDTH / 2, yMiddle - 32 + i * 22, 22, 20, "+10"));
         }
+
+        if(variableField != null) oldVarName = variableField.getText();
+        variableField = new WidgetTextField(fontRendererObj, xMiddle - 50, yMiddle + 60, 100, fontRendererObj.FONT_HEIGHT);
+        variableField.setText(oldVarName);
+        addWidget(variableField);
+
+        String var = I18n.format("gui.progWidget.coordinate.variable");
+        addLabel(var, xMiddle - 62 - fontRendererObj.getStringWidth(var), yMiddle + 61);
+        addLabel("#", xMiddle - 60, yMiddle + 61);
     }
 
     @Override
     protected void actionPerformed(GuiButton button){
-        int index = button.id / 4;
-        int curValue = Integer.parseInt(textFields[index].getText());
-        switch(button.id - index * 4){
-            case 0:
-                curValue -= 10;
-                break;
-            case 1:
-                curValue--;
-                break;
-            case 2:
-                curValue++;
-                break;
-            case 3:
-                curValue += 10;
-                break;
-        }
-        if(index == 1) {
-            curValue = MathHelper.clamp_int(curValue, 0, 255);
-        }
-        textFields[index].setText(curValue + "");
+        textFields[button.id / 4].setValue(textFields[button.id / 4].getValue() + BUTTON_ACTIONS[button.id % 4]);
     }
 
     @Override
     public void drawScreen(int par1, int par2, float par3){
         drawDefaultBackground();
         super.drawScreen(par1, par2, par3);
-        for(GuiTextField field : textFields)
-            field.drawTextBox();
 
         int xMiddle = width / 2;
         int yMiddle = height / 2;
         int stringX = xMiddle - 60 - TEXTFIELD_WIDTH / 2;
-        drawCenteredString(fontRendererObj, "GPS Tool", xMiddle, yMiddle - 44, 0xFFFFFFFF);
+        drawCenteredString(fontRendererObj, new ItemStack(Itemss.GPSTool).getDisplayName(), xMiddle, yMiddle - 44, 0xFFFFFFFF);
         drawString(fontRendererObj, "X:", stringX, yMiddle - 22 - fontRendererObj.FONT_HEIGHT / 2, 0xFFFFFFFF);
         drawString(fontRendererObj, "Y:", stringX, yMiddle - fontRendererObj.FONT_HEIGHT / 2, 0xFFFFFFFF);
         drawString(fontRendererObj, "Z:", stringX, yMiddle + 22 - fontRendererObj.FONT_HEIGHT / 2, 0xFFFFFFFF);
     }
 
     @Override
-    protected void keyTyped(char par1, int par2){
-        super.keyTyped(par1, par2);
-        for(GuiTextField field : textFields) {
-            String oldText = field.getText();
-            field.textboxKeyTyped(par1, par2);
-            if(!field.getText().equals("") && !field.getText().equals("-") && !NumberUtils.isNumber(field.getText()) || field.getText().contains(".")) {
-                field.setText(oldText);
-            }
-        }
-    }
-
-    @Override
-    protected void mouseClicked(int par1, int par2, int par3){
-        for(GuiTextField field : textFields) {
-            boolean focused = field.isFocused();
-            field.mouseClicked(par1, par2, par3);
-            if(!field.isFocused() && focused && !NumberUtils.isNumber(field.getText())) {
-                field.setText("0");
-            }
-        }
-        super.mouseClicked(par1, par2, par3);
-    }
-
-    @Override
     public void onGuiClosed(){
-        int x = NumberUtils.isNumber(textFields[0].getText()) ? Integer.parseInt(textFields[0].getText()) : 0;
-        int y = NumberUtils.isNumber(textFields[1].getText()) ? Integer.parseInt(textFields[1].getText()) : 0;
-        int z = NumberUtils.isNumber(textFields[2].getText()) ? Integer.parseInt(textFields[2].getText()) : 0;
-        if(oldGPSLoc.chunkPosX != x || oldGPSLoc.chunkPosY != y || oldGPSLoc.chunkPosZ != z) {
-            NetworkHandler.sendToServer(new PacketChangeGPSToolCoordinate(x, y, z));
-        }
+        ChunkPosition newPos = new ChunkPosition(textFields[0].getValue(), textFields[1].getValue(), textFields[2].getValue());
+        NetworkHandler.sendToServer(new PacketChangeGPSToolCoordinate(newPos.chunkPosX, newPos.equals(oldGPSLoc) ? -1 : newPos.chunkPosY, newPos.chunkPosZ, variableField.getText()));
+    }
+
+    @Override
+    protected ResourceLocation getTexture(){
+        return null;
     }
 }

@@ -47,7 +47,11 @@ public class GlobalVariableManager extends WorldSavedData{
     }
 
     public void set(String varName, int value){
-        set(varName, new ChunkPosition(value, 0, 0));
+        set(varName, value, 0, 0);
+    }
+
+    public void set(String varName, int x, int y, int z){
+        set(varName, new ChunkPosition(x, y, z));
     }
 
     public void set(String varName, ChunkPosition pos){

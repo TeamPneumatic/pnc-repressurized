@@ -3,6 +3,8 @@ package pneumaticCraft.common.item;
 import java.util.List;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -12,6 +14,7 @@ import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.World;
 import pneumaticCraft.client.gui.GuiGPSTool;
 import pneumaticCraft.common.NBTUtil;
+import pneumaticCraft.common.remote.GlobalVariableManager;
 import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
@@ -43,7 +46,7 @@ public class ItemGPSTool extends ItemPneumatic{
     public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player){
         if(world.isRemote) {
             if(getGPSLocation(stack) != null) {
-                FMLCommonHandler.instance().showGuiScreen(new GuiGPSTool(getGPSLocation(stack)));
+                FMLCommonHandler.instance().showGuiScreen(new GuiGPSTool(getGPSLocation(stack), getVariable(stack)));
             } else {
                 player.addChatComponentMessage(new ChatComponentTranslation(EnumChatFormatting.GREEN + "[GPS Tool] First you'll have to select a coordinate before you can alter it."));
             }
@@ -64,12 +67,30 @@ public class ItemGPSTool extends ItemPneumatic{
             if(x != 0 || y != 0 || z != 0) {
                 infoList.add("\u00a72Set to " + x + ", " + y + ", " + z);
             }
+            String varName = getVariable(stack);
+            if(!varName.equals("")) {
+                infoList.add(I18n.format("gui.tooltip.gpsTool.variable", varName));
+            }
+        }
+    }
+
+    @Override
+    public void onUpdate(ItemStack stack, World world, Entity entity, int slot, boolean heldItem){
+        String var = getVariable(stack);
+        if(!var.equals("") && !world.isRemote) {
+            ChunkPosition pos = GlobalVariableManager.getInstance().getPos(var);
+            setGPSLocation(stack, pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ);
         }
     }
 
     public static ChunkPosition getGPSLocation(ItemStack gpsTool){
         NBTTagCompound compound = gpsTool.stackTagCompound;
         if(compound != null) {
+            String var = getVariable(gpsTool);
+            if(!var.equals("") && FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER) {
+                ChunkPosition pos = GlobalVariableManager.getInstance().getPos(var);
+                setGPSLocation(gpsTool, pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ);
+            }
             int x = compound.getInteger("x");
             int y = compound.getInteger("y");
             int z = compound.getInteger("z");
@@ -87,5 +108,15 @@ public class ItemGPSTool extends ItemPneumatic{
         NBTUtil.setInteger(gpsTool, "x", x);
         NBTUtil.setInteger(gpsTool, "y", y);
         NBTUtil.setInteger(gpsTool, "z", z);
+        String var = getVariable(gpsTool);
+        if(!var.equals("")) GlobalVariableManager.getInstance().set(var, x, y, z);
+    }
+
+    public static void setVariable(ItemStack gpsTool, String variable){
+        NBTUtil.setString(gpsTool, "variable", variable);
+    }
+
+    public static String getVariable(ItemStack gpsTool){
+        return gpsTool.hasTagCompound() ? gpsTool.getTagCompound().getString("variable") : "";
     }
 }
