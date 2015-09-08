@@ -12,3 +12,5 @@ Entity Filters are used at a few locations in PneumaticCraft. They all work the 
 @drone --> allows drone entities only
 Creeper --> allows Creepers only
 MineMaarten --> allows MineMaarten only
+c* --> allows any entity starting with the letter 'c' only (like Creepers, or Cows).
+*pig* --> allows any entity that includes 'pig' in the name only (like a Pig or Zombie Pigman).

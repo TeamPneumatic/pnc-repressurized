@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.regex.PatternSyntaxException;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
@@ -613,7 +614,12 @@ public class PneumaticCraftUtils{
                 throw new IllegalArgumentException(filter + " is not a valid entity type.");
             }
         } else {
-            return entity.getCommandSenderName().toLowerCase().equals(filter.toLowerCase());//TODO when player, check if entity is tamed by the player (see EntityAIAvoidEntity for example)
+            try {
+                String regex = filter.toLowerCase().replaceAll(".", "[$0]").replace("[*]", ".*");//Wildcard regex
+                return entity.getCommandSenderName().toLowerCase().matches(regex);//TODO when player, check if entity is tamed by the player (see EntityAIAvoidEntity for example)
+            } catch(PatternSyntaxException e) {
+                return entity.getCommandSenderName().toLowerCase().equals(filter.toLowerCase());
+            }
         }
     }
 
