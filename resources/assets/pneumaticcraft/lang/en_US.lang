@@ -657,6 +657,7 @@ gui.progWidget.blockRightClick.sneaking=Sneaking
 gui.progWidget.blockRightClick.sneaking.tooltip=When checked, the Drone will sneak while right clicking.
 gui.progWidget.digAndPlace.useMaxActions=Limit block interactions
 gui.progWidget.digAndPlace.useMaxActions.tooltip=When checked, only the specified amount of blocks will be interacted with until the next puzzle piece is executed.
+gui.progWidget.liquidExport.placeFluidInWorld=Place fluid in world
 
 gui.progWidget.area.error.noArea=No area specified.
 gui.progWidget.general.error.emptyVariable=Variable is empty. Specify a valid variable.

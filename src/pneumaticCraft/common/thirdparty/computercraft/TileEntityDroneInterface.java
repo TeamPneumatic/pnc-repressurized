@@ -590,6 +590,19 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral,
             }
         });
 
+        luaMethods.add(new LuaMethod("setPlaceFluidBlocks"){
+            @Override
+            public Object[] call(Object[] args) throws Exception{
+                if(args.length == 1) {
+                    getWidget().setPlaceFluidBlocks((Boolean)args[0]);
+                    messageToDrone(0xFFFFFFFF);
+                    return null;
+                } else {
+                    throw new IllegalArgumentException("setPlaceFluidBlocks takes 1 argument (boolean is sneaking true/false!");
+                }
+            }
+        });
+
         luaMethods.add(new LuaMethod("setAction"){
             @Override
             public Object[] call(Object[] args) throws Exception{

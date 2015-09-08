@@ -1,7 +1,8 @@
 Programming Puzzles are used in [link{block/programmer}]programmers [link{}].
 
 [prefix{l}]The Liquid Import piece [prefix{}]
-This will make the Drone move to the nearest tank within the specified area. It will then take liquid from that tank and it will put them in the Drone's tank.
+This will make the Drone move to the nearest tank within the specified area. It will then take liquid from that tank and it will put it in the Drone's tank.
+It can also suck up fluids from fluid blocks making the Drone act as a portable pump.
 
 You can specify from which side the Drone should extract the liquids from. Right click the puzzle piece for this. In here you can also specify a maximum amount of imported liquid per operation (in mB).
 

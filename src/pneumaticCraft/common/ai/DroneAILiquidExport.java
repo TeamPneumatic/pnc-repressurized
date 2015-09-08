@@ -1,11 +1,13 @@
 package pneumaticCraft.common.ai;
 
+import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.ChunkPosition;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidHandler;
 import pneumaticCraft.common.progwidgets.ICountWidget;
+import pneumaticCraft.common.progwidgets.ILiquidExport;
 import pneumaticCraft.common.progwidgets.ILiquidFiltered;
 import pneumaticCraft.common.progwidgets.ISidedWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetAreaItemBase;
@@ -49,6 +51,16 @@ public class DroneAILiquidExport extends DroneAIImExBase{
                             }
                         }
                     }
+                }
+            } else if(((ILiquidExport)widget).isPlacingFluidBlocks() && (!((ICountWidget)widget).useCount() || getRemainingCount() >= 1000)) {
+                Block fluidBlock = drone.getTank().getFluid().getFluid().getBlock();
+                if(drone.getTank().getFluidAmount() >= 1000 && fluidBlock != null && drone.getWorld().isAirBlock(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ)) {
+                    if(!simulate) {
+                        decreaseCount(1000);
+                        drone.getTank().drain(1000, true);
+                        drone.getWorld().setBlock(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ, fluidBlock);
+                    }
+                    return true;
                 }
             }
             return false;

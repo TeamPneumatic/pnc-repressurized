@@ -12,12 +12,12 @@ import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetInventoryBase;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 
-public class GuiProgWidgetImportExport extends GuiProgWidgetAreaShow{
+public class GuiProgWidgetImportExport<Widget extends IProgWidget> extends GuiProgWidgetAreaShow<Widget>{
 
     private GuiCheckBox useItemCount;
     private WidgetTextFieldNumber textField;
 
-    public GuiProgWidgetImportExport(IProgWidget widget, GuiProgrammer guiProgrammer){
+    public GuiProgWidgetImportExport(Widget widget, GuiProgrammer guiProgrammer){
         super(widget, guiProgrammer);
     }
 

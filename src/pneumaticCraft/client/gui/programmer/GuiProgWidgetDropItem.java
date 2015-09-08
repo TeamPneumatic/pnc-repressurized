@@ -6,12 +6,12 @@ import java.util.List;
 import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.client.gui.widget.GuiRadioButton;
 import pneumaticCraft.client.gui.widget.IGuiWidget;
-import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetDropItem;
+import pneumaticCraft.common.progwidgets.ProgWidgetInventoryBase;
 
 public class GuiProgWidgetDropItem extends GuiProgWidgetImportExport{
 
-    public GuiProgWidgetDropItem(IProgWidget widget, GuiProgrammer guiProgrammer){
+    public GuiProgWidgetDropItem(ProgWidgetInventoryBase widget, GuiProgrammer guiProgrammer){
         super(widget, guiProgrammer);
     }
 

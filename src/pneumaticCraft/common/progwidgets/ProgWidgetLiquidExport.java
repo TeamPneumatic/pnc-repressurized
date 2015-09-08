@@ -1,14 +1,20 @@
 package pneumaticCraft.common.progwidgets;
 
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.Fluid;
+import pneumaticCraft.client.gui.GuiProgrammer;
+import pneumaticCraft.client.gui.programmer.GuiProgWidgetLiquidExport;
 import pneumaticCraft.common.ai.DroneAILiquidExport;
 import pneumaticCraft.common.ai.IDroneBase;
 import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.lib.Textures;
 
-public class ProgWidgetLiquidExport extends ProgWidgetInventoryBase implements ILiquidFiltered{
+public class ProgWidgetLiquidExport extends ProgWidgetInventoryBase implements ILiquidFiltered, ILiquidExport{
+
+    private boolean placeFluidBlocks;
 
     @Override
     public String getWidgetString(){
@@ -39,4 +45,32 @@ public class ProgWidgetLiquidExport extends ProgWidgetInventoryBase implements I
     public int getCraftingColorIndex(){
         return ItemPlasticPlants.PROPULSION_PLANT_DAMAGE;
     }
+
+    @Override
+    public void writeToNBT(NBTTagCompound tag){
+        super.writeToNBT(tag);
+        tag.setBoolean("placeFluidBlocks", placeFluidBlocks);
+    }
+
+    @Override
+    public void readFromNBT(NBTTagCompound tag){
+        super.readFromNBT(tag);
+        placeFluidBlocks = tag.getBoolean("placeFluidBlocks");
+    }
+
+    @Override
+    public void setPlaceFluidBlocks(boolean placeFluidBlocks){
+        this.placeFluidBlocks = placeFluidBlocks;
+    }
+
+    @Override
+    public boolean isPlacingFluidBlocks(){
+        return placeFluidBlocks;
+    }
+
+    @Override
+    public GuiScreen getOptionWindow(GuiProgrammer guiProgrammer){
+        return new GuiProgWidgetLiquidExport(this, guiProgrammer);
+    }
+
 }

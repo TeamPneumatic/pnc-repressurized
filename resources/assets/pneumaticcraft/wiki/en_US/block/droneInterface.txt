@@ -116,6 +116,9 @@ Sets up the crafting grid so when the Crafting instruction is called, this recip
 [prefix{l}]setSneaking(<true/false>) [prefix{}]
 Only used in the right click command, this will set whether or not the fake player is sneaking while right clicking.
 
+[prefix{l}]setPlaceFluidBlocks(<true/false>) [prefix{}]
+Only used in the Liquid Export command, when set to true the Drone will be allowed to place down fluid blocks.
+
 [prefix{l}]setVariable(<variable name>, <true/false>) [prefix{}]
 [prefix{l}]setVariable(<variable name>, <x>) [prefix{}]
 [prefix{l}]setVariable(<variable name>, <x>, <y>, <z>) [prefix{}]
