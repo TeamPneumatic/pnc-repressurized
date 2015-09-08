@@ -8,6 +8,10 @@ You can get the following info from any PneumaticCraft block that runs on compre
 -getDangerPressure() - This is a constant, it'll be 5 bar for tier one machines, and 20 for tier two.
 -getCriticalPressure() - This is a constant, it'll be 7 bar for tier two machines, and 25 for tier two.
 
+[prefix{l}]Every machine that is heat-related[prefix{}]
+This is for blocks like the Heat Sink, or Compressed Iron Block, that have a temperature.
+-getTemperature(), getTemperature(<side>) - Gets the temperature from the block.
+
 [link{block/airCannon}]Air Cannon[link{}]
 Apart from the methods that apply to any pneumatic machine, you can also use the following functions on Air Cannons:
 -setExternalControl(<true/false>) - When parsed true, this will disable the Cannon to be rotated with normal methods (GPS Tool insertion, change in range upgrades..)

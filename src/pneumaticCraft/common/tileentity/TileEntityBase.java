@@ -2,6 +2,7 @@ package pneumaticCraft.common.tileentity;
 
 import ic2.api.item.IC2Items;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -26,14 +27,21 @@ import pneumaticCraft.common.network.IDescSynced;
 import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.NetworkUtils;
 import pneumaticCraft.common.network.PacketDescription;
+import pneumaticCraft.common.thirdparty.computercraft.ILuaMethod;
+import pneumaticCraft.common.thirdparty.computercraft.LuaMethod;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.common.util.TileEntityCache;
 import pneumaticCraft.lib.ModIds;
 import pneumaticCraft.lib.PneumaticValues;
 import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
+import dan200.computercraft.api.lua.ILuaContext;
+import dan200.computercraft.api.lua.LuaException;
+import dan200.computercraft.api.peripheral.IComputerAccess;
+import dan200.computercraft.api.peripheral.IPeripheral;
 
-public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, IDescSynced{
+@Optional.InterfaceList({@Optional.Interface(iface = "dan200.computercraft.api.peripheral.IPeripheral", modid = ModIds.COMPUTERCRAFT)})
+public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, IDescSynced, IPeripheral{
     /**
      * True only the first time updateEntity invokes in a session.
      */
@@ -43,9 +51,10 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     private List<SyncedField> descriptionFields;
     protected int poweredRedstone; //The redstone strength currently applied to the block.
     private TileEntityCache[] tileCache;
+    protected List<ILuaMethod> luaMethods = new ArrayList<ILuaMethod>();
 
     public TileEntityBase(){
-
+        addLuaMethods();
     }
 
     public TileEntityBase(int... upgradeSlots){
@@ -393,5 +402,81 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     @Override
     public int getZ(){
         return zCoord;
+    }
+
+    /*
+     * COMPUTERCRAFT API 
+     */
+
+    protected void addLuaMethods(){
+        if(this instanceof IHeatExchanger) {
+            final IHeatExchanger exchanger = (IHeatExchanger)this;
+            luaMethods.add(new LuaMethod("getTemperature"){
+                @Override
+                public Object[] call(Object[] args) throws Exception{
+                    if(args.length == 0) {
+                        return new Object[]{exchanger.getHeatExchangerLogic(ForgeDirection.UNKNOWN).getTemperature()};
+                    } else if(args.length == 1) {
+                        IHeatExchangerLogic logic = exchanger.getHeatExchangerLogic(getDirForString((String)args[0]));
+                        return new Object[]{logic != null ? logic.getTemperature() : 0};
+                    } else {
+                        throw new IllegalArgumentException("getTemperature method requires 0 or 1 argument (direction: up, down, east, west, north, south!");
+                    }
+                }
+            });
+        }
+    }
+
+    @Override
+    public String getType(){
+        return getBlockType().getUnlocalizedName().substring(5);
+    }
+
+    @Override
+    public String[] getMethodNames(){
+        String[] methodNames = new String[luaMethods.size()];
+        for(int i = 0; i < methodNames.length; i++) {
+            methodNames[i] = luaMethods.get(i).getMethodName();
+        }
+        return methodNames;
+    }
+
+    public List<ILuaMethod> getLuaMethods(){
+        return luaMethods;
+    }
+
+    @Override
+    @Optional.Method(modid = ModIds.COMPUTERCRAFT)
+    public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) throws LuaException, InterruptedException{
+        try {
+            return luaMethods.get(method).call(arguments);
+        } catch(Exception e) {
+            throw new LuaException(e.getMessage());
+        }
+    }
+
+    @Override
+    @Optional.Method(modid = ModIds.COMPUTERCRAFT)
+    public void attach(IComputerAccess computer){}
+
+    @Override
+    @Optional.Method(modid = ModIds.COMPUTERCRAFT)
+    public void detach(IComputerAccess computer){}
+
+    @Override
+    @Optional.Method(modid = ModIds.COMPUTERCRAFT)
+    public boolean equals(IPeripheral other){
+        if(other == null) {
+            return false;
+        }
+        if(this == other) {
+            return true;
+        }
+        if(other instanceof TileEntity) {
+            TileEntity tother = (TileEntity)other;
+            return tother.getWorldObj().equals(worldObj) && tother.xCoord == xCoord && tother.yCoord == yCoord && tother.zCoord == zCoord;
+        }
+
+        return false;
     }
 }
