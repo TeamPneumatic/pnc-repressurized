@@ -7,7 +7,9 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTBase.NBTPrimitive;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 
@@ -19,6 +21,7 @@ import pneumaticCraft.common.ai.DroneAIManager;
 import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.Textures;
+import cpw.mods.fml.common.registry.GameData;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -132,7 +135,9 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget{
     @Override
     public void writeToNBT(NBTTagCompound tag){
         super.writeToNBT(tag);
-        if(filter != null) filter.writeToNBT(tag);
+        if(filter != null) {
+            saveItemStackByName(filter, tag);
+        }
         tag.setBoolean("useMetadata", useMetadata);
         tag.setBoolean("useNBT", useNBT);
         tag.setBoolean("useOreDict", useOreDict);
@@ -144,13 +149,34 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget{
     @Override
     public void readFromNBT(NBTTagCompound tag){
         super.readFromNBT(tag);
-        filter = ItemStack.loadItemStackFromNBT(tag);
+        filter = tag.getTag("id") instanceof NBTPrimitive ? ItemStack.loadItemStackFromNBT(tag) : loadItemStackByName(tag);
         useMetadata = tag.getBoolean("useMetadata");
         useNBT = tag.getBoolean("useNBT");
         useOreDict = tag.getBoolean("useOreDict");
         useModSimilarity = tag.getBoolean("useModSimilarity");
         specificMeta = tag.getInteger("specificMeta");
         variable = tag.getString("variable");
+    }
+
+    private static void saveItemStackByName(ItemStack stack, NBTTagCompound tag){
+        tag.setString("id", GameData.getItemRegistry().getNameForObject(stack.getItem()));
+        tag.setByte("Count", (byte)stack.stackSize);
+        tag.setShort("Damage", (short)stack.getItemDamage());
+        if(stack.hasTagCompound()) {
+            tag.setTag("tag", stack.getTagCompound());
+        }
+    }
+
+    private static ItemStack loadItemStackByName(NBTTagCompound tag){
+        Item item = GameData.getItemRegistry().getObject(tag.getString("id"));
+        if(item == null) return null;
+        ItemStack stack = new ItemStack(item, tag.getByte("Count"), tag.getShort("Damage"));
+        if(stack.getItemDamage() < 0) stack.setItemDamage(0);
+
+        if(tag.hasKey("tag", 10)) {
+            stack.setTagCompound(tag.getCompoundTag("tag"));
+        }
+        return stack;
     }
 
     @Override
