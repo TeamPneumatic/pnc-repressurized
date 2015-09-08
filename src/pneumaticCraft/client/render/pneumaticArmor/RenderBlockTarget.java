@@ -60,7 +60,7 @@ public class RenderBlockTarget{
         String title = world.getBlock(x, y, z).getLocalizedName();
         if(title.contains(".name")) {
             try {
-                ItemStack stack = world.getBlock(x, y, z).getPickBlock(FMLClientHandler.instance().getClient().objectMouseOver, world, x, y, z);
+                ItemStack stack = world.getBlock(x, y, z).getPickBlock(FMLClientHandler.instance().getClient().objectMouseOver, world, x, y, z, FMLClientHandler.instance().getClientPlayerEntity());
                 if(stack != null) title = stack.getDisplayName();
             } catch(Throwable e) {}
         }
