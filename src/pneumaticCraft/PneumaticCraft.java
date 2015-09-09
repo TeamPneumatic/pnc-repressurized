@@ -161,6 +161,7 @@ public class PneumaticCraft{
         Config.postInit();
         AmadronOfferManager.getInstance().shufflePeriodicOffers();
         AmadronOfferManager.getInstance().recompileOffers();
+        CraftingRegistrator.addProgrammingPuzzleRecipes();
     }
 
     @EventHandler

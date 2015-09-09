@@ -186,7 +186,6 @@ public class CraftingRegistrator{
 
         addRecipe(new ItemStack(Blockss.plasticMixer), "igi", "g g", "iii", 'i', Names.INGOT_IRON_COMPRESSED, 'g', "blockGlass");
 
-        addProgrammingPuzzleRecipes();
         addRecipe(new ItemStack(Itemss.drone), " b ", "bcb", " b ", 'b', Itemss.turbineRotor, 'c', Itemss.printedCircuitBoard);
         addRecipe(new ItemStack(Blockss.programmableController), "iri", "cdp", "ini", 'i', Names.INGOT_IRON_COMPRESSED, 'c', Itemss.printedCircuitBoard, 'r', Itemss.remote, 'd', Itemss.drone, 'p', Blockss.advancedPressureTube, 'n', new ItemStack(Itemss.networkComponent, 1, ItemNetworkComponents.NETWORK_REGISTRY));
 
