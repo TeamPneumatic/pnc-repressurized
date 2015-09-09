@@ -11,6 +11,8 @@ import pneumaticCraft.common.ai.DroneAILiquidExport;
 import pneumaticCraft.common.ai.IDroneBase;
 import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.lib.Textures;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class ProgWidgetLiquidExport extends ProgWidgetInventoryBase implements ILiquidFiltered, ILiquidExport{
 
@@ -69,6 +71,7 @@ public class ProgWidgetLiquidExport extends ProgWidgetInventoryBase implements I
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public GuiScreen getOptionWindow(GuiProgrammer guiProgrammer){
         return new GuiProgWidgetLiquidExport(this, guiProgrammer);
     }

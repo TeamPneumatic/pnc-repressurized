@@ -1,12 +1,1 @@
--Liquid Export piece can now place down Fluid blocks.
--Liquid Import can now suck up Fluid blocks.
--Item Filters now are saved by item name rather than id, so (modded) items don't get mixed up when sharing programs anymore.
--Added global variable linking to the GPS Tool.
--Added 'has work' Comparator output for the Refinery.
--Added 'getTemperature()' method to the ComputerCraft and OpenComputer peripherals.
--Added wildcard matching to Entity Filters (working for the Pneumatic Helmet, Drone Entity Attack and Universal Sensor filter).
--Adjusted the model of the Charging Station pad, and added camouflaging.
-
--Bugfix: You can't edit widgets in the Remote when they manage to get out of bounds (as a result of changing the text).
--Bugfix: Block tracker sometimes shows very generic information about tracked blocks (like AE2 cables).
--Bugfix: Puzzle pieces can't be crafted.
+-Bugfix: SMP crash on startup
