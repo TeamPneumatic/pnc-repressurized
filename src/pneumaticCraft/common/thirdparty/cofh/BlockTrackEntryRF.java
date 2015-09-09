@@ -6,6 +6,7 @@ import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.api.client.pneumaticHelmet.IBlockTrackEntry;
 import cofh.api.energy.IEnergyConnection;
 
@@ -13,7 +14,13 @@ public class BlockTrackEntryRF implements IBlockTrackEntry{
 
     @Override
     public boolean shouldTrackWithThisEntry(IBlockAccess world, int x, int y, int z, Block block, TileEntity te){
-        return te instanceof IEnergyConnection;
+        if(te instanceof IEnergyConnection) {
+            IEnergyConnection connection = (IEnergyConnection)te;
+            for(ForgeDirection d : ForgeDirection.VALID_DIRECTIONS) {
+                if(connection.canConnectEnergy(d)) return true;
+            }
+        }
+        return false;
     }
 
     @Override
