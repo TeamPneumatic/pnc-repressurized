@@ -59,7 +59,7 @@ public class BlockPressureTube extends BlockPneumaticCraftModeled{
 
     @Override
     protected Class<? extends TileEntity> getTileEntityClass(){
-        return null;
+        return TileEntityPressureTube.class;
     }
 
     @Override
