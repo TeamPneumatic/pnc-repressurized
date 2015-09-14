@@ -132,4 +132,9 @@ public class GuiRadioButton extends Gui implements IGuiWidget{
 
     @Override
     public void handleMouseInput(){}
+
+    @Override
+    public void postRender(int mouseX, int mouseY, float partialTick){
+
+    }
 }

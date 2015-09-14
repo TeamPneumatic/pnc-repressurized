@@ -23,6 +23,7 @@ import pneumaticCraft.common.item.ItemProgrammingPuzzle;
 import pneumaticCraft.common.network.GuiSynced;
 import pneumaticCraft.common.progwidgets.IAreaProvider;
 import pneumaticCraft.common.progwidgets.IProgWidget;
+import pneumaticCraft.common.progwidgets.IVariableWidget;
 import pneumaticCraft.common.progwidgets.WidgetRegistrator;
 import pneumaticCraft.common.util.IOHelper;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
@@ -379,6 +380,19 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory, 
             }
         }
         return map;
+    }
+
+    /**
+     * Returns a set with all variables that are used in the program.
+     * @return
+     */
+    public Set<String> getAllVariables(){
+        Set<String> variables = new HashSet<String>();
+        for(IProgWidget widget : progWidgets) {
+            if(widget instanceof IVariableWidget) ((IVariableWidget)widget).addVariables(variables);
+        }
+        variables.remove("");
+        return variables;
     }
 
     // INVENTORY METHODS

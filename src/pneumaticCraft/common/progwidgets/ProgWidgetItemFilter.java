@@ -1,6 +1,7 @@
 package pneumaticCraft.common.progwidgets;
 
 import java.util.List;
+import java.util.Set;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -230,5 +231,10 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget{
 
     public String getVariable(){
         return variable;
+    }
+
+    @Override
+    public void addVariables(Set<String> variables){
+        variables.add(variable);
     }
 }

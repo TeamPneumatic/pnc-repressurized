@@ -7,7 +7,6 @@ import java.util.Set;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -18,11 +17,13 @@ import pneumaticCraft.common.network.PacketSetGlobalVariable;
 import pneumaticCraft.common.remote.GlobalVariableManager;
 import pneumaticCraft.common.remote.TextVariableParser;
 
-public class ContainerRemote extends Container{
+public class ContainerRemote extends ContainerPneumaticBase{
     private final List<String> syncedVars;
     private final ChunkPosition[] lastValues;
+    public String[] variables = new String[0];
 
     public ContainerRemote(ItemStack remote){
+        super(null);
         syncedVars = new ArrayList<String>(getRelevantVariableNames(remote));
         lastValues = new ChunkPosition[syncedVars.size()];
     }

@@ -577,4 +577,10 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         this.aiManager = aiManager;
     }
 
+    @Override
+    public void addVariables(Set<String> variables){
+        variables.add(coord1Variable);
+        variables.add(coord2Variable);
+    }
+
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
@@ -16,6 +17,9 @@ import net.minecraft.world.WorldServer;
 import org.apache.commons.lang3.text.WordUtils;
 
 import pneumaticCraft.PneumaticCraft;
+import pneumaticCraft.common.network.NetworkHandler;
+import pneumaticCraft.common.network.PacketNotifyVariablesRemote;
+import pneumaticCraft.common.remote.GlobalVariableManager;
 import pneumaticCraft.common.tileentity.TileEntitySecurityStation;
 import pneumaticCraft.proxy.CommonProxy.EnumGuiId;
 import cpw.mods.fml.relauncher.Side;
@@ -95,6 +99,7 @@ public class ItemRemote extends ItemPneumatic{
         if(player.isSneaking()) {
             if(isAllowedToEdit(player, remote)) {
                 player.openGui(PneumaticCraft.instance, EnumGuiId.REMOTE_EDITOR.ordinal(), player.worldObj, (int)player.posX, (int)player.posY, (int)player.posZ);
+                NetworkHandler.sendTo(new PacketNotifyVariablesRemote(GlobalVariableManager.getInstance().getAllActiveVariableNames()), (EntityPlayerMP)player);
             }
         } else {
             player.openGui(PneumaticCraft.instance, EnumGuiId.REMOTE.ordinal(), player.worldObj, (int)player.posX, (int)player.posY, (int)player.posZ);

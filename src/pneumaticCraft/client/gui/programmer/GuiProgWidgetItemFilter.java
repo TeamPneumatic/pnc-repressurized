@@ -8,7 +8,7 @@ import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.client.gui.GuiSearcher;
 import pneumaticCraft.client.gui.widget.GuiCheckBox;
 import pneumaticCraft.client.gui.widget.IGuiWidget;
-import pneumaticCraft.client.gui.widget.WidgetTextField;
+import pneumaticCraft.client.gui.widget.WidgetComboBox;
 import pneumaticCraft.common.config.Config;
 import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetItemFilter;
@@ -23,7 +23,7 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase{
     private GuiCheckBox checkBoxUseModSimilarity;
     private final ProgWidgetItemFilter widg;
     private GuiButton incButton, decButton;
-    private WidgetTextField variableField;
+    private WidgetComboBox variableField;
 
     // private GuiAnimatedStat metaInfoStat;
 
@@ -61,7 +61,8 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase{
         checkBoxUseModSimilarity.checked = widg.useModSimilarity;
         addWidget(checkBoxUseModSimilarity);
 
-        variableField = new WidgetTextField(fontRendererObj, guiLeft + 90, guiTop + 56, 80, fontRendererObj.FONT_HEIGHT + 1);
+        variableField = new WidgetComboBox(fontRendererObj, guiLeft + 90, guiTop + 56, 80, fontRendererObj.FONT_HEIGHT + 1);
+        variableField.setElements(guiProgrammer.te.getAllVariables());
         variableField.setText(widg.getVariable());
 
         if(Config.getProgrammerDifficulty() == 2) {

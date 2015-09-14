@@ -1,12 +1,12 @@
 package pneumaticCraft.client.gui.programmer;
 
 import pneumaticCraft.client.gui.GuiProgrammer;
+import pneumaticCraft.client.gui.widget.WidgetComboBox;
 import pneumaticCraft.client.gui.widget.WidgetLabel;
-import pneumaticCraft.client.gui.widget.WidgetTextField;
 import pneumaticCraft.common.progwidgets.ProgWidgetItemAssign;
 
 public class GuiProgWidgetItemAssign extends GuiProgWidgetOptionBase<ProgWidgetItemAssign>{
-    private WidgetTextField textfield;
+    private WidgetComboBox textfield;
 
     public GuiProgWidgetItemAssign(ProgWidgetItemAssign widget, GuiProgrammer guiProgrammer){
         super(widget, guiProgrammer);
@@ -15,7 +15,8 @@ public class GuiProgWidgetItemAssign extends GuiProgWidgetOptionBase<ProgWidgetI
     @Override
     public void initGui(){
         super.initGui();
-        textfield = new WidgetTextField(fontRendererObj, guiLeft + 10, guiTop + 40, 160, 10);
+        textfield = new WidgetComboBox(fontRendererObj, guiLeft + 10, guiTop + 40, 160, 10);
+        textfield.setElements(guiProgrammer.te.getAllVariables());
         textfield.setMaxStringLength(1000);
         textfield.setText(widget.getVariable());
         addWidget(textfield);

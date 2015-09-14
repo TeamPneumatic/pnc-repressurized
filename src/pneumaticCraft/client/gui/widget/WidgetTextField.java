@@ -95,4 +95,7 @@ public class WidgetTextField extends GuiTextField implements IGuiWidget{
 
     }
 
+    @Override
+    public void postRender(int mouseX, int mouseY, float partialTick){}
+
 }

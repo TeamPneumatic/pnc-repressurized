@@ -64,8 +64,11 @@ public abstract class GuiPneumaticScreenBase extends GuiScreen implements IWidge
         }
         super.drawScreen(x, y, partialTicks);
 
-        for(IGuiWidget checkBox : widgets) {
-            checkBox.render(x, y, partialTicks);
+        for(IGuiWidget widget : widgets) {
+            widget.render(x, y, partialTicks);
+        }
+        for(IGuiWidget widget : widgets) {
+            widget.postRender(x, y, partialTicks);
         }
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glColor4d(1, 1, 1, 1);

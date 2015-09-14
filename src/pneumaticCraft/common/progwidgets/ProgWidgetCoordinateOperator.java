@@ -1,6 +1,7 @@
 package pneumaticCraft.common.progwidgets;
 
 import java.util.List;
+import java.util.Set;
 
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.nbt.NBTTagCompound;
@@ -156,5 +157,10 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
     @Override
     public String getExtraStringInfo(){
         return "\"" + variable + "\"";
+    }
+
+    @Override
+    public void addVariables(Set<String> variables){
+        variables.add(variable);
     }
 }

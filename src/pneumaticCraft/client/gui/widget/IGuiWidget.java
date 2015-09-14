@@ -10,6 +10,8 @@ public interface IGuiWidget{
 
     public void render(int mouseX, int mouseY, float partialTick);
 
+    public void postRender(int mouseX, int mouseY, float partialTick);
+
     public void onMouseClicked(int mouseX, int mouseY, int button);
 
     public void onMouseClickedOutsideBounds(int mouseX, int mouseY, int button);

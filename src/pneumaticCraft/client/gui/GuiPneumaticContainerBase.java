@@ -211,6 +211,9 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
         for(IGuiWidget widget : widgets) {
             widget.render(i, j, partialTicks);
         }
+        for(IGuiWidget widget : widgets) {
+            widget.postRender(i, j, partialTicks);
+        }
 
         if(pressureStat != null) {
             TileEntityPneumaticBase pneu = (TileEntityPneumaticBase)te;

@@ -7,12 +7,12 @@ import net.minecraft.client.resources.I18n;
 import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.client.gui.widget.GuiRadioButton;
 import pneumaticCraft.client.gui.widget.IGuiWidget;
-import pneumaticCraft.client.gui.widget.WidgetTextField;
+import pneumaticCraft.client.gui.widget.WidgetComboBox;
 import pneumaticCraft.common.progwidgets.ProgWidgetCoordinateOperator;
 
 public class GuiProgWidgetCoordinateOperator extends GuiProgWidgetAreaShow<ProgWidgetCoordinateOperator>{
 
-    private WidgetTextField variableField;
+    private WidgetComboBox variableField;
 
     public GuiProgWidgetCoordinateOperator(ProgWidgetCoordinateOperator widget, GuiProgrammer guiProgrammer){
         super(widget, guiProgrammer);
@@ -34,7 +34,8 @@ public class GuiProgWidgetCoordinateOperator extends GuiProgWidgetAreaShow<ProgW
         radioButton.otherChoices = radioButtons;
         addWidget(radioButton);
 
-        variableField = new WidgetTextField(fontRendererObj, guiLeft + 90, guiTop + 42, 80, fontRendererObj.FONT_HEIGHT + 1);
+        variableField = new WidgetComboBox(fontRendererObj, guiLeft + 90, guiTop + 42, 80, fontRendererObj.FONT_HEIGHT + 1);
+        variableField.setElements(guiProgrammer.te.getAllVariables());
         addWidget(variableField);
         variableField.setText(widget.getVariable());
     }

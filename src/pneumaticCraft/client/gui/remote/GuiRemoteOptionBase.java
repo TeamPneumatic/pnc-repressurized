@@ -4,7 +4,9 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import pneumaticCraft.client.gui.GuiPneumaticScreenBase;
 import pneumaticCraft.client.gui.GuiRemoteEditor;
+import pneumaticCraft.client.gui.widget.WidgetComboBox;
 import pneumaticCraft.client.gui.widget.WidgetTextField;
+import pneumaticCraft.common.inventory.ContainerRemote;
 import pneumaticCraft.common.remote.ActionWidget;
 import pneumaticCraft.common.remote.IActionWidgetLabeled;
 import pneumaticCraft.lib.Textures;
@@ -12,7 +14,8 @@ import pneumaticCraft.lib.Textures;
 public class GuiRemoteOptionBase<Widget extends ActionWidget> extends GuiPneumaticScreenBase{
     protected Widget widget;
     protected GuiRemoteEditor guiRemote;
-    private WidgetTextField labelField, tooltipField, enableField;
+    private WidgetTextField labelField, tooltipField;
+    private WidgetComboBox enableField;
 
     public GuiRemoteOptionBase(Widget widget, GuiRemoteEditor guiRemote){
         this.widget = widget;
@@ -62,7 +65,8 @@ public class GuiRemoteOptionBase<Widget extends ActionWidget> extends GuiPneumat
             addLabel(I18n.format("gui.remote.tooltip"), guiLeft + 10, guiTop + 46);
         }
 
-        enableField = new WidgetTextField(fontRendererObj, guiLeft + 18, guiTop + 180, 152, 10);
+        enableField = new WidgetComboBox(fontRendererObj, guiLeft + 18, guiTop + 180, 152, 10);
+        enableField.setElements(((ContainerRemote)guiRemote.inventorySlots).variables);
         enableField.setText(widget.getEnableVariable());
         enableField.setTooltip(I18n.format("gui.remote.enable.tooltip"));
         addWidget(enableField);

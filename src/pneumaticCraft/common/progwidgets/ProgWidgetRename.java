@@ -1,5 +1,7 @@
 package pneumaticCraft.common.progwidgets;
 
+import java.util.Set;
+
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.util.ResourceLocation;
@@ -78,5 +80,8 @@ public class ProgWidgetRename extends ProgWidget implements IRenamingWidget, IVa
     public void setAIManager(DroneAIManager aiManager){
         this.aiManager = aiManager;
     }
+
+    @Override
+    public void addVariables(Set<String> variables){}
 
 }

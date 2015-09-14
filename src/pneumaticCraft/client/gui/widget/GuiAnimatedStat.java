@@ -531,4 +531,9 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
         return false;
     }
 
+    @Override
+    public void postRender(int mouseX, int mouseY, float partialTick){
+
+    }
+
 }

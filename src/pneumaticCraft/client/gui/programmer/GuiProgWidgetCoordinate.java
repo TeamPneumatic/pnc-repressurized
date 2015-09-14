@@ -12,6 +12,7 @@ import pneumaticCraft.client.gui.GuiInventorySearcher;
 import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.client.gui.widget.GuiRadioButton;
 import pneumaticCraft.client.gui.widget.IGuiWidget;
+import pneumaticCraft.client.gui.widget.WidgetComboBox;
 import pneumaticCraft.client.gui.widget.WidgetTextField;
 import pneumaticCraft.client.gui.widget.WidgetTextFieldNumber;
 import pneumaticCraft.common.item.ItemGPSTool;
@@ -22,7 +23,7 @@ import cpw.mods.fml.client.FMLClientHandler;
 public class GuiProgWidgetCoordinate extends GuiProgWidgetAreaShow<ProgWidgetCoordinate>{
     private GuiInventorySearcher invSearchGui;
     private WidgetTextFieldNumber[] coordFields;
-    private WidgetTextField variableField;
+    private WidgetComboBox variableField;
     private GuiButtonSpecial gpsButton;
 
     public GuiProgWidgetCoordinate(ProgWidgetCoordinate widget, GuiProgrammer guiProgrammer){
@@ -65,7 +66,8 @@ public class GuiProgWidgetCoordinate extends GuiProgWidgetAreaShow<ProgWidgetCoo
         coordFields[1].setValue(widget.getRawCoordinate().chunkPosY);
         coordFields[2].setValue(widget.getRawCoordinate().chunkPosZ);
 
-        variableField = new WidgetTextField(fontRendererObj, guiLeft + 90, guiTop + 112, 80, fontRendererObj.FONT_HEIGHT + 1);
+        variableField = new WidgetComboBox(fontRendererObj, guiLeft + 90, guiTop + 112, 80, fontRendererObj.FONT_HEIGHT + 1);
+        variableField.setElements(guiProgrammer.te.getAllVariables());
         addWidget(variableField);
         variableField.setText(widget.getVariable());
         variableField.setEnabled(widget.isUsingVariable());
