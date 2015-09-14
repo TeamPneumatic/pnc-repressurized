@@ -1,6 +1,7 @@
 package pneumaticCraft.common.ai;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
@@ -37,8 +38,7 @@ public class DroneAILogistics extends EntityAIBase{
     @Override
     public boolean shouldExecute(){
         manager.clearLogistics();
-        Set<ChunkPosition> area = new HashSet<ChunkPosition>();
-        widget.getArea(area);
+        List<ChunkPosition> area = widget.getCachedArea();
         if(area.size() == 0) return false;
         int minX = Integer.MAX_VALUE, maxX = Integer.MIN_VALUE, minZ = Integer.MAX_VALUE, maxZ = Integer.MIN_VALUE;
         for(ChunkPosition pos : area) {

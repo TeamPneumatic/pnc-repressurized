@@ -1,10 +1,8 @@
 package pneumaticCraft.common.ai;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -58,9 +56,7 @@ public abstract class DroneAIBlockInteraction extends EntityAIBase{
         setMutexBits(63);//binary 111111, so it won't run along with other AI tasks.
         this.widget = widget;
         order = widget instanceof IBlockOrdered ? ((IBlockOrdered)widget).getOrder() : EnumOrder.CLOSEST;
-        Set<ChunkPosition> set = new HashSet<ChunkPosition>();
-        widget.getArea(set);
-        area = new ArrayList(set);
+        area = widget.getCachedArea();
         worldCache = ProgWidgetAreaItemBase.getCache(area, drone.getWorld());
         if(area.size() > 0) {
             Iterator<ChunkPosition> iterator = area.iterator();

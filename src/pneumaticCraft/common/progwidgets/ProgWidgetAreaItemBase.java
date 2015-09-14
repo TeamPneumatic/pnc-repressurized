@@ -2,9 +2,11 @@ package pneumaticCraft.common.progwidgets;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import net.minecraft.client.gui.GuiScreen;
@@ -17,12 +19,17 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.client.gui.programmer.GuiProgWidgetAreaShow;
+import pneumaticCraft.common.ai.DroneAIManager;
 import pneumaticCraft.common.ai.StringFilterEntitySelector;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IAreaProvider, IEntityProvider,
-        IItemFiltering{
+        IItemFiltering, IVariableWidget{
+    private List<ChunkPosition> areaCache;
+    private Map<String, ChunkPosition> areaVariableStates;
+    private DroneAIManager aiManager;
+    private boolean canCache = true;
 
     @Override
     public boolean hasStepInput(){
@@ -65,6 +72,57 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
             maxZ = Math.max(maxZ, p.chunkPosZ);
         }
         return new ChunkCache(world, minX, minY, minZ, maxX, maxY, maxZ, 0);
+    }
+
+    public List<ChunkPosition> getCachedArea(){
+        if(areaCache != null) {
+            if(!canCache || updateVariables()) {
+                Set<ChunkPosition> set = new HashSet<ChunkPosition>(areaCache.size());
+                getArea(set);
+                areaCache = new ArrayList<ChunkPosition>(set.size());
+                areaCache.addAll(set);
+            }
+        } else {
+            Set<ChunkPosition> set = new HashSet<ChunkPosition>();
+            getArea(set);
+            areaCache = new ArrayList<ChunkPosition>(set.size());
+            areaCache.addAll(set);
+            initializeVariableCache();
+        }
+        return areaCache;
+    }
+
+    private void initializeVariableCache(){
+        areaVariableStates = new HashMap<String, ChunkPosition>();
+        ProgWidgetArea whitelistWidget = (ProgWidgetArea)getConnectedParameters()[0];
+        ProgWidgetArea blacklistWidget = (ProgWidgetArea)getConnectedParameters()[getParameters().length];
+        if(whitelistWidget == null) return;
+        ProgWidgetArea widget = whitelistWidget;
+        while(widget != null) {
+            if(widget.type == ProgWidgetArea.EnumAreaType.RANDOM) canCache = false;
+            if(!widget.getCoord1Variable().equals("")) areaVariableStates.put(widget.getCoord1Variable(), aiManager.getCoordinate(widget.getCoord1Variable()));
+            if(!widget.getCoord2Variable().equals("")) areaVariableStates.put(widget.getCoord2Variable(), aiManager.getCoordinate(widget.getCoord2Variable()));
+            widget = (ProgWidgetArea)widget.getConnectedParameters()[0];
+        }
+        widget = blacklistWidget;
+        while(widget != null) {
+            if(widget.type == ProgWidgetArea.EnumAreaType.RANDOM) canCache = false;
+            if(!widget.getCoord1Variable().equals("")) areaVariableStates.put(widget.getCoord1Variable(), aiManager.getCoordinate(widget.getCoord1Variable()));
+            if(!widget.getCoord2Variable().equals("")) areaVariableStates.put(widget.getCoord2Variable(), aiManager.getCoordinate(widget.getCoord2Variable()));
+            widget = (ProgWidgetArea)widget.getConnectedParameters()[0];
+        }
+    }
+
+    private boolean updateVariables(){
+        boolean varChanged = false;
+        for(Map.Entry<String, ChunkPosition> entry : areaVariableStates.entrySet()) {
+            ChunkPosition newValue = aiManager.getCoordinate(entry.getKey());
+            if(!newValue.equals(entry.getValue())) {
+                varChanged = true;
+                entry.setValue(newValue);
+            }
+        }
+        return varChanged;
     }
 
     @Override
@@ -174,4 +232,12 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
     public WidgetDifficulty getDifficulty(){
         return WidgetDifficulty.EASY;
     }
+
+    @Override
+    public void setAIManager(DroneAIManager aiManager){
+        this.aiManager = aiManager;
+    }
+
+    @Override
+    public void addVariables(Set<String> variables){}
 }
