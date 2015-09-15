@@ -21,6 +21,7 @@ import pneumaticCraft.common.NBTUtil;
 import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.PacketSyncAmadronOffers;
 import pneumaticCraft.common.recipes.AmadronOffer;
+import pneumaticCraft.common.recipes.AmadronOfferCustom;
 import pneumaticCraft.common.recipes.AmadronOfferManager;
 import pneumaticCraft.common.util.IOHelper;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
@@ -167,7 +168,7 @@ public class ItemAmadronTablet extends ItemPressurizable implements IAmadronInte
             NBTTagList list = tablet.getTagCompound().getTagList("shoppingCart", 10);
             for(int i = 0; i < list.tagCount(); i++) {
                 NBTTagCompound tag = list.getCompoundTagAt(i);
-                offers.put(AmadronOffer.loadFromNBT(tag), tag.getInteger("amount"));
+                offers.put(tag.hasKey("inStock") ? AmadronOfferCustom.loadFromNBT(tag) : AmadronOffer.loadFromNBT(tag), tag.getInteger("amount"));
             }
         }
         return offers;

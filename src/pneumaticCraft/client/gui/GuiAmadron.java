@@ -52,7 +52,7 @@ public class GuiAmadron extends GuiPneumaticContainerBase{
         searchBar = new WidgetTextField(mc.fontRenderer, guiLeft + 79, guiTop + 40, 73, mc.fontRenderer.FONT_HEIGHT);
         addWidget(searchBar);
 
-        scrollbar = new WidgetVerticalScrollbar(1, guiLeft + 156, guiTop + 54, 142);
+        scrollbar = new WidgetVerticalScrollbar(-1, guiLeft + 156, guiTop + 54, 142);
         scrollbar.setStates(1);
         scrollbar.setListening(true);
         addWidget(scrollbar);
