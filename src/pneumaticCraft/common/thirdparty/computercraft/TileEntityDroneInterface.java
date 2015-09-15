@@ -70,7 +70,7 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral,
                 if(ringSendCooldown > 0) ringSendCooldown--;
                 if(ringSendList.size() > 0 && ringSendCooldown <= 0) {
                     ringSendCooldown = ringSendList.size() > 10 ? 1 : 5;
-                    NetworkHandler.sendToAllAround(new PacketSpawnRing(xCoord + 0.5, yCoord + 0.8, zCoord + 0.5, drone, ringSendList.remove(0)), worldObj);
+                    NetworkHandler.sendToDimension(new PacketSpawnRing(xCoord + 0.5, yCoord + 0.8, zCoord + 0.5, drone, ringSendList.remove(0)), worldObj.provider.dimensionId);
                 }
             }
         }
@@ -236,7 +236,7 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral,
                 if(args.length == 0) {
                     Set<ChunkPosition> area = new HashSet<ChunkPosition>();
                     getWidget().getArea(area);
-                    NetworkHandler.sendToAllAround(new PacketShowArea(xCoord, yCoord, zCoord, area), worldObj);
+                    NetworkHandler.sendToDimension(new PacketShowArea(xCoord, yCoord, zCoord, area), worldObj.provider.dimensionId);
                     return null;
                 } else {
                     throw new IllegalArgumentException("showArea doesn't take any arguments!");
@@ -248,7 +248,7 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral,
             @Override
             public Object[] call(Object[] args) throws Exception{
                 if(args.length == 0) {
-                    NetworkHandler.sendToAllAround(new PacketShowArea(xCoord, yCoord, zCoord), worldObj);
+                    NetworkHandler.sendToDimension(new PacketShowArea(xCoord, yCoord, zCoord), worldObj.provider.dimensionId);
                     return null;
                 } else {
                     throw new IllegalArgumentException("hideArea doesn't take any arguments!");
