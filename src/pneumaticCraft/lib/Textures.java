@@ -220,6 +220,8 @@ public class Textures{
     public static final String GUI_INFO_LOCATION = GUI_LOCATION + "GuiInfo.png";
     public static final String GUI_UPGRADES_LOCATION = GUI_LOCATION + "GuiUpgrade.png";
     public static final ResourceLocation GUI_PASTEBIN_ICON_LOCATION = new ResourceLocation(GUI_LOCATION + "GuiPastebinIcon.png");
+    public static final ResourceLocation GUI_UNDO_ICON_LOCATION = new ResourceLocation(GUI_LOCATION + "GuiUndo.png");
+    public static final ResourceLocation GUI_REDO_ICON_LOCATION = new ResourceLocation(GUI_LOCATION + "GuiRedo.png");
     public static final String GUI_4UPGRADE_SLOTS = GUI_LOCATION + "GuiPressureChamber.png";
     public static final String GUI_NEI_PRESSURE_CHAMBER_LOCATION = GUI_LOCATION + "GuiNEIPressureChamber.png";
     public static final String GUI_CHARGING_STATION_LOCATION = GUI_LOCATION + "GuiChargingStation.png";

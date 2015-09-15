@@ -65,6 +65,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
     private List<GuiRadioButton> difficultyButtons;
     private GuiCheckBox showInfo, showFlow;
     private WidgetTextField nameField;
+    private GuiButtonSpecial undoButton, redoButton;
 
     private final List<IProgWidget> visibleSpawnWidgets = new ArrayList<IProgWidget>();
 
@@ -184,9 +185,17 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
 
         GuiButtonSpecial pastebinButton = new GuiButtonSpecial(7, guiLeft - 24, guiTop + 44, 20, 20, "");
         pastebinButton.setTooltipText(I18n.format("gui.remote.button.pastebinButton"));
-        //pastebinButton.setRenderStacks(new ItemStack(Itemss.advancedPCB));
         pastebinButton.setRenderedIcon(Textures.GUI_PASTEBIN_ICON_LOCATION);
         buttonList.add(pastebinButton);
+
+        undoButton = new GuiButtonSpecial(9, guiLeft - 24, guiTop + 2, 20, 20, "");
+        redoButton = new GuiButtonSpecial(10, guiLeft - 24, guiTop + 23, 20, 20, "");
+        undoButton.setRenderedIcon(Textures.GUI_UNDO_ICON_LOCATION);
+        redoButton.setRenderedIcon(Textures.GUI_REDO_ICON_LOCATION);
+        undoButton.setTooltipText(I18n.format("gui.programmer.button.undoButton.tooltip"));
+        redoButton.setTooltipText(I18n.format("gui.programmer.button.redoButton.tooltip"));
+        buttonList.add(undoButton);
+        buttonList.add(redoButton);
 
         scaleScroll = new WidgetVerticalScrollbar(xStart + 302, yStart + 40, 129).setStates(9).setCurrentState(te.zoomState).setListening(true);
         addWidget(scaleScroll);
@@ -791,6 +800,9 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
     @Override
     public void updateScreen(){
         super.updateScreen();
+
+        undoButton.enabled = te.canUndo;
+        redoButton.enabled = te.canRedo;
 
         ItemStack programmedItem = te.getStackInSlot(TileEntityProgrammer.PROGRAM_SLOT);
         oldShowingWidgetProgress = showingWidgetProgress;

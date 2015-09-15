@@ -39,6 +39,14 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory, 
     //Client side variables that are used to prevent resetting.
     public int translatedX, translatedY, zoomState;
     public boolean showInfo = true, showFlow = true;
+    @GuiSynced
+    public boolean canUndo, canRedo;
+    private NBTTagList history = new NBTTagList();//Used to undo/redo.
+    private int historyIndex;
+
+    public TileEntityProgrammer(){
+        saveToHistory();
+    }
 
     @Override
     public void readFromNBT(NBTTagCompound tag){
@@ -55,7 +63,8 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory, 
                 inventory[slot] = ItemStack.loadItemStackFromNBT(tagCompound);
             }
         }
-
+        history = tag.getTagList("history", 10);
+        if(history.tagCount() == 0) saveToHistory();
     }
 
     @Override
@@ -80,7 +89,7 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory, 
             }
         }
         tag.setTag("Items", tagList);
-
+        tag.setTag("history", history);
     }
 
     @Override
@@ -201,6 +210,12 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory, 
                 break;
             case 2:
                 tryProgramDrone(player);
+                break;
+            case 9:
+                undo();
+                break;
+            case 10:
+                redo();
                 break;
         }
         sendDescriptionPacket();
@@ -498,4 +513,39 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory, 
 
     @Override
     public void closeInventory(){}
+
+    public void saveToHistory(){
+        NBTTagCompound tag = new NBTTagCompound();
+        writeProgWidgetsToNBT(tag);
+        if(history.tagCount() == 0 || !history.getCompoundTagAt(historyIndex).equals(tag)) {
+            while(history.tagCount() > historyIndex + 1) {
+                history.removeTag(historyIndex + 1);
+            }
+            history.appendTag(tag);
+            if(history.tagCount() > 20) history.removeTag(0);//Only save up to 20 steps back. 
+            historyIndex = history.tagCount() - 1;
+            updateUndoRedoState();
+        }
+    }
+
+    public void undo(){
+        if(canUndo) {
+            historyIndex--;
+            readProgWidgetsFromNBT(history.getCompoundTagAt(historyIndex));
+            updateUndoRedoState();
+        }
+    }
+
+    public void redo(){
+        if(canRedo) {
+            historyIndex++;
+            readProgWidgetsFromNBT(history.getCompoundTagAt(historyIndex));
+            updateUndoRedoState();
+        }
+    }
+
+    private void updateUndoRedoState(){
+        canUndo = historyIndex > 0;
+        canRedo = historyIndex < history.tagCount() - 1;
+    }
 }

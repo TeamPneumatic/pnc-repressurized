@@ -53,6 +53,7 @@ public class PacketProgrammerUpdate extends LocationIntPacket<PacketProgrammerUp
         TileEntity te = player.worldObj.getTileEntity(message.x, message.y, message.z);
         if(te instanceof TileEntityProgrammer) {
             ((TileEntityProgrammer)te).readProgWidgetsFromNBT(message.progWidgets);
+            ((TileEntityProgrammer)te).saveToHistory();
             if(!player.worldObj.isRemote) {
                 updateOtherWatchingPlayers((TileEntityProgrammer)te, player);
             }
