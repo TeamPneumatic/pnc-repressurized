@@ -60,6 +60,7 @@ public class WidgetVerticalScrollbar extends WidgetBase{
 
     public WidgetVerticalScrollbar setEnabled(boolean enabled){
         this.enabled = enabled;
+        wasClicking = true;
         return this;
     }
 
