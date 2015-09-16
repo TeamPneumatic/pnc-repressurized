@@ -8,6 +8,7 @@ import java.util.Map;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.item.ItemStack;
@@ -23,6 +24,8 @@ import pneumaticCraft.common.item.ItemLogisticsFrame;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.network.DescSynced;
 import pneumaticCraft.common.network.GuiSynced;
+import pneumaticCraft.common.network.NetworkHandler;
+import pneumaticCraft.common.network.PacketSetSemiBlock;
 import pneumaticCraft.common.tileentity.TileEntityBase;
 import pneumaticCraft.proxy.CommonProxy.EnumGuiId;
 import cpw.mods.fml.relauncher.Side;
@@ -229,7 +232,10 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic{
 
     @Override
     public boolean onRightClickWithConfigurator(EntityPlayer player){
-        if(getGuiID() != null) player.openGui(PneumaticCraft.instance, getGuiID().ordinal(), world, pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ);
+        if(getGuiID() != null) {
+            NetworkHandler.sendTo(new PacketSetSemiBlock(pos, this), (EntityPlayerMP)player);
+            player.openGui(PneumaticCraft.instance, getGuiID().ordinal(), world, pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ);
+        }
         return true;
     }
 
