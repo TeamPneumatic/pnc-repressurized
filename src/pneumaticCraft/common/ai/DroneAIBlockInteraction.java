@@ -56,7 +56,7 @@ public abstract class DroneAIBlockInteraction extends EntityAIBase{
         setMutexBits(63);//binary 111111, so it won't run along with other AI tasks.
         this.widget = widget;
         order = widget instanceof IBlockOrdered ? ((IBlockOrdered)widget).getOrder() : EnumOrder.CLOSEST;
-        area = widget.getCachedArea();
+        area = widget.getCachedAreaList();
         worldCache = ProgWidgetAreaItemBase.getCache(area, drone.getWorld());
         if(area.size() > 0) {
             Iterator<ChunkPosition> iterator = area.iterator();

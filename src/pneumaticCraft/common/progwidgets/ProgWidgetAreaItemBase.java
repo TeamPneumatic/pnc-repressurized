@@ -26,7 +26,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IAreaProvider, IEntityProvider,
         IItemFiltering, IVariableWidget{
-    private List<ChunkPosition> areaCache;
+    private List<ChunkPosition> areaListCache;
+    private Set<ChunkPosition> areaSetCache;
     private Map<String, ChunkPosition> areaVariableStates;
     private DroneAIManager aiManager;
     private boolean canCache = true;
@@ -74,22 +75,27 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
         return new ChunkCache(world, minX, minY, minZ, maxX, maxY, maxZ, 0);
     }
 
-    public List<ChunkPosition> getCachedArea(){
-        if(areaCache != null) {
+    public List<ChunkPosition> getCachedAreaList(){
+        if(areaListCache != null) {
             if(!canCache || updateVariables()) {
-                Set<ChunkPosition> set = new HashSet<ChunkPosition>(areaCache.size());
-                getArea(set);
-                areaCache = new ArrayList<ChunkPosition>(set.size());
-                areaCache.addAll(set);
+                areaSetCache = new HashSet<ChunkPosition>(areaListCache.size());
+                getArea(areaSetCache);
+                areaListCache = new ArrayList<ChunkPosition>(areaSetCache.size());
+                areaListCache.addAll(areaSetCache);
             }
         } else {
-            Set<ChunkPosition> set = new HashSet<ChunkPosition>();
-            getArea(set);
-            areaCache = new ArrayList<ChunkPosition>(set.size());
-            areaCache.addAll(set);
+            areaSetCache = new HashSet<ChunkPosition>();
+            getArea(areaSetCache);
+            areaListCache = new ArrayList<ChunkPosition>(areaSetCache.size());
+            areaListCache.addAll(areaSetCache);
             initializeVariableCache();
         }
-        return areaCache;
+        return areaListCache;
+    }
+
+    public Set<ChunkPosition> getCachedAreaSet(){
+        getCachedAreaList();
+        return areaSetCache;
     }
 
     private void initializeVariableCache(){
