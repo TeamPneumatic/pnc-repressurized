@@ -158,10 +158,14 @@ public class TileEntityRefinery extends TileEntityBase implements IFluidHandler,
 
     @Override
     public int fill(ForgeDirection from, FluidStack resource, boolean doFill){
-        if(isMaster()) {
-            return oilTank.fill(resource, doFill);
+        if(canFill(from, resource != null ? resource.getFluid() : null)) {
+            if(isMaster()) {
+                return oilTank.fill(resource, doFill);
+            } else {
+                return getMasterRefinery().fill(from, resource, doFill);
+            }
         } else {
-            return getMasterRefinery().fill(from, resource, doFill);
+            return 0;
         }
     }
 
