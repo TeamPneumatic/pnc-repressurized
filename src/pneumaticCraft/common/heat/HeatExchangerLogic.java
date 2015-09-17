@@ -28,6 +28,7 @@ public class HeatExchangerLogic implements IHeatExchangerLogic{
 
     @Override
     public void initializeAsHull(World world, int x, int y, int z, ForgeDirection... validSides){
+        if(world.isRemote) return;
         for(IHeatExchangerLogic logic : hullExchangers) {
             removeConnectedExchanger(logic);
         }
