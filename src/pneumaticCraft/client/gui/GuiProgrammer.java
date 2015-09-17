@@ -309,6 +309,28 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         if(Keyboard.KEY_SPACE == keyCode) {
             toggleShowWidgets();
         }
+        if(Keyboard.KEY_DELETE == keyCode) {
+            int x = lastMouseX;
+            int y = lastMouseY;
+            float scale = getScale();
+
+            for(int i = 0; i < te.progWidgets.size(); i++) {
+                IProgWidget widget = te.progWidgets.get(i);
+                if(!isOutsideProgrammingArea(widget)) {
+                    if(widget != draggingWidget && (x - translatedX) / scale - guiLeft >= widget.getX() && (y - translatedY) / scale - guiTop >= widget.getY() && (x - translatedX) / scale - guiLeft <= widget.getX() + widget.getWidth() / 2 && (y - translatedY) / scale - guiTop <= widget.getY() + widget.getHeight() / 2) {
+                        te.progWidgets.remove(i);
+                        NetworkHandler.sendToServer(new PacketProgrammerUpdate(te));
+                        break;
+                    }
+                }
+            }
+        }
+        if(Keyboard.KEY_Z == keyCode) {
+            NetworkHandler.sendToServer(new PacketGuiButton(undoButton.id));
+        }
+        if(Keyboard.KEY_Y == keyCode) {
+            NetworkHandler.sendToServer(new PacketGuiButton(redoButton.id));
+        }
     }
 
     @Optional.Method(modid = ModIds.IGWMOD)
