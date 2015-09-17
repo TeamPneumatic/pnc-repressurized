@@ -1,1 +1,11 @@
--Bugfix: Crash when placing down an (Advanced) Pressure Tube.
+-RF Block Tracker now only tracks when able to connect a RF block (this prevents AE cables to be tracked).
+-Added auto-complete for variables when inserting them in a Remote or Programmer GUI.
+-Increased Drone performance.
+-Added Undo+Redo button to the Programmer
+
+-Bugfix: When dragging a piece out of the panel of the Programmer, you sometimes affect the scrollbar.
+-Bugfix: Drone Interface area showing doesn't update when more than 64 blocks away from the Drone Interface.
+-Bugfix: Amadron Tablet orders items when clicking the scrollbar.
+-Bugfix (on other mods' behalf): You can pump in any fluid with certain mods' fluid insertion methods into a Refinery which will treat it as Oil.
+-Bugfix: Crash when interacting with a Logistics Frame which disappeared from the client.
+-Bugfix: Crash on startup when having a mod that adds null items to Villager Trades (looking at you Fossils and Archeology).

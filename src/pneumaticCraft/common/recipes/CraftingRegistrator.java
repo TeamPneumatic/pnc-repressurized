@@ -329,7 +329,7 @@ public class CraftingRegistrator{
                     EntityVillager villager = new EntityVillager(null, i);
                     MerchantRecipeList list = villager.getRecipes(null);
                     for(MerchantRecipe recipe : (List<MerchantRecipe>)list) {
-                        if(recipe.getSecondItemToBuy() == null) {
+                        if(recipe.getSecondItemToBuy() == null && recipe.getItemToBuy() != null && recipe.getItemToBuy().getItem() != null && recipe.getItemToSell() != null && recipe.getItemToSell().getItem() != null) {
                             registry.registerDefaultPeriodicAmadronOffer(recipe.getItemToBuy(), recipe.getItemToSell());
                         }
                     }

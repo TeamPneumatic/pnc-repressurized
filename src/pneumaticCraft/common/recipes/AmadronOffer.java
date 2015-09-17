@@ -18,10 +18,11 @@ public class AmadronOffer{
     protected Object output;
 
     public AmadronOffer(Object input, Object output){
-        if(input == null) throw new NullPointerException("Input item can't be null!");
-        if(output == null) throw new NullPointerException("Output item can't be null!");
+        if(input == null) throw new NullPointerException("Input item/fluid can't be null!");
+        if(output == null) throw new NullPointerException("Output item/fluid can't be null!");
         if(input instanceof ItemStack) {
             if(((ItemStack)input).stackSize <= 0) throw new IllegalArgumentException("Input item needs to have a stacksize of > 0!");
+            if(((ItemStack)input).getItem() == null) throw new IllegalArgumentException("Input item can't be null!");
         } else if(input instanceof FluidStack) {
             if(((FluidStack)input).amount <= 0) throw new IllegalArgumentException("Input fluid needs to have an amount of > 0!");
         } else {
@@ -29,6 +30,7 @@ public class AmadronOffer{
         }
         if(output instanceof ItemStack) {
             if(((ItemStack)output).stackSize <= 0) throw new IllegalArgumentException("Output item needs to have a stacksize of > 0!");
+            if(((ItemStack)output).getItem() == null) throw new IllegalArgumentException("Output item can't be null!");
         } else if(output instanceof FluidStack) {
             if(((FluidStack)output).amount <= 0) throw new IllegalArgumentException("Output fluid needs to have an amount of > 0!");
         } else {

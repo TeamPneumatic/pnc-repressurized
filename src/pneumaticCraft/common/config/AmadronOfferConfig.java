@@ -1,9 +1,6 @@
 package pneumaticCraft.common.config;
 
-import java.io.IOException;
 import java.util.Collection;
-
-import org.apache.commons.io.FileUtils;
 
 import pneumaticCraft.common.recipes.AmadronOffer;
 import pneumaticCraft.common.recipes.AmadronOfferCustom;
@@ -11,7 +8,6 @@ import pneumaticCraft.common.recipes.AmadronOfferCustom;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 public abstract class AmadronOfferConfig extends JsonConfig{
 
@@ -22,12 +18,6 @@ public abstract class AmadronOfferConfig extends JsonConfig{
     protected abstract Collection<AmadronOffer> getOffers();
 
     protected abstract String getComment();
-
-    private void readOffersFromFile() throws IOException{
-        JsonParser parser = new JsonParser();
-        JsonObject root = (JsonObject)parser.parse(FileUtils.readFileToString(file));
-
-    }
 
     @Override
     protected final void writeToJson(JsonObject json){
