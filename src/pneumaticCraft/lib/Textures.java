@@ -94,7 +94,7 @@ public class Textures{
     public static final String ICON_PROPULSION_PLANT_LOCATION = PLANT_LOCATION + "propulsionPlant";
     public static final String ICON_CHOPPER_PLANT_LOCATION = PLANT_LOCATION + "chopperPlant";
 
-    private static final String PROG_WIDGET_LOCATION = ICON_LOCATION + "textures/items/progwidgets/";
+    public static final String PROG_WIDGET_LOCATION = ICON_LOCATION + "textures/items/progwidgets/";
     public static final ResourceLocation PROG_WIDGET_COMMENT = new ResourceLocation(PROG_WIDGET_LOCATION + "commentPiece.png");
     public static final ResourceLocation PROG_WIDGET_AREA = new ResourceLocation(PROG_WIDGET_LOCATION + "areaPiece.png");
     public static final ResourceLocation PROG_WIDGET_ATTACK = new ResourceLocation(PROG_WIDGET_LOCATION + "attackPiece.png");
@@ -132,8 +132,6 @@ public class Textures{
     public static final ResourceLocation PROG_WIDGET_CRAFTING = new ResourceLocation(PROG_WIDGET_LOCATION + "craftPiece.png");
     public static final ResourceLocation PROG_WIDGET_STANDBY = new ResourceLocation(PROG_WIDGET_LOCATION + "standbyPiece.png");
     public static final ResourceLocation PROG_WIDGET_COORDINATE = new ResourceLocation(PROG_WIDGET_LOCATION + "coordinatePiece.png");
-    public static final ResourceLocation PROG_WIDGET_COORDINATE_OPERATION_PLUS_MINUS = new ResourceLocation(PROG_WIDGET_LOCATION + "coordinateOperationPlusMinus.png");
-    public static final ResourceLocation PROG_WIDGET_COORDINATE_OPERATION_MULTIPLY_DIVIDE = new ResourceLocation(PROG_WIDGET_LOCATION + "coordinateOperationMultiplyDivide.png");
     public static final ResourceLocation PROG_WIDGET_ITEM_ASSIGN = new ResourceLocation(PROG_WIDGET_LOCATION + "itemAssignPiece.png");
     public static final ResourceLocation PROG_WIDGET_LOGISTICS = new ResourceLocation(PROG_WIDGET_LOCATION + "logisticsPiece.png");
     public static final ResourceLocation PROG_WIDGET_CONDITION_REDSTONE = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionRedstonePiece.png");

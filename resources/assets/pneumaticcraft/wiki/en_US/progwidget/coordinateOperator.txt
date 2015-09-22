@@ -5,7 +5,16 @@ The Coordinate Operation comes into play when dealing with [link{pneumaticcraft:
 
 You can [link{www.youtube.com/watch?v=FIjEdD_Yj9Y}]click here[link{}] to see a video where these variables are explained graphically.
 
-The Coordinate Operation piece takes all connected Coordinate pieces to the right of the piece, and adds/multiplies them together. Whether it's adding or multiplying is dependent on the mode the piece is set to. Coordinates on the left side will be subtracted from the total when in add/subtract mode, or the total will be divided by the pieces on the left side when in multiply/subtract mode.
+The Coordinate Operation piece takes all connected Coordinate pieces connected to it and performs a certain operation on them, depending on the selected operator. Operations all operate separately per axis. Available operations are:
+
+[prefix{l}]+ -[prefix{}]
+Adds up the pieces connected to the right. Subtracts the pieces on the left.
+
+[prefix{l}]* /[prefix{}]
+Multiplies the pieces connected to the right. Divides the result by the pieces on the left.
+
+[prefix{l}]Max Min[prefix{}]
+Takes the maximum x, y and z from the connected pieces on the right. Then it will take the minimum of the pieces on the left and the maximum that was determined earlier.
 
 The end result is stored in a variable, defined by the name put in the Coordinate Operation when you right click it. Using this name, you can get this coordinate back later. In the [link{pneumaticcraft:progwidget/area}] Area[link{}] piece you can instead of putting in a GPS coordinate, put in a variable name of a coordinate. These variables are kept saved, even if the world reloads. These variables could be used to create an endless mining program for example.
 

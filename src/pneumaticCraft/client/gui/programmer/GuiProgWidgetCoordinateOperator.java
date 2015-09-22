@@ -9,6 +9,7 @@ import pneumaticCraft.client.gui.widget.GuiRadioButton;
 import pneumaticCraft.client.gui.widget.IGuiWidget;
 import pneumaticCraft.client.gui.widget.WidgetComboBox;
 import pneumaticCraft.common.progwidgets.ProgWidgetCoordinateOperator;
+import pneumaticCraft.common.progwidgets.ProgWidgetCoordinateOperator.EnumOperator;
 
 public class GuiProgWidgetCoordinateOperator extends GuiProgWidgetAreaShow<ProgWidgetCoordinateOperator>{
 
@@ -23,16 +24,13 @@ public class GuiProgWidgetCoordinateOperator extends GuiProgWidgetAreaShow<ProgW
         super.initGui();
 
         List<GuiRadioButton> radioButtons = new ArrayList<GuiRadioButton>();
-        GuiRadioButton radioButton = new GuiRadioButton(0, guiLeft + 7, guiTop + 42, 0xFF000000, "+  -");
-        radioButtons.add(radioButton);
-        radioButton.checked = !widget.isMultiplyAndDividing();
-        radioButton.otherChoices = radioButtons;
-        addWidget(radioButton);
-        radioButton = new GuiRadioButton(1, guiLeft + 7, guiTop + 54, 0xFF000000, "* /");
-        radioButtons.add(radioButton);
-        radioButton.checked = widget.isMultiplyAndDividing();
-        radioButton.otherChoices = radioButtons;
-        addWidget(radioButton);
+        for(int i = 0; i < EnumOperator.values().length; i++) {
+            GuiRadioButton radioButton = new GuiRadioButton(i, guiLeft + 7, guiTop + 42 + 12 * i, 0xFF000000, I18n.format(EnumOperator.values()[i].getUnlocalizedName()));
+            radioButtons.add(radioButton);
+            radioButton.checked = widget.getOperator().ordinal() == i;
+            radioButton.otherChoices = radioButtons;
+            addWidget(radioButton);
+        }
 
         variableField = new WidgetComboBox(fontRendererObj, guiLeft + 90, guiTop + 42, 80, fontRendererObj.FONT_HEIGHT + 1);
         variableField.setElements(guiProgrammer.te.getAllVariables());
@@ -42,8 +40,8 @@ public class GuiProgWidgetCoordinateOperator extends GuiProgWidgetAreaShow<ProgW
 
     @Override
     public void actionPerformed(IGuiWidget guiWidget){
-        if(guiWidget.getID() == 0 || guiWidget.getID() == 1) {
-            widget.setMultiplyDividing(guiWidget.getID() == 1);
+        if(guiWidget.getID() >= 0 && guiWidget.getID() < EnumOperator.values().length) {
+            widget.setOperator(EnumOperator.values()[guiWidget.getID()]);
         }
         super.actionPerformed(guiWidget);
     }

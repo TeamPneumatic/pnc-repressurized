@@ -660,6 +660,9 @@ gui.progWidget.blockRightClick.sneaking.tooltip=When checked, the Drone will sne
 gui.progWidget.digAndPlace.useMaxActions=Limit block interactions
 gui.progWidget.digAndPlace.useMaxActions.tooltip=When checked, only the specified amount of blocks will be interacted with until the next puzzle piece is executed.
 gui.progWidget.liquidExport.placeFluidInWorld=Place fluid in world
+gui.progWidget.coordinateOperator.plusMinus=+ -
+gui.progWidget.coordinateOperator.multiplyDivide=* /
+gui.progWidget.coordinateOperator.maxMin=Max Min
 
 gui.progWidget.area.error.noArea=No area specified.
 gui.progWidget.general.error.emptyVariable=Variable is empty. Specify a valid variable.
@@ -677,6 +680,7 @@ gui.progWidget.label.error.noJumpLocation=No place to jump to. Attach a Text puz
 gui.progWidget.liquidFilter.error.noLiquid=No liquid selected in the filter.
 gui.progWidget.crafting.error.noCraftingRecipe=No valid crafting recipe set.
 gui.progWidget.conditionBlock.selectedAirAndItemFilter=Configured to look for air, yet Item Filters are connected!
+gui.progWidget.coordinateOperator.noParameter=No parameters!
 
 gui.pastebin.button.login=Log In
 gui.pastebin.button.logout=Log Out

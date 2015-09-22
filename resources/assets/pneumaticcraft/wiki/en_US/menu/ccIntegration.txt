@@ -12,7 +12,7 @@ You can get the following info from any PneumaticCraft block that runs on compre
 This is for blocks like the Heat Sink, or Compressed Iron Block, that have a temperature.
 -getTemperature(), getTemperature(<side>) - Gets the temperature from the block.
 
-[link{block/airCannon}]Air Cannon[link{}]
+[link{pneumaticcraft:block/airCannon}]Air Cannon[link{}]
 Apart from the methods that apply to any pneumatic machine, you can also use the following functions on Air Cannons:
 -setExternalControl(<true/false>) - When parsed true, this will disable the Cannon to be rotated with normal methods (GPS Tool insertion, change in range upgrades..)
 -setTargetLocation(<x>,<y>,<z>) - Makes the Air Cannon target the given location. This normally would be the location stored in a GPS Tool.
@@ -28,7 +28,7 @@ Apart from the methods that apply to any pneumatic machine, you can also use the
 -getMinWorkingPressure() - Returns the minimal pressure needed to extend the Elevator (the yellow to green threshold in the GUI). Making the Elevator go down is free.
 -setTargetHeight(<height>) - Sets the Elevator's target height to the height parsed (in meters/blocks).
 
-[link{block/universalSensor}]Universal Sensor[link{}]
+[link{pneumaticcraft:block/universalSensor}]Universal Sensor[link{}]
 Apart from the methods that apply to any pneumatic machine, you can also use the following functions when connected to any Universal Sensor:
 -getSensorNames() - Will return a table of all sensor names.
 -setSensor(<sensorName>), setSensor(<index>), setSensor() - Will set the current selected sensor the the sensor provided. The sensor name should be one of the names returned by getSensorNames(). The index should be an index on the returned table from getSensorNames(), so if you want to select the second sensor, do setSensor(2). This function will return true if the sensor is possible with the currently inserted upgrades. When using setSensor(), the Universal Sensor will select no sensor (therefore using no air).
@@ -41,5 +41,9 @@ Apart from the methods that apply to any pneumatic machine, you can also use the
 -setGPSToolCoordinate(<slotIndex>,<x>,<y>,<z>) Sets the location stored in the GPS Tool located in the given slot (starting with 1) to the provided location. This is useful for sensors that use a location.
 For event based sensors (like the player right click sensor), getting the sensor value is event based. You get the event by doing a <arguments> = os.pullEvent("universalSensor"). Usually the arguments consist of <eventName, redstoneStrength>. The player right click sensor is an exception, as <eventName, redstoneStrength, interactedX, interactedY, interactedZ> is returned. This allows for some interesting uses..
 
-[link{block/droneInterface}]Drone Interface[link{}]
+[link{pneumaticcraft:block/plasticMixer}]Plastic Mixer[link{}]
+Apart from the getTemperature(), you can also call:
+-selectColor(<colorIndex>), Will set the currently selected plastic to be crafted to the index given, ranging from 1-16. When calling selectColor(0) it will unselect any selections.
+
+[link{pneumaticcraft:block/droneInterface}]Drone Interface[link{}]
 Click on the link to visit the Drone Interface page or ComputerCraft info.
