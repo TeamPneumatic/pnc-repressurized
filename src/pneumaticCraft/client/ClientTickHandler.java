@@ -4,7 +4,10 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
+import pneumaticCraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
 import pneumaticCraft.client.gui.INeedTickUpdate;
+import pneumaticCraft.client.render.pneumaticArmor.UpgradeRenderHandlerList;
 import pneumaticCraft.common.block.tubes.ModuleRegulatorTube;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
@@ -45,6 +48,11 @@ public class ClientTickHandler{
     @SubscribeEvent
     public void tickEnd(TickEvent.ClientTickEvent event){
         if(event.phase == TickEvent.Phase.END) {
+            if(Minecraft.getMinecraft().thePlayer == null) {
+                for(IUpgradeRenderHandler handler : UpgradeRenderHandlerList.instance().upgradeRenderers) {
+                    handler.reset();
+                }
+            }
             TICKS++;
             ModuleRegulatorTube.hasTicked = false;
             ModuleRegulatorTube.inverted = false;

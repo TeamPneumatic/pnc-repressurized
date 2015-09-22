@@ -735,6 +735,7 @@ blockTracker.module.hydraulicraft=Hydraulicraft Power Blocks
 blockTracker.module.ic2=IC2 Power Blocks
 blockTracker.module.rf=RF Power Blocks
 blockTracker.module.thaumcraft=Thaumcraft Aspect Blocks
+blockTracker.module.peripheral=ComputerCraft Peripheral
 
 blockTracker.info.bcEnergy=BuildCraft Energy Block
 blockTracker.info.hydraulicraft=Hydraulicraft Power Block
