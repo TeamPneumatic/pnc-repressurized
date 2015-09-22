@@ -6,14 +6,11 @@ import java.util.List;
 import java.util.Map;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBucket;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.IIcon;
-import net.minecraftforge.fluids.BlockFluidClassic;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidRegistry;
@@ -29,34 +26,27 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class Fluids{
-    public static Fluid etchingAcid;
-    public static Fluid plastic;
-    public static Fluid oil;
-    public static Fluid lpg;
-    public static Fluid gasoline;
-    public static Fluid kerosene;
-    public static Fluid diesel;
-    public static Fluid lubricant;
+    public static final Fluid etchingAcid = new FluidPneumaticCraft("etchacid", false){
+        @Override
+        public int getColor(){
+            return getBlock().colorMultiplier(null, 0, 0, 0);
+        }
+    };
+    public static final Fluid plastic = new FluidPlastic("plastic");
+    public static final Fluid oil = new FluidPneumaticCraft("oil").setDensity(800).setViscosity(10000);
+    public static final Fluid lpg = new FluidPneumaticCraft("lpg");
+    public static final Fluid gasoline = new FluidPneumaticCraft("fuel");
+    public static final Fluid kerosene = new FluidPneumaticCraft("kerosene");
+    public static final Fluid diesel = new FluidPneumaticCraft("diesel");
+    public static final Fluid lubricant = new FluidPneumaticCraft("lubricant");
     public static List<Fluid> fluids = new ArrayList<Fluid>();
-    public static List<Boolean> nativeFluids = new ArrayList<Boolean>();
     public static Map<Block, Item> fluidBlockToBucketMap = new HashMap<Block, Item>();
-    public static Map<Fluid, Block> fluidToBlockMap = new HashMap<Fluid, Block>();//you could theoretically use fluid.getBlock(), but other mods like GregTech break it for some reason.
+    private static Map<String, Block> fluidToBlockMap = new HashMap<String, Block>();//you could theoretically use fluid.getBlock(), but other mods like GregTech break it for some reason.
 
     public static void initFluids(){
-        plastic = new FluidPlastic("plastic");
-        etchingAcid = new Fluid("etchacid"){
-            @Override
-            public int getColor(){
-                return fluidToBlockMap.get(this).colorMultiplier(null, 0, 0, 0);
-            }
-        };
 
-        oil = new Fluid("oil").setDensity(800).setViscosity(10000);
-        lpg = new Fluid("lpg");
-        gasoline = new Fluid("fuel");
-        kerosene = new Fluid("kerosene");
-        diesel = new Fluid("diesel");
-        lubricant = new Fluid("lubricant");
+        etchingAcid.setBlock(new BlockFluidEtchingAcid());
+        plastic.getBlock().setBlockName(plastic.getName() + "Block");
 
         fluids.add(plastic);
         fluids.add(etchingAcid);
@@ -68,15 +58,6 @@ public class Fluids{
         fluids.add(lubricant);
 
         initializeFluidBlocksAndBuckets();
-
-        plastic = FluidRegistry.getFluid("plastic");
-        etchingAcid = FluidRegistry.getFluid("etchacid");
-        lpg = FluidRegistry.getFluid("lpg");
-        gasoline = FluidRegistry.getFluid("fuel");
-        kerosene = FluidRegistry.getFluid("kerosene");
-        diesel = FluidRegistry.getFluid("diesel");
-        oil = FluidRegistry.getFluid("oil");
-        lubricant = FluidRegistry.getFluid("lubricant");
 
         PneumaticRegistry.getInstance().registerFuel(oil, 150000);
         PneumaticRegistry.getInstance().registerFuel(diesel, 700000);
@@ -92,44 +73,26 @@ public class Fluids{
 
     }
 
-    public static Item getBucket(Fluid fluid){
-        return fluidBlockToBucketMap.get(fluidToBlockMap.get(fluid));
+    public static boolean areFluidsEqual(Fluid fluid1, Fluid fluid2){
+        if(fluid1 == null && fluid2 == null) return true;
+        if(fluid1 == null != (fluid2 == null)) return false;
+        return fluid1.getName().equals(fluid2.getName());
     }
 
-    private static Block getBlockForFluid(final Fluid fluid){
-        if(fluid == etchingAcid) {
-            return new BlockFluidEtchingAcid().setBlockName("etchingAcid");
-        }
-        return new BlockFluidClassic(fluid, Material.water){
-            private IIcon flowingIcon, stillIcon;
+    public static Item getBucket(Fluid fluid){
+        return fluidBlockToBucketMap.get(getBlock(fluid));
+    }
 
-            @Override
-            public void registerBlockIcons(IIconRegister register){
-                flowingIcon = register.registerIcon("pneumaticcraft:" + fluid.getName() + "_flow");
-                stillIcon = register.registerIcon("pneumaticcraft:" + fluid.getName() + "_still");
-            }
-
-            @Override
-            @SideOnly(Side.CLIENT)
-            public IIcon getIcon(int side, int meta){
-                return side != 0 && side != 1 ? flowingIcon : stillIcon;
-            }
-        }.setBlockName(fluid.getName() + (fluid == plastic ? "Block" : ""));
+    public static Block getBlock(Fluid fluid){
+        return fluidToBlockMap.get(fluid.getName());
     }
 
     private static void initializeFluidBlocksAndBuckets(){
-        for(Fluid fluid : fluids) {
-            boolean nativeFluid = FluidRegistry.getFluid(fluid.getName()) == null;
-            nativeFluids.add(nativeFluid);
-            FluidRegistry.registerFluid(fluid);
-            fluid = FluidRegistry.getFluid(fluid.getName());
+        for(final Fluid fluid : fluids) {
+            //FluidRegistry.registerFluid(fluid); (The constructor of FluidPneumaticCrafts registers the fluid.
             Block fluidBlock = fluid.getBlock();
-            if(fluidBlock == null) {
-                fluidBlock = getBlockForFluid(fluid);
-                Blockss.registerBlock(fluidBlock);
-                fluid.setBlock(fluidBlock);
-            }
-            fluidToBlockMap.put(fluid, fluidBlock);
+            Blockss.registerBlock(fluidBlock);
+            fluidToBlockMap.put(fluid.getName(), fluidBlock);
 
             Item fluidBucket = new ItemBucket(fluidBlock){
                 @Override
@@ -137,13 +100,19 @@ public class Fluids{
                     super.addInformation(p_77624_1_, p_77624_2_, p_77624_3_, p_77624_4_);
                     ItemPneumatic.addTooltip(p_77624_1_, p_77624_2_, p_77624_3_);
                 };
+
+                @Override
+                @SideOnly(Side.CLIENT)
+                public void getSubItems(Item item, CreativeTabs creativeTab, List items){
+                    if(FluidRegistry.isFluidDefault(fluid)) super.getSubItems(item, creativeTab, items);
+                }
             }.setContainerItem(Items.bucket).setCreativeTab(PneumaticCraft.tabPneumaticCraft).setTextureName(Textures.ICON_LOCATION + fluid.getName() + "Bucket").setUnlocalizedName(fluid.getName() + "Bucket");
 
             Itemss.registerItem(fluidBucket);
 
             fluidBlockToBucketMap.put(fluidBlock, fluidBucket);
 
-            FluidContainerRegistry.registerFluidContainer(new FluidStack(fluid, 1000), new ItemStack(fluidBucket), new ItemStack(Items.bucket));
+            if(FluidRegistry.isFluidDefault(fluid)) FluidContainerRegistry.registerFluidContainer(new FluidStack(fluid, 1000), new ItemStack(fluidBucket), new ItemStack(Items.bucket));
         }
     }
 }

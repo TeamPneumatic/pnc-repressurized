@@ -10,6 +10,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.fluids.FluidRegistry;
 import pneumaticCraft.common.fluid.Fluids;
 import pneumaticCraft.lib.Textures;
 import pneumaticCraft.lib.TileEntityConstants;
@@ -60,7 +61,7 @@ public class ItemEmptyPCB extends ItemNonDespawning{
     public boolean onEntityItemUpdate(EntityItem entityItem){
         super.onEntityItemUpdate(entityItem);
         ItemStack stack = entityItem.getEntityItem();
-        if(entityItem.worldObj.getBlock((int)Math.floor(entityItem.posX), (int)Math.floor(entityItem.posY), (int)Math.floor(entityItem.posZ)) == Fluids.fluidToBlockMap.get(Fluids.etchingAcid)) {
+        if(Fluids.areFluidsEqual(FluidRegistry.lookupFluidForBlock(entityItem.worldObj.getBlock((int)Math.floor(entityItem.posX), (int)Math.floor(entityItem.posY), (int)Math.floor(entityItem.posZ))), Fluids.etchingAcid)) {
             if(!stack.hasTagCompound()) {
                 stack.setTagCompound(new NBTTagCompound());
             }

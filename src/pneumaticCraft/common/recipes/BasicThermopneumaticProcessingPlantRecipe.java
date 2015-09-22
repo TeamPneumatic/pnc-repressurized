@@ -3,6 +3,7 @@ package pneumaticCraft.common.recipes;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 import pneumaticCraft.api.recipe.IThermopneumaticProcessingPlantRecipe;
+import pneumaticCraft.common.fluid.Fluids;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 
 public class BasicThermopneumaticProcessingPlantRecipe implements IThermopneumaticProcessingPlantRecipe{
@@ -25,7 +26,7 @@ public class BasicThermopneumaticProcessingPlantRecipe implements IThermopneumat
     public boolean isValidRecipe(FluidStack inputTank, ItemStack inputItem){
         if(inputLiquid != null) {
             if(inputTank == null) return false;
-            if(inputTank.getFluid() != inputLiquid.getFluid()) return false;
+            if(!Fluids.areFluidsEqual(inputTank.getFluid(), inputLiquid.getFluid())) return false;
             if(inputTank.amount < inputLiquid.amount) return false;
         }
         if(this.inputItem != null) {

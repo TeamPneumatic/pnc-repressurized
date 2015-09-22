@@ -19,16 +19,13 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
-import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
-import net.minecraftforge.fluids.Fluid;
 import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.api.item.IProgrammable;
 import pneumaticCraft.client.gui.IGuiDrone;
 import pneumaticCraft.common.DateEventHandler;
 import pneumaticCraft.common.block.tubes.ModuleRegulatorTube;
 import pneumaticCraft.common.config.Config;
-import pneumaticCraft.common.fluid.Fluids;
 import pneumaticCraft.common.item.ItemProgrammingPuzzle;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.progwidgets.IProgWidget;
@@ -88,26 +85,6 @@ public class ClientEventHandler{
             }
         }
         return map;
-    }
-
-    @SubscribeEvent
-    public void onTextureStitchEventPost(TextureStitchEvent.Post event){
-        for(int i = 0; i < Fluids.fluids.size(); i++) {
-            if(Fluids.nativeFluids.get(i)) {
-                Fluid fluid = Fluids.fluids.get(i);
-                fluid.setIcons(fluid.getBlock().getIcon(0, 0), fluid.getBlock().getIcon(1, 0));
-                //fluid.setIcons(event.map.registerIcon("pneumaticcraft:" + fluid.getName() + "_still"), event.map.registerIcon("pneumaticcraft:" + fluid.getName() + "_flow"));
-            }
-        }
-
-    }
-
-    @SubscribeEvent
-    public void onTextureStitchEventPre(TextureStitchEvent.Pre event){
-        if(event.map.getTextureType() == 0) {
-            Fluids.plastic.setIcons(event.map.registerIcon("pneumaticcraft:plastic_still"), event.map.registerIcon("pneumaticcraft:plastic_flow"));
-
-        }
     }
 
     @SubscribeEvent

@@ -17,7 +17,7 @@ public class NEIEtchingAcidManager extends NEISpecialCraftingManager{
 
     @Override
     public String getRecipeName(){
-        return StatCollector.translateToLocal(Fluids.fluidToBlockMap.get(Fluids.etchingAcid).getUnlocalizedName() + ".name");
+        return StatCollector.translateToLocal(Fluids.getBlock(Fluids.etchingAcid).getUnlocalizedName() + ".name");
     }
 
     @Override

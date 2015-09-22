@@ -6,6 +6,8 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
 import pneumaticCraft.api.PneumaticRegistry;
 import pneumaticCraft.client.CreativeTabPneumaticCraft;
 import pneumaticCraft.client.render.pneumaticArmor.UpgradeRenderHandlerList;
@@ -54,6 +56,7 @@ import cpw.mods.fml.common.event.FMLMissingMappingsEvent;
 import cpw.mods.fml.common.event.FMLMissingMappingsEvent.MissingMapping;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerStartedEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -186,5 +189,14 @@ public class PneumaticCraft{
                 return fuel != null && fuel.isItemEqual(fuelStack) ? fuelValue : 0;
             }
         });
+    }
+
+    @EventHandler
+    public void validateFluids(FMLServerStartedEvent event){
+        Fluid oil = FluidRegistry.getFluid(Fluids.oil.getName());
+        if(oil.getBlock() == null) {
+            String modName = FluidRegistry.getDefaultFluidName(oil).split(":")[0];
+            throw new IllegalStateException(String.format("Oil fluid does not have a block associated with it. The fluid is owned by %s. This could be fixed by creating the world with having this mod loaded after PneumaticCraft. This can be done by adding a injectedDependencies.json inside the config folder containing: [{\"modId\": \"%s\",\"deps\": [{\"type\":\"after\",\"target\":\"%s\"}]}]", modName, modName, Names.MOD_ID));
+        }
     }
 }

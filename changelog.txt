@@ -1,11 +1,6 @@
--RF Block Tracker now only tracks when able to connect a RF block (this prevents AE cables to be tracked).
--Added auto-complete for variables when inserting them in a Remote or Programmer GUI.
--Increased Drone performance.
--Added Undo+Redo button to the Programmer
+This version is marked beta because some things have changed to the way I register fluids. This could cause worlds to corrupt (though it's meant to prevent it). I'd love to hear feedback, but be careful nevertheless.
 
--Bugfix: When dragging a piece out of the panel of the Programmer, you sometimes affect the scrollbar.
--Bugfix: Drone Interface area showing doesn't update when more than 64 blocks away from the Drone Interface.
--Bugfix: Amadron Tablet orders items when clicking the scrollbar.
--Bugfix (on other mods' behalf): You can pump in any fluid with certain mods' fluid insertion methods into a Refinery which will treat it as Oil.
--Bugfix: Crash when interacting with a Logistics Frame which disappeared from the client.
--Bugfix: Crash on startup when having a mod that adds null items to Villager Trades (looking at you Fossils and Archeology).
+-Added shortcuts for the Undo and Redo actions.
+
+-Bugfix: Client crash when working with heat, mentioning FurnaceBehaviour.
+-Bugfix: Wrong usage of FluidRegistry.

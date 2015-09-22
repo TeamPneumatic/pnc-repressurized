@@ -6,13 +6,12 @@ import java.util.List;
 import net.minecraft.item.ItemDye;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.lib.PneumaticValues;
 
-public class FluidPlastic extends Fluid{
+public class FluidPlastic extends FluidPneumaticCraft{
 
     public FluidPlastic(String name){
         super(name);
@@ -43,7 +42,7 @@ public class FluidPlastic extends Fluid{
     }
 
     public static void addDye(FluidStack plastic, int dyeMetadata){
-        if(plastic.getFluid() != Fluids.plastic) throw new IllegalArgumentException("Given fluid stack isn't mixable! " + plastic);
+        if(!Fluids.areFluidsEqual(plastic.getFluid(), Fluids.plastic)) throw new IllegalArgumentException("Given fluid stack isn't mixable! " + plastic);
         int dyeColor = ItemDye.field_150922_c[dyeMetadata];
         int[] dyeColors = new int[]{dyeColor >> 16, dyeColor >> 8 & 255, dyeColor & 255};
         int[] plasticColor = getColor3(plastic);
@@ -68,7 +67,7 @@ public class FluidPlastic extends Fluid{
         NBTTagCompound newTag = new NBTTagCompound();
         newTag.setInteger("color", (newColor[0] << 16) + (newColor[1] << 8) + newColor[2]);
         // newTag.setInteger("temperature", (int)(ratio * getTemperatureS(plastic) + (1 - ratio) * getTemperatureS(otherPlastic)));
-        return new FluidStack(Fluids.plastic.getID(), plastic.amount + otherPlastic.amount, newTag);
+        return new FluidStack(Fluids.plastic, plastic.amount + otherPlastic.amount, newTag);
     }
 
     public static int getPlasticMeta(FluidStack plastic){

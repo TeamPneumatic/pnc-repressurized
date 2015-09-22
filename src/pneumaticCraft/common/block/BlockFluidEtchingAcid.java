@@ -8,13 +8,12 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.fluids.BlockFluidClassic;
 import pneumaticCraft.common.DamageSourcePneumaticCraft;
 import pneumaticCraft.common.fluid.Fluids;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class BlockFluidEtchingAcid extends BlockFluidClassic{
+public class BlockFluidEtchingAcid extends BlockFluidPneumaticCraft{
 
     public BlockFluidEtchingAcid(){
         super(Fluids.etchingAcid, new MaterialLiquid(MapColor.waterColor){
@@ -23,6 +22,7 @@ public class BlockFluidEtchingAcid extends BlockFluidClassic{
                 return 1;
             }
         });
+        setBlockName("etchingAcid");
     }
 
     @Override

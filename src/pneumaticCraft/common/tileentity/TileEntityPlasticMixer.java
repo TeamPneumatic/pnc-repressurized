@@ -206,7 +206,7 @@ public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHand
 
     @Override
     public int fill(ForgeDirection from, FluidStack resource, boolean doFill){
-        if(resource == null || resource.getFluid() != Fluids.plastic) return 0;
+        if(resource == null || !Fluids.areFluidsEqual(resource.getFluid(), Fluids.plastic)) return 0;
         int fillingAmount = Math.min(tank.getCapacity() - tank.getFluidAmount(), resource.amount);
         if(doFill && fillingAmount > 0) {
             tank.setFluid(FluidPlastic.mixFluid(tank.getFluid(), new FluidStack(resource, fillingAmount)));
@@ -217,7 +217,7 @@ public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHand
 
     @Override
     public FluidStack drain(ForgeDirection from, FluidStack resource, boolean doDrain){
-        if(resource == null || resource.getFluid() == Fluids.plastic) return drain(from, PneumaticValues.MAX_DRAIN, doDrain);
+        if(resource == null || Fluids.areFluidsEqual(resource.getFluid(), Fluids.plastic)) return drain(from, PneumaticValues.MAX_DRAIN, doDrain);
         else return null;
     }
 
@@ -230,7 +230,7 @@ public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHand
 
     @Override
     public boolean canFill(ForgeDirection from, Fluid fluid){
-        return fluid == Fluids.plastic;
+        return Fluids.areFluidsEqual(fluid, Fluids.plastic);
     }
 
     @Override

@@ -44,7 +44,7 @@ apply plugin: 'forge'
 project.ext {
 	massive = "1"
     major = "11"
-    minor = "7"
+    minor = "8"
     mcVersion = "1.7.10"
 }
 
@@ -105,7 +105,7 @@ curse {
     apiKey = System.getenv("minemaarten_curse")
     projectId = "224125" // my project url is http://minecraft.curseforge.com/mc-mods/59652-seretroomsmod/
     changelog = new File('changelog.txt').text
-    releaseType = "release"
+    releaseType = "beta"
 	relatedProject 'in-game-wiki-mod': 'optionalLibrary'
 
     // the default obfuscated jar is uploaded by default

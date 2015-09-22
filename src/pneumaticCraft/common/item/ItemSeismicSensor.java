@@ -30,7 +30,7 @@ public class ItemSeismicSensor extends ItemPneumatic{
                 player.addChatComponentMessage(new ChatComponentTranslation("message.seismicSensor.foundOil"));
                 while(testingY > 0) {
                     testingY--;
-                    if(world.getBlock(x, testingY, z) == Fluids.fluidToBlockMap.get(Fluids.oil)) {
+                    if(world.getBlock(x, testingY, z) == Fluids.getBlock(Fluids.oil)) {
                         Set<ChunkPosition> oilPositions = new HashSet<ChunkPosition>();
                         Stack<ChunkPosition> pendingPositions = new Stack<ChunkPosition>();
                         pendingPositions.add(new ChunkPosition(x, testingY, z));
