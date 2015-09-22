@@ -20,6 +20,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
+import net.minecraft.util.Vec3;
 
 import org.apache.commons.lang3.text.WordUtils;
 import org.lwjgl.input.Keyboard;
@@ -574,8 +575,25 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
                                 if(w instanceof ILabel) {
                                     String label = ((ILabel)w).getLabel();
                                     if(label != null && jumpLocation.equals(label)) {
-                                        GL11.glVertex3d(guiLeft + widget.getX() + widget.getWidth() / 4, guiTop + widget.getY() + widget.getHeight() / 4, zLevel);
-                                        GL11.glVertex3d(guiLeft + w.getX() + w.getWidth() / 4, guiTop + w.getY() + w.getHeight() / 4, zLevel);
+                                        int x1 = widget.getX() + widget.getWidth() / 4;
+                                        int y1 = widget.getY() + widget.getHeight() / 4;
+                                        int x2 = w.getX() + w.getWidth() / 4;
+                                        int y2 = w.getY() + w.getHeight() / 4;
+                                        double midX = (x2 + x1) / 2D;
+                                        double midY = (y2 + y1) / 2D;
+                                        GL11.glVertex3d(guiLeft + x1, guiTop + y1, zLevel);
+                                        GL11.glVertex3d(guiLeft + x2, guiTop + y2, zLevel);
+                                        Vec3 arrowVec = Vec3.createVectorHelper(x1 - x2, y1 - y2, 0).normalize();
+                                        float arrowAngle = (float)Math.toRadians(30);
+                                        float arrowSize = 5;
+                                        arrowVec.xCoord *= arrowSize;
+                                        arrowVec.yCoord *= arrowSize;
+                                        arrowVec.rotateAroundZ(arrowAngle);
+                                        GL11.glVertex3d(guiLeft + midX, guiTop + midY, zLevel);
+                                        GL11.glVertex3d(guiLeft + midX + arrowVec.xCoord, guiTop + midY + arrowVec.yCoord, zLevel);
+                                        arrowVec.rotateAroundZ(-2 * arrowAngle);
+                                        GL11.glVertex3d(guiLeft + midX, guiTop + midY, zLevel);
+                                        GL11.glVertex3d(guiLeft + midX + arrowVec.xCoord, guiTop + midY + arrowVec.yCoord, zLevel);
                                         break;
                                     }
                                 }
