@@ -23,6 +23,7 @@ import pneumaticCraft.common.fluid.FluidPlastic;
 import pneumaticCraft.common.fluid.Fluids;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.network.GuiSynced;
+import pneumaticCraft.common.thirdparty.computercraft.LuaMethod;
 import pneumaticCraft.lib.PneumaticValues;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -402,5 +403,26 @@ public class TileEntityPlasticMixer extends TileEntityBase implements IFluidHand
     @Override
     public boolean redstoneAllows(){
         return redstoneMode == 3 ? true : super.redstoneAllows();
+    }
+
+    @Override
+    protected void addLuaMethods(){
+        super.addLuaMethods();
+        luaMethods.add(new LuaMethod("selectColor"){
+            @Override
+            public Object[] call(Object[] args) throws Exception{
+                if(args.length == 1) {
+                    int selection = ((Double)args[0]).intValue();
+                    if(selection >= 0 && selection <= 16) {
+                        selectedPlastic = selection - 1;
+                        return null;
+                    } else {
+                        throw new IllegalArgumentException("selectColor method only accepts a value ranging from 0-16. The value passed was: " + selection);
+                    }
+                } else {
+                    throw new IllegalArgumentException("selectColor method requires 1 argument (int color index, with 0 being no color");
+                }
+            }
+        });
     }
 }
