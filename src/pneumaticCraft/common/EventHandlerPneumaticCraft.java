@@ -78,7 +78,6 @@ import pneumaticCraft.common.remote.GlobalVariableManager;
 import pneumaticCraft.common.thirdparty.ModInteractionUtilImplementation;
 import pneumaticCraft.common.tileentity.TileEntityProgrammer;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
-import pneumaticCraft.common.worldgen.OilTracker;
 import pneumaticCraft.lib.TileEntityConstants;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.eventhandler.Event.Result;
@@ -294,7 +293,6 @@ public class EventHandlerPneumaticCraft{
                 GlobalVariableManager.overworld = event.world;
                 event.world.loadItemData(GlobalVariableManager.class, GlobalVariableManager.DATA_KEY);
             }
-            event.world.loadItemData(OilTracker.class, OilTracker.DATA_KEY);
         }
     }
 

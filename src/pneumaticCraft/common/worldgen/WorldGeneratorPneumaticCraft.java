@@ -41,12 +41,7 @@ public class WorldGeneratorPneumaticCraft implements IWorldGenerator{
     public void generateSurface(World world, Random rand, int chunkX, int chunkZ){
         if(rand.nextDouble() < Config.oilGenerationChance / 100D) {
             int y = rand.nextInt(rand.nextInt(128) + 8);
-            if(new WorldGenLakes(FluidRegistry.getFluid(Fluids.oil.getName()).getBlock()).generate(world, rand, chunkX + 8, y, chunkZ + 8)) {
-                OilTracker.setContainingReserves(world, chunkX >> 4, chunkZ >> 4, true);
-            }
-            //new WorldGenLakes(Blockss.etchingAcid).generate(world, random, chunkX * 16 + distance, y, chunkZ * 16);
-            // new WorldGenLakes(Blockss.etchingAcid).generate(world, random, chunkX * 16 + distance, y, chunkZ * 16 + distance);
-            //new WorldGenLakes(Blockss.etchingAcid).generate(world, random, chunkX * 16, y, chunkZ * 16 + distance);
+            new WorldGenLakes(FluidRegistry.getFluid(Fluids.oil.getName()).getBlock()).generate(world, rand, chunkX + 8, y, chunkZ + 8);
         }
 
         for(int j = 0; j < 16; j++) {
