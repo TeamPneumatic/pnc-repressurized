@@ -289,7 +289,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
                     targetY = yCoord + 0.6;
                     targetZ = zCoord + 0.5;
                 }
-                if(worldObj != null) {
+                if(worldObj != null && !worldObj.isRemote) {
                     aiManager = new DroneAIManager(this);
                 }
             }
