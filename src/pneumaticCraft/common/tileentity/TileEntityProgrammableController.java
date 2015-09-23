@@ -489,7 +489,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
 
     @Override
     public IInventory getInventory(){
-        return fakePlayer.inventory;
+        return getFakePlayer().inventory;
     }
 
     @Override

@@ -1,6 +1,9 @@
-This version is marked beta because some things have changed to the way I register fluids. This could cause worlds to corrupt (though it's meant to prevent it). I'd love to hear feedback, but be careful nevertheless.
+This version is still marked beta because some things have changed to the way I register fluids last version. This could cause worlds to corrupt (though it's meant to prevent it). I'd love to hear feedback, but be careful nevertheless.
 
--Added shortcuts for the Undo and Redo actions.
+-Seismic Sensor now also works for other mods' Oil spawns (like Buildcraft's). Closes #691
+-Added computer support for the Plastic Mixer. Closes #690
+-Added arrows to the 'show flow' render of the Programmer. Closes #683
+-Added 'Max Min' operator to the Coordinate Operator piece. Closes #677
 
--Bugfix: Client crash when working with heat, mentioning FurnaceBehaviour.
--Bugfix: Wrong usage of FluidRegistry.
+-Bugfix: Pneumatic Helmet remembers old tracked entities, even when relogging. Closes #688
+-Bugfix: Crash with Programmable Controller.
