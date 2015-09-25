@@ -146,7 +146,7 @@ public class EntityPathNavigateDrone extends PathNavigate implements IPathNaviga
         }
     }
 
-    private void teleport(){
+    public void teleport(){
 
         Random rand = pathfindingEntity.getRNG();
         double width = pathfindingEntity.width;

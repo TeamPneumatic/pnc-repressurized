@@ -7,6 +7,7 @@ public class DroneMoveHelper extends EntityMoveHelper{
     private final EntityDroneBase entity;
     private double x, y, z, speed;
     private int timeoutTimer;
+    private int timeoutCounter;//counts the times the drone timed out.
 
     public DroneMoveHelper(EntityDroneBase par1EntityLiving){
         super(par1EntityLiving);
@@ -25,6 +26,8 @@ public class DroneMoveHelper extends EntityMoveHelper{
             this.y = newY;
             this.z = z;
             timeoutTimer = 0;
+        } else {
+            timeoutCounter = 0;
         }
         this.speed = speed;
     }
@@ -39,6 +42,10 @@ public class DroneMoveHelper extends EntityMoveHelper{
             if(timeoutTimer++ > 40) {
                 entity.getNavigator().clearPathEntity();
                 timeoutTimer = 0;
+                timeoutCounter++;
+                if(timeoutCounter > 1 && entity.hasPath()) { //Teleport when after re-acquiring a new path, the drone still doesn't move.
+                    ((EntityPathNavigateDrone)entity.getNavigator()).teleport();
+                }
             }
         }
     }
