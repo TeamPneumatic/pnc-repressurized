@@ -45,11 +45,8 @@ public class ItemGPSTool extends ItemPneumatic{
     @Override
     public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player){
         if(world.isRemote) {
-            if(getGPSLocation(stack) != null) {
-                FMLCommonHandler.instance().showGuiScreen(new GuiGPSTool(getGPSLocation(stack), getVariable(stack)));
-            } else {
-                player.addChatComponentMessage(new ChatComponentTranslation(EnumChatFormatting.GREEN + "[GPS Tool] First you'll have to select a coordinate before you can alter it."));
-            }
+            ChunkPosition pos = getGPSLocation(stack);
+            FMLCommonHandler.instance().showGuiScreen(new GuiGPSTool(pos != null ? pos : new ChunkPosition(0, 0, 0), getVariable(stack)));
         }
         return stack;
     }
