@@ -191,12 +191,16 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
 
         undoButton = new GuiButtonSpecial(9, guiLeft - 24, guiTop + 2, 20, 20, "");
         redoButton = new GuiButtonSpecial(10, guiLeft - 24, guiTop + 23, 20, 20, "");
+        GuiButtonSpecial clearAllButton = new GuiButtonSpecial(11, guiLeft - 24, guiTop + 65, 20, 20, "");
         undoButton.setRenderedIcon(Textures.GUI_UNDO_ICON_LOCATION);
         redoButton.setRenderedIcon(Textures.GUI_REDO_ICON_LOCATION);
+        clearAllButton.setRenderedIcon(Textures.GUI_DELETE_ICON_LOCATION);
         undoButton.setTooltipText(I18n.format("gui.programmer.button.undoButton.tooltip"));
         redoButton.setTooltipText(I18n.format("gui.programmer.button.redoButton.tooltip"));
+        clearAllButton.setTooltipText(I18n.format("gui.programmer.button.clearAllButton.tooltip"));
         buttonList.add(undoButton);
         buttonList.add(redoButton);
+        buttonList.add(clearAllButton);
 
         scaleScroll = new WidgetVerticalScrollbar(xStart + 302, yStart + 40, 129).setStates(9).setCurrentState(te.zoomState).setListening(true);
         addWidget(scaleScroll);
@@ -801,6 +805,9 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
                 te.writeProgWidgetsToNBT(mainTag);
                 FMLClientHandler.instance().showGuiScreen(pastebinGui = new GuiPastebin(this, mainTag));
                 break;
+            case 11:
+                te.progWidgets.clear();
+                NetworkHandler.sendToServer(new PacketProgrammerUpdate(te));
         }
 
         NetworkHandler.sendToServer(new PacketGuiButton(button.id));

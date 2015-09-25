@@ -1,9 +1,10 @@
-This version is still marked beta because some things have changed to the way I register fluids last version. This could cause worlds to corrupt (though it's meant to prevent it). I'd love to hear feedback, but be careful nevertheless.
+-Added Kerosene Lamp.
+-Added warning to variable widgets when that variable was never set.
+-Added error when multiple Start pieces are placed.
+-GPS Tool GUI can now be opened even when no position is set yet.
+-Added 'Clear all' button to the Programmer.
+-Added way to save to and clipboard and load from clipboard option to the Pastebin GUI.
 
--Seismic Sensor now also works for other mods' Oil spawns (like Buildcraft's). Closes #691
--Added computer support for the Plastic Mixer. Closes #690
--Added arrows to the 'show flow' render of the Programmer. Closes #683
--Added 'Max Min' operator to the Coordinate Operator piece. Closes #677
-
--Bugfix: Pneumatic Helmet remembers old tracked entities, even when relogging. Closes #688
--Bugfix: Crash with Programmable Controller.
+-Bugfix: SMP crash with Mekanism.
+-Bugfix: You can't sneak right click Charging Stations nor Elevator Callers to take them off.
+-Bugfix: Drones getting stuck.

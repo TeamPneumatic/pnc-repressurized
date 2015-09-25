@@ -82,6 +82,15 @@ public class GuiPastebin extends GuiPneumaticScreenBase{
         GuiButtonSpecial getButton = new GuiButtonSpecial(2, guiLeft + 31, guiTop + 167, 120, 20, I18n.format("gui.pastebin.button.get"));
         addWidget(getButton);
 
+        GuiButtonSpecial putInClipBoard = new GuiButtonSpecial(4, guiLeft + 8, guiTop + 78, 20, 20, "");
+        putInClipBoard.setRenderedIcon(Textures.GUI_COPY_ICON_LOCATION);
+        putInClipBoard.setTooltipText(I18n.format("gui.pastebin.button.copyToClipboard"));
+        addWidget(putInClipBoard);
+        GuiButtonSpecial retrieveFromClipboard = new GuiButtonSpecial(5, guiLeft + 8, guiTop + 167, 20, 20, "");
+        retrieveFromClipboard.setRenderedIcon(Textures.GUI_PASTE_ICON_LOCATION);
+        retrieveFromClipboard.setTooltipText(I18n.format("gui.pastebin.button.loadFromClipboard"));
+        addWidget(retrieveFromClipboard);
+
         addLabel(I18n.format("gui.pastebin.pastebinLink"), guiLeft + 10, guiTop + 120);
 
     }
@@ -100,12 +109,7 @@ public class GuiPastebin extends GuiPneumaticScreenBase{
                 case GETTING:
                     pastebinText = PastebinHandler.getHandler().contents;
                     if(pastebinText != null) {
-                        try {
-                            outputTag = new JsonToNBTConverter(pastebinText).convert();
-                        } catch(Exception e) {
-                            e.printStackTrace();
-                            errorMessage = I18n.format("gui.pastebin.invalidFormattedPastebin");
-                        }
+                        readFromString(pastebinText);
                     } else {
                         errorMessage = I18n.format("gui.pastebin.invalidPastebin");
                     }
@@ -130,6 +134,15 @@ public class GuiPastebin extends GuiPneumaticScreenBase{
                     initGui();
             }
             state = EnumState.NONE;
+        }
+    }
+
+    private void readFromString(String string){
+        try {
+            outputTag = new JsonToNBTConverter(string).convert();
+        } catch(Exception e) {
+            e.printStackTrace();
+            errorMessage = I18n.format("gui.pastebin.invalidFormattedPastebin");
         }
     }
 
@@ -172,6 +185,12 @@ public class GuiPastebin extends GuiPneumaticScreenBase{
         } else if(widget.getID() == 3) {
             PastebinHandler.logout();
             state = EnumState.LOGOUT;
+        } else if(widget.getID() == 4) {
+            GuiScreen.setClipboardString(pastingString);
+            errorMessage = I18n.format("gui.pastebin.clipboardSetToContents");
+        } else if(widget.getID() == 5) {
+            errorMessage = I18n.format("gui.pastebin.retrievedFromClipboard");
+            readFromString(GuiScreen.getClipboardString());
         }
     }
 
