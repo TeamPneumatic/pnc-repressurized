@@ -32,7 +32,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityKeroseneLamp extends TileEntityBase implements IFluidHandler, IRedstoneControlled,
         ISidedInventory{
-    private final Set<ChunkPosition> managingLights = new HashSet<>();
+    private final Set<ChunkPosition> managingLights = new HashSet<ChunkPosition>();
     @DescSynced
     private boolean isOn;
     @GuiSynced
