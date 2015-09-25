@@ -6,6 +6,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.IBlockAccess;
@@ -107,7 +108,7 @@ public class BlockChargingStation extends BlockPneumaticCraftModeled{
         if(!world.isRemote && player.isSneaking()) {
             TileEntityChargingStation station = (TileEntityChargingStation)world.getTileEntity(x, y, z);
             station.setCamoStack(player.getCurrentEquippedItem());
-            return true;
+            return player.getCurrentEquippedItem() != null && player.getCurrentEquippedItem().getItem() instanceof ItemBlock;
         } else return super.onBlockActivated(world, x, y, z, player, par6, par7, par8, par9);
     }
 

@@ -3,6 +3,7 @@ package pneumaticCraft.common.block;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MovingObjectPosition;
@@ -36,6 +37,7 @@ public class BlockElevatorCaller extends BlockPneumaticCraft{
                 setSurroundingElevators(world, x, y, z, mop.subHit);
             } else if(player.isSneaking()) {
                 te.camoStack = player.getCurrentEquippedItem();
+                return te.camoStack != null && te.camoStack.getItem() instanceof ItemBlock;
             }
         }
         return te.getRotation().getOpposite().ordinal() == side;
