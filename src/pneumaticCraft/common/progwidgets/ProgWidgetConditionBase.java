@@ -24,8 +24,8 @@ public abstract class ProgWidgetConditionBase extends ProgWidget implements IJum
     }
 
     @Override
-    public void addErrors(List<String> curInfo){
-        super.addErrors(curInfo);
+    public void addErrors(List<String> curInfo, List<IProgWidget> widgets){
+        super.addErrors(curInfo, widgets);
         IProgWidget widget = getConnectedParameters()[getParameters().length - 1];
         IProgWidget widget2 = getConnectedParameters()[getParameters().length * 2 - 1];
         if(widget == null && widget2 == null) {

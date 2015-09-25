@@ -91,8 +91,8 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     }
 
     @Override
-    public void addErrors(List<String> curInfo){
-        super.addErrors(curInfo);
+    public void addErrors(List<String> curInfo, List<IProgWidget> widgets){
+        super.addErrors(curInfo, widgets);
         if(coord1Variable.equals("") && coord2Variable.equals("") && x1 == 0 && y1 == 0 && z1 == 0 && x2 == 0 && y2 == 0 && z2 == 0) {
             curInfo.add("gui.progWidget.area.error.noArea");
         }

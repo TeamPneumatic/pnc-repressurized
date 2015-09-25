@@ -9,8 +9,8 @@ import pneumaticCraft.lib.Textures;
 public class ProgWidgetLabel extends ProgWidget implements ILabel{
 
     @Override
-    public void addErrors(List<String> curInfo){
-        super.addErrors(curInfo);
+    public void addErrors(List<String> curInfo, List<IProgWidget> widgets){
+        super.addErrors(curInfo, widgets);
         if(getConnectedParameters()[0] == null) curInfo.add("gui.progWidget.label.error.noLabel");
     }
 

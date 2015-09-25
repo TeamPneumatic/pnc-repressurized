@@ -28,9 +28,9 @@ public interface IProgWidget{
 
     public void getTooltip(List<String> curTooltip);
 
-    public void addWarnings(List<String> curInfo);
+    public void addWarnings(List<String> curInfo, List<IProgWidget> widgets);
 
-    public void addErrors(List<String> curInfo);
+    public void addErrors(List<String> curInfo, List<IProgWidget> widgets);
 
     public void renderExtraInfo();
 

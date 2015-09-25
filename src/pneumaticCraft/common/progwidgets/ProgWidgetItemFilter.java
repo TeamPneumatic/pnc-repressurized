@@ -37,8 +37,8 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget{
     private static RenderItem itemRender;
 
     @Override
-    public void addErrors(List<String> curInfo){
-        super.addErrors(curInfo);
+    public void addErrors(List<String> curInfo, List<IProgWidget> widgets){
+        super.addErrors(curInfo, widgets);
         if(variable.equals("") && filter == null) {
             curInfo.add("gui.progWidget.itemFilter.error.noFilter");
         }

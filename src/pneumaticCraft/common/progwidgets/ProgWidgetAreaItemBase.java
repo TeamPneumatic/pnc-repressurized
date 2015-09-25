@@ -48,8 +48,8 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
     }
 
     @Override
-    public void addErrors(List<String> curInfo){
-        super.addErrors(curInfo);
+    public void addErrors(List<String> curInfo, List<IProgWidget> widgets){
+        super.addErrors(curInfo, widgets);
         if(getConnectedParameters()[0] == null) {
             curInfo.add("gui.progWidget.area.error.noArea");
         }

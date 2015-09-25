@@ -19,8 +19,8 @@ public class ProgWidgetItemCondition extends ProgWidgetConditionBase{
     }
 
     @Override
-    public void addErrors(List<String> curInfo){
-        super.addErrors(curInfo);
+    public void addErrors(List<String> curInfo, List<IProgWidget> widgets){
+        super.addErrors(curInfo, widgets);
         if(getConnectedParameters()[0] == null && getConnectedParameters()[3] == null) {
             curInfo.add("gui.progWidget.conditionItem.error.noCheckingItem");
         }

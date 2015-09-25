@@ -254,7 +254,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
                         widget.getTooltip(tooltip);
 
                         List<String> errors = new ArrayList<String>();
-                        widget.addErrors(errors);
+                        widget.addErrors(errors, te.progWidgets);
                         if(errors.size() > 0) {
                             tooltip.add(EnumChatFormatting.RED + I18n.format("gui.programmer.errors"));
                             for(String s : errors) {
@@ -266,7 +266,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
                         }
 
                         List<String> warnings = new ArrayList<String>();
-                        widget.addWarnings(warnings);
+                        widget.addWarnings(warnings, te.progWidgets);
                         if(warnings.size() > 0) {
                             tooltip.add(EnumChatFormatting.YELLOW + I18n.format("gui.programmer.warnings"));
                             for(String s : warnings) {
@@ -418,12 +418,12 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
 
         for(IProgWidget widget : te.progWidgets) {
             List<String> errors = new ArrayList<String>();
-            widget.addErrors(errors);
+            widget.addErrors(errors, te.progWidgets);
             if(errors.size() > 0) {
                 drawBorder(widget, 0xFFFF0000);
             } else {
                 List<String> warnings = new ArrayList<String>();
-                widget.addWarnings(warnings);
+                widget.addWarnings(warnings, te.progWidgets);
                 if(warnings.size() > 0) {
                     drawBorder(widget, 0xFFFFFF00);
                 }
@@ -863,8 +863,8 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         List<String> errors = new ArrayList<String>();
         List<String> warnings = new ArrayList<String>();
         for(IProgWidget w : te.progWidgets) {
-            w.addErrors(errors);
-            w.addWarnings(warnings);
+            w.addErrors(errors, te.progWidgets);
+            w.addWarnings(warnings, te.progWidgets);
         }
 
         boolean isDeviceInserted = programmedItem != null;

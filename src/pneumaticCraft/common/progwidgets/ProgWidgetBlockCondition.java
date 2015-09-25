@@ -94,8 +94,8 @@ public class ProgWidgetBlockCondition extends ProgWidgetCondition{
     }
 
     @Override
-    public void addErrors(List<String> curInfo){
-        super.addErrors(curInfo);
+    public void addErrors(List<String> curInfo, List<IProgWidget> widgets){
+        super.addErrors(curInfo, widgets);
         if(checkingForAir && (getConnectedParameters()[1] != null || getConnectedParameters()[getParameters().length * 2 - 2] != null)) {
             curInfo.add("gui.progWidget.conditionBlock.selectedAirAndItemFilter");
         }

@@ -1,7 +1,9 @@
 package pneumaticCraft.common.progwidgets;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -13,6 +15,7 @@ import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.StatCollector;
 
 import org.apache.commons.lang3.text.WordUtils;
 import org.lwjgl.opengl.GL11;
@@ -67,10 +70,32 @@ public abstract class ProgWidget implements IProgWidget{
     }
 
     @Override
-    public void addWarnings(List<String> curInfo){}
+    public void addWarnings(List<String> curInfo, List<IProgWidget> widgets){
+        if(this instanceof IVariableWidget) {
+            Set<String> variables = new HashSet<String>();
+            ((IVariableWidget)this).addVariables(variables);
+            for(String variable : variables) {
+                if(!variable.equals("") && !variable.startsWith("#") && !variable.startsWith("$") && !isVariableSetAnywhere(widgets, variable)) {
+                    curInfo.add(StatCollector.translateToLocalFormatted("gui.progWidget.general.warning.variableNeverSet", variable));
+                }
+            }
+        }
+    }
+
+    private boolean isVariableSetAnywhere(List<IProgWidget> widgets, String variable){
+        if(variable.equals("")) return true;
+        for(IProgWidget widget : widgets) {
+            if(widget instanceof ProgWidgetCoordinateOperator) {
+                if(((ProgWidgetCoordinateOperator)widget).getVariable().equals(variable)) return true;
+            } else if(widget instanceof ProgWidgetItemAssign) {
+                if(((ProgWidgetItemAssign)widget).getVariable().equals(variable)) return true;
+            }
+        }
+        return false;
+    }
 
     @Override
-    public void addErrors(List<String> curInfo){
+    public void addErrors(List<String> curInfo, List<IProgWidget> widgets){
         if(!hasStepInput() && hasStepOutput() && outputStepConnection == null) {
             curInfo.add("gui.progWidget.general.error.noPieceConnected");
         }

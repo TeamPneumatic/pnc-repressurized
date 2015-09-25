@@ -36,8 +36,8 @@ public class ProgWidgetCoordinateCondition extends ProgWidgetConditionBase{
     }
 
     @Override
-    public void addErrors(List<String> curInfo){
-        super.addErrors(curInfo);
+    public void addErrors(List<String> curInfo, List<IProgWidget> widgets){
+        super.addErrors(curInfo, widgets);
         if(!checkingAxis[0] && !checkingAxis[1] && !checkingAxis[2]) curInfo.add("gui.progWidget.conditionCoordinate.error.noAxisSelected");
     }
 

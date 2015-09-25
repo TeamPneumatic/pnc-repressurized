@@ -20,8 +20,8 @@ public class ProgWidgetLiquidFilter extends ProgWidget{
     private Fluid fluid;
 
     @Override
-    public void addErrors(List<String> curInfo){
-        super.addErrors(curInfo);
+    public void addErrors(List<String> curInfo, List<IProgWidget> widgets){
+        super.addErrors(curInfo, widgets);
         if(fluid == null) curInfo.add("gui.progWidget.liquidFilter.error.noLiquid");
     }
 

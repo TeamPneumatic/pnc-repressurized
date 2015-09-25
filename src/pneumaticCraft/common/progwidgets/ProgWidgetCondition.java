@@ -29,8 +29,8 @@ public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implem
     }
 
     @Override
-    public void addErrors(List<String> curInfo){
-        super.addErrors(curInfo);
+    public void addErrors(List<String> curInfo, List<IProgWidget> widgets){
+        super.addErrors(curInfo, widgets);
         if(getConnectedParameters()[getParameters().length - 1] == null && getConnectedParameters()[getParameters().length * 2 - 1] == null) {
             curInfo.add("gui.progWidget.condition.error.noFlowControl");
         }

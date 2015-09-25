@@ -16,8 +16,8 @@ public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase imp
     private int count = 1;
 
     @Override
-    public void addErrors(List<String> curInfo){
-        super.addErrors(curInfo);
+    public void addErrors(List<String> curInfo, List<IProgWidget> widgets){
+        super.addErrors(curInfo, widgets);
 
         boolean sideActive = false;
         for(boolean bool : accessingSides) {

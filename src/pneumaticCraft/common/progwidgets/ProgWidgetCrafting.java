@@ -35,8 +35,8 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
     private int count;
 
     @Override
-    public void addErrors(List<String> curInfo){
-        super.addErrors(curInfo);
+    public void addErrors(List<String> curInfo, List<IProgWidget> widgets){
+        super.addErrors(curInfo, widgets);
         boolean usingVariables = false;
         for(int y = 0; y < 3; y++) {
             ProgWidgetItemFilter itemFilter = (ProgWidgetItemFilter)getConnectedParameters()[y];

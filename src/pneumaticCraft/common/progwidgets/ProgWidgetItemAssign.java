@@ -55,8 +55,8 @@ public class ProgWidgetItemAssign extends ProgWidget implements IVariableWidget{
     }
 
     @Override
-    public void addErrors(List<String> curInfo){
-        super.addErrors(curInfo);
+    public void addErrors(List<String> curInfo, List<IProgWidget> widgets){
+        super.addErrors(curInfo, widgets);
         if(variable.equals("")) {
             curInfo.add("gui.progWidget.general.error.emptyVariable");
         }
