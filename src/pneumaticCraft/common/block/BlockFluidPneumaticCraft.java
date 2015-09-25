@@ -5,8 +5,6 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.util.IIcon;
 import net.minecraftforge.fluids.BlockFluidClassic;
 import net.minecraftforge.fluids.Fluid;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockFluidPneumaticCraft extends BlockFluidClassic{
     private IIcon flowingIcon, stillIcon;
@@ -27,7 +25,6 @@ public class BlockFluidPneumaticCraft extends BlockFluidClassic{
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
     public IIcon getIcon(int side, int meta){
         return side != 0 && side != 1 ? flowingIcon : stillIcon;
     }
