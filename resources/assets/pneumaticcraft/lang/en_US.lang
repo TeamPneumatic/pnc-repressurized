@@ -67,6 +67,7 @@ tile.kerosene.name=Kerosene
 tile.diesel.name=Diesel
 tile.oil.name=Oil
 tile.lubricant.name=Lubricant
+tile.keroseneLamp.name=Kerosene Lamp
 
 tile.monsterStoneEgg.name=Silverfish
 
@@ -452,6 +453,7 @@ gui.tab.info.tile.creativeCompressor=§0A creative-only block used to generate a
 gui.tab.info.tile.heatSink=§0Block that disperses heat into the air. It only connects to the block it's on (not simply adjacent to). When an Air Grate Tube Module is pointed at its effectiveness is increased greatly.
 gui.tab.info.tile.vortexTube=§0Splits air coming in into a heat and cold component. One side will be heated, the other cooled down. Its air usage is dependent on the pressure. Mind that the hot and cold side are connected, so it's more efficient to vent the cold side when you want to utilize the heat, and vice versa if you want to use the cold.
 gui.tab.info.tile.droneInterface=§0A block that allows ComputerCraft and OpenComputers to interface with Drones.
+gui.tab.info.tile.keroseneLamp=§0A Kerosene Lamp is a light source that runs on Kerosene. It is similar to the long range light sources you might be used to, like Thaumcraft's Arcane Lamp, or Factorization's Wrath Lamp.
 
 gui.tab.info.logisticFrameRequester=§0In here you can specify which items and amounts logistical Drones should keep supplied in the framed inventory. Either put in items from your inventory or search for an item by right clicking an empty slot.
 gui.tab.info.logisticFramePassiveProvider=§0By default the framed inventory will provide every item in the inventory. By adding items in this filter, only items specified will be provided. Either put in items from your inventory or search for an item by right clicking an empty slot.
@@ -495,6 +497,9 @@ gui.tab.problems.amadron.notEnoughFluidSpace=§7Can't store more fluid than curr
 gui.tab.problems.amadron.notEnoughItems=§7Out of items to sell! \n§0Add more items in the bound inventory.
 gui.tab.problems.amadron.notEnoughFluid=§7Out of fluid to sell! \n§0Add more fluid in the bound tank. Or bind a bigger tank.
 gui.tab.problems.amadron.outOfStock=§7Out of stock! \n§0Come back later, maybe the vendor will resupply later.
+gui.tab.problems.keroseneLamp.lowFuel=§7The lamp is low on fuel. \n§0Add Kerosene through a fluid insertion method (like a Liquid Hopper or Logistic Drone).
+gui.tab.problems.keroseneLamp.noFuel=§7The lamp has no fuel. \n§0Add Kerosene by placing a Kerosene Bucket in the slot, or through a fluid insertion method (like a Liquid Hopper or Logistic Drone).
+
 
 # Upgrades
 gui.tab.upgrades=Upgrades
@@ -556,6 +561,7 @@ gui.tab.redstoneBehaviour.universalSensor.button.inverted=Inverted
 gui.tab.redstoneBehaviour.universalSensor.button.normal=Normal
 gui.tab.redstoneBehaviour.uvLightBox.button.chance=Success Chance
 gui.tab.redstoneBehaviour.plasticMixer.button.selectOnSignal=Select Plastic on Signal
+gui.tab.redstoneBehaviour.keroseneLamp.button.interpolate=Interpolate Signal
 
 #misc
 gui.tab.hopperStatus=Hopper Status
@@ -711,6 +717,10 @@ gui.logisticFrame.invisible=Invisible
 gui.logisticFrame.invisible.tooltip=Turns the Logistic Frame invisible (unless you have a Logistic item in your hand)
 gui.plasticMixer.lockSelection=Lock Selection
 gui.plasticMixer.lockSelection.tooltip=Locks the selected plastic
+gui.keroseneLamp.maxRange=Max Range:
+gui.keroseneLamp.blocks=Blocks
+gui.keroseneLamp.currentRange=Current Range: %s Blocks
+gui.keroseneLamp.timeLeft=Time left: %s
 
 gui.liquid.empty=Empty
 

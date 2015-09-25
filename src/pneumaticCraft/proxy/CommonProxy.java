@@ -18,6 +18,7 @@ import pneumaticCraft.client.gui.GuiDrone;
 import pneumaticCraft.client.gui.GuiElectrostaticCompressor;
 import pneumaticCraft.client.gui.GuiElevator;
 import pneumaticCraft.client.gui.GuiGasLift;
+import pneumaticCraft.client.gui.GuiKeroseneLamp;
 import pneumaticCraft.client.gui.GuiLiquidCompressor;
 import pneumaticCraft.client.gui.GuiLiquidHopper;
 import pneumaticCraft.client.gui.GuiOmnidirectionalHopper;
@@ -56,6 +57,7 @@ import pneumaticCraft.common.inventory.ContainerChargingStation;
 import pneumaticCraft.common.inventory.ContainerChargingStationItemInventory;
 import pneumaticCraft.common.inventory.ContainerElevator;
 import pneumaticCraft.common.inventory.ContainerGasLift;
+import pneumaticCraft.common.inventory.ContainerKeroseneLamp;
 import pneumaticCraft.common.inventory.ContainerLiquidCompressor;
 import pneumaticCraft.common.inventory.ContainerLiquidHopper;
 import pneumaticCraft.common.inventory.ContainerLogistics;
@@ -95,6 +97,7 @@ import pneumaticCraft.common.tileentity.TileEntityCreativeCompressor;
 import pneumaticCraft.common.tileentity.TileEntityElectrostaticCompressor;
 import pneumaticCraft.common.tileentity.TileEntityElevatorBase;
 import pneumaticCraft.common.tileentity.TileEntityGasLift;
+import pneumaticCraft.common.tileentity.TileEntityKeroseneLamp;
 import pneumaticCraft.common.tileentity.TileEntityLiquidCompressor;
 import pneumaticCraft.common.tileentity.TileEntityLiquidHopper;
 import pneumaticCraft.common.tileentity.TileEntityOmnidirectionalHopper;
@@ -123,7 +126,7 @@ public class CommonProxy implements IGuiHandler{
     public int PneumaticHelmetRenderID = 0;
 
     public static enum EnumGuiId{
-        AIR_COMPRESSOR, AIR_CANNON, PRESSURE_CHAMBER, CHARGING_STATION, ELEVATOR, PNEUMATIC_HELMET, PRESSURE_CHAMBER_INTERFACE, VACUUM_PUMP, PNEUMATIC_DOOR, ASSEMBLY_CONTROLLER, UV_LIGHT_BOX, SECURITY_STATION_INVENTORY, HACKING, UNIVERSAL_SENSOR, PNEUMATIC_GENERATOR, ELECTRIC_COMPRESSOR, PNEUMATIC_ENGINE, KINETIC_COMPRESSOR, AERIAL_INTERFACE, ELECTROSTATIC_COMPRESSOR, APHORISM_TILE, OMNIDIRECTIONAL_HOPPER, PROGRAMMER, DRONE, PRESSURE_MODULE, AIR_GRATE_MODULE, PNEUMATIC_DYNAMO, FLUX_COMPRESSOR, PLASTIC_MIXER, LIQUID_COMPRESSOR, ADVANCED_AIR_COMPRESSOR, LIQUID_HOPPER, ADVANCED_LIQUID_COMPRESSOR, REMOTE, REMOTE_EDITOR, PROGRAMMABLE_CONTROLLER, GAS_LIFT, REFINERY, THERMOPNEUMATIC_PROCESSING_PLANT, LOGISTICS_REQUESTER, LOGISTICS_STORAGE, LOGISTICS_PASSIVE_PROVIDER, AMADRON, AMADRON_ADD_TRADE, CREATIVE_COMPRESSOR;
+        AIR_COMPRESSOR, AIR_CANNON, PRESSURE_CHAMBER, CHARGING_STATION, ELEVATOR, PNEUMATIC_HELMET, PRESSURE_CHAMBER_INTERFACE, VACUUM_PUMP, PNEUMATIC_DOOR, ASSEMBLY_CONTROLLER, UV_LIGHT_BOX, SECURITY_STATION_INVENTORY, HACKING, UNIVERSAL_SENSOR, PNEUMATIC_GENERATOR, ELECTRIC_COMPRESSOR, PNEUMATIC_ENGINE, KINETIC_COMPRESSOR, AERIAL_INTERFACE, ELECTROSTATIC_COMPRESSOR, APHORISM_TILE, OMNIDIRECTIONAL_HOPPER, PROGRAMMER, DRONE, PRESSURE_MODULE, AIR_GRATE_MODULE, PNEUMATIC_DYNAMO, FLUX_COMPRESSOR, PLASTIC_MIXER, LIQUID_COMPRESSOR, ADVANCED_AIR_COMPRESSOR, LIQUID_HOPPER, ADVANCED_LIQUID_COMPRESSOR, REMOTE, REMOTE_EDITOR, PROGRAMMABLE_CONTROLLER, GAS_LIFT, REFINERY, THERMOPNEUMATIC_PROCESSING_PLANT, LOGISTICS_REQUESTER, LOGISTICS_STORAGE, LOGISTICS_PASSIVE_PROVIDER, AMADRON, AMADRON_ADD_TRADE, CREATIVE_COMPRESSOR, KEROSENE_LAMP;
     }
 
     private final HackTickHandler serverHackTickHandler = new HackTickHandler();
@@ -232,6 +235,8 @@ public class CommonProxy implements IGuiHandler{
                 return new ContainerAmadronAddTrade();
             case CREATIVE_COMPRESSOR:
                 return new ContainerPneumaticBase((TileEntityBase)world.getTileEntity(x, y, z));
+            case KEROSENE_LAMP:
+                return new ContainerKeroseneLamp(player.inventory, (TileEntityKeroseneLamp)world.getTileEntity(x, y, z));
         }
         return ThirdPartyManager.instance().getServerGuiElement(ID, player, world, x, y, z);
     }
@@ -317,6 +322,8 @@ public class CommonProxy implements IGuiHandler{
                 return new GuiAmadronAddTrade();
             case CREATIVE_COMPRESSOR:
                 return new GuiCreativeCompressor((TileEntityCreativeCompressor)world.getTileEntity(x, y, z));
+            case KEROSENE_LAMP:
+                return new GuiKeroseneLamp(player.inventory, (TileEntityKeroseneLamp)world.getTileEntity(x, y, z));
         }
         return ThirdPartyManager.instance().getClientGuiElement(ID, player, world, x, y, z);
     }

@@ -13,7 +13,11 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.Packet;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.FluidContainerRegistry;
+import net.minecraftforge.fluids.FluidContainerRegistry.FluidContainerData;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidTankInfo;
+import net.minecraftforge.fluids.IFluidContainerItem;
 import net.minecraftforge.fluids.IFluidHandler;
 import pneumaticCraft.api.IHeatExchangerLogic;
 import pneumaticCraft.api.tileentity.IHeatExchanger;
@@ -402,6 +406,84 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     @Override
     public int getZ(){
         return zCoord;
+    }
+
+    protected void processFluidItem(int inputSlot, int outputSlot){
+        IInventory inv = (IInventory)this;
+        IFluidHandler fluidHandler = (IFluidHandler)this;
+        FluidTankInfo tankInfo = fluidHandler.getTankInfo(ForgeDirection.UNKNOWN)[0];
+        if(inv.getStackInSlot(inputSlot) != null) {
+            ItemStack fluidContainer = inv.getStackInSlot(inputSlot);
+            if(tankInfo.fluid == null || tankInfo.fluid.isFluidEqual(fluidContainer)) {
+                FluidStack fluid = FluidContainerRegistry.getFluidForFilledItem(fluidContainer);
+                int amount = FluidContainerRegistry.BUCKET_VOLUME;
+                if(fluid == null) {
+                    if(fluidContainer.getItem() instanceof IFluidContainerItem) {
+                        IFluidContainerItem containerItem = (IFluidContainerItem)fluidContainer.getItem();
+                        fluid = containerItem.getFluid(fluidContainer);
+                        if(fluid != null && fluidHandler.canFill(ForgeDirection.UNKNOWN, fluid.getFluid())) {
+                            amount = fluid != null ? fluid.amount : 0;
+                            int availableSpace = tankInfo.capacity - (tankInfo.fluid != null ? tankInfo.fluid.amount : 0);
+                            if(availableSpace >= amount) {
+                                ItemStack singleFuelItem = fluidContainer.copy();
+                                singleFuelItem.stackSize = 1;
+                                FluidStack drainedStack = containerItem.drain(singleFuelItem, availableSpace, true);
+                                if(fluidContainer.stackSize == 1 || inv.getStackInSlot(outputSlot) == null || canStack(singleFuelItem, inv.getStackInSlot(outputSlot))) {
+                                    fluidHandler.fill(ForgeDirection.UNKNOWN, drainedStack, true);
+                                    if(fluidContainer.stackSize == 1) {
+                                        inv.setInventorySlotContents(inputSlot, singleFuelItem);
+                                    } else {
+                                        inv.getStackInSlot(inputSlot).stackSize--;
+                                        if(inv.getStackInSlot(outputSlot) == null) {
+                                            inv.setInventorySlotContents(outputSlot, singleFuelItem);
+                                        } else {
+                                            inv.getStackInSlot(outputSlot).stackSize++;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } else if(fluidHandler.canFill(ForgeDirection.UNKNOWN, fluid.getFluid())) {
+                    if(tankInfo.capacity - (tankInfo.fluid != null ? tankInfo.fluid.amount : 0) >= amount) {
+                        ItemStack returnedItem = null;
+                        FluidContainerData[] allFluidData = FluidContainerRegistry.getRegisteredFluidContainerData();
+                        for(FluidContainerData fluidData : allFluidData) {
+                            if(fluidData.filledContainer.isItemEqual(fluidContainer)) {
+                                returnedItem = fluidData.emptyContainer;
+                                break;
+                            }
+                        }
+                        if(returnedItem == null || inv.getStackInSlot(outputSlot) == null || canStack(returnedItem, inv.getStackInSlot(outputSlot))) {
+                            if(returnedItem != null) {
+                                if(inv.getStackInSlot(outputSlot) == null) {
+                                    inv.setInventorySlotContents(outputSlot, returnedItem.copy());
+                                } else {
+                                    inv.getStackInSlot(outputSlot).stackSize += returnedItem.stackSize;
+                                }
+                            }
+                            fluidHandler.fill(ForgeDirection.UNKNOWN, new FluidStack(fluid.getFluid(), amount, fluid.tag), true);
+                            inv.getStackInSlot(inputSlot).stackSize--;
+                            if(inv.getStackInSlot(inputSlot).stackSize <= 0) inv.setInventorySlotContents(inputSlot, null);
+                        }
+                    }
+                }
+            }
+            if(fluidContainer.getItem() instanceof IFluidContainerItem) {
+                if(((IFluidContainerItem)fluidContainer.getItem()).getFluid(fluidContainer) == null && (inv.getStackInSlot(outputSlot) == null || canStack(fluidContainer, inv.getStackInSlot(outputSlot)))) {
+                    if(inv.getStackInSlot(outputSlot) == null) {
+                        inv.setInventorySlotContents(outputSlot, fluidContainer);
+                    } else {
+                        inv.getStackInSlot(outputSlot).stackSize += fluidContainer.stackSize;
+                    }
+                    inv.setInventorySlotContents(inputSlot, null);
+                }
+            }
+        }
+    }
+
+    private boolean canStack(ItemStack stack1, ItemStack stack2){
+        return stack1.isItemEqual(stack2) && ItemStack.areItemStackTagsEqual(stack1, stack2) && stack1.stackSize + stack2.stackSize <= stack1.getMaxStackSize();
     }
 
     /*

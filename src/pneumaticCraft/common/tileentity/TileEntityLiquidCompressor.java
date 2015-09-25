@@ -7,7 +7,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidContainerRegistry;
-import net.minecraftforge.fluids.FluidContainerRegistry.FluidContainerData;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.FluidTankInfo;
@@ -56,73 +55,7 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
         super.updateEntity();
 
         if(!worldObj.isRemote) {
-            if(inventory[4] != null) {
-                ItemStack fluidContainer = inventory[4];
-                if(tank.getFluid() == null || tank.getFluid().isFluidEqual(fluidContainer)) {
-                    FluidStack fluid = FluidContainerRegistry.getFluidForFilledItem(fluidContainer);
-                    int amount = FluidContainerRegistry.BUCKET_VOLUME;
-                    if(fluid == null) {
-                        if(fluidContainer.getItem() instanceof IFluidContainerItem) {
-                            IFluidContainerItem containerItem = (IFluidContainerItem)fluidContainer.getItem();
-                            fluid = containerItem.getFluid(fluidContainer);
-                            if(fluid != null && getFuelValue(fluid) > 0) {
-                                amount = fluid != null ? fluid.amount : 0;
-                                if(tank.getCapacity() - tank.getFluidAmount() >= amount) {
-                                    ItemStack singleFuelItem = fluidContainer.copy();
-                                    singleFuelItem.stackSize = 1;
-                                    FluidStack drainedStack = containerItem.drain(singleFuelItem, tank.getCapacity() - tank.getFluidAmount(), true);
-                                    if(fluidContainer.stackSize == 1 || inventory[5] == null || canStack(singleFuelItem, inventory[5])) {
-                                        fill(ForgeDirection.UNKNOWN, drainedStack, true);
-                                        if(fluidContainer.stackSize == 1) {
-                                            inventory[4] = singleFuelItem;
-                                        } else {
-                                            inventory[4].stackSize--;
-                                            if(inventory[5] == null) {
-                                                inventory[5] = singleFuelItem;
-                                            } else {
-                                                inventory[5].stackSize++;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    } else if(getFuelValue(fluid) > 0) {
-                        if(tank.getCapacity() - tank.getFluidAmount() >= amount) {
-                            ItemStack returnedItem = null;
-                            FluidContainerData[] allFluidData = FluidContainerRegistry.getRegisteredFluidContainerData();
-                            for(FluidContainerData fluidData : allFluidData) {
-                                if(fluidData.filledContainer.isItemEqual(fluidContainer)) {
-                                    returnedItem = fluidData.emptyContainer;
-                                    break;
-                                }
-                            }
-                            if(returnedItem == null || inventory[5] == null || canStack(returnedItem, inventory[5])) {
-                                if(returnedItem != null) {
-                                    if(inventory[5] == null) {
-                                        inventory[5] = returnedItem.copy();
-                                    } else {
-                                        inventory[5].stackSize += returnedItem.stackSize;
-                                    }
-                                }
-                                tank.fill(new FluidStack(fluid.getFluid(), amount, fluid.tag), true);
-                                inventory[4].stackSize--;
-                                if(inventory[4].stackSize <= 0) inventory[4] = null;
-                            }
-                        }
-                    }
-                }
-                if(fluidContainer.getItem() instanceof IFluidContainerItem) {
-                    if(((IFluidContainerItem)fluidContainer.getItem()).getFluid(fluidContainer) == null && (inventory[5] == null || canStack(fluidContainer, inventory[5]))) {
-                        if(inventory[5] == null) {
-                            inventory[5] = fluidContainer;
-                        } else {
-                            inventory[5].stackSize += fluidContainer.stackSize;
-                        }
-                        inventory[4] = null;
-                    }
-                }
-            }
+            processFluidItem(4, 5);
 
             isProducing = false;
             if(redstoneAllows()) {
@@ -153,10 +86,6 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
 
     public int getBaseProduction(){
         return 10;
-    }
-
-    private boolean canStack(ItemStack stack1, ItemStack stack2){
-        return stack1.isItemEqual(stack2) && ItemStack.areItemStackTagsEqual(stack1, stack2) && stack1.stackSize + stack2.stackSize <= stack1.getMaxStackSize();
     }
 
     @Override

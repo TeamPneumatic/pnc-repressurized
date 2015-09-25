@@ -46,6 +46,7 @@ import pneumaticCraft.client.model.ModelComputer;
 import pneumaticCraft.client.model.ModelElevatorBase;
 import pneumaticCraft.client.model.ModelGasLift;
 import pneumaticCraft.client.model.ModelHeatSink;
+import pneumaticCraft.client.model.ModelKeroseneLamp;
 import pneumaticCraft.client.model.ModelLiquidHopper;
 import pneumaticCraft.client.model.ModelOmnidirectionalHopper;
 import pneumaticCraft.client.model.ModelPlasticMixer;
@@ -121,6 +122,7 @@ import pneumaticCraft.common.tileentity.TileEntityElevatorBase;
 import pneumaticCraft.common.tileentity.TileEntityElevatorCaller;
 import pneumaticCraft.common.tileentity.TileEntityGasLift;
 import pneumaticCraft.common.tileentity.TileEntityHeatSink;
+import pneumaticCraft.common.tileentity.TileEntityKeroseneLamp;
 import pneumaticCraft.common.tileentity.TileEntityLiquidCompressor;
 import pneumaticCraft.common.tileentity.TileEntityLiquidHopper;
 import pneumaticCraft.common.tileentity.TileEntityOmnidirectionalHopper;
@@ -196,6 +198,7 @@ public class ClientProxy extends CommonProxy{
         registerBaseModelRenderer(Blockss.thermopneumaticProcessingPlant, TileEntityThermopneumaticProcessingPlant.class, new ModelThermopneumaticProcessingPlant());
         registerBaseModelRenderer(Blockss.refinery, TileEntityRefinery.class, new ModelRefinery());
         registerBaseModelRenderer(Blockss.gasLift, TileEntityGasLift.class, new ModelGasLift());
+        registerBaseModelRenderer(Blockss.keroseneLamp, TileEntityKeroseneLamp.class, new ModelKeroseneLamp());
 
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPressureTube.class, new RenderPressureTube());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAirCannon.class, new RenderAirCannon());

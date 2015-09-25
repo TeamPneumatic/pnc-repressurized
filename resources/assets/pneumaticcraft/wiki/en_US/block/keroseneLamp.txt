@@ -1,0 +1,9 @@
+[image{200, 10, 0.51, pneumaticcraft:textures/wiki/keroseneLamp.png}]
+
+A Kerosene Lamp is a light source that runs on.. you guessed it, [link{pneumaticcraft:block/refinery}]Kerosene [link{}]. It is similar to the long range light sources you might be used to, like Thaumcraft's Arcane Lamp, or Factorization's Wrath Lamp.
+
+The lamp by default has a range of 10 blocks. However this can be changed in the Lamp's interface up to a maximum of 30 blocks. Do note that the higher the range, the more fuel the lamp will use in a cubic fashion. This means that when you double the range, the fuel usage is multiplied by 8! However, the lamp only uses a small amount of fuel. With 1000mB of Kerosene and the default range of 10 blocks, the Lamp can run about 40 minutes.
+
+The lamp can be controlled by redstone like most PneumaticCraft blocks. Apart from the usual modes, there also is an 'Interpolate Signal' mode. This will like the name says interpolate the range of the lamp. Assuming the default max range of 10 blocks, when a redstone signal of 8 (out of 15) is applied, the Lamp will have a range of 5.
+
+[crafting{200, 460, key=block/keroseneLamp}]

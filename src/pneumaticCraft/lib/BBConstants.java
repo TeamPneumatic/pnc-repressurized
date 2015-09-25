@@ -48,4 +48,8 @@ public class BBConstants{
 
     public static final float APHORISM_TILE_THICKNESS = 1 / 16F;
     public static final float HEAT_SINK_THICKNESS = 8 / 16F;
+
+    public static final float KEROSENE_LAMP_WIDTH_MIN = 5F / 16F;
+    public static final float KEROSENE_LAMP_LENGTH_MIN = 3 / 16F;
+    public static final float KEROSENE_LAMP_TOP_MAX = 10 / 16F;
 }

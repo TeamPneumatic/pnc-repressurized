@@ -197,7 +197,7 @@ public class PneumaticCraftUtils{
         if(ticks < 60) {
             return ticks + (fraction ? "." + part : "") + "s";
         } else {
-            return ticks / 60 + "m";
+            return ticks / 60 + "m " + ticks % 60 + "s";
         }
     }
 

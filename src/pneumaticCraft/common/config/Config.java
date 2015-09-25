@@ -26,6 +26,7 @@ public class Config{
     public static double oilGenerationChance;
     public static boolean shouldDisplayChangeNotification;
     public static boolean stopDroneAI;
+    public static boolean disableKeroseneLampFakeAirBlock;
 
     public static int configCompressedIngotLossRate;
     public static int elevatorBaseBlocksPerBase;
@@ -167,6 +168,10 @@ public class Config{
         property = config.get("advanced", "Stop Drone AI", false);
         property.comment = "When set to true, Drones will not execute any program. This is useful to set to true when due to a bug Drones are lagging your server or crashing it. Please report the bug if you encounter it.";
         stopDroneAI = property.getBoolean(true);
+
+        property = config.get("advanced", "Disable Kerosene Lamp Fake Air Block", false);
+        property.comment = "When set to true, the Kerosene Lamp's fake air blocks won't be registered and therefore removed from the world. Useful if this causes trouble (it shouldn't though)";
+        disableKeroseneLampFakeAirBlock = property.getBoolean(true);
 
         enableUpdateChecker = config.get(Configuration.CATEGORY_GENERAL, "Enable Update Checker", true).getBoolean(true);
 
