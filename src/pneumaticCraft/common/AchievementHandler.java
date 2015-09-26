@@ -54,7 +54,9 @@ public class AchievementHandler{
     }
 
     public static void giveAchievement(EntityPlayer player, ItemStack acquiredStack){
-        giveAchievement(player, acquiredStack.getItem().getUnlocalizedName().substring(5));
+        try {
+            giveAchievement(player, acquiredStack.getItem().getUnlocalizedName().substring(5));
+        } catch(Throwable e) {}
     }
 
     public static void giveAchievement(EntityPlayer player, String id){

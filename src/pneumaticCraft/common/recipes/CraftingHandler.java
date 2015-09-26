@@ -9,9 +9,7 @@ public class CraftingHandler{
     @SubscribeEvent
     public void onCrafting(PlayerEvent.ItemCraftedEvent event){
         if(event.player != null) {
-            try {
-                AchievementHandler.giveAchievement(event.player, event.crafting);
-            } catch(Throwable e) {}
+            AchievementHandler.giveAchievement(event.player, event.crafting);
         }
     }
 
