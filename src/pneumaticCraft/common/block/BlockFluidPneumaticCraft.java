@@ -7,7 +7,7 @@ import net.minecraftforge.fluids.BlockFluidClassic;
 import net.minecraftforge.fluids.Fluid;
 
 public class BlockFluidPneumaticCraft extends BlockFluidClassic{
-    private IIcon flowingIcon, stillIcon;
+    public IIcon flowingIcon, stillIcon;
 
     public BlockFluidPneumaticCraft(Fluid fluid, Material material){
         super(fluid, material);

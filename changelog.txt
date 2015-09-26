@@ -1,10 +1,3 @@
--Added Kerosene Lamp.
--Added warning to variable widgets when that variable was never set.
--Added error when multiple Start pieces are placed.
--GPS Tool GUI can now be opened even when no position is set yet.
--Added 'Clear all' button to the Programmer.
--Added way to save to and clipboard and load from clipboard option to the Pastebin GUI.
-
+-Bugfix: Logistics Passive Provider Frame acts as an Active one.
+-Bugfix: Crash when crafting some items from a different mod.
 -Bugfix: SMP crash with Mekanism.
--Bugfix: You can't sneak right click Charging Stations nor Elevator Callers to take them off.
--Bugfix: Drones getting stuck.

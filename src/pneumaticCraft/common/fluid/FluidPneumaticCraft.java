@@ -19,11 +19,11 @@ public class FluidPneumaticCraft extends Fluid{
 
     @Override
     public IIcon getStillIcon(){
-        return getBlock().getIcon(0, 0);
+        return ((BlockFluidPneumaticCraft)getBlock()).stillIcon;
     }
 
     @Override
     public IIcon getFlowingIcon(){
-        return getBlock().getIcon(1, 0);
+        return ((BlockFluidPneumaticCraft)getBlock()).flowingIcon;
     }
 }
