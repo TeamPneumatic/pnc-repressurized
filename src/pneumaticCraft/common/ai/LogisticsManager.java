@@ -45,7 +45,7 @@ public class LogisticsManager{
             for(SemiBlockLogistics requester : logistics[priority]) {
                 for(int i = 0; i < priority; i++) {
                     for(SemiBlockLogistics provider : logistics[i]) {
-                        if(provider.shouldProvideTo(priority)) {
+                        if(provider.shouldProvideTo(i)) {
                             if(item != null) {
                                 int requestedAmount = getRequestedAmount(requester, item);
                                 if(requestedAmount > 0) {
