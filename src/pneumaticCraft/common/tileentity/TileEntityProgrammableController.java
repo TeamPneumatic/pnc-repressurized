@@ -286,6 +286,14 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
                     targetX = xCoord + 0.5;
                     targetY = yCoord + 0.6;
                     targetZ = zCoord + 0.5;
+                    boolean updateNeighbours = false;
+                    for(int i = 0; i < redstoneLevels.length; i++) {
+                        if(redstoneLevels[i] > 0) {
+                            redstoneLevels[i] = 0;
+                            updateNeighbours = true;
+                        }
+                    }
+                    if(updateNeighbours) updateNeighbours();
                 }
                 getAIManager();
             }
