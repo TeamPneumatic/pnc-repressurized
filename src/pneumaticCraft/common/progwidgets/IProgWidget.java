@@ -92,6 +92,8 @@ public interface IProgWidget{
 
     public IProgWidget copy();
 
+    public boolean canBeRunByComputers(IDroneBase drone, IProgWidget widget);
+
     @SideOnly(Side.CLIENT)
     public GuiScreen getOptionWindow(GuiProgrammer guiProgrammer);
 

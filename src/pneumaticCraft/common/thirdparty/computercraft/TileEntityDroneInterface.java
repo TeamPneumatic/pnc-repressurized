@@ -132,7 +132,7 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral,
                 if(args.length == 0) {
                     List<String> actions = new ArrayList<String>();
                     for(IProgWidget widget : WidgetRegistrator.registeredWidgets) {
-                        if(widget.getWidgetAI(new EntityDrone(worldObj), getWidget()) != null) {
+                        if(widget.canBeRunByComputers(new EntityDrone(worldObj), getWidget())) {
                             actions.add(widget.getWidgetString());
                         }
                     }
@@ -611,7 +611,7 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral,
                     for(IProgWidget widget : WidgetRegistrator.registeredWidgets) {
                         if(widget.getWidgetString().equalsIgnoreCase(widgetName)) {
                             EntityAIBase ai = widget.getWidgetAI(drone, getWidget());
-                            if(ai == null) throw new IllegalArgumentException("The parsed action is not a runnable action! Action: \"" + widget.getWidgetString() + "\".");
+                            if(ai == null || !widget.canBeRunByComputers(drone, getWidget())) throw new IllegalArgumentException("The parsed action is not a runnable action! Action: \"" + widget.getWidgetString() + "\".");
                             getAI().setAction(widget, ai);
                             getTargetAI().setAction(widget, widget.getWidgetTargetAI(drone, getWidget()));
                             messageToDrone(ItemDye.field_150922_c[widget.getCraftingColorIndex()]);

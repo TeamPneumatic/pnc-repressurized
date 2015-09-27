@@ -25,9 +25,9 @@ import pneumaticCraft.common.progwidgets.ProgWidgetPlace;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.common.util.ThreadedSorter;
 
-public abstract class DroneAIBlockInteraction extends EntityAIBase{
+public abstract class DroneAIBlockInteraction<Widget extends ProgWidgetAreaItemBase> extends EntityAIBase{
     protected final IDroneBase drone;
-    protected final ProgWidgetAreaItemBase widget;
+    protected final Widget widget;
     private final EnumOrder order;
     protected ChunkPosition curPos;
     private final List<ChunkPosition> area;
@@ -51,7 +51,7 @@ public abstract class DroneAIBlockInteraction extends EntityAIBase{
      * @param speed
      * @param widget needs to implement IBlockOrdered
      */
-    public DroneAIBlockInteraction(IDroneBase drone, ProgWidgetAreaItemBase widget){
+    public DroneAIBlockInteraction(IDroneBase drone, Widget widget){
         this.drone = drone;
         setMutexBits(63);//binary 111111, so it won't run along with other AI tasks.
         this.widget = widget;

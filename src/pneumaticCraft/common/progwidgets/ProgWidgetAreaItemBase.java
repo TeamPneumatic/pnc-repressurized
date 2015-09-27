@@ -29,7 +29,7 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
     private List<ChunkPosition> areaListCache;
     private Set<ChunkPosition> areaSetCache;
     private Map<String, ChunkPosition> areaVariableStates;
-    private DroneAIManager aiManager;
+    protected DroneAIManager aiManager;
     private boolean canCache = true;
 
     @Override

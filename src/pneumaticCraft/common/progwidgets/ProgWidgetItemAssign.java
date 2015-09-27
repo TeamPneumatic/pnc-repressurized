@@ -15,7 +15,7 @@ import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ProgWidgetItemAssign extends ProgWidget implements IVariableWidget{
+public class ProgWidgetItemAssign extends ProgWidget implements IVariableSetWidget{
     private String variable = "";
     private DroneAIManager aiManager;
 

@@ -16,7 +16,7 @@ import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariableWidget{
+public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariableSetWidget{
     public enum EnumOperator{
         PLUS_MINUS("plusMinus"), MULIPLY_DIVIDE("multiplyDivide"), MAX_MIN("maxMin");
 

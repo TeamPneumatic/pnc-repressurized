@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.item.ItemStack;
@@ -17,11 +18,11 @@ import net.minecraft.world.ChunkPosition;
 import net.minecraftforge.common.MinecraftForge;
 import pneumaticCraft.api.drone.SpecialVariableRetrievalEvent;
 import pneumaticCraft.common.config.Config;
+import pneumaticCraft.common.progwidgets.IJumpBackWidget;
 import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.common.progwidgets.IVariableWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetStart;
 import pneumaticCraft.common.remote.GlobalVariableManager;
-import pneumaticCraft.lib.Log;
 
 /**
  * This class is derived from Minecraft's {link EntityAITasks} class. As the original class would need quite a few
@@ -51,6 +52,9 @@ public class DroneAIManager{
 
     private final Map<String, ChunkPosition> coordinateVariables = new HashMap<String, ChunkPosition>();
     private final Map<String, ItemStack> itemVariables = new HashMap<String, ItemStack>();
+    private final Stack<IProgWidget> jumpBackWidgets = new Stack<IProgWidget>();//Used to jump back to a for each widget.
+
+    private static final int MAX_JUMP_STACK_SIZE = 100;
 
     public DroneAIManager(IDroneBase drone){
         theProfiler = drone.getWorld().theProfiler;
@@ -164,6 +168,9 @@ public class DroneAIManager{
         if(!isExecuting && curActiveWidget != null && (curWidgetTargetAI == null || !curWidgetTargetAI.shouldExecute())) {
             IProgWidget widget = curActiveWidget.getOutputWidget(drone, progWidgets);
             if(widget != null) {
+                if(curActiveWidget.getOutputWidget() != widget) {
+                    if(addJumpBackWidget(curActiveWidget)) return;
+                }
                 setActiveWidget(widget);
             } else {
                 if(stopWhenEndReached) {
@@ -180,10 +187,14 @@ public class DroneAIManager{
 
     private void gotoFirstWidget(){
         setLabel("Main");
-        for(IProgWidget widget : progWidgets) {
-            if(widget instanceof ProgWidgetStart) {
-                setActiveWidget(widget);
-                return;
+        if(!jumpBackWidgets.isEmpty()) {
+            setActiveWidget(jumpBackWidgets.pop());
+        } else {
+            for(IProgWidget widget : progWidgets) {
+                if(widget instanceof ProgWidgetStart) {
+                    setActiveWidget(widget);
+                    return;
+                }
             }
         }
     }
@@ -198,6 +209,7 @@ public class DroneAIManager{
             Set<IProgWidget> visitedWidgets = new HashSet<IProgWidget>();//Prevent endless loops
             while(!visitedWidgets.contains(widget) && targetAI == null && ai == null) {
                 visitedWidgets.add(widget);
+                IProgWidget oldWidget = widget;
                 widget = widget.getOutputWidget(drone, progWidgets);
                 if(widget == null) {
                     if(first) {
@@ -210,6 +222,8 @@ public class DroneAIManager{
                         }
                         return;
                     }
+                } else if(oldWidget.getOutputWidget() != widget) {
+                    if(addJumpBackWidget(oldWidget)) return;
                 }
                 targetAI = widget.getWidgetTargetAI(drone, widget);
                 ai = widget.getWidgetAI(drone, widget);
@@ -226,6 +240,20 @@ public class DroneAIManager{
         if(targetAI != null) drone.getTargetAI().addTask(2, targetAI);
         curWidgetAI = ai;
         curWidgetTargetAI = targetAI;
+    }
+
+    private boolean addJumpBackWidget(IProgWidget widget){
+        if(widget instanceof IJumpBackWidget) {
+            if(jumpBackWidgets.size() >= MAX_JUMP_STACK_SIZE) {
+                drone.overload();
+                jumpBackWidgets.clear();
+                setActiveWidget(null);
+                return true;
+            } else {
+                jumpBackWidgets.push(widget);
+            }
+        }
+        return false;
     }
 
     public List<EntityAITaskEntry> getRunningTasks(){
@@ -398,7 +426,6 @@ public class DroneAIManager{
             label = ((DroneAIExternalProgram)curWidgetAI).getRunningAI().getLabel() + " --> " + label;
         }
         currentLabel = label;
-        Log.info("Setting label: " + label);
         drone.setLabel(label);
     }
 

@@ -85,10 +85,10 @@ public abstract class ProgWidget implements IProgWidget{
     private boolean isVariableSetAnywhere(List<IProgWidget> widgets, String variable){
         if(variable.equals("")) return true;
         for(IProgWidget widget : widgets) {
-            if(widget instanceof ProgWidgetCoordinateOperator) {
-                if(((ProgWidgetCoordinateOperator)widget).getVariable().equals(variable)) return true;
-            } else if(widget instanceof ProgWidgetItemAssign) {
-                if(((ProgWidgetItemAssign)widget).getVariable().equals(variable)) return true;
+            if(widget instanceof IVariableSetWidget) {
+                Set<String> variables = new HashSet<String>();
+                ((IVariableSetWidget)widget).addVariables(variables);
+                if(variables.contains(variable)) return true;
             }
         }
         return false;
@@ -256,6 +256,11 @@ public abstract class ProgWidget implements IProgWidget{
         } else {
             return null;
         }
+    }
+
+    @Override
+    public boolean canBeRunByComputers(IDroneBase drone, IProgWidget widget){
+        return getWidgetAI(drone, widget) != null;
     }
 
 }
