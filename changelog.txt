@@ -1,5 +1,1 @@
--Added 'Routine' info to the Drone, which allows you to see which label the Drone has jumped to last.
--Added For Each Coordinate piece.
-
--Bugfix: Oil can't be pumped into a Refinery when the Oil isn't PneumaticCraft's.
--Bugfix: Passive Provide Frame doesn't provide to Requester Frames.
+-Now with 100% less SMP crashing on startup.

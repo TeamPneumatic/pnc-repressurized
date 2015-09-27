@@ -16,6 +16,8 @@ import pneumaticCraft.common.ai.DroneAIForEachCoordinate;
 import pneumaticCraft.common.ai.IDroneBase;
 import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.lib.Textures;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class ProgWidgetForEachCoordinate extends ProgWidgetAreaItemBase implements IJumpBackWidget, IJump,
         IVariableSetWidget{
@@ -112,6 +114,7 @@ public class ProgWidgetForEachCoordinate extends ProgWidgetAreaItemBase implemen
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public GuiScreen getOptionWindow(GuiProgrammer guiProgrammer){
         return new GuiProgWidgetForEach(this, guiProgrammer);
     }
