@@ -10,6 +10,6 @@ public class SemiBlockPassiveProvider extends SemiBlockActiveProvider{
 
     @Override
     public boolean shouldProvideTo(int priority){
-        return priority > 1;
+        return priority > 2;
     }
 }
