@@ -181,7 +181,7 @@ public class TileEntityRefinery extends TileEntityBase implements IFluidHandler,
 
     @Override
     public boolean canFill(ForgeDirection from, Fluid fluid){
-        return fluid != null && fluid == Fluids.oil;
+        return Fluids.areFluidsEqual(fluid, Fluids.oil);
     }
 
     @Override
