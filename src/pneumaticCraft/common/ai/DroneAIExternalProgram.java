@@ -92,7 +92,10 @@ public class DroneAIExternalProgram extends DroneAIBlockInteraction{
                         if(areWidgetsValid) {
                             aiManager.setWidgets(widgets);
                             curProgramTag = stack.getTagCompound();
-                            if(!aiManager.isIdling()) return true;
+                            if(!aiManager.isIdling()) {
+                                aiManager.getDrone().getAIManager().setLabel("Main");
+                                return true;
+                            }
                         }
                     }
                 }
@@ -105,6 +108,10 @@ public class DroneAIExternalProgram extends DroneAIBlockInteraction{
     //Prevent a memory leak, as a result of the same External program recursively calling itself.
     private boolean isRunningSameProgram(EntityAIBase ai){
         return ai instanceof DroneAIExternalProgram && curProgramTag.equals(((DroneAIExternalProgram)ai).curProgramTag);
+    }
+
+    public DroneAIManager getRunningAI(){
+        return aiManager;
     }
 
 }

@@ -49,7 +49,7 @@ public abstract class ProgWidgetConditionBase extends ProgWidget implements IJum
 
     @Override
     public IProgWidget getOutputWidget(IDroneBase drone, List<IProgWidget> allWidgets){
-        return ProgWidgetJump.jumpToLabel(allWidgets, this, evaluate(drone, this));
+        return ProgWidgetJump.jumpToLabel(drone, allWidgets, this, evaluate(drone, this));
     }
 
     public abstract boolean evaluate(IDroneBase drone, IProgWidget widget);

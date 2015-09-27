@@ -21,6 +21,7 @@ import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.common.progwidgets.IVariableWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetStart;
 import pneumaticCraft.common.remote.GlobalVariableManager;
+import pneumaticCraft.lib.Log;
 
 /**
  * This class is derived from Minecraft's {link EntityAITasks} class. As the original class would need quite a few
@@ -46,6 +47,7 @@ public class DroneAIManager{
     private EntityAIBase curWidgetTargetAI;
     private boolean stopWhenEndReached;
     private boolean wasAIOveridden;
+    private String currentLabel = "Main";//Holds the name of the last label that was jumped to.
 
     private final Map<String, ChunkPosition> coordinateVariables = new HashMap<String, ChunkPosition>();
     private final Map<String, ItemStack> itemVariables = new HashMap<String, ItemStack>();
@@ -177,6 +179,7 @@ public class DroneAIManager{
     }
 
     private void gotoFirstWidget(){
+        setLabel("Main");
         for(IProgWidget widget : progWidgets) {
             if(widget instanceof ProgWidgetStart) {
                 setActiveWidget(widget);
@@ -212,6 +215,8 @@ public class DroneAIManager{
                 ai = widget.getWidgetAI(drone, widget);
             }
             drone.setActiveProgram(widget);
+        } else {
+            setLabel("Stopped");
         }
 
         curActiveWidget = widget;
@@ -386,6 +391,19 @@ public class DroneAIManager{
      */
     private boolean areTasksCompatible(EntityAITaskEntry par1EntityAITaskEntry, EntityAITaskEntry par2EntityAITaskEntry){
         return (par1EntityAITaskEntry.action.getMutexBits() & par2EntityAITaskEntry.action.getMutexBits()) == 0;
+    }
+
+    public void setLabel(String label){
+        if(curWidgetAI instanceof DroneAIExternalProgram) {
+            label = ((DroneAIExternalProgram)curWidgetAI).getRunningAI().getLabel() + " --> " + label;
+        }
+        currentLabel = label;
+        Log.info("Setting label: " + label);
+        drone.setLabel(label);
+    }
+
+    public String getLabel(){
+        return currentLabel;
     }
 
     public class EntityAITaskEntry{

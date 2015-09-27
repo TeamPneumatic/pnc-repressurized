@@ -14,4 +14,12 @@ public interface IDroneBase extends IDrone{
     public boolean isProgramApplicable(IProgWidget widget);
 
     public void overload();
+
+    public DroneAIManager getAIManager();
+
+    /**
+     * Sets the label that was jumped to last, with a hierarchy in case of External Programs.
+     * @param label
+     */
+    public void setLabel(String label);
 }

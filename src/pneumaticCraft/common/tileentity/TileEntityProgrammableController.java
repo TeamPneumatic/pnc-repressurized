@@ -133,9 +133,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
         }
 
         if(!worldObj.isRemote) {
-            if(aiManager == null) {
-                aiManager = new DroneAIManager(this);
-            }
+            getAIManager();
             if(worldObj.getTotalWorldTime() % 40 == 0) {
                 dispenserUpgrades = getUpgrades(ItemMachineUpgrade.UPGRADE_DISPENSER_DAMAGE);
                 speedUpgrades = getUpgrades(ItemMachineUpgrade.UPGRADE_SPEED_DAMAGE);
@@ -289,9 +287,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
                     targetY = yCoord + 0.6;
                     targetZ = zCoord + 0.5;
                 }
-                if(worldObj != null && !worldObj.isRemote) {
-                    aiManager = new DroneAIManager(this);
-                }
+                getAIManager();
             }
         } else {
             getFakePlayer().inventory.setInventorySlotContents(slot - 5, itemStack);
@@ -680,4 +676,15 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
             NetworkHandler.sendToAllAround(new PacketSpawnParticle("largesmoke", xCoord + worldObj.rand.nextDouble(), yCoord + 1, zCoord + worldObj.rand.nextDouble(), 0, 0, 0), worldObj);
         }
     }
+
+    @Override
+    public DroneAIManager getAIManager(){
+        if(worldObj != null && !worldObj.isRemote) {
+            aiManager = new DroneAIManager(this);
+        }
+        return aiManager;
+    }
+
+    @Override
+    public void setLabel(String label){}
 }

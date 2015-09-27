@@ -107,6 +107,7 @@ public class EntityTrackHandler{
         @Override
         public void addInfo(Entity entity, List<String> curInfo){
             curInfo.add("Owner: " + ((EntityDrone)entity).playerName);
+            curInfo.add("Routine: " + ((EntityDrone)entity).getLabel());
         }
     }
 

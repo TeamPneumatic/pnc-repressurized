@@ -30,6 +30,7 @@ public class ProgWidgetJump extends ProgWidget implements IJump{
     public IProgWidget getOutputWidget(IDroneBase drone, List<IProgWidget> allWidgets){
         ProgWidgetString jumpedLabel = (ProgWidgetString)getConnectedParameters()[0];
         if(jumpedLabel != null) {
+            drone.getAIManager().setLabel(jumpedLabel.string);
             return jumpToLabel(allWidgets, jumpedLabel.string);
         }
         return null;
@@ -37,13 +38,15 @@ public class ProgWidgetJump extends ProgWidget implements IJump{
 
     /**
      * Used by condition pieces
+     * @param drone TODO
      * @param allWidgets
      * @param conditionValue
      * @return
      */
-    public static IProgWidget jumpToLabel(List<IProgWidget> allWidgets, IProgWidget conditionWidget, boolean conditionValue){
+    public static IProgWidget jumpToLabel(IDroneBase drone, List<IProgWidget> allWidgets, IProgWidget conditionWidget, boolean conditionValue){
         ProgWidgetString textWidget = (ProgWidgetString)(conditionValue ? conditionWidget.getConnectedParameters()[conditionWidget.getParameters().length - 1] : conditionWidget.getConnectedParameters()[conditionWidget.getParameters().length * 2 - 1]);
         if(textWidget != null) {
+            drone.getAIManager().setLabel(textWidget.string);
             return jumpToLabel(allWidgets, textWidget.string);
         } else {
             return conditionWidget.getOutputWidget();

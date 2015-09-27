@@ -192,6 +192,7 @@ public class EntityDrone extends EntityDroneBase implements IManoMeasurable, IIn
         dataWatcher.addObject(23, (byte)0);
         dataWatcher.addObject(24, (byte)0);
         dataWatcher.addObjectByDataType(25, 5);
+        dataWatcher.addObject(26, "Main");
     }
 
     @Override
@@ -1358,5 +1359,19 @@ public class EntityDrone extends EntityDroneBase implements IManoMeasurable, IIn
     @Override
     public void overload(){
         attackEntityFrom(DamageSource.outOfWorld, 2000.0F);
+    }
+
+    @Override
+    public DroneAIManager getAIManager(){
+        return aiManager;
+    }
+
+    @Override
+    public void setLabel(String label){
+        dataWatcher.updateObject(26, label);
+    }
+
+    public String getLabel(){
+        return dataWatcher.getWatchableObjectString(26);
     }
 }

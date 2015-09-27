@@ -44,7 +44,7 @@ public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implem
     @Override
     public IProgWidget getOutputWidget(IDroneBase drone, List<IProgWidget> allWidgets){
         if(evaluator != null) {
-            return ProgWidgetJump.jumpToLabel(allWidgets, this, evaluate(drone, this));
+            return ProgWidgetJump.jumpToLabel(drone, allWidgets, this, evaluate(drone, this));
         } else {
             Log.error("Shouldn't be happening! ProgWidgetCondition");
             return super.getOutputWidget(drone, allWidgets);
