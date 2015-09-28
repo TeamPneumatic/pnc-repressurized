@@ -10,6 +10,7 @@ import java.util.Set;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -129,21 +130,23 @@ public class ModuleAirGrate extends TubeModule{
                     entity.setDead();
                 }
             } else {
-                Vec3 entityVec = Vec3.createVectorHelper(entity.posX, entity.posY, entity.posZ);
-                MovingObjectPosition trace = worldObj.rayTraceBlocks(entityVec, tileVec);
-                if(trace != null && trace.blockX == xCoord && trace.blockY == yCoord && trace.blockZ == zCoord) {
-                    double d1 = (entity.posX - xCoord - 0.5D) / d0;
-                    double d2 = (entity.posY - yCoord - 0.5D) / d0;
-                    double d3 = (entity.posZ - zCoord - 0.5D) / d0;
-                    double d4 = Math.sqrt(d1 * d1 + d2 * d2 + d3 * d3);
-                    double d5 = 1.0D - d4;
+                if(!(entity instanceof EntityPlayer) || !((EntityPlayer)entity).capabilities.isCreativeMode) {
+                    Vec3 entityVec = Vec3.createVectorHelper(entity.posX, entity.posY, entity.posZ);
+                    MovingObjectPosition trace = worldObj.rayTraceBlocks(entityVec, tileVec);
+                    if(trace != null && trace.blockX == xCoord && trace.blockY == yCoord && trace.blockZ == zCoord) {
+                        double d1 = (entity.posX - xCoord - 0.5D) / d0;
+                        double d2 = (entity.posY - yCoord - 0.5D) / d0;
+                        double d3 = (entity.posZ - zCoord - 0.5D) / d0;
+                        double d4 = Math.sqrt(d1 * d1 + d2 * d2 + d3 * d3);
+                        double d5 = 1.0D - d4;
 
-                    if(d5 > 0.0D) {
-                        d5 *= d5;
-                        if(!vacuum) d5 *= -1;
-                        entity.motionX -= d1 / d4 * d5 * 0.1D;
-                        entity.motionY -= d2 / d4 * d5 * 0.1D;
-                        entity.motionZ -= d3 / d4 * d5 * 0.1D;
+                        if(d5 > 0.0D) {
+                            d5 *= d5;
+                            if(!vacuum) d5 *= -1;
+                            entity.motionX -= d1 / d4 * d5 * 0.1D;
+                            entity.motionY -= d2 / d4 * d5 * 0.1D;
+                            entity.motionZ -= d3 / d4 * d5 * 0.1D;
+                        }
                     }
                 }
             }
