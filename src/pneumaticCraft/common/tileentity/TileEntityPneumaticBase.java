@@ -47,7 +47,7 @@ public class TileEntityPneumaticBase extends TileEntityBase implements IManoMeas
     public int currentAir;
     public int soundCounter;
     public TileEntity parentTile;
-    private final Set<IAirHandler> specialConnectedHandlers = new HashSet<IAirHandler>();
+    protected final Set<IAirHandler> specialConnectedHandlers = new HashSet<IAirHandler>();
 
     public TileEntityPneumaticBase(float dangerPressure, float criticalPressure, int volume){
         if(volume <= 0) throw new IllegalArgumentException("Volume can't be lower than or equal to 0!");

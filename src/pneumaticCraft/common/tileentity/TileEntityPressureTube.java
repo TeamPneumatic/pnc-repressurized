@@ -131,9 +131,9 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase{
                 break;
             }
         }
-        if(!hasModules && teList.size() == 1 && !worldObj.isRemote) {
+        if(!hasModules && teList.size() - specialConnectedHandlers.size() == 1 && !worldObj.isRemote) {
             for(Pair<ForgeDirection, IAirHandler> entry : teList) {
-                if(modules[entry.getKey().getOpposite().ordinal()] == null && isConnectedTo(entry.getKey().getOpposite())) airLeak(entry.getKey().getOpposite());
+                if(entry.getKey() != ForgeDirection.UNKNOWN && modules[entry.getKey().getOpposite().ordinal()] == null && isConnectedTo(entry.getKey().getOpposite())) airLeak(entry.getKey().getOpposite());
             }
         }
     }
