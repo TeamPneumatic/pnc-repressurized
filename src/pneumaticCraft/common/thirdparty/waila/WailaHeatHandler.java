@@ -1,15 +1,12 @@
 package pneumaticCraft.common.thirdparty.waila;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 import mcp.mobius.waila.api.IWailaDataProvider;
-import mcp.mobius.waila.api.SpecialChars;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
@@ -41,22 +38,14 @@ public class WailaHeatHandler implements IWailaDataProvider{
 
     public static void addTipToMachine(List<String> currenttip, IWailaDataAccessor accessor){
         NBTTagCompound tag = accessor.getNBTData();
-        //This is used so that we can split values later easier and have them all in the same layout.
-        Map<String, String> values = new HashMap<String, String>();
-
         if(tag.hasKey("heat")) {
             NBTTagList tagList = tag.getTagList("heat", 10);
             for(int i = 0; i < tagList.tagCount(); i++) {
                 NBTTagCompound heatTag = tagList.getCompoundTagAt(i);
-                values.put("waila.temperature." + ForgeDirection.getOrientation(heatTag.getByte("side")).toString().toLowerCase(), heatTag.getInteger("temp") - 273 + "C");
+                currenttip.add(I18n.format("waila.temperature." + ForgeDirection.getOrientation(heatTag.getByte("side")).toString().toLowerCase(), heatTag.getInteger("temp") - 273));
             }
         } else {
-            values.put("waila.temperature", tag.getInteger("temp") - 273 + "C");
-        }
-
-        //Get all the values from the map and put them in the list.
-        for(Map.Entry<String, String> entry : values.entrySet()) {
-            currenttip.add(I18n.format(entry.getKey()) + ": " + /*SpecialChars.ALIGNRIGHT +*/SpecialChars.WHITE + entry.getValue());
+            currenttip.add(I18n.format("waila.temperature", tag.getInteger("temp") - 273));
         }
     }
 

@@ -7,7 +7,6 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -186,6 +185,6 @@ public class SemiBlockHeatFrame extends SemiBlockBasic implements IHeatExchanger
     @Override
     public void addWailaTooltip(List<String> curInfo, NBTTagCompound tag){
         super.addWailaTooltip(curInfo, tag);
-        curInfo.add(StatCollector.translateToLocal("waila.temperature") + ": " + EnumChatFormatting.WHITE + (tag.getInteger("temp") - 273) + "C");
+        curInfo.add(StatCollector.translateToLocalFormatted("waila.temperature", tag.getInteger("temp") - 273));
     }
 }

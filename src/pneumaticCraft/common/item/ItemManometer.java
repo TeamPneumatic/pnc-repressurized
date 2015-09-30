@@ -3,13 +3,13 @@ package pneumaticCraft.common.item;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.IChatComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.api.IHeatExchangerLogic;
@@ -36,29 +36,32 @@ public class ItemManometer extends ItemPressurizable{
         if(((IPressurizable)iStack.getItem()).getPressure(iStack) > 0F) {
             TileEntity te = world.getTileEntity(x, y, z);
             IPneumaticMachine machine = ModInteractionUtils.getInstance().getMachine(te);
-            List<String> curInfo = new ArrayList<String>();
+            List<IChatComponent> curInfo = new ArrayList<IChatComponent>();
+            List<String> info = new ArrayList<String>();
             if(te instanceof IManoMeasurable) {
-                ((IManoMeasurable)te).printManometerMessage(player, curInfo);
+                ((IManoMeasurable)te).printManometerMessage(player, info);
             } else if(machine != null) {
-                machine.getAirHandler().printManometerMessage(player, curInfo);
+                machine.getAirHandler().printManometerMessage(player, info);
             }
+            for(String s : info)
+                curInfo.add(new ChatComponentTranslation(s));
             if(te instanceof IHeatExchanger) {
                 IHeatExchangerLogic exchanger = ((IHeatExchanger)te).getHeatExchangerLogic(ForgeDirection.getOrientation(side));
                 if(exchanger != null) {
-                    curInfo.add(I18n.format("waila.temperature") + ": " + ((int)exchanger.getTemperature() - 273) + "C");
+                    curInfo.add(new ChatComponentTranslation("waila.temperature", (int)exchanger.getTemperature() - 273));
                 } else {
                     for(ForgeDirection d : ForgeDirection.VALID_DIRECTIONS) {
                         exchanger = ((IHeatExchanger)te).getHeatExchangerLogic(d);
                         if(exchanger != null) {
-                            curInfo.add(I18n.format("waila.temperature." + d.toString().toLowerCase()) + ": " + ((int)exchanger.getTemperature() - 273) + "C");
+                            curInfo.add(new ChatComponentTranslation("waila.temperature." + d.toString().toLowerCase(), (int)exchanger.getTemperature() - 273));
                         }
                     }
                 }
             }
             if(curInfo.size() > 0) {
                 ((IPressurizable)iStack.getItem()).addAir(iStack, -30);
-                for(String s : curInfo) {
-                    player.addChatComponentMessage(new ChatComponentTranslation(s));
+                for(IChatComponent s : curInfo) {
+                    player.addChatComponentMessage(s);
                 }
                 return true;
             }
