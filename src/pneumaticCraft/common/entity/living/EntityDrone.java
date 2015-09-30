@@ -37,7 +37,6 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.ItemInWorldManager;
 import net.minecraft.stats.StatBase;
-import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumChatFormatting;
@@ -875,7 +874,6 @@ public class EntityDrone extends EntityDroneBase implements IManoMeasurable, IIn
 
     @Override
     public boolean isBlockValidPathfindBlock(int x, int y, int z){
-        if(isBlockHigherThan1(worldObj, x, y - 1, z)) return false;
         if(worldObj.isAirBlock(x, y, z)) return true;
         Block block = worldObj.getBlock(x, y, z);
         if(block.getBlocksMovement(worldObj, x, y, z) && block != Blocks.ladder && (!PneumaticCraftUtils.isBlockLiquid(block) || hasLiquidImmunity)) return true;
@@ -885,16 +883,6 @@ public class EntityDrone extends EntityDroneBase implements IManoMeasurable, IIn
         } else {
             return false;
         }
-    }
-
-    private boolean isBlockHigherThan1(World world, int x, int y, int z){
-        List<AxisAlignedBB> aabbs = new ArrayList<AxisAlignedBB>();
-        Block block = world.getBlock(x, y, z);
-        block.addCollisionBoxesToList(world, x, y, z, AxisAlignedBB.getBoundingBox(x, y, z, x + 1, y + 1, z + 1), aabbs, null);
-        for(AxisAlignedBB aabb : aabbs) {
-            if(aabb.maxY > y + 1) return true;
-        }
-        return false;
     }
 
     @Override
