@@ -281,6 +281,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
             if(slot == 0) {
                 if(itemStack != null && isProgrammableAndValidForDrone(this, itemStack)) {
                     progWidgets = TileEntityProgrammer.getProgWidgets(itemStack);
+                    if(!worldObj.isRemote) getAIManager().setWidgets(progWidgets);
                 } else {
                     progWidgets.clear();
                     targetX = xCoord + 0.5;
@@ -621,6 +622,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
     public void setName(String string){
         droneName = string;
         if(drone != null) drone.setCustomNameTag(droneName);
+        if(inventory[0] != null) inventory[0].setStackDisplayName(string);
     }
 
     @Override
@@ -687,8 +689,10 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
 
     @Override
     public DroneAIManager getAIManager(){
-        if(worldObj != null && !worldObj.isRemote) {
-            aiManager = new DroneAIManager(this);
+        if(aiManager == null && worldObj != null && !worldObj.isRemote) {
+            aiManager = new DroneAIManager(this, new ArrayList<IProgWidget>());
+            aiManager.setWidgets(getProgWidgets());
+            aiManager.dontStopWhenEndReached();
         }
         return aiManager;
     }

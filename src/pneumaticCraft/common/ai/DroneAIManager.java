@@ -69,6 +69,10 @@ public class DroneAIManager{
         setWidgets(progWidgets);
     }
 
+    public void dontStopWhenEndReached(){
+        stopWhenEndReached = false;
+    }
+
     public void setWidgets(List<IProgWidget> progWidgets){
         this.progWidgets = progWidgets;
         for(IProgWidget widget : progWidgets) {
