@@ -90,19 +90,23 @@ public class GuiAphorismTile extends GuiScreen{
                 ArrayList arraylist = new ArrayList();
                 BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(Minecraft.getMinecraft().getResourceManager().getResource(splashTexts).getInputStream(), Charsets.UTF_8));
 
-                while((s = bufferedreader.readLine()) != null) {
-                    s = s.trim();
+                try {
+                    while((s = bufferedreader.readLine()) != null) {
+                        s = s.trim();
 
-                    if(!s.isEmpty()) {
-                        arraylist.add(s);
+                        if(!s.isEmpty()) {
+                            arraylist.add(s);
+                        }
                     }
+
+                    do {
+                        splashText = (String)arraylist.get(rand.nextInt(arraylist.size()));
+                    } while(splashText.hashCode() == 125780783);
+                } finally {
+                    bufferedreader.close();
                 }
-
-                do {
-                    splashText = (String)arraylist.get(rand.nextInt(arraylist.size()));
-                } while(splashText.hashCode() == 125780783);
             } catch(IOException ioexception) {
-
+                ioexception.printStackTrace();
             }
         } else {
             DramaSplash.newDrama();

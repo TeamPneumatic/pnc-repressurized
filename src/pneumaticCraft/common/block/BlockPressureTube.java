@@ -286,11 +286,6 @@ public class BlockPressureTube extends BlockPneumaticCraftModeled{
                 double d2 = par4 + 0.5D + (par5Random.nextFloat() - 0.5D) * 0.5D;
                 float f = l / 15.0F;
                 float f1 = f * 0.6F + 0.4F;
-
-                if(l == 0) {
-                    f1 = 0.0F;
-                }
-
                 float f2 = f * f * 0.7F - 0.5F;
                 float f3 = f * f * 0.6F - 0.7F;
                 if(f2 < 0.0F) {

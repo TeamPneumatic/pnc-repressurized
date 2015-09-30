@@ -292,17 +292,21 @@ public class ClientProxy extends CommonProxy{
         if(optionsFile.exists()) {
             try {
                 BufferedReader bufferedreader = new BufferedReader(new FileReader(optionsFile));
-                String s = "";
 
-                while((s = bufferedreader.readLine()) != null) {
-                    try {
-                        String[] astring = s.split(":");
-                        if(astring[0].startsWith("key_")) {
-                            keybindToKeyCodes.put(astring[0].substring(4), Integer.parseInt(astring[1]));
+                try {
+                    String s = "";
+                    while((s = bufferedreader.readLine()) != null) {
+                        try {
+                            String[] astring = s.split(":");
+                            if(astring[0].startsWith("key_")) {
+                                keybindToKeyCodes.put(astring[0].substring(4), Integer.parseInt(astring[1]));
+                            }
+                        } catch(Exception exception) {
+                            Log.warning("Skipping bad option: " + s);
                         }
-                    } catch(Exception exception) {
-                        Log.warning("Skipping bad option: " + s);
                     }
+                } finally {
+                    bufferedreader.close();
                 }
             } catch(Exception exception1) {
                 Log.error("Failed to load options");

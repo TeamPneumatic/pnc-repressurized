@@ -88,6 +88,7 @@ public class FakePlayerItemInWorldManager extends ItemInWorldManager{
 
             if(removeBlock(x, y, z)) {
                 block.harvestBlock(theWorld, thisPlayerMP, x, y, z, l);
+                flag = true;
             }
 
             // Drop experience
