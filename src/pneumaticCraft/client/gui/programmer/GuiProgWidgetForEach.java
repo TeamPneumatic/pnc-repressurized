@@ -3,13 +3,14 @@ package pneumaticCraft.client.gui.programmer;
 import net.minecraft.client.resources.I18n;
 import pneumaticCraft.client.gui.GuiProgrammer;
 import pneumaticCraft.client.gui.widget.WidgetComboBox;
-import pneumaticCraft.common.progwidgets.ProgWidgetForEachCoordinate;
+import pneumaticCraft.common.progwidgets.IProgWidget;
+import pneumaticCraft.common.progwidgets.IVariableSetWidget;
 
-public class GuiProgWidgetForEach extends GuiProgWidgetAreaShow<ProgWidgetForEachCoordinate>{
+public class GuiProgWidgetForEach extends GuiProgWidgetAreaShow{
 
     private WidgetComboBox variableField;
 
-    public GuiProgWidgetForEach(ProgWidgetForEachCoordinate widget, GuiProgrammer guiProgrammer){
+    public GuiProgWidgetForEach(IProgWidget widget, GuiProgrammer guiProgrammer){
         super(widget, guiProgrammer);
     }
 
@@ -20,13 +21,13 @@ public class GuiProgWidgetForEach extends GuiProgWidgetAreaShow<ProgWidgetForEac
         variableField = new WidgetComboBox(fontRendererObj, guiLeft + 10, guiTop + 42, 160, fontRendererObj.FONT_HEIGHT + 1);
         variableField.setElements(guiProgrammer.te.getAllVariables());
         addWidget(variableField);
-        variableField.setText(widget.getVariable());
+        variableField.setText(((IVariableSetWidget)widget).getVariable());
     }
 
     @Override
     public void keyTyped(char chr, int keyCode){
         if(keyCode == 1) {
-            widget.setVariable(variableField.getText());
+            ((IVariableSetWidget)widget).setVariable(variableField.getText());
         }
         super.keyTyped(chr, keyCode);
     }

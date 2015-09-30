@@ -285,6 +285,7 @@ programmingPuzzle.coordinateOperator.name=Coordinate Operator
 programmingPuzzle.itemAssign.name=Item Assignment
 programmingPuzzle.logistics.name=Logistics
 programmingPuzzle.forEachCoordinate.name=For Each Coordinate
+programmingPuzzle.forEachItem.name=For Each Item
 programmingPuzzle.conditionItem.name=Condition: Item Filter
 programmingPuzzle.conditionCoordinate.name=Condition: Coordinate
 programmingPuzzle.conditionRedstone.name=Condition: Redstone

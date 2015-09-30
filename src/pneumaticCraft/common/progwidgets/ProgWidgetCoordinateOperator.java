@@ -170,10 +170,12 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
         this.operator = operator;
     }
 
+    @Override
     public String getVariable(){
         return variable;
     }
 
+    @Override
     public void setVariable(String variable){
         this.variable = variable;
     }

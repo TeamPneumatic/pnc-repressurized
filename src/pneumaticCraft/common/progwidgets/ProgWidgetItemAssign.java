@@ -93,10 +93,12 @@ public class ProgWidgetItemAssign extends ProgWidget implements IVariableSetWidg
         variable = tag.getString("variable");
     }
 
+    @Override
     public String getVariable(){
         return variable;
     }
 
+    @Override
     public void setVariable(String variable){
         this.variable = variable;
     }
