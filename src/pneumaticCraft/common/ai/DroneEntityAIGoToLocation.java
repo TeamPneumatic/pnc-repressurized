@@ -40,7 +40,7 @@ public class DroneEntityAIGoToLocation extends EntityAIBase{
                 return !((IGotoWidget)gotoWidget).doneWhenDeparting();
             }
         }
-        return ((EntityPathNavigateDrone)drone.getPathNavigator()).isGoingToTeleport();
+        return drone.getPathNavigator().isGoingToTeleport();
 
     }
 

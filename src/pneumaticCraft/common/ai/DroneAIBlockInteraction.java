@@ -156,7 +156,7 @@ public abstract class DroneAIBlockInteraction<Widget extends ProgWidgetAreaItemB
                                         }
                                     }
                                 }
-                                if(((EntityPathNavigateDrone)drone.getPathNavigator()).isGoingToTeleport()) {
+                                if(drone.getPathNavigator().isGoingToTeleport()) {
                                     searching = false;
                                     totalActions++;
                                     if(respectClaims()) DroneClaimManager.getInstance(drone.getWorld()).claim(pos);

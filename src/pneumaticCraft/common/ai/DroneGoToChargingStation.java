@@ -53,7 +53,7 @@ public class DroneGoToChargingStation extends EntityAIBase{
         });
 
         for(TileEntityChargingStation station : validChargingStations) {
-            if(PneumaticCraftUtils.getProtectingSecurityStations(drone.worldObj, station.xCoord, station.yCoord, station.zCoord, drone.getFakePlayer(), false, false) == 0 && drone.getPathNavigator().moveToXYZ(station.xCoord, station.yCoord + 1.5, station.zCoord) || ((EntityPathNavigateDrone)drone.getPathNavigator()).isGoingToTeleport()) {
+            if(PneumaticCraftUtils.getProtectingSecurityStations(drone.worldObj, station.xCoord, station.yCoord, station.zCoord, drone.getFakePlayer(), false, false) == 0 && drone.getPathNavigator().moveToXYZ(station.xCoord, station.yCoord + 1.5, station.zCoord) || drone.getPathNavigator().isGoingToTeleport()) {
                 isExecuting = true;
                 curCharger = station;
                 DroneClaimManager.getInstance(drone.worldObj).claim(new ChunkPosition(station.xCoord, station.yCoord, station.zCoord));
@@ -72,7 +72,7 @@ public class DroneGoToChargingStation extends EntityAIBase{
         if(curCharger.getUpgrades(ItemMachineUpgrade.UPGRADE_DISPENSER_DAMAGE) == 0 || curCharger.isInvalid()) {//If our path was blocked.
             isExecuting = false;
             return false;
-        } else if(!((EntityPathNavigateDrone)drone.getPathNavigator()).isGoingToTeleport() && (drone.getNavigator().getPath() == null || drone.getNavigator().getPath().isFinished())) {
+        } else if(!drone.getPathNavigator().isGoingToTeleport() && (drone.getNavigator().getPath() == null || drone.getNavigator().getPath().isFinished())) {
             isExecuting = drone.getPressure(null) < 9.9F && curCharger.getPressure(ForgeDirection.UNKNOWN) > drone.getPressure(null) + 0.1F;
             if(isExecuting) {
                 chargingTime++;

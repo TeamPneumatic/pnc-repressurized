@@ -539,6 +539,11 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
                 return targetX == curX && targetY == curY && targetZ == curZ;
             }
 
+            @Override
+            public boolean isGoingToTeleport(){
+                return false;
+            }
+
         };
     }
 

@@ -108,6 +108,7 @@ public class EntityPathNavigateDrone extends PathNavigate implements IPathNaviga
         return (float)pathfindingEntity.getRange();
     }
 
+    @Override
     public boolean isGoingToTeleport(){
         return teleportCounter >= 0;
     }

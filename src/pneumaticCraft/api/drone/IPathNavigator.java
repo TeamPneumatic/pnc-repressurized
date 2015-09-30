@@ -8,4 +8,6 @@ public interface IPathNavigator{
     public boolean moveToEntity(Entity entity);
 
     public boolean hasNoPath();
+
+    public boolean isGoingToTeleport();
 }
