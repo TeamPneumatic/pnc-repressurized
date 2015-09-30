@@ -113,6 +113,7 @@ public interface IAirHandler extends IManoMeasurable{
 
     /**
      * Creates an air connection with another handler. Can be used to connect up pneumatic machines that aren't neighboring, like AE2's P2P tunnels.
+     * This is a custom method that isn't necessary 99% of the cases. Only when you want to connect two IAirHandler's that aren't adjacent to eachother in the world you should need this.
      * @param otherHandler
      */
     public void createConnection(IAirHandler otherHandler);

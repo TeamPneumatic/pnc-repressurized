@@ -1,1 +1,6 @@
--Now with 100% less SMP crashing on startup.
+-Air Grate Tube now doesn't affect the motion of player in creative mode anymore.
+
+-Bugfix: [SMP] Crash with Manometer when interacting with a heat block.
+-Bugfix: Programmable Controller keeps emitting a redstone signal if the program is taken out.
+-Bugfix: Programmable Controller doesn't work.
+-Bugfix: Crash on certain conditions with the Programmable Controller.
