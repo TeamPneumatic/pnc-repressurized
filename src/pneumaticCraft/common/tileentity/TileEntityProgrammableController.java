@@ -397,8 +397,8 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
     }
 
     @Override
-    public void validate(){
-        super.validate();
+    protected void onFirstServerUpdate(){
+        super.onFirstServerUpdate();
         setInventorySlotContents(0, getStackInSlot(0));
     }
 
