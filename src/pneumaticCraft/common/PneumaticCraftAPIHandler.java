@@ -53,7 +53,7 @@ public class PneumaticCraftAPIHandler implements IPneumaticCraftInterface{
     public final List<IInventoryItem> inventoryItems = new ArrayList<IInventoryItem>();
     public final List<Integer> concealableRenderIds = new ArrayList<Integer>();
     public final Map<Fluid, Integer> liquidXPs = new HashMap<Fluid, Integer>();
-    public final Map<Fluid, Integer> liquidFuels = new HashMap<Fluid, Integer>();
+    public final Map<String, Integer> liquidFuels = new HashMap<String, Integer>();
 
     private PneumaticCraftAPIHandler(){
         concealableRenderIds.add(0);
@@ -186,11 +186,11 @@ public class PneumaticCraftAPIHandler implements IPneumaticCraftInterface{
     public void registerFuel(Fluid fluid, int mLPerBucket){
         if(fluid == null) throw new NullPointerException("Fluid can't be null!");
         if(mLPerBucket < 0) throw new IllegalArgumentException("mLPerBucket can't be < 0");
-        if(liquidFuels.containsKey(fluid)) {
-            Log.info("Overriding liquid fuel entry " + fluid.getLocalizedName(new FluidStack(fluid, 1)) + " (" + fluid.getName() + ") with a fuel value of " + mLPerBucket + " (previously " + liquidFuels.get(fluid) + ")");
-            if(mLPerBucket == 0) liquidFuels.remove(fluid);
+        if(liquidFuels.containsKey(fluid.getName())) {
+            Log.info("Overriding liquid fuel entry " + fluid.getLocalizedName(new FluidStack(fluid, 1)) + " (" + fluid.getName() + ") with a fuel value of " + mLPerBucket + " (previously " + liquidFuels.get(fluid.getName()) + ")");
+            if(mLPerBucket == 0) liquidFuels.remove(fluid.getName());
         }
-        if(mLPerBucket > 0) liquidFuels.put(fluid, mLPerBucket);
+        if(mLPerBucket > 0) liquidFuels.put(fluid.getName(), mLPerBucket);
     }
 
     @Override

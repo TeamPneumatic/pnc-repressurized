@@ -25,7 +25,7 @@ public class EnderIO implements IThirdParty{
     }
 
     private void registerFuel(Fluid fluid){
-        registerFuel(fluid, 60, PneumaticCraftAPIHandler.getInstance().liquidFuels.get(fluid) / 60);
+        registerFuel(fluid, 60, PneumaticCraftAPIHandler.getInstance().liquidFuels.get(fluid.getName()) / 60);
     }
 
     private void registerFuel(Fluid fluid, int powerPerCycle, int burnTime){

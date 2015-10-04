@@ -46,7 +46,7 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
     }
 
     private int getFuelValue(Fluid fluid){
-        Integer value = PneumaticCraftAPIHandler.getInstance().liquidFuels.get(fluid);
+        Integer value = PneumaticCraftAPIHandler.getInstance().liquidFuels.get(fluid.getName());
         return value == null ? 0 : value;
     }
 

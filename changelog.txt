@@ -1,6 +1,5 @@
--Air Grate Tube now doesn't affect the motion of player in creative mode anymore.
+-Improved Drone pathfinding performance.
+-Added For Each Item piece.
 
--Bugfix: [SMP] Crash with Manometer when interacting with a heat block.
--Bugfix: Programmable Controller keeps emitting a redstone signal if the program is taken out.
--Bugfix: Programmable Controller doesn't work.
--Bugfix: Crash on certain conditions with the Programmable Controller.
+-Bugfix: Programmable Controller inventory clears on world reload.
+-Bugfix: Liquid Compressor is picky about which Gasoline/Fuel to supply (when having Buildcraft installed).

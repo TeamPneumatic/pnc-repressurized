@@ -14,6 +14,7 @@ import net.minecraft.init.Items;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import pneumaticCraft.client.gui.widget.WidgetTank;
 import pneumaticCraft.common.PneumaticCraftAPIHandler;
@@ -66,12 +67,13 @@ public class GuiLiquidCompressor extends GuiPneumaticContainerBase<TileEntityLiq
     private List<String> getAllFuels(){
         List<String> fuels = new ArrayList<String>();
         fuels.add("L/Bucket | Fluid");
-        for(Map.Entry<Fluid, Integer> map : sortByValue(PneumaticCraftAPIHandler.getInstance().liquidFuels).entrySet()) {
+        for(Map.Entry<String, Integer> map : sortByValue(PneumaticCraftAPIHandler.getInstance().liquidFuels).entrySet()) {
             String value = map.getValue() / 1000 + "";
             while(fontRendererObj.getStringWidth(value) < 25) {
                 value = value + " ";
             }
-            fuels.add(value + "| " + map.getKey().getLocalizedName(new FluidStack(map.getKey(), 1)));
+            Fluid fluid = FluidRegistry.getFluid(map.getKey());
+            fuels.add(value + "| " + fluid.getLocalizedName(new FluidStack(fluid, 1)));
         }
         return fuels;
     }
