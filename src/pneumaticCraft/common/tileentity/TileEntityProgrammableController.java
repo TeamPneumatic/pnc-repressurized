@@ -326,7 +326,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
             NBTTagCompound tagCompound = tagList.getCompoundTagAt(i);
             byte slot = tagCompound.getByte("Slot");
             if(slot >= 0 && slot < inventory.length) {
-                setInventorySlotContents(slot, ItemStack.loadItemStackFromNBT(tagCompound));
+                inventory[slot] = ItemStack.loadItemStackFromNBT(tagCompound);
             }
         }
 
@@ -394,7 +394,12 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
             extendedList.appendTag(propertyTag);
         }
         tag.setTag("extendedProperties", extendedList);
+    }
 
+    @Override
+    public void validate(){
+        super.validate();
+        setInventorySlotContents(0, getStackInSlot(0));
     }
 
     private int getDroneSlots(){
