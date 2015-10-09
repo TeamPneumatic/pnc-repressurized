@@ -12,6 +12,7 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.village.MerchantRecipe;
 import net.minecraft.village.MerchantRecipeList;
+import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.RecipeSorter;
@@ -149,6 +150,7 @@ public class CraftingRegistrator{
         RecipeSorter.register("pneumaticcraft:colorDrone", RecipeColorDrone.class, Category.SHAPELESS, "after:minecraft:shapeless");
         RecipeSorter.register("pneumaticcraft:logisticToDrone", RecipeLogisticToDrone.class, Category.SHAPELESS, "after:minecraft:shapeless");
         RecipeSorter.register("pneumaticcraft:gunAmmo", RecipeGunAmmo.class, Category.SHAPELESS, "after:minecraft:shapeless");
+        RecipeSorter.register("pneumaticcraft:fluid", RecipeFluid.class, Category.SHAPED, "after:minecraft:shaped");
 
         //Heat related
         addRecipe(new ItemStack(Blockss.heatSink), "bbb", "igi", 'i', Names.INGOT_IRON_COMPRESSED, 'b', Blocks.iron_bars, 'g', "ingotGold");
@@ -346,10 +348,25 @@ public class CraftingRegistrator{
     }
 
     private static void addRecipe(ItemStack result, Object... recipe){
-        GameRegistry.addRecipe(new ShapedOreRecipe(result, recipe));
+        ShapedOreRecipe newRecipe = new ShapedOreRecipe(result, recipe);
+        GameRegistry.addRecipe(newRecipe);
+        scanForFluids(newRecipe);
     }
 
     public static void addShapelessRecipe(ItemStack result, Object... recipe){
         GameRegistry.addRecipe(new ShapelessOreRecipe(result, recipe));
+    }
+
+    private static void scanForFluids(ShapedOreRecipe recipe){
+        for(int i = 0; i < recipe.getRecipeSize(); i++) {
+            Object o = recipe.getInput()[i];
+            if(o instanceof ItemStack) {
+                ItemStack stack = (ItemStack)o;
+                FluidStack fluid = FluidContainerRegistry.getFluidForFilledItem(stack);
+                if(fluid != null) {
+                    GameRegistry.addRecipe(new RecipeFluid(recipe, i));
+                }
+            }
+        }
     }
 }
