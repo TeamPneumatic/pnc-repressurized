@@ -33,6 +33,14 @@ public class Chisel implements IThirdParty{
             }
         }
 
+        if(modClass == null) {
+            try {
+                modClass = Class.forName("team.chisel.Chisel");
+            } catch(ClassNotFoundException e) {
+
+            }
+        }
+
         if(modClass != null) {
             try {
                 PneumaticRegistry.getInstance().registerConcealableRenderId(ReflectionHelper.findField(modClass, "renderEldritchId").getInt(null));
