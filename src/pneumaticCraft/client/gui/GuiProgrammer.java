@@ -598,7 +598,6 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
                                         arrowVec.rotateAroundZ(-2 * arrowAngle);
                                         GL11.glVertex3d(guiLeft + midX, guiTop + midY, zLevel);
                                         GL11.glVertex3d(guiLeft + midX + arrowVec.xCoord, guiTop + midY + arrowVec.yCoord, zLevel);
-                                        break;
                                     }
                                 }
                             }

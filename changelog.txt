@@ -1,1 +1,9 @@
--Bugfix: StackOverFlowException with Programmable Controller.
+-Added option for the External Program piece to share its variables to the calling program.
+-Entity Tracker recticle now is colored depending on the targeted entity.
+-The Liquid Condition now also considers fluid blocks.
+-Block Condition set to 'check for air' now still also looks at the connected item filters.
+-Any jump in the program (Jump/Condition/For Each) with multiple labels with the same name will now jump to a random label with this label, instead of the first only.
+
+-Bugfix: Speed Upgrades can't be crafted with a foreign Lubricant Bucket.
+-Bugfix: Chisel branch http://minecraft.curseforge.com/projects/chisel doesn't work with camouflaging.
+-Bugfix: Drone program call hierarchy of the entity tracker isn't always accurate.

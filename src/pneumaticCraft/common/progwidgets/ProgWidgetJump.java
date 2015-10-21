@@ -1,7 +1,9 @@
 package pneumaticCraft.common.progwidgets;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 import net.minecraft.util.ResourceLocation;
 import pneumaticCraft.common.ai.IDroneBase;
@@ -54,15 +56,16 @@ public class ProgWidgetJump extends ProgWidget implements IJump{
     }
 
     public static IProgWidget jumpToLabel(List<IProgWidget> allWidgets, String label){
+        List<IProgWidget> possibleJumpLocations = new ArrayList<IProgWidget>();
         for(IProgWidget widget : allWidgets) {
             if(widget instanceof ILabel) {
                 String labelLabel = ((ILabel)widget).getLabel();
                 if(labelLabel != null && labelLabel.equals(label)) {
-                    return widget;
+                    possibleJumpLocations.add(widget);
                 }
             }
         }
-        return null;
+        return possibleJumpLocations.size() == 0 ? null : possibleJumpLocations.get(new Random().nextInt(possibleJumpLocations.size()));
     }
 
     @Override
