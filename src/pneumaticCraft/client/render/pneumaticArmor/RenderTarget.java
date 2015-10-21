@@ -8,6 +8,8 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityUtils;
+import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -24,6 +26,7 @@ import pneumaticCraft.client.gui.widget.GuiAnimatedStat;
 import pneumaticCraft.client.render.RenderProgressBar;
 import pneumaticCraft.client.render.pneumaticArmor.entitytracker.EntityTrackHandler;
 import pneumaticCraft.client.render.pneumaticArmor.hacking.HackableHandler;
+import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.PacketHackingEntityStart;
 import pneumaticCraft.lib.Sounds;
@@ -123,10 +126,24 @@ public class RenderTarget{
 
         GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
 
-        float red = 0.5F;
-        float green = 0.5F;
-        float blue = 1.0F;
+        float red;
+        float green;
+        float blue;
         float alpha = 0.5F;
+        if(entity instanceof EntityDrone) {
+            red = 1;
+            green = 1;
+            blue = 0;
+        } else if(entity instanceof EntityMob || entity instanceof EntitySlime) {
+            red = 1;
+            green = 0;
+            blue = 0;
+        } else {
+            red = 0;
+            green = 1;
+            blue = 0;
+        }
+
         float size = entity.height * 0.5F;
 
         if(ticksExisted < 60) {
