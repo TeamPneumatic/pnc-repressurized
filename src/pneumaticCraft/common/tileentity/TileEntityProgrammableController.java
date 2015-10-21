@@ -708,5 +708,5 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
     }
 
     @Override
-    public void setLabel(String label){}
+    public void updateLabel(){}
 }

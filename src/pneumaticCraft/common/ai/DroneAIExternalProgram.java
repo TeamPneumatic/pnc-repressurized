@@ -92,10 +92,10 @@ public class DroneAIExternalProgram extends DroneAIBlockInteraction<ProgWidgetEx
 
                         if(areWidgetsValid) {
                             if(widget.shareVariables) mainAI.connectVariables(subAI);
+                            subAI.getDrone().getAIManager().setLabel("Main");
                             subAI.setWidgets(widgets);
                             curProgramTag = stack.getTagCompound();
                             if(!subAI.isIdling()) {
-                                subAI.getDrone().getAIManager().setLabel("Main");
                                 return true;
                             }
                         }

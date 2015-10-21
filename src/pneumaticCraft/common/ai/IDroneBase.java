@@ -19,7 +19,6 @@ public interface IDroneBase extends IDrone{
 
     /**
      * Sets the label that was jumped to last, with a hierarchy in case of External Programs.
-     * @param label
      */
-    public void setLabel(String label);
+    public void updateLabel();
 }

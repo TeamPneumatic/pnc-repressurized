@@ -431,15 +431,16 @@ public class DroneAIManager{
     }
 
     public void setLabel(String label){
-        if(curWidgetAI instanceof DroneAIExternalProgram) {
-            label = ((DroneAIExternalProgram)curWidgetAI).getRunningAI().getLabel() + " --> " + label;
-        }
         currentLabel = label;
-        drone.setLabel(label);
+        drone.updateLabel();
     }
 
     public String getLabel(){
-        return currentLabel;
+        if(curWidgetAI instanceof DroneAIExternalProgram) {
+            return ((DroneAIExternalProgram)curWidgetAI).getRunningAI().getLabel() + " --> " + currentLabel;
+        } else {
+            return currentLabel;
+        }
     }
 
     public class EntityAITaskEntry{

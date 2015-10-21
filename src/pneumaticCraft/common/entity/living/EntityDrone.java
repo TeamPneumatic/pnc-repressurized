@@ -1355,8 +1355,8 @@ public class EntityDrone extends EntityDroneBase implements IManoMeasurable, IIn
     }
 
     @Override
-    public void setLabel(String label){
-        dataWatcher.updateObject(26, label);
+    public void updateLabel(){
+        dataWatcher.updateObject(26, getAIManager() != null ? getAIManager().getLabel() : "Main");
     }
 
     public String getLabel(){
