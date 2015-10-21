@@ -1,7 +1,5 @@
 package pneumaticCraft.common.progwidgets;
 
-import java.util.List;
-
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.nbt.NBTTagCompound;
@@ -38,12 +36,16 @@ public class ProgWidgetBlockCondition extends ProgWidgetCondition{
             @Override
             protected boolean evaluate(ChunkPosition pos){
                 if(checkingForAir) {
-                    return drone.getWorld().isAirBlock(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ);
+                    if(drone.getWorld().isAirBlock(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ)) return true;
+                    if(getConnectedParameters()[1] != null) {
+                        return DroneAIDig.isBlockValidForFilter(drone.getWorld(), drone, pos, widget);
+                    } else {
+                        return false;
+                    }
                 } else {
                     return DroneAIDig.isBlockValidForFilter(drone.getWorld(), drone, pos, widget);
                 }
             }
-
         };
     }
 
@@ -91,14 +93,6 @@ public class ProgWidgetBlockCondition extends ProgWidgetCondition{
     public void readFromNBT(NBTTagCompound tag){
         super.readFromNBT(tag);
         checkingForAir = tag.getBoolean("checkingForAir");
-    }
-
-    @Override
-    public void addErrors(List<String> curInfo, List<IProgWidget> widgets){
-        super.addErrors(curInfo, widgets);
-        if(checkingForAir && (getConnectedParameters()[1] != null || getConnectedParameters()[getParameters().length * 2 - 2] != null)) {
-            curInfo.add("gui.progWidget.conditionBlock.selectedAirAndItemFilter");
-        }
     }
 
 }
