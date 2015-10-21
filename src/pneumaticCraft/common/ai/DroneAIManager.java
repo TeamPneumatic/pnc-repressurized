@@ -50,8 +50,8 @@ public class DroneAIManager{
     private boolean wasAIOveridden;
     private String currentLabel = "Main";//Holds the name of the last label that was jumped to.
 
-    private final Map<String, ChunkPosition> coordinateVariables = new HashMap<String, ChunkPosition>();
-    private final Map<String, ItemStack> itemVariables = new HashMap<String, ItemStack>();
+    private Map<String, ChunkPosition> coordinateVariables = new HashMap<String, ChunkPosition>();
+    private Map<String, ItemStack> itemVariables = new HashMap<String, ItemStack>();
     private final Stack<IProgWidget> jumpBackWidgets = new Stack<IProgWidget>();//Used to jump back to a for each widget.
 
     private static final int MAX_JUMP_STACK_SIZE = 100;
@@ -81,6 +81,11 @@ public class DroneAIManager{
             }
         }
         gotoFirstWidget();
+    }
+
+    public void connectVariables(DroneAIManager subAI){
+        subAI.coordinateVariables = coordinateVariables;
+        subAI.itemVariables = itemVariables;
     }
 
     public boolean isIdling(){
@@ -452,4 +457,5 @@ public class DroneAIManager{
             action = par3EntityAIBase;
         }
     }
+
 }

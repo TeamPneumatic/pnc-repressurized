@@ -672,6 +672,8 @@ gui.progWidget.liquidExport.placeFluidInWorld=Place fluid in world
 gui.progWidget.coordinateOperator.plusMinus=+ -
 gui.progWidget.coordinateOperator.multiplyDivide=* /
 gui.progWidget.coordinateOperator.maxMin=Max Min
+gui.progWidget.externalProgram.shareVariables=Share Variables
+gui.progWidget.externalProgram.shareVariables.tooltip=When checked, the variables stored in the calling program will be shared with the called program.
 
 gui.progWidget.area.error.noArea=No area specified.
 gui.progWidget.general.error.emptyVariable=Variable is empty. Specify a valid variable.

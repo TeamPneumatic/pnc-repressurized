@@ -13,20 +13,21 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.ChunkPosition;
 import pneumaticCraft.api.item.IProgrammable;
 import pneumaticCraft.common.progwidgets.IProgWidget;
-import pneumaticCraft.common.progwidgets.ProgWidgetAreaItemBase;
+import pneumaticCraft.common.progwidgets.ProgWidgetExternalProgram;
 import pneumaticCraft.common.tileentity.TileEntityProgrammer;
 import pneumaticCraft.common.util.IOHelper;
 
-public class DroneAIExternalProgram extends DroneAIBlockInteraction{
+public class DroneAIExternalProgram extends DroneAIBlockInteraction<ProgWidgetExternalProgram>{
 
-    private final DroneAIManager aiManager;
+    private final DroneAIManager subAI, mainAI;
     private final Set<ChunkPosition> traversedPositions = new HashSet<ChunkPosition>();
     private int curSlot;
     private NBTTagCompound curProgramTag; //Used to see if changes have been made to the program while running it.
 
-    public DroneAIExternalProgram(IDroneBase drone, ProgWidgetAreaItemBase widget){
+    public DroneAIExternalProgram(IDroneBase drone, DroneAIManager mainAI, ProgWidgetExternalProgram widget){
         super(drone, widget);
-        aiManager = new DroneAIManager(drone, new ArrayList<IProgWidget>());
+        this.mainAI = mainAI;
+        subAI = new DroneAIManager(drone, new ArrayList<IProgWidget>());
     }
 
     @Override
@@ -62,14 +63,14 @@ public class DroneAIExternalProgram extends DroneAIBlockInteraction{
             if(curSlot < inv.getSizeInventory()) {
                 ItemStack stack = inv.getStackInSlot(curSlot);
                 if(stack != null && curProgramTag.equals(stack.getTagCompound())) {
-                    aiManager.onUpdateTasks();
-                    if(aiManager.isIdling() || isRunningSameProgram(aiManager.getCurrentAI())) {
+                    subAI.onUpdateTasks();
+                    if(subAI.isIdling() || isRunningSameProgram(subAI.getCurrentAI())) {
                         curProgramTag = null;
                         curSlot++;
                     }
                 } else {
                     curProgramTag = null;
-                    aiManager.setWidgets(new ArrayList<IProgWidget>());
+                    subAI.setWidgets(new ArrayList<IProgWidget>());
                 }
             }
             return true;
@@ -90,10 +91,11 @@ public class DroneAIExternalProgram extends DroneAIBlockInteraction{
                         }
 
                         if(areWidgetsValid) {
-                            aiManager.setWidgets(widgets);
+                            if(widget.shareVariables) mainAI.connectVariables(subAI);
+                            subAI.setWidgets(widgets);
                             curProgramTag = stack.getTagCompound();
-                            if(!aiManager.isIdling()) {
-                                aiManager.getDrone().getAIManager().setLabel("Main");
+                            if(!subAI.isIdling()) {
+                                subAI.getDrone().getAIManager().setLabel("Main");
                                 return true;
                             }
                         }
@@ -111,7 +113,7 @@ public class DroneAIExternalProgram extends DroneAIBlockInteraction{
     }
 
     public DroneAIManager getRunningAI(){
-        return aiManager;
+        return subAI;
     }
 
 }
