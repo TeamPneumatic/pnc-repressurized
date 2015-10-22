@@ -10,6 +10,8 @@ import pneumaticCraft.common.ai.DroneAIExternalProgram;
 import pneumaticCraft.common.ai.IDroneBase;
 import pneumaticCraft.common.item.ItemPlasticPlants;
 import pneumaticCraft.lib.Textures;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class ProgWidgetExternalProgram extends ProgWidgetAreaItemBase{
     public boolean shareVariables;
@@ -57,6 +59,7 @@ public class ProgWidgetExternalProgram extends ProgWidgetAreaItemBase{
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public GuiScreen getOptionWindow(GuiProgrammer guiProgrammer){
         return new GuiProgWidgetExternalProgram(this, guiProgrammer);
     }
