@@ -16,6 +16,12 @@ For the Label widget this can include a special tag: You can include the value o
 
 When the counter is equal to x=1, y=2, z=3, the Label will be shown as "Counter: 1, 2, 3". This is nice for debugging purposes.
 
+By postfixing the variable name with ".x", ".y" or ".z" you can just show one value. For instance:
+
+"Counter: ${counter.x}"
+
+Given a value of x=1, y=2, z=3, the Label will be shown as "Counter: 1".
+
 [prefix{l}]Tooltip: [prefix{}]
 When it has text, this will show as tooltip text when the mouse hovers over this button.
 
@@ -42,4 +48,4 @@ You can copy a lay-out from an existing remote by clicking one of the buttons on
 [prefix{l}]Protecting a Remote[prefix{}]
 If you're borrowing your Remote you might not want to allow this user to modify your lay-out. By right clicking your Remote on a Security Station, editing the Remote lay-out is limited to the ones that have access to the Security Station.
 
-[crafting{200, 1350, key=item/remote}]
+[crafting{200, 1420, key=item/remote}]
