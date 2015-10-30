@@ -10,7 +10,7 @@ public abstract class ActionWidgetVariable<Widget extends IGuiWidget> extends Ac
     private String variableName = "";
 
     public ActionWidgetVariable(Widget widget){
-        this.widget = widget;
+        super(widget);
     }
 
     public ActionWidgetVariable(){}
@@ -42,6 +42,8 @@ public abstract class ActionWidgetVariable<Widget extends IGuiWidget> extends Ac
     }
 
     public abstract void onActionPerformed();
+
+    public void onKeyTyped(){}
 
     public abstract void onVariableChange();
 }

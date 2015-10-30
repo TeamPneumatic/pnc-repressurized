@@ -15,6 +15,7 @@ public class WidgetComboBox extends WidgetTextField{
     private final ArrayList<String> elements = new ArrayList<String>();
     private final FontRenderer fontRenderer;
     private boolean enabled = true;
+    private boolean fixedOptions;
 
     public WidgetComboBox(FontRenderer fontRenderer, int x, int y, int width, int height){
         super(fontRenderer, x, y, width, height);
@@ -40,7 +41,7 @@ public class WidgetComboBox extends WidgetTextField{
     private List<String> getApplicableElements(){
         List<String> list = new ArrayList<String>();
         for(String element : elements) {
-            if(element.toLowerCase().contains(getText().toLowerCase())) list.add(element);
+            if(fixedOptions || element.toLowerCase().contains(getText().toLowerCase())) list.add(element);
         }
         return list;
     }
@@ -61,13 +62,14 @@ public class WidgetComboBox extends WidgetTextField{
 
     @Override
     public void onMouseClicked(int mouseX, int mouseY, int button){
-        super.onMouseClicked(mouseX, mouseY, button);
+        if(!fixedOptions || button != 1) super.onMouseClicked(mouseX, mouseY, button);
         if(enabled) {
             setFocused(true);
             List<String> applicableElements = getApplicableElements();
             for(int i = 0; i < applicableElements.size(); i++) {
                 if(new Rectangle(xPosition - 1, yPosition + height + 2 + i * fontRenderer.FONT_HEIGHT, width, fontRenderer.FONT_HEIGHT).contains(mouseX, mouseY)) {
                     setText(applicableElements.get(i));
+                    listener.onKeyTyped(this);
                     setFocused(false);
                     break;
                 }
@@ -87,10 +89,12 @@ public class WidgetComboBox extends WidgetTextField{
 
     @Override
     public boolean onKey(char key, int keyCode){
+        if(fixedOptions) return false;
         if(enabled && isFocused() && keyCode == Keyboard.KEY_TAB) {//Auto-complete
             List<String> applicableElements = getApplicableElements();
             if(applicableElements.size() > 0) {
                 setText(applicableElements.get(0));
+                listener.onKeyTyped(this);
                 return true;
             } else {
                 return super.onKey(key, keyCode);
@@ -104,5 +108,10 @@ public class WidgetComboBox extends WidgetTextField{
     public void setEnabled(boolean enabled){
         super.setEnabled(enabled);
         this.enabled = enabled;
+    }
+
+    public WidgetComboBox setFixedOptions(){
+        fixedOptions = true;
+        return this;
     }
 }

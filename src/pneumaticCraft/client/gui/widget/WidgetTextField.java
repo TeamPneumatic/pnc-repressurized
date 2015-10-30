@@ -1,6 +1,7 @@
 package pneumaticCraft.client.gui.widget;
 
 import java.awt.Rectangle;
+import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.gui.FontRenderer;
@@ -10,8 +11,8 @@ import org.apache.commons.lang3.StringUtils;
 
 public class WidgetTextField extends GuiTextField implements IGuiWidget{
 
-    private IWidgetListener listener;
-    private String tooltip;
+    protected IWidgetListener listener;
+    private final List<String> tooltip = new ArrayList<String>();
     private boolean passwordBox;
 
     public WidgetTextField(FontRenderer fontRenderer, int x, int y, int width, int height){
@@ -69,11 +70,13 @@ public class WidgetTextField extends GuiTextField implements IGuiWidget{
 
     @Override
     public void addTooltip(int mouseX, int mouseY, List<String> curTooltip, boolean shiftPressed){
-        if(!net.minecraft.util.StringUtils.isNullOrEmpty(tooltip)) curTooltip.add(tooltip);
+        curTooltip.addAll(tooltip);
     }
 
-    public void setTooltip(String tooltip){
-        this.tooltip = tooltip;
+    public void setTooltip(String... tooltip){
+        this.tooltip.clear();
+        for(String s : tooltip)
+            this.tooltip.add(s);
     }
 
     @Override

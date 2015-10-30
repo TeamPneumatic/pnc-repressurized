@@ -45,7 +45,7 @@ public abstract class ActionWidget<Widget extends IGuiWidget> {
         }
     }
 
-    public IGuiWidget getWidget(){
+    public Widget getWidget(){
         return widget;
     }
 

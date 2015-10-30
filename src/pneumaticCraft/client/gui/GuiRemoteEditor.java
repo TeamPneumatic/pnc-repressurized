@@ -15,6 +15,7 @@ import net.minecraft.util.ChatComponentTranslation;
 import org.lwjgl.input.Mouse;
 
 import pneumaticCraft.client.gui.widget.GuiCheckBox;
+import pneumaticCraft.client.gui.widget.WidgetComboBox;
 import pneumaticCraft.common.item.ItemRemote;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.network.NetworkHandler;
@@ -22,6 +23,7 @@ import pneumaticCraft.common.network.PacketUpdateRemoteLayout;
 import pneumaticCraft.common.remote.ActionWidget;
 import pneumaticCraft.common.remote.ActionWidgetButton;
 import pneumaticCraft.common.remote.ActionWidgetCheckBox;
+import pneumaticCraft.common.remote.ActionWidgetDropdown;
 import pneumaticCraft.common.remote.ActionWidgetLabel;
 import pneumaticCraft.common.remote.ActionWidgetVariable;
 import pneumaticCraft.common.remote.RemoteLayout;
@@ -73,9 +75,10 @@ public class GuiRemoteEditor extends GuiRemote{
         oldGuiLeft = guiLeft;
         oldGuiTop = guiTop;
         visibleSpawnWidgets.clear();
-        visibleSpawnWidgets.add(new ActionWidgetCheckBox(new GuiCheckBox(-1, guiLeft + 200, guiTop + 50, 0xFF000000, I18n.format("remote.checkbox.name"))));
-        visibleSpawnWidgets.add(new ActionWidgetLabel(new WidgetLabelVariable(guiLeft + 200, guiTop + 70, I18n.format("remote.label.name"))));
-        visibleSpawnWidgets.add(new ActionWidgetButton(new GuiButtonSpecial(-1, guiLeft + 200, guiTop + 90, 50, 20, I18n.format("remote.button.name"))));
+        visibleSpawnWidgets.add(new ActionWidgetCheckBox(new GuiCheckBox(-1, guiLeft + 200, guiTop + 10, 0xFF000000, I18n.format("remote.checkbox.name"))));
+        visibleSpawnWidgets.add(new ActionWidgetLabel(new WidgetLabelVariable(guiLeft + 200, guiTop + 25, I18n.format("remote.label.name"))));
+        visibleSpawnWidgets.add(new ActionWidgetButton(new GuiButtonSpecial(-1, guiLeft + 200, guiTop + 40, 50, 20, I18n.format("remote.button.name"))));
+        visibleSpawnWidgets.add(new ActionWidgetDropdown(new WidgetComboBox(fontRendererObj, guiLeft + 200, guiTop + 70, 70, fontRendererObj.FONT_HEIGHT + 1).setFixedOptions()));
 
         for(ActionWidget actionWidget : visibleSpawnWidgets) {
             addWidget(actionWidget.getWidget());

@@ -322,6 +322,8 @@ gui.remote.tooltip=Tooltip:
 remote.checkbox.name=CheckBox
 remote.label.name=Label
 remote.button.name=Button
+remote.dropdown.name=Drop-down
+remote.dropdown.tooltip=A set of text elements which the user can choose from. The assigned variable will be set to the selected index.
 gui.remote.label.tooltip=The text displayed on this widget.
 gui.remote.variable.tooltip=The variable modified by this widget.
 gui.remote.button.value.tooltip=When this button is pressed, the variable will be set to this coordinate.
@@ -329,6 +331,8 @@ gui.remote.enable=Enabling variable:
 gui.remote.enable.tooltip=When specifying a variable, this widget only will be visible and working when the variable equals the specified value.
 gui.remote.enableValue=Enabled when variable equals:
 gui.remote.enableValue.tooltip=The value the variable needs to equal to enable the widget.
+gui.remote.dropdown.dropDownElements=Drop-down elements:
+gui.remote.dropdown.dropDownElements.tooltip=Specifies the drop down elements. Every element needs to be separated with a ','.
 
 # entities
 entity.PneumaticCraft.Drone.name=Drone

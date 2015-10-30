@@ -62,6 +62,20 @@ public class GuiRemote extends GuiPneumaticContainerBase{
     }
 
     @Override
+    public void onKeyTyped(IGuiWidget widget){
+        super.onKeyTyped(widget);
+        for(ActionWidget actionWidget : remoteLayout.getActionWidgets()) {
+            if(actionWidget.getWidget() == widget && actionWidget instanceof ActionWidgetVariable) {
+                onKeyTyped((ActionWidgetVariable)actionWidget);
+            }
+        }
+    }
+
+    protected void onKeyTyped(ActionWidgetVariable actionWidget){
+        actionWidget.onKeyTyped();
+    }
+
+    @Override
     public boolean doesGuiPauseGame(){
         return false;
     }

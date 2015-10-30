@@ -19,6 +19,7 @@ public class RemoteLayout{
         registerWidget(ActionWidgetCheckBox.class);
         registerWidget(ActionWidgetLabel.class);
         registerWidget(ActionWidgetButton.class);
+        registerWidget(ActionWidgetDropdown.class);
     }
 
     private static void registerWidget(Class<? extends ActionWidget> widgetClass){
