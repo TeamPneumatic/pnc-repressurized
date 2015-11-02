@@ -46,15 +46,29 @@ public class BlockElevatorFrame extends BlockPneumaticCraftModeled{
                 return super.collisionRayTrace(world, x, y, z, origin, direction);
             }
         }
+        boolean frameXPos = world.getBlock(x + 1, y, z) == Blockss.elevatorFrame;
+        boolean frameXNeg = world.getBlock(x - 1, y, z) == Blockss.elevatorFrame;
+        boolean frameZPos = world.getBlock(x, y, z + 1) == Blockss.elevatorFrame;
+        boolean frameZNeg = world.getBlock(x, y, z - 1) == Blockss.elevatorFrame;
+
         boolean isColliding = false;
-        setBlockBounds(0, 0, 0, 2 / 16F, 1, 2 / 16F);
-        if(super.collisionRayTrace(world, x, y, z, origin, direction) != null) isColliding = true;
-        setBlockBounds(0, 0, 14 / 16F, 2 / 16F, 1, 1);
-        if(super.collisionRayTrace(world, x, y, z, origin, direction) != null) isColliding = true;
-        setBlockBounds(14 / 16F, 0, 14 / 16F, 1, 1, 1);
-        if(super.collisionRayTrace(world, x, y, z, origin, direction) != null) isColliding = true;
-        setBlockBounds(14 / 16F, 0, 0, 1, 1, 2 / 16F);
-        if(super.collisionRayTrace(world, x, y, z, origin, direction) != null) isColliding = true;
+
+        if(!frameXNeg && !frameZNeg) {
+            setBlockBounds(0, 0, 0, 2 / 16F, 1, 2 / 16F);
+            if(super.collisionRayTrace(world, x, y, z, origin, direction) != null) isColliding = true;
+        }
+        if(!frameXNeg && !frameZPos) {
+            setBlockBounds(0, 0, 14 / 16F, 2 / 16F, 1, 1);
+            if(super.collisionRayTrace(world, x, y, z, origin, direction) != null) isColliding = true;
+        }
+        if(!frameXPos && !frameZPos) {
+            setBlockBounds(14 / 16F, 0, 14 / 16F, 1, 1, 1);
+            if(super.collisionRayTrace(world, x, y, z, origin, direction) != null) isColliding = true;
+        }
+        if(!frameXPos && !frameZNeg) {
+            setBlockBounds(14 / 16F, 0, 0, 1, 1, 2 / 16F);
+            if(super.collisionRayTrace(world, x, y, z, origin, direction) != null) isColliding = true;
+        }
 
         setBlockBounds(0, 0, 0, 1, 1, 1);
         return isColliding ? super.collisionRayTrace(world, x, y, z, origin, direction) : null;
