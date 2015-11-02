@@ -868,6 +868,8 @@ death.attack.pressure2=%1$s was compressed to death!
 death.attack.acid1=%1$s was etched to death!
 death.attack.acid2=%1$s turned into a PCB!
 death.attack.securityStation1=%1$s failed to hack a Security Station and died!
+death.drone=Your Drone has died at X: %s, Y: %s, Z: %s.
+death.drone.named=Your Drone named "%s" has died at X: %s, Y: %s, Z: %s.
 
 # IGW pages
 igwtab.entry.oil=Oil

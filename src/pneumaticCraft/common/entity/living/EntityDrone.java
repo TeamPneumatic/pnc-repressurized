@@ -37,6 +37,7 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.ItemInWorldManager;
 import net.minecraft.stats.StatBase;
+import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumChatFormatting;
@@ -620,6 +621,20 @@ public class EntityDrone extends EntityDroneBase implements IManoMeasurable, IIn
             if(hasCustomNameTag()) drone.setStackDisplayName(getCustomNameTag());
 
             entityDropItem(drone, 0);
+
+            if(!worldObj.isRemote) {
+                EntityPlayer owner = getOwner();
+                if(owner != null) {
+                    int x = (int)Math.floor(posX);
+                    int y = (int)Math.floor(posY);
+                    int z = (int)Math.floor(posZ);
+                    if(hasCustomNameTag()) {
+                        owner.addChatComponentMessage(new ChatComponentTranslation("death.drone.named", getCustomNameTag(), x, y, z));
+                    } else {
+                        owner.addChatComponentMessage(new ChatComponentTranslation("death.drone", x, y, z));
+                    }
+                }
+            }
         }
         if(!worldObj.isRemote) ((FakePlayerItemInWorldManager)getFakePlayer().theItemInWorldManager).cancelDigging();
         super.onDeath(par1DamageSource);
