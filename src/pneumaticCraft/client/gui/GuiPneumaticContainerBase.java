@@ -487,13 +487,9 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
         return currentVisibility;
     }
 
-    /**
-     * NEI will give the specified item to the InventoryRange returned if the player's inventory is full.
-     * return null for no range
-     */
     @Override
     public Iterable<Integer> getItemSpawnSlots(GuiContainer gui, ItemStack item){
-        return null;
+        return new ArrayList<Integer>();
     }
 
     /**
