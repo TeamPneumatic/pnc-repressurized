@@ -33,7 +33,7 @@ public class HeatExchangerManager{
         PneumaticRegistry.getInstance().registerBlockExchanger(Blocks.ice, 263, 500);
         PneumaticRegistry.getInstance().registerBlockExchanger(Blocks.packed_ice, 263, 500);
         PneumaticRegistry.getInstance().registerBlockExchanger(Blocks.snow, 268, 1000);
-        PneumaticRegistry.getInstance().registerBlockExchanger(Blocks.torch, 1700, 2000);
+        PneumaticRegistry.getInstance().registerBlockExchanger(Blocks.torch, 1700, 100000);
         PneumaticRegistry.getInstance().registerBlockExchanger(Blocks.fire, 1700, 1000);
 
         Map<String, Fluid> fluids = FluidRegistry.getRegisteredFluids();
