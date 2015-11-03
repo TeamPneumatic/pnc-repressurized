@@ -28,6 +28,7 @@ public class UpgradeRenderHandlerList{
         upgradeRenderers.add(new EntityTrackUpgradeHandler());
         upgradeRenderers.add(new SearchUpgradeHandler());
         upgradeRenderers.add(new CoordTrackUpgradeHandler());
+        upgradeRenderers.add(new DroneDebugUpgradeHandler());
     }
 
     public float getAirUsage(EntityPlayer player, boolean countDisabled){

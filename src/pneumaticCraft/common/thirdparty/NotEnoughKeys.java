@@ -32,7 +32,7 @@ public class NotEnoughKeys implements IThirdParty{
 
     @Override
     public void clientInit(){
-        Api.registerMod(Names.MOD_ID, new String[]{KeyHandler.getInstance().keybindHack.getKeyDescription(), KeyHandler.getInstance().keybindOpenOptions.getKeyDescription()});
+        Api.registerMod(Names.MOD_ID, new String[]{KeyHandler.getInstance().keybindHack.getKeyDescription(), KeyHandler.getInstance().keybindDebuggingDrone.getKeyDescription(), KeyHandler.getInstance().keybindOpenOptions.getKeyDescription()});
     }
 
 }

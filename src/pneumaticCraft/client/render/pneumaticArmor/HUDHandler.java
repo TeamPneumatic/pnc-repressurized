@@ -252,6 +252,8 @@ public class HUDHandler implements IKeyListener{
             } else if(key == KeyHandler.getInstance().keybindHack && HackUpgradeRenderHandler.enabledForPlayer(mc.thePlayer)) {
                 getSpecificRenderer(BlockTrackUpgradeHandler.class).hack();
                 getSpecificRenderer(EntityTrackUpgradeHandler.class).hack();
+            } else if(key == KeyHandler.getInstance().keybindDebuggingDrone) {
+                getSpecificRenderer(EntityTrackUpgradeHandler.class).selectAsDebuggingTarget();
             }
         }
     }

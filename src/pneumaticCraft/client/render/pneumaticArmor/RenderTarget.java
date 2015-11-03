@@ -26,9 +26,12 @@ import pneumaticCraft.client.gui.widget.GuiAnimatedStat;
 import pneumaticCraft.client.render.RenderProgressBar;
 import pneumaticCraft.client.render.pneumaticArmor.entitytracker.EntityTrackHandler;
 import pneumaticCraft.client.render.pneumaticArmor.hacking.HackableHandler;
+import pneumaticCraft.common.NBTUtil;
 import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.PacketHackingEntityStart;
+import pneumaticCraft.common.network.PacketUpdateDebuggingDrone;
+import pneumaticCraft.lib.NBTKeys;
 import pneumaticCraft.lib.Sounds;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.relauncher.Side;
@@ -80,11 +83,14 @@ public class RenderTarget{
     public void update(){
         stat.update();
         stat.setTitle(entity.getCommandSenderName());
+        EntityPlayer player = FMLClientHandler.instance().getClient().thePlayer;
         if(ticksExisted >= 30 && !didMakeLockSound) {
             didMakeLockSound = true;
-            EntityPlayer player = FMLClientHandler.instance().getClient().thePlayer;
             player.worldObj.playSound(player.posX, player.posY, player.posZ, Sounds.HUD_ENTITY_LOCK, 0.1F, 1.0F, true);
         }
+        boolean tagged = NBTUtil.getInteger(player.getCurrentArmor(3), NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE) == entity.getEntityId();
+        circle1.setRenderingAsTagged(tagged);
+        circle2.setRenderingAsTagged(tagged);
         circle1.update();
         circle2.update();
         for(IEntityTrackEntry tracker : trackEntries) {
@@ -224,6 +230,12 @@ public class RenderTarget{
         if(isInitialized() && isPlayerLookingAtTarget()) {
             IHackableEntity hackable = HackableHandler.getHackableForEntity(entity, PneumaticCraft.proxy.getPlayer());
             if(hackable != null && (hackTime == 0 || hackTime > hackable.getHackTime(entity, PneumaticCraft.proxy.getPlayer()))) NetworkHandler.sendToServer(new PacketHackingEntityStart(entity));
+        }
+    }
+
+    public void selectAsDebuggingTarget(){
+        if(isInitialized() && isPlayerLookingAtTarget() && entity instanceof EntityDrone) {
+            NetworkHandler.sendToServer(new PacketUpdateDebuggingDrone(entity.getEntityId()));
         }
     }
 

@@ -255,6 +255,12 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler{
         }
     }
 
+    public void selectAsDebuggingTarget(){
+        for(RenderTarget target : targets) {
+            target.selectAsDebuggingTarget();
+        }
+    }
+
     public boolean scroll(MouseEvent event){
         for(RenderTarget target : targets) {
             if(target.scroll(event)) return true;
