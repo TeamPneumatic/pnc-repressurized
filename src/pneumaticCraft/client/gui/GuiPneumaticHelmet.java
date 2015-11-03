@@ -42,7 +42,7 @@ public class GuiPneumaticHelmet extends GuiPneumaticInventoryItem{
         ItemStack entityTracker = new ItemStack(Itemss.machineUpgrade, 1, ItemMachineUpgrade.UPGRADE_ENTITY_TRACKER);
         addAnimatedStat(entityTracker.getDisplayName(), entityTracker, 0xFF0000FF, true).setText("gui.tab.info.item.pneumaticHelmet.entityTracker");
         ItemStack blockTracker = new ItemStack(Itemss.machineUpgrade, 1, ItemMachineUpgrade.UPGRADE_BLOCK_TRACKER);
-        addAnimatedStat(blockTracker.getDisplayName(), searchUpgradeStat, 0xFF0000FF, true).setText("gui.tab.info.item.pneumaticHelmet.blockTracker");
+        addAnimatedStat(blockTracker.getDisplayName(), blockTracker, 0xFF0000FF, true).setText("gui.tab.info.item.pneumaticHelmet.blockTracker");
     }
 
     @Override
