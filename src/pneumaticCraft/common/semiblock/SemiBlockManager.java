@@ -39,6 +39,7 @@ public class SemiBlockManager{
     private final Map<Chunk, Map<ChunkPosition, ISemiBlock>> semiBlocks = new HashMap<Chunk, Map<ChunkPosition, ISemiBlock>>();
     private final List<ISemiBlock> addingBlocks = new ArrayList<ISemiBlock>();
     private final Map<Chunk, Set<EntityPlayerMP>> syncList = new HashMap<Chunk, Set<EntityPlayerMP>>();
+    private final Set<Chunk> chunksMarkedForRemoval = new HashSet<Chunk>();
     public static final int SYNC_DISTANCE = 64;
     private static final HashBiMap<String, Class<? extends ISemiBlock>> registeredTypes = HashBiMap.create();
     private static final HashBiMap<Class<? extends ISemiBlock>, Item> semiBlockToItems = HashBiMap.create();
@@ -114,8 +115,7 @@ public class SemiBlockManager{
     @SubscribeEvent
     public void onChunkUnLoad(ChunkEvent.Unload event){
         if(!event.world.isRemote) {
-            semiBlocks.remove(event.getChunk());
-            syncList.remove(event.getChunk());
+            chunksMarkedForRemoval.add(event.getChunk());
         }
     }
 
@@ -174,6 +174,14 @@ public class SemiBlockManager{
             }
         }
         addingBlocks.clear();
+
+        for(Chunk removingChunk : chunksMarkedForRemoval) {
+            if(!removingChunk.isChunkLoaded) {
+                semiBlocks.remove(removingChunk);
+                syncList.remove(removingChunk);
+            }
+        }
+        chunksMarkedForRemoval.clear();
 
         for(Map<ChunkPosition, ISemiBlock> map : semiBlocks.values()) {
             for(ISemiBlock semiBlock : map.values()) {
