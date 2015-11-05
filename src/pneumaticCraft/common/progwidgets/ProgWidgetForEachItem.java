@@ -80,7 +80,7 @@ public class ProgWidgetForEachItem extends ProgWidget implements IJumpBackWidget
         ItemStack filter = getFilterForIndex(curIndex++);
         if(locations.size() > 0 && filter != null && (curIndex == 1 || aiManager.getStack(elementVariable) != null)) {
             aiManager.setItem(elementVariable, filter);
-            return ProgWidgetJump.jumpToLabel(allWidgets, locations.get(0));
+            return ProgWidgetJump.jumpToLabel(drone, allWidgets, locations.get(0));
         }
         curIndex = 0;
         return super.getOutputWidget(drone, allWidgets);

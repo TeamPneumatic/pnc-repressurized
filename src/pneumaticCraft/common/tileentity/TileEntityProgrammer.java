@@ -29,7 +29,7 @@ import pneumaticCraft.common.util.IOHelper;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 
 public class TileEntityProgrammer extends TileEntityBase implements IInventory, IGUITextFieldSensitive{
-    public List<IProgWidget> progWidgets = new ArrayList<IProgWidget>();
+    public final List<IProgWidget> progWidgets = new ArrayList<IProgWidget>();
     @GuiSynced
     public int redstoneMode;
     private ItemStack[] inventory = new ItemStack[1];
@@ -99,7 +99,8 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory, 
     }
 
     public void readProgWidgetsFromNBT(NBTTagCompound tag){
-        progWidgets = getWidgetsFromNBT(tag);
+        progWidgets.clear();
+        getWidgetsFromNBT(tag, progWidgets);
     }
 
     public void writeProgWidgetsToNBT(NBTTagCompound tag){
@@ -108,6 +109,11 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory, 
 
     public static List<IProgWidget> getWidgetsFromNBT(NBTTagCompound tag){
         List<IProgWidget> progWidgets = new ArrayList<IProgWidget>();
+        getWidgetsFromNBT(tag, progWidgets);
+        return progWidgets;
+    }
+
+    public static void getWidgetsFromNBT(NBTTagCompound tag, List<IProgWidget> progWidgets){
         NBTTagList widgetTags = tag.getTagList("widgets", 10);
         for(int i = 0; i < widgetTags.tagCount(); i++) {
             NBTTagCompound widgetTag = widgetTags.getCompoundTagAt(i);
@@ -122,7 +128,6 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory, 
             }
         }
         updatePuzzleConnections(progWidgets);
-        return progWidgets;
     }
 
     public static void setWidgetsToNBT(List<IProgWidget> widgets, NBTTagCompound tag){
@@ -206,7 +211,7 @@ public class TileEntityProgrammer extends TileEntityBase implements IInventory, 
             case 1:
                 NBTTagCompound tag = inventory[PROGRAM_SLOT] != null ? inventory[PROGRAM_SLOT].getTagCompound() : null;
                 if(tag != null) readProgWidgetsFromNBT(tag);
-                else progWidgets = new ArrayList<IProgWidget>();
+                else progWidgets.clear();
                 break;
             case 2:
                 tryProgramDrone(player);

@@ -31,6 +31,7 @@ public class DroneAILiquidImport extends DroneAIImExBase{
 
     private boolean emptyTank(ChunkPosition pos, boolean simulate){
         if(drone.getTank().getFluidAmount() == drone.getTank().getCapacity()) {
+            drone.addDebugEntry("gui.progWidget.liquidImport.debug.fullDroneTank");
             abort();
             return false;
         } else {
@@ -52,6 +53,7 @@ public class DroneAILiquidImport extends DroneAIImExBase{
                         }
                     }
                 }
+                drone.addDebugEntry("gui.progWidget.liquidImport.debug.emptiedToMax", pos);
             } else if(!((ICountWidget)widget).useCount() || getRemainingCount() >= 1000) {
                 Fluid fluid = FluidRegistry.lookupFluidForBlock(drone.getWorld().getBlock(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ));
                 if(fluid != null && ((ILiquidFiltered)widget).isFluidValid(fluid) && drone.getTank().fill(new FluidStack(fluid, 1000), false) == 1000 && FluidUtils.isSourceBlock(drone.getWorld(), pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ)) {

@@ -85,7 +85,7 @@ public class ProgWidgetForEachCoordinate extends ProgWidgetAreaItemBase implemen
             ChunkPosition pos = ai.getCurCoord();
             if(pos != null) {
                 aiManager.setCoordinate(elementVariable, pos);
-                return ProgWidgetJump.jumpToLabel(allWidgets, locations.get(0));
+                return ProgWidgetJump.jumpToLabel(drone, allWidgets, locations.get(0));
             }
         }
         traversedPositions.clear();

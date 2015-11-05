@@ -33,14 +33,16 @@ public class ProgWidgetJump extends ProgWidget implements IJump{
         ProgWidgetString jumpedLabel = (ProgWidgetString)getConnectedParameters()[0];
         if(jumpedLabel != null) {
             drone.getAIManager().setLabel(jumpedLabel.string);
-            return jumpToLabel(allWidgets, jumpedLabel.string);
+            IProgWidget widget = jumpToLabel(drone, allWidgets, jumpedLabel.string);
+            if(widget != null) return widget;
         }
+        drone.addDebugEntry("gui.progWidget.jump.nowhereToJump");
         return null;
     }
 
     /**
      * Used by condition pieces
-     * @param drone TODO
+     * @param drone
      * @param allWidgets
      * @param conditionValue
      * @return
@@ -48,14 +50,16 @@ public class ProgWidgetJump extends ProgWidget implements IJump{
     public static IProgWidget jumpToLabel(IDroneBase drone, List<IProgWidget> allWidgets, IProgWidget conditionWidget, boolean conditionValue){
         ProgWidgetString textWidget = (ProgWidgetString)(conditionValue ? conditionWidget.getConnectedParameters()[conditionWidget.getParameters().length - 1] : conditionWidget.getConnectedParameters()[conditionWidget.getParameters().length * 2 - 1]);
         if(textWidget != null) {
-            drone.getAIManager().setLabel(textWidget.string);
-            return jumpToLabel(allWidgets, textWidget.string);
+            return jumpToLabel(drone, allWidgets, textWidget.string);
         } else {
-            return conditionWidget.getOutputWidget();
+            IProgWidget widget = conditionWidget.getOutputWidget();
+            if(widget == null) drone.addDebugEntry("gui.progWidget.jump.nowhereToJump");
+            return widget;
         }
     }
 
-    public static IProgWidget jumpToLabel(List<IProgWidget> allWidgets, String label){
+    public static IProgWidget jumpToLabel(IDroneBase drone, List<IProgWidget> allWidgets, String label){
+        drone.getAIManager().setLabel(label);
         List<IProgWidget> possibleJumpLocations = new ArrayList<IProgWidget>();
         for(IProgWidget widget : allWidgets) {
             if(widget instanceof ILabel) {
@@ -65,7 +69,13 @@ public class ProgWidgetJump extends ProgWidget implements IJump{
                 }
             }
         }
-        return possibleJumpLocations.size() == 0 ? null : possibleJumpLocations.get(new Random().nextInt(possibleJumpLocations.size()));
+        if(possibleJumpLocations.size() == 0) {
+            drone.addDebugEntry("gui.progWidget.jump.nowhereToJump");
+            return null;
+        } else {
+            return possibleJumpLocations.get(new Random().nextInt(possibleJumpLocations.size()));
+        }
+
     }
 
     @Override

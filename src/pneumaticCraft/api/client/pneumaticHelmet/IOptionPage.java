@@ -28,6 +28,8 @@ public interface IOptionPage{
      */
     public void actionPerformed(GuiButton button);
 
+    public void drawPreButtons(int x, int y, float partialTicks);
+
     /**
      * Same as {@link GuiScreen#drawScreen(int, int, float)}
      * Here you can render additional things like text.
@@ -43,4 +45,12 @@ public interface IOptionPage{
      * @param key
      */
     public void keyTyped(char ch, int key);
+
+    public void mouseClicked(int x, int y, int button);
+
+    public void handleMouseInput();
+
+    public boolean canBeTurnedOff();
+
+    public boolean displaySettingsText();
 }

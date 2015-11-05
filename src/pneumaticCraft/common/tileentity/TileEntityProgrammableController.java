@@ -709,4 +709,14 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
 
     @Override
     public void updateLabel(){}
+
+    @Override
+    public void addDebugEntry(String message){
+
+    }
+
+    @Override
+    public void addDebugEntry(String message, ChunkPosition pos){
+
+    }
 }

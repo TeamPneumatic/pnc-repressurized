@@ -13,22 +13,29 @@ import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
+
+import org.lwjgl.input.Keyboard;
+
 import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.api.PneumaticRegistry;
 import pneumaticCraft.api.client.pneumaticHelmet.IEntityTrackEntry;
 import pneumaticCraft.api.client.pneumaticHelmet.IEntityTrackEntry.EntityTrackEntry;
 import pneumaticCraft.api.client.pneumaticHelmet.IHackableEntity;
 import pneumaticCraft.api.item.IPressurizable;
+import pneumaticCraft.client.KeyHandler;
+import pneumaticCraft.client.render.pneumaticArmor.DroneDebugUpgradeHandler;
 import pneumaticCraft.client.render.pneumaticArmor.EntityTrackUpgradeHandler;
 import pneumaticCraft.client.render.pneumaticArmor.HUDHandler;
 import pneumaticCraft.client.render.pneumaticArmor.HackUpgradeRenderHandler;
 import pneumaticCraft.client.render.pneumaticArmor.RenderDroneAI;
 import pneumaticCraft.client.render.pneumaticArmor.RenderTarget;
 import pneumaticCraft.client.render.pneumaticArmor.hacking.HackableHandler;
+import pneumaticCraft.common.NBTUtil;
 import pneumaticCraft.common.PneumaticCraftAPIHandler;
 import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.Log;
+import pneumaticCraft.lib.NBTKeys;
 
 public class EntityTrackHandler{
     private static List<IEntityTrackEntry> trackEntries = new ArrayList<IEntityTrackEntry>();
@@ -108,6 +115,9 @@ public class EntityTrackHandler{
         public void addInfo(Entity entity, List<String> curInfo){
             curInfo.add("Owner: " + ((EntityDrone)entity).playerName);
             curInfo.add("Routine: " + ((EntityDrone)entity).getLabel());
+            if(DroneDebugUpgradeHandler.enabledForPlayer(PneumaticCraft.proxy.getPlayer()) && NBTUtil.getInteger(PneumaticCraft.proxy.getPlayer().getCurrentArmor(3), NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE) != entity.getEntityId()) {
+                curInfo.add(EnumChatFormatting.RED + "Press '" + Keyboard.getKeyName(KeyHandler.getInstance().keybindDebuggingDrone.getKeyCode()) + "' to debug");
+            }
         }
     }
 

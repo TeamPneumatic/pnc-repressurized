@@ -18,6 +18,8 @@ import net.minecraftforge.client.event.RenderWorldLastEvent;
 import org.lwjgl.opengl.GL11;
 
 import pneumaticCraft.PneumaticCraft;
+import pneumaticCraft.client.render.pneumaticArmor.DroneDebugUpgradeHandler;
+import pneumaticCraft.client.render.pneumaticArmor.HUDHandler;
 import pneumaticCraft.common.item.ItemGPSTool;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
@@ -29,6 +31,7 @@ public class AreaShowManager{
     private static AreaShowManager INSTANCE = new AreaShowManager();
     private final Map<ChunkPosition, AreaShowHandler> showHandlers = new HashMap<ChunkPosition, AreaShowHandler>();
     private World world;
+    private DroneDebugUpgradeHandler droneDebugger;
 
     public static AreaShowManager getInstance(){
         return INSTANCE;
@@ -53,7 +56,7 @@ public class AreaShowManager{
             handler.render();
         }
 
-        ItemStack curItem = Minecraft.getMinecraft().thePlayer.getCurrentEquippedItem();
+        ItemStack curItem = player.getCurrentEquippedItem();
         if(curItem != null && curItem.getItem() == Itemss.GPSTool) {
             ChunkPosition gpsLocation = ItemGPSTool.getGPSLocation(curItem);
             if(gpsLocation != null) {
@@ -63,6 +66,15 @@ public class AreaShowManager{
                 new AreaShowHandler(set, 0xFFFF00).render();
                 GL11.glEnable(GL11.GL_DEPTH_TEST);
             }
+        }
+
+        ItemStack helmet = player.getCurrentArmor(3);
+        if(helmet != null && helmet.getItem() == Itemss.pneumaticHelmet) {
+            if(droneDebugger == null) droneDebugger = HUDHandler.instance().getSpecificRenderer(DroneDebugUpgradeHandler.class);
+            Set<ChunkPosition> set = droneDebugger.getShowingPositions();
+            GL11.glDisable(GL11.GL_DEPTH_TEST);
+            new AreaShowHandler(set, 0xFF0000).render();
+            GL11.glEnable(GL11.GL_DEPTH_TEST);
         }
 
         // GL11.glEnable(GL11.GL_DEPTH_TEST);

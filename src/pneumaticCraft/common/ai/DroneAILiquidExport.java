@@ -30,6 +30,7 @@ public class DroneAILiquidExport extends DroneAIImExBase{
 
     private boolean fillTank(ChunkPosition pos, boolean simulate){
         if(drone.getTank().getFluidAmount() == 0) {
+            drone.addDebugEntry("gui.progWidget.liquidExport.debug.emptyDroneTank");
             abort();
             return false;
         } else {
@@ -51,6 +52,9 @@ public class DroneAILiquidExport extends DroneAIImExBase{
                             }
                         }
                     }
+                    drone.addDebugEntry("gui.progWidget.liquidExport.debug.filledToMax", pos);
+                } else {
+                    drone.addDebugEntry("gui.progWidget.liquidExport.debug.noValidFluid");
                 }
             } else if(((ILiquidExport)widget).isPlacingFluidBlocks() && (!((ICountWidget)widget).useCount() || getRemainingCount() >= 1000)) {
                 Block fluidBlock = drone.getTank().getFluid().getFluid().getBlock();

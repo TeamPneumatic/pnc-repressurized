@@ -19,7 +19,16 @@ public class DroneAIAttackEntity extends EntityAIAttackOnCollide{
 
     @Override
     public boolean shouldExecute(){
-        if(isRanged && attacker.getAmmo() == null) return false;
+        if(isRanged && attacker.getAmmo() == null) {
+            attacker.addDebugEntry("gui.progWidget.entityAttack.debug.noAmmo");
+            return false;
+        }
+
+        EntityLivingBase entitylivingbase = attacker.getAttackTarget();
+        if(entitylivingbase == null) {
+            attacker.addDebugEntry("gui.progWidget.entityAttack.debug.noEntityToAttack");
+        }
+
         return super.shouldExecute();
     }
 

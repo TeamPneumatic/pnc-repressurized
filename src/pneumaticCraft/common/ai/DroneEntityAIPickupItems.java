@@ -53,6 +53,8 @@ public class DroneEntityAIPickupItems extends EntityAIBase{
                         }
                     }
                 }
+            } else {
+                drone.addDebugEntry("gui.progWidget.itemPickup.debug.itemNotValid");
             }
         }
         return false; // 

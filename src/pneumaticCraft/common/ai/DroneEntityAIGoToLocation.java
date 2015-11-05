@@ -40,8 +40,15 @@ public class DroneEntityAIGoToLocation extends EntityAIBase{
                 return !((IGotoWidget)gotoWidget).doneWhenDeparting();
             }
         }
-        return drone.getPathNavigator().isGoingToTeleport();
-
+        boolean teleport = drone.getPathNavigator().isGoingToTeleport();
+        if(teleport) {
+            return true;
+        } else {
+            for(ChunkPosition c : validArea) {
+                drone.addDebugEntry("gui.progWidget.goto.debug.cantNavigate", c);
+            }
+            return false;
+        }
     }
 
     /**

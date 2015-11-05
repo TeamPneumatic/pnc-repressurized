@@ -91,6 +91,9 @@ public class GuiCoordinateTrackerOptions implements IOptionPage{
     }
 
     @Override
+    public void drawPreButtons(int x, int y, float partialTicks){}
+
+    @Override
     public void drawScreen(int x, int y, float partialTicks){}
 
     private void updateButtonTexts(){
@@ -117,4 +120,19 @@ public class GuiCoordinateTrackerOptions implements IOptionPage{
     @Override
     public void keyTyped(char ch, int key){}
 
+    @Override
+    public void mouseClicked(int x, int y, int button){}
+
+    @Override
+    public void handleMouseInput(){}
+
+    @Override
+    public boolean canBeTurnedOff(){
+        return true;
+    }
+
+    @Override
+    public boolean displaySettingsText(){
+        return true;
+    }
 }

@@ -60,7 +60,8 @@ public class GuiHelmetMainScreen extends GuiPneumaticScreenBase implements IGuiS
             buttonList.add(button);
         }
         if(page > upgradePages.size() - 1) page = upgradePages.size() - 1;
-        addWidget(new GuiKeybindCheckBox(100, 40, 12, 0xFFFFFFFF, I18n.format("gui.enableModule", I18n.format("pneumaticHelmet.upgrade." + upgradePageNames.get(page))), "pneumaticHelmet.upgrade." + upgradePageNames.get(page)));
+        GuiKeybindCheckBox checkBox = new GuiKeybindCheckBox(100, 40, 12, 0xFFFFFFFF, I18n.format("gui.enableModule", I18n.format("pneumaticHelmet.upgrade." + upgradePageNames.get(page))), "pneumaticHelmet.upgrade." + upgradePageNames.get(page));
+        if(upgradePages.get(page).canBeTurnedOff()) addWidget(checkBox);
         upgradePages.get(page).initGui(this);
     }
 
@@ -85,10 +86,12 @@ public class GuiHelmetMainScreen extends GuiPneumaticScreenBase implements IGuiS
     @Override
     public void drawScreen(int x, int y, float partialTicks){
         drawDefaultBackground();
+        IOptionPage optionPage = upgradePages.get(page);
+        optionPage.drawPreButtons(x, y, partialTicks);
         super.drawScreen(x, y, partialTicks);
-        upgradePages.get(page).drawScreen(x, y, partialTicks);
+        optionPage.drawScreen(x, y, partialTicks);
         drawCenteredString(fontRendererObj, upgradePages.get(page).getPageName(), 100, 25, 0xFFFFFFFF);
-        drawCenteredString(fontRendererObj, "Settings", 100, 115, 0xFFFFFFFF);
+        if(optionPage.displaySettingsText()) drawCenteredString(fontRendererObj, "Settings", 100, 115, 0xFFFFFFFF);
     }
 
     @Override
@@ -112,6 +115,18 @@ public class GuiHelmetMainScreen extends GuiPneumaticScreenBase implements IGuiS
     }
 
     @Override
+    public void handleMouseInput(){
+        super.handleMouseInput();
+        upgradePages.get(page).handleMouseInput();
+    }
+
+    @Override
+    protected void mouseClicked(int par1, int par2, int par3){
+        super.mouseClicked(par1, par2, par3);
+        upgradePages.get(page).mouseClicked(par1, par2, par3);
+    }
+
+    @Override
     public List getButtonList(){
         return buttonList;
     }
@@ -119,5 +134,10 @@ public class GuiHelmetMainScreen extends GuiPneumaticScreenBase implements IGuiS
     @Override
     public FontRenderer getFontRenderer(){
         return fontRendererObj;
+    }
+
+    @Override
+    public boolean doesGuiPauseGame(){
+        return false;
     }
 }

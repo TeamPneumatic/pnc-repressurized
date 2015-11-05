@@ -34,6 +34,11 @@ public class ProgWidgetEntityCondition extends ProgWidgetCondition{
     public IProgWidget getOutputWidget(IDroneBase drone, List<IProgWidget> allWidgets){
         List<Entity> entities = getValidEntities(drone.getWorld());
         boolean result = getOperator() == Operator.EQUALS ? entities.size() == getRequiredCount() : entities.size() >= getRequiredCount();
+        if(result) {
+            drone.addDebugEntry("gui.progWidget.condition.evaluatedTrue");
+        } else {
+            drone.addDebugEntry("gui.progWidget.condition.evaluatedFalse");
+        }
         return ProgWidgetJump.jumpToLabel(drone, allWidgets, this, result);
     }
 

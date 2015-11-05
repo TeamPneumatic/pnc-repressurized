@@ -41,9 +41,6 @@ public abstract class ProgWidget implements IProgWidget{
     @Override
     public void getTooltip(List<String> curTooltip){
         curTooltip.add(EnumChatFormatting.DARK_AQUA + I18n.format("programmingPuzzle." + getWidgetString() + ".name"));
-        if(getOptionWindow(null) != null) {
-            curTooltip.add(EnumChatFormatting.GOLD + "Right click for options");
-        }
     }
 
     @Override

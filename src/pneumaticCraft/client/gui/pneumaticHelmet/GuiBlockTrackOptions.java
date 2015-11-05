@@ -5,9 +5,9 @@ import pneumaticCraft.api.client.pneumaticHelmet.IGuiScreen;
 import pneumaticCraft.api.client.pneumaticHelmet.IOptionPage;
 import pneumaticCraft.client.gui.widget.GuiKeybindCheckBox;
 import pneumaticCraft.client.render.pneumaticArmor.BlockTrackUpgradeHandler;
+import pneumaticCraft.client.render.pneumaticArmor.blockTracker.BlockTrackEntryList;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
-import pneumaticCraft.client.render.pneumaticArmor.blockTracker.BlockTrackEntryList;
 
 public class GuiBlockTrackOptions implements IOptionPage{
 
@@ -39,9 +39,28 @@ public class GuiBlockTrackOptions implements IOptionPage{
     }
 
     @Override
+    public void drawPreButtons(int x, int y, float partialTicks){}
+
+    @Override
     public void drawScreen(int x, int y, float partialTicks){}
 
     @Override
     public void keyTyped(char ch, int key){}
+
+    @Override
+    public void mouseClicked(int x, int y, int button){}
+
+    @Override
+    public void handleMouseInput(){}
+
+    @Override
+    public boolean canBeTurnedOff(){
+        return true;
+    }
+
+    @Override
+    public boolean displaySettingsText(){
+        return true;
+    }
 
 }

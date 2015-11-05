@@ -83,6 +83,24 @@ public class GuiHelmetMainOptions implements IOptionPage{
     }
 
     @Override
+    public void mouseClicked(int x, int y, int button){}
+
+    @Override
+    public void drawPreButtons(int x, int y, float partialTicks){}
+
+    @Override
     public void drawScreen(int x, int y, float partialTicks){}
 
+    @Override
+    public void handleMouseInput(){}
+
+    @Override
+    public boolean canBeTurnedOff(){
+        return true;
+    }
+
+    @Override
+    public boolean displaySettingsText(){
+        return true;
+    }
 }

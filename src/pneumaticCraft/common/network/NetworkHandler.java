@@ -87,6 +87,8 @@ public class NetworkHandler{
 
         INSTANCE.registerMessage(PacketToggleHelmetFeature.class, PacketToggleHelmetFeature.class, discriminant++, Side.SERVER);
         INSTANCE.registerMessage(PacketUpdateDebuggingDrone.class, PacketUpdateDebuggingDrone.class, discriminant++, Side.SERVER);
+        INSTANCE.registerMessage(PacketSendDroneDebugEntry.class, PacketSendDroneDebugEntry.class, discriminant++, Side.CLIENT);
+        INSTANCE.registerMessage(PacketSyncDroneEntityProgWidgets.class, PacketSyncDroneEntityProgWidgets.class, discriminant++, Side.CLIENT);
 
         INSTANCE.registerMessage(PacketOpenTubeModuleGui.class, PacketOpenTubeModuleGui.class, discriminant++, Side.CLIENT);
 

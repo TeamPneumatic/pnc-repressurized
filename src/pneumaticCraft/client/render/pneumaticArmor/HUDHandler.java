@@ -14,6 +14,7 @@ import net.minecraftforge.client.event.RenderWorldLastEvent;
 
 import org.lwjgl.opengl.GL11;
 
+import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.api.client.IGuiAnimatedStat;
 import pneumaticCraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
 import pneumaticCraft.api.item.IPressurizable;
@@ -252,7 +253,7 @@ public class HUDHandler implements IKeyListener{
             } else if(key == KeyHandler.getInstance().keybindHack && HackUpgradeRenderHandler.enabledForPlayer(mc.thePlayer)) {
                 getSpecificRenderer(BlockTrackUpgradeHandler.class).hack();
                 getSpecificRenderer(EntityTrackUpgradeHandler.class).hack();
-            } else if(key == KeyHandler.getInstance().keybindDebuggingDrone) {
+            } else if(key == KeyHandler.getInstance().keybindDebuggingDrone && DroneDebugUpgradeHandler.enabledForPlayer(PneumaticCraft.proxy.getPlayer())) {
                 getSpecificRenderer(EntityTrackUpgradeHandler.class).selectAsDebuggingTarget();
             }
         }

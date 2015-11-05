@@ -36,19 +36,18 @@ public class DroneAIPlace extends DroneAIBlockInteraction{
             for(int i = 0; i < drone.getInventory().getSizeInventory(); i++) {
                 ItemStack droneStack = drone.getInventory().getStackInSlot(i);
                 if(droneStack != null && droneStack.getItem() instanceof ItemBlock) {
-                    if(((ItemBlock)droneStack.getItem()).field_150939_a.canPlaceBlockOnSide(drone.getWorld(), pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ, ProgWidgetPlace.getDirForSides(((ISidedWidget)widget).getSides()).ordinal())) {
-                        if(widget.isItemValidForFilters(droneStack)) {
+                    if(widget.isItemValidForFilters(droneStack)) {
+                        if(((ItemBlock)droneStack.getItem()).field_150939_a.canPlaceBlockOnSide(drone.getWorld(), pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ, ProgWidgetPlace.getDirForSides(((ISidedWidget)widget).getSides()).ordinal())) {
                             if(drone.getWorld().canPlaceEntityOnSide(((ItemBlock)droneStack.getItem()).field_150939_a, pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ, false, 0, null, droneStack)) {
-                                for(ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-                                    if(drone.isBlockValidPathfindBlock(pos.chunkPosX + dir.offsetX, pos.chunkPosY + dir.offsetY, pos.chunkPosZ + dir.offsetZ)) {
-                                        return true;
-                                    }
-                                }
+                                return true;
+                            } else {
+                                drone.addDebugEntry("gui.progWidget.place.debug.entityInWay", pos);
+                                failedOnPlacement = true;
                             }
+                        } else {
                             failedOnPlacement = true;
+                            drone.addDebugEntry("gui.progWidget.place.debug.cantPlaceBlock", pos);
                         }
-                    } else {
-                        failedOnPlacement = true;
                     }
                 }
             }

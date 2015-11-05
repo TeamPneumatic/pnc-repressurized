@@ -162,6 +162,8 @@ public abstract class DroneAIBlockInteraction<Widget extends ProgWidgetAreaItemB
                                     if(respectClaims()) DroneClaimManager.getInstance(drone.getWorld()).claim(pos);
                                     blacklist.clear();//clear the list for next time (maybe the blocks/rights have changed by the time there will be dug again).
                                     return true;
+                                } else {
+                                    drone.addDebugEntry("gui.progWidget.general.debug.cantNavigate", pos);
                                 }
                             } else {
                                 searching = false;
@@ -176,6 +178,7 @@ public abstract class DroneAIBlockInteraction<Widget extends ProgWidgetAreaItemB
                 }
                 if(curPos == null) updateY();
             }
+            if(!shouldAbort()) addEndingDebugEntry();
             return false;
         } else {
             Vec3 dronePos = drone.getPosition();
@@ -189,6 +192,10 @@ public abstract class DroneAIBlockInteraction<Widget extends ProgWidgetAreaItemB
             }
             return !drone.getPathNavigator().hasNoPath();
         }
+    }
+
+    protected void addEndingDebugEntry(){
+        drone.addDebugEntry("gui.progWidget.blockInteraction.debug.noBlocksValid");
     }
 
     protected int lookupsPerSearch(){

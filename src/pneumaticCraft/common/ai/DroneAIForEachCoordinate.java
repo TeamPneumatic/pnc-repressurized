@@ -28,4 +28,9 @@ public class DroneAIForEachCoordinate extends DroneAIBlockInteraction<ProgWidget
     public ChunkPosition getCurCoord(){
         return curCoord;
     }
+
+    @Override
+    protected void addEndingDebugEntry(){
+
+    }
 }

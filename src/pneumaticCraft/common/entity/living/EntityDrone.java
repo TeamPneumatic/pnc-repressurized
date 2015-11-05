@@ -4,7 +4,12 @@ import io.netty.buffer.ByteBuf;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.UUID;
 
 import net.minecraft.block.Block;
@@ -60,6 +65,7 @@ import pneumaticCraft.api.drone.IPathfindHandler;
 import pneumaticCraft.api.tileentity.IManoMeasurable;
 import pneumaticCraft.client.render.RenderProgressingLine;
 import pneumaticCraft.client.util.RenderUtils;
+import pneumaticCraft.common.NBTUtil;
 import pneumaticCraft.common.PneumaticCraftAPIHandler;
 import pneumaticCraft.common.ai.DroneAIManager;
 import pneumaticCraft.common.ai.DroneAIManager.EntityAITaskEntry;
@@ -77,7 +83,9 @@ import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.ItemProgrammingPuzzle;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.common.network.NetworkHandler;
+import pneumaticCraft.common.network.PacketSendDroneDebugEntry;
 import pneumaticCraft.common.network.PacketShowWireframe;
+import pneumaticCraft.common.network.PacketSyncDroneEntityProgWidgets;
 import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetGoToLocation;
 import pneumaticCraft.common.recipes.AmadronOffer;
@@ -85,6 +93,7 @@ import pneumaticCraft.common.recipes.AmadronOfferCustom;
 import pneumaticCraft.common.tileentity.TileEntityPlasticMixer;
 import pneumaticCraft.common.tileentity.TileEntityProgrammer;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
+import pneumaticCraft.lib.NBTKeys;
 import pneumaticCraft.lib.PneumaticValues;
 import pneumaticCraft.lib.Sounds;
 
@@ -154,6 +163,8 @@ public class EntityDrone extends EntityDroneBase implements IManoMeasurable, IIn
     private int offerTimes;
     private ItemStack usedTablet;//Tablet used to place the order.
     private String buyingPlayer;
+    private final SortedSet<DebugEntry> debugEntries = new TreeSet<DebugEntry>();
+    private final Set<EntityPlayerMP> syncedPlayers = new HashSet<EntityPlayerMP>();
 
     public EntityDrone(World world){
         super(world);
@@ -193,6 +204,7 @@ public class EntityDrone extends EntityDroneBase implements IManoMeasurable, IIn
         dataWatcher.addObject(24, (byte)0);
         dataWatcher.addObjectByDataType(25, 5);
         dataWatcher.addObject(26, "Main");
+        dataWatcher.addObject(27, 0);
     }
 
     @Override
@@ -279,6 +291,9 @@ public class EntityDrone extends EntityDroneBase implements IManoMeasurable, IIn
                 }
             } else {
                 setTargetedBlock(0, 0, 0);
+            }
+            if(worldObj.getTotalWorldTime() % 20 == 0) {
+                updateSyncedPlayers();
             }
         } else {
             if(digLaser != null) digLaser.update();
@@ -417,9 +432,27 @@ public class EntityDrone extends EntityDroneBase implements IManoMeasurable, IIn
         return dataWatcher.getWatchableObjectString(17);
     }
 
+    /**
+     * Can only be called when the drone is being debugged, so the client has a synced progWidgets array.
+     * @return
+     */
+    public IProgWidget getActiveWidget(){
+        int index = getActiveWidgetIndex();
+        if(index >= 0 && index < progWidgets.size()) {
+            return progWidgets.get(index);
+        } else {
+            return null;
+        }
+    }
+
+    private int getActiveWidgetIndex(){
+        return dataWatcher.getWatchableObjectInt(27);
+    }
+
     @Override
     public void setActiveProgram(IProgWidget widget){
         dataWatcher.updateObject(17, widget.getWidgetString());
+        dataWatcher.updateObject(27, progWidgets.indexOf(widget));
     }
 
     private void setAccelerating(boolean accelerating){
@@ -1376,5 +1409,61 @@ public class EntityDrone extends EntityDroneBase implements IManoMeasurable, IIn
 
     public String getLabel(){
         return dataWatcher.getWatchableObjectString(26);
+    }
+
+    public SortedSet<DebugEntry> getDebugEntries(){
+        return debugEntries;
+    }
+
+    @Override
+    public void addDebugEntry(String message){
+        addDebugEntry(message, null);
+    }
+
+    @Override
+    public void addDebugEntry(String message, ChunkPosition pos){
+
+        DebugEntry entry = new DebugEntry(message, getActiveWidgetIndex(), pos);
+        addDebugEntry(entry);
+
+        PacketSendDroneDebugEntry packet = new PacketSendDroneDebugEntry(entry, this);
+        for(EntityPlayerMP player : syncedPlayers) {
+            NetworkHandler.sendTo(packet, player);
+        }
+    }
+
+    public void addDebugEntry(DebugEntry entry){
+        if(!debugEntries.isEmpty()) {
+            DebugEntry previous = debugEntries.last();
+            if(previous.getProgWidgetId() != entry.getProgWidgetId()) {//When we've jumped to another piece
+                Iterator<DebugEntry> iterator = debugEntries.iterator();
+                while(iterator.hasNext()) {
+                    if(iterator.next().getProgWidgetId() == entry.getProgWidgetId()) {
+                        iterator.remove(); //Remove the data from last cycle.
+                    }
+                }
+            }
+        }
+        debugEntries.add(entry);
+    }
+
+    public void trackAsDebugged(EntityPlayerMP player){
+        NetworkHandler.sendTo(new PacketSyncDroneEntityProgWidgets(this), player);
+
+        for(DebugEntry entry : debugEntries) {
+            NetworkHandler.sendTo(new PacketSendDroneDebugEntry(entry, this), player);
+        }
+
+        syncedPlayers.add(player);
+    }
+
+    public void updateSyncedPlayers(){
+        Iterator<EntityPlayerMP> iterator = syncedPlayers.iterator();
+        while(iterator.hasNext()) {
+            EntityPlayerMP player = iterator.next();
+            if(player.isDead || player.getCurrentArmor(3) == null || NBTUtil.getInteger(player.getCurrentArmor(3), NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE) != getEntityId()) {
+                iterator.remove();
+            }
+        }
     }
 }

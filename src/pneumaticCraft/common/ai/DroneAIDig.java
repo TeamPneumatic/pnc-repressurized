@@ -9,7 +9,6 @@ import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.IBlockAccess;
-import net.minecraftforge.common.util.ForgeDirection;
 import pneumaticCraft.common.progwidgets.ProgWidgetAreaItemBase;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.Log;
@@ -40,13 +39,8 @@ public class DroneAIDig extends DroneAIBlockInteraction{
             }
             for(ItemStack droppedStack : droppedStacks) {
                 if(widget.isItemValidForFilters(droppedStack, meta)) {
-                    for(ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-                        if(drone.isBlockValidPathfindBlock(pos.chunkPosX + dir.offsetX, pos.chunkPosY + dir.offsetY, pos.chunkPosZ + dir.offsetZ)) {
-                            swapBestItemToFirstSlot(block, pos);
-                            return true;
-                        }
-                    }
-                    return false;
+                    swapBestItemToFirstSlot(block, pos);
+                    return true;
                 }
             }
         }
@@ -89,6 +83,7 @@ public class DroneAIDig extends DroneAIBlockInteraction{
             if(!ignoreBlock(block) && isBlockValidForFilter(worldCache, drone, pos, widget)) {
                 if(block.getBlockHardness(drone.getWorld(), x, y, z) < 0) {
                     addToBlacklist(pos);
+                    drone.addDebugEntry("gui.progWidget.dig.debug.cantDigBlock", pos);
                     drone.setDugBlock(0, 0, 0);
                     return false;
                 }
@@ -96,6 +91,7 @@ public class DroneAIDig extends DroneAIBlockInteraction{
                 manager.onBlockClicked(x, y, z, 0);
                 if(!manager.isAccepted) {
                     addToBlacklist(pos);
+                    drone.addDebugEntry("gui.progWidget.dig.debug.cantDigBlock", pos);
                     drone.setDugBlock(0, 0, 0);
                     return false;
                 }

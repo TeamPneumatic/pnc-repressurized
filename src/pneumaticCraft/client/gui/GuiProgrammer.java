@@ -10,7 +10,6 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.GameSettings;
@@ -20,9 +19,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
-import net.minecraft.util.Vec3;
 
-import org.apache.commons.lang3.text.WordUtils;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -32,15 +29,12 @@ import pneumaticCraft.client.gui.widget.GuiCheckBox;
 import pneumaticCraft.client.gui.widget.GuiRadioButton;
 import pneumaticCraft.client.gui.widget.IGuiWidget;
 import pneumaticCraft.client.gui.widget.WidgetTextField;
-import pneumaticCraft.client.gui.widget.WidgetVerticalScrollbar;
 import pneumaticCraft.common.config.Config;
 import pneumaticCraft.common.inventory.ContainerProgrammer;
 import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.PacketGuiButton;
 import pneumaticCraft.common.network.PacketProgrammerUpdate;
 import pneumaticCraft.common.network.PacketUpdateTextfield;
-import pneumaticCraft.common.progwidgets.IJump;
-import pneumaticCraft.common.progwidgets.ILabel;
 import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetStart;
 import pneumaticCraft.common.progwidgets.WidgetRegistrator;
@@ -70,23 +64,24 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
 
     private final List<IProgWidget> visibleSpawnWidgets = new ArrayList<IProgWidget>();
 
+    private GuiUnitProgrammer programmerUnit;
     private boolean wasClicking;
     private boolean wasFocused;
     private IProgWidget draggingWidget;
+    private int lastMouseX, lastMouseY;
     private int dragMouseStartX, dragMouseStartY;
     private int dragWidgetStartX, dragWidgetStartY;
     private static final int FAULT_MARGIN = 4;
     private int widgetPage;
     private int maxPage;
-    private WidgetVerticalScrollbar scaleScroll;
-    private static final float SCALE_PER_STEP = 0.2F;
-    private int translatedX, translatedY;
-    private int lastMouseX, lastMouseY;
-    private int lastZoom;
+
     private boolean showingAllWidgets;
     private int showingWidgetProgress;
     private int oldShowingWidgetProgress;
     private static final int PROGRAMMING_START_Y = 17;
+    private static final int PROGRAMMING_START_X = 5;
+    private static final int PROGRAMMING_WIDTH = 294;
+    private static final int PROGRAMMING_HEIGHT = 154;
 
     public GuiProgrammer(InventoryPlayer player, TileEntityProgrammer te){
 
@@ -149,6 +144,9 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
 
         super.initGui();
 
+        programmerUnit = new GuiUnitProgrammer(te.progWidgets, fontRendererObj, guiLeft, guiTop, xSize, width, height, PROGRAMMING_START_X, PROGRAMMING_START_Y, PROGRAMMING_WIDTH, PROGRAMMING_HEIGHT, te.translatedX, te.translatedY, te.zoomState);
+        addWidget(programmerUnit.getScrollBar());
+
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
 
@@ -202,9 +200,6 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         buttonList.add(redoButton);
         buttonList.add(clearAllButton);
 
-        scaleScroll = new WidgetVerticalScrollbar(xStart + 302, yStart + 40, 129).setStates(9).setCurrentState(te.zoomState).setListening(true);
-        addWidget(scaleScroll);
-
         String containerName = te.hasCustomInventoryName() ? te.getInventoryName() : StatCollector.translateToLocal(te.getInventoryName() + ".name");
         addLabel(containerName, guiLeft + 7, guiTop + 5);
 
@@ -213,10 +208,6 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
 
         String name = I18n.format("gui.programmer.name");
         addLabel(name, guiLeft + 197 - fontRendererObj.getStringWidth(name), guiTop + 5);
-
-        lastZoom = te.zoomState;
-        translatedX = te.translatedX;
-        translatedY = te.translatedY;
 
         updateVisibleProgWidgets();
     }
@@ -236,10 +227,6 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         return false;
     }
 
-    private float getScale(){
-        return 2.0F - scaleScroll.getState() * SCALE_PER_STEP;
-    }
-
     @Override
     protected void drawGuiContainerForegroundLayer(int x, int y){
         super.drawGuiContainerForegroundLayer(x, y);
@@ -248,44 +235,8 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         fontRendererObj.drawString(widgetPage + 1 + "/" + (maxPage + 1), 305, 175, 0xFF000000);
         fontRendererObj.drawString(I18n.format("gui.programmer.difficulty"), 263, 190, 0xFF000000);
 
-        float scale = getScale();
-
         if(showingWidgetProgress == 0) {
-            for(IProgWidget widget : te.progWidgets) {
-                if(!isOutsideProgrammingArea(widget)) {
-                    if(widget != draggingWidget && (x - translatedX) / scale - guiLeft >= widget.getX() && (y - translatedY) / scale - guiTop >= widget.getY() && (x - translatedX) / scale - guiLeft <= widget.getX() + widget.getWidth() / 2 && (y - translatedY) / scale - guiTop <= widget.getY() + widget.getHeight() / 2) {
-                        List<String> tooltip = new ArrayList<String>();
-                        widget.getTooltip(tooltip);
-
-                        List<String> errors = new ArrayList<String>();
-                        widget.addErrors(errors, te.progWidgets);
-                        if(errors.size() > 0) {
-                            tooltip.add(EnumChatFormatting.RED + I18n.format("gui.programmer.errors"));
-                            for(String s : errors) {
-                                String[] lines = WordUtils.wrap("-" + I18n.format(s), 30).split(System.getProperty("line.separator"));
-                                for(String line : lines) {
-                                    tooltip.add(EnumChatFormatting.RED + "   " + line);
-                                }
-                            }
-                        }
-
-                        List<String> warnings = new ArrayList<String>();
-                        widget.addWarnings(warnings, te.progWidgets);
-                        if(warnings.size() > 0) {
-                            tooltip.add(EnumChatFormatting.YELLOW + I18n.format("gui.programmer.warnings"));
-                            for(String s : warnings) {
-                                String[] lines = WordUtils.wrap("-" + I18n.format(s), 30).split(System.getProperty("line.separator"));
-                                for(String line : lines) {
-                                    tooltip.add(EnumChatFormatting.YELLOW + "   " + line);
-                                }
-                            }
-                        }
-
-                        if(igwLoaded) tooltip.add(I18n.format("gui.programmer.pressIForInfo"));
-                        if(tooltip.size() > 0) drawHoveringString(tooltip, x - guiLeft, y - guiTop, fontRendererObj);
-                    }
-                }
-            }
+            programmerUnit.renderForeground(x, y, draggingWidget);
         }
 
         for(IProgWidget widget : visibleSpawnWidgets) {
@@ -315,19 +266,10 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
             toggleShowWidgets();
         }
         if(Keyboard.KEY_DELETE == keyCode) {
-            int x = lastMouseX;
-            int y = lastMouseY;
-            float scale = getScale();
-
-            for(int i = 0; i < te.progWidgets.size(); i++) {
-                IProgWidget widget = te.progWidgets.get(i);
-                if(!isOutsideProgrammingArea(widget)) {
-                    if(widget != draggingWidget && (x - translatedX) / scale - guiLeft >= widget.getX() && (y - translatedY) / scale - guiTop >= widget.getY() && (x - translatedX) / scale - guiLeft <= widget.getX() + widget.getWidth() / 2 && (y - translatedY) / scale - guiTop <= widget.getY() + widget.getHeight() / 2) {
-                        te.progWidgets.remove(i);
-                        NetworkHandler.sendToServer(new PacketProgrammerUpdate(te));
-                        break;
-                    }
-                }
+            IProgWidget widget = programmerUnit.getHoveredWidget(lastMouseX, lastMouseY);
+            if(widget != null) {
+                te.progWidgets.remove(widget);
+                NetworkHandler.sendToServer(new PacketProgrammerUpdate(te));
             }
         }
         if(Keyboard.KEY_Z == keyCode) {
@@ -342,16 +284,12 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
     private void onIGWAction(){
         int x = lastMouseX;
         int y = lastMouseY;
-        float scale = getScale();
 
-        for(IProgWidget widget : te.progWidgets) {
-            if(!isOutsideProgrammingArea(widget)) {
-                if(widget != draggingWidget && (x - translatedX) / scale - guiLeft >= widget.getX() && (y - translatedY) / scale - guiTop >= widget.getY() && (x - translatedX) / scale - guiLeft <= widget.getX() + widget.getWidth() / 2 && (y - translatedY) / scale - guiTop <= widget.getY() + widget.getHeight() / 2) {
-                    GuiWiki gui = new GuiWiki();
-                    FMLClientHandler.instance().showGuiScreen(gui);
-                    gui.setCurrentFile("pneumaticcraft:progwidget/" + widget.getWidgetString());
-                }
-            }
+        IProgWidget hoveredWidget = programmerUnit.getHoveredWidget(x, y);
+        if(hoveredWidget != null) {
+            GuiWiki gui = new GuiWiki();
+            FMLClientHandler.instance().showGuiScreen(gui);
+            gui.setCurrentFile("pneumaticcraft:progwidget/" + hoveredWidget.getWidgetString());
         }
 
         for(IProgWidget widget : visibleSpawnWidgets) {
@@ -376,79 +314,19 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         int yStart = (height - ySize) / 2;
         func_146110_a(xStart, yStart, 0, 0, xSize, ySize, xSize, ySize);
 
-        scaleScroll.setEnabled(showingWidgetProgress == 0);
+        programmerUnit.getScrollBar().setEnabled(showingWidgetProgress == 0);
         super.drawGuiContainerBackgroundLayer(partialTicks, x, y);
-        if(showingWidgetProgress > 0) scaleScroll.setCurrentState(lastZoom);
+        if(showingWidgetProgress > 0) programmerUnit.getScrollBar().setCurrentState(programmerUnit.getLastZoom());
 
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        programmerUnit.render(x, y, showFlow.checked, showInfo.checked && showingWidgetProgress == 0, draggingWidget == null);
 
         int origX = x;
         int origY = y;
-        x -= translatedX;
-        y -= translatedY;
-        float scale = getScale();
+        x -= programmerUnit.getTranslatedX();
+        y -= programmerUnit.getTranslatedY();
+        float scale = programmerUnit.getScale();
         x = (int)(x / scale);
         y = (int)(y / scale);
-
-        if(scaleScroll.getState() != lastZoom) {
-            float shift = SCALE_PER_STEP * (scaleScroll.getState() - lastZoom);
-            if(new Rectangle(guiLeft + 5, guiTop + PROGRAMMING_START_Y, 294, 171 - PROGRAMMING_START_Y).contains(origX, origY)) {
-                translatedX += shift * x;
-                translatedY += shift * y;
-            } else {
-                translatedX += 294 / 2 * shift;
-                translatedY += 166 / 2 * shift;
-            }
-        }
-        lastZoom = scaleScroll.getState();
-
-        ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft(), Minecraft.getMinecraft().displayWidth, Minecraft.getMinecraft().displayHeight);
-        GL11.glScissor((guiLeft + 5) * sr.getScaleFactor(), (sr.getScaledHeight() - (171 - PROGRAMMING_START_Y) - (guiTop + PROGRAMMING_START_Y)) * sr.getScaleFactor(), 294 * sr.getScaleFactor(), (171 - PROGRAMMING_START_Y) * sr.getScaleFactor());
-        GL11.glEnable(GL11.GL_SCISSOR_TEST);
-
-        GL11.glPushMatrix();
-
-        GL11.glTranslated(translatedX, translatedY, 0);
-        GL11.glScaled(scale, scale, 1);
-
-        if(showFlow.checked) showFlow();
-
-        for(IProgWidget widget : te.progWidgets) {
-            GL11.glPushMatrix();
-            GL11.glTranslated(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
-            GL11.glScaled(0.5, 0.5, 1);
-            widget.render();
-            GL11.glPopMatrix();
-        }
-
-        for(IProgWidget widget : te.progWidgets) {
-            List<String> errors = new ArrayList<String>();
-            widget.addErrors(errors, te.progWidgets);
-            if(errors.size() > 0) {
-                drawBorder(widget, 0xFFFF0000);
-            } else {
-                List<String> warnings = new ArrayList<String>();
-                widget.addWarnings(warnings, te.progWidgets);
-                if(warnings.size() > 0) {
-                    drawBorder(widget, 0xFFFFFF00);
-                }
-            }
-        }
-        GL11.glColor4d(1, 1, 1, 1);
-
-        if(showInfo.checked && showingWidgetProgress == 0) {
-            for(IProgWidget widget : te.progWidgets) {
-                GL11.glPushMatrix();
-                GL11.glTranslated(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
-                GL11.glScaled(0.5, 0.5, 1);
-                widget.renderExtraInfo();
-                GL11.glPopMatrix();
-            }
-        }
-
-        GL11.glPopMatrix();
-
-        GL11.glDisable(GL11.GL_SCISSOR_TEST);
 
         if(showingWidgetProgress > 0) {
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -470,7 +348,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         }
 
         GL11.glPushMatrix();
-        GL11.glTranslated(translatedX, translatedY, 0);
+        GL11.glTranslated(programmerUnit.getTranslatedX(), programmerUnit.getTranslatedY(), 0);
         GL11.glScaled(scale, scale, 1);
         if(draggingWidget != null) {
             GL11.glPushMatrix();
@@ -486,9 +364,6 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
 
         if(draggingWidget != null) {
             setConnectingWidgetsToXY(draggingWidget, x - dragMouseStartX + dragWidgetStartX - guiLeft, y - dragMouseStartY + dragWidgetStartY - guiTop);
-        } else if(isLeftClicking && wasClicking && new Rectangle(guiLeft + 5, guiTop + PROGRAMMING_START_Y, 294, 171 - PROGRAMMING_START_Y).contains(origX, origY)) {
-            translatedX += origX - lastMouseX;
-            translatedY += origY - lastMouseY;
         }
 
         if(isLeftClicking && !wasClicking) {
@@ -498,50 +373,42 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
                     te.progWidgets.add(draggingWidget);
                     dragMouseStartX = x - (int)(guiLeft / scale);
                     dragMouseStartY = y - (int)(guiTop / scale);
-                    dragWidgetStartX = (int)((widget.getX() - translatedX) / scale);
-                    dragWidgetStartY = (int)((widget.getY() - translatedY) / scale);
+                    dragWidgetStartX = (int)((widget.getX() - programmerUnit.getTranslatedX()) / scale);
+                    dragWidgetStartY = (int)((widget.getY() - programmerUnit.getTranslatedY()) / scale);
                     break;
                 }
             }
             if(draggingWidget == null && showingWidgetProgress == 0) {
-                for(IProgWidget widget : te.progWidgets) {
-                    if(!isOutsideProgrammingArea(widget)) {
-                        if(x >= widget.getX() + guiLeft && y >= widget.getY() + guiTop && x <= widget.getX() + guiLeft + widget.getWidth() / 2 && y <= widget.getY() + guiTop + widget.getHeight() / 2) {
-                            draggingWidget = widget;
-                            dragMouseStartX = x - guiLeft;
-                            dragMouseStartY = y - guiTop;
-                            dragWidgetStartX = widget.getX();
-                            dragWidgetStartY = widget.getY();
-                            break;
-                        }
-                    }
+                IProgWidget widget = programmerUnit.getHoveredWidget(origX, origY);
+                if(widget != null) {
+                    draggingWidget = widget;
+                    dragMouseStartX = x - guiLeft;
+                    dragMouseStartY = y - guiTop;
+                    dragWidgetStartX = widget.getX();
+                    dragWidgetStartY = widget.getY();
                 }
             }
         } else if(isMiddleClicking && !wasClicking && showingWidgetProgress == 0) {
-            for(IProgWidget widget : te.progWidgets) {
-                if(!isOutsideProgrammingArea(widget)) {
-                    if(x >= widget.getX() + guiLeft && y >= widget.getY() + guiTop && x <= widget.getX() + guiLeft + widget.getWidth() / 2 && y <= widget.getY() + guiTop + widget.getHeight() / 2) {
-                        draggingWidget = widget.copy();
-                        te.progWidgets.add(draggingWidget);
-                        dragMouseStartX = 0;
-                        dragMouseStartY = 0;
-                        dragWidgetStartX = widget.getX() - (x - guiLeft);
-                        dragWidgetStartY = widget.getY() - (y - guiTop);
-                        if(PneumaticCraft.proxy.isSneakingInGui()) copyAndConnectConnectingWidgets(widget, draggingWidget);
-                        break;
-                    }
-                }
+            IProgWidget widget = programmerUnit.getHoveredWidget(origX, origY);
+            if(widget != null) {
+                draggingWidget = widget.copy();
+                te.progWidgets.add(draggingWidget);
+                dragMouseStartX = 0;
+                dragMouseStartY = 0;
+                dragWidgetStartX = widget.getX() - (x - guiLeft);
+                dragWidgetStartY = widget.getY() - (y - guiTop);
+                if(PneumaticCraft.proxy.isSneakingInGui()) copyAndConnectConnectingWidgets(widget, draggingWidget);
             }
         }
 
         if(!isLeftClicking && !isMiddleClicking && draggingWidget != null) {
-            if(isOutsideProgrammingArea(draggingWidget)) {
+            if(programmerUnit.isOutsideProgrammingArea(draggingWidget)) {
                 deleteConnectingWidgets(draggingWidget);
             } else {
                 handlePuzzleMargins();
                 if(!isValidPlaced(draggingWidget)) {
                     setConnectingWidgetsToXY(draggingWidget, dragWidgetStartX, dragWidgetStartY);
-                    if(isOutsideProgrammingArea(draggingWidget)) deleteConnectingWidgets(draggingWidget);
+                    if(programmerUnit.isOutsideProgrammingArea(draggingWidget)) deleteConnectingWidgets(draggingWidget);
                 }
             }
             NetworkHandler.sendToServer(new PacketProgrammerUpdate(te));
@@ -552,64 +419,6 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         wasClicking = isLeftClicking || isMiddleClicking;
         lastMouseX = origX;
         lastMouseY = origY;
-    }
-
-    private void drawBorder(IProgWidget widget, int color){
-        GL11.glPushMatrix();
-        GL11.glTranslated(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
-        GL11.glScaled(0.5, 0.5, 1);
-        drawVerticalLine(0, 0, widget.getHeight(), color);
-        drawVerticalLine(widget.getWidth(), 0, widget.getHeight(), color);
-        drawHorizontalLine(widget.getWidth(), 0, 0, color);
-        drawHorizontalLine(widget.getWidth(), 0, widget.getHeight(), color);
-        GL11.glPopMatrix();
-    }
-
-    private void showFlow(){
-        GL11.glLineWidth(1);
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
-        GL11.glBegin(GL11.GL_LINES);
-
-        for(IProgWidget widget : te.progWidgets) {
-            if(widget instanceof IJump) {
-                List<String> jumpLocations = ((IJump)widget).getPossibleJumpLocations();
-                if(jumpLocations != null) {
-                    for(String jumpLocation : jumpLocations) {
-                        if(jumpLocation != null) {
-                            for(IProgWidget w : te.progWidgets) {
-                                if(w instanceof ILabel) {
-                                    String label = ((ILabel)w).getLabel();
-                                    if(label != null && jumpLocation.equals(label)) {
-                                        int x1 = widget.getX() + widget.getWidth() / 4;
-                                        int y1 = widget.getY() + widget.getHeight() / 4;
-                                        int x2 = w.getX() + w.getWidth() / 4;
-                                        int y2 = w.getY() + w.getHeight() / 4;
-                                        double midX = (x2 + x1) / 2D;
-                                        double midY = (y2 + y1) / 2D;
-                                        GL11.glVertex3d(guiLeft + x1, guiTop + y1, zLevel);
-                                        GL11.glVertex3d(guiLeft + x2, guiTop + y2, zLevel);
-                                        Vec3 arrowVec = Vec3.createVectorHelper(x1 - x2, y1 - y2, 0).normalize();
-                                        float arrowAngle = (float)Math.toRadians(30);
-                                        float arrowSize = 5;
-                                        arrowVec.xCoord *= arrowSize;
-                                        arrowVec.yCoord *= arrowSize;
-                                        arrowVec.rotateAroundZ(arrowAngle);
-                                        GL11.glVertex3d(guiLeft + midX, guiTop + midY, zLevel);
-                                        GL11.glVertex3d(guiLeft + midX + arrowVec.xCoord, guiTop + midY + arrowVec.yCoord, zLevel);
-                                        arrowVec.rotateAroundZ(-2 * arrowAngle);
-                                        GL11.glVertex3d(guiLeft + midX, guiTop + midY, zLevel);
-                                        GL11.glVertex3d(guiLeft + midX + arrowVec.xCoord, guiTop + midY + arrowVec.yCoord, zLevel);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        GL11.glEnd();
-
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
     }
 
     private boolean isValidPlaced(IProgWidget widget1){
@@ -701,16 +510,6 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         }
     }
 
-    private boolean isOutsideProgrammingArea(IProgWidget widget){
-        float scale = getScale();
-        int x = (int)((widget.getX() + guiLeft) * scale);
-        int y = (int)((widget.getY() + guiTop) * scale);
-        x += translatedX - guiLeft;
-        y += translatedY - guiTop;
-
-        return x < 5 || x + widget.getWidth() * scale / 2 > xSize - 51 || y < PROGRAMMING_START_Y || y + widget.getHeight() * scale / 2 > 171;
-    }
-
     private void setConnectingWidgetsToXY(IProgWidget widget, int x, int y){
         widget.setX(x);
         widget.setY(y);
@@ -790,14 +589,14 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
             case 5:
                 for(IProgWidget widget : te.progWidgets) {
                     if(widget instanceof ProgWidgetStart) {
-                        gotoPiece(widget);
+                        programmerUnit.gotoPiece(widget);
                         break;
                     }
                 }
                 return;
             case 6:
                 if(te.progWidgets.size() > 0) {
-                    gotoPiece(te.progWidgets.get(te.progWidgets.size() - 1));
+                    programmerUnit.gotoPiece(te.progWidgets.get(te.progWidgets.size() - 1));
                 }
                 return;
             case 7:
@@ -835,13 +634,6 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
             }
             updateVisibleProgWidgets();
         }
-    }
-
-    private void gotoPiece(IProgWidget widget){
-        scaleScroll.currentScroll = 0;
-        lastZoom = 0;
-        translatedX = -widget.getX() * 2 + 294 / 2 - guiLeft;
-        translatedY = -widget.getY() * 2 + 166 / 2 - guiTop;
     }
 
     @Override
@@ -944,28 +736,19 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         super.mouseClicked(x, y, par3);
 
         if(par3 == 1 && showingWidgetProgress == 0) {
-            x -= translatedX;
-            y -= translatedY;
-            float scale = getScale();
-            x = (int)(x / scale);
-            y = (int)(y / scale);
-
-            for(IProgWidget widget : te.progWidgets) {
-                if(!isOutsideProgrammingArea(widget)) {
-                    if(x >= widget.getX() + guiLeft && y >= widget.getY() + guiTop && x <= widget.getX() + guiLeft + widget.getWidth() / 2 && y <= widget.getY() + guiTop + widget.getHeight() / 2) {
-                        GuiScreen screen = widget.getOptionWindow(this);
-                        if(screen != null) mc.displayGuiScreen(screen);
-                    }
-                }
+            IProgWidget widget = programmerUnit.getHoveredWidget(x, y);
+            if(widget != null) {
+                GuiScreen screen = widget.getOptionWindow(this);
+                if(screen != null) mc.displayGuiScreen(screen);
             }
         }
     }
 
     @Override
     public void onGuiClosed(){
-        te.translatedX = translatedX;
-        te.translatedY = translatedY;
-        te.zoomState = lastZoom;
+        te.translatedX = programmerUnit.getTranslatedX();
+        te.translatedY = programmerUnit.getTranslatedY();
+        te.zoomState = programmerUnit.getLastZoom();
         te.showFlow = showFlow.checked;
         te.showInfo = showInfo.checked;
         super.onGuiClosed();
