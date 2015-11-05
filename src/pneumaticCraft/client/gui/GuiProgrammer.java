@@ -339,6 +339,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
 
             if(showingAllWidgets && draggingWidget != null) toggleShowWidgets();
         }
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
         for(IProgWidget widget : visibleSpawnWidgets) {
             GL11.glPushMatrix();
             GL11.glTranslated(widget.getX() + guiLeft, widget.getY() + guiTop, 0);

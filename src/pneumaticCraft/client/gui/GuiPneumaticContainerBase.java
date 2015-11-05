@@ -227,7 +227,10 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
     }
 
     protected void bindGuiTexture(){
-        if(guiTexture != null) mc.getTextureManager().bindTexture(guiTexture);
+        if(guiTexture != null) {
+            mc.getTextureManager().bindTexture(guiTexture);
+            GL11.glEnable(GL11.GL_TEXTURE_2D);
+        }
     }
 
     protected Point getGaugeLocation(){

@@ -161,6 +161,7 @@ public class GuiUnitProgrammer extends GuiScreen{
 
         if(showFlow) showFlow();
 
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
         for(IProgWidget widget : progWidgets) {
             GL11.glPushMatrix();
             GL11.glTranslated(widget.getX() + guiLeft, widget.getY() + guiTop, 0);

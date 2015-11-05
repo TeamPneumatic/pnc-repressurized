@@ -333,6 +333,7 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
 
             GL11.glPushMatrix();
             GL11.glTranslated(renderBaseX, renderAffectedY, 0);
+            GL11.glEnable(GL11.GL_TEXTURE_2D);
             for(IGuiWidget widget : widgets)
                 widget.render(mouseX - renderBaseX, mouseY - renderAffectedY, partialTicks);
             GL11.glPopMatrix();
