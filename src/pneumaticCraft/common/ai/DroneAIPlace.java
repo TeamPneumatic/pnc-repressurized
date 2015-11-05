@@ -8,6 +8,7 @@ import net.minecraft.util.Vec3;
 import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import pneumaticCraft.common.entity.living.EntityDrone;
 import pneumaticCraft.common.progwidgets.ISidedWidget;
 import pneumaticCraft.common.progwidgets.ProgWidgetAreaItemBase;
 import pneumaticCraft.common.progwidgets.ProgWidgetPlace;
@@ -38,9 +39,21 @@ public class DroneAIPlace extends DroneAIBlockInteraction{
                 if(droneStack != null && droneStack.getItem() instanceof ItemBlock) {
                     if(widget.isItemValidForFilters(droneStack)) {
                         if(((ItemBlock)droneStack.getItem()).field_150939_a.canPlaceBlockOnSide(drone.getWorld(), pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ, ProgWidgetPlace.getDirForSides(((ISidedWidget)widget).getSides()).ordinal())) {
+                            if(drone instanceof EntityDrone) {
+                                EntityDrone entity = (EntityDrone)drone;
+                                entity.setPosition(entity.posX, entity.posY + 200, entity.posZ);//Teleport the drone to make sure it isn't in the way of placing a block.
+                            }
                             if(drone.getWorld().canPlaceEntityOnSide(((ItemBlock)droneStack.getItem()).field_150939_a, pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ, false, 0, null, droneStack)) {
+                                if(drone instanceof EntityDrone) {
+                                    EntityDrone entity = (EntityDrone)drone;
+                                    entity.setPosition(entity.posX, entity.posY - 200, entity.posZ);
+                                }
                                 return true;
                             } else {
+                                if(drone instanceof EntityDrone) {
+                                    EntityDrone entity = (EntityDrone)drone;
+                                    entity.setPosition(entity.posX, entity.posY - 200, entity.posZ);
+                                }
                                 drone.addDebugEntry("gui.progWidget.place.debug.entityInWay", pos);
                                 failedOnPlacement = true;
                             }
@@ -58,12 +71,16 @@ public class DroneAIPlace extends DroneAIBlockInteraction{
 
     @Override
     protected boolean doBlockInteraction(ChunkPosition pos, double distToBlock){
-        if(distToBlock > 0.5) {
+        if(drone.getPathNavigator().hasNoPath()) {
             ForgeDirection side = ProgWidgetPlace.getDirForSides(((ISidedWidget)widget).getSides());
             for(int i = 0; i < drone.getInventory().getSizeInventory(); i++) {
                 ItemStack droneStack = drone.getInventory().getStackInSlot(i);
                 if(droneStack != null && droneStack.getItem() instanceof ItemBlock && ((ItemBlock)droneStack.getItem()).field_150939_a.canPlaceBlockOnSide(drone.getWorld(), pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ, ProgWidgetPlace.getDirForSides(((ISidedWidget)widget).getSides()).ordinal())) {
                     if(widget.isItemValidForFilters(droneStack)) {
+                        if(drone instanceof EntityDrone) {
+                            EntityDrone entity = (EntityDrone)drone;
+                            entity.setPosition(entity.posX, entity.posY + 200, entity.posZ);//Teleport the drone to make sure it isn't in the way of placing a block.
+                        }
                         if(drone.getWorld().canPlaceEntityOnSide(((ItemBlock)droneStack.getItem()).field_150939_a, pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ, false, 0, null, droneStack)) {
                             Block block = Block.getBlockFromItem(droneStack.getItem());
                             int meta = droneStack.getItem().getMetadata(droneStack.getItemDamage());
@@ -76,14 +93,22 @@ public class DroneAIPlace extends DroneAIBlockInteraction{
                                     drone.getInventory().setInventorySlotContents(i, null);
                                 }
                             }
+                            if(drone instanceof EntityDrone) {
+                                EntityDrone entity = (EntityDrone)drone;
+                                entity.setPosition(entity.posX, entity.posY - 200, entity.posZ);
+                            }
                             return false;
+                        }
+                        if(drone instanceof EntityDrone) {
+                            EntityDrone entity = (EntityDrone)drone;
+                            entity.setPosition(entity.posX, entity.posY - 200, entity.posZ);
                         }
                     }
                 }
             }
             return false;
         } else {
-            return !drone.getPathNavigator().hasNoPath();
+            return true;
         }
     }
 
