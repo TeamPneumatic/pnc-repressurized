@@ -93,6 +93,11 @@ public class GuiDroneDebuggerOptions extends Gui implements IOptionPage{
 
     @Override
     public void drawScreen(int x, int y, float partialTicks){
+        if(selectedDrone != null) {
+            Minecraft.getMinecraft().fontRenderer.drawString("Drone name: " + selectedDrone.getCommandSenderName(), 20, screenHeight - 15, 0xFFFFFFFF, true);
+            Minecraft.getMinecraft().fontRenderer.drawString("Routine: " + selectedDrone.getLabel(), screenWidth / 2, screenHeight - 15, 0xFFFFFFFF, true);
+        }
+
         programmerUnit.render(x, y, true, true, true);
         programmerUnit.renderForeground(x, y, null);
 
