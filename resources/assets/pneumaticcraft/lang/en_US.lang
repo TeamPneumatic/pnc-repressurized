@@ -609,6 +609,7 @@ gui.programmer.button.export.pressRToChange=§cPress 'R' to change
 # Universal Sensor descriptions
 gui.universalSensor.desc.userSetSensor=This is a 'sensor' you can use to emit a constant redstone value. The value emitted is the numeric value inserted into the textbox.
 gui.universalSensor.desc.heatSensor=The coordinate(s) marked by the GPS Tool(s) is/are monitored for heat. When the temperature of the monitored block is higher than the temperature put in the text box (in degrees C) the sensor will emit a redstone strength of 15 and 0 if not. If the textbox is empty, the output level will be linear to the temperature, scaling from 0 through 400 degrees C. In case of multiple positions, the position with the highest temperature is used.
+gui.universalSensor.desc.playerHealth=This sensor option emits a redstone signal proportional to the player's health. no health = 0, max health = 15, and anything in between. The player's name needs to be put into the textbox.
 
 # GUI strings
 gui.entityFilter=Entity filter ('Pig', or '@mob')
