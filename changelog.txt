@@ -1,9 +1,1 @@
--Added Minigun (handheld minigun).
--Added Sentry Turret (block turret).
--Added Drone debugging to the Pneumatic Helmet (when inserting a Dispenser Upgrade).
--Added 'Player Health' sensor to the Universal Sensor.
--Nerfed the heat property of Torches.
--Updated de_DE localization.
-
--Bugfix: Wrong icon in the info tab of the Pneumatic Helmet inside a Charging Station.
--Bugfix: Drone block placement can be derpy when the Drone is in the way of a block that potentially could've been placed.
+-Crash when trying to fire the Minigun.
