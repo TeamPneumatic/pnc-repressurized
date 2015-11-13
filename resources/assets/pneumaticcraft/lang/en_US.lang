@@ -791,6 +791,7 @@ pneumaticHelmet.upgrade.itemSearcher=Item Search Upgrade
 pneumaticHelmet.upgrade.coordinateTracker=Coordinate Tracker
 pneumaticHelmet.upgrade.hackingUpgrade=Hacking Upgrade
 pneumaticHelmet.upgrade.coreComponents=Helmet
+pneumaticHelmet.upgrade.droneDebugger=Drone Debugger
 
 pneumaticHelmet.message.enableSetting=%s Enabled
 pneumaticHelmet.message.disableSetting=%s Disabled
