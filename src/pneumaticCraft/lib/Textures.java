@@ -61,6 +61,7 @@ public class Textures{
     public static final ResourceLocation MODEL_DRONE_MINIGUN = new ResourceLocation(MODEL_LOCATION + "droneMinigun.png");
     public static final ResourceLocation MODEL_HEAT_FRAME = new ResourceLocation(MODEL_LOCATION + "heatFrame.png");
     public static final ResourceLocation MODEL_KEROSENE_LAMP = new ResourceLocation(MODEL_LOCATION + "keroseneLamp.png");
+    public static final ResourceLocation MODEL_SENTRY_TURRET = new ResourceLocation(MODEL_LOCATION + "sentryTurret.png");
 
     public static final ResourceLocation MODEL_FLOW_DETECTOR = new ResourceLocation(TUBE_MODULE_MODEL_LOCATION + "flowDetector.png");
     public static final ResourceLocation MODEL_GAUGE = new ResourceLocation(TUBE_MODULE_MODEL_LOCATION + "gaugeModule.png");
@@ -261,6 +262,7 @@ public class Textures{
     public static final String GUI_AMADRON = GUI_LOCATION + "GuiAmadron.png";
     public static final String GUI_NEI_MISC_RECIPES = GUI_LOCATION + "GuiNEIMiscRecipes.png";
     public static final String GUI_KEROSENE_LAMP = GUI_LOCATION + "GuiKeroseneLamp.png";
+    public static final String GUI_SENTRY_TURRET = GUI_LOCATION + "GuiSentryTurret.png";
     public static final String WIDGET_AMADRON_OFFER_STRING = WIDGET_LOCATION + "WidgetAmadronOffer.png";
     public static final ResourceLocation GUI_WIDGET_OPTIONS = new ResourceLocation(GUI_WIDGET_OPTIONS_STRING);
     public static final ResourceLocation GUI_WIDGET_AREA = new ResourceLocation(GUI_LOCATION + "GuiWidgetArea.png");

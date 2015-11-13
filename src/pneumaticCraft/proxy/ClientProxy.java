@@ -54,6 +54,7 @@ import pneumaticCraft.client.model.ModelPneumaticDoor;
 import pneumaticCraft.client.model.ModelPneumaticDoorBase;
 import pneumaticCraft.client.model.ModelPressureChamberInterface;
 import pneumaticCraft.client.model.ModelRefinery;
+import pneumaticCraft.client.model.ModelSentryTurret;
 import pneumaticCraft.client.model.ModelThermopneumaticProcessingPlant;
 import pneumaticCraft.client.model.ModelUVLightBox;
 import pneumaticCraft.client.model.ModelUniversalSensor;
@@ -69,6 +70,7 @@ import pneumaticCraft.client.render.entity.RenderEntityRing;
 import pneumaticCraft.client.render.entity.RenderEntityVortex;
 import pneumaticCraft.client.render.item.RenderItemCannonParts;
 import pneumaticCraft.client.render.item.RenderItemDrone;
+import pneumaticCraft.client.render.item.RenderItemMinigun;
 import pneumaticCraft.client.render.item.RenderItemPneumaticCilinder;
 import pneumaticCraft.client.render.item.RenderItemPneumaticHelmet;
 import pneumaticCraft.client.render.item.RenderItemProgrammingPuzzle;
@@ -134,6 +136,7 @@ import pneumaticCraft.common.tileentity.TileEntityPressureTube;
 import pneumaticCraft.common.tileentity.TileEntityProgrammer;
 import pneumaticCraft.common.tileentity.TileEntityRefinery;
 import pneumaticCraft.common.tileentity.TileEntitySecurityStation;
+import pneumaticCraft.common.tileentity.TileEntitySentryTurret;
 import pneumaticCraft.common.tileentity.TileEntityThermopneumaticProcessingPlant;
 import pneumaticCraft.common.tileentity.TileEntityUVLightBox;
 import pneumaticCraft.common.tileentity.TileEntityUniversalSensor;
@@ -199,6 +202,7 @@ public class ClientProxy extends CommonProxy{
         registerBaseModelRenderer(Blockss.refinery, TileEntityRefinery.class, new ModelRefinery());
         registerBaseModelRenderer(Blockss.gasLift, TileEntityGasLift.class, new ModelGasLift());
         registerBaseModelRenderer(Blockss.keroseneLamp, TileEntityKeroseneLamp.class, new ModelKeroseneLamp());
+        registerBaseModelRenderer(Blockss.sentryTurret, TileEntitySentryTurret.class, new ModelSentryTurret());
 
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPressureTube.class, new RenderPressureTube());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAirCannon.class, new RenderAirCannon());
@@ -207,6 +211,7 @@ public class ClientProxy extends CommonProxy{
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAphorismTile.class, new RenderAphorismTile());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityElevatorCaller.class, new RenderElevatorCaller());
         // ClientRegistry.bindTileEntitySpecialRenderer(TileEntityProgrammableController.class, new RenderProgrammableController());
+        // ClientRegistry.bindTileEntitySpecialRenderer(TileEntitySentryTurret.class, new RenderSentryTurret());
 
         MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(Blockss.pressureTube), new RenderItemPressureTube(false));
         MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(Blockss.advancedPressureTube), new RenderItemPressureTube(true));
@@ -221,6 +226,7 @@ public class ClientProxy extends CommonProxy{
         MinecraftForgeClient.registerItemRenderer(Itemss.drone, new RenderItemDrone(false));
         MinecraftForgeClient.registerItemRenderer(Itemss.logisticsDrone, new RenderItemDrone(true));
         MinecraftForgeClient.registerItemRenderer(Itemss.programmingPuzzle, new RenderItemProgrammingPuzzle());
+        MinecraftForgeClient.registerItemRenderer(Itemss.minigun, new RenderItemMinigun());
         if(Config.useHelmetModel) MinecraftForgeClient.registerItemRenderer(Itemss.pneumaticHelmet, new RenderItemPneumaticHelmet());
 
         RenderingRegistry.registerEntityRenderingHandler(EntityVortex.class, new RenderEntityVortex());

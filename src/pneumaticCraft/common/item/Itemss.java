@@ -55,6 +55,7 @@ public class Itemss{
     public static Item logisticsDrone;
     public static Item gunAmmo;
     public static Item amadronTablet;
+    public static Item minigun;
 
     public static void init(){
         GPSTool = new ItemGPSTool().setUnlocalizedName("gpsTool");
@@ -99,6 +100,7 @@ public class Itemss{
         logisticsDrone = new ItemLogisticsDrone().setUnlocalizedName("logisticDrone");
         gunAmmo = new ItemGunAmmo().setUnlocalizedName("gunAmmo");
         amadronTablet = new ItemAmadronTablet("amadronTablet", PneumaticValues.AIR_CANISTER_MAX_AIR, PneumaticValues.AIR_CANISTER_VOLUME).setUnlocalizedName("amadronTablet");
+        minigun = new ItemMinigun(PneumaticValues.AIR_CANISTER_MAX_AIR, PneumaticValues.AIR_CANISTER_VOLUME).setUnlocalizedName("minigun");
 
         registerItems();
 
@@ -148,6 +150,7 @@ public class Itemss{
         registerItem(logisticsDrone);
         registerItem(gunAmmo);
         registerItem(amadronTablet);
+        registerItem(minigun);
     }
 
     public static void registerItem(Item item){

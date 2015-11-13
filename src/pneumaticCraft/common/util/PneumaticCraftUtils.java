@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Random;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -30,6 +31,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityHopper;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.ChunkPosition;
@@ -478,26 +480,72 @@ public class PneumaticCraftUtils{
 
     public static int getProtectingSecurityStations(World world, int x, int y, int z, EntityPlayer player, boolean showRangeLines, boolean placementRange){
         int blockingStations = 0;
-        int range = placementRange ? 32 : 16;
-        for(int i = x - range; i <= x + range; i += 16) {
-            for(int j = z - range; j <= z + range; j += 16) {
-                Chunk chunk = world.getChunkFromBlockCoords(i, j);
-                for(TileEntity te : (Iterable<TileEntity>)chunk.chunkTileEntityMap.values()) {
-                    if(te instanceof TileEntitySecurityStation) {
-                        TileEntitySecurityStation station = (TileEntitySecurityStation)te;
-                        if(station.hasValidNetwork()) {
-                            if(Math.abs(station.xCoord - x) <= station.getSecurityRange() + (placementRange ? 16 : 0) && Math.abs(station.yCoord - y) <= station.getSecurityRange() + (placementRange ? 16 : 0) && Math.abs(station.zCoord - z) <= station.getSecurityRange() + (placementRange ? 16 : 0)) {
-                                if(!station.doesAllowPlayer(player)) {
-                                    blockingStations++;
-                                    if(showRangeLines) station.showRangeLines();
-                                }
-                            }
-                        }
-                    }
-                }
+        for(TileEntitySecurityStation station : getSecurityStations(world, x, y, z, placementRange)) {
+            if(!station.doesAllowPlayer(player)) {
+                blockingStations++;
+                if(showRangeLines) station.showRangeLines();
             }
         }
         return blockingStations;
+    }
+
+    public static Iterable<TileEntitySecurityStation> getSecurityStations(final World world, final int x, final int y, final int z, final boolean placementRange){
+        return new Iterable<TileEntitySecurityStation>(){
+            @Override
+            public Iterator<TileEntitySecurityStation> iterator(){
+                return new Iterator<TileEntitySecurityStation>(){
+
+                    private final int range = placementRange ? 32 : 16;
+                    private int i = x - range;
+                    private int j = z - range;
+                    private TileEntitySecurityStation curStation;
+                    private int chunkTileEntityIndex = -1;
+
+                    @Override
+                    public boolean hasNext(){
+                        if(curStation != null) return true;
+                        for(; i <= x + range; i += 16) {
+                            for(; j <= z + range; j += 16) {
+                                Chunk chunk = world.getChunkFromBlockCoords(i, j);
+                                int curIndex = 0;
+                                for(TileEntity te : (Iterable<TileEntity>)chunk.chunkTileEntityMap.values()) {
+                                    if(curIndex > chunkTileEntityIndex && te instanceof TileEntitySecurityStation) {
+                                        TileEntitySecurityStation station = (TileEntitySecurityStation)te;
+                                        if(station.hasValidNetwork()) {
+                                            if(Math.abs(station.xCoord - x) <= station.getSecurityRange() + (placementRange ? 16 : 0) && Math.abs(station.yCoord - y) <= station.getSecurityRange() + (placementRange ? 16 : 0) && Math.abs(station.zCoord - z) <= station.getSecurityRange() + (placementRange ? 16 : 0)) {
+                                                curStation = station;
+                                                chunkTileEntityIndex = curIndex;
+                                                return true;
+                                            }
+                                        }
+                                    }
+                                    curIndex++;
+                                }
+                                chunkTileEntityIndex = -1;
+                            }
+                            j = z - range;
+                        }
+                        return false;
+                    }
+
+                    @Override
+                    public TileEntitySecurityStation next(){
+                        if(hasNext()) {
+                            TileEntitySecurityStation station = curStation;
+                            curStation = null;
+                            return station;
+                        } else {
+                            throw new NoSuchElementException();
+                        }
+                    }
+
+                    @Override
+                    public void remove(){
+                        throw new UnsupportedOperationException();
+                    }
+                };
+            }
+        };
     }
 
     public static MovingObjectPosition getEntityLookedObject(EntityLivingBase entity){
@@ -835,6 +883,69 @@ public class PneumaticCraftUtils{
 
     public static boolean isPlayerOp(EntityPlayer player){
         return player.canCommandSenderUseCommand(2, "PneumaticCraftIsPlayerOp");
+    }
+
+    private static MovingObjectPosition raytraceEntityBlocks(EntityLivingBase entity, double range){
+        Pair<Vec3, Vec3> startAndEnd = getStartAndEndLookVec(entity, (float)range);
+        return entity.worldObj.func_147447_a(startAndEnd.getLeft(), startAndEnd.getRight(), false, false, true);
+    }
+
+    public static MovingObjectPosition getMouseOverServer(EntityLivingBase lookingEntity, double range){
+
+        MovingObjectPosition mop = raytraceEntityBlocks(lookingEntity, range);
+        double d1 = range;
+        Pair<Vec3, Vec3> startAndEnd = getStartAndEndLookVec(lookingEntity, (float)range);
+        Vec3 vec3 = startAndEnd.getLeft();
+
+        if(mop != null) {
+            d1 = mop.hitVec.distanceTo(vec3);
+        }
+
+        Vec3 vec31 = lookingEntity.getLookVec();
+        Vec3 vec32 = startAndEnd.getRight();
+        Entity pointedEntity = null;
+        Vec3 vec33 = null;
+        float f1 = 1.0F;
+        List list = lookingEntity.worldObj.getEntitiesWithinAABBExcludingEntity(lookingEntity, lookingEntity.boundingBox.addCoord(vec31.xCoord * range, vec31.yCoord * range, vec31.zCoord * range).expand(f1, f1, f1));
+        double d2 = d1;
+
+        for(int i = 0; i < list.size(); ++i) {
+            Entity entity = (Entity)list.get(i);
+
+            if(entity.canBeCollidedWith()) {
+                float f2 = entity.getCollisionBorderSize();
+                AxisAlignedBB axisalignedbb = entity.boundingBox.expand(f2, f2, f2);
+                MovingObjectPosition movingobjectposition = axisalignedbb.calculateIntercept(vec3, vec32);
+
+                if(axisalignedbb.isVecInside(vec3)) {
+                    if(0.0D < d2 || d2 == 0.0D) {
+                        pointedEntity = entity;
+                        vec33 = movingobjectposition == null ? vec3 : movingobjectposition.hitVec;
+                        d2 = 0.0D;
+                    }
+                } else if(movingobjectposition != null) {
+                    double d3 = vec3.distanceTo(movingobjectposition.hitVec);
+
+                    if(d3 < d2 || d2 == 0.0D) {
+                        if(entity == entity.ridingEntity && !entity.canRiderInteract()) {
+                            if(d2 == 0.0D) {
+                                pointedEntity = entity;
+                                vec33 = movingobjectposition.hitVec;
+                            }
+                        } else {
+                            pointedEntity = entity;
+                            vec33 = movingobjectposition.hitVec;
+                            d2 = d3;
+                        }
+                    }
+                }
+            }
+        }
+
+        if(pointedEntity != null && (d2 < d1 || mop == null)) {
+            mop = new MovingObjectPosition(pointedEntity, vec33);
+        }
+        return mop;
     }
 
 }

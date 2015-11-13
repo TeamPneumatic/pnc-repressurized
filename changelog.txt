@@ -1,10 +1,9 @@
--You can now set a specific variable value to enable widgets in Remotes.
--You can now postfix variables in a label with '.x', '.y' or '.z' to only show that value. For example: "${varName.x}" will only show the x value of the 'varName' variable.
--Added 'Drop-down' widget to the Remote.
--Drones now send a chat message to their owner with their location when dying.
--The hitbox of Elevator Frames are now more representative to how the frames look.
+-Added Minigun (handheld minigun).
+-Added Sentry Turret (block turret).
+-Added Drone debugging to the Pneumatic Helmet (when inserting a Dispenser Upgrade).
+-Added 'Player Health' sensor to the Universal Sensor.
+-Nerfed the heat property of Torches.
+-Updated de_DE localization.
 
--Bugfix: NEI crash when spawning in items from the panel when the player's inventory is full.
--Bugfix: The IGW documentation for the "Drone Condition: Entity" and "Condition: Entity" are swapped.
--Bugfix: Logistics frames disappear when chunk unloads (while the server is still running).
--Bugfix: Hopefully fixed not being able to drag the rightmost pieces out of the Programmer panel.
+-Bugfix: Wrong icon in the info tab of the Pneumatic Helmet inside a Charging Station.
+-Bugfix: Drone block placement can be derpy when the Drone is in the way of a block that potentially could've been placed.

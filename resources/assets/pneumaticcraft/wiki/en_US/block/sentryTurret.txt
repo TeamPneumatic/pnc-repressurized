@@ -1,0 +1,14 @@
+A Sentry Turret is an autonomous defensive weapon. It uses Gun Ammo to shoot entities within range.
+
+[prefix{l}]Range [prefix{}]
+The Sentry Turret's range is 16 blocks by default, but can be upgraded using Range Upgrades. Every upgrade increases the range by one.
+
+[prefix{l}]Filtering targets[prefix{}]
+You can filter which entities to attack by entering an [link{pneumaticcraft:misc/entityFilter}]entity filter[link{}] in the 'Target Filter' field inside the Sentry Turret's GUI.
+
+[prefix{l}]Security Stations[prefix{}]
+When the Sentry Gun is covered by one ore more Security Stations, all players allowed by all Security Stations will not be targeted. This is regardless how the entity filter is set up.
+
+[image{335,10,0.25,pneumaticcraft:textures/wiki/sentryTurret.png}]
+
+[crafting{200,250,key=block/sentryTurret}]

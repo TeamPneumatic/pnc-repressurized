@@ -20,6 +20,6 @@ public class SlotBase extends Slot{
 
     @Override
     public boolean isItemValid(ItemStack stack){
-        return inventory.isItemValidForSlot(slotNumber, stack);
+        return inventory.isItemValidForSlot(getSlotIndex(), stack);
     }
 }

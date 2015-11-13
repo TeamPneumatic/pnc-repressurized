@@ -165,6 +165,8 @@ public class CraftingRegistrator{
         addRecipe(new ItemStack(Itemss.advancedPCB), "prp", "rcr", "prp", 'c', Itemss.printedCircuitBoard, 'r', Items.redstone, 'p', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.HELIUM_PLANT_DAMAGE));
         addRecipe(new ItemStack(Blockss.uvLightBox), "lll", "ibt", "iii", 'l', Blocks.redstone_lamp, 'b', Itemss.PCBBlueprint, 'i', Names.INGOT_IRON_COMPRESSED, 't', new ItemStack(Blockss.pressureTube, 1, 0));
         addShapelessRecipe(new ItemStack(Itemss.gunAmmo), new ItemStack(Items.gunpowder), Names.INGOT_IRON_COMPRESSED, "ingotGold");
+        addRecipe(new ItemStack(Blockss.sentryTurret), " m ", "pip", "i i", 'm', Itemss.minigun, 'p', new ItemStack(Itemss.plastic, 1, ItemPlasticPlants.SQUID_PLANT_DAMAGE), 'i', Names.INGOT_IRON_COMPRESSED);
+        addRecipe(new ItemStack(Itemss.minigun), "cib", "g  ", 'c', Names.BLOCK_IRON_COMPRESSED, 'i', Names.INGOT_IRON_COMPRESSED, 'b', Itemss.cannonBarrel, 'g', "ingotGold");
 
         //Assembly Machines
         addRecipe(new ItemStack(Blockss.assemblyDrill), true, "dcc", "  c", "ipi", 'd', Items.diamond, 'c', Itemss.pneumaticCylinder, 'i', Names.INGOT_IRON_COMPRESSED, 'p', Itemss.printedCircuitBoard);

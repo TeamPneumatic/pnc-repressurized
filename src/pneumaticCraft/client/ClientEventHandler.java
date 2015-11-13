@@ -15,19 +15,30 @@ import net.minecraft.client.renderer.entity.RenderBiped;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.Vec3;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
+
+import org.lwjgl.opengl.GL11;
+
 import pneumaticCraft.PneumaticCraft;
 import pneumaticCraft.api.item.IProgrammable;
 import pneumaticCraft.client.gui.IGuiDrone;
+import pneumaticCraft.client.render.RenderProgressingLine;
+import pneumaticCraft.client.util.RenderUtils;
 import pneumaticCraft.common.DateEventHandler;
 import pneumaticCraft.common.block.tubes.ModuleRegulatorTube;
 import pneumaticCraft.common.config.Config;
+import pneumaticCraft.common.item.ItemMinigun;
 import pneumaticCraft.common.item.ItemProgrammingPuzzle;
 import pneumaticCraft.common.item.Itemss;
+import pneumaticCraft.common.minigun.Minigun;
 import pneumaticCraft.common.progwidgets.IProgWidget;
 import pneumaticCraft.common.tileentity.TileEntityProgrammer;
 import cpw.mods.fml.client.FMLClientHandler;
@@ -37,6 +48,7 @@ import cpw.mods.fml.common.gameevent.TickEvent;
 public class ClientEventHandler{
     public static float playerRenderPartialTick;
     private static boolean firstTick = true;
+    private final RenderProgressingLine minigunFire = new RenderProgressingLine().setProgress(1);
 
     @SubscribeEvent
     public void onPlayerJoin(TickEvent.PlayerTickEvent event){
@@ -127,5 +139,54 @@ public class ClientEventHandler{
             String warning = EnumChatFormatting.RED + I18n.format("gui.regulatorTube.hudMessage." + (ModuleRegulatorTube.inverted ? "inverted" : "notInLine"));
             fontRenderer.drawStringWithShadow(warning, sr.getScaledWidth() / 2 - fontRenderer.getStringWidth(warning) / 2, sr.getScaledHeight() / 2 + 30, 0xFFFFFFFF);
         }
+    }
+
+    @SubscribeEvent
+    public void onWorldRender(RenderWorldLastEvent event){
+        double gunRadius = 1.1D;
+
+        EntityPlayer thisPlayer = Minecraft.getMinecraft().thePlayer;
+        double playerX = thisPlayer.prevPosX + (thisPlayer.posX - thisPlayer.prevPosX) * event.partialTicks;
+        double playerY = thisPlayer.prevPosY + (thisPlayer.posY - thisPlayer.prevPosY) * event.partialTicks;
+        double playerZ = thisPlayer.prevPosZ + (thisPlayer.posZ - thisPlayer.prevPosZ) * event.partialTicks;
+        GL11.glPushMatrix();
+        GL11.glTranslated(-playerX, -playerY, -playerZ);
+
+        for(EntityPlayer player : (List<EntityPlayer>)Minecraft.getMinecraft().theWorld.playerEntities) {
+            if(thisPlayer == player && Minecraft.getMinecraft().gameSettings.thirdPersonView == 0) continue;
+            ItemStack curItem = player.getCurrentEquippedItem();
+            if(curItem != null && curItem.getItem() == Itemss.minigun) {
+                Minigun minigun = ((ItemMinigun)Itemss.minigun).getMinigun(curItem, player);
+                if(minigun.isMinigunActivated() && minigun.getMinigunSpeed() == Minigun.MAX_GUN_SPEED) {
+                    GL11.glPushMatrix();
+                    playerX = player.prevPosX + (player.posX - player.prevPosX) * event.partialTicks;
+                    playerY = player.prevPosY + (player.posY - player.prevPosY) * event.partialTicks;
+                    playerZ = player.prevPosZ + (player.posZ - player.prevPosZ) * event.partialTicks;
+                    GL11.glTranslated(playerX, playerY + 0.5, playerZ);
+
+                    GL11.glDisable(GL11.GL_TEXTURE_2D);
+                    //GL11.glDisable(GL11.GL_LIGHTING);
+                    RenderUtils.glColorHex(0xFF000000 | minigun.getAmmoColor());
+                    for(int i = 0; i < 5; i++) {
+
+                        Vec3 directionVec = player.getLookVec().normalize();
+                        Vec3 vec = Vec3.createVectorHelper(directionVec.xCoord, 0, directionVec.zCoord).normalize();
+                        vec.rotateAroundY((float)Math.toRadians(-15 + (player.rotationYawHead - player.renderYawOffset)));
+                        minigunFire.startX = vec.xCoord * gunRadius;
+                        minigunFire.startY = vec.yCoord * gunRadius - player.yOffset;
+                        minigunFire.startZ = vec.zCoord * gunRadius;
+                        minigunFire.endX = directionVec.xCoord * 20 + player.getRNG().nextDouble() - 0.5;
+                        minigunFire.endY = directionVec.yCoord * 20 + player.getRNG().nextDouble() - 0.5;
+                        minigunFire.endZ = directionVec.zCoord * 20 + player.getRNG().nextDouble() - 0.5;
+                        minigunFire.render();
+                    }
+                    GL11.glColor4d(1, 1, 1, 1);
+                    // GL11.glEnable(GL11.GL_LIGHTING);
+                    GL11.glEnable(GL11.GL_TEXTURE_2D);
+                    GL11.glPopMatrix();
+                }
+            }
+        }
+        GL11.glPopMatrix();
     }
 }

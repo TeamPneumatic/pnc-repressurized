@@ -1,0 +1,4 @@
+A Minigun is a handheld weapon. It runs on [link{item/gunAmmo}]Gun Ammo[link{}] which needs to be kept in the player's inventory while using the Minigun.
+
+To fire the minigun, simply hold right-click. The barrel will start to spin and will fire as soon as it is up to speed. It has a 50 block range.
+[crafting{200, 100, key=item/minigun}]

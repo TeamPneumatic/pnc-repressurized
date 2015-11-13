@@ -26,7 +26,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.item.ItemDye;
@@ -38,7 +37,6 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.client.C15PacketClientSettings;
 import net.minecraft.pathfinding.PathEntity;
 import net.minecraft.pathfinding.PathPoint;
-import net.minecraft.potion.PotionEffect;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.ItemInWorldManager;
 import net.minecraft.stats.StatBase;
@@ -64,7 +62,6 @@ import pneumaticCraft.api.drone.IPathNavigator;
 import pneumaticCraft.api.drone.IPathfindHandler;
 import pneumaticCraft.api.tileentity.IManoMeasurable;
 import pneumaticCraft.client.render.RenderProgressingLine;
-import pneumaticCraft.client.util.RenderUtils;
 import pneumaticCraft.common.NBTUtil;
 import pneumaticCraft.common.PneumaticCraftAPIHandler;
 import pneumaticCraft.common.ai.DroneAIManager;
@@ -78,10 +75,10 @@ import pneumaticCraft.common.ai.IDroneBase;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.config.Config;
 import pneumaticCraft.common.item.ItemGPSTool;
-import pneumaticCraft.common.item.ItemGunAmmo;
 import pneumaticCraft.common.item.ItemMachineUpgrade;
 import pneumaticCraft.common.item.ItemProgrammingPuzzle;
 import pneumaticCraft.common.item.Itemss;
+import pneumaticCraft.common.minigun.Minigun;
 import pneumaticCraft.common.network.NetworkHandler;
 import pneumaticCraft.common.network.PacketSendDroneDebugEntry;
 import pneumaticCraft.common.network.PacketShowWireframe;
@@ -95,7 +92,6 @@ import pneumaticCraft.common.tileentity.TileEntityProgrammer;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.NBTKeys;
 import pneumaticCraft.lib.PneumaticValues;
-import pneumaticCraft.lib.Sounds;
 
 import com.mojang.authlib.GameProfile;
 
@@ -148,17 +144,8 @@ public class EntityDrone extends EntityDroneBase implements IManoMeasurable, IIn
     private boolean isSuffocating;
     private boolean disabledByHacking;
     private boolean standby;//If true, the drone's propellors stop, the drone will fall down, and won't use pressure.
-    private static final double MAX_GUN_SPEED = 0.4;
-    public double minigunRotation, oldMinigunRotation;
-    private double minigunSpeed;
-    private int minigunTriggerTimeOut;
-    public double minigunYaw, oldMinigunYaw;
-    public double minigunPitch, oldMinigunPitch;
-    private final RenderProgressingLine minigunFire = new RenderProgressingLine().setProgress(1);
-    private int minigunSoundCounter = -1;
-    private boolean gunAimedAtTarget;
-    private static final double MAX_GUN_YAW_CHANGE = 10;
-    private static final double MAX_GUN_PITCH_CHANGE = 10;
+    private Minigun minigun;
+
     private AmadronOffer handlingOffer;
     private int offerTimes;
     private ItemStack usedTablet;//Tablet used to place the order.
@@ -351,7 +338,7 @@ public class EntityDrone extends EntityDroneBase implements IManoMeasurable, IIn
             }
         }
         super.onUpdate();
-        if(hasMinigun()) updateMinigun();
+        if(hasMinigun()) getMinigun().setAttackTarget(getAttackTarget()).update(posX, posY, posZ);
         if(!worldObj.isRemote && isEntityAlive()) {
             if(enabled) aiManager.onUpdateTasks();
             for(ForgeDirection d : ForgeDirection.VALID_DIRECTIONS) {
@@ -568,34 +555,11 @@ public class EntityDrone extends EntityDroneBase implements IManoMeasurable, IIn
             GL11.glEnable(GL11.GL_TEXTURE_2D);
             GL11.glPopMatrix();
         }
-        if(isMinigunActivated() && minigunSpeed == MAX_GUN_SPEED && gunAimedAtTarget && getAttackTarget() != null) {
-            Entity target = getAttackTarget();
-            GL11.glPushMatrix();
-            GL11.glScaled(1, 1, 1);
-            double x = lastTickPosX + (posX - lastTickPosX) * partialTicks;
-            double y = lastTickPosY + (posY - lastTickPosY) * partialTicks;
-            double z = lastTickPosZ + (posZ - lastTickPosZ) * partialTicks;
-            GL11.glTranslated(-x, -y, -z);
-            GL11.glDisable(GL11.GL_TEXTURE_2D);
-            //GL11.glDisable(GL11.GL_LIGHTING);
-            RenderUtils.glColorHex(0xFF000000 | getAmmoColor());
-            for(int i = 0; i < 5; i++) {
 
-                Vec3 vec = Vec3.createVectorHelper(target.posX - x, target.posY - y, target.posZ - z).normalize();
-                double f = 0.60;
-                minigunFire.startX = x + vec.xCoord * f;
-                minigunFire.startY = y + vec.yCoord * f;
-                minigunFire.startZ = z + vec.zCoord * f;
-                minigunFire.endX = target.posX + getRNG().nextDouble() - 0.5;
-                minigunFire.endY = target.posY + target.height / 2 + getRNG().nextDouble() - 0.5;
-                minigunFire.endZ = target.posZ + getRNG().nextDouble() - 0.5;
-                minigunFire.render();
-            }
-            GL11.glColor4d(1, 1, 1, 1);
-            // GL11.glEnable(GL11.GL_LIGHTING);
-            GL11.glEnable(GL11.GL_TEXTURE_2D);
-            GL11.glPopMatrix();
-        }
+        double x = lastTickPosX + (posX - lastTickPosX) * partialTicks;
+        double y = lastTickPosY + (posY - lastTickPosY) * partialTicks;
+        double z = lastTickPosZ + (posZ - lastTickPosZ) * partialTicks;
+        getMinigun().render(x, y, z, 0.6);
     }
 
     public double getRange(){
@@ -877,8 +841,17 @@ public class EntityDrone extends EntityDroneBase implements IManoMeasurable, IIn
 
     @Override
     public DroneFakePlayer getFakePlayer(){
-        if(fakePlayer == null && !worldObj.isRemote) initializeFakePlayer();
+        if(fakePlayer == null && !worldObj.isRemote) {
+            initializeFakePlayer();
+        }
         return fakePlayer;
+    }
+
+    public Minigun getMinigun(){
+        if(minigun == null) {
+            minigun = new MinigunDrone().setPlayer(getFakePlayer()).setWorld(worldObj).setPressurizable(this, PneumaticValues.DRONE_USAGE_ATTACK);
+        }
+        return minigun;
     }
 
     @Override
@@ -1233,127 +1206,12 @@ public class EntityDrone extends EntityDroneBase implements IManoMeasurable, IIn
         return (IPathNavigator)getNavigator();
     }
 
-    private void updateMinigun(){
-        oldMinigunRotation = minigunRotation;
-        oldMinigunYaw = minigunYaw;
-        oldMinigunPitch = minigunPitch;
-        if(!worldObj.isRemote) {
-            setMinigunActivated(minigunTriggerTimeOut > 0);
-
-            ItemStack ammo = getAmmo();
-            setAmmoColor(ammo);
-
-            if(minigunTriggerTimeOut > 0) {
-                minigunTriggerTimeOut--;
-                if(minigunSpeed == 0) {
-                    worldObj.playSoundAtEntity(this, Sounds.HUD_INIT, 2, 0.9F);
-                }
-            }
-            if(minigunSoundCounter == 0 && minigunTriggerTimeOut == 0) {
-                worldObj.playSoundAtEntity(this, Sounds.MINIGUN_STOP, 3, 0.5F);
-                minigunSoundCounter = -1;
-            }
-        }
-        if(isMinigunActivated()) {
-            minigunSpeed = Math.min(minigunSpeed + 0.01D, MAX_GUN_SPEED);
-        } else {
-            minigunSpeed = Math.max(0, minigunSpeed - 0.003D);
-        }
-
-        minigunRotation += minigunSpeed;
-
-        double targetYaw = 0;
-        double targetPitch = 0;
-        if(getAttackTarget() != null) {
-            double deltaX = posX - getAttackTarget().posX;
-            double deltaZ = posZ - getAttackTarget().posZ;
-
-            if(deltaX >= 0 && deltaZ < 0) {
-                targetYaw = Math.atan(Math.abs(deltaX / deltaZ)) / Math.PI * 180D;
-            } else if(deltaX >= 0 && deltaZ >= 0) {
-                targetYaw = Math.atan(Math.abs(deltaZ / deltaX)) / Math.PI * 180D + 90;
-            } else if(deltaX < 0 && deltaZ >= 0) {
-                targetYaw = Math.atan(Math.abs(deltaX / deltaZ)) / Math.PI * 180D + 180;
-            } else {
-                targetYaw = Math.atan(Math.abs(deltaZ / deltaX)) / Math.PI * 180D + 270;
-            }
-            if(targetYaw - minigunYaw > 180) {
-                targetYaw -= 360;
-            } else if(minigunYaw - targetYaw > 180) {
-                targetYaw += 360;
-            }
-            targetPitch = Math.toDegrees(Math.atan((posY - getAttackTarget().posY - getAttackTarget().height / 2) / PneumaticCraftUtils.distBetween(posX, posZ, getAttackTarget().posX, getAttackTarget().posZ)));
-
-            if(minigunPitch > targetPitch) {
-                if(minigunPitch - MAX_GUN_PITCH_CHANGE > targetPitch) {
-                    minigunPitch -= MAX_GUN_PITCH_CHANGE;
-                } else {
-                    minigunPitch = targetPitch;
-                }
-            } else {
-                if(minigunPitch + MAX_GUN_PITCH_CHANGE < targetPitch) {
-                    minigunPitch += MAX_GUN_PITCH_CHANGE;
-                } else {
-                    minigunPitch = targetPitch;
-                }
-            }
-
-            if(minigunPitch < 10 || minigunPitch > 170) {
-                minigunYaw = targetYaw;
-            } else {
-                if(minigunYaw > targetYaw) {
-                    if(minigunYaw - MAX_GUN_YAW_CHANGE > targetYaw) {
-                        minigunYaw -= MAX_GUN_YAW_CHANGE;
-                    } else {
-                        minigunYaw = targetYaw;
-                    }
-                } else {
-                    if(minigunYaw + MAX_GUN_YAW_CHANGE < targetYaw) {
-                        minigunYaw += MAX_GUN_YAW_CHANGE;
-                    } else {
-                        minigunYaw = targetYaw;
-                    }
-                }
-            }
-
-            gunAimedAtTarget = minigunYaw == targetYaw && minigunPitch == targetPitch;
-        }
-
-        if(!worldObj.isRemote && isMinigunActivated() && minigunSpeed == MAX_GUN_SPEED && gunAimedAtTarget && getAttackTarget() != null && !getAttackTarget().isDead) {
-            if(minigunSoundCounter <= 0) {
-                worldObj.playSoundAtEntity(this, Sounds.MINIGUN, 0.3F, 1);
-                minigunSoundCounter = 20;
-            }
-        }
-        if(minigunSoundCounter > 0) minigunSoundCounter--;
-    }
-
     public void tryFireMinigun(EntityLivingBase target){
-
         ItemStack ammo = getAmmo();
-        if(ammo != null) {
-            minigunTriggerTimeOut = Math.max(2, minigunSoundCounter);
-            if(minigunSpeed == MAX_GUN_SPEED && gunAimedAtTarget) {
-                if(ammo.attemptDamageItem(1, getRNG())) {
-                    for(int i = 0; i < getInventory().getSizeInventory(); i++) {
-                        if(getInventory().getStackInSlot(i) == ammo) {
-                            getInventory().setInventorySlotContents(i, null);
-                        }
-                    }
-                }
-                ItemStack potion = ItemGunAmmo.getPotion(ammo);
-                if(potion != null) {
-                    if(getRNG().nextInt(20) == 0) {
-                        List<PotionEffect> effects = Items.potionitem.getEffects(potion);
-                        if(effects != null) {
-                            for(PotionEffect effect : effects) {
-                                target.addPotionEffect(new PotionEffect(effect));
-                            }
-                            addAir(null, -PneumaticValues.DRONE_USAGE_ATTACK);
-                        }
-                    }
-                } else {
-                    target.attackEntityFrom(DamageSource.causePlayerDamage(getFakePlayer()), 4);
+        if(getMinigun().setAmmo(ammo).tryFireMinigun(target)) {
+            for(int i = 0; i < getInventory().getSizeInventory(); i++) {
+                if(getInventory().getStackInSlot(i) == ammo) {
+                    getInventory().setInventorySlotContents(i, null);
                 }
             }
         }
@@ -1465,5 +1323,38 @@ public class EntityDrone extends EntityDroneBase implements IManoMeasurable, IIn
                 iterator.remove();
             }
         }
+    }
+
+    private class MinigunDrone extends Minigun{
+
+        public MinigunDrone(){
+            super(true);
+        }
+
+        @Override
+        public boolean isMinigunActivated(){
+            return EntityDrone.this.isMinigunActivated();
+        }
+
+        @Override
+        public void setMinigunActivated(boolean activated){
+            EntityDrone.this.setMinigunActivated(activated);
+        }
+
+        @Override
+        public void setAmmoColorStack(ItemStack ammo){
+            setAmmoColor(ammo);
+        }
+
+        @Override
+        public int getAmmoColor(){
+            return EntityDrone.this.getAmmoColor();
+        }
+
+        @Override
+        public void playSound(String soundName, float volume, float pitch){
+            worldObj.playSoundAtEntity(EntityDrone.this, soundName, volume, pitch);
+        }
+
     }
 }

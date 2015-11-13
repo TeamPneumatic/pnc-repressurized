@@ -34,6 +34,7 @@ import pneumaticCraft.client.gui.GuiRemote;
 import pneumaticCraft.client.gui.GuiRemoteEditor;
 import pneumaticCraft.client.gui.GuiSecurityStationHacking;
 import pneumaticCraft.client.gui.GuiSecurityStationInventory;
+import pneumaticCraft.client.gui.GuiSentryTurret;
 import pneumaticCraft.client.gui.GuiThermopneumaticProcessingPlant;
 import pneumaticCraft.client.gui.GuiUVLightBox;
 import pneumaticCraft.client.gui.GuiUniversalSensor;
@@ -73,6 +74,7 @@ import pneumaticCraft.common.inventory.ContainerRefinery;
 import pneumaticCraft.common.inventory.ContainerRemote;
 import pneumaticCraft.common.inventory.ContainerSecurityStationHacking;
 import pneumaticCraft.common.inventory.ContainerSecurityStationInventory;
+import pneumaticCraft.common.inventory.ContainerSentryTurret;
 import pneumaticCraft.common.inventory.ContainerThermopneumaticProcessingPlant;
 import pneumaticCraft.common.inventory.ContainerUVLightBox;
 import pneumaticCraft.common.inventory.ContainerUniversalSensor;
@@ -109,6 +111,7 @@ import pneumaticCraft.common.tileentity.TileEntityProgrammableController;
 import pneumaticCraft.common.tileentity.TileEntityProgrammer;
 import pneumaticCraft.common.tileentity.TileEntityRefinery;
 import pneumaticCraft.common.tileentity.TileEntitySecurityStation;
+import pneumaticCraft.common.tileentity.TileEntitySentryTurret;
 import pneumaticCraft.common.tileentity.TileEntityThermopneumaticProcessingPlant;
 import pneumaticCraft.common.tileentity.TileEntityUVLightBox;
 import pneumaticCraft.common.tileentity.TileEntityUniversalSensor;
@@ -126,7 +129,7 @@ public class CommonProxy implements IGuiHandler{
     public int PneumaticHelmetRenderID = 0;
 
     public static enum EnumGuiId{
-        AIR_COMPRESSOR, AIR_CANNON, PRESSURE_CHAMBER, CHARGING_STATION, ELEVATOR, PNEUMATIC_HELMET, PRESSURE_CHAMBER_INTERFACE, VACUUM_PUMP, PNEUMATIC_DOOR, ASSEMBLY_CONTROLLER, UV_LIGHT_BOX, SECURITY_STATION_INVENTORY, HACKING, UNIVERSAL_SENSOR, PNEUMATIC_GENERATOR, ELECTRIC_COMPRESSOR, PNEUMATIC_ENGINE, KINETIC_COMPRESSOR, AERIAL_INTERFACE, ELECTROSTATIC_COMPRESSOR, APHORISM_TILE, OMNIDIRECTIONAL_HOPPER, PROGRAMMER, DRONE, PRESSURE_MODULE, AIR_GRATE_MODULE, PNEUMATIC_DYNAMO, FLUX_COMPRESSOR, PLASTIC_MIXER, LIQUID_COMPRESSOR, ADVANCED_AIR_COMPRESSOR, LIQUID_HOPPER, ADVANCED_LIQUID_COMPRESSOR, REMOTE, REMOTE_EDITOR, PROGRAMMABLE_CONTROLLER, GAS_LIFT, REFINERY, THERMOPNEUMATIC_PROCESSING_PLANT, LOGISTICS_REQUESTER, LOGISTICS_STORAGE, LOGISTICS_PASSIVE_PROVIDER, AMADRON, AMADRON_ADD_TRADE, CREATIVE_COMPRESSOR, KEROSENE_LAMP;
+        AIR_COMPRESSOR, AIR_CANNON, PRESSURE_CHAMBER, CHARGING_STATION, ELEVATOR, PNEUMATIC_HELMET, PRESSURE_CHAMBER_INTERFACE, VACUUM_PUMP, PNEUMATIC_DOOR, ASSEMBLY_CONTROLLER, UV_LIGHT_BOX, SECURITY_STATION_INVENTORY, HACKING, UNIVERSAL_SENSOR, PNEUMATIC_GENERATOR, ELECTRIC_COMPRESSOR, PNEUMATIC_ENGINE, KINETIC_COMPRESSOR, AERIAL_INTERFACE, ELECTROSTATIC_COMPRESSOR, APHORISM_TILE, OMNIDIRECTIONAL_HOPPER, PROGRAMMER, DRONE, PRESSURE_MODULE, AIR_GRATE_MODULE, PNEUMATIC_DYNAMO, FLUX_COMPRESSOR, PLASTIC_MIXER, LIQUID_COMPRESSOR, ADVANCED_AIR_COMPRESSOR, LIQUID_HOPPER, ADVANCED_LIQUID_COMPRESSOR, REMOTE, REMOTE_EDITOR, PROGRAMMABLE_CONTROLLER, GAS_LIFT, REFINERY, THERMOPNEUMATIC_PROCESSING_PLANT, LOGISTICS_REQUESTER, LOGISTICS_STORAGE, LOGISTICS_PASSIVE_PROVIDER, AMADRON, AMADRON_ADD_TRADE, CREATIVE_COMPRESSOR, KEROSENE_LAMP, SENTRY_TURRET;
     }
 
     private final HackTickHandler serverHackTickHandler = new HackTickHandler();
@@ -237,6 +240,8 @@ public class CommonProxy implements IGuiHandler{
                 return new ContainerPneumaticBase((TileEntityBase)world.getTileEntity(x, y, z));
             case KEROSENE_LAMP:
                 return new ContainerKeroseneLamp(player.inventory, (TileEntityKeroseneLamp)world.getTileEntity(x, y, z));
+            case SENTRY_TURRET:
+                return new ContainerSentryTurret(player.inventory, (TileEntitySentryTurret)world.getTileEntity(x, y, z));
         }
         return ThirdPartyManager.instance().getServerGuiElement(ID, player, world, x, y, z);
     }
@@ -324,6 +329,8 @@ public class CommonProxy implements IGuiHandler{
                 return new GuiCreativeCompressor((TileEntityCreativeCompressor)world.getTileEntity(x, y, z));
             case KEROSENE_LAMP:
                 return new GuiKeroseneLamp(player.inventory, (TileEntityKeroseneLamp)world.getTileEntity(x, y, z));
+            case SENTRY_TURRET:
+                return new GuiSentryTurret(player.inventory, (TileEntitySentryTurret)world.getTileEntity(x, y, z));
         }
         return ThirdPartyManager.instance().getClientGuiElement(ID, player, world, x, y, z);
     }

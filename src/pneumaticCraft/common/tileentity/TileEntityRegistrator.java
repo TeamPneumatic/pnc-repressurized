@@ -46,6 +46,7 @@ public class TileEntityRegistrator{
         GameRegistry.registerTileEntity(TileEntityRefinery.class, "PneumaticCraft_refinery");
         GameRegistry.registerTileEntity(TileEntityThermopneumaticProcessingPlant.class, "PneumaticCraft_thermopneumaticProcessingPlant");
         GameRegistry.registerTileEntity(TileEntityKeroseneLamp.class, "PneumaticCraft_keroseneLamp");
+        GameRegistry.registerTileEntity(TileEntitySentryTurret.class, "PneumaticCraft_sentryTurret");
     }
 
 }

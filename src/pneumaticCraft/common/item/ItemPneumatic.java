@@ -25,8 +25,10 @@ public class ItemPneumatic extends Item{
 
     public ItemPneumatic(String textureLocation){
         this();
-        setTextureName(Textures.ICON_LOCATION + textureLocation);
-        setUnlocalizedName(textureLocation);
+        if(textureLocation != null) {
+            setTextureName(Textures.ICON_LOCATION + textureLocation);
+            setUnlocalizedName(textureLocation);
+        }
     }
 
     @Override

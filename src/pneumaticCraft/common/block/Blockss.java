@@ -88,6 +88,7 @@ public class Blockss{
     public static Block thermopneumaticProcessingPlant;
     public static Block keroseneLamp;
     public static Block keroseneLampLight;
+    public static Block sentryTurret;
 
     public static void init(){
         pressureTube = new BlockPressureTube(Material.iron, PneumaticValues.DANGER_PRESSURE_PRESSURE_TUBE, PneumaticValues.MAX_PRESSURE_PRESSURE_TUBE, PneumaticValues.VOLUME_PRESSURE_TUBE).setBlockName("pressureTube");
@@ -148,6 +149,7 @@ public class Blockss{
         thermopneumaticProcessingPlant = new BlockThermopneumaticProcessingPlant(Material.iron).setBlockName("thermopneumaticProcessingPlant");
         keroseneLamp = new BlockKeroseneLamp(Material.iron).setBlockName("keroseneLamp");
         keroseneLampLight = new BlockKeroseneLampLight().setBlockName("keroseneLampLight");
+        sentryTurret = new BlockSentryTurret(Material.iron).setBlockName("sentryTurret");
 
         registerBlocks();
 
@@ -213,6 +215,7 @@ public class Blockss{
         registerBlock(thermopneumaticProcessingPlant);
         registerBlock(keroseneLamp);
         if(!Config.disableKeroseneLampFakeAirBlock) registerBlock(keroseneLampLight);
+        registerBlock(sentryTurret);
     }
 
     public static void registerBlock(Block block){
