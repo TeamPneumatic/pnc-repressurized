@@ -96,7 +96,7 @@ public class TileEntitySentryTurret extends TileEntityBase implements IRedstoneC
     }
 
     private boolean canSeeEntity(Entity entity){
-        Vec3 entityVec = Vec3.createVectorHelper(entity.posX, entity.posY, entity.posZ);
+        Vec3 entityVec = Vec3.createVectorHelper(entity.posX + entity.width / 2, entity.posY + entity.height / 2, entity.posZ + entity.width / 2);
         Vec3 tileVec = Vec3.createVectorHelper(xCoord + 0.5, yCoord + 0.5, zCoord + 0.5);
         MovingObjectPosition trace = worldObj.rayTraceBlocks(entityVec, tileVec);
         return trace != null && trace.blockX == xCoord && trace.blockY == yCoord && trace.blockZ == zCoord;
