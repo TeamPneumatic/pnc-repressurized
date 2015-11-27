@@ -12,6 +12,8 @@ import net.minecraft.stats.Achievement;
 import net.minecraft.world.ChunkCache;
 import net.minecraftforge.common.AchievementPage;
 import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.FluidContainerRegistry;
+import net.minecraftforge.fluids.FluidStack;
 import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.fluid.Fluids;
 import pneumaticCraft.common.item.Itemss;
@@ -55,6 +57,9 @@ public class AchievementHandler{
 
     public static void giveAchievement(EntityPlayer player, ItemStack acquiredStack){
         try {
+            if(FluidContainerRegistry.containsFluid(acquiredStack, new FluidStack(Fluids.oil, 1))) {
+                giveAchievement(player, Fluids.getBucket(Fluids.oil).getUnlocalizedName().substring(5));
+            }
             giveAchievement(player, acquiredStack.getItem().getUnlocalizedName().substring(5));
         } catch(Throwable e) {}
     }
