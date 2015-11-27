@@ -1,5 +1,8 @@
 package pneumaticCraft.common.remote;
 
+import java.awt.Rectangle;
+
+import net.minecraft.client.Minecraft;
 import pneumaticCraft.client.gui.widget.WidgetLabel;
 
 public class WidgetLabelVariable extends WidgetLabel{
@@ -18,4 +21,8 @@ public class WidgetLabelVariable extends WidgetLabel{
         text = oldText;
     }
 
+    @Override
+    public Rectangle getBounds(){
+        return new Rectangle(x, y, Minecraft.getMinecraft().fontRenderer.getStringWidth(parser.parse()), Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT);
+    }
 }
