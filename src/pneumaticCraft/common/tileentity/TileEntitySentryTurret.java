@@ -73,11 +73,11 @@ public class TileEntitySentryTurret extends TileEntityBase implements IRedstoneC
             }
             EntityLivingBase target = getMinigun().getAttackTarget();
             if(target != null) {
-                if(!redstoneAllows() || PneumaticCraftUtils.distBetween(new ChunkPosition(xCoord, yCoord, zCoord), target.posX, target.posY, target.posZ) > range) {
+                if(!redstoneAllows() || !entitySelector.isEntityApplicable(target)) {
                     getMinigun().setAttackTarget(null);
                     targetEntityId = -1;
                 } else {
-                    if(worldObj.getTotalWorldTime() % 5 == 0 && canSeeEntity(target)) {
+                    if(worldObj.getTotalWorldTime() % 5 == 0) {
                         getFakePlayer().setPosition(xCoord + 0.5, yCoord + 0.5, zCoord + 0.5); //Make sure the knockback has the right direction.
                         boolean usedAmmo = getMinigun().tryFireMinigun(target);
                         if(usedAmmo) {
@@ -357,10 +357,9 @@ public class TileEntitySentryTurret extends TileEntityBase implements IRedstoneC
         public boolean isEntityApplicable(Entity entity){
             if(entity instanceof EntityPlayer) {
                 EntityPlayer player = (EntityPlayer)entity;
-                return !player.capabilities.isCreativeMode && super.isEntityApplicable(player) && !isExcludedBySecurityStations(player) && inRange(entity);
-            } else {
-                return super.isEntityApplicable(entity) && inRange(entity);
+                if(player.capabilities.isCreativeMode || isExcludedBySecurityStations(player)) return false;
             }
+            return super.isEntityApplicable(entity) && inRange(entity) && canSeeEntity(entity);
         }
 
         private boolean inRange(Entity entity){
