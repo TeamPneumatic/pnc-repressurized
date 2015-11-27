@@ -59,6 +59,9 @@ public class DroneAIAttackEntity extends EntityAIAttackOnCollide{
             EntityLivingBase entitylivingbase = attacker.getAttackTarget();
             double dist = attacker.getDistanceSq(entitylivingbase.posX, entitylivingbase.boundingBox.minY, entitylivingbase.posZ);
             if(dist < Math.pow(rangedAttackRange, 2) && attacker.getEntitySenses().canSee(entitylivingbase)) {
+                attacker.getFakePlayer().posX = attacker.posX;//Knockback direction
+                attacker.getFakePlayer().posY = attacker.posY;
+                attacker.getFakePlayer().posZ = attacker.posZ;
                 attacker.tryFireMinigun(entitylivingbase);
                 needingSuper = false;
                 if(dist < Math.pow(rangedAttackRange - 4, 2)) {
