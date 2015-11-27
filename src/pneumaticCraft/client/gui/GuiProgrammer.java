@@ -144,6 +144,12 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
 
         super.initGui();
 
+        if(programmerUnit != null) {
+            te.translatedX = programmerUnit.getTranslatedX();
+            te.translatedY = programmerUnit.getTranslatedY();
+            te.zoomState = programmerUnit.getLastZoom();
+        }
+
         programmerUnit = new GuiUnitProgrammer(te.progWidgets, fontRendererObj, guiLeft, guiTop, xSize, width, height, PROGRAMMING_START_X, PROGRAMMING_START_Y, PROGRAMMING_WIDTH, PROGRAMMING_HEIGHT, te.translatedX, te.translatedY, te.zoomState);
         addWidget(programmerUnit.getScrollBar());
 
