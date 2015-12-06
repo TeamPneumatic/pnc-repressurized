@@ -1,1 +1,12 @@
--Crash when trying to fire the Minigun.
+-Sentry Turrets now acquire targets a bit smarter.
+
+-Bugfix: Drone Debugger doesn't have a localization.
+-Bugfix: Sentry Turret sometimes doesn't work properly.
+-Bugfix: Programmer program view translation isn't saved.
+-Bugfix: Drone minigun has a weird knockback direction.
+-Bugfix: Buildcraft Oil buckets don't trigger the oil achievement.
+-Bugfix: When using long variables in the Remote's editor, labels can be removed when close to the edge.
+-Bugfix: Log messages about blocks missing tooltips.
+-Bugfix: Drone can't pathfind through Lava when it has a Security Upgrade.
+-Bugfix: Crashes with Pastebin exporting.
+-Bugfix: Errors in the log about the EnderIO support not behaving.
