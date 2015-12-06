@@ -3,6 +3,7 @@ package pneumaticCraft.common.util;
 import java.util.Map;
 
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.nbt.NBTTagList;
 
 import com.google.gson.JsonArray;
@@ -66,9 +67,14 @@ public class JsonToNBTConverter{
                 case 10:
                     nbt.setTag(entry.getKey(), getTag(element.getAsJsonObject()));
                     break;
-                //    case 11:
-                //        return new NBTTagIntArray();
-                //       break;
+                case 11:
+                    array = element.getAsJsonArray();
+                    int[] intArray = new int[array.size()];
+                    for(int i = 0; i < array.size(); i++) {
+                        intArray[i] = array.get(i).getAsInt();
+                    }
+                    nbt.setTag(entry.getKey(), new NBTTagIntArray(intArray));
+                    break;
                 default:
                     throw new IllegalArgumentException("NBT type no " + type + " is not supported by the Json to NBT converter!");
             }

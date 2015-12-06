@@ -5,6 +5,7 @@ import java.util.Set;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTBase.NBTPrimitive;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 
@@ -14,6 +15,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 
 public class NBTToJsonConverter{
     private final NBTTagCompound tag;
@@ -54,6 +56,13 @@ public class NBTToJsonConverter{
                 NBTTagList tagList = (NBTTagList)nbt;
                 for(int i = 0; i < tagList.tagCount(); i++) {
                     array.add(getObject(tagList.getCompoundTagAt(i)));
+                }
+                keyObject.add("value", array);
+            } else if(nbt instanceof NBTTagIntArray) {
+                JsonArray array = new JsonArray();
+                NBTTagIntArray intArray = (NBTTagIntArray)nbt;
+                for(int i : intArray.func_150302_c()) {
+                    array.add(new JsonPrimitive(i));
                 }
                 keyObject.add("value", array);
             } else {
