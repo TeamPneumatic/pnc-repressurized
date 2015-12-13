@@ -297,6 +297,7 @@ programmingPuzzle.conditionBlock.name=Condition: Block
 programmingPuzzle.conditionLiquidInventory.name=Condition: Liquid
 programmingPuzzle.conditionEntity.name=Condition: Entity
 programmingPuzzle.conditionPressure.name=Condition: Pressure
+programmingPuzzle.conditionLight.name=Condition: Light Level
 programmingPuzzle.droneConditionItem.name=Drone Condition: Items
 programmingPuzzle.droneConditionLiquid.name=Drone Condition: Liquid
 programmingPuzzle.droneConditionEntity.name=Drone Condition: Entity

@@ -53,6 +53,7 @@ public class WidgetRegistrator{
         register(new ProgWidgetEditSign());
         register(new ProgWidgetCoordinateCondition());
         register(new ProgWidgetRedstoneCondition());
+        register(new ProgWidgetLightCondition());
         register(new ProgWidgetItemInventoryCondition());
         register(new ProgWidgetBlockCondition());
         register(new ProgWidgetLiquidInventoryCondition());

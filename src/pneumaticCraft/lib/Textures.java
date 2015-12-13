@@ -148,6 +148,7 @@ public class Textures{
     public static final ResourceLocation PROG_WIDGET_CONDITION_PRESSURE = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionPressurePiece.png");
     public static final ResourceLocation PROG_WIDGET_CONDITION_COORDINATE = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionCoordinatePiece.png");
     public static final ResourceLocation PROG_WIDGET_CONDITION_ITEM = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionItem.png");
+    public static final ResourceLocation PROG_WIDGET_CONDITION_LIGHT = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionLightPiece.png");
     public static final ResourceLocation PROG_WIDGET_CONDITION_DRONE_ENTITY = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionDroneEntityPiece.png");
     public static final ResourceLocation PROG_WIDGET_CONDITION_DRONE_LIQUID_INVENTORY = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionDroneLiquidPiece.png");
     public static final ResourceLocation PROG_WIDGET_CONDITION_DRONE_ITEM_INVENTORY = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionDroneInventoryPiece.png");
