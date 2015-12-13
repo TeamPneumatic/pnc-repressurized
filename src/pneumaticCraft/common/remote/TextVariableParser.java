@@ -40,11 +40,11 @@ public class TextVariableParser{
     }
 
     private String getVariableValue(String variable){
-        relevantVariables.add(variable);
         boolean x = variable.endsWith(".x");
         boolean y = variable.endsWith(".y");
         boolean z = variable.endsWith(".z");
         if(x || y || z) variable = variable.substring(0, variable.length() - 2);
+        relevantVariables.add(variable);
         ChunkPosition pos = variableHolder != null ? variableHolder.getCoordinate(variable) : GlobalVariableManager.getInstance().getPos(variable.startsWith("#") ? variable.substring(1) : variable);
         if(x) return pos.chunkPosX + "";
         if(y) return pos.chunkPosY + "";
