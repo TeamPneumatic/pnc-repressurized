@@ -58,6 +58,8 @@ public class Config{
     public static boolean enableSlimeSeedDrop, enableCreeperSeedDrop, enableSquidSeedDrop, enableEndermanSeedDrop;
     public static boolean enableDungeonLoot;
 
+    public static float configMinigunDamage;
+
     public static final String[] CATEGORIES = new String[]{Configuration.CATEGORY_GENERAL, "plant_full-grown_effects", "plant_generation_options", "machine_properties", "advanced", "recipe_enabling", "third_party_enabling"};
     public static List<String> NO_MC_RESTART_CATS = Arrays.asList(new String[]{"plant_full-grown_effects", "plant_generation_options", "machine_properties"});
     private static ISubConfig[] subConfigs = new ISubConfig[]{new AmadronOfferSettings(), AmadronOfferStaticConfig.INSTANCE, new AmadronOfferPeriodicConfig(), new ProgWidgetConfig()};
@@ -130,6 +132,10 @@ public class Config{
         property = config.get(Configuration.CATEGORY_GENERAL, "Villager Mechanic ID", 125);
         property.comment = "Villager ID used for the Mechanic Villager. Change when ID collides with an other mod which adds villagers.";
         villagerMechanicID = property.getInt();
+
+        property = config.get(Configuration.CATEGORY_GENERAL, "Minigun damage", 4D);
+        property.comment = "Damage of the Miniguns. This applies to the Sentry Gun, Handheld Minigun, and Drone-based minigun.";
+        configMinigunDamage = (float)property.getDouble();
 
         property = config.get("Machine_Properties", "Pneumatic Generator (PneumaticCraft --> IC2) efficiency", 40);
         property.comment = "Changing this value will alter the pressurized air usage of the Pneumatic Generator. The output, EU, will stay the same.";

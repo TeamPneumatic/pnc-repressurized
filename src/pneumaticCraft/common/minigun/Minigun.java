@@ -18,6 +18,7 @@ import org.lwjgl.opengl.GL11;
 import pneumaticCraft.api.item.IPressurizable;
 import pneumaticCraft.client.render.RenderProgressingLine;
 import pneumaticCraft.client.util.RenderUtils;
+import pneumaticCraft.common.config.Config;
 import pneumaticCraft.common.item.ItemGunAmmo;
 import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.Sounds;
@@ -172,7 +173,7 @@ public abstract class Minigun{
                             }
                         }
                     } else {
-                        target.attackEntityFrom(DamageSource.causePlayerDamage(player), 4);
+                        target.attackEntityFrom(DamageSource.causePlayerDamage(player), Config.configMinigunDamage);
                     }
                 }
             }
