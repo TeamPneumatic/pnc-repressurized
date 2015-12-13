@@ -99,6 +99,7 @@ public class GuiRemoteOptionBase<Widget extends ActionWidget> extends GuiPneumat
             labelField = new WidgetTextField(fontRendererObj, guiLeft + 10, guiTop + 30, 160, 10);
             labelField.setText(((IActionWidgetLabeled)widget).getText());
             labelField.setTooltip(I18n.format("gui.remote.label.tooltip"));
+            labelField.setMaxStringLength(1000);
             addWidget(labelField);
 
             tooltipField = new WidgetTextField(fontRendererObj, guiLeft + 10, guiTop + 56, 160, 10);
