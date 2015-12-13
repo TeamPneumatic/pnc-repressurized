@@ -50,6 +50,7 @@ public class WidgetRegistrator{
         register(new ProgWidgetLogistics());
         register(new ProgWidgetForEachCoordinate());
         register(new ProgWidgetForEachItem());
+        register(new ProgWidgetEditSign());
         register(new ProgWidgetCoordinateCondition());
         register(new ProgWidgetRedstoneCondition());
         register(new ProgWidgetItemInventoryCondition());

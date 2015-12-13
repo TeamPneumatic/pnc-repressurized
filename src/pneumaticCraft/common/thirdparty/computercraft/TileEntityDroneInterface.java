@@ -745,6 +745,19 @@ public class TileEntityDroneInterface extends TileEntity implements IPeripheral,
             }
 
         });
+
+        luaMethods.add(new LuaMethod("setSignText"){
+
+            @Override
+            public Object[] call(Object[] args) throws Exception{
+                getWidget().signText = new String[args.length];
+                for(int i = 0; i < args.length; i++) {
+                    getWidget().signText[i] = (String)args[i];
+                }
+                return null;
+            }
+
+        });
     }
 
     @Override

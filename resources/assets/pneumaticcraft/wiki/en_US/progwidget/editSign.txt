@@ -1,0 +1,6 @@
+Programming Puzzles are used in [link{block/programmer}]programmers [link{}].
+
+[prefix{l}]The Edit Sign piece [prefix{}]
+This will set all Signs in the area to the text specified by the text pieces connected. This could be either Vanilla Signs or [link{pneumaticcraft:block/aphorismTile}]Aphorism Tiles[link{}].
+
+Every connected Text piece represents one line. By connecting multiple text pieces you can set a multi-line message.

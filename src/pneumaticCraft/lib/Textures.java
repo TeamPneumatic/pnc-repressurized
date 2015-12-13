@@ -138,6 +138,7 @@ public class Textures{
     public static final ResourceLocation PROG_WIDGET_LOGISTICS = new ResourceLocation(PROG_WIDGET_LOCATION + "logisticsPiece.png");
     public static final ResourceLocation PROG_WIDGET_FOR_EACH_COORDINATE = new ResourceLocation(PROG_WIDGET_LOCATION + "forEachCoordinate.png");
     public static final ResourceLocation PROG_WIDGET_FOR_EACH_ITEM = new ResourceLocation(PROG_WIDGET_LOCATION + "forEachItem.png");
+    public static final ResourceLocation PROG_WIDGET_EDIT_SIGN = new ResourceLocation(PROG_WIDGET_LOCATION + "editSignPiece.png");
     public static final ResourceLocation PROG_WIDGET_CONDITION_REDSTONE = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionRedstonePiece.png");
     public static final ResourceLocation PROG_WIDGET_CONDITION_ENTITY = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionEntityPiece.png");
     public static final ResourceLocation PROG_WIDGET_CONDITION_LIQUID_INVENTORY = new ResourceLocation(PROG_WIDGET_LOCATION + "conditionLiquidInventoryPiece.png");
