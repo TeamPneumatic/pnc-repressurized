@@ -86,3 +86,8 @@ You can automate the programming of Drones by pressing 'R' while hovering over t
 
 There is a trick to speed up certain programming: Middle-click a puzzle piece to copy the piece along with its properties (so a copied 'area' piece will contain the area of the copied piece). Additionally, when you sneak + middle-click a piece, it will copy an entire branch.
 
+[prefix{l}]Sharing programs[prefix{}]
+You can share programs with other worlds/players by clicking on the 'Import/Export layout from/to Pastebin' button. It will open a window in which you can create a pastebin link, or input a pastebin link to import a program. Optionally you can log into your Pastebin account to overcome the limitations you have when not logged in.
+
+[prefix{l}]Convert the program to use relative coordinates[prefix{}]
+This concerns an advanced feature to share programs. Say you have designed a program that automatically creates and manages a farm and you want to share this. People on a different world will want to have their farm on a different location, so the user would have to change every [link{pneumaticcraft:progwidget/area}]Area piece[link{}]. The 'Convert to Relative coordinates' button makes this easier. It requires you to set one fixed coordinate (say the position of an input chest). It will then create offsets based on that which are used in the program. The end user will only have to adjust that base coordinate to the one used in their world.

@@ -5,7 +5,9 @@ import igwmod.gui.GuiWiki;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -19,6 +21,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
+import net.minecraft.world.ChunkPosition;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -36,9 +39,13 @@ import pneumaticCraft.common.network.PacketGuiButton;
 import pneumaticCraft.common.network.PacketProgrammerUpdate;
 import pneumaticCraft.common.network.PacketUpdateTextfield;
 import pneumaticCraft.common.progwidgets.IProgWidget;
+import pneumaticCraft.common.progwidgets.ProgWidgetArea;
+import pneumaticCraft.common.progwidgets.ProgWidgetCoordinate;
+import pneumaticCraft.common.progwidgets.ProgWidgetCoordinateOperator;
 import pneumaticCraft.common.progwidgets.ProgWidgetStart;
 import pneumaticCraft.common.progwidgets.WidgetRegistrator;
 import pneumaticCraft.common.tileentity.TileEntityProgrammer;
+import pneumaticCraft.common.util.PneumaticCraftUtils;
 import pneumaticCraft.lib.ModIds;
 import pneumaticCraft.lib.Textures;
 import codechicken.nei.VisiblityData;
@@ -61,6 +68,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
     private GuiCheckBox showInfo, showFlow;
     private WidgetTextField nameField;
     private GuiButtonSpecial undoButton, redoButton;
+    private GuiButtonSpecial convertToRelativeButton;
 
     private final List<IProgWidget> visibleSpawnWidgets = new ArrayList<IProgWidget>();
 
@@ -196,15 +204,20 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         undoButton = new GuiButtonSpecial(9, guiLeft - 24, guiTop + 2, 20, 20, "");
         redoButton = new GuiButtonSpecial(10, guiLeft - 24, guiTop + 23, 20, 20, "");
         GuiButtonSpecial clearAllButton = new GuiButtonSpecial(11, guiLeft - 24, guiTop + 65, 20, 20, "");
+        convertToRelativeButton = new GuiButtonSpecial(12, guiLeft - 24, guiTop + 86, 20, 20, "Rel");
+
         undoButton.setRenderedIcon(Textures.GUI_UNDO_ICON_LOCATION);
         redoButton.setRenderedIcon(Textures.GUI_REDO_ICON_LOCATION);
         clearAllButton.setRenderedIcon(Textures.GUI_DELETE_ICON_LOCATION);
+
         undoButton.setTooltipText(I18n.format("gui.programmer.button.undoButton.tooltip"));
         redoButton.setTooltipText(I18n.format("gui.programmer.button.redoButton.tooltip"));
         clearAllButton.setTooltipText(I18n.format("gui.programmer.button.clearAllButton.tooltip"));
+
         buttonList.add(undoButton);
         buttonList.add(redoButton);
         buttonList.add(clearAllButton);
+        buttonList.add(convertToRelativeButton);
 
         String containerName = te.hasCustomInventoryName() ? te.getInventoryName() : StatCollector.translateToLocal(te.getInventoryName() + ".name");
         addLabel(containerName, guiLeft + 7, guiTop + 5);
@@ -614,6 +627,15 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
             case 11:
                 te.progWidgets.clear();
                 NetworkHandler.sendToServer(new PacketProgrammerUpdate(te));
+                break;
+            case 12:
+                for(IProgWidget widget : te.progWidgets) {
+                    if(widget instanceof ProgWidgetStart) {
+                        generateRelativeOperators((ProgWidgetCoordinateOperator)widget.getOutputWidget(), null, false);
+                        break;
+                    }
+                }
+                break;
         }
 
         NetworkHandler.sendToServer(new PacketGuiButton(button.id));
@@ -649,6 +671,8 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
 
         undoButton.enabled = te.canUndo;
         redoButton.enabled = te.canRedo;
+
+        updateConvertRelativeState();
 
         ItemStack programmedItem = te.getStackInSlot(TileEntityProgrammer.PROGRAM_SLOT);
         oldShowingWidgetProgress = showingWidgetProgress;
@@ -731,6 +755,142 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
             nameField.setText("");
             wasFocused = false;
         }
+    }
+
+    private void updateConvertRelativeState(){
+        convertToRelativeButton.enabled = false;
+        List<String> tooltip = new ArrayList<String>();
+        tooltip.add("gui.programmer.button.convertToRelative.desc");
+
+        boolean startFound = false;
+        for(IProgWidget startWidget : te.progWidgets) {
+            if(startWidget instanceof ProgWidgetStart) {
+                startFound = true;
+                IProgWidget widget = startWidget.getOutputWidget();
+                if(widget instanceof ProgWidgetCoordinateOperator) {
+                    ProgWidgetCoordinateOperator operatorWidget = (ProgWidgetCoordinateOperator)widget;
+                    if(!operatorWidget.getVariable().equals("")) {
+                        try {
+                            if(generateRelativeOperators(operatorWidget, tooltip, true)) {
+                                convertToRelativeButton.enabled = true;
+                            } else {
+                                tooltip.add("gui.programmer.button.convertToRelative.notEnoughRoom");
+                            }
+                        } catch(NullPointerException e) {
+                            tooltip.add("gui.programmer.button.convertToRelative.cantHaveVariables");
+                        }
+                    } else {
+                        tooltip.add("gui.programmer.button.convertToRelative.noVariableName");
+                    }
+                } else {
+                    tooltip.add("gui.programmer.button.convertToRelative.noBaseCoordinate");
+                }
+            }
+        }
+        if(!startFound) tooltip.add("gui.programmer.button.convertToRelative.noStartPiece");
+
+        List<String> localizedTooltip = new ArrayList<String>();
+        for(String s : tooltip) {
+            localizedTooltip.addAll(PneumaticCraftUtils.convertStringIntoList(I18n.format(s), 40));
+        }
+        convertToRelativeButton.setTooltipText(localizedTooltip);
+    }
+
+    /**
+     * 
+     * @param baseWidget
+     * @param simulate
+     * @return true if successful
+     */
+    private boolean generateRelativeOperators(ProgWidgetCoordinateOperator baseWidget, List<String> tooltip, boolean simulate){
+        ChunkPosition baseCoord = ProgWidgetCoordinateOperator.calculateCoordinate(baseWidget, 0, baseWidget.getOperator());
+        Map<ChunkPosition, String> offsetToVariableNames = new HashMap<ChunkPosition, String>();
+        for(IProgWidget widget : te.progWidgets) {
+            if(widget instanceof ProgWidgetArea) {
+                ProgWidgetArea area = (ProgWidgetArea)widget;
+                if(area.getCoord1Variable().equals("") && (area.x1 != 0 || area.y1 != 0 || area.z1 != 0)) {
+                    ChunkPosition offset = new ChunkPosition(area.x1 - baseCoord.chunkPosX, area.y1 - baseCoord.chunkPosY, area.z1 - baseCoord.chunkPosZ);
+                    String var = getOffsetVariable(offsetToVariableNames, baseWidget.getVariable(), offset);
+                    if(!simulate) area.setCoord1Variable(var);
+                }
+                if(area.getCoord2Variable().equals("") && (area.x2 != 0 || area.y2 != 0 || area.z2 != 0)) {
+                    ChunkPosition offset = new ChunkPosition(area.x2 - baseCoord.chunkPosX, area.y2 - baseCoord.chunkPosY, area.z2 - baseCoord.chunkPosZ);
+                    String var = getOffsetVariable(offsetToVariableNames, baseWidget.getVariable(), offset);
+                    if(!simulate) area.setCoord2Variable(var);
+                }
+            } else if(widget instanceof ProgWidgetCoordinate && baseWidget.getConnectedParameters()[0] != widget) {
+                ProgWidgetCoordinate coordinate = (ProgWidgetCoordinate)widget;
+                if(!coordinate.isUsingVariable()) {
+                    ChunkPosition c = coordinate.getCoordinate();
+                    String chunkString = "(" + c.chunkPosX + ", " + c.chunkPosY + ", " + c.chunkPosZ + ")";
+                    if(PneumaticCraftUtils.distBetween(c, 0, 0, 0) < 64) { //When the coordinate value is close to 0, there's a low chance it means a position, and rather an offset.
+                        if(tooltip != null) tooltip.add(I18n.format("gui.programmer.button.convertToRelative.coordIsNotChangedWarning", chunkString));
+                    } else {
+                        if(tooltip != null) tooltip.add(I18n.format("gui.programmer.button.convertToRelative.coordIsChangedWarning", chunkString));
+                        if(!simulate) {
+                            ChunkPosition offset = new ChunkPosition(c.chunkPosX - baseCoord.chunkPosX, c.chunkPosY - baseCoord.chunkPosY, c.chunkPosZ - baseCoord.chunkPosZ);
+                            String var = getOffsetVariable(offsetToVariableNames, baseWidget.getVariable(), offset);
+                            if(!simulate) {
+                                coordinate.setVariable(var);
+                                coordinate.setUsingVariable(true);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if(offsetToVariableNames.size() > 0) {
+            ProgWidgetCoordinateOperator firstOperator = null;
+            ProgWidgetCoordinateOperator prevOperator = baseWidget;
+            int x = baseWidget.getX();
+            for(Map.Entry<ChunkPosition, String> entry : offsetToVariableNames.entrySet()) {
+                ProgWidgetCoordinateOperator operator = new ProgWidgetCoordinateOperator();
+                operator.setVariable(entry.getValue());
+
+                int y = prevOperator.getY() + prevOperator.getHeight() / 2;
+                operator.setX(x);
+                operator.setY(y);
+                if(!isValidPlaced(operator)) return false;
+
+                ProgWidgetCoordinate coordinatePiece1 = new ProgWidgetCoordinate();
+                coordinatePiece1.setX(x + prevOperator.getWidth() / 2);
+                coordinatePiece1.setY(y);
+                coordinatePiece1.setVariable(baseWidget.getVariable());
+                coordinatePiece1.setUsingVariable(true);
+                if(!isValidPlaced(coordinatePiece1)) return false;
+
+                ProgWidgetCoordinate coordinatePiece2 = new ProgWidgetCoordinate();
+                coordinatePiece2.setX(x + prevOperator.getWidth() / 2 + coordinatePiece1.getWidth() / 2);
+                coordinatePiece2.setY(y);
+                coordinatePiece2.setCoordinate(entry.getKey());
+                if(!isValidPlaced(coordinatePiece2)) return false;
+
+                if(!simulate) {
+                    te.progWidgets.add(operator);
+                    te.progWidgets.add(coordinatePiece1);
+                    te.progWidgets.add(coordinatePiece2);
+                }
+                if(firstOperator == null) firstOperator = operator;
+                prevOperator = operator;
+            }
+            if(!simulate) {
+                NetworkHandler.sendToServer(new PacketProgrammerUpdate(te));
+                TileEntityProgrammer.updatePuzzleConnections(te.progWidgets);
+            }
+            return true;
+        } else {
+            return true; //When there's nothing to place there's always room.
+        }
+    }
+
+    private String getOffsetVariable(Map<ChunkPosition, String> offsetToVariableNames, String baseVariable, ChunkPosition offset){
+        if(offset.equals(new ChunkPosition(0, 0, 0))) return baseVariable;
+        String var = offsetToVariableNames.get(offset);
+        if(var == null) {
+            var = "var" + (offsetToVariableNames.size() + 1);
+            offsetToVariableNames.put(offset, var);
+        }
+        return var;
     }
 
     @Override
