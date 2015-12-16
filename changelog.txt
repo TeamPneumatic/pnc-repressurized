@@ -1,12 +1,9 @@
--Sentry Turrets now acquire targets a bit smarter.
+-Added Edit Sign puzzle piece.
+-Added Condition: Light Level puzzle piece.
+-Increased max Label length for the Remote.
+-Added config option for the minigun damage.
+-Added 'Convert to relative coordinates' function to the Programmer.
+-Added 'Check for Liquids' option to the Condition: Block.
 
--Bugfix: Drone Debugger doesn't have a localization.
--Bugfix: Sentry Turret sometimes doesn't work properly.
--Bugfix: Programmer program view translation isn't saved.
--Bugfix: Drone minigun has a weird knockback direction.
--Bugfix: Buildcraft Oil buckets don't trigger the oil achievement.
--Bugfix: When using long variables in the Remote's editor, labels can be removed when close to the edge.
--Bugfix: Log messages about blocks missing tooltips.
--Bugfix: Drone can't pathfind through Lava when it has a Security Upgrade.
--Bugfix: Crashes with Pastebin exporting.
--Bugfix: Errors in the log about the EnderIO support not behaving.
+-Bugfix: Remote Label stops updating variable name when using the .x .y or .z postfix.
+-Bugfix: Minor sync issue with the Universal Sensor text field.

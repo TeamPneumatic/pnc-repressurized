@@ -188,6 +188,9 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<TileEntityUniv
             ticksExisted = 0;
             updateButtons();
         }
+        if(!nameFilterField.isFocused()) {
+            nameFilterField.setText(te.getText(0));
+        }
     }
 
     private List<String> getUpgradeText(){
