@@ -61,7 +61,7 @@ import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid = Names.MOD_ID, name = "PneumaticCraft", guiFactory = "pneumaticCraft.client.GuiConfigHandler", dependencies = "required-after:Forge@[10.13.3.1388,);" + "after:Forestry")
+@Mod(modid = Names.MOD_ID, name = "PneumaticCraft", guiFactory = "pneumaticCraft.client.GuiConfigHandler", dependencies = "required-after:Forge@[10.13.3.1388,);" + "after:Forestry;after:ComputerCraft")
 public class PneumaticCraft{
 
     @SidedProxy(clientSide = "pneumaticCraft.proxy.ClientProxy", serverSide = "pneumaticCraft.proxy.CommonProxy")
