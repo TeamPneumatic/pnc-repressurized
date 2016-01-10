@@ -22,6 +22,7 @@ import pneumaticCraft.common.block.Blockss;
 import pneumaticCraft.common.item.ItemPneumatic;
 import pneumaticCraft.common.item.Itemss;
 import pneumaticCraft.lib.Textures;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -29,7 +30,11 @@ public class Fluids{
     public static final Fluid etchingAcid = new FluidPneumaticCraft("etchacid", false){
         @Override
         public int getColor(){
-            return getBlock().colorMultiplier(null, 0, 0, 0);
+            if(FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
+                return getBlock().colorMultiplier(null, 0, 0, 0);
+            } else {
+                return super.getColor();
+            }
         }
     };
     public static final Fluid plastic = new FluidPlastic("plastic");

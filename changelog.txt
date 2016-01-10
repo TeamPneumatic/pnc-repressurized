@@ -1,9 +1,4 @@
--Added Edit Sign puzzle piece.
--Added Condition: Light Level puzzle piece.
--Increased max Label length for the Remote.
--Added config option for the minigun damage.
--Added 'Convert to relative coordinates' function to the Programmer.
--Added 'Check for Liquids' option to the Condition: Block.
+-PneumaticCraft is now loaded after ComputerCraft, it's supposedly going to fix a crash.
 
--Bugfix: Remote Label stops updating variable name when using the .x .y or .z postfix.
--Bugfix: Minor sync issue with the Universal Sensor text field.
+-Bugfix: Crash with RotaryCraft.
+-Bugfix: Pneumatic Helmet GUI can't be closed when NotEnoughKeys is around.
