@@ -3,6 +3,7 @@ package modwarriors.notenoughkeys.api;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.settings.KeyBinding;
 
 /**
  * Center of the API. Main api methods can be found in this class.
@@ -25,16 +26,34 @@ public class Api {
 	 * Registers a mod's keys with NEK
 	 *
 	 * @param modname        The NAME of the mod registering the key
-	 * @param keyDecriptions A String[] (Array[String]) of the key descriptions. i.e. new String[]{"key.hotbar1"}
+	 * @param keyDescriptions A String[] (Array[String]) of the key descriptions
+	 *                           as an inherit array. i.e. ("modName", "key.hotbar1", "key.hotbar2")
 	 */
-	public static void registerMod(String modname, String[] keyDecriptions) {
+	public static void registerMod(String modname, String... keyDescriptions) {
 		try {
 			Class.forName("modwarriors.notenoughkeys.keys.KeyHelper").getMethod(
 					"registerMod", String.class, String[].class
-			).invoke(null, modname, keyDecriptions);
+			).invoke(null, modname, keyDescriptions);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * Returns whether the selected keybinding is pressed
+	 *
+	 * @param binding The keybinding
+	 * @return whether the keybinding is pressed with modifier keys
+	 */
+	public static boolean isKeyBindingPressed(KeyBinding binding) {
+		try {
+			return (Boolean)Class.forName("modwarriors.notenoughkeys.keys.KeyHelper").getMethod(
+					"isKeyBindingPressed", KeyBinding.class
+			).invoke(null, binding);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 
 }
