@@ -143,13 +143,11 @@ import pneumaticCraft.common.tileentity.TileEntityUniversalSensor;
 import pneumaticCraft.common.tileentity.TileEntityVacuumPump;
 import pneumaticCraft.common.tileentity.TileEntityVortexTube;
 import pneumaticCraft.lib.Log;
-import pneumaticCraft.lib.ModIds;
 import pneumaticCraft.lib.Textures;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.VillagerRegistry;
@@ -279,9 +277,7 @@ public class ClientProxy extends CommonProxy{
         MinecraftForge.EVENT_BUS.register(AreaShowManager.getInstance());
         FMLCommonHandler.instance().bus().register(AreaShowManager.getInstance());
 
-        if(!Loader.isModLoaded(ModIds.NOT_ENOUGH_KEYS) || !Config.config.get("Third_Party_Enabling", ModIds.NOT_ENOUGH_KEYS, true).getBoolean()) {
-            FMLCommonHandler.instance().bus().register(KeyHandler.getInstance());
-        } else KeyHandler.getInstance();
+        FMLCommonHandler.instance().bus().register(KeyHandler.getInstance());
         ThirdPartyManager.instance().clientSide();
 
         /*  if(Config.enableUpdateChecker) {

@@ -16,7 +16,7 @@ public class NotEnoughKeys implements IThirdParty{
 
     @SubscribeEvent
     public void onKey(KeyBindingPressedEvent event){
-        KeyHandler.getInstance().onKey(event.keyBinding);
+        if(event.isKeyBindingPressed) KeyHandler.getInstance().onKey(event.keyBinding);
     }
 
     @Override

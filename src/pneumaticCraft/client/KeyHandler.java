@@ -8,8 +8,11 @@ import net.minecraft.client.settings.KeyBinding;
 import org.lwjgl.input.Keyboard;
 
 import pneumaticCraft.client.render.pneumaticArmor.HUDHandler;
+import pneumaticCraft.common.config.Config;
+import pneumaticCraft.lib.ModIds;
 import pneumaticCraft.lib.Names;
 import cpw.mods.fml.client.registry.ClientRegistry;
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.InputEvent.KeyInputEvent;
 
@@ -52,11 +55,17 @@ public class KeyHandler{
      */
     @SubscribeEvent
     public void onKey(KeyInputEvent event){
-        for(KeyBinding key : keys) {
-            if(key.isPressed()) {
-                onKey(key);
+        if(!nekLoaded()) {
+            for(KeyBinding key : keys) {
+                if(key.isPressed()) {
+                    onKey(key);
+                }
             }
         }
+    }
+
+    private boolean nekLoaded(){
+        return Loader.isModLoaded(ModIds.NOT_ENOUGH_KEYS) && Config.config.get("Third_Party_Enabling", ModIds.NOT_ENOUGH_KEYS, true).getBoolean();
     }
 
     public void onKey(KeyBinding keybinding){
