@@ -117,7 +117,7 @@ public class Fluids{
 
             fluidBlockToBucketMap.put(fluidBlock, fluidBucket);
 
-            if(FluidRegistry.isFluidDefault(fluid)) FluidContainerRegistry.registerFluidContainer(new FluidStack(fluid, 1000), new ItemStack(fluidBucket), new ItemStack(Items.bucket));
+            FluidContainerRegistry.registerFluidContainer(new FluidStack(fluid, 1000), new ItemStack(fluidBucket), new ItemStack(Items.bucket));
         }
     }
 }

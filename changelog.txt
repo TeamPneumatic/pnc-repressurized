@@ -1,4 +1,1 @@
--PneumaticCraft is now loaded after ComputerCraft, it's supposedly going to fix a crash.
-
--Bugfix: Crash with RotaryCraft.
--Bugfix: Pneumatic Helmet GUI can't be closed when NotEnoughKeys is around.
+-Bugfix: An Oil Bucket can't be used to fill tanks in some occasions.
