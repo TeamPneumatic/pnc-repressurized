@@ -68,21 +68,25 @@ public class BlockTrackEntryInventory implements IBlockTrackEntry{
 
     @Override
     public void addInformation(World world, int x, int y, int z, TileEntity te, List<String> infoList){
-        IInventory inventory = IOHelper.getInventoryForTE(te);
-        if(inventory != null) {
-            boolean empty = true;
-            ItemStack[] inventoryStacks = new ItemStack[inventory.getSizeInventory()];
-            for(int i = 0; i < inventory.getSizeInventory(); i++) {
-                ItemStack iStack = inventory.getStackInSlot(i);
-                if(iStack != null) empty = false;
-                inventoryStacks[i] = iStack;
+        try {
+            IInventory inventory = IOHelper.getInventoryForTE(te);
+            if(inventory != null) {
+                boolean empty = true;
+                ItemStack[] inventoryStacks = new ItemStack[inventory.getSizeInventory()];
+                for(int i = 0; i < inventory.getSizeInventory(); i++) {
+                    ItemStack iStack = inventory.getStackInSlot(i);
+                    if(iStack != null) empty = false;
+                    inventoryStacks[i] = iStack;
+                }
+                if(empty) {
+                    infoList.add("Contents: Empty");
+                } else {
+                    infoList.add("Contents:");
+                    PneumaticCraftUtils.sortCombineItemStacksAndToString(infoList, inventoryStacks);
+                }
             }
-            if(empty) {
-                infoList.add("Contents: Empty");
-            } else {
-                infoList.add("Contents:");
-                PneumaticCraftUtils.sortCombineItemStacksAndToString(infoList, inventoryStacks);
-            }
+        } catch(Throwable e) {
+            addTileEntityToBlackList(te, e);
         }
     }
 
