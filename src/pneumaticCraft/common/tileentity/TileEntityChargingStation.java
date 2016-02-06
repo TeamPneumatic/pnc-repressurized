@@ -227,7 +227,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
         if(slot < inventory.length) {
             return inventory[slot];
         } else {
-            return chargeableInventory.getStackInSlot(slot - inventory.length);
+            return chargeableInventory != null ? chargeableInventory.getStackInSlot(slot - inventory.length) : null;
         }
     }
 
@@ -268,7 +268,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
 
         if(slot < inventory.length) {
             inventory[slot] = itemStack;
-        } else {
+        } else if(chargeableInventory != null) {
             chargeableInventory.setInventorySlotContents(slot - inventory.length, itemStack);
         }
 

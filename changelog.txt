@@ -1,1 +1,2 @@
--Bugfix: An Oil Bucket can't be used to fill tanks in some occasions.
+-Bugfix: Crash with BetterStorage
+-Bugfix: Crash with mods which cache the 'getSizeInventory()' from IInventories.
