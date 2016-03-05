@@ -1,2 +1,1 @@
--Bugfix: Crash with BetterStorage
--Bugfix: Crash with mods which cache the 'getSizeInventory()' from IInventories.
+-Bugfix: Stall with pneumatic logic.
