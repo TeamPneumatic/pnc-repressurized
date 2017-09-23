@@ -1,0 +1,52 @@
+{
+	"forge_marker": 1,
+	"defaults":{
+	   "model": "cube_column"
+	},
+	"variants":{
+		"formed":{
+		      "false":{
+		          "textures":{
+		              "side": "pneumaticcraft:blocks/pressure_chamber/valve_side",
+		              "end":  "pneumaticcraft:blocks/pressure_chamber/valve"
+		          }
+		      },
+		      "true":{
+		          "textures":{
+                      "side": "pneumaticcraft:blocks/pressure_chamber/valve_side",
+                      "end":  "pneumaticcraft:blocks/pressure_chamber/valve_formed"
+                  }
+		      } 
+		},
+		"facing":{
+		      "north":{
+		          "transform": {
+                    "rotation": {"x" : 90}
+                  }
+		      },
+		      "south":{
+                  "transform": {
+                    "rotation": {"x" : 90}
+                  }
+              },
+		      "east":{
+		          "transform": {
+                    "rotation": {"z" : 90}
+                  }
+		      },
+		      "west":{
+                  "transform": {
+                    "rotation": {"z" : 90}
+                  }
+              },
+              "up":{},
+              "down":{}
+		},
+		"inventory": [{
+          "textures":{
+              "side": "pneumaticcraft:blocks/pressure_chamber/valve_side",
+              "end":  "pneumaticcraft:blocks/pressure_chamber/valve"
+          }
+        }]
+	}
+}

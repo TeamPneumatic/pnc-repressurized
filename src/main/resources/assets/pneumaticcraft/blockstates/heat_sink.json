@@ -1,0 +1,51 @@
+{
+    "forge_marker": 1,
+    "defaults": {
+        "textures": {},
+        "custom": { "flip-v" : true},
+        "model": "pneumaticcraft:heat_sink.obj"
+    },
+	"variants": {
+		"facing": {
+			"south": {
+			    "transform": {
+    			     "rotation" : {"x" : -90},
+    			     "translation": [ 0, 0, 0 ]
+    			}
+			},
+			"north": {
+                "transform": {
+                     "rotation" : {"x" : 90},
+                     "translation": [ 0, 0, 0 ]
+                }
+            },
+			"down": {
+				"transform": {
+					"rotation": {"y" : 90},
+					"translation": [ 0, 0, 0 ]
+				}
+			},
+			"up": {
+				"transform": {
+				    "translation": [ 0, 0, 0 ],
+					"rotation": {"x" : 180}
+				}
+			},
+			"west": {
+				"transform": {
+					"translation": [ 0, 0, 0 ],
+					"rotation": {"z": 270}
+				}
+			},
+			"east": {
+				"transform": {
+                    "rotation": {"z": 90},
+					"translation": [ 0, 0, 0 ]
+				}
+			}
+		},
+		"inventory": [{
+          "transform": "forge:default-block"
+        }]
+	}
+}

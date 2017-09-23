@@ -1,0 +1,11 @@
+{
+   "variants" : {
+      "inventory" : {
+         "custom" : {},
+         "model" : "pneumaticcraft:programming_puzzle",
+         "transform" : "forge:default-item",
+         "textures" : {}
+      }
+   },
+   "forge_marker" : 1
+}

@@ -1,0 +1,6 @@
+{
+   "textures" : {
+      "layer0" : "pneumaticcraft:items/network_components/diagnostic_subroutine"
+   },
+   "parent" : "item/generated"
+}

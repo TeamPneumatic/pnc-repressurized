@@ -1,0 +1,39 @@
+{
+    "forge_marker": 1,
+    "defaults": {
+        "textures": {},
+        "custom": { "flip-v" : true},
+        "model": "pneumaticcraft:heat_frame.obj"
+    },
+	"variants": {
+		"normal": [{
+			"transform": {
+                "scale": [-1, 1, 1],
+				"translation": [ -0.5, 1.5, 0.5 ]
+			}
+		}],
+		"inventory": [{
+          "transform": {
+            "translation": [ -0.45, 1.5, 0.45 ],
+            "scale": [-1, 1, 1],
+            "firstperson": {
+              "translation": [ 0, 0.2, 0 ],
+              "scale": [ 1, 1, 1 ]
+            },
+            "thirdperson": {
+              "translation": [ 0, 0.09375, -0.171875 ],
+              "rotation": [{ "x": 10 }, { "y": -45 }, { "z": 170 }],
+              "scale": [ 0.375, 0.375, 0.375 ]
+            },
+            "fixed": {
+              "scale": [ 1, 1, 1 ]
+            },
+            "gui": {
+              "translation": [ 0, 0.10, 0 ],
+              "rotation": [{ "x": 0 }, { "y": 0 }, { "z": 0 }],
+              "scale": [ 1.00, 1.00, 1.00 ]
+            }
+          }
+        }]
+	}
+}

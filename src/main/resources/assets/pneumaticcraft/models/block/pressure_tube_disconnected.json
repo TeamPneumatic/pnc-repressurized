@@ -1,0 +1,22 @@
+{
+  "elements": [
+    { "from": [ 7.003, 9.997, 7.003 ],
+      "to": [ 8.997, 10.997, 8.997 ],
+      "faces": {
+        "down": { "texture": "#pipe" },
+        "up": { "texture": "#pipe" },
+        "north": { "texture": "#pipe" },
+        "south": { "texture": "#pipe" },
+        "east": { "texture": "#pipe" },
+        "west": { "texture": "#pipe" }
+      }
+    },
+    { "from": [ 6.003, 9.997, 6.003 ],
+      "to": [ 9.997, 9.997, 9.997 ],
+      "faces": {
+        "down": { "texture": "#pipe" },
+        "up": { "texture": "#pipe" }
+      }
+    }
+  ]
+}

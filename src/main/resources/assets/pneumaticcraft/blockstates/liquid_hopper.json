@@ -1,0 +1,35 @@
+{
+    "forge_marker": 1,
+    "defaults": {
+        "textures": {
+            "particle": "pneumaticcraft:model/liquid_hopper",
+            "top": "pneumaticcraft:model/liquid_hopper",
+            "side": "pneumaticcraft:model/liquid_hopper",
+            "inside": "pneumaticcraft:model/liquid_hopper"
+        }
+    },
+    "variants": {
+        "facing":{
+             "down":  { "submodel": { "down": { "model": "pneumaticcraft:omnidirectional_hopper_output", "x": 180 }}},
+              "up": {  "submodel": { "up": {"model": "pneumaticcraft:omnidirectional_hopper_output"}}},
+              "north":{ "submodel":   { "north": {"model": "pneumaticcraft:omnidirectional_hopper_output", "x": 90 }}},
+              "south":{ "submodel":   {"south": { "model": "pneumaticcraft:omnidirectional_hopper_output", "x": 90, "y": 180 }}},
+              "west": { "submodel":  { "west": {"model": "pneumaticcraft:omnidirectional_hopper_output", "x": 90, "y": 270 }}},
+              "east":{  "submodel":  { "east": {"model": "pneumaticcraft:omnidirectional_hopper_output", "x": 90, "y": 90 }}}
+        },
+        "input":{
+              "down":{ "submodel": {  "down": { "model": "pneumaticcraft:omnidirectional_hopper_base", "x": 180 }}},
+              "up": { "submodel": {"up": { "model": "pneumaticcraft:omnidirectional_hopper_base"}}},
+              "north":{ "submodel": {  "north": {"model": "pneumaticcraft:omnidirectional_hopper_base", "x": 90 }}},
+              "south":{ "submodel": {"south": { "model": "pneumaticcraft:omnidirectional_hopper_base", "x": 90, "y": 180 }}},
+              "west":{ "submodel": { "west": {"model": "pneumaticcraft:omnidirectional_hopper_base", "x": 90, "y": 270 }}},
+              "east":{ "submodel": { "east": {"model": "pneumaticcraft:omnidirectional_hopper_base", "x": 90, "y": 90 }}}
+        },
+        "inventory":[{
+                "submodel": {
+                    "down": { "model": "pneumaticcraft:omnidirectional_hopper_output", "x": 180 },
+                    "up": { "model": "pneumaticcraft:omnidirectional_hopper_base"}
+                }
+        }]
+    }
+}

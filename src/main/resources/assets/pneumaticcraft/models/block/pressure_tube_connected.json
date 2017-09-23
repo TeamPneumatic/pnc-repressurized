@@ -1,0 +1,78 @@
+{
+  "elements": [
+    { "from": [ 6.003, 9.997, 7.003 ],
+      "to": [ 6.997, 16, 8.997 ],
+      "faces": {
+        "north": { "texture": "#pipe" },
+        "south": { "texture": "#pipe" },
+        "west":  { "texture": "#pipe" },
+        "east":  { "texture": "#pipe" },
+        "up":  { "texture": "#pipe" },
+        "down":  { "texture": "#pipe" }
+      }
+    },
+    { "from": [ 9.003, 9.997, 7.003 ],
+      "to": [ 9.997, 16, 8.997 ],
+      "faces": {
+        "north": { "texture": "#pipe" },
+        "south": { "texture": "#pipe" },
+        "west":  { "texture": "#pipe" },
+        "east":  { "texture": "#pipe" },
+        "up":  { "texture": "#pipe" },
+        "down":  { "texture": "#pipe" }
+      }
+    },
+    { "from": [ 7.003, 9.997, 6.003 ],
+      "to": [ 8.997, 16, 6.997 ],
+      "faces": {
+        "north": { "texture": "#pipe" },
+        "south": { "texture": "#pipe" },
+        "west":  { "texture": "#pipe" },
+        "east":  { "texture": "#pipe" },
+        "up":  { "texture": "#pipe" },
+        "down":  { "texture": "#pipe" }
+      }
+    },
+    { "from": [ 7.003, 9.997, 9.003 ],
+      "to": [ 8.997, 16, 9.997 ],
+      "faces": {
+        "north": { "texture": "#pipe" },
+        "south": { "texture": "#pipe" },
+        "west":  { "texture": "#pipe" },
+        "east":  { "texture": "#pipe" },
+        "up":  { "texture": "#pipe" },
+        "down":  { "texture": "#pipe" }
+      }
+    }
+    
+    ,
+    { "from": [ 6.003, 9.997, 6.003 ],
+      "to": [ 6.997, 9.997, 6.997 ],
+      "faces": {
+        "down": { "texture": "#pipe" },
+        "up": { "texture": "#pipe" }
+      }
+    },
+    { "from": [ 9.003, 9.997, 6.003 ],
+      "to": [ 9.997, 9.997, 6.997 ],
+      "faces": {
+        "down": { "texture": "#pipe" },
+        "up": { "texture": "#pipe" }
+      }
+    },
+    { "from": [ 9.003, 9.997, 9.003 ],
+      "to": [ 9.997, 9.997, 9.997 ],
+      "faces": {
+        "down": { "texture": "#pipe" },
+        "up": { "texture": "#pipe" }
+      }
+    },
+    { "from": [ 6.003, 9.997, 9.003 ],
+      "to": [ 6.997, 9.997, 9.997 ],
+      "faces": {
+        "down": { "texture": "#pipe" },
+        "up": { "texture": "#pipe" }
+      }
+    }
+  ]
+}

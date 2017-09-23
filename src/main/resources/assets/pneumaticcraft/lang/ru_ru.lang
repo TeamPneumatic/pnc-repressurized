@@ -1,0 +1,287 @@
+# Blocks
+tile.pressure_tube.name=Труба под давлением
+tile.air_compressor.name=Воздушный компрессор
+tile.air_cannon.name=Воздушная пушка
+tile.pressure_wall.wall.name=Стена камеры давления
+tile.pressure_wall.window.name=Окно камеры давления
+tile.pressure_chamber_valve.name=Клапан камеры давления
+tile.slime_plant.name=Растение слизи
+tile.creeper_plant.name=Растение крипера
+tile.squid_plant.name=Растение спрута
+tile.fire_flower.name=Огненный цветок
+tile.rain_plant.name=Растение дождя
+tile.ender_plant.name=Растение Края
+tile.lightning_plant.name=Растение молний
+tile.burst_plant.name=Растение взрыва
+tile.potion_plant.name=Растение зелий
+tile.helium_plant.name=Растение гелия
+tile.propulsion_plant.name=Растение толчка
+tile.repulsion_plant.name=Растение отталкивания
+tile.flying_flower.name=Летающий цветок
+tile.chopper_plant.name=Chopper Plant
+tile.charging_station.name=Станция позарядки
+tile.elevator_base.name=Основание лифта
+tile.elevator_frame.name=Рамка лифта
+tile.pressure_chamber_interface.name=Интерфейс камеры давления
+tile.vacuum_pump.name=Вакуумная помпа
+tile.pneumatic_door_base.name=Основание пневматической двери
+tile.pneumatic_door.name=Пневматическая дверь
+tile.assembly_io_unit.name=Блок ввода/вывода сборки
+tile.assembly_platform.name=Платформа сборки
+tile.assembly_drill.name=Бур сборки
+tile.assembly_laser.name=Лазер сборки
+tile.assembly_controller.name=Контроллер сборки
+tile.advanced_pressure_tube.name=Продвинутая труба под давлением
+tile.compressed_iron_block.name=Блок сжатого железа
+tile.uv_light_box.name=UV Light Box
+tile.security_station.name=Станция безопасности
+tile.universal_sensor.name=Универсальный датчик
+tile.pneumatic_generator.name=Пневматический генератор
+tile.electric_compressor.name=Электрический компрессор
+tile.pneumatic_engine.name=Пневматический двигатель
+tile.kinetic_compressor.name=Кинетический компрессор
+tile.aerial_interface.name=Воздушный интерфейс
+tile.electrostatic_compressor.name=Электростатический компрессор
+tile.aphorism_tile.name=Aphorism Tile
+tile.omnidirectional_hopper.name=Всенаправленная воронка
+tile.elevator_caller.name=Вызыватель лифта
+tile.programmer.name=Программатор
+tile.drone_interface.name=Интерфейс дрона
+tile.creative_compressor.name=Творческий компрессор
+tile.wheat_harvester.plastic_plants.name=Собиратель пластиковых растений
+tile.pressure_chamber_wall.wall.name=Стена камеры давления
+tile.pressure_chamber_wall.window.name=Окно камеры давления
+
+tile.monster_stone_egg.name=Чешуйница
+
+# Items
+item.gps_tool.name=GPS
+item.machine_upgrade.name=Улучшение механизма
+item.ingot_iron_compressed.name=Слиток сжатого железа
+item.pressure_gauge.name=Датчик давления
+item.stone_base.name=Каменная основа
+item.cannon_barrel.name=Ствол пушки
+item.turbine_blade.name=Лезвие турбины
+item.plastic_plant.name=Пластиковое растение
+item.plastic.name=Пластик
+item.air_canister.name=Воздушная канистра
+item.vortex_cannon.name=Вихревая пушка
+item.pneumatic_cilinder.name=Пневматический цилиндр
+item.pneumatic_helmet.name=Пневматический шлем
+item.manometer.name=Манометр
+item.turbine_rotor.name=Ротор турбины
+item.assembly_program.name=Программа сборки
+item.empty_pcb.name=Пустая печатная плата
+item.unassembled_pcb.name=Разобранная печатная плата
+item.pcb_blueprint.name=Чертёж печатной платы
+item.etching_acid_bucket.name=Ведро плавиковой кислоты
+item.transistor.name=Транзистор
+item.capacitor.name=Конденсатор
+item.printed_circuit_board.name=Печатная плата
+item.failed_pcb.name=Неудачная печатная плата
+item.network_component.name=Компонент сети
+item.stop_worm.name=СТОП! -Червь
+item.nuke_virus.name=Бомба с вирусом
+item.compressed_iron_gear.name=Шестерня из сжатого железа
+item.pneumatic_wrench.name=Пневматический ключ
+item.drone.name=Дрон
+item.programming_puzzle.name=Логика программирования
+item.advanced_pcb.name=Продвинутая печатная плата
+
+item.plastic_plant0.name=Семена растения спрута
+item.plastic_plant1.name=Семена огненного цветка
+item.plastic_plant2.name=Семена растения крипера
+item.plastic_plant3.name=Семена растения слизня
+item.plastic_plant4.name=Семена растения дождя
+item.plastic_plant5.name=Семена растения Края
+item.plastic_plant6.name=Семена растения молний
+item.plastic_plant7.name=Семена растения адреналина
+item.plastic_plant8.name=Семена растения взрыва
+item.plastic_plant9.name=Семена растения зелий
+item.plastic_plant10.name=Семена растения отталкивания
+item.plastic_plant11.name=Семена растения гелия
+item.plastic_plant12.name=Chopper Plant Seeds
+item.plastic_plant13.name=Семена растения музыки
+item.plastic_plant14.name=Семена растения толчка
+item.plastic_plant15.name=Семена летающего цветка
+
+item.machine_upgrade0.name=Улучшение механизма: Звук
+item.machine_upgrade1.name=Улучшение механизма: Раздатчик
+item.machine_upgrade2.name=Улучшение механизма: Жизнь предмета
+item.machine_upgrade3.name=Улучшение механизма: Отслеживатель сущности
+item.machine_upgrade4.name=Улучшение механизма: Отслеживатель блока
+item.machine_upgrade5.name=Улучшение механизма: Скорость
+item.machine_upgrade6.name=Улучшение механизма: Поиск предмета
+item.machine_upgrade7.name=Улучшение механизма: Отслеживатель координаты
+item.machine_upgrade8.name=Улучшение механизма: Дальность
+item.machine_upgrade9.name=Улучшение механизма: Безопасность
+
+item.assembly_program0.name=Программа сборки: Бур
+item.assembly_program1.name=Программа сборки: Лазер
+item.assembly_program2.name=Программа сборки: Бур и лазер
+
+item.network_component0.name=Диагностическая подпрограмма
+item.network_component1.name=API сети
+item.network_component2.name=Хранилище данных сети
+item.network_component3.name=Порт ввода/вывода сети
+item.network_component4.name=Сетевой реестр
+item.network_component5.name=Сетевой узел
+
+# Tube Modules
+item.safety_tube_module.name=Модуль «Безопасная труба»
+item.pressure_gauge_module.name=Модуль «Датчик давления трубы»
+item.flow_detector_module.name=Модуль «Детектор потока трубы»
+item.airGrateModule.nameМодуль «Воздушная решётка для трубы»
+item.regulator_tube_module.name=Модуль «Регулировщик трубы»
+
+# Programming Puzzles
+programmingPuzzle.start.name=Старт
+programmingPuzzle.entityAttack.name=Атаковать сущность
+programmingPuzzle.area.name=Территория
+programmingPuzzle.text.name=Текст
+programmingPuzzle.itemFilter.name=Предметный фильтр
+programmingPuzzle.dig.name=Территория копания
+programmingPuzzle.pickupItem.name=Собирать предметы
+programmingPuzzle.inventoryExport.name=Экспорт в инвентарь
+programmingPuzzle.inventoryImport.name=Импорт из инвентаря
+programmingPuzzle.goto.name=Идти в
+programmingPuzzle.place.name=Поставить
+programmingPuzzle.computerCraft.name=Контроль ComputerCraft
+
+# entities
+entity.PneumaticCraft.Drone.name=Дрон
+
+# Helmet hacking
+pneumaticHelmet.hacking.hacking=Взлом...
+
+pneumaticHelmet.hacking.result.disarm=Обезоружить
+pneumaticHelmet.hacking.result.neutralize=Нейтрализовать
+pneumaticHelmet.hacking.result.explode=Взорвать
+pneumaticHelmet.hacking.result.dispense=Hack to dispense
+pneumaticHelmet.hacking.result.open=Открыть
+pneumaticHelmet.hacking.result.close=Закрыть
+pneumaticHelmet.hacking.result.activate=Активировать
+pneumaticHelmet.hacking.result.deactivate=Деактивировать
+pneumaticHelmet.hacking.result.silence=Заглушить
+pneumaticHelmet.hacking.result.makeSound=Сделать звук
+pneumaticHelmet.hacking.result.access=Получить доступ
+pneumaticHelmet.hacking.result.tame=Приручить
+pneumaticHelmet.hacking.result.fungiInfuse=Наполнить генами грибов
+pneumaticHelmet.hacking.result.disable=Отключить
+pneumaticHelmet.hacking.result.stopTeleport=Запретить телепортацию
+pneumaticHelmet.hacking.result.callBack=Hack to call back
+pneumaticHelmet.hacking.result.resumeTasks=Hack to resume tasks
+
+pneumaticHelmet.hacking.finished.disarmed=Обезоружен
+pneumaticHelmet.hacking.finished.neutralized=Нейтрализован
+pneumaticHelmet.hacking.finished.exploded=Взорван
+pneumaticHelmet.hacking.finished.dispensed=Dispensed
+pneumaticHelmet.hacking.finished.opened=Открыто
+pneumaticHelmet.hacking.finished.closed=Закрыто
+pneumaticHelmet.hacking.finished.activated=Активировано
+pneumaticHelmet.hacking.finished.deactivated=Деактивировано
+pneumaticHelmet.hacking.finished.silenced=Заглушено
+pneumaticHelmet.hacking.finished.makingSound=Ploinking
+pneumaticHelmet.hacking.finished.accessed=Доступ получен
+pneumaticHelmet.hacking.finished.tamed=Приручён
+pneumaticHelmet.hacking.finished.fungiInfusion=Наполнен генами грибов
+pneumaticHelmet.hacking.finished.disabled=Отключено
+pneumaticHelmet.hacking.finished.stopTeleporting=Телепорты запрещены
+pneumaticHelmet.hacking.finished.calledBack=Called back
+pneumaticHelmet.hacking.finished.resumedTasks=Resumed tasks
+
+########## GUI tabs
+
+# Info
+gui.tab.info=Информация
+gui.tab.info.tubeModule=В этом интерфейсе Вы можете точно определить, как модуль должен вести себя в зависимости от сигнала красного камня. Вы можете определить формулу.
+
+# Problems
+gui.tab.problems.redstoneDisallows=Красный камень не позволяет этому механизму функционировать.
+
+# Universal Sensor descriptions
+gui.universalSensor.desc.userSetSensor=Этот 'датчик' Вы можете использовать, чтобы излучать постоянное значение красного камня. Излучённое значение - это числовое значение, вставленное в текстовое поле.
+
+# GUI strings
+gui.entityFilter=Фильтр сущностей ('Pig', or '@mob')
+gui.redstone=Красный камень
+gui.threshold=Предел(бар)
+gui.keybindBoundKey=Сейчас привязано к '%s'
+gui.keybindRightClickToSet=ПКМ, чтобы связать кнопку
+gui.setKeybind=Нажмите кнопку, чтобы связать
+gui.enableModule=Включить %s
+
+key.pneumaticcraft.category=PneumaticCraft
+# gui.enableModule.coreComponents=Включить шлем
+
+# Pneumatic Helmet upgrades
+pneumaticHelmet.upgrade.blockTracker=Отслеживатель блока
+pneumaticHelmet.upgrade.entityTracker=Отслеживатель сущности
+pneumaticHelmet.upgrade.itemSearcher=Улучшение «Поиск предмета»
+pneumaticHelmet.upgrade.coordinateTracker=Отслеживатель координаты
+pneumaticHelmet.upgrade.hackingUpgrade=Улучшение «Взлом»
+pneumaticHelmet.upgrade.coreComponents=Шлем
+
+pneumaticHelmet.message.enableSetting=Включена настройка: %s
+pneumaticHelmet.message.disableSetting=Выключена настройка: %s
+
+blockTracker.module.hackables=Hackables
+blockTracker.module.inventories=Инвентари
+blockTracker.module.misc=Разные блоки
+blockTracker.module.bcEnergy=Блоки энергии BuildCraft
+blockTracker.module.hydraulicraft=Блоки энергии Hydraulicraft
+blockTracker.module.ic2=Блоки энергии IC2
+blockTracker.module.thaumcraft=Блоки аспектов Thaumcraft
+
+blockTracker.info.bcEnergy=Блок энергии BuildCraft
+blockTracker.info.hydraulicraft=Блок энергии Hydraulicraft
+blockTracker.info.ic2=Блок энергии IC2
+blockTracker.info.thaumcraft=Содержит аспекты:
+blockTracker.info.thaumcraft.nodetype=Тип узла:
+blockTracker.info.thaumcraft.nodeModifier=Модификатор узла:
+
+blockTracker.info.peripheral.title=Переферия ComputerCraft
+blockTracker.info.peripheral.availableMethods=Доступные методы:
+
+blockTracker.message.stopSpam=Спам остановлен на %s
+
+# Tooltips
+gui.tooltip.plasticPlant=Origin: %s
+
+# Misc
+itemGroup.tabPneumaticCraft=PneumaticCraft
+message.date.ironman=Сегодня премьера фильма "Железный человек"!
+
+# Death Messages
+death.attack.pressure1=%1$s плоский, как блин!
+death.attack.pressure2=%1$s был сжат до смерти!
+death.attack.acid1=%1$s был отравлен до смерти!
+death.attack.acid2=%1$s превратился в печатную плату!
+
+# IGW pages
+igwtab.entry.worldgen=Генерация мира
+igwtab.entry.baseConcepts=Основные понятия
+igwtab.entry.machineUpgrades=Улучшения механизмов
+igwtab.entry.generatingPressure=Генерация давления
+igwtab.entry.pressureTubes=Трубы и модули
+igwtab.entry.pressureChamber=Камера давления
+igwtab.entry.elevator=Лифт
+igwtab.entry.pneumaticDoor=Пневматическая дверь
+igwtab.entry.printedCircuitBoards=Печатные платы
+igwtab.entry.assemblyMachines=Сборка механизмов
+igwtab.entry.ic2Integration=Интеграция IC2
+igwtab.entry.bcIntegration=Интеграция Buildcraft
+igwtab.entry.ccIntegration=Интеграция Computercraft
+igwmod.pressureChamber.requiredPressure=Требуется давление
+
+item.programming_puzzle_start.name=Логика программирования: Старт
+item.programming_puzzle_inv-e.name=Логика программирования: Экспорт инвентаря
+item.programming_puzzle_inv-i.name=Логика программирования: Импорт инвентаря
+item.programming_puzzle_i-pick.name=Логика программирования: Собирать предметы
+item.programming_puzzle_dig.name=Логика программирования: Копать блоки
+item.programming_puzzle_place.name=Логика программирования: Ставить блоки
+item.programming_puzzle_goto.name=Логика программирования: Идти в
+item.programming_puzzle_attk.name=Логика программирования: Атаковать сущность
+item.programming_puzzle_i-ftr.name=Логика программирования: Предметный фильтр
+item.programming_puzzle_area.name=Логика программирования: Территория
+item.programming_puzzle_text.name=Логика программирования: Текст

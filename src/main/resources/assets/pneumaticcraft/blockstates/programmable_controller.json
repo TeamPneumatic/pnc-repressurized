@@ -1,0 +1,10 @@
+{
+	"variants":{
+		"normal":{
+			"model": "pneumaticcraft:programmable_controller"
+		},
+		"inventory": [{
+		  "model": "pneumaticcraft:programmable_controller"
+        }]
+	}
+}

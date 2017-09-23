@@ -1,0 +1,10 @@
+{
+	"variants":{
+		"normal":{
+			"model": "pneumaticcraft:pressure_chamber_glass"
+		},
+		"inventory": [{
+		  "model": "pneumaticcraft:pressure_chamber_glass"
+        }]
+	}
+}

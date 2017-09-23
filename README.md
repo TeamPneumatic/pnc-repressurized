@@ -1,46 +1,72 @@
-PneumaticCraft
-==================
+# PneumaticCraft: Repressurized
 
-This is the source of PneumaticCraft. It's licenced under GPLv3, so have fun. Also have fun learning from the code where possible!
-I'm open to pull requests.
+This is a port to Minecraft 1.12 of MineMaarten's awesome PneumaticCraft mod: https://github.com/MineMaarten/PneumaticCraft.  It is *not* fully functional at this point, and there are no JAR releases; if you want to play with, build it from source.  It should be enough to do:
 
-To download PneumaticCraft, head to [Curse](http://www.curse.com/mc-mods/minecraft/224125-pneumaticcraft)
+```
+$ ./gradlew setupDecompWorkspace
+$ ./gradlew build
+```
 
-If you have any questions about the source, you can bug me on IRC, in #PneumaticCraft on Espernet.
+...and any IDE-specific steps.
 
-I know parts of the code still need refactoring, notably TileEntity rendering.
+This code is based on MineMaarten's 1.8.9 code (see the *MC1.8.8* branch in the above-linked repo), which is fairly functional but is missing a lot of client-side stuff.  Basically, this is a developer preview, not a usable mod at this stage.  I'm welcoming any assistance & pull requests, especially in the area of modelling and client-side animations; those have not been ported from the original 1.7.10 mod yet and they're not my strong point either (time to learn!)
 
-=======
-Developping with PneumaticCraft
-=======
-If you want to use the PneumaticCraft API in your mod, it's really easy to include the mod or API to your development environment, as the mod has a maven.
+Note that this tree also contains a version of igwmod from https://github.com/Z-Doctor/IGW-mod/tree/1.11/src/igwmod, further ported to 1.12 by me.  It's not usable as a mod here, but only for the API to allow PneumaticCraft: Repressurized to compile.  I haven't decided what to do with IGWMod yet; I may just remove it and move the in-game docs to the FTB Utilities guide system or similar.
 
-In your build.gradle, add:
+With all that said, have fun!
 
-	repositories {
-		maven {
-			name = "MM repo"
-			url = "http://maven.k-4u.nl/"
-		}
-	}
+## What's Working?
 
-	dependencies{
-		//If you want to load the whole source, use this line
-		compile "pneumaticCraft:PneumaticCraft-1.7.10:1.2.6-6:userdev"
-		
-		//If you want to load the PneumaticCraft API only, use this line
-		compile "pneumaticCraft:PneumaticCraft-1.7.10:1.2.6-6:api"
-	}
+### Generally Working Well
 
-It should be clear that the version number used in the 'compile' is an example, to see which versions you can use, go to http://maven.k-4u.nl/pneumaticCraft/PneumaticCraft-1.7.10/
+* Explosions convert iron -> compressed iron
+* Solid and liquid-fuelled air compressors, creative compressor
+* Pressure tubes (but with MCMP2 disabled in config)
+* Pressure chamber multiblock
+* Pressure chamber interface
+* Etching Acid
+* UV Light Box
+* Pneumatic Helmet (there may be some persistence issues with keybinds etc?)
+* Oil lake generation
+* Gas Lift
+* Refinery
+* Thermopneumatic Processing Plant
+* Plastic Mixer
+* Vacuum Pump (and pressure chamber disenchanting)
+* Kerosene Lamp (also works with any burnable fuel)
+* Omni Hopper and Liquid Hopper (liquid hopper textures are messed up though)
+* Heat system: Vortex Tube, Heat Sink, compressed iron blocks glow when hot - needs much more testing
+* Programmer
+* Drones (not well tested, but a simple "Go To Location" program works)
+* Pneumatic Wrench
+* GPS Tool
+* Manometer
+* Seismic Sensor
 
-=======
-Contributing to PneumaticCraft
-=======
-If you're planning to contribute to the PneumaticCraft's mods source, the best thing you can do is fork this github repository, and run 'gradle setupDecompWorkspace idea/eclipse' on the build.gradle file in this repository.
+### Functional but Needs Clientside Work
 
-After you've made changes, do a pull request :)
+* Pneumatic Doors (need a TESR for smooth door rotation)
+* Miniguns (ammo works, mobs die, but no item model)
+* Tube Modules (no model when placed - modules have an empty bounding box, can be removed with wrench)
+* Vortex Cannon (vortex entities working nicely but cannon needs an item model)
 
-For more details on pull-requests see [link](https://help.github.com/articles/using-pull-requests/)
+### Not Working Yet
 
-For more details on how to get PneumaticCraft up and running in Eclipse, see [link](CONTRIBUTING-ECLIPSE.md)
+* Multipart pressure tubes with MCMP2; support is in, but not working yet.  I need to get a better understanding of the API.  Pressure tubes work fine if you set "mcmultipart" to "false" in ``config/pneumaticcraft/thirdparty.cfg``.
+* Assembly system (server-side logic not quite working, no client rendering of rotating robotic arms)
+* Elevators (no client-side rendering, raises player but player drops as soon as lift reaches top)
+* Aphorism Tiles (need a TESR, collision box is wrong too)
+* Pneumatic Villagers
+* Flux Compressor (not in game, need to reimplement using Forge Energy)
+* Electric Compressor (not in game, need to reimplement with IC2 API)
+* Achievements (need to convert to 1.12 Advancements)
+
+### Not Tested Yet
+
+* Aerial Interface
+* Security system
+* Amadron system
+* Programmable Controller
+* Logistics Drones & Frames
+* Heat Frame
+

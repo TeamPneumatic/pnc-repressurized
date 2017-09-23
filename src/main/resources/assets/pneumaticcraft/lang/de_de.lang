@@ -1,0 +1,201 @@
+﻿# de_DE localization - PneumaticCraft V. 1.10.6
+# Translated by Cakestory, Fayti1703
+# Feel free to extend, change and use this file.
+
+#Fayti1703 Note:
+#If there is a "#TOCHANGE" line above a line, that line is still to be translated.
+#It was added to make this language list consistant with the en_US language.
+ 
+# Blocks
+tile.pressure_tube.name=Druckröhre
+tile.air_compressor.name=Druckluftkompressor
+tile.air_cannon.name=Luftdruckkanone
+tile.pressure_chamber_wall.name=Druckkammer Wand
+tile.pressure_chamber_window.name=Druckkammer Fenster
+tile.pressure_chamber_valve.name=Druckkammer-Ventil
+tile.slime_plant.name=Schleimpflanze
+tile.creeper_plant.name=Creeperpflanze
+tile.squid_plant.name=Tintenfischpflanze
+tile.fire_flower.name=Feuerpflanze
+tile.rain_plant.name=Regenpflanze
+tile.ender_plant.name=Enderpflanze
+tile.lightning_plant.name=Blitzpflanze
+tile.burst_plant.name=Explosivpflanze
+tile.potion_plant.name=Trankpflanze
+tile.helium_plant.name=Heliumpflanze
+tile.propulsion_plant.name=Antriebspflanze
+tile.repulsion_plant.name=Rückstoßpflanze
+tile.flying_flower.name=Fliegende Blume
+tile.chopper_plant.name=Pulsformerpflanze
+tile.charging_station.name=Ladestation
+tile.elevator_base.name=Aufzugbasis
+tile.elevator_frame.name=Aufzugrahmen
+tile.pressure_chamber_interface.name=Druckkammer-Schnittstelle
+tile.vacuum_pump.name=Vakuum-Pumpe
+tile.pneumatic_door_base.name=Pneumatische Türbasis
+tile.pneumatic_door.name=Pneumatische Tür
+tile.etching_acid.name=Ätzende Säure
+tile.assembly_io_unit.name=Montage IO Einheit
+tile.assembly_platform.name=Montagebühne
+tile.assembly_drill.name=Montagebohrer
+tile.assembly_laser.name=Montagelaser
+tile.assembly_controller.name=Montagekonsole
+tile.advanced_pressure_tube.name=Erwiterte Druckröhre
+tile.compressed_iron_block.name=Komprimierter Eisenblock
+tile.uv_light_box.name=UV-Licht-Box
+tile.security_station.name=Sicherheitsterminal
+tile.universal_sensor.name=Universeller Sensor
+tile.pneumatic_generator.name=Pneumatischer Generator
+tile.electric_compressor.name=Elektischer Kompressor
+tile.pneumatic_engine.name=Pneumatischer Motor
+tile.kinetic_compressor.name=Kinetischer Kompressor
+tile.aerial_interface.name=Pneumatische Schnittstelle
+tile.electrostatic_compressor.name=Elektrostatischer Kompressor
+tile.aphorism_tile.name=Sinnspruch-Platte
+tile.omnidirectional_hopper.name=Ungerichteter Trichter
+tile.elevator_caller.name=Aufzugschalter
+tile.programmer.name=Programmierer
+tile.drone_interface.name=Drohen-Interface
+tile.creative_compressor.name=Kreativ-Kompressor
+#TOCHANGE
+tile.wheat_harvester.plastic_plants.name=Plastik Plants Harvester Dolley
+tile.flux_compressor.name=Flux Kompressor
+tile.pneumatic_dynamo.name=Pneumatischer Dynamo
+tile.plastic_mixer.name=Plastik Mixer
+tile.liquid_compressor.name=Flüssigkeiten Kompressor
+tile.advanced_liquid_compressor.name=Fortgeschrittener Flüssigkeiten Kompressor
+#/TOCHANGE
+tile.heat_sink.name=Heat Sink
+tile.vortex_tube.name=Vortex Tube
+#TOCHANGE/
+tile.etching_acid.name=Ätzsäure
+tile.programmable_controller.name=Programmable Controller
+tile.gas_lift.name=Gasheber
+tile.refinery.name=Raffinerie
+tile.thermopneumatic_processing_plant.name=Thermopneumatische Aufbereitungsanlage
+tile.fuel.name=Benzin
+tile.lpg.name=LPG
+tile.kerosene.name=Kerosin
+tile.diesel.name=Diesel
+tile.oil.name=Öl
+tile.lubricant.name=Gleitmittel
+ 
+tile.monster_stone_egg.name=Silberfisch
+ 
+# Items
+item.gps_tool.name=GPS-Gerät
+item.machine_upgrade.name=Maschienen-Erweiterung
+item.ingot_iron_compressed.name=Komprimierter Eisenbarren
+item.pressure_gauge.name=Luftdruckmesser
+item.stone_base.name=Steinbasis
+item.cannon_barrel.name=Kannonenrohr
+item.turbine_blade.name=Turbinenschaufel
+item.plastic_plant.name=Plastikpflanze
+item.plastic.name=Plastik
+item.air_canister.name=Luftdruckkanister
+item.vortex_cannon.name=Luftwirbel-Kanone
+item.pneumatic_cilinder.name=Pneumatischer Zylinder
+item.pneumatic_helmet.name=Pneumatischer Helm
+item.manometer.name=Manometer
+item.turbine_rotor.name=Turbinenrotor
+item.assembly_program.name=Montageprogramm
+item.empty_pcb.name=Leerer PCB
+item.unassembled_pcb.name=Unbearbeiteter PCB
+item.pcb_blueprint.name=PCB Blaupause
+item.etching_acid_bucket.name=Eimer mit ätzender Säure
+item.transistor.name=Transistor
+item.capacitor.name=Kondensator
+item.printed_circuit_board.name=Leiterplatine
+item.failed_pcb.name=Defekter PCB
+item.network_component.name=Netzwerkkomponente
+item.stop_worm.name=STOP! - Wurm
+item.nuke_virus.name=Nuke Virus
+item.pneumatic_wrench.name=Druckluftschrauber
+item.drone.name=Drohne
+item.programming_puzzle.name=Programmier-Puzzle
+item.compressed_iron_gear.name=Komprimiertes Eisenzahnrad
+item.advanced_pcb.name=Fortgeschrittener PCB
+item.remote.name=Fernbedienung
+item.seismic_sensor.name=Seismischer Sensor
+item.lpg_bucket.name=LPG Eimer
+item.fuel_bucket.name=Bezin Eimer
+item.kerosene_bucket.name=Kerosin Eimer
+item.diesel_bucket.name=Dieseleimer
+item.oil_bucket.name=Öl Eimer
+item.lubricant_bucket.name=Eimer mit Gleitmittel
+item.plastic_bucket.name=Plastik Eimer
+item.logistics_configurator.name=Logistik Konfigurator
+item.logistic_frame_requester.name=Logistischer Anforderungs Rahmen
+item.logistic_frame_passive_provider.name=Logistischer Passiver Versorger Rahmen
+item.logistic_frame_active_provider.name=Logistischer Aktiver Versorger Rahmen
+item.logistic_frame_storage.name=Logistischer Lagerungs Rahmen
+item.logistic_drone.name=Logistische Drohne
+item.gun_ammo.name=Minigun Munition
+ 
+# Programmier-Puzzles
+
+item.programming_puzzle.black.name=Schwarzes Programmier-Puzzle
+item.programming_puzzle.red.name=Rotes Programmier-Puzzle
+item.programming_puzzle.green.name=Grünes Programmier-Puzzle
+item.programming_puzzle.brown.name=Braunes Programmier-Puzzle
+item.programming_puzzle.blue.name=Blaues Programmier-Puzzle
+item.programming_puzzle.purple.name=Lilanes Programmier-Puzzle
+item.programming_puzzle.cyan.name=Cyanes Programmier-Puzzle
+item.programming_puzzle.silver.name=Hellgraues Programmier-Puzzle
+item.programming_puzzle.gray.name=Graues Programmier-Puzzle
+item.programming_puzzle.pink.name=Pinkes Programmier-Puzzle
+item.programming_puzzle.lime.name=Hellgrünes Programmier-Puzzle
+item.programming_puzzle.yellow.name=Gelbes Programmier-Puzzle
+item.programming_puzzle.light_blaues.name=Hellblaues Programmier-Puzzle
+item.programming_puzzle.magenta.name=Magenta-Programmier-Puzzle
+item.programming_puzzle.orange.name=Orangenes Programmier-Puzzle
+item.programming_puzzle.white.name=Weißes Programmier-Puzzle
+
+item.plastic.black.name=Schwarzes Plastik
+item.plastic.red.name=Rotes Plastik
+item.plastic.green.name=Grünes Plastik
+item.plastic.brown.name=Braunes Plastik
+item.plastic.blue.name=Blaues Plastik
+item.plastic.purple.name=Lilanes Plastik
+item.plastic.cyan.name=Cyanes Plastik
+item.plastic.silver.name=Hellgraues Plastik
+item.plastic.gray.name=Graues Plastik
+item.plastic.pink.name=Pinkes Plastik
+item.plastic.lime.name=Hellgrünes Plastik
+item.plastic.yellow.name=Gelbes Plastik
+item.plastic.light_blaues.name=Hellblaues Plastik
+item.plastic.magenta.name=Magenta-Plastik
+item.plastic.orange.name=Orangenes Plastik
+item.plastic.white.name=Weißes Plastik
+
+
+programmingPuzzle.start.name=Start
+programmingPuzzle.attk.name=Angriff
+programmingPuzzle.area.name=Bereich
+programmingPuzzle.text.name=Text
+programmingPuzzle.I-ftr.name=Item-Filter
+programmingPuzzle.dig.name=Ausheben
+programmingPuzzle.I-pick.name=Items aufheben
+programmingPuzzle.Inv-E.name=In Inventar einlagern
+programmingPuzzle.Inv-I.name=Aus Inventar auslagern
+programmingPuzzle.goto.name=Gehe zu Position
+programmingPuzzle.Place.name=Platzieren
+ 
+#Creative Tabs
+itemGroup.tabPneumaticCraft=PneumaticCraft
+ 
+# entities
+entity.PneumaticCraft.Drone.name=Drohne
+ 
+# IGW pages
+item.programming_puzzle_start.name=Programmier-Puzzle: Start
+item.programming_puzzle_inv-e.name=Programmier-Puzzle: Inventar Einlagern
+item.programming_puzzle_inv-i.name=Programmier-Puzzle: Inventar Auslagern
+item.programming_puzzle_i-pick.name=Programmier-Puzzle: Sammle Items
+item.programming_puzzle_dig.name=Programmier-Puzzle: Blöcke abbauen
+item.programming_puzzle_place.name=Programmier-Puzzle: Blöcke platzieren
+item.programming_puzzle_goto.name=Programmier-Puzzle: Gehe zu Position
+item.programming_puzzle_attk.name=Programmier-Puzzle: Angriff
+item.programming_puzzle_i-ftr.name=Programmier-Puzzle: Item-Filter
+item.programming_puzzle_area.name=Programmier-Puzzle: Bereich
+item.programming_puzzle_text.name=Programmier-Puzzle: Text

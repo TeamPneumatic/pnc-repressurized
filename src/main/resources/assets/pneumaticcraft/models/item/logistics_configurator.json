@@ -1,0 +1,6 @@
+{
+   "textures" : {
+      "layer0" : "pneumaticcraft:items/logistics_configurator"
+   },
+   "parent" : "item/generated"
+}

@@ -1,0 +1,14 @@
+{
+    "forge_marker": 1,
+    "defaults": {
+        "textures": {},
+        "custom": { "flip-v" : true},
+        "model": "pneumaticcraft:plastic_mixer.obj"
+    },
+	"variants": {
+		"normal": [{}],
+		"inventory": [{
+          "transform": "forge:default-block"
+        }]
+	}
+}

@@ -1,0 +1,16 @@
+[
+{
+  "modid": "pneumaticcraft",
+  "name": "PneumaticCraft: Repressurized",
+  "description": "A port of PneumaticCraft to Minecraft 1.12+",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["desht"],
+  "credits": "MineMaarten",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]

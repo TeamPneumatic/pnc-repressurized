@@ -1,0 +1,98 @@
+{
+	"forge_marker": 1,
+	"defaults":{
+	   "model": "cube"
+	},
+	"variants":{
+		"wall_state":{
+		      "none":{
+		          "model": "cube_all",
+		          "textures":{
+		              "all": "pneumaticcraft:blocks/pressure_chamber/pressure_chamber_wall"
+		          }
+		      },
+		      "center":{
+		          "model": "cube_all",
+		          "textures":{
+                      "all": "pneumaticcraft:blocks/pressure_chamber/center"
+                  }
+		      },
+		      "xedge":{
+		          "textures":{
+		              "down": "pneumaticcraft:blocks/pressure_chamber/middle_vertical",
+		              "up": "pneumaticcraft:blocks/pressure_chamber/middle_vertical",
+		              "north": "pneumaticcraft:blocks/pressure_chamber/middle_horizontal",
+		              "south": "pneumaticcraft:blocks/pressure_chamber/middle_horizontal",
+		              "east": "pneumaticcraft:blocks/pressure_chamber/middle_horizontal",
+		              "west": "pneumaticcraft:blocks/pressure_chamber/middle_horizontal"
+		          }
+		      },
+		      "yedge":{
+		          "textures":{
+                      "down": "pneumaticcraft:blocks/pressure_chamber/middle_vertical",
+                      "up": "pneumaticcraft:blocks/pressure_chamber/middle_vertical",
+                      "north": "pneumaticcraft:blocks/pressure_chamber/middle_vertical",
+                      "south": "pneumaticcraft:blocks/pressure_chamber/middle_vertical",
+                      "east": "pneumaticcraft:blocks/pressure_chamber/middle_vertical",
+                      "west": "pneumaticcraft:blocks/pressure_chamber/middle_vertical"
+                  }
+		      },
+		      "zedge":{
+		          "textures":{
+                      "down": "pneumaticcraft:blocks/pressure_chamber/middle_horizontal",
+                      "up": "pneumaticcraft:blocks/pressure_chamber/middle_horizontal",
+                      "north": "pneumaticcraft:blocks/pressure_chamber/middle_horizontal",
+                      "south": "pneumaticcraft:blocks/pressure_chamber/middle_horizontal",
+                      "east": "pneumaticcraft:blocks/pressure_chamber/middle_vertical",
+                      "west": "pneumaticcraft:blocks/pressure_chamber/middle_vertical"
+                  }
+		      },
+		      "xmin_ymin_zmin":{
+		          "textures":{
+                      "down": "pneumaticcraft:blocks/pressure_chamber/bottom_left",
+                      "up": "pneumaticcraft:blocks/pressure_chamber/bottom_right",
+                      "north": "pneumaticcraft:blocks/pressure_chamber/bottom_right",
+                      "south": "pneumaticcraft:blocks/pressure_chamber/top_right",
+                      "east": "pneumaticcraft:blocks/pressure_chamber/top_left",
+                      "west": "pneumaticcraft:blocks/pressure_chamber/bottom_left"
+                  }
+		      },
+              "xmin_ymin_zmax":{
+                  "textures":{
+                      "down": "pneumaticcraft:blocks/pressure_chamber/top_left",
+                      "up": "pneumaticcraft:blocks/pressure_chamber/top_right",
+                      "north": "pneumaticcraft:blocks/pressure_chamber/top_left",
+                      "south": "pneumaticcraft:blocks/pressure_chamber/bottom_left",
+                      "east": "pneumaticcraft:blocks/pressure_chamber/top_right",
+                      "west": "pneumaticcraft:blocks/pressure_chamber/bottom_right"
+                  }
+              },
+              "xmin_ymax_zmax":{
+                  "textures":{
+                      "down": "pneumaticcraft:blocks/pressure_chamber/bottom_right",
+                      "up": "pneumaticcraft:blocks/pressure_chamber/bottom_left",
+                      "north": "pneumaticcraft:blocks/pressure_chamber/bottom_left",
+                      "south": "pneumaticcraft:blocks/pressure_chamber/top_left",
+                      "east": "pneumaticcraft:blocks/pressure_chamber/bottom_right",
+                      "west": "pneumaticcraft:blocks/pressure_chamber/top_right"
+                  }
+              },
+              "xmin_ymax_zmin":{
+                  "textures":{
+                      "down": "pneumaticcraft:blocks/pressure_chamber/top_right",
+                      "up": "pneumaticcraft:blocks/pressure_chamber/top_left",
+                      "north": "pneumaticcraft:blocks/pressure_chamber/top_right",
+                      "south": "pneumaticcraft:blocks/pressure_chamber/bottom_right",
+                      "east": "pneumaticcraft:blocks/pressure_chamber/bottom_left",
+                      "west": "pneumaticcraft:blocks/pressure_chamber/top_left"
+                  }
+              }
+		},
+		"inventory": [{
+		  "model": "cube_all",
+          "textures":{
+              "all": "pneumaticcraft:blocks/pressure_chamber/pressure_chamber_wall"
+          }
+        }]
+	}
+}

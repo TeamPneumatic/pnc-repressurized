@@ -1,0 +1,10 @@
+{
+    "variants": {
+        "normal": { 
+            "model": "pneumaticcraft:aerial_interface" 
+       },
+       "inventory": [{ 
+            "model": "pneumaticcraft:aerial_interface" 
+       }]
+    }
+}

@@ -1,0 +1,6 @@
+{
+   "textures" : {
+      "layer0" : "pneumaticcraft:items/upgrades/item_life"
+   },
+   "parent" : "item/generated"
+}

@@ -1,0 +1,6 @@
+{
+   "textures" : {
+      "layer0" : "pneumaticcraft:items/upgrades/thaumcraft"
+   },
+   "parent" : "item/generated"
+}

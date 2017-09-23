@@ -1,25 +1,26 @@
-ideeen.docx
-~$ideeen.docx
-~WRL1161.tmp
-unused resources
-/bin
-
-*.class
-
-# Package Files #
-*.jar
-*.war
-*.ear
-
-*.iml
-
-environment.properties
-*.db
-
+# eclipse
+bin
+*.launch
+.settings
+.metadata
 .classpath
 .project
-/build
-/eclipse
-.gradle/
-.settings/
-/sounds
+
+# idea
+out
+*.ipr
+*.iws
+*.iml
+.idea
+
+# gradle
+build
+.gradle
+
+# other
+eclipse
+run
+run-*
+conf
+*.xcf
+*.pl

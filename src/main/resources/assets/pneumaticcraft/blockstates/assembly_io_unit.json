@@ -1,0 +1,18 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "textures": {},
+    "custom": { "flip-v" : true},
+    "model": "pneumaticcraft:assembly_io_unit_export.obj"
+  },
+  "variants": {
+    "normal": [{}],
+    "inventory": [{
+      "transform": "forge:default-block"
+    }],
+    "import": {
+      "true": { "model": "pneumaticcraft:assembly_io_unit_import.obj" },
+      "false": { "model": "pneumaticcraft:assembly_io_unit_export.obj" }
+    }
+  }
+}

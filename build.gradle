@@ -1,99 +1,45 @@
 buildscript {
     repositories {
-        mavenCentral()
-        maven {
-            name = "forge"
-            url = "http://files.minecraftforge.net/maven"
-        }
-        maven {
-            name = "sonatype"
-            url = "https://oss.sonatype.org/content/repositories/snapshots/"
-        }
+        jcenter()
+        maven { url = "http://files.minecraftforge.net/maven" }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
     }
 }
+apply plugin: 'net.minecraftforge.gradle.forge'
 
-repositories {
-		maven { // The repo from which to get waila
-			name "Mobius Repo"
-			url "http://mobiusstrip.eu/maven"
-		}
-		maven { // the repo from which to get NEI and stuff 
-			name 'CB Repo'
-			url "http://chickenbones.net/maven/"
-		}
-		maven {
-			name = "ic2"
-			url = "http://maven.ic2.player.to/"
-		}
-		maven {
-			name = "IGW"
-			url = "http://maven.k-4u.nl/"
-		}
-		maven {
-			name 'OpenComputers'
-			url = "http://maven.cil.li/"
-		}
-}
-
-apply plugin: "curseforge"
-apply plugin: 'forge'
+//Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
 project.ext {
-	massive = "1"
-    major = "12"
-    minor = "7"
-    mcVersion = "1.7.10"
+    massive = "0"
+    major = "1"
+    minor = "0"
+    mcVersion = "1.12.1"
 }
-
 version = "${project.ext.massive}.${project.ext.major}.${project.minor}"
-group= "pneumaticCraft" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "PneumaticCraft"
+group = "me.desht.pneumaticcraft"
+archivesBaseName = "pneumaticcraft-repressurized"
 
-if (System.getenv().BUILD_NUMBER != null) {
-    version += "-${System.getenv().BUILD_NUMBER}"
-} else {
-    version += " - err"
-}
-
-//delete 'Version.txt'
-//new File('Version.txt') << "build/libs/" + archivesBaseName + "-" + project.ext.mcVersion + "-" + version + "-universal.jar"
-
-def grabDep(url) {
-    ant.get(src: url, dest: 'dep')
-	compile files("dep/" + url.substring(url.lastIndexOf("/")));
-}
-
-dependencies {
- 
-	println("  Adding dependencies!")
-
-	compile "codechicken:CodeChickenLib:1.7.10-1.1.3.138:dev"
-	compile "codechicken:CodeChickenCore:1.7.10-1.0.4.29:dev"
-	compile "codechicken:NotEnoughItems:1.7.10-1.0.3.74:dev"
-	compile "codechicken:ForgeMultipart:1.7.10-1.1.0.297:dev"
-	compile "mcp.mobius.waila:Waila:1.5.10_1.7.10"
-    compile 'com.mod-buildcraft:buildcraft:6.0.8:dev'
-    compile 'net.industrial-craft:industrialcraft-2:2.2.504-experimental:api'
-	compile "igwmod:IGW-Mod-1.7.10:1.1.3-18:userdev"
-	compile "li.cil.oc:OpenComputers:MC1.7.10-1.4.5.28:api"
-	compile "com.pahimar.ee3:EquivalentExchange3:1.7.10-0.3.505:dev"
-//	compile "appeng:appliedenergistics2:rv2-stable-10:dev" Don't use the AE2 maven, as of the time of writing this it didn't work.
-
-	println("  Finished adding dependencies!")
+sourceCompatibility = targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+compileJava {
+    sourceCompatibility = targetCompatibility = '1.8'
 }
 
 minecraft {
-    version = "${project.ext.mcVersion}-10.13.3.1388-1.7.10"
-    runDir = "minecraft/assets"
-
-    // replacing stuff in the source
-	replace '@MASSIVE@', project.massive
+    version = "1.12.1-14.22.0.2474"
+    runDir = "run"
+    mappings = "snapshot_20170908"
+    replace '@VERSION@', project.version
+        replaceIn 'PneumaticRedux.java'
+    replace '@MASSIVE@', project.massive
+        replaceIn 'lib/Versions.java'
     replace '@MAJOR@', project.major
+        replaceIn 'lib/Versions.java'
     replace '@MINOR@', project.minor
+        replaceIn 'lib/Versions.java'
     replace '@MC_VERSION@', version
+        replaceIn 'lib/Versions.java'
     if (System.getenv("BUILD_NUMBER") != null) {
         replace '@BUILD_NUMBER@', System.getenv("BUILD_NUMBER")
     } else {
@@ -101,55 +47,48 @@ minecraft {
     }
 }
 
-curse {
-    apiKey = System.getenv("minemaarten_curse")
-    projectId = "224125" // my project url is http://minecraft.curseforge.com/mc-mods/59652-seretroomsmod/
-    changelog = new File('changelog.txt').text
-    releaseType = "release"
-	relatedProject 'in-game-wiki-mod': 'optionalLibrary'
-
-    // the default obfuscated jar is uploaded by default
-    // artifact = project.file("some/jar/to/upload.jar")
-
-    // allows you to add extra compatible MC versions. The one specified in the minecraft{} block is used by default.
-    // addGameVersion "1.7.1"
-    // addGameversion "1.7.0", "1.7.4"
-}
-
-// configure the source folders
-sourceSets {
-    main {
-        java {
-            srcDir 'src'
-            // exclude 'some exclusion'
-            // include 'some inclusion'
-        }
-        resources {
-            srcDir 'resources'
-            exclude '**/.md' // exclude readme from localization repo
-			exclude 'Models'
-			exclude 'unused resources'
-			exclude '**/.txt'
-			exclude '**/.docx'
-            // exclude 'some exclusion'
-            // include 'some inclusion'
-        }
+repositories {
+    maven {
+        name = "CoFH Maven"
+        url = "http://maven.covers1624.net"
     }
-	
-	api {
-    java {
-        srcDir 'api'
+    maven {
+        name = "JEI"
+        url = "http://dvs1.progwml6.com/files/maven"
     }
-}
+    maven {
+        name = "MCMP"
+        url = "http://maven.amadornes.com/"
+    }
+    maven {
+        name = "OpenComputers"
+        url = "http://maven.cil.li/"
+    }
+    maven {
+        name = "ComputerCraft"
+        url = "http://cc.crzd.me/maven"
+    }
+//    maven {
+//        name = "IGW"
+//        url = "http://maven.k-4u.nl/"
+//    }
+
 }
 
-apply plugin: 'idea'
-idea {
-    module.outputDir = sourceSets.main.output.classesDir
+dependencies {
+    deobfCompile "cofh:RedstoneFlux:1.12-2.0.0.1:universal"
+    deobfCompile "mezz.jei:jei_1.12:4.7.0.67"
+    deobfCompile "MCMultiPart2:MCMultiPart:2.2.2"
+    deobfCompile "li.cil.oc:OpenComputers:MC1.12-1.7.0.3:api"
+    deobfCompile "dan200.computercraft:ComputerCraft-SquidDev-CC-ComputerCraft-feature-minecraft-1.12.2:1.80pr0-build20"
+    // compile "igwmod:IGW-Mod-1.9.4:1.3.0-5:userdev"
 }
 
-processResources
-{
+processResources {
+    // this will ensure that this task is redone when the versions change.
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version
+
     // replace stuff in mcmod.info, nothing else
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
@@ -158,58 +97,11 @@ processResources
         expand 'version':project.version, 'mcversion':project.minecraft.version
     }
         
-    // copy everything else, thats not the mcmod.info
+    // copy everything else except the mcmod.info
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
     }
 }
 
-task doIRC() {
-    def proc = "java -jar /opt/maartenbot/MineMaartenBot.jar ${version}".execute()
-}
+idea { module { inheritOutputDirs = true } }
 
-task("uploadJars", dependsOn:"reobf") {
-    description = "uploads JARs"
-    if (System.getenv("local_maven") != null) {
-        apply plugin: 'maven'
-        uploadArchives {
-            repositories {
-                mavenDeployer {
-                    repository(url: "file://" + System.getenv("local_maven"))
-                }
-            }
-        }
-    }
-}
-
-jar {
-    appendix = "${project.ext.mcVersion}"
-    classifier = "universal"
-	manifest {
-        attributes 'FMLAT': 'PneumaticCraft_at.cfg'
-    }
-}
-
-task userdevJar(type: Jar) {
-    from(sourceSets.main.output)
-	from(sourceSets.main.allSource)
-    appendix = "${project.ext.mcVersion}"
-    classifier = "userdev"
-}
-
-// Create API library jar
-task apiJar(type: Jar) {
-	from sourceSets.main.java
-    include "pneumaticCraft/api/**"
-
-    from sourceSets.main.output
-    include "pneumaticCraft/api/**"
-
-	appendix = "${project.ext.mcVersion}"
-    classifier = 'api'
-}
-
-artifacts {
-    archives userdevJar
-	archives apiJar
-}

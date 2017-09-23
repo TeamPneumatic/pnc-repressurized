@@ -1,0 +1,6 @@
+{
+   "textures" : {
+      "layer0" : "pneumaticcraft:items/programs/program_laser"
+   },
+   "parent" : "item/generated"
+}

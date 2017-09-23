@@ -1,0 +1,42 @@
+{
+    "forge_marker": 1,
+    "defaults": {
+        "textures": {},
+		"model": "pneumaticcraft:aphorism_tile"
+    },
+	"variants": {
+		"facing": {
+			"up": {
+			    "transform": {
+    			     "rotation" : {"x" : -90}
+    			}
+			},
+			"down": {
+                "transform": {
+                     "rotation" : {"x" : 90}
+                }
+            },
+			"east": {
+				"transform": {
+					"rotation": {"y" : 90}
+				}
+			},
+			"north": {
+				"transform": {
+					"rotation": {"y" : 180}
+				}
+			},
+			"west": {
+				"transform": {
+					"rotation": {"y": 270}
+				}
+			},
+			"south": {
+				"transform": {
+
+				}
+			}
+		},
+		"inventory": [{}]
+	}
+}

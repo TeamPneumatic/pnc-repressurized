@@ -1,0 +1,6 @@
+{
+   "textures" : {
+      "layer0" : "pneumaticcraft:items/pneumatic_wrench"
+   },
+   "parent" : "item/generated"
+}

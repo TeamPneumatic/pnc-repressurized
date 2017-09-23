@@ -1,0 +1,48 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "textures": {},
+    "custom": { "flip-v" : true},
+    "model": "pneumaticcraft:kerosene_lamp.obj"
+  },
+  "variants": {
+    "facing": {
+      "up": {
+        "transform": {
+          "rotation" : {"x" : 90}
+        }
+      },
+      "down": {"x" : -90},
+      "east": {
+        "transform": {
+          "scale": [ 0.625, 0.625, 0.625 ],
+          "translation": [ 0.1171875, -0.2, 0 ],
+          "rotation": {"y" : 90}
+        }
+      },
+      "north": {
+        "transform": {
+          "scale": [ 0.625, 0.625, 0.625 ],
+          "translation": [ 0, -0.2, -0.1171875 ],
+          "rotation": {"y" : 180}
+        }
+      },
+      "west": {
+        "transform": {
+          "scale": [ 0.625, 0.625, 0.625 ],
+          "translation": [ -0.1171875, -0.2, 0 ],
+          "rotation": {"y": 270}
+        }
+      },
+      "south": {
+        "transform": {
+          "scale": [ 0.625, 0.625, 0.625 ],
+          "translation": [ 0, -0.2, 0.1171875 ]
+        }
+      }
+    },
+    "inventory": [{
+      "transform": "forge:default-block"
+    }]
+  }
+}
