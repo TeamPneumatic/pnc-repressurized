@@ -52,8 +52,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-//import net.minecraftforge.fluids.FluidContainerRegistry.FluidContainerData;
-
 @Optional.InterfaceList({@Optional.Interface(iface = "dan200.computercraft.api.peripheral.IPeripheral", modid = ModIds.COMPUTERCRAFT)})
 public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, IDescSynced, ITickable, IUpgradeAcceptor, IPeripheral {
     /**
@@ -74,7 +72,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     }
 
     public TileEntityBase(int upgradeSize) {
-//        addLuaMethods();
+        addLuaMethods();
         this.upgradeHandler = upgradeSize > 0 ? new UpgradeHandler(upgradeSize) : null;
     }
 
@@ -86,11 +84,6 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     protected void addApplicableUpgrade(Item upgrade) {
         applicableUpgrades.add(upgrade);
     }
-
-//    @Override
-//    public Packet getDescriptionPacket() {
-//        return DescPacketHandler.getPacket(new PacketDescription(this));
-//    }
 
     // server side, chunk sending
     @Override
@@ -340,56 +333,6 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     public boolean isGuiUseableByPlayer(EntityPlayer player) {
         return getWorld().getTileEntity(getPos()) == this && player.getDistanceSq(getPos().getX() + 0.5D, getPos().getY() + 0.5D, getPos().getZ() + 0.5D) <= 64.0D;
     }
-//
-//    public static void writeInventoryToNBT(NBTTagCompound tag, ItemStack[] stacks) {
-//        writeInventoryToNBT(tag, stacks, "Items");
-//    }
-
-//    public static void writeInventoryToNBT(NBTTagCompound tag, IItemHandler inventory, String tagName) {
-//        ItemStack[] stacks = new ItemStack[inventory.getSlots()];
-//        for (int i = 0; i < stacks.length; i++) {
-//            stacks[i] = inventory.getStackInSlot(i);
-//        }
-//        writeInventoryToNBT(tag, stacks, tagName);
-//    }
-
-//    public static void writeInventoryToNBT(NBTTagCompound tag, ItemStack[] stacks, String tagName) {
-//        NBTTagList tagList = new NBTTagList();
-//        for (int i = 0; i < stacks.length; i++) {
-//            if (!stacks[i].isEmpty()) {
-//                NBTTagCompound itemTag = new NBTTagCompound();
-//                stacks[i].writeToNBT(itemTag);
-//                itemTag.setByte("Slot", (byte) i);
-//                tagList.appendTag(itemTag);
-//            }
-//        }
-//        tag.setTag(tagName, tagList);
-//    }
-
-//    public static void readInventoryFromNBT(NBTTagCompound tag, ItemStack[] stacks) {
-//        readInventoryFromNBT(tag, stacks, "Items");
-//    }
-//
-//    public static void readInventoryFromNBT(NBTTagCompound tag, IItemHandlerModifiable inventory, String tagName) {
-//        ItemStack[] stacks = new ItemStack[inventory.getSlots()];
-//        readInventoryFromNBT(tag, stacks, tagName);
-//        for (int i = 0; i < stacks.length; i++) {
-//            inventory.setStackInSlot(i, stacks[i]);
-//        }
-//    }
-//
-//    public static void readInventoryFromNBT(NBTTagCompound tag, ItemStack[] stacks, String tagName) {
-//        Arrays.fill(stacks, ItemStack.EMPTY);
-//
-//        NBTTagList tagList = tag.getTagList(tagName, 10);
-//        for (int i = 0; i < tagList.tagCount(); i++) {
-//            NBTTagCompound itemTag = tagList.getCompoundTagAt(i);
-//            int slot = itemTag.getByte("Slot");
-//            if (slot >= 0 && slot < stacks.length) {
-//                stacks[slot] = new ItemStack(itemTag);
-//            }
-//        }
-//    }
 
     public void onNeighborTileUpdate() {
         initializeIfHeatExchanger();
@@ -503,10 +446,6 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
         }
     }
 
-//    private boolean canStack(ItemStack stack1, ItemStack stack2) {
-//        return stack1.isItemEqual(stack2) && ItemStack.areItemStackTagsEqual(stack1, stack2) && stack1.stackSize + stack2.stackSize <= stack1.getMaxStackSize();
-//    }
-
     @Override
     public ITextComponent getDisplayName() {
         return getName() == null ? new TextComponentString("???") : new TextComponentTranslation(getName());
@@ -521,18 +460,6 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     public String getName() {
         return null; //Is called directly from the block instead.
     }
-
-//    public boolean canInsertUpgrade(int slot, ItemStack item) {
-//        return item != null ? canInsertUpgrade(slot, item.getItem()) : false;
-//    }
-
-//    protected boolean canInsertUpgrade(int slot, Item item) {
-//        if (!applicableUpgrades.contains(item)) return false;
-//        for (int upgradeSlot : upgradeSlots) {
-//            if (upgradeSlot == slot) return true;
-//        }
-//        return false;
-//    }
 
     @Override
     public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate) {
