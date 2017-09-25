@@ -26,6 +26,7 @@ import java.util.Random;
 
 public class BlockPneumaticDoor extends BlockPneumaticCraftModeled {
     private static final PropertyBool TOP_DOOR = PropertyBool.create("top_door");
+    private static final PropertyBool STATIC = PropertyBool.create("static");
 
     // true when the Pneumatic Door Base is determining if it should open the door dependent
     // on the player watched block.
@@ -37,7 +38,7 @@ public class BlockPneumaticDoor extends BlockPneumaticCraftModeled {
 
     @Override
     protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, TOP_DOOR, ROTATION);
+        return new BlockStateContainer(this, TOP_DOOR, ROTATION, STATIC);
     }
 
     @Override
@@ -55,9 +56,14 @@ public class BlockPneumaticDoor extends BlockPneumaticCraftModeled {
         TileEntity te = PneumaticCraftUtils.getTileEntitySafely(worldIn, pos);
         if (te instanceof TileEntityPneumaticDoor) {
             TileEntityPneumaticDoor teDoor = (TileEntityPneumaticDoor) te;
-            if (teDoor.rotationAngle != 0) {
+            if (teDoor.rotationAngle == 90) {
                 EnumFacing facing = teDoor.rightGoing ? state.getValue(ROTATION).rotateY() : state.getValue(ROTATION).rotateYCCW();
-                state = state.withProperty(ROTATION, facing);
+                state = state.withProperty(ROTATION, facing).withProperty(STATIC, true);
+            } else if (teDoor.rotationAngle == 0) {
+                state = state.withProperty(STATIC, true);
+            } else if (teDoor.rotationAngle > 0) {
+                // currently rotating - hide the static model; TESR will show the rotating door
+                state = state.withProperty(STATIC, false);
             }
         }
         return state;

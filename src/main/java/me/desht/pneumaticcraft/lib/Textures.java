@@ -30,6 +30,7 @@ public class Textures {
     public static final ResourceLocation MODEL_PRESSURE_CHAMBER_INTERFACE = new ResourceLocation(MODEL_LOCATION + "pressure_chamber_interface.png");
     public static final ResourceLocation MODEL_VACUUM_PUMP = new ResourceLocation(MODEL_LOCATION + "vacuum_pump.png");
     public static final ResourceLocation MODEL_PNEUMATIC_DOOR = new ResourceLocation(MODEL_LOCATION + "pneumatic_door.png");
+    public static final ResourceLocation MODEL_PNEUMATIC_DOOR_DYNAMIC = new ResourceLocation(MODEL_LOCATION + "pneumatic_door_dynamic.png");
     public static final ResourceLocation MODEL_PNEUMATIC_DOOR_BASE = new ResourceLocation(MODEL_LOCATION + "pneumatic_door_base.png");
     public static final ResourceLocation MODEL_ASSEMBLY_IO_EXPORT = new ResourceLocation(MODEL_LOCATION + "assembly_io_export.png");
     public static final ResourceLocation MODEL_ASSEMBLY_IO_IMPORT = new ResourceLocation(MODEL_LOCATION + "assembly_io_import.png");

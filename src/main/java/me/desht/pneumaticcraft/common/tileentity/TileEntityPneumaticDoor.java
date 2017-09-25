@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.common.tileentity;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticDoor;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -23,9 +22,12 @@ public class TileEntityPneumaticDoor extends TileEntityBase {
         oldRotationAngle = this.rotationAngle;
         this.rotationAngle = rotationAngle;
 
-        if (oldRotationAngle == 0f && rotationAngle != 0f || oldRotationAngle != 0f && rotationAngle == 0f) {
-            IBlockState state = getWorld().getBlockState(getPos());
-            getWorld().notifyBlockUpdate(pos, state, state ,3);
+        if (rotationAngle != oldRotationAngle &&
+                (oldRotationAngle == 0f || oldRotationAngle == 90f || rotationAngle == 0f || rotationAngle == 90f)) {
+            if (getWorld().isRemote) {
+                // force a redraw to make the static door model appear or disappear
+                getWorld().markBlockRangeForRenderUpdate(pos, pos);
+            }
         }
 
         // also rotate the TE for the other half of the door
