@@ -85,23 +85,23 @@ public class PneumaticCraftUtils {
     /**
      * Rotates the render matrix dependant on the given metadata of a block. Used in the render methods of many PneumaticCraft TileEntities.
      *
-     * @param metadata
+     * @param metadata block metadata
      * @return
      */
     @SideOnly(Side.CLIENT)
-    public static double rotateMatrixByMetadata(int metadata) { //TODO 1.8
+    public static double rotateMatrixByMetadata(int metadata) {
         EnumFacing facing = EnumFacing.getFront(metadata & 7);
         double metaRotation;
         switch (facing) {
             case UP:
                 metaRotation = 0;
                 GL11.glRotated(90, 1, 0, 0);
-                GL11.glTranslated(0, 1, 1);
+                GL11.glTranslated(0, -1, -1);
                 break;
             case DOWN:
                 metaRotation = 0;
                 GL11.glRotated(-90, 1, 0, 0);
-                GL11.glTranslated(0, 1, -1);
+                GL11.glTranslated(0, -1, 1);
                 break;
             case NORTH:
                 metaRotation = 0;

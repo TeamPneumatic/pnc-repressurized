@@ -37,18 +37,18 @@ public class GuiAphorismTile extends GuiScreen {
 
     @Override
     protected void keyTyped(char par1, int par2) throws IOException {
-        if (par2 == 1) {
+        if (par2 == Keyboard.KEY_ESCAPE) {
             NetworkHandler.sendToServer(new PacketAphorismTileUpdate(tile));
-        } else if (par2 == 200) {
+        } else if (par2 == Keyboard.KEY_LEFT) {
             cursorY--;
             if (cursorY < 0) cursorY = textLines.length - 1;
-        } else if (par2 == 208 || par2 == 156) {
+        } else if (par2 == Keyboard.KEY_DOWN || par2 == Keyboard.KEY_NUMPADENTER) {
             cursorY++;
             if (cursorY >= textLines.length) cursorY = 0;
-        } else if (par2 == 28) {
+        } else if (par2 == Keyboard.KEY_RETURN) {
             cursorY++;
             textLines = ArrayUtils.add(textLines, cursorY, "");
-        } else if (par2 == 14) {
+        } else if (par2 == Keyboard.KEY_BACK) {
             if (textLines[cursorY].length() > 0) {
                 textLines[cursorY] = textLines[cursorY].substring(0, textLines[cursorY].length() - 1);
             } else if (textLines.length > 1) {

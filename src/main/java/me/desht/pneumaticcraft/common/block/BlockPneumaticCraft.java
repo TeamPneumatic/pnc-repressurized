@@ -184,17 +184,20 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
             if (isRotatable()) {
                 IBlockState state = world.getBlockState(pos);
                 if (!rotateCustom(world, pos, state, side)) {
-                    TileEntityBase te = (TileEntityBase) world.getTileEntity(pos);
                     if (rotateForgeWay()) {
                         if (!canRotateToTopOrBottom()) side = EnumFacing.UP;
-                        if (getRotation(world, pos).getAxis() != side.getAxis())
+                        if (getRotation(world, pos).getAxis() != side.getAxis()) {
                             setRotation(world, pos, getRotation(world, pos).rotateAround(side.getAxis()));
+                        }
                     } else {
+                        EnumFacing f = getRotation(world, pos);
                         do {
-                            setRotation(world, pos, EnumFacing.getFront(getRotation(world, pos).ordinal() + 1));
-                        } while (canRotateToTopOrBottom() || getRotation(world, pos).getAxis() != Axis.Y);
+                            f = EnumFacing.getFront(f.ordinal() + 1);
+                        } while (!canRotateToTopOrBottom() && f.getAxis() == Axis.Y);
+                        setRotation(world, pos, f);
                     }
-                    te.onBlockRotated();
+                    TileEntityBase te = (TileEntityBase) world.getTileEntity(pos);
+                    if (te != null) te.onBlockRotated();
                 }
                 return true;
             } else {
@@ -207,6 +210,15 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
         return true;
     }
 
+    /**
+     * Can be overridden to implement custom rotation behaviour for a block.
+     *
+     * @param world the world
+     * @param pos block position
+     * @param state block state
+     * @param side the side clicked
+     * @return true when the method is overridden, to disable default rotation behaviour
+     */
     protected boolean rotateCustom(World world, BlockPos pos, IBlockState state, EnumFacing side) {
         return false;
     }

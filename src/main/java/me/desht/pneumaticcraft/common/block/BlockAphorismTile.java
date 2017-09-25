@@ -28,12 +28,7 @@ public class BlockAphorismTile extends BlockPneumaticCraft {
 
     @Override
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-        if (!source.getBlockState(pos).getPropertyKeys().contains(ROTATION)) {
-            // getBoundingBox() can be called during placement (from World#mayPlace), before the
-            // block is actually placed; handle this, or we'll crash with an IllegalArgumentException
-            return FULL_BLOCK_AABB;
-        }
-        EnumFacing dir = getRotation(source, pos);
+        EnumFacing dir = state.getValue(ROTATION);
         return new AxisAlignedBB(
                 dir.getFrontOffsetX() <= 0 ? 0 : 1F - BBConstants.APHORISM_TILE_THICKNESS,
                 dir.getFrontOffsetY() <= 0 ? 0 : 1F - BBConstants.APHORISM_TILE_THICKNESS,
@@ -59,22 +54,10 @@ public class BlockAphorismTile extends BlockPneumaticCraft {
         return false;
     }
 
-//    @Override
-//    public void setBlockBoundsBasedOnState(IBlockAccess blockAccess, BlockPos pos) {
-//        EnumFacing dir = getRotation(blockAccess, pos);
-//        setBlockBounds(dir.getFrontOffsetX() <= 0 ? 0 : 1F - BBConstants.APHORISM_TILE_THICKNESS, dir.getFrontOffsetY() <= 0 ? 0 : 1F - BBConstants.APHORISM_TILE_THICKNESS, dir.getFrontOffsetZ() <= 0 ? 0 : 1F - BBConstants.APHORISM_TILE_THICKNESS, dir.getFrontOffsetX() >= 0 ? 1 : BBConstants.APHORISM_TILE_THICKNESS, dir.getFrontOffsetY() >= 0 ? 1 : BBConstants.APHORISM_TILE_THICKNESS, dir.getFrontOffsetZ() >= 0 ? 1 : BBConstants.APHORISM_TILE_THICKNESS);
-//    }
-//
-//    @Override
-//    public void addCollisionBoxesToList(World world, BlockPos pos, IBlockState state, AxisAlignedBB axisalignedbb, List arraylist, Entity par7Entity) {
-//        setBlockBoundsBasedOnState(world, pos);
-//        super.addCollisionBoxesToList(world, pos, state, axisalignedbb, arraylist, par7Entity);
-//    }
-//
-//    @Override
-//    public void setBlockBoundsForItemRender() {
-//        setBlockBounds(0, 0, 0.5F - BBConstants.APHORISM_TILE_THICKNESS / 2, 1, 1, 0.5F + BBConstants.APHORISM_TILE_THICKNESS / 2);
-//    }
+    @Override
+    public boolean isFullCube(IBlockState state) {
+        return false;
+    }
 
     /**
      * Called when the block is placed in the world.
@@ -86,7 +69,13 @@ public class BlockAphorismTile extends BlockPneumaticCraft {
         if (rotation.getAxis() == Axis.Y) {
             TileEntity te = world.getTileEntity(pos);
             if (te instanceof TileEntityAphorismTile) {
-                ((TileEntityAphorismTile) te).textRotation = (((int) entityLiving.rotationYaw + 45) / 90 + 2) % 4;
+                TileEntityAphorismTile teAT = (TileEntityAphorismTile) te;
+                float yaw = entityLiving.rotationYaw; if (yaw < 0) yaw += 360;
+                teAT.textRotation = (((int) yaw + 45) / 90 + 2) % 4;
+                if (rotation.getFrontOffsetY() > 0 && (teAT.textRotation == 1 || teAT.textRotation == 3)) {
+                    // fudge - reverse rotation if placing above, and player is facing on east/west axis
+                    teAT.textRotation = 4 - teAT.textRotation;
+                }
             }
         }
         if (world.isRemote && entityLiving instanceof EntityPlayer) {

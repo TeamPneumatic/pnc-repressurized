@@ -42,6 +42,7 @@ With all that said, have fun!
 * GPS Tool
 * Manometer
 * Seismic Sensor
+* Aphorism Tiles
 
 ### Functional but Needs Clientside Work
 
@@ -55,7 +56,6 @@ With all that said, have fun!
 * Multipart pressure tubes with MCMP2; support is in, but not working yet.  I need to get a better understanding of the API.  Pressure tubes work fine if you set "mcmultipart" to "false" in ``config/pneumaticcraft/thirdparty.cfg``.
 * Assembly system (server-side logic not quite working, no client rendering of rotating robotic arms)
 * Elevators (no client-side rendering, raises player but player drops as soon as lift reaches top)
-* Aphorism Tiles (need a TESR, collision box is wrong too)
 * Pneumatic Villagers
 * Flux Compressor (not in game, need to reimplement using Forge Energy)
 * Electric Compressor (not in game, need to reimplement with IC2 API)
