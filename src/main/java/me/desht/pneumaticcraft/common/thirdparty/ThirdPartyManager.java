@@ -7,9 +7,9 @@ import me.desht.pneumaticcraft.common.thirdparty.computercraft.ComputerCraft;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.OpenComputers;
 import me.desht.pneumaticcraft.common.thirdparty.enderio.EnderIO;
 import me.desht.pneumaticcraft.common.thirdparty.forestry.Forestry;
+import me.desht.pneumaticcraft.common.thirdparty.industrialforegoing.IndustrialForegoing;
 import me.desht.pneumaticcraft.common.thirdparty.igwmod.IGWMod;
 import me.desht.pneumaticcraft.common.thirdparty.mcmultipart.PneumaticMultiPart;
-import me.desht.pneumaticcraft.common.thirdparty.mfr.MFR;
 import me.desht.pneumaticcraft.common.thirdparty.openblocks.OpenBlocks;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.ModIds;
@@ -42,15 +42,15 @@ public class ThirdPartyManager implements IGuiHandler {
             thirdPartyClasses.put(ModIds.BUILDCRAFT, BuildCraft.class);
             thirdPartyClasses.put(ModIds.IGWMOD, IGWMod.class);
             thirdPartyClasses.put(ModIds.COMPUTERCRAFT, ComputerCraft.class);
-            if (!Loader.isModLoaded(ModIds.COMPUTERCRAFT))
+            if (!Loader.isModLoaded(ModIds.COMPUTERCRAFT)) {
                 thirdPartyClasses.put(ModIds.OPEN_COMPUTERS, OpenComputers.class);
-            // thirdPartyClasses.put(ModIds.FMP, FMPLoader.class);
-            //thirdPartyClasses.put(ModIds.WAILA, Waila.class);
+            }
+//            thirdPartyClasses.put(ModIds.WAILA, Waila.class);
             // thirdPartyClasses.put(ModIds.THAUMCRAFT, Thaumcraft.class);
             thirdPartyClasses.put(ModIds.AE2, AE2.class);
             // thirdPartyClasses.put(ModIds.CHISEL, Chisel.class);
             thirdPartyClasses.put(ModIds.FORESTRY, Forestry.class);
-            thirdPartyClasses.put(ModIds.MFR, MFR.class);
+            thirdPartyClasses.put(ModIds.INDUSTRIALFOREGOING, IndustrialForegoing.class);
             thirdPartyClasses.put(ModIds.OPEN_BLOCKS, OpenBlocks.class);
 //              thirdPartyClasses.put(ModIds.COFH_CORE, CoFHCore.class);
             thirdPartyClasses.put(ModIds.NOT_ENOUGH_KEYS, NotEnoughKeys.class);

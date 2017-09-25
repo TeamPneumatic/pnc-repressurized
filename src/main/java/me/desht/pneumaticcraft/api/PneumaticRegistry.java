@@ -84,7 +84,7 @@ public final class PneumaticRegistry {
          * Used to register a liquid that represents liquid XP (like MFR mob essence, OpenBlocks liquid XP).
          * This is used in the Aerial Interface to pump XP in/out of the player.
          *
-         * @param fluid
+         * @param fluid registered name of the fluid (may have been registered by another mod)
          * @param liquidToPointRatio The amount of liquid (in mB) used to get one XP point. In OpenBlocks this is 20 (mB/point).
          */
         void registerXPLiquid(Fluid fluid, int liquidToPointRatio);
