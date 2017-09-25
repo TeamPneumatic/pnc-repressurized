@@ -11,31 +11,34 @@
       "down": {"x" : -90},
       "east": {
         "transform": {
+          "translation": [ 0, -0.0625, 0 ],
           "scale" : [ 0.875, 0.875, 0.875 ],
           "rotation": {"y" : 90}
         }
       },
       "north": {
         "transform": {
+          "translation": [ 0, -0.0625, 0 ],
           "scale" : [ 0.875, 0.875, 0.875 ],
           "rotation": {"y" : 180}
         }
       },
       "west": {
         "transform": {
+          "translation": [ 0, -0.0625, 0 ],
           "scale" : [ 0.875, 0.875, 0.875 ],
-//          "translation": [ -0.02734375, 0, 0 ],
           "rotation": {"y": 270}
         }
       },
       "south": {
         "transform": {
+          "translation": [ 0, -0.0625, 0 ],
           "scale" : [ 0.875, 0.875, 0.875 ]
-//          "translation": [ 0, 0, 0.02734375 ]
         }
       }
     },
     "inventory": [{
+      "model": "pneumaticcraft:air_cannon_inv.obj",
       "transform": "forge:default-block"
     }]
   }

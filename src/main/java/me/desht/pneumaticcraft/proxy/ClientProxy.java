@@ -16,6 +16,7 @@ import me.desht.pneumaticcraft.client.render.pneumaticArmor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.UpgradeRenderHandlerList;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.entitytracker.EntityTrackHandler;
 import me.desht.pneumaticcraft.client.render.tileentity.PressureTubeModuleRenderer;
+import me.desht.pneumaticcraft.client.render.tileentity.RenderAirCannon;
 import me.desht.pneumaticcraft.client.render.tileentity.RenderAphorismTile;
 import me.desht.pneumaticcraft.client.semiblock.ClientSemiBlockManager;
 import me.desht.pneumaticcraft.common.CommonHUDHandler;
@@ -32,6 +33,7 @@ import me.desht.pneumaticcraft.common.item.ItemColorHandler;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.recipes.CraftingRegistrator;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityAirCannon;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAphorismTile;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPlasticMixer;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
@@ -77,6 +79,7 @@ public class ClientProxy extends CommonProxy {
 
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPressureTube.class, new PressureTubeModuleRenderer());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAphorismTile.class, new RenderAphorismTile());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAirCannon.class, new RenderAirCannon());
 
         MinecraftForge.EVENT_BUS.register(new ClientEventHandler());
 

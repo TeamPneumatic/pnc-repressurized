@@ -5,6 +5,8 @@ import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.*;
+import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaConstant;
+import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethod;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -289,24 +291,23 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements IMin
         if (payloadGravity == 0D) {
             return 90F - (float) (Math.atan(deltaY / distance) * 180F / Math.PI);
         }
-        for (double i = Math.PI * 0.25D; i < Math.PI * 0.50D; i += 0.001D) {
-            double motionX = Math.cos(i) * force;// calculate the x component of
-            // the vector
-            double motionY = Math.sin(i) * force;// calculate the y component of
-            // the vector
+        // simulate the trajectory for angles from 45 to 90 degrees,
+        // returning the angle which lands the projectile closest to the target distance
+//        for (double i = Math.PI * 0.25D; i < Math.PI * 0.50D; i += 0.001D) {
+        for (double i = Math.PI * 0.1D; i < Math.PI * 0.5D; i += 0.001D) {
+            double motionX = Math.cos(i) * force;// calculate the x component of the vector
+            double motionY = Math.sin(i) * force;// calculate the y component of the vector
             double posX = 0;
             double posY = 0;
-            while (posY > deltaY || motionY > 0) { // simulate movement, until we
-                // reach the y-level required
+            while (posY > deltaY || motionY > 0) { // simulate movement, until we reach the y-level required
                 posX += motionX;
                 posY += motionY;
-                motionY -= payloadGravity;// gravity
-                motionX *= payloadFrictionX;// friction
-                motionY *= payloadFrictionY;// friction
+                motionY -= payloadGravity;
+                motionX *= payloadFrictionX;
+                motionY *= payloadFrictionY;
             }
-            double distanceToTarget = Math.abs(distance - posX);// take the
-            // distance
-            if (distanceToTarget < bestDistance) {// and return the best angle.
+            double distanceToTarget = Math.abs(distance - posX);
+            if (distanceToTarget < bestDistance) {
                 bestDistance = distanceToTarget;
                 bestAngle = i;
             }
@@ -355,7 +356,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements IMin
     }
 
     public float getForce() {
-        return 2F + oldRangeUpgrades;
+        return 0.5F + oldRangeUpgrades / 2f;
     }
 
     @Override
@@ -585,7 +586,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements IMin
         EntityItem item = new EntityItem(getWorld());
         item.setItem(inventory.getStackInSlot(CANNON_SLOT).copy());
         item.setAgeToCreativeDespawnTime(); // 1200 ticks left to live = 60s.
-        // add 30s for life upgrade, to a max of 5 mins
+        // add 30s per life upgrade, to a max of 5 mins
         item.lifespan += Math.min(getUpgrades(EnumUpgrade.ITEM_LIFE) * 600, 4800);
         return item;
 
@@ -611,88 +612,88 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements IMin
      *  COMPUTERCRAFT API
      */
 
-//    @Override
-//    public String getType() {
-//        return "airCannon";
-//    }
-//
-//    @Override
-//    protected void addLuaMethods() {
-//        super.addLuaMethods();
-//        luaMethods.add(new LuaConstant("getMinWorkingPressure", PneumaticValues.MIN_PRESSURE_AIR_CANNON));
-//
-//        luaMethods.add(new LuaMethod("setTargetLocation") {
-//            @Override
-//            public Object[] call(Object[] args) throws Exception {
-//                if (args.length == 3) {
-//                    gpsX = ((Double) args[0]).intValue();
-//                    gpsY = ((Double) args[1]).intValue();
-//                    gpsZ = ((Double) args[2]).intValue();
-//                    updateDestination();
-//                    return new Object[]{coordWithinReach};
-//                } else {
-//                    throw new IllegalArgumentException("setTargetLocation requires 3 parameters (x,y,z)");
-//                }
-//            }
-//        });
-//
-//        luaMethods.add(new LuaMethod("fire") {
-//            @Override
-//            public Object[] call(Object[] args) throws Exception {
-//                if (args.length == 0) {
-//                    return new Object[]{fire()};//returns true if the fire succeeded.
-//                } else {
-//                    throw new IllegalArgumentException("fire doesn't take any arguments!");
-//                }
-//            }
-//        });
-//        luaMethods.add(new LuaMethod("isDoneTurning") {
-//            @Override
-//            public Object[] call(Object[] args) throws Exception {
-//                if (args.length == 0) {
-//                    return new Object[]{doneTurning};
-//                } else {
-//                    throw new IllegalArgumentException("isDoneTurning doesn't take any arguments!");
-//                }
-//            }
-//        });
-//
-//        luaMethods.add(new LuaMethod("setRotationAngle") {
-//            @Override
-//            public Object[] call(Object[] args) throws Exception {
-//                if (args.length == 1) {
-//                    setTargetAngles(((Double) args[0]).floatValue(), targetHeightAngle);
-//                    return null;
-//                } else {
-//                    throw new IllegalArgumentException("setRotationAngle does take one argument!");
-//                }
-//            }
-//        });
-//
-//        luaMethods.add(new LuaMethod("setHeightAngle") {
-//            @Override
-//            public Object[] call(Object[] args) throws Exception {
-//                if (args.length == 1) {
-//                    setTargetAngles(targetRotationAngle, 90 - ((Double) args[0]).floatValue());
-//                    return null;
-//                } else {
-//                    throw new IllegalArgumentException("setHeightAngle does take one argument!");
-//                }
-//            }
-//        });
-//
-//        luaMethods.add(new LuaMethod("setExternalControl") {
-//            @Override
-//            public Object[] call(Object[] args) throws Exception {
-//                if (args.length == 1) {
-//                    externalControl = (Boolean) args[0];
-//                    return null;
-//                } else {
-//                    throw new IllegalArgumentException("setExternalControl does take one argument!");
-//                }
-//            }
-//        });
-//    }
+    @Override
+    public String getType() {
+        return "airCannon";
+    }
+
+    @Override
+    protected void addLuaMethods() {
+        super.addLuaMethods();
+        luaMethods.add(new LuaConstant("getMinWorkingPressure", PneumaticValues.MIN_PRESSURE_AIR_CANNON));
+
+        luaMethods.add(new LuaMethod("setTargetLocation") {
+            @Override
+            public Object[] call(Object[] args) throws Exception {
+                if (args.length == 3) {
+                    gpsX = ((Double) args[0]).intValue();
+                    gpsY = ((Double) args[1]).intValue();
+                    gpsZ = ((Double) args[2]).intValue();
+                    updateDestination();
+                    return new Object[]{coordWithinReach};
+                } else {
+                    throw new IllegalArgumentException("setTargetLocation requires 3 parameters (x,y,z)");
+                }
+            }
+        });
+
+        luaMethods.add(new LuaMethod("fire") {
+            @Override
+            public Object[] call(Object[] args) throws Exception {
+                if (args.length == 0) {
+                    return new Object[]{fire()};//returns true if the fire succeeded.
+                } else {
+                    throw new IllegalArgumentException("fire takes 0 parameters!");
+                }
+            }
+        });
+        luaMethods.add(new LuaMethod("isDoneTurning") {
+            @Override
+            public Object[] call(Object[] args) throws Exception {
+                if (args.length == 0) {
+                    return new Object[]{doneTurning};
+                } else {
+                    throw new IllegalArgumentException("isDoneTurning takes 0 parameters!");
+                }
+            }
+        });
+
+        luaMethods.add(new LuaMethod("setRotationAngle") {
+            @Override
+            public Object[] call(Object[] args) throws Exception {
+                if (args.length == 1) {
+                    setTargetAngles(((Double) args[0]).floatValue(), targetHeightAngle);
+                    return null;
+                } else {
+                    throw new IllegalArgumentException("setRotationAngle takes 1 parameter! (angle in degrees, 0 = north)");
+                }
+            }
+        });
+
+        luaMethods.add(new LuaMethod("setHeightAngle") {
+            @Override
+            public Object[] call(Object[] args) throws Exception {
+                if (args.length == 1) {
+                    setTargetAngles(targetRotationAngle, 90 - ((Double) args[0]).floatValue());
+                    return null;
+                } else {
+                    throw new IllegalArgumentException("setHeightAngle takes 1 parameter! (angle in degrees, 90 = straight up)");
+                }
+            }
+        });
+
+        luaMethods.add(new LuaMethod("setExternalControl") {
+            @Override
+            public Object[] call(Object[] args) throws Exception {
+                if (args.length == 1) {
+                    externalControl = (Boolean) args[0];
+                    return null;
+                } else {
+                    throw new IllegalArgumentException("setExternalControl takes 1 parameter! (boolean)");
+                }
+            }
+        });
+    }
 
     @Override
     public IItemHandlerModifiable getPrimaryInventory() {
