@@ -44,6 +44,7 @@ With all that said, have fun!
 * Seismic Sensor
 * Aphorism Tiles
 * Air Cannon
+* Aerial Interface
 
 ### Functional but Needs Clientside Work
 
@@ -64,7 +65,6 @@ With all that said, have fun!
 
 ### Not Tested Yet
 
-* Aerial Interface
 * Security system
 * Amadron system
 * Programmable Controller
