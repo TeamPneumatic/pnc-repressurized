@@ -127,4 +127,5 @@ public class TileEntityPneumaticBase extends TileEntityBase implements IPneumati
     public boolean isConnectedTo(EnumFacing side) {
         return true;
     }
+
 }

@@ -36,7 +36,7 @@ public class BlockAerialInterface extends BlockPneumaticCraft implements IPeriph
     public void onBlockPlacedBy(World par1World, BlockPos pos, IBlockState state, EntityLivingBase entity, ItemStack par6ItemStack) {
         TileEntity te = par1World.getTileEntity(pos);
         if (te instanceof TileEntityAerialInterface && entity instanceof EntityPlayer) {
-            ((TileEntityAerialInterface) te).setPlayer(((EntityPlayer) entity).getGameProfile());
+            ((TileEntityAerialInterface) te).setPlayer(((EntityPlayer) entity));
         }
     }
 

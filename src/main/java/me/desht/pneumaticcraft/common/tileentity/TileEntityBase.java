@@ -588,6 +588,13 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
         }
     }
 
+
+    /**
+     * Carry out any tasks which need a world object (the world is null in the TE constructor)
+     */
+    public void onTileEntityCreated() {
+    }
+
     class UpgradeHandler extends FilteredItemStackHandler {
         UpgradeHandler(int upgradeSize) {
             super(upgradeSize);

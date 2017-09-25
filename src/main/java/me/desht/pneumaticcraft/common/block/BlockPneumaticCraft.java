@@ -71,6 +71,9 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
         try {
             TileEntity te = getTileEntityClass().newInstance();
             te.setWorld(world);
+            if (te instanceof TileEntityBase) {
+                ((TileEntityBase) te).onTileEntityCreated();
+            }
             return te;
         } catch (Exception e) {
             e.printStackTrace();
