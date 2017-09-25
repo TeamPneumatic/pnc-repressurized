@@ -43,6 +43,7 @@ With all that said, have fun!
 * Manometer
 * Seismic Sensor
 * Aphorism Tiles
+* Air Cannon
 
 ### Functional but Needs Clientside Work
 
