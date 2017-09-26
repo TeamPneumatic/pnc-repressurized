@@ -9,7 +9,9 @@ import me.desht.pneumaticcraft.common.network.LazySynced;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -19,15 +21,19 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
-public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase implements IRedstoneControl, IMinWorkingPressure {
+public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase
+        implements IRedstoneControl, IMinWorkingPressure, ICamouflageableTE {
+    public static final int CAMO_SLOT = 0;
     public static final int INVENTORY_SIZE = 1;
+
     private TileEntityPneumaticDoor door;
     private TileEntityPneumaticDoorBase doubleDoor;
+    private IBlockState camoState;
     @DescSynced
-    public boolean rightGoing;
-    public float oldProgress;
+    private boolean rightGoing;
     @DescSynced
     @LazySynced
     public float progress;
@@ -35,11 +41,9 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
     private boolean opening;
     public boolean wasPowered;
     @DescSynced
-    private ItemStackHandler inventory = new ItemStackHandler(INVENTORY_SIZE);
+    private ItemStackHandler inventory = new CamoItemStackHandler();
     @GuiSynced
     public int redstoneMode;
-    public static final int CAMO_SLOT = 0;
-    private ItemStack oldCamo = ItemStack.EMPTY;
 
     public TileEntityPneumaticDoorBase() {
         super(PneumaticValues.DANGER_PRESSURE_PNEUMATIC_DOOR, PneumaticValues.MAX_PRESSURE_PNEUMATIC_DOOR, PneumaticValues.VOLUME_PNEUMATIC_DOOR, 4);
@@ -54,7 +58,7 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
     @Override
     public void update() {
         super.update();
-        oldProgress = progress;
+        float oldProgress = progress;
         if (!getWorld().isRemote) {
             if (getPressure() >= PneumaticValues.MIN_PRESSURE_PNEUMATIC_DOOR) {
                 if (getWorld().getTotalWorldTime() % 60 == 0) {
@@ -89,19 +93,13 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
             }
             if (progress < targetProgress) progress = targetProgress;
         }
-        if (!getWorld().isRemote)
+        if (!getWorld().isRemote) {
             addAir((int) (-Math.abs(oldProgress - progress) * PneumaticValues.USAGE_PNEUMATIC_DOOR * (getSpeedUsageMultiplierFromUpgrades() / speedMultiplier)));
-
+        }
         door = getDoor();
         if (door != null) {
             door.setRotationAngle(progress * 90);
             if (!getWorld().isRemote) rightGoing = door.rightGoing;
-        }
-
-        if (!ItemStack.areItemsEqual(oldCamo, inventory.getStackInSlot(CAMO_SLOT))) {
-            oldCamo = inventory.getStackInSlot(CAMO_SLOT);
-            //TODO 1.8 fix camo meta     getWorld().setBlockMetadataWithNotify(getPos().getX(), getPos().getY(), getPos().getZ(), inventory[CAMO_SLOT] != null ? inventory[CAMO_SLOT].getItemDamage() % 16 : 0, 2);
-            rerenderChunk();
         }
     }
 
@@ -188,6 +186,7 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
         redstoneMode = tag.getInteger("redstoneMode");
         rightGoing = tag.getBoolean("rightGoing");
         inventory.deserializeNBT(tag.getCompoundTag("Items"));
+        cacheCamo();
     }
 
     @Override
@@ -222,5 +221,42 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
     @Override
     public int getRedstoneMode() {
         return redstoneMode;
+    }
+
+    public void cacheCamo() {
+        ItemStack stack = inventory.getStackInSlot(0);
+        if (!stack.isEmpty() && stack.getItem() instanceof ItemBlock) {
+            camoState = ((ItemBlock)inventory.getStackInSlot(0).getItem()).getBlock().getStateFromMeta(stack.getMetadata());
+        } else {
+            camoState = null;
+        }
+    }
+
+    @Override
+    public IBlockState getCamouflage() {
+        return camoState;
+    }
+
+
+    private class CamoItemStackHandler extends FilteredItemStackHandler {
+        CamoItemStackHandler() {
+            super(INVENTORY_SIZE);
+        }
+
+        @Override
+        protected int getStackLimit(int slot, @Nonnull ItemStack stack) {
+            return 1;
+        }
+
+        @Override
+        public boolean test(Integer integer, ItemStack itemStack) {
+            return itemStack.isEmpty() || itemStack.getItem() instanceof ItemBlock;
+        }
+
+        @Override
+        protected void onContentsChanged(int slot) {
+            cacheCamo();
+            rerenderChunk();
+        }
     }
 }

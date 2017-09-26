@@ -193,7 +193,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     }
 
     protected void rerenderChunk() {
-        world.markBlockRangeForRenderUpdate(getPos().getX(), getPos().getY(), getPos().getZ(), getPos().getX(), getPos().getY(), getPos().getZ());
+        world.markBlockRangeForRenderUpdate(getPos(), getPos());
     }
 
     protected boolean shouldRerenderChunkOnDescUpdate() {

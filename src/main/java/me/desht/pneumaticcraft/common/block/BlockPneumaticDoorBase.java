@@ -2,30 +2,25 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticDoor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticDoorBase;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.proxy.CommonProxy.EnumGuiId;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.property.ExtendedBlockState;
+import net.minecraftforge.common.property.IUnlistedProperty;
 
-public class BlockPneumaticDoorBase extends BlockPneumaticCraftModeled {
+public class BlockPneumaticDoorBase extends BlockPneumaticCraftCamo {
 
     BlockPneumaticDoorBase() {
         super(Material.IRON, "pneumatic_door_base");
-    }
-
-    @Override
-    public EnumBlockRenderType getRenderType(IBlockState state) {
-        return EnumBlockRenderType.MODEL;
     }
 
     @Override
@@ -78,22 +73,6 @@ public class BlockPneumaticDoorBase extends BlockPneumaticCraftModeled {
 
     @Override
     protected boolean canRotateToTopOrBottom() {
-        return false;
-    }
-
-    @Override
-    public boolean shouldSideBeRendered(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
-        TileEntity te = blockAccess.getTileEntity(pos.offset(side.getOpposite()));
-        if (te instanceof TileEntityPneumaticDoorBase) {
-            TileEntityPneumaticDoorBase teDoorBase = (TileEntityPneumaticDoorBase) te;
-            ItemStack camoStack = teDoorBase.getPrimaryInventory().getStackInSlot(TileEntityPneumaticDoorBase.CAMO_SLOT);
-            if (camoStack.getItem() instanceof ItemBlock) {
-                Block block = ((ItemBlock) camoStack.getItem()).getBlock();
-                if (PneumaticCraftUtils.isRenderIDCamo(block.getRenderType(blockState))) {
-                    return true;
-                }
-            }
-        }
         return false;
     }
 }
