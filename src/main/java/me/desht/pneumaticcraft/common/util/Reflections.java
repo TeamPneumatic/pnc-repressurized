@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.util;
 
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.management.PlayerInteractionManager;
 import net.minecraft.tileentity.MobSpawnerBaseLogic;
 import net.minecraft.util.ResourceLocation;
@@ -25,6 +26,7 @@ public class Reflections {
     private static Field msbl_prevMobRotation;
     private static Field entity_inventoryHandsDropChances;
     private static Field entity_inventoryArmorDropChances;
+    private static Field player_invulnerableDimensionChange;
 
     public static void init() {
         entityItem_Age = ReflectionHelper.findField(EntityItem.class, "field_70292_b", "age");
@@ -37,6 +39,7 @@ public class Reflections {
         msbl_prevMobRotation = ReflectionHelper.findField(MobSpawnerBaseLogic.class, "field_98284_d", "prevMobRotation");
         entity_inventoryArmorDropChances = ReflectionHelper.findField(EntityLiving.class, "field_184655_bs", "inventoryArmorDropChances");
         entity_inventoryHandsDropChances = ReflectionHelper.findField(EntityLiving.class, "field_82174_bp", "inventoryHandsDropChances");
+        player_invulnerableDimensionChange = ReflectionHelper.findField(EntityPlayerMP.class, "field_184851_cj", "invulnerableDimensionChange");
     }
 
     public static int getItemAge(EntityItem item) {
@@ -144,6 +147,20 @@ public class Reflections {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
             return DEF_HANDS;
+        }
+    }
+
+    /**
+     * This is a nasty hack to get around "player moved wrongly!" messages, which can be caused if player movement
+     * triggers a player teleport (e.g. player moves onto pressure plate, triggers air cannon with an entity tracker).
+     *
+     * @param player the player
+     */
+    public static void setInvulnerableDimensionChange(EntityPlayerMP player) {
+        try {
+            player_invulnerableDimensionChange.set(player, true);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
         }
     }
 }
