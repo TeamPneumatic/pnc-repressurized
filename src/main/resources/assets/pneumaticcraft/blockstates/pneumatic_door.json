@@ -37,16 +37,14 @@
         }
       }
     },
-    "static": {
-      "false": {
-        "model": "pneumaticcraft:blank"
-      },
-      "true": {}
+    "door_state": {
+      "open": {},
+      "closed": {},
+      "moving": { "model": "pneumaticcraft:blank" }
     },
     "top_door": {
       "false": {},
       "true": {
-        "model": "pneumaticcraft:blank",
         "textures": {
           "particle": "pneumaticcraft:blocks/compressed_iron_block"
         }

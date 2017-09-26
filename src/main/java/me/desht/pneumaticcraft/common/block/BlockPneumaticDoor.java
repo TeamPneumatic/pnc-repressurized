@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticDoor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticDoorBase;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -7,14 +8,17 @@ import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
+import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -26,7 +30,7 @@ import java.util.Random;
 
 public class BlockPneumaticDoor extends BlockPneumaticCraftModeled {
     private static final PropertyBool TOP_DOOR = PropertyBool.create("top_door");
-    private static final PropertyBool STATIC = PropertyBool.create("static");
+    private static final PropertyEnum<DoorState> DOOR_STATE = PropertyEnum.create("door_state", DoorState.class);
 
     // true when the Pneumatic Door Base is determining if it should open the door dependent
     // on the player watched block.
@@ -38,7 +42,7 @@ public class BlockPneumaticDoor extends BlockPneumaticCraftModeled {
 
     @Override
     protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, TOP_DOOR, ROTATION, STATIC);
+        return new BlockStateContainer(this, TOP_DOOR, ROTATION, DOOR_STATE);
     }
 
     @Override
@@ -58,12 +62,12 @@ public class BlockPneumaticDoor extends BlockPneumaticCraftModeled {
             TileEntityPneumaticDoor teDoor = (TileEntityPneumaticDoor) te;
             if (teDoor.rotationAngle == 90) {
                 EnumFacing facing = teDoor.rightGoing ? state.getValue(ROTATION).rotateY() : state.getValue(ROTATION).rotateYCCW();
-                state = state.withProperty(ROTATION, facing).withProperty(STATIC, true);
+                state = state.withProperty(ROTATION, facing).withProperty(DOOR_STATE, DoorState.OPEN);
             } else if (teDoor.rotationAngle == 0) {
-                state = state.withProperty(STATIC, true);
+                state = state.withProperty(DOOR_STATE, DoorState.CLOSED);
             } else if (teDoor.rotationAngle > 0) {
                 // currently rotating - hide the static model; TESR will show the rotating door
-                state = state.withProperty(STATIC, false);
+                state = state.withProperty(DOOR_STATE, DoorState.MOVING);
             }
         }
         return state;
@@ -75,12 +79,6 @@ public class BlockPneumaticDoor extends BlockPneumaticCraftModeled {
 
     @Override
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess blockAccess, BlockPos pos) {
-        if (!blockAccess.getBlockState(pos).getPropertyKeys().contains(ROTATION)) {
-            // getBoundingBox() can be called during placement (from World#mayPlace), before the
-            // block is actually placed; handle this, or we'll crash with an IllegalArgumentException
-            return FULL_BLOCK_AABB;
-        }
-
         if (isTrackingPlayerEye) {
             return FULL_BLOCK_AABB;
         } else {
@@ -89,7 +87,7 @@ public class BlockPneumaticDoor extends BlockPneumaticCraftModeled {
             float xMax = 1;
             float zMax = 1;
             TileEntity te = blockAccess.getTileEntity(pos);
-            EnumFacing rotation = getRotation(blockAccess, pos);
+            EnumFacing rotation = state.getValue(ROTATION);
             if (te instanceof TileEntityPneumaticDoor) {
                 TileEntityPneumaticDoor door = (TileEntityPneumaticDoor) te;
                 float cosinus = 13 / 16F - MathHelper.sin((float)Math.toRadians(door.rotationAngle)) * 13 / 16F;
@@ -97,46 +95,36 @@ public class BlockPneumaticDoor extends BlockPneumaticCraftModeled {
                 if (door.rightGoing) {
                     switch (rotation) {
                         case NORTH:
-                            zMin = cosinus;
-                            xMax = 1 - sinus;
+                            zMin = cosinus; xMax = 1 - sinus;
                             break;
                         case WEST:
-                            xMin = cosinus;
-                            zMin = sinus;
+                            xMin = cosinus; zMin = sinus;
                             break;
                         case SOUTH:
-                            zMax = 1 - cosinus;
-                            xMin = sinus;
+                            zMax = 1 - cosinus; xMin = sinus;
                             break;
                         case EAST:
-                            xMax = 1 - cosinus;
-                            zMax = 1 - sinus;
+                            xMax = 1 - cosinus; zMax = 1 - sinus;
                             break;
-
                     }
                 } else {
                     switch (rotation) {
                         case NORTH:
-                            zMin = cosinus;
-                            xMin = sinus;
+                            zMin = cosinus; xMin = sinus;
                             break;
                         case WEST:
-                            xMin = cosinus;
-                            zMax = 1 - sinus;
+                            xMin = cosinus; zMax = 1 - sinus;
                             break;
                         case SOUTH:
-                            zMax = 1 - cosinus;
-                            xMax = 1 - sinus;
+                            zMax = 1 - cosinus; xMax = 1 - sinus;
                             break;
                         case EAST:
-                            xMax = 1 - cosinus;
-                            zMin = sinus;
+                            xMax = 1 - cosinus; zMin = sinus;
                             break;
-
                     }
                 }
             }
-            boolean topDoor = isTopDoor(blockAccess.getBlockState(pos));
+            boolean topDoor = state.getValue(TOP_DOOR);
             return new AxisAlignedBB(xMin, topDoor ? -1 : 0, zMin, xMax, topDoor ? 1 : 2, zMax);
         }
     }
@@ -147,21 +135,16 @@ public class BlockPneumaticDoor extends BlockPneumaticCraftModeled {
         return getBoundingBox(blockState, worldIn, pos);
     }
 
-//    @Override
-//    public void addCollisionBoxesToList(World world, BlockPos pos, IBlockState state, AxisAlignedBB axisalignedbb, List arraylist, Entity par7Entity) {
-//        setBlockBoundsBasedOnState(world, pos);
-//        super.addCollisionBoxesToList(world, pos, state, axisalignedbb, arraylist, par7Entity);
-//        setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
-//    }
+    @Override
+    public boolean canRenderInLayer(IBlockState state, BlockRenderLayer layer) {
+        return !state.getValue(TOP_DOOR) && super.canRenderInLayer(state, layer);
+    }
 
     @Override
     protected Class<? extends TileEntity> getTileEntityClass() {
         return TileEntityPneumaticDoor.class;
     }
 
-    /**
-     * Checks to see if its valid to put this block at the specified coordinates. Args: world, x, y, z
-     */
     @Override
     public boolean canPlaceBlockAt(World par1World, BlockPos pos) {
         return super.canPlaceBlockAt(par1World, pos) && par1World.isAirBlock(pos.offset(EnumFacing.UP));
@@ -265,6 +248,21 @@ public class BlockPneumaticDoor extends BlockPneumaticCraftModeled {
                 }
             }
             return null;
+        }
+    }
+
+    public enum DoorState implements IStringSerializable {
+        CLOSED("closed"), MOVING("moving"), OPEN("open");
+
+        private final String name;
+
+        DoorState(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String getName() {
+            return this.name;
         }
     }
 }

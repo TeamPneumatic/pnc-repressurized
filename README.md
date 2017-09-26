@@ -7,7 +7,7 @@ $ ./gradlew setupDecompWorkspace
 $ ./gradlew build
 ```
 
-...and any IDE-specific steps.
+...and any IDE-specific steps (genIntellijRuns etc.)
 
 This code is based on MineMaarten's 1.8.9 code (see the *MC1.8.8* branch in the above-linked repo), which is fairly functional but is missing a lot of client-side stuff.  Basically, this is a developer preview, not a usable mod at this stage.  I'm welcoming any assistance & pull requests, especially in the area of modelling and client-side animations; those have not been ported from the original 1.7.10 mod yet and they're not my strong point either (time to learn!)
 
@@ -45,10 +45,10 @@ With all that said, have fun!
 * Aphorism Tiles
 * Air Cannon
 * Aerial Interface
+* Pneumatic Doors
 
 ### Functional but Needs Clientside Work
 
-* Pneumatic Doors (need a TESR for smooth door rotation)
 * Miniguns (ammo works, mobs die, but no item model)
 * Tube Modules (no model when placed - modules have an empty bounding box, can be removed with wrench)
 * Vortex Cannon (vortex entities working nicely but cannon needs an item model)
