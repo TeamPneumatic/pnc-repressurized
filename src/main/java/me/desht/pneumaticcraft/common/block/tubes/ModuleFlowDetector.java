@@ -34,7 +34,7 @@ public class ModuleFlowDetector extends TubeModuleRedstoneEmitting implements II
 
     @Override
     public String getModelName() {
-        return "flowDetector";
+        return "flow_detector";
     }
 
     @Override

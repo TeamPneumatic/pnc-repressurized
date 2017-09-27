@@ -1,7 +1,7 @@
 # Exported from Tabula using TabulaObj - Kihira
 # File created at Fri Jan 15 11:57:06 CET 2016
 
-mtllib safetyValve.mtl
+mtllib safety_valve.mtl
 usemtl defaultMaterial
 
 #

@@ -60,24 +60,6 @@ public class ModelRegistry {
         ModelLoader.setCustomStateMapper(Blockss.KEROSENE_LAMP_LIGHT, blockIn -> Collections.emptyMap());
     }
 
-    @SubscribeEvent
-    public static void onModelBake(ModelBakeEvent event) {
-        for (Block block : Blockss.blocks) {
-            if (block instanceof BlockPneumaticCraftCamo) {
-                Map<IBlockState,ModelResourceLocation> map
-                        = event.getModelManager().getBlockModelShapes().getBlockStateMapper().getVariants(block);
-                for (Map.Entry<IBlockState,ModelResourceLocation> entry : map.entrySet()) {
-                    Object object = event.getModelRegistry().getObject(entry.getValue());
-                    if (object != null) {
-                        IBakedModel existing = (IBakedModel) object;
-                        CamoModel customModel = new CamoModel(existing);
-                        event.getModelRegistry().putObject(entry.getValue(), customModel);
-                    }
-                }
-            }
-        }
-    }
-
     private static void registerFluids() {
         for (IFluidBlock fluidBlock : Fluids.MOD_FLUID_BLOCKS) {
             final Item item = Item.getItemFromBlock((Block) fluidBlock);

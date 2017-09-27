@@ -1,7 +1,7 @@
 # Exported from Tabula using TabulaObj - Kihira
 # File created at Fri Jan 15 11:47:50 CET 2016
 
-mtllib gaugeModule.mtl
+mtllib gauge_module.mtl
 usemtl defaultMaterial
 
 #

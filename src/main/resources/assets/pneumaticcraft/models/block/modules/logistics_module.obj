@@ -1,7 +1,7 @@
 # Exported from Tabula using TabulaObj - Kihira
 # File created at Fri Jan 15 11:51:48 CET 2016
 
-mtllib logisticsModule.mtl
+mtllib logistics_module.mtl
 usemtl defaultMaterial
 
 #

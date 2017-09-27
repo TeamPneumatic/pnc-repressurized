@@ -30,7 +30,7 @@ public class ModuleSafetyValve extends TubeModuleRedstoneReceiving {
 
     @Override
     public String getModelName() {
-        return "safetyValve";
+        return "safety_valve";
     }
 
     @Override

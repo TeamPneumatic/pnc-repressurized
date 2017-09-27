@@ -7,6 +7,8 @@ import me.desht.pneumaticcraft.client.gui.IGuiDrone;
 import me.desht.pneumaticcraft.client.render.RenderProgressingLine;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.DateEventHandler;
+import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
+import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleRegistrator;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleRegulatorTube;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
@@ -18,12 +20,15 @@ import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.lib.Names;
+import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.block.model.IBakedModel;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderBiped;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -251,6 +256,22 @@ public class ClientEventHandler {
         for (Map.Entry<IModel, Class<? extends TubeModule>> entry : awaitingBaking.entrySet()) {
             IBakedModel model = entry.getKey().bake(entry.getKey().getDefaultState(), DefaultVertexFormats.BLOCK, RenderUtils.TEXTURE_GETTER);
             ModuleRegistrator.models.put(entry.getValue(), model);
+        }
+
+        // set up camo models for camouflagable blocks
+        for (Block block : Blockss.blocks) {
+            if (block instanceof BlockPneumaticCraftCamo) {
+                Map<IBlockState,ModelResourceLocation> map
+                        = event.getModelManager().getBlockModelShapes().getBlockStateMapper().getVariants(block);
+                for (Map.Entry<IBlockState,ModelResourceLocation> entry : map.entrySet()) {
+                    Object object = event.getModelRegistry().getObject(entry.getValue());
+                    if (object != null) {
+                        IBakedModel existing = (IBakedModel) object;
+                        CamoModel customModel = new CamoModel(existing);
+                        event.getModelRegistry().putObject(entry.getValue(), customModel);
+                    }
+                }
+            }
         }
     }
 }

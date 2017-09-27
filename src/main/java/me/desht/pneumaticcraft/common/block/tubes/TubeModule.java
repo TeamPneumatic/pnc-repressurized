@@ -150,17 +150,15 @@ public abstract class TubeModule implements ISidedPart {
             if (model == null) return;
 
             GL11.glPushMatrix(); // start
+
             // GL11.glDisable(GL11.GL_TEXTURE_2D);
             // GL11.glEnable(GL11.GL_BLEND);
             // GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-
             // GL11.glColor4f(0.82F, 0.56F, 0.09F, 1.0F);
+
             GL11.glTranslatef((float) x + 0.5F, (float) y - 0.5F, (float) z + 0.5F); // size
             GL11.glRotatef(0, 0.0F, 1.0F, 0.0F);
-
-            GL11.glScalef(1.0F, -1F, -1F); // to make your block have a normal
-            // positioning. comment out to see what
-            // happens
+            GL11.glScalef(1.0F, -1F, -1F);
 
             PneumaticCraftUtils.rotateMatrixByMetadata(dir.ordinal());
             renderModule();

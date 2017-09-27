@@ -59,7 +59,7 @@ public class ModuleLogistics extends TubeModule {
 
     @Override
     public String getModelName() {
-        return "logisticsModule";
+        return "logistics_module";
         /*TODO 1.8 if(ticksSinceAction >= 0) {
              model.base1 = model.action;
          } else if(ticksSinceNotEnoughAir >= 0) {

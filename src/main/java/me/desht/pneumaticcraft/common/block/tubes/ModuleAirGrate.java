@@ -169,7 +169,7 @@ public class ModuleAirGrate extends TubeModule {
 
     @Override
     public String getModelName() {
-        return "airGrate";
+        return "air_grate";
     }
 
     @Override

@@ -160,10 +160,11 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
             module.setTube(this);
         }
         modules[side.ordinal()] = module;
-        if (!getWorld().isRemote) {
+        if (getWorld() != null && !getWorld().isRemote) {
 //            if (part != null) updatePart();
             sendDescriptionPacket();
         }
+        markDirty();
     }
 
     @Override

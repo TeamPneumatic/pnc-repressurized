@@ -37,7 +37,7 @@ public class ModulePressureGauge extends TubeModuleRedstoneEmitting {
 
     @Override
     public String getModelName() {
-        return "gaugeModule";
+        return "gauge_module";
     }
 
     @Override
