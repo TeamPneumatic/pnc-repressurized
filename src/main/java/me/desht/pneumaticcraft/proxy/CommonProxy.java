@@ -259,6 +259,8 @@ public class CommonProxy implements IGuiHandler {
     public void init() {
         MinecraftForge.EVENT_BUS.register(serverHudHandler = new CommonHUDHandler());
         MinecraftForge.EVENT_BUS.register(getHackTickHandler());
+
+        SemiBlockManager.registerEventHandler(getClientWorld() != null);
     }
 
     public void registerSemiBlockRenderer(Item semiBlock) {

@@ -17,11 +17,14 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.ChunkDataEvent;
@@ -46,6 +49,10 @@ public class SemiBlockManager {
 
     private static SemiBlockManager getServerInstance() {
         return INSTANCE;
+    }
+
+    public static void registerEventHandler(boolean isClient) {
+        MinecraftForge.EVENT_BUS.register(isClient ? CLIENT_INSTANCE : INSTANCE);
     }
 
     private static SemiBlockManager getClientOldInstance() {
@@ -262,9 +269,9 @@ public class SemiBlockManager {
 
     @SubscribeEvent
     public void onInteraction(PlayerInteractEvent.RightClickBlock event) {
-        if (!event.getWorld().isRemote) {
-            ItemStack curItem = event.getEntityPlayer().getHeldItemMainhand();
-            if (!curItem.isEmpty() && curItem.getItem() instanceof ISemiBlockItem) {
+        ItemStack curItem = event.getEntityPlayer().getHeldItemMainhand();
+        if (!event.getWorld().isRemote && event.getHand() == EnumHand.MAIN_HAND) {
+            if (curItem.getItem() instanceof ISemiBlockItem) {
                 if (getSemiBlock(event.getWorld(), event.getPos()) != null) {
                     if (event.getEntityPlayer().capabilities.isCreativeMode) {
                         setSemiBlock(event.getWorld(), event.getPos(), null);
@@ -290,6 +297,9 @@ public class SemiBlockManager {
                     }
                 }
             }
+        } else if (event.getWorld().isRemote && curItem.getItem() instanceof ISemiBlockItem) {
+            event.setCancellationResult(EnumActionResult.SUCCESS);
+            event.setCanceled(true);
         }
     }
 
@@ -309,7 +319,7 @@ public class SemiBlockManager {
 
     public void breakSemiBlock(World world, BlockPos pos, EntityPlayer player) {
         ISemiBlock semiBlock = getSemiBlock(world, pos);
-        if (semiBlock != null) {
+        if (semiBlock != null && !semiBlock.isInvalid()) {
             NonNullList<ItemStack> drops = NonNullList.create();
             semiBlock.addDrops(drops);
             for (ItemStack stack : drops) {

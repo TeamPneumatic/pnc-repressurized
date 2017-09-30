@@ -23,7 +23,7 @@ public class SemiBlockHeatFrame extends SemiBlockBasic implements IHeatExchanger
     public static final String ID = "heat_frame";
 
     private final IHeatExchangerLogic logic = PneumaticRegistry.getInstance().getHeatRegistry().getHeatExchangerLogic();
-    private int lastValidSlot;//Performance increaser
+    private int lastValidSlot; // cache the current cooking slot for performance boost
     private int cookingProgress;
     private int coolingProgress;
     @DescSynced

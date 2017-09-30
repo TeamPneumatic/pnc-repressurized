@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.common.semiblock.SemiBlockHeatFrame;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityCompressedIronBlock;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import org.lwjgl.opengl.GL11;
@@ -22,7 +23,6 @@ public class SemiBlockRendererHeatFrame implements ISemiBlockRenderer<SemiBlockH
 
         AxisAlignedBB aabb;
         if (semiBlock.getWorld() != null) {
-//            semiBlock.getBlockState().getBlock().setBlockBoundsBasedOnState(semiBlock.getWorld(), semiBlock.getPos());
             aabb = semiBlock.getBlockState().getBlock().getSelectedBoundingBox(semiBlock.getBlockState(), semiBlock.getWorld(), semiBlock.getPos());
             BlockPos p = semiBlock.getPos();
             aabb = new AxisAlignedBB(aabb.minX - p.getX(), aabb.minY - p.getY(), aabb.minZ - p.getZ(), aabb.maxX - p.getX(), aabb.maxY - p.getY(), aabb.maxZ - p.getZ());

@@ -35,7 +35,7 @@ With all that said, have fun!
 * Vacuum Pump (and pressure chamber disenchanting)
 * Kerosene Lamp (also works with any burnable fuel)
 * Omni Hopper and Liquid Hopper (liquid hopper textures are messed up though)
-* Heat system: Vortex Tube, Heat Sink, compressed iron blocks glow when hot - needs much more testing
+* Heat system
 * Programmer
 * Drones (not well tested, but a simple "Go To Location" program works)
 * Pneumatic Wrench
@@ -47,11 +47,13 @@ With all that said, have fun!
 * Aerial Interface
 * Pneumatic Doors
 * Tube Modules
+* Heat Frame
 
 ### Functional but Needs Clientside Work
 
+* Vortex tube & Heat Sink don't show colours to indicate temperature (OBJ models can't have a tintindex - may to Heat Sink with JSON, Vortex Tube may need a TESR)
 * Miniguns (ammo works, mobs die, but no item model)
-* Vortex Cannon (vortex entities working nicely but cannon needs an item model)
+* Vortex Cannon (vortex entities work fine but cannon needs an item model)
 
 ### Not Working Yet
 
@@ -69,5 +71,4 @@ With all that said, have fun!
 * Amadron system
 * Programmable Controller
 * Logistics Drones & Frames
-* Heat Frame
 

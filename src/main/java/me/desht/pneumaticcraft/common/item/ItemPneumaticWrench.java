@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.item;
 import me.desht.pneumaticcraft.api.block.IPneumaticWrenchable;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
+import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
 import me.desht.pneumaticcraft.common.thirdparty.ModInteractionUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Sounds;
@@ -38,24 +39,36 @@ public class ItemPneumaticWrench extends ItemPressurizable /*implements IToolWre
             } else {
                 wrenchable = ModInteractionUtils.getInstance().getWrenchable(world.getTileEntity(pos));
             }
-            if (wrenchable != null && ((ItemPneumaticWrench) Itemss.PNEUMATIC_WRENCH).getPressure(stack) > 0) {
+            boolean didWork = true;
+            float pressure = ((ItemPneumaticWrench) Itemss.PNEUMATIC_WRENCH).getPressure(stack);
+            if (SemiBlockManager.getInstance(world).getSemiBlock(world, pos) != null
+                    && pressure > 0 && player.isSneaking()) {
+                if (!player.capabilities.isCreativeMode) {
+                    SemiBlockManager.getInstance(world).breakSemiBlock(world, pos, player);
+                } else {
+                    SemiBlockManager.getInstance(world).setSemiBlock(world, pos, null);
+                }
+            } else if (wrenchable != null && pressure > 0) {
                 if (wrenchable.rotateBlock(world, player, pos, side)) {
                     if (!player.capabilities.isCreativeMode)
                         ((ItemPneumaticWrench) Itemss.PNEUMATIC_WRENCH).addAir(stack, -PneumaticValues.USAGE_PNEUMATIC_WRENCH);
-                    NetworkHandler.sendToAllAround(new PacketPlaySound(Sounds.PNEUMATIC_WRENCH, SoundCategory.PLAYERS, pos, 1.0F, 1.0F, false), world);
-                    return EnumActionResult.SUCCESS;
                 }
             } else {
-                //rotating normal blocks doesn't cost energy.
-                if (block.rotateBlock(world, pos, side)) {
-                    NetworkHandler.sendToAllAround(new PacketPlaySound(Sounds.PNEUMATIC_WRENCH, SoundCategory.PLAYERS, pos, 1.0F, 1.0F, false), world);
-                    return EnumActionResult.SUCCESS;
+                // rotating normal blocks doesn't use pressure
+                if (!block.rotateBlock(world, pos, side)) {
+                    didWork = false;
                 }
             }
-            return EnumActionResult.PASS;
+            if (didWork) playWrenchSound(world, pos);
+            return didWork ? EnumActionResult.SUCCESS : EnumActionResult.PASS;
         } else {
-            return EnumActionResult.PASS;
+            // client-side: prevent GUI's opening etc.
+            return EnumActionResult.SUCCESS;
         }
+    }
+
+    private void playWrenchSound(World world, BlockPos pos) {
+        NetworkHandler.sendToAllAround(new PacketPlaySound(Sounds.PNEUMATIC_WRENCH, SoundCategory.PLAYERS, pos, 1.0F, 1.0F, false), world);
     }
 
     @Override

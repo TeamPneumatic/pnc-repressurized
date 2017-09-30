@@ -8,8 +8,9 @@ import net.minecraft.world.World;
 
 /**
  * Extend this class, and register it via {@link PneumaticRegistry.getInstance().registerHeatBehaviour()}
- * This can be used to add heat dependent logic to non-TE's or blocks you don't have access to. PneumaticCraft uses this to power Furnaces with heat,
- * and to turn Lava into Obsidian when heat is drained. This only works for ticking heat logic, so not for static heat sources like lava blocks.
+ * This can be used to add heat dependent logic to non-TE's or blocks you don't have access to. PneumaticCraft uses this
+ * to power Furnaces with heat, and to turn Lava into Obsidian when heat is drained. This only works for ticking heat
+ * logic, so not for static heat sources like lava blocks.
  */
 public abstract class HeatBehaviour<Tile extends TileEntity> {
 

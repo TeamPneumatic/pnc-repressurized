@@ -84,8 +84,8 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
 public class EventHandlerPneumaticCraft {
 
-    private static ItemStack IRON_INGOT = new ItemStack(Items.IRON_INGOT);
-    private static ItemStack IRON_BLOCK = new ItemStack(Blocks.IRON_BLOCK);
+    private static final ItemStack IRON_INGOT = new ItemStack(Items.IRON_INGOT);
+    private static final ItemStack IRON_BLOCK = new ItemStack(Blocks.IRON_BLOCK);
 
     @SubscribeEvent
     public void handleFuelEvent(FurnaceFuelBurnTimeEvent event) {
