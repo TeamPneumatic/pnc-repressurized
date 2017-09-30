@@ -40,7 +40,7 @@ public class ItemManometer extends ItemPressurizable {
             IPneumaticMachine machine = ModInteractionUtils.getInstance().getMachine(te);
             List<ITextComponent> curInfo = new ArrayList<>();
             List<String> info = new ArrayList<>();
-            if (machine != null) {
+            if (machine != null && machine.getAirHandler(side) != null) {
                 machine.getAirHandler(side).printManometerMessage(player, info);
             }
             if (te instanceof IManoMeasurable) {

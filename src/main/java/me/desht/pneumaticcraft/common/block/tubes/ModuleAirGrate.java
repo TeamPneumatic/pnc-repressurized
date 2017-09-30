@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.block.tubes;
 
+import me.desht.pneumaticcraft.client.model.module.ModelAirGrate;
 import me.desht.pneumaticcraft.client.render.RenderRangeLines;
 import me.desht.pneumaticcraft.common.ai.StringFilterEntitySelector;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityHeatSink;
@@ -20,6 +21,9 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.opencl.CL;
 import org.lwjgl.opengl.GL11;
 
 import java.util.HashSet;
@@ -31,8 +35,10 @@ public class ModuleAirGrate extends TubeModule {
     private int grateRange;
     private boolean vacuum;
     public String entityFilter = "";
-    private final Set<TileEntityHeatSink> heatSinks = new HashSet<TileEntityHeatSink>();
+    private final Set<TileEntityHeatSink> heatSinks = new HashSet<>();
     private final RenderRangeLines rangeLineRenderer = new RenderRangeLines(0x55FF0000);
+    @SideOnly(Side.CLIENT)
+    private final ModelAirGrate model = new ModelAirGrate();
 
     public ModuleAirGrate() {
         rangeLineRenderer.resetRendering(1);
@@ -66,26 +72,12 @@ public class ModuleAirGrate extends TubeModule {
 
         } else {
             rangeLineRenderer.update();
-            /*  updateParticleTargets(tileVec, grateRange);
-              for(Vec3d particleVec : particleTargets) {
-
-                  //if(getWorld().rand.nextInt(10) == 0) {
-                  Vec3d motionVec = particleVec.subtract(tileVec);
-                  double force = 0.1D;
-                  motionVec.getPos().getX() *= force;
-                  motionVec.getPos().getY() *= force;
-                  motionVec.getPos().getZ() *= force;
-                  if(vacuum) {
-                      getWorld().spawnParticle("smoke", particleVec.getPos().getX(), particleVec.getPos().getY(), particleVec.getPos().getZ(), -motionVec.getPos().getX(), -motionVec.getPos().getY(), -motionVec.getPos().getZ());
-                  } else {
-                      getWorld().spawnParticle("smoke", tileVec.getPos().getX(), tileVec.getPos().getY(), tileVec.getPos().getZ(), motionVec.getPos().getX(), motionVec.getPos().getY(), motionVec.getPos().getZ());
-                  }
-                  //   }
-
-              }*/
-
         }
 
+        pushEntities(world, pos, tileVec);
+    }
+
+    private void pushEntities(World world, BlockPos pos, Vec3d tileVec) {
         AxisAlignedBB bbBox = new AxisAlignedBB(pos.add(-grateRange, -grateRange, -grateRange), pos.add(grateRange + 1, grateRange + 1, grateRange + 1));
         List<Entity> entities = world.getEntitiesWithinAABB(Entity.class, bbBox, new StringFilterEntitySelector().setFilter(entityFilter));
         double d0 = grateRange + 0.5D;
@@ -173,18 +165,24 @@ public class ModuleAirGrate extends TubeModule {
     }
 
     @Override
-    protected void renderModule() {
-        GL11.glPushMatrix();
-        GL11.glTranslated(0, 0, 2);
-        rangeLineRenderer.render();
-        if (isFake()) {
-            GL11.glEnable(GL11.GL_BLEND);
-            GL11.glColor4d(1, 1, 1, 0.5);
-        }
-        GL11.glPopMatrix();
-        GL11.glRotated(90, 1, 0, 0);
-        GL11.glTranslated(0, 1, 1);
+    @SideOnly(Side.CLIENT)
+    public void render(float partialTicks) {
+        model.renderModel(0.0625f, dir, partialTicks);
     }
+
+//    @Override
+//    protected void renderModule() {
+//        GL11.glPushMatrix();
+//        GL11.glTranslated(0, 0, 2);
+//        rangeLineRenderer.render();
+//        if (isFake()) {
+//            GL11.glEnable(GL11.GL_BLEND);
+//            GL11.glColor4d(1, 1, 1, 0.5);
+//        }
+//        GL11.glPopMatrix();
+//        GL11.glRotated(90, 1, 0, 0);
+//        GL11.glTranslated(0, 1, 1);
+//    }
 
     @Override
     public void addInfo(List<String> curInfo) {

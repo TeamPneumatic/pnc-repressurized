@@ -19,6 +19,7 @@ import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -385,18 +386,28 @@ public class PneumaticCraftUtils {
     }
 
     /**
-     * Returns the redstone level at the given coordinate. Useful when triggering on analog levels. When for example a redstone torch is attached, normally getBlockPowerInput() would return 0.
+     * Returns the redstone level at the given position. Use this when you don't care what side(s) the signal is
+     * coming from, just the level of the signal at the position.
      *
-     * @param world
-     * @param pos
-     * @return
+     * @param world the world
+     * @param pos the position to check
+     * @return the redstone level
      */
     public static int getRedstoneLevel(World world, BlockPos pos) {
         return world != null ? world.isBlockIndirectlyGettingPowered(pos) : 0;
     }
 
-    public static int getRedstoneLevel(World world, BlockPos pos, EnumFacing dir) {
-        return world.getRedstonePower(pos.offset(dir), dir);
+    /**
+     * Returns the redstone level for the given face at the given position.  Use this to check redstone signal level
+     * on a specific face of a block.
+     *
+     * @param world the world
+     * @param pos the position
+     * @param face the face to check
+     * @return the redstone level
+     */
+    public static int getRedstoneLevel(World world, BlockPos pos, EnumFacing face) {
+        return world.getRedstonePower(pos, face);
     }
 
 //    /**
@@ -555,11 +566,11 @@ public class PneumaticCraftUtils {
         if (entity.world.isRemote && entity instanceof EntityPlayer) {
             entityVec = new Vec3d(entity.posX, entity.posY + 1.6200000000000001D - entity.getYOffset(), entity.posZ);
         } else {
-            entityVec = new Vec3d(entity.posX, entity.posY + entity.getEyeHeight() - entity.getYOffset() - (entity.isSneaking() ? 0.08 : 0), entity.posZ);
+            entityVec = new Vec3d(entity.posX, entity.posY + entity.getEyeHeight() /*- entity.getYOffset()*/ - (entity.isSneaking() ? 0.08 : 0), entity.posZ);
         }
         Vec3d entityLookVec = entity.getLook(1.0F);
         Vec3d maxDistVec = entityVec.addVector(entityLookVec.x * maxDistance, entityLookVec.y * maxDistance, entityLookVec.z * maxDistance);
-        return new ImmutablePair(entityVec, maxDistVec);
+        return new ImmutablePair<>(entityVec, maxDistVec);
     }
 
     public static BlockPos getEntityLookedBlock(EntityLivingBase entity, float maxDistance) {

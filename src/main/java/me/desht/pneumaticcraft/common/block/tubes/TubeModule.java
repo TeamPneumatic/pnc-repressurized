@@ -8,8 +8,11 @@ import me.desht.pneumaticcraft.common.thirdparty.ModInteractionUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.BBConstants;
 import me.desht.pneumaticcraft.proxy.CommonProxy.EnumGuiId;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -19,8 +22,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.EnumSkyBlock;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.opencl.CL;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
@@ -40,6 +46,7 @@ public abstract class TubeModule implements ISidedPart {
         double width = getWidth() / 2;
         double height = getHeight();
 
+        // 0..6 = D,U,N,S,W,E
         boundingBoxes[0] = new AxisAlignedBB(0.5 - width, BBConstants.PRESSURE_PIPE_MIN_POS - height, 0.5 - width, 0.5 + width, BBConstants.PRESSURE_PIPE_MIN_POS, 0.5 + width);
         boundingBoxes[1] = new AxisAlignedBB(0.5 - width, BBConstants.PRESSURE_PIPE_MAX_POS, 0.5 - width, 0.5 + width, BBConstants.PRESSURE_PIPE_MAX_POS + height, 0.5 + width);
         boundingBoxes[2] = new AxisAlignedBB(0.5 - width, 0.5 - width, BBConstants.PRESSURE_PIPE_MIN_POS - height, 0.5 + width, 0.5 + width, BBConstants.PRESSURE_PIPE_MIN_POS);
@@ -144,36 +151,7 @@ public abstract class TubeModule implements ISidedPart {
     public abstract String getType();
 
     @SideOnly(Side.CLIENT)
-    public void renderDynamic(double x, double y, double z, float partialTicks, int renderPass, boolean itemRender) {
-        if (renderPass == 0) {
-            IBakedModel model = ModuleRegistrator.models.get(getClass());
-            if (model == null) return;
-
-            GL11.glPushMatrix(); // start
-
-            // GL11.glDisable(GL11.GL_TEXTURE_2D);
-            // GL11.glEnable(GL11.GL_BLEND);
-            // GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-            // GL11.glColor4f(0.82F, 0.56F, 0.09F, 1.0F);
-
-            GL11.glTranslatef((float) x + 0.5F, (float) y - 0.5F, (float) z + 0.5F); // size
-            GL11.glRotatef(0, 0.0F, 1.0F, 0.0F);
-            GL11.glScalef(1.0F, -1F, -1F);
-
-            PneumaticCraftUtils.rotateMatrixByMetadata(dir.ordinal());
-            renderModule();
-            BufferBuilder worldRenderer = Tessellator.getInstance().getBuffer();
-            worldRenderer.setTranslation(-getTube().pos().getX(), -getTube().pos().getY(), -getTube().pos().getZ());
-            worldRenderer.begin(7, DefaultVertexFormats.BLOCK);
-            Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelRenderer().renderModel(getTube().world(), model, Blockss.PRESSURE_TUBE.getDefaultState(), getTube().pos(), worldRenderer, false);
-            Tessellator.getInstance().draw();
-            worldRenderer.setTranslation(0, 0, 0);
-            GL11.glPopMatrix();
-        }
-    }
-
-    protected void renderModule() {
-    }
+    public abstract void render(float partialTicks);
 
     public abstract String getModelName();
 

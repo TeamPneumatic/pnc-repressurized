@@ -1,9 +1,16 @@
 package me.desht.pneumaticcraft.common.block.tubes;
 
+import me.desht.pneumaticcraft.client.model.module.ModelFlowDetector;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Names;
+import me.desht.pneumaticcraft.lib.Textures;
 import me.desht.pneumaticcraft.proxy.CommonProxy.EnumGuiId;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
@@ -11,6 +18,8 @@ public class ModuleFlowDetector extends TubeModuleRedstoneEmitting implements II
     public float rotation, oldRotation;
     private int flow;
     private int oldFlow;
+    @SideOnly(Side.CLIENT)
+    private final ModelFlowDetector model = new ModelFlowDetector(this);
 
     @Override
     public void update() {
@@ -25,6 +34,12 @@ public class ModuleFlowDetector extends TubeModuleRedstoneEmitting implements II
             oldFlow = flow;
             flow = 0;
         }
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void render(float partialTicks) {
+        model.renderModel(0.0625f, dir, partialTicks);
     }
 
     @Override

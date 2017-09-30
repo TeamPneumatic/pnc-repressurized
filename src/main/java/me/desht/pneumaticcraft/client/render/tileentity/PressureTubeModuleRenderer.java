@@ -6,8 +6,10 @@ import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import org.lwjgl.opengl.GL11;
@@ -18,7 +20,7 @@ public class PressureTubeModuleRenderer extends TileEntitySpecialRenderer<TileEn
 
     @Override
     public void render(TileEntityPressureTube tile, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
-        GL11.glPushMatrix();
+        GlStateManager.pushMatrix();
 
         FMLClientHandler.instance().getClient().getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
         GlStateManager.disableLighting();
@@ -26,18 +28,11 @@ public class PressureTubeModuleRenderer extends TileEntitySpecialRenderer<TileEn
         GlStateManager.disableAlpha();
         GlStateManager.color(1, 1, 1);
 
-        GL11.glTranslatef((float) x + 0.5F, (float) y + 1.5F, (float) z + 0.5F);
-        GL11.glRotatef(0, 0.0F, 1.0F, 0.0F);
+        GlStateManager.translate((float) x + 0.5F, (float) y + 1.5F, (float) z + 0.5F);
+        GlStateManager.scale(1.0F, -1F, -1F);
 
-        GL11.glScalef(1.0F, -1F, -1F);
+        // "fake" module is for showing a preview of where the module would be placed
         attachFakeModule(tile);
-        boolean[] renderSides = Arrays.copyOf(tile.sidesConnected, tile.sidesConnected.length);
-        for (int i = 0; i < 6; i++) {
-            if (tile.modules[i] != null && tile.modules[i].isInline()) {
-                renderSides[i] = true;
-            }
-        }
-        GL11.glPopMatrix();
 
         for (int i = 0; i < tile.modules.length; i++) {
             TubeModule module = tile.modules[i];
@@ -45,10 +40,11 @@ public class PressureTubeModuleRenderer extends TileEntitySpecialRenderer<TileEn
                 if (module.isFake()) {
                           GL11.glEnable(GL11.GL_BLEND);
                           GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-                          GL11.glColor4d(1, 1, 1, 0.7);
+                          GL11.glColor4d(1, 1, 1, 0.5);
                 }
 
-                module.renderDynamic(x, y, z, partialTicks, 0, false);
+                module.render(partialTicks);
+
                 if (module.isFake()) {
                     tile.modules[i] = null;
                     GL11.glDisable(GL11.GL_BLEND);
@@ -56,10 +52,12 @@ public class PressureTubeModuleRenderer extends TileEntitySpecialRenderer<TileEn
                 }
             }
         }
-        GL11.glColor4d(1, 1, 1, 1);
+        GlStateManager.color(1, 1, 1, 1);
 
         GlStateManager.enableLighting();
         GlStateManager.enableAlpha();
+
+        GlStateManager.popMatrix();
     }
 
     private void attachFakeModule(TileEntityPressureTube tile) {

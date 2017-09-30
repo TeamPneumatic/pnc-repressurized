@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.block.tubes;
 
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.proxy.CommonProxy.EnumGuiId;
 import net.minecraft.nbt.NBTTagCompound;
@@ -31,12 +30,13 @@ public abstract class TubeModuleRedstoneReceiving extends TubeModule {
 
     @Override
     public void onNeighborBlockUpdate() {
-        redstoneLevel = 0;
-        for (EnumFacing side : EnumFacing.VALUES) {
-            if (dir == side || isInline() && side != dir.getOpposite()) {
-                redstoneLevel = Math.max(redstoneLevel, PneumaticCraftUtils.getRedstoneLevel(pressureTube.world(), pressureTube.pos().offset(side)));
-            }
-        }
+        redstoneLevel = pressureTube.world().isBlockIndirectlyGettingPowered(pressureTube.pos());
+//        redstoneLevel = 0;
+//        for (EnumFacing side : EnumFacing.VALUES) {
+//            if (dir == side || isInline() && side != dir.getOpposite()) {
+//                redstoneLevel = Math.max(redstoneLevel, PneumaticCraftUtils.getRedstoneLevel(pressureTube.world(), pressureTube.pos().offset(side)));
+//            }
+//        }
     }
 
     public int getReceivingRedstoneLevel() {

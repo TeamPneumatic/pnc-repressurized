@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
@@ -230,25 +231,26 @@ public class ClientEventHandler {
         }
     }
 
-    @SubscribeEvent
-    public void onTextureStitch(TextureStitchEvent.Pre event) {
-        System.out.println("Stitching...");
-        ModuleRegistrator.models = Maps.newHashMap();
-        for (Class<? extends TubeModule> moduleClass : ModuleRegistrator.modules.values()) {
-            try {
-                TubeModule module = moduleClass.newInstance();
-
-                OBJLoader objLoader = OBJLoader.INSTANCE;
-                IModel modelDefinition = objLoader.loadModel(new ResourceLocation(Names.MOD_ID, "models/block/modules/" + module.getModelName() + ".obj"));
-                awaitingBaking.put(modelDefinition, moduleClass);
-                for (ResourceLocation texture : modelDefinition.getTextures()) {
-                    event.getMap().registerSprite(texture);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
+//    @SubscribeEvent
+//    public void onTextureStitch(TextureStitchEvent.Pre event) {
+//        System.out.println("Stitching...");
+//        ModuleRegistrator.models = Maps.newHashMap();
+//        for (Class<? extends TubeModule> moduleClass : ModuleRegistrator.modules.values()) {
+//            try {
+//                TubeModule module = moduleClass.newInstance();
+//
+//                OBJLoader objLoader = OBJLoader.INSTANCE;
+//                IModel modelDefinition = objLoader.loadModel(new ResourceLocation(Names.MOD_ID, "models/block/modules/" + module.getModelName() + ".obj"));
+//                modelDefinition = modelDefinition.process(ImmutableMap.of("flip-v", "true"));
+//                awaitingBaking.put(modelDefinition, moduleClass);
+//                for (ResourceLocation texture : modelDefinition.getTextures()) {
+//                    event.getMap().registerSprite(texture);
+//                }
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
 
     @SubscribeEvent
     public void onModelBaking(ModelBakeEvent event) {

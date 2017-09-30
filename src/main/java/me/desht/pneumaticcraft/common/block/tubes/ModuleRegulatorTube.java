@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.block.tubes;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IPneumaticMachine;
 import me.desht.pneumaticcraft.client.ClientTickHandler;
+import me.desht.pneumaticcraft.client.model.module.ModelPressureRegulator;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketDescriptionPacketRequest;
@@ -12,56 +13,57 @@ import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.opengl.GL11;
 
 import java.util.List;
 
 public class ModuleRegulatorTube extends TubeModuleRedstoneReceiving implements IInfluenceDispersing {
-    private boolean renderItem;
     public static boolean hasTicked;
     public static boolean inLine;
     public static boolean inverted;
+    @SideOnly(Side.CLIENT)
+    private final ModelPressureRegulator model = new ModelPressureRegulator(this);
 
     @Override
-    public void renderDynamic(double x, double y, double z, float partialTicks, int renderPass, boolean itemRender) {
-        renderItem = itemRender;
-        super.renderDynamic(x, y, z, partialTicks, renderPass, itemRender);
+    @SideOnly(Side.CLIENT)
+    public void render(float partialTicks) {
+        if (isFake()) renderPreview();
+        model.renderModel(0.0625f, dir, partialTicks);
     }
 
-    @Override
-    protected void renderModule() {
-        super.renderModule();
-        if (isFake()) {
-            if (!hasTicked) {
-                TileEntityPneumaticBase tile = (TileEntityPneumaticBase) getTube();
-                NetworkHandler.sendToServer(new PacketDescriptionPacketRequest(tile.getPos()));
-                TileEntity neighbor = tile.getWorld().getTileEntity(tile.getPos().offset(dir));
-                inLine = neighbor instanceof IPneumaticMachine;
-                if (inLine) {
-                    IAirHandler neighborHandler = ((IPneumaticMachine) neighbor).getAirHandler(dir);
-                    inverted = neighborHandler != null && neighborHandler.getPressure() > tile.getAirHandler(null).getPressure();
-                    NetworkHandler.sendToServer(new PacketDescriptionPacketRequest(neighbor.getPos()));
-                }
-                hasTicked = true;
+    @SideOnly(Side.CLIENT)
+    private void renderPreview() {
+        if (!hasTicked) {
+            TileEntityPneumaticBase tile = (TileEntityPneumaticBase) getTube();
+            NetworkHandler.sendToServer(new PacketDescriptionPacketRequest(tile.getPos()));
+            TileEntity neighbor = tile.getWorld().getTileEntity(tile.getPos().offset(dir));
+            inLine = neighbor instanceof IPneumaticMachine;
+            if (inLine) {
+                IAirHandler neighborHandler = ((IPneumaticMachine) neighbor).getAirHandler(dir);
+                inverted = neighborHandler != null && neighborHandler.getPressure() > tile.getAirHandler(null).getPressure();
+                NetworkHandler.sendToServer(new PacketDescriptionPacketRequest(neighbor.getPos()));
             }
-
-            GL11.glEnable(GL11.GL_BLEND);
-            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-            if (inLine && !inverted) {
-                GL11.glColor4d(0, 1, 0, 0.3);
-            } else {
-                GL11.glColor4d(1, 0, 0, 0.3);
-            }
-            GL11.glPushMatrix();
-            GL11.glTranslated(0, 1, 0.2 + ClientTickHandler.TICKS % 20 * 0.015);
-            GL11.glRotated(90, 1, 0, 0);
-
-            RenderUtils.render3DArrow();
-            GL11.glColor4d(1, 1, 1, 1);
-            GL11.glPopMatrix();
-            GL11.glDisable(GL11.GL_BLEND);
+            hasTicked = true;
         }
+
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        if (inLine && !inverted) {
+            GL11.glColor4d(0, 1, 0, 0.3);
+        } else {
+            GL11.glColor4d(1, 0, 0, 0.3);
+        }
+        GL11.glPushMatrix();
+        GL11.glTranslated(0, 1, 0.2 + ClientTickHandler.TICKS % 20 * 0.015);
+        GL11.glRotated(90, 1, 0, 0);
+
+        RenderUtils.render3DArrow();
+        GL11.glColor4d(1, 1, 1, 0.5);  // 0.5 because we're rendering a preview
+        GL11.glPopMatrix();
+        GL11.glDisable(GL11.GL_BLEND);
     }
 
     @Override
@@ -72,25 +74,6 @@ public class ModuleRegulatorTube extends TubeModuleRedstoneReceiving implements 
     @Override
     public String getModelName() {
         return "regulator";
-        //if(model == null) {
-        /*TODO 1.8 model = new BaseModel("regulatorTubeModule.obj"){
-             @Override
-             public void renderStatic(float size, TileEntity te){
-                 GL11.glPushMatrix();
-                 GL11.glRotated(90, 0, -1, 0);
-                 GL11.glTranslated(10 / 16D, 24 / 16D, 0);
-                 if(renderItem) {
-                     GL11.glTranslated(1 / 16D, -1 / 16D, 3 / 16D);
-                 }
-                 float scale = 1 / 16F;
-                 GL11.glScalef(scale, scale, scale);
-                 GL11.glEnable(GL12.GL_RESCALE_NORMAL);
-                 super.renderStatic(size, te);
-                 GL11.glPopMatrix();
-             }
-         };*/
-        //  }
-        ////  return model;
     }
 
     @Override

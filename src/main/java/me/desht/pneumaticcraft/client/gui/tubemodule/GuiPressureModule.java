@@ -13,6 +13,7 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
@@ -155,18 +156,20 @@ public class GuiPressureModule extends GuiTubeModule {
         /*
          * Draw the data in the graph 
          */
-        double zLevel = 90;
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
-        BufferBuilder wr = Tessellator.getInstance().getBuffer();
-        wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
-        RenderUtils.glColorHex(0);
+        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+        bufferBuilder.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION_COLOR);
+        GlStateManager.enableBlend();
+        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+        GlStateManager.disableTexture2D();
+        GlStateManager.color(0, 0, 0, 1.0f);
         for (int i = 0; i < 16; i++) {
             double y = graphHighY + (graphLowY - graphHighY) * (15 - i) / 15;
             double x = graphLeft + (graphRight - graphLeft) * module.getThreshold(i) / 30;
-            wr.pos(x, y, zLevel).endVertex();
+            bufferBuilder.pos(x, y, 90.0d).color(0.25f + i * 0.05f, 0f, 0f, 1.0f).endVertex();
         }
         Tessellator.getInstance().draw();
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GlStateManager.enableTexture2D();
+        GlStateManager.disableBlend();
 
     }
 

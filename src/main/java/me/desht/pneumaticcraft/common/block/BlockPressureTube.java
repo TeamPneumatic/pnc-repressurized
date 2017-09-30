@@ -1,10 +1,13 @@
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleRegistrator;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.config.ThirdPartyConfig;
 import me.desht.pneumaticcraft.common.item.ItemTubeModule;
 import me.desht.pneumaticcraft.common.item.Itemss;
+import me.desht.pneumaticcraft.common.network.NetworkHandler;
+import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.thirdparty.ModInteractionUtils;
 import me.desht.pneumaticcraft.common.thirdparty.mcmultipart.PneumaticMultiPart;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
@@ -12,6 +15,7 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.BBConstants;
 import me.desht.pneumaticcraft.lib.ModIds;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
+import me.desht.pneumaticcraft.proxy.CommonProxy;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
@@ -22,10 +26,7 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.SoundCategory;
+import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -107,45 +108,46 @@ public class BlockPressureTube extends BlockPneumaticCraftModeled {
         return state;
     }
 
-    @Override
-    public IBlockState getStateFromMeta(int meta) {
-        IBlockState state = super.getStateFromMeta(meta);
-        for (PropertyBool property : CONNECTION_PROPERTIES) {
-            state = state.withProperty(property, (meta & 1) == 1);
-            meta >>= 1;
-        }
-        return state;
-    }
+//    @Override
+//    public IBlockState getStateFromMeta(int meta) {
+//        IBlockState state = super.getStateFromMeta(meta);
+//        for (PropertyBool property : CONNECTION_PROPERTIES) {
+//            state = state.withProperty(property, (meta & 1) == 1);
+//            meta >>= 1;
+//        }
+//        return state;
+//    }
 
     @Override
     public int getMetaFromState(IBlockState state) {
         return 0;
-        /*int meta = 0;
-        for(PropertyBool property : CONNECTION_PROPERTIES) {
-            if(state.getValue(property)) {
-                meta++;
-            }
-            meta <<= 1;
-        }
-        return meta;*/
+    }
+
+    @Override
+    public BlockRenderLayer getBlockLayer() {
+        return BlockRenderLayer.CUTOUT;
     }
 
     @Override
     public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float par7, float par8, float par9) {
-        if (!world.isRemote) {
-            if (tryPlaceModule(player, world, pos, side, false)) return true;
-        }
-        if (!player.isSneaking()) {
-            TubeModule module = getLookedModule(world, pos, player);
-            if (module != null) {
-                return module.onActivated(player);
+        if (hand == EnumHand.MAIN_HAND) {
+            if (!world.isRemote) {
+                if (tryPlaceModule(player, world, pos, side, false)) return true;
+            }
+            if (!player.isSneaking()) {
+                TubeModule module = getLookedModule(world, pos, player);
+                if (module != null) {
+                    return module.onActivated(player);
+                }
             }
         }
         return false;
     }
 
     private static TileEntity getTE(IBlockAccess world, BlockPos pos) {
-        return ThirdPartyConfig.isEnabled(ModIds.MCMP) ? PneumaticMultiPart.unwrapTile(world, pos) : PneumaticCraftUtils.getTileEntitySafely(world, pos);
+        return ThirdPartyConfig.isEnabled(ModIds.MCMP) ?
+                PneumaticMultiPart.unwrapTile(world, pos) :
+                PneumaticCraftUtils.getTileEntitySafely(world, pos);
     }
 
     public boolean tryPlaceModule(EntityPlayer player, World world, BlockPos pos, EnumFacing side, boolean simulate) {
@@ -160,7 +162,10 @@ public class BlockPressureTube extends BlockPneumaticCraftModeled {
                     neighborChanged(world.getBlockState(pos), world, pos, this, pos.offset(side));
                     world.notifyNeighborsOfStateChange(pos, this, true);
                     if (!player.capabilities.isCreativeMode) player.getHeldItemMainhand().shrink(1);
-                    world.playSound(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundType.GLASS.getStepSound(), SoundCategory.BLOCKS, SoundType.GLASS.getVolume() * 5.0f, SoundType.GLASS.getPitch() * .9F, false);
+                    NetworkHandler.sendToAllAround(
+                            new PacketPlaySound(SoundType.GLASS.getStepSound(), SoundCategory.BLOCKS, pos.getX(), pos.getY(), pos.getZ(),
+                                    SoundType.GLASS.getVolume() * 5.0f, SoundType.GLASS.getPitch() * 0.9f, false),
+                            world);
                 }
                 return true;
             }
@@ -195,7 +200,6 @@ public class BlockPressureTube extends BlockPneumaticCraftModeled {
 
         setBlockBounds(BASE_BOUNDS);
         RayTraceResult mop = super.collisionRayTrace(state, world, pos, origin, direction);
-
         if (isCloserMOP(origin, bestMOP, mop)) {
             bestMOP = mop;
             bestAABB = getBoundingBox(state, world, pos);
@@ -245,10 +249,6 @@ public class BlockPressureTube extends BlockPneumaticCraftModeled {
             return new ItemStack(ModuleRegistrator.getModuleItem(tube.modules[((EnumFacing) target.hitInfo).ordinal()].getType()));
         }
     }
-
-//    private void setBlockBounds(AxisAlignedBB aabb) {
-//        this.setBlockBounds((float) aabb.minX, (float) aabb.minY, (float) aabb.minZ, (float) aabb.maxX, (float) aabb.maxY, (float) aabb.maxZ);
-//    }
 
     @Override
     public boolean rotateBlock(World world, EntityPlayer player, BlockPos pos, EnumFacing side) {
@@ -304,30 +304,13 @@ public class BlockPressureTube extends BlockPneumaticCraftModeled {
         return drops;
     }
 
-    @Nullable
-    @Override
-    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos) {
-        TileEntity te = getTE(worldIn, pos);
-
-        if (te instanceof TileEntityPressureTube) {
-            TileEntityPressureTube tePt = (TileEntityPressureTube) te;
-            for (int i = 0; i < 6; i++) {
-                if (tePt.sidesConnected[i]) {
-                    return boundingBoxes[i];
-                } else if (tePt.modules[i] != null) {
-                    return tePt.modules[i].boundingBoxes[i];
-                }
-            }
-        }
-        return super.getCollisionBoundingBox(blockState, worldIn, pos);
-    }
-
     @Override
     public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean isActualState) {
+        addCollisionBoxToList(pos, entityBox, collidingBoxes, BASE_BOUNDS);
+
         TileEntity te = getTE(worldIn, pos);
         if (te instanceof TileEntityPressureTube) {
             TileEntityPressureTube tePt = (TileEntityPressureTube) te;
-            addCollisionBoxToList(pos, entityBox, collidingBoxes, BASE_BOUNDS);
             for (int i = 0; i < 6; i++) {
                 if (tePt.sidesConnected[i]) {
                     addCollisionBoxToList(pos, entityBox, collidingBoxes, boundingBoxes[i]);
@@ -338,29 +321,6 @@ public class BlockPressureTube extends BlockPneumaticCraftModeled {
             }
         }
     }
-
-//    @Override
-//    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean p_185477_7_) {
-////        setBlockBounds(BBConstants.PRESSURE_PIPE_MIN_POS, BBConstants.PRESSURE_PIPE_MIN_POS, BBConstants.PRESSURE_PIPE_MIN_POS, BBConstants.PRESSURE_PIPE_MAX_POS, BBConstants.PRESSURE_PIPE_MAX_POS, BBConstants.PRESSURE_PIPE_MAX_POS);
-////        addCollisionBoxToList(pos, entityBox, collidingBoxes, entityBox);
-//
-//        super.addCollisionBoxToList(state, worldIn, pos, entityBox, collidingBoxes, entityIn, p_185477_7_);
-//
-//        TileEntity te = worldIn.getTileEntity(pos);
-//
-//        if (te instanceof TileEntityPressureTube) {
-//            TileEntityPressureTube tePt = (TileEntityPressureTube) te;
-//            for (int i = 0; i < 6; i++) {
-//                if (tePt.sidesConnected[i]) {
-//                    addCollisionBoxToList(pos, entityBox, collidingBoxes, boundingBoxes[i]);
-//                } else if (tePt.modules[i] != null) {
-//                    addCollisionBoxToList(pos, entityBox, collidingBoxes, tePt.modules[i].boundingBoxes[i]);
-//                }
-//            }
-//        }
-////        setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
-//    }
-
 
     @Override
     @SideOnly(Side.CLIENT)
@@ -390,32 +350,12 @@ public class BlockPressureTube extends BlockPneumaticCraftModeled {
                 if (f3 < 0.0F) {
                     f3 = 0.0F;
                 }
-                // PacketDispatcher.sendPacketToAllPlayers(PacketHandlerPneumaticCraft.spawnParticle("reddust",
-                // d0, d1, d2, (double)f1, (double)f2, (double)f3));
                 par1World.spawnParticle(EnumParticleTypes.REDSTONE, d0, d1, d2, f1, f2, f3);
-                // }
             }
         }
 
     }
 
-//    /**
-//     * Returns true if the block is emitting direct/strong redstone power on the
-//     * specified side. Args: World, X, Y, Z, side. Note that the side is
-//     * reversed - eg it is 1 (up) when checking the bottom of the block.
-//     */
-//    @Override
-//    public int getStrongPower(IBlockState state, IBlockAccess par1IBlockAccess, BlockPos pos, EnumFacing side) {
-//        return 0;
-//    }
-
-    /**
-     * Returns true if the block is emitting indirect/weak redstone power on the
-     * specified side. If isBlockNormalCube returns true, standard redstone
-     * propagation rules will apply instead and this will not be called. Args:
-     * World, X, Y, Z, side. Note that the side is reversed - eg it is 1 (up)
-     * when checking the bottom of the block.
-     */
     @Override
     public int getWeakPower(IBlockState state, IBlockAccess par1IBlockAccess, BlockPos pos, EnumFacing side) {
         TileEntity te = getTE(par1IBlockAccess, pos);
@@ -434,41 +374,8 @@ public class BlockPressureTube extends BlockPneumaticCraftModeled {
         return 0;
     }
 
-    /**
-     * Determine if this block can make a redstone connection on the side provided,
-     * Useful to control which sides are inputs and outputs for redstone wires.
-     *
-     * Side:
-     *  -1: UP
-     *   0: NORTH
-     *   1: EAST
-     *   2: SOUTH
-     *   3: WEST
-     *
-     * @param world The current world
-     * @param x X Position
-     * @param y Y Position
-     * @param z Z Position
-     * @param side The side that is trying to make the connection
-     * @return True to make the connection
-     */
-    /* @Override
-     * TODO 1.8
-     public boolean canConnectRedstone(IBlockAccess world, BlockPos pos, EnumFacing side){
-         if(side < 0 || side > 3) return false;
-         TileEntityPressureTube tube = (TileEntityPressureTube)world.getTileEntity(x, y, z);
-         EnumFacing d = EnumFacing.NORTH;
-         for(int i = 0; i < side; i++) {
-             d = d.getRotation(EnumFacing.UP);
-         }
-         side = d.ordinal();
-         for(int i = 0; i < 6; i++) {
-             if(tube.modules[i] != null) {
-                 if((side ^ 1) == i || i != side && tube.modules[i].isInline()) {//if we are on the same side, or when we have an 'in line' module that is not on the opposite side.
-                     if(tube.modules[i] instanceof TubeModuleRedstoneEmitting) return true;
-                 }
-             }
-         }
-         return false;
-     }*/
+    @Override
+    public boolean canProvidePower(IBlockState state) {
+        return true;
+    }
 }

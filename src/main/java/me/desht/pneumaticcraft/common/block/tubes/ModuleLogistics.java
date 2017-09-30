@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.block.tubes;
 
-import me.desht.pneumaticcraft.client.util.RenderUtils;
+import me.desht.pneumaticcraft.client.model.module.ModelLogistics;
 import me.desht.pneumaticcraft.common.ai.LogisticsManager;
 import me.desht.pneumaticcraft.common.ai.LogisticsManager.LogisticsTask;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -12,7 +12,9 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityPlasticMixer;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Names;
+import me.desht.pneumaticcraft.lib.Textures;
 import me.desht.pneumaticcraft.proxy.CommonProxy.EnumGuiId;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemDye;
@@ -24,7 +26,9 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import org.lwjgl.opengl.GL11;
+import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.HashMap;
 import java.util.List;
@@ -34,13 +38,25 @@ import java.util.PriorityQueue;
 public class ModuleLogistics extends TubeModule {
     private SemiBlockLogistics cachedFrame;
     private int colorChannel;
-    private int ticksSinceAction = -1;//client sided timer used to display the blue color when doing a logistic task.
+    private int ticksSinceAction = -1; // client sided timer used to display the blue color when doing a logistic task.
     private int ticksSinceNotEnoughAir = -1;
     private int ticksUntilNextCycle;
     private boolean powered;
     private static final double MIN_PRESSURE = 3;
     private static final double ITEM_TRANSPORT_COST = 5;
     private static final double FLUID_TRANSPORT_COST = 0.1;
+    @SideOnly(Side.CLIENT)
+    private final ModelLogistics model = new ModelLogistics(this);
+
+    @SideOnly(Side.CLIENT)
+    public int getTicksSinceAction() {
+        return ticksSinceAction;
+    }
+
+    @SideOnly(Side.CLIENT)
+    public int getTicksSinceNotEnoughAir() {
+        return ticksSinceNotEnoughAir;
+    }
 
     @Override
     public double getWidth() {
@@ -60,21 +76,11 @@ public class ModuleLogistics extends TubeModule {
     @Override
     public String getModelName() {
         return "logistics_module";
-        /*TODO 1.8 if(ticksSinceAction >= 0) {
-             model.base1 = model.action;
-         } else if(ticksSinceNotEnoughAir >= 0) {
-             model.base1 = model.notEnoughAir;
-         } else {
-             model.base1 = hasPower() ? model.powered : model.notPowered;
-         }*/
     }
 
     @Override
-    protected void renderModule() {
-        super.renderModule();
-        RenderUtils.glColorHex(0xFF000000 | ItemDye.DYE_COLORS[getColorChannel()]);
-        //TODO 1.8  model.renderChannelColorFrame(1 / 16F);
-        GL11.glColor4d(1, 1, 1, 1);
+    public void render(float partialTicks) {
+        model.renderModel(0.0625f, dir, partialTicks);
     }
 
     @Override

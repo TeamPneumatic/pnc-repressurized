@@ -1,12 +1,18 @@
 package me.desht.pneumaticcraft.common.block.tubes;
 
+import me.desht.pneumaticcraft.client.model.module.ModelSafetyValve;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
 public class ModuleSafetyValve extends TubeModuleRedstoneReceiving {
+    @SideOnly(Side.CLIENT)
+    private final ModelSafetyValve model = new ModelSafetyValve();
+
     @Override
     public void update() {
         super.update();
@@ -15,6 +21,12 @@ public class ModuleSafetyValve extends TubeModuleRedstoneReceiving {
                 pressureTube.getAirHandler(null).airLeak(dir);
             }
         }
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void render(float partialTicks) {
+        model.renderModel(0.0625f, dir, partialTicks);
     }
 
     @Override

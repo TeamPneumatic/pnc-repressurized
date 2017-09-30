@@ -2,17 +2,26 @@ package me.desht.pneumaticcraft.common.block.tubes;
 
 import me.desht.pneumaticcraft.api.item.IPressurizable;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
+import me.desht.pneumaticcraft.client.model.module.ModelCharging;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.TileEntityCache;
 import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
+import me.desht.pneumaticcraft.lib.Textures;
 import me.desht.pneumaticcraft.proxy.CommonProxy.EnumGuiId;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
 public class ModuleCharging extends TubeModule {
     private TileEntityCache connectedInventory;
+    @SideOnly(Side.CLIENT)
+    private final ModelCharging model = new ModelCharging();
 
     @Override
     public String getType() {
@@ -27,6 +36,11 @@ public class ModuleCharging extends TubeModule {
     @Override
     protected EnumGuiId getGuiId() {
         return null;
+    }
+
+    @Override
+    public void render(float partialTicks) {
+        model.renderModel(0.0625f, dir, partialTicks);
     }
 
     @Override

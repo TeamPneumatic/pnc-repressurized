@@ -7,7 +7,7 @@ public class Textures {
     public static final String ICON_LOCATION = Names.MOD_ID + ":";
 
     public static final String MODEL_LOCATION = ICON_LOCATION + "textures/model/";
-    public static final String TUBE_MODULE_MODEL_LOCATION = MODEL_LOCATION + "tubemodules/";
+    public static final String TUBE_MODULE_MODEL_LOCATION = MODEL_LOCATION + "modules/";
     public static final String GUI_LOCATION = ICON_LOCATION + "textures/gui/";
     public static final String WIDGET_LOCATION = GUI_LOCATION + "widget/";
     public static final String UPGRADE_LOCATION = ICON_LOCATION + "upgrades/";
@@ -69,7 +69,9 @@ public class Textures {
     public static final ResourceLocation MODEL_GAUGE = new ResourceLocation(TUBE_MODULE_MODEL_LOCATION + "gauge_module.png");
     public static final ResourceLocation MODEL_AIR_GRATE = new ResourceLocation(TUBE_MODULE_MODEL_LOCATION + "air_grate.png");
     public static final ResourceLocation MODEL_CHARGING_MODULE = new ResourceLocation(TUBE_MODULE_MODEL_LOCATION + "charging_module.png");
-    public static final ResourceLocation MODEL_LOGISTICS = new ResourceLocation(TUBE_MODULE_MODEL_LOCATION + "logistics_module.png");
+    public static final ResourceLocation MODEL_LOGISTICS_MODULE = new ResourceLocation(TUBE_MODULE_MODEL_LOCATION + "logistics_module.png");
+    public static final ResourceLocation MODEL_SAFETY_VALVE = new ResourceLocation(TUBE_MODULE_MODEL_LOCATION + "safety_valve.png");
+    public static final ResourceLocation MODEL_REGULATOR_MODULE = new ResourceLocation(TUBE_MODULE_MODEL_LOCATION + "regulator.png");
 
     public static final ResourceLocation MODEL_DRONE = new ResourceLocation(ENTITY_LOCATION + "drone.png");
 

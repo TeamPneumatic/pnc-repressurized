@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
+import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IAirListener;
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
@@ -71,7 +72,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
         writeModulesToNBT(tag);
     }
 
-    public void writeModulesToNBT(NBTTagCompound tag) {
+    private void writeModulesToNBT(NBTTagCompound tag) {
         NBTTagList moduleList = new NBTTagList();
         for (int i = 0; i < modules.length; i++) {
             if (modules[i] != null) {
@@ -190,7 +191,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
         }
     }
 
-    public void updateConnections() {
+    private void updateConnections() {
         sidesConnected = new boolean[6];
 
         List<Pair<EnumFacing, IAirHandler>> connections = getAirHandler(null).getConnectedPneumatics();
