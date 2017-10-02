@@ -1,7 +1,7 @@
 {
   "elements": [
     {
-      "from": [ 6, 2, 7 ],
+      "from": [ 6, 1, 7 ],
       "to": [ 7, 8, 9 ],
       "faces": {
         "north": { "texture": "#pipe" },
@@ -13,7 +13,7 @@
       }
     },
     {
-      "from": [ 9, 2, 7 ],
+      "from": [ 9, 1, 7 ],
       "to": [ 10, 8, 9 ],
       "faces": {
         "north": { "texture": "#pipe" },
@@ -25,7 +25,7 @@
       }
     },
     {
-      "from": [ 7, 2, 6 ],
+      "from": [ 7, 1, 6 ],
       "to": [ 9, 8, 7 ],
       "faces": {
         "north": { "texture": "#pipe" },
@@ -37,7 +37,7 @@
       }
     },
     {
-      "from": [ 7, 2, 9 ],
+      "from": [ 7, 1, 9 ],
       "to": [ 9, 8, 10 ],
       "faces": {
         "north": { "texture": "#pipe" },

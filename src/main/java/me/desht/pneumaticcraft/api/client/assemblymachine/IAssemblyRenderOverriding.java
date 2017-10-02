@@ -15,7 +15,7 @@ public interface IAssemblyRenderOverriding {
     boolean applyRenderChangeIOUnit(ItemStack renderedStack);
 
     /**
-     * Same deal as with the applyRenderChangeIOUnit(), but now for the Assembly Platform.
+     * Same deal as with the {@link #applyRenderChangeIOUnit(ItemStack)}, but now for the Assembly Platform.
      *
      * @param renderedStack itemStack that is being rendered
      * @return true if PneumaticCraft should render the item (after your changes), or false to cancel rendering.

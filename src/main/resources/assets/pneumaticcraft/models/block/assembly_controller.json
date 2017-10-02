@@ -2,7 +2,7 @@
   "elements": [
     {
       "from": [ 0, 0, 0],
-      "to": [16, 2, 16],
+      "to": [16, 1, 16],
       "faces": {
         "down": { "texture": "#base", "cullface": "down" },
         "up": { "texture": "#base" },
@@ -13,7 +13,7 @@
       }
     },
     {
-      "from": [ 7, 2, 7 ],
+      "from": [ 7, 1, 7 ],
       "to": [ 9, 12, 9 ],
       "faces": {
         "down": { "texture": "#leg", "cullface": "down" },
@@ -25,7 +25,7 @@
       }
     },
     {
-      "from": [ 6, 2, 7 ],
+      "from": [ 6, 1, 7 ],
       "to": [ 10, 4, 9 ],
       "faces": {
         "down": { "texture": "#base", "cullface": "down" },
@@ -37,7 +37,7 @@
       }
     },
     {
-      "from": [ 7, 2, 6 ],
+      "from": [ 7, 1, 6 ],
       "to": [ 9, 4, 10 ],
       "faces": {
         "down": { "texture": "#base", "cullface": "down" },

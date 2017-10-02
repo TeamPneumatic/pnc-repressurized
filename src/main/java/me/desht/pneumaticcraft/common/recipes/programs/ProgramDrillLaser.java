@@ -19,7 +19,7 @@ public class ProgramDrillLaser extends AssemblyProgram {
     public boolean executeStep(TileEntityAssemblyController controller, TileEntityAssemblyPlatform platform, TileEntityAssemblyIOUnit ioUnitImport, TileEntityAssemblyIOUnit ioUnitExport, TileEntityAssemblyDrill drill, TileEntityAssemblyLaser laser) {
         boolean useAir = true;
 
-        if (platform.getHeldStack() != null) {
+        if (!platform.getHeldStack().isEmpty()) {
             if (canItemBeDrilled(platform.getHeldStack())) {
                 drill.goDrilling();
             } else if (drill.isIdle() && canItemBeLasered(platform.getHeldStack())) {
@@ -27,8 +27,9 @@ public class ProgramDrillLaser extends AssemblyProgram {
             } else if (drill.isIdle() && laser.isIdle()) {
                 useAir = ioUnitExport.pickupItem(null);
             }
-        } else if (!ioUnitExport.isIdle()) useAir = ioUnitExport.pickupItem(null);
-        else {
+        } else if (!ioUnitExport.isIdle()) {
+            useAir = ioUnitExport.pickupItem(null);
+        } else {
             List<AssemblyRecipe> recipes = new ArrayList<AssemblyRecipe>();
             recipes.addAll(getRecipeList());
             recipes.addAll(new ProgramDrill().getRecipeList());

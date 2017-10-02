@@ -230,11 +230,6 @@ public class TileEntityPlasticMixer extends TileEntityBase implements IHeatExcha
         public boolean canFillFluidType(FluidStack fluid) {
             return Fluids.areFluidsEqual(fluid.getFluid(), Fluids.PLASTIC);
         }
-
-        @Override
-        protected void onContentsChanged() {
-            System.out.println("tank contents changed! " + getFluid());
-        }
     }
 
     private static class PlasticItemStackHandler extends FilteredItemStackHandler {

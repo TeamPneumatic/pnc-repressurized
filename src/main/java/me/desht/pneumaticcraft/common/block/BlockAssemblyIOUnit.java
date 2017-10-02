@@ -18,7 +18,7 @@ import net.minecraft.world.World;
 import javax.annotation.Nullable;
 
 public class BlockAssemblyIOUnit extends BlockPneumaticCraftModeled {
-    private static final PropertyBool IMPORT = PropertyBool.create("import");
+//    private static final PropertyBool IMPORT = PropertyBool.create("import");
 
     private static final AxisAlignedBB BASE_BOUNDS = new AxisAlignedBB(
             BBConstants.ASSEMBLY_ROBOT_MIN_POS, 0F, BBConstants.ASSEMBLY_ROBOT_MIN_POS,
@@ -41,20 +41,20 @@ public class BlockAssemblyIOUnit extends BlockPneumaticCraftModeled {
         }
     }
 
-    @Override
-    protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, IMPORT);
-    }
-
-    @Override
-    public int getMetaFromState(IBlockState state) {
-        return 0;  // import/export value is stored in the TE
-    }
-
-    @Override
-    public IBlockState getStateFromMeta(int meta) {
-        return this.getDefaultState();
-    }
+//    @Override
+//    protected BlockStateContainer createBlockState() {
+//        return new BlockStateContainer(this, IMPORT);
+//    }
+//
+//    @Override
+//    public int getMetaFromState(IBlockState state) {
+//        return 0;  // import/export value is stored in the TE
+//    }
+//
+//    @Override
+//    public IBlockState getStateFromMeta(int meta) {
+//        return this.getDefaultState();
+//    }
 
     @Nullable
     @Override
@@ -62,15 +62,15 @@ public class BlockAssemblyIOUnit extends BlockPneumaticCraftModeled {
         return COLLISION_BOUNDS;
     }
 
-    @Override
-    public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
-        TileEntity te = PneumaticCraftUtils.getTileEntitySafely(worldIn, pos);
-        if (te instanceof TileEntityAssemblyIOUnit) {
-            boolean importing = ((TileEntityAssemblyIOUnit) te).isImportUnit();
-            return state.withProperty(IMPORT, importing);
-        }
-        return state;
-    }
+//    @Override
+//    public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
+//        TileEntity te = PneumaticCraftUtils.getTileEntitySafely(worldIn, pos);
+//        if (te instanceof TileEntityAssemblyIOUnit) {
+//            boolean importing = ((TileEntityAssemblyIOUnit) te).isImportUnit();
+//            return state.withProperty(IMPORT, importing);
+//        }
+//        return state;
+//    }
 
     //    @Override
 //    public void setBlockBoundsBasedOnState(IBlockAccess par1IBlockAccess, BlockPos pos) {

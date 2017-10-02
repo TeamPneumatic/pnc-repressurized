@@ -161,8 +161,6 @@ public class TileEntityGasLift extends TileEntityPneumaticBase implements IMinWo
             if (pumpingLake == null) {
                 findLake(block);
             }
-            System.out.println("lake size = " + pumpingLake.size());
-            for (BlockPos pos: pumpingLake) System.out.println("  " + pos);
             BlockPos curPos = null;
             boolean foundSource = false;
             while (pumpingLake.size() > 0) {
@@ -186,7 +184,6 @@ public class TileEntityGasLift extends TileEntityPneumaticBase implements IMinWo
     }
 
     private void findLake(Block block) {
-        System.out.println("looking for lake...");
         pumpingLake = new ArrayList<>();
         Stack<BlockPos> pendingPositions = new Stack<>();
         BlockPos thisPos = getPos().offset(EnumFacing.DOWN, currentDepth + 1);

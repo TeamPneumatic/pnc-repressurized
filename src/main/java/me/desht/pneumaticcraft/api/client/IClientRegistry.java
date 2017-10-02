@@ -6,6 +6,9 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.registries.IForgeRegistryEntry;
+
+import javax.annotation.Nonnull;
 
 public interface IClientRegistry {
     /**
@@ -52,7 +55,9 @@ public interface IClientRegistry {
      */
     void drawPressureGauge(FontRenderer fontRenderer, float minPressure, float maxPressure, float dangerPressure, float minWorkingPressure, float currentPressure, int xPos, int yPos, float zLevel);
 
-    void registerRenderOverride(Block block, IAssemblyRenderOverriding renderOverride);
+    void registerRenderOverride(@Nonnull IForgeRegistryEntry<?> entry, @Nonnull IAssemblyRenderOverriding renderOverride);
 
-    void registerRenderOverride(Item item, IAssemblyRenderOverriding renderOverride);
+//    void registerRenderOverride(Block block, IAssemblyRenderOverriding renderOverride);
+//
+//    void registerRenderOverride(Item item, IAssemblyRenderOverriding renderOverride);
 }

@@ -52,11 +52,13 @@ public class TileEntityAssemblyPlatform extends TileEntityBase implements IAssem
         hasDrilledStack = false;
         hasLaseredStack = false;
         shouldClawClose = true;
+        sendDescriptionPacket();
         return isClawDone();
     }
 
     public boolean openClaw() {
         shouldClawClose = false;
+        sendDescriptionPacket();
         return isClawDone();
     }
 
@@ -93,7 +95,6 @@ public class TileEntityAssemblyPlatform extends TileEntityBase implements IAssem
         speed = tag.getFloat("speed");
         hasDrilledStack = tag.getBoolean("drilled");
         hasLaseredStack = tag.getBoolean("lasered");
-        inventory = new ItemStackHandler(1);
         inventory.deserializeNBT(tag.getCompoundTag("Items"));
     }
 

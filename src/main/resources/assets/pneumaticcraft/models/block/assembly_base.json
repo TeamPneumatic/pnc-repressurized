@@ -1,0 +1,19 @@
+{
+  "textures": {
+    "base": "pneumaticcraft:blocks/assembly_base"
+  },
+  "elements": [
+    {
+      "from": [ 0, 0, 0],
+      "to": [16, 1, 16],
+      "faces": {
+        "down": { "texture": "#base", "cullface": "down" },
+        "up": { "texture": "#base" },
+        "north": { "texture": "#base" },
+        "south": { "texture": "#base" },
+        "west": { "texture": "#base" },
+        "east": { "texture": "#base" }
+      }
+    }
+  ]
+}

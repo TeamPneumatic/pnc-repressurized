@@ -98,7 +98,6 @@ public class TileEntityKeroseneLamp extends TileEntityBase implements IRedstoneC
             // 110 comes from kerosene's fuel value of 1,100,000 divided by the old FUEL_PER_MB value (10000)
             fuelQuality = PneumaticCraftAPIHandler.getInstance().liquidFuels.getOrDefault(f.getName(), 0) / 110;
         }
-        System.out.println("recalculate fuel quality: " + fuelQuality);
     }
 
     private void useFuel() {

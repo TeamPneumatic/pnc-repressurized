@@ -30,7 +30,7 @@ public class BBConstants {
     public static final float ASSEMBLY_ROBOT_MAX_POS = 14F / 16F;
     public static final float ASSEMBLY_ROBOT_MAX_POS_TOP = 14F / 16F;
 
-    public static final float ASSEMBLY_BASE_HEIGHT = 2F / 16F;
+    public static final float ASSEMBLY_BASE_HEIGHT = 1F / 16F;
 
     public static final float UV_LIGHT_BOX_WIDTH_MIN = 4.5F / 16F;
     public static final float UV_LIGHT_BOX_LENGTH_MIN = 1 / 16F;

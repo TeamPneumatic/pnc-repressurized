@@ -16,7 +16,6 @@ public class BlockColorHandler {
                 if (te instanceof TileEntityCompressedIronBlock) {
                     int heatLevel = ((TileEntityCompressedIronBlock) te).getHeatLevel();
                     double[] color = TileEntityCompressedIronBlock.getColorForHeatLevel(heatLevel);
-                    System.out.println("get block color @ " + pos + " = " + (0xFF000000 + ((int) (color[0] * 255) << 16) + ((int) (color[1] * 255) << 8) + (int) (color[2] * 255)));
                     return 0xFF000000 + ((int) (color[0] * 255) << 16) + ((int) (color[1] * 255) << 8) + (int) (color[2] * 255);
                 }
             }

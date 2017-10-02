@@ -18,7 +18,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
     private static final int INVENTORY_SIZE = 1;
 
     @DescSynced
-    public boolean shouldClawClose;
+    private boolean shouldClawClose;
     @DescSynced
     @LazySynced
     public float clawProgress;
@@ -288,6 +288,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
                     inventory.setStackInSlot(0, excess);
                     if (excess.isEmpty()) break;
                 }
+                currentStack = inventory.getStackInSlot(0);
                 if (currentStack.isEmpty() || startSize != currentStack.getCount())
                     sendDescriptionPacket(); // TODO - is this still needed? Shouldn't @DescSynced on inventory take care of this?
 

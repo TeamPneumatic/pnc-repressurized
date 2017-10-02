@@ -5,18 +5,21 @@ import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.assemblymachine.IAssemblyRenderOverriding;
 import me.desht.pneumaticcraft.client.gui.GuiUtils;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
-import net.minecraft.block.Block;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.registries.IForgeRegistryEntry;
 
+import javax.annotation.Nonnull;
 import java.util.HashMap;
 
 public class GuiRegistry implements IClientRegistry {
 
     private static final GuiRegistry INSTANCE = new GuiRegistry();
-    public final HashMap<Integer, IAssemblyRenderOverriding> renderOverrides = new HashMap<Integer, IAssemblyRenderOverriding>();
+    public static final HashMap<ResourceLocation, IAssemblyRenderOverriding> renderOverrides = new HashMap<>();
+
+    private GuiRegistry() {}
 
     public static GuiRegistry getInstance() {
         return INSTANCE;
@@ -42,16 +45,21 @@ public class GuiRegistry implements IClientRegistry {
         GuiUtils.drawPressureGauge(fontRenderer, minPressure, maxPressure, dangerPressure, minWorkingPressure, currentPressure, xPos, yPos, zLevel);
     }
 
-    public void registerRenderOverride(Block block, IAssemblyRenderOverriding renderOverride) {
-        if (block == null) throw new NullPointerException("Block is null!");
-        if (renderOverride == null) throw new NullPointerException("Render override is null!");
-        renderOverrides.put(Block.getIdFromBlock(block), renderOverride);
+    @Override
+    public void registerRenderOverride(@Nonnull IForgeRegistryEntry<?> entry, @Nonnull IAssemblyRenderOverriding renderOverride) {
+        renderOverrides.put(entry.getRegistryName(), renderOverride);
     }
 
-    public void registerRenderOverride(Item item, IAssemblyRenderOverriding renderOverride) {
-        if (item == null) throw new NullPointerException("Item is null!");
-        if (renderOverride == null) throw new NullPointerException("Render override is null!");
-        renderOverrides.put(Item.getIdFromItem(item), renderOverride);
-    }
+//    public void registerRenderOverride(Block block, IAssemblyRenderOverriding renderOverride) {
+//        if (block == null) throw new NullPointerException("Block is null!");
+//        if (renderOverride == null) throw new NullPointerException("Render override is null!");
+//        renderOverrides.put(block.getRegistryName(), renderOverride);
+//    }
+//
+//    public void registerRenderOverride(Item item, IAssemblyRenderOverriding renderOverride) {
+//        if (item == null) throw new NullPointerException("Item is null!");
+//        if (renderOverride == null) throw new NullPointerException("Render override is null!");
+//        renderOverrides.put(item.getRegistryName(), renderOverride);
+//    }
 
 }

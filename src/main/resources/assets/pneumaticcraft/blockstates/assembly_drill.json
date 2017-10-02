@@ -1,14 +1,15 @@
 {
-    "forge_marker": 1,
-    "defaults": {
-        "textures": {},
-        "custom": { "flip-v" : true},
-        "model": "pneumaticcraft:assembly_drill.obj"
-    },
-	"variants": {
-		"normal": [{}],
-		"inventory": [{
-          "transform": "forge:default-block"
-        }]
-	}
+  "forge_marker": 1,
+  "defaults": {
+    "textures": {},
+    "model": "pneumaticcraft:assembly_base"
+  },
+  "variants": {
+    "normal": [{}],
+    "inventory": [{
+      "custom": { "flip-v" : true},
+      "model": "pneumaticcraft:assembly_drill.obj",
+      "transform": "forge:default-block"
+    }]
+  }
 }
