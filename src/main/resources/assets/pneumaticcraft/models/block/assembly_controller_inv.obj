@@ -1,7 +1,7 @@
 # Exported from Tabula using TabulaObj - Kihira
 # File created at Fri Jan 15 10:34:40 CET 2016
 
-mtllib assembly_controller.mtl
+mtllib assembly_controller_inv.mtl
 usemtl defaultMaterial
 
 #

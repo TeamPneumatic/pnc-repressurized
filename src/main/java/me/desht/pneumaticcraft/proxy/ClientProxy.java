@@ -15,10 +15,7 @@ import me.desht.pneumaticcraft.client.render.pneumaticArmor.CoordTrackUpgradeHan
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.UpgradeRenderHandlerList;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.entitytracker.EntityTrackHandler;
-import me.desht.pneumaticcraft.client.render.tileentity.PressureTubeModuleRenderer;
-import me.desht.pneumaticcraft.client.render.tileentity.RenderAirCannon;
-import me.desht.pneumaticcraft.client.render.tileentity.RenderAphorismTile;
-import me.desht.pneumaticcraft.client.render.tileentity.RenderPneumaticDoor;
+import me.desht.pneumaticcraft.client.render.tileentity.*;
 import me.desht.pneumaticcraft.client.semiblock.ClientSemiBlockManager;
 import me.desht.pneumaticcraft.common.CommonHUDHandler;
 import me.desht.pneumaticcraft.common.HackTickHandler;
@@ -75,10 +72,11 @@ public class ClientProxy extends CommonProxy {
         OBJLoader.INSTANCE.addDomain(Names.MOD_ID);
         ModelLoaderRegistry.registerLoader(LoaderProgrammingPuzzle.instance);
 
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPressureTube.class, new PressureTubeModuleRenderer());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPressureTube.class, new RenderPressureTubeModule());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAphorismTile.class, new RenderAphorismTile());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAirCannon.class, new RenderAirCannon());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPneumaticDoor.class, new RenderPneumaticDoor());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAssemblyController.class, new RenderAssemblyController());
 
         MinecraftForge.EVENT_BUS.register(new ClientEventHandler());
 

@@ -172,6 +172,12 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
 
     }
 
+    @Override
+    public void onDescUpdate() {
+        // appears to be necessary to allow the connector tube to be redrawn (or not)
+        getWorld().markBlockRangeForRenderUpdate(getPos(), getPos());
+    }
+
     private void setStatus(String text) {
 //        if (!text.equals(displayedText)) System.out.println("Status change! " + displayedText + " -> " + text);
         displayedText = text;
@@ -254,6 +260,7 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
         for (Pair<EnumFacing, IAirHandler> entry : connections) {
             sidesConnected[entry.getKey().ordinal()] = true;
         }
+        sendDescriptionPacket();
     }
 
     @Override

@@ -48,10 +48,11 @@ With all that said, have fun!
 * Pneumatic Doors
 * Tube Modules
 * Heat Frame
+* ComputerCraft integration
 
 ### Functional but Needs Clientside Work
 
-* Vortex tube & Heat Sink don't show colours to indicate temperature (OBJ models can't have a tintindex - may to Heat Sink with JSON, Vortex Tube may need a TESR)
+* Vortex tube & Heat Sink don't show colours to indicate temperature (OBJ models can't have a tintindex - may need to redo Heat Sink with JSON, Vortex Tube may need a TESR?)
 * Miniguns (ammo works, mobs die, but no item model)
 * Vortex Cannon (vortex entities work fine but cannon needs an item model)
 

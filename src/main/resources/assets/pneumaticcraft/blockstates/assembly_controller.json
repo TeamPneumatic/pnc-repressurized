@@ -1,14 +1,56 @@
 {
-    "forge_marker": 1,
-    "defaults": {
-        "textures": {},
-        "custom": { "flip-v" : true},
-        "model": "pneumaticcraft:assembly_controller.obj"
+  "forge_marker": 1,
+  "defaults": {
+    "textures": {
+      "pipe": "pneumaticcraft:blocks/pressure_tube",
+      "base": "pneumaticcraft:blocks/assembly_base",
+      "leg": "pneumaticcraft:blocks/compressed_iron_block",
+      "particle": "pneumaticcraft:blocks/assembly_base"
     },
-	"variants": {
-		"normal": [{}],
-		"inventory": [{
-          "transform": "forge:default-block"
-        }]
-	}
+    "model": "pneumaticcraft:assembly_controller"
+  },
+  "variants": {
+    "normal": [{}],
+    "inventory": [{
+      "model": "pneumaticcraft:assembly_controller_inv.obj",
+      "custom": { "flip-v" : true},
+      "transform": "forge:default-block"
+    }],
+    "down": {
+      "false": {},
+      "true": {}
+    },
+    "north": {
+      "false": {},
+      "true": {
+        "submodel": {
+          "north": { "model": "pneumaticcraft:assembly_connector",  "transform": { "translation": [ 0, 0, -0.375 ], "rotation": { "y": 180 } } }
+        }
+      }
+    },
+    "south": {
+      "false": {},
+      "true": {
+        "submodel": {
+          "south": { "model": "pneumaticcraft:assembly_connector",  "transform": { "translation": [ 0, 0, 0.375 ]} }
+        }
+      }
+    },
+    "west": {
+      "false": {},
+      "true": {
+        "submodel": {
+          "west": { "model": "pneumaticcraft:assembly_connector",  "transform": { "translation": [ -0.375, 0, 0 ], "rotation": { "y": 270 } } }
+        }
+      }
+    },
+    "east": {
+      "false": {},
+      "true": {
+        "submodel": {
+          "east": { "model": "pneumaticcraft:assembly_connector",  "transform": { "translation": [ 0.375, 0, -0 ], "rotation": { "y": 90 } } }
+        }
+      }
+    }
+  }
 }

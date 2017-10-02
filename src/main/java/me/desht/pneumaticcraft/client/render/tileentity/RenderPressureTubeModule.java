@@ -16,7 +16,7 @@ import org.lwjgl.opengl.GL11;
 
 import java.util.Arrays;
 
-public class PressureTubeModuleRenderer extends TileEntitySpecialRenderer<TileEntityPressureTube> {
+public class RenderPressureTubeModule extends TileEntitySpecialRenderer<TileEntityPressureTube> {
 
     @Override
     public void render(TileEntityPressureTube tile, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
