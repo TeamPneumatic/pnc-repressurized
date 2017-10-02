@@ -17,6 +17,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 
+import javax.annotation.Nonnull;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.PriorityQueue;
@@ -113,7 +114,7 @@ public class DroneAILogistics extends EntityAIBase {
         } else if (drone.getTank().getFluidAmount() > 0) {
             if (!isPosPathfindable(task.requester.getPos())) return false;
             curAI = new DroneAILiquidExport(drone, new FakeWidgetLogistics(task.requester.getPos(), task.transportingFluid.stack));
-        } else if (task.transportingItem != null) {
+        } else if (!task.transportingItem.isEmpty()) {
             if (!isPosPathfindable(task.provider.getPos())) return false;
             curAI = new DroneEntityAIInventoryImport(drone, new FakeWidgetLogistics(task.provider.getPos(), task.transportingItem));
         } else {
@@ -137,17 +138,20 @@ public class DroneAILogistics extends EntityAIBase {
 
     private static class FakeWidgetLogistics extends ProgWidgetAreaItemBase implements ISidedWidget, ICountWidget,
             ILiquidFiltered {
-        private ItemStack stack;
-        private FluidStack fluid;
+        @Nonnull
+        private final ItemStack stack;
+        private final FluidStack fluid;
         private final Set<BlockPos> area;
 
         FakeWidgetLogistics(BlockPos pos, ItemStack stack) {
             this.stack = stack;
+            this.fluid = null;
             area = new HashSet<>();
             area.add(pos);
         }
 
         FakeWidgetLogistics(BlockPos pos, FluidStack fluid) {
+            this.stack = ItemStack.EMPTY;
             this.fluid = fluid;
             area = new HashSet<>();
             area.add(pos);

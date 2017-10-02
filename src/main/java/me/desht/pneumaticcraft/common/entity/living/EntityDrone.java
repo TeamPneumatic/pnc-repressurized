@@ -16,6 +16,7 @@ import me.desht.pneumaticcraft.common.ai.DroneAIManager.EntityAITaskEntry;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.item.ItemGPSTool;
+import me.desht.pneumaticcraft.common.item.ItemMachineUpgrade;
 import me.desht.pneumaticcraft.common.item.ItemProgrammingPuzzle;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
@@ -105,7 +106,7 @@ public class EntityDrone extends EntityDroneBase
     }
 
     private boolean isChangingCurrentStack;//used when syncing up the stacks of the drone with the fake player. Without it they'll keep syncing resulting in a stackoverflow.
-    private ItemHandlerDrone inventory = new ItemHandlerDrone(0);
+    private ItemHandlerDrone inventory = new ItemHandlerDrone(1);
     private final FluidTank tank = new FluidTank(Integer.MAX_VALUE);
     private ItemStackHandler upgradeInventory = new ItemStackHandler(9);
     private final int[] emittingRedstoneValues = new int[6];
@@ -792,7 +793,9 @@ public class EntityDrone extends EntityDroneBase
 
         // Read in the ItemStacks in the inventory from NBT
         NBTTagCompound inv = tag.getCompoundTag("Inventory");
+        inventory = new ItemHandlerDrone(1 + getUpgrades(EnumUpgrade.DISPENSER));
         inventory.deserializeNBT(inv.getCompoundTag("Inv"));
+        if (inventory.getSlots() < 1) inventory = new ItemHandlerDrone(1);
         upgradeInventory.deserializeNBT(inv.getCompoundTag("Items"));
 
         tank.setCapacity(PneumaticValues.DRONE_TANK_SIZE * (1 + getUpgrades(EnumUpgrade.DISPENSER)));

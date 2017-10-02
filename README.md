@@ -26,6 +26,7 @@ With all that said, have fun!
 * Pressure chamber interface
 * Etching Acid
 * UV Light Box
+* Assembly system
 * Pneumatic Helmet (there may be some persistence issues with keybinds etc?)
 * Oil lake generation
 * Gas Lift
@@ -49,6 +50,7 @@ With all that said, have fun!
 * Tube Modules
 * Heat Frame
 * ComputerCraft integration
+* Logistics Drones & Frames (not well tested: active provider frame & default storage frame work with logistics drone)
 
 ### Functional but Needs Clientside Work
 
@@ -59,7 +61,6 @@ With all that said, have fun!
 ### Not Working Yet
 
 * Multipart pressure tubes with MCMP2; support is in, but not working yet.  I need to get a better understanding of the API.  Pressure tubes work fine if you set "mcmultipart" to "false" in ``config/pneumaticcraft/thirdparty.cfg``.
-* Assembly system (server-side logic not quite working, no client rendering of rotating robotic arms)
 * Elevators (no client-side rendering, raises player but player drops as soon as lift reaches top)
 * Pneumatic Villagers
 * Flux Compressor (not in game, need to reimplement using Forge Energy)
@@ -71,5 +72,4 @@ With all that said, have fun!
 * Security system
 * Amadron system
 * Programmable Controller
-* Logistics Drones & Frames
 

@@ -14,6 +14,7 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.IItemHandler;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -159,25 +160,26 @@ public class LogisticsManager {
     public static class LogisticsTask implements Comparable<LogisticsTask> {
 
         public final SemiBlockLogistics provider, requester;
+        @Nonnull
         public final ItemStack transportingItem;
         public final FluidStackWrapper transportingFluid;
 
-        public LogisticsTask(SemiBlockLogistics provider, SemiBlockLogistics requester, ItemStack transportingItem) {
+        LogisticsTask(SemiBlockLogistics provider, SemiBlockLogistics requester, ItemStack transportingItem) {
             this.provider = provider;
             this.requester = requester;
             this.transportingItem = transportingItem;
             transportingFluid = null;
         }
 
-        public LogisticsTask(SemiBlockLogistics provider, SemiBlockLogistics requester,
-                             FluidStackWrapper transportingFluid) {
+        LogisticsTask(SemiBlockLogistics provider, SemiBlockLogistics requester,
+                      FluidStackWrapper transportingFluid) {
             this.provider = provider;
             this.requester = requester;
             this.transportingFluid = transportingFluid;
             transportingItem = ItemStack.EMPTY;
         }
 
-        public void informRequester() {
+        void informRequester() {
             if (!transportingItem.isEmpty()) {
                 requester.informIncomingStack(transportingItem);
             } else {
