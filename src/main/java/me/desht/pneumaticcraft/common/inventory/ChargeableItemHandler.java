@@ -8,13 +8,13 @@ import net.minecraftforge.items.ItemStackHandler;
 public class ChargeableItemHandler extends ItemStackHandler {
     private static final int INVENTORY_SIZE = 9;
 
-    private final ItemStack armorStack;
+    private final ItemStack chargingItem;
     private final TileEntityChargingStation te;
 
     public ChargeableItemHandler(TileEntityChargingStation te) {
         super(INVENTORY_SIZE);
 
-        this.armorStack = te.getChargingItem();
+        this.chargingItem = te.getChargingItem();
         this.te = te;
 
         if (!hasInventory()) {
@@ -31,7 +31,7 @@ public class ChargeableItemHandler extends ItemStackHandler {
     }
 
     private boolean hasInventory() {
-        return NBTUtil.hasTag(armorStack, "UpgradeInventory");
+        return NBTUtil.hasTag(chargingItem, "UpgradeInventory");
     }
 
     private void createInventory() {
@@ -47,13 +47,11 @@ public class ChargeableItemHandler extends ItemStackHandler {
     }
 
     public void writeToNBT() {
-//        NBTTagCompound inv = new NBTTagCompound();
-//        inv.setTag("Items", serializeNBT());
-        NBTUtil.setCompoundTag(armorStack, "UpgradeInventory", serializeNBT());
+        NBTUtil.setCompoundTag(chargingItem, "UpgradeInventory", serializeNBT());
     }
 
     private void readFromNBT() {
-        deserializeNBT(NBTUtil.getCompoundTag(armorStack, "UpgradeInventory"));
+        deserializeNBT(NBTUtil.getCompoundTag(chargingItem, "UpgradeInventory"));
     }
 
 }

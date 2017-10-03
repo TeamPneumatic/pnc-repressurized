@@ -9,12 +9,10 @@ import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.proxy.CommonProxy.EnumGuiId;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -32,8 +30,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class ItemDrone extends ItemPneumatic implements IPressurizable, IChargingStationGUIHolderItem, IProgrammable,
-        IUpgradeAcceptor {
+public class ItemDrone extends ItemPneumatic implements IPressurizable, IChargingStationGUIHolderItem, IProgrammable, IUpgradeAcceptor {
 
     ItemDrone(String registryName) {
         super(registryName);
@@ -143,23 +140,9 @@ public class ItemDrone extends ItemPneumatic implements IPressurizable, IChargin
         return true;
     }
 
-
-    /**
-     * Called each tick as long the item is on a player inventory. Uses by maps to check if is on a player hand and
-     * update it's contents.
-     */
-    @Override
-    public void onUpdate(ItemStack stack, World world, Entity entityIn, int itemSlot, boolean isSelected) {
-        if (!world.isRemote && NBTUtil.hasTag(stack, "Inventory") && stack.getTagCompound().getTag("Inventory") instanceof NBTTagCompound) {
-            Log.info("Converting 'Inventory' tag to 'UpgradeInventory' in Pneumatic items");
-            stack.getTagCompound().setTag("UpgradeInventory", stack.getTagCompound().getTag("Inventory"));
-            stack.getTagCompound().removeTag("Inventory");
-        }
-    }
-
     @Override
     public Set<Item> getApplicableUpgrades() {
-        Set<Item> set = new HashSet<Item>();
+        Set<Item> set = new HashSet<>();
         set.add(Itemss.upgrades.get(EnumUpgrade.VOLUME));
         set.add(Itemss.upgrades.get(EnumUpgrade.DISPENSER));
         set.add(Itemss.upgrades.get(EnumUpgrade.ITEM_LIFE));

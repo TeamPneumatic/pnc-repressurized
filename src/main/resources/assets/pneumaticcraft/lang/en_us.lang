@@ -277,6 +277,7 @@ gui.remote.dropdown.dropDownElements.tooltip=Specifies the drop down elements. E
 # entities
 entity.Drone.name=Drone
 entity.logisticDrone.name=Logistic Drone
+entity.Villager.pneumaticcraft.mechanic=Mechanic
 
 # Helmet hacking
 pneumaticHelmet.hacking.hacking=Hacking...

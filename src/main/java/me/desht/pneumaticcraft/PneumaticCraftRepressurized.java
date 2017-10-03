@@ -99,7 +99,6 @@ public class PneumaticCraftRepressurized {
         TileEntityRegistrator.init();
         EntityRegistrator.init();
         SemiBlockInitializer.preInit();
-        //TODO 1.8 fix  VillagerHandler.instance().init();
         GameRegistry.registerWorldGenerator(new WorldGeneratorPneumaticCraft(), 0);
         HeatBehaviourManager.getInstance().init();
 
