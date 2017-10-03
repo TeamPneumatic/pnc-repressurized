@@ -275,8 +275,8 @@ gui.remote.dropdown.dropDownElements=Drop-down elements:
 gui.remote.dropdown.dropDownElements.tooltip=Specifies the drop down elements. Every element needs to be separated with a ','.
 
 # entities
-entity.PneumaticCraft.Drone.name=Drone
-entity.PneumaticCraft.logisticDrone.name=Logistic Drone
+entity.Drone.name=Drone
+entity.logisticDrone.name=Logistic Drone
 
 # Helmet hacking
 pneumaticHelmet.hacking.hacking=Hacking...
