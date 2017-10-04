@@ -11,29 +11,21 @@
 			"down": {"x" : -90},
 			"east": {
 				"transform": {
-					"scale": [ 1.6, 1.6, 1.6 ],
-					"rotation": {"y" : 90},
-					"translation": [ -0.0625, 0.3, 0.02 ]
+					"rotation": {"y" : 90}
 				}
 			},
 			"north": {
 				"transform": {
-					"scale": [ 1.6, 1.6, 1.6 ],
-					"translation": [ 0.02, 0.3, 0.0625 ],
 					"rotation": {"y" : 180}
 				}
 			},
 			"west": {
 				"transform": {
-					"scale": [ 1.6, 1.6, 1.6 ],
-					"translation": [ 0.0625, 0.3, -0.02 ],
 					"rotation": {"y": 270}
 				}
 			},
 			"south": {
 				"transform": {
-					"scale": [ 1.6, 1.6, 1.6 ],
-					"translation": [ -0.02, 0.3, -0.0625 ]
 				}
 			}
 		},

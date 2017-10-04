@@ -54,11 +54,9 @@ import java.util.Set;
 
 @Optional.InterfaceList({@Optional.Interface(iface = "dan200.computercraft.api.peripheral.IPeripheral", modid = ModIds.COMPUTERCRAFT)})
 public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, IDescSynced, ITickable, IUpgradeAcceptor, IPeripheral {
-    /**
-     * True only the first time updateEntity invokes in a session.
-     */
+    @DescSynced
     protected UpgradeHandler upgradeHandler;
-    protected boolean firstRun = true;
+    protected boolean firstRun = true;  // True only the first time updateEntity invokes in a session
     private boolean descriptionPacketScheduled;
     private List<SyncedField> descriptionFields;
     protected int poweredRedstone; // The redstone strength currently applied to the block.
@@ -68,12 +66,12 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     private final Set<Item> applicableUpgrades = new HashSet<>();
 
     public TileEntityBase() {
-        this.upgradeHandler = null;
+        this(0);
     }
 
     public TileEntityBase(int upgradeSize) {
         addLuaMethods();
-        this.upgradeHandler = upgradeSize > 0 ? new UpgradeHandler(upgradeSize) : null;
+        this.upgradeHandler = new UpgradeHandler(upgradeSize);
     }
 
     protected void addApplicableUpgrade(EnumUpgrade... upgrades) {

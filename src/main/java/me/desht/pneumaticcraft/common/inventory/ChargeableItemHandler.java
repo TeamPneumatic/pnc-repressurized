@@ -1,11 +1,13 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.NBTUtil;
+import me.desht.pneumaticcraft.common.item.ItemMachineUpgrade;
+import me.desht.pneumaticcraft.common.tileentity.FilteredItemStackHandler;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.ItemStackHandler;
 
-public class ChargeableItemHandler extends ItemStackHandler {
+public class ChargeableItemHandler extends FilteredItemStackHandler {
     private static final int INVENTORY_SIZE = 9;
 
     private final ItemStack chargingItem;
@@ -54,4 +56,8 @@ public class ChargeableItemHandler extends ItemStackHandler {
         deserializeNBT(NBTUtil.getCompoundTag(chargingItem, "UpgradeInventory"));
     }
 
+    @Override
+    public boolean test(Integer integer, ItemStack itemStack) {
+        return itemStack.isEmpty() || itemStack.getItem() instanceof ItemMachineUpgrade;
+    }
 }

@@ -10,15 +10,13 @@ import me.desht.pneumaticcraft.common.inventory.ContainerChargingStationItemInve
 import me.desht.pneumaticcraft.common.item.IChargingStationGUIHolderItem;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.proxy.CommonProxy.EnumGuiId;
-import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -34,7 +32,7 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TileEntityChargingStation extends TileEntityPneumaticBase implements IRedstoneControl {
+public class TileEntityChargingStation extends TileEntityPneumaticBase implements IRedstoneControl, ICamouflageableTE {
     @DescSynced
     private ChargingStationHandler inventory;
     private ChargeableItemHandler chargeableInventory;
@@ -55,6 +53,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     public float renderAirProgress;
     @DescSynced
     private ItemStack camoStack = ItemStack.EMPTY;
+    private IBlockState camoState;
 
     public TileEntityChargingStation() {
         super(PneumaticValues.DANGER_PRESSURE_CHARGING_STATION, PneumaticValues.MAX_PRESSURE_CHARGING_STATION, PneumaticValues.VOLUME_CHARGING_STATION, 4);
@@ -62,21 +61,25 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
         addApplicableUpgrade(EnumUpgrade.SPEED, EnumUpgrade.DISPENSER);
     }
 
-    @Nonnull
-    public ItemStack getCamoStack() {
-        if (camoStack.isEmpty() || !(camoStack.getItem() instanceof ItemBlock)) {
-            return new ItemStack(Blocks.COBBLESTONE);
-        }
-        Block block = ((ItemBlock) camoStack.getItem()).getBlock();
-        if (PneumaticCraftUtils.isRenderIDCamo(block.getDefaultState().getRenderType())) {
-            return camoStack;
-        } else {
-            return new ItemStack(Blocks.COBBLESTONE);
-        }
-    }
-
     public void setCamoStack(@Nonnull ItemStack stack) {
         camoStack = stack;
+        sendDescriptionPacket();
+    }
+
+    @Override
+    public void onDescUpdate() {
+        cacheCamo(true);
+    }
+
+    private void cacheCamo(boolean renderNow) {
+        if (!camoStack.isEmpty() && camoStack.getItem() instanceof ItemBlock) {
+            camoState = ((ItemBlock) camoStack.getItem()).getBlock().getStateFromMeta(camoStack.getMetadata());
+        } else {
+            camoState = null;
+        }
+        if (renderNow) {
+            getWorld().markBlockRangeForRenderUpdate(getPos(), getPos());
+        }
     }
 
     @Nonnull
@@ -185,7 +188,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
         }
     }
 
-    private boolean shouldEmitRedstone() {
+    public boolean shouldEmitRedstone() {
         // if(!getWorld().isRemote) System.out.println("redstone mode: " +
         // redstoneMode + ", charging: " + charging + ",discharging: " +
         // disCharging);
@@ -241,6 +244,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
         } else {
             camoStack = ItemStack.EMPTY;
         }
+        cacheCamo(false);
     }
 
     @Override
@@ -284,6 +288,11 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     @Override
     protected boolean shouldRerenderChunkOnDescUpdate() {
         return true;
+    }
+
+    @Override
+    public IBlockState getCamouflage() {
+        return camoState;
     }
 
     private class ChargingStationHandler extends FilteredItemStackHandler {

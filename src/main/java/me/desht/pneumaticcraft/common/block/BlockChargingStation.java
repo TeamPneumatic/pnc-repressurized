@@ -16,7 +16,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-public class BlockChargingStation extends BlockPneumaticCraftModeled {
+public class BlockChargingStation extends BlockPneumaticCraftCamo {
 
     private static final AxisAlignedBB BOUNDS = new AxisAlignedBB(
             BBConstants.CHARGING_STATION_MIN_POS, 0F, BBConstants.CHARGING_STATION_MIN_POS,
@@ -54,11 +54,27 @@ public class BlockChargingStation extends BlockPneumaticCraftModeled {
     @Override
     public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float par7, float par8, float par9) {
         if (!world.isRemote && player.isSneaking()) {
-            TileEntityChargingStation station = (TileEntityChargingStation) world.getTileEntity(pos);
-            station.setCamoStack(player.getHeldItemMainhand());
-            return player.getHeldItemMainhand().getItem() instanceof ItemBlock;
-        } else {
-            return super.onBlockActivated(world, pos, state, player, hand, side, par7, par8, par9);
+            TileEntity te = world.getTileEntity(pos);
+            if (te instanceof TileEntityChargingStation) {
+                TileEntityChargingStation teCS = (TileEntityChargingStation) te;
+                teCS.setCamoStack(player.getHeldItemMainhand());
+                return true;
+            }
         }
+        return super.onBlockActivated(world, pos, state, player, hand, side, par7, par8, par9);
+    }
+
+    @Override
+    public boolean canProvidePower(IBlockState state) {
+        return true;
+    }
+
+    @Override
+    public int getWeakPower(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
+        TileEntity te = blockAccess.getTileEntity(pos);
+        if (te instanceof TileEntityChargingStation) {
+            return ((TileEntityChargingStation) te).shouldEmitRedstone() ? 15 : 0;
+        }
+        return 0;
     }
 }

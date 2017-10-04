@@ -83,14 +83,14 @@ public abstract class BlockPneumaticCraftCamo extends BlockPneumaticCraftModeled
     @Override
     public boolean doesSideBlockRendering(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing face) {
         IBlockState camo = getCamoState(world, pos);
-        return camo == null || camo.doesSideBlockRendering(world, pos, face);
+        return camo == null ? super.doesSideBlockRendering(state, world, pos, face) : camo.doesSideBlockRendering(world, pos, face);
     }
 
     @Override
     public boolean isSideSolid(IBlockState base_state, IBlockAccess world, BlockPos pos, EnumFacing side) {
         // ensure levers etc. can be attached to the block even though it can possibly emit redstone
         IBlockState camo = getCamoState(world, pos);
-        return camo == null || camo.isSideSolid(world, pos, side);
+        return camo == null ? super.isSideSolid(base_state, world, pos, side) : camo.isSideSolid(world, pos, side);
     }
 
 //    @Override
