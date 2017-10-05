@@ -233,7 +233,7 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
 
     @Override
     protected void drawGuiContainerForegroundLayer(int x, int y) {
-        if (getInvNameOffset() != null) {
+        if (te != null && getInvNameOffset() != null) {
             String containerName = I18n.format(te.getName() + ".name");
             fontRenderer.drawString(containerName, xSize / 2 - fontRenderer.getStringWidth(containerName) / 2 + getInvNameOffset().x, 6 + getInvNameOffset().y, getTitleColor());
         }

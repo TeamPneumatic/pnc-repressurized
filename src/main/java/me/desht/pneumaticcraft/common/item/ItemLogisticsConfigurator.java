@@ -28,11 +28,13 @@ public class ItemLogisticsConfigurator extends ItemPressurizable {
                     return EnumActionResult.SUCCESS;
                 } else {
                     if (semiBlock.onRightClickWithConfigurator(player)) {
-                        addAir(stack, -100);
+                        addAir(stack, -PneumaticValues.USAGE_LOGISTICS_CONFIGURATOR);
                         return EnumActionResult.SUCCESS;
                     }
                 }
             }
+        } else if (world.isRemote) {
+            return EnumActionResult.SUCCESS;
         }
         return EnumActionResult.PASS;
     }

@@ -15,6 +15,7 @@ import net.minecraft.inventory.IContainerListener;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import org.lwjgl.input.Keyboard;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -110,19 +111,6 @@ public class ContainerPneumaticBase<Tile extends TileEntityBase> extends Contain
 
                 srcSlot.onSlotChange(stackInSlot, var3);
             } else {
-                /* int validStartSlot = -1; Unncessary, as Forge now adds respect to slot.isItemValid to mergeItemStack
-                 for(int i = 0; i < playerSlotsStart; i++) {
-                     boolean slotValid = inventorySlots.get(i).isItemValid(var5);
-                     if(slotValid && validStartSlot == -1) {
-                         validStartSlot = i;
-                     } else if(!slotValid && validStartSlot >= 0) {
-                         if(!mergeItemStack(var5, validStartSlot, i, false)) return null;
-                         validStartSlot = -1;
-                     }
-                 }
-                 if(validStartSlot >= 0) {
-                     if(!mergeItemStack(var5, validStartSlot, playerSlotsStart, false)) return null;
-                 }*/
                 if (!mergeItemStack(stackInSlot, 0, playerSlotsStart, false))
                     return ItemStack.EMPTY;
                 srcSlot.onSlotChange(stackInSlot, var3);
@@ -163,7 +151,7 @@ public class ContainerPneumaticBase<Tile extends TileEntityBase> extends Contain
             if (((IPhantomSlot) slot).canAdjust()) {
                 slot.putStack(ItemStack.EMPTY);
             }
-        } else if (clickType == ClickType.PICKUP && (dragType == 0 || dragType == 1)) {
+        } else if ((clickType == ClickType.PICKUP || clickType == ClickType.QUICK_MOVE) && (dragType == 0 || dragType == 1)) {
             // left or right-click...
             InventoryPlayer playerInv = player.inventory;
             slot.onSlotChanged();
@@ -190,9 +178,7 @@ public class ContainerPneumaticBase<Tile extends TileEntityBase> extends Contain
     }
 
     private boolean canStacksMerge(ItemStack stack1, ItemStack stack2) {
-        if (stack1.isEmpty() || stack2.isEmpty()) return false;
-        if (!stack1.isItemEqual(stack2)) return false;
-        return ItemStack.areItemStackTagsEqual(stack1, stack2);
+        return !(stack1.isEmpty() || stack2.isEmpty()) && stack1.isItemEqual(stack2) && ItemStack.areItemStackTagsEqual(stack1, stack2);
     }
 
     private void adjustPhantomSlot(Slot slot, ClickType clickType, int dragType) {
@@ -201,11 +187,17 @@ public class ContainerPneumaticBase<Tile extends TileEntityBase> extends Contain
         }
         ItemStack stackSlot = slot.getStack().copy();
         if (dragType == 1) {
-            // right-click: increase stack size
-            stackSlot.setCount(Math.min(stackSlot.getCount() + 1, slot.getSlotStackLimit()));
+            if (clickType == ClickType.QUICK_MOVE) {
+                stackSlot.setCount(Math.min(stackSlot.getCount() * 2, slot.getSlotStackLimit())); // shift-r-click: double stack size
+            } else {
+                stackSlot.setCount(Math.min(stackSlot.getCount() + 1, slot.getSlotStackLimit())); // r-click: increase stack size
+            }
         } else if (dragType == 0) {
-            // left-click: decrease stack size
-            stackSlot.shrink(1);
+            if (clickType == ClickType.QUICK_MOVE) {
+                stackSlot.setCount(stackSlot.getCount() / 2); // shift-l-click: half stack size
+            } else {
+                stackSlot.shrink(1); // l-click: decrease stack size
+            }
         }
         slot.putStack(stackSlot);
     }

@@ -32,8 +32,8 @@ import java.util.Iterator;
 
 @SideOnly(Side.CLIENT)
 public class GuiSearcher extends InventoryEffectRenderer {
-    private static final ResourceLocation guiTexture = new ResourceLocation(Textures.GUI_ITEM_SEARCHER_LOCATION);
-    private static final ResourceLocation scrollTexture = new ResourceLocation("textures/gui/container/creative_inventory/tabs.png");
+    private static final ResourceLocation GUI_TEXTURE = new ResourceLocation(Textures.GUI_ITEM_SEARCHER_LOCATION);
+    private static final ResourceLocation SCROLL_TEXTURE = new ResourceLocation("textures/gui/container/creative_inventory/tabs.png");
 //    private final InventoryBasic inventory = new InventoryBasic("tmp", true, 49);
     private final ItemStackHandler inventory = new ItemStackHandler(49);
     private final GuiScreen parentScreen;
@@ -343,6 +343,8 @@ public class GuiSearcher extends InventoryEffectRenderer {
      */
     @Override
     public void drawScreen(int par1, int par2, float par3) {
+        drawDefaultBackground();
+
         boolean flag = Mouse.isButtonDown(0);
         int k = guiLeft;
         int l = guiTop;
@@ -389,7 +391,7 @@ public class GuiSearcher extends InventoryEffectRenderer {
      */
     @Override
     protected void drawGuiContainerBackgroundLayer(float par1, int par2, int par3) {
-        mc.getTextureManager().bindTexture(guiTexture);
+        mc.getTextureManager().bindTexture(GUI_TEXTURE);
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
         drawTexturedModalRect(xStart, yStart, 0, 0, xSize, ySize);
@@ -398,7 +400,7 @@ public class GuiSearcher extends InventoryEffectRenderer {
         int i1 = guiLeft + 156;
         int k = guiTop + 48;
         int l = k + 112;
-        mc.getTextureManager().bindTexture(scrollTexture);
+        mc.getTextureManager().bindTexture(SCROLL_TEXTURE);
         drawTexturedModalRect(i1, k + (int) ((l - k - 17) * currentScroll), 232 + (needsScrollBars() ? 0 : 12), 0, 12, 15);
 
     }

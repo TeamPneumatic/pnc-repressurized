@@ -41,23 +41,14 @@ public class ItemPneumaticWrench extends ItemPressurizable /*implements IToolWre
             }
             boolean didWork = true;
             float pressure = ((ItemPneumaticWrench) Itemss.PNEUMATIC_WRENCH).getPressure(stack);
-            if (SemiBlockManager.getInstance(world).getSemiBlock(world, pos) != null
-                    && pressure > 0 && player.isSneaking()) {
-                if (!player.capabilities.isCreativeMode) {
-                    SemiBlockManager.getInstance(world).breakSemiBlock(world, pos, player);
-                } else {
-                    SemiBlockManager.getInstance(world).setSemiBlock(world, pos, null);
-                }
-            } else if (wrenchable != null && pressure > 0) {
+            if (wrenchable != null && pressure > 0) {
                 if (wrenchable.rotateBlock(world, player, pos, side)) {
                     if (!player.capabilities.isCreativeMode)
                         ((ItemPneumaticWrench) Itemss.PNEUMATIC_WRENCH).addAir(stack, -PneumaticValues.USAGE_PNEUMATIC_WRENCH);
                 }
             } else {
                 // rotating normal blocks doesn't use pressure
-                if (!block.rotateBlock(world, pos, side)) {
-                    didWork = false;
-                }
+                didWork = block.rotateBlock(world, pos, side);
             }
             if (didWork) playWrenchSound(world, pos);
             return didWork ? EnumActionResult.SUCCESS : EnumActionResult.PASS;

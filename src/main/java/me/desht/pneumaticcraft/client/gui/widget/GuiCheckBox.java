@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.client.gui.widget;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
@@ -43,14 +44,14 @@ public class GuiCheckBox extends Gui implements IGuiWidget {
 
     @Override
     public void render(int mouseX, int mouseY, float partialTick) {
-        drawRect(x, y, x + CHECKBOX_WIDTH, y + CHECKBOX_HEIGHT, enabled ? -6250336 : 0xFF999999);
-        drawRect(x + 1, y + 1, x + CHECKBOX_WIDTH - 1, y + CHECKBOX_HEIGHT - 1, enabled ? -16777216 : 0xFFAAAAAA);
+        drawRect(x, y, x + CHECKBOX_WIDTH, y + CHECKBOX_HEIGHT, enabled ? 0xFFA0A0A0 : 0xFF999999);
+        drawRect(x + 1, y + 1, x + CHECKBOX_WIDTH - 1, y + CHECKBOX_HEIGHT - 1, enabled ? 0xFF404040 : 0xFFAAAAAA);
         if (checked) {
-            GL11.glDisable(GL11.GL_TEXTURE_2D);
+            GlStateManager.disableTexture2D();;
             if (enabled) {
-                GL11.glColor4d(1, 1, 1, 1);
+                GlStateManager.color(1, 1, 1, 1);
             } else {
-                GL11.glColor4d(0.8, 0.8, 0.8, 1);
+                GlStateManager.color(0.8f, 0.8f, 0.8f, 1);
             }
             BufferBuilder wr = Tessellator.getInstance().getBuffer();
             wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
@@ -58,7 +59,8 @@ public class GuiCheckBox extends Gui implements IGuiWidget {
             wr.pos(x + 5, y + 7, zLevel).endVertex();
             wr.pos(x + 8, y + 3, zLevel).endVertex();
             Tessellator.getInstance().draw();
-            GL11.glEnable(GL11.GL_TEXTURE_2D);
+            GlStateManager.enableTexture2D();
+            GlStateManager.color(0.25f, 0.25f, 0.25f, 1);
         }
         fontRenderer.drawString(I18n.format(text), x + 1 + CHECKBOX_WIDTH, y + CHECKBOX_HEIGHT / 2 - fontRenderer.FONT_HEIGHT / 2, enabled ? color : 0xFF888888);
     }

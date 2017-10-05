@@ -55,11 +55,11 @@ public class GuiLogisticsBase<Logistics extends SemiBlockLogistics> extends GuiP
             NetworkHandler.sendToServer(new PacketSetLogisticsFluidFilterStack(logistics, filter, editingSlot));
             fluidSearchGui = null;
         }
-        String invisibleText = I18n.format("gui.logisticFrame.invisible");
-        addWidget(invisible = new GuiCheckBox(9, guiLeft + xSize - 15 - fontRenderer.getStringWidth(invisibleText), guiTop + 7, 0xFF000000, invisibleText));
-        invisible.setTooltip(Arrays.asList(WordUtils.wrap(I18n.format("gui.logisticFrame.invisible.tooltip"), 40).split(System.getProperty("line.separator"))));
+        String invisibleText = I18n.format("gui.logistic_frame.invisible");
+        addWidget(invisible = new GuiCheckBox(9, guiLeft + xSize - 15 - fontRenderer.getStringWidth(invisibleText), guiTop + 7, 0xFF404040, invisibleText));
+        invisible.setTooltip(Arrays.asList(WordUtils.wrap(I18n.format("gui.logistic_frame.invisible.tooltip"), 40).split(System.getProperty("line.separator"))));
         addWidget(new WidgetLabel(guiLeft + 8, guiTop + 18, I18n.format(String.format("gui.%s.filters", SemiBlockManager.getKeyForSemiBlock(logistics)))));
-        addWidget(new WidgetLabel(guiLeft + 8, guiTop + 90, I18n.format("gui.logisticFrame.liquid")));
+        addWidget(new WidgetLabel(guiLeft + 8, guiTop + 90, I18n.format("gui.logistic_frame.liquid")));
         for (int i = 0; i < 9; i++) {
             addWidget(new WidgetFluidStack(i, guiLeft + i * 18 + 8, guiTop + 101, logistics.getTankFilter(i)));
         }

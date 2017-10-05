@@ -1,19 +1,28 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import me.desht.pneumaticcraft.client.util.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -135,4 +144,74 @@ public class GuiUtils {
         GL11.glDisable(GL12.GL_RESCALE_NORMAL);
     }
 
+    private static final int TEX_WIDTH = 16;
+    private static final int TEX_HEIGHT = 16;
+
+    public static void drawFluid(final Rectangle bounds, @Nullable FluidStack fluidStack, @Nullable IFluidTank tank) {
+        if (fluidStack == null || fluidStack.getFluid() == null) {
+            return;
+        }
+
+        Fluid fluid = fluidStack.getFluid();
+        TextureMap textureMapBlocks = Minecraft.getMinecraft().getTextureMapBlocks();
+        ResourceLocation fluidStill = fluid.getStill();
+        TextureAtlasSprite fluidStillSprite = null;
+        if (fluidStill != null) {
+            fluidStillSprite = textureMapBlocks.getTextureExtry(fluidStill.toString());
+        }
+        if (fluidStillSprite == null) {
+            fluidStillSprite = textureMapBlocks.getMissingSprite();
+        }
+
+        int fluidColor = fluid.getColor(fluidStack);
+
+        int scaledAmount = tank == null ? bounds.height : fluidStack.amount * bounds.height / tank.getCapacity();
+        if (fluidStack.amount > 0 && scaledAmount < 1) {
+            scaledAmount = 1;
+        }
+        scaledAmount = Math.min(scaledAmount, bounds.height);
+
+        Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+        RenderUtils.glColorHex(fluidColor, 255);
+
+        final int xTileCount = bounds.width / TEX_WIDTH;
+        final int xRemainder = bounds.width - xTileCount * TEX_WIDTH;
+        final int yTileCount = scaledAmount / TEX_HEIGHT;
+        final int yRemainder = scaledAmount - yTileCount * TEX_HEIGHT;
+
+        final int yStart = bounds.y + bounds.height;
+
+        for (int xTile = 0; xTile <= xTileCount; xTile++) {
+            for (int yTile = 0; yTile <= yTileCount; yTile++) {
+                int w = xTile == xTileCount ? xRemainder : TEX_WIDTH;
+                int h = yTile == yTileCount ? yRemainder : TEX_HEIGHT;
+                int x = bounds.x + xTile * TEX_WIDTH;
+                int y = yStart - (yTile + 1) * TEX_HEIGHT;
+                if (bounds.width > 0 && h > 0) {
+                    int maskTop = TEX_HEIGHT - h;
+                    int maskRight = TEX_WIDTH - w;
+
+                    drawFluidTexture(x, y, fluidStillSprite, maskTop, maskRight, 100);
+                }
+            }
+        }
+    }
+
+    private static void drawFluidTexture(double xCoord, double yCoord, TextureAtlasSprite textureSprite, int maskTop, int maskRight, double zLevel) {
+        double uMin = textureSprite.getMinU();
+        double uMax = textureSprite.getMaxU();
+        double vMin = textureSprite.getMinV();
+        double vMax = textureSprite.getMaxV();
+        uMax = uMax - maskRight / 16.0 * (uMax - uMin);
+        vMax = vMax - maskTop / 16.0 * (vMax - vMin);
+
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder worldrenderer = tessellator.getBuffer();
+        worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
+        worldrenderer.pos(xCoord, yCoord + 16, zLevel).tex(uMin, vMax).endVertex();
+        worldrenderer.pos(xCoord + 16 - maskRight, yCoord + 16, zLevel).tex(uMax, vMax).endVertex();
+        worldrenderer.pos(xCoord + 16 - maskRight, yCoord + maskTop, zLevel).tex(uMax, vMin).endVertex();
+        worldrenderer.pos(xCoord, yCoord + maskTop, zLevel).tex(uMin, vMin).endVertex();
+        tessellator.draw();
+    }
 }

@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
+import me.desht.pneumaticcraft.client.gui.GuiUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
@@ -9,6 +10,7 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import org.lwjgl.opengl.GL11;
 
+import java.awt.*;
 import java.util.List;
 
 public class WidgetFluidFilter extends WidgetBase {
@@ -21,21 +23,7 @@ public class WidgetFluidFilter extends WidgetBase {
     @Override
     public void render(int mouseX, int mouseY, float partialTick) {
         if (fluid != null) {
-            ResourceLocation icon = fluid.getStill(); //TODO 1.8 still or flowing?
-            if (icon != null) {
-                GL11.glColor4d(1, 1, 1, 1);
-                GL11.glPushMatrix();
-                GL11.glTranslated(x, y, 0);
-                Minecraft.getMinecraft().getTextureManager().bindTexture(icon);
-                BufferBuilder wr = Tessellator.getInstance().getBuffer();
-                wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-                wr.pos(0, 0, 0).tex(0, 0).endVertex();
-                wr.pos(0, 16, 0).tex(0, 1).endVertex();
-                wr.pos(16, 16, 0).tex(1, 1).endVertex();
-                wr.pos(16, 0, 0).tex(1, 0).endVertex();
-                Tessellator.getInstance().draw();
-                GL11.glPopMatrix();
-            }
+            GuiUtils.drawFluid(new Rectangle(x, y, 16, 16), new FluidStack(fluid, 1000), null);
         }
     }
 

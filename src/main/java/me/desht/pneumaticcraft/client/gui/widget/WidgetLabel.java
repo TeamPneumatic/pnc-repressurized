@@ -14,7 +14,7 @@ public class WidgetLabel extends WidgetBase {
 
     @Override
     public void render(int mouseX, int mouseY, float partialTick) {
-        Minecraft.getMinecraft().fontRenderer.drawString(text, x, y, 0xFF000000);
+        Minecraft.getMinecraft().fontRenderer.drawString(text, x, y, 0xFF404040);
     }
 
     @Override
