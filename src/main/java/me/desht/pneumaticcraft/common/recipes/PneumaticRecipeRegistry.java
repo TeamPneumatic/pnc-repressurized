@@ -12,6 +12,7 @@ import net.minecraftforge.oredict.OreDictionary;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +33,7 @@ public class PneumaticRecipeRegistry implements IPneumaticRecipeRegistry {
     }
 
     @Override
-    public void registerThermopneumaticProcessingPlantRecipe(FluidStack requiredFluid, ItemStack requiredItem, FluidStack output, double requiredTemperature, float requiredPressure) {
+    public void registerThermopneumaticProcessingPlantRecipe(FluidStack requiredFluid, @Nonnull ItemStack requiredItem, FluidStack output, double requiredTemperature, float requiredPressure) {
         if (output == null) throw new NullPointerException("Output can't be null!");
         registerThermopneumaticProcessingPlantRecipe(new BasicThermopneumaticProcessingPlantRecipe(requiredFluid, requiredItem, output, requiredTemperature, requiredPressure));
     }
@@ -58,7 +59,7 @@ public class PneumaticRecipeRegistry implements IPneumaticRecipeRegistry {
         PressureChamberRecipe.chamberRecipes.add(new PressureChamberRecipe(input, pressureRequired, output));
     }
 
-    public static boolean isItemEqual(Object o, ItemStack stack) {
+    public static boolean isItemEqual(Object o, @Nonnull ItemStack stack) {
 
         if (o instanceof ItemStack) {
             return OreDictionary.itemMatches((ItemStack) o, stack, false);

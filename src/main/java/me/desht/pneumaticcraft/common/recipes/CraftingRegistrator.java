@@ -325,9 +325,9 @@ public class CraftingRegistrator {
         PneumaticRecipeRegistry registry = PneumaticRecipeRegistry.getInstance();
         registry.registerThermopneumaticProcessingPlantRecipe(new FluidStack(Fluids.LPG, 100), new ItemStack(Items.COAL), new FluidStack(Fluids.PLASTIC, 1000), 373, 0);
         registry.registerThermopneumaticProcessingPlantRecipe(new FluidStack(Fluids.DIESEL, 1000), new ItemStack(Items.REDSTONE), new FluidStack(Fluids.LUBRICANT, 1000), 373, 0);
-        registry.registerThermopneumaticProcessingPlantRecipe(new FluidStack(Fluids.DIESEL, 100), null, new FluidStack(Fluids.KEROSENE, 80), 573, 2);
-        registry.registerThermopneumaticProcessingPlantRecipe(new FluidStack(Fluids.KEROSENE, 100), null, new FluidStack(Fluids.GASOLINE, 80), 573, 2);
-        registry.registerThermopneumaticProcessingPlantRecipe(new FluidStack(Fluids.GASOLINE, 100), null, new FluidStack(Fluids.LPG, 80), 573, 2);
+        registry.registerThermopneumaticProcessingPlantRecipe(new FluidStack(Fluids.DIESEL, 100), ItemStack.EMPTY, new FluidStack(Fluids.KEROSENE, 80), 573, 2);
+        registry.registerThermopneumaticProcessingPlantRecipe(new FluidStack(Fluids.KEROSENE, 100), ItemStack.EMPTY, new FluidStack(Fluids.GASOLINE, 80), 573, 2);
+        registry.registerThermopneumaticProcessingPlantRecipe(new FluidStack(Fluids.GASOLINE, 100), ItemStack.EMPTY, new FluidStack(Fluids.LPG, 80), 573, 2);
     }
 
     private static void registerAmadronOffers() {
