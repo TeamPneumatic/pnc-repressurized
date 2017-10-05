@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.ai;
 
+import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.drone.IPathNavigator;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -56,7 +57,9 @@ public class EntityPathNavigateDrone extends PathNavigate implements IPathNaviga
     public Path getPathToPos(BlockPos pos) {
         if (!pathfindingEntity.isBlockValidPathfindBlock(pos)) return null;
         Path path = null;
-        if (!forceTeleport || pos.equals(new BlockPos(pathfindingEntity))) {
+
+        BlockPos blockPos = new BlockPos(pathfindingEntity);
+        if (!forceTeleport || pos.equals(blockPos)) {
             path = super.getPathToPos(pos.down());
             if (path != null) {
                 PathPoint finalPoint = path.getFinalPathPoint();
@@ -64,7 +67,7 @@ public class EntityPathNavigateDrone extends PathNavigate implements IPathNaviga
                     path = null;
             }
         }
-        teleportCounter = path != null ? -1 : 0;
+        teleportCounter = path != null || pos.equals(blockPos) ? -1 : 0;
         telPos = pos;
         pathfindingEntity.setStandby(false);
         return path;

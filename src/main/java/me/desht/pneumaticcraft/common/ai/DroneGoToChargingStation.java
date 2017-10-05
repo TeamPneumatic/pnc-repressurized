@@ -48,7 +48,7 @@ public class DroneGoToChargingStation extends EntityAIBase {
             }
         }
 
-        validChargingStations.sort(Comparator.comparingDouble(arg -> PneumaticCraftUtils.distBetween(arg.getPos().getX(), arg.getPos().getY(), arg.getPos().getZ(), drone.posX, drone.posY, drone.posZ)));
+        validChargingStations.sort(Comparator.comparingDouble(arg -> PneumaticCraftUtils.distBetweenSq(arg.getPos().getX(), arg.getPos().getY(), arg.getPos().getZ(), drone.posX, drone.posY, drone.posZ)));
 
         for (TileEntityChargingStation station : validChargingStations) {
             boolean protect = PneumaticCraftUtils.getProtectingSecurityStations(drone.world, station.getPos(), drone.getFakePlayer(), false, false) > 0;
