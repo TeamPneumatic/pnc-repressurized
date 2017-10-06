@@ -110,13 +110,14 @@ public class IOHelper {
     /**
      * Retrieves a specfied item from the specified inventory.
      *
-     * @param handler
-     * @param requestedStack
-     * @param useItemCount   if true, it'll only retrieve the stack of the exact item count given. it'll look in multiple slots of the inventory. if false, the
-     *                       first matching stack, ignoring item count, will be returned.
-     * @param simulate
-     * @param fuzzyMeta   ,
-     * @return
+     * @param handler the item handler object
+     * @param requestedStack the item to retrieve
+     * @param useItemCount if true, only retrieve the exact number of items in requestedStack, looking in multiple slots
+     *                     of the inventory if necessary; if false, the first matching stack, regardless of item count,
+     *                     will be returned.
+     * @param simulate true to only simulate extraction
+     * @param fuzzyMeta if true, ignore metadata when finding items to extract
+     * @return the extracted items
      */
     @Nonnull
     public static ItemStack extract(IItemHandler handler, ItemStack requestedStack, boolean useItemCount, boolean simulate, boolean fuzzyMeta) {
@@ -136,17 +137,15 @@ public class IOHelper {
             if (itemsFound >= requestedStack.getCount()) {
                 ItemStack exportedStack = ItemStack.EMPTY;
                 int itemsNeeded = requestedStack.getCount();
-                for (int slot = 0; slot < handler.getSlots(); slot++) {
+                for (int slot = 0; slot < handler.getSlots() && itemsNeeded > 0; slot++) {
                     ItemStack stack = handler.getStackInSlot(slot);
-                    if (stack.isItemEqual(requestedStack)) {
+                    if (matchStacks(stack, requestedStack, fuzzyMeta)) {
                         int itemsSubtracted = Math.min(itemsNeeded, stack.getCount());
                         if (itemsSubtracted > 0) {
                             exportedStack = stack;
                         }
                         itemsNeeded -= itemsSubtracted;
-                        if (itemsNeeded <= 0) break;
                         handler.extractItem(slot, itemsSubtracted, simulate);
-//                        if (!simulate) tile.markDirty();
                     }
                 }
                 exportedStack = exportedStack.copy();

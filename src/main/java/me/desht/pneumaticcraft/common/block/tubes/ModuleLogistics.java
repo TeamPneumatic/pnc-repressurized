@@ -160,7 +160,9 @@ public class ModuleLogistics extends TubeModule {
                     if (module instanceof ModuleLogistics) {
                         ModuleLogistics logistics = (ModuleLogistics) module;
                         if (logistics.getColorChannel() == getColorChannel()) {
-                            logistics.ticksUntilNextCycle = 100;//Make sure any connected module doesn't tick, set it to a 5 second timer. This is also a penalty value when no task is executed this tick.
+                            // Make sure any connected module doesn't tick, set it to a 5 second timer.
+                            // This is also a penalty value when no task is executed this tick.
+                            logistics.ticksUntilNextCycle = 100;
                             if (logistics.hasPower() && logistics.getFrame() != null) {
                                 frameToModuleMap.put(logistics.getFrame(), logistics);
                                 manager.addLogisticFrame(logistics.getFrame());
