@@ -1,6 +1,8 @@
 package me.desht.pneumaticcraft.common.recipes;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
+import me.desht.pneumaticcraft.common.item.ItemAssemblyProgram;
+import me.desht.pneumaticcraft.common.recipes.programs.AssemblyProgram;
 import net.minecraft.item.ItemStack;
 
 import java.util.ArrayList;

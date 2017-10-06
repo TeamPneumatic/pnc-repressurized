@@ -38,7 +38,7 @@ public class Itemss {
     @ObjectHolder("stone_base")
     public static final Item STONE_BASE = null;
     @ObjectHolder("cannon_barrel")
-    public static final Item cannonBarrel = null;
+    public static final Item CANNON_BARREL = null;
     @ObjectHolder("turbine_blade")
     public static final Item TURBINE_BLADE = null;
     @ObjectHolder("plastic")

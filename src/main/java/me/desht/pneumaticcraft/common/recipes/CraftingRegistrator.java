@@ -74,9 +74,9 @@ public class CraftingRegistrator {
         addRecipe(new ItemStack(Blockss.GAS_LIFT), " t ", "tgt", "iii", 'i', Names.INGOT_IRON_COMPRESSED, 'g', "blockGlass", 't', Blockss.PRESSURE_TUBE);
 
         // cannon
-        addRecipe(new ItemStack(Blockss.AIR_CANNON), " b ", " st", "hhh", 'b', Itemss.cannonBarrel, 's', Itemss.STONE_BASE, 't', new ItemStack(Blockss.PRESSURE_TUBE, 1, 0 /* normal */), 'h', cobbleSlab);
+        addRecipe(new ItemStack(Blockss.AIR_CANNON), " b ", " st", "hhh", 'b', Itemss.CANNON_BARREL, 's', Itemss.STONE_BASE, 't', new ItemStack(Blockss.PRESSURE_TUBE, 1, 0 /* normal */), 'h', cobbleSlab);
         addRecipe(new ItemStack(Itemss.STONE_BASE), "s s", "sts", 's', Blocks.STONE, 't', new ItemStack(Blockss.PRESSURE_TUBE, 1, 0));
-        addRecipe(new ItemStack(Itemss.cannonBarrel), true, "i i", "i i", "pii", 'i', Names.INGOT_IRON_COMPRESSED, 'p', ModuleRegistrator.getModuleItem(Names.MODULE_SAFETY_VALVE));
+        addRecipe(new ItemStack(Itemss.CANNON_BARREL), true, "i i", "i i", "pii", 'i', Names.INGOT_IRON_COMPRESSED, 'p', ModuleRegistrator.getModuleItem(Names.MODULE_SAFETY_VALVE));
 
         addRecipe(new ItemStack(Itemss.GPS_TOOL), " r ", "pgp", "pdp", 'r', Blocks.REDSTONE_TORCH, 'p', new ItemStack(Itemss.PLASTIC, 1, ItemPlastic.RED), 'g', Blocks.GLASS_PANE, 'd', Items.DIAMOND);
         addRecipe(new ItemStack(Itemss.REMOTE), " i ", "tgt", "tdt", 'i', new ItemStack(Itemss.NETWORK_COMPONENT, 1, ItemNetworkComponents.NETWORK_IO_PORT), 't', Itemss.TRANSISTOR, 'g', Itemss.GPS_TOOL, 'd', new ItemStack(Itemss.NETWORK_COMPONENT, 1, ItemNetworkComponents.NETWORK_DATA_STORAGE));
@@ -92,7 +92,7 @@ public class CraftingRegistrator {
         addRecipe(new ItemStack(Blockss.CHARGING_STATION), "  t", "ppp", "sss", 's', cobbleSlab, 't', new ItemStack(Blockss.PRESSURE_TUBE, 1, 0), 'p', Items.BRICK);
 
         addRecipe(new ItemStack(Blockss.ELEVATOR_FRAME, 4, 0), "i i", "i i", "i i", 'i', Names.INGOT_IRON_COMPRESSED);
-        addRecipe(new ItemStack(Itemss.PNEUMATIC_CYLINDER), "pip", "pip", "pbp", 'p', new ItemStack(Itemss.PLASTIC, 1, ItemPlastic.BLUE), 'i', Names.INGOT_IRON_COMPRESSED, 'b', Itemss.cannonBarrel);
+        addRecipe(new ItemStack(Itemss.PNEUMATIC_CYLINDER), "pip", "pip", "pbp", 'p', new ItemStack(Itemss.PLASTIC, 1, ItemPlastic.BLUE), 'i', Names.INGOT_IRON_COMPRESSED, 'b', Itemss.CANNON_BARREL);
         addRecipe(new ItemStack(Blockss.ELEVATOR_BASE, 4, 0), "cp", "pc", 'p', new ItemStack(Itemss.PLASTIC, 1, ItemPlastic.GREY), 'c', Itemss.PNEUMATIC_CYLINDER);
         addRecipe(new ItemStack(Blockss.ELEVATOR_BASE, 4, 0), "pc", "cp", 'p', new ItemStack(Itemss.PLASTIC, 1, ItemPlastic.GREY), 'c', Itemss.PNEUMATIC_CYLINDER);
         addRecipe(new ItemStack(Blockss.ELEVATOR_CALLER, 1, 0), "cpc", "prp", "cpc", 'p', new ItemStack(Itemss.PLASTIC, 1, ItemPlastic.BROWN), 'c', new ItemStack(Itemss.PLASTIC, 1, ItemPlastic.WHITE), 'r', Items.REDSTONE);
@@ -166,7 +166,7 @@ public class CraftingRegistrator {
         addRecipe(new ItemStack(Blockss.UV_LIGHT_BOX), "lll", "ibt", "iii", 'l', Blocks.REDSTONE_LAMP, 'b', Itemss.PCB_BLUEPRINT, 'i', Names.INGOT_IRON_COMPRESSED, 't', new ItemStack(Blockss.PRESSURE_TUBE, 1, 0));
         addShapelessRecipe(new ItemStack(Itemss.GUN_AMMO), new ItemStack(Items.GUNPOWDER), Names.INGOT_IRON_COMPRESSED, "ingotGold");
         addRecipe(new ItemStack(Blockss.SENTRY_TURRET), " m ", "pip", "i i", 'm', Itemss.MINIGUN, 'p', new ItemStack(Itemss.PLASTIC, 1, ItemPlastic.BLACK), 'i', Names.INGOT_IRON_COMPRESSED);
-        addRecipe(new ItemStack(Itemss.MINIGUN), "cib", "g  ", 'c', Names.BLOCK_IRON_COMPRESSED, 'i', Names.INGOT_IRON_COMPRESSED, 'b', Itemss.cannonBarrel, 'g', "ingotGold");
+        addRecipe(new ItemStack(Itemss.MINIGUN), "cib", "g  ", 'c', Names.BLOCK_IRON_COMPRESSED, 'i', Names.INGOT_IRON_COMPRESSED, 'b', Itemss.CANNON_BARREL, 'g', "ingotGold");
 
         //Assembly Machines
         addRecipe(new ItemStack(Blockss.ASSEMBLY_DRILL), true, "dcc", "  c", "ipi", 'd', Items.DIAMOND, 'c', Itemss.PNEUMATIC_CYLINDER, 'i', Names.INGOT_IRON_COMPRESSED, 'p', Itemss.PRINTED_CIRCUIT_BOARD);

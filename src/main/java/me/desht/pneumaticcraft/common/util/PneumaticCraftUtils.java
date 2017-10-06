@@ -1008,7 +1008,7 @@ public class PneumaticCraftUtils {
     }
 
     /**
-     * Get a resource location with the domain of Pneumatic Redux's mod ID.
+     * Get a resource location with the domain of PneumaticCraft: Repressurized's mod ID.
      *
      * @param path the path
      * @return a mod-specific ResourceLocation for the given path

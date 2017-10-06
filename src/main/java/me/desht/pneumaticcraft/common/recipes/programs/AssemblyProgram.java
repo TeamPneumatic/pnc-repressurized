@@ -1,5 +1,7 @@
 package me.desht.pneumaticcraft.common.recipes.programs;
 
+import me.desht.pneumaticcraft.common.item.ItemAssemblyProgram;
+import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.recipes.AssemblyRecipe;
 import me.desht.pneumaticcraft.common.tileentity.*;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -64,4 +66,17 @@ public abstract class AssemblyProgram {
     public static boolean isValidInput(AssemblyRecipe recipe, ItemStack input) {
         return !input.isEmpty() && (input.isItemEqual(recipe.getInput()) || PneumaticCraftUtils.isSameOreDictStack(input, recipe.getInput())) && input.getCount() == recipe.getInput().getCount();
     }
+
+    public static AssemblyProgram fromRecipe(AssemblyRecipe recipe) {
+        int meta = AssemblyRecipe.drillRecipes.contains(recipe) ? ItemAssemblyProgram.DRILL_DAMAGE :
+                AssemblyRecipe.laserRecipes.contains(recipe) ? ItemAssemblyProgram.LASER_DAMAGE :
+                        ItemAssemblyProgram.DRILL_LASER_DAMAGE;
+        return ItemAssemblyProgram.getProgramFromItem(meta);
+    }
+
+    public ItemStack getItemStack(int amount) {
+        return new ItemStack(Itemss.ASSEMBLY_PROGRAM, amount, getItemMeta());
+    }
+
+    protected abstract int getItemMeta();
 }

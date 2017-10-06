@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.recipes.programs;
 
+import me.desht.pneumaticcraft.common.item.ItemAssemblyProgram;
 import me.desht.pneumaticcraft.common.recipes.AssemblyRecipe;
 import me.desht.pneumaticcraft.common.tileentity.*;
 import net.minecraft.item.ItemStack;
@@ -73,6 +74,11 @@ public class ProgramDrillLaser extends AssemblyProgram {
     @Override
     public List<AssemblyRecipe> getRecipeList() {
         return AssemblyRecipe.drillLaserRecipes;
+    }
+
+    @Override
+    protected int getItemMeta() {
+        return ItemAssemblyProgram.DRILL_LASER_DAMAGE;
     }
 
 }

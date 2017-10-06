@@ -27,7 +27,7 @@ public class IGWHandler {
         WikiRegistry.registerBlockAndItemPageEntry(Blockss.PRESSURE_TUBE, "pneumaticcraft:menu/pressureTubes");
         WikiRegistry.registerBlockAndItemPageEntry(Blockss.ADVANCED_PRESSURE_TUBE, "pneumaticcraft:menu/pressureTubes");
 
-        WikiRegistry.registerBlockAndItemPageEntry(Itemss.cannonBarrel, "pneumaticcraft:block/airCannon");
+        WikiRegistry.registerBlockAndItemPageEntry(Itemss.CANNON_BARREL, "pneumaticcraft:block/airCannon");
         WikiRegistry.registerBlockAndItemPageEntry(Itemss.STONE_BASE, "pneumaticcraft:block/airCannon");
 
         WikiRegistry.registerBlockAndItemPageEntry(Itemss.INGOT_IRON_COMPRESSED, "pneumaticcraft:menu/baseConcepts");
