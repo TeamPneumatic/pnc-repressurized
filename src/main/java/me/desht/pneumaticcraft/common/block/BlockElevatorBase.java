@@ -5,6 +5,8 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.proxy.CommonProxy.EnumGuiId;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -12,11 +14,14 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.property.ExtendedBlockState;
+import net.minecraftforge.common.property.IUnlistedProperty;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
-public class BlockElevatorBase extends BlockPneumaticCraftModeled {
+public class BlockElevatorBase extends BlockPneumaticCraftCamo {
 
     public BlockElevatorBase() {
         super(Material.IRON, "elevator_base");
@@ -29,6 +34,28 @@ public class BlockElevatorBase extends BlockPneumaticCraftModeled {
         if (elevatorBase != null) {
             elevatorBase.updateMaxElevatorHeight();
         }
+    }
+
+    @Override
+    protected BlockStateContainer createBlockState() {
+        return new ExtendedBlockState(this,
+                new IProperty[] { BlockPressureTube.NORTH, BlockPressureTube.SOUTH, BlockPressureTube.WEST, BlockPressureTube.EAST },
+                new IUnlistedProperty[] { CAMO_STATE });
+    }
+
+    @Override
+    public int getMetaFromState(IBlockState state) {
+        return 0;
+    }
+
+    @Override
+    public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
+        state = super.getActualState(state, worldIn, pos);
+        TileEntityElevatorBase te = (TileEntityElevatorBase) PneumaticCraftUtils.getTileEntitySafely(worldIn, pos);
+        for (int i = 2; i < 6; i++) {  // 2..5 = horizontal directions
+            state = state.withProperty(BlockPressureTube.CONNECTION_PROPERTIES[i], te.sidesConnected[i]);
+        }
+        return state;
     }
 
     @Override

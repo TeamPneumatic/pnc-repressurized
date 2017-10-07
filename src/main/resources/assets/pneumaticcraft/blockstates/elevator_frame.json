@@ -1,9 +1,60 @@
 {
-	"variants":{
-		"normal": { "model": "pneumaticcraft:elevator_frame" },
-		"inventory": [{
-          "model": "pneumaticcraft:elevator_frame"
-        }]
-	}
-	
+  "forge_marker": 1,
+  "defaults": {
+    "textures": {
+      "particle": "pneumaticcraft:blocks/compressed_iron_block"
+    }
+  },
+  "variants": {
+    "normal": { "model": "pneumaticcraft:elevator_frame" },
+    "inventory": [
+      {
+        "model": "pneumaticcraft:elevator_frame",
+        "transform": "forge:default-block"
+      }
+    ],
+    "ne": {
+      "true": { "submodel": "pneumaticcraft:blank" },
+      "false": {
+        "submodel": {
+          "ne": {
+            "model": "pneumaticcraft:elevator_frame_single",
+            "y": 90
+          }
+        }
+      }
+    },
+    "nw": {
+      "true": { "submodel": "pneumaticcraft:blank" },
+      "false": {
+        "submodel": {
+          "nw": {
+            "model": "pneumaticcraft:elevator_frame_single"
+          }
+        }
+      }
+    },
+    "sw": {
+      "true": { "submodel": "pneumaticcraft:blank" },
+      "false": {
+        "submodel": {
+          "sw": {
+            "model": "pneumaticcraft:elevator_frame_single",
+            "y": 270
+          }
+        }
+      }
+    },
+    "se": {
+      "true": { "submodel": "pneumaticcraft:blank" },
+      "false": {
+        "submodel": {
+          "se": {
+            "model": "pneumaticcraft:elevator_frame_single",
+            "y": 180
+          }
+        }
+      }
+    }
+  }
 }

@@ -1,0 +1,20 @@
+{
+  "textures": {
+    "all": "pneumaticcraft:blocks/compressed_iron_block",
+    "particle": "pneumaticcraft:blocks/compressed_iron_block"
+  },
+  "elements": [
+    {
+      "from": [ 1, 0, 1 ],
+      "to": [ 2, 16, 2 ],
+      "faces": {
+        "down":  { "texture": "#all", "cullface": "down" },
+        "up":    { "texture": "#all", "cullface": "up" },
+        "north": { "texture": "#all" },
+        "south": { "texture": "#all" },
+        "west":  { "texture": "#all" },
+        "east":  { "texture": "#all" }
+      }
+    }
+  ]
+}

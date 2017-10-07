@@ -190,7 +190,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     public void onBlockRotated() {
     }
 
-    protected void rerenderChunk() {
+    public void rerenderChunk() {
         world.markBlockRangeForRenderUpdate(getPos(), getPos());
     }
 

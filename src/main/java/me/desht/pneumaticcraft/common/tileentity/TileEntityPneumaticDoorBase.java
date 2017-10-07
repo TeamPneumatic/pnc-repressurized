@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticDoor;
 import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.inventory.CamoItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
@@ -18,6 +19,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
 
@@ -41,7 +43,7 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase
     private boolean opening;
     public boolean wasPowered;
     @DescSynced
-    private ItemStackHandler inventory = new CamoItemStackHandler();
+    private ItemStackHandler inventory = new CamoItemStackHandler(this, INVENTORY_SIZE);
     @GuiSynced
     public int redstoneMode;
 
@@ -186,7 +188,7 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase
         redstoneMode = tag.getInteger("redstoneMode");
         rightGoing = tag.getBoolean("rightGoing");
         inventory.deserializeNBT(tag.getCompoundTag("Items"));
-        cacheCamo();
+        setCamouflage(inventory.getStackInSlot(CAMO_SLOT));
     }
 
     @Override
@@ -223,40 +225,22 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase
         return redstoneMode;
     }
 
-    public void cacheCamo() {
-        ItemStack stack = inventory.getStackInSlot(0);
+    @Override
+    public void setCamouflage(@Nonnull ItemStack stack) {
         if (!stack.isEmpty() && stack.getItem() instanceof ItemBlock) {
-            camoState = ((ItemBlock)inventory.getStackInSlot(0).getItem()).getBlock().getStateFromMeta(stack.getMetadata());
+            camoState = ((ItemBlock)stack.getItem()).getBlock().getStateFromMeta(stack.getMetadata());
         } else {
             camoState = null;
         }
     }
 
     @Override
-    public IBlockState getCamouflage() {
-        return camoState;
+    public IItemHandler getCamoInventory() {
+        return inventory;
     }
 
-
-    private class CamoItemStackHandler extends FilteredItemStackHandler {
-        CamoItemStackHandler() {
-            super(INVENTORY_SIZE);
-        }
-
-        @Override
-        protected int getStackLimit(int slot, @Nonnull ItemStack stack) {
-            return 1;
-        }
-
-        @Override
-        public boolean test(Integer integer, ItemStack itemStack) {
-            return itemStack.isEmpty() || itemStack.getItem() instanceof ItemBlock;
-        }
-
-        @Override
-        protected void onContentsChanged(int slot) {
-            cacheCamo();
-            rerenderChunk();
-        }
+    @Override
+    public IBlockState getCamouflage() {
+        return camoState;
     }
 }

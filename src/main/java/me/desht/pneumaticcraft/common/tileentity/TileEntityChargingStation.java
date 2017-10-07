@@ -24,6 +24,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.wrapper.CombinedInvWrapper;
 import org.apache.commons.lang3.tuple.Pair;
@@ -68,18 +69,8 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
 
     @Override
     public void onDescUpdate() {
-        cacheCamo(true);
-    }
-
-    private void cacheCamo(boolean renderNow) {
-        if (!camoStack.isEmpty() && camoStack.getItem() instanceof ItemBlock) {
-            camoState = ((ItemBlock) camoStack.getItem()).getBlock().getStateFromMeta(camoStack.getMetadata());
-        } else {
-            camoState = null;
-        }
-        if (renderNow) {
-            getWorld().markBlockRangeForRenderUpdate(getPos(), getPos());
-        }
+        setCamouflage(camoStack);
+        getWorld().markBlockRangeForRenderUpdate(getPos(), getPos());
     }
 
     @Nonnull
@@ -244,7 +235,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
         } else {
             camoStack = ItemStack.EMPTY;
         }
-        cacheCamo(false);
+        setCamouflage(camoStack);
     }
 
     @Override
@@ -293,6 +284,20 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     @Override
     public IBlockState getCamouflage() {
         return camoState;
+    }
+
+    @Override
+    public void setCamouflage(@Nonnull ItemStack stack) {
+        if (!stack.isEmpty() && camoStack.getItem() instanceof ItemBlock) {
+            camoState = ((ItemBlock) camoStack.getItem()).getBlock().getStateFromMeta(stack.getMetadata());
+        } else {
+            camoState = null;
+        }
+    }
+
+    @Override
+    public IItemHandler getCamoInventory() {
+        return null;
     }
 
     private class ChargingStationHandler extends FilteredItemStackHandler {

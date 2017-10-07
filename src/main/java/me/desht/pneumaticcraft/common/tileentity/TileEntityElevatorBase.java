@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.api.tileentity.IAirListener;
 import me.desht.pneumaticcraft.common.block.BlockElevatorBase;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
+import me.desht.pneumaticcraft.common.inventory.CamoItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
@@ -17,7 +18,7 @@ import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Sounds;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
-import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.EntityPlayer;
@@ -33,14 +34,16 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
 import org.apache.commons.lang3.tuple.Pair;
 
+import javax.annotation.Nonnull;
 import java.util.*;
 
 public class TileEntityElevatorBase extends TileEntityPneumaticBase
-        implements IGUITextFieldSensitive, IRedstoneControlled, IMinWorkingPressure, IAirListener {
+        implements IGUITextFieldSensitive, IRedstoneControlled, IMinWorkingPressure, IAirListener, ICamouflageableTE {
     private static final int INVENTORY_SIZE = 2;
 
     @DescSynced
@@ -50,26 +53,21 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     @LazySynced
     public float extension;
     @DescSynced
-    public float targetExtension;
+    private float targetExtension;
     private int soundCounter;
-    private boolean isStopped; //used for sounds
+    private boolean isStopped;  //used for sounds
     private TileEntityElevatorBase coreElevator;
-    private List<TileEntityElevatorBase> multiElevators;//initialized when multiple elevators are connected in a multiblock manner.
+    private List<TileEntityElevatorBase> multiElevators; //initialized when multiple elevators are connected in a multiblock manner.
     @GuiSynced
     public int redstoneMode;
-    public int[] floorHeights = new int[0];//list of every floor of Elevator Callers.
-    private HashMap<Integer, String> floorNames = new HashMap<Integer, String>();
+    public int[] floorHeights = new int[0]; //list of every floor of Elevator Callers.
+    private HashMap<Integer, String> floorNames = new HashMap<>();
     @GuiSynced
     private int maxFloorHeight;
-    private int redstoneInputLevel;//current redstone input level
+    private int redstoneInputLevel; //current redstone input level
     @DescSynced
-    private ItemStackHandler inventory = new FilteredItemStackHandler(INVENTORY_SIZE) {
-        @Override
-        public boolean test(Integer integer, ItemStack itemStack) {
-            return itemStack.getItem() instanceof ItemBlock;
-        }
-    };
-    private Block baseCamo, frameCamo;
+    private ItemStackHandler inventory = new CamoItemStackHandler(this, INVENTORY_SIZE);
+    private IBlockState baseCamo, frameCamo;
 
     public TileEntityElevatorBase() {
         super(PneumaticValues.DANGER_PRESSURE_ELEVATOR, PneumaticValues.MAX_PRESSURE_ELEVATOR, PneumaticValues.VOLUME_ELEVATOR, 4);
@@ -375,6 +373,12 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     public void onNeighborBlockUpdate() {
         super.onNeighborBlockUpdate();
         getCoreElevator().updateRedstoneInputLevel();
+        updateConnections();
+    }
+
+    @Override
+    protected boolean shouldRerenderChunkOnDescUpdate() {
+        return true;
     }
 
     public void updateConnections() {
@@ -501,16 +505,21 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
         }
     }
 
-    @Override
-    public void onDescUpdate() {
-        baseCamo = inventory.getStackInSlot(0).getItem() instanceof ItemBlock ? ((ItemBlock) inventory.getStackInSlot(0).getItem()).getBlock() : null;
-        Block newFrameCamo = inventory.getStackInSlot(1).getItem() instanceof ItemBlock ? ((ItemBlock) inventory.getStackInSlot(1).getItem()).getBlock() : null;
-
-        if (newFrameCamo != frameCamo) {
-            frameCamo = newFrameCamo;
-            rerenderChunk();
-        }
-    }
+//    @Override
+//    public void onDescUpdate() {
+//        ItemStack baseStack = inventory.getStackInSlot(0);
+//        ItemStack frameStack = inventory.getStackInSlot(1);
+//
+//        baseCamo = baseStack.getItem() instanceof ItemBlock ?
+//                ((ItemBlock) baseStack.getItem()).getBlock().getStateFromMeta(baseStack.getMetadata()) : null;
+//        IBlockState newFrameCamo = frameStack.getItem() instanceof ItemBlock ?
+//                ((ItemBlock) frameStack.getItem()).getBlock().getStateFromMeta(frameStack.getMetadata()) : null;
+//
+//        if (newFrameCamo != frameCamo) {
+//            frameCamo = newFrameCamo;
+//            rerenderChunk();
+//        }
+//    }
 
     private void sendDescPacketFromAllElevators() {
         if (multiElevators != null) {
@@ -666,5 +675,24 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     @Override
     public float getMinWorkingPressure() {
         return PneumaticValues.MIN_PRESSURE_ELEVATOR;
+    }
+
+    @Override
+    public IBlockState getCamouflage() {
+        return baseCamo;
+    }
+
+    @Override
+    public void setCamouflage(@Nonnull ItemStack stack) {
+        if (!stack.isEmpty() && stack.getItem() instanceof ItemBlock) {
+            baseCamo = ((ItemBlock)stack.getItem()).getBlock().getStateFromMeta(stack.getMetadata());
+        } else {
+            baseCamo = null;
+        }
+    }
+
+    @Override
+    public IItemHandler getCamoInventory() {
+        return inventory;
     }
 }
