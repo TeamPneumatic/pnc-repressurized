@@ -51,6 +51,8 @@ With all that said, have fun!
 * Heat Frame
 * ComputerCraft integration
 * Logistics Drones & Frames (not well tested: active provider frame & default storage frame work with logistics drone)
+* Elevators
+* Pneumatic Villagers (mechanics)
 
 ### Functional but Needs Clientside Work
 
@@ -61,8 +63,6 @@ With all that said, have fun!
 ### Not Working Yet
 
 * Multipart pressure tubes with MCMP2; support is in, but not working yet.  I need to get a better understanding of the API.  Pressure tubes work fine if you set "mcmultipart" to "false" in ``config/pneumaticcraft/thirdparty.cfg``.
-* Elevators (no client-side rendering, raises player but player drops as soon as lift reaches top)
-* Pneumatic Villagers
 * Flux Compressor (not in game, need to reimplement using Forge Energy)
 * Electric Compressor (not in game, need to reimplement with IC2 API)
 * Achievements (need to convert to 1.12 Advancements)
