@@ -19,8 +19,6 @@ import java.util.Collections;
 
 public class BlockVortexTube extends BlockPneumaticCraftModeled {
 
-    private static final OBJState objState = new OBJState(Collections.singletonList("Pipe"), false);
-
     BlockVortexTube() {
         super(Material.IRON, "vortex_tube");
     }
@@ -56,15 +54,5 @@ public class BlockVortexTube extends BlockPneumaticCraftModeled {
         }
 
         return state;
-    }
-
-    /**
-     * FIXME doesn't work to remove the pipe obj group, as the model is part of a MultiModel which doesn't implement ISmartModel, so getExtendedState isn't called.
-     */
-    @Override
-    public IBlockState getExtendedState(IBlockState state, IBlockAccess world, BlockPos pos) {
-        IExtendedBlockState extended = (IExtendedBlockState) super.getExtendedState(state, world, pos);
-        extended = extended.withProperty(OBJProperty.INSTANCE, objState);
-        return extended;
     }
 }
