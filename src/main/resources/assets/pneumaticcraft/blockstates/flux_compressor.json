@@ -1,0 +1,18 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "pneumaticcraft:flux_compressor"
+  },
+  "variants": {
+    "normal": [{}],
+    "inventory": [{}],
+    "facing": {
+      "up": {},
+      "down": {},
+      "north": { "y": 180 },
+      "south": {},
+      "east": { "y": 270 },
+      "west": { "y": 90 }
+    }
+  }
+}

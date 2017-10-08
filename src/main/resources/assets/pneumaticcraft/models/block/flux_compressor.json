@@ -1,0 +1,12 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "particle": "pneumaticcraft:blocks/flux_compressor_front",
+    "down": "pneumaticcraft:blocks/flux_compressor_bottom",
+    "up": "pneumaticcraft:blocks/flux_compressor_top",
+    "north": "pneumaticcraft:blocks/flux_compressor_back",
+    "south": "pneumaticcraft:blocks/flux_compressor_front",
+    "west": "pneumaticcraft:blocks/flux_compressor_side",
+    "east": "pneumaticcraft:blocks/flux_compressor_side"
+  }
+}

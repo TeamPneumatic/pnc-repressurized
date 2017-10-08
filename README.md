@@ -53,19 +53,21 @@ With all that said, have fun!
 * Logistics Drones & Frames (not well tested: active provider frame & default storage frame work with logistics drone)
 * Elevators
 * Pneumatic Villagers (mechanics)
+* Flux Compressor (using Forge Energy, no Tesla or direct CoFH support at this point)
 
 ### Functional but Needs Clientside Work
 
 * Vortex tube & Heat Sink don't show colours to indicate temperature (OBJ models can't have a tintindex - may need to redo Heat Sink with JSON, Vortex Tube may need a TESR?)
 * Miniguns (ammo works, mobs die, but no item model)
 * Vortex Cannon (vortex entities work fine but cannon needs an item model)
+* Flux Compressor could use a fancier model...
 
 ### Not Working Yet
 
 * Multipart pressure tubes with MCMP2; support is in, but not working yet.  I need to get a better understanding of the API.  Pressure tubes work fine if you set "mcmultipart" to "false" in ``config/pneumaticcraft/thirdparty.cfg``.
-* Flux Compressor (not in game, need to reimplement using Forge Energy)
 * Electric Compressor (not in game, need to reimplement with IC2 API)
 * Achievements (need to convert to 1.12 Advancements)
+* IGW support (there's no official 1.12 port, but see https://github.com/Z-Doctor/IGW-mod/tree/1.11/src/igwmod)
 
 ### Not Tested Yet
 

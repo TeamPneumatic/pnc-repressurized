@@ -98,9 +98,9 @@ public class CommonProxy implements IGuiHandler {
             case UNIVERSAL_SENSOR:
                 return new ContainerUniversalSensor(player.inventory, (TileEntityUniversalSensor) te);
             case AERIAL_INTERFACE:
-                return new Container4UpgradeSlots(player.inventory, (TileEntityAerialInterface) te);
+                return new Container4UpgradeSlots<>(player.inventory, (TileEntityAerialInterface) te);
             case ELECTROSTATIC_COMPRESSOR:
-                return new Container4UpgradeSlots(player.inventory, (TileEntityElectrostaticCompressor) te);
+                return new Container4UpgradeSlots<>(player.inventory, (TileEntityElectrostaticCompressor) te);
             case OMNIDIRECTIONAL_HOPPER:
                 return new ContainerOmnidirectionalHopper(player.inventory, (TileEntityOmnidirectionalHopper) te);
             case PROGRAMMER:
@@ -133,11 +133,13 @@ public class CommonProxy implements IGuiHandler {
             case AMADRON_ADD_TRADE:
                 return new ContainerAmadronAddTrade();
             case CREATIVE_COMPRESSOR:
-                return new ContainerPneumaticBase((TileEntityBase) te);
+                return new ContainerPneumaticBase<>((TileEntityBase) te);
             case KEROSENE_LAMP:
                 return new ContainerKeroseneLamp(player.inventory, (TileEntityKeroseneLamp) te);
             case SENTRY_TURRET:
                 return new ContainerSentryTurret(player.inventory, (TileEntitySentryTurret) te);
+            case FLUX_COMPRESSOR:
+                return new ContainerEnergy(player.inventory, (TileEntityFluxCompressor) te);
         }
         return ThirdPartyManager.instance().getServerGuiElement(ID, player, world, x, y, z);
     }
@@ -229,6 +231,8 @@ public class CommonProxy implements IGuiHandler {
                 return new GuiKeroseneLamp(player.inventory, (TileEntityKeroseneLamp) te);
             case SENTRY_TURRET:
                 return new GuiSentryTurret(player.inventory, (TileEntitySentryTurret) te);
+            case FLUX_COMPRESSOR:
+                return new GuiFluxCompressor(player.inventory, (TileEntityFluxCompressor) te);
         }
         return ThirdPartyManager.instance().getClientGuiElement(ID, player, world, x, y, z);
     }
