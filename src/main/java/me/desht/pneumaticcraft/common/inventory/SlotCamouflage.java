@@ -17,20 +17,12 @@ public class SlotCamouflage extends SlotItemHandler {
     }
 
     @Override
-    public int getItemStackLimit(@Nonnull ItemStack stack) {
+    public int getSlotStackLimit() {
         return 1;
     }
 
     @Override
     public boolean isItemValid(@Nonnull ItemStack stack) {
         return stack.isEmpty() || stack.getItem() instanceof ItemBlock;
-    }
-
-    @Override
-    public void onSlotChanged() {
-        te.setCamouflage(getStack());
-        if (te instanceof TileEntityPneumaticBase) {
-            ((TileEntityPneumaticBase) te).rerenderChunk();
-        }
     }
 }

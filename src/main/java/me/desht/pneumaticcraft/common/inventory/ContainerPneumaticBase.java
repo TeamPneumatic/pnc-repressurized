@@ -102,7 +102,7 @@ public class ContainerPneumaticBase<Tile extends TileEntityBase> extends Contain
         Slot srcSlot = inventorySlots.get(slot);
 
         if (srcSlot != null && srcSlot.getHasStack()) {
-            ItemStack stackInSlot = srcSlot.getStack();
+            ItemStack stackInSlot = srcSlot.getStack().copy();
             var3 = stackInSlot.copy();
 
             if (slot < playerSlotsStart) {
