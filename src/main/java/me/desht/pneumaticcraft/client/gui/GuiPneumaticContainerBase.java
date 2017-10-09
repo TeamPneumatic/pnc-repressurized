@@ -130,7 +130,7 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
             redstoneButton = new GuiButtonSpecial(0, buttonRect.x, buttonRect.y, buttonRect.width, buttonRect.height, "-");//getButtonFromRectangle(0, buttonRect, "-");
             redstoneTab.addWidget(redstoneButton);
         }
-        if (te != null && te.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)) {
+        if (te != null) {
             if (shouldAddInfoTab()) {
                 String info = "gui.tab.info." + te.getName();
                 String translatedInfo = I18n.format(info);
