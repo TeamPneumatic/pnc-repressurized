@@ -87,10 +87,17 @@ public class CraftingRegistrator {
         addRecipe(new ItemStack(Blockss.LIQUID_COMPRESSOR), true, "pbp", "lcl", 'p', Blockss.PRESSURE_TUBE, 'l', Items.LEATHER, 'b', Items.BUCKET, 'c', Blockss.AIR_COMPRESSOR);
         addRecipe(new ItemStack(Blockss.ADVANCED_LIQUID_COMPRESSOR), true, "iii", "ibt", "ici", 'i', new ItemStack(Itemss.PLASTIC, 1, ItemPlastic.BLUE), 'b', Items.BUCKET, 'c', Blockss.LIQUID_COMPRESSOR, 't', Blockss.ADVANCED_PRESSURE_TUBE);
         addRecipe(new ItemStack(Blockss.ELECTROSTATIC_COMPRESSOR), "bpb", "prp", "bcb", 'b', Blocks.IRON_BARS, 'p', new ItemStack(Itemss.PLASTIC, 1, ItemPlastic.GREY), 'r', Itemss.TURBINE_ROTOR, 'c', Blockss.AIR_COMPRESSOR);
+        addRecipe(new ItemStack(Blockss.PNEUMATIC_DYNAMO), " t ", "gig", "ipi",
+                'i', Names.INGOT_IRON_COMPRESSED, 'g', Itemss.COMPRESSED_IRON_GEAR, 't', Blockss.ADVANCED_PRESSURE_TUBE,
+                'p', Itemss.PRINTED_CIRCUIT_BOARD);
+        addRecipe(new ItemStack(Blockss.FLUX_COMPRESSOR), "gcp", "frt", "gqp",
+                'p', Itemss.PRINTED_CIRCUIT_BOARD, 'c', Itemss.COMPRESSED_IRON_GEAR, 'g', Items.REDSTONE, 't', Blockss.ADVANCED_PRESSURE_TUBE,
+                'r', Itemss.TURBINE_ROTOR, 'f', Blocks.REDSTONE_BLOCK, 'q', Blocks.FURNACE);
 
         // Charging Station
         addRecipe(new ItemStack(Blockss.CHARGING_STATION), "  t", "ppp", "sss", 's', cobbleSlab, 't', new ItemStack(Blockss.PRESSURE_TUBE, 1, 0), 'p', Items.BRICK);
 
+        // Elevators
         addRecipe(new ItemStack(Blockss.ELEVATOR_FRAME, 4, 0), "i i", "i i", "i i", 'i', Names.INGOT_IRON_COMPRESSED);
         addRecipe(new ItemStack(Itemss.PNEUMATIC_CYLINDER), "pip", "pip", "pbp", 'p', new ItemStack(Itemss.PLASTIC, 1, ItemPlastic.BLUE), 'i', Names.INGOT_IRON_COMPRESSED, 'b', Itemss.CANNON_BARREL);
         addRecipe(new ItemStack(Blockss.ELEVATOR_BASE, 4, 0), "cp", "pc", 'p', new ItemStack(Itemss.PLASTIC, 1, ItemPlastic.GREY), 'c', Itemss.PNEUMATIC_CYLINDER);
@@ -119,12 +126,12 @@ public class CraftingRegistrator {
         addRecipe(getUpgrade(EnumUpgrade.RANGE), "lal", "aba", "lal", 'l', lapis, 'a', Items.ARROW, 'b', Items.BOW);
         addRecipe(getUpgrade(EnumUpgrade.SECURITY), "lol", "obo", "lol", 'l', lapis, 'o', Blocks.OBSIDIAN, 'b', ModuleRegistrator.getModuleItem(Names.MODULE_SAFETY_VALVE));
 
+        // Misc crafting components
         addRecipe(new ItemStack(Itemss.AIR_CANISTER, 1, Itemss.AIR_CANISTER.getMaxDamage()), " t ", "iri", "iri", 'i', Names.INGOT_IRON_COMPRESSED, 'r', Items.REDSTONE, 't', new ItemStack(Blockss.PRESSURE_TUBE, 1, 0));
-
         addRecipe(new ItemStack(Itemss.TURBINE_ROTOR), " b ", " i ", "b b", 'i', Names.INGOT_IRON_COMPRESSED, 'b', Itemss.TURBINE_BLADE);
         addRecipe(new ItemStack(Blockss.VACUUM_PUMP), "grg", "trt", "sss", 'g', Itemss.PRESSURE_GAUGE, 'r', Itemss.TURBINE_ROTOR, 's', cobbleSlab, 't', new ItemStack(Blockss.PRESSURE_TUBE, 1, 0));
 
-        // NEI support recipes
+        // Pneumatic Items
         addRecipe(new ItemStack(Itemss.VORTEX_CANNON, 1, Itemss.VORTEX_CANNON.getMaxDamage()), "idi", "c  ", "ili", 'd', "dyeYellow", 'i', Itemss.INGOT_IRON_COMPRESSED, 'l', Blocks.LEVER, 'c', new ItemStack(Itemss.AIR_CANISTER, 1, Itemss.AIR_CANISTER.getMaxDamage()));
         addRecipe(new ItemStack(Itemss.PNEUMATIC_WRENCH, 1, Itemss.PNEUMATIC_WRENCH.getMaxDamage()), "idi", "c  ", "ili", 'd', "dyeOrange", 'i', Itemss.INGOT_IRON_COMPRESSED, 'l', Blocks.LEVER, 'c', new ItemStack(Itemss.AIR_CANISTER, 1, Itemss.AIR_CANISTER.getMaxDamage()));
         addRecipe(new ItemStack(Itemss.LOGISTICS_CONFIGURATOR, 1, Itemss.LOGISTICS_CONFIGURATOR.getMaxDamage()), "idi", "c  ", "ili", 'd', "dyeRed", 'i', Itemss.INGOT_IRON_COMPRESSED, 'l', Blocks.LEVER, 'c', new ItemStack(Itemss.AIR_CANISTER, 1, Itemss.AIR_CANISTER.getMaxDamage()));
@@ -132,7 +139,6 @@ public class CraftingRegistrator {
         addRecipe(new ItemStack(Itemss.PNEUMATIC_HELMET, 1), "cec", "c c", 'e', Itemss.PRINTED_CIRCUIT_BOARD, 'c', new ItemStack(Itemss.AIR_CANISTER, 1, Itemss.AIR_CANISTER.getMaxDamage()));
         addShapelessRecipe(new ItemStack(Itemss.MANOMETER, 1, Itemss.MANOMETER.getMaxDamage()), new ItemStack(Itemss.AIR_CANISTER, 1, Itemss.AIR_CANISTER.getMaxDamage()), Itemss.PRESSURE_GAUGE);
 
-        // Pneumatic Items
         ForgeRegistries.RECIPES.register(new RecipeGun("dyeYellow", Itemss.VORTEX_CANNON));
         ForgeRegistries.RECIPES.register(new RecipeGun("dyeOrange", Itemss.PNEUMATIC_WRENCH));
         ForgeRegistries.RECIPES.register(new RecipeGun("dyeRed", Itemss.LOGISTICS_CONFIGURATOR));
@@ -143,20 +149,12 @@ public class CraftingRegistrator {
         ForgeRegistries.RECIPES.register(new RecipeGunAmmo());
         ForgeRegistries.RECIPES.register(new RecipeAmadronTablet());
 
-//        RecipeSorter.register("pneumaticcraft:gun", RecipeGun.class, Category.SHAPED, "after:minecraft:shaped");
-//        RecipeSorter.register("pneumaticcraft:amadronTablet", RecipeAmadronTablet.class, Category.SHAPED, "after:minecraft:shaped");
-//        RecipeSorter.register("pneumaticcraft:pneumaticHelmet", RecipePneumaticHelmet.class, Category.SHAPED, "after:minecraft:shaped");
-//        RecipeSorter.register("pneumaticcraft:manometer", RecipeManometer.class, Category.SHAPED, "after:minecraft:shaped");
-//        RecipeSorter.register("pneumaticcraft:colorDrone", RecipeColorDrone.class, Category.SHAPELESS, "after:minecraft:shapeless");
-//        RecipeSorter.register("pneumaticcraft:logisticToDrone", RecipeLogisticToDrone.class, Category.SHAPELESS, "after:minecraft:shapeless");
-//        RecipeSorter.register("pneumaticcraft:gunAmmo", RecipeGunAmmo.class, Category.SHAPELESS, "after:minecraft:shapeless");
-//        RecipeSorter.register("pneumaticcraft:fluid", RecipeFluid.class, Category.SHAPED, "after:minecraft:shaped");
-
         //Heat related
         addRecipe(new ItemStack(Blockss.HEAT_SINK), "bbb", "igi", 'i', Names.INGOT_IRON_COMPRESSED, 'b', Blocks.IRON_BARS, 'g', "ingotGold");
         addRecipe(new ItemStack(Blockss.VORTEX_TUBE), "iti", "gtg", "iii", 'i', Names.INGOT_IRON_COMPRESSED, 'g', "ingotGold", 't', Blockss.PRESSURE_TUBE);
         addRecipe(new ItemStack(SemiBlockManager.getItemForSemiBlock(SemiBlockHeatFrame.class)), "iii", "ifi", "iii", 'i', Names.INGOT_IRON_COMPRESSED, 'f', Blocks.FURNACE);
-        //misc
+
+        // misc
         addRecipe(new ItemStack(Blockss.COMPRESSED_IRON), "iii", "iii", "iii", 'i', Names.INGOT_IRON_COMPRESSED);
         addShapelessRecipe(new ItemStack(Itemss.INGOT_IRON_COMPRESSED, 9, 0), Names.BLOCK_IRON_COMPRESSED);
 
@@ -168,14 +166,14 @@ public class CraftingRegistrator {
         addRecipe(new ItemStack(Blockss.SENTRY_TURRET), " m ", "pip", "i i", 'm', Itemss.MINIGUN, 'p', new ItemStack(Itemss.PLASTIC, 1, ItemPlastic.BLACK), 'i', Names.INGOT_IRON_COMPRESSED);
         addRecipe(new ItemStack(Itemss.MINIGUN), "cib", "g  ", 'c', Names.BLOCK_IRON_COMPRESSED, 'i', Names.INGOT_IRON_COMPRESSED, 'b', Itemss.CANNON_BARREL, 'g', "ingotGold");
 
-        //Assembly Machines
+        GameRegistry.addSmelting(Itemss.FAILED_PCB, new ItemStack(Itemss.EMPTY_PCB, 1, Itemss.EMPTY_PCB.getMaxDamage()), 0);
+
+        // Assembly Machines
         addRecipe(new ItemStack(Blockss.ASSEMBLY_DRILL), true, "dcc", "  c", "ipi", 'd', Items.DIAMOND, 'c', Itemss.PNEUMATIC_CYLINDER, 'i', Names.INGOT_IRON_COMPRESSED, 'p', Itemss.PRINTED_CIRCUIT_BOARD);
         addRecipe(new ItemStack(Blockss.ASSEMBLY_LASER), true, "dcc", "  c", "ipi", 'd', new ItemStack(Items.DYE, 1, 1), 'c', Itemss.PNEUMATIC_CYLINDER, 'i', Names.INGOT_IRON_COMPRESSED, 'p', Itemss.PRINTED_CIRCUIT_BOARD);
         addRecipe(new ItemStack(Blockss.ASSEMBLY_IO_UNIT), true, "hcc", "  c", "ipi", 'h', Blocks.HOPPER, 'c', Itemss.PNEUMATIC_CYLINDER, 'i', Names.INGOT_IRON_COMPRESSED, 'p', Itemss.PRINTED_CIRCUIT_BOARD);
         addRecipe(new ItemStack(Blockss.ASSEMBLY_PLATFORM), true, "a a", "ppp", "ici", 'a', Itemss.PNEUMATIC_CYLINDER, 'p', new ItemStack(Itemss.PLASTIC, 1, ItemPlastic.ORANGE), 'i', Names.INGOT_IRON_COMPRESSED, 'c', Itemss.PRINTED_CIRCUIT_BOARD);
         addRecipe(new ItemStack(Blockss.ASSEMBLY_CONTROLLER), true, " c ", "tcc", "iii", 'i', Names.INGOT_IRON_COMPRESSED, 'c', Itemss.PRINTED_CIRCUIT_BOARD, 't', new ItemStack(Blockss.PRESSURE_TUBE, 1, 0));
-
-        GameRegistry.addSmelting(Itemss.FAILED_PCB, new ItemStack(Itemss.EMPTY_PCB, 1, Itemss.EMPTY_PCB.getMaxDamage()), 0);
 
         addRecipe(new ItemStack(Blockss.PNEUMATIC_DOOR), "cc", "cc", "cc", 'c', Names.INGOT_IRON_COMPRESSED);
         addRecipe(new ItemStack(Blockss.PNEUMATIC_DOOR_BASE), true, " #c", "cct", "ccc", '#', Itemss.PNEUMATIC_CYLINDER, 'c', Names.INGOT_IRON_COMPRESSED, 't', new ItemStack(Blockss.PRESSURE_TUBE, 1, 0));

@@ -25,6 +25,7 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
+import javax.annotation.Nonnull;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -38,7 +39,7 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
     private static final int ANIMATED_STAT_SPEED = 20;
 
     private IGuiAnimatedStat affectingStat;
-    private ItemStack iStack;
+    private ItemStack iStack = ItemStack.EMPTY;
     private String texture = "";
     private final GuiScreen gui;
     private final List<String> textList = new ArrayList<String>();
@@ -111,7 +112,7 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
         this.texture = texture;
     }
 
-    public GuiAnimatedStat(GuiScreen gui, String title, ItemStack icon, int xPos, int yPos, int backGroundColor,
+    public GuiAnimatedStat(GuiScreen gui, String title, @Nonnull ItemStack icon, int xPos, int yPos, int backGroundColor,
                            IGuiAnimatedStat affectingStat, boolean leftSided) {
         this(gui, title, xPos, yPos, backGroundColor, affectingStat, leftSided);
         iStack = icon;
@@ -341,7 +342,7 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
             GL11.glColor4d(1, 1, 1, 1);
             GL11.glEnable(GL11.GL_BLEND);
             GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-            if (iStack == null) {
+            if (iStack.isEmpty()) {
                 if (texture.contains(Textures.GUI_LOCATION)) {
                     GuiPneumaticContainerBase.drawTexture(texture, renderBaseX - (leftSided ? 16 : 0), renderAffectedY);
                 } else {

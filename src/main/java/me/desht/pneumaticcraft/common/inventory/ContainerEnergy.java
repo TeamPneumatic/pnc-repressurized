@@ -11,6 +11,9 @@ public class ContainerEnergy extends Container4UpgradeSlots<TileEntityPneumaticB
 
     public ContainerEnergy(InventoryPlayer inventoryPlayer, TileEntityPneumaticBase te) {
         super(inventoryPlayer, te);
+        if (!te.hasCapability(CapabilityEnergy.ENERGY, null)) {
+            throw new IllegalStateException("tile entity must support CapabilityEnergy.ENERGY on face null!");
+        }
         energyStorage = te.getCapability(CapabilityEnergy.ENERGY, null);
         try {
             addSyncedField(new SyncedField.SyncedInt(energyStorage, EnergyStorage.class.getDeclaredField("energy")));

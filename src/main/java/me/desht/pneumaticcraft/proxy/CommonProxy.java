@@ -140,6 +140,8 @@ public class CommonProxy implements IGuiHandler {
                 return new ContainerSentryTurret(player.inventory, (TileEntitySentryTurret) te);
             case FLUX_COMPRESSOR:
                 return new ContainerEnergy(player.inventory, (TileEntityFluxCompressor) te);
+            case PNEUMATIC_DYNAMO:
+                return new ContainerEnergy(player.inventory, (TileEntityPneumaticDynamo) te);
         }
         return ThirdPartyManager.instance().getServerGuiElement(ID, player, world, x, y, z);
     }
@@ -233,6 +235,8 @@ public class CommonProxy implements IGuiHandler {
                 return new GuiSentryTurret(player.inventory, (TileEntitySentryTurret) te);
             case FLUX_COMPRESSOR:
                 return new GuiFluxCompressor(player.inventory, (TileEntityFluxCompressor) te);
+            case PNEUMATIC_DYNAMO:
+                return new GuiPneumaticDynamo(player.inventory, (TileEntityPneumaticDynamo) te);
         }
         return ThirdPartyManager.instance().getClientGuiElement(ID, player, world, x, y, z);
     }

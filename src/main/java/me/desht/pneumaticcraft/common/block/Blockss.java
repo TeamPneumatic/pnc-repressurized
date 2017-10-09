@@ -111,6 +111,8 @@ public class Blockss {
     public static final Block SENTRY_TURRET = null;
     @GameRegistry.ObjectHolder("flux_compressor")
     public static final Block FLUX_COMPRESSOR = null;
+    @GameRegistry.ObjectHolder("pneumatic_dynamo")
+    public static final Block PNEUMATIC_DYNAMO = null;
 
     public static List<Block> blocks = new ArrayList<>();
 
@@ -165,6 +167,7 @@ public class Blockss {
         if (!ConfigHandler.advanced.disableKeroseneLampFakeAirBlock) registerBlock(registry, new BlockKeroseneLampLight());
         registerBlock(registry, new BlockSentryTurret());
         registerBlock(registry, new BlockFluxCompressor());
+        registerBlock(registry, new BlockPneumaticDynamo());
     }
 
     public static void registerBlock(IForgeRegistry<Block> registry, Block block) {

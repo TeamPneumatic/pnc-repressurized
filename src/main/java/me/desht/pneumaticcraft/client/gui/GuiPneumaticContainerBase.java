@@ -31,6 +31,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.CapabilityItemHandler;
 import org.lwjgl.opengl.GL11;
 
+import javax.annotation.Nonnull;
 import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -61,7 +62,7 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
         this.guiTexture = guiTexture != null ? new ResourceLocation(guiTexture) : null;
     }
 
-    protected GuiAnimatedStat addAnimatedStat(String title, ItemStack icon, int color, boolean leftSided) {
+    protected GuiAnimatedStat addAnimatedStat(String title, @Nonnull ItemStack icon, int color, boolean leftSided) {
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
 

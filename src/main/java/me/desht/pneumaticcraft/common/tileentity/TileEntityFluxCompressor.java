@@ -15,14 +15,13 @@ import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.EnergyStorage;
-import net.minecraftforge.energy.IEnergyStorage;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
 public class TileEntityFluxCompressor extends TileEntityPneumaticBase implements IRedstoneControlled, IHeatExchanger {
-    private final EnergyStorage energy = new EnergyStorage(100000);
+    private final PneumaticEnergyStorage energy = new PneumaticEnergyStorage(100000);
     @GuiSynced
     private int rfPerTick;
     @GuiSynced
@@ -104,7 +103,7 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase implements
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound tag){
         super.writeToNBT(tag);
-        tag.setInteger("Energy", energy.getEnergyStored());
+        energy.writeToNBT(tag);
         tag.setByte("redstoneMode", (byte)redstoneMode);
         return tag;
     }
@@ -112,13 +111,13 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase implements
     @Override
     public void readFromNBT(NBTTagCompound tag){
         super.readFromNBT(tag);
-        energy.receiveEnergy(tag.getInteger("Energy"), false);
+        energy.readFromNBT(tag);
         redstoneMode = tag.getByte("redstoneMode");
     }
 
     @Override
     public void handleGUIButtonPress(int buttonID, EntityPlayer player){
-        if(buttonID == 0 && ++redstoneMode > 2) redstoneMode = 0;
+        if (buttonID == 0 && ++redstoneMode > 2) redstoneMode = 0;
     }
 
     @Override
@@ -136,9 +135,5 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase implements
 
     public int getAirRate() {
         return airPerTick;
-    }
-
-    public IEnergyStorage getEnergyStorage() {
-        return energy;
     }
 }

@@ -1,0 +1,26 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "pneumaticcraft:pneumatic_dynamo",
+    "textures": {
+      "particle": "pneumaticcraft:blocks/pneumatic_dynamo_off",
+      "dynamo": "pneumaticcraft:blocks/pneumatic_dynamo_on"
+    }
+  },
+  "variants": {
+    "normal": [{}],
+    "inventory": [{ "transform": "forge:default-block" }],
+    "facing": {
+      "up": { "transform": { "rotation": { "z": 90 } } },
+      "down": { "transform": { "rotation": { "z": -90 } } },
+      "north": { "transform": { "rotation": { "y": 90 } } },
+      "south": { "transform": { "rotation": { "y": -90 } } },
+      "east": { },
+      "west": { "transform": { "rotation": { "y": 180 }} }
+    },
+    "active": {
+      "true": { },
+      "false": { "textures": { "dynamo": "pneumaticcraft:blocks/pneumatic_dynamo_off" } }
+    }
+  }
+}

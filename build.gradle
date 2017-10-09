@@ -76,7 +76,7 @@ repositories {
 }
 
 dependencies {
-    deobfCompile "cofh:RedstoneFlux:1.12-2.0.0.1:universal"
+//    deobfCompile "cofh:RedstoneFlux:1.12-2.0.0.1:universal"
     deobfCompile "mezz.jei:jei_1.12:4.7.0.67"
     deobfCompile "MCMultiPart2:MCMultiPart:2.2.2"
     deobfCompile "li.cil.oc:OpenComputers:MC1.12-1.7.0.3:api"
