@@ -32,7 +32,7 @@ public class GuiFluxCompressor extends GuiPneumaticContainerBase<TileEntityFluxC
     @Override
     public void initGui() {
         super.initGui();
-        inputStat = addAnimatedStat("Input", ItemStack.EMPTY, 0xFF555555, false);
+        inputStat = addAnimatedStat("Input", Textures.GUI_BUILDCRAFT_ENERGY, 0xFF555555, false);
 
         IEnergyStorage storage = te.getCapability(CapabilityEnergy.ENERGY, null);
         addWidget(new WidgetEnergy(guiLeft + 20, guiTop + 20, storage));

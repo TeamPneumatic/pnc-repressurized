@@ -26,7 +26,7 @@ public class GuiPneumaticDynamo extends GuiPneumaticContainerBase<TileEntityPneu
     @Override
     public void initGui() {
         super.initGui();
-        inputStat = addAnimatedStat("Output", ItemStack.EMPTY, 0xFF555555, false);
+        inputStat = addAnimatedStat("Output", Textures.GUI_BUILDCRAFT_ENERGY, 0xFF555555, false);
 
         IEnergyStorage storage = te.getCapability(CapabilityEnergy.ENERGY, null);
         addWidget(new WidgetEnergy(guiLeft + 20, guiTop + 20, storage));
