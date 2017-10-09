@@ -170,7 +170,7 @@ public class Itemss {
         for (EnumUpgrade upgrade : EnumUpgrade.values()) {
             if (upgrade != EnumUpgrade.THAUMCRAFT || Loader.isModLoaded(ModIds.THAUMCRAFT)) {
                 String upgradeName = upgrade.toString().toLowerCase() + "_upgrade";
-                Item upgradeItem = new ItemMachineUpgrade(upgradeName);
+                Item upgradeItem = new ItemMachineUpgrade(upgradeName, upgrade.ordinal());
                 registerItem(registry, upgradeItem);
                 upgrades.put(upgrade, upgradeItem);
             }

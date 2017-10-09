@@ -37,7 +37,6 @@ import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 import java.util.Iterator;
 
-//TODO TE dep @Optional.InterfaceList({@Optional.Interface(iface = "cofh.api.energy.IEnergyReceiver", modid = ModIds.COFH_CORE), @Optional.Interface(iface = "cofh.api.tileentity.IEnergyInfo", modid = ModIds.COFH_CORE)})
 public class TileEntityAerialInterface extends TileEntityPneumaticBase implements IMinWorkingPressure, IRedstoneControl, IComparatorSupport {
     @GuiSynced
     @DescSynced
@@ -56,7 +55,6 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
     @GuiSynced
     public boolean isConnectedToPlayer = false;
     private boolean dispenserUpgradeInserted;
-    private boolean oldDispenserUpgradeInserted;
 
     private final PlayerMainInvHandler playerMainInvHandler;
     private final PlayerArmorInvHandler playerArmorInvHandler;
@@ -95,6 +93,15 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
     }
 
     @Override
+    protected void onUpgradesChanged() {
+        boolean old = dispenserUpgradeInserted;
+        dispenserUpgradeInserted = getUpgrades(EnumUpgrade.DISPENSER) > 0;
+        if (old != dispenserUpgradeInserted) {
+            updateNeighbours = true;
+        }
+    }
+
+    @Override
     public void update() {
         if (!getWorld().isRemote && updateNeighbours) {
             updateNeighbours = false;
@@ -104,22 +111,16 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
             if (getPressure() > PneumaticValues.MIN_PRESSURE_AERIAL_INTERFACE && isConnectedToPlayer) {
                 if (energyRF != null) tickRF();
                 addAir(-PneumaticValues.USAGE_AERIAL_INTERFACE);
-                if (getWorld().getTotalWorldTime() % 40 == 0) {
-                    dispenserUpgradeInserted = getUpgrades(EnumUpgrade.DISPENSER) > 0;
-                    if (oldDispenserUpgradeInserted != dispenserUpgradeInserted) {
-                        world.notifyNeighborsOfStateChange(pos, world.getBlockState(getPos()).getBlock(), true);
-                    }
-                    oldDispenserUpgradeInserted = dispenserUpgradeInserted;
-                }
-                if (getWorld().getTotalWorldTime() % 20 == 0) {
+                // bitwise check much faster than mod (%)
+                if ((getWorld().getTotalWorldTime() & 0xf) == 0) {
                     EntityPlayer player = getPlayer();
                     if (player != null && player.getAir() <= 280) {
-                        player.setAir(player.getAir() + 20);
-                        addAir(-4000);
+                        player.setAir(player.getAir() + 16);
+                        addAir(-3200);
                     }
                 }
             }
-            if (getWorld().getTotalWorldTime() % 20 == 0 && !getWorld().isRemote && !playerUUID.isEmpty()) {
+            if ((getWorld().getTotalWorldTime() & 0xf) == 0 && !getWorld().isRemote && !playerUUID.isEmpty()) {
                 setPlayer(PneumaticCraftUtils.getPlayerFromId(playerUUID));
             }
         }
@@ -199,7 +200,6 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
         redstoneMode = tag.getInteger("redstoneMode");
         feedMode = tag.getInteger("feedMode");
         setPlayer(tag.getString("playerName"), tag.getString("playerUUID"));
-//        isConnectedToPlayer = tag.getBoolean("connected");
         if (tag.hasKey("curXpFluid")) curXpFluid = FluidRegistry.getFluid(tag.getString("curXpFluid"));
         if (energyRF != null) readRF(tag);
 
@@ -216,7 +216,6 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
         tag.setString("playerUUID", playerUUID);
         if (curXpFluid != null) tag.setString("curXpFluid", curXpFluid.getName());
         if (energyRF != null) saveRF(tag);
-//        tag.setBoolean("connected", isConnectedToPlayer);
         return tag;
     }
 
@@ -536,49 +535,4 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
             return i - 1;
         }
     }
-
-    /* @Optional.Method(modid = ModIds.COFH_CORE)
-     private EnergyStorage getEnergy(){
-         return (EnergyStorage)energyRF;
-     }
-
-     @Override
-     public boolean canConnectEnergy(EnumFacing from){
-         return true;
-     }
-
-     @Override
-     public int getInfoEnergyPerTick(){
-         return RF_PER_TICK;
-     }
-
-     @Override
-     public int getInfoMaxEnergyPerTick(){
-         return RF_PER_TICK;
-     }
-
-     @Override
-     public int getInfoEnergyStored(){
-         return getEnergy().getEnergyStored();
-     }
-
-     @Override
-     public int getInfoMaxEnergyStored(){
-         return getEnergy().getMaxEnergyStored();
-     }
-
-     @Override
-     public int receiveEnergy(EnumFacing from, int maxReceive, boolean simulate){
-         return getEnergy().receiveEnergy(maxReceive, simulate);
-     }
-
-     @Override
-     public int getEnergyStored(EnumFacing from){
-         return getEnergy().getEnergyStored();
-     }
-
-     @Override
-     public int getMaxEnergyStored(EnumFacing from){
-         return getEnergy().getMaxEnergyStored();
-     }*/
 }

@@ -131,12 +131,12 @@ public interface IAirHandler extends IManoMeasurable, IUpgradeAcceptor {
      */
     void setPneumaticMachine(IPneumaticMachine machine);
 
-    /**
-     * Not necessary if you use validate(), or when the parent's inventory isn't used to handle like volume upgrades.
-     *
-     * @param inv
-     */
-    void setParentInventory(IItemHandler inv);
+//    /**
+//     * Not necessary if you use validate(), or when the parent's inventory isn't used to handle like volume upgrades.
+//     *
+//     * @param inv
+//     */
+//    void setParentInventory(IItemHandler inv);
 
     /**
      * Not necessary if you use validate(), or when the parent doesn't implement IAirListener.

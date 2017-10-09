@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
+import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
@@ -10,9 +11,15 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import java.util.List;
 
 public class ItemMachineUpgrade extends ItemPneumatic {
+    private final int index;
 
-    public ItemMachineUpgrade(String registryName) {
+    public ItemMachineUpgrade(String registryName, int index) {
         super(registryName);
+        this.index = index;
+    }
+
+    public IItemRegistry.EnumUpgrade getUpgradeType() {
+        return IItemRegistry.EnumUpgrade.values()[index];
     }
 
     @Override

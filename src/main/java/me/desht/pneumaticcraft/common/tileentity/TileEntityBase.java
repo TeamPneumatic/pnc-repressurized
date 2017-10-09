@@ -64,6 +64,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     protected List<ILuaMethod> luaMethods = new ArrayList<>();
     private IBlockState cachedBlockState;
     private final Set<Item> applicableUpgrades = new HashSet<>();
+    private final UpgradeCache upgradeCache = new UpgradeCache(this);
 
     public TileEntityBase() {
         this(0);
@@ -237,6 +238,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
         if (tag.hasKey("Upgrades") && upgradeHandler != null) {
             upgradeHandler = new UpgradeHandler(upgradeHandler.getSlots());
             upgradeHandler.deserializeNBT(tag.getCompoundTag("Upgrades"));
+            upgradeCache.cacheUpgrades();
         }
         readFromPacket(tag);
         if (this instanceof IHeatExchanger) {
@@ -286,7 +288,8 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     }
 
     public int getUpgrades(EnumUpgrade upgrade) {
-        return getUpgrades(Itemss.upgrades.get(upgrade));
+        return upgradeCache.getUpgrades(upgrade);
+//        return getUpgrades(Itemss.upgrades.get(upgrade));
     }
 
     public static int getUpgrades(IItemHandler inv, EnumUpgrade upgrade) {
@@ -593,6 +596,10 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     public void onTileEntityCreated() {
     }
 
+    public UpgradeCache getUpgradeCache() {
+        return upgradeCache;
+    }
+
     class UpgradeHandler extends FilteredItemStackHandler {
         UpgradeHandler(int upgradeSize) {
             super(upgradeSize);
@@ -600,7 +607,18 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
 
         @Override
         public boolean test(Integer integer, ItemStack itemStack) {
-            return applicableUpgrades.contains(itemStack.getItem());
+            return itemStack.isEmpty() || applicableUpgrades.contains(itemStack.getItem());
+        }
+
+        @Override
+        protected void onContentsChanged(int slot) {
+            upgradeCache.cacheUpgrades();
+            onUpgradesChanged();
         }
     }
+
+    /**
+     * Called when a machine's upgrades have changed in some way.
+     */
+    protected void onUpgradesChanged() {}
 }

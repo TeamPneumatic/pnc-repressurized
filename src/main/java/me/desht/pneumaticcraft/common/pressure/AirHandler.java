@@ -11,6 +11,7 @@ import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.thirdparty.ModInteractionUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
+import me.desht.pneumaticcraft.common.tileentity.UpgradeCache;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.TileEntityCache;
 import me.desht.pneumaticcraft.lib.Log;
@@ -26,7 +27,6 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import net.minecraftforge.items.IItemHandler;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -46,7 +46,8 @@ public class AirHandler implements IAirHandler {
     private TileEntityCache[] tileCache;
     private int[] upgradeSlots;
 
-    private IItemHandler parentInventory;  // just for finding upgrades..?
+    private UpgradeCache upgradeCache;
+//    private IItemHandler parentInventory;  // just for finding upgrades..?
     private IAirListener airListener;
     private IPneumaticMachine parentPneumatic;
     private World world;
@@ -141,7 +142,7 @@ public class AirHandler implements IAirHandler {
     }
 
     private int getUpgrades(EnumUpgrade upgrade) {
-        return parentInventory == null ? 0 : TileEntityBase.getUpgrades(parentInventory, upgrade);
+        return upgradeCache == null ? 0 : upgradeCache.getUpgrades(upgrade);
     }
 
     protected int getVolumeFromUpgrades() {
@@ -269,7 +270,8 @@ public class AirHandler implements IAirHandler {
 
     @Override
     public void validate(TileEntity parent) {
-        parentInventory = parent instanceof TileEntityBase ? ((TileEntityBase) parent).getUpgradesInventory() : null;
+        upgradeCache = parent instanceof TileEntityBase ? ((TileEntityBase) parent).getUpgradeCache() : null;
+//        parentInventory = parent instanceof TileEntityBase ? ((TileEntityBase) parent).getUpgradesInventory() : null;
         airListener = parent instanceof IAirListener ? (IAirListener) parent : null;
         parentPneumatic = (IPneumaticMachine) parent;
         setWorld(parent.getWorld());
@@ -281,10 +283,10 @@ public class AirHandler implements IAirHandler {
         parentPneumatic = machine;
     }
 
-    @Override
-    public void setParentInventory(IItemHandler inv) {
-        parentInventory = inv;
-    }
+//    @Override
+//    public void setParentInventory(IItemHandler inv) {
+//        parentInventory = inv;
+//    }
 
     @Override
     public void setAirListener(IAirListener airListener) {
