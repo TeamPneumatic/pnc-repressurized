@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.ModIds;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
@@ -55,6 +56,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
     @GuiSynced
     public boolean isConnectedToPlayer = false;
     private boolean dispenserUpgradeInserted;
+    private boolean oldDispenserUpgradeInserted;
 
     private final PlayerMainInvHandler playerMainInvHandler;
     private final PlayerArmorInvHandler playerArmorInvHandler;
@@ -102,8 +104,13 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
             if (getPressure() > PneumaticValues.MIN_PRESSURE_AERIAL_INTERFACE && isConnectedToPlayer) {
                 if (energyRF != null) tickRF();
                 addAir(-PneumaticValues.USAGE_AERIAL_INTERFACE);
-                if (getWorld().getTotalWorldTime() % 40 == 0)
+                if (getWorld().getTotalWorldTime() % 40 == 0) {
                     dispenserUpgradeInserted = getUpgrades(EnumUpgrade.DISPENSER) > 0;
+                    if (oldDispenserUpgradeInserted != dispenserUpgradeInserted) {
+                        world.notifyNeighborsOfStateChange(pos, world.getBlockState(getPos()).getBlock(), true);
+                    }
+                    oldDispenserUpgradeInserted = dispenserUpgradeInserted;
+                }
                 if (getWorld().getTotalWorldTime() % 20 == 0) {
                     EntityPlayer player = getPlayer();
                     if (player != null && player.getAir() <= 280) {
@@ -124,7 +131,6 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
 
         super.update();
     }
-
 
     @Override
     public void handleGUIButtonPress(int buttonID, EntityPlayer player) {
