@@ -23,6 +23,7 @@ public class ThirdPartyConfig extends JsonConfig {
         MODS.put(OPEN_COMPUTERS, true);
         MODS.put(EIO, true);
         MODS.put(MCMP,  true);
+        MODS.put(INDUSTRIALFOREGOING, true);
     }
 
     public ThirdPartyConfig() {
