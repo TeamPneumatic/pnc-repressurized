@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.block;
 import dan200.computercraft.api.peripheral.IPeripheral;
 import dan200.computercraft.api.peripheral.IPeripheralProvider;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAerialInterface;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticBase;
 import me.desht.pneumaticcraft.lib.ModIds;
 import me.desht.pneumaticcraft.proxy.CommonProxy.EnumGuiId;
 import net.minecraft.block.material.Material;
@@ -16,6 +17,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Optional;
+
+import javax.annotation.Nullable;
 
 public class BlockAerialInterface extends BlockPneumaticCraft implements IPeripheralProvider {
     BlockAerialInterface() {
@@ -41,8 +44,17 @@ public class BlockAerialInterface extends BlockPneumaticCraft implements IPeriph
     }
 
     @Override
-    public boolean shouldCheckWeakPower(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing side) {
+    public boolean canProvidePower(IBlockState state) {
         return true;
+    }
+
+    @Override
+    public int getWeakPower(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
+        TileEntity te = blockAccess.getTileEntity(pos);
+        if (te instanceof TileEntityAerialInterface) {
+            return ((TileEntityAerialInterface)te ).shouldEmitRedstone() ? 15 : 0;
+        }
+        return 0;
     }
 
     /**

@@ -8,13 +8,11 @@ import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.ModIds;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.fluids.Fluid;
@@ -25,8 +23,6 @@ import net.minecraftforge.fluids.capability.FluidTankProperties;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
 import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.PlayerArmorInvWrapper;
@@ -144,7 +140,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
         }
     }
 
-    private boolean shouldEmitRedstone() {
+    public boolean shouldEmitRedstone() {
         switch (redstoneMode) {
             case 0:
                 return false;
@@ -192,7 +188,6 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
     public String getName() {
         return Blockss.AERIAL_INTERFACE.getUnlocalizedName();
     }
-
 
     @Override
     public void readFromNBT(NBTTagCompound tag) {
