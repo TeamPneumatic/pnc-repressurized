@@ -60,6 +60,8 @@ public class WidgetRegistrator {
         register(new ProgWidgetDroneConditionLiquid());
         register(new ProgWidgetDroneConditionEntity());
         register(new ProgWidgetDroneConditionPressure());
+        register(new ProgWidgetRFCondition());
+        register(new ProgWidgetDroneConditionRF());
     }
 
     public static void register(IProgWidget widget) {

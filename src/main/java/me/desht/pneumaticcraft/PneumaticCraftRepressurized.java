@@ -9,6 +9,8 @@ import me.desht.pneumaticcraft.common.EventHandlerPneumaticCraft;
 import me.desht.pneumaticcraft.common.EventHandlerUniversalSensor;
 import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.TickHandlerPneumaticCraft;
+import me.desht.pneumaticcraft.common.ai.DroneInteractRFExport;
+import me.desht.pneumaticcraft.common.ai.DroneInteractRFImport;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.commands.PCCommandManager;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
@@ -96,6 +98,10 @@ public class PneumaticCraftRepressurized {
         tabPneumaticCraft = new CreativeTabPneumaticCraft("tabPneumaticCraft");
         Fluids.preInit();
         ThirdPartyManager.instance().preInit();
+
+        PneumaticRegistry.getInstance().getDroneRegistry().registerCustomBlockInteractor(new DroneInteractRFExport());
+        PneumaticRegistry.getInstance().getDroneRegistry().registerCustomBlockInteractor(new DroneInteractRFImport());
+
         TileEntityRegistrator.init();
         EntityRegistrator.init();
         SemiBlockInitializer.preInit();

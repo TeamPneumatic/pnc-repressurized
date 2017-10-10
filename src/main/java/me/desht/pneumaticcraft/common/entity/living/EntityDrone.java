@@ -28,6 +28,7 @@ import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetGoToLocation;
 import me.desht.pneumaticcraft.common.recipes.AmadronOffer;
 import me.desht.pneumaticcraft.common.recipes.AmadronOfferCustom;
+import me.desht.pneumaticcraft.common.tileentity.PneumaticEnergyStorage;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPlasticMixer;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -74,6 +75,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
@@ -108,10 +110,17 @@ public class EntityDrone extends EntityDroneBase
     private boolean isChangingCurrentStack;//used when syncing up the stacks of the drone with the fake player. Without it they'll keep syncing resulting in a stackoverflow.
     private ItemHandlerDrone inventory = new ItemHandlerDrone(1);
     private final FluidTank tank = new FluidTank(Integer.MAX_VALUE);
-    private ItemStackHandler upgradeInventory = new ItemStackHandler(9);
+    private ItemStackHandler upgradeInventory = new ItemStackHandler(9) {
+        @Override
+        protected void onContentsChanged(int slot) {
+            super.onContentsChanged(slot);
+            energy.setCapacity(100000 + 100000 * getUpgrades(EnumUpgrade.VOLUME));
+        }
+    };
     private final int[] emittingRedstoneValues = new int[6];
     private float propSpeed;
     private static final float LASER_EXTEND_SPEED = 0.05F;
+    private final PneumaticEnergyStorage energy = new PneumaticEnergyStorage(100000);
 
     protected float currentAir; //the current held energy of the Drone;
     private float volume;
@@ -216,6 +225,7 @@ public class EntityDrone extends EntityDroneBase
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
         return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY
                 || capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY
+                || capability == CapabilityEnergy.ENERGY
                 || super.hasCapability(capability, facing);
     }
 
@@ -226,6 +236,8 @@ public class EntityDrone extends EntityDroneBase
             return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(inventory);
         } else if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
             return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(tank);
+        } else if (capability == CapabilityEnergy.ENERGY) {
+            return CapabilityEnergy.ENERGY.cast(energy);
         }
         return super.getCapability(capability, facing);
     }

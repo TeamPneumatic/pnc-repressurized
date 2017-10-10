@@ -15,4 +15,8 @@ public class PneumaticEnergyStorage extends EnergyStorage {
     public void readFromNBT(NBTTagCompound tag) {
         energy = tag.getInteger("Energy");
     }
+
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
+    }
 }
