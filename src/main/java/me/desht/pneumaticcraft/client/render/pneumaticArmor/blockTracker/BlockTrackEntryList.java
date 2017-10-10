@@ -22,6 +22,7 @@ public class BlockTrackEntryList {
         trackList.add(new BlockTrackEntryEndPortalFrame());
         trackList.add(new BlockTrackEntryMobSpawner());
         trackList.add(new BlockTrackEntrySimple());
+        trackList.add(new BlockTrackEntryEnergy());
     }
 
     public List<IBlockTrackEntry> getEntriesForCoordinate(IBlockAccess blockAccess, BlockPos pos, TileEntity te) {
