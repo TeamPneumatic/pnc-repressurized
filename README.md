@@ -54,6 +54,7 @@ With all that said, have fun!
 * Elevators
 * Pneumatic Villagers (mechanics)
 * Flux Compressor (using Forge Energy, no Tesla or direct CoFH support at this point)
+* Universal Sensor
 
 ### Functional but Needs Clientside Work
 

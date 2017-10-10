@@ -35,18 +35,6 @@ public class BlockUniversalSensor extends BlockPneumaticCraftModeled {
         return COLLISION_BOUNDS;
     }
 
-//    @Override
-//    public void setBlockBoundsBasedOnState(IBlockAccess par1IBlockAccess, BlockPos pos) {
-//        setBlockBounds(BBConstants.UNIVERSAL_SENSOR_MIN_POS, 0F, BBConstants.UNIVERSAL_SENSOR_MIN_POS, BBConstants.UNIVERSAL_SENSOR_MAX_POS, BBConstants.UNIVERSAL_SENSOR_MAX_POS_TOP, BBConstants.UNIVERSAL_SENSOR_MAX_POS);
-//    }
-//
-//    @Override
-//    public void addCollisionBoxesToList(World world, BlockPos pos, IBlockState state, AxisAlignedBB axisalignedbb, List arraylist, Entity par7Entity) {
-//        setBlockBounds(BBConstants.UNIVERSAL_SENSOR_MIN_POS, BBConstants.UNIVERSAL_SENSOR_MIN_POS, BBConstants.UNIVERSAL_SENSOR_MIN_POS, BBConstants.UNIVERSAL_SENSOR_MAX_POS, BBConstants.UNIVERSAL_SENSOR_MAX_POS_TOP, BBConstants.UNIVERSAL_SENSOR_MAX_POS);
-//        super.addCollisionBoxesToList(world, pos, state, axisalignedbb, arraylist, par7Entity);
-//        setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
-//    }
-
     @Override
     protected Class<? extends TileEntity> getTileEntityClass() {
         return TileEntityUniversalSensor.class;
@@ -55,10 +43,6 @@ public class BlockUniversalSensor extends BlockPneumaticCraftModeled {
     @Override
     public EnumGuiId getGuiID() {
         return EnumGuiId.UNIVERSAL_SENSOR;
-    }
-
-    protected boolean isRotable() {
-        return true;
     }
 
     @Override

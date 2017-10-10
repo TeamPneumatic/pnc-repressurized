@@ -1,0 +1,32 @@
+{
+  "textures": {
+    "particle": "pneumaticcraft:blocks/universal_sensor",
+    "face": "pneumaticcraft:blocks/universal_sensor"
+  },
+  "elements": [
+    {
+      "from": [ 0, 0, 0 ],
+      "to": [ 16, 4, 16 ],
+      "faces": {
+        "up": { "texture": "#face", "uv": [ 0, 0, 8, 8 ] },
+        "down": { "texture": "#face", "uv": [ 0, 0, 8, 8 ], "cullface": "down" },
+        "north": { "texture": "#face", "uv": [ 8, 0, 16, 2 ] },
+        "south": { "texture": "#face", "uv": [ 8, 0, 16, 2 ] },
+        "west": { "texture": "#face", "uv": [ 8, 0, 16, 2 ] },
+        "east": { "texture": "#face", "uv": [ 8, 0, 16, 2 ] }
+      }
+    },
+    {
+      "from": [ 4, 4, 4 ],
+      "to": [ 12, 7, 12 ],
+      "faces": {
+        "up": { "texture": "#face", "uv": [ 0, 0, 8, 8 ] },
+        "down": { "texture": "#face", "uv": [ 0, 0, 8, 8 ], "cullface": "down" },
+        "north": { "texture": "#face", "uv": [ 8, 0, 16, 2 ] },
+        "south": { "texture": "#face", "uv": [ 8, 0, 16, 2 ] },
+        "west": { "texture": "#face", "uv": [ 8, 0, 16, 2 ] },
+        "east": { "texture": "#face", "uv": [ 8, 0, 16, 2 ] }
+      }
+    }
+  ]
+}

@@ -1,13 +1,13 @@
 {
     "forge_marker": 1,
     "defaults": {
-        "textures": {},
-        "custom": { "flip-v" : true},
-        "model": "pneumaticcraft:universal_sensor.obj"
+        "model": "pneumaticcraft:universal_sensor"
     },
 	"variants": {
 		"normal": [{}],
 		"inventory": [{
+          "model": "pneumaticcraft:universal_sensor_inv.obj",
+          "custom": { "flip-v" : true},
           "transform": "forge:default-block"
         }]
 	}

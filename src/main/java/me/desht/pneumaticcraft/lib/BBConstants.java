@@ -42,7 +42,7 @@ public class BBConstants {
 
     public static final float UNIVERSAL_SENSOR_MIN_POS = 0;
     public static final float UNIVERSAL_SENSOR_MAX_POS = 1F;
-    public static final float UNIVERSAL_SENSOR_MAX_POS_TOP = 15F / 16F;
+    public static final float UNIVERSAL_SENSOR_MAX_POS_TOP = 4F / 16F;
 
     public static final float APHORISM_TILE_THICKNESS = 1 / 16F;
     public static final float HEAT_SINK_THICKNESS = 8 / 16F;

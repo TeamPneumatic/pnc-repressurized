@@ -205,7 +205,7 @@ public class SensorHandler implements ISensorRegistry {
         public int emitRedstoneOnEvent(Event event, TileEntity tile, int sensorRange, String textboxText) {
             TileEntityUniversalSensor teUs = (TileEntityUniversalSensor) tile;
             Set<BlockPos> positions = teUs.getGPSPositions();
-            return positions == null ? 0 : coordinateSensor.emitRedstoneOnEvent(event, teUs, sensorRange, positions);
+            return positions.isEmpty() ? 0 : coordinateSensor.emitRedstoneOnEvent(event, teUs, sensorRange, positions);
         }
 
         @Override
@@ -258,7 +258,7 @@ public class SensorHandler implements ISensorRegistry {
         public int getPollFrequency(TileEntity te) {
             TileEntityUniversalSensor us = (TileEntityUniversalSensor) te;
             Set<BlockPos> positions = us.getGPSPositions();
-            int mult = positions == null ? 1 : positions.size();
+            int mult = positions.isEmpty() ? 1 : positions.size();
             return coordinateSensor.getPollFrequency() * mult;
         }
 
@@ -268,7 +268,7 @@ public class SensorHandler implements ISensorRegistry {
             if (te instanceof TileEntityUniversalSensor) {
                 TileEntityUniversalSensor teUs = (TileEntityUniversalSensor) te;
                 Set<BlockPos> positions = teUs.getGPSPositions();
-                return positions == null ? 0 : coordinateSensor.getRedstoneValue(world, pos, sensorRange, textBoxText, positions);
+                return positions.isEmpty() ? 0 : coordinateSensor.getRedstoneValue(world, pos, sensorRange, textBoxText, positions);
             }
             return 0;
         }

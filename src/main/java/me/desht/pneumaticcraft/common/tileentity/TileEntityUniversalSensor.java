@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
+import dan200.computercraft.api.peripheral.IComputerAccess;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.universalSensor.IEventSensorSetting;
@@ -35,20 +36,18 @@ import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemStackHandler;
 import org.apache.commons.lang3.tuple.Pair;
 
+import javax.annotation.Nonnull;
 import java.util.*;
 
 public class TileEntityUniversalSensor extends TileEntityPneumaticBase implements IRangeLineShower,
         IGUITextFieldSensitive, IMinWorkingPressure, IRedstoneControl {
 
-    public static final int INVENTORY_SIZE = 1;
+    public static final int INVENTORY_SIZE = 4;
 
     @DescSynced
     public boolean[] sidesConnected = new boolean[6];
-    private ItemStackHandler inventory = new UniversalSensorHandler();
 
     @GuiSynced
     private String sensorSetting = "";
@@ -57,7 +56,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
     private int eventTimer;
     public float dishRotation;
     public float oldDishRotation;
-    public float dishSpeed;
+    private float dishSpeed;
     @GuiSynced
     public boolean invertedRedstone;
     @DescSynced
@@ -65,24 +64,20 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
     @GuiSynced
     private String sensorGuiText = ""; //optional parameter text for sensors.
     private boolean requestPollPullEvent;
-    private Set<BlockPos> positions;
+    private final Set<BlockPos> positions = new HashSet<>();
 
     private int oldSensorRange; //range used by the range line renderer, to figure out if the range has been changed.
     private final RenderRangeLines rangeLineRenderer = new RenderRangeLines(0x330000FF);
 
-    //  private final List<IComputerAccess> attachedComputers = new ArrayList<IComputerAccess>(); //keep track of the computers so we can raise a os.pullevent.
+    private final List<IComputerAccess> attachedComputers = new ArrayList<>(); // keep track of the computers so we can raise a os.pullevent.
 
     public TileEntityUniversalSensor() {
-        super(PneumaticValues.DANGER_PRESSURE_UNIVERSAL_SENSOR, PneumaticValues.MAX_PRESSURE_UNIVERSAL_SENSOR, PneumaticValues.VOLUME_UNIVERSAL_SENSOR, 4);
+        super(PneumaticValues.DANGER_PRESSURE_UNIVERSAL_SENSOR, PneumaticValues.MAX_PRESSURE_UNIVERSAL_SENSOR, PneumaticValues.VOLUME_UNIVERSAL_SENSOR, 0);
         for (Item upgrade : SensorHandler.getInstance().getUniversalSensorUpgrades()) {
             addApplicableUpgrade(upgrade);
         }
         addApplicableUpgrade(EnumUpgrade.RANGE);
-    }
-
-    @Override
-    public IItemHandlerModifiable getPrimaryInventory() {
-        return inventory;
+        upgradeHandler = new UniversalSensorUpgradeHandler(this);  // custom upgrade inventory
     }
 
     @Override
@@ -229,7 +224,6 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
         tag.setBoolean("invertedRedstone", invertedRedstone);
         tag.setFloat("dishSpeed", dishSpeed);
         tag.setString("sensorText", sensorGuiText);
-        tag.setTag("Items", inventory.serializeNBT());
         return tag;
     }
 
@@ -240,8 +234,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
         invertedRedstone = tag.getBoolean("invertedRedstone");
         dishSpeed = tag.getFloat("dishSpeed");
         sensorGuiText = tag.getString("sensorText");
-        inventory.deserializeNBT(tag.getCompoundTag("Items"));
-        positions = getGPSPositionsStatic(this, getRange());
+        setupGPSPositions();
     }
 
     @Override
@@ -289,29 +282,31 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
         }
     }
 
-
+    @Nonnull
     public Set<BlockPos> getGPSPositions() {
         return positions;
     }
 
-    private static Set<BlockPos> getGPSPositionsStatic(TileEntityUniversalSensor teUs, int sensorRange) {
-        List<BlockPos> gpsPositions = new ArrayList<>();
+    private void setupGPSPositions() {
+        positions.clear();
 
-        for (int i = 0; i < teUs.upgradeHandler.getSlots(); i++) {
-            ItemStack gps = teUs.upgradeHandler.getStackInSlot(i);
+        List<BlockPos> gpsPositions = new ArrayList<>();
+        int sensorRange = getRange();
+        for (int i = 0; i < upgradeHandler.getSlots(); i++) {
+            ItemStack gps = upgradeHandler.getStackInSlot(i);
             if (gps.getItem() == Itemss.GPS_TOOL) {
                 BlockPos pos = ItemGPSTool.getGPSLocation(gps);
                 if (pos != null
-                        && Math.abs(pos.getX() - teUs.getPos().getX()) <= sensorRange
-                        && Math.abs(pos.getY() - teUs.getPos().getY()) <= sensorRange
-                        && Math.abs(pos.getZ() - teUs.getPos().getZ()) <= sensorRange) {
+                        && Math.abs(pos.getX() - getPos().getX()) <= sensorRange
+                        && Math.abs(pos.getY() - getPos().getY()) <= sensorRange
+                        && Math.abs(pos.getZ() - getPos().getZ()) <= sensorRange) {
                     gpsPositions.add(pos);
                 }
             }
         }
 
         if (gpsPositions.size() == 1) {
-            return new HashSet(gpsPositions);
+            positions.add(gpsPositions.get(0));
         } else if (gpsPositions.size() > 1) {
             int minX = Math.min(gpsPositions.get(0).getX(), gpsPositions.get(1).getX());
             int minY = Math.min(gpsPositions.get(0).getY(), gpsPositions.get(1).getY());
@@ -319,7 +314,6 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
             int maxX = Math.max(gpsPositions.get(0).getX(), gpsPositions.get(1).getX());
             int maxY = Math.max(gpsPositions.get(0).getY(), gpsPositions.get(1).getY());
             int maxZ = Math.max(gpsPositions.get(0).getZ(), gpsPositions.get(1).getZ());
-            Set<BlockPos> positions = new HashSet<BlockPos>();
             for (int x = minX; x <= maxX; x++) {
                 for (int y = Math.min(255, maxY); y >= minY && y >= 0; y--) {
                     for (int z = minZ; z <= maxZ; z++) {
@@ -327,9 +321,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
                     }
                 }
             }
-            return positions;
         }
-        return null;
     }
 
     @Override
@@ -375,7 +367,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
             @Override
             public Object[] call(Object[] args) throws Exception {
                 if (args.length == 1) {
-                    ISensorSetting sensor = null;
+                    ISensorSetting sensor;
                     if (args[0] instanceof String) {
                         sensor = SensorHandler.getInstance().getSensorForName((String) args[0]);
                     } else {
@@ -498,7 +490,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
         });
     }
 
-    /*@Override
+    @Override
     @Optional.Method(modid = ModIds.COMPUTERCRAFT)
     public void attach(IComputerAccess computer){
         attachedComputers.add(computer);
@@ -508,7 +500,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
     @Optional.Method(modid = ModIds.COMPUTERCRAFT)
     public void detach(IComputerAccess computer){
         attachedComputers.remove(computer);
-    }*/
+    }
 
     /**
      * Called on a event sensor
@@ -517,9 +509,9 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
      */
     @Optional.Method(modid = ModIds.COMPUTERCRAFT)
     private void notifyComputers(Object... arguments) {
-        /*     for(IComputerAccess computer : attachedComputers) {
-                 computer.queueEvent(getType(), arguments);
-             }*/
+        for(IComputerAccess computer : attachedComputers) {
+            computer.queueEvent(getType(), arguments);
+        }
     }
 
     @Override
@@ -532,9 +524,17 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
         return PneumaticValues.MIN_PRESSURE_UNIVERSAL_SENSOR;
     }
 
-    private class UniversalSensorHandler extends ItemStackHandler {
-        public UniversalSensorHandler() {
+    private class UniversalSensorUpgradeHandler extends UpgradeHandler {
+        private TileEntityUniversalSensor te;
+
+        UniversalSensorUpgradeHandler(TileEntityUniversalSensor te) {
             super(INVENTORY_SIZE);
+            this.te = te;
+        }
+
+        @Override
+        public boolean test(Integer integer, ItemStack itemStack) {
+            return itemStack.isEmpty() || getApplicableUpgrades().contains(itemStack.getItem()) || itemStack.getItem() == Itemss.GPS_TOOL;
         }
 
         @Override
@@ -544,7 +544,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
                     && !areGivenUpgradesInserted(SensorHandler.getInstance().getRequiredStacksFromText(getSensorSetting()))) {
                 setSensorSetting("");
             }
-            positions = getGPSPositionsStatic(TileEntityUniversalSensor.this, getRange());
+            te.setupGPSPositions();
         }
     }
 }
