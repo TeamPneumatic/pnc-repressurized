@@ -6,7 +6,6 @@ import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.lib.ModIds;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemFood;
@@ -14,6 +13,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
@@ -22,7 +23,6 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.FluidTankProperties;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.PlayerArmorInvWrapper;
@@ -67,7 +67,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
         playerExperienceHandler = new PlayerExperienceHandler();
         playerFoodHandler = new PlayerFoodHandler();
 
-        if (isRFAvailable()) initRF();
+        initRF();
     }
 
     public void setPlayer(EntityPlayer player) {
@@ -156,10 +156,11 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
 
     @Override
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
-        return isConnectedToPlayer &&
-                ((capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && dispenserUpgradeInserted)
-                        || capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY
-                        || super.hasCapability(capability, facing));
+        return ((isConnectedToPlayer &&
+                (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && dispenserUpgradeInserted)
+                || capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY))
+                || capability == CapabilityEnergy.ENERGY
+                || super.hasCapability(capability, facing);
 
     }
 
@@ -180,6 +181,8 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
             }
         } else if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && dispenserUpgradeInserted) {
             return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(playerExperienceHandler);
+        } else if (capability == CapabilityEnergy.ENERGY) {
+            return CapabilityEnergy.ENERGY.cast(energyRF);
         }
         return super.getCapability(capability, facing);
     }
@@ -234,44 +237,43 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
      * RF integration
      */
 
-    private Object energyRF;
+    private PneumaticEnergyStorage energyRF;
     private static final int RF_PER_TICK = 1000;
 
-    private boolean isRFAvailable() {
-        return Loader.isModLoaded(ModIds.COFH_CORE);
-    }
-
     private void initRF() {
-        // TODO TE dep   energyRF = new EnergyStorage(100000);
+        energyRF = new PneumaticEnergyStorage(100000);
     }
 
     private void saveRF(NBTTagCompound tag) {
-        //TODO TE dep     getEnergy().writeToNBT(tag);
+        energyRF.writeToNBT(tag);
     }
 
     private void readRF(NBTTagCompound tag) {
-        //TODO TE dep    getEnergy().readFromNBT(tag);
+        energyRF.readFromNBT(tag);
     }
 
     private void tickRF() {
-        /*TODO TE dep
-          if(getEnergyStored(null) > 0) {
-              InventoryPlayer inv = getPlayerInventory();
-              if(inv != null) {
-                  for(int i = 0; i < inv.getSizeInventory(); i++) {
-                      ItemStack stack = inv.getStackInSlot(i);
-                      if(stack != null && stack.getItem() instanceof IEnergyContainerItem) {
-                          IEnergyContainerItem chargingItem = (IEnergyContainerItem)stack.getItem();
-                          int energyLeft = getEnergyStored(null);
-                          if(energyLeft > 0) {
-                              getEnergy().extractEnergy(chargingItem.receiveEnergy(stack, energyLeft, false), false);
-                          } else {
-                              break;
-                          }
-                      }
-                  }
-              }
-          }*/
+        if (energyRF.getEnergyStored() > 0) {
+            chargeInv(playerMainInvHandler);
+        }
+        if (energyRF.getEnergyStored() > 0) {
+            chargeInv(playerArmorInvHandler);
+        }
+    }
+
+    private void chargeInv(IItemHandler inv) {
+        for (int i = 0; i < inv.getSlots(); i++) {
+            ItemStack stack = inv.getStackInSlot(i);
+            if (stack.hasCapability(CapabilityEnergy.ENERGY, null)) {
+                IEnergyStorage receivingStorage = stack.getCapability(CapabilityEnergy.ENERGY, null);
+                int energyLeft = energyRF.getEnergyStored();
+                if (energyLeft > 0) {
+                    energyRF.extractEnergy(receivingStorage.receiveEnergy(Math.max(energyLeft, RF_PER_TICK), false), false);
+                } else {
+                    break;
+                }
+            }
+        }
     }
 
     private abstract class PlayerInvHandler implements IItemHandler {

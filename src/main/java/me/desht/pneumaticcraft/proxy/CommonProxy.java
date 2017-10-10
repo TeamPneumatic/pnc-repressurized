@@ -24,7 +24,7 @@ import net.minecraftforge.fml.common.network.IGuiHandler;
 import net.minecraftforge.fml.relauncher.Side;
 
 public class CommonProxy implements IGuiHandler {
-    protected CommonHUDHandler clientHudHandler;
+    CommonHUDHandler clientHudHandler;
     private CommonHUDHandler serverHudHandler;
 
     public int PneumaticHelmetRenderID = 0;
@@ -98,7 +98,7 @@ public class CommonProxy implements IGuiHandler {
             case UNIVERSAL_SENSOR:
                 return new ContainerUniversalSensor(player.inventory, (TileEntityUniversalSensor) te);
             case AERIAL_INTERFACE:
-                return new Container4UpgradeSlots<>(player.inventory, (TileEntityAerialInterface) te);
+                return new ContainerEnergy(player.inventory, (TileEntityAerialInterface) te);
             case ELECTROSTATIC_COMPRESSOR:
                 return new Container4UpgradeSlots<>(player.inventory, (TileEntityElectrostaticCompressor) te);
             case OMNIDIRECTIONAL_HOPPER:

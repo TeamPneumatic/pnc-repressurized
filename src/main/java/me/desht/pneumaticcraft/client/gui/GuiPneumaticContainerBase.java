@@ -119,17 +119,6 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
         if (shouldAddProblemTab()) {
             problemTab = addAnimatedStat("gui.tab.problems", Textures.GUI_PROBLEMS_TEXTURE, 0xFFFF0000, false);
         }
-        if (shouldAddRedstoneTab() && te instanceof IRedstoneControl) {
-            redstoneTab = addAnimatedStat("gui.tab.redstoneBehaviour", new ItemStack(Items.REDSTONE), 0xFFCC0000, true);
-            List<String> curInfo = new ArrayList<>();
-            curInfo.add(I18n.format(getRedstoneString()));
-            for (int i = 0; i < 3; i++)
-                curInfo.add("                                      ");// create some space for the button
-            redstoneTab.setTextWithoutCuttingString(curInfo);
-            Rectangle buttonRect = redstoneTab.getButtonScaledRectangle(-170, 24, 170, 20);
-            redstoneButton = new GuiButtonSpecial(0, buttonRect.x, buttonRect.y, buttonRect.width, buttonRect.height, "-");//getButtonFromRectangle(0, buttonRect, "-");
-            redstoneTab.addWidget(redstoneButton);
-        }
         if (te != null) {
             if (shouldAddInfoTab()) {
                 String info = "gui.tab.info." + te.getName();
@@ -137,6 +126,17 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
                 if (!translatedInfo.equals(info)) {
                     addInfoTab(translatedInfo);
                 }
+            }
+            if (shouldAddRedstoneTab() && te instanceof IRedstoneControl) {
+                redstoneTab = addAnimatedStat("gui.tab.redstoneBehaviour", new ItemStack(Items.REDSTONE), 0xFFCC0000, true);
+                List<String> curInfo = new ArrayList<>();
+                curInfo.add(I18n.format(getRedstoneString()));
+                for (int i = 0; i < 3; i++)
+                    curInfo.add("                                      "); // create some space for the button
+                redstoneTab.setTextWithoutCuttingString(curInfo);
+                Rectangle buttonRect = redstoneTab.getButtonScaledRectangle(-170, 24, 168, 20);
+                redstoneButton = new GuiButtonSpecial(0, buttonRect.x, buttonRect.y, buttonRect.width, buttonRect.height, "-");
+                redstoneTab.addWidget(redstoneButton);
             }
             if (te instanceof IHeatExchanger) {
                 addAnimatedStat("gui.tab.info.heat.title", new ItemStack(Items.BLAZE_POWDER), 0xFFFF5500, false).setText("gui.tab.info.heat");

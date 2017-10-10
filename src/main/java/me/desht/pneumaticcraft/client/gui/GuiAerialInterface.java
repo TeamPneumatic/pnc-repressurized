@@ -2,11 +2,12 @@ package me.desht.pneumaticcraft.client.gui;
 
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetEnergy;
 import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.inventory.Container4UpgradeSlots;
+import me.desht.pneumaticcraft.common.inventory.ContainerEnergy;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAerialInterface;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.lib.ModIds;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.resources.I18n;
@@ -14,9 +15,10 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.text.WordUtils;
@@ -31,16 +33,21 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<TileEntityAeri
 
     public GuiAerialInterface(InventoryPlayer player, TileEntityAerialInterface te) {
 
-        super(new Container4UpgradeSlots(player, te), te, Textures.GUI_4UPGRADE_SLOTS);
+        super(new ContainerEnergy(player, te), te, Textures.GUI_4UPGRADE_SLOTS);
     }
 
     @Override
     public void initGui() {
         super.initGui();
+
         if (PneumaticCraftAPIHandler.getInstance().liquidXPs.size() > 0)
             addAnimatedStat("gui.tab.info.aerialInterface.liquidXp.info.title", new ItemStack(Items.WATER_BUCKET), 0xFF55FF55, false).setText(getLiquidXPText());
-        if (Loader.isModLoaded(ModIds.COFH_CORE)) {
-            addAnimatedStat("gui.tab.info.aerialInterface.interfacingRF.info.title", new ItemStack(Items.GLOWSTONE_DUST), 0xFFFF2222, false).setText("gui.tab.info.aerialInterface.interfacingRF.info");
+
+        addAnimatedStat("gui.tab.info.aerialInterface.interfacingRF.info.title", Textures.GUI_BUILDCRAFT_ENERGY, 0xFFc02222, false).setText("gui.tab.info.aerialInterface.interfacingRF.info");
+
+        if (te.hasCapability(CapabilityEnergy.ENERGY, null)) {
+            IEnergyStorage storage = te.getCapability(CapabilityEnergy.ENERGY, null);
+            addWidget(new WidgetEnergy(guiLeft + 20, guiTop + 20, storage));
         }
 
         if (te.getUpgrades(EnumUpgrade.DISPENSER) > 0) {
