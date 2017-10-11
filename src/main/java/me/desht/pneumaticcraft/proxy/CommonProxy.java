@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.proxy;
 
+import me.desht.pneumaticcraft.api.hacking.IHacking;
 import me.desht.pneumaticcraft.client.gui.*;
 import me.desht.pneumaticcraft.client.gui.semiblock.GuiLogisticsProvider;
 import me.desht.pneumaticcraft.client.gui.semiblock.GuiLogisticsRequester;
@@ -7,6 +8,7 @@ import me.desht.pneumaticcraft.client.gui.semiblock.GuiLogisticsStorage;
 import me.desht.pneumaticcraft.client.gui.tubemodule.GuiAirGrateModule;
 import me.desht.pneumaticcraft.client.gui.tubemodule.GuiPressureModule;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.hacking.CapabilityHackingProvider;
+import me.desht.pneumaticcraft.client.render.pneumaticArmor.hacking.HackingImpl;
 import me.desht.pneumaticcraft.common.CommonHUDHandler;
 import me.desht.pneumaticcraft.common.HackTickHandler;
 import me.desht.pneumaticcraft.common.inventory.*;
@@ -19,6 +21,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 import net.minecraftforge.fml.relauncher.Side;
@@ -249,9 +252,6 @@ public class CommonProxy implements IGuiHandler {
         return 0;
     }
 
-    public void registerVillagerSkins() {
-    }
-
     public HackTickHandler getHackTickHandler() {
         return serverHackTickHandler;
     }
@@ -261,7 +261,7 @@ public class CommonProxy implements IGuiHandler {
     }
 
     public void preInit() {
-        CapabilityHackingProvider.register();
+        CapabilityManager.INSTANCE.register(IHacking.class, new HackingImpl.Storage(), HackingImpl::new);
     }
 
     public void init() {

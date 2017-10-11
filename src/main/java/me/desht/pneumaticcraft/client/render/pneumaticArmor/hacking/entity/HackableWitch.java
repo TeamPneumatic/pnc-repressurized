@@ -1,6 +1,8 @@
 package me.desht.pneumaticcraft.client.render.pneumaticArmor.hacking.entity;
 
+import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IHackableEntity;
+import me.desht.pneumaticcraft.common.util.Reflections;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.monster.EntityWitch;
@@ -11,8 +13,6 @@ import java.lang.reflect.Field;
 import java.util.List;
 
 public class HackableWitch implements IHackableEntity {
-    private static Field attackTimer;
-
     @Override
     public String getId() {
         return "witch";
@@ -44,15 +44,12 @@ public class HackableWitch implements IHackableEntity {
 
     @Override
     public boolean afterHackTick(Entity entity) {
-        if (attackTimer == null)
-            attackTimer = ReflectionHelper.findField(EntityWitch.class, "field_82200_e", "witchAttackTimer");
-        try {
-            attackTimer.set(entity, 20);
-            ((EntityWitch) entity).setAggressive(true);
+        if (entity instanceof EntityWitch) {
+            Reflections.setWitchPotionUseTimer((EntityWitch) entity, 20);
+            ((EntityWitch) entity).setDrinkingPotion(true);
             return true;
-        } catch (Exception e) {
-            Log.warning("Reflection failed on HackableWitch:");
-            e.printStackTrace();
+        } else {
+            PneumaticCraftRepressurized.logger.error("something's wrong: found HackableWitch hack on " + entity);
             return false;
         }
     }

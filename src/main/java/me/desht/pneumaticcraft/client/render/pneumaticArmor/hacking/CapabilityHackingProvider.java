@@ -15,13 +15,7 @@ public class CapabilityHackingProvider implements ICapabilitySerializable<NBTBas
     @CapabilityInject(IHacking.class)
     public static final Capability<IHacking> HACKING_CAPABILITY = null;
 
-    private static IHacking instance;
-
-    public static void register() {
-        CapabilityManager.INSTANCE.register(IHacking.class, new HackingImpl.Storage(), HackingImpl::new);
-
-        instance = HACKING_CAPABILITY.getDefaultInstance();
-    }
+    private final IHacking instance = HACKING_CAPABILITY.getDefaultInstance();
 
     @Override
     public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing) {
@@ -31,16 +25,16 @@ public class CapabilityHackingProvider implements ICapabilitySerializable<NBTBas
     @Nullable
     @Override
     public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
-        return capability == HACKING_CAPABILITY ? HACKING_CAPABILITY.cast(instance) : null;
+        return capability == HACKING_CAPABILITY ? HACKING_CAPABILITY.cast(this.instance) : null;
     }
 
     @Override
     public NBTBase serializeNBT() {
-        return HACKING_CAPABILITY.getStorage().writeNBT(HACKING_CAPABILITY, instance, null);
+        return HACKING_CAPABILITY.getStorage().writeNBT(HACKING_CAPABILITY, this.instance, null);
     }
 
     @Override
     public void deserializeNBT(NBTBase nbt) {
-        HACKING_CAPABILITY.getStorage().readNBT(HACKING_CAPABILITY, instance, null, nbt);
+        HACKING_CAPABILITY.getStorage().readNBT(HACKING_CAPABILITY, this.instance, null, nbt);
     }
 }

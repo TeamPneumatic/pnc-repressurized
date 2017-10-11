@@ -29,7 +29,7 @@ public class ItemVortexCannon extends ItemPressurizable {
             vortex.posX += directionVec.x;
             vortex.posY += directionVec.y;
             vortex.posZ += directionVec.z;
-            vortex.setHeadingFromThrower(playerIn, playerIn.rotationPitch, playerIn.rotationYaw, 0.0F, 1.5F, 0.0F);
+            vortex.shoot(playerIn, playerIn.rotationPitch, playerIn.rotationYaw, 0.0F, 1.5F, 0.0F);
             vortex.motionX *= factor;
             vortex.motionY *= factor;
             vortex.motionZ *= factor;

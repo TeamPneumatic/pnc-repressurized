@@ -8,10 +8,12 @@ import com.google.gson.JsonObject;
 import java.util.Set;
 
 public class HelmetWidgetDefaults extends JsonConfig {
-    private static final Set<String> KEY_BINDS = Sets.newHashSet();
+    private final Set<String> keyBinds = Sets.newHashSet();
 
-    public HelmetWidgetDefaults() {
-        super(false);
+    public static HelmetWidgetDefaults INSTANCE = new HelmetWidgetDefaults();
+
+    private HelmetWidgetDefaults() {
+        super(true);
     }
 
     @Override
@@ -21,32 +23,32 @@ public class HelmetWidgetDefaults extends JsonConfig {
 
     @Override
     protected void writeToJson(JsonObject json) {
-        json.addProperty("description", "Tracks a list of checked keybindings for the Pneumatic Helmet");
+        json.addProperty("description", "Tracks the active upgrades for the Pneumatic Helmet");
         JsonArray array = new JsonArray();
-        for (String s : KEY_BINDS) {
+        for (String s : keyBinds) {
             array.add(s);
         }
-        json.add("keybindings", array);
+        json.add("active", array);
     }
 
     @Override
     protected void readFromJson(JsonObject json) {
-        JsonArray array = json.get("keybindings").getAsJsonArray();
-        KEY_BINDS.clear();
+        JsonArray array = json.get("active").getAsJsonArray();
+        keyBinds.clear();
         for (JsonElement element : array) {
-            KEY_BINDS.add(element.getAsString());
+            keyBinds.add(element.getAsString());
         }
     }
 
-    public static void setKey(String keyBindName, boolean checked) {
+    public void setKey(String keyBindName, boolean checked) {
         if (checked) {
-            KEY_BINDS.add(keyBindName);
+            keyBinds.add(keyBindName);
         } else {
-            KEY_BINDS.remove(keyBindName);
+            keyBinds.remove(keyBindName);
         }
     }
 
-    public static boolean getKey(String keyBindingName) {
-        return KEY_BINDS.contains(keyBindingName);
+    public boolean getKey(String keyBindingName) {
+        return keyBinds.contains(keyBindingName);
     }
 }

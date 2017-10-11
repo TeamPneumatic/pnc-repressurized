@@ -59,7 +59,7 @@ public class HackableHandler {
         manager.addHackable(Blocks.DISPENSER, HackableDispenser.class);
         manager.addHackable(Blocks.DROPPER, HackableDispenser.class);
         manager.addHackable(Blockss.SECURITY_STATION, HackableSecurityStation.class);
-        manager.addHackable(Blocks.MONSTER_EGG, HackableTripwire.class);
+        manager.addHackable(Blocks.MONSTER_EGG, HackableSilverfish.class);
         manager.addHackable(Blocks.NOTEBLOCK, HackableNoteblock.class);
         manager.addHackable(Blocks.JUKEBOX, HackableJukebox.class);
 
@@ -158,69 +158,4 @@ public class HackableHandler {
             return false;
         }
     }
-
-    // FIXME: hacking capability
-
-//    public static void onEntityConstruction(Entity entity) {
-//        entity.registerExtendedProperties("PneumaticCraftHacking", new HackingEntityProperties());
-//    }
-//
-//    public static class HackingEntityProperties implements IExtendedEntityProperties {
-//        private List<IHackableEntity> hackables;
-//
-//        @Override
-//        public void saveNBTData(NBTTagCompound compound) {
-//            if (hackables != null && !hackables.isEmpty()) {
-//                NBTTagList tagList = new NBTTagList();
-//                for (IHackableEntity hackableEntity : hackables) {
-//                    if (hackableEntity.getId() != null) {
-//                        NBTTagCompound tag = new NBTTagCompound();
-//                        tag.setString("id", hackableEntity.getId());
-//                        tagList.appendTag(tag);
-//                    }
-//                }
-//                compound.setTag("hackables", tagList);
-//            }
-//        }
-//
-//        @Override
-//        public void loadNBTData(NBTTagCompound compound) {
-//            hackables = null;
-//            NBTTagList tagList = compound.getTagList("hackables", 10);
-//            for (int i = 0; i < tagList.tagCount(); i++) {
-//                String hackableId = tagList.getCompoundTagAt(i).getString("id");
-//                Class<? extends IHackableEntity> hackableClass = PneumaticHelmetRegistry.getInstance().stringToEntityHackables.get(hackableId);
-//                if (hackableClass != null) {
-//                    try {
-//                        if (hackables == null) hackables = new ArrayList<IHackableEntity>();
-//                        hackables.add(hackableClass.newInstance());
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
-//                } else {
-//                    Log.warning("hackable \"" + hackableId + "\" not found when constructing from nbt. Was it deleted?");
-//                }
-//            }
-//        }
-//
-//        @Override
-//        public void init(Entity entity, World world) {
-//        }
-//
-//        public void update(Entity entity) {
-//            if (hackables != null) {
-//                hackables.removeIf(hackable -> !hackable.afterHackTick(entity));
-//            }
-//        }
-//
-//        public void addHackable(IHackableEntity hackable) {
-//            if (hackables == null) hackables = new ArrayList<>();
-//            hackables.add(hackable);
-//        }
-//
-//        public List<IHackableEntity> getCurrentHacks() {
-//            return hackables;
-//        }
-//
-//    }
 }

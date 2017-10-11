@@ -2,6 +2,9 @@ package me.desht.pneumaticcraft.common.util;
 
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.monster.EntityBlaze;
+import net.minecraft.entity.monster.EntityGhast;
+import net.minecraft.entity.monster.EntityWitch;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.management.PlayerInteractionManager;
 import net.minecraft.tileentity.MobSpawnerBaseLogic;
@@ -27,6 +30,10 @@ public class Reflections {
     private static Field entity_inventoryHandsDropChances;
     private static Field entity_inventoryArmorDropChances;
     private static Field player_invulnerableDimensionChange;
+    private static Field witch_potionUseTimer;
+
+    public static Class blaze_aiFireballAttack;
+    public static Class ghast_aiFireballAttack;
 
     public static void init() {
         entityItem_Age = ReflectionHelper.findField(EntityItem.class, "field_70292_b", "age");
@@ -40,6 +47,22 @@ public class Reflections {
         entity_inventoryArmorDropChances = ReflectionHelper.findField(EntityLiving.class, "field_184655_bs", "inventoryArmorDropChances");
         entity_inventoryHandsDropChances = ReflectionHelper.findField(EntityLiving.class, "field_82174_bp", "inventoryHandsDropChances");
         player_invulnerableDimensionChange = ReflectionHelper.findField(EntityPlayerMP.class, "field_184851_cj", "invulnerableDimensionChange");
+        witch_potionUseTimer = ReflectionHelper.findField(EntityWitch.class, "field_82200_e", "potionUseTimer");
+
+        // access to non-public entity AI's for hacking purposes
+        blaze_aiFireballAttack = findEnclosedClass(EntityBlaze.class, "AIFireballAttack", "a");
+        ghast_aiFireballAttack = findEnclosedClass(EntityGhast.class, "AIFireballAttack", "c");
+    }
+
+    private static Class<?> findEnclosedClass(Class<?> cls, String... enclosedClassNames) {
+        for (Class c : cls.getDeclaredClasses()) {
+            for (String name : enclosedClassNames) {
+                if (c.getSimpleName().equals(name)) {
+                    return c;
+                }
+            }
+        }
+        return null;
     }
 
     public static int getItemAge(EntityItem item) {
@@ -159,6 +182,14 @@ public class Reflections {
     public static void setInvulnerableDimensionChange(EntityPlayerMP player) {
         try {
             player_invulnerableDimensionChange.set(player, true);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void setWitchPotionUseTimer(EntityWitch witch, int time) {
+        try {
+            witch_potionUseTimer.setInt(witch, time);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }

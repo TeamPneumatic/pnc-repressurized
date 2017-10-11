@@ -100,7 +100,7 @@ public abstract class Minigun {
     public abstract void playSound(SoundEvent soundName, float volume, float pitch);
 
     protected int getAmmoColor(@Nonnull ItemStack stack) {
-        return stack.isEmpty() ? 0xFF313131 : Minecraft.getMinecraft().getItemColors().getColorFromItemstack(stack, 1);
+        return stack.isEmpty() ? 0xFF313131 : Minecraft.getMinecraft().getItemColors().colorMultiplier(stack, 1);
     }
 
     public double getMinigunSpeed() {

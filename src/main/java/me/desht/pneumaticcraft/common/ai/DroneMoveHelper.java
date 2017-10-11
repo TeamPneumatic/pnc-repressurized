@@ -39,7 +39,7 @@ public class DroneMoveHelper extends EntityMoveHelper {
             entity.motionZ = Math.max(-speed, Math.min(speed, z - entity.posZ));
 
             if (timeoutTimer++ > 40) {
-                entity.getNavigator().clearPathEntity();
+                entity.getNavigator().clearPath();
                 timeoutTimer = 0;
                 timeoutCounter++;
                 if (timeoutCounter > 1 && entity.hasPath()) { //Teleport when after re-acquiring a new path, the drone still doesn't move.

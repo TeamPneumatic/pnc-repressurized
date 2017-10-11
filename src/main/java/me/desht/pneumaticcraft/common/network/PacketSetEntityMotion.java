@@ -38,9 +38,9 @@ public class PacketSetEntityMotion extends LocationDoublePacket<PacketSetEntityM
             entity.motionZ = message.z;
 
             entity.onGround = false;
-            entity.isCollided = false;
-            entity.isCollidedHorizontally = false;
-            entity.isCollidedVertically = false;
+            entity.collided = false;
+            entity.collidedHorizontally = false;
+            entity.collidedVertically = false;
             if (entity instanceof EntityLivingBase) ((EntityLivingBase) entity).setJumping(true);
         }
     }

@@ -34,18 +34,18 @@ public class HackableNoteblock implements IHackableBlock {
 
     @Override
     public int getHackTime(IBlockAccess world, BlockPos pos, EntityPlayer player) {
-        return 60;
+        return 20;
     }
 
     @Override
     public void onHackFinished(World world, BlockPos pos, EntityPlayer player) {
+        IBlockState state = world.getBlockState(pos);
+        state.getBlock().onBlockActivated(world, pos, state, player, EnumHand.MAIN_HAND, EnumFacing.UP, 0, 0, 0);
     }
 
     @Override
     public boolean afterHackTick(World world, BlockPos pos) {
-        IBlockState state = world.getBlockState(pos);
-        state.getBlock().onBlockActivated(world, pos, state, null, EnumHand.MAIN_HAND, EnumFacing.UP, 0, 0, 0);
-        return true;
+        return false;
     }
 
 }

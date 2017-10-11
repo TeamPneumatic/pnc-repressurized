@@ -66,7 +66,7 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler {
         List<EntityLivingBase> mobs = player.world.getEntitiesWithinAABB(EntityLivingBase.class, bbBox);
         if (mobs.contains(player)) mobs.remove(player);
         for (EntityLivingBase mob : mobs) {
-            if (player.getDistanceToEntity(mob) > entityTrackRange || !PneumaticCraftUtils.isEntityValidForFilter(entityFilter, mob) || MinecraftForge.EVENT_BUS.post(new EntityTrackEvent(mob)))
+            if (player.getDistance(mob) > entityTrackRange || !PneumaticCraftUtils.isEntityValidForFilter(entityFilter, mob) || MinecraftForge.EVENT_BUS.post(new EntityTrackEvent(mob)))
                 continue;
             boolean inList = false;
             for (RenderTarget target : targets) {
@@ -86,7 +86,7 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler {
         }
         for (int j = 0; j < targets.size(); j++) {
             RenderTarget target = targets.get(j);
-            if (target.entity.isDead || player.getDistanceToEntity(target.entity) > entityTrackRange + 5 || !PneumaticCraftUtils.isEntityValidForFilter(entityFilter, target.entity)) {
+            if (target.entity.isDead || player.getDistance(target.entity) > entityTrackRange + 5 || !PneumaticCraftUtils.isEntityValidForFilter(entityFilter, target.entity)) {
                 if (target.ticksExisted > 0) {
                     target.ticksExisted = -60;
                 } else if (target.ticksExisted == -1) {

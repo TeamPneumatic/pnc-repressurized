@@ -1,7 +1,11 @@
 package me.desht.pneumaticcraft.client.render.pneumaticArmor.hacking.entity;
 
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IHackableEntity;
+import me.desht.pneumaticcraft.common.util.Reflections;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.ai.EntityAITasks;
+import net.minecraft.entity.monster.EntityBlaze;
 import net.minecraft.entity.player.EntityPlayer;
 
 import java.util.List;
@@ -35,19 +39,17 @@ public class HackableBlaze implements IHackableEntity {
 
     @Override
     public void onHackFinished(Entity entity, EntityPlayer player) {
-    }
-
-    @Override
-    public boolean afterHackTick(Entity entity) {
-        /*EntityAITasks tasks = ((EntityLiving)entity).tasks;
-        for(EntityAITasks.EntityAITaskEntry task : tasks.taskEntries){
-            if(task.action instanceof EntityBlaze.AIFireballAttack){
+        EntityAITasks tasks = ((EntityLiving) entity).tasks;
+        for (EntityAITasks.EntityAITaskEntry task : tasks.taskEntries) {
+            if (Reflections.blaze_aiFireballAttack.isAssignableFrom(task.action.getClass())) {
                 tasks.removeTask(task.action);
                 break;
             }
         }
-        for(int i = 0; i < )
-        ((EntityLivingBase)entity).attackTime = 20;*///TODO 1.8 fix
-        return true;
+    }
+
+    @Override
+    public boolean afterHackTick(Entity entity) {
+        return false;
     }
 }

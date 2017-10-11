@@ -18,7 +18,7 @@ public class ConfigHandler {
             AmadronOfferStaticConfig.INSTANCE,
             new AmadronOfferPeriodicConfig(),
             new ProgWidgetConfig(),
-            new HelmetWidgetDefaults(),
+            HelmetWidgetDefaults.INSTANCE,
             new ThirdPartyConfig()
     };
 

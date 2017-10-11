@@ -67,7 +67,7 @@ public class DroneAIAttackEntity extends EntityAIAttackMelee {
                 attacker.tryFireMinigun(entitylivingbase);
                 needingSuper = false;
                 if (dist < Math.pow(rangedAttackRange - 4, 2)) {
-                    attacker.getNavigator().clearPathEntity();
+                    attacker.getNavigator().clearPath();
                 }
             }
         }

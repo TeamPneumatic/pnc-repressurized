@@ -1,7 +1,10 @@
 package me.desht.pneumaticcraft.client.render.pneumaticArmor.hacking.entity;
 
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IHackableEntity;
+import me.desht.pneumaticcraft.common.util.Reflections;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.ai.EntityAITasks;
 import net.minecraft.entity.player.EntityPlayer;
 
 import java.util.List;
@@ -34,12 +37,18 @@ public class HackableGhast implements IHackableEntity {
 
     @Override
     public void onHackFinished(Entity entity, EntityPlayer player) {
+        EntityAITasks tasks = ((EntityLiving) entity).tasks;
+        for (EntityAITasks.EntityAITaskEntry task : tasks.taskEntries) {
+            if (Reflections.ghast_aiFireballAttack.isAssignableFrom(task.action.getClass())) {
+                tasks.removeTask(task.action);
+                break;
+            }
+        }
     }
 
     @Override
     public boolean afterHackTick(Entity entity) {
-        ///TODO 1.8 fix ((EntityGhast)entity).attackCounter = 0;
-        return true;
+        return false;
     }
 
 }

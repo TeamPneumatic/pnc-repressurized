@@ -219,12 +219,6 @@ public class ClientProxy extends CommonProxy {
     }
 
     @Override
-    public void registerVillagerSkins() {
-        // FIXME
-//        VillagerRegistry.instance().registerVillagerSkin(ConfigHandler.General.villagerMechanicID, new ResourceLocation(Textures.VILLAGER_MECHANIC));
-    }
-
-    @Override
     public HackTickHandler getHackTickHandler() {
         return clientHackTickHandler;
     }

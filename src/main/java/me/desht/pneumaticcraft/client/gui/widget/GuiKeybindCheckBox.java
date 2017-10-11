@@ -20,6 +20,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 import org.lwjgl.input.Keyboard;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,8 +42,7 @@ public class GuiKeybindCheckBox extends GuiCheckBox {
         this.keyBindingName = keyBindingName;
         keyBinding = setOrAddKeybind(keyBindingName, -1);//get the saved value.
         if (!trackedCheckboxes.containsKey(keyBindingName)) {
-            checked = HelmetWidgetDefaults.getKey(keyBindingName);
-//            checked = ConfigHandler.config.get("pneumatic_helmet_widgetDefaults", keyBindingName, true).getBoolean();
+            checked = HelmetWidgetDefaults.INSTANCE.getKey(keyBindingName);
             trackedCheckboxes.put(keyBindingName, this);
             MinecraftForge.EVENT_BUS.register(this);
         } else {
@@ -58,10 +58,12 @@ public class GuiKeybindCheckBox extends GuiCheckBox {
             if (trackedBox != this) {
                 trackedBox.onMouseClicked(mouseX, mouseY, button);
             } else {
-                HelmetWidgetDefaults.setKey(keyBindingName, checked);
-//                ConfigHandler.config.get("pneumatic_helmet_widgetDefaults", keyBindingName, true).set(checked);
-//                ConfigHandler.config.save();
-
+                HelmetWidgetDefaults.INSTANCE.setKey(keyBindingName, checked);
+                try {
+                    HelmetWidgetDefaults.INSTANCE.writeToFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 for (int i = 0; i < UpgradeRenderHandlerList.instance().upgradeRenderers.size(); i++) {
                     IUpgradeRenderHandler upgradeRenderHandler = UpgradeRenderHandlerList.instance().upgradeRenderers.get(i);
                     if (("pneumaticHelmet.upgrade." + upgradeRenderHandler.getUpgradeName()).equals(keyBindingName)) {
@@ -124,9 +126,10 @@ public class GuiKeybindCheckBox extends GuiCheckBox {
                 }
             }
         }
-        //When the keybind wasn't added yet
+        // If the keybind wasn't added yet, look for it in the Minecraft options.txt file (which we scanned
+        // in ClientProxy#getAllKeybindsFromOptionsFile() during pre-init)
         if (keyCode < 0) {
-            if (((ClientProxy) PneumaticCraftRepressurized.proxy).keybindToKeyCodes.containsKey(keybindName)) {//If the keybind can be found in the options file
+            if (((ClientProxy) PneumaticCraftRepressurized.proxy).keybindToKeyCodes.containsKey(keybindName)) {
                 keyCode = ((ClientProxy) PneumaticCraftRepressurized.proxy).keybindToKeyCodes.get(keybindName);
             } else {
                 return null;

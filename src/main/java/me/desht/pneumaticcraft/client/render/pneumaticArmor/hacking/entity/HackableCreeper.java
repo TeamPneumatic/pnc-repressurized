@@ -35,12 +35,12 @@ public class HackableCreeper implements IHackableEntity {
 
     @Override
     public void onHackFinished(Entity entity, EntityPlayer player) {
+        ((EntityCreeper) entity).ignite();
     }
 
     @Override
     public boolean afterHackTick(Entity entity) {
-        ((EntityCreeper) entity).setCreeperState(1);
-        return true;
+        return false;
     }
 
 }

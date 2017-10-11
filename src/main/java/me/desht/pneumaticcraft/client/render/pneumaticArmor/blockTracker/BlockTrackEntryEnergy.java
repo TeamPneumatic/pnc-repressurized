@@ -8,6 +8,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.energy.IEnergyStorage;
 
 import java.util.List;
 
@@ -28,7 +29,7 @@ public class BlockTrackEntryEnergy implements IBlockTrackEntry {
 
     @Override
     public boolean shouldBeUpdatedFromServer(TileEntity te) {
-        return false;
+        return true;
     }
 
     @Override
@@ -39,6 +40,10 @@ public class BlockTrackEntryEnergy implements IBlockTrackEntry {
     @Override
     public void addInformation(World world, BlockPos pos, TileEntity te, List<String> infoList) {
         infoList.add("blockTracker.info.rf");
+        if (te.hasCapability(CapabilityEnergy.ENERGY, null)) {
+            IEnergyStorage storage = te.getCapability(CapabilityEnergy.ENERGY, null);
+            infoList.add(storage.getEnergyStored() + " / " + storage.getMaxEnergyStored() + " RF");
+        }
     }
 
     @Override

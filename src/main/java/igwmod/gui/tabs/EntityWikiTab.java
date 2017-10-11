@@ -147,7 +147,7 @@ public class EntityWikiTab implements IWikiTab{
          entity.prevRotationYawHead = entity.rotationYaw;*/
         GL11.glTranslatef(0.0F, (float)entity.getYOffset(), 0.0F);
         Minecraft.getMinecraft().getRenderManager().playerViewY = 180.0F;
-        Minecraft.getMinecraft().getRenderManager().doRenderEntity(entity, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, false);
+        Minecraft.getMinecraft().getRenderManager().renderEntity(entity, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, false);
         
         /* entity.renderYawOffset = f2;
          entity.rotationYaw = f3;

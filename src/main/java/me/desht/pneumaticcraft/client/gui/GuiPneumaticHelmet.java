@@ -33,17 +33,17 @@ public class GuiPneumaticHelmet extends GuiPneumaticInventoryItem {
     @Override
     public void initGui() {
         super.initGui();
-        addAnimatedStat("gui.tab.info", Textures.GUI_INFO_LOCATION, 0xFF8888FF, true).setText("gui.tab.info.item.pneumaticHelmet");
+        addAnimatedStat("gui.tab.info", Textures.GUI_INFO_LOCATION, 0xFF8888FF, true).setText("gui.tab.info.item.pneumatic_helmet");
         statusStat = addAnimatedStat("Helmet Status", new ItemStack(Itemss.PNEUMATIC_HELMET), 0xFFFFAA00, false);
 
         ItemStack searchUpgradeStat = CraftingRegistrator.getUpgrade(EnumUpgrade.SEARCH);
-        addAnimatedStat(searchUpgradeStat.getDisplayName(), searchUpgradeStat, 0xFF0000FF, false).setText("gui.tab.info.item.pneumaticHelmet.searchUpgrade");
+        addAnimatedStat(searchUpgradeStat.getDisplayName(), searchUpgradeStat, 0xFF0000FF, false).setText("gui.tab.info.item.pneumatic_helmet.searchUpgrade");
         ItemStack coordinateTracker = CraftingRegistrator.getUpgrade(EnumUpgrade.COORDINATE_TRACKER);
-        addAnimatedStat(coordinateTracker.getDisplayName(), coordinateTracker, 0xFF0000FF, false).setText("gui.tab.info.item.pneumaticHelmet.coordinateTracker");
+        addAnimatedStat(coordinateTracker.getDisplayName(), coordinateTracker, 0xFF0000FF, false).setText("gui.tab.info.item.pneumatic_helmet.coordinateTracker");
         ItemStack entityTracker = CraftingRegistrator.getUpgrade(EnumUpgrade.ENTITY_TRACKER);
-        addAnimatedStat(entityTracker.getDisplayName(), entityTracker, 0xFF0000FF, true).setText("gui.tab.info.item.pneumaticHelmet.entityTracker");
+        addAnimatedStat(entityTracker.getDisplayName(), entityTracker, 0xFF0000FF, true).setText("gui.tab.info.item.pneumatic_helmet.entityTracker");
         ItemStack blockTracker = CraftingRegistrator.getUpgrade(EnumUpgrade.BLOCK_TRACKER);
-        addAnimatedStat(blockTracker.getDisplayName(), blockTracker, 0xFF0000FF, true).setText("gui.tab.info.item.pneumaticHelmet.blockTracker");
+        addAnimatedStat(blockTracker.getDisplayName(), blockTracker, 0xFF0000FF, true).setText("gui.tab.info.item.pneumatic_helmet.blockTracker");
     }
 
     @Override

@@ -522,9 +522,9 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements IMin
             itemShot.motionZ = velocity[2];
 
             itemShot.onGround = false;
-            itemShot.isCollided = false;
-            itemShot.isCollidedHorizontally = false;
-            itemShot.isCollidedVertically = false;
+            itemShot.collided = false;
+            itemShot.collidedHorizontally = false;
+            itemShot.collidedVertically = false;
             if (itemShot instanceof EntityLivingBase) ((EntityLivingBase) itemShot).setJumping(true);
 
             if (shootingInventory && !getWorld().isRemote) getWorld().spawnEntity(itemShot);

@@ -21,10 +21,10 @@ import java.util.List;
 
 public class GuiHelmetMainScreen extends GuiPneumaticScreenBase implements IGuiScreen {
 
-    private final List<IOptionPage> upgradePages = new ArrayList<IOptionPage>();
+    private final List<IOptionPage> upgradePages = new ArrayList<>();
     private final List<String> upgradePageNames = new ArrayList<>();
     private static int page;
-    private boolean init = true;
+    private boolean inInitPhase = true;
 
     private static GuiHelmetMainScreen instance;//Creating a static instance, as we can use it to handle keybinds when the GUI is closed.
 
@@ -45,7 +45,7 @@ public class GuiHelmetMainScreen extends GuiPneumaticScreenBase implements IGuiS
             instance.initGui();
         }
         page = 0;
-        instance.init = false;
+        instance.inInitPhase = false;
     }
 
     @Override
@@ -77,7 +77,7 @@ public class GuiHelmetMainScreen extends GuiPneumaticScreenBase implements IGuiS
 
     private void addPages() {
         for (int i = 0; i < UpgradeRenderHandlerList.instance().upgradeRenderers.size(); i++) {
-            if (init || CommonHUDHandler.getHandlerForPlayer().upgradeRenderersInserted[i]) {
+            if (inInitPhase || CommonHUDHandler.getHandlerForPlayer().upgradeRenderersInserted[i]) {
                 IUpgradeRenderHandler upgradeRenderHandler = UpgradeRenderHandlerList.instance().upgradeRenderers.get(i);
                 IOptionPage optionPage = upgradeRenderHandler.getGuiOptionsPage();
                 if (optionPage != null) {

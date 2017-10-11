@@ -12,15 +12,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class KeyHandler {
+    private static final String DESCRIPTION_HELMET_HACK = "pneumaticcraft.helmet.hack";
+    private static final String DESCRIPTION_HELMET_OPTIONS = "pneumaticcraft.helmet.options";
+    private static final String DESCRIPTION_HELMET_DEBUGGING_DRONE = "pneumaticcraft.helmet.debugging.drone";
+
     private static KeyHandler INSTANCE = new KeyHandler();
+
     public KeyBinding keybindOpenOptions;
     public KeyBinding keybindHack;
     public KeyBinding keybindDebuggingDrone;
-    public static final String DESCRIPTION_HELMET_HACK = "Pneumatic Helmet Hack";
-    public static final String DESCRIPTION_HELMET_OPTIONS = "Pneumatic Helmet Options";
-    public static final String DESCRIPTION_HELMET_DEBUGGING_DRONE = "Pneumatic Helmet Debugging Drone";
-    private final List<IKeyListener> keyListeners = new ArrayList<IKeyListener>();
-    private final List<KeyBinding> keys = new ArrayList<KeyBinding>();
+    private final List<IKeyListener> keyListeners = new ArrayList<>();
+    private final List<KeyBinding> keys = new ArrayList<>();
 
     public static KeyHandler getInstance() {
         return INSTANCE;
@@ -40,7 +42,7 @@ public class KeyHandler {
         return keyBinding;
     }
 
-    public void registerKeyListener(IKeyListener listener) {
+    private void registerKeyListener(IKeyListener listener) {
         keyListeners.add(listener);
     }
 

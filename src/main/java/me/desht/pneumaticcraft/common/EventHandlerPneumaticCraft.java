@@ -141,7 +141,8 @@ public class EventHandlerPneumaticCraft {
     @SubscribeEvent
     public void onFillBucket(FillBucketEvent event) {
         RayTraceResult p = event.getTarget();
-        if (event.getEmptyBucket().isEmpty() || event.getEmptyBucket().getItem() != Items.BUCKET || !FluidUtils.isSourceBlock(event.getWorld(), p.getBlockPos()))
+        if (event.getEmptyBucket().isEmpty() || event.getEmptyBucket().getItem() != Items.BUCKET ||
+                p == null || !FluidUtils.isSourceBlock(event.getWorld(), p.getBlockPos()))
             return;
         ItemStack result = attemptFill(event.getWorld(), event.getTarget());
         if (!result.isEmpty()) {

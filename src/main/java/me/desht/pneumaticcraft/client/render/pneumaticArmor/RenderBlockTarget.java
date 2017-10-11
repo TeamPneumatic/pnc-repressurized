@@ -111,7 +111,7 @@ public class RenderBlockTarget {
         arrowRenderer.ticksExisted++;
 
         if (!getBlock().isAir(world.getBlockState(pos), world, pos)) {
-            textList = new ArrayList<String>();
+            textList = new ArrayList<>();
             if (ticksExisted > 120) {
                 stat.closeWindow();
                 for (IBlockTrackEntry entry : applicableTrackEntries) {
@@ -159,8 +159,7 @@ public class RenderBlockTarget {
 
         GL11.glTranslated(x, y, z);
 
-        // for some reason the blend function resets... that's why this line is
-        // here.
+        // for some reason the blend function resets... that's why this line is here.
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         IBlockState state = world.getBlockState(pos);

@@ -52,17 +52,13 @@ public class HackTickHandler {
                 for (Entity entity : event.world.loadedEntityList) {
                     if (entity.hasCapability(CapabilityHackingProvider.HACKING_CAPABILITY, null)) {
                         IHacking hack = entity.getCapability(CapabilityHackingProvider.HACKING_CAPABILITY, null);
-                        hack.update(entity);
+                        if (!hack.getCurrentHacks().isEmpty()) {
+                            hack.update(entity);
+                        }
                     }
-//                    HackingEntityProperties hackingProps = (HackingEntityProperties) entity.getExtendedProperties("PneumaticCraftHacking");
-//                    if (hackingProps != null) {
-//                        hackingProps.update(entity);
-//                    } else {
-//                        Log.warning("Extended entity props HackingEntityProperties couldn't be found in the entity " + entity.getName());
-//                    }
                 }
             } catch (Throwable e) {
-                //Catching a CME which I have no clue on what might cause it.
+                // Catching a CME which I have no clue on what might cause it.
             }
         }
     }
@@ -75,12 +71,6 @@ public class HackTickHandler {
         if (iHackable.getId() != null && entity.hasCapability(CapabilityHackingProvider.HACKING_CAPABILITY, null)) {
             IHacking hack = entity.getCapability(CapabilityHackingProvider.HACKING_CAPABILITY, null);
             hack.addHackable(iHackable);
-//            HackingEntityProperties hackingProps = (HackingEntityProperties) entity.getExtendedProperties("PneumaticCraftHacking");
-//            if (hackingProps != null) {
-//                hackingProps.addHackable(iHackable);
-//            } else {
-//                Log.warning("Extended entity props HackingEntityProperties couldn't be found in the entity " + entity.getName());
-//            }
         }
     }
 }

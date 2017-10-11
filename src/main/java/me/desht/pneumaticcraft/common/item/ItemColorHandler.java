@@ -12,7 +12,7 @@ public class ItemColorHandler {
             switch (tintIndex) {
                 case 1:
                     ItemStack potion = ItemGunAmmo.getPotion(stack);
-                    return potion.isEmpty() ? 0x00FFFF00 : Minecraft.getMinecraft().getItemColors().getColorFromItemstack(potion, 0);
+                    return potion.isEmpty() ? 0x00FFFF00 : Minecraft.getMinecraft().getItemColors().colorMultiplier(potion, 0);
                 default:
                     return Color.WHITE.getRGB();
             }
