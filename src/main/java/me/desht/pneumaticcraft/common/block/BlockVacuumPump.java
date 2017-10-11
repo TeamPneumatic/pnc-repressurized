@@ -15,8 +15,8 @@ import javax.annotation.Nullable;
 public class BlockVacuumPump extends BlockPneumaticCraftModeled {
 
     private static final AxisAlignedBB BASE_BOUNDS = new AxisAlignedBB(
-            BBConstants.VACUUM_PUMP_MIN_POS, 0F, BBConstants.VACUUM_PUMP_MIN_POS, BBConstants.VACUUM_PUMP_MAX_POS,
-            BBConstants.VACUUM_PUMP_MAX_POS_TOP, BBConstants.VACUUM_PUMP_MAX_POS);
+            BBConstants.VACUUM_PUMP_MIN_POS, 0F, BBConstants.VACUUM_PUMP_MIN_POS,
+            BBConstants.VACUUM_PUMP_MAX_POS, BBConstants.VACUUM_PUMP_MAX_POS_TOP, BBConstants.VACUUM_PUMP_MAX_POS);
     private static final AxisAlignedBB COLL_BOUNDS = new AxisAlignedBB(
             BBConstants.VACUUM_PUMP_MIN_POS, BBConstants.VACUUM_PUMP_MIN_POS, BBConstants.VACUUM_PUMP_MIN_POS,
             BBConstants.VACUUM_PUMP_MAX_POS, BBConstants.VACUUM_PUMP_MAX_POS_TOP, BBConstants.VACUUM_PUMP_MAX_POS);
@@ -32,18 +32,6 @@ public class BlockVacuumPump extends BlockPneumaticCraftModeled {
     public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos) {
         return COLL_BOUNDS;
     }
-
-//    @Override
-//    public void setBlockBoundsBasedOnState(IBlockAccess par1IBlockAccess, BlockPos pos) {
-//        setBlockBounds(BBConstants.VACUUM_PUMP_MIN_POS, 0F, BBConstants.VACUUM_PUMP_MIN_POS, BBConstants.VACUUM_PUMP_MAX_POS, BBConstants.VACUUM_PUMP_MAX_POS_TOP, BBConstants.VACUUM_PUMP_MAX_POS);
-//    }
-
-//    @Override
-//    public void addCollisionBoxesToList(World world, BlockPos pos, IBlockState state, AxisAlignedBB axisalignedbb, List arraylist, Entity par7Entity) {
-//        setBlockBounds(BBConstants.VACUUM_PUMP_MIN_POS, BBConstants.VACUUM_PUMP_MIN_POS, BBConstants.VACUUM_PUMP_MIN_POS, BBConstants.VACUUM_PUMP_MAX_POS, BBConstants.VACUUM_PUMP_MAX_POS_TOP, BBConstants.VACUUM_PUMP_MAX_POS);
-//        super.addCollisionBoxesToList(world, pos, state, axisalignedbb, arraylist, par7Entity);
-//        setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
-//    }
 
     @Override
     protected Class<? extends TileEntity> getTileEntityClass() {

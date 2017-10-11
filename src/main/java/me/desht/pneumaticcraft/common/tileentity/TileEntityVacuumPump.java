@@ -25,10 +25,10 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements IRe
     private final IAirHandler vacuumHandler = PneumaticRegistry.getInstance().getAirHandlerSupplier().createTierOneAirHandler(PneumaticValues.VOLUME_VACUUM_PUMP);
     public int rotation;
     public int oldRotation;
-    public int turnTimer = -1;
+    private int turnTimer = -1;
     @DescSynced
     public boolean turning = false;
-    public int rotationSpeed;
+    private int rotationSpeed;
     @GuiSynced
     public int redstoneMode;
 
@@ -148,7 +148,6 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements IRe
 
     @Override
     public String getName() {
-
         return Blockss.VACUUM_PUMP.getUnlocalizedName();
     }
 
