@@ -1,7 +1,5 @@
 package me.desht.pneumaticcraft.client;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.client.gui.IGuiDrone;
@@ -14,13 +12,14 @@ import me.desht.pneumaticcraft.common.block.tubes.ModuleRegistrator;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleRegulatorTube;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
+import me.desht.pneumaticcraft.common.fluid.Fluids;
 import me.desht.pneumaticcraft.common.item.ItemMinigun;
+import me.desht.pneumaticcraft.common.item.ItemPneumaticSubtyped;
 import me.desht.pneumaticcraft.common.item.ItemProgrammingPuzzle;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -29,6 +28,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.block.model.IBakedModel;
+import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderBiped;
@@ -37,23 +37,27 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.ModelBakeEvent;
+import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
-import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.IModel;
-import net.minecraftforge.client.model.obj.OBJLoader;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
+import net.minecraftforge.fluids.IFluidBlock;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.opengl.GL11;
 
 import java.util.*;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
 public class ClientEventHandler {
     public static float playerRenderPartialTick;
@@ -274,6 +278,47 @@ public class ClientEventHandler {
                     }
                 }
             }
+        }
+    }
+
+    @SubscribeEvent
+    public void registerModels(ModelRegistryEvent event) {
+        registerFluidModels();
+
+        for (Block block : Blockss.blocks) {
+            Item item = Item.getItemFromBlock(block);
+            ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(item.getRegistryName(), "inventory"));
+        }
+
+        for (Item item: Itemss.items) {
+            if (item instanceof ItemPneumaticSubtyped) {
+                ModelBakery.registerItemVariants(item);
+                ItemPneumaticSubtyped subtyped = (ItemPneumaticSubtyped) item;
+                NonNullList<ItemStack> stacks = NonNullList.create();
+                item.getSubItems(PneumaticCraftRepressurized.tabPneumaticCraft, stacks);
+                for (ItemStack stack : stacks) {
+                    ModelLoader.setCustomModelResourceLocation(item, stack.getMetadata(),
+                            new ModelResourceLocation(RL(subtyped.getSubtypeModelName(stack.getMetadata())), "inventory"));
+                }
+            } else {
+                ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(item.getRegistryName(), "inventory"));
+            }
+        }
+
+        ModelLoader.setCustomStateMapper(Blockss.DRONE_REDSTONE_EMITTER, blockIn -> Collections.emptyMap());
+        ModelLoader.setCustomStateMapper(Blockss.KEROSENE_LAMP_LIGHT, blockIn -> Collections.emptyMap());
+    }
+
+    private void registerFluidModels() {
+        for (IFluidBlock fluidBlock : Fluids.MOD_FLUID_BLOCKS) {
+            final Item item = Item.getItemFromBlock((Block) fluidBlock);
+            assert item != null;
+
+            ModelBakery.registerItemVariants(item);
+
+            FluidStateMapper stateMapper = new FluidStateMapper(fluidBlock.getFluid());
+            ModelLoader.setCustomMeshDefinition(item, stateMapper);
+            ModelLoader.setCustomStateMapper((Block) fluidBlock, stateMapper);
         }
     }
 }
