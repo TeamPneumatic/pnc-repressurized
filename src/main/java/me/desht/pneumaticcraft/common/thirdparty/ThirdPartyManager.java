@@ -1,5 +1,7 @@
 package me.desht.pneumaticcraft.common.thirdparty;
 
+import joptsimple.internal.Strings;
+import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.common.config.ThirdPartyConfig;
 import me.desht.pneumaticcraft.common.thirdparty.ae2.AE2;
 import me.desht.pneumaticcraft.common.thirdparty.buildcraft.BuildCraft;
@@ -7,8 +9,8 @@ import me.desht.pneumaticcraft.common.thirdparty.computercraft.ComputerCraft;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.OpenComputers;
 import me.desht.pneumaticcraft.common.thirdparty.enderio.EnderIO;
 import me.desht.pneumaticcraft.common.thirdparty.forestry.Forestry;
-import me.desht.pneumaticcraft.common.thirdparty.industrialforegoing.IndustrialForegoing;
 import me.desht.pneumaticcraft.common.thirdparty.igwmod.IGWMod;
+import me.desht.pneumaticcraft.common.thirdparty.industrialforegoing.IndustrialForegoing;
 import me.desht.pneumaticcraft.common.thirdparty.mcmultipart.PneumaticMultiPart;
 import me.desht.pneumaticcraft.common.thirdparty.openblocks.OpenBlocks;
 import me.desht.pneumaticcraft.lib.Log;
@@ -20,10 +22,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class ThirdPartyManager implements IGuiHandler {
 
@@ -38,37 +38,37 @@ public class ThirdPartyManager implements IGuiHandler {
     public void index() {
         Map<String, Class<? extends IThirdParty>> thirdPartyClasses = new HashMap<>();
         try {
-            // thirdPartyClasses.put(ModIds.INDUSTRIALCRAFT, IC2.class);
             thirdPartyClasses.put(ModIds.BUILDCRAFT, BuildCraft.class);
             thirdPartyClasses.put(ModIds.IGWMOD, IGWMod.class);
             thirdPartyClasses.put(ModIds.COMPUTERCRAFT, ComputerCraft.class);
             if (!Loader.isModLoaded(ModIds.COMPUTERCRAFT)) {
                 thirdPartyClasses.put(ModIds.OPEN_COMPUTERS, OpenComputers.class);
             }
-//            thirdPartyClasses.put(ModIds.WAILA, Waila.class);
-            // thirdPartyClasses.put(ModIds.THAUMCRAFT, Thaumcraft.class);
             thirdPartyClasses.put(ModIds.AE2, AE2.class);
-            // thirdPartyClasses.put(ModIds.CHISEL, Chisel.class);
             thirdPartyClasses.put(ModIds.FORESTRY, Forestry.class);
-            thirdPartyClasses.put(ModIds.INDUSTRIALFOREGOING, IndustrialForegoing.class);
             thirdPartyClasses.put(ModIds.OPEN_BLOCKS, OpenBlocks.class);
-//              thirdPartyClasses.put(ModIds.COFH_CORE, CoFHCore.class);
             thirdPartyClasses.put(ModIds.NOT_ENOUGH_KEYS, NotEnoughKeys.class);
-            //  thirdPartyClasses.put(ModIds.EE3, EE3.class);
             thirdPartyClasses.put(ModIds.EIO, EnderIO.class);
-            thirdPartyClasses.put(ModIds.MCMP, PneumaticMultiPart.class);
-//            DramaSplash.newDrama();
+            thirdPartyClasses.put(ModIds.INDUSTRIALFOREGOING, IndustrialForegoing.class);
+            if (Loader.isModLoaded(ModIds.MCMP)) {
+                thirdPartyClasses.put(ModIds.MCMP, PneumaticMultiPart.class);
+            }
+            // thirdPartyClasses.put(ModIds.COFH_CORE, CoFHCore.class);
+            // thirdPartyClasses.put(ModIds.EE3, EE3.class);
+            // thirdPartyClasses.put(ModIds.INDUSTRIALCRAFT, IC2.class);
+            // thirdPartyClasses.put(ModIds.WAILA, Waila.class);
+            // thirdPartyClasses.put(ModIds.THAUMCRAFT, Thaumcraft.class);
+            // thirdPartyClasses.put(ModIds.CHISEL, Chisel.class);
+            // DramaSplash.newDrama();
         } catch (Throwable e) {
             Log.error("A class loader loaded a class where we didn't expect it to do so! Please report, as third party content is broken.");
             e.printStackTrace();
         }
 
-        List<String> enabledThirdParty = new ArrayList<>();
-        for (String modid : thirdPartyClasses.keySet()) {
-            if (ThirdPartyConfig.isEnabled(modid)) {
-                enabledThirdParty.add(modid);
-            }
-        }
+        ThirdPartyConfig.setupDefaults(thirdPartyClasses.keySet());
+
+        Set<String> enabledThirdParty = thirdPartyClasses.keySet().stream().filter(ThirdPartyConfig::isEnabled).collect(Collectors.toSet());
+        PneumaticCraftRepressurized.logger.info("Thirdparty integration activated for [" + Strings.join(enabledThirdParty, ", ") + "]");
 
         for (Map.Entry<String, Class<? extends IThirdParty>> entry : thirdPartyClasses.entrySet()) {
             if (enabledThirdParty.contains(entry.getKey()) && Loader.isModLoaded(entry.getKey())) {

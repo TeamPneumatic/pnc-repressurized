@@ -16,7 +16,7 @@ public class ProgWidgetConfig extends JsonConfig {
     }
 
     @Override
-    public String getFolderName() {
+    public String getConfigFilename() {
         return "ProgrammingPuzzleBlacklist";
     }
 

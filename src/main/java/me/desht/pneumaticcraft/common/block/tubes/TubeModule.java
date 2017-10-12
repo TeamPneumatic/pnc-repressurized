@@ -1,33 +1,20 @@
 package me.desht.pneumaticcraft.common.block.tubes;
 
-import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.client.model.module.ModelModuleBase;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketOpenTubeModuleGui;
 import me.desht.pneumaticcraft.common.thirdparty.ModInteractionUtils;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.BBConstants;
 import me.desht.pneumaticcraft.proxy.CommonProxy.EnumGuiId;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.block.model.IBakedModel;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.EnumSkyBlock;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.opencl.CL;
-import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +28,8 @@ public abstract class TubeModule implements ISidedPart {
     private boolean fake;
     public boolean advancedConfig;
     public boolean shouldDrop;
+    @SideOnly(Side.CLIENT)
+    private ModelModuleBase model;
 
     public TubeModule() {
         double width = getWidth() / 2;
@@ -150,11 +139,6 @@ public abstract class TubeModule implements ISidedPart {
      */
     public abstract String getType();
 
-    @SideOnly(Side.CLIENT)
-    public abstract void render(float partialTicks);
-
-    public abstract String getModelName();
-
     public int getRedstoneLevel() {
         return 0;
     }
@@ -199,4 +183,19 @@ public abstract class TubeModule implements ISidedPart {
 
     protected abstract EnumGuiId getGuiId();
 
+    @SideOnly(Side.CLIENT)
+    public abstract Class<? extends ModelModuleBase> getModelClass();
+
+    @SideOnly(Side.CLIENT)
+    public final ModelModuleBase getModel() {
+        if (model == null) {
+            try {
+                model = getModelClass().newInstance();
+            } catch (InstantiationException | IllegalAccessException e) {
+                e.printStackTrace();
+                model = new ModelModuleBase.MissingModel();
+            }
+        }
+        return model;
+    }
 }

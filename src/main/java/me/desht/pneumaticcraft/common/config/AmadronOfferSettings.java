@@ -14,7 +14,7 @@ public class AmadronOfferSettings extends JsonConfig {
     }
 
     @Override
-    public String getFolderName() {
+    public String getConfigFilename() {
         return "AmadronTradingSettings";
     }
 

@@ -7,7 +7,6 @@ import me.desht.pneumaticcraft.client.gui.semiblock.GuiLogisticsRequester;
 import me.desht.pneumaticcraft.client.gui.semiblock.GuiLogisticsStorage;
 import me.desht.pneumaticcraft.client.gui.tubemodule.GuiAirGrateModule;
 import me.desht.pneumaticcraft.client.gui.tubemodule.GuiPressureModule;
-import me.desht.pneumaticcraft.client.render.pneumaticArmor.hacking.CapabilityHackingProvider;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.hacking.HackingImpl;
 import me.desht.pneumaticcraft.common.CommonHUDHandler;
 import me.desht.pneumaticcraft.common.HackTickHandler;

@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.block.tubes;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IPneumaticMachine;
 import me.desht.pneumaticcraft.client.ClientTickHandler;
+import me.desht.pneumaticcraft.client.model.module.ModelModuleBase;
 import me.desht.pneumaticcraft.client.model.module.ModelPressureRegulator;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -24,15 +25,6 @@ public class ModuleRegulatorTube extends TubeModuleRedstoneReceiving implements 
     public static boolean hasTicked;
     public static boolean inLine;
     public static boolean inverted;
-    @SideOnly(Side.CLIENT)
-    private final ModelPressureRegulator model = new ModelPressureRegulator(this);
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public void render(float partialTicks) {
-        if (isFake()) renderPreview();
-        model.renderModel(0.0625f, dir, partialTicks);
-    }
 
     @SideOnly(Side.CLIENT)
     private void renderPreview() {
@@ -72,11 +64,6 @@ public class ModuleRegulatorTube extends TubeModuleRedstoneReceiving implements 
     }
 
     @Override
-    public String getModelName() {
-        return "regulator";
-    }
-
-    @Override
     public int getMaxDispersion() {
         IAirHandler connectedHandler = null;
         for (Pair<EnumFacing, IAirHandler> entry : pressureTube.getAirHandler(null).getConnectedPneumatics()) {
@@ -112,6 +99,11 @@ public class ModuleRegulatorTube extends TubeModuleRedstoneReceiving implements 
         curInfo.add("This module will stop pressurized air from");
         curInfo.add("travelling through this tube when a certain");
         curInfo.add("pressure threshold's reached.");
+    }
+
+    @Override
+    public Class<? extends ModelModuleBase> getModelClass() {
+        return ModelPressureRegulator.class;
     }
 
 }

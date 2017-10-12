@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.common.block;
 import dan200.computercraft.api.peripheral.IPeripheral;
 import dan200.computercraft.api.peripheral.IPeripheralProvider;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAerialInterface;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticBase;
 import me.desht.pneumaticcraft.lib.ModIds;
 import me.desht.pneumaticcraft.proxy.CommonProxy.EnumGuiId;
 import net.minecraft.block.material.Material;
@@ -18,9 +17,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Optional;
 
-import javax.annotation.Nullable;
-
-public class BlockAerialInterface extends BlockPneumaticCraft implements IPeripheralProvider {
+public class BlockAerialInterface extends BlockPneumaticCraft {
     BlockAerialInterface() {
         super(Material.IRON, "aerial_interface");
     }

@@ -3,9 +3,7 @@ package me.desht.pneumaticcraft.client.render.tileentity;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.client.model.block.ModelChargingStation;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.item.EntityItem;
 

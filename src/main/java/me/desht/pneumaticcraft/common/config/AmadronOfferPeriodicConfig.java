@@ -12,7 +12,7 @@ public class AmadronOfferPeriodicConfig extends AmadronOfferConfig {
     public static int offersPer = 20;
 
     @Override
-    public String getFolderName() {
+    public String getConfigFilename() {
         return "AmadronOffersPeriodic";
     }
 

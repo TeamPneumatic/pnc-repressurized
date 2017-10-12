@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.common.ai;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import net.minecraft.pathfinding.FlyingNodeProcessor;
 import net.minecraft.pathfinding.PathPoint;
-import net.minecraft.pathfinding.SwimNodeProcessor;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 

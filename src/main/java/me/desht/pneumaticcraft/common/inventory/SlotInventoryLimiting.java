@@ -1,10 +1,7 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticBase;
-import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
-
-import javax.annotation.Nonnull;
 
 public class SlotInventoryLimiting extends SlotBase {
 

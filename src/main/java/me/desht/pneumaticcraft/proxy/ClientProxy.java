@@ -2,7 +2,10 @@ package me.desht.pneumaticcraft.proxy;
 
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
-import me.desht.pneumaticcraft.client.*;
+import me.desht.pneumaticcraft.client.AreaShowManager;
+import me.desht.pneumaticcraft.client.ClientEventHandler;
+import me.desht.pneumaticcraft.client.ClientTickHandler;
+import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.gui.pneumaticHelmet.GuiHelmetMainScreen;
 import me.desht.pneumaticcraft.client.model.item.ModelProgrammingPuzzle.LoaderProgrammingPuzzle;
 import me.desht.pneumaticcraft.client.render.entity.RenderDrone;

@@ -9,7 +9,7 @@ public class AmadronOfferStaticConfig extends AmadronOfferConfig {
     public static AmadronOfferStaticConfig INSTANCE = new AmadronOfferStaticConfig();
 
     @Override
-    public String getFolderName() {
+    public String getConfigFilename() {
         return "AmadronOffersStatic";
     }
 

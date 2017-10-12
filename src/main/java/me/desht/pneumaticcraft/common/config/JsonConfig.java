@@ -9,36 +9,34 @@ import java.io.IOException;
 
 public abstract class JsonConfig implements ISubConfig {
     protected File file;
-    private final boolean inInit;
+    private final boolean inPreInit;
 
-    public JsonConfig(boolean inInit) {
-        this.inInit = inInit;
+    public JsonConfig(boolean inPreInit) {
+        this.inPreInit = inPreInit;
     }
 
     @Override
-    public void init(File file) throws IOException {
+    public void preInit(File file) throws IOException {
         this.file = file;
-        if (inInit) {
-            if (file.exists()) {
-                readFromFile();
-                writeToFile();//Write back to the file so tags that weren't there in last version are included.
-            } else {
-                file.createNewFile();
-                writeToFile();
-            }
+        if (inPreInit) {
+            processFile();
         }
     }
 
     @Override
     public void postInit() throws IOException {
-        if (!inInit) {
-            if (file.exists()) {
-                readFromFile();
+        if (!inPreInit) {
+            processFile();
+        }
+    }
+
+    private void processFile() throws IOException {
+        if (file.exists()) {
+            readFromFile();
+            writeToFile();
+        } else {
+            if (file.createNewFile()) {
                 writeToFile();
-            } else {
-                if (file.createNewFile()) {
-                    writeToFile();
-                }
             }
         }
     }
@@ -55,7 +53,7 @@ public abstract class JsonConfig implements ISubConfig {
         FileUtils.write(file, gson.toJson(el), Charsets.UTF_8);
     }
 
-    private void readFromFile() throws IOException {
+    protected void readFromFile() throws IOException {
         JsonParser parser = new JsonParser();
         JsonObject root = (JsonObject) parser.parse(FileUtils.readFileToString(file, Charsets.UTF_8));
         readFromJson(root);

@@ -14,14 +14,13 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
-@Mod.EventBusSubscriber
 public class OpenComputers implements IThirdParty {
     public Block droneInterface;
 
@@ -34,6 +33,7 @@ public class OpenComputers implements IThirdParty {
     @Override
     public void preInit() {
         GameRegistry.registerTileEntity(TileEntityDroneInterface.class, "droneInterface");
+        MinecraftForge.EVENT_BUS.register(this);
         WidgetRegistrator.register(new ProgWidgetCC());
     }
 

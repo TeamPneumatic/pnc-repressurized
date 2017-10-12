@@ -24,7 +24,6 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import javax.annotation.Nonnull;
@@ -34,7 +33,6 @@ import java.util.Optional;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
 @MCMPAddon
-@Mod.EventBusSubscriber
 public class PneumaticMultiPart implements IMCMPAddon, IThirdParty {
     private static boolean enabled = false;
 
@@ -52,7 +50,7 @@ public class PneumaticMultiPart implements IMCMPAddon, IThirdParty {
     }
 
     @SubscribeEvent
-    public static void onAttachCapability(AttachCapabilitiesEvent<TileEntity> e) {
+    public void onAttachCapability(AttachCapabilitiesEvent<TileEntity> e) {
         if (!enabled) return;
 
         TileEntity tile = e.getObject();
@@ -61,7 +59,9 @@ public class PneumaticMultiPart implements IMCMPAddon, IThirdParty {
         }
     }
 
-    private static void register(AttachCapabilitiesEvent<TileEntity> e, String multipartId) {
+    private void register(AttachCapabilitiesEvent<TileEntity> e, String multipartId) {
+        if (e.getCapabilities().containsKey(RL(multipartId))) return;
+
         e.addCapability(RL(multipartId), new ICapabilityProvider() {
             private PartPressureTubeTile tile;
 
@@ -120,6 +120,7 @@ public class PneumaticMultiPart implements IMCMPAddon, IThirdParty {
 
     @Override
     public void preInit() {
+        MinecraftForge.EVENT_BUS.register(this);
         enabled = true;
     }
 

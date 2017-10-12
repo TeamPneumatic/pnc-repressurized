@@ -17,7 +17,7 @@ public class HelmetWidgetDefaults extends JsonConfig {
     }
 
     @Override
-    public String getFolderName() {
+    public String getConfigFilename() {
         return "HelmetWidgetDefaults";
     }
 

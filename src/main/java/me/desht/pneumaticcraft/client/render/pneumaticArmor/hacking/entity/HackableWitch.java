@@ -3,13 +3,10 @@ package me.desht.pneumaticcraft.client.render.pneumaticArmor.hacking.entity;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IHackableEntity;
 import me.desht.pneumaticcraft.common.util.Reflections;
-import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.monster.EntityWitch;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
-import java.lang.reflect.Field;
 import java.util.List;
 
 public class HackableWitch implements IHackableEntity {

@@ -5,33 +5,21 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
+import java.io.IOException;
 import java.util.Map;
-
-import static me.desht.pneumaticcraft.lib.ModIds.*;
+import java.util.Set;
 
 public class ThirdPartyConfig extends JsonConfig {
     private static final Map<String, Boolean> MODS = Maps.newHashMap();
-    static {
-        MODS.put(BUILDCRAFT, true);
-        MODS.put(COMPUTERCRAFT, true);
-        MODS.put(IGWMOD, true);
-        MODS.put(TE,  true);
-        MODS.put(AE2, true);
-        MODS.put(FORESTRY, true);
-        MODS.put(OPEN_BLOCKS, true);
-        MODS.put(COFH_CORE, true);
-        MODS.put(OPEN_COMPUTERS, true);
-        MODS.put(EIO, true);
-        MODS.put(MCMP,  true);
-        MODS.put(INDUSTRIALFOREGOING, true);
-    }
 
-    public ThirdPartyConfig() {
+    public static ThirdPartyConfig INSTANCE = new ThirdPartyConfig();
+
+    private ThirdPartyConfig() {
         super(true);
     }
 
     @Override
-    public String getFolderName() {
+    public String getConfigFilename() {
         return "thirdparty";
     }
 
@@ -51,6 +39,17 @@ public class ThirdPartyConfig extends JsonConfig {
         MODS.clear();
         for (Map.Entry<String,JsonElement> entry : obj.entrySet()) {
             MODS.put(entry.getKey(), entry.getValue().getAsBoolean());
+        }
+    }
+
+    public static void setupDefaults(Set<String> modids) {
+        for (String modid : modids) {
+            MODS.putIfAbsent(modid, true);
+        }
+        try {
+            INSTANCE.writeToFile();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

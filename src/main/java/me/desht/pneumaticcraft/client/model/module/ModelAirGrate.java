@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.client.model.module;
 
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.util.ResourceLocation;
 

@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.tileentity.ICamouflageableTE;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticBase;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.SlotItemHandler;

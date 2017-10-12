@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.block.tubes;
 
 import me.desht.pneumaticcraft.client.model.module.ModelLogistics;
+import me.desht.pneumaticcraft.client.model.module.ModelModuleBase;
 import me.desht.pneumaticcraft.common.ai.LogisticsManager;
 import me.desht.pneumaticcraft.common.ai.LogisticsManager.LogisticsTask;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -12,9 +13,7 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityPlasticMixer;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Names;
-import me.desht.pneumaticcraft.lib.Textures;
 import me.desht.pneumaticcraft.proxy.CommonProxy.EnumGuiId;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemDye;
@@ -26,7 +25,6 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -45,8 +43,6 @@ public class ModuleLogistics extends TubeModule {
     private static final double MIN_PRESSURE = 3;
     private static final double ITEM_TRANSPORT_COST = 5;
     private static final double FLUID_TRANSPORT_COST = 0.1;
-    @SideOnly(Side.CLIENT)
-    private final ModelLogistics model = new ModelLogistics(this);
 
     @SideOnly(Side.CLIENT)
     public int getTicksSinceAction() {
@@ -74,18 +70,13 @@ public class ModuleLogistics extends TubeModule {
     }
 
     @Override
-    public String getModelName() {
-        return "logistics_module";
-    }
-
-    @Override
-    public void render(float partialTicks) {
-        model.renderModel(0.0625f, dir, partialTicks);
-    }
-
-    @Override
     protected EnumGuiId getGuiId() {
         return null;
+    }
+
+    @Override
+    public Class<? extends ModelModuleBase> getModelClass() {
+        return ModelLogistics.class;
     }
 
     public int getColorChannel() {

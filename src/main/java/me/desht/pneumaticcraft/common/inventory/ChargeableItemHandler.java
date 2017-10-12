@@ -5,7 +5,6 @@ import me.desht.pneumaticcraft.common.item.ItemMachineUpgrade;
 import me.desht.pneumaticcraft.common.tileentity.FilteredItemStackHandler;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.items.ItemStackHandler;
 
 public class ChargeableItemHandler extends FilteredItemStackHandler {
     private static final int INVENTORY_SIZE = 9;

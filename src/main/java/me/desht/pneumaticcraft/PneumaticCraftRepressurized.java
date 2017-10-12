@@ -40,11 +40,9 @@ import me.desht.pneumaticcraft.proxy.CommonProxy;
 import net.minecraft.block.Block;
 import net.minecraft.command.ServerCommandManager;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fml.common.IFuelHandler;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -56,7 +54,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import org.apache.logging.log4j.Logger;
 
 @Mod(modid = Names.MOD_ID, name = "PneumaticCraft: Repressurized", version = PneumaticCraftRepressurized.MODVERSION,
-        dependencies = "required-after:forge@[14.22.0.2474,);" + "after:forestry",
+        dependencies = "required-after:forge@[14.23.0.2491,);after:forestry",
         acceptedMinecraftVersions = "1.12"
 )
 public class PneumaticCraftRepressurized {

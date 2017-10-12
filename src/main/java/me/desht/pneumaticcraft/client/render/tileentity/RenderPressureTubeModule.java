@@ -6,15 +6,11 @@ import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import org.lwjgl.opengl.GL11;
-
-import java.util.Arrays;
 
 public class RenderPressureTubeModule extends TileEntitySpecialRenderer<TileEntityPressureTube> {
 
@@ -43,7 +39,7 @@ public class RenderPressureTubeModule extends TileEntitySpecialRenderer<TileEnti
                           GL11.glColor4d(1, 1, 1, 0.5);
                 }
 
-                module.render(partialTicks);
+                module.getModel().renderModel(0.0625f, module.getDirection(), partialTicks);
 
                 if (module.isFake()) {
                     tile.modules[i] = null;

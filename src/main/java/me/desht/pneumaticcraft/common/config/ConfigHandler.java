@@ -19,7 +19,7 @@ public class ConfigHandler {
             new AmadronOfferPeriodicConfig(),
             new ProgWidgetConfig(),
             HelmetWidgetDefaults.INSTANCE,
-            new ThirdPartyConfig()
+            ThirdPartyConfig.INSTANCE
     };
 
     @Config.Name("general")
@@ -50,11 +50,11 @@ public class ConfigHandler {
         for(ISubConfig subConfig : subConfigs) {
             File subFolder = new File(configFile.getAbsolutePath().substring(0, configFile.getAbsolutePath().length() - 4) + File.separator);
             if (subFolder.exists() || subFolder.mkdirs()) {
-                File subFile = new File(subFolder, subConfig.getFolderName() + ".cfg");
+                File subFile = new File(subFolder, subConfig.getConfigFilename() + ".cfg");
                 try {
-                    subConfig.init(subFile);
+                    subConfig.preInit(subFile);
                 } catch(IOException e) {
-                    PneumaticCraftRepressurized.logger.error("Config file " + subConfig.getFolderName() + " failed to create! Unexpected things can happen!");
+                    PneumaticCraftRepressurized.logger.error("Config file " + subConfig.getConfigFilename() + " failed to create! Unexpected things can happen!");
                     e.printStackTrace();
                 }
             }
@@ -66,7 +66,7 @@ public class ConfigHandler {
             try {
                 subConfig.postInit();
             } catch(IOException e) {
-                PneumaticCraftRepressurized.logger.error("Config file " + subConfig.getFolderName() + " failed to create! Unexpected things can happen!");
+                PneumaticCraftRepressurized.logger.error("Config file " + subConfig.getConfigFilename() + " failed to create! Unexpected things can happen!");
                 e.printStackTrace();
             }
         }

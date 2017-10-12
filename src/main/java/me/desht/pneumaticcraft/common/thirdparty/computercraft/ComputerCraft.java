@@ -20,7 +20,7 @@ import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class ComputerCraft extends OpenComputers implements IRegistryListener {
-    @GameRegistry.ObjectHolder(ModIds.COMPUTERCRAFT + ":CC-Peripheral")
+    @GameRegistry.ObjectHolder(ModIds.COMPUTERCRAFT + ":peripheral")
     public static final Block MODEM = null;
 
     @Override

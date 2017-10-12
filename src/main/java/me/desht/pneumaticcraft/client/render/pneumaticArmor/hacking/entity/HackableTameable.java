@@ -2,7 +2,6 @@ package me.desht.pneumaticcraft.client.render.pneumaticArmor.hacking.entity;
 
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IHackableEntity;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.EntityOcelot;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;

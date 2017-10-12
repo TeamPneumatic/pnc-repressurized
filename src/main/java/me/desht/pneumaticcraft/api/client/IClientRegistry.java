@@ -1,10 +1,8 @@
 package me.desht.pneumaticcraft.api.client;
 
 import me.desht.pneumaticcraft.api.client.assemblymachine.IAssemblyRenderOverriding;
-import net.minecraft.block.Block;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 

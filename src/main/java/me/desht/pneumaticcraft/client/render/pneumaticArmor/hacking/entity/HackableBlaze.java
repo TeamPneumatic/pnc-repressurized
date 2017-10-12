@@ -5,7 +5,6 @@ import me.desht.pneumaticcraft.common.util.Reflections;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.ai.EntityAITasks;
-import net.minecraft.entity.monster.EntityBlaze;
 import net.minecraft.entity.player.EntityPlayer;
 
 import java.util.List;

@@ -1,11 +1,12 @@
 package me.desht.pneumaticcraft.lib;
 
 public class ModIds {
-    public static final String BUILDCRAFT = "BuildCraft|Core";
+    // TODO some of these mod IDs need fixing or just plain obsolete
+    public static final String BUILDCRAFT = "buildcraftcore";
     public static final String COMPUTERCRAFT = "computercraft";
     public static final String INDUSTRIALCRAFT = "ic2";
     public static final String INDUSTRIALFOREGOING = "industrialforegoing";
-    public static final String IGWMOD = "IGWMod";
+    public static final String IGWMOD = "igwmod";
     public static final String WAILA = "waila";
     public static final String TE = "ThermalExpansion";
     public static final String NEI = "NotEnoughItems";

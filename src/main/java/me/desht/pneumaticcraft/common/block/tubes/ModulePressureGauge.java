@@ -1,28 +1,18 @@
 package me.desht.pneumaticcraft.common.block.tubes;
 
 import me.desht.pneumaticcraft.client.model.module.ModelGauge;
+import me.desht.pneumaticcraft.client.model.module.ModelModuleBase;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdatePressureBlock;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticBase;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Names;
-import me.desht.pneumaticcraft.lib.Textures;
 import me.desht.pneumaticcraft.proxy.CommonProxy.EnumGuiId;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
 public class ModulePressureGauge extends TubeModuleRedstoneEmitting {
-    @SideOnly(Side.CLIENT)
-    private final ModelGauge model = new ModelGauge(this);
-
     public ModulePressureGauge() {
         lowerBound = 0;
         higherBound = 7.5F;
@@ -43,19 +33,8 @@ public class ModulePressureGauge extends TubeModuleRedstoneEmitting {
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
-    public void render(float partialTicks) {
-        model.renderModel(0.0625f, dir, partialTicks);
-    }
-
-    @Override
     public String getType() {
         return Names.MODULE_GAUGE;
-    }
-
-    @Override
-    public String getModelName() {
-        return "gauge_module";
     }
 
     @Override
@@ -83,5 +62,10 @@ public class ModulePressureGauge extends TubeModuleRedstoneEmitting {
     @Override
     protected EnumGuiId getGuiId() {
         return EnumGuiId.PRESSURE_MODULE;
+    }
+
+    @Override
+    public Class<? extends ModelModuleBase> getModelClass() {
+        return ModelGauge.class;
     }
 }

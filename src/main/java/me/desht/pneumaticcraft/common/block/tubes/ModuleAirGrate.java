@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.block.tubes;
 
 import me.desht.pneumaticcraft.client.model.module.ModelAirGrate;
+import me.desht.pneumaticcraft.client.model.module.ModelModuleBase;
 import me.desht.pneumaticcraft.client.render.RenderRangeLines;
 import me.desht.pneumaticcraft.common.ai.StringFilterEntitySelector;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityHeatSink;
@@ -21,10 +22,6 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.opencl.CL;
-import org.lwjgl.opengl.GL11;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -37,8 +34,6 @@ public class ModuleAirGrate extends TubeModule {
     public String entityFilter = "";
     private final Set<TileEntityHeatSink> heatSinks = new HashSet<>();
     private final RenderRangeLines rangeLineRenderer = new RenderRangeLines(0x55FF0000);
-    @SideOnly(Side.CLIENT)
-    private final ModelAirGrate model = new ModelAirGrate();
 
     public ModuleAirGrate() {
         rangeLineRenderer.resetRendering(1);
@@ -160,31 +155,6 @@ public class ModuleAirGrate extends TubeModule {
     }
 
     @Override
-    public String getModelName() {
-        return "air_grate";
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public void render(float partialTicks) {
-        model.renderModel(0.0625f, dir, partialTicks);
-    }
-
-//    @Override
-//    protected void renderModule() {
-//        GL11.glPushMatrix();
-//        GL11.glTranslated(0, 0, 2);
-//        rangeLineRenderer.render();
-//        if (isFake()) {
-//            GL11.glEnable(GL11.GL_BLEND);
-//            GL11.glColor4d(1, 1, 1, 0.5);
-//        }
-//        GL11.glPopMatrix();
-//        GL11.glRotated(90, 1, 0, 0);
-//        GL11.glTranslated(0, 1, 1);
-//    }
-
-    @Override
     public void addInfo(List<String> curInfo) {
         curInfo.add("Status: " + TextFormatting.WHITE + (grateRange == 0 ? "Idle" : vacuum ? "Attracting" : "Repelling"));
         curInfo.add("Range: " + TextFormatting.WHITE + grateRange + " blocks");
@@ -205,4 +175,10 @@ public class ModuleAirGrate extends TubeModule {
     protected EnumGuiId getGuiId() {
         return EnumGuiId.AIR_GRATE_MODULE;
     }
+
+    @Override
+    public Class<? extends ModelModuleBase> getModelClass() {
+        return ModelAirGrate.class;
+    }
+
 }
