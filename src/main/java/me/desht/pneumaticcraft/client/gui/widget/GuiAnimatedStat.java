@@ -361,6 +361,7 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
                 GL11.glDisable(GL12.GL_RESCALE_NORMAL);
                 GL11.glPopMatrix();
             }
+            GL11.glDisable(GL11.GL_BLEND);
         }
     }
 
