@@ -9,7 +9,7 @@ $ ./gradlew build
 
 ...and any IDE-specific steps (genIntellijRuns etc.)
 
-This code is based on MineMaarten's 1.8.9 code (see the *MC1.8.8* branch in the above-linked repo), which is fairly functional but is missing a lot of client-side stuff.  At the time of writing, a signicant amount of the fancy 1.7.10 rendering (block animations) has been ported and reimplemented in 1.12.2, but not all.
+This code is based on MineMaarten's 1.8.9 code (see the *MC1.8.8* branch in the above-linked repo), which is fairly functional but is missing a lot of client-side stuff.  At the time of writing, a significant amount of the fancy 1.7.10 rendering (block animations) has been ported and reimplemented in 1.12.2, but not all.
 
 Basically, this is a developer preview, not a usable mod at this stage, although it's getting close.  I'm welcoming any assistance & pull requests, especially in the area of modelling and client-side animation.
 
@@ -60,7 +60,7 @@ With all that said, have fun!
 
 ### Functional but Needs Clientside Work
 
-* Vortex tube & Heat Sink don't get tinted to indicate temperature (OBJ models can't have a tintindex - may need to redo Heat Sink with JSON, Vortex Tube may need a TESR or some other solution)
+* Vortex tube doesn't get tinted to indicate temperature (OBJ models can't have a tintindex - may need a TESR or some IBakedModel trickery)
 * Miniguns (ammo works, mobs die, but no item model)
 * Vortex Cannon (vortex entities work fine but cannon needs an item model)
 * Flux Compressor could use a fancier model...
@@ -73,7 +73,7 @@ With all that said, have fun!
 * Achievements (need to convert to 1.12 Advancements)
 * IGW support (there's no official 1.12 port, but see https://github.com/Z-Doctor/IGW-mod/tree/1.11/src/igwmod)
 
-### Not Tested Yet(liquid hopper textures are messed up though)
+### Not Tested Yet
 
 * Security system
 * Amadron system
