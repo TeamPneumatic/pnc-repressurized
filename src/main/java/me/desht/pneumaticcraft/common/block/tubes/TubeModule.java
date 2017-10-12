@@ -16,6 +16,8 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -190,8 +192,9 @@ public abstract class TubeModule implements ISidedPart {
     public final ModelModuleBase getModel() {
         if (model == null) {
             try {
-                model = getModelClass().newInstance();
-            } catch (InstantiationException | IllegalAccessException e) {
+                Constructor<? extends ModelModuleBase> ctor = getModelClass().getDeclaredConstructor(this.getClass());
+                model = ctor.newInstance(this);
+            } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
                 e.printStackTrace();
                 model = new ModelModuleBase.MissingModel();
             }
