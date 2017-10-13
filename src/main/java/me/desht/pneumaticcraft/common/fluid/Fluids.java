@@ -30,7 +30,7 @@ public class Fluids {
     public static final Set<IFluidBlock> MOD_FLUID_BLOCKS = new HashSet<>();
 
     public static final Fluid ETCHING_ACID = createFluid("etchacid",
-            fluid -> ((FluidPneumaticCraft)fluid).setCustomColor(0xFF803c20), BlockFluidEtchingAcid::new);
+            fluid -> ((FluidPneumaticCraft)fluid).setCustomColor(0xFF808000), BlockFluidEtchingAcid::new);
     public static final Fluid PLASTIC = createFluid("plastic",
             fluid -> {}, fluid -> new BlockFluidPneumaticCraft(fluid, new MaterialLiquid(MapColor.GRAY)));
     public static final Fluid OIL = createFluid("oil",

@@ -24,7 +24,9 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class TileEntityRefinery extends TileEntityBase implements IHeatExchanger, IRedstoneControlled, IComparatorSupport {
 
@@ -59,8 +61,17 @@ public class TileEntityRefinery extends TileEntityBase implements IHeatExchanger
     public static final int[][] REFINING_TABLE = new int[][]{{4, 0, 0, 2}, {2, 3, 0, 2}, {2, 3, 3, 2}};
     private final Fluid[] refiningFluids = getRefiningFluids();
 
-    public TileEntityRefinery() {
+    private static final Set<String> validFluids = new HashSet<>();
 
+    public TileEntityRefinery() {
+    }
+
+    public static void registerInputFluid(Fluid fluid) {
+        validFluids.add(fluid.getName());
+    }
+
+    public static boolean isInputFluidValid(Fluid fluid) {
+        return validFluids.contains(fluid.getName());
     }
 
     public static Fluid[] getRefiningFluids() {
@@ -81,7 +92,7 @@ public class TileEntityRefinery extends TileEntityBase implements IHeatExchanger
 
             if (isMaster()) {
                 List<TileEntityRefinery> refineries = getRefineries();
-                if (redstoneAllows() && oilTank.getFluidAmount() >= 10) {
+                if (redstoneAllows() && oilTank.getFluidAmount() >= 10 && isInputFluidValid(oilTank.getFluid().getFluid())) {
                     if (refineries.size() > 1 && refineries.size() <= refiningFluids.length && refine(refineries, true)) {
                         int progress = Math.max(0, ((int) heatExchanger.getTemperature() - 343) / 30);
                         progress = Math.min(5, progress);
@@ -259,7 +270,7 @@ public class TileEntityRefinery extends TileEntityBase implements IHeatExchanger
 
         @Override
         public boolean canFillFluidType(FluidStack fluid) {
-            return Fluids.areFluidsEqual(fluid.getFluid(), Fluids.OIL);
+            return isInputFluidValid(fluid.getFluid());
         }
     }
 

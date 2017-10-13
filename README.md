@@ -64,6 +64,7 @@ With all that said, have fun!
 * Miniguns (ammo works, mobs die, but no item model)
 * Vortex Cannon (vortex entities work fine but cannon needs an item model)
 * Flux Compressor could use a fancier model...
+* Refinery doesn't render the contained liquids
 * Liquid Hopper texture is a mess
 
 ### Not Working Yet

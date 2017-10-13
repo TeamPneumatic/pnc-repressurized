@@ -16,6 +16,7 @@ import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.pressure.AirHandlerSupplier;
 import me.desht.pneumaticcraft.common.recipes.PneumaticRecipeRegistry;
 import me.desht.pneumaticcraft.common.sensor.SensorHandler;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityRefinery;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.entity.player.EntityPlayer;
@@ -75,6 +76,11 @@ public class PneumaticCraftAPIHandler implements IPneumaticCraftInterface {
         if (fluid == null) throw new NullPointerException("Fluid can't be null!");
         if (liquidToPointRatio <= 0) throw new IllegalArgumentException("liquidToPointRatio can't be <= 0");
         liquidXPs.put(fluid, liquidToPointRatio);
+    }
+
+    @Override
+    public void registerRefineryInput(Fluid fluid) {
+        TileEntityRefinery.registerInputFluid(fluid);
     }
 
     @Override

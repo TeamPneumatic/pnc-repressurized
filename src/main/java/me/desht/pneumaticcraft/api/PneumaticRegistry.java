@@ -89,5 +89,11 @@ public final class PneumaticRegistry {
          */
         void registerXPLiquid(Fluid fluid, int liquidToPointRatio);
 
+        /**
+         * Register this fluid as a raw input to the refinery.
+         *
+         * @param fluid the fluid to register
+         */
+        void registerRefineryInput(Fluid fluid);
     }
 }

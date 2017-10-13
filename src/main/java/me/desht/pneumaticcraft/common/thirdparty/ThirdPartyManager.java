@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.common.config.ThirdPartyConfig;
 import me.desht.pneumaticcraft.common.thirdparty.ae2.AE2;
 import me.desht.pneumaticcraft.common.thirdparty.buildcraft.BuildCraft;
+import me.desht.pneumaticcraft.common.thirdparty.cofhcore.CoFHCore;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.ComputerCraft;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.OpenComputers;
 import me.desht.pneumaticcraft.common.thirdparty.enderio.EnderIO;
@@ -53,7 +54,7 @@ public class ThirdPartyManager implements IGuiHandler {
             if (Loader.isModLoaded(ModIds.MCMP)) {
                 thirdPartyClasses.put(ModIds.MCMP, PneumaticMultiPart.class);
             }
-            // thirdPartyClasses.put(ModIds.COFH_CORE, CoFHCore.class);
+             thirdPartyClasses.put(ModIds.COFH_CORE, CoFHCore.class);
             // thirdPartyClasses.put(ModIds.EE3, EE3.class);
             // thirdPartyClasses.put(ModIds.INDUSTRIALCRAFT, IC2.class);
             // thirdPartyClasses.put(ModIds.WAILA, Waila.class);

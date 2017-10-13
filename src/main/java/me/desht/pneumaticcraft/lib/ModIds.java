@@ -16,7 +16,7 @@ public class ModIds {
     public static final String CHISEL = "chisel";
     public static final String FORESTRY = "forestry";
     public static final String OPEN_BLOCKS = "openblocks";
-    public static final String COFH_CORE = "CoFHCore";
+    public static final String COFH_CORE = "cofhcore";
     public static final String NOT_ENOUGH_KEYS = "notenoughkeys";
     public static final String OPEN_COMPUTERS = "OpenComputers|Core";
     public static final String EIO = "enderio";
