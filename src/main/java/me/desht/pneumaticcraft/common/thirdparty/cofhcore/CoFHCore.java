@@ -24,10 +24,26 @@ public class CoFHCore implements IThirdParty {
         ThermalExpansionHelper.addCompressionFuel(Fluids.LPG.getName(), 2500000);
         PneumaticCraftRepressurized.logger.info("Added PneumaticCraft: Repressurized fuels to CoFH Compression Dynamo");
 
+        registerCoFHfuel("creosote", 75000);
+        registerCoFHfuel("coal", 300000);
+        registerCoFHfuel("tree_oil", 750000);
+        registerCoFHfuel("refined_oil", 937500);
+        registerCoFHfuel("refined_fuel", 1500000);
+
         Fluid crudeOil = FluidRegistry.getFluid("crude_oil");
         if (crudeOil != null) {
             PneumaticCraftAPIHandler.getInstance().registerRefineryInput(crudeOil);
             PneumaticCraftRepressurized.logger.info("Added CoFH Crude Oil as a Refinery input");
+        }
+    }
+
+    private void registerCoFHfuel(String fuelName, int mLPerBucket) {
+        Fluid f = FluidRegistry.getFluid(fuelName);
+        if (f != null) {
+            PneumaticCraftAPIHandler.getInstance().registerFuel(f, mLPerBucket);
+            PneumaticCraftRepressurized.logger.info("Added CoFH fuel '" + fuelName + "'");
+        } else {
+            PneumaticCraftRepressurized.logger.warn("Can't find CoFH fuel: " + fuelName);
         }
     }
 
