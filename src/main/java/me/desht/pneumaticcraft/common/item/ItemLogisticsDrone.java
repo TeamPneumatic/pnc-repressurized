@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.entity.living.EntityLogisticsDrone;
+import me.desht.pneumaticcraft.common.inventory.ChargeableItemHandler;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetLogistics;
@@ -41,8 +42,7 @@ public class ItemLogisticsDrone extends ItemDrone {
             if (stackTag != null) {
                 entityTag.setFloat("currentAir", stackTag.getFloat("currentAir"));
                 entityTag.setInteger("color", stackTag.getInteger("color"));
-                NBTTagCompound invTag = stackTag.getCompoundTag("UpgradeInventory");
-                entityTag.setTag("Inventory", invTag.copy());
+                entityTag.setTag(ChargeableItemHandler.NBT_UPGRADE_TAG, stackTag.getCompoundTag(ChargeableItemHandler.NBT_UPGRADE_TAG));
             }
             drone.readEntityFromNBT(entityTag);
             addLogisticsProgram(pos, drone.progWidgets);

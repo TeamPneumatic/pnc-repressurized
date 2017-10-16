@@ -27,6 +27,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.Iterator;
 
@@ -71,11 +72,12 @@ public class GuiSearcher extends InventoryEffectRenderer {
         ((ContainerSearcher) inventorySlots).init(this);
     }
 
+    @Nonnull
     public ItemStack getSearchStack() {
         return inventory.getStackInSlot(48);
     }
 
-    public void setSearchStack(ItemStack stack) {
+    public void setSearchStack(@Nonnull ItemStack stack) {
         inventory.setStackInSlot(48, stack);
     }
 

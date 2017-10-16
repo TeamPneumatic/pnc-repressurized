@@ -260,12 +260,14 @@ public class TileEntityProgrammer extends TileEntityBase implements IGUITextFiel
                     if (left > 0) {
                         for (EnumFacing d : EnumFacing.VALUES) {
                             IItemHandler neighbor = IOHelper.getInventoryForTE(getWorld().getTileEntity(getPos().offset(d)), d.getOpposite());
-                            for (int slot = 0; slot < neighbor.getSlots(); slot++) {
-                                ItemStack neighborStack = neighbor.extractItem(slot, left, true);
-                                if (PneumaticCraftUtils.areStacksEqual(neighborStack, stack, true, true, false, false)) {
-                                    neighborStack = neighbor.extractItem(slot, left, false);
-                                    left -= neighborStack.getCount();
-                                    if (left <= 0) break;
+                            if (neighbor != null) {
+                                for (int slot = 0; slot < neighbor.getSlots(); slot++) {
+                                    ItemStack neighborStack = neighbor.extractItem(slot, left, true);
+                                    if (PneumaticCraftUtils.areStacksEqual(neighborStack, stack, true, true, false, false)) {
+                                        neighborStack = neighbor.extractItem(slot, left, false);
+                                        left -= neighborStack.getCount();
+                                        if (left <= 0) break;
+                                    }
                                 }
                             }
                         }

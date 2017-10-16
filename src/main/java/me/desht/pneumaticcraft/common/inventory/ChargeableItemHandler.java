@@ -9,6 +9,8 @@ import net.minecraft.item.ItemStack;
 public class ChargeableItemHandler extends FilteredItemStackHandler {
     private static final int INVENTORY_SIZE = 9;
 
+    public static final String NBT_UPGRADE_TAG = "UpgradeInventory";
+
     private final ItemStack chargingItem;
     private final TileEntityChargingStation te;
 
@@ -32,7 +34,7 @@ public class ChargeableItemHandler extends FilteredItemStackHandler {
     }
 
     private boolean hasInventory() {
-        return NBTUtil.hasTag(chargingItem, "UpgradeInventory");
+        return NBTUtil.hasTag(chargingItem, NBT_UPGRADE_TAG);
     }
 
     private void createInventory() {
@@ -48,11 +50,11 @@ public class ChargeableItemHandler extends FilteredItemStackHandler {
     }
 
     public void writeToNBT() {
-        NBTUtil.setCompoundTag(chargingItem, "UpgradeInventory", serializeNBT());
+        NBTUtil.setCompoundTag(chargingItem, NBT_UPGRADE_TAG, serializeNBT());
     }
 
     private void readFromNBT() {
-        deserializeNBT(NBTUtil.getCompoundTag(chargingItem, "UpgradeInventory"));
+        deserializeNBT(NBTUtil.getCompoundTag(chargingItem, NBT_UPGRADE_TAG));
     }
 
     @Override

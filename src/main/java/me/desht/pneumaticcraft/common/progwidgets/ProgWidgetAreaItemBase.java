@@ -202,9 +202,10 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
         return filter;
     }
 
-    public static List<Entity> getEntitiesInArea(ProgWidgetArea whitelistWidget, ProgWidgetArea blacklistWidget, World world, Predicate<? super Entity> whitelistPredicate, Predicate<? super Entity> blacklistPredicate) {
-        if (whitelistWidget == null) return new ArrayList<Entity>();
-        Set<Entity> entities = new HashSet<Entity>();
+    public static List<Entity> getEntitiesInArea(ProgWidgetArea whitelistWidget, ProgWidgetArea blacklistWidget, World world,
+                                                 Predicate<? super Entity> whitelistPredicate, Predicate<? super Entity> blacklistPredicate) {
+        if (whitelistWidget == null) return new ArrayList<>();
+        Set<Entity> entities = new HashSet<>();
         ProgWidgetArea widget = whitelistWidget;
         while (widget != null) {
             entities.addAll(widget.getEntitiesWithinArea(world, whitelistPredicate));
@@ -216,11 +217,7 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
             widget = (ProgWidgetArea) widget.getConnectedParameters()[0];
         }
         if (blacklistPredicate != null) {
-            Iterator<Entity> iterator = entities.iterator();
-            while (iterator.hasNext()) {
-                Entity entity = iterator.next();
-                if (!blacklistPredicate.apply(entity)) iterator.remove();
-            }
+            entities.removeIf(blacklistPredicate::apply);
         }
         return new ArrayList<Entity>(entities);
     }

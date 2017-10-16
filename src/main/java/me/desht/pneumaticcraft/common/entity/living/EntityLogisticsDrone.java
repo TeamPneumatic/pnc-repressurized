@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.entity.living;
 
+import me.desht.pneumaticcraft.common.inventory.ChargeableItemHandler;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -23,7 +24,7 @@ public class EntityLogisticsDrone extends EntityDrone {
         tag.setInteger("color", getDroneColor());
         NBTTagCompound invTag = new NBTTagCompound();
         writeEntityToNBT(invTag);
-        tag.setTag("UpgradeInventory", invTag.getTag("Inventory"));
+        tag.setTag(ChargeableItemHandler.NBT_UPGRADE_TAG, invTag.getTag(ChargeableItemHandler.NBT_UPGRADE_TAG));
         ItemStack drone = new ItemStack(Itemss.LOGISTICS_DRONE);
         drone.setTagCompound(tag);
         return drone;

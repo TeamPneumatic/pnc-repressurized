@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.common.NBTUtil;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
+import me.desht.pneumaticcraft.common.inventory.ChargeableItemHandler;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -60,8 +61,7 @@ public class ItemDrone extends ItemPneumatic implements IPressurizable, IChargin
                 entityTag.setTag("widgets", stackTag.getTagList("widgets", 10).copy());
                 entityTag.setFloat("currentAir", stackTag.getFloat("currentAir"));
                 entityTag.setInteger("color", stackTag.getInteger("color"));
-                NBTTagCompound invTag = stackTag.getCompoundTag("UpgradeInventory");
-                entityTag.setTag("Inventory", invTag.copy());
+                entityTag.setTag(ChargeableItemHandler.NBT_UPGRADE_TAG, stackTag.getCompoundTag(ChargeableItemHandler.NBT_UPGRADE_TAG));
             }
             drone.readEntityFromNBT(entityTag);
             if (iStack.hasDisplayName()) drone.setCustomNameTag(iStack.getDisplayName());

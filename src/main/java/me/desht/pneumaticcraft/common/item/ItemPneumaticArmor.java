@@ -10,6 +10,7 @@ import me.desht.pneumaticcraft.client.render.pneumaticArmor.UpgradeRenderHandler
 import me.desht.pneumaticcraft.common.DateEventHandler;
 import me.desht.pneumaticcraft.common.NBTUtil;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
+import me.desht.pneumaticcraft.common.inventory.ChargeableItemHandler;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -111,7 +112,7 @@ IRepairable, IRevealer, IGoggles, IVisDiscountGear*/ {
      * Retrieves the upgrades currently installed on the given armor stack.
      */
     public static ItemStack[] getUpgradeStacks(ItemStack iStack) {
-        NBTTagCompound tag = NBTUtil.getCompoundTag(iStack, "UpgradeInventory");
+        NBTTagCompound tag = NBTUtil.getCompoundTag(iStack, ChargeableItemHandler.NBT_UPGRADE_TAG);
         ItemStack[] inventoryStacks = new ItemStack[9];
         Arrays.fill(inventoryStacks, ItemStack.EMPTY);
         NBTTagList itemList = tag.getTagList("Items", 10);

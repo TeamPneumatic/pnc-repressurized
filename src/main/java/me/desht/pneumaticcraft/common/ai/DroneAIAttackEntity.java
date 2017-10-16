@@ -51,9 +51,6 @@ public class DroneAIAttackEntity extends EntityAIAttackMelee {
 
     }
 
-    /**
-     * Updates the task
-     */
     @Override
     public void updateTask() {
         boolean needingSuper = true;

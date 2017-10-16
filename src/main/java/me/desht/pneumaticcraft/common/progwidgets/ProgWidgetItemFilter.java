@@ -19,11 +19,12 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Set;
 
 public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget {
-    private ItemStack filter;
+    private ItemStack filter = ItemStack.EMPTY;
     public boolean useMetadata = true, useNBT, useOreDict, useModSimilarity;
     public int specificMeta;
     private DroneAIManager aiManager;
@@ -43,7 +44,7 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
     @Override
     public void renderExtraInfo() {
         if (variable.equals("")) {
-            if (filter != null) {
+            if (!filter.isEmpty()) {
                 drawItemStack(filter, 10, 2, "");
             }
         } else {
@@ -56,15 +57,16 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
         return "\"" + variable + "\"";
     }
 
+    @Nonnull
     public ItemStack getFilter() {
-        return variable.equals("") ? filter : aiManager != null ? aiManager.getStack(variable) : null;
+        return variable.equals("") ? filter : aiManager != null ? aiManager.getStack(variable) : ItemStack.EMPTY;
     }
 
-    public void setFilter(ItemStack filter) {
+    public void setFilter(@Nonnull ItemStack filter) {
         this.filter = filter;
     }
 
-    public static void drawItemStack(ItemStack stack, int x, int y, String text) {
+    public static void drawItemStack(@Nonnull ItemStack stack, int x, int y, String text) {
         RenderHelper.disableStandardItemLighting();
         GL11.glPushMatrix();
         Minecraft mc = Minecraft.getMinecraft();
@@ -73,7 +75,7 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
         if (itemRender == null) itemRender = Minecraft.getMinecraft().getRenderItem();
         itemRender.zLevel = 200.0F;
         FontRenderer font = null;
-        if (stack != null) font = stack.getItem().getFontRenderer(stack);
+        if (!stack.isEmpty()) font = stack.getItem().getFontRenderer(stack);
         if (font == null) font = mc.fontRenderer;
         itemRender.renderItemAndEffectIntoGUI(stack, x, y);
         itemRender.renderItemOverlayIntoGUI(font, stack, x, y, text);
@@ -89,7 +91,7 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
     @Override
     public void getTooltip(List<String> curTooltip) {
         super.getTooltip(curTooltip);
-        if (filter != null) {
+        if (!filter.isEmpty()) {
             curTooltip.add("Current filter:");
             curTooltip.add(filter.getDisplayName());
             if (useOreDict) {

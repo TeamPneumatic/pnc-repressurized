@@ -23,10 +23,10 @@ public class BlockDroneInterface extends BlockPneumaticCraftModeled {
         return TileEntityDroneInterface.class;
     }
 
-    @Override
-    public boolean isSideSolid(IBlockState base_state, IBlockAccess world, BlockPos pos, EnumFacing side) {
-        return side == EnumFacing.DOWN;
-    }
+//    @Override
+//    public boolean isSideSolid(IBlockState base_state, IBlockAccess world, BlockPos pos, EnumFacing side) {
+//        return side == EnumFacing.DOWN;
+//    }
 
     @Override
     public Set<Item> getApplicableUpgrades() {

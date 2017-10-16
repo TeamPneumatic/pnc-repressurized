@@ -15,14 +15,12 @@ import me.desht.pneumaticcraft.common.ai.*;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager.EntityAITaskEntry;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
+import me.desht.pneumaticcraft.common.inventory.ChargeableItemHandler;
 import me.desht.pneumaticcraft.common.item.ItemGPSTool;
 import me.desht.pneumaticcraft.common.item.ItemProgrammingPuzzle;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
-import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketSendDroneDebugEntry;
-import me.desht.pneumaticcraft.common.network.PacketShowWireframe;
-import me.desht.pneumaticcraft.common.network.PacketSyncDroneEntityProgWidgets;
+import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetGoToLocation;
 import me.desht.pneumaticcraft.common.recipes.AmadronOffer;
@@ -156,7 +154,8 @@ public class EntityDrone extends EntityDroneBase
     public EntityDrone(World world) {
         super(world);
         setSize(0.7F, 0.35F);
-        ReflectionHelper.setPrivateValue(EntityLiving.class, this, new DroneMoveHelper(this), "moveHelper", "field_70765_h");
+        moveHelper = new DroneMoveHelper(this);
+//        ReflectionHelper.setPrivateValue(EntityLiving.class, this, new DroneMoveHelper(this), "moveHelper", "field_70765_h");
         tasks.addTask(1, chargeAI = new DroneGoToChargingStation(this));
     }
 
@@ -177,7 +176,7 @@ public class EntityDrone extends EntityDroneBase
                 new GameProfile(playerUUID != null ? UUID.fromString(playerUUID) : null, playerName),
                 new FakePlayerItemInWorldManager(world, fakePlayer, this), this);
         fakePlayer.connection = new NetHandlerPlayServer(FMLCommonHandler.instance().getMinecraftServerInstance(), new NetworkManager(EnumPacketDirection.SERVERBOUND), fakePlayer);
-        fakePlayer.inventory = new InventoryFakePlayer(fakePlayer);
+//        fakePlayer.inventory = new InventoryFakePlayer(fakePlayer);
     }
 
     private static final DataParameter<Boolean> ACCELERATING = EntityDataManager.createKey(EntityDrone.class, DataSerializers.BOOLEAN);
@@ -451,10 +450,11 @@ public class EntityDrone extends EntityDroneBase
         return aiManager.getCoordinate(varName);
     }
 
+    @Nonnull
     public ItemStack getActiveProgram() {
         String key = getActiveProgramKey();
         if (key.equals("")) {
-            return null;
+            return ItemStack.EMPTY;
         } else {
             return ItemProgrammingPuzzle.getStackForWidgetKey(key);
         }
@@ -702,8 +702,6 @@ public class EntityDrone extends EntityDroneBase
     protected ItemStack getDroppedStack() {
         NBTTagCompound tag = new NBTTagCompound();
         writeEntityToNBT(tag);
-        tag.setTag("UpgradeInventory", tag.getTag("Inventory"));
-        tag.removeTag("Inventory");
         ItemStack drone = new ItemStack(Itemss.DRONE);
         drone.setTagCompound(tag);
         return drone;
@@ -767,11 +765,8 @@ public class EntityDrone extends EntityDroneBase
         aiManager.writeToNBT(variableTag);
         tag.setTag("variables", variableTag);
 
-        NBTTagCompound inv = new NBTTagCompound();
-
-        inv.setTag("Inv", inventory.serializeNBT());
-        inv.setTag("Items", upgradeInventory.serializeNBT());
-        tag.setTag("Inventory", inv);
+        tag.setTag("Inventory", inventory.serializeNBT());
+        tag.setTag(ChargeableItemHandler.NBT_UPGRADE_TAG, upgradeInventory.serializeNBT());
 
         tank.writeToNBT(tag);
 
@@ -794,7 +789,6 @@ public class EntityDrone extends EntityDroneBase
         currentAir = tag.getFloat("currentAir");
         volume = tag.getFloat("volume");
         dataManager.set(PRESSURE, currentAir / volume);
-//        dataWatcher.updateObject(12, currentAir / volume);
         propSpeed = tag.getFloat("propSpeed");
         disabledByHacking = tag.getBoolean("disabledByHacking");
         setGoingToOwner(tag.getBoolean("hackedByOwner"));
@@ -802,12 +796,11 @@ public class EntityDrone extends EntityDroneBase
         aiManager.readFromNBT(tag.getCompoundTag("variables"));
         standby = tag.getBoolean("standby");
 
-        // Read in the ItemStacks in the inventory from NBT
-        NBTTagCompound inv = tag.getCompoundTag("Inventory");
         inventory = new ItemHandlerDrone(1 + getUpgrades(EnumUpgrade.DISPENSER));
-        inventory.deserializeNBT(inv.getCompoundTag("Inv"));
-        if (inventory.getSlots() < 1) inventory = new ItemHandlerDrone(1);
-        upgradeInventory.deserializeNBT(inv.getCompoundTag("Items"));
+        inventory.deserializeNBT(tag.getCompoundTag("Inventory"));
+        if (inventory.getSlots() < 1) inventory = new ItemHandlerDrone(1);  // in case of bad NBT
+
+        upgradeInventory.deserializeNBT(tag.getCompoundTag(ChargeableItemHandler.NBT_UPGRADE_TAG));
 
         tank.setCapacity(PneumaticValues.DRONE_TANK_SIZE * (1 + getUpgrades(EnumUpgrade.DISPENSER)));
         tank.readFromNBT(tag);
@@ -949,6 +942,17 @@ public class EntityDrone extends EntityDroneBase
         NetworkHandler.sendToAllAround(new PacketShowWireframe(this, pos), world);
     }
 
+//    @Nonnull
+//    @Override
+//    public ItemStack getItemStackFromSlot(EntityEquipmentSlot slotIn) {
+//        switch (slotIn) {
+//            case MAINHAND:
+//                return inventory.getStackInSlot(0);
+//            default:
+//                return ItemStack.EMPTY;
+//        }
+//    }
+
     private class ItemHandlerDrone extends ItemStackHandler {
         ItemStack oldStack = ItemStack.EMPTY;
 
@@ -956,35 +960,39 @@ public class EntityDrone extends EntityDroneBase
             super(size);
         }
 
+//
+
         @Override
-        public void setStackInSlot(int slot, @Nonnull ItemStack stack) {
-            super.setStackInSlot(slot, stack);
+        protected void onContentsChanged(int slot) {
+            super.onContentsChanged(slot);
+
             if (slot == 0 && !isChangingCurrentStack) {
-                isChangingCurrentStack = true;
-                getFakePlayer().inventory.setInventorySlotContents(slot, stack);
-                isChangingCurrentStack = false;
+                ItemStack newStack = inventory.getStackInSlot(slot);
+
+//                isChangingCurrentStack = true;
+//                getFakePlayer().inventory.setInventorySlotContents(slot, newStack);
+//                isChangingCurrentStack = false;
+
                 if (!oldStack.isEmpty()) {
                     for (EntityEquipmentSlot s : EntityEquipmentSlot.values()) {
                         getFakePlayer().getAttributeMap().removeAttributeModifiers(oldStack.getAttributeModifiers(s));
                     }
                 }
 
-                if (!stack.isEmpty()) {
+                if (!newStack.isEmpty()) {
                     for (EntityEquipmentSlot s : EntityEquipmentSlot.values()) {
-                        getFakePlayer().getAttributeMap().applyAttributeModifiers(stack.getAttributeModifiers(s));
+                        getFakePlayer().getAttributeMap().applyAttributeModifiers(newStack.getAttributeModifiers(s));
                     }
                 }
-                oldStack = stack;
+
+                oldStack = newStack;
             }
         }
     }
 
-    // FIXME use IItemHandler
-//    private class InventoryDrone extends InventoryBasic {
-//        ItemStack oldStack;
-//
-//        public InventoryDrone(String inventoryName, boolean isNameLocalized, int slots) {
-//            super(inventoryName, isNameLocalized, slots);
+//    private class InventoryFakePlayer extends InventoryPlayer {
+//        public InventoryFakePlayer(EntityPlayer par1EntityPlayer) {
+//            super(par1EntityPlayer);
 //        }
 //
 //        @Override
@@ -992,35 +1000,11 @@ public class EntityDrone extends EntityDroneBase
 //            super.setInventorySlotContents(slot, stack);
 //            if (slot == 0 && !isChangingCurrentStack) {
 //                isChangingCurrentStack = true;
-//                getFakePlayer().inventory.setInventorySlotContents(slot, stack);
+//                inventory.setStackInSlot(slot, stack);
 //                isChangingCurrentStack = false;
-//                if (!oldStack.isEmpty()) {
-//                    getFakePlayer().getAttributeMap().removeAttributeModifiers(oldStack.getAttributeModifiers());
-//                }
-//
-//                if (!stack.isEmpty()) {
-//                    getFakePlayer().getAttributeMap().applyAttributeModifiers(stack.getAttributeModifiers());
-//                }
-//                oldStack = stack;
 //            }
 //        }
 //    }
-
-    private class InventoryFakePlayer extends InventoryPlayer {
-        public InventoryFakePlayer(EntityPlayer par1EntityPlayer) {
-            super(par1EntityPlayer);
-        }
-
-        @Override
-        public void setInventorySlotContents(int slot, ItemStack stack) {
-            super.setInventorySlotContents(slot, stack);
-            if (slot == 0 && !isChangingCurrentStack) {
-                isChangingCurrentStack = true;
-                inventory.setStackInSlot(slot, stack);
-                isChangingCurrentStack = false;
-            }
-        }
-    }
 
     public static class DroneFakePlayer extends EntityPlayerMP {
         private final IDroneBase drone;
@@ -1041,6 +1025,17 @@ public class EntityDrone extends EntityDroneBase
         @Override
         public boolean canUseCommand(int permLevel, String commandName) {
             return false;
+        }
+
+        @Nonnull
+        @Override
+        public ItemStack getItemStackFromSlot(@Nonnull EntityEquipmentSlot slotIn) {
+            switch (slotIn) {
+                case MAINHAND:
+                    return drone.getInv().getStackInSlot(0);
+                default:
+                    return ItemStack.EMPTY;
+            }
         }
 
         //        @Override
@@ -1431,7 +1426,8 @@ public class EntityDrone extends EntityDroneBase
 
         @Override
         public void playSound(SoundEvent soundName, float volume, float pitch) {
-            world.playSound(posX, posY, posZ, soundName, SoundCategory.NEUTRAL, volume, pitch, true);
+            NetworkHandler.sendToAllAround(new PacketPlaySound(soundName, SoundCategory.NEUTRAL, posX, posY, posZ, volume, pitch, true), world);
+//            world.playSound(posX, posY, posZ, soundName, SoundCategory.NEUTRAL, volume, pitch, true);
 //            world.playSoundAtEntity(EntityDrone.this, soundName, volume, pitch);
         }
 
