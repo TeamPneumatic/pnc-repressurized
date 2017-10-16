@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.fluid;
 
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
+import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.block.BlockFluidEtchingAcid;
 import me.desht.pneumaticcraft.common.block.BlockFluidPneumaticCraft;
 import net.minecraft.block.Block;
@@ -61,7 +62,7 @@ public class Fluids {
 
     public static void init() {
         // stuff that needs to be done AFTER items & blocks are registered
-        // ... which right now is nothing
+        PneumaticCraftAPIHandler.getInstance().registerRefineryInput(Fluids.OIL);
     }
 
     private static <T extends Block & IFluidBlock> Fluid createFluid(String name,
