@@ -38,7 +38,7 @@ public class BBConstants {
 
     public static final float SECURITY_STATION_MIN_POS = 1F / 16F;
     public static final float SECURITY_STATION_MAX_POS = 15F / 16F;
-    public static final float SECURITY_STATION_MAX_POS_TOP = 14F / 16F;
+    public static final float SECURITY_STATION_MAX_POS_TOP = 11F / 16F;
 
     public static final float UNIVERSAL_SENSOR_MIN_POS = 0;
     public static final float UNIVERSAL_SENSOR_MAX_POS = 1F;

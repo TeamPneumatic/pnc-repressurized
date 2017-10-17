@@ -28,14 +28,14 @@ public class GuiProgWidgetDigAndPlace<Widget extends ProgWidgetDigAndPlace> exte
         List<GuiRadioButton> radioButtons = new ArrayList<>();
         ProgWidgetDigAndPlace.EnumOrder[] orders = ProgWidgetDigAndPlace.EnumOrder.values();
         for (int i = 0; i < orders.length; i++) {
-            GuiRadioButton radioButton = new GuiRadioButton(i, guiLeft + 4, guiTop + 30 + i * 12, 0xFF000000, orders[i].getLocalizedName());
+            GuiRadioButton radioButton = new GuiRadioButton(i, guiLeft + 4, guiTop + 30 + i * 12, 0xFF404040, orders[i].getLocalizedName());
             radioButton.checked = orders[i] == widget.getOrder();
             addWidget(radioButton);
             radioButtons.add(radioButton);
             radioButton.otherChoices = radioButtons;
         }
 
-        useMaxActions = new GuiCheckBox(16, guiLeft + (moveActionsToSide() ? 54 : 4), guiTop + 115, 0xFF000000, I18n.format("gui.progWidget.digAndPlace.useMaxActions"));
+        useMaxActions = new GuiCheckBox(16, guiLeft + (moveActionsToSide() ? 54 : 4), guiTop + 115, 0xFF404040, I18n.format("gui.progWidget.digAndPlace.useMaxActions"));
         useMaxActions.setTooltip("gui.progWidget.digAndPlace.useMaxActions.tooltip");
         useMaxActions.checked = widget.useMaxActions();
         addWidget(useMaxActions);
@@ -69,7 +69,7 @@ public class GuiProgWidgetDigAndPlace<Widget extends ProgWidgetDigAndPlace> exte
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         super.drawScreen(mouseX, mouseY, partialTicks);
-        fontRenderer.drawString("Order:", guiLeft + 8, guiTop + 20, 0xFF000000);
+        fontRenderer.drawString("Order:", guiLeft + 8, guiTop + 20, 0xFF404060);
     }
 
 }

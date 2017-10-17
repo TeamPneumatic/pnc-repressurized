@@ -35,7 +35,7 @@ public class GuiPressureModuleSimple extends GuiTubeModule {
         String title = I18n.format("item." + module.getType() + ".name");
         addLabel(title, width / 2 - fontRenderer.getStringWidth(title) / 2, guiTop + 5);
 
-        advancedMode = new GuiCheckBox(0, guiLeft + 6, guiTop + 15, 0xFF000000, "gui.tubeModule.advancedConfig").setTooltip(I18n.format("gui.tubeModule.advancedConfig.tooltip"));
+        advancedMode = new GuiCheckBox(0, guiLeft + 6, guiTop + 15, 0xFF404040, "gui.tubeModule.advancedConfig").setTooltip(I18n.format("gui.tubeModule.advancedConfig.tooltip"));
         advancedMode.checked = false;
         addWidget(advancedMode);
 

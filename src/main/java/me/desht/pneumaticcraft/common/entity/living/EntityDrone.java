@@ -36,7 +36,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIBase;
@@ -45,7 +44,6 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
@@ -79,7 +77,6 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -104,7 +101,6 @@ public class EntityDrone extends EntityDroneBase
         colorMap.put("jadedcat", 0xa020f0);
     }
 
-    private boolean isChangingCurrentStack;//used when syncing up the stacks of the drone with the fake player. Without it they'll keep syncing resulting in a stackoverflow.
     private ItemHandlerDrone inventory = new ItemHandlerDrone(1);
     private final FluidTank tank = new FluidTank(Integer.MAX_VALUE);
     private ItemStackHandler upgradeInventory = new ItemStackHandler(9) {
@@ -942,17 +938,6 @@ public class EntityDrone extends EntityDroneBase
         NetworkHandler.sendToAllAround(new PacketShowWireframe(this, pos), world);
     }
 
-//    @Nonnull
-//    @Override
-//    public ItemStack getItemStackFromSlot(EntityEquipmentSlot slotIn) {
-//        switch (slotIn) {
-//            case MAINHAND:
-//                return inventory.getStackInSlot(0);
-//            default:
-//                return ItemStack.EMPTY;
-//        }
-//    }
-
     private class ItemHandlerDrone extends ItemStackHandler {
         ItemStack oldStack = ItemStack.EMPTY;
 
@@ -960,19 +945,12 @@ public class EntityDrone extends EntityDroneBase
             super(size);
         }
 
-//
-
         @Override
         protected void onContentsChanged(int slot) {
             super.onContentsChanged(slot);
 
-            if (slot == 0 && !isChangingCurrentStack) {
+            if (slot == 0) {  // the "currently-held" item
                 ItemStack newStack = inventory.getStackInSlot(slot);
-
-//                isChangingCurrentStack = true;
-//                getFakePlayer().inventory.setInventorySlotContents(slot, newStack);
-//                isChangingCurrentStack = false;
-
                 if (!oldStack.isEmpty()) {
                     for (EntityEquipmentSlot s : EntityEquipmentSlot.values()) {
                         getFakePlayer().getAttributeMap().removeAttributeModifiers(oldStack.getAttributeModifiers(s));
@@ -989,22 +967,6 @@ public class EntityDrone extends EntityDroneBase
             }
         }
     }
-
-//    private class InventoryFakePlayer extends InventoryPlayer {
-//        public InventoryFakePlayer(EntityPlayer par1EntityPlayer) {
-//            super(par1EntityPlayer);
-//        }
-//
-//        @Override
-//        public void setInventorySlotContents(int slot, ItemStack stack) {
-//            super.setInventorySlotContents(slot, stack);
-//            if (slot == 0 && !isChangingCurrentStack) {
-//                isChangingCurrentStack = true;
-//                inventory.setStackInSlot(slot, stack);
-//                isChangingCurrentStack = false;
-//            }
-//        }
-//    }
 
     public static class DroneFakePlayer extends EntityPlayerMP {
         private final IDroneBase drone;

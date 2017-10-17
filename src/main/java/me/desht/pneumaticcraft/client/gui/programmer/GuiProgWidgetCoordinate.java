@@ -37,12 +37,12 @@ public class GuiProgWidgetCoordinate extends GuiProgWidgetAreaShow<ProgWidgetCoo
         }
 
         List<GuiRadioButton> radioButtons = new ArrayList<GuiRadioButton>();
-        GuiRadioButton radioButton = new GuiRadioButton(0, guiLeft + 7, guiTop + 51, 0xFF000000, I18n.format("gui.progWidget.coordinate.constant"));
+        GuiRadioButton radioButton = new GuiRadioButton(0, guiLeft + 7, guiTop + 51, 0xFF404040, I18n.format("gui.progWidget.coordinate.constant"));
         if (!widget.isUsingVariable()) radioButton.checked = true;
         radioButtons.add(radioButton);
         radioButton.otherChoices = radioButtons;
         addWidget(radioButton);
-        radioButton = new GuiRadioButton(1, guiLeft + 7, guiTop + 100, 0xFF000000, I18n.format("gui.progWidget.coordinate.variable"));
+        radioButton = new GuiRadioButton(1, guiLeft + 7, guiTop + 100, 0xFF404040, I18n.format("gui.progWidget.coordinate.variable"));
         if (widget.isUsingVariable()) radioButton.checked = true;
         radioButtons.add(radioButton);
         radioButton.otherChoices = radioButtons;
@@ -109,9 +109,9 @@ public class GuiProgWidgetCoordinate extends GuiProgWidgetAreaShow<ProgWidgetCoo
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         super.drawScreen(mouseX, mouseY, partialTicks);
-        fontRenderer.drawString("x:", guiLeft + 90, guiTop + 51, 0xFF000000);
-        fontRenderer.drawString("y:", guiLeft + 90, guiTop + 64, 0xFF000000);
-        fontRenderer.drawString("z:", guiLeft + 90, guiTop + 77, 0xFF000000);
-        fontRenderer.drawString(I18n.format("gui.progWidget.coordinate.variableName"), guiLeft + 90, guiTop + 100, 0xFF000000);
+        fontRenderer.drawString("x:", guiLeft + 90, guiTop + 51, 0xFF404040);
+        fontRenderer.drawString("y:", guiLeft + 90, guiTop + 64, 0xFF404040);
+        fontRenderer.drawString("z:", guiLeft + 90, guiTop + 77, 0xFF404040);
+        fontRenderer.drawString(I18n.format("gui.progWidget.coordinate.variableName"), guiLeft + 90, guiTop + 100, 0xFF404060);
     }
 }

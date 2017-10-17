@@ -10,6 +10,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.item.ItemStack;
@@ -67,11 +68,10 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
     }
 
     public static void drawItemStack(@Nonnull ItemStack stack, int x, int y, String text) {
-        RenderHelper.disableStandardItemLighting();
-        GL11.glPushMatrix();
+        RenderHelper.enableGUIStandardItemLighting();
+        GlStateManager.pushMatrix();
         Minecraft mc = Minecraft.getMinecraft();
-        GL11.glTranslatef(0.0F, 0.0F, 32.0F);
-        //  zLevel = 200.0F;
+        GlStateManager.translate(0.0F, 0.0F, 32.0F);
         if (itemRender == null) itemRender = Minecraft.getMinecraft().getRenderItem();
         itemRender.zLevel = 200.0F;
         FontRenderer font = null;
@@ -79,13 +79,9 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
         if (font == null) font = mc.fontRenderer;
         itemRender.renderItemAndEffectIntoGUI(stack, x, y);
         itemRender.renderItemOverlayIntoGUI(font, stack, x, y, text);
-        GL11.glPopMatrix();
-
-        //GL11.glEnable(GL11.GL_LIGHTING);
-        RenderHelper.enableGUIStandardItemLighting();
-        // zLevel = 0.0F;
-        //  itemRender.zLevel = 0.0F;
-        GL11.glDisable(GL11.GL_LIGHTING);
+        GlStateManager.popMatrix();
+        RenderHelper.disableStandardItemLighting();
+        GlStateManager.disableLighting();
     }
 
     @Override

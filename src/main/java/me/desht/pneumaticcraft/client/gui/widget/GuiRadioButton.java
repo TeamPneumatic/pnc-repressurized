@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.client.gui.widget;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
@@ -23,7 +24,7 @@ public class GuiRadioButton extends Gui implements IGuiWidget {
     private final int id;
     public String text;
     public FontRenderer fontRenderer = FMLClientHandler.instance().getClient().fontRenderer;
-    private List<String> tooltip = new ArrayList<String>();
+    private List<String> tooltip = new ArrayList<>();
     public List<GuiRadioButton> otherChoices;
     private IWidgetListener listener;
 
@@ -45,12 +46,8 @@ public class GuiRadioButton extends Gui implements IGuiWidget {
 
     @Override
     public void render(int mouseX, int mouseY, float partialTick) {
-        // drawRect(x, y, x + BUTTON_WIDTH, y + BUTTON_HEIGHT, enabled ? -6250336 : 0xFF999999);
-        // drawRect(x + 1, y + 1, x + BUTTON_WIDTH - 1, y + BUTTON_HEIGHT - 1, enabled ? -16777216 : 0xFFAAAAAA);
-
-        drawCircle(x + BUTTON_WIDTH / 2, y + BUTTON_HEIGHT / 2, BUTTON_WIDTH / 2, enabled ? -6250336 : 0xFF999999);
-        drawCircle(x + BUTTON_WIDTH / 2, y + BUTTON_HEIGHT / 2, BUTTON_WIDTH / 2 - 1, enabled ? -16777216 : 0xFFAAAAAA);
-
+        drawCircle(x + BUTTON_WIDTH / 2, y + BUTTON_HEIGHT / 2, BUTTON_WIDTH / 2, enabled ? 0xFFA0A0A0 : 0xFF999999);
+        drawCircle(x + BUTTON_WIDTH / 2, y + BUTTON_HEIGHT / 2, BUTTON_WIDTH / 2 - 1, enabled ? 0XFF202020 : 0xFFAAAAAA);
         if (checked) {
             drawCircle(x + BUTTON_WIDTH / 2, y + BUTTON_HEIGHT / 2, 1, enabled ? 0xFFFFFFFF : 0xFFAAAAAA);
         }
@@ -63,10 +60,10 @@ public class GuiRadioButton extends Gui implements IGuiWidget {
         float f1 = (color >> 16 & 255) / 255.0F;
         float f2 = (color >> 8 & 255) / 255.0F;
         float f3 = (color & 255) / 255.0F;
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GL11.glColor4f(f1, f2, f3, f);
+        GlStateManager.enableBlend();
+        GlStateManager.disableTexture2D();
+        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GlStateManager.color(f1, f2, f3, f);
         wr.begin(GL11.GL_TRIANGLE_FAN, DefaultVertexFormats.POSITION);
         int points = 20;
         for (int i = 0; i < points; i++) {
@@ -75,8 +72,8 @@ public class GuiRadioButton extends Gui implements IGuiWidget {
             wr.pos(x + sin * radius, y + cos * radius, zLevel).endVertex();
         }
         Tessellator.getInstance().draw();
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
-        GL11.glDisable(GL11.GL_BLEND);
+        GlStateManager.enableTexture2D();
+        GlStateManager.disableBlend();
     }
 
     @Override

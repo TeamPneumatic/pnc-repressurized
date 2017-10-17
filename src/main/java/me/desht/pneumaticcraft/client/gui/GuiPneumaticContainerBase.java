@@ -104,6 +104,10 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
         addWidget(new WidgetLabel(x, y, text));
     }
 
+    protected void addLabel(String text, int x, int y, int color) {
+        addWidget(new WidgetLabel(x, y, text, color));
+    }
+
     protected void removeWidget(IGuiWidget widget) {
         widgets.remove(widget);
     }

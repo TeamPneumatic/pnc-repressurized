@@ -20,13 +20,13 @@ public class GuiProgWidgetGoto extends GuiProgWidgetAreaShow {
         super.initGui();
 
         List<GuiRadioButton> radioButtons = new ArrayList<GuiRadioButton>();
-        GuiRadioButton radioButton = new GuiRadioButton(0, guiLeft + 4, guiTop + 44, 0xFF000000, "Done when arrived");
+        GuiRadioButton radioButton = new GuiRadioButton(0, guiLeft + 4, guiTop + 44, 0xFF404040, "Done when arrived");
         radioButton.checked = !((ProgWidgetGoToLocation) widget).doneWhenDeparting;
         addWidget(radioButton);
         radioButtons.add(radioButton);
         radioButton.otherChoices = radioButtons;
 
-        GuiRadioButton radioButton2 = new GuiRadioButton(1, guiLeft + 4, guiTop + 58, 0xFF000000, "Done when departing");
+        GuiRadioButton radioButton2 = new GuiRadioButton(1, guiLeft + 4, guiTop + 58, 0xFF404040, "Done when departing");
         radioButton2.checked = ((ProgWidgetGoToLocation) widget).doneWhenDeparting;
         addWidget(radioButton2);
         radioButtons.add(radioButton2);
@@ -44,8 +44,8 @@ public class GuiProgWidgetGoto extends GuiProgWidgetAreaShow {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         super.drawScreen(mouseX, mouseY, partialTicks);
-        fontRenderer.drawString("Move to the next puzzle piece", guiLeft + 8, guiTop + 20, 0xFF000000);
-        fontRenderer.drawString("when arrived or right away?", guiLeft + 8, guiTop + 30, 0xFF000000);
+        fontRenderer.drawString("Move to the next puzzle piece", guiLeft + 8, guiTop + 20, 0xFF404060);
+        fontRenderer.drawString("when arrived or right away?", guiLeft + 8, guiTop + 30, 0xFF404060);
     }
 
 }

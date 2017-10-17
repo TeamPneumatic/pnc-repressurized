@@ -35,7 +35,7 @@ public abstract class DroneAIBlockInteraction<Widget extends ProgWidgetAreaItemB
     protected BlockPos curPos;
     private final List<BlockPos> area;
     protected final IBlockAccess worldCache;
-    private final List<BlockPos> blacklist = new ArrayList<BlockPos>();//a list of position which weren't allowed to be digged in the past.
+    private final List<BlockPos> blacklist = new ArrayList<>();//a list of position which weren't allowed to be digged in the past.
     private int curY;
     private int lastSuccessfulY;
     private int minY, maxY;
@@ -49,7 +49,7 @@ public abstract class DroneAIBlockInteraction<Widget extends ProgWidgetAreaItemB
     private int maxActions = -1;
 
     /**
-     * @param drone
+     * @param drone the drone
      * @param widget needs to implement IBlockOrdered
      */
     public DroneAIBlockInteraction(IDroneBase drone, Widget widget) {

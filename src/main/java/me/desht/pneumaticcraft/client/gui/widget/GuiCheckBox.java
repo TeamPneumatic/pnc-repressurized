@@ -23,7 +23,7 @@ public class GuiCheckBox extends Gui implements IGuiWidget {
     private final int id;
     public String text;
     public FontRenderer fontRenderer = FMLClientHandler.instance().getClient().fontRenderer;
-    private List<String> tooltip = new ArrayList<String>();
+    private List<String> tooltip = new ArrayList<>();
     private IWidgetListener listener;
 
     private static final int CHECKBOX_WIDTH = 10;
@@ -45,9 +45,9 @@ public class GuiCheckBox extends Gui implements IGuiWidget {
     @Override
     public void render(int mouseX, int mouseY, float partialTick) {
         drawRect(x, y, x + CHECKBOX_WIDTH, y + CHECKBOX_HEIGHT, enabled ? 0xFFA0A0A0 : 0xFF999999);
-        drawRect(x + 1, y + 1, x + CHECKBOX_WIDTH - 1, y + CHECKBOX_HEIGHT - 1, enabled ? 0xFF404040 : 0xFFAAAAAA);
+        drawRect(x + 1, y + 1, x + CHECKBOX_WIDTH - 1, y + CHECKBOX_HEIGHT - 1, enabled ? 0xFF202020 : 0xFFAAAAAA);
         if (checked) {
-            GlStateManager.disableTexture2D();;
+            GlStateManager.disableTexture2D();
             if (enabled) {
                 GlStateManager.color(1, 1, 1, 1);
             } else {

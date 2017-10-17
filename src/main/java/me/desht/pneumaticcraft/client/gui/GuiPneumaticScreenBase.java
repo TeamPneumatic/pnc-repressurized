@@ -9,6 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.FMLClientHandler;
@@ -69,8 +70,8 @@ public abstract class GuiPneumaticScreenBase extends GuiScreen implements IWidge
         for (IGuiWidget widget : widgets) {
             widget.postRender(x, y, partialTicks);
         }
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
-        GL11.glColor4d(1, 1, 1, 1);
+        GlStateManager.enableTexture2D();
+        GlStateManager.color(0.25f, 0.25f, 0.25f, 1.0f);
 
         List<String> tooltip = new ArrayList<>();
         for (Object obj : buttonList) {
@@ -96,6 +97,7 @@ public abstract class GuiPneumaticScreenBase extends GuiScreen implements IWidge
             }
             drawHoveringText(localizedTooltip, x, y, fontRenderer);
         }
+        GlStateManager.color(0.25f, 0.25f, 0.25f, 1.0f);
     }
 
     @Override

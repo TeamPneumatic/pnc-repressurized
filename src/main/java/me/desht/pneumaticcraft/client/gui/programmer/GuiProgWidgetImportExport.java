@@ -28,13 +28,13 @@ public class GuiProgWidgetImportExport<Widget extends IProgWidget> extends GuiPr
         if (showSides()) {
             for (int i = 0; i < 6; i++) {
                 String sideName = PneumaticCraftUtils.getOrientationName(EnumFacing.getFront(i));
-                GuiCheckBox checkBox = new GuiCheckBox(i, guiLeft + 4, guiTop + 30 + i * 12, 0xFF000000, sideName);
+                GuiCheckBox checkBox = new GuiCheckBox(i, guiLeft + 4, guiTop + 30 + i * 12, 0xFF404040, sideName);
                 checkBox.checked = ((ProgWidgetInventoryBase) widget).getSides()[i];
                 addWidget(checkBox);
             }
         }
 
-        useItemCount = new GuiCheckBox(6, guiLeft + 4, guiTop + (showSides() ? 115 : 30), 0xFF000000, I18n.format("gui.progWidget.itemFilter.useItemCount"));
+        useItemCount = new GuiCheckBox(6, guiLeft + 4, guiTop + (showSides() ? 115 : 30), 0xFF404040, I18n.format("gui.progWidget.itemFilter.useItemCount"));
         useItemCount.setTooltip("gui.progWidget.itemFilter.useItemCount.tooltip");
         useItemCount.checked = ((ICountWidget) widget).useCount();
         addWidget(useItemCount);
@@ -68,7 +68,7 @@ public class GuiProgWidgetImportExport<Widget extends IProgWidget> extends GuiPr
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         super.drawScreen(mouseX, mouseY, partialTicks);
-        if (showSides()) fontRenderer.drawString("Accessing sides:", guiLeft + 4, guiTop + 20, 0xFF000000);
+        if (showSides()) fontRenderer.drawString("Accessing sides:", guiLeft + 4, guiTop + 20, 0xFF404060);
     }
 
 }

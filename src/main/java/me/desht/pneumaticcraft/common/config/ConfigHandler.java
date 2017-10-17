@@ -184,6 +184,7 @@ public class ConfigHandler {
 
     public static void setProgrammerDifficulty(int difficulty) {
         general.programmerDifficulty = difficulty;
+        sync();
     }
 
     public static int getProgrammerDifficulty() {

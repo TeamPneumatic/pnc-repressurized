@@ -41,23 +41,23 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase {
 
         buttonList.add(new GuiButton(0, guiLeft + 4, guiTop + 20, 70, 20, "Search item..."));
         buttonList.add(new GuiButton(1, guiLeft + 78, guiTop + 20, 100, 20, "Search inventory..."));
-        decButton = new GuiButton(2, guiLeft + 140, guiTop + 85, 10, 20, "-");
-        incButton = new GuiButton(3, guiLeft + 167, guiTop + 85, 10, 20, "+");
+        decButton = new GuiButton(2, guiLeft + 140, guiTop + 87, 10, 12, "-");
+        incButton = new GuiButton(3, guiLeft + 167, guiTop + 87, 10, 12, "+");
         buttonList.add(decButton);
         buttonList.add(incButton);
-        checkBoxUseDamage = new GuiCheckBox(0, guiLeft + 4, guiTop + 72, 0xFF000000, "Use metadata / damage values");
+        checkBoxUseDamage = new GuiCheckBox(0, guiLeft + 4, guiTop + 72, 0xFF404040, "Use metadata / damage values");
         checkBoxUseDamage.setTooltip(Arrays.asList(new String[]{"Check to handle differently damaged tools", "or different colors of Wool as different."}));
         checkBoxUseDamage.checked = widg.useMetadata;
         addWidget(checkBoxUseDamage);
-        checkBoxUseNBT = new GuiCheckBox(2, guiLeft + 4, guiTop + 108, 0xFF000000, "Use NBT");
+        checkBoxUseNBT = new GuiCheckBox(2, guiLeft + 4, guiTop + 108, 0xFF404040, "Use NBT");
         checkBoxUseNBT.setTooltip(Arrays.asList(new String[]{"Check to handle items like Enchanted Books", "or Firework as different."}));
         checkBoxUseNBT.checked = widg.useNBT;
         addWidget(checkBoxUseNBT);
-        checkBoxUseOreDict = new GuiCheckBox(3, guiLeft + 4, guiTop + 120, 0xFF000000, "Use Ore Dictionary");
+        checkBoxUseOreDict = new GuiCheckBox(3, guiLeft + 4, guiTop + 120, 0xFF404040, "Use Ore Dictionary");
         checkBoxUseOreDict.setTooltip(Arrays.asList(new String[]{"Check to handle items registered in the", "Ore Dictionary (like Wood) as the same."}));
         checkBoxUseOreDict.checked = widg.useOreDict;
         addWidget(checkBoxUseOreDict);
-        checkBoxUseModSimilarity = new GuiCheckBox(4, guiLeft + 4, guiTop + 132, 0xFF000000, "Use Mod similarity");
+        checkBoxUseModSimilarity = new GuiCheckBox(4, guiLeft + 4, guiTop + 132, 0xFF404040, "Use Mod similarity");
         checkBoxUseModSimilarity.setTooltip(Arrays.asList(new String[]{"Check to handle items from the", "same mod as the same."}));
         checkBoxUseModSimilarity.checked = widg.useModSimilarity;
         addWidget(checkBoxUseModSimilarity);
@@ -145,15 +145,15 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase {
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         super.drawScreen(mouseX, mouseY, partialTicks);
         String value = String.valueOf(widg.specificMeta);
-        fontRenderer.drawString(value, guiLeft + 158 - fontRenderer.getStringWidth(value) / 2, guiTop + 90, checkBoxUseDamage.enabled && checkBoxUseDamage.checked ? 0xFF000000 : 0xFF888888);
-        fontRenderer.drawString("Specific block metadata:", guiLeft + 14, guiTop + 90, checkBoxUseDamage.enabled && checkBoxUseDamage.checked ? 0xFF000000 : 0xFF888888);
+        fontRenderer.drawString(value, guiLeft + 158 - fontRenderer.getStringWidth(value) / 2, guiTop + 90, checkBoxUseDamage.enabled && checkBoxUseDamage.checked ? 0xFF404040 : 0xFF888888);
+        fontRenderer.drawString("Specific block metadata:", guiLeft + 14, guiTop + 90, checkBoxUseDamage.enabled && checkBoxUseDamage.checked ? 0xFF404040 : 0xFF888888);
         if (ConfigHandler.getProgrammerDifficulty() == 2)
-            fontRenderer.drawString("Variable:", guiLeft + 90, guiTop + 45, 0xFF000000);
-        fontRenderer.drawString("Filter:", guiLeft + 10, guiTop + 53, 0xFF000000);
+            fontRenderer.drawString("Variable:", guiLeft + 90, guiTop + 45, 0xFF404040);
+        fontRenderer.drawString("Filter:", guiLeft + 10, guiTop + 53, 0xFF404040);
 
         String oldVarName = widg.getVariable();
         widg.setVariable("");
-        if (widg.getFilter() != null)
+        if (!widg.getFilter().isEmpty())
             ProgWidgetItemFilter.drawItemStack(widg.getFilter(), guiLeft + 50, guiTop + 48, "");
         widg.setVariable(oldVarName);
     }

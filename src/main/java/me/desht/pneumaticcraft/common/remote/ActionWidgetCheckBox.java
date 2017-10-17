@@ -18,7 +18,7 @@ public class ActionWidgetCheckBox extends ActionWidgetVariable<GuiCheckBox> impl
     @Override
     public void readFromNBT(NBTTagCompound tag, int guiLeft, int guiTop) {
         super.readFromNBT(tag, guiLeft, guiTop);
-        widget = new GuiCheckBox(-1, tag.getInteger("x") + guiLeft, tag.getInteger("y") + guiTop, 0xFF000000, tag.getString("text"));
+        widget = new GuiCheckBox(-1, tag.getInteger("x") + guiLeft, tag.getInteger("y") + guiTop, 0xFF404040, tag.getString("text"));
         setTooltip(tag.getString("tooltip"));
     }
 

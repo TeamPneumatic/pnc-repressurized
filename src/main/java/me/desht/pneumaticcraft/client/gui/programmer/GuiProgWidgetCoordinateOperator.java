@@ -26,7 +26,7 @@ public class GuiProgWidgetCoordinateOperator extends GuiProgWidgetAreaShow<ProgW
 
         List<GuiRadioButton> radioButtons = new ArrayList<GuiRadioButton>();
         for (int i = 0; i < EnumOperator.values().length; i++) {
-            GuiRadioButton radioButton = new GuiRadioButton(i, guiLeft + 7, guiTop + 42 + 12 * i, 0xFF000000, I18n.format(EnumOperator.values()[i].getUnlocalizedName()));
+            GuiRadioButton radioButton = new GuiRadioButton(i, guiLeft + 7, guiTop + 42 + 12 * i, 0xFF404040, I18n.format(EnumOperator.values()[i].getUnlocalizedName()));
             radioButtons.add(radioButton);
             radioButton.checked = widget.getOperator().ordinal() == i;
             radioButton.otherChoices = radioButtons;
@@ -58,7 +58,7 @@ public class GuiProgWidgetCoordinateOperator extends GuiProgWidgetAreaShow<ProgW
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         super.drawScreen(mouseX, mouseY, partialTicks);
-        fontRenderer.drawString(I18n.format("gui.progWidget.coordinate.variableName"), guiLeft + 90, guiTop + 30, 0xFF000000);
-        fontRenderer.drawString(I18n.format("gui.progWidget.coordinateOperator.operator"), guiLeft + 7, guiTop + 30, 0xFF000000);
+        fontRenderer.drawString(I18n.format("gui.progWidget.coordinate.variableName"), guiLeft + 90, guiTop + 30, 0xFF404060);
+        fontRenderer.drawString(I18n.format("gui.progWidget.coordinateOperator.operator"), guiLeft + 7, guiTop + 30, 0xFF404060);
     }
 }

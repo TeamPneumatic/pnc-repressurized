@@ -21,7 +21,7 @@ public class GuiProgWidgetPlace<Widget extends ProgWidgetPlace> extends GuiProgW
         super.initGui();
         List<GuiRadioButton> radioButtons = new ArrayList<GuiRadioButton>();
         for (int i = 0; i < 6; i++) {
-            GuiRadioButton radioButton = new GuiRadioButton(i + 10, guiLeft + 4, guiTop + 80 + i * 12, 0xFF000000, PneumaticCraftUtils.getOrientationName(EnumFacing.getFront(i)));
+            GuiRadioButton radioButton = new GuiRadioButton(i + 10, guiLeft + 4, guiTop + 80 + i * 12, 0xFF404040, PneumaticCraftUtils.getOrientationName(EnumFacing.getFront(i)));
             radioButton.checked = widget.placeDir.ordinal() == i;
             addWidget(radioButton);
             radioButtons.add(radioButton);

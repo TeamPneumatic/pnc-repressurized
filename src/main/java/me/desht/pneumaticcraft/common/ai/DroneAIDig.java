@@ -17,8 +17,8 @@ import javax.annotation.Nonnull;
 public class DroneAIDig extends DroneAIBlockInteraction {
 
     /**
-     * @param drone
-     * @param widget needs to implement IBlockOrdered.
+     * @param drone the drone
+     * @param widget needs to implement IBlockOrdered
      */
     public DroneAIDig(IDroneBase drone, ProgWidgetAreaItemBase widget) {
         super(drone, widget);
@@ -53,7 +53,7 @@ public class DroneAIDig extends DroneAIBlockInteraction {
     private void swapBestItemToFirstSlot(BlockPos pos) {
         int bestSlot = 0;
         float bestSoftness = Float.MIN_VALUE;
-        ItemStack oldCurrentStack = drone.getInv().getStackInSlot(0);
+        ItemStack oldCurrentStack = drone.getInv().getStackInSlot(0).copy();
         for (int i = 0; i < drone.getInv().getSlots(); i++) {
             drone.getInv().setStackInSlot(0, drone.getInv().getStackInSlot(i));
             float softness = worldCache.getBlockState(pos).getPlayerRelativeBlockHardness(drone.getFakePlayer(), drone.world(), pos);
@@ -64,9 +64,10 @@ public class DroneAIDig extends DroneAIBlockInteraction {
         }
         drone.getInv().setStackInSlot(0, oldCurrentStack);
         if (bestSlot != 0) {
-            ItemStack bestItem = drone.getInv().getStackInSlot(bestSlot);
+            ItemStack bestItem = drone.getInv().getStackInSlot(bestSlot).copy();
             drone.getInv().setStackInSlot(bestSlot, drone.getInv().getStackInSlot(0));
             drone.getInv().setStackInSlot(0, bestItem);
+            System.out.println("drone swapped" + bestItem + " into slot 0 & " + drone.getInv().getStackInSlot(bestSlot) + " out to slot " + bestSlot);
         }
     }
 

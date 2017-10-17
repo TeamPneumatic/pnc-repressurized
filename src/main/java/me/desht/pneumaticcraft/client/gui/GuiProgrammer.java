@@ -59,7 +59,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
     private GuiButtonSpecial undoButton, redoButton;
     private GuiButtonSpecial convertToRelativeButton;
 
-    private final List<IProgWidget> visibleSpawnWidgets = new ArrayList<IProgWidget>();
+    private final List<IProgWidget> visibleSpawnWidgets = new ArrayList<>();
 
     private GuiUnitProgrammer programmerUnit;
     private boolean wasClicking;
@@ -208,14 +208,14 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         buttonList.add(clearAllButton);
         buttonList.add(convertToRelativeButton);
 
-        String containerName = te.getName(); // te.hasCustomName() ? te.getName() : I18n.format(te.getName() + ".name");
-        addLabel(containerName, guiLeft + 7, guiTop + 5);
+        String containerName = I18n.format(te.getName() + ".name");
+        addLabel(containerName, guiLeft + 7, guiTop + 5, 0xFFFFFFFF);
 
         nameField = new WidgetTextField(fontRenderer, guiLeft + 200, guiTop + 5, 98, fontRenderer.FONT_HEIGHT);
         addWidget(nameField);
 
         String name = I18n.format("gui.programmer.name");
-        addLabel(name, guiLeft + 197 - fontRenderer.getStringWidth(name), guiTop + 5);
+        addLabel(name, guiLeft + 197 - fontRenderer.getStringWidth(name), guiTop + 5, 0xFFFFFFFF);
 
         updateVisibleProgWidgets();
     }
@@ -249,7 +249,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
 
         for (IProgWidget widget : visibleSpawnWidgets) {
             if (widget != draggingWidget && x - guiLeft >= widget.getX() && y - guiTop >= widget.getY() && x - guiLeft <= widget.getX() + widget.getWidth() / 2 && y - guiTop <= widget.getY() + widget.getHeight() / 2) {
-                List<String> tooltip = new ArrayList<String>();
+                List<String> tooltip = new ArrayList<>();
                 widget.getTooltip(tooltip);
                 if (igwLoaded) tooltip.add(I18n.format("gui.programmer.pressIForInfo"));
                 if (tooltip.size() > 0) drawHoveringString(tooltip, x - guiLeft, y - guiTop, fontRenderer);

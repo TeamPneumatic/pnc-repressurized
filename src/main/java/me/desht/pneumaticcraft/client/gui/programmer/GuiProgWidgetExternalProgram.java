@@ -19,7 +19,7 @@ public class GuiProgWidgetExternalProgram extends GuiProgWidgetAreaShow<ProgWidg
     public void initGui() {
         super.initGui();
 
-        shareVariables = new GuiCheckBox(-1, guiLeft + 10, guiTop + 22, 0xFF000000, I18n.format("gui.progWidget.externalProgram.shareVariables"));
+        shareVariables = new GuiCheckBox(-1, guiLeft + 10, guiTop + 22, 0xFF404040, I18n.format("gui.progWidget.externalProgram.shareVariables"));
         addWidget(shareVariables);
         shareVariables.setTooltip(I18n.format("gui.progWidget.externalProgram.shareVariables.tooltip"));
         shareVariables.setChecked(widget.shareVariables);

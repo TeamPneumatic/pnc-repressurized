@@ -56,8 +56,8 @@ public class ProgWidgetBlockCondition extends ProgWidgetCondition {
             @Override
             public void initGui() {
                 super.initGui();
-                addWidget(new GuiCheckBox(500, guiLeft + 5, guiTop + 60, 0xFF000000, I18n.format("gui.progWidget.conditionBlock.checkForAir")).setChecked(checkingForAir).setTooltip(I18n.format("gui.progWidget.conditionBlock.checkForAir.tooltip")));
-                addWidget(new GuiCheckBox(501, guiLeft + 5, guiTop + 72, 0xFF000000, I18n.format("gui.progWidget.conditionBlock.checkForLiquids")).setChecked(checkingForLiquids).setTooltip(I18n.format("gui.progWidget.conditionBlock.checkForLiquids.tooltip")));
+                addWidget(new GuiCheckBox(500, guiLeft + 5, guiTop + 60, 0xFF404040, I18n.format("gui.progWidget.conditionBlock.checkForAir")).setChecked(checkingForAir).setTooltip(I18n.format("gui.progWidget.conditionBlock.checkForAir.tooltip")));
+                addWidget(new GuiCheckBox(501, guiLeft + 5, guiTop + 72, 0xFF404040, I18n.format("gui.progWidget.conditionBlock.checkForLiquids")).setChecked(checkingForLiquids).setTooltip(I18n.format("gui.progWidget.conditionBlock.checkForLiquids.tooltip")));
             }
 
             @Override

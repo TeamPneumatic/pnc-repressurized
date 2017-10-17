@@ -25,13 +25,13 @@ public class GuiProgWidgetDropItem extends GuiProgWidgetImportExport {
         super.initGui();
 
         List<GuiRadioButton> radioButtons = new ArrayList<>();
-        GuiRadioButton radioButton = new GuiRadioButton(7, guiLeft + 4, guiTop + 80, 0xFF000000, "Random");
+        GuiRadioButton radioButton = new GuiRadioButton(7, guiLeft + 4, guiTop + 80, 0xFF404040, "Random");
         radioButton.checked = !((ProgWidgetDropItem) widget).dropStraight();
         addWidget(radioButton);
         radioButtons.add(radioButton);
         radioButton.otherChoices = radioButtons;
 
-        GuiRadioButton radioButton2 = new GuiRadioButton(8, guiLeft + 4, guiTop + 94, 0xFF000000, "Straight");
+        GuiRadioButton radioButton2 = new GuiRadioButton(8, guiLeft + 4, guiTop + 94, 0xFF404040, "Straight");
         radioButton2.checked = ((ProgWidgetDropItem) widget).dropStraight();
         addWidget(radioButton2);
         radioButtons.add(radioButton2);
@@ -49,6 +49,6 @@ public class GuiProgWidgetDropItem extends GuiProgWidgetImportExport {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         super.drawScreen(mouseX, mouseY, partialTicks);
-        fontRenderer.drawString("Drop method:", guiLeft + 8, guiTop + 70, 0xFF000000);
+        fontRenderer.drawString("Drop method:", guiLeft + 8, guiTop + 70, 0xFF404060);
     }
 }

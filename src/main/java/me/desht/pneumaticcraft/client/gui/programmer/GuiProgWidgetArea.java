@@ -68,17 +68,17 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
             addWidget(variableField2);
         }
 
-        List<GuiRadioButton> radioButtons = new ArrayList<GuiRadioButton>();
+        List<GuiRadioButton> radioButtons = new ArrayList<>();
         ProgWidgetArea.EnumAreaType[] areaTypes = ProgWidgetArea.EnumAreaType.values();
         for (int i = 0; i < areaTypes.length; i++) {
-            GuiRadioButton radioButton = new GuiRadioButton(i, guiLeft + 7 + i / 7 * 80, guiTop + 60 + i % 7 * 12, 0xFF000000, areaTypes[i].toString());
+            GuiRadioButton radioButton = new GuiRadioButton(i, guiLeft + 7 + i / 7 * 80, guiTop + 60 + i % 7 * 12, 0xFF404040, areaTypes[i].toString());
             radioButton.checked = areaTypes[i] == widget.type;
             addWidget(radioButton);
             radioButtons.add(radioButton);
             radioButton.otherChoices = radioButtons;
         }
         if (invSearchGui != null) {
-            BlockPos pos = invSearchGui.getSearchStack() != null ? ItemGPSTool.getGPSLocation(invSearchGui.getSearchStack()) : null;
+            BlockPos pos = !invSearchGui.getSearchStack().isEmpty() ? ItemGPSTool.getGPSLocation(invSearchGui.getSearchStack()) : null;
             if (pos != null) {
                 if (pointSearched == 0) {
                     widget.x1 = pos.getX();

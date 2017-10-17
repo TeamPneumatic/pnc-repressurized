@@ -32,7 +32,7 @@ public class GuiProgWidgetCondition extends GuiProgWidgetAreaShow<ProgWidget> {
         if (isSidedWidget()) {
             for (int i = 0; i < 6; i++) {
                 String sideName = PneumaticCraftUtils.getOrientationName(EnumFacing.getFront(i));
-                GuiCheckBox checkBox = new GuiCheckBox(i, guiLeft + 4, guiTop + 30 + i * 12, 0xFF000000, sideName);
+                GuiCheckBox checkBox = new GuiCheckBox(i, guiLeft + 4, guiTop + 30 + i * 12, 0xFF404040, sideName);
                 checkBox.checked = ((ISidedWidget) widget).getSides()[i];
                 addWidget(checkBox);
             }
@@ -45,13 +45,13 @@ public class GuiProgWidgetCondition extends GuiProgWidgetAreaShow<ProgWidget> {
         GuiRadioButton radioButton;
         if (isUsingAndOr()) {
             radioButtons = new ArrayList<>();
-            radioButton = new GuiRadioButton(6, guiLeft + baseX, guiTop + 30, 0xFF000000, "Any block");
+            radioButton = new GuiRadioButton(6, guiLeft + baseX, guiTop + 30, 0xFF404040, "Any block");
             radioButton.checked = !((ICondition) widget).isAndFunction();
             addWidget(radioButton);
             radioButtons.add(radioButton);
             radioButton.otherChoices = radioButtons;
 
-            radioButton = new GuiRadioButton(7, guiLeft + baseX, guiTop + 42, 0xFF000000, "All blocks");
+            radioButton = new GuiRadioButton(7, guiLeft + baseX, guiTop + 42, 0xFF404040, "All blocks");
             radioButton.checked = ((ICondition) widget).isAndFunction();
             addWidget(radioButton);
             radioButtons.add(radioButton);
@@ -61,7 +61,7 @@ public class GuiProgWidgetCondition extends GuiProgWidgetAreaShow<ProgWidget> {
         if (requiresNumber()) {
             radioButtons = new ArrayList<>();
             for (int i = 0; i < ICondition.Operator.values().length; i++) {
-                radioButton = new GuiRadioButton(8 + i, guiLeft + baseX, guiTop + baseY + i * 12, 0xFF000000, ICondition.Operator.values()[i].toString());
+                radioButton = new GuiRadioButton(8 + i, guiLeft + baseX, guiTop + baseY + i * 12, 0xFF404040, ICondition.Operator.values()[i].toString());
                 radioButton.checked = ((ICondition) widget).getOperator().ordinal() == i;
                 addWidget(radioButton);
                 radioButtons.add(radioButton);
@@ -118,8 +118,8 @@ public class GuiProgWidgetCondition extends GuiProgWidgetAreaShow<ProgWidget> {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         super.drawScreen(mouseX, mouseY, partialTicks);
-        if (isSidedWidget()) fontRenderer.drawString("Accessing sides:", guiLeft + 4, guiTop + 20, 0xFF000000);
-        fontRenderer.drawString(widget.getExtraStringInfo(), guiLeft + xSize / 2 - fontRenderer.getStringWidth(widget.getExtraStringInfo()) / 2, guiTop + 120, 0xFF000000);
+        if (isSidedWidget()) fontRenderer.drawString("Accessing sides:", guiLeft + 4, guiTop + 20, 0xFF404060);
+        fontRenderer.drawString(widget.getExtraStringInfo(), guiLeft + xSize / 2 - fontRenderer.getStringWidth(widget.getExtraStringInfo()) / 2, guiTop + 120, 0xFF404060);
     }
 
 }
