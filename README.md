@@ -36,7 +36,7 @@ With all that said, have fun!
 * Thermopneumatic Processing Plant
 * Plastic Mixer
 * Vacuum Pump (and pressure chamber disenchanting)
-* Kerosene Lamp (also works with any burnable fuel, duration dependent on fuel quality)
+* Kerosene Lamp (also works with any burnable liquid fuel, duration dependent on fuel quality)
 * Omni Hopper and Liquid Hopper
 * Heat system (including 3rd-party interaction: Gelid Cryotheum cooling is a thing!)
 * Programmer
@@ -69,10 +69,11 @@ With all that said, have fun!
 
 ### Not Working Yet
 
-* Multipart pressure tubes with MCMP2; support is in, but not working yet.  I need to get a better understanding of the API.  Pressure tubes work fine if you set "mcmultipart" to "false" in ``config/pneumaticcraft/thirdparty.cfg``.
+* Multipart pressure tubes with MCMP2; support is in, but not working yet; tubes render unconnected even if they're actually connected.  I need to get a better understanding of the API.  Works fine if you set "mcmultipart" to "false" in ``config/pneumaticcraft/thirdparty.cfg``.
 * Electric Compressor & Pneumatic Generator (need to reimplement with IC2 API)
 * Achievements (need to convert to 1.12 Advancements)
 * IGW support (there's no official 1.12 port, but see https://github.com/Z-Doctor/IGW-mod/tree/1.11/src/igwmod)
+* Dungeon loot (nuke virus & stop worm)
 
 ### Not Tested Yet
 
