@@ -29,18 +29,18 @@ With all that said, have fun!
 * Etching Acid
 * UV Light Box
 * Assembly system
-* Pneumatic Helmet (there may be some persistence issues with keybinds etc?)
+* Pneumatic Helmet
 * Oil lake generation
 * Gas Lift
-* Refinery (only with our own Oil right now, but will be possible to use other mods's oils soon, e.g. Thermal Foundation Crude Oil)
+* Refinery (including support for 3rd party oils; as of now Thermal Expansion Crude Oil and Actually Additions Oil - that's the 2nd tier oil - should work)
 * Thermopneumatic Processing Plant
 * Plastic Mixer
 * Vacuum Pump (and pressure chamber disenchanting)
 * Kerosene Lamp (also works with any burnable fuel, duration dependent on fuel quality)
 * Omni Hopper and Liquid Hopper
-* Heat system (including 3rd-party interaction: Gelid Cryotheum is a thing!)
+* Heat system (including 3rd-party interaction: Gelid Cryotheum cooling is a thing!)
 * Programmer
-* Drones (not well tested, but a simple "Go To Location" program works)
+* Drones (tested several functions; working pretty well but there may be issues with dig speed, e.g. seems to dig dirt quite slowly even with diamond shovel in inventory)
 * Pneumatic Wrench
 * GPS Tool
 * Manometer
@@ -55,7 +55,7 @@ With all that said, have fun!
 * Logistics Drones & Frames (reasonably well tested)
 * Elevators
 * Pneumatic Villagers (mechanics)
-* Flux Compressor & Pneumatic Dynamo (using Forge Energy, no Tesla or direct CoFH support at this point)
+* Flux Compressor & Pneumatic Dynamo (using Forge Energy; no Tesla or direct CoFH support at this point - not sure if it will be necessary to add)
 * Universal Sensor
 
 ### Functional but Needs Clientside Work
@@ -64,8 +64,8 @@ With all that said, have fun!
 * Miniguns (ammo works, mobs die, but no item model)
 * Vortex Cannon (vortex entities work fine but cannon needs an item model)
 * Flux Compressor could use a fancier model...
-* Refinery doesn't render the contained liquids
 * Liquid Hopper texture is a mess
+* Pneumatic Helmet HUD: OpenGL state is being left wrong somewhere leading to currently selected item in hotbar having an opaque background.
 
 ### Not Working Yet
 
@@ -89,3 +89,4 @@ With all that said, have fun!
 * Expose more functionality via capabilities (e.g. ``IAirHandler``, ``IHeatExchangerLogic``, ``IPressurizable``)
 * Look at re-implementing some rendering with FastTESR's.  Animated blocks all use regular TESR's right now, which isn't great for client performance (but at least fewer TESR's are used now than in 1.7.10, so that's a start)
 * Allow Pneumatic Dynamo to take Thermal Expansion augments?
+* Extended Aphorism Tile functionality: coloured text? images? multiblock tiles? needs some thought...
