@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.model.module;
 
+import me.desht.pneumaticcraft.common.block.tubes.ModuleCharging;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.util.ResourceLocation;
@@ -9,7 +10,7 @@ public class ModelCharging extends ModelModuleBase {
     private final ModelRenderer shape2;
     private final ModelRenderer shape3;
 
-    public ModelCharging() {
+    public ModelCharging(ModuleCharging charging) {
         textureWidth = 64;
         textureHeight = 32;
 

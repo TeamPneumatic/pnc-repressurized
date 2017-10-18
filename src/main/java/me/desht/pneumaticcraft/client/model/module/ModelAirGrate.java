@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.model.module;
 
+import me.desht.pneumaticcraft.common.block.tubes.ModuleAirGrate;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.util.ResourceLocation;
@@ -14,7 +15,7 @@ public class ModelAirGrate extends ModelModuleBase {
     private final ModelRenderer base2;
     private final ModelRenderer base3;
 
-    public ModelAirGrate() {
+    public ModelAirGrate(ModuleAirGrate grate) {
         textureWidth = 128;
         textureHeight = 128;
 

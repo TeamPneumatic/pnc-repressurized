@@ -8,10 +8,8 @@ import net.minecraft.util.ResourceLocation;
 public class ModelPressureRegulator extends ModelModuleBase {
     private final ModelRenderer shape1;
     private final ModelRenderer valve;
-    private final ModuleRegulatorTube module;
 
     public ModelPressureRegulator(ModuleRegulatorTube module) {
-        this.module = module;
         textureWidth = 64;
         textureHeight = 32;
 
