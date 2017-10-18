@@ -67,7 +67,6 @@ public class DroneAIDig extends DroneAIBlockInteraction {
             ItemStack bestItem = drone.getInv().getStackInSlot(bestSlot).copy();
             drone.getInv().setStackInSlot(bestSlot, drone.getInv().getStackInSlot(0));
             drone.getInv().setStackInSlot(0, bestItem);
-            System.out.println("drone swapped" + bestItem + " into slot 0 & " + drone.getInv().getStackInSlot(bestSlot) + " out to slot " + bestSlot);
         }
     }
 

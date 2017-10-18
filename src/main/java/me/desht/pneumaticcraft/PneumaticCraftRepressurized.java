@@ -96,6 +96,7 @@ public class PneumaticCraftRepressurized {
         tabPneumaticCraft = new CreativeTabPneumaticCraft("tabPneumaticCraft");
         Fluids.preInit();
         ThirdPartyManager.instance().preInit();
+        WidgetRegistrator.compileBlacklist();  // compile this after 3rd party pre-init has happened
 
         PneumaticRegistry.getInstance().getDroneRegistry().registerCustomBlockInteractor(new DroneInteractRFExport());
         PneumaticRegistry.getInstance().getDroneRegistry().registerCustomBlockInteractor(new DroneInteractRFImport());

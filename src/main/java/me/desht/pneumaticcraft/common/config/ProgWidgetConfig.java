@@ -35,7 +35,6 @@ public class ProgWidgetConfig extends JsonConfig {
             array.add(new JsonPrimitive(name));
         }
         json.add("blacklist", array);
-        WidgetRegistrator.compileBlacklist();
     }
 
     @Override

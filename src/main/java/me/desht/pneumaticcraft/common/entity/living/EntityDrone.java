@@ -44,6 +44,7 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
@@ -130,14 +131,14 @@ public class EntityDrone extends EntityDroneBase
     private final DroneAIManager aiManager = new DroneAIManager(this);
 
     private boolean firstTick = true;
-    public boolean naturallySpawned = true;//determines if it should drop a drone when it dies.
+    public boolean naturallySpawned = true; //determines if it should drop a drone when it dies.
     public boolean hasLiquidImmunity;
     private double speed;
     private int lifeUpgrades;
-    private int suffocationCounter = 40;//Drones are invincible for suffocation for this time.
+    private int suffocationCounter = 40; //Drones are invincible for suffocation for this time.
     private boolean isSuffocating;
     private boolean disabledByHacking;
-    private boolean standby;//If true, the drone's propellors stop, the drone will fall down, and won't use pressure.
+    private boolean standby; //If true, the drone's propellors stop, the drone will fall down, and won't use pressure.
     private Minigun minigun;
 
     private AmadronOffer handlingOffer;
@@ -172,7 +173,7 @@ public class EntityDrone extends EntityDroneBase
                 new GameProfile(playerUUID != null ? UUID.fromString(playerUUID) : null, playerName),
                 new FakePlayerItemInWorldManager(world, fakePlayer, this), this);
         fakePlayer.connection = new NetHandlerPlayServer(FMLCommonHandler.instance().getMinecraftServerInstance(), new NetworkManager(EnumPacketDirection.SERVERBOUND), fakePlayer);
-//        fakePlayer.inventory = new InventoryFakePlayer(fakePlayer);
+        fakePlayer.inventory = new InventoryFakePlayer(fakePlayer);
     }
 
     private static final DataParameter<Boolean> ACCELERATING = EntityDataManager.createKey(EntityDrone.class, DataSerializers.BOOLEAN);
@@ -792,11 +793,16 @@ public class EntityDrone extends EntityDroneBase
         aiManager.readFromNBT(tag.getCompoundTag("variables"));
         standby = tag.getBoolean("standby");
 
-        inventory = new ItemHandlerDrone(1 + getUpgrades(EnumUpgrade.DISPENSER));
-        inventory.deserializeNBT(tag.getCompoundTag("Inventory"));
-        if (inventory.getSlots() < 1) inventory = new ItemHandlerDrone(1);  // in case of bad NBT
-
         upgradeInventory.deserializeNBT(tag.getCompoundTag(ChargeableItemHandler.NBT_UPGRADE_TAG));
+
+        // we can't just deserialize the saved inv directly into the inventory, since that
+        // also affects its size, meaning any added dispenser upgrades wouldn't work
+        inventory = new ItemHandlerDrone(1 + getUpgrades(EnumUpgrade.DISPENSER));
+        ItemHandlerDrone tmpInv = new ItemHandlerDrone(1);
+        tmpInv.deserializeNBT(tag.getCompoundTag("Inventory"));
+        for (int i = 0; i < tmpInv.getSlots() && i < inventory.getSlots(); i++) {
+            inventory.setStackInSlot(i, tmpInv.getStackInSlot(i).copy());
+        }
 
         tank.setCapacity(PneumaticValues.DRONE_TANK_SIZE * (1 + getUpgrades(EnumUpgrade.DISPENSER)));
         tank.readFromNBT(tag);
@@ -949,7 +955,7 @@ public class EntityDrone extends EntityDroneBase
         protected void onContentsChanged(int slot) {
             super.onContentsChanged(slot);
 
-            if (slot == 0) {  // the "currently-held" item
+            if (slot == 0 && getFakePlayer() != null) {  // the "currently-held" item
                 ItemStack newStack = inventory.getStackInSlot(slot);
                 if (!oldStack.isEmpty()) {
                     for (EntityEquipmentSlot s : EntityEquipmentSlot.values()) {
@@ -999,21 +1005,6 @@ public class EntityDrone extends EntityDroneBase
                     return ItemStack.EMPTY;
             }
         }
-
-        //        @Override
-//        public void setCurrentItemOrArmor(int p_70062_1_, ItemStack p_70062_2_) {
-//
-//            if (p_70062_1_ == 0) {
-//                inventory.setInventorySlotContents(inventory.currentItem, p_70062_2_);
-//            } else {
-//                inventory.armorInventory[p_70062_1_ - 1] = p_70062_2_;
-//            }
-//        }
-
-        /*   @Override TODO 1.8 verify not necessary
-           public ChunkCoordinates getPlayerCoordinates(){
-               return new ChunkCoordinates(0, 0, 0);
-           }*/
 
         @Override
         public void sendStatusMessage(ITextComponent chatComponent, boolean actionBar) {
@@ -1393,5 +1384,31 @@ public class EntityDrone extends EntityDroneBase
 //            world.playSoundAtEntity(EntityDrone.this, soundName, volume, pitch);
         }
 
+    }
+
+    // Drone's fake player needs a custom inventory
+    // This is so EntityPlayer#getDigSpeed() gets the right tool (i.e. the tool in the drone's inv. slot 0)
+    // Overriding DroneFakePlayer#getItemStackFromSlot() is also necessary, but not sufficient on its own
+    private class InventoryFakePlayer extends InventoryPlayer {
+        InventoryFakePlayer(EntityPlayer fakePlayer) {
+            super(fakePlayer);
+        }
+
+        @Nonnull
+        @Override
+        public ItemStack getStackInSlot(int index) {
+            return getInv().getStackInSlot(index);
+        }
+
+        @Override
+        public float getDestroySpeed(IBlockState state) {
+            float f = 1.0f;
+
+            if (!getInv().getStackInSlot(0).isEmpty()) {
+                f *= getInv().getStackInSlot(0).getDestroySpeed(state);
+            }
+
+            return f;
+        }
     }
 }
