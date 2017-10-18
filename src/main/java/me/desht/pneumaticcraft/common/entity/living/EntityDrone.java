@@ -16,6 +16,7 @@ import me.desht.pneumaticcraft.common.ai.DroneAIManager.EntityAITaskEntry;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.inventory.ChargeableItemHandler;
+import me.desht.pneumaticcraft.common.item.ItemColorHandler;
 import me.desht.pneumaticcraft.common.item.ItemGPSTool;
 import me.desht.pneumaticcraft.common.item.ItemProgrammingPuzzle;
 import me.desht.pneumaticcraft.common.item.Itemss;
@@ -35,6 +36,7 @@ import me.desht.pneumaticcraft.lib.Sounds;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -89,8 +91,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
-//import net.minecraftforge.common.IExtendedEntityProperties;
-
 public class EntityDrone extends EntityDroneBase
         implements IManoMeasurable, IPneumaticWrenchable, IEntityAdditionalSpawnData, IHackableEntity, IDroneBase {
 
@@ -132,7 +132,7 @@ public class EntityDrone extends EntityDroneBase
 
     private boolean firstTick = true;
     public boolean naturallySpawned = true; //determines if it should drop a drone when it dies.
-    public boolean hasLiquidImmunity;
+    private boolean hasLiquidImmunity;
     private double speed;
     private int lifeUpgrades;
     private int suffocationCounter = 40; //Drones are invincible for suffocation for this time.
@@ -152,7 +152,6 @@ public class EntityDrone extends EntityDroneBase
         super(world);
         setSize(0.7F, 0.35F);
         moveHelper = new DroneMoveHelper(this);
-//        ReflectionHelper.setPrivateValue(EntityLiving.class, this, new DroneMoveHelper(this), "moveHelper", "field_70765_h");
         tasks.addTask(1, chargeAI = new DroneGoToChargingStation(this));
     }
 
@@ -161,7 +160,6 @@ public class EntityDrone extends EntityDroneBase
         playerUUID = player.getGameProfile().getId().toString();
         playerName = player.getName();
     }
-
 
     @Override
     protected PathNavigate createNavigator(World worldIn) {
@@ -188,7 +186,6 @@ public class EntityDrone extends EntityDroneBase
     private static final DataParameter<String> LABEL = EntityDataManager.createKey(EntityDrone.class, DataSerializers.STRING);
     private static final DataParameter<Integer> ACTIVE_WIDGET = EntityDataManager.createKey(EntityDrone.class, DataSerializers.VARINT);
     private static final DataParameter<BlockPos> TARGET_POS = EntityDataManager.createKey(EntityDrone.class, DataSerializers.BLOCK_POS);
-
 
     @Override
     protected void entityInit() {
@@ -285,6 +282,7 @@ public class EntityDrone extends EntityDroneBase
             lifeUpgrades = getUpgrades(EnumUpgrade.ITEM_LIFE);
             if (!world.isRemote) setHasMinigun(getUpgrades(EnumUpgrade.ENTITY_TRACKER) > 0);
             aiManager.setWidgets(progWidgets);
+            energy.setCapacity(100000 + 100000 * getUpgrades(EnumUpgrade.VOLUME));
         }
         boolean enabled = !disabledByHacking && getPressure(null) > 0.01F;
         if (!world.isRemote) {
@@ -390,17 +388,10 @@ public class EntityDrone extends EntityDroneBase
     public BlockPos getTargetedBlock() {
         BlockPos pos = dataManager.get(TARGET_POS);
         return pos.equals(BlockPos.ORIGIN) ? null : pos;
-//        int x = dataWatcher.getWatchableObjectInt(28);
-//        int y = dataWatcher.getWatchableObjectInt(29);
-//        int z = dataWatcher.getWatchableObjectInt(30);
-//        return x != 0 || y != 0 || z != 0 ? new BlockPos(x, y, z) : null;
     }
 
     private void setTargetedBlock(BlockPos pos) {
         dataManager.set(TARGET_POS, pos == null ? BlockPos.ORIGIN : pos);
-//        dataWatcher.updateObject(28, pos != null ? pos.getX() : 0);
-//        dataWatcher.updateObject(29, pos != null ? pos.getY() : 0);
-//        dataWatcher.updateObject(30, pos != null ? pos.getZ() : 0);
     }
 
     @Override
@@ -417,18 +408,11 @@ public class EntityDrone extends EntityDroneBase
     protected BlockPos getDugBlock() {
         BlockPos pos = dataManager.get(DUG_POS);
         return pos.equals(BlockPos.ORIGIN) ? null : pos;
-//        int x = dataWatcher.getWatchableObjectInt(18);
-//        int y = dataWatcher.getWatchableObjectInt(19);
-//        int z = dataWatcher.getWatchableObjectInt(20);
-//        return x != 0 || y != 0 || z != 0 ? new BlockPos(x, y, z) : null;
     }
 
     @Override
     public void setDugBlock(BlockPos pos) {
         dataManager.set(DUG_POS, pos == null ? BlockPos.ORIGIN : pos);
-//        dataWatcher.updateObject(18, pos != null ? pos.getX() : 0);
-//        dataWatcher.updateObject(19, pos != null ? pos.getY() : 0);
-//        dataWatcher.updateObject(20, pos != null ? pos.getZ() : 0);
     }
 
     public List<EntityAITaskEntry> getRunningTasks() {
@@ -459,7 +443,6 @@ public class EntityDrone extends EntityDroneBase
 
     private String getActiveProgramKey() {
         return dataManager.get(PROGRAM_KEY);
-//        return dataWatcher.getWatchableObjectString(17);
     }
 
     /**
@@ -478,86 +461,63 @@ public class EntityDrone extends EntityDroneBase
 
     private int getActiveWidgetIndex() {
         return dataManager.get(ACTIVE_WIDGET);
-//        return dataWatcher.getWatchableObjectInt(27);
     }
 
     @Override
     public void setActiveProgram(IProgWidget widget) {
         dataManager.set(PROGRAM_KEY, widget.getWidgetString());
         dataManager.set(ACTIVE_WIDGET, progWidgets.indexOf(widget));
-//        dataWatcher.updateObject(17, widget.getWidgetString());
-//        dataWatcher.updateObject(27, progWidgets.indexOf(widget));
     }
 
     private void setAccelerating(boolean accelerating) {
         dataManager.set(ACCELERATING, accelerating);
-//        dataWatcher.updateObject(13, (byte) (accelerating ? 1 : 0));
     }
 
     @Override
     public boolean isAccelerating() {
         return dataManager.get(ACCELERATING);
-//        return dataWatcher.getWatchableObjectByte(13) == 1;
     }
 
     private void setDroneColor(int color) {
         dataManager.set(DRONE_COLOR, color);
-//        dataWatcher.updateObject(22, color);
     }
 
     @Override
     public int getDroneColor() {
         return dataManager.get(DRONE_COLOR);
-//        return dataWatcher.getWatchableObjectInt(22);
     }
 
-    public void setMinigunActivated(boolean activated) {
+    private void setMinigunActivated(boolean activated) {
         dataManager.set(MINIGUN_ACTIVE, activated);
-//        dataWatcher.updateObject(23, (byte) (activated ? 1 : 0));
     }
 
-    public boolean isMinigunActivated() {
+    private boolean isMinigunActivated() {
         return dataManager.get(MINIGUN_ACTIVE);
-//        return dataWatcher.getWatchableObjectByte(23) == 1;
     }
 
-    public void setHasMinigun(boolean hasMinigun) {
+    private void setHasMinigun(boolean hasMinigun) {
         dataManager.set(HAS_MINIGUN, hasMinigun);
-//        dataWatcher.updateObject(24, (byte) (hasMinigun ? 1 : 0));
     }
 
     public boolean hasMinigun() {
         return dataManager.get(HAS_MINIGUN);
-//        return dataWatcher.getWatchableObjectByte(24) == 1;
     }
 
     public int getAmmoColor() {
         ItemStack ammo = dataManager.get(AMMO);
-        // FIXME : get color from itemstack
-        return ammo.isEmpty() ? 0xFF313131 : 0xFF313131; /* ammo.getItem().getColorFromItemStack(ammo, 1) */
-//        ItemStack ammo = dataWatcher.getWatchableObjectItemStack(25);
-//        return ammo != null ? ammo.getItem().getColorFromItemStack(ammo, 1) : 0xFF313131;
+        return ItemColorHandler.getAmmoColor(ammo);
     }
 
     public void setAmmoColor(ItemStack color) {
         dataManager.set(AMMO, color);
-//        dataWatcher.updateObject(25, color);
     }
-
-    /**
-     * Returns true if the newer Entity AI code should be run
-     */
-    /*  @Override //TODO 1.8 test
-      public boolean isAIEnabled(){
-          return true;
-      }*/
 
     /**
      * Decrements the entity's air supply when underwater
      */
     @Override
     protected int decreaseAirSupply(int par1) {
-        return -20;//make drones insta drown.
+        return -20; // make drones insta drown
     }
 
     /**
@@ -592,7 +552,7 @@ public class EntityDrone extends EntityDroneBase
         } else {
             super.travel(par1, par2, par3);
         }
-        onGround = true;//set onGround to true so AI pathfinding will keep updating.
+        onGround = true; //set onGround to true so AI pathfinding will keep updating.
     }
 
     /**
@@ -604,16 +564,14 @@ public class EntityDrone extends EntityDroneBase
     @SideOnly(Side.CLIENT)
     public void renderExtras(double transX, double transY, double transZ, float partialTicks) {
         if (targetLine != null && oldTargetLine != null) {
-            GL11.glPushMatrix();
-            GL11.glScaled(1, -1, 1);
-            GL11.glDisable(GL11.GL_TEXTURE_2D);
-            //GL11.glDisable(GL11.GL_LIGHTING);
-            GL11.glColor4d(1, 0, 0, 1);
+            GlStateManager.pushMatrix();
+            GlStateManager.scale(1, -1, 1);
+            GlStateManager.disableTexture2D();
+            GlStateManager.color(1, 0, 0, 1);
             targetLine.renderInterpolated(oldTargetLine, partialTicks);
-            GL11.glColor4d(1, 1, 1, 1);
-            // GL11.glEnable(GL11.GL_LIGHTING);
-            GL11.glEnable(GL11.GL_TEXTURE_2D);
-            GL11.glPopMatrix();
+            GlStateManager.color(1, 1, 1, 1);
+            GlStateManager.enableTexture2D();
+            GlStateManager.popMatrix();
         }
 
         double x = lastTickPosX + (posX - lastTickPosX) * partialTicks;
@@ -807,6 +765,8 @@ public class EntityDrone extends EntityDroneBase
         tank.setCapacity(PneumaticValues.DRONE_TANK_SIZE * (1 + getUpgrades(EnumUpgrade.DISPENSER)));
         tank.readFromNBT(tag);
 
+        energy.setCapacity(100000 + 100000 * getUpgrades(EnumUpgrade.VOLUME));
+
         if (tag.hasKey("amadronOffer")) {
             NBTTagCompound subTag = tag.getCompoundTag("amadronOffer");
             if (subTag.getBoolean("isCustom")) {
@@ -919,7 +879,6 @@ public class EntityDrone extends EntityDroneBase
             BlockPos pos = new BlockPos((int) Math.floor(posX + width / 2), (int) Math.floor(posY), (int) Math.floor(posZ + width / 2));
             IBlockState state = world.getBlockState(pos);
             world.notifyBlockUpdate(pos, state, state, 3);
-//            world.notifyBlockOfStateChange(new BlockPos((int) Math.floor(posX + width / 2), (int) Math.floor(posY), (int) Math.floor(posZ + width / 2)), Blockss.droneRedstoneEmitter);
         }
     }
 
@@ -1007,6 +966,13 @@ public class EntityDrone extends EntityDroneBase
         }
 
         @Override
+        public void setItemStackToSlot(EntityEquipmentSlot slotIn, ItemStack stack) {
+            if (slotIn == EntityEquipmentSlot.MAINHAND) {
+                drone.getInv().setStackInSlot(0, stack);
+            }
+        }
+
+        @Override
         public void sendStatusMessage(ITextComponent chatComponent, boolean actionBar) {
             // do nothing
         }
@@ -1018,11 +984,6 @@ public class EntityDrone extends EntityDroneBase
         @Override
         public void openGui(Object mod, int modGuiId, World world, int x, int y, int z) {
         }
-
-        /* @Override TODO 1.8 verify not necessary
-         public boolean isEntityInvulnerable(){
-             return true;
-         }*/
 
         @Override
         public boolean canAttackPlayer(EntityPlayer player) {
@@ -1043,12 +1004,6 @@ public class EntityDrone extends EntityDroneBase
         public Entity changeDimension(int dim) {
             return this;
         }
-
-
-        /* @Override TODO 1.8 verify not necessary
-        public void func_147100_a(C15PacketClientSettings pkt){
-            return;
-        }*/
 
         @Override
         public boolean isSneaking() {
@@ -1125,19 +1080,16 @@ public class EntityDrone extends EntityDroneBase
             gotoOwnerAI = new DroneGoToOwner(this);
             tasks.addTask(2, gotoOwnerAI);
             dataManager.set(GOING_TO_OWNER, true);
-//            dataWatcher.updateObject(21, (byte) 1);
             setActiveProgram(new ProgWidgetGoToLocation());
         } else if (!state && gotoOwnerAI != null) {
             tasks.removeTask(gotoOwnerAI);
             gotoOwnerAI = null;
             dataManager.set(GOING_TO_OWNER, false);
-//            dataWatcher.updateObject(21, (byte) 0);
         }
     }
 
     private boolean isGoingToOwner() {
         return dataManager.get(GOING_TO_OWNER);
-//        return dataWatcher.getWatchableObjectByte(21) == (byte) 1;
     }
 
     @Override
@@ -1152,7 +1104,6 @@ public class EntityDrone extends EntityDroneBase
      */
     public EntityPlayer getOwner() {
         return FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUsername(playerName);
-//        return MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(playerName);
     }
 
     public void setStandby(boolean standby) {
@@ -1189,16 +1140,6 @@ public class EntityDrone extends EntityDroneBase
         return true;
     }
 
-//    @Override
-//    public IExtendedEntityProperties getProperty(String key) {
-//        return getExtendedProperties(key);
-//    }
-//
-//    @Override
-//    public void setProperty(String key, IExtendedEntityProperties property) {
-//        registerExtendedProperties(key, property);
-//    }
-
     @Override
     public void setName(String string) {
         setCustomNameTag(string);
@@ -1214,11 +1155,6 @@ public class EntityDrone extends EntityDroneBase
             entity.startRiding(this);
         }
     }
-
-//    @Override
-//    public Entity getCarryingEntity() {
-//        return riddenByEntity;
-//    }
 
     @Override
     public List<Entity> getCarryingEntities() {
@@ -1297,12 +1233,10 @@ public class EntityDrone extends EntityDroneBase
     @Override
     public void updateLabel() {
         dataManager.set(LABEL, getAIManager() != null ? getAIManager().getLabel() : "Main");
-//        dataWatcher.updateObject(26, getAIManager() != null ? getAIManager().getLabel() : "Main");
     }
 
     public String getLabel() {
         return dataManager.get(LABEL);
-//        return dataWatcher.getWatchableObjectString(26);
     }
 
     public SortedSet<DebugEntry> getDebugEntries() {
@@ -1329,8 +1263,8 @@ public class EntityDrone extends EntityDroneBase
     public void addDebugEntry(DebugEntry entry) {
         if (!debugEntries.isEmpty()) {
             DebugEntry previous = debugEntries.last();
-            if (previous.getProgWidgetId() != entry.getProgWidgetId()) {//When we've jumped to another piece
-                //Remove the data from last cycle.
+            if (previous.getProgWidgetId() != entry.getProgWidgetId()) {
+                // When we've jumped to another piece, remove the data from the previous cycle
                 debugEntries.removeIf(debugEntry -> debugEntry.getProgWidgetId() == entry.getProgWidgetId());
             }
         }
@@ -1380,14 +1314,12 @@ public class EntityDrone extends EntityDroneBase
         @Override
         public void playSound(SoundEvent soundName, float volume, float pitch) {
             NetworkHandler.sendToAllAround(new PacketPlaySound(soundName, SoundCategory.NEUTRAL, posX, posY, posZ, volume, pitch, true), world);
-//            world.playSound(posX, posY, posZ, soundName, SoundCategory.NEUTRAL, volume, pitch, true);
-//            world.playSoundAtEntity(EntityDrone.this, soundName, volume, pitch);
         }
 
     }
 
     // Drone's fake player needs a custom inventory
-    // This is so EntityPlayer#getDigSpeed() gets the right tool (i.e. the tool in the drone's inv. slot 0)
+    // This is so EntityPlayer#getDigSpeed() gets the right tool speed (i.e. the tool in the drone's inv. slot 0)
     // Overriding DroneFakePlayer#getItemStackFromSlot() is also necessary, but not sufficient on its own
     private class InventoryFakePlayer extends InventoryPlayer {
         InventoryFakePlayer(EntityPlayer fakePlayer) {

@@ -10,6 +10,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemRedstone;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
@@ -18,8 +19,10 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.fml.common.eventhandler.Event;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,9 +71,14 @@ public class DroneAIBlockInteract extends DroneAIBlockInteraction {
         EnumFacing faceDir = ProgWidgetPlace.getDirForSides(((ISidedWidget) widget).getSides());
         EntityPlayer player = drone.getFakePlayer();
         World world = drone.world();
-        int dx = faceDir.getFrontOffsetX();
-        int dy = faceDir.getFrontOffsetY();
-        int dz = faceDir.getFrontOffsetZ();
+
+        ItemStack stack = player.getHeldItemMainhand();
+        if (stack.getItem() instanceof ItemBlock) {
+            return false; // use a place block widget place blocks; this is for right-clicking items
+        }
+//        int dx = faceDir.getFrontOffsetX();
+//        int dy = faceDir.getFrontOffsetY();
+//        int dz = faceDir.getFrontOffsetZ();
 
         player.setPosition(pos.getX() + 0.5, pos.getY() + 0.5 - player.eyeHeight, pos.getZ() + 0.5);
         player.rotationPitch = faceDir.getFrontOffsetY() * -90;
@@ -88,34 +96,54 @@ public class DroneAIBlockInteract extends DroneAIBlockInteraction {
                 player.rotationYaw = -90;
         }
 
+        float hitX = (float)(player.posX - pos.getX());
+        float hitY = (float)(player.posY - pos.getY());
+        float hitZ = (float)(player.posZ - pos.getZ());
+
         try {
-            PlayerInteractEvent.RightClickEmpty event = new PlayerInteractEvent.RightClickEmpty(player, EnumHand.MAIN_HAND);
-            MinecraftForge.EVENT_BUS.post(event);
-            if (event.isCanceled()) return false;
+//            PlayerInteractEvent.RightClickEmpty event = new PlayerInteractEvent.RightClickEmpty(player, EnumHand.MAIN_HAND);
+//            MinecraftForge.EVENT_BUS.post(event);
+//            if (event.isCanceled()) return false;
 
             IBlockState state = world.getBlockState(pos);
             Block block = state.getBlock();
 
-            ItemStack stack = player.getHeldItemMainhand();
-            if (stack.getItem().onItemUseFirst(player, world, pos, faceDir, dx, dy, dz, EnumHand.MAIN_HAND) == EnumActionResult.PASS)
-                return false;
-
-            if (!world.isAirBlock(pos) && block.onBlockActivated(world, pos, state, player, EnumHand.MAIN_HAND, faceDir, dx, dy, dz))
-                return false;
-
-            if (!stack.isEmpty()) {
-                boolean isGoingToShift = false;
-                if (stack.getItem() == Items.REEDS || stack.getItem() instanceof ItemRedstone) {
-                    isGoingToShift = true;
+            if (block.isAir(state, world, pos)) {
+                // right-clicking nothing...
+            } else {
+                // right-clicking a block with a held item
+                PlayerInteractEvent.RightClickBlock event = ForgeHooks.onRightClickBlock(player, EnumHand.MAIN_HAND, pos, faceDir.getOpposite(),  ForgeHooks.rayTraceEyeHitVec(player, 2.0D));
+                if (event.isCanceled() || event.getUseItem() == Event.Result.DENY) return false;
+                if (stack.onItemUseFirst(player, world, pos, EnumHand.MAIN_HAND, faceDir.getOpposite(), hitX, hitY, hitZ) == EnumActionResult.PASS) {
+                    stack.onItemUse(player, world, pos, EnumHand.MAIN_HAND, faceDir.getOpposite(), hitX, hitY, hitZ);
                 }
-                if (stack.getItem().onItemUse(player, world, pos, EnumHand.MAIN_HAND, faceDir, dx, dy, dz) == EnumActionResult.PASS)
-                    return false;
-
                 ItemStack copy = stack.copy();
                 ActionResult<ItemStack> res = stack.getItem().onItemRightClick(world, player, EnumHand.MAIN_HAND);
                 player.setHeldItem(EnumHand.MAIN_HAND, res.getResult());
-                if (!copy.isItemEqual(stack)) return true;
+                if (!copy.isItemEqual(stack)) {
+                    return !stack.isEmpty();
+                }
             }
+
+//            if (stack.getItem().onItemUseFirst(player, world, pos, faceDir, dx, dy, dz, EnumHand.MAIN_HAND) == EnumActionResult.PASS)
+//                return false;
+//
+//            if (!world.isAirBlock(pos) && block.onBlockActivated(world, pos, state, player, EnumHand.MAIN_HAND, faceDir, dx, dy, dz))
+//                return false;
+//
+//            if (!stack.isEmpty()) {
+//                boolean isGoingToShift = false;
+//                if (stack.getItem() == Items.REEDS || stack.getItem() instanceof ItemRedstone) {
+//                    isGoingToShift = true;
+//                }
+//                if (stack.getItem().onItemUse(player, world, pos, EnumHand.MAIN_HAND, faceDir, dx, dy, dz) == EnumActionResult.PASS)
+//                    return false;
+//
+//                ItemStack copy = stack.copy();
+//                ActionResult<ItemStack> res = stack.getItem().onItemRightClick(world, player, EnumHand.MAIN_HAND);
+//                player.setHeldItem(EnumHand.MAIN_HAND, res.getResult());
+//                if (!copy.isItemEqual(stack)) return true;
+//            }
             return false;
         } catch (Throwable e) {
             Log.error("DroneAIBlockInteract crashed! Stacktrace: ");
