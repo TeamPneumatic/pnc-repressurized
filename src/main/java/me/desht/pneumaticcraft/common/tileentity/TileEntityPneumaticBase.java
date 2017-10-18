@@ -70,6 +70,18 @@ public class TileEntityPneumaticBase extends TileEntityBase implements IPneumati
     }
 
     @Override
+    public void writeToPacket(NBTTagCompound tag) {
+        super.writeToPacket(tag);
+        airHandler.writeToNBT(tag);
+    }
+
+    @Override
+    public void readFromPacket(NBTTagCompound tag) {
+        super.readFromPacket(tag);
+        airHandler.readFromNBT(tag);
+    }
+
+    @Override
     protected void addLuaMethods() {
         super.addLuaMethods();
         luaMethods.add(new LuaMethod("getPressure") {

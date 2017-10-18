@@ -256,8 +256,7 @@ public class AirHandler implements IAirHandler {
         maxPressure = pneumaticTag.getFloat("maxPressure");
         volume = pneumaticTag.getInteger("volume");
         if (volume == 0 && PneumaticCraftRepressurized.proxy.getClientWorld() == null) {
-            // only warn about a zero volume on the server side; the air handler data
-            // isn't sync'd to the client, so the client will always see a zero volume
+            // only warn about a zero volume on the server side
             Log.error("Volume was 0! Assigning default");
             volume = defaultVolume;
         }
