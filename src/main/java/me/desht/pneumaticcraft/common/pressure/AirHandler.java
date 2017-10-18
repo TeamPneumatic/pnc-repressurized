@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.pressure;
 
+import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IAirListener;
@@ -17,6 +18,7 @@ import me.desht.pneumaticcraft.common.util.TileEntityCache;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Sounds;
+import me.desht.pneumaticcraft.proxy.CommonProxy;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
@@ -253,7 +255,9 @@ public class AirHandler implements IAirHandler {
         air = pneumaticTag.getInteger("air");
         maxPressure = pneumaticTag.getFloat("maxPressure");
         volume = pneumaticTag.getInteger("volume");
-        if (volume == 0) {
+        if (volume == 0 && PneumaticCraftRepressurized.proxy.getClientWorld() == null) {
+            // only warn about a zero volume on the server side; the air handler data
+            // isn't sync'd to the client, so the client will always see a zero volume
             Log.error("Volume was 0! Assigning default");
             volume = defaultVolume;
         }
