@@ -12,19 +12,39 @@
     "normal": [
       {}
     ],
-    "inventory": [
-      {
-        "submodel": {
-          "down": { "model": "pneumaticcraft:pressure_tube_disconnected", "x": 180 },
-          "up": { "model": "pneumaticcraft:pressure_tube_disconnected"},
-          "north": { "model": "pneumaticcraft:pressure_tube_connected", "x": 90 },
-          "south": { "model": "pneumaticcraft:pressure_tube_connected", "x": 90, "y": 180 },
-          "west": { "model": "pneumaticcraft:pressure_tube_disconnected", "x": 90, "y": 270 },
-          "east": { "model": "pneumaticcraft:pressure_tube_disconnected", "x": 90, "y": 90 }
+    "inventory": [{
+      "model": "pneumaticcraft:pressure_tube_inv",
+      "transform": {
+        "gui": {
+          "rotation": [ { "x": -30 }, { "z": -120 } ],
+          "scale": [ 0.8, 0.8, 0.8 ]
         },
-        "transform": "forge:default-block"
+        "ground": {
+          "rotation": [ { "z": -90 } ],
+          "scale": [ 0.8, 0.8, 0.8  ]
+        },
+        "fixed": {
+          "rotation": [ { "z": -90 } ],
+          "scale": [ 0.9, 0.9, 0.9 ]
+        },
+        "firstperson_righthand": {
+          "rotation": [ {"x": 0 }, { "y": 45}, { "z": 0 }],
+          "scale": [ 0.7, 0.7, 0.7 ]
+        },
+        "firstperson_lefthand": {
+          "rotation": [ {"x": 0 }, { "y": 225 }, { "z": 0 } ],
+          "scale": [ 0.7, 0.7, 0.7 ]
+        },
+        "thirdperson_righthand": {
+          "rotation": [ {"x": 0 }, { "y": 45}, { "z": 0 }],
+          "scale": [ 0.7, 0.7, 0.7 ]
+        },
+        "thirdperson_lefthand": {
+          "rotation": [ {"x": 0 }, { "y": 225 }, { "z": 0 } ],
+          "scale": [ 0.7, 0.7, 0.7 ]
+        }
       }
-    ],
+    }],
     "down": {
       "false": {
         "submodel": {
