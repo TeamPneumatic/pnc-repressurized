@@ -1,12 +1,14 @@
 package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.api.drone.IPathNavigator;
+import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.lib.Sounds;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.pathfinding.PathFinder;
@@ -45,6 +47,14 @@ public class EntityPathNavigateDrone extends PathNavigate implements IPathNaviga
     @Override
     public Path getPathToEntityLiving(Entity par1Entity) {
         BlockPos pos = new BlockPos(par1Entity.posX, par1Entity.getEntityBoundingBox().minY, par1Entity.posZ);
+
+        if (par1Entity instanceof EntityItem && !pathfindingEntity.isBlockValidPathfindBlock(pos)) {
+            // items can end up with a blockpos of the ground they're sitting on,
+            // which will prevent the drone pathfinding to them
+            if (pathfindingEntity.isBlockValidPathfindBlock(pos.up())) {
+                pos = pos.up();
+            }
+        }
         return getPathToPos(pos); //TODO 1.8 test
     }
 
