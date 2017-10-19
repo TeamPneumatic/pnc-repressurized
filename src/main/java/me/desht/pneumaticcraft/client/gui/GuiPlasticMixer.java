@@ -125,7 +125,10 @@ public class GuiPlasticMixer extends GuiPneumaticContainerBase<TileEntityPlastic
         if (te.getPrimaryInventory().getStackInSlot(TileEntityPlasticMixer.INV_DYE_BLUE).isEmpty()) {
             curInfo.add(I18n.format("gui.tab.problems.plasticMixer.noDye", new ItemStack(Items.DYE, 1, 4).getDisplayName()));
         }
+    }
 
+    @Override
+    protected void addInformation(List<String> curInfo) {
         if (curInfo.size() == 0) {
             curInfo.add(I18n.format("gui.tab.problems.plasticMixer.noProblems"));
         }

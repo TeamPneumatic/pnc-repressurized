@@ -57,7 +57,7 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
     private boolean isClicked = false;
     private int minWidth = 17;
     private int minHeight = 17;
-    private final int backGroundColor;
+    private int backGroundColor;
     private String title;
     private boolean leftSided; // this boolean determines if the stat is going to expand to the left or right.
     private boolean doneExpanding;
@@ -197,6 +197,10 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
         onTextChange();
     }
 
+    public void setBackGroundColor(int backGroundColor) {
+        this.backGroundColor = backGroundColor;
+    }
+
     public void onTextChange() {
         if (textList.size() > MAX_LINES) {
             for (IGuiWidget widget : widgets) {
@@ -239,8 +243,7 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
         FontRenderer fontRenderer = FMLClientHandler.instance().getClient().fontRenderer;
         doneExpanding = true;
         if (isClicked) {
-            // calculate the width and height needed for the box to fit the
-            // strings.
+            // calculate the width and height needed for the box to fit the strings.
             int maxWidth = fontRenderer.getStringWidth(title);
             int maxHeight = 12;
             if (textList.size() > 0) {
@@ -252,8 +255,8 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
             }
             maxWidth = (int) (maxWidth * textSize);
             maxWidth += 20;
-            // expand the box
 
+            // expand the box
             for (int i = 0; i < ANIMATED_STAT_SPEED; i++) {
                 if (width < maxWidth) {
                     width++;
@@ -536,5 +539,9 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
     @Override
     public void postRender(int mouseX, int mouseY, float partialTick) {
 
+    }
+
+    public void setTexture(String texture) {
+        this.texture = texture;
     }
 }

@@ -309,17 +309,24 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
             widget.update();
 
         if (pressureStat != null) {
-            List<String> curInfo = new ArrayList<>();
-            addPressureStatInfo(curInfo);
-            pressureStat.setText(curInfo);
+            List<String> pressureText = new ArrayList<>();
+            addPressureStatInfo(pressureText);
+            pressureStat.setText(pressureText);
         }
         if (problemTab != null) {
-            List<String> curInfo = new ArrayList<>();
-            addProblems(curInfo);
-            if (curInfo.size() == 0) {
-                curInfo.add("gui.tab.problems.noProblems");
+            List<String> problemText = new ArrayList<>();
+            addProblems(problemText);
+            if (problemText.isEmpty()) {
+                problemTab.setTexture(Textures.GUI_NO_PROBLEMS_TEXTURE);
+                problemTab.setTitle("gui.tab.problems.noProblems");
+                problemTab.setBackGroundColor(0xFFA0ffA0);
+            } else {
+                problemTab.setTexture(Textures.GUI_PROBLEMS_TEXTURE);
+                problemTab.setTitle("gui.tab.problems");
+                problemTab.setBackGroundColor(0xFFFF0000);
             }
-            problemTab.setText(curInfo);
+            addInformation(problemText);
+            problemTab.setText(problemText);
         }
         if (redstoneTab != null) {
             redstoneButton.displayString = I18n.format(getRedstoneButtonText(((IRedstoneControl) te).getRedstoneMode()));
@@ -381,6 +388,15 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
                 curInfo.add(I18n.format("gui.tab.problems.applyPressure", minWork.getMinWorkingPressure()));
             }
         }
+    }
+
+    /**
+     * Use this to add informational messages to the problems tab, which don't actually count as problems.
+     *
+     * @param curInfo string list to add to, which may already contain some problem text
+     */
+    protected void addInformation(List<String> curInfo) {
+        curInfo.add("");
     }
 
     @Override

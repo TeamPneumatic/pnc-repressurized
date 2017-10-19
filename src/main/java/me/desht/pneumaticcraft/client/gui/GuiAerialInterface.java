@@ -129,16 +129,19 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<TileEntityAeri
     protected void addProblems(List<String> textList) {
         super.addProblems(textList);
         if (te.playerName.equals("")) {
-            textList.add("\u00a77There isn't a player set!");
-            textList.add(TextFormatting.BLACK + "Replace the machine.");
+            textList.add("\u00a7No player set!");
+            textList.add(TextFormatting.BLACK + "Break and replace the machine.");
         } else if (!te.isConnectedToPlayer) {
-            textList.add(TextFormatting.GRAY + te.playerName + " can not be found on the server!");
-            textList.add(TextFormatting.BLACK + "Insists he/she comes back.");
+            textList.add(TextFormatting.GRAY + te.playerName + " is not online!");
+            textList.add(TextFormatting.BLACK + "The Aerial Interface is non-functional");
+            textList.add(TextFormatting.BLACK + "until they return.");
         }
+    }
 
-        if (textList.size() == 0) {
-            textList.add("gui.tab.problems.noProblems");
-            textList.add(I18n.format("gui.tab.problems.aerialInterface.linked", te.playerName));
+    @Override
+    protected void addInformation(List<String> curInfo) {
+        if (te.playerName != null && !te.playerName.isEmpty()) {
+            curInfo.add(I18n.format("gui.tab.problems.aerialInterface.linked", te.playerName));
         }
     }
 }
