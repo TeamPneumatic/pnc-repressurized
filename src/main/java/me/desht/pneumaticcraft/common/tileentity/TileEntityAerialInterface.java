@@ -343,6 +343,8 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
             if (player == null || getFoodValue(stack) <= 0) return stack;
             if (!okToFeed(stack, player)) return stack;
 
+            if (simulate) return ItemStack.EMPTY;
+
             int startValue = stack.getCount();
             ItemStack remainingItem = stack;
             while (stack.getCount() > 0) {
@@ -355,16 +357,17 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
                 }
                 if (stack.getCount() == startValue) break;
             }
-            return remainingItem;
+            return remainingItem.getCount() > 0 ? remainingItem : ItemStack.EMPTY;
         }
 
         private boolean okToFeed(@Nonnull ItemStack stack, EntityPlayer player) {
             int foodValue = getFoodValue(stack);
             int curFoodLevel = player.getFoodStats().getFoodLevel();
-            if (feedMode == 2) {
-                feedMode = player.getMaxHealth() - player.getHealth() > 0 ? 1 : 0;
+            int tmpFeedMode = feedMode;
+            if (tmpFeedMode == 2) {
+                tmpFeedMode = player.getMaxHealth() - player.getHealth() > 0 ? 1 : 0;
             }
-            switch (feedMode) {
+            switch (tmpFeedMode) {
                 case 0:
                     return 20 - curFoodLevel >= foodValue * stack.getCount();
                 case 1:
