@@ -563,9 +563,9 @@ public class PneumaticCraftUtils {
     public static Pair<Vec3d, Vec3d> getStartAndEndLookVec(EntityLivingBase entity, float maxDistance) {
         Vec3d entityVec;
         if (entity.world.isRemote && entity instanceof EntityPlayer) {
-            entityVec = new Vec3d(entity.posX, entity.posY + 1.6200000000000001D - entity.getYOffset(), entity.posZ);
+            entityVec = new Vec3d(entity.posX, entity.posY + 1.6200000000000001D, entity.posZ);
         } else {
-            entityVec = new Vec3d(entity.posX, entity.posY + entity.getEyeHeight() /*- entity.getYOffset()*/ - (entity.isSneaking() ? 0.08 : 0), entity.posZ);
+            entityVec = new Vec3d(entity.posX, entity.posY + entity.getEyeHeight() - (entity.isSneaking() ? 0.08 : 0), entity.posZ);
         }
         Vec3d entityLookVec = entity.getLook(1.0F);
         Vec3d maxDistVec = entityVec.addVector(entityLookVec.x * maxDistance, entityLookVec.y * maxDistance, entityLookVec.z * maxDistance);
