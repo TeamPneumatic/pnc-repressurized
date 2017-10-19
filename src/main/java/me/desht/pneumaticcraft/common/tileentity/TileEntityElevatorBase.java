@@ -505,22 +505,6 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
         }
     }
 
-//    @Override
-//    public void onDescUpdate() {
-//        ItemStack baseStack = inventory.getStackInSlot(0);
-//        ItemStack frameStack = inventory.getStackInSlot(1);
-//
-//        baseCamo = baseStack.getItem() instanceof ItemBlock ?
-//                ((ItemBlock) baseStack.getItem()).getBlock().getStateFromMeta(baseStack.getMetadata()) : null;
-//        IBlockState newFrameCamo = frameStack.getItem() instanceof ItemBlock ?
-//                ((ItemBlock) frameStack.getItem()).getBlock().getStateFromMeta(frameStack.getMetadata()) : null;
-//
-//        if (newFrameCamo != frameCamo) {
-//            frameCamo = newFrameCamo;
-//            rerenderChunk();
-//        }
-//    }
-
     private void sendDescPacketFromAllElevators() {
         if (multiElevators != null) {
             for (TileEntityElevatorBase base : multiElevators) {

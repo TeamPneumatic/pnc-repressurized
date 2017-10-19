@@ -23,7 +23,7 @@ public class Sounds {
     public static final SoundEvent ELEVATOR_START = null;
     @GameRegistry.ObjectHolder("elevator_rising_stop")
     public static final SoundEvent ELEVATOR_STOP = null;
-    @GameRegistry.ObjectHolder("elevator_moving")
+    @GameRegistry.ObjectHolder("elevator_rising")
     public static final SoundEvent ELEVATOR_MOVING = null;
     @GameRegistry.ObjectHolder("helmet_hack_finish")
     public static final SoundEvent HELMET_HACK_FINISH = null;

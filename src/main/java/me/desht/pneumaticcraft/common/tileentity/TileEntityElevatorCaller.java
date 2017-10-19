@@ -2,24 +2,26 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.common.block.BlockElevatorCaller;
 import me.desht.pneumaticcraft.common.network.DescSynced;
-import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 
-public class TileEntityElevatorCaller extends TileEntityBase {
+public class TileEntityElevatorCaller extends TileEntityBase implements ICamouflageableTE {
     private ElevatorButton[] floors = new ElevatorButton[0];
     private int thisFloor;
     private boolean emittingRedstone;
     private boolean shouldUpdateNeighbors;
     @DescSynced
-    public @Nonnull ItemStack camoStack = ItemStack.EMPTY;
-    private Block camoBlock;
+    @Nonnull
+    private ItemStack camoStack = ItemStack.EMPTY;
+    private IBlockState camoState;
 
     public void setEmittingRedstone(boolean emittingRedstone) {
         if (emittingRedstone != this.emittingRedstone) {
@@ -36,6 +38,19 @@ public class TileEntityElevatorCaller extends TileEntityBase {
             shouldUpdateNeighbors = false;
         }
     }
+
+    public void setCamoStack(@Nonnull ItemStack stack) {
+        camoStack = stack;
+        sendDescriptionPacket();
+        markDirty();
+    }
+
+    @Override
+    public void onDescUpdate() {
+        setCamouflage(camoStack);
+        getWorld().markBlockRangeForRenderUpdate(getPos(), getPos());
+    }
+
 
     public boolean getEmittingRedstone() {
         return emittingRedstone;
@@ -88,16 +103,6 @@ public class TileEntityElevatorCaller extends TileEntityBase {
     }
 
     @Override
-    public void onDescUpdate() {
-        Block newCamo = camoStack.getItem() instanceof ItemBlock ? ((ItemBlock) camoStack.getItem()).getBlock() : null;
-
-        if (newCamo != camoBlock) {
-            camoBlock = newCamo;
-            rerenderChunk();
-        }
-    }
-
-    @Override
     public void onNeighborBlockUpdate() {
         boolean wasPowered = poweredRedstone > 0;
         super.onNeighborBlockUpdate();
@@ -120,6 +125,25 @@ public class TileEntityElevatorCaller extends TileEntityBase {
     @SideOnly(Side.CLIENT)
     public AxisAlignedBB getRenderBoundingBox() {
         return new AxisAlignedBB(getPos().getX(), getPos().getY(), getPos().getZ(), getPos().getX() + 1, getPos().getY() + 1, getPos().getZ() + 1);
+    }
+
+    @Override
+    public IBlockState getCamouflage() {
+        return camoState;
+    }
+
+    @Override
+    public void setCamouflage(@Nonnull ItemStack stack) {
+        if (!stack.isEmpty() && camoStack.getItem() instanceof ItemBlock) {
+            camoState = ((ItemBlock) camoStack.getItem()).getBlock().getStateFromMeta(stack.getMetadata());
+        } else {
+            camoState = null;
+        }
+    }
+
+    @Override
+    public IItemHandler getCamoInventory() {
+        return null;
     }
 
     public static class ElevatorButton {
@@ -173,19 +197,5 @@ public class TileEntityElevatorCaller extends TileEntityBase {
             green = tag.getFloat("green");
             blue = tag.getFloat("blue");
         }
-
-        /*
-        @Override
-        public boolean equals(Object button){
-            if(!(button instanceof ElevatorButton)) return false;
-            ElevatorButton b = (ElevatorButton)button;
-            return posX == b.posX && posY == b.posY && width == b.width && height == b.height && buttonText.equals(b.buttonText) && floorNumber == b.floorNumber && floorHeight == b.floorHeight && red == b.red && green == ;
-        }
-
-        @Override
-        public int hashCode(){
-            return (int)(posX * 191 + posY * 281 + width * 342 + height * 425) + buttonText.hashCode() + floorNumber * 1041 + floorHeight * 1024;
-        }*/
-
     }
 }

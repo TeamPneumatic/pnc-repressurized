@@ -19,7 +19,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-public class BlockElevatorCaller extends BlockPneumaticCraft {
+public class BlockElevatorCaller extends BlockPneumaticCraftCamo {
 
     BlockElevatorCaller() {
         super(Material.IRON, "elevator_caller");
@@ -32,23 +32,21 @@ public class BlockElevatorCaller extends BlockPneumaticCraft {
 
     @Override
     public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
-        TileEntityElevatorCaller te = (TileEntityElevatorCaller) world.getTileEntity(pos);
-        if (!world.isRemote) {
-            RayTraceResult mop = PneumaticCraftUtils.getEntityLookedObject(player);
-            if (mop != null && mop.subHit >= 0) {
-                setSurroundingElevators(world, pos, mop.subHit);
-            } else if (player.isSneaking()) {
-                te.camoStack = player.getHeldItemMainhand();
-                return te.camoStack != null && te.camoStack.getItem() instanceof ItemBlock;
+        TileEntity te = world.getTileEntity(pos);
+        if (te instanceof TileEntityElevatorCaller) {
+            TileEntityElevatorCaller teEC = (TileEntityElevatorCaller) te;
+            if (!world.isRemote) {
+                RayTraceResult mop = PneumaticCraftUtils.getEntityLookedObject(player);
+                if (mop != null && mop.subHit >= 0) {
+                    setSurroundingElevators(world, pos, mop.subHit);
+                } else if (player.isSneaking() && (player.getHeldItemMainhand().isEmpty() || player.getHeldItemMainhand().getItem() instanceof ItemBlock)) {
+                    teEC.setCamoStack(player.getHeldItemMainhand());
+                    return true;
+                }
             }
         }
         return getRotation(state).getOpposite() == side;
     }
-
-//    @Override
-//    public void setBlockBoundsForItemRender() {
-//        setBlockBounds(0, 0, 0, 1, 1, 1);
-//    }
 
     @Override
     public boolean isNormalCube(IBlockState state, IBlockAccess world, BlockPos pos) {
@@ -166,36 +164,14 @@ public class BlockElevatorCaller extends BlockPneumaticCraft {
 
     @Override
     public boolean isOpaqueCube(IBlockState state) {
-        return false;//this should return false, because otherwise I can't give color to the rendered elevator buttons for some reason...
+        return false ;//this should return false, because otherwise I can't give color to the rendered elevator buttons for some reason...
     }
-
-//    @Override
-//    public int getRenderType() {
-//        setBlockBoundsForItemRender();
-//        return super.getRenderType();
-//    }
 
     @Override
     public boolean canProvidePower(IBlockState state) {
         return true;
     }
 
-    /*@Override TODO elevator camo
-    public IIcon getIcon(IBlockAccess world, int x, int y, int z, int side){
-        TileEntityElevatorCaller te = (TileEntityElevatorCaller)world.getTileEntity(x, y, z);
-        if(te.camoBlock != null && PneumaticCraftUtils.isRenderIDCamo(te.camoBlock.getRenderType())) {
-            return te.camoBlock.getIcon(side, te.camoStack.getItemDamage());
-        }
-        return getIcon(side, world.getBlockMetadata(x, y, z));
-    }*/
-
-    /**
-     * Returns true if the block is emitting indirect/weak redstone power on the
-     * specified side. If isBlockNormalCube returns true, standard redstone
-     * propagation rules will apply instead and this will not be called. Args:
-     * World, X, Y, Z, side. Note that the side is reversed - eg it is 1 (up)
-     * when checking the bottom of the block.
-     */
     @Override
     public int getWeakPower(IBlockState state, IBlockAccess par1IBlockAccess, BlockPos pos, EnumFacing side) {
         TileEntity te = par1IBlockAccess.getTileEntity(pos);
