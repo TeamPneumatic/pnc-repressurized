@@ -92,7 +92,9 @@ public class ItemProgrammingPuzzle extends ItemPneumaticSubtyped {
                 return new ItemStack(Itemss.programmingPuzzle, 1, widget.getCraftingColorIndex());
             }
         }*/
-        ItemStack stack = new ItemStack(Itemss.PROGRAMMING_PUZZLE);
+        IProgWidget widget = WidgetRegistrator.getWidgetFromName(widgetKey);
+        int meta = widget == null ? ItemPlastic.BLACK : WidgetRegistrator.getWidgetFromName(widgetKey).getCraftingColorIndex();
+        ItemStack stack = new ItemStack(Itemss.PROGRAMMING_PUZZLE,1, meta);
         NBTTagCompound tag = new NBTTagCompound();
         tag.setString("type", widgetKey);
         stack.setTagCompound(tag);
