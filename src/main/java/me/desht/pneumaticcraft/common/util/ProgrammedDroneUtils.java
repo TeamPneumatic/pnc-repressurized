@@ -2,10 +2,10 @@ package me.desht.pneumaticcraft.common.util;
 
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
+import me.desht.pneumaticcraft.common.inventory.ChargeableItemHandler;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.progwidgets.*;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -36,12 +36,13 @@ public class ProgrammedDroneUtils {
 
         NBTTagCompound inv = new NBTTagCompound();
 
-        inv.setTag("Items", upgradeList);
+        inv.setTag(ChargeableItemHandler.NBT_UPGRADE_TAG, upgradeList);
         tag.setTag("Inventory", inv);
         tag.setFloat("currentAir", 100000);
 
         drone.readEntityFromNBT(tag);
-        drone.setCustomNameTag(I18n.format("drone.amadronDeliveryDrone"));
+        // FIXME: we really need to get a clientside localization here (on the server side)
+        drone.setCustomNameTag(net.minecraft.util.text.translation.I18n.translateToLocal("drone.amadronDeliveryDrone"));
 
         drone.naturallySpawned = true;//Don't let the drone be dropped when wrenching it.
 
@@ -55,13 +56,11 @@ public class ProgrammedDroneUtils {
             throw new IllegalArgumentException("You can only deliver up to 65 stacks at once!");
         for (ItemStack stack : deliveredStacks) {
             if (stack.isEmpty()) throw new IllegalArgumentException("You can't supply a null stack to be delivered!");
-//            if (stack.getItem() == null)
-//                throw new IllegalArgumentException("You can't supply a stack with a null item to be delivered!");
         }
 
         EntityDrone drone = getChargedDispenserUpgradeDrone(world);
 
-        //Program the drone
+        // Program the drone
         int startY = world.getHeight(pos.add(30, 0, 0)).getY() + 30;
         drone.setPosition(pos.getX() + 30, startY, pos.getZ());
         List<IProgWidget> widgets = drone.progWidgets;
@@ -91,7 +90,7 @@ public class ProgrammedDroneUtils {
         suicide.setY(107);
         widgets.add(suicide);
 
-        ProgWidgetArea area = new ProgWidgetArea();
+        ProgWidgetArea area = new ProgWidgetArea(); // inventory export
         area.setX(107);
         area.setY(52);
         area.x1 = pos.getX();
@@ -99,7 +98,7 @@ public class ProgrammedDroneUtils {
         area.z1 = pos.getZ();
         widgets.add(area);
 
-        area = new ProgWidgetArea();
+        area = new ProgWidgetArea(); // drop item
         area.setX(107);
         area.setY(74);
         area.x1 = pos.getX();
@@ -111,11 +110,11 @@ public class ProgrammedDroneUtils {
         } else {
             area.y1 = world.getHeight(pos).getY() + 10;
             if (!drone.isBlockValidPathfindBlock(new BlockPos(area.x1, area.y1, area.z1)))
-                area.y1 = 260;//Worst case scenario, there are definately no blocks here.
+                area.y1 = 260; //Worst case scenario, there are definately no blocks here.
         }
         widgets.add(area);
 
-        area = new ProgWidgetArea();
+        area = new ProgWidgetArea(); // go to
         area.setX(107);
         area.setY(96);
         area.x1 = pos.getX() + 30;
@@ -140,7 +139,7 @@ public class ProgrammedDroneUtils {
 
         EntityDrone drone = getChargedDispenserUpgradeDrone(world);
 
-        //Program the drone
+        // Program the drone
         int startY = world.getHeight(pos.add(30, 0, 0)).getY() + 30;
         drone.setPosition(pos.getX() + 30, startY, pos.getZ());
         List<IProgWidget> widgets = drone.progWidgets;
@@ -165,7 +164,7 @@ public class ProgrammedDroneUtils {
         suicide.setY(85);
         widgets.add(suicide);
 
-        ProgWidgetArea area = new ProgWidgetArea();
+        ProgWidgetArea area = new ProgWidgetArea();  // fluid export
         area.setX(107);
         area.setY(52);
         area.x1 = pos.getX();
@@ -173,7 +172,7 @@ public class ProgrammedDroneUtils {
         area.z1 = pos.getZ();
         widgets.add(area);
 
-        area = new ProgWidgetArea();
+        area = new ProgWidgetArea();  // go to
         area.setX(107);
         area.setY(74);
         area.x1 = pos.getX() + 30;
@@ -195,17 +194,15 @@ public class ProgrammedDroneUtils {
             throw new IllegalArgumentException("You can only query up to 65 stacks at once!");
         for (ItemStack stack : queriedStacks) {
             if (stack.isEmpty()) throw new IllegalArgumentException("You can't query a null stack!");
-//            if (stack.getItem() == null)
-//                throw new IllegalArgumentException("You can't query a stack with a null item!");
         }
 
         EntityDrone drone = getChargedDispenserUpgradeDrone(world);
 
-        //Program the drone
         int startY = world.getHeight(pos.add(30, 0, 0)).getY() + 30;
         drone.setPosition(pos.getX() + 30, startY, pos.getZ());
         List<IProgWidget> widgets = drone.progWidgets;
 
+        // Program the drone
         ProgWidgetStart start = new ProgWidgetStart();
         start.setX(92);
         start.setY(41);
@@ -221,7 +218,7 @@ public class ProgrammedDroneUtils {
             im.setUseCount(true);
             widgets.add(im);
 
-            ProgWidgetArea area = new ProgWidgetArea();
+            ProgWidgetArea area = new ProgWidgetArea();  // inventory import
             area.setX(107);
             area.setY(yBase);
             area.x1 = pos.getX();
@@ -229,7 +226,7 @@ public class ProgrammedDroneUtils {
             area.z1 = pos.getZ();
             widgets.add(area);
 
-            ProgWidgetItemFilter filter = new ProgWidgetItemFilter();
+            ProgWidgetItemFilter filter = new ProgWidgetItemFilter();  // filter for inventory import
             filter.setX(107);
             filter.setY(yBase + 11);
             filter.setFilter(stack);
@@ -245,7 +242,7 @@ public class ProgrammedDroneUtils {
         gotoPiece.setY(yBase);
         widgets.add(gotoPiece);
 
-        ProgWidgetArea area = new ProgWidgetArea();
+        ProgWidgetArea area = new ProgWidgetArea(); // go to
         area.setX(107);
         area.setY(yBase);
         area.x1 = pos.getX() + 30;
@@ -272,7 +269,7 @@ public class ProgrammedDroneUtils {
 
         EntityDrone drone = getChargedDispenserUpgradeDrone(world);
 
-        //Program the drone
+        // Program the drone
         int startY = world.getHeight(pos.add(30, 0, 0)).getY() + 30;
         drone.setPosition(pos.getX() + 30, startY, pos.getZ());
         List<IProgWidget> widgets = drone.progWidgets;

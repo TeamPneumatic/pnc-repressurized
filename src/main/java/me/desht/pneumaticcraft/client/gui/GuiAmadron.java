@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetVerticalScrollbar;
 import me.desht.pneumaticcraft.common.inventory.ContainerAmadron;
 import me.desht.pneumaticcraft.common.inventory.ContainerAmadron.EnumProblemState;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
+import me.desht.pneumaticcraft.common.network.PacketAmadronInvSync;
 import me.desht.pneumaticcraft.common.network.PacketAmadronOrderUpdate;
 import me.desht.pneumaticcraft.common.recipes.AmadronOffer;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -27,7 +28,7 @@ public class GuiAmadron extends GuiPneumaticContainerBase {
     private WidgetTextField searchBar;
     private WidgetVerticalScrollbar scrollbar;
     private int page;
-    private final List<WidgetAmadronOffer> widgetOffers = new ArrayList<WidgetAmadronOffer>();
+    private final List<WidgetAmadronOffer> widgetOffers = new ArrayList<>();
     private boolean needsRefreshing;
     private boolean hadProblem = false;
     private GuiButtonSpecial addTradeButton;
@@ -62,7 +63,7 @@ public class GuiAmadron extends GuiPneumaticContainerBase {
         addTradeButton = new GuiButtonSpecial(2, guiLeft + 80, guiTop + 15, 72, 20, I18n.format("gui.amadron.button.addTrade"));
         addWidget(addTradeButton);
 
-        updateVisibleOffers();
+        needsRefreshing = true;
     }
 
     @Override
@@ -116,8 +117,12 @@ public class GuiAmadron extends GuiPneumaticContainerBase {
         widgets.removeAll(widgetOffers);
         for (int i = 0; i < visibleOffers.size(); i++) {
             AmadronOffer offer = visibleOffers.get(i);
-            if (offer.getInput() instanceof ItemStack) container.setStack(i * 2, (ItemStack) offer.getInput());
-            if (offer.getOutput() instanceof ItemStack) container.setStack(i * 2 + 1, (ItemStack) offer.getOutput());
+            if (offer.getInput() instanceof ItemStack) {
+                container.inventorySlots.get(i * 2).putStack((ItemStack) offer.getInput());
+            }
+            if (offer.getOutput() instanceof ItemStack) {
+                container.inventorySlots.get(i * 2 + 1).putStack((ItemStack) offer.getOutput());
+            }
 
             WidgetAmadronOffer widget = new WidgetAmadronOffer(i, guiLeft + 6 + 73 * (i % 2), guiTop + 55 + 35 * (i / 2), offer) {
                 @Override
@@ -128,6 +133,9 @@ public class GuiAmadron extends GuiPneumaticContainerBase {
             addWidget(widget);
             widgetOffers.add(widget);
         }
+        // the server also needs to know what's in the tablet, or the next
+        // "window items" packet will empty all the client-side slots
+        NetworkHandler.sendToServer(new PacketAmadronInvSync(container.getInventory()));
     }
 
     @Override

@@ -96,6 +96,7 @@ public class NetworkHandler {
         INSTANCE.registerMessage(PacketShowArea.class, PacketShowArea.class, discriminant++, Side.CLIENT);
         INSTANCE.registerMessage(PacketSetEntityMotion.class, PacketSetEntityMotion.class, discriminant++, Side.CLIENT);
         INSTANCE.registerMessage(PacketDebugBlock.class, PacketDebugBlock.class, discriminant++, Side.CLIENT);
+        INSTANCE.registerMessage(PacketAmadronInvSync.class, PacketAmadronInvSync.class, discriminant++, Side.SERVER);
     }
 
     /* public static void INSTANCE.registerMessage(Class<? extends AbstractPacket<? extends IMessage>> clazz){

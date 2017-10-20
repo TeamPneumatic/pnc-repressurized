@@ -1,6 +1,8 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.IFluidTank;
@@ -26,8 +28,12 @@ public class WidgetFluidStack extends WidgetFluidFilter {
         if (fluid != null) {
             int fluidAmount = tank.getFluidAmount() / 1000;
             String s = fluidAmount + "B";
-            if (fluidAmount > 1)
-                Minecraft.getMinecraft().fontRenderer.drawString(s, x - Minecraft.getMinecraft().fontRenderer.getStringWidth(s) + 17, y + 9, 0xFFFFFFFF, true);
+            if (fluidAmount > 1) {
+                FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
+                GlStateManager.translate(0, 0, 400);  // ensure amount is drawn in front of the fluid texture
+                fr.drawString(s, x - fr.getStringWidth(s) + 17, y + 9, 0xFFFFFFFF, true);
+                GlStateManager.translate(0, 0, -400);
+            }
         }
     }
 }

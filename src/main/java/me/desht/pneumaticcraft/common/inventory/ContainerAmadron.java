@@ -35,6 +35,7 @@ import java.util.*;
 
 public class ContainerAmadron extends ContainerPneumaticBase {
     public static final int ROWS = 4;
+    public static final int OFFERS_PER_PAGE = ROWS * 2;
 
     public List<AmadronOffer> offers = new ArrayList<>(AmadronOfferManager.getInstance().getAllOffers());
 

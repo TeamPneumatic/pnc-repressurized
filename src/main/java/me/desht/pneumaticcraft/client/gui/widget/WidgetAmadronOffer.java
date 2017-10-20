@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.common.recipes.AmadronOfferCustom;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
@@ -20,7 +21,7 @@ import java.util.List;
 
 public class WidgetAmadronOffer extends WidgetBase {
     private final AmadronOffer offer;
-    private final List<IGuiWidget> widgets = new ArrayList<IGuiWidget>();
+    private final List<IGuiWidget> widgets = new ArrayList<>();
     private int shoppingAmount;
     private boolean canBuy;
     private final Rectangle[] tooltipRectangles = new Rectangle[2];
@@ -41,10 +42,9 @@ public class WidgetAmadronOffer extends WidgetBase {
 
     @Override
     public void render(int mouseX, int mouseY, float partialTick) {
-        GL11.glDisable(GL11.GL_LIGHTING);
         if (renderBackground) {
             Minecraft.getMinecraft().getTextureManager().bindTexture(Textures.WIDGET_AMADRON_OFFER);
-            GL11.glColor4d(1, canBuy ? 1 : 0.4, canBuy ? 1 : 0.4, 1);
+            GlStateManager.color(1f, canBuy ? 1f : 0.4f, canBuy ? 1f : 0.4f, 1f);
             Gui.drawModalRectWithCustomSizedTexture(x, y, 0, 0, getBounds().width, getBounds().height, 256, 256);
         }
         for (IGuiWidget widget : widgets) {
@@ -53,11 +53,11 @@ public class WidgetAmadronOffer extends WidgetBase {
         Minecraft.getMinecraft().fontRenderer.drawString(offer.getVendor(), x + 2, y + 2, 0xFF000000);
         boolean customOffer = offer instanceof AmadronOfferCustom;
         if (shoppingAmount > 0) {
-            Minecraft.getMinecraft().fontRenderer.drawString(shoppingAmount + "", x + 36 - Minecraft.getMinecraft().fontRenderer.getStringWidth("" + shoppingAmount) / 2, y + (customOffer ? 15 : 20), 0xFF000000);
+            Minecraft.getMinecraft().fontRenderer.drawString(TextFormatting.BLACK.toString() + shoppingAmount, x + 36 - Minecraft.getMinecraft().fontRenderer.getStringWidth("" + shoppingAmount) / 2, y + (customOffer ? 15 : 20), 0xFF000000);
         }
         if (customOffer) {
             AmadronOfferCustom custom = (AmadronOfferCustom) offer;
-            Minecraft.getMinecraft().fontRenderer.drawString(TextFormatting.DARK_BLUE.toString() + custom.getStock() + "", x + 36 - Minecraft.getMinecraft().fontRenderer.getStringWidth("" + custom.getStock()) / 2, y + 25, 0xFF000000);
+            Minecraft.getMinecraft().fontRenderer.drawString(TextFormatting.DARK_BLUE.toString() + custom.getStock(), x + 36 - Minecraft.getMinecraft().fontRenderer.getStringWidth("" + custom.getStock()) / 2, y + 25, 0xFF000000);
         }
     }
 

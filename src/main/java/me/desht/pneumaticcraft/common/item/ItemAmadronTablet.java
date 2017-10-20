@@ -59,7 +59,7 @@ public class ItemAmadronTablet extends ItemPressurizable implements IAmadronInte
         if (hand != EnumHand.MAIN_HAND) return EnumActionResult.PASS;
         TileEntity te = worldIn.getTileEntity(pos);
         if (te == null) return EnumActionResult.PASS;
-        if (te.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, facing)) {
+        if (te.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing)) {
             if (!worldIn.isRemote) {
                 setLiquidProvidingLocation(player.getHeldItemMainhand(), pos, worldIn.provider.getDimension());
                 player.sendStatusMessage(new TextComponentTranslation("message.amadronTable.setLiquidProvidingLocation", pos.getX(), pos.getY(), pos.getZ(),
