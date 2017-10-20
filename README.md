@@ -40,7 +40,8 @@ With all that said, have fun!
 * Omni Hopper and Liquid Hopper
 * Heat system (including 3rd-party interaction: Gelid Cryotheum cooling is a thing!)
 * Programmer
-* Drones (tested several functions; working pretty well but there may be issues with dig speed, e.g. seems to dig dirt quite slowly even with diamond shovel in inventory)
+* Drones (tested several functions; mostly working but there are some pathfinding issues causing drones to teleport when they need to move to a distant location because they can't pathfind far enough)
+* Amadron trading system (but see drone pathfinding issues above)
 * Pneumatic Wrench
 * GPS Tool
 * Manometer
@@ -65,7 +66,7 @@ With all that said, have fun!
 * Vortex Cannon (vortex entities work fine but cannon needs an item model)
 * Flux Compressor could use a fancier model...
 * Liquid Hopper texture is a mess
-* Pneumatic Helmet HUD: OpenGL state is being left wrong somewhere leading to currently selected item in hotbar having an opaque background.
+* Pneumatic Helmet HUD: OpenGL state is being left wrong somewhere leading to currently selected item in hotbar having an opaque background.  Minor but irritating.
 
 ### Not Working Yet
 
@@ -78,7 +79,6 @@ With all that said, have fun!
 ### Not Tested Yet
 
 * Security system
-* Amadron system
 * Programmable Controller
 * Universal Actuator
 * OpenComputers integration
@@ -91,3 +91,4 @@ With all that said, have fun!
 * Look at re-implementing some rendering with FastTESR's.  Animated blocks all use regular TESR's right now, which isn't great for client performance (but at least fewer TESR's are used now than in 1.7.10, so that's a start)
 * Allow Pneumatic Dynamo to take Thermal Expansion augments?
 * Extended Aphorism Tile functionality: coloured text? images? multiblock tiles? needs some thought...
+* CraftTweaker support for various machines (in particular the compression chamber & thermopneumatic processing plant but maybe others)
