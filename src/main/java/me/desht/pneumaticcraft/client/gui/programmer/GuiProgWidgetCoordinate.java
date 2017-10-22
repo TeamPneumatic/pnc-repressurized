@@ -91,7 +91,7 @@ public class GuiProgWidgetCoordinate extends GuiProgWidgetAreaShow<ProgWidgetCoo
             BlockPos area = widget.getRawCoordinate();
             ItemStack gps = new ItemStack(Itemss.GPS_TOOL);
             ItemGPSTool.setGPSLocation(gps, area);
-            invSearchGui.setSearchStack(ItemGPSTool.getGPSLocation(gps) != null ? gps : null);
+            invSearchGui.setSearchStack(ItemGPSTool.getGPSLocation(gps) != null ? gps : ItemStack.EMPTY);
             FMLClientHandler.instance().showGuiScreen(invSearchGui);
         }
         super.actionPerformed(button);
