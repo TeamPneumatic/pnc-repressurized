@@ -296,4 +296,5 @@ public class Textures {
     public static final ResourceLocation GLOW_RESOURCE = new ResourceLocation(Textures.RENDER_BLUR);
     public static final ResourceLocation ITEM_SEARCH_OVERLAY = new ResourceLocation(ARMOR_LOCATION + "item_search_overlay.png");
 
+    public static final ResourceLocation JEI_EXPLOSION = new ResourceLocation(GUI_LOCATION + "jei/explosion.png");
 }

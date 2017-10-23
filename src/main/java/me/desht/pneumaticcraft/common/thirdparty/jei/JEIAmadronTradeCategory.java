@@ -51,7 +51,7 @@ public class JEIAmadronTradeCategory extends PneumaticCraftCategory<JEIAmadronTr
     }
 
     protected List<MultipleInputOutputRecipeWrapper> getAllRecipes() {
-        List<MultipleInputOutputRecipeWrapper> recipes = new ArrayList<MultipleInputOutputRecipeWrapper>();
+        List<MultipleInputOutputRecipeWrapper> recipes = new ArrayList<>();
         for (AmadronOffer recipe : AmadronOfferManager.getInstance().getAllOffers()) {
             recipes.add(new AmadronOfferWrapper(recipe));
         }
@@ -59,31 +59,12 @@ public class JEIAmadronTradeCategory extends PneumaticCraftCategory<JEIAmadronTr
     }
 
     private static class WidgetCustomTank extends WidgetTank {
-
-        public WidgetCustomTank(int x, int y, FluidStack stack) {
+        WidgetCustomTank(int x, int y, FluidStack stack) {
             super(x, y, 16, 16, stack);
         }
 
         @Override
         public void render(int mouseX, int mouseY, float partialTick) {
-
         }
-
     }
-
-    //    @Override
-//    public Class<AmadronOffer> getRecipeClass() {
-//        return AmadronOffer.class;
-//    }
-//
-//    @Override
-//    public IRecipeWrapper getRecipeWrapper(AmadronOffer recipe) {
-//        return new AmadronOfferWrapper(recipe);
-//    }
-//
-//    @Override
-//    public boolean isRecipeValid(AmadronOffer recipe) {
-//        return true;
-//    }
-
 }

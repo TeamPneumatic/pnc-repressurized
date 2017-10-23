@@ -15,13 +15,12 @@ public abstract class JEISpecialCraftingCategory<T extends IRecipeWrapper> exten
     private List<String> text;
     private final List<MultipleInputOutputRecipeWrapper> allRecipes = getAllRecipes();
 
-    public JEISpecialCraftingCategory(IJeiHelpers jeiHelpers) {
+    JEISpecialCraftingCategory(IJeiHelpers jeiHelpers) {
         super(jeiHelpers);
-//        registry.addRecipes(allRecipes);
     }
 
-    protected void setText(String localizationKey) {
-        text = PneumaticCraftUtils.convertStringIntoList(I18n.format(localizationKey), 30);
+    protected void setText(String localizationKey, Object... parameters) {
+        text = PneumaticCraftUtils.convertStringIntoList(I18n.format(localizationKey, parameters), 30);
     }
 
     @Override

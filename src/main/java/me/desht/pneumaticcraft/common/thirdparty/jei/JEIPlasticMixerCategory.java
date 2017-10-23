@@ -63,19 +63,4 @@ public class JEIPlasticMixerCategory extends PneumaticCraftCategory<PlasticMixer
             recipes.add(new PlasticMixerRecipeWrapper(new FluidStack(Fluids.PLASTIC, 1000), new ItemStack(Itemss.PLASTIC, 1, i)));
         return recipes;
     }
-
-//    @Override
-//    public Class<PlasticMixerNEIRecipe> getRecipeClass() {
-//        return PlasticMixerNEIRecipe.class;
-//    }
-//
-//    @Override
-//    public IRecipeWrapper getRecipeWrapper(PlasticMixerNEIRecipe recipe) {
-//        return recipe;
-//    }
-//
-//    @Override
-//    public boolean isRecipeValid(PlasticMixerNEIRecipe recipe) {
-//        return true;
-//    }
 }

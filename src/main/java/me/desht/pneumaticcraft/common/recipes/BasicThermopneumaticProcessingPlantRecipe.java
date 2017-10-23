@@ -15,7 +15,7 @@ public class BasicThermopneumaticProcessingPlantRecipe implements IThermopneumat
     private final float requiredPressure;
     private final double requiredTemperature;
 
-    public BasicThermopneumaticProcessingPlantRecipe(FluidStack inputLiquid, ItemStack inputItem,
+    public BasicThermopneumaticProcessingPlantRecipe(FluidStack inputLiquid, @Nonnull ItemStack inputItem,
                                                      FluidStack outputLiquid, double requiredTemperature, float requiredPressure) {
         this.inputItem = inputItem;
         this.inputLiquid = inputLiquid;
@@ -41,33 +41,33 @@ public class BasicThermopneumaticProcessingPlantRecipe implements IThermopneumat
     }
 
     @Override
-    public FluidStack getRecipeOutput(FluidStack inputTank, ItemStack inputItem) {
+    public FluidStack getRecipeOutput(FluidStack inputTank, @Nonnull ItemStack inputItem) {
         return outputLiquid;
     }
 
     @Override
-    public void useRecipeItems(FluidStack inputTank, ItemStack inputItem) {
+    public void useRecipeItems(FluidStack inputTank, @Nonnull ItemStack inputItem) {
         if (inputLiquid != null) inputTank.amount -= inputLiquid.amount;
-        if (this.inputItem != null) inputItem.shrink(this.inputItem.getCount());
+        if (!this.inputItem.isEmpty()) inputItem.shrink(this.inputItem.getCount());
     }
 
     @Override
-    public double getRequiredTemperature(FluidStack inputTank, ItemStack inputItem) {
+    public double getRequiredTemperature(FluidStack inputTank, @Nonnull ItemStack inputItem) {
         return requiredTemperature;
     }
 
     @Override
-    public float getRequiredPressure(FluidStack inputTank, ItemStack inputItem) {
+    public float getRequiredPressure(FluidStack inputTank, @Nonnull ItemStack inputItem) {
         return requiredPressure;
     }
 
     @Override
-    public double heatUsed(FluidStack inputTank, ItemStack inputItem) {
+    public double heatUsed(FluidStack inputTank, @Nonnull ItemStack inputItem) {
         return (requiredTemperature - 295) / 10D;
     }
 
     @Override
-    public int airUsed(FluidStack inputTank, ItemStack inputItem) {
+    public int airUsed(FluidStack inputTank, @Nonnull ItemStack inputItem) {
         return (int) (requiredPressure * 50);
     }
 
@@ -79,6 +79,7 @@ public class BasicThermopneumaticProcessingPlantRecipe implements IThermopneumat
         return outputLiquid;
     }
 
+    @Nonnull
     public ItemStack getInputItem() {
         return inputItem;
     }

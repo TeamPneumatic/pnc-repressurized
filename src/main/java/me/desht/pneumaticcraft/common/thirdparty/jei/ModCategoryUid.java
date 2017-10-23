@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.lib.Names;
 public class ModCategoryUid {
     static final String AMADRON_TRADE = Names.MOD_ID + ".amadron_trade";
     static final String ASSEMBLY_CONTROLLER = Names.MOD_ID + ".assembly_controller";
+    static final String COMPRESSED_IRON_EXPLOSION = Names.MOD_ID + ".compressed_iron_explosion";
     static final String ETCHING_ACID = Names.MOD_ID + ".etching_acid";
     static final String PLASTIC_MIXER = Names.MOD_ID + ".plastic_mixer";
     static final String PRESSURE_CHAMBER = Names.MOD_ID + ".pressure_chamber";

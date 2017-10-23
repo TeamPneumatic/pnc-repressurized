@@ -5,10 +5,11 @@ import me.desht.pneumaticcraft.common.recipes.BasicThermopneumaticProcessingPlan
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.IJeiHelpers;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.item.ItemStack;
 
 public class JEIThermopneumaticProcessingPlantCategory extends PneumaticCraftCategory<JEIThermopneumaticProcessingPlantCategory.ThermopneumaticRecipeWrapper> {
 
-    public JEIThermopneumaticProcessingPlantCategory(IJeiHelpers jeiHelpers) {
+    JEIThermopneumaticProcessingPlantCategory(IJeiHelpers jeiHelpers) {
         super(jeiHelpers);
     }
 
@@ -31,31 +32,9 @@ public class JEIThermopneumaticProcessingPlantCategory extends PneumaticCraftCat
         ThermopneumaticRecipeWrapper(BasicThermopneumaticProcessingPlantRecipe recipe) {
             addInputLiquid(recipe.getInputLiquid(), 8, 4);
             addOutputLiquid(recipe.getOutputLiquid(), 74, 3);
-            if (recipe.getInputItem() != null) this.addIngredient(new PositionedStack(recipe.getInputItem(), 41, 3));
-            setUsedPressure(136, 42, recipe.getRequiredPressure(null, null));
-            setUsedTemperature(92, 12, recipe.getRequiredTemperature(null, null));
+            if (!recipe.getInputItem().isEmpty()) this.addIngredient(new PositionedStack(recipe.getInputItem(), 41, 3));
+            setUsedPressure(136, 42, recipe.getRequiredPressure(null, ItemStack.EMPTY));
+            setUsedTemperature(92, 12, recipe.getRequiredTemperature(null, ItemStack.EMPTY));
         }
     }
-
-    /*  @Override
-      public void drawExtras(int recipe){
-          this.drawProgressBar(25, 20, 176, 0, 48, 22, cycleticks % 48 / 48F, 0);
-          super.drawExtras(recipe);
-      }*/
-
-//    @Override
-//    public Class<BasicThermopneumaticProcessingPlantRecipe> getRecipeClass() {
-//        return BasicThermopneumaticProcessingPlantRecipe.class;
-//    }
-//
-//    @Override
-//    public IRecipeWrapper getRecipeWrapper(BasicThermopneumaticProcessingPlantRecipe recipe) {
-//        return new ThermoNEIRecipeWrapper(recipe);
-//    }
-//
-//    @Override
-//    public boolean isRecipeValid(BasicThermopneumaticProcessingPlantRecipe recipe) {
-//        return true;
-//    }
-
 }

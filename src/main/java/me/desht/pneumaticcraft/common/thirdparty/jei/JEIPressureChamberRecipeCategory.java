@@ -8,13 +8,11 @@ import mezz.jei.api.IJeiHelpers;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class JEIPressureChamberRecipeCategory extends PneumaticCraftCategory<JEIPressureChamberRecipeCategory.ChamberRecipeWrapper> {
-    public JEIPressureChamberRecipeCategory(IJeiHelpers jeiHelpers) {
+    JEIPressureChamberRecipeCategory(IJeiHelpers jeiHelpers) {
         super(jeiHelpers);
     }
 
@@ -36,15 +34,14 @@ public class JEIPressureChamberRecipeCategory extends PneumaticCraftCategory<JEI
     public static class ChamberRecipeWrapper extends PneumaticCraftCategory.MultipleInputOutputRecipeWrapper {
         float recipePressure;
 
-        public ChamberRecipeWrapper(PressureChamberRecipe recipe) {
+        ChamberRecipeWrapper(PressureChamberRecipe recipe) {
             for (int i = 0; i < recipe.input.length; i++) {
                 PositionedStack stack;
                 int posX = 19 + i % 3 * 17;
                 int posY = 93 - i / 3 * 17;
 
                 if (recipe.input[i] instanceof Pair) {
-                    List<ItemStack> oreInputs = new ArrayList<ItemStack>();
-
+                    NonNullList<ItemStack> oreInputs = NonNullList.create();
                     Pair<String, Integer> oreDictEntry = (Pair<String, Integer>) recipe.input[i];
                     for (ItemStack s : OreDictionaryHelper.getOreDictEntries(oreDictEntry.getKey())) {
                         s = s.copy();
@@ -69,20 +66,4 @@ public class JEIPressureChamberRecipeCategory extends PneumaticCraftCategory<JEI
             drawAnimatedPressureGauge(120, 27, -1, recipePressure, PneumaticValues.DANGER_PRESSURE_PRESSURE_CHAMBER, PneumaticValues.MAX_PRESSURE_PRESSURE_CHAMBER);
         }
     }
-
-    //    @Override
-//    public Class<PressureChamberRecipe> getRecipeClass() {
-//        return PressureChamberRecipe.class;
-//    }
-//
-//    @Override
-//    public IRecipeWrapper getRecipeWrapper(PressureChamberRecipe recipe) {
-//        return getShape(recipe);
-//    }
-//
-//    @Override
-//    public boolean isRecipeValid(PressureChamberRecipe recipe) {
-//        return true;
-//    }
-
 }

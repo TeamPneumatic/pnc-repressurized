@@ -13,11 +13,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.FMLClientHandler;
 
+import javax.annotation.Nonnull;
+
 import static me.desht.pneumaticcraft.common.recipes.programs.AssemblyProgram.EnumMachine.IO_UNIT_EXPORT;
 import static me.desht.pneumaticcraft.common.recipes.programs.AssemblyProgram.EnumMachine.IO_UNIT_IMPORT;
 
 public class JEIAssemblyControllerCategory extends PneumaticCraftCategory<JEIAssemblyControllerCategory.AssemblyRecipeWrapper> {
-    public JEIAssemblyControllerCategory(IJeiHelpers jeiHelpers) {
+    JEIAssemblyControllerCategory(IJeiHelpers jeiHelpers) {
         super(jeiHelpers);
     }
 
@@ -58,7 +60,7 @@ public class JEIAssemblyControllerCategory extends PneumaticCraftCategory<JEIAss
             }
         }
 
-        protected ItemStack[] getMachinesFromEnum(AssemblyProgram.EnumMachine[] requiredMachines) {
+        private ItemStack[] getMachinesFromEnum(AssemblyProgram.EnumMachine[] requiredMachines) {
             ItemStack[] machineStacks = new ItemStack[requiredMachines.length];
             for (int i = 0; i < requiredMachines.length; i++) {
                 switch (requiredMachines[i]) {
@@ -83,6 +85,7 @@ public class JEIAssemblyControllerCategory extends PneumaticCraftCategory<JEIAss
         }
     }
 
+    @Nonnull
     private static ItemStack makeIOUnitStack(AssemblyProgram.EnumMachine what) {
         ItemStack stack = new ItemStack(Blockss.ASSEMBLY_IO_UNIT, 1, what == IO_UNIT_IMPORT ? 0 : 1);
         return stack.setStackDisplayName(TextFormatting.RESET.toString() + TextFormatting.WHITE +

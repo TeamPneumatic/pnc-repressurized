@@ -12,7 +12,7 @@ import java.util.List;
 
 public class JEIEtchingAcidCategory extends JEISpecialCraftingCategory<EtchingAcidRecipeWrapper> {
 
-    public JEIEtchingAcidCategory(IJeiHelpers jeiHelpers) {
+    JEIEtchingAcidCategory(IJeiHelpers jeiHelpers) {
         super(jeiHelpers);
         setText("gui.nei.recipe.etchingAcid");
     }
@@ -32,28 +32,12 @@ public class JEIEtchingAcidCategory extends JEISpecialCraftingCategory<EtchingAc
         List<MultipleInputOutputRecipeWrapper> recipes = new ArrayList<>();
         MultipleInputOutputRecipeWrapper recipe = new EtchingAcidRecipeWrapper();
         recipe.addIngredient(new PositionedStack(new ItemStack(Itemss.EMPTY_PCB), 41, 80));
-        recipe.addIngredient(new PositionedStack(new ItemStack(Fluids.getBucket(Fluids.ETCHING_ACID)), 73, 80));
+        recipe.addIngredient(new PositionedStack(Fluids.getBucketStack(Fluids.ETCHING_ACID), 73, 80));
         recipe.addOutput(new PositionedStack(new ItemStack(Itemss.UNASSEMBLED_PCB), 105, 80));
         recipes.add(recipe);
         return recipes;
     }
 
     static class EtchingAcidRecipeWrapper extends PneumaticCraftCategory.MultipleInputOutputRecipeWrapper {
-
     }
-
-//    @Override
-//    public Class<EtchingAcidRecipeWrapper> getRecipeClass() {
-//        return EtchingAcidRecipeWrapper.class;
-//    }
-//
-//    @Override
-//    public IRecipeWrapper getRecipeWrapper(EtchingAcidRecipeWrapper recipe) {
-//        return recipe;
-//    }
-//
-//    @Override
-//    public boolean isRecipeValid(EtchingAcidRecipeWrapper recipe) {
-//        return true;
-//    }
 }

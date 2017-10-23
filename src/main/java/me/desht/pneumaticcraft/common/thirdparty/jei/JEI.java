@@ -5,6 +5,8 @@ import me.desht.pneumaticcraft.client.gui.GuiPressureChamber;
 import me.desht.pneumaticcraft.client.gui.GuiRefinery;
 import me.desht.pneumaticcraft.client.gui.GuiThermopneumaticProcessingPlant;
 import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.fluid.Fluids;
+import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.recipes.AssemblyRecipe;
 import me.desht.pneumaticcraft.common.recipes.BasicThermopneumaticProcessingPlantRecipe;
 import me.desht.pneumaticcraft.common.recipes.PneumaticRecipeRegistry;
@@ -15,7 +17,13 @@ import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.JEIPlugin;
 import mezz.jei.api.recipe.IRecipeCategoryRegistration;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidUtil;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.oredict.OreDictionary;
 
 @JEIPlugin
@@ -23,8 +31,6 @@ public class JEI implements IModPlugin {
 
     @Override
     public void register(IModRegistry registry) {
-        Log.info("Initializing PneumaticCraft JEI plugin...");
-
         IJeiHelpers jeiHelpers = registry.getJeiHelpers();
 
         registry.addRecipes(PneumaticRecipeRegistry.getInstance().thermopneumaticProcessingPlantRecipes, ModCategoryUid.THERMO_PNEUMATIC);
@@ -32,10 +38,12 @@ public class JEI implements IModPlugin {
         registry.addRecipes(new JEIPlasticMixerCategory(jeiHelpers).getAllRecipes(), ModCategoryUid.PLASTIC_MIXER);
         registry.addRecipes(new JEIRefineryCategory(jeiHelpers).getAllRecipes(), ModCategoryUid.REFINERY);
         registry.addRecipes(new JEIEtchingAcidCategory(jeiHelpers).getAllRecipes(), ModCategoryUid.ETCHING_ACID);
+        registry.addRecipes(new JEICompressedIronCategory(jeiHelpers).getAllRecipes(), ModCategoryUid.COMPRESSED_IRON_EXPLOSION);
         registry.addRecipes(new JEIUVLightBoxCategory(jeiHelpers).getAllRecipes(), ModCategoryUid.UV_LIGHT_BOX);
         registry.addRecipes(AssemblyRecipe.drillRecipes, ModCategoryUid.ASSEMBLY_CONTROLLER);
         registry.addRecipes(AssemblyRecipe.laserRecipes, ModCategoryUid.ASSEMBLY_CONTROLLER);
         registry.addRecipes(AssemblyRecipe.drillLaserRecipes, ModCategoryUid.ASSEMBLY_CONTROLLER);
+        registry.addRecipes(new JEIAmadronTradeCategory(jeiHelpers).getAllRecipes(), ModCategoryUid.AMADRON_TRADE);
 
         registry.handleRecipes(PressureChamberRecipe.class,
                 JEIPressureChamberRecipeCategory.ChamberRecipeWrapper::new, ModCategoryUid.PRESSURE_CHAMBER);
@@ -52,6 +60,15 @@ public class JEI implements IModPlugin {
         jeiHelpers.getIngredientBlacklist().addIngredientToBlacklist(new ItemStack(Blockss.DRONE_REDSTONE_EMITTER, 1, OreDictionary.WILDCARD_VALUE));
         jeiHelpers.getIngredientBlacklist().addIngredientToBlacklist(new ItemStack(Blockss.KEROSENE_LAMP_LIGHT));
 
+        registry.addRecipeCatalyst(new ItemStack(Itemss.AMADRON_TABLET), ModCategoryUid.AMADRON_TRADE);
+        registry.addRecipeCatalyst(new ItemStack(Blockss.ASSEMBLY_CONTROLLER), ModCategoryUid.ASSEMBLY_CONTROLLER);
+        registry.addRecipeCatalyst(FluidUtil.getFilledBucket(new FluidStack(Fluids.ETCHING_ACID, 1000)), ModCategoryUid.ETCHING_ACID);
+        registry.addRecipeCatalyst(new ItemStack(Blockss.PLASTIC_MIXER), ModCategoryUid.PLASTIC_MIXER);
+        registry.addRecipeCatalyst(new ItemStack(Blockss.PRESSURE_CHAMBER_WALL), ModCategoryUid.PRESSURE_CHAMBER);
+        registry.addRecipeCatalyst(new ItemStack(Blockss.REFINERY), ModCategoryUid.REFINERY);
+        registry.addRecipeCatalyst(new ItemStack(Blockss.THERMOPNEUMATIC_PROCESSING_PLANT), ModCategoryUid.THERMO_PNEUMATIC);
+        registry.addRecipeCatalyst(new ItemStack(Blockss.UV_LIGHT_BOX), ModCategoryUid.UV_LIGHT_BOX);
+
         registry.addAdvancedGuiHandlers(new GuiTabHandler());
     }
 
@@ -64,25 +81,10 @@ public class JEI implements IModPlugin {
                 new JEIThermopneumaticProcessingPlantCategory(helpers),
                 new JEIRefineryCategory(helpers),
                 new JEIEtchingAcidCategory(helpers),
+                new JEICompressedIronCategory(helpers),
                 new JEIUVLightBoxCategory(helpers),
                 new JEIAmadronTradeCategory(helpers),
                 new JEIPlasticMixerCategory(helpers)
         );
     }
-
-//    public static List<ItemStack> toItemStacks(List<PositionedStack> positioned) {
-//        List<ItemStack> stacks = new ArrayList<ItemStack>(positioned.size());
-//        for (PositionedStack stack : positioned) {
-//            stacks.addAll(stack.getStacks());
-//        }
-//        return stacks;
-//    }
-//
-//    public static List<FluidStack> toFluidStacks(List<WidgetTank> widgets) {
-//        List<FluidStack> stacks = new ArrayList<FluidStack>(widgets.size());
-//        for (WidgetTank widget : widgets) {
-//            stacks.add(widget.getFluid());
-//        }
-//        return stacks;
-//    }
 }

@@ -3,6 +3,8 @@ package me.desht.pneumaticcraft.api.recipe;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
+import javax.annotation.Nonnull;
+
 public interface IThermopneumaticProcessingPlantRecipe {
     /**
      * Should return true when this recipe is valid, providing the input items. Do not modify these input items yet.
@@ -35,11 +37,11 @@ public interface IThermopneumaticProcessingPlantRecipe {
      * @param inputItem
      * @return temperature in degrees Kelvin.
      */
-    double getRequiredTemperature(FluidStack inputTank, ItemStack inputItem);
+    double getRequiredTemperature(FluidStack inputTank, @Nonnull ItemStack inputItem);
 
-    double heatUsed(FluidStack inputTank, ItemStack inputItem);
+    double heatUsed(FluidStack inputTank, @Nonnull ItemStack inputItem);
 
-    float getRequiredPressure(FluidStack inputTank, ItemStack inputItem);
+    float getRequiredPressure(FluidStack inputTank, @Nonnull ItemStack inputItem);
 
-    int airUsed(FluidStack inputTank, ItemStack inputItem);
+    int airUsed(FluidStack inputTank, @Nonnull ItemStack inputItem);
 }

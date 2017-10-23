@@ -913,8 +913,10 @@ achievement.dw9x9=The Perfect Size
 achievement.dw9x9.desc=Build a 9x9 house made out of Cobblestone, the perfect size according to Direwolf20.
 
 #NEI
-gui.nei.recipe.etchingAcid=Place down a block of Etching Acid. Throw in an Empty PCB that has been exposed by UV light by a UV Light Box. This process will take 5 minutes.
-gui.nei.recipe.uvLightBox=Create a UV Light Box, power it with air, and put in an Empty PCB. This process takes about 10 minutes (without any Speed Upgrades).
+gui.nei.recipe.etchingAcid=Create a pool of Etching Acid (one bucket is enough). Throw in an Empty PCB which has been exposed in a UV Light Box. This process will take 5 minutes.
+gui.nei.recipe.uvLightBox=Create a UV Light Box, provide pressure, and insert an Empty PCB. This process takes about 10 minutes (without any Speed Upgrades).
+gui.nei.recipe.compressedIronExplosion=Throw one or more iron ingots on the ground, and set off an explosion next to them.  Note: %d%% (on average) of the ingots will be destroyed.
+gui.nei.title.compressedIronExplosion=Explosion Crafting
 
 #Amadron
 drone.amadronDeliveryDrone=Amadron Delivery Drone

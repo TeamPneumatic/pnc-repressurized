@@ -290,6 +290,9 @@ public class ClientEventHandler {
             ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(item.getRegistryName(), "inventory"));
         }
 
+        Item assemblyIO = Item.getItemFromBlock(Blockss.ASSEMBLY_IO_UNIT);
+        ModelLoader.setCustomModelResourceLocation(assemblyIO, 1, new ModelResourceLocation(RL("assembly_io_unit_import"), "inventory"));
+
         for (Item item: Itemss.items) {
             if (item instanceof ItemPneumaticSubtyped) {
                 ModelBakery.registerItemVariants(item);

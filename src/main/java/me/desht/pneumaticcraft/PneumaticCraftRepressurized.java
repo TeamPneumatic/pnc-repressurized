@@ -53,7 +53,7 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import org.apache.logging.log4j.Logger;
 
-@Mod(modid = Names.MOD_ID, name = "PneumaticCraft: Repressurized", version = PneumaticCraftRepressurized.MODVERSION,
+@Mod(modid = Names.MOD_ID, name = Names.MOD_NAME, version = PneumaticCraftRepressurized.MODVERSION,
         dependencies = "required-after:forge@[14.23.0.2491,);after:forestry",
         acceptedMinecraftVersions = "1.12"
 )

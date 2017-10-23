@@ -12,7 +12,7 @@ import java.util.List;
 
 public class JEIUVLightBoxCategory extends JEISpecialCraftingCategory<UVLightBoxRecipeWrapper> {
 
-    public JEIUVLightBoxCategory(IJeiHelpers jeiHelpers) {
+    JEIUVLightBoxCategory(IJeiHelpers jeiHelpers) {
         super(jeiHelpers);
         setText("gui.nei.recipe.uvLightBox");
     }
@@ -29,7 +29,7 @@ public class JEIUVLightBoxCategory extends JEISpecialCraftingCategory<UVLightBox
 
     @Override
     protected List<MultipleInputOutputRecipeWrapper> getAllRecipes() {
-        List<MultipleInputOutputRecipeWrapper> recipes = new ArrayList<MultipleInputOutputRecipeWrapper>();
+        List<MultipleInputOutputRecipeWrapper> recipes = new ArrayList<>();
         MultipleInputOutputRecipeWrapper recipe = new UVLightBoxRecipeWrapper();
         recipe.addIngredient(new PositionedStack(new ItemStack(Itemss.EMPTY_PCB, 1, Itemss.EMPTY_PCB.getMaxDamage()), 41, 80));
         recipe.addIngredient(new PositionedStack(new ItemStack(Blockss.UV_LIGHT_BOX), 73, 80));
@@ -38,22 +38,6 @@ public class JEIUVLightBoxCategory extends JEISpecialCraftingCategory<UVLightBox
         return recipes;
     }
 
-    public static class UVLightBoxRecipeWrapper extends PneumaticCraftCategory.MultipleInputOutputRecipeWrapper {
-
+    static class UVLightBoxRecipeWrapper extends PneumaticCraftCategory.MultipleInputOutputRecipeWrapper {
     }
-
-//    @Override
-//    public Class<UVLightBoxRecipeWrapper> getRecipeClass() {
-//        return UVLightBoxRecipeWrapper.class;
-//    }
-//
-//    @Override
-//    public IRecipeWrapper getRecipeWrapper(UVLightBoxRecipeWrapper recipe) {
-//        return recipe;
-//    }
-//
-//    @Override
-//    public boolean isRecipeValid(UVLightBoxRecipeWrapper recipe) {
-//        return true;
-//    }
 }

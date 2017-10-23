@@ -39,7 +39,7 @@ public abstract class PneumaticCraftCategory<T extends IRecipeWrapper> implement
     @Nonnull
     @Override
     public String getModName() {
-        return Names.MOD_ID;
+        return Names.MOD_NAME;
     }
 
     public static class MultipleInputOutputRecipeWrapper implements IRecipeWrapper {
@@ -153,7 +153,7 @@ public abstract class PneumaticCraftCategory<T extends IRecipeWrapper> implement
         @Nonnull
         @Override
         public List<String> getTooltipStrings(int mouseX, int mouseY) {
-            List<String> currenttip = new ArrayList<String>();
+            List<String> currenttip = new ArrayList<>();
 
             Point mouse = new Point(mouseX, mouseY);
             for (IGuiWidget widget : tooltipWidgets) {
@@ -178,7 +178,7 @@ public abstract class PneumaticCraftCategory<T extends IRecipeWrapper> implement
 
     }
 
-    public static void drawAnimatedPressureGauge(int x, int y, float minPressure, float minWorkingPressure, float dangerPressure, float maxPressure) {
+    static void drawAnimatedPressureGauge(int x, int y, float minPressure, float minWorkingPressure, float dangerPressure, float maxPressure) {
         GuiUtils.drawPressureGauge(FMLClientHandler.instance().getClient().fontRenderer, minPressure, maxPressure, dangerPressure, minWorkingPressure, minWorkingPressure * ((float) tickTimer.getValue() / tickTimer.getMaxValue()), x, y, 90);
     }
 

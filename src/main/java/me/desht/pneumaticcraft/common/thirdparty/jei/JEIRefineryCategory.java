@@ -14,7 +14,7 @@ import java.util.List;
 
 public class JEIRefineryCategory extends PneumaticCraftCategory<RefineryNEIRecipeWrapper> {
 
-    public JEIRefineryCategory(IJeiHelpers jeiHelpers) {
+    JEIRefineryCategory(IJeiHelpers jeiHelpers) {
         super(jeiHelpers);
     }
 

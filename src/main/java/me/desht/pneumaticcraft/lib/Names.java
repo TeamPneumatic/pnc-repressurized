@@ -16,4 +16,5 @@ public class Names {
     public static final String PNEUMATIC_KEYBINDING_CATEGORY = "key.pneumaticcraft.category";
 
     public static final String MOD_ID = "pneumaticcraft";
+    public static final String MOD_NAME = "PneumaticCraft: Repressurized";
 }
