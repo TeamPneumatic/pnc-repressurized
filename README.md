@@ -59,36 +59,23 @@ With all that said, have fun!
 * Flux Compressor & Pneumatic Dynamo (using Forge Energy; no Tesla or direct CoFH support at this point - not sure if it will be necessary to add)
 * Universal Sensor
 
-### Functional but Needs Clientside Work
-
-* Vortex tube doesn't get tinted to indicate temperature (OBJ models can't have a tintindex - may need a TESR or some IBakedModel trickery)
-* Miniguns (ammo works, mobs die, but no item model)
-* Vortex Cannon (vortex entities work fine but cannon needs an item model)
-* Flux Compressor could use a fancier model...
-* Liquid Hopper texture is a mess
-* Pneumatic Helmet HUD: OpenGL state is being left wrong somewhere leading to currently selected item in hotbar having an opaque background.  Minor but irritating.
-
 ### Not Working Yet
 
-* Multipart pressure tubes with MCMP2; support is in, but not working yet; tubes render unconnected even if they're actually connected.  I need to get a better understanding of the API.  Works fine if you set "mcmultipart" to "false" in ``config/pneumaticcraft/thirdparty.cfg``.
-* Electric Compressor & Pneumatic Generator (need to reimplement with IC2 API)
-* Achievements (need to convert to 1.12 Advancements)
-* IGW support (there's no official 1.12 port, but see https://github.com/Z-Doctor/IGW-mod/tree/1.11/src/igwmod)
-* Dungeon loot (nuke virus & stop worm)
+I'm now tracking work that's needed before the initial release in the issues: https://github.com/desht/pnc-repressurized/milestone/1
+
+If you're playing with the mod and encounter problems, check there first before raising a new issue.
 
 ### Not Tested Yet
 
 * Security system
 * Programmable Controller
-* Universal Actuator
 * OpenComputers integration
+* Universal Actuator *(implementation of this block was never completed in the original PneumaticCraft)*
 
 *Any mod features not listed anywhere else can be assumed to be in the **Not Tested Yet** category.*
 
 ### TODO (once the mod is stable, post-release)
 
-* Expose more functionality via capabilities (e.g. ``IAirHandler``, ``IHeatExchangerLogic``, ``IPressurizable``)
-* Look at re-implementing some rendering with FastTESR's.  Animated blocks all use regular TESR's right now, which isn't great for client performance (but at least fewer TESR's are used now than in 1.7.10, so that's a start)
-* Allow Pneumatic Dynamo to take Thermal Expansion augments?
-* Extended Aphorism Tile functionality: coloured text? images? multiblock tiles? needs some thought...
-* CraftTweaker support for various machines (in particular the compression chamber & thermopneumatic processing plant but maybe others)
+Features & enhancements tracked for post-beta: https://github.com/desht/pnc-repressurized/milestone/3
+
+
