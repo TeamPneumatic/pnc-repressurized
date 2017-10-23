@@ -69,6 +69,9 @@ public class ThirdPartyManager implements IGuiHandler {
         ThirdPartyConfig.setupDefaults(thirdPartyClasses.keySet());
 
         Set<String> enabledThirdParty = thirdPartyClasses.keySet().stream().filter(ThirdPartyConfig::isEnabled).collect(Collectors.toSet());
+        // mcmp2 is just too broken to contemplate trying to make work: blacklist it for the foreseeable future
+        enabledThirdParty.remove(ModIds.MCMP);
+
         PneumaticCraftRepressurized.logger.info("Thirdparty integration activated for [" + Strings.join(enabledThirdParty, ", ") + "]");
 
         for (Map.Entry<String, Class<? extends IThirdParty>> entry : thirdPartyClasses.entrySet()) {
