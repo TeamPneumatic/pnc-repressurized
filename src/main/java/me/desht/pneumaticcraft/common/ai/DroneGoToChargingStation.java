@@ -55,7 +55,7 @@ public class DroneGoToChargingStation extends EntityAIBase {
             BlockPos pos = new BlockPos(station.getPos().getX(), station.getPos().getY(), station.getPos().getZ());
             if (protect) {
                 drone.addDebugEntry("gui.progWidget.chargingStation.debug.protected", pos);
-            } else if (drone.getPathNavigator().moveToXYZ(station.getPos().getX(), station.getPos().getY() + 1.5, station.getPos().getZ()) || drone.getPathNavigator().isGoingToTeleport()) {
+            } else if (drone.getPathNavigator().moveToXYZ(station.getPos().getX(), station.getPos().getY() + 1, station.getPos().getZ()) || drone.getPathNavigator().isGoingToTeleport()) {
                 isExecuting = true;
                 curCharger = station;
                 DroneClaimManager.getInstance(drone.world).claim(pos);

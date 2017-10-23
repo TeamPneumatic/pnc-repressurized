@@ -44,6 +44,7 @@ import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.EntityAITasks;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
+import net.minecraft.entity.passive.EntityFlying;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -61,6 +62,7 @@ import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.pathfinding.PathNavigate;
+import net.minecraft.pathfinding.PathNodeType;
 import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.server.management.PlayerInteractionManager;
 import net.minecraft.stats.StatBase;
@@ -92,7 +94,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 
 public class EntityDrone extends EntityDroneBase
-        implements IManoMeasurable, IPneumaticWrenchable, IEntityAdditionalSpawnData, IHackableEntity, IDroneBase {
+        implements IManoMeasurable, IPneumaticWrenchable, IEntityAdditionalSpawnData, IHackableEntity, IDroneBase, EntityFlying {
 
     private static final HashMap<String, Integer> colorMap = new HashMap<>();
 
@@ -163,7 +165,11 @@ public class EntityDrone extends EntityDroneBase
 
     @Override
     protected PathNavigate createNavigator(World worldIn) {
-        return new EntityPathNavigateDrone(this, worldIn);
+        EntityPathNavigateDrone nav = new EntityPathNavigateDrone(this, worldIn);
+        nav.setCanOpenDoors(false);
+        nav.setCanFloat(true);
+        nav.setCanEnterDoors(true);
+        return nav;
     }
 
     private void initializeFakePlayer() {
@@ -278,6 +284,7 @@ public class EntityDrone extends EntityDroneBase
             if (hasLiquidImmunity) {
                 ((EntityPathNavigateDrone) getPathNavigator()).pathThroughLiquid = true;
             }
+            setPathPriority(PathNodeType.WATER, hasLiquidImmunity ? 0.0f : -1.0f);
             speed = 0.1 + Math.min(10, getUpgrades(EnumUpgrade.SPEED)) * 0.01;
             lifeUpgrades = getUpgrades(EnumUpgrade.ITEM_LIFE);
             if (!world.isRemote) setHasMinigun(getUpgrades(EnumUpgrade.ENTITY_TRACKER) > 0);

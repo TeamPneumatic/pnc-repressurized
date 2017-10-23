@@ -9,10 +9,10 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.items.ItemStackHandler;
 
 import java.util.List;
 
@@ -23,28 +23,18 @@ public class ProgrammedDroneUtils {
         NBTTagCompound tag = new NBTTagCompound();
         drone.writeEntityToNBT(tag);
 
-        NBTTagList upgradeList = new NBTTagList();
-        NBTTagCompound slotEntry = new NBTTagCompound();
-        slotEntry.setByte("Slot", (byte) 0);
-        new ItemStack(ItemRegistry.getInstance().getUpgrade(EnumUpgrade.DISPENSER), 64).writeToNBT(slotEntry);
-        upgradeList.appendTag(slotEntry);
-
-        slotEntry = new NBTTagCompound();
-        slotEntry.setByte("Slot", (byte) 1);
-        new ItemStack(ItemRegistry.getInstance().getUpgrade(EnumUpgrade.SPEED), 10).writeToNBT(slotEntry);
-        upgradeList.appendTag(slotEntry);
-
-        NBTTagCompound inv = new NBTTagCompound();
-
-        inv.setTag(ChargeableItemHandler.NBT_UPGRADE_TAG, upgradeList);
-        tag.setTag("Inventory", inv);
+        ItemStackHandler upgrades = new ItemStackHandler(9);
+        upgrades.setStackInSlot(0, new ItemStack(ItemRegistry.getInstance().getUpgrade(EnumUpgrade.DISPENSER), 64));
+        upgrades.setStackInSlot(1, new ItemStack(ItemRegistry.getInstance().getUpgrade(EnumUpgrade.SPEED), 10));
+        tag.setTag(ChargeableItemHandler.NBT_UPGRADE_TAG, upgrades.serializeNBT());
+        tag.setTag("Inventory", new NBTTagCompound());
         tag.setFloat("currentAir", 100000);
 
         drone.readEntityFromNBT(tag);
         // FIXME: we really need to get a clientside localization here (on the server side)
         drone.setCustomNameTag(net.minecraft.util.text.translation.I18n.translateToLocal("drone.amadronDeliveryDrone"));
 
-        drone.naturallySpawned = true;//Don't let the drone be dropped when wrenching it.
+        drone.naturallySpawned = true; // Don't let the drone be dropped when wrenching it.
 
         return drone;
     }

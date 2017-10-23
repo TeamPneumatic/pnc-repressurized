@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.api.drone.IPathNavigator;
-import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
@@ -12,17 +11,17 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.pathfinding.PathFinder;
-import net.minecraft.pathfinding.PathNavigate;
-import net.minecraft.pathfinding.PathPoint;
+import net.minecraft.pathfinding.PathNavigateFlying;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
 import java.util.Random;
 
-public class EntityPathNavigateDrone extends PathNavigate implements IPathNavigator {
+public class EntityPathNavigateDrone extends PathNavigateFlying implements IPathNavigator {
 
     private final EntityDrone pathfindingEntity;
     public boolean pathThroughLiquid;
@@ -55,30 +54,32 @@ public class EntityPathNavigateDrone extends PathNavigate implements IPathNaviga
                 pos = pos.up();
             }
         }
-        return getPathToPos(pos); //TODO 1.8 test
+        return getPathToPos(pos);
     }
 
     public void setForceTeleport(boolean forceTeleport) {
         this.forceTeleport = forceTeleport;
     }
 
+
+    @Nullable
     @Override
     public Path getPathToPos(BlockPos pos) {
-        if (!pathfindingEntity.isBlockValidPathfindBlock(pos)) return null;
-        Path path = null;
-
-        BlockPos blockPos = new BlockPos(pathfindingEntity);
-        if (!forceTeleport || pos.equals(blockPos)) {
-            path = super.getPathToPos(pos.down());
-            if (path != null) {
-                PathPoint finalPoint = path.getFinalPathPoint();
-                if (finalPoint == null || !pos.equals(new BlockPos(finalPoint.x, finalPoint.y, finalPoint.z)))
-                    path = null;
-            }
+        if (forceTeleport) {
+            teleportCounter = 0;
+            return null;
         }
-        teleportCounter = path != null || pos.equals(blockPos) ? -1 : 0;
+        if (!pathfindingEntity.isBlockValidPathfindBlock(pos) || pathfindingEntity.getDistanceSqToCenter(pos) < 0.3)
+            return null;
+
         telPos = pos;
         pathfindingEntity.setStandby(false);
+        teleportCounter = -1;
+        Path path = super.getPathToPos(pos);
+        if (path == null) {
+            teleportCounter = 0;
+        }
+
         return path;
     }
 
@@ -156,9 +157,7 @@ public class EntityPathNavigateDrone extends PathNavigate implements IPathNaviga
             NetworkHandler.sendToAllAround(new PacketSpawnParticle(EnumParticleTypes.PORTAL, d7, d8, d9, f, f1, f2), pathfindingEntity.world);
         }
 
-//        pathfindingEntity.world.playSoundEffect(pathfindingEntity.posX, pathfindingEntity.posY, pathfindingEntity.posZ, "mob.endermen.portal", 1.0F, 1.0F);
         pathfindingEntity.playSound(SoundEvents.ENTITY_ENDERMEN_TELEPORT, 1.0F, 1.0F);
-
         pathfindingEntity.setPosition(telPos.getX() + 0.5, telPos.getY() + 0.5, telPos.getZ() + 0.5);
     }
 
@@ -184,12 +183,13 @@ public class EntityPathNavigateDrone extends PathNavigate implements IPathNaviga
 
     @Override
     protected PathFinder getPathFinder() {
-        return new PathFinder(new NodeProcessorDrone());
+        this.nodeProcessor = new NodeProcessorDrone();
+        return new PathFinder(this.nodeProcessor);
     }
 
     @Override
     protected Vec3d getEntityPosition() {
-        return pathfindingEntity.getDronePos();//TODO 1.8 test if offset is necessary.
+        return pathfindingEntity.getDronePos();
     }
 
     @Override
