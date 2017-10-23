@@ -120,7 +120,7 @@ public class CraftingRegistrator {
         addRecipe(getUpgrade(EnumUpgrade.ITEM_LIFE), "lal", "aca", "lal", 'l', lapis, 'a', Items.APPLE, 'c', Items.CLOCK);
         addRecipe(getUpgrade(EnumUpgrade.ENTITY_TRACKER), "lbl", "bsb", "lbl", 'l', lapis, 'b', Items.BONE, 's', Items.FERMENTED_SPIDER_EYE);
         addRecipe(getUpgrade(EnumUpgrade.BLOCK_TRACKER), "lwl", "wsw", "lwl", 'l', lapis, 'w', Blockss.PRESSURE_CHAMBER_WALL, 's', Items.FERMENTED_SPIDER_EYE);
-        addRecipe(getUpgrade(EnumUpgrade.SPEED), "lsl", "scs", "lsl", 'l', lapis, 's', Items.SUGAR, 'c', Fluids.getBucket(Fluids.LUBRICANT));
+        addRecipe(getUpgrade(EnumUpgrade.SPEED), "lsl", "scs", "lsl", 'l', lapis, 's', Items.SUGAR, 'c', Fluids.getBucketStack(Fluids.LUBRICANT));
         addRecipe(getUpgrade(EnumUpgrade.SEARCH), "lel", "ege", "lel", 'l', lapis, 'e', Items.ENDER_EYE, 'g', Items.GOLDEN_CARROT);
         addRecipe(getUpgrade(EnumUpgrade.COORDINATE_TRACKER), "lrl", "rgr", "lrl", 'l', lapis, 'r', Items.REDSTONE, 'g', Itemss.GPS_TOOL);
         addRecipe(getUpgrade(EnumUpgrade.RANGE), "lal", "aba", "lal", 'l', lapis, 'a', Items.ARROW, 'b', Items.BOW);
@@ -385,7 +385,7 @@ public class CraftingRegistrator {
             for (ItemStack stack : ingredient.getMatchingStacks()) {
                 FluidStack fluid = FluidUtil.getFluidContained(stack);
                 if (fluid != null) {
-                    ForgeRegistries.RECIPES.register(new RecipeFluid(recipe, i).setRegistryName("recipe_" + recipeIndex++));
+                    ForgeRegistries.RECIPES.register(new RecipeFluid(recipe, i));
                 }
             }
         }
