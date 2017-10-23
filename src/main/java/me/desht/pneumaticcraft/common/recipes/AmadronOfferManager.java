@@ -127,12 +127,12 @@ public class AmadronOfferManager {
     }
 
     static IItemHandler getItemHandler(TileEntity te) {
-        return te.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null) ?
+        return te != null && te.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null) ?
                 te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null) : null;
     }
 
     static IFluidHandler getFluidHandler(TileEntity te) {
-        return te.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null) ?
+        return te != null && te.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null) ?
                 te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null) : null;
     }
 
