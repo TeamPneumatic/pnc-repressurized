@@ -47,7 +47,6 @@ public class Fluids {
     public static final Fluid LUBRICANT = createFluid("lubricant",
             fluid -> {}, BlockFluidPneumaticCraft::new);
 
-    public static final Map<Block, Item> fluidBlockToBucketMap = new HashMap<>();
     private static final Map<String, Block> fluidToBlockMap = new HashMap<>(); //you could theoretically use fluid.getBlock(), but other mods like GregTech break it for some reason.
 
     public static void preInit() {

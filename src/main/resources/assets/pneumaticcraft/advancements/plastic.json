@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "item": "pneumaticcraft:plastic"
+    },
+    "title": {
+      "translate": "achievement.plastic"
+    },
+    "description": {
+      "translate": "achievement.plastic.desc"
+    }
+  },
+  "parent": "pneumaticcraft:refinery",
+  "criteria": {
+    "plastic": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:plastic"
+          }
+        ]
+      }
+    }
+  }
+}

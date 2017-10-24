@@ -1,0 +1,28 @@
+{
+  "display": {
+    "icon": {
+      "item": "forge:bucketfilled",
+      "nbt": "{FluidName:\"etchacid\",Amount:1000}"
+    },
+    "title": {
+      "translate": "achievement.etchacidBucket"
+    },
+    "description": {
+      "translate": "achievement.etchacidBucket.desc"
+    }
+  },
+  "parent": "pneumaticcraft:uv_light_box",
+  "criteria": {
+    "etchacid_bucket": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "forge:bucketfilled",
+            "nbt": "{FluidName:\"etchacid\",Amount:1000}"
+          }
+        ]
+      }
+    }
+  }
+}

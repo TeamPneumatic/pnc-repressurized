@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "item": "pneumaticcraft:refinery"
+    },
+    "title": {
+      "translate": "achievement.refinery"
+    },
+    "description": {
+      "translate": "achievement.refinery.desc"
+    }
+  },
+  "parent": "pneumaticcraft:oil_bucket",
+  "criteria": {
+    "refinery": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:refinery"
+          }
+        ]
+      }
+    }
+  }
+}

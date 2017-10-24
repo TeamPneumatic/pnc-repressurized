@@ -1,0 +1,20 @@
+{
+  "display": {
+    "icon": {
+      "item": "forge:bucketfilled",
+      "nbt": "{FluidName:\"oil\",Amount:1000}"
+    },
+    "title": {
+      "translate": "achievement.oilBucket"
+    },
+    "description": {
+      "translate": "achievement.oilBucket.desc"
+    }
+  },
+  "parent": "pneumaticcraft:root",
+  "criteria": {
+    "oil_bucket": {
+      "trigger": "pneumaticcraft:oil_bucket"
+    }
+  }
+}

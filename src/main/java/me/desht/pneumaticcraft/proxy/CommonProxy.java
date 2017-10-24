@@ -10,6 +10,7 @@ import me.desht.pneumaticcraft.client.gui.tubemodule.GuiPressureModule;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.hacking.HackingImpl;
 import me.desht.pneumaticcraft.common.CommonHUDHandler;
 import me.desht.pneumaticcraft.common.HackTickHandler;
+import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.inventory.*;
 import me.desht.pneumaticcraft.common.semiblock.*;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
@@ -261,6 +262,7 @@ public class CommonProxy implements IGuiHandler {
 
     public void preInit() {
         CapabilityManager.INSTANCE.register(IHacking.class, new HackingImpl.Storage(), HackingImpl::new);
+        AdvancementTriggers.registerTriggers();
     }
 
     public void init() {

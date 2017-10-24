@@ -13,12 +13,12 @@ import me.desht.pneumaticcraft.client.render.pneumaticArmor.EntityTrackUpgradeHa
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.hacking.CapabilityHackingProvider;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.hacking.entity.HackableEnderman;
+import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.entity.EntityProgrammableController;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
-import me.desht.pneumaticcraft.common.fluid.Fluids;
 import me.desht.pneumaticcraft.common.item.ItemAmadronTablet;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.item.Itemss;
@@ -31,7 +31,7 @@ import me.desht.pneumaticcraft.common.recipes.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.remote.GlobalVariableManager;
 import me.desht.pneumaticcraft.common.thirdparty.ModInteractionUtilImplementation;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
-import me.desht.pneumaticcraft.common.util.FluidUtils;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityRefinery;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
 import net.minecraft.block.Block;
@@ -42,6 +42,7 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityGolem;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
@@ -50,8 +51,10 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
@@ -66,8 +69,10 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.furnace.FurnaceFuelBurnTimeEvent;
 import net.minecraftforge.event.world.ExplosionEvent;
 import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
+import net.minecraftforge.fluids.IFluidBlock;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.eventhandler.Event.Result;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -76,7 +81,6 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import javax.annotation.Nonnull;
 import java.util.*;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
@@ -113,6 +117,12 @@ public class EventHandlerPneumaticCraft {
                         }
                         ((EntityItem) entity).setItem(newStack);
                         iterator.remove();
+                        if (!event.getWorld().isRemote) {
+                            Vec3d exp = event.getExplosion().getPosition();
+                            for (EntityPlayer player : event.getWorld().getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(exp.x - 32, exp.y - 32, exp.z - 32, exp.x + 32, exp.y + 32, exp.z + 32))) {
+                                AdvancementTriggers.EXPLODE_IRON.trigger((EntityPlayerMP) player);
+                            }
+                        }
                     }
                 }
             }
@@ -140,27 +150,22 @@ public class EventHandlerPneumaticCraft {
 
     @SubscribeEvent
     public void onFillBucket(FillBucketEvent event) {
-        RayTraceResult p = event.getTarget();
-        if (event.getEmptyBucket().isEmpty() || event.getEmptyBucket().getItem() != Items.BUCKET ||
-                p == null || !FluidUtils.isSourceBlock(event.getWorld(), p.getBlockPos()))
-            return;
-        ItemStack result = attemptFill(event.getWorld(), event.getTarget());
-        if (!result.isEmpty()) {
-            event.setFilledBucket(result);
-            event.setResult(Result.ALLOW);
-        }
-    }
-
-    @Nonnull
-    private ItemStack attemptFill(World world, RayTraceResult p) {
-        Block id = world.getBlockState(p.getBlockPos()).getBlock();
-        for (Map.Entry<Block, Item> entry : Fluids.fluidBlockToBucketMap.entrySet()) {
-            if (id == entry.getKey()) {
-                world.setBlockToAir(p.getBlockPos());
-                return new ItemStack(entry.getValue());
+        RayTraceResult rtr = event.getTarget();
+        if (rtr != null) {
+            Block b = event.getWorld().getBlockState(rtr.getBlockPos()).getBlock();
+            if (b instanceof IFluidBlock) {
+                Fluid fluid = ((IFluidBlock) b).getFluid();
+                ItemStack filled = FluidUtil.getFilledBucket(new FluidStack(fluid, 1000));
+                if (!filled.isEmpty()) {
+                    event.setFilledBucket(FluidUtil.getFilledBucket(new FluidStack(fluid, 1000)));
+                    event.getWorld().setBlockToAir(rtr.getBlockPos());
+                    event.setResult(Result.ALLOW);
+                    if (TileEntityRefinery.isInputFluidValid(fluid) && event.getEntityPlayer() instanceof EntityPlayerMP) {
+                        AdvancementTriggers.OIL_BUCKET.trigger((EntityPlayerMP) event.getEntityPlayer());
+                    }
+                }
             }
         }
-        return ItemStack.EMPTY;
     }
 
     @SubscribeEvent
@@ -200,7 +205,7 @@ public class EventHandlerPneumaticCraft {
         }
 
 //        if (!event.isCanceled() && interactedBlock == Blocks.COBBLESTONE) {
-//            AchievementHandler.checkFor9x9(event.getEntityPlayer(), event.getPos());
+//            AdvancementUtils.checkFor9x9(event.getEntityPlayer(), event.getPos());
 //        }
     }
 

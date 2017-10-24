@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "item": "pneumaticcraft:uv_light_box"
+    },
+    "title": {
+      "translate": "achievement.uvLightBox"
+    },
+    "description": {
+      "translate": "achievement.uvLightBox.desc"
+    }
+  },
+  "parent": "pneumaticcraft:plastic",
+  "criteria": {
+    "uv_light_box": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:uv_light_box"
+          }
+        ]
+      }
+    }
+  }
+}
