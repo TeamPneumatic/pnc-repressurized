@@ -243,4 +243,22 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase
     public IBlockState getCamouflage() {
         return camoState;
     }
+
+    @Override
+    public String getRedstoneString() {
+        return "gui.tab.redstoneBehaviour.pneumaticDoor.openWhen";
+    }
+
+    @Override
+    public String getRedstoneButtonText(int mode) {
+        switch (mode) {
+            case 0:
+                return "gui.tab.redstoneBehaviour.pneumaticDoor.button.playerNearby";
+            case 1:
+                return "gui.tab.redstoneBehaviour.pneumaticDoor.button.playerNearbyAndLooking";
+            case 2:
+                return "gui.tab.redstoneBehaviour.pneumaticDoor.button.woodenDoor";
+        }
+        return "<ERROR>";
+    }
 }

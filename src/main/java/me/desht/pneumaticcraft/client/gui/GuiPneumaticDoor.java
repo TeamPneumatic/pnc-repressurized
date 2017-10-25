@@ -22,21 +22,4 @@ public class GuiPneumaticDoor extends GuiPneumaticContainerBase<TileEntityPneuma
         fontRenderer.drawString("Camo", 73, 26, 4210752);
     }
 
-    @Override
-    public String getRedstoneButtonText(int mode) {
-        switch (mode) {
-            case 0:
-                return "gui.tab.redstoneBehaviour.pneumaticDoor.button.playerNearby";
-            case 1:
-                return "gui.tab.redstoneBehaviour.pneumaticDoor.button.playerNearbyAndLooking";
-            case 2:
-                return "gui.tab.redstoneBehaviour.pneumaticDoor.button.woodenDoor";
-        }
-        return "<ERROR>";
-    }
-
-    @Override
-    public String getRedstoneString() {
-        return "gui.tab.redstoneBehaviour.pneumaticDoor.openWhen";
-    }
 }

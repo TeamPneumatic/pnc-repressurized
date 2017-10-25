@@ -711,4 +711,23 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements IMin
     public int getRedstoneMode() {
         return redstoneMode;
     }
+
+    @Override
+    public String getRedstoneButtonText(int mode) {
+        switch (mode) {
+            case 0:
+                return "gui.tab.redstoneBehaviour.airCannon.button.highSignalAndAngle";
+            case 1:
+                return "gui.tab.redstoneBehaviour.button.highSignal";
+            case 2:
+                return "gui.tab.redstoneBehaviour.airCannon.button.highAndSpace";
+            default:
+                return "<ERROR>";
+        }
+    }
+
+    @Override
+    public String getRedstoneString() {
+        return "gui.tab.redstoneBehaviour.airCannon.fireUpon";
+    }
 }

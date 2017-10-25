@@ -31,7 +31,7 @@ public class GuiUtils {
     private static HashMap<String, ResourceLocation> resourceMap = new HashMap<String, ResourceLocation>();
     // This method is used to draw a pressure gauge in various GUI's.
     private static final int CIRCLE_POINTS = 500;
-    public static final double RADIUS = 20D;
+    public static final double PRESSURE_GAUGE_RADIUS = 20D;
     private static final double START_ANGLE = 240D / 180D * Math.PI; // 150
     // degrees
     private static final double STOP_ANGLE = -60D / 180D * Math.PI;
@@ -39,6 +39,10 @@ public class GuiUtils {
     private static RenderItem itemRenderer = Minecraft.getMinecraft().getRenderItem();
 
     public static void drawPressureGauge(FontRenderer fontRenderer, float minPressure, float maxPressure, float dangerPressure, float minWorkingPressure, float currentPressure, int xPos, int yPos, float zLevel) {
+        drawPressureGauge(fontRenderer, minPressure, maxPressure, dangerPressure, minWorkingPressure, currentPressure, xPos, yPos, zLevel, 0xFF000000);
+    }
+
+    public static void drawPressureGauge(FontRenderer fontRenderer, float minPressure, float maxPressure, float dangerPressure, float minWorkingPressure, float currentPressure, int xPos, int yPos, float zLevel, int fgColor) {
         BufferBuilder wr = Tessellator.getInstance().getBuffer();
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         GL11.glLineWidth(2.0F);
@@ -69,17 +73,22 @@ public class GuiUtils {
                 changedColorYellow = true;
             }
             double angle = (double) -i / (double) CIRCLE_POINTS * 2D * Math.PI - STOP_ANGLE;
-            wr.pos(Math.cos(angle) * RADIUS + xPos, Math.sin(angle) * RADIUS + yPos, zLevel).endVertex();
+            wr.pos(Math.cos(angle) * PRESSURE_GAUGE_RADIUS + xPos, Math.sin(angle) * PRESSURE_GAUGE_RADIUS + yPos, zLevel).endVertex();
         }
         Tessellator.getInstance().draw();
 
+        float fgR = (float)(fgColor >> 16 & 255) / 255.0F;
+        float fgB = (float)(fgColor >> 8 & 255) / 255.0F;
+        float fgG = (float)(fgColor & 255) / 255.0F;
+        float fgA = (float)(fgColor >> 24 & 255) / 255.0F;
+
         // Draw the black surrounding circle
-        GL11.glColor4d(0.0, 0.0, 0.0, 1.0);
+        GL11.glColor4d(fgR, fgG, fgB, fgA);
 
         wr.begin(GL11.GL_LINE_LOOP, DefaultVertexFormats.POSITION);
         for (int i = 0; i < CIRCLE_POINTS; i++) {
             double angle = (double) i / (double) CIRCLE_POINTS * 2D * Math.PI;
-            wr.pos(Math.cos(angle) * RADIUS + xPos, Math.sin(angle) * RADIUS + yPos, zLevel).endVertex();
+            wr.pos(Math.cos(angle) * PRESSURE_GAUGE_RADIUS + xPos, Math.sin(angle) * PRESSURE_GAUGE_RADIUS + yPos, zLevel).endVertex();
         }
         Tessellator.getInstance().draw();
 
@@ -90,24 +99,24 @@ public class GuiUtils {
         for (int i = 0; i <= GAUGE_POINTS; i++) {
             double angle = (double) -i / (double) CIRCLE_POINTS * 2D * Math.PI - STOP_ANGLE;
             if (i == GAUGE_POINTS - (int) ((currentScale - minPressure) / (maxPressure - minPressure) * GAUGE_POINTS)) {
-                textScalers.add(new int[]{currentScale, (int) (Math.cos(angle) * RADIUS * 1.4D), (int) (Math.sin(angle) * RADIUS * 1.4D)});
+                textScalers.add(new int[]{currentScale, (int) (Math.cos(angle) * PRESSURE_GAUGE_RADIUS * 1.4D), (int) (Math.sin(angle) * PRESSURE_GAUGE_RADIUS * 1.4D)});
                 currentScale--;
                 // System.out.println("curr: "+ currentScale);
-                wr.pos(Math.cos(angle) * RADIUS * 0.9D + xPos, Math.sin(angle) * RADIUS * 0.9D + yPos, zLevel).endVertex();
-                wr.pos(Math.cos(angle) * RADIUS * 1.1D + xPos, Math.sin(angle) * RADIUS * 1.1D + yPos, zLevel).endVertex();
+                wr.pos(Math.cos(angle) * PRESSURE_GAUGE_RADIUS * 0.9D + xPos, Math.sin(angle) * PRESSURE_GAUGE_RADIUS * 0.9D + yPos, zLevel).endVertex();
+                wr.pos(Math.cos(angle) * PRESSURE_GAUGE_RADIUS * 1.1D + xPos, Math.sin(angle) * PRESSURE_GAUGE_RADIUS * 1.1D + yPos, zLevel).endVertex();
 
             }
         }
         Tessellator.getInstance().draw();
 
         // Draw the needle.
-        GL11.glColor4d(0.0, 0.0, 0.0, 1.0);
+        GL11.glColor4d(fgR, fgG, fgB, fgA);
         double angleIndicator = GAUGE_POINTS - (int) ((currentPressure - minPressure) / (maxPressure - minPressure) * GAUGE_POINTS);
         angleIndicator = -angleIndicator / CIRCLE_POINTS * 2D * Math.PI - STOP_ANGLE;
         wr.begin(GL11.GL_LINE_LOOP, DefaultVertexFormats.POSITION);
-        wr.pos(Math.cos(angleIndicator + 0.89D * Math.PI) * RADIUS * 0.3D + xPos, Math.sin(angleIndicator + 0.89D * Math.PI) * RADIUS * 0.3D + yPos, zLevel).endVertex();
-        wr.pos(Math.cos(angleIndicator + 1.11D * Math.PI) * RADIUS * 0.3D + xPos, Math.sin(angleIndicator + 1.11D * Math.PI) * RADIUS * 0.3D + yPos, zLevel).endVertex();
-        wr.pos(Math.cos(angleIndicator) * RADIUS * 0.8D + xPos, Math.sin(angleIndicator) * RADIUS * 0.8D + yPos, zLevel).endVertex();
+        wr.pos(Math.cos(angleIndicator + 0.89D * Math.PI) * PRESSURE_GAUGE_RADIUS * 0.3D + xPos, Math.sin(angleIndicator + 0.89D * Math.PI) * PRESSURE_GAUGE_RADIUS * 0.3D + yPos, zLevel).endVertex();
+        wr.pos(Math.cos(angleIndicator + 1.11D * Math.PI) * PRESSURE_GAUGE_RADIUS * 0.3D + xPos, Math.sin(angleIndicator + 1.11D * Math.PI) * PRESSURE_GAUGE_RADIUS * 0.3D + yPos, zLevel).endVertex();
+        wr.pos(Math.cos(angleIndicator) * PRESSURE_GAUGE_RADIUS * 0.8D + xPos, Math.sin(angleIndicator) * PRESSURE_GAUGE_RADIUS * 0.8D + yPos, zLevel).endVertex();
         Tessellator.getInstance().draw();
 
         GL11.glEnable(GL11.GL_TEXTURE_2D);
@@ -120,7 +129,7 @@ public class GuiUtils {
             }
         }
         for (int[] scaler : textScalers) {
-            fontRenderer.drawString("" + scaler[0], xPos + scaler[1] - 3, yPos + scaler[2] - 3, 0);
+            fontRenderer.drawString("" + scaler[0], xPos + scaler[1] - 3, yPos + scaler[2] - 3, fgColor);
         }
         GL11.glColor4d(1.0, 1.0, 1.0, 1.0);
     }

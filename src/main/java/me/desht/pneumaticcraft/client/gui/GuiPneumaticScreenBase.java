@@ -14,7 +14,6 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import org.apache.commons.lang3.text.WordUtils;
-import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.io.IOException;

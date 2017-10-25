@@ -334,4 +334,10 @@ public class TileEntityKeroseneLamp extends TileEntityBase implements IRedstoneC
     public float getFuelQuality() {
         return fuelQuality;
     }
+
+    @Override
+    public String getRedstoneButtonText(int mode) {
+        if (mode == 3) return "gui.tab.redstoneBehaviour.keroseneLamp.button.interpolate";
+        return super.getRedstoneButtonText(mode);
+    }
 }

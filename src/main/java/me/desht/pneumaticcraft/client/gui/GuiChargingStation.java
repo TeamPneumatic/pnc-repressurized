@@ -51,22 +51,6 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<TileEntityChar
     }
 
     @Override
-    public String getRedstoneButtonText(int mode) {
-        switch (mode) {
-            case 0:
-                return "gui.tab.redstoneBehaviour.button.never";
-            case 1:
-                return "gui.tab.redstoneBehaviour.chargingStation.button.doneDischarging";
-            case 2:
-                return "gui.tab.redstoneBehaviour.chargingStation.button.charging";
-            case 3:
-                return "gui.tab.redstoneBehaviour.chargingStation.button.discharging";
-
-        }
-        return "<ERROR>";
-    }
-
-    @Override
     protected void drawGuiContainerBackgroundLayer(float opacity, int x, int y) {
         super.drawGuiContainerBackgroundLayer(opacity, x, y);
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);

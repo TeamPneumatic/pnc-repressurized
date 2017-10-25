@@ -88,19 +88,6 @@ public class GuiSecurityStationInventory extends GuiSecurityStationBase {
     }
 
     @Override
-    public String getRedstoneButtonText(int mode) {
-        switch (mode) {
-            case 0:
-                return "gui.tab.redstoneBehaviour.button.never";
-            case 1:
-                return "gui.tab.redstoneBehaviour.securityStation.button.hacked";
-            case 2:
-                return "gui.tab.redstoneBehaviour.securityStation.button.doneRebooting";
-        }
-        return "<ERROR>";
-    }
-
-    @Override
     protected void drawGuiContainerBackgroundLayer(float opacity, int x, int y) {
         super.drawGuiContainerBackgroundLayer(opacity, x, y);
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);

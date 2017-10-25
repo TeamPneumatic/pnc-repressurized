@@ -112,11 +112,6 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<TileEntityAeri
     }
 
     @Override
-    public String getRedstoneButtonText(int mode) {
-        return te.redstoneMode == 0 ? "gui.tab.redstoneBehaviour.button.never" : "gui.tab.redstoneBehaviour.aerialInterface.button.playerConnected";
-    }
-
-    @Override
     protected void addPressureStatInfo(List<String> pressureStatText) {
         super.addPressureStatInfo(pressureStatText);
         if (te.getPressure() > PneumaticValues.MIN_PRESSURE_AERIAL_INTERFACE && te.isConnectedToPlayer) {

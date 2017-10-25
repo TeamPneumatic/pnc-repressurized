@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticContainerBase;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
 import me.desht.pneumaticcraft.common.tileentity.IRedstoneControl;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
@@ -46,9 +47,13 @@ public class WailaRedstoneControl implements IWailaDataProvider {
             int mode = tag.getInteger("redstoneMode");
             GuiPneumaticContainerBase gui = (GuiPneumaticContainerBase) PneumaticCraftRepressurized.proxy.getClientGuiElement(((BlockPneumaticCraft) accessor.getBlock()).getGuiID().ordinal(),
                     accessor.getPlayer(), accessor.getWorld(), accessor.getPosition().getX(), accessor.getPosition().getY(), accessor.getPosition().getZ());
-            if (gui != null) {
-                values.put(gui.getRedstoneString(), gui.getRedstoneButtonText(mode));
+            TileEntity te = accessor.getTileEntity();
+            if (te instanceof TileEntityBase) {
+                values.put(((TileEntityBase) te).getRedstoneString(), ((TileEntityBase) te).getRedstoneButtonText(mode));
             }
+//            if (gui != null) {
+//                values.put(gui.getRedstoneString(), gui.getRedstoneButtonText(mode));
+//            }
         }
 
         //Get all the values from the map and put them in the list.

@@ -11,19 +11,14 @@ import me.desht.pneumaticcraft.common.recipes.AssemblyRecipe;
 import me.desht.pneumaticcraft.common.recipes.BasicThermopneumaticProcessingPlantRecipe;
 import me.desht.pneumaticcraft.common.recipes.PneumaticRecipeRegistry;
 import me.desht.pneumaticcraft.common.recipes.PressureChamberRecipe;
-import me.desht.pneumaticcraft.lib.Log;
 import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.JEIPlugin;
 import mezz.jei.api.recipe.IRecipeCategoryRegistration;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.oredict.OreDictionary;
 
 @JEIPlugin

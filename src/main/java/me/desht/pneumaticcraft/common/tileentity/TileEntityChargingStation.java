@@ -277,6 +277,22 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     }
 
     @Override
+    public String getRedstoneButtonText(int mode) {
+        switch (mode) {
+            case 0:
+                return "gui.tab.redstoneBehaviour.button.never";
+            case 1:
+                return "gui.tab.redstoneBehaviour.chargingStation.button.doneDischarging";
+            case 2:
+                return "gui.tab.redstoneBehaviour.chargingStation.button.charging";
+            case 3:
+                return "gui.tab.redstoneBehaviour.chargingStation.button.discharging";
+
+        }
+        return "<ERROR>";
+    }
+
+    @Override
     protected boolean shouldRerenderChunkOnDescUpdate() {
         return true;
     }

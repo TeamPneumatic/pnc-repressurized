@@ -53,12 +53,6 @@ public class GuiKeroseneLamp extends GuiPneumaticContainerBase<TileEntityKerosen
     }
 
     @Override
-    public String getRedstoneButtonText(int mode) {
-        if (mode == 3) return "gui.tab.redstoneBehaviour.keroseneLamp.button.interpolate";
-        return super.getRedstoneButtonText(mode);
-    }
-
-    @Override
     protected void mouseClicked(int par1, int par2, int par3) throws IOException {
         super.mouseClicked(par1, par2, par3);
         if (!rangeWidget.isFocused()) {

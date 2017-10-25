@@ -401,6 +401,19 @@ public class TileEntitySecurityStation extends TileEntityBase implements IGUITex
         return redstoneMode;
     }
 
+    @Override
+    public String getRedstoneButtonText(int mode) {
+        switch (mode) {
+            case 0:
+                return "gui.tab.redstoneBehaviour.button.never";
+            case 1:
+                return "gui.tab.redstoneBehaviour.securityStation.button.hacked";
+            case 2:
+                return "gui.tab.redstoneBehaviour.securityStation.button.doneRebooting";
+        }
+        return "<ERROR>";
+    }
+
     private class SecurityStationHandler extends ItemStackHandler {
         private SecurityStationHandler() {
             super(INVENTORY_SIZE);

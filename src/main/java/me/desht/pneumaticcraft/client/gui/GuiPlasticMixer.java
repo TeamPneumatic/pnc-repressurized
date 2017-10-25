@@ -58,11 +58,6 @@ public class GuiPlasticMixer extends GuiPneumaticContainerBase<TileEntityPlastic
     }
 
     @Override
-    public String getRedstoneButtonText(int mode) {
-        return mode == 3 ? "gui.tab.redstoneBehaviour.plasticMixer.button.selectOnSignal" : super.getRedstoneButtonText(mode);
-    }
-
-    @Override
     public void updateScreen() {
         super.updateScreen();
         for (int i = 0; i < buttons.length; i++) {

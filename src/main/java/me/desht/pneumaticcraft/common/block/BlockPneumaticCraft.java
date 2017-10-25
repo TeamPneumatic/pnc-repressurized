@@ -2,14 +2,21 @@ package me.desht.pneumaticcraft.common.block;
 
 import dan200.computercraft.api.peripheral.IPeripheral;
 import dan200.computercraft.api.peripheral.IPeripheralProvider;
+import mcjty.theoneprobe.api.IProbeHitData;
+import mcjty.theoneprobe.api.IProbeInfo;
+import mcjty.theoneprobe.api.ProbeMode;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.block.IPneumaticWrenchable;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
+import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.thirdparty.ModInteractionUtils;
+import me.desht.pneumaticcraft.common.thirdparty.theoneprobe.ITOPInfoProvider;
+import me.desht.pneumaticcraft.common.thirdparty.theoneprobe.TOPCallback;
 import me.desht.pneumaticcraft.common.tileentity.IComparatorSupport;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticBase;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.ModIds;
@@ -46,7 +53,7 @@ import java.util.List;
 import java.util.Set;
 
 @Optional.Interface(iface = "dan200.computercraft.api.peripheral.IPeripheralProvider", modid = ModIds.COMPUTERCRAFT)
-public abstract class BlockPneumaticCraft extends Block implements IPneumaticWrenchable, IUpgradeAcceptor, IPeripheralProvider {
+public abstract class BlockPneumaticCraft extends Block implements IPneumaticWrenchable, IUpgradeAcceptor, IPeripheralProvider, ITOPInfoProvider {
     public static final PropertyEnum<EnumFacing> ROTATION = PropertyEnum.create("facing", EnumFacing.class);
 
     private AxisAlignedBB bounds = FULL_BLOCK_AABB;
@@ -328,5 +335,23 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
      */
     protected void setBlockBounds(AxisAlignedBB bounds) {
         this.bounds = bounds;
+    }
+
+    @Override
+    @Optional.Method(modid = "theoneprobe")
+    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, EntityPlayer player, World world, IBlockState blockState, IProbeHitData data) {
+        TileEntity te = world.getTileEntity(data.getPos());
+        if (te instanceof TileEntityPneumaticBase) {
+            TOPCallback.handlePneumatic(mode, probeInfo, (TileEntityPneumaticBase) te);
+        }
+        if (te instanceof IHeatExchanger) {
+            TOPCallback.handleHeat(mode, probeInfo, (IHeatExchanger) te);
+        }
+        if (te instanceof TileEntityBase) {
+            TOPCallback.handleRedstoneMode(mode, probeInfo, (TileEntityBase) te);
+        }
+        if (te instanceof TileEntityPressureTube) {
+            TOPCallback.handlePressureTube(mode, probeInfo, (TileEntityPressureTube) te, data.getSideHit());
+        }
     }
 }

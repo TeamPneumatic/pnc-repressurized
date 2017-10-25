@@ -14,6 +14,7 @@ import me.desht.pneumaticcraft.common.thirdparty.igwmod.IGWMod;
 import me.desht.pneumaticcraft.common.thirdparty.industrialforegoing.IndustrialForegoing;
 import me.desht.pneumaticcraft.common.thirdparty.mcmultipart.PneumaticMultiPart;
 import me.desht.pneumaticcraft.common.thirdparty.openblocks.OpenBlocks;
+import me.desht.pneumaticcraft.common.thirdparty.theoneprobe.TheOneProbe;
 import me.desht.pneumaticcraft.common.thirdparty.waila.Waila;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.ModIds;
@@ -57,6 +58,7 @@ public class ThirdPartyManager implements IGuiHandler {
             }
             thirdPartyClasses.put(ModIds.COFH_CORE, CoFHCore.class);
             thirdPartyClasses.put(ModIds.WAILA, Waila.class);
+            thirdPartyClasses.put(ModIds.TOP, TheOneProbe.class);
             // thirdPartyClasses.put(ModIds.EE3, EE3.class);
             // thirdPartyClasses.put(ModIds.INDUSTRIALCRAFT, IC2.class);
             // thirdPartyClasses.put(ModIds.THAUMCRAFT, Thaumcraft.class);

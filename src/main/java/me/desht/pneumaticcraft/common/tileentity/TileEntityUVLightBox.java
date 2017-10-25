@@ -179,6 +179,15 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
     }
 
     @Override
+    public String getRedstoneButtonText(int mode) {
+        if (mode == 0) {
+            return "gui.tab.redstoneBehaviour.button.never";
+        } else {
+            return "gui.tab.redstoneBehaviour.uvLightBox.button.chance." + (10 * mode + 60);
+        }
+    }
+
+    @Override
     public float getMinWorkingPressure() {
         return PneumaticValues.MIN_PRESSURE_UV_LIGHTBOX;
     }

@@ -276,6 +276,11 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
         }
     }
 
+    @Override
+    public String getRedstoneButtonText(int mode) {
+        return mode == 0 ? "gui.tab.redstoneBehaviour.button.never" : "gui.tab.redstoneBehaviour.aerialInterface.button.playerConnected";
+    }
+
     private abstract class PlayerInvHandler implements IItemHandler {
         /**
          * Get an item handler for the current player, which must be non-null.

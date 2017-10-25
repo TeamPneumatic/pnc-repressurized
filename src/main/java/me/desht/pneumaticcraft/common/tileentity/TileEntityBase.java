@@ -621,4 +621,20 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
      * Called when a machine's upgrades have changed in some way.
      */
     protected void onUpgradesChanged() {}
+
+    public String getRedstoneButtonText(int mode) {
+        switch (mode) {
+            case 0:
+                return "gui.tab.redstoneBehaviour.button.anySignal";
+            case 1:
+                return "gui.tab.redstoneBehaviour.button.highSignal";
+            case 2:
+                return "gui.tab.redstoneBehaviour.button.lowSignal";
+        }
+        return "<ERROR>";
+    }
+
+    public String getRedstoneString() {
+        return this instanceof IRedstoneControlled ? "gui.tab.redstoneBehaviour.enableOn" : "gui.tab.redstoneBehaviour.emitRedstoneWhen";
+    }
 }

@@ -59,16 +59,6 @@ public class GuiElevator extends GuiPneumaticContainerBase<TileEntityElevatorBas
     }
 
     @Override
-    public String getRedstoneButtonText(int mode) {
-        return mode == 0 ? "gui.tab.redstoneBehaviour.elevator.button.redstone" : "gui.tab.redstoneBehaviour.elevator.button.elevatorCallers";
-    }
-
-    @Override
-    public String getRedstoneString() {
-        return "gui.tab.redstoneBehaviour.elevator.controlBy";
-    }
-
-    @Override
     protected void drawGuiContainerBackgroundLayer(float opacity, int x, int y) {
         super.drawGuiContainerBackgroundLayer(opacity, x, y);
     }

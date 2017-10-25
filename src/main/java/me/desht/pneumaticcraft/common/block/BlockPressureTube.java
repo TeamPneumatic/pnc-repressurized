@@ -242,10 +242,16 @@ public class BlockPressureTube extends BlockPneumaticCraftModeled {
     public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player) {
         if (target.hitInfo == CENTER_TUBE_HIT_MARKER) {
             return super.getPickBlock(state, target, world, pos, player);
-        } else {
+        } else if (target.hitInfo instanceof EnumFacing) {
             TileEntityPressureTube tube = (TileEntityPressureTube) getTE(world, pos);
-            return new ItemStack(ModuleRegistrator.getModuleItem(tube.modules[((EnumFacing) target.hitInfo).ordinal()].getType()));
+            if (tube != null) {
+                TubeModule module = tube.modules[((EnumFacing) target.hitInfo).ordinal()];
+                if (module != null) {
+                    return new ItemStack(ModuleRegistrator.getModuleItem(module.getType()));
+                }
+            }
         }
+        return ItemStack.EMPTY;
     }
 
     @Override

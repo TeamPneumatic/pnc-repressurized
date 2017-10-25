@@ -133,7 +133,7 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
             if (shouldAddRedstoneTab() && te instanceof IRedstoneControl) {
                 redstoneTab = addAnimatedStat("gui.tab.redstoneBehaviour", new ItemStack(Items.REDSTONE), 0xFFCC0000, true);
                 List<String> curInfo = new ArrayList<>();
-                curInfo.add(I18n.format(getRedstoneString()));
+                curInfo.add(I18n.format(te.getRedstoneString()));
                 for (int i = 0; i < 3; i++)
                     curInfo.add("                                      "); // create some space for the button
                 redstoneTab.setTextWithoutCuttingString(curInfo);
@@ -329,29 +329,13 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
             problemTab.setText(problemText);
         }
         if (redstoneTab != null) {
-            redstoneButton.displayString = I18n.format(getRedstoneButtonText(((IRedstoneControl) te).getRedstoneMode()));
+            redstoneButton.displayString = I18n.format(te.getRedstoneButtonText(((IRedstoneControl) te).getRedstoneMode()));
         }
     }
 
     @Override
     protected void actionPerformed(GuiButton button) {
         sendPacketToServer(button.id);
-    }
-
-    public String getRedstoneButtonText(int mode) {
-        switch (mode) {
-            case 0:
-                return "gui.tab.redstoneBehaviour.button.anySignal";
-            case 1:
-                return "gui.tab.redstoneBehaviour.button.highSignal";
-            case 2:
-                return "gui.tab.redstoneBehaviour.button.lowSignal";
-        }
-        return "<ERROR>";
-    }
-
-    public String getRedstoneString() {
-        return te instanceof IRedstoneControlled ? "gui.tab.redstoneBehaviour.enableOn" : "gui.tab.redstoneBehaviour.emitRedstoneWhen";
     }
 
     protected void addPressureStatInfo(List<String> pressureStatText) {

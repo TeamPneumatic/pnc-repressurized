@@ -21,4 +21,5 @@ public class ModIds {
     public static final String OPEN_COMPUTERS = "OpenComputers|Core";
     public static final String EIO = "enderio";
     public static final String MCMP = "mcmultipart";
+    public static final String TOP = "theoneprobe";
 }

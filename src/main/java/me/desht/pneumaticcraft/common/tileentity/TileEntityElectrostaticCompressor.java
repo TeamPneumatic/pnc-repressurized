@@ -97,4 +97,9 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase i
     public int getRedstoneMode() {
         return redstoneMode;
     }
+
+    @Override
+    public String getRedstoneButtonText(int mode) {
+        return mode == 0 ? "gui.tab.redstoneBehaviour.button.never" : "gui.tab.redstoneBehaviour.electrostaticCompressor.button.struckByLightning";
+    }
 }

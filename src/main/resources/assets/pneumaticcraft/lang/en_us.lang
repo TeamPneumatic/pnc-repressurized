@@ -511,7 +511,10 @@ gui.tab.redstoneBehaviour.securityStation.button.doneRebooting=Done Rebooting
 gui.tab.redstoneBehaviour.universalSensor.redstoneEmission=Redstone emission
 gui.tab.redstoneBehaviour.universalSensor.button.inverted=Inverted
 gui.tab.redstoneBehaviour.universalSensor.button.normal=Normal
-gui.tab.redstoneBehaviour.uvLightBox.button.chance=Success Chance
+gui.tab.redstoneBehaviour.uvLightBox.button.chance.70=Success Chance > 70%%
+gui.tab.redstoneBehaviour.uvLightBox.button.chance.80=Success Chance > 80%%
+gui.tab.redstoneBehaviour.uvLightBox.button.chance.90=Success Chance > 90%%
+gui.tab.redstoneBehaviour.uvLightBox.button.chance.100=Success Chance = 100%%
 gui.tab.redstoneBehaviour.plasticMixer.button.selectOnSignal=Select Plastic on Signal
 gui.tab.redstoneBehaviour.keroseneLamp.button.interpolate=Interpolate Signal
 

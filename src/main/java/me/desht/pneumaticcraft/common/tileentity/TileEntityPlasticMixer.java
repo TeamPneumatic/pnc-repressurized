@@ -332,4 +332,9 @@ public class TileEntityPlasticMixer extends TileEntityBase implements IHeatExcha
             }
         });
     }
+
+    @Override
+    public String getRedstoneButtonText(int mode) {
+        return mode == 3 ? "gui.tab.redstoneBehaviour.plasticMixer.button.selectOnSignal" : super.getRedstoneButtonText(mode);
+    }
 }

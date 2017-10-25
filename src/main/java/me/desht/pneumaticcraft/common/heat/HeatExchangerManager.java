@@ -15,8 +15,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class HeatExchangerManager implements IHeatRegistry {
     /**
@@ -100,4 +99,50 @@ public class HeatExchangerManager implements IHeatRegistry {
         return new HeatExchangerLogic();
     }
 
+    public static class TemperatureData {
+        private final Double[] temp = new Double[7];
+
+        private boolean isMultisided = true;
+
+        public TemperatureData(IHeatExchanger heatExchanger) {
+            Arrays.fill(temp, null);
+
+            Set<IHeatExchangerLogic> heatExchangers = new HashSet<>();
+            IHeatExchangerLogic logic = null;
+            for (EnumFacing face : EnumFacing.values()) {
+                logic = heatExchanger.getHeatExchangerLogic(face);
+                if (logic != null) {
+                    if (heatExchangers.contains(logic)) {
+                        isMultisided = false;
+                        break;
+                    } else {
+                        heatExchangers.add(logic);
+                    }
+                }
+            }
+
+            if (isMultisided) {
+                for (EnumFacing face : EnumFacing.values()) {
+                    logic = heatExchanger.getHeatExchangerLogic(face);
+                    if (logic != null) {
+                        temp[face.ordinal()] = logic.getTemperature();
+                    }
+                }
+            } else if (logic != null) {
+                temp[6] = logic.getTemperature();
+            }
+        }
+
+        public boolean isMultisided() {
+            return isMultisided;
+        }
+
+        public double getTemperature(EnumFacing face) {
+            return face == null ? temp[6] : temp[face.ordinal()];
+        }
+
+        public boolean hasData(EnumFacing face) {
+            return face == null ? temp[6] != null : temp[face.ordinal()] != null;
+        }
+    }
 }

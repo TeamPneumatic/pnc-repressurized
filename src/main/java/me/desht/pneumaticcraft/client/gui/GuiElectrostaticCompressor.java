@@ -35,11 +35,6 @@ public class GuiElectrostaticCompressor extends GuiPneumaticContainerBase<TileEn
     }
 
     @Override
-    public String getRedstoneButtonText(int mode) {
-        return mode == 0 ? "gui.tab.redstoneBehaviour.button.never" : "gui.tab.redstoneBehaviour.electrostaticCompressor.button.struckByLightning";
-    }
-
-    @Override
     protected void addPressureStatInfo(List<String> pressureStatText) {
         super.addPressureStatInfo(pressureStatText);
 

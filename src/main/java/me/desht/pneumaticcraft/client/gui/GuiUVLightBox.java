@@ -5,7 +5,6 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityUVLightBox;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -24,17 +23,6 @@ public class GuiUVLightBox extends GuiPneumaticContainerBase<TileEntityUVLightBo
         super.drawGuiContainerForegroundLayer(x, y);
         fontRenderer.drawString("Upgr.", 28, 19, 4210752);
         fontRenderer.drawString("PCB", 70, 25, 4210752);
-    }
-
-    @Override
-    public String getRedstoneButtonText(int mode) {
-        if (mode == 0) {
-            return "gui.tab.redstoneBehaviour.button.never";
-        } else if (mode == 4) {
-            return I18n.format("gui.tab.redstoneBehaviour.uvLightBox.button.chance") + " = 100%%";
-        } else {
-            return I18n.format("gui.tab.redstoneBehaviour.uvLightBox.button.chance") + " > " + (10 * mode + 60) + "%%";
-        }
     }
 
     @Override

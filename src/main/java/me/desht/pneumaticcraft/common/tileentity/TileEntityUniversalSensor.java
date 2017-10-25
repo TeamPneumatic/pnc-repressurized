@@ -524,6 +524,16 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
         return PneumaticValues.MIN_PRESSURE_UNIVERSAL_SENSOR;
     }
 
+    @Override
+    public String getRedstoneString() {
+        return "gui.tab.redstoneBehaviour.universalSensor.redstoneEmission";
+    }
+
+    @Override
+    public String getRedstoneButtonText(int mode) {
+        return invertedRedstone ? "gui.tab.redstoneBehaviour.universalSensor.button.inverted" : "gui.tab.redstoneBehaviour.universalSensor.button.normal";
+    }
+
     private class UniversalSensorUpgradeHandler extends UpgradeHandler {
         private TileEntityUniversalSensor te;
 
@@ -547,4 +557,5 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
             te.setupGPSPositions();
         }
     }
+
 }

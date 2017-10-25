@@ -679,4 +679,15 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     public IItemHandler getCamoInventory() {
         return inventory;
     }
+
+    @Override
+    public String getRedstoneString() {
+        return "gui.tab.redstoneBehaviour.elevator.controlBy";
+    }
+
+    @Override
+    public String getRedstoneButtonText(int mode) {
+        return mode == 0 ? "gui.tab.redstoneBehaviour.elevator.button.redstone" : "gui.tab.redstoneBehaviour.elevator.button.elevatorCallers";
+    }
+
 }

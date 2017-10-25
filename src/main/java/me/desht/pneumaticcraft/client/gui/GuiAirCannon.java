@@ -62,25 +62,6 @@ public class GuiAirCannon extends GuiPneumaticContainerBase<TileEntityAirCannon>
         }
     }
 
-    @Override
-    public String getRedstoneButtonText(int mode) {
-        switch (te.getRedstoneMode()) {
-            case 0:
-                return "gui.tab.redstoneBehaviour.airCannon.button.highSignalAndAngle";
-            case 1:
-                return "gui.tab.redstoneBehaviour.button.highSignal";
-            case 2:
-                return "gui.tab.redstoneBehaviour.airCannon.button.highAndSpace";
-            default:
-                return "<ERROR>";
-        }
-    }
-
-    @Override
-    public String getRedstoneString() {
-        return "gui.tab.redstoneBehaviour.airCannon.fireUpon";
-    }
-
     private List<String> getStatusText() {
         List<String> text = new ArrayList<>();
         text.add("\u00a77Current Aimed Coordinate:");
