@@ -8,6 +8,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -63,8 +64,14 @@ public class ItemEmptyPCB extends ItemNonDespawning {
             }
             int etchProgress = stack.getTagCompound().getInteger("etchProgress");
             if (etchProgress < 100) {
-                if (entityItem.ticksExisted % (TileEntityConstants.PCB_ETCH_TIME / 5) == 0)
+                if (entityItem.ticksExisted % (TileEntityConstants.PCB_ETCH_TIME / 5) == 0) {
                     stack.getTagCompound().setInteger("etchProgress", etchProgress + 1);
+                    World world = entityItem.getEntityWorld();
+                    double x = entityItem.posX + world.rand.nextDouble() * 0.5 - 0.25;
+                    double y = entityItem.posY + world.rand.nextDouble() * 0.5;
+                    double z = entityItem.posZ + world.rand.nextDouble() * 0.5 - 0.25;
+                    world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, x, y, z, 0.0, 0.05, 0.0);
+                }
             } else {
                 entityItem.setItem(new ItemStack(rand.nextInt(100) >= stack.getItemDamage() ? Itemss.UNASSEMBLED_PCB : Itemss.FAILED_PCB));
             }
