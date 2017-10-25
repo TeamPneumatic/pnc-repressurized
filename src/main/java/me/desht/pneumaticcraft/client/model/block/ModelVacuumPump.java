@@ -66,7 +66,7 @@ public class ModelVacuumPump extends ModelBase {
         GL11.glPopMatrix();
 
         GL11.glDisable(GL11.GL_TEXTURE_2D);
-        GL11.glColor4d(0.75D, 0.75D, 0.75D, 1.0D);
+        GL11.glColor4d(0.5D, 0.5D, 0.5D, 1.0D);
         GL11.glPushMatrix();
         for (int i = 0; i < CASE_POINTS; i++) {
             GL11.glPushMatrix();

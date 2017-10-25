@@ -55,18 +55,4 @@ public class OpenComputers implements IThirdParty {
         Driver.add(new DriverPneumaticCraft());
     }
 
-    @Override
-    public void postInit() {
-
-    }
-
-    @Override
-    public void clientSide() {
-
-    }
-
-    @Override
-    public void clientInit() {
-    }
-
 }

@@ -123,24 +123,4 @@ public class PneumaticMultiPart implements IMCMPAddon, IThirdParty {
         MinecraftForge.EVENT_BUS.register(this);
         enabled = true;
     }
-
-    @Override
-    public void init() {
-
-    }
-
-    @Override
-    public void postInit() {
-
-    }
-
-    @Override
-    public void clientSide() {
-
-    }
-
-    @Override
-    public void clientInit() {
-
-    }
 }

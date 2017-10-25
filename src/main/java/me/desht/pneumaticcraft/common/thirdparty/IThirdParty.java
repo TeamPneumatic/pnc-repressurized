@@ -2,19 +2,19 @@ package me.desht.pneumaticcraft.common.thirdparty;
 
 public interface IThirdParty {
 
-    void preInit();
+    default void preInit() {}
 
-    void init();
+    default void init() {}
 
-    void postInit();
+    default void postInit() {}
 
     /**
      * Gets called from the ClientProxy in the preInit.
      */
-    void clientSide();
+    default void clientSide() {}
 
     /**
      * Gets called from the ClientProxy in the Init.
      */
-    void clientInit();
+    default void clientInit() {}
 }

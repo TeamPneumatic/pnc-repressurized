@@ -60,15 +60,4 @@ public class EnderIO implements IThirdParty {
             Log.warning("Couldn't find a fluid with name 'fire_water' even though EnderIO is in the instance. It hasn't been registered as fuel!");
         }
     }
-
-    @Override
-    public void clientSide() {
-
-    }
-
-    @Override
-    public void clientInit() {
-
-    }
-
 }

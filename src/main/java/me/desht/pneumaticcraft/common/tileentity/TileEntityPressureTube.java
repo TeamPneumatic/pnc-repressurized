@@ -71,7 +71,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
         writeModulesToNBT(tag);
     }
 
-    private void writeModulesToNBT(NBTTagCompound tag) {
+    public void writeModulesToNBT(NBTTagCompound tag) {
         NBTTagList moduleList = new NBTTagList();
         for (int i = 0; i < modules.length; i++) {
             if (modules[i] != null) {

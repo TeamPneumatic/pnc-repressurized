@@ -9,10 +9,6 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 
 public class CoFHCore implements IThirdParty {
-    @Override
-    public void preInit() {
-
-    }
 
     @Override
     public void init() {
@@ -45,19 +41,5 @@ public class CoFHCore implements IThirdParty {
         } else {
             PneumaticCraftRepressurized.logger.warn("Can't find CoFH fuel: " + fuelName);
         }
-    }
-
-    @Override
-    public void postInit() {
-    }
-
-    @Override
-    public void clientSide() {
-
-    }
-
-    @Override
-    public void clientInit() {
-
     }
 }
