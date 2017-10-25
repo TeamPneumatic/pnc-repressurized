@@ -16,13 +16,13 @@ public class ModelVacuumPump extends ModelBase {
         textureWidth = 64;
         textureHeight = 64;
 
-        TurbineCase = new ModelRenderer(this, 0, 19);
+        TurbineCase = new ModelRenderer(this, 0, 47);
         TurbineCase.addBox(0F, 0F, 0F, 1, 4, 1);
         TurbineCase.setRotationPoint(-0.5F, 14.1F, 0F);
         TurbineCase.setTextureSize(64, 64);
         TurbineCase.mirror = true;
         setRotation(TurbineCase, 0F, 0F, 0F);
-        Top = new ModelRenderer(this, 0, 19);
+        Top = new ModelRenderer(this, 0, 47);
         Top.addBox(0F, 0F, 0F, 6, 1, 12);
         Top.setRotationPoint(-3F, 13F, -6F);
         Top.setTextureSize(64, 64);
@@ -66,7 +66,7 @@ public class ModelVacuumPump extends ModelBase {
         GL11.glPopMatrix();
 
         GL11.glDisable(GL11.GL_TEXTURE_2D);
-        GL11.glColor4d(0.5D, 0.5D, 0.5D, 1.0D);
+        GL11.glColor4d(0.75D, 0.75D, 0.75D, 1.0D);
         GL11.glPushMatrix();
         for (int i = 0; i < CASE_POINTS; i++) {
             GL11.glPushMatrix();
