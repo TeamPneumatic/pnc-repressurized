@@ -77,10 +77,6 @@ public class BlockUVLightBox extends BlockPneumaticCraftModeled {
 
     @Override
     public int getLightValue(IBlockState state, IBlockAccess world, BlockPos pos) {
-        Block block = world.getBlockState(pos).getBlock();
-        if (block != this) {
-            return block.getLightValue(state, world, pos);
-        }
         TileEntity te = world.getTileEntity(pos);
         return te instanceof TileEntityUVLightBox ? ((TileEntityUVLightBox) te).getLightLevel() : 0;
     }

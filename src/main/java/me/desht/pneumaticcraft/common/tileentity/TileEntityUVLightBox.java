@@ -1,5 +1,7 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
+import elucent.albedo.lighting.ILightProvider;
+import elucent.albedo.lighting.Light;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.common.block.Blockss;
@@ -12,15 +14,20 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.world.EnumSkyBlock;
+import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
 
-public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMinWorkingPressure, IRedstoneControl {
+@Optional.Interface(iface = "elucent.albedo.lighting.ILightProvider", modid = "albedo")
+public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMinWorkingPressure, IRedstoneControl, ILightProvider {
     public static final int INVENTORY_SIZE = 1;
     public static final int PCB_SLOT = 0;
+
+    private Object light = null;
 
     @DescSynced
     public boolean leftConnected;
@@ -65,14 +72,14 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
                 addAir((int) (-PneumaticValues.USAGE_UV_LIGHTBOX * getSpeedUsageMultiplierFromUpgrades()));
                 if (ticksExisted % Math.max(1, (int) (TileEntityConstants.LIGHT_BOX_0_100_TIME / (5 * getSpeedMultiplierFromUpgrades()))) == 0) {
                     if (!areLightsOn) {
-                        areLightsOn = true;
+                        setLightsOn(true);
                         updateNeighbours();
                     }
                     stack.setItemDamage(Math.max(0, stack.getItemDamage() - 1));
                     inventory.setStackInSlot(PCB_SLOT, stack);
                 }
             } else if (areLightsOn) {
-                areLightsOn = false;
+                setLightsOn(false);
                 updateNeighbours();
             }
             if (oldRedstoneStatus != shouldEmitRedstone()) {
@@ -93,14 +100,28 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
         updateConnections();
     }
 
+    private void setLightsOn(boolean lightsOn) {
+        boolean check = areLightsOn != lightsOn;
+        areLightsOn = lightsOn;
+        if (check) {
+            getWorld().checkLightFor(EnumSkyBlock.BLOCK, getPos());
+            sendDescriptionPacket();
+        }
+    }
+
+    @Override
+    public void onDescUpdate() {
+        getWorld().checkLightFor(EnumSkyBlock.BLOCK, getPos());
+        getWorld().markBlockRangeForRenderUpdate(getPos(), getPos());
+    }
+
     public int getLightLevel() {
-        return areLightsOn ? Math.min(5, getUpgrades(EnumUpgrade.SPEED) * 2) + 10 : 0;
+        return areLightsOn ? Math.max(15, getUpgrades(EnumUpgrade.SPEED)) + 11 : 0;
     }
 
     @Override
     public boolean isConnectedTo(EnumFacing side) {
         return side == getRotation().rotateYCCW();
-//        return side != EnumFacing.UP && side != getRotation() && side != getRotation().getOpposite();
     }
 
     private void updateConnections() {
@@ -164,5 +185,17 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
 
     public ItemStack getLoadedPCB() {
         return inventory.getStackInSlot(PCB_SLOT);
+    }
+
+    @Optional.Method(modid = "albedo")
+    @Override
+    public Light provideLight() {
+        if (light == null && areLightsOn) {
+            int radius = Math.max(8, 4 + getUpgrades(EnumUpgrade.SPEED));
+            light = new Light(pos().getX(), pos.getY(), pos().getZ(), 0.2f, 0.0f, 1.0f, 1.0f, radius);
+        } else if (!areLightsOn) {
+            light = null;
+        }
+        return (Light) light;
     }
 }

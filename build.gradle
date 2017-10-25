@@ -30,8 +30,9 @@ minecraft {
     version = "1.12.2-14.23.0.2512"
     runDir = "run"
     mappings = "snapshot_20171011"
+    clientJvmArgs += "-Dfml.coreMods.load=elucent.albedo.asm.FMLPlugin"
     replace '@VERSION@', project.version
-        replaceIn 'PneumaticRedux.java'
+        replaceIn 'PneumaticCraftRepressurized.java'
     replace '@MASSIVE@', project.massive
         replaceIn 'lib/Versions.java'
     replace '@MAJOR@', project.major
