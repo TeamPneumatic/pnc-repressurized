@@ -1,12 +1,16 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUVLightBox;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.BBConstants;
 import me.desht.pneumaticcraft.proxy.CommonProxy.EnumGuiId;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.PropertyBool;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -15,6 +19,7 @@ import net.minecraft.world.IBlockAccess;
 import javax.annotation.Nullable;
 
 public class BlockUVLightBox extends BlockPneumaticCraftModeled {
+    private static final PropertyBool LOADED = PropertyBool.create("loaded");
 
     private static final AxisAlignedBB BLOCK_BOUNDS_NS = new AxisAlignedBB(
             BBConstants.UV_LIGHT_BOX_LENGTH_MIN, 0, BBConstants.UV_LIGHT_BOX_WIDTH_MIN,
@@ -26,6 +31,21 @@ public class BlockUVLightBox extends BlockPneumaticCraftModeled {
 
     BlockUVLightBox() {
         super(Material.IRON, "uv_light_box");
+    }
+
+    @Override
+    protected BlockStateContainer createBlockState() {
+        return new BlockStateContainer(this, ROTATION, LOADED);
+    }
+
+    @Override
+    public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
+        state = super.getActualState(state, worldIn, pos);
+        TileEntity te = PneumaticCraftUtils.getTileEntitySafely(worldIn, pos);
+        if (te instanceof TileEntityUVLightBox) {
+            state = state.withProperty(LOADED, !((TileEntityUVLightBox) te).getLoadedPCB().isEmpty());
+        }
+        return state;
     }
 
     @Override
@@ -68,5 +88,24 @@ public class BlockUVLightBox extends BlockPneumaticCraftModeled {
     @Override
     public boolean isRotatable() {
         return true;
+    }
+
+    @Override
+    public BlockRenderLayer getBlockLayer() {
+        return BlockRenderLayer.CUTOUT_MIPPED;
+    }
+
+    @Override
+    public boolean canProvidePower(IBlockState state) {
+        return true;
+    }
+
+    @Override
+    public int getWeakPower(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
+        TileEntity te = blockAccess.getTileEntity(pos);
+        if (te instanceof TileEntityUVLightBox) {
+            return ((TileEntityUVLightBox) te).shouldEmitRedstone() ? 15 : 0;
+        }
+        return 0;
     }
 }

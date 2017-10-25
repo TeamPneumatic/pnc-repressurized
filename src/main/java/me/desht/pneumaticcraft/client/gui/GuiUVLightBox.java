@@ -40,9 +40,9 @@ public class GuiUVLightBox extends GuiPneumaticContainerBase<TileEntityUVLightBo
     @Override
     protected void addProblems(List<String> textList) {
         super.addProblems(textList);
-        if (te.getPrimaryInventory().getStackInSlot(TileEntityUVLightBox.PCB_INDEX).isEmpty()) {
-            textList.add("\u00a77No PCB to expose.");
-            textList.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a70Put in an Empy PCB.", GuiConstants.MAX_CHAR_PER_LINE_LEFT));
+        if (te.getPrimaryInventory().getStackInSlot(TileEntityUVLightBox.PCB_SLOT).isEmpty()) {
+            textList.add("\u00a77No PCB to expose");
+            textList.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a7Insert an Empty PCB", GuiConstants.MAX_CHAR_PER_LINE_LEFT));
         }
     }
 }

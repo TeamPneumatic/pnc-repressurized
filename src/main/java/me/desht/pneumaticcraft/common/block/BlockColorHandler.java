@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.tileentity.TileEntityCompressedIronBlock;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityUVLightBox;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.color.IBlockColor;
 import net.minecraft.tileentity.TileEntity;
@@ -23,8 +24,16 @@ public class BlockColorHandler {
         };
         Minecraft.getMinecraft().getBlockColors().registerBlockColorHandler(compressedIronHeatColor, Blockss.COMPRESSED_IRON, Blockss.HEAT_SINK);
 
-//        final IBlockColor etchingAcidColor = (state, worldIn, pos, tintIndex) -> 0x501c00;
-//        Minecraft.getMinecraft().getBlockColors().registerBlockColorHandler(etchingAcidColor, Fluids.ETCHING_ACID.getBlock());
+        final IBlockColor uvLightBoxLampColor = (state, blockAccess, pos, tintIndex) -> {
+            if (blockAccess != null && pos != null) {
+                TileEntity te = blockAccess.getTileEntity(pos);
+                if (te instanceof TileEntityUVLightBox) {
+                    return ((TileEntityUVLightBox) te).areLightsOn ? 0xFF4000FF : 0xAFAFE4;
+                }
+            }
+            return 0xFFAFAFE4;
+        };
+        Minecraft.getMinecraft().getBlockColors().registerBlockColorHandler(uvLightBoxLampColor, Blockss.UV_LIGHT_BOX);
     }
 
 }

@@ -23,6 +23,10 @@ public class UpgradeCache {
                 upgradeCount[idx] += inv.getStackInSlot(i).getCount();
             }
         }
+//        System.out.println("upgrades cached for " + te.getName() + ": ");
+//        for (int i = 0; i < upgradeCount.length; i++) {
+//            if (upgradeCount[i] > 0) System.out.println("  " + IItemRegistry.EnumUpgrade.values()[i] + " x " + upgradeCount[i]);
+//        }
     }
 
     public int getUpgrades(IItemRegistry.EnumUpgrade type) {

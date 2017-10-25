@@ -1,0 +1,19 @@
+{
+  "textures": {
+    "face": "pneumaticcraft:blocks/uv_light_box"
+  },
+  "elements": [
+    {
+      "from": [ 5, 1, 5.75 ],
+      "to": [ 11, 1.25, 9.25 ],
+      "faces": {
+        "up": { "texture": "#face", "uv": [ 0, 8.5, 6, 12.5 ] },
+        "down": { "texture": "#face", "uv": [ 0, 8.5, 6, 12.5 ], "cullface": "down" },
+        "north": { "texture": "#face", "uv": [ 0, 8.5, 6, 9 ] },
+        "south": { "texture": "#face", "uv": [ 0, 8.5, 6, 9 ] },
+        "west": { "texture": "#face", "uv": [ 0, 8.5, 4, 9 ] },
+        "east": { "texture": "#face", "uv": [ 0, 8.5, 4, 9 ] }
+      }
+    }
+  ]
+}

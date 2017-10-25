@@ -20,7 +20,7 @@ import java.util.List;
 
 public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMinWorkingPressure, IRedstoneControl {
     public static final int INVENTORY_SIZE = 1;
-    public static final int PCB_INDEX = 0;
+    public static final int PCB_SLOT = 0;
 
     @DescSynced
     public boolean leftConnected;
@@ -60,7 +60,7 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
         super.update();
         if (!getWorld().isRemote) {
             ticksExisted++;
-            ItemStack stack = inventory.getStackInSlot(PCB_INDEX).copy();
+            ItemStack stack = getLoadedPCB().copy();
             if (getPressure() >= PneumaticValues.MIN_PRESSURE_UV_LIGHTBOX && stack.getItem() == Itemss.EMPTY_PCB && stack.getItemDamage() > 0) {
                 addAir((int) (-PneumaticValues.USAGE_UV_LIGHTBOX * getSpeedUsageMultiplierFromUpgrades()));
                 if (ticksExisted % Math.max(1, (int) (TileEntityConstants.LIGHT_BOX_0_100_TIME / (5 * getSpeedMultiplierFromUpgrades()))) == 0) {
@@ -69,7 +69,7 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
                         updateNeighbours();
                     }
                     stack.setItemDamage(Math.max(0, stack.getItemDamage() - 1));
-                    inventory.setStackInSlot(PCB_INDEX, stack);
+                    inventory.setStackInSlot(PCB_SLOT, stack);
                 }
             } else if (areLightsOn) {
                 areLightsOn = false;
@@ -97,13 +97,13 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
         return areLightsOn ? Math.min(5, getUpgrades(EnumUpgrade.SPEED) * 2) + 10 : 0;
     }
 
-    // used in the air dispersion methods.
     @Override
     public boolean isConnectedTo(EnumFacing side) {
-        return side != EnumFacing.UP && side != getRotation() && side != getRotation().getOpposite();
+        return side == getRotation().rotateYCCW();
+//        return side != EnumFacing.UP && side != getRotation() && side != getRotation().getOpposite();
     }
 
-    public void updateConnections() {
+    private void updateConnections() {
         leftConnected = false;
         rightConnected = false;
 
@@ -132,7 +132,7 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
     }
 
     public boolean shouldEmitRedstone() {
-        ItemStack stack = inventory.getStackInSlot(PCB_INDEX);
+        ItemStack stack = getLoadedPCB();
         if (redstoneMode == 0 || stack.getItem() != Itemss.EMPTY_PCB) return false;
         switch (redstoneMode) {
             case 1:
@@ -160,5 +160,9 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
     @Override
     public float getMinWorkingPressure() {
         return PneumaticValues.MIN_PRESSURE_UV_LIGHTBOX;
+    }
+
+    public ItemStack getLoadedPCB() {
+        return inventory.getStackInSlot(PCB_SLOT);
     }
 }

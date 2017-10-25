@@ -1,36 +1,43 @@
 {
-    "forge_marker": 1,
-    "defaults": {
-        "textures": {},
-        "custom": { "flip-v" : true},
-        "model": "pneumaticcraft:uv_light_box.obj"
+  "forge_marker": 1,
+  "defaults": {
+    "textures": {
+      "particle": "pneumaticcraft:blocks/uv_light_box",
+      "face": "pneumaticcraft:blocks/uv_light_box",
+      "blueprint": "pneumaticcraft:items/pcb_blueprint"
     },
-	"variants": {
-		"facing": {
-			"up": {"transform": {"rotation" : {"x" : 90}}},
-			"down": {"x" : -90},
-			"east": {
-				"transform": {
-					"rotation": {"y" : 90}
-				}
-			},
-			"north": {
-				"transform": {
-					"rotation": {"y" : 180}
-				}
-			},
-			"west": {
-				"transform": {
-					"rotation": {"y": 270}
-				}
-			},
-			"south": {
-				"transform": {
-				}
-			}
-		},
-		"inventory": [{
-          "transform": "forge:default-block"
-        }]
-	}
+    "model": "pneumaticcraft:uv_light_box"
+  },
+  "variants": {
+    "facing": {
+      "up": {"transform": {"rotation" : {"x" : 90}}},
+      "down": {"x" : -90},
+      "east": {
+        "transform": {
+          "rotation": {"y" : 90}
+        }
+      },
+      "north": {
+        "transform": {
+          "rotation": {"y" : 180}
+        }
+      },
+      "west": {
+        "transform": {
+          "rotation": {"y": 270}
+        }
+      },
+      "south": {
+        "transform": {
+        }
+      }
+    },
+    "loaded": {
+      "true": { "submodel": { "pcb": { "model": "pneumaticcraft:pcb" } } },
+      "false": { }
+    },
+    "inventory": [{
+      "transform": "forge:default-block"
+    }]
+  }
 }
