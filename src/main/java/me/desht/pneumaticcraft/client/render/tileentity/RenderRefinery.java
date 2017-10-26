@@ -53,13 +53,13 @@ public class RenderRefinery extends TileEntitySpecialRenderer<TileEntityRefinery
     private AxisAlignedBB getBoundsForRender(EnumFacing rotation, float percent) {
         switch (rotation) {
             case NORTH:
-                return new AxisAlignedBB(5f/16f, 1f/16f, 13f/16f, 11f/16f, (1f + 14f * percent) / 16f, 15f/16f);
+                return new AxisAlignedBB(4.25f/16f, 1f/16f, 13f/16f, 11.75f/16f, (1f + 14f * percent) / 16f, 15.75f/16f);
             case SOUTH:
-                return new AxisAlignedBB(5f/16f, 1f/16f, 1f/16f, 11f/16f, (1f + 14f * percent)/16f, 3f/16f);
+                return new AxisAlignedBB(4.25f/16f, 1f/16f, 0.25f/16f, 11.75f/16f, (1f + 14f * percent)/16f, 3f/16f);
             case EAST:
-                return new AxisAlignedBB(1f/16f, 1f/16f, 5f/16f, 3f/16f, (1f + 14f * percent)/16f, 11f/16f);
+                return new AxisAlignedBB(0.25f/16f, 1f/16f, 4.25f/16f, 3f/16f, (1f + 14f * percent)/16f, 11.75f/16f);
             case WEST:
-                return new AxisAlignedBB(13f/16f, 1f/16f, 5f/16f, 15f/16f, (1f + 14f * percent)/16f, 11f/16f);
+                return new AxisAlignedBB(13f/16f, 1f/16f, 4.25f/16f, 15.75f/16f, (1f + 14f * percent)/16f, 11.75f/16f);
             default:
                 // shouldn't happen but TE crescent wrench is able to rotate it onto its side...
                 return null;
@@ -75,19 +75,19 @@ public class RenderRefinery extends TileEntitySpecialRenderer<TileEntityRefinery
         buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
         buffer.pos(bounds.minX, bounds.minY, bounds.minZ)
                 .tex(sprite.getInterpolatedU(16 * bounds.minX), sprite.getInterpolatedV(16 * bounds.minY))
-                .color(1.0f, 1.0f, 1.0f, 0.7f)
+                .color(1.0f, 1.0f, 1.0f, 0.75f)
                 .endVertex();
         buffer.pos(bounds.minX, bounds.maxY, bounds.minZ)
                 .tex(sprite.getInterpolatedU(16 * bounds.minX), sprite.getInterpolatedV(16 * bounds.maxY))
-                .color(1.0f, 1.0f, 1.0f, 0.7f)
+                .color(1.0f, 1.0f, 1.0f, 0.75f)
                 .endVertex();
         buffer.pos(bounds.maxX, bounds.maxY, bounds.minZ)
                 .tex(sprite.getInterpolatedU(16 * bounds.maxX), sprite.getInterpolatedV(16 * bounds.maxY))
-                .color(1.0f, 1.0f, 1.0f, 0.7f)
+                .color(1.0f, 1.0f, 1.0f, 0.75f)
                 .endVertex();
         buffer.pos(bounds.maxX, bounds.minY, bounds.minZ)
                 .tex(sprite.getInterpolatedU(16 * bounds.maxX), sprite.getInterpolatedV(16 * bounds.minY))
-                .color(1.0f, 1.0f, 1.0f, 0.7f)
+                .color(1.0f, 1.0f, 1.0f, 0.75f)
                 .endVertex();
         tess.draw();
 
@@ -95,19 +95,19 @@ public class RenderRefinery extends TileEntitySpecialRenderer<TileEntityRefinery
         buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
         buffer.pos(bounds.maxX, bounds.minY, bounds.maxZ)
                 .tex(sprite.getInterpolatedU(16 * bounds.maxX), sprite.getInterpolatedV(16 * bounds.minY))
-                .color(1.0f, 1.0f, 1.0f, 0.7f)
+                .color(1.0f, 1.0f, 1.0f, 0.75f)
                 .endVertex();
         buffer.pos(bounds.maxX, bounds.maxY, bounds.maxZ)
                 .tex(sprite.getInterpolatedU(16 * bounds.maxX), sprite.getInterpolatedV(16 * bounds.maxY))
-                .color(1.0f, 1.0f, 1.0f, 0.7f)
+                .color(1.0f, 1.0f, 1.0f, 0.75f)
                 .endVertex();
         buffer.pos(bounds.minX, bounds.maxY, bounds.maxZ)
                 .tex(sprite.getInterpolatedU(16 * bounds.minX), sprite.getInterpolatedV(16 * bounds.maxY))
-                .color(1.0f, 1.0f, 1.0f, 0.7f)
+                .color(1.0f, 1.0f, 1.0f, 0.75f)
                 .endVertex();
         buffer.pos(bounds.minX, bounds.minY, bounds.maxZ)
                 .tex(sprite.getInterpolatedU(16 * bounds.minX), sprite.getInterpolatedV(16 * bounds.minY))
-                .color(1.0f, 1.0f, 1.0f, 0.7f)
+                .color(1.0f, 1.0f, 1.0f, 0.75f)
                 .endVertex();
         tess.draw();
 
@@ -115,19 +115,19 @@ public class RenderRefinery extends TileEntitySpecialRenderer<TileEntityRefinery
         buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
         buffer.pos(bounds.minX, bounds.minY, bounds.maxZ)
                 .tex(sprite.getInterpolatedU(16 * bounds.maxZ), sprite.getInterpolatedV(16 * bounds.minY))
-                .color(1.0f, 1.0f, 1.0f, 0.7f)
+                .color(1.0f, 1.0f, 1.0f, 0.75f)
                 .endVertex();
         buffer.pos(bounds.minX, bounds.maxY, bounds.maxZ)
                 .tex(sprite.getInterpolatedU(16 * bounds.maxZ), sprite.getInterpolatedV(16 * bounds.maxY))
-                .color(1.0f, 1.0f, 1.0f, 0.7f)
+                .color(1.0f, 1.0f, 1.0f, 0.75f)
                 .endVertex();
         buffer.pos(bounds.minX, bounds.maxY, bounds.minZ)
                 .tex(sprite.getInterpolatedU(16 * bounds.minZ), sprite.getInterpolatedV(16 * bounds.maxY))
-                .color(1.0f, 1.0f, 1.0f, 0.7f)
+                .color(1.0f, 1.0f, 1.0f, 0.75f)
                 .endVertex();
         buffer.pos(bounds.minX, bounds.minY, bounds.minZ)
                 .tex(sprite.getInterpolatedU(16 * bounds.minZ), sprite.getInterpolatedV(16 * bounds.minY))
-                .color(1.0f, 1.0f, 1.0f, 0.7f)
+                .color(1.0f, 1.0f, 1.0f, 0.75f)
                 .endVertex();
         tess.draw();
 
@@ -135,19 +135,19 @@ public class RenderRefinery extends TileEntitySpecialRenderer<TileEntityRefinery
         buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
         buffer.pos(bounds.maxX, bounds.minY, bounds.minZ)
                 .tex(sprite.getInterpolatedU(16 * bounds.minZ), sprite.getInterpolatedV(16 * bounds.minY))
-                .color(1.0f, 1.0f, 1.0f, 0.7f)
+                .color(1.0f, 1.0f, 1.0f, 0.75f)
                 .endVertex();
         buffer.pos(bounds.maxX, bounds.maxY, bounds.minZ)
                 .tex(sprite.getInterpolatedU(16 * bounds.minZ), sprite.getInterpolatedV(16 * bounds.maxY))
-                .color(1.0f, 1.0f, 1.0f, 0.7f)
+                .color(1.0f, 1.0f, 1.0f, 0.75f)
                 .endVertex();
         buffer.pos(bounds.maxX, bounds.maxY, bounds.maxZ)
                 .tex(sprite.getInterpolatedU(16 * bounds.maxZ), sprite.getInterpolatedV(16 * bounds.maxY))
-                .color(1.0f, 1.0f, 1.0f, 0.7f)
+                .color(1.0f, 1.0f, 1.0f, 0.75f)
                 .endVertex();
         buffer.pos(bounds.maxX, bounds.minY, bounds.maxZ)
                 .tex(sprite.getInterpolatedU(16 * bounds.maxZ), sprite.getInterpolatedV(16 * bounds.minY))
-                .color(1.0f, 1.0f, 1.0f, 0.7f)
+                .color(1.0f, 1.0f, 1.0f, 0.75f)
                 .endVertex();
         tess.draw();
 
@@ -155,17 +155,37 @@ public class RenderRefinery extends TileEntitySpecialRenderer<TileEntityRefinery
         buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
         buffer.pos(bounds.minX, bounds.maxY, bounds.maxZ)
                 .tex(sprite.getInterpolatedU(16 * bounds.minX), sprite.getInterpolatedV(16 * bounds.maxZ))
-                .color(1.0f, 1.0f, 1.0f, 0.7f)
+                .color(1.0f, 1.0f, 1.0f, 0.75f)
                 .endVertex();
         buffer.pos(bounds.maxX, bounds.maxY, bounds.maxZ)
                 .tex(sprite.getInterpolatedU(16 * bounds.maxX), sprite.getInterpolatedV(16 * bounds.maxZ))
-                .color(1.0f, 1.0f, 1.0f, 0.7f)
+                .color(1.0f, 1.0f, 1.0f, 0.75f)
                 .endVertex();
         buffer.pos(bounds.maxX, bounds.maxY, bounds.minZ)
                 .tex(sprite.getInterpolatedU(16 * bounds.maxX), sprite.getInterpolatedV(16 * bounds.minZ))
-                .color(1.0f, 1.0f, 1.0f, 0.7f)
+                .color(1.0f, 1.0f, 1.0f, 0.75f)
                 .endVertex();
         buffer.pos(bounds.minX, bounds.maxY, bounds.minZ)
+                .tex(sprite.getInterpolatedU(16 * bounds.minX), sprite.getInterpolatedV(16 * bounds.minZ))
+                .color(1.0f, 1.0f, 1.0f, 0.7f)
+                .endVertex();
+        tess.draw();
+
+        // bottom face
+        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
+        buffer.pos(bounds.minX, bounds.minY, bounds.maxZ)
+                .tex(sprite.getInterpolatedU(16 * bounds.minX), sprite.getInterpolatedV(16 * bounds.maxZ))
+                .color(1.0f, 1.0f, 1.0f, 0.75f)
+                .endVertex();
+        buffer.pos(bounds.maxX, bounds.minY, bounds.maxZ)
+                .tex(sprite.getInterpolatedU(16 * bounds.maxX), sprite.getInterpolatedV(16 * bounds.maxZ))
+                .color(1.0f, 1.0f, 1.0f, 0.75f)
+                .endVertex();
+        buffer.pos(bounds.maxX, bounds.minY, bounds.minZ)
+                .tex(sprite.getInterpolatedU(16 * bounds.maxX), sprite.getInterpolatedV(16 * bounds.minZ))
+                .color(1.0f, 1.0f, 1.0f, 0.75f)
+                .endVertex();
+        buffer.pos(bounds.minX, bounds.minY, bounds.minZ)
                 .tex(sprite.getInterpolatedU(16 * bounds.minX), sprite.getInterpolatedV(16 * bounds.minZ))
                 .color(1.0f, 1.0f, 1.0f, 0.7f)
                 .endVertex();
