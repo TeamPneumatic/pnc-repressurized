@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
+import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.network.DescSynced;
@@ -21,9 +22,11 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Map;
 
-public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper {
+public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper implements ISerializableTanks {
     @DescSynced
     private final FluidTank tank = new FluidTank(PneumaticValues.NORMAL_TANK_CAPACITY);
 
@@ -139,7 +142,6 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper {
         return false;
     }
 
-    @SideOnly(Side.CLIENT)
     public FluidTank getTank() {
         return tank;
     }
@@ -174,5 +176,11 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper {
         } else {
             return super.getCapability(capability, facing);
         }
+    }
+
+    @Nonnull
+    @Override
+    public Map<String, FluidTank> getSerializableTanks() {
+        return ImmutableMap.of("Tank", tank);
     }
 }

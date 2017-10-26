@@ -29,6 +29,7 @@ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
@@ -576,19 +577,24 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     }
 
     /**
-     * Drop all the tile entity's inventory; called when its block is broken.  Override this if the subclassing
-     * tile entity has other inventories that need to be dropped.
+     * Collect all items which should be dropped when this TE is broken.  Override this if the subclassing TE has
+     * extra inventories which need to be dropped.
+     *
+     * @param drops list in which to collect dropped items
      */
-    public void dropAllInventoryItems() {
+    public void getAllDrops(NonNullList<ItemStack> drops) {
         if (getPrimaryInventory() != null) {
-            PneumaticCraftUtils.dropInventory(getPrimaryInventory(), world, pos.getX(), pos.getY(), pos.getZ());
+            for (int i = 0; i < getPrimaryInventory().getSlots(); i++) {
+                drops.add(getPrimaryInventory().getStackInSlot(i));
+            }
         }
         // TODO consider preserving upgrades in the dropped block
         if (getUpgradesInventory() != null) {
-            PneumaticCraftUtils.dropInventory(getUpgradesInventory(), world, pos.getX(), pos.getY(), pos.getZ());
+            for (int i = 0; i < getUpgradesInventory().getSlots(); i++) {
+                drops.add(getUpgradesInventory().getStackInSlot(i));
+            }
         }
     }
-
 
     /**
      * Carry out any tasks which need a world object (the world is null in the TE constructor)

@@ -13,10 +13,7 @@ import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.thirdparty.ModInteractionUtils;
 import me.desht.pneumaticcraft.common.thirdparty.theoneprobe.ITOPInfoProvider;
 import me.desht.pneumaticcraft.common.thirdparty.theoneprobe.TOPCallback;
-import me.desht.pneumaticcraft.common.tileentity.IComparatorSupport;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticBase;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
+import me.desht.pneumaticcraft.common.tileentity.*;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.ModIds;
@@ -27,10 +24,12 @@ import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
@@ -42,6 +41,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
@@ -118,6 +120,10 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
             EnumFacing rotation = PneumaticCraftUtils.getDirectionFacing(entity, canRotateToTopOrBottom());
             setRotation(world, pos, rotation, state);
         }
+        TileEntity te = world.getTileEntity(pos);
+        if (te instanceof ISerializableTanks && stack.hasTagCompound() && stack.getTagCompound().hasKey(PneumaticCraftUtils.SAVED_TANKS, Constants.NBT.TAG_COMPOUND)) {
+            ((ISerializableTanks) te).deserializeTanks(stack.getTagCompound().getCompoundTag(PneumaticCraftUtils.SAVED_TANKS));
+        }
     }
 
     protected void setRotation(World world, BlockPos pos, EnumFacing rotation) {
@@ -168,19 +174,6 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
             return super.getStateFromMeta(meta).withProperty(ROTATION, EnumFacing.getFront(meta));
         } else {
             return super.getStateFromMeta(meta);
-        }
-    }
-
-    @Override
-    public void breakBlock(World world, BlockPos pos, IBlockState state) {
-        dropInventory(world, pos);
-        super.breakBlock(world, pos, state);
-    }
-
-    protected void dropInventory(World world, BlockPos pos) {
-        TileEntity te = world.getTileEntity(pos);
-        if (te instanceof TileEntityBase) {
-            ((TileEntityBase) te).dropAllInventoryItems();
         }
     }
 
@@ -267,9 +260,22 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
     }
 
     @SideOnly(Side.CLIENT)
-    public void addInformation(ItemStack stack, EntityPlayer player, List<String> curInfo, boolean extraInfo) {
+    @Override
+    public void addInformation(ItemStack stack, World world, List<String> curInfo, ITooltipFlag flag) {
+        if (stack.hasTagCompound() && stack.getTagCompound().hasKey(PneumaticCraftUtils.SAVED_TANKS, Constants.NBT.TAG_COMPOUND)) {
+            NBTTagCompound tag = stack.getTagCompound().getCompoundTag(PneumaticCraftUtils.SAVED_TANKS);
+            for (String s : tag.getKeySet()) {
+                NBTTagCompound tankTag = tag.getCompoundTag(s);
+                FluidTank tank = new FluidTank(tankTag.getInteger("Amount"));
+                tank.readFromNBT(tankTag);
+                FluidStack fluidStack = tank.getFluid();
+                if (fluidStack != null && fluidStack.amount > 0) {
+                    curInfo.add(fluidStack.getFluid().getLocalizedName(fluidStack) + ": " + fluidStack.amount + "mB");
+                }
+            }
+        }
         if (PneumaticCraftRepressurized.proxy.isSneakingInGui()) {
-            TileEntity te = createTileEntity(player.world, getDefaultState());
+            TileEntity te = createTileEntity(world, getDefaultState());
             if (te instanceof TileEntityPneumaticBase) {
                 float pressure = ((TileEntityPneumaticBase) te).dangerPressure;
                 curInfo.add(TextFormatting.YELLOW + I18n.format("gui.tooltip.maxPressure", pressure));
@@ -335,6 +341,38 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
      */
     protected void setBlockBounds(AxisAlignedBB bounds) {
         this.bounds = bounds;
+    }
+
+    @Override
+    public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest) {
+        // This delays harvesting until after getDrops() is called, giving getDrops() a chance to serialize any TE
+        // data onto the itemstack.  harvestBlock() must also be overridden to remove the block (see below)
+        return willHarvest || super.removedByPlayer(state, world, pos, player, false);
+    }
+
+    @Override
+    public void harvestBlock(World world, EntityPlayer player, BlockPos pos, IBlockState state, TileEntity te, ItemStack stack) {
+        super.harvestBlock(world, player, pos, state, te, stack);
+        world.setBlockToAir(pos);  // see removedByPlayer() above
+    }
+
+    @Override
+    public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
+        boolean hasCustomDrops = false;
+
+        TileEntity te = world.getTileEntity(pos);
+        if (te instanceof TileEntityBase) {
+            ((TileEntityBase) te).getAllDrops(drops);
+        }
+
+        if (te instanceof ISerializableTanks) {
+            hasCustomDrops = true;
+            drops.add(((ISerializableTanks) te).getDroppedStack(this));
+        }
+
+        if (!hasCustomDrops) {
+            super.getDrops(drops, world, pos, state, fortune);
+        }
     }
 
     @Override

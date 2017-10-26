@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
+import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.common.ai.ChunkPositionSorter;
@@ -27,10 +28,11 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
 import org.apache.commons.lang3.tuple.Pair;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
-public class TileEntityGasLift extends TileEntityPneumaticBase implements IMinWorkingPressure, IRedstoneControlled {
+public class TileEntityGasLift extends TileEntityPneumaticBase implements IMinWorkingPressure, IRedstoneControlled, ISerializableTanks {
     private static final int INVENTORY_SIZE = 1;
 
     public enum Status { IDLE, PUMPING, DIGGING, RETRACTING }
@@ -274,7 +276,6 @@ public class TileEntityGasLift extends TileEntityPneumaticBase implements IMinWo
         }
     }
 
-    @SideOnly(Side.CLIENT)
     public FluidTank getTank() {
         return tank;
     }
@@ -287,5 +288,9 @@ public class TileEntityGasLift extends TileEntityPneumaticBase implements IMinWo
         return Blockss.GAS_LIFT.getUnlocalizedName();
     }
 
-
+    @Nonnull
+    @Override
+    public Map<String, FluidTank> getSerializableTanks() {
+        return ImmutableMap.of("Tank", tank);
+    }
 }

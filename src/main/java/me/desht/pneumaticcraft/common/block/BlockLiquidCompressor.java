@@ -25,5 +25,4 @@ public class BlockLiquidCompressor extends BlockPneumaticCraftModeled {
     public EnumGuiId getGuiID() {
         return EnumGuiId.LIQUID_COMPRESSOR;
     }
-
 }

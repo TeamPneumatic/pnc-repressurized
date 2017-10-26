@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
+import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
@@ -22,13 +23,11 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.ArrayUtils;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-public class TileEntityRefinery extends TileEntityBase implements IHeatExchanger, IRedstoneControlled, IComparatorSupport {
+public class TileEntityRefinery extends TileEntityBase implements IHeatExchanger, IRedstoneControlled, IComparatorSupport, ISerializableTanks {
 
     @GuiSynced
     @DescSynced
@@ -260,6 +259,12 @@ public class TileEntityRefinery extends TileEntityBase implements IHeatExchanger
         } else {
             return super.getCapability(capability, facing);
         }
+    }
+
+    @Nonnull
+    @Override
+    public Map<String, FluidTank> getSerializableTanks() {
+        return ImmutableMap.of("OilTank", oilTank, "OutputTank", outputTank);
     }
 
 

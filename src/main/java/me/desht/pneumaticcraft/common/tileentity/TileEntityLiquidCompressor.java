@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
+import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.block.Blockss;
@@ -18,9 +19,11 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Map;
 
-public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implements IRedstoneControlled {
+public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implements IRedstoneControlled, ISerializableTanks {
     public static final int INVENTORY_SIZE = 2;
 
     @GuiSynced
@@ -165,5 +168,11 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
         } else {
             return super.getCapability(capability, facing);
         }
+    }
+
+    @Nonnull
+    @Override
+    public Map<String, FluidTank> getSerializableTanks() {
+        return ImmutableMap.of("Tank", tank);
     }
 }

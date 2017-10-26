@@ -30,5 +30,4 @@ public class BlockGasLift extends BlockPneumaticCraftModeled {
     public EnumGuiId getGuiID() {
         return EnumGuiId.GAS_LIFT;
     }
-
 }

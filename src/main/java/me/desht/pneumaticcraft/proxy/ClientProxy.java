@@ -156,7 +156,6 @@ public class ClientProxy extends CommonProxy {
 
     @Override
     public boolean isSneakingInGui() {
-
         return GameSettings.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindSneak);
     }
 

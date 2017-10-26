@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
+import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.network.DescSynced;
@@ -23,12 +24,14 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
-public class TileEntityKeroseneLamp extends TileEntityBase implements IRedstoneControlled {
+public class TileEntityKeroseneLamp extends TileEntityBase implements IRedstoneControlled, ISerializableTanks {
     public static final int INVENTORY_SIZE = 2;
 
     private final Set<BlockPos> managingLights = new HashSet<>();
@@ -59,7 +62,7 @@ public class TileEntityKeroseneLamp extends TileEntityBase implements IRedstoneC
         }
     };
     @DescSynced
-    private float fuelQuality = 0f; // the "quality" of the liquid currently in the tank
+    private float fuelQuality = -1f; // the "quality" of the liquid currently in the tank
 
     private final ItemStackHandler inventory = new FilteredItemStackHandler(INVENTORY_SIZE) {
         @Override
@@ -77,6 +80,7 @@ public class TileEntityKeroseneLamp extends TileEntityBase implements IRedstoneC
     public void update() {
         super.update();
         if (!getWorld().isRemote) {
+            if (fuelQuality < 0) recalculateFuelQuality();
             processFluidItem(0, 1);
             if (getWorld().getTotalWorldTime() % 5 == 0) {
                 int realTargetRange = redstoneAllows() && fuel > 0 ? targetRange : 0;
@@ -287,8 +291,7 @@ public class TileEntityKeroseneLamp extends TileEntityBase implements IRedstoneC
         }
     }
 
-    @SideOnly(Side.CLIENT)
-    public IFluidTank getTank() {
+    public FluidTank getTank() {
         return tank;
     }
 
@@ -339,5 +342,11 @@ public class TileEntityKeroseneLamp extends TileEntityBase implements IRedstoneC
     public String getRedstoneButtonText(int mode) {
         if (mode == 3) return "gui.tab.redstoneBehaviour.keroseneLamp.button.interpolate";
         return super.getRedstoneButtonText(mode);
+    }
+
+    @Nonnull
+    @Override
+    public Map<String, FluidTank> getSerializableTanks() {
+        return ImmutableMap.of("Tank", tank);
     }
 }

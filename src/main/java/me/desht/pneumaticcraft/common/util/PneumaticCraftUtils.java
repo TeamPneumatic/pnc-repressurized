@@ -22,6 +22,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.pathfinding.PathFinder;
 import net.minecraft.pathfinding.WalkNodeProcessor;
 import net.minecraft.tileentity.TileEntity;
@@ -35,6 +36,9 @@ import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.IFluidBlock;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
@@ -54,6 +58,7 @@ import java.util.*;
 import java.util.regex.PatternSyntaxException;
 
 public class PneumaticCraftUtils {
+    public static final String SAVED_TANKS = "SavedTanks";  // NBT top-level tag to store saved fluid tank data
 
     private static Random rand = new Random();
     private static final List<Item> inventoryItemBlacklist = new ArrayList<Item>();
@@ -1014,5 +1019,64 @@ public class PneumaticCraftUtils {
      */
     public static ResourceLocation RL(String path) {
         return new ResourceLocation(Names.MOD_ID, path);
+    }
+
+    /**
+     * Serialize some tank data onto an ItemStack.  Useful to preserve tile entity tank data when breaking
+     * the block.
+     *
+     * @param tank the fluid tank
+     * @param stack the itemstack to save to
+     * @param tagName name of the tag in the itemstack's NBT to store the tank data
+     */
+    public static void serializeTank(FluidTank tank, ItemStack stack, String tagName) {
+        if (tank.getFluidAmount() > 0) {
+            if (!stack.hasTagCompound()) {
+                stack.setTagCompound(new NBTTagCompound());
+            }
+            NBTTagCompound tag = stack.getTagCompound();
+            if (!tag.hasKey(SAVED_TANKS, Constants.NBT.TAG_COMPOUND)) {
+                tag.setTag(SAVED_TANKS, new NBTTagCompound());
+            }
+            NBTTagCompound subTag = tag.getCompoundTag(SAVED_TANKS);
+            NBTTagCompound tankTag = new NBTTagCompound();
+            tank.writeToNBT(tankTag);
+            subTag.setTag(tagName, tankTag);
+        }
+    }
+
+    /**
+     * Deserialize some fluid tank data from an ItemStack into a fluid tank.  Useful to restore tile entity
+     * tank data when placing down a block which has previously been serialized.
+     *
+     * @param tank the fluid tank
+     * @param stack the itemstack to load from
+     * @param tagName name of the tag in the itemstack's NBT which holds the saved tank data
+     */
+    public static void deserializeTank(FluidTank tank, ItemStack stack, String tagName) {
+        if (stack.hasTagCompound() && stack.getTagCompound().hasKey(SAVED_TANKS ,Constants.NBT.TAG_COMPOUND)) {
+            NBTTagCompound subTag = stack.getTagCompound().getCompoundTag(SAVED_TANKS);
+            tank.readFromNBT(subTag.getCompoundTag(tagName));
+        }
+    }
+
+    /**
+     * Convenience method to append data about stored fluid to an itemstack's tooltip.
+     *
+     * @param stack the itemstack
+     * @param tagName tag which stores the tank data
+     * @param tooltip tooltip to append to
+     */
+    public static void addTankInfo(ItemStack stack, String tagName, List<String> tooltip) {
+        if (stack.hasTagCompound()) {
+            NBTTagCompound tag = stack.getTagCompound();
+            NBTTagCompound tankTag = tag.getCompoundTag(tagName);
+            FluidTank tank = new FluidTank(tankTag.getInteger("Amount"));
+            tank.readFromNBT(tankTag);
+            FluidStack fluidStack = tank.getFluid();
+            if (fluidStack != null && fluidStack.amount > 0) {
+                tooltip.add(fluidStack.getFluid().getLocalizedName(fluidStack) + ": " + fluidStack.amount + "mB");
+            }
+        }
     }
 }

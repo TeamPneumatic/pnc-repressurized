@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
+import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
@@ -27,9 +28,11 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.oredict.OreDictionary;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Map;
 
-public class TileEntityPlasticMixer extends TileEntityBase implements IHeatExchanger, IRedstoneControlled {
+public class TileEntityPlasticMixer extends TileEntityBase implements IHeatExchanger, IRedstoneControlled, ISerializableTanks {
     private static final int BASE_TEMPERATURE = FluidRegistry.WATER.getTemperature();
     public static final int INVENTORY_SIZE = 5;
     public static final int DYE_PER_DYE = 0xFF * 10;
@@ -219,6 +222,12 @@ public class TileEntityPlasticMixer extends TileEntityBase implements IHeatExcha
         NBTTagCompound tankTag = new NBTTagCompound();
         tank.writeToNBT(tankTag);
         tag.setTag("fluid", tankTag);
+    }
+
+    @Nonnull
+    @Override
+    public Map<String, FluidTank> getSerializableTanks() {
+        return ImmutableMap.of("Tank", tank);
     }
 
     private static class PlasticFluidTank extends FluidTank {

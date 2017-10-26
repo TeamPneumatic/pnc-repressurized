@@ -61,5 +61,4 @@ public class BlockKeroseneLamp extends BlockPneumaticCraftModeled {
         TileEntityKeroseneLamp lamp = (TileEntityKeroseneLamp) world.getTileEntity(pos);
         return lamp != null && lamp.getRange() > 0 ? 15 : 0;
     }
-
 }

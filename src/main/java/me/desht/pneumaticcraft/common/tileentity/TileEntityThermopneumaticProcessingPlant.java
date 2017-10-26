@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
+import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
@@ -26,10 +27,12 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
 import org.apache.commons.lang3.ArrayUtils;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Map;
 
 public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumaticBase
-        implements IHeatExchanger, IMinWorkingPressure, IRedstoneControlled  {
+        implements IHeatExchanger, IMinWorkingPressure, IRedstoneControlled, ISerializableTanks  {
 
     private static final int INVENTORY_SIZE = 1;
     private static final int CRAFTING_TIME = 60;
@@ -141,12 +144,10 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
         return super.getCapability(capability, facing);
     }
 
-    @SideOnly(Side.CLIENT)
     public FluidTank getInputTank() {
         return inputTank;
     }
 
-    @SideOnly(Side.CLIENT)
     public FluidTank getOutputTank() {
         return outputTank;
     }
@@ -211,6 +212,12 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
     @Override
     public String getName() {
         return Blockss.THERMOPNEUMATIC_PROCESSING_PLANT.getUnlocalizedName();
+    }
+
+    @Nonnull
+    @Override
+    public Map<String, FluidTank> getSerializableTanks() {
+        return ImmutableMap.of("InputTank", inputTank, "OutputTank", outputTank);
     }
 
     private class ThermopneumaticFluidTank extends FluidTank {
