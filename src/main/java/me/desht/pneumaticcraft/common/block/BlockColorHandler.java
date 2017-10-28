@@ -30,7 +30,7 @@ public class BlockColorHandler {
             if (blockAccess != null && pos != null) {
                 TileEntity te = blockAccess.getTileEntity(pos);
                 if (te instanceof TileEntityUVLightBox) {
-                    return ((TileEntityUVLightBox) te).areLightsOn ? 0xFF4000FF : 0xAFAFE4;
+                    return ((TileEntityUVLightBox) te).areLightsOn ? 0xFF4000FF : 0xFFAFAFE4;
                 }
             }
             return 0xFFAFAFE4;
