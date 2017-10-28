@@ -26,15 +26,8 @@
       "east":{ "submodel": { "east": {"model": "pneumaticcraft:omnidirectional_hopper_base", "x": 90, "y": 90 }}}
     },
     "inventory":[{
-      "submodel": {
-        "down": { "model": "pneumaticcraft:omnidirectional_hopper_output", "x": 180 },
-        "up": { "model": "pneumaticcraft:omnidirectional_hopper_base" }
-      },
-      "transform": {
-        "gui": {
-          "rotation": [ {"x": 30 }, { "y": 135 }, { "z": 0 }]
-        }
-      }
+      "model": "pneumaticcraft:omnidirectional_hopper_base",
+      "transform": "forge:default-block"
     }]
   }
 }
