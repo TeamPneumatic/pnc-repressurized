@@ -29,7 +29,7 @@ public class GuiLiquidHopper extends GuiPneumaticContainerBase<TileEntityLiquidH
     public void initGui() {
         super.initGui();
         addWidget(new WidgetTank(0, guiLeft + 116, guiTop + 15, te.getTank()));
-        statusStat = addAnimatedStat("gui.tab.hopperStatus", new ItemStack(Blockss.OMNIDIRECTIONAL_HOPPER), 0xFFFFAA00, false);
+        statusStat = addAnimatedStat("gui.tab.hopperStatus", new ItemStack(Blockss.LIQUID_HOPPER), 0xFFFFAA00, false);
 
         GuiAnimatedStat optionStat = addAnimatedStat("gui.tab.gasLift.mode", new ItemStack(Blocks.LEVER), 0xFFFFCC00, false);
         List<String> text = new ArrayList<String>();
