@@ -19,8 +19,6 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fluids.*;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -62,7 +60,7 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
             for (EntityItem entity : getNeighborItems(this, dir)) {
                 if (!entity.isDead) {
                     NonNullList<ItemStack> returnedItems = NonNullList.create();
-                    if (FluidUtils.tryExtractingLiquid(tank, entity.getItem(), returnedItems)) {
+                    if (FluidUtils.tryFluidExtraction(tank, entity.getItem(), returnedItems)) {
                         if (entity.getItem().getCount() <= 0) entity.setDead();
                         for (ItemStack stack : returnedItems) {
                             EntityItem item = new EntityItem(getWorld(), entity.posX, entity.posY, entity.posZ, stack);
@@ -112,7 +110,7 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
             for (EntityItem entity : getNeighborItems(this, inputDir)) {
                 if (!entity.isDead) {
                     NonNullList<ItemStack> returnedItems = NonNullList.create();
-                    if (FluidUtils.tryInsertingLiquid(this, entity.getItem(), returnedItems)) {
+                    if (FluidUtils.tryFluidInsertion(tank, entity.getItem(), returnedItems)) {
                         if (entity.getItem().isEmpty()) entity.setDead();
                         for (ItemStack stack : returnedItems) {
                             EntityItem item = new EntityItem(getWorld(), entity.posX, entity.posY, entity.posZ, stack);
