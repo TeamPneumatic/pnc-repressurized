@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.proxy.CommonProxy.EnumGuiId;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -60,5 +61,10 @@ public class BlockKeroseneLamp extends BlockPneumaticCraftModeled {
     public int getLightValue(IBlockState state, IBlockAccess world, BlockPos pos) {
         TileEntityKeroseneLamp lamp = (TileEntityKeroseneLamp) world.getTileEntity(pos);
         return lamp != null && lamp.getRange() > 0 ? 15 : 0;
+    }
+
+    @Override
+    public BlockRenderLayer getBlockLayer() {
+        return BlockRenderLayer.CUTOUT_MIPPED;
     }
 }
