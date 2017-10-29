@@ -144,6 +144,10 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
         return tank;
     }
 
+    public EnumFacing getInputDirection() {
+        return inputDir;
+    }
+
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound tag) {
         super.writeToNBT(tag);
