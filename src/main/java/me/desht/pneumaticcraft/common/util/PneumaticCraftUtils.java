@@ -9,6 +9,12 @@ import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityLiving;
@@ -37,6 +43,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.IFluidBlock;
@@ -50,6 +57,7 @@ import net.minecraftforge.oredict.OreDictionary;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.lwjgl.opencl.CL;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nonnull;
@@ -91,7 +99,7 @@ public class PneumaticCraftUtils {
      * Rotates the render matrix dependant on the given metadata of a block. Used in the render methods of many PneumaticCraft TileEntities.
      *
      * @param metadata block metadata
-     * @return
+     * @return the angle (in degrees) of resulting rotation around the Y axis
      */
     @SideOnly(Side.CLIENT)
     public static double rotateMatrixByMetadata(int metadata) {
@@ -1061,22 +1069,131 @@ public class PneumaticCraftUtils {
     }
 
     /**
-     * Convenience method to append data about stored fluid to an itemstack's tooltip.
+     * Render a fluid with a given bounding box.  The bounding box should be within the range 0..1 for x,y,z so
+     * it is expected that the necessary GL translations have already been done.
      *
-     * @param stack the itemstack
-     * @param tagName tag which stores the tank data
-     * @param tooltip tooltip to append to
+     * @param fluid the fluid to render (still texture)
+     * @param bounds the bounds within to render
      */
-    public static void addTankInfo(ItemStack stack, String tagName, List<String> tooltip) {
-        if (stack.hasTagCompound()) {
-            NBTTagCompound tag = stack.getTagCompound();
-            NBTTagCompound tankTag = tag.getCompoundTag(tagName);
-            FluidTank tank = new FluidTank(tankTag.getInteger("Amount"));
-            tank.readFromNBT(tankTag);
-            FluidStack fluidStack = tank.getFluid();
-            if (fluidStack != null && fluidStack.amount > 0) {
-                tooltip.add(fluidStack.getFluid().getLocalizedName(fluidStack) + ": " + fluidStack.amount + "mB");
-            }
-        }
+    @SideOnly(Side.CLIENT)
+    public static void renderFluid(Fluid fluid, AxisAlignedBB bounds) {
+        Tessellator tess = Tessellator.getInstance();
+        TextureMap map =  Minecraft.getMinecraft().getTextureMapBlocks();
+        TextureAtlasSprite sprite = map.getAtlasSprite(fluid.getStill().toString());
+        BufferBuilder buffer = tess.getBuffer();
+
+        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
+        buffer.pos(bounds.minX, bounds.minY, bounds.minZ)
+                .tex(sprite.getInterpolatedU(16 * bounds.minX), sprite.getInterpolatedV(16 * bounds.minY))
+                .color(1.0f, 1.0f, 1.0f, 0.75f)
+                .endVertex();
+        buffer.pos(bounds.minX, bounds.maxY, bounds.minZ)
+                .tex(sprite.getInterpolatedU(16 * bounds.minX), sprite.getInterpolatedV(16 * bounds.maxY))
+                .color(1.0f, 1.0f, 1.0f, 0.75f)
+                .endVertex();
+        buffer.pos(bounds.maxX, bounds.maxY, bounds.minZ)
+                .tex(sprite.getInterpolatedU(16 * bounds.maxX), sprite.getInterpolatedV(16 * bounds.maxY))
+                .color(1.0f, 1.0f, 1.0f, 0.75f)
+                .endVertex();
+        buffer.pos(bounds.maxX, bounds.minY, bounds.minZ)
+                .tex(sprite.getInterpolatedU(16 * bounds.maxX), sprite.getInterpolatedV(16 * bounds.minY))
+                .color(1.0f, 1.0f, 1.0f, 0.75f)
+                .endVertex();
+        tess.draw();
+
+        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
+        buffer.pos(bounds.maxX, bounds.minY, bounds.maxZ)
+                .tex(sprite.getInterpolatedU(16 * bounds.maxX), sprite.getInterpolatedV(16 * bounds.minY))
+                .color(1.0f, 1.0f, 1.0f, 0.75f)
+                .endVertex();
+        buffer.pos(bounds.maxX, bounds.maxY, bounds.maxZ)
+                .tex(sprite.getInterpolatedU(16 * bounds.maxX), sprite.getInterpolatedV(16 * bounds.maxY))
+                .color(1.0f, 1.0f, 1.0f, 0.75f)
+                .endVertex();
+        buffer.pos(bounds.minX, bounds.maxY, bounds.maxZ)
+                .tex(sprite.getInterpolatedU(16 * bounds.minX), sprite.getInterpolatedV(16 * bounds.maxY))
+                .color(1.0f, 1.0f, 1.0f, 0.75f)
+                .endVertex();
+        buffer.pos(bounds.minX, bounds.minY, bounds.maxZ)
+                .tex(sprite.getInterpolatedU(16 * bounds.minX), sprite.getInterpolatedV(16 * bounds.minY))
+                .color(1.0f, 1.0f, 1.0f, 0.75f)
+                .endVertex();
+        tess.draw();
+
+        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
+        buffer.pos(bounds.minX, bounds.minY, bounds.maxZ)
+                .tex(sprite.getInterpolatedU(16 * bounds.maxZ), sprite.getInterpolatedV(16 * bounds.minY))
+                .color(1.0f, 1.0f, 1.0f, 0.75f)
+                .endVertex();
+        buffer.pos(bounds.minX, bounds.maxY, bounds.maxZ)
+                .tex(sprite.getInterpolatedU(16 * bounds.maxZ), sprite.getInterpolatedV(16 * bounds.maxY))
+                .color(1.0f, 1.0f, 1.0f, 0.75f)
+                .endVertex();
+        buffer.pos(bounds.minX, bounds.maxY, bounds.minZ)
+                .tex(sprite.getInterpolatedU(16 * bounds.minZ), sprite.getInterpolatedV(16 * bounds.maxY))
+                .color(1.0f, 1.0f, 1.0f, 0.75f)
+                .endVertex();
+        buffer.pos(bounds.minX, bounds.minY, bounds.minZ)
+                .tex(sprite.getInterpolatedU(16 * bounds.minZ), sprite.getInterpolatedV(16 * bounds.minY))
+                .color(1.0f, 1.0f, 1.0f, 0.75f)
+                .endVertex();
+        tess.draw();
+
+        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
+        buffer.pos(bounds.maxX, bounds.minY, bounds.minZ)
+                .tex(sprite.getInterpolatedU(16 * bounds.minZ), sprite.getInterpolatedV(16 * bounds.minY))
+                .color(1.0f, 1.0f, 1.0f, 0.75f)
+                .endVertex();
+        buffer.pos(bounds.maxX, bounds.maxY, bounds.minZ)
+                .tex(sprite.getInterpolatedU(16 * bounds.minZ), sprite.getInterpolatedV(16 * bounds.maxY))
+                .color(1.0f, 1.0f, 1.0f, 0.75f)
+                .endVertex();
+        buffer.pos(bounds.maxX, bounds.maxY, bounds.maxZ)
+                .tex(sprite.getInterpolatedU(16 * bounds.maxZ), sprite.getInterpolatedV(16 * bounds.maxY))
+                .color(1.0f, 1.0f, 1.0f, 0.75f)
+                .endVertex();
+        buffer.pos(bounds.maxX, bounds.minY, bounds.maxZ)
+                .tex(sprite.getInterpolatedU(16 * bounds.maxZ), sprite.getInterpolatedV(16 * bounds.minY))
+                .color(1.0f, 1.0f, 1.0f, 0.75f)
+                .endVertex();
+        tess.draw();
+
+        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
+        buffer.pos(bounds.minX, bounds.maxY, bounds.maxZ)
+                .tex(sprite.getInterpolatedU(16 * bounds.minX), sprite.getInterpolatedV(16 * bounds.maxZ))
+                .color(1.0f, 1.0f, 1.0f, 0.75f)
+                .endVertex();
+        buffer.pos(bounds.maxX, bounds.maxY, bounds.maxZ)
+                .tex(sprite.getInterpolatedU(16 * bounds.maxX), sprite.getInterpolatedV(16 * bounds.maxZ))
+                .color(1.0f, 1.0f, 1.0f, 0.75f)
+                .endVertex();
+        buffer.pos(bounds.maxX, bounds.maxY, bounds.minZ)
+                .tex(sprite.getInterpolatedU(16 * bounds.maxX), sprite.getInterpolatedV(16 * bounds.minZ))
+                .color(1.0f, 1.0f, 1.0f, 0.75f)
+                .endVertex();
+        buffer.pos(bounds.minX, bounds.maxY, bounds.minZ)
+                .tex(sprite.getInterpolatedU(16 * bounds.minX), sprite.getInterpolatedV(16 * bounds.minZ))
+                .color(1.0f, 1.0f, 1.0f, 0.7f)
+                .endVertex();
+        tess.draw();
+
+        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
+        buffer.pos(bounds.minX, bounds.minY, bounds.maxZ)
+                .tex(sprite.getInterpolatedU(16 * bounds.minX), sprite.getInterpolatedV(16 * bounds.maxZ))
+                .color(1.0f, 1.0f, 1.0f, 0.75f)
+                .endVertex();
+        buffer.pos(bounds.maxX, bounds.minY, bounds.maxZ)
+                .tex(sprite.getInterpolatedU(16 * bounds.maxX), sprite.getInterpolatedV(16 * bounds.maxZ))
+                .color(1.0f, 1.0f, 1.0f, 0.75f)
+                .endVertex();
+        buffer.pos(bounds.maxX, bounds.minY, bounds.minZ)
+                .tex(sprite.getInterpolatedU(16 * bounds.maxX), sprite.getInterpolatedV(16 * bounds.minZ))
+                .color(1.0f, 1.0f, 1.0f, 0.75f)
+                .endVertex();
+        buffer.pos(bounds.minX, bounds.minY, bounds.minZ)
+                .tex(sprite.getInterpolatedU(16 * bounds.minX), sprite.getInterpolatedV(16 * bounds.minZ))
+                .color(1.0f, 1.0f, 1.0f, 0.7f)
+                .endVertex();
+        tess.draw();
     }
 }
