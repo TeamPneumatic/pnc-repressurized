@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IAirListener;
 import me.desht.pneumaticcraft.common.DamageSourcePneumaticCraft;
 import me.desht.pneumaticcraft.common.NBTUtil;
+import me.desht.pneumaticcraft.common.VillagerHandler;
 import me.desht.pneumaticcraft.common.block.BlockPressureChamberValve;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.block.IBlockPressureChamber;
@@ -194,12 +195,11 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
                 for (EntityLivingBase entity : entities) {
                     if (entity instanceof EntityVillager) {
                         EntityVillager villager = (EntityVillager) entity;
-                        // FIXME migrate to getProfessionForge()
-                        if (villager.getProfession() != ConfigHandler.general.villagerMechanicID) {
-                            villager.setProfession(ConfigHandler.general.villagerMechanicID);
+                        if (villager.getProfessionForge() != VillagerHandler.mechanicProfession) {
+                            villager.setProfession(VillagerHandler.mechanicProfession);
                             NBTTagCompound tag = new NBTTagCompound();
                             villager.writeEntityToNBT(tag);
-                            if (tag.hasKey("Offers")) {//reset the trade list
+                            if (tag.hasKey("Offers")) { // force a reset of the villager's trade list
                                 tag.removeTag("Offers");
                                 villager.readEntityFromNBT(tag);
                             }
@@ -210,11 +210,11 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
             }
         }
 
-        // move entities to eachother.
+        // move entities to each other
         AxisAlignedBB bbBox = new AxisAlignedBB(multiBlockX, multiBlockY, multiBlockZ, multiBlockX + multiBlockSize, multiBlockY + multiBlockSize, multiBlockZ + multiBlockSize);
         List<EntityItem> entities = getWorld().getEntitiesWithinAABB(EntityItem.class, bbBox);
-        areEntitiesDoneMoving = true; // set to true, set to false when one of
-        // the entities is moving.
+        areEntitiesDoneMoving = true;
+        // set to true, set to false when one of the entities is moving.
         for (int i = 0; i < entities.size() - 1; i++) {
             EntityItem lastEntity = entities.get(i);
             EntityItem entity = entities.get(i + 1);
@@ -242,19 +242,6 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
             }
         }
 
-//        if (lifeUpgrade && !getWorld().isRemote && ageField != null) {
-//            try {
-//                for (EntityItem entity : entities) {
-//                    ageField.setInt(entity, ageField.getInt(entity));
-//                }
-//            } catch (IllegalAccessException e) {
-//                e.printStackTrace();
-//                ageField = null;
-//            }
-//
-////                entity.age--;
-//        }
-
         // particles
         if (getWorld().isRemote && getPressure() > 0.2D) {
             int particles = (int) Math.pow(multiBlockSize - 2, 3);
@@ -274,7 +261,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
         boolean[] connected = new boolean[]{ true, true, true, true, true, true };
 
         switch (getRotation()) {
-            //take off the sides that tubes can connect to
+            // take off the sides that tubes can connect to
             case UP: case DOWN:
                 connected[EnumFacing.UP.ordinal()] = connected[EnumFacing.DOWN.ordinal()] = false;
                 break;

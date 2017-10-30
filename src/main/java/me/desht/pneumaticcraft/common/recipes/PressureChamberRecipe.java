@@ -8,7 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PressureChamberRecipe {
+    // standard recipes: list of inputs, list of outputs and required pressure
     public static List<PressureChamberRecipe> chamberRecipes = new ArrayList<>();
+    // custom recipe, using
     public static List<IPressureChamberRecipe> specialRecipes = new ArrayList<>();
 
     public final Object[] input;

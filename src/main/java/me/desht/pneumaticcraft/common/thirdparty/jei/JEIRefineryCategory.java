@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.thirdparty.jei;
 
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.fluid.Fluids;
-import me.desht.pneumaticcraft.common.thirdparty.jei.JEIRefineryCategory.RefineryNEIRecipeWrapper;
+import me.desht.pneumaticcraft.common.thirdparty.jei.JEIRefineryCategory.RefineryRecipeWrapper;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefinery;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.IJeiHelpers;
@@ -12,7 +12,7 @@ import net.minecraftforge.fluids.FluidStack;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JEIRefineryCategory extends PneumaticCraftCategory<RefineryNEIRecipeWrapper> {
+public class JEIRefineryCategory extends PneumaticCraftCategory<RefineryRecipeWrapper> {
 
     JEIRefineryCategory(IJeiHelpers jeiHelpers) {
         super(jeiHelpers);
@@ -33,10 +33,10 @@ public class JEIRefineryCategory extends PneumaticCraftCategory<RefineryNEIRecip
         return new ResourceDrawable(Textures.GUI_REFINERY, 0, 0, 6, 3, 166, 79);
     }
 
-    static class RefineryNEIRecipeWrapper extends PneumaticCraftCategory.MultipleInputOutputRecipeWrapper {
+    static class RefineryRecipeWrapper extends PneumaticCraftCategory.MultipleInputOutputRecipeWrapper {
         final int refineries;
 
-        private RefineryNEIRecipeWrapper(int refineries, int[] outputs) {
+        private RefineryRecipeWrapper(int refineries, int[] outputs) {
             this.refineries = refineries;
             addInputLiquid(new FluidStack(Fluids.OIL, 10), 2, 10);
             int x = 69;
@@ -55,7 +55,7 @@ public class JEIRefineryCategory extends PneumaticCraftCategory<RefineryNEIRecip
     List<MultipleInputOutputRecipeWrapper> getAllRecipes() {
         List<MultipleInputOutputRecipeWrapper> recipes = new ArrayList<>();
         for (int i = 0; i < TileEntityRefinery.REFINING_TABLE.length; i++) {
-            recipes.add(new RefineryNEIRecipeWrapper(2 + i, TileEntityRefinery.REFINING_TABLE[i]));
+            recipes.add(new RefineryRecipeWrapper(2 + i, TileEntityRefinery.REFINING_TABLE[i]));
         }
         return recipes;
     }

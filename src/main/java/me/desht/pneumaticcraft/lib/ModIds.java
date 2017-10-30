@@ -22,4 +22,5 @@ public class ModIds {
     public static final String EIO = "enderio";
     public static final String MCMP = "mcmultipart";
     public static final String TOP = "theoneprobe";
+    public static final String JEI = "jei";
 }

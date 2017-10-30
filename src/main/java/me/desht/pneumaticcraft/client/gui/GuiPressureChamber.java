@@ -52,16 +52,16 @@ public class GuiPressureChamber extends GuiPneumaticContainerBase<TileEntityPres
     }
 
     private List<String> getStatusText() {
-        List<String> text = new ArrayList<String>();
+        List<String> text = new ArrayList<>();
 
         text.add("\u00a77Chamber Size:");
         text.add("\u00a70" + te.multiBlockSize + "x" + te.multiBlockSize + "x" + te.multiBlockSize + " (outside)");
         text.add("\u00a70" + (te.multiBlockSize - 2) + "x" + (te.multiBlockSize - 2) + "x" + (te.multiBlockSize - 2) + " (inside)");
         text.add("\u00a77Recipe list:");
-        if (PneumaticCraftRepressurized.isNEIInstalled) {
-            text.add("\u00a70Click on the Pressure gauge to view all the recipes of this machine. Powered by ChickenBones' NEI.");
+        if (PneumaticCraftRepressurized.isJEIInstalled) {
+            text.add("\u00a70Click on the pressure gauge to view this machine's recipe with JEI.");
         } else {
-            text.add("\u00a70Install NEI (an other (client) mod by ChickenBones) to be able to see all the recipes of this machine.");
+            text.add("\u00a70Install JEI to view this machine's recipes.");
         }
         return text;
     }
@@ -82,7 +82,7 @@ public class GuiPressureChamber extends GuiPneumaticContainerBase<TileEntityPres
             }
             textList.add("\u00a70Pressure required: " + te.recipePressure + " bar");
         } else if (!te.areEntitiesDoneMoving) {
-            textList.add("\u00a77Items are too far away from eachother");
+            textList.add("\u00a77Items are too far away from each other");
             textList.add("\u00a70Wait until the items are blown to the middle.");
         }
     }

@@ -38,7 +38,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @SideOnly(Side.CLIENT)
-//TODO NEI dep @Optional.Interface(iface = "codechicken.nei.api.INEIGuiHandler", modid = ModIds.NEI)
 public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiContainer implements IWidgetListener {
 
     public final Tile te;

@@ -10,18 +10,18 @@ import net.minecraftforge.fluids.FluidStack;
  */
 public interface IPneumaticRecipeRegistry {
     /**
-     * @param requiredFluid       can be null
-     * @param requiredItem        can be null
-     * @param requiredTemperature in degrees Kelvin.
-     * @param requiredPressure    required pressure.
-     * @param output              the output of the recipe. cannot be null.
+     * @param requiredFluid       fluid input; may be null
+     * @param requiredItem        item input; may be ItemStack.EMPTY
+     * @param requiredTemperature in degrees Kelvin
+     * @param requiredPressure    required pressure
+     * @param output              the output of the recipe; must not be null
      */
     void registerThermopneumaticProcessingPlantRecipe(FluidStack requiredFluid, ItemStack requiredItem, FluidStack output, double requiredTemperature, float requiredPressure);
 
     /**
      * Allows for registry of a recipe which allows for all your custom needs.
      *
-     * @param recipe
+     * @param recipe custom thermopneumatic recipe implementation
      */
     void registerThermopneumaticProcessingPlantRecipe(IThermopneumaticProcessingPlantRecipe recipe);
 
@@ -44,7 +44,7 @@ public interface IPneumaticRecipeRegistry {
     /**
      * Adds a recipe to the Pressure Chamber.
      *
-     * @param input either of type ItemStack or Pair<String, Integer>, where the String is the Ore dictionary entry and Integer is the amount (stack size)
+     * @param input array of type ItemStack or Pair&lt;String,Integer&gt;, where the String is an Oredict name and Integer is the amount (stack size)
      * @param pressureRequired negative pressures for negative pressure needs.
      * @param output
      */
@@ -53,7 +53,7 @@ public interface IPneumaticRecipeRegistry {
     /**
      * Allows for registry of a recipe which allows for all your custom needs.
      *
-     * @param recipe
+     * @param recipe a custom pressure chamber recipe implementation
      */
     void registerPressureChamberRecipe(IPressureChamberRecipe recipe);
 
@@ -62,8 +62,8 @@ public interface IPneumaticRecipeRegistry {
      * This is a default offer, meaning it will be put in a clean config load. After that the user can change it at will to remove this added recipe.
      * It's a static offer, meaning if it exists in the instance, it will be there forever (like the Emerald --> PCB Blueprint offer).
      *
-     * @param input
-     * @param output
+     * @param input an ItemStack or FluidStack
+     * @param output an ItemStack or FluidStack
      */
     void registerDefaultStaticAmadronOffer(Object input, Object output);
 
@@ -72,16 +72,17 @@ public interface IPneumaticRecipeRegistry {
      * This is a default offer, meaning it will be put in a clean config load. After that the user can change it at will to remove this added recipe.
      * It's a periodic offer, meaning it will be shuffled (by default) once per day between other periodic offers, like the villager trade offers.
      *
-     * @param input
-     * @param output
+     * @param input an ItemStack or FluidStack
+     * @param output an ItemStack or FluidStack
      */
     void registerDefaultPeriodicAmadronOffer(Object input, Object output);
 
     /**
-     * Adds a behaviour for when an inventory is framed with a Heat Frame, and is cooled below 0 degrees C. If the input item is a container item it will be returned as well.
+     * Adds a behaviour for when an inventory is framed with a Heat Frame, and is cooled below 0 degrees C. If the input item is a container item
+     * it will be returned as well.
      *
-     * @param input  either of type ItemStack or Pair<String, Integer>, where the String is the Ore dictionary entry and Integer is the amount (stack size)
-     * @param output
+     * @param input either of type ItemStack or Pair&lt;String,Integer&gt;, where the String is the Oredict entry and Integer is the amount (stack size)
+     * @param output the returned item
      */
     void registerHeatFrameCoolRecipe(Object input, ItemStack output);
 

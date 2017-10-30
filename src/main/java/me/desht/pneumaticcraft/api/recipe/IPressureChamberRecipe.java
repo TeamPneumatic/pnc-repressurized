@@ -5,17 +5,18 @@ import net.minecraft.item.ItemStack;
 public interface IPressureChamberRecipe {
 
     /**
-     * Returns the threshold which is minimal to craft the recipe. Negative pressures also work.
+     * Returns the threshold which is minimal to craft the recipe. Negative pressures are also acceptable; in this
+     * case the pressure chamber's pressure must be <strong>lower</strong> than the required pressure.
      *
      * @return threshold pressure
      */
     float getCraftingPressure();
 
     /**
-     * This method should return the used items in the recipe when the right items are provided to craft this recipe.
+     * Check if the given list of items is valid for this recipe.
      *
-     * @param inputStacks
-     * @return usedStacks, return null when the inputStacks aren't valid for this recipe.
+     * @param inputStacks the items to provide as input; what's currently in the pressure chamber
+     * @return those stacks which will be used up (as opposed to simply modified); return null when the input stacks aren't valid for this recipe.
      */
     ItemStack[] isValidRecipe(ItemStack[] inputStacks);
 

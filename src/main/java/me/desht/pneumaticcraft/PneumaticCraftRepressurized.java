@@ -71,7 +71,7 @@ public class PneumaticCraftRepressurized {
     public static TickHandlerPneumaticCraft tickHandler;
     public static CreativeTabPneumaticCraft tabPneumaticCraft;
 
-    public static boolean isNEIInstalled;
+    public static boolean isJEIInstalled;
 
     static {
         FluidRegistry.enableUniversalBucket();
@@ -82,7 +82,7 @@ public class PneumaticCraftRepressurized {
         logger = event.getModLog();
 
         event.getModMetadata().version = Versions.fullVersionString();
-        isNEIInstalled = Loader.isModLoaded(ModIds.NEI);
+        isJEIInstalled = Loader.isModLoaded(ModIds.JEI);
 
         Reflections.init();
 
