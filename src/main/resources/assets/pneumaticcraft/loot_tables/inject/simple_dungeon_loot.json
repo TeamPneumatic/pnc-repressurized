@@ -1,0 +1,24 @@
+{
+  "type": "item",
+  "name": "pneumaticcraft:security_items",
+  "pools": [{
+    "name": "main",
+    "rolls": 1,
+    "entries": [
+      {
+        "type": "item",
+        "name": "pneumaticcraft:stop_worm",
+        "weight": 15
+      },
+      {
+        "type": "item",
+        "name": "pneumaticcraft:nuke_virus",
+        "weight": 15
+      },
+      {
+        "type": "empty",
+        "weight": 70
+      }
+    ]
+  }]
+}

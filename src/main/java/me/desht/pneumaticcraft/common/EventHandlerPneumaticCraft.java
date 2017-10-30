@@ -50,6 +50,7 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -57,9 +58,15 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
+import net.minecraft.world.storage.loot.LootEntry;
+import net.minecraft.world.storage.loot.LootEntryTable;
+import net.minecraft.world.storage.loot.LootPool;
+import net.minecraft.world.storage.loot.RandomValueRange;
+import net.minecraft.world.storage.loot.conditions.LootCondition;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 import net.minecraftforge.event.entity.living.EnderTeleportEvent;
@@ -349,4 +356,31 @@ public class EventHandlerPneumaticCraft {
             }
         }
     }
+
+    @SubscribeEvent
+    public void onLootTableLoad(LootTableLoadEvent event) {
+        if (ConfigHandler.general.enableDungeonLoot) {
+            String prefix = "minecraft:chests/";
+            String name = event.getName().toString();
+            if (name.startsWith(prefix)) {
+                String file = name.substring(name.indexOf(prefix) + prefix.length());
+                switch (file) {
+                    case "abandoned_mineshaft":
+                    case "desert_pyramid":
+                    case "jungle_temple":
+                    case "simple_dungeon":
+                    case "spawn_bonus_chest":
+                    case "stronghold_corridor":
+                    case "village_blacksmith":
+                        LootEntry entry = new LootEntryTable(RL("simple_dungeon_loot"), 1, 0,  new LootCondition[0], "pneumaticcraft_inject_entry");
+                        LootPool pool = new LootPool(new LootEntry[]{entry}, new LootCondition[0], new RandomValueRange(1), new RandomValueRange(0, 1), "pneumaticcraft_inject_pool");
+                        event.getTable().addPool(pool);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+    }
+
 }
