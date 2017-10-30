@@ -2,42 +2,75 @@
   "forge_marker": 1,
   "defaults": {
     "textures": {},
-//    "custom": { "flip-v" : true},
     "model": "pneumaticcraft:kerosene_lamp"
   },
   "variants": {
     "facing": {
       "up": {
-        "transform": {
-          "rotation" : {"x" : 90}
-        }
+        "transform": { "rotation" : {"x" : 90} }
       },
       "down": {"x" : -90},
       "east": {
-        "transform": {
-//          "scale": [ 0.625, 0.625, 0.625 ],
-//          "translation": [ 0.1171875, -0.2, 0 ],
-          "rotation": {"y" : 90}
+        "transform": { "rotation": {"y" : 90} }
+      },
+      "north": {
+        "transform": { "rotation": {"y" : 180} }
+      },
+      "west": {
+        "transform": { "rotation": {"y": 270} }
+      },
+      "south": {
+        "transform": { }
+      }
+    },
+    "connected": {
+      "down": {
+      },
+      "up": {
+        "submodel": {
+          "vert": {
+            "model": "pneumaticcraft:kerosene_lamp_support_v"
+          }
         }
       },
       "north": {
-        "transform": {
-//          "scale": [ 0.625, 0.625, 0.625 ],
-//          "translation": [ 0, -0.2, -0.1171875 ],
-          "rotation": {"y" : 180}
-        }
-      },
-      "west": {
-        "transform": {
-//          "scale": [ 0.625, 0.625, 0.625 ],
-//          "translation": [ -0.1171875, -0.2, 0 ],
-          "rotation": {"y": 270}
+        "submodel": {
+          "vert": {
+            "model": "pneumaticcraft:kerosene_lamp_support_v"
+          },
+          "horiz": {
+            "model": "pneumaticcraft:kerosene_lamp_support_h"
+          }
         }
       },
       "south": {
-        "transform": {
-//          "scale": [ 0.625, 0.625, 0.625 ],
-//          "translation": [ 0, -0.2, 0.1171875 ]
+        "submodel": {
+          "vert": {
+            "model": "pneumaticcraft:kerosene_lamp_support_v"
+          },
+          "horiz": {
+            "model": "pneumaticcraft:kerosene_lamp_support_h"
+          }
+        }
+      },
+      "east": {
+        "submodel": {
+          "vert": {
+            "model": "pneumaticcraft:kerosene_lamp_support_v"
+          },
+          "horiz": {
+            "model": "pneumaticcraft:kerosene_lamp_support_h"
+          }
+        }
+      },
+      "west": {
+        "submodel": {
+          "vert": {
+            "model": "pneumaticcraft:kerosene_lamp_support_v"
+          },
+          "horiz": {
+            "model": "pneumaticcraft:kerosene_lamp_support_h"
+          }
         }
       }
     },

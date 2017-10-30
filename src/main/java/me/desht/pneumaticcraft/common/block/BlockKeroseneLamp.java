@@ -1,9 +1,12 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.tileentity.TileEntityKeroseneLamp;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.BBConstants;
 import me.desht.pneumaticcraft.proxy.CommonProxy.EnumGuiId;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.PropertyEnum;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
@@ -13,6 +16,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
 public class BlockKeroseneLamp extends BlockPneumaticCraftModeled {
+    private static final PropertyEnum<EnumFacing> CONNECTED = PropertyEnum.create("connected", EnumFacing.class);
+
     private static final AxisAlignedBB BLOCK_BOUNDS_NS = new AxisAlignedBB(
             BBConstants.KEROSENE_LAMP_LENGTH_MIN, 0, BBConstants.KEROSENE_LAMP_WIDTH_MIN,
             1 - BBConstants.KEROSENE_LAMP_LENGTH_MIN, BBConstants.KEROSENE_LAMP_TOP_MAX, 1 - BBConstants.KEROSENE_LAMP_WIDTH_MIN
@@ -40,6 +45,20 @@ public class BlockKeroseneLamp extends BlockPneumaticCraftModeled {
         } else {
             return BLOCK_BOUNDS_EW;
         }
+    }
+
+    @Override
+    protected BlockStateContainer createBlockState() {
+        return new BlockStateContainer(this, ROTATION, CONNECTED);
+    }
+
+    @Override
+    public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
+        TileEntity te = PneumaticCraftUtils.getTileEntitySafely(worldIn, pos);
+        if (te instanceof TileEntityKeroseneLamp) {
+            state = state.withProperty(CONNECTED, ((TileEntityKeroseneLamp) te).getSideConnected());
+        }
+        return state;
     }
 
     @Override

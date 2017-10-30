@@ -1,6 +1,7 @@
 {
   "textures": {
-    "face": "pneumaticcraft:model/kerosene_lamp"
+    "face": "pneumaticcraft:model/kerosene_lamp",
+    "particle": "pneumaticcraft:model/kerosene_lamp"
   },
   "elements": [
     {
@@ -99,31 +100,6 @@
         "south": { "texture": "#face", "uv": [ 6, 0, 7, 10 ]},
         "east": { "texture": "#face", "uv": [ 6, 0, 7, 10 ]},
         "west": { "texture": "#face", "uv": [ 6, 0, 7, 10 ]}
-      }
-    },
-
-    {
-      "from": [ 7.5, 10, 7.5 ],
-      "to": [ 8.5, 15, 8.5 ],
-      "faces": {
-        "up": { "texture": "#face", "uv": [ 6, 0, 7, 1 ]},
-        "down": { "texture": "#face", "uv": [ 6, 0, 7, 1 ], "cullface": "down" },
-        "north": { "texture": "#face", "uv": [ 6, 0, 7, 5 ]},
-        "south": { "texture": "#face", "uv": [ 6, 0, 7, 5 ]},
-        "east": { "texture": "#face", "uv": [ 6, 0, 7, 5 ]},
-        "west": { "texture": "#face", "uv": [ 6, 0, 7, 5 ]}
-      }
-    },
-    {
-      "from": [ 7.5, 14.5, 7.51 ],
-      "to": [ 8.5, 15.5, 16 ],
-      "faces": {
-        "up": { "texture": "#face", "uv": [ 8, 0, 16, 1 ]},
-        "down": { "texture": "#face", "uv": [ 8, 0, 16, 1 ] },
-        "north": { "texture": "#face", "uv": [ 8, 0, 9, 1 ]},
-        "south": { "texture": "#face", "uv": [ 8, 0, 9, 1 ]},
-        "east": { "texture": "#face", "uv": [ 8, 0, 16, 1 ]},
-        "west": { "texture": "#face", "uv": [ 8, 0, 16, 1 ]}
       }
     }
   ]

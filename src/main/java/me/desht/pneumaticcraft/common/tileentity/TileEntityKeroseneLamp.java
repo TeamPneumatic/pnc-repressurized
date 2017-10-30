@@ -92,7 +92,7 @@ public class TileEntityKeroseneLamp extends TileEntityBase implements IRedstoneC
             }
         } else {
             if (isOn && getWorld().getTotalWorldTime() % 5 == 0) {
-                getWorld().spawnParticle(EnumParticleTypes.FLAME, getPos().getX() + 0.4 + 0.3 * getWorld().rand.nextDouble(), getPos().getY() + 0.2 + tank.getFluidAmount() / 1000D * 3 / 16D, getPos().getZ() + 0.4 + 0.3 * getWorld().rand.nextDouble(), 0, 0, 0);
+                getWorld().spawnParticle(EnumParticleTypes.FLAME, getPos().getX() + 0.4 + 0.2 * getWorld().rand.nextDouble(), getPos().getY() + 0.2 + tank.getFluidAmount() / 1000D * 3 / 16D, getPos().getZ() + 0.4 + 0.2 * getWorld().rand.nextDouble(), 0, 0, 0);
             }
         }
     }
@@ -202,22 +202,21 @@ public class TileEntityKeroseneLamp extends TileEntityBase implements IRedstoneC
         return mop != null && lampPos.equals(mop.getBlockPos());
     }
 
-    private boolean tryAddLight(BlockPos pos, BlockPos lampPos) {
+    private void tryAddLight(BlockPos pos, BlockPos lampPos) {
         if (PneumaticCraftUtils.distBetween(pos, lampPos) <= range) {
             if (getWorld().isAirBlock(pos) && !isLampLight(pos)) {
                 if (passesRaytraceTest(pos, lampPos)) {
                     getWorld().setBlockState(pos, Blockss.KEROSENE_LAMP_LIGHT.getDefaultState());
                     managingLights.add(pos);
-                    return true;
                 }
             }
         }
-        return false;
     }
 
     @Override
     public void onNeighborBlockUpdate() {
         super.onNeighborBlockUpdate();
+        EnumFacing oldSideConnected = sideConnected;
         sideConnected = EnumFacing.DOWN;
         for (EnumFacing d : EnumFacing.VALUES) {
             BlockPos neighborPos = getPos().offset(d);
@@ -227,6 +226,14 @@ public class TileEntityKeroseneLamp extends TileEntityBase implements IRedstoneC
                 break;
             }
         }
+        if (sideConnected != oldSideConnected) {
+            sendDescriptionPacket();
+        }
+    }
+
+    @Override
+    public void onDescUpdate() {
+        getWorld().markBlockRangeForRenderUpdate(getPos(), getPos());
     }
 
     @Override
@@ -273,8 +280,7 @@ public class TileEntityKeroseneLamp extends TileEntityBase implements IRedstoneC
 
     @Override
     public boolean redstoneAllows() {
-        if (redstoneMode == 3) return true;
-        return super.redstoneAllows();
+        return redstoneMode == 3 || super.redstoneAllows();
     }
 
     @Override

@@ -1,0 +1,19 @@
+{
+  "textures": {
+    "face": "pneumaticcraft:model/kerosene_lamp"
+  },
+  "elements": [
+    {
+      "from": [ 7.5, 15, 8.5 ],
+      "to": [ 8.5, 16, 16 ],
+      "faces": {
+        "up": { "texture": "#face", "uv": [ 6, 0, 7, 8 ]},
+        "down": { "texture": "#face", "uv": [ 6, 0, 7, 8 ] },
+        "north": { "texture": "#face", "uv": [ 8, 0, 9, 1 ]},
+        "south": { "texture": "#face", "uv": [ 8, 0, 9, 1 ]},
+        "east": { "texture": "#face", "uv": [ 8, 0, 16, 1 ]},
+        "west": { "texture": "#face", "uv": [ 8, 0, 16, 1 ]}
+      }
+    }
+  ]
+}
