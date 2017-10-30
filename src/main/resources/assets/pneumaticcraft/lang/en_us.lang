@@ -449,7 +449,7 @@ gui.tab.problems.amadron.notEnoughFluid=§7Out of fluid to sell! \n§0Add more f
 gui.tab.problems.amadron.outOfStock=§7Out of stock! \n§0Come back later, maybe the vendor will resupply later.
 gui.tab.problems.keroseneLamp.lowFuel=§7The lamp is low on fuel. \n§0Add Kerosene through a fluid insertion method (like a Liquid Hopper or Logistic Drone).
 gui.tab.problems.keroseneLamp.noFuel=§7The lamp has no fuel. \n§0Add Kerosene by placing a Kerosene Bucket in the slot, or through a fluid insertion method (like a Liquid Hopper or Logistic Drone).
-gui.tab.problems.keroseneLamp.badFuel=§7The lamp has a non-flammable liquid in the tank! \n§0Break and replace the lamp to empty out the tank.
+gui.tab.problems.keroseneLamp.badFuel=§7The lamp has an unsuitable fluid in the tank! \n§0Pump out the fluid with a Liquid Hopper or other fluid extraction device.
 gui.tab.problems.sentryTurret.noAmmo=§7The Sentry Turret has no ammo. \n§0Add Gun Ammo to the Ammo slots.
 
 # Upgrades

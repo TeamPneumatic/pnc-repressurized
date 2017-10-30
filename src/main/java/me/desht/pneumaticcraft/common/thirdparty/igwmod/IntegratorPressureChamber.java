@@ -80,7 +80,7 @@ public class IntegratorPressureChamber implements IRecipeIntegrator {
 
         LocatedEntity locatedEntity = new LocatedEntity(EntityVillager.class, x + 215, y + 125, 2F);
         EntityVillager villager = (EntityVillager) locatedEntity.entity;
-        villager.setProfession(ConfigHandler.general.villagerMechanicID);
+//        villager.setProfession(ConfigHandler.general.villagerMechanicID);
         locatedTextures.add(locatedEntity);
     }
 

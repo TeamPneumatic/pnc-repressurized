@@ -3,6 +3,8 @@ package me.desht.pneumaticcraft.common.tileentity;
 import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.config.ConfigHandler;
+import me.desht.pneumaticcraft.common.fluid.Fluids;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -16,6 +18,7 @@ import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.EnumSkyBlock;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
@@ -63,7 +66,7 @@ public class TileEntityKeroseneLamp extends TileEntityBase implements IRedstoneC
         }
     };
     @DescSynced
-    private float fuelQuality = -1f; // the "quality" of the liquid currently in the tank
+    private float fuelQuality = -1f; // the quality of the liquid currently in the tank; basically, its burn time
 
     private final ItemStackHandler inventory = new FilteredItemStackHandler(INVENTORY_SIZE) {
         @Override
@@ -99,17 +102,21 @@ public class TileEntityKeroseneLamp extends TileEntityBase implements IRedstoneC
 
     private void recalculateFuelQuality() {
         if (tank.getFluid() != null && tank.getFluid().amount > 0) {
-            Fluid f = tank.getFluid().getFluid();
-            // 110 comes from kerosene's fuel value of 1,100,000 divided by the old FUEL_PER_MB value (10000)
-            fuelQuality = PneumaticCraftAPIHandler.getInstance().liquidFuels.getOrDefault(f.getName(), 0) / 110;
+            if (ConfigHandler.machineProperties.keroseneLampCanUseAnyFuel) {
+                Fluid f = tank.getFluid().getFluid();
+                // 110 comes from kerosene's fuel value of 1,100,000 divided by the old FUEL_PER_MB value (10000)
+                fuelQuality = PneumaticCraftAPIHandler.getInstance().liquidFuels.getOrDefault(f.getName(), 0) / 110;
+            } else {
+                fuelQuality = Fluids.areFluidsEqual(tank.getFluid().getFluid(), Fluids.KEROSENE) ? 10000 : 0;
+            }
+            fuelQuality *= ConfigHandler.machineProperties.keroseneLampFuelEfficiency;
         }
     }
 
     private void useFuel() {
         if (fuelQuality == 0) return; // tank is empty or a non-burnable liquid in the tank
-
-        fuel -= Math.pow(range, 3);
-        if (fuel <= 0 && tank.drain(1, true) != null) {
+        fuel -= range * range * range;
+        while (fuel <= 0 && tank.drain(1, true) != null) {
             fuel += fuelQuality;
         }
         if (fuel < 0) fuel = 0;
@@ -194,7 +201,16 @@ public class TileEntityKeroseneLamp extends TileEntityBase implements IRedstoneC
                 }
             }
         }
+        boolean oldIsOn = isOn;
         isOn = range > 0;
+        if (isOn != oldIsOn) {
+            getWorld().checkLightFor(EnumSkyBlock.BLOCK, getPos());
+            sendDescriptionPacket();
+        }
+    }
+
+    public boolean isOn() {
+        return isOn;
     }
 
     private boolean passesRaytraceTest(BlockPos pos, BlockPos lampPos) {
@@ -233,6 +249,7 @@ public class TileEntityKeroseneLamp extends TileEntityBase implements IRedstoneC
 
     @Override
     public void onDescUpdate() {
+        getWorld().checkLightFor(EnumSkyBlock.BLOCK, getPos());
         getWorld().markBlockRangeForRenderUpdate(getPos(), getPos());
     }
 

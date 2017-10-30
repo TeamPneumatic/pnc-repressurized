@@ -73,8 +73,6 @@ public class ConfigHandler {
     }
 
     public static class General {
-        @Config.Comment("Villager ID used for the Mechanic Villager. Change when ID collides with an other mod which adds villagers.")
-        public int villagerMechanicID = 125;
         @Config.Comment("Chance per chunk in percentage to generate an Oil Lake. Set to 0 for no spawns")
         @Config.RangeDouble(min = 0d, max = 100d)
         public double oilGenerationChance = 15d;
@@ -114,6 +112,10 @@ public class ConfigHandler {
         @Config.Comment("The max height of an elevator per stacked Elevator Base.")
         @Config.RangeInt(min = 1, max = 256)
         public int elevatorBaseBlocksPerBase = 4;
+        @Config.Comment("Can the Kerosene Lamp burn any fuel?  If false, only Kerosene can be burnt")
+        public boolean keroseneLampCanUseAnyFuel = true;
+        @Config.Comment("Kerosene Lamp fuel efficiency: higher values mean fuel will last longer in the lamp")
+        public float keroseneLampFuelEfficiency = 1.0f;
     }
 
     public static class Advanced {

@@ -78,8 +78,11 @@ public class BlockKeroseneLamp extends BlockPneumaticCraftModeled {
 
     @Override
     public int getLightValue(IBlockState state, IBlockAccess world, BlockPos pos) {
-        TileEntityKeroseneLamp lamp = (TileEntityKeroseneLamp) world.getTileEntity(pos);
-        return lamp != null && lamp.getRange() > 0 ? 15 : 0;
+        TileEntity te = world.getTileEntity(pos);
+        if (te instanceof TileEntityKeroseneLamp) {
+            return ((TileEntityKeroseneLamp) te).isOn() ? 15 : 0;
+        }
+        return 0;
     }
 
     @Override
