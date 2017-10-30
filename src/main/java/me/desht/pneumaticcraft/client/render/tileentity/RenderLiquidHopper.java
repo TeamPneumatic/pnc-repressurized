@@ -11,6 +11,10 @@ import net.minecraftforge.fluids.FluidTank;
 import org.lwjgl.opengl.GL11;
 
 public class RenderLiquidHopper extends TileEntitySpecialRenderer<TileEntityLiquidHopper> {
+    private static final AxisAlignedBB TANK_BOUNDS_UP = new AxisAlignedBB(1 / 16f, 11 / 16f, 1 / 16f, 15 / 16f, 15 / 16f, 15 / 16f);
+    private static final AxisAlignedBB TANK_BOUNDS_DOWN = new AxisAlignedBB(1 / 16f, 1 / 16f, 1 / 16f, 15 / 16f, 5 / 16f, 15 / 16f);
+    private static final AxisAlignedBB TANK_BOUNDS_HORIZ = new AxisAlignedBB(1 / 16f, 1 / 16f, 11 / 16f, 15 / 16f, 15 / 16f, 15 / 16f);
+
     @Override
     public void render(TileEntityLiquidHopper te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
         FluidTank tank = te.getTank();
@@ -35,32 +39,17 @@ public class RenderLiquidHopper extends TileEntitySpecialRenderer<TileEntityLiqu
     }
 
     private void doRotate(EnumFacing rotation) {
-        // no need to do a rotation when facing up or down
         if (rotation.getAxis().isHorizontal()) {
-            GlStateManager.translate(0.5, 0.5, 0.5);
-            GlStateManager.rotate(getAngleFromRotation(rotation), 0, 1, 0);
-            GlStateManager.translate(-0.5, -0.5, -0.5);
+            // no need to do a rotation when facing up or down
+            TankRenderHelper.doRotate(rotation);
         }
-    }
-
-    private float getAngleFromRotation(EnumFacing rotation) {
-        switch (rotation) {
-            case NORTH: return 180;
-            case EAST: return 90;
-            case WEST: return 270;
-        }
-        return 0;
     }
 
     private AxisAlignedBB getRenderBounds(EnumFacing rotation, FluidTank tank) {
-        float percent =  (float) tank.getFluidAmount() / (float) tank.getCapacity();
         switch (rotation) {
-            case UP:
-                return new AxisAlignedBB(1 / 16f, 11 / 16f, 1 / 16f, 15 / 16f, (11 + 4 * percent) / 16, 15 / 16f);
-            case DOWN:
-                return new AxisAlignedBB(1 / 16f, 1 / 16f, 1 / 16f, 15 / 16f, (1 + 4 * percent) / 16, 15 / 16f);
-            default:
-                return new AxisAlignedBB(1 / 16f, 1 / 16f, 11 / 16f, 15 / 16f, (1 + 14 * percent) / 16, 15 / 16f);
+            case UP: return TankRenderHelper.getRenderBounds(tank, TANK_BOUNDS_UP);
+            case DOWN: return TankRenderHelper.getRenderBounds(tank, TANK_BOUNDS_DOWN);
+            default: return TankRenderHelper.getRenderBounds(tank, TANK_BOUNDS_HORIZ);
         }
     }
 }

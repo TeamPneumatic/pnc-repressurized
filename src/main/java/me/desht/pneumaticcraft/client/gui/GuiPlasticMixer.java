@@ -36,7 +36,7 @@ public class GuiPlasticMixer extends GuiPneumaticContainerBase<TileEntityPlastic
 
         addWidget(new WidgetTemperature(0, guiLeft + 55, guiTop + 25, 295, 500, te.getLogic(0)));
         addWidget(new WidgetTemperature(1, guiLeft + 82, guiTop + 25, 295, 500, te.getLogic(1), PneumaticValues.PLASTIC_MIXER_MELTING_TEMP));
-        addWidget(new WidgetTank(3, guiLeft + 152, guiTop + 14, te.getFluidTank()));
+        addWidget(new WidgetTank(3, guiLeft + 152, guiTop + 14, te.getTank()));
 
         GuiAnimatedStat stat = addAnimatedStat("gui.tab.plasticMixer.plasticSelection", new ItemStack(Itemss.PLASTIC, 1, 1), 0xFF005500, false);
         List<String> text = new ArrayList<>();
@@ -98,7 +98,7 @@ public class GuiPlasticMixer extends GuiPneumaticContainerBase<TileEntityPlastic
     protected void addProblems(List<String> curInfo) {
         super.addProblems(curInfo);
         ItemStack stack = te.getPrimaryInventory().getStackInSlot(0);
-        if (te.getFluidTank().getFluidAmount() == 0) {
+        if (te.getTank().getFluidAmount() == 0) {
             if (stack.isEmpty()) {
                 curInfo.add("gui.tab.problems.plasticMixer.noPlastic");
             } else {
@@ -106,7 +106,7 @@ public class GuiPlasticMixer extends GuiPneumaticContainerBase<TileEntityPlastic
             }
         } else {
             if (!stack.isEmpty()) {
-                if (te.getLogic(1).getTemperature() >= PneumaticValues.PLASTIC_MIXER_MELTING_TEMP && te.getFluidTank().getCapacity() - te.getFluidTank().getFluidAmount() < 1000) {
+                if (te.getLogic(1).getTemperature() >= PneumaticValues.PLASTIC_MIXER_MELTING_TEMP && te.getTank().getCapacity() - te.getTank().getFluidAmount() < 1000) {
                     curInfo.add("gui.tab.problems.plasticMixer.plasticLiquidOverflow");
                 }
             }
@@ -117,7 +117,7 @@ public class GuiPlasticMixer extends GuiPneumaticContainerBase<TileEntityPlastic
         if (te.getPrimaryInventory().getStackInSlot(TileEntityPlasticMixer.INV_DYE_GREEN).isEmpty()) {
             curInfo.add(I18n.format("gui.tab.problems.plasticMixer.noDye", new ItemStack(Items.DYE, 1, 2).getDisplayName()));
         }
-        if (te.getPrimaryInventory().getStackInSlot(TileEntityPlasticMixer.INV_DYE_BLUE).isEmpty()) {
+        if (te.getPrimaryInventory().getStackInSlot(TileEntityPlasticMixer.INV_DYE_BLUE).isEmpty()  ) {
             curInfo.add(I18n.format("gui.tab.problems.plasticMixer.noDye", new ItemStack(Items.DYE, 1, 4).getDisplayName()));
         }
     }

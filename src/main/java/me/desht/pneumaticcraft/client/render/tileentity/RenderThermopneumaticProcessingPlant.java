@@ -1,22 +1,20 @@
 package me.desht.pneumaticcraft.client.render.tileentity;
 
-import me.desht.pneumaticcraft.common.tileentity.TileEntityRefinery;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityThermopneumaticProcessingPlant;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fluids.FluidTank;
-import net.minecraftforge.fluids.IFluidTank;
 import org.lwjgl.opengl.GL11;
 
-public class RenderRefinery extends TileEntitySpecialRenderer<TileEntityRefinery> {
-
-    private static final AxisAlignedBB TANK_BOUNDS = new AxisAlignedBB(4.25f/16f, 1f/16f, 0.25f/16f, 11.75f/16f, 15/16f, 3f/16f);
+public class RenderThermopneumaticProcessingPlant extends TileEntitySpecialRenderer<TileEntityThermopneumaticProcessingPlant> {
+    private static final AxisAlignedBB TANK_BOUNDS = new AxisAlignedBB(1 / 16f, 1 / 16f, 10 / 16f, 6 / 16f, 11 / 16f, 15 / 16f);
 
     @Override
-    public void render(TileEntityRefinery te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
-        if (te.getOilTank().getFluidAmount() == 0 && te.getOutputTank().getFluidAmount() == 0) return;
+    public void render(TileEntityThermopneumaticProcessingPlant te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
+        if (te.getInputTank().getFluidAmount() == 0 && te.getOutputTank().getFluidAmount() == 0) return;
 
         GlStateManager.pushMatrix();
         GlStateManager.translate(x, y, z);
@@ -26,20 +24,19 @@ public class RenderRefinery extends TileEntitySpecialRenderer<TileEntityRefinery
 
         bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 
-        // note: unrotated model has oil tank on the south face, output tank on the north face
-
+        // unrotated: input tank at SW corner, output tank at SE corner
         TankRenderHelper.doRotate(te.getRotation());
 
-        FluidTank oilTank = te.getOilTank();
-        if (oilTank.getFluidAmount() > 0) {
-            AxisAlignedBB bounds = getRenderBounds(oilTank);
-            PneumaticCraftUtils.renderFluid(oilTank.getFluid().getFluid(), bounds);
+        FluidTank inputTank = te.getInputTank();
+        if (inputTank.getFluidAmount() > 0) {
+            AxisAlignedBB bounds = getRenderBounds(inputTank);
+            PneumaticCraftUtils.renderFluid(inputTank.getFluid().getFluid(), bounds);
         }
 
         FluidTank outputTank = te.getOutputTank();
         if (outputTank.getFluidAmount() > 0) {
             AxisAlignedBB bounds = getRenderBounds(outputTank);
-            TankRenderHelper.doRotate(180);
+            TankRenderHelper.doRotate(90);
             PneumaticCraftUtils.renderFluid(outputTank.getFluid().getFluid(), bounds);
         }
 
@@ -48,7 +45,7 @@ public class RenderRefinery extends TileEntitySpecialRenderer<TileEntityRefinery
         GlStateManager.popMatrix();
     }
 
-    private AxisAlignedBB getRenderBounds(IFluidTank tank) {
+    private AxisAlignedBB getRenderBounds(FluidTank tank) {
         return TankRenderHelper.getRenderBounds(tank, TANK_BOUNDS);
     }
 }

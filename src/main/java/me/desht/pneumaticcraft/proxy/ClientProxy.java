@@ -89,6 +89,8 @@ public class ClientProxy extends CommonProxy {
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityRefinery.class, new RenderRefinery());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityLiquidHopper.class, new RenderLiquidHopper());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityKeroseneLamp.class, new RenderKeroseneLamp());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPlasticMixer.class, new RenderPlasticMixer());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityThermopneumaticProcessingPlant.class, new RenderThermopneumaticProcessingPlant());
 
         MinecraftForge.EVENT_BUS.register(new ClientEventHandler());
 

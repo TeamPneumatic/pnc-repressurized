@@ -78,8 +78,7 @@ public class TileEntityPlasticMixer extends TileEntityBase implements IHeatExcha
         throw new IllegalArgumentException("Invalid index: " + index);
     }
 
-    @SideOnly(Side.CLIENT)
-    public IFluidTank getFluidTank() {
+    public IFluidTank getTank() {
         return tank;
     }
 
