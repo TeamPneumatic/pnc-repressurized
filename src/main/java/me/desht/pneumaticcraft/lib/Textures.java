@@ -226,6 +226,7 @@ public class Textures {
     public static final String GUI_AIR_CANNON_LOCATION = GUI_LOCATION + "gui_air_cannon.png";
     public static final String GUI_PROBLEMS_TEXTURE = GUI_LOCATION + "gui_problem.png";
     public static final String GUI_NO_PROBLEMS_TEXTURE = GUI_LOCATION + "gui_no_problem.png";
+    public static final ResourceLocation GUI_X_BUTTON = new ResourceLocation(GUI_LOCATION + "gui_x_button.png");
     public static final String GUI_INFO_LOCATION = GUI_LOCATION + "gui_info.png";
     public static final String GUI_UPGRADES_LOCATION = GUI_LOCATION + "gui_upgrade.png";
     public static final ResourceLocation GUI_PASTEBIN_ICON_LOCATION = new ResourceLocation(GUI_LOCATION + "gui_pastebin_icon.png");
@@ -297,4 +298,5 @@ public class Textures {
     public static final ResourceLocation ITEM_SEARCH_OVERLAY = new ResourceLocation(ARMOR_LOCATION + "item_search_overlay.png");
 
     public static final ResourceLocation JEI_EXPLOSION = new ResourceLocation(GUI_LOCATION + "jei/explosion.png");
+
 }
