@@ -9,35 +9,29 @@ buildscript {
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
 
-//Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
-
-project.ext {
-    massive = "0"
-    major = "1"
-    minor = "0"
-    mcVersion = "1.12.1"
-}
-version = "${project.ext.massive}.${project.ext.major}.${project.minor}"
+// Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
+version = "${mod_version_massive}.${mod_version_major}.${mod_version_minor}"
 group = "me.desht.pneumaticcraft"
 archivesBaseName = "pneumaticcraft-repressurized"
 
 sourceCompatibility = targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+
 compileJava {
     sourceCompatibility = targetCompatibility = '1.8'
 }
 
 minecraft {
-    version = "1.12.2-14.23.0.2512"
+    version = "${forge_version}"
     runDir = "run"
-    mappings = "snapshot_20171011"
+    mappings = "${mappings_version}"
     clientJvmArgs += "-Dfml.coreMods.load=elucent.albedo.asm.FMLPlugin"
     replace '@VERSION@', project.version
         replaceIn 'PneumaticCraftRepressurized.java'
-    replace '@MASSIVE@', project.massive
+    replace '@MASSIVE@', mod_version_massive
         replaceIn 'lib/Versions.java'
-    replace '@MAJOR@', project.major
+    replace '@MAJOR@', mod_version_major
         replaceIn 'lib/Versions.java'
-    replace '@MINOR@', project.minor
+    replace '@MINOR@', mod_version_minor
         replaceIn 'lib/Versions.java'
     replace '@MC_VERSION@', version
         replaceIn 'lib/Versions.java'
