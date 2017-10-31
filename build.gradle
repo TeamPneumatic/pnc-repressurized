@@ -9,6 +9,37 @@ buildscript {
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
 
+repositories {
+    maven {
+        name = "CoFH Maven"
+        url = "http://maven.covers1624.net"
+    }
+    maven {
+        name = "JEI"
+        url = "http://dvs1.progwml6.com/files/maven"
+    }
+    maven {
+        name = "MCMP"
+        url = "http://maven.amadornes.com/"
+    }
+    maven {
+        name = "OpenComputers"
+        url = "http://maven.cil.li/"
+    }
+    maven {
+        name = "ComputerCraft"
+        url = "http://cc.crzd.me/maven"
+    }
+    maven {
+        name = "hwyla"
+        url = 'http://tehnut.info/maven/'
+    }
+    maven { // TOP
+        name = "tterrag maven"
+        url = "http://maven.tterrag.com/"
+    }
+}
+
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 version = "${mod_version_massive}.${mod_version_major}.${mod_version_minor}"
 group = "me.desht.pneumaticcraft"
@@ -42,41 +73,10 @@ minecraft {
     }
 }
 
-repositories {
-    maven {
-        name = "CoFH Maven"
-        url = "http://maven.covers1624.net"
-    }
-    maven {
-        name = "JEI"
-        url = "http://dvs1.progwml6.com/files/maven"
-    }
-    maven {
-        name = "MCMP"
-        url = "http://maven.amadornes.com/"
-    }
-    maven {
-        name = "OpenComputers"
-        url = "http://maven.cil.li/"
-    }
-    maven {
-        name = "ComputerCraft"
-        url = "http://cc.crzd.me/maven"
-    }
-    maven {
-        name = "hwyla"
-        url = 'http://tehnut.info/maven/'
-    }
-    maven { // TOP
-        name = "tterrag maven"
-        url = "http://maven.tterrag.com/"
-    }
-}
-
 dependencies {
-//    deobfCompile "cofh:RedstoneFlux:1.12-2.0.0.1:universal"
-    deobfCompile "cofh:CoFHCore:1.12-${cofhcore_version}:deobf"
+//    deobfCompile "cofh:RedstoneFlux:1.12-2.0.1.2:universal"
     deobfCompile "mezz.jei:jei_${mc_version}:${jei_version}"
+    deobfCompile "cofh:CoFHCore:1.12-${cofhcore_version}:deobf"
     deobfCompile "MCMultiPart2:MCMultiPart:${mcmultipart_version}"
     deobfCompile "li.cil.oc:OpenComputers:MC1.12.1-${oc_version}:api"
     deobfCompile "dan200.computercraft:ComputerCraft-SquidDev-CC-ComputerCraft-feature-minecraft-1.12.2:${computercraft_version}"
