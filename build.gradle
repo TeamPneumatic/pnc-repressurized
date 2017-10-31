@@ -9,45 +9,6 @@ buildscript {
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
 
-//Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
-
-project.ext {
-    massive = "0"
-    major = "1"
-    minor = "0"
-    mcVersion = "1.12.1"
-}
-version = "${project.ext.massive}.${project.ext.major}.${project.minor}"
-group = "me.desht.pneumaticcraft"
-archivesBaseName = "pneumaticcraft-repressurized"
-
-sourceCompatibility = targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
-compileJava {
-    sourceCompatibility = targetCompatibility = '1.8'
-}
-
-minecraft {
-    version = "1.12.2-14.23.0.2512"
-    runDir = "run"
-    mappings = "snapshot_20171011"
-    clientJvmArgs += "-Dfml.coreMods.load=elucent.albedo.asm.FMLPlugin"
-    replace '@VERSION@', project.version
-        replaceIn 'PneumaticCraftRepressurized.java'
-    replace '@MASSIVE@', project.massive
-        replaceIn 'lib/Versions.java'
-    replace '@MAJOR@', project.major
-        replaceIn 'lib/Versions.java'
-    replace '@MINOR@', project.minor
-        replaceIn 'lib/Versions.java'
-    replace '@MC_VERSION@', version
-        replaceIn 'lib/Versions.java'
-    if (System.getenv("BUILD_NUMBER") != null) {
-        replace '@BUILD_NUMBER@', System.getenv("BUILD_NUMBER")
-    } else {
-        replace '@BUILD_NUMBER@', 0
-    }
-}
-
 repositories {
     maven {
         name = "CoFH Maven"
@@ -79,15 +40,48 @@ repositories {
     }
 }
 
+// Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
+version = "${mod_version_massive}.${mod_version_major}.${mod_version_minor}"
+group = "me.desht.pneumaticcraft"
+archivesBaseName = "pneumaticcraft-repressurized"
+
+sourceCompatibility = targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+
+compileJava {
+    sourceCompatibility = targetCompatibility = '1.8'
+}
+
+minecraft {
+    version = "${forge_version}"
+    runDir = "run"
+    mappings = "${mappings_version}"
+    clientJvmArgs += "-Dfml.coreMods.load=elucent.albedo.asm.FMLPlugin"
+    replace '@VERSION@', project.version
+        replaceIn 'PneumaticCraftRepressurized.java'
+    replace '@MASSIVE@', mod_version_massive
+        replaceIn 'lib/Versions.java'
+    replace '@MAJOR@', mod_version_major
+        replaceIn 'lib/Versions.java'
+    replace '@MINOR@', mod_version_minor
+        replaceIn 'lib/Versions.java'
+    replace '@MC_VERSION@', version
+        replaceIn 'lib/Versions.java'
+    if (System.getenv("BUILD_NUMBER") != null) {
+        replace '@BUILD_NUMBER@', System.getenv("BUILD_NUMBER")
+    } else {
+        replace '@BUILD_NUMBER@', 0
+    }
+}
+
 dependencies {
-//    deobfCompile "cofh:RedstoneFlux:1.12-2.0.0.1:universal"
-    deobfCompile "cofh:CoFHCore:1.12-4.3.6.14:deobf"
-    deobfCompile "mezz.jei:jei_1.12:4.7.0.67"
-    deobfCompile "MCMultiPart2:MCMultiPart:2.3.3"
-    deobfCompile "li.cil.oc:OpenComputers:MC1.12-1.7.0.3:api"
-    deobfCompile "dan200.computercraft:ComputerCraft-SquidDev-CC-ComputerCraft-feature-minecraft-1.12.2:1.80pr0-build20"
-    deobfCompile "mcp.mobius.waila:Hwyla:1.8.20-B35_1.12"
-    deobfCompile "mcjty.theoneprobe:TheOneProbe-1.12:1.12-1.4.18-10"
+//    deobfCompile "cofh:RedstoneFlux:1.12-2.0.1.2:universal"
+    deobfCompile "mezz.jei:jei_${mc_version}:${jei_version}"
+    deobfCompile "cofh:CoFHCore:1.12-${cofhcore_version}:deobf"
+    deobfCompile "MCMultiPart2:MCMultiPart:${mcmultipart_version}"
+    deobfCompile "li.cil.oc:OpenComputers:MC1.12.1-${oc_version}:api"
+    deobfCompile "dan200.computercraft:ComputerCraft-SquidDev-CC-ComputerCraft-feature-minecraft-1.12.2:${computercraft_version}"
+    deobfCompile "mcp.mobius.waila:Hwyla:${hwyla_version}"
+    deobfCompile "mcjty.theoneprobe:TheOneProbe-1.12:${top_version}"
     // compile "igwmod:IGW-Mod-1.9.4:1.3.0-5:userdev"
 }
 
