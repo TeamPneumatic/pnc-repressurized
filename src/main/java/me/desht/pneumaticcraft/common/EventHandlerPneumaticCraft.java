@@ -372,7 +372,7 @@ public class EventHandlerPneumaticCraft {
                     case "spawn_bonus_chest":
                     case "stronghold_corridor":
                     case "village_blacksmith":
-                        LootEntry entry = new LootEntryTable(RL("simple_dungeon_loot"), 1, 0,  new LootCondition[0], "pneumaticcraft_inject_entry");
+                        LootEntry entry = new LootEntryTable(RL("inject/simple_dungeon_loot"), 1, 0,  new LootCondition[0], "pneumaticcraft_inject_entry");
                         LootPool pool = new LootPool(new LootEntry[]{entry}, new LootCondition[0], new RandomValueRange(1), new RandomValueRange(0, 1), "pneumaticcraft_inject_pool");
                         event.getTable().addPool(pool);
                         break;
