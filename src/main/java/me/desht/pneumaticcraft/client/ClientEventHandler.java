@@ -27,6 +27,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.model.ModelBiped;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -153,9 +154,10 @@ public class ClientEventHandler {
 
     @SubscribeEvent
     public void onWorldRender(RenderWorldLastEvent event) {
-
+        // render our own minigun bullet traces
         renderMinigunFirstPerson();
 
+        // render everyone else's minigun bullet traces
         EntityPlayer thisPlayer = Minecraft.getMinecraft().player;
         double playerX = thisPlayer.prevPosX + (thisPlayer.posX - thisPlayer.prevPosX) * event.getPartialTicks();
         double playerY = thisPlayer.prevPosY + (thisPlayer.posY - thisPlayer.prevPosY) * event.getPartialTicks();
@@ -204,33 +206,31 @@ public class ClientEventHandler {
     private void renderMinigunFirstPerson() {
         EntityPlayer player = Minecraft.getMinecraft().player;
         ItemStack stack = player.getHeldItemMainhand();
-        if (player.getHeldItemMainhand().getItem() == Itemss.MINIGUN) {
+        if (stack.getItem() == Itemss.MINIGUN) {
             Minigun minigun = ((ItemMinigun) Itemss.MINIGUN).getMinigun(stack, player);
             if (minigun.isMinigunActivated() && minigun.getMinigunSpeed() == Minigun.MAX_GUN_SPEED) {
-                GL11.glDisable(GL11.GL_TEXTURE_2D);
-                GL11.glDisable(GL11.GL_LIGHTING);
-                RenderUtils.glColorHex(0x7f000000 | minigun.getAmmoColor());
+                GlStateManager.disableTexture2D();
+                GlStateManager.disableLighting();
+                GlStateManager.enableBlend();
+                GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+
+                RenderUtils.glColorHex(0x40000000 | minigun.getAmmoColor());
                 for (int i = 0; i < 5; i++) {
                     Vec3d directionVec = player.getLookVec().normalize();
-                    Vec3d vec = new Vec3d(directionVec.x, 0, directionVec.z).normalize();
-                    vec.rotateYaw((float) Math.toRadians(-15 + (player.rotationYawHead - player.renderYawOffset)));
-                    minigunFire.startX = -0.5;
-                    minigunFire.startY = 0.6;
-                    minigunFire.startZ = 0.4;
+                    Vec3d vec2 = new Vec3d(directionVec.x, directionVec.y, directionVec.z);
+                    vec2 = vec2.rotateYaw(-(float)Math.PI / 2f);
+                    minigunFire.startX = vec2.x ;
+                    minigunFire.startY = 1.0;
+                    minigunFire.startZ = vec2.z;
                     minigunFire.endX = directionVec.x * 20 + player.getRNG().nextDouble() - 0.5;
-                    minigunFire.endY = directionVec.y * 20 + player.getRNG().nextDouble() - 0.5;
+                    minigunFire.endY = directionVec.y * 20 + player.getEyeHeight() + player.getRNG().nextDouble() - 0.5;
                     minigunFire.endZ = directionVec.z * 20 + player.getRNG().nextDouble() - 0.5;
-//                    minigunFire.startX = -0.5;
-//                    minigunFire.startY = 0.6;
-//                    minigunFire.startZ = 0.4;
-//                    minigunFire.endX = 0.2 * (player.getRNG().nextDouble() - 0.5) - 1;
-//                    minigunFire.endY = 0.2 * (player.getRNG().nextDouble() - 0.5);
-//                    minigunFire.endZ = 7;
                     minigunFire.render();
                 }
-                GL11.glColor4d(1, 1, 1, 1);
-                GL11.glEnable(GL11.GL_LIGHTING);
-                GL11.glEnable(GL11.GL_TEXTURE_2D);
+                GlStateManager.color(1, 1, 1, 1);
+                GlStateManager.enableLighting();
+                GlStateManager.enableTexture2D();
+                GlStateManager.disableBlend();
             }
         }
     }
@@ -303,7 +303,7 @@ public class ClientEventHandler {
                     ModelLoader.setCustomModelResourceLocation(item, stack.getMetadata(),
                             new ModelResourceLocation(RL(subtyped.getSubtypeModelName(stack.getMetadata())), "inventory"));
                 }
-            } else {
+            } else {ModelBakery.registerItemVariants(item);
                 ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(item.getRegistryName(), "inventory"));
             }
         }

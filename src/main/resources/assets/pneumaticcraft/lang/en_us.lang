@@ -779,6 +779,7 @@ blockTracker.message.stopSpam=Stopped spam on %s
 # Tooltips
 gui.tooltip.programmable.invalidPieces=Pieces displayed in red are not applicable in this application.
 gui.tooltip.doesNotDespawn=§aThis item does not despawn.
+gui.tooltip.gunAmmo.ammoRemaining=Ammo: §f%d / %d
 gui.tooltip.gunAmmo=Ammo type:
 gui.tooltip.gunAmmo.combineWithPotion=Craft with any Potion to tip the bullets with that effect.
 gui.tooltip.sneakForInfo=Sneak for info

@@ -258,7 +258,6 @@ public class RenderUtils extends Render {
         float red = (color >> 16 & 255) / 255F;
         float green = (color >> 8 & 255) / 255F;
         float blue = (color & 255) / 255F;
-        GL11.glColor4d(red, green, blue, alpha);
         GlStateManager.color(red, green, blue, alpha);
     }
 

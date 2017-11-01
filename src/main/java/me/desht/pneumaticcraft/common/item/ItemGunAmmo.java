@@ -41,9 +41,10 @@ public class ItemGunAmmo extends ItemPneumatic {
     @Override
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, World world, List<String> infoList, ITooltipFlag extraInfo) {
+        infoList.add(I18n.format("gui.tooltip.gunAmmo.ammoRemaining", stack.getMaxDamage() - stack.getItemDamage(), stack.getMaxDamage()));
         infoList.add(I18n.format("gui.tooltip.gunAmmo.combineWithPotion"));
         ItemStack potion = getPotion(stack);
-        if (potion != null) {
+        if (!potion.isEmpty()) {
             potion.getItem().addInformation(potion, world, infoList, extraInfo);
             if (infoList.size() > 2) infoList.set(2, I18n.format("gui.tooltip.gunAmmo") + " " + infoList.get(2));
         }

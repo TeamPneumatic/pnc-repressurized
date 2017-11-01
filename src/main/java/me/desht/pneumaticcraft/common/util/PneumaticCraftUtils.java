@@ -920,13 +920,11 @@ public class PneumaticCraftUtils {
         Entity pointedEntity = null;
         Vec3d vec33 = null;
         float f1 = 1.0F;
-        List list = lookingEntity.world.getEntitiesWithinAABBExcludingEntity(lookingEntity, lookingEntity.getEntityBoundingBox()
+        List<Entity> list = lookingEntity.world.getEntitiesWithinAABBExcludingEntity(lookingEntity, lookingEntity.getEntityBoundingBox()
                 .expand(vec31.x * range, vec31.y * range, vec31.z * range).expand(f1, f1, f1));
         double d2 = d1;
 
-        for (int i = 0; i < list.size(); ++i) {
-            Entity entity = (Entity) list.get(i);
-
+        for (Entity entity : list) {
             if (entity.canBeCollidedWith()) {
                 float f2 = entity.getCollisionBorderSize();
                 AxisAlignedBB axisalignedbb = entity.getEntityBoundingBox().expand(f2, f2, f2);

@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.Reflections;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemRenderer;
@@ -32,13 +33,6 @@ public class ItemMinigun extends ItemPressurizable {
     public void onPlayerStoppedUsing(ItemStack stack, World worldIn, EntityLivingBase entityLiving, int timeLeft) {
     }
 
-    /**
-     * returns the action that specifies what animation to play when the items is being used
-     */
-    /* public EnumAction getItemUseAction(ItemStack p_77661_1_)
-     {
-         return EnumAction.bow;
-     }*/
     @Override
     public void onUpdate(ItemStack stack, World world, Entity entity, int slot, boolean currentItem) {
         super.onUpdate(stack, world, entity, slot, currentItem);
@@ -61,9 +55,7 @@ public class ItemMinigun extends ItemPressurizable {
         Minecraft mc = Minecraft.getMinecraft();
         ItemRenderer renderer = mc.entityRenderer.itemRenderer;
         renderer.updateEquippedItem();
-//        renderer.equippedProgress = 1;
-//        renderer.prevEquippedProgress = 1;
-
+        Reflections.resetEquippedProgress(renderer);
     }
 
     public Minigun getMinigun(ItemStack stack, EntityPlayer player) {
@@ -91,6 +83,11 @@ public class ItemMinigun extends ItemPressurizable {
             if (stack.getItem() == Itemss.GUN_AMMO) return stack;
         }
         return ItemStack.EMPTY;
+    }
+
+    @Override
+    public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
+        return false;
     }
 
     private class MinigunItem extends Minigun {
@@ -122,7 +119,7 @@ public class ItemMinigun extends ItemPressurizable {
 
         @Override
         public int getAmmoColor() {
-            ItemStack ammo = null;
+            ItemStack ammo = ItemStack.EMPTY;
             if (NBTUtil.hasTag(stack, "ammoColorStack")) {
                 NBTTagCompound tag = NBTUtil.getCompoundTag(stack, "ammoColorStack");
                 ammo = new ItemStack(tag);
@@ -133,8 +130,6 @@ public class ItemMinigun extends ItemPressurizable {
         @Override
         public void playSound(SoundEvent soundName, float volume, float pitch) {
             NetworkHandler.sendToAllAround(new PacketPlaySound(soundName, SoundCategory.PLAYERS, player.getPosition(), volume, pitch, false), world);
-//            world.playSound(player.posX, player.posY, player.posZ, soundName, SoundCategory.PLAYERS, volume, pitch, true);
-//            world.playSoundAtEntity(player, soundName, volume, pitch);
         }
 
         @Override

@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.util;
 
+import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityBlaze;
@@ -10,6 +11,8 @@ import net.minecraft.server.management.PlayerInteractionManager;
 import net.minecraft.tileentity.MobSpawnerBaseLogic;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -31,6 +34,10 @@ public class Reflections {
     private static Field entity_inventoryArmorDropChances;
     private static Field player_invulnerableDimensionChange;
     private static Field witch_potionUseTimer;
+    @SideOnly(Side.CLIENT)
+    private static Field itemRenderer_equippedProgress;
+    @SideOnly(Side.CLIENT)
+    private static Field itemRenderer_prevEquippedProgress;
 
     public static Class blaze_aiFireballAttack;
     public static Class ghast_aiFireballAttack;
@@ -52,6 +59,11 @@ public class Reflections {
         // access to non-public entity AI's for hacking purposes
         blaze_aiFireballAttack = findEnclosedClass(EntityBlaze.class, "AIFireballAttack", "a");
         ghast_aiFireballAttack = findEnclosedClass(EntityGhast.class, "AIFireballAttack", "c");
+    }
+
+    public static void initClientOnly() {
+        itemRenderer_equippedProgress = ReflectionHelper.findField(ItemRenderer.class, "field_187469_f", "equippedProgressMainHand");
+        itemRenderer_prevEquippedProgress = ReflectionHelper.findField(ItemRenderer.class, "field_187470_g", "prevEquippedProgressMainHand");
     }
 
     private static Class<?> findEnclosedClass(Class<?> cls, String... enclosedClassNames) {
@@ -190,6 +202,15 @@ public class Reflections {
     public static void setWitchPotionUseTimer(EntityWitch witch, int time) {
         try {
             witch_potionUseTimer.setInt(witch, time);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void resetEquippedProgress(ItemRenderer itemRenderer) {
+        try {
+            itemRenderer_equippedProgress.setInt(itemRenderer, 1);
+            itemRenderer_prevEquippedProgress.setInt(itemRenderer, 1);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }

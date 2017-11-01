@@ -75,7 +75,7 @@ minecraft {
 
 dependencies {
 //    deobfCompile "cofh:RedstoneFlux:1.12-2.0.1.2:universal"
-    deobfCompile "mezz.jei:jei_${mc_version}:${jei_version}"
+    //deobfCompile "mezz.jei:jei_${mc_version}:${jei_version}"
     deobfCompile "cofh:CoFHCore:1.12-${cofhcore_version}:deobf"
     deobfCompile "MCMultiPart2:MCMultiPart:${mcmultipart_version}"
     deobfCompile "li.cil.oc:OpenComputers:MC1.12.1-${oc_version}:api"

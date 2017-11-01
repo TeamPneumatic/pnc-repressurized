@@ -32,6 +32,7 @@ import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.recipes.CraftingRegistrator;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.tileentity.*;
+import me.desht.pneumaticcraft.common.util.Reflections;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.ModIds;
 import me.desht.pneumaticcraft.lib.Names;
@@ -69,6 +70,8 @@ public class ClientProxy extends CommonProxy {
 
     @Override
     public void preInit() {
+        Reflections.initClientOnly();
+
         OBJLoader.INSTANCE.addDomain(Names.MOD_ID);
         ModelLoaderRegistry.registerLoader(LoaderProgrammingPuzzle.instance);
 
