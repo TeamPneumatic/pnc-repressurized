@@ -8,7 +8,7 @@
     "inventory": [{
       "transform": {
         "gui": {
-          "rotation": [ {"x": 30 }, { "y": 0 }, { "z": 45 }],
+          "rotation": [ {"x": 30 }, { "y": 0 }, { "z": 30 }],
           "translation": [ -0.2, 0.4, 0 ],
           "scale":[ 1, 1, 1 ]
         },
