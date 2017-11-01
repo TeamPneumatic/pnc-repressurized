@@ -67,7 +67,7 @@ public class GuiSentryTurret extends GuiPneumaticContainerBase<TileEntitySentryT
         super.addProblems(curInfo);
 
         boolean hasAmmo = false;
-        for (int i = 4; i < te.getPrimaryInventory().getSlots(); i++) {
+        for (int i = 0; i < te.getPrimaryInventory().getSlots(); i++) {
             if (!te.getPrimaryInventory().getStackInSlot(i).isEmpty()) {
                 hasAmmo = true;
                 break;

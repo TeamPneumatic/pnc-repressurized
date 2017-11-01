@@ -8,6 +8,8 @@ import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.network.NetworkHandler;
+import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -196,7 +198,7 @@ public class TileEntitySentryTurret extends TileEntityBase implements IRedstoneC
 
         @Override
         public boolean test(Integer integer, ItemStack itemStack) {
-            return itemStack.getItem() == Itemss.GUN_AMMO;
+            return itemStack.isEmpty() || itemStack.getItem() == Itemss.GUN_AMMO;
         }
     }
 
@@ -244,7 +246,9 @@ public class TileEntitySentryTurret extends TileEntityBase implements IRedstoneC
 
         @Override
         public void playSound(SoundEvent soundName, float volume, float pitch) {
-            getWorld().playSound(getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5, soundName, SoundCategory.BLOCKS, volume, pitch, false);
+            NetworkHandler.sendToAllAround(new PacketPlaySound(soundName, SoundCategory.BLOCKS,
+                    getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5,
+                    volume, pitch, false), world);
         }
 
         @Override
