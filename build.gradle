@@ -40,6 +40,15 @@ repositories {
     }
 }
 
+task copyCIArtifacts << {
+    if (System.getenv("CIRCLECI").equals("true")) {
+        copy {
+            from(file('build/libs/').listFiles())
+            into System.getenv('CIRCLE_ARTIFACTS')
+        }
+    }
+}
+
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 version = "${mod_version_massive}.${mod_version_major}.${mod_version_minor}"
 group = "me.desht.pneumaticcraft"
