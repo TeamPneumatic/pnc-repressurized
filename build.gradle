@@ -75,8 +75,8 @@ minecraft {
         replaceIn 'lib/Versions.java'
     replace '@MC_VERSION@', version
         replaceIn 'lib/Versions.java'
-    if (System.getenv("BUILD_NUMBER") != null) {
-        replace '@BUILD_NUMBER@', System.getenv("BUILD_NUMBER")
+    if (System.getenv("CIRCLE_BUILD_NUM") != null) {
+        replace '@BUILD_NUMBER@', System.getenv("CIRCLE_BUILD_NUM")
     } else {
         replace '@BUILD_NUMBER@', 0
     }
