@@ -187,7 +187,8 @@ public class GuiUtils {
         final int yTileCount = scaledAmount / TEX_HEIGHT;
         final int yRemainder = scaledAmount - yTileCount * TEX_HEIGHT;
 
-        final int yStart = bounds.y + bounds.height;
+        int yStart = bounds.y + bounds.height;
+        if (fluid.getDensity() < 0) yStart -= (bounds.height - scaledAmount);
 
         for (int xTile = 0; xTile <= xTileCount; xTile++) {
             for (int yTile = 0; yTile <= yTileCount; yTile++) {
