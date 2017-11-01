@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.client.model.block;
 
+import me.desht.pneumaticcraft.client.render.tileentity.AbstractModelRenderer;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderEntityItem;
@@ -10,7 +10,7 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraftforge.fml.client.FMLClientHandler;
 
-public class ModelChargingStation extends ModelBase {
+public class ModelChargingStation extends AbstractModelRenderer.BaseModel {
     private final ModelRenderer shape3;
     private final ModelRenderer shape4;
     private final ModelRenderer shape5;
@@ -117,15 +117,8 @@ public class ModelChargingStation extends ModelBase {
         setRotation(shape16, 0F, 0F, 0F);
     }
 
-    private void setRotation(ModelRenderer model, float x, float y, float z){
-        model.rotateAngleX = x;
-        model.rotateAngleY = y;
-        model.rotateAngleZ = z;
-    }
-
     public void renderModel(float scale, boolean renderChargePad, EntityItem ghostEntityItem) {
         if (renderChargePad) {
-            FMLClientHandler.instance().getClient().getTextureManager().bindTexture(Textures.MODEL_CHARGING_STATION_PAD);
             shape3.render(scale);
             shape4.render(scale);
             shape5.render(scale);
@@ -143,12 +136,7 @@ public class ModelChargingStation extends ModelBase {
         }
         if (ghostEntityItem != null) {
             if (customRenderItem == null) {
-                customRenderItem = new RenderEntityItem(Minecraft.getMinecraft().getRenderManager(), Minecraft.getMinecraft().getRenderItem()) {
-                    @Override
-                    public boolean shouldBob() {
-                        return false;
-                    }
-                };
+                customRenderItem = new AbstractModelRenderer.NoBobItemRenderer();
             }
             GlStateManager.translate(0, 1.25f, 0);
             GlStateManager.scale(1.0F, -1F, -1F);

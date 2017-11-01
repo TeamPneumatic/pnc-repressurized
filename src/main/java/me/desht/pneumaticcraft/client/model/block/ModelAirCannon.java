@@ -1,11 +1,10 @@
 package me.desht.pneumaticcraft.client.model.block;
 
-import net.minecraft.client.model.ModelBase;
+import me.desht.pneumaticcraft.client.render.tileentity.AbstractModelRenderer;
 import net.minecraft.client.model.ModelRenderer;
-import net.minecraft.entity.Entity;
 import org.lwjgl.opengl.GL11;
 
-public class ModelAirCannon extends ModelBase {
+public class ModelAirCannon extends AbstractModelRenderer.BaseModel {
     private final ModelRenderer baseTurn;
     private final ModelRenderer baseFrame1;
     private final ModelRenderer baseFrame2;
@@ -96,30 +95,24 @@ public class ModelAirCannon extends ModelBase {
         setRotation(cannon5, 0F, 0F, 0F);
     }
 
-    @Override
-    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
-        super.render(entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
-
-        setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, entityIn);
-        baseTurn.render(scale);
-        baseFrame1.render(scale);
-        baseFrame2.render(scale);
-        baseFrame3.render(scale);
-        baseFrame4.render(scale);
-        baseFrame5.render(scale);
-        baseFrame6.render(scale);
-        cannon1.render(scale);
-        cannon2.render(scale);
-        cannon3.render(scale);
-        cannon4.render(scale);
-        cannon5.render(scale);
-    }
-
-    private void setRotation(ModelRenderer model, float x, float y, float z){
-        model.rotateAngleX = x;
-        model.rotateAngleY = y;
-        model.rotateAngleZ = z;
-    }
+//    @Override
+//    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
+//        super.render(entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
+//
+//        setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, entityIn);
+//        baseTurn.render(scale);
+//        baseFrame1.render(scale);
+//        baseFrame2.render(scale);
+//        baseFrame3.render(scale);
+//        baseFrame4.render(scale);
+//        baseFrame5.render(scale);
+//        baseFrame6.render(scale);
+//        cannon1.render(scale);
+//        cannon2.render(scale);
+//        cannon3.render(scale);
+//        cannon4.render(scale);
+//        cannon5.render(scale);
+//    }
 
     public void renderModel(float size, float rotationAngle, float heightAngle) {
         GL11.glPushMatrix();

@@ -1,10 +1,10 @@
 package me.desht.pneumaticcraft.client.model.block;
 
-import net.minecraft.client.model.ModelBase;
+import me.desht.pneumaticcraft.client.render.tileentity.AbstractModelRenderer;
 import net.minecraft.client.model.ModelRenderer;
 import org.lwjgl.opengl.GL11;
 
-public class ModelAssemblyDrill extends ModelBase {
+public class ModelAssemblyDrill extends AbstractModelRenderer.BaseModel {
     private final ModelRenderer baseTurn;
     private final ModelRenderer baseTurn2;
     private final ModelRenderer armBase1;
@@ -100,11 +100,5 @@ public class ModelAssemblyDrill extends ModelBase {
         GL11.glTranslated(0, -3 / 16F, 0);
         drill.render(size);
         GL11.glPopMatrix();
-    }
-
-    private void setRotation(ModelRenderer model, float x, float y, float z) {
-        model.rotateAngleX = x;
-        model.rotateAngleY = y;
-        model.rotateAngleZ = z;
     }
 }

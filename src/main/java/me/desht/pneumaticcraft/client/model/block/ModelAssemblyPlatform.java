@@ -2,15 +2,15 @@ package me.desht.pneumaticcraft.client.model.block;
 
 import me.desht.pneumaticcraft.api.client.assemblymachine.IAssemblyRenderOverriding;
 import me.desht.pneumaticcraft.client.GuiRegistry;
+import me.desht.pneumaticcraft.client.render.tileentity.AbstractModelRenderer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderEntityItem;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemBlock;
 
-public class ModelAssemblyPlatform extends ModelBase {
+public class ModelAssemblyPlatform extends AbstractModelRenderer.BaseModel {
     private final ModelRenderer claw1;
     private final ModelRenderer claw2;
     private RenderEntityItem customRenderItem = null;
@@ -33,23 +33,12 @@ public class ModelAssemblyPlatform extends ModelBase {
         setRotation(claw2, 0F, 0F, 0F);
     }
 
-    private void setRotation(ModelRenderer model, float x, float y, float z){
-        model.rotateAngleX = x;
-        model.rotateAngleY = y;
-        model.rotateAngleZ = z;
-    }
-
     public void renderModel(float size, float progress, EntityItem carriedItem) {
         float clawTrans;
         float scaleFactor = 0.7F;
 
         if (customRenderItem == null) {
-            customRenderItem = new RenderEntityItem(Minecraft.getMinecraft().getRenderManager(), Minecraft.getMinecraft().getRenderItem()) {
-                @Override
-                public boolean shouldBob() {
-                    return false;
-                }
-            };
+            customRenderItem = new AbstractModelRenderer.NoBobItemRenderer();
         }
 
         IAssemblyRenderOverriding renderOverride = null;
@@ -62,7 +51,6 @@ public class ModelAssemblyPlatform extends ModelBase {
                     clawTrans = 1.5F / 16F - progress * 0.1F / 16F;
                 } else {
                     clawTrans = 1.5F / 16F - progress * 1.4F / 16F;
-//                    scaleFactor = 0.6F;
                 }
             }
         } else {

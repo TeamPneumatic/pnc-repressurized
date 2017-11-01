@@ -8,10 +8,11 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import org.lwjgl.opengl.GL11;
 
-public class RenderAssemblyController extends TileEntitySpecialRenderer<TileEntityAssemblyController> {
+public class RenderAssemblyController extends AbstractModelRenderer<TileEntityAssemblyController> {
     private final ModelAssemblyControllerScreen model;
 
     public RenderAssemblyController() {
@@ -19,28 +20,29 @@ public class RenderAssemblyController extends TileEntitySpecialRenderer<TileEnti
     }
 
     @Override
-    public void render(TileEntityAssemblyController te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
-        GlStateManager.pushMatrix();
+    ResourceLocation getTexture(TileEntityAssemblyController te) {
+        return Textures.MODEL_ASSEMBLY_CONTROLLER;
+    }
 
-        GL11.glTranslatef((float)x + 0.5F, (float)y + 1.5F, (float)z + 0.5F);
-        GL11.glScalef(1.0F, -1F, -1F);
+    @Override
+    void renderModel(TileEntityAssemblyController te, float partialTicks) {
         PneumaticCraftUtils.rotateMatrixByMetadata(2);
 
         // have the screen face the player
-        GL11.glRotatef(180 + Minecraft.getMinecraft().getRenderManager().playerViewY, 0.0F, 1.0F, 0.0F);
+        GlStateManager.rotate(180 + Minecraft.getMinecraft().getRenderManager().playerViewY, 0.0F, 1.0F, 0.0F);
 
-        FMLClientHandler.instance().getClient().getTextureManager().bindTexture(Textures.MODEL_ASSEMBLY_CONTROLLER);
         model.renderModel(0.0625f);
 
+        // status text & possible problem icon
         double textSize = 1 / 100D;
-        GL11.glTranslated(-0.25D, 0.53D, 0.04D);
-        GL11.glRotated(-34, 1, 0, 0);
-        GL11.glScaled(textSize, textSize, textSize);
-        GL11.glDisable(GL11.GL_LIGHTING);
+        GlStateManager.translate(-0.25D, 0.53D, 0.04D);
+        GlStateManager.rotate(-34, 1, 0, 0);
+        GlStateManager.scale(textSize, textSize, textSize);
+        GlStateManager.disableLighting();
         Minecraft.getMinecraft().fontRenderer.drawString(te.displayedText, 1, 4, 0xFFFFFFFF);
-        if(te.hasProblem) GuiPneumaticContainerBase.drawTexture(Textures.GUI_PROBLEMS_TEXTURE, 28, 12);
-        GL11.glEnable(GL11.GL_LIGHTING);
-
-        GlStateManager.popMatrix();
+        if(te.hasProblem) {
+            GuiPneumaticContainerBase.drawTexture(Textures.GUI_PROBLEMS_TEXTURE, 28, 12);
+        }
+        GlStateManager.enableLighting();
     }
 }

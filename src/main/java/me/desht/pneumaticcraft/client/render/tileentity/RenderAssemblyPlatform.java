@@ -8,9 +8,10 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.FMLClientHandler;
 
-public class RenderAssemblyPlatform extends TileEntitySpecialRenderer<TileEntityAssemblyPlatform> {
+public class RenderAssemblyPlatform extends AbstractModelRenderer<TileEntityAssemblyPlatform> {
     private final ModelAssemblyPlatform model;
 
     public RenderAssemblyPlatform() {
@@ -18,14 +19,12 @@ public class RenderAssemblyPlatform extends TileEntitySpecialRenderer<TileEntity
     }
 
     @Override
-    public void render(TileEntityAssemblyPlatform te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
-        FMLClientHandler.instance().getClient().getTextureManager().bindTexture(Textures.MODEL_ASSEMBLY_PLATFORM);
+    ResourceLocation getTexture(TileEntityAssemblyPlatform te) {
+        return Textures.MODEL_ASSEMBLY_PLATFORM;
+    }
 
-        GlStateManager.pushMatrix();
-
-        GlStateManager.translate(x + 0.5, y + 1.5, z + 0.5);
-        GlStateManager.scale(1.0, -1.0, -1.0);
-
+    @Override
+    void renderModel(TileEntityAssemblyPlatform te, float partialTicks) {
         if (te != null) {
             EntityItem ghostEntityItem = null;
             if (!te.getHeldStack().isEmpty()) {
@@ -41,7 +40,5 @@ public class RenderAssemblyPlatform extends TileEntitySpecialRenderer<TileEntity
         } else {
             model.renderModel(0.0625f, 0, null);
         }
-
-        GlStateManager.popMatrix();
     }
 }

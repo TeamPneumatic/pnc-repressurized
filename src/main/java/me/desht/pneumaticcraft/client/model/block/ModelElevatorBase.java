@@ -1,10 +1,10 @@
 package me.desht.pneumaticcraft.client.model.block;
 
-import net.minecraft.client.model.ModelBase;
+import me.desht.pneumaticcraft.client.render.tileentity.AbstractModelRenderer;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 
-public class ModelElevatorBase extends ModelBase {
+public class ModelElevatorBase extends AbstractModelRenderer.BaseModel {
     private final ModelRenderer pole1;
     private final ModelRenderer pole2;
     private final ModelRenderer pole3;
@@ -45,12 +45,6 @@ public class ModelElevatorBase extends ModelBase {
         floor.setTextureSize(64, 64);
         floor.mirror = true;
         setRotation(floor, 0F, 0F, 0F);
-    }
-
-    private void setRotation(ModelRenderer model, float x, float y, float z){
-        model.rotateAngleX = x;
-        model.rotateAngleY = y;
-        model.rotateAngleZ = z;
     }
 
     private static final float FACTOR = 9F / 16;

@@ -5,9 +5,10 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityUniversalSensor;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.FMLClientHandler;
 
-public class RenderUniversalSensor extends TileEntitySpecialRenderer<TileEntityUniversalSensor> {
+public class RenderUniversalSensor extends AbstractModelRenderer<TileEntityUniversalSensor> {
     private final ModelUniversalSensor model;
 
     public RenderUniversalSensor() {
@@ -15,19 +16,15 @@ public class RenderUniversalSensor extends TileEntitySpecialRenderer<TileEntityU
     }
 
     @Override
-    public void render(TileEntityUniversalSensor te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
-        GlStateManager.pushMatrix();
+    ResourceLocation getTexture(TileEntityUniversalSensor te) {
+        return Textures.MODEL_UNIVERSAL_SENSOR;
+    }
 
-        GlStateManager.translate(x + 0.5, y + 1.5, z + 0.5);
-        GlStateManager.scale(1.0, -1.0, -1.0);
-
-        FMLClientHandler.instance().getClient().getTextureManager().bindTexture(Textures.MODEL_UNIVERSAL_SENSOR);
-
+    @Override
+    void renderModel(TileEntityUniversalSensor te, float partialTicks) {
         if (te != null) {
             model.renderModel(0.0625f, te.oldDishRotation + (te.dishRotation - te.oldDishRotation) * partialTicks);
             te.renderRangeLines();
         }
-
-        GlStateManager.popMatrix();
     }
 }

@@ -1,10 +1,10 @@
 package me.desht.pneumaticcraft.client.model.block;
 
-import net.minecraft.client.model.ModelBase;
+import me.desht.pneumaticcraft.client.render.tileentity.AbstractModelRenderer;
 import net.minecraft.client.model.ModelRenderer;
 import org.lwjgl.opengl.GL11;
 
-public class ModelUniversalSensor extends ModelBase {
+public class ModelUniversalSensor extends AbstractModelRenderer.BaseModel {
     private final ModelRenderer dish1;
     private final ModelRenderer dish2;
     private final ModelRenderer dish3;
@@ -52,12 +52,6 @@ public class ModelUniversalSensor extends ModelBase {
         dish6.setTextureSize(64, 64);
         dish6.mirror = true;
         setRotation(dish6, 0F, 0F, 0F);
-    }
-
-    private void setRotation(ModelRenderer model, float x, float y, float z){
-        model.rotateAngleX = x;
-        model.rotateAngleY = y;
-        model.rotateAngleZ = z;
     }
 
     public void renderModel(float scale, float dishRotation) {

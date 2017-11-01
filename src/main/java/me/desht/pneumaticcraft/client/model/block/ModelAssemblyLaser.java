@@ -1,13 +1,13 @@
 package me.desht.pneumaticcraft.client.model.block;
 
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticContainerBase;
+import me.desht.pneumaticcraft.client.render.tileentity.AbstractModelRenderer;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.opengl.GL11;
 
-public class ModelAssemblyLaser extends ModelBase {
+public class ModelAssemblyLaser extends AbstractModelRenderer.BaseModel {
     private final ModelRenderer baseTurn;
     private final ModelRenderer baseTurn2;
     private final ModelRenderer armBase1;
@@ -118,11 +118,5 @@ public class ModelAssemblyLaser extends ModelBase {
         GL11.glEnable(GL11.GL_LIGHTING);
 
         GlStateManager.popMatrix();
-    }
-
-    private void setRotation(ModelRenderer model, float x, float y, float z) {
-        model.rotateAngleX = x;
-        model.rotateAngleY = y;
-        model.rotateAngleZ = z;
     }
 }

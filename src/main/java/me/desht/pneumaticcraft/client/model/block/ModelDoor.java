@@ -1,10 +1,9 @@
 package me.desht.pneumaticcraft.client.model.block;
 
-import net.minecraft.client.model.ModelBase;
+import me.desht.pneumaticcraft.client.render.tileentity.AbstractModelRenderer;
 import net.minecraft.client.model.ModelRenderer;
-import net.minecraft.entity.Entity;
 
-public class ModelDoor extends ModelBase {
+public class ModelDoor extends AbstractModelRenderer.BaseModel {
     private final ModelRenderer Shape1;
     private final ModelRenderer Shape2;
     private final ModelRenderer Shape3;
@@ -70,17 +69,6 @@ public class ModelDoor extends ModelBase {
         Shape9.setTextureSize(64, 32);
         Shape9.mirror = true;
         setRotation(Shape9, 0F, 0F, 0F);
-    }
-
-    private void setRotation(ModelRenderer model, float x, float y, float z){
-        model.rotateAngleX = x;
-        model.rotateAngleY = y;
-        model.rotateAngleZ = z;
-    }
-
-    @Override
-    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
-        super.render(entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
     }
 
     public void renderModel(float size) {

@@ -3,11 +3,13 @@ package me.desht.pneumaticcraft.client.render.tileentity;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.client.model.block.ModelChargingStation;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
+import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.util.ResourceLocation;
 
-public class RenderChargingStation extends TileEntitySpecialRenderer<TileEntityChargingStation> {
+public class RenderChargingStation extends AbstractModelRenderer<TileEntityChargingStation> {
     private final ModelChargingStation model;
 
     public RenderChargingStation() {
@@ -15,12 +17,12 @@ public class RenderChargingStation extends TileEntitySpecialRenderer<TileEntityC
     }
 
     @Override
-    public void render(TileEntityChargingStation te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
-        GlStateManager.pushMatrix();
+    ResourceLocation getTexture(TileEntityChargingStation te) {
+        return Textures.MODEL_CHARGING_STATION_PAD;
+    }
 
-        GlStateManager.translate(x + 0.5, y + 1.5, z + 0.5);
-        GlStateManager.scale(1.0, -1.0, -1.0);
-
+    @Override
+    void renderModel(TileEntityChargingStation te, float partialTicks) {
         if (te != null) {
             EntityItem ghostEntityItem = null;
             if (!te.getChargingItem().isEmpty()) {
@@ -30,7 +32,5 @@ public class RenderChargingStation extends TileEntitySpecialRenderer<TileEntityC
             }
             model.renderModel(0.0625f, te.getUpgrades(IItemRegistry.EnumUpgrade.DISPENSER) > 0, ghostEntityItem);
         }
-
-        GlStateManager.popMatrix();
     }
 }

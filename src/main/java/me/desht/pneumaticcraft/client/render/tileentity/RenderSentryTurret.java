@@ -3,11 +3,9 @@ package me.desht.pneumaticcraft.client.render.tileentity;
 import me.desht.pneumaticcraft.client.model.block.ModelSentryTurret;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySentryTurret;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraft.util.ResourceLocation;
 
-public class RenderSentryTurret extends TileEntitySpecialRenderer<TileEntitySentryTurret> {
+public class RenderSentryTurret extends AbstractModelRenderer<TileEntitySentryTurret> {
     private final ModelSentryTurret model;
 
     public RenderSentryTurret() {
@@ -15,15 +13,12 @@ public class RenderSentryTurret extends TileEntitySpecialRenderer<TileEntitySent
     }
 
     @Override
-    public void render(TileEntitySentryTurret te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
-        GlStateManager.pushMatrix();
+    ResourceLocation getTexture(TileEntitySentryTurret te) {
+        return Textures.MODEL_SENTRY_TURRET;
+    }
 
-        GlStateManager.translate(x + 0.5, y + 1.5, z + 0.5);
-        GlStateManager.scale(1.0, -1.0, -1.0);
-
-        FMLClientHandler.instance().getClient().getTextureManager().bindTexture(Textures.MODEL_SENTRY_TURRET);
+    @Override
+    void renderModel(TileEntitySentryTurret te, float partialTicks) {
         model.renderModel(0.0625f, te, partialTicks);
-
-        GlStateManager.popMatrix();
     }
 }

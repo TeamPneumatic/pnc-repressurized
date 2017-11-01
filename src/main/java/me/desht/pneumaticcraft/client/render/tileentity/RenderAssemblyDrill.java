@@ -5,9 +5,10 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyDrill;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.FMLClientHandler;
 
-public class RenderAssemblyDrill extends TileEntitySpecialRenderer<TileEntityAssemblyDrill> {
+public class RenderAssemblyDrill extends AbstractModelRenderer<TileEntityAssemblyDrill> {
     private final ModelAssemblyDrill model;
 
     public RenderAssemblyDrill() {
@@ -15,14 +16,12 @@ public class RenderAssemblyDrill extends TileEntitySpecialRenderer<TileEntityAss
     }
 
     @Override
-    public void render(TileEntityAssemblyDrill te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
-        FMLClientHandler.instance().getClient().getTextureManager().bindTexture(Textures.MODEL_ASSEMBLY_LASER_AND_DRILL);
+    ResourceLocation getTexture(TileEntityAssemblyDrill te) {
+        return Textures.MODEL_ASSEMBLY_LASER_AND_DRILL;
+    }
 
-        GlStateManager.pushMatrix();
-
-        GlStateManager.translate(x + 0.5, y + 1.5, z + 0.5);
-        GlStateManager.scale(1.0, -1.0, -1.0);
-
+    @Override
+    void renderModel(TileEntityAssemblyDrill te, float partialTicks) {
         if (te != null) {
             float[] renderAngles = new float[5];
             for (int i = 0; i < 4; i++) {
@@ -33,7 +32,5 @@ public class RenderAssemblyDrill extends TileEntitySpecialRenderer<TileEntityAss
         } else {
             model.renderModel(0.0625f, new float[]{0, 0, 35, 55, 0});
         }
-
-        GlStateManager.popMatrix();
     }
 }

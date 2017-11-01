@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.client.render.tileentity;
 
 import me.desht.pneumaticcraft.client.model.block.ModelAssemblyIOUnit;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyDrill;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyIOUnit;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
@@ -8,9 +9,10 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.FMLClientHandler;
 
-public class RenderAssemblyIOUnit extends TileEntitySpecialRenderer<TileEntityAssemblyIOUnit> {
+public class RenderAssemblyIOUnit extends AbstractModelRenderer<TileEntityAssemblyIOUnit> {
     private final ModelAssemblyIOUnit model;
 
     public RenderAssemblyIOUnit() {
@@ -18,37 +20,31 @@ public class RenderAssemblyIOUnit extends TileEntitySpecialRenderer<TileEntityAs
     }
 
     @Override
-    public void render(TileEntityAssemblyIOUnit tile, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
-        FMLClientHandler.instance().getClient().getTextureManager().bindTexture(
-                tile != null && tile.isImportUnit() ? Textures.MODEL_ASSEMBLY_IO_IMPORT : Textures.MODEL_ASSEMBLY_IO_EXPORT);
+    ResourceLocation getTexture(TileEntityAssemblyIOUnit te) {
+        return te != null && te.isImportUnit() ? Textures.MODEL_ASSEMBLY_IO_IMPORT : Textures.MODEL_ASSEMBLY_IO_EXPORT;
+    }
 
-        GlStateManager.pushMatrix();
-
-        GlStateManager.translate(x + 0.5, y + 1.5, z + 0.5);
-        GlStateManager.scale(1.0, -1.0, -1.0);
-
-        if (tile != null) {
+    @Override
+    void renderModel(TileEntityAssemblyIOUnit te, float partialTicks) {
+        if (te != null) {
             float[] renderAngles = new float[5];
             for (int i = 0; i < 5; i++) {
-                renderAngles[i] = tile.oldAngles[i] + (tile.angles[i] - tile.oldAngles[i]) * partialTicks;
+                renderAngles[i] = te.oldAngles[i] + (te.angles[i] - te.oldAngles[i]) * partialTicks;
             }
 
             EntityItem ghostEntityItem = null;
-            if (!tile.getPrimaryInventory().getStackInSlot(0).isEmpty()) {
-                ghostEntityItem = new EntityItem(tile.getWorld());
+            if (!te.getPrimaryInventory().getStackInSlot(0).isEmpty()) {
+                ghostEntityItem = new EntityItem(te.getWorld());
                 ghostEntityItem.hoverStart = 0.0F;
-                ghostEntityItem.setItem(tile.getPrimaryInventory().getStackInSlot(0));
+                ghostEntityItem.setItem(te.getPrimaryInventory().getStackInSlot(0));
             }
             RenderManager renderManager = Minecraft.getMinecraft().getRenderManager();
             boolean fancySetting = renderManager.options.fancyGraphics;
             renderManager.options.fancyGraphics = true;
-            model.renderModel(0.0625F, renderAngles, tile.oldClawProgress + (tile.clawProgress - tile.oldClawProgress) * partialTicks, ghostEntityItem);
+            model.renderModel(0.0625F, renderAngles, te.oldClawProgress + (te.clawProgress - te.oldClawProgress) * partialTicks, ghostEntityItem);
             renderManager.options.fancyGraphics = fancySetting;
         } else {
             model.renderModel(0.0625F, new float[]{0, 0, 35, 55, 0}, 0, null);
         }
-
-        GlStateManager.popMatrix();
     }
-
 }

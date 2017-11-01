@@ -2,8 +2,8 @@ package me.desht.pneumaticcraft.client.model.block;
 
 import me.desht.pneumaticcraft.api.client.assemblymachine.IAssemblyRenderOverriding;
 import me.desht.pneumaticcraft.client.GuiRegistry;
+import me.desht.pneumaticcraft.client.render.tileentity.AbstractModelRenderer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderEntityItem;
@@ -11,7 +11,7 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemBlock;
 import org.lwjgl.opengl.GL11;
 
-public class ModelAssemblyIOUnit extends ModelBase {
+public class ModelAssemblyIOUnit extends AbstractModelRenderer.BaseModel {
     private final ModelRenderer baseTurn;
     private final ModelRenderer baseTurn2;
     private final ModelRenderer armBase1;
@@ -104,23 +104,12 @@ public class ModelAssemblyIOUnit extends ModelBase {
         setRotation(claw2, 0F, 0F, 0F);
     }
 
-    private void setRotation(ModelRenderer model, float x, float y, float z) {
-        model.rotateAngleX = x;
-        model.rotateAngleY = y;
-        model.rotateAngleZ = z;
-    }
-
     public void renderModel(float size, float[] angles, float clawProgress, EntityItem carriedItem) {
         float clawTrans;
         float scaleFactor = 0.7F;
 
         if (customRenderer == null) {
-            customRenderer = new RenderEntityItem(Minecraft.getMinecraft().getRenderManager(), Minecraft.getMinecraft().getRenderItem()) {
-                @Override
-                public boolean shouldBob() {
-                    return false;
-                }
-            };
+            customRenderer = new AbstractModelRenderer.NoBobItemRenderer();
         }
 
         IAssemblyRenderOverriding renderOverride = null;
@@ -133,7 +122,6 @@ public class ModelAssemblyIOUnit extends ModelBase {
                     clawTrans = 1.5F / 16F - clawProgress * 0.1F / 16F;
                 } else {
                     clawTrans = 1.5F / 16F - clawProgress * 1.4F / 16F;
-//                    scaleFactor = 0.6F;
                 }
             }
         } else {

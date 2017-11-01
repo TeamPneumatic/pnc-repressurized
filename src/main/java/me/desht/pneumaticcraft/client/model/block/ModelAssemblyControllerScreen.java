@@ -1,9 +1,9 @@
 package me.desht.pneumaticcraft.client.model.block;
 
-import net.minecraft.client.model.ModelBase;
+import me.desht.pneumaticcraft.client.render.tileentity.AbstractModelRenderer;
 import net.minecraft.client.model.ModelRenderer;
 
-public class ModelAssemblyControllerScreen extends ModelBase {
+public class ModelAssemblyControllerScreen extends AbstractModelRenderer.BaseModel {
     private final ModelRenderer screen;
 
     public ModelAssemblyControllerScreen() {
@@ -16,12 +16,6 @@ public class ModelAssemblyControllerScreen extends ModelBase {
         screen.setTextureSize(64, 32);
         screen.mirror = true;
         setRotation(screen, -0.5934119F, 0F, 0F);
-    }
-
-    private void setRotation(ModelRenderer model, float x, float y, float z){
-        model.rotateAngleX = x;
-        model.rotateAngleY = y;
-        model.rotateAngleZ = z;
     }
 
     public void renderModel(float scale) {

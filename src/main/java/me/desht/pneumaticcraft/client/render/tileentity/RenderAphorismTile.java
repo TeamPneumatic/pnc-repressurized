@@ -20,7 +20,7 @@ public class RenderAphorismTile extends TileEntitySpecialRenderer<TileEntityApho
         PneumaticCraftUtils.rotateMatrixByMetadata(te.getBlockMetadata());
         GL11.glTranslatef(0, 1, 0.5F - BBConstants.APHORISM_TILE_THICKNESS - 0.01F);
         String[] textLines = te.getTextLines();
-        int lineWidth = getMaxLineWidth(textLines);
+        int lineWidth = getMaxLineWidth(textLines);  // TODO we don't need to calculate this every single tick
         int lineHeight = 10 * textLines.length;
         float textScale = Math.min(14 / 16F / lineWidth, 14 / 16F / lineHeight);
         GL11.glScalef(textScale, textScale, textScale);
