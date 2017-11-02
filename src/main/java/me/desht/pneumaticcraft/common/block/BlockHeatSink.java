@@ -1,13 +1,18 @@
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
+import me.desht.pneumaticcraft.common.DamageSourcePneumaticCraft;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityHeatSink;
 import me.desht.pneumaticcraft.lib.BBConstants;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.init.MobEffects;
 import net.minecraft.item.ItemStack;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -66,9 +71,23 @@ public class BlockHeatSink extends BlockPneumaticCraftModeled {
 
     @Override
     public void onEntityCollidedWithBlock(World world, BlockPos pos, IBlockState state, Entity entity) {
-        TileEntityHeatSink heatSink = (TileEntityHeatSink) world.getTileEntity(pos);
-        if (heatSink != null && heatSink.getHeatExchangerLogic(null).getTemperature() > 323) {
-            entity.setFire(3);
+        TileEntity te = world.getTileEntity(pos);
+        if (te instanceof TileEntityHeatSink) {
+            IHeatExchangerLogic heat = ((TileEntityHeatSink) te).getHeatExchangerLogic(null);
+            int temp = (int) ((TileEntityHeatSink) te).getHeatExchangerLogic(null).getTemperature();
+            if (temp > 323) { // +50C
+                entity.attackEntityFrom(DamageSource.HOT_FLOOR, 2);
+                if (temp > 373) { // +100C
+                    entity.setFire(3);
+                }
+            } else if (temp < 243 && entity instanceof EntityLivingBase) { // -30C
+                int durationSec = (243 - (int)heat.getTemperature()) / 10;
+                int amplifier = (243 - (int) heat.getTemperature()) / 80;
+                ((EntityLivingBase) entity).addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, durationSec * 20, amplifier));
+                if (temp < 213) { // -60C
+                    entity.attackEntityFrom(DamageSourcePneumaticCraft.FREEZING, 2);
+                }
+            }
         }
     }
 }

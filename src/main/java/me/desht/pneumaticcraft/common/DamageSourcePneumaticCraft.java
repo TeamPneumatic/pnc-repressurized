@@ -10,6 +10,7 @@ public class DamageSourcePneumaticCraft extends DamageSource {
     public static final DamageSourcePneumaticCraft PRESSURE = (DamageSourcePneumaticCraft) new DamageSourcePneumaticCraft("pressure", 2).setDamageBypassesArmor();
     public static final DamageSourcePneumaticCraft ETCHING_ACID = new DamageSourcePneumaticCraft("acid", 2);
     public static final DamageSourcePneumaticCraft SECURITY_STATION = (DamageSourcePneumaticCraft) new DamageSourcePneumaticCraft("securityStation").setDamageBypassesArmor();
+    public static final DamageSourcePneumaticCraft FREEZING = (DamageSourcePneumaticCraft) new DamageSourcePneumaticCraft("freezing", 2);
 
     private int deathMessages = 0;
 
