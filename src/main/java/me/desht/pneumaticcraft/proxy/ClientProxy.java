@@ -29,6 +29,7 @@ import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.recipes.CraftingRegistrator;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.tileentity.*;
+import me.desht.pneumaticcraft.common.util.DramaSplash;
 import me.desht.pneumaticcraft.common.util.Reflections;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.ModIds;
@@ -198,6 +199,7 @@ public class ClientProxy extends CommonProxy {
     public void postInit() {
         EntityTrackHandler.init();
         GuiHelmetMainScreen.init();
+        DramaSplash.getInstance();
     }
 
     public void registerModuleRenderers() {

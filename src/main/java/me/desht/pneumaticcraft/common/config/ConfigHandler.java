@@ -92,6 +92,8 @@ public class ConfigHandler {
         public boolean enableUpdateChecker = true;
         @Config.Comment("Enable Drone Suffocation Damage")
         public boolean enableDroneSuffocationDamage = true;
+        @Config.Comment("Enable Aphorism Tile Drama!")
+        public boolean aphorismDrama = true;
     }
 
     public static class MachineProperties {

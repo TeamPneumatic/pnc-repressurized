@@ -38,7 +38,7 @@ public class RenderAphorismTile extends TileEntitySpecialRenderer<TileEntityApho
         for (int i = 0; i < textLines.length; i++) {
             String textLine = textLines[i];
             if (editedLine == i) textLine = ">" + textLine + "<";
-            f.drawString(TextFormatting.ITALIC + textLine, -f.getStringWidth(textLine) / 2, -(textLines.length * 10) / 2 + i * 10 + 1, 0xFF000000);
+            f.drawString(textLine, -f.getStringWidth(textLine) / 2, -(textLines.length * 10) / 2 + i * 10 + 1, 0xFF000000);
         }
 
         GL11.glPopMatrix();

@@ -12,8 +12,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumFacing.Axis;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
@@ -80,7 +82,18 @@ public class BlockAphorismTile extends BlockPneumaticCraft {
         }
         if (world.isRemote && entityLiving instanceof EntityPlayer) {
             ((EntityPlayer) entityLiving).openGui(PneumaticCraftRepressurized.instance, EnumGuiId.APHORISM_TILE.ordinal(), world, pos.getX(), pos.getY(), pos.getZ());
+            ((EntityPlayer) entityLiving).sendStatusMessage(new TextComponentTranslation("gui.aphorismTile.message"), true);
         }
+    }
+
+    @Override
+    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+        if (world.isRemote && player.getHeldItem(hand).isEmpty() && !player.isSneaking()) {
+            player.openGui(PneumaticCraftRepressurized.instance, EnumGuiId.APHORISM_TILE.ordinal(), world, pos.getX(), pos.getY(), pos.getZ());
+            player.sendStatusMessage(new TextComponentTranslation("gui.aphorismTile.message"), true);
+            return true;
+        }
+        return false;
     }
 
     @Override

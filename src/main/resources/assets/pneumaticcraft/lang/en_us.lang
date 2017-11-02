@@ -567,6 +567,8 @@ gui.universalSensor.desc.heatSensor=The coordinate(s) marked by the GPS Tool(s) 
 gui.universalSensor.desc.playerHealth=This sensor option emits a redstone signal proportional to the player's health. no health = 0, max health = 15, and anything in between. The player's name needs to be put into the textbox.
 
 # GUI strings
+gui.aphorismTile.message=§fAphorism Tile Editor: Hold §eF1§f for help text
+gui.aphorismTile.helpText=§aAphorism Editor Help \n \n§eCursor Left/Up:§r move up a line \n§eCursor Down:§r move down a line \n§eReturn:§r insert line \n§eBackspace:§r delete character or line \n§eEscape:§r finish editing \n§eAlt + §ochr§r: insert control code \n - codes: 0-9, a-f, l, m, n, o, r
 gui.entityFilter=Entity filter ('Pig', or '@mob')
 gui.redstone=Redstone
 gui.threshold=Threshold(bar)
