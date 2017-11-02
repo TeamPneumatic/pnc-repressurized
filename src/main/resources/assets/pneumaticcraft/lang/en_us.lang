@@ -831,6 +831,8 @@ gui.tooltip.item.uvLightBox.successChance=Etch success chance: %d%%
 gui.tooltip.item.uvLightBox.putInLightBox=Put in a UV Light Box to progress...
 gui.tooltip.item.uvLightBox.etchProgress=Etching progress: %d%%
 gui.tooltip.item.uvLightBox.putInAcid=Throw in Etching Acid to develop...
+gui.tooltip.item.upgrade.usedIn=Used in:
+gui.tooltip.item.upgrade.shiftMessage=Hold Shift to see which machines use this upgrade
 
 # Waila
 hud.msg.state=State

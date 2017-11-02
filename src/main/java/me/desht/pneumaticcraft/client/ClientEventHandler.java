@@ -303,7 +303,7 @@ public class ClientEventHandler {
                     ModelLoader.setCustomModelResourceLocation(item, stack.getMetadata(),
                             new ModelResourceLocation(RL(subtyped.getSubtypeModelName(stack.getMetadata())), "inventory"));
                 }
-            } else {ModelBakery.registerItemVariants(item);
+            } else {
                 ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(item.getRegistryName(), "inventory"));
             }
         }
