@@ -359,7 +359,6 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
                 GL11.glEnable(GL12.GL_RESCALE_NORMAL);
                 RenderHelper.enableGUIStandardItemLighting();
                 itemRenderer.renderItemAndEffectIntoGUI(iStack, renderBaseX - (leftSided ? 16 : 0), renderAffectedY);
-                GL11.glEnable(GL11.GL_ALPHA_TEST);
                 RenderHelper.disableStandardItemLighting();
                 GL11.glDisable(GL12.GL_RESCALE_NORMAL);
                 GL11.glPopMatrix();
