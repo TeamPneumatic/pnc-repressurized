@@ -91,9 +91,8 @@ public class BlockAphorismTile extends BlockPneumaticCraft {
         if (world.isRemote && player.getHeldItem(hand).isEmpty() && !player.isSneaking()) {
             player.openGui(PneumaticCraftRepressurized.instance, EnumGuiId.APHORISM_TILE.ordinal(), world, pos.getX(), pos.getY(), pos.getZ());
             player.sendStatusMessage(new TextComponentTranslation("gui.aphorismTile.message"), true);
-            return true;
         }
-        return false;
+        return true;
     }
 
     @Override
