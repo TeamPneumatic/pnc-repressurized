@@ -7,7 +7,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.projectile.EntityThrowable;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
@@ -45,8 +44,7 @@ public class EntityVortex extends EntityThrowable {
         oldMotionY = motionY;
         oldMotionZ = motionZ;
         super.onUpdate();
-        //blowOtherEntities();
-        motionX *= 0.95D;// equal to the potion effect friction. 0.95F
+        motionX *= 0.95D; // equal to the potion effect friction. 0.95F
         motionY *= 0.95D;
         motionZ *= 0.95D;
         if (motionX * motionX + motionY * motionY + motionZ * motionZ < 0.1D) {
@@ -54,33 +52,35 @@ public class EntityVortex extends EntityThrowable {
         }
         if (!world.isRemote) {
             BlockPos pos = new BlockPos(posX, posY, posZ);
-            tryCutPlants(pos);
-            for (EnumFacing dir : EnumFacing.VALUES) {
-                tryCutPlants(pos.offset(dir));
+            BlockPos.MutableBlockPos mPos = new BlockPos.MutableBlockPos(pos);
+            if (tryCutPlants(pos)) {
+                int plantsCut = 1;
+                for (int x = -1; x <= 1; x++) {
+                    for (int y = -1; y <= 1; y++) {
+                        for (int z = -1; z <= 1; z++) {
+                            if (x == 0 && y == 0 && z == 0) continue;
+                            mPos.setPos(pos.getX() + x, pos.getY() + y, pos.getZ() + z);
+                            if (tryCutPlants(mPos)) plantsCut++;
+                        }
+                    }
+                }
+                // slow the vortex down for each plant it broke
+                motionX *= Math.pow(0.95D, plantsCut);
+                motionY *= Math.pow(0.95D, plantsCut);
+                motionZ *= Math.pow(0.95D, plantsCut);
             }
         }
 
     }
 
-    private void tryCutPlants(BlockPos pos) {
+    private boolean tryCutPlants(BlockPos pos) {
         Block block = world.getBlockState(pos).getBlock();
         if (block instanceof IPlantable || block instanceof BlockLeaves) {
             world.destroyBlock(pos, true);
+            return true;
         }
+        return false;
     }
-
-    /*   private void blowOtherEntities(){
-           List<Entity> list = getWorld().getEntitiesWithinAABBExcludingEntity(this, boundingBox.addCoord(motionX, motionY, motionZ).expand(1.0D, 1.0D, 1.0D));
-           for(Entity e : list) {
-               if(e != getThrower() || ticksExisted >= 5) {
-                   if(e instanceof EntityPlayer || e instanceof EntityItem) {
-                       e.motionX += motionX;
-                       e.motionY += motionY;
-                       e.motionZ += motionZ;
-                   }
-               }
-           }
-       }*/
 
     @Override
     public float getGravityVelocity() {
@@ -104,7 +104,6 @@ public class EntityVortex extends EntityThrowable {
                     }
                 }
             }
-
         } else {
             Block block = world.getBlockState(objectPosition.getBlockPos()).getBlock();
             if (block instanceof IPlantable || block instanceof BlockLeaves) {
