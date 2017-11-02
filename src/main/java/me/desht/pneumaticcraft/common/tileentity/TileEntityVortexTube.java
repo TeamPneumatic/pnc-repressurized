@@ -98,8 +98,9 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
     public void update() {
         super.update();
         if (!getWorld().isRemote) {
+            // Only update the cold and connecting side, the hot side is handled in TileEntityBase.
             connectingExchanger.update();
-            coldHeatExchanger.update();//Only update the cold and connecting side, the hot side is handled in TileEntityBase.
+            coldHeatExchanger.update();
             int usedAir = (int) (getPressure() * 10);
             if (usedAir > 0) {
                 addAir(-usedAir);
