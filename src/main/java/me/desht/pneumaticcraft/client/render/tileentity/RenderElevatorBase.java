@@ -16,6 +16,11 @@ public class RenderElevatorBase extends AbstractModelRenderer<TileEntityElevator
     }
 
     @Override
+    protected boolean shouldRender(TileEntityElevatorBase te) {
+        return te.extension > 0;
+    }
+
+    @Override
     ResourceLocation getTexture(TileEntityElevatorBase te) {
         return Textures.MODEL_ELEVATOR;
     }
