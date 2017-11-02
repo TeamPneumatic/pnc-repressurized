@@ -133,7 +133,7 @@ public class PneumaticCraftRepressurized {
         SensorHandler.getInstance().init();
 
         if (ConfigHandler.general.enableDungeonLoot) {
-            LootTableList.register(RL("simple_dungeon_loot"));
+            LootTableList.register(RL("inject/simple_dungeon_loot"));
         }
 
         OreDictionaryHelper.addOreDictEntries();
