@@ -89,6 +89,18 @@ public class GuiAphorismTile extends GuiScreen {
                 cursorY--;
                 if (cursorY < 0) cursorY = 0;
             }
+        } else if (par2 == Keyboard.KEY_DELETE) {
+            if (GuiScreen.isShiftKeyDown()) {
+                textLines = new String[1];
+                textLines[0] = "";
+                cursorY = 0;
+            } else {
+                if (textLines.length > 1) {
+                    textLines = ArrayUtils.remove(textLines, cursorY);
+                    if (cursorY > textLines.length - 1)
+                        cursorY = textLines.length - 1;
+                }
+            }
         } else if (ChatAllowedCharacters.isAllowedCharacter(par1)) {
             if (GuiScreen.isAltKeyDown()) {
                 if (par1 >= 'a' && par1 <= 'f' || par1 >= 'l' && par1 <= 'o' || par1 == 'r' || par1 >= '0' && par1 <= '9') {
