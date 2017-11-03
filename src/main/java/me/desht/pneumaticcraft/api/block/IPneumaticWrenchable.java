@@ -6,10 +6,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 /**
- * Should be implemented by any block or FMP that allows to be rotated by a Pneumatic Wrench. It uses almost the same
+ * Should be implemented by any block that can be rotated by a Pneumatic Wrench. It uses almost the same
  * rotate method as the Vanilla (Forge) method. However it uses energy to rotate (when rotateBlock() return true).
+ * Also, this method gets passed the player who did the rotation.
  */
 public interface IPneumaticWrenchable {
-
     boolean rotateBlock(World world, EntityPlayer player, BlockPos pos, EnumFacing side);
 }

@@ -182,12 +182,13 @@ public class EventHandlerPneumaticCraft {
     public void onPlayerClick(PlayerInteractEvent event) {
         if (event instanceof PlayerInteractEvent.RightClickEmpty) return;
 
+        ItemStack heldItem = event.getEntityPlayer().getHeldItem(event.getHand());
+
         IBlockState interactedBlockState = event.getWorld().getBlockState(event.getPos());
         Block interactedBlock = interactedBlockState.getBlock();
         if (!event.getEntityPlayer().capabilities.isCreativeMode || !event.getEntityPlayer().canUseCommand(2, "securityStation")) {
             if (event.getWorld() != null && !event.getWorld().isRemote) {
                 if (interactedBlock != Blockss.SECURITY_STATION || event instanceof PlayerInteractEvent.LeftClickBlock) {
-                    ItemStack heldItem = event.getEntityPlayer().getHeldItem(event.getHand());
                     boolean tryingToPlaceSecurityStation = heldItem.getItem() instanceof ItemBlock && ((ItemBlock) heldItem.getItem()).getBlock() == Blockss.SECURITY_STATION;
                     int blockingStations = PneumaticCraftUtils.getProtectingSecurityStations(event.getWorld(), event.getPos(), event.getEntityPlayer(), true, tryingToPlaceSecurityStation);
                     if (blockingStations > 0) {
@@ -201,15 +202,16 @@ public class EventHandlerPneumaticCraft {
             }
         }
 
-        /**
-         * Due to some weird quirk that causes Block#onBlockActivated not getting called on the server when the player is sneaking, this is a workaround.
-         */
         if (!event.isCanceled() && event instanceof PlayerInteractEvent.RightClickBlock && !event.getWorld().isRemote) {
             if (event.getEntityPlayer().isSneaking() && (interactedBlock == Blockss.ELEVATOR_CALLER || interactedBlock == Blockss.CHARGING_STATION)) {
+                // work around the fact that Block#onBlockActivated doesn't get called server-side when sneaking
                 event.setCanceled(interactedBlock.onBlockActivated(event.getWorld(), event.getPos(), interactedBlockState, event.getEntityPlayer(), event.getHand(), event.getFace(), 0, 0, 0));
-            } else if (!event.getEntityPlayer().getHeldItem(event.getHand()).isEmpty() && ModInteractionUtilImplementation.getInstance().isModdedWrench(event.getEntityPlayer().getHeldItem(event.getHand()).getItem())) {
+            } else if (ModInteractionUtilImplementation.getInstance().isModdedWrench(heldItem)) {
+                // when player clicks with a modded wrench, enforce our rotation behaviour and cancel default behaviour
+                // (which is probably to call the "vanilla" rotateBlock(), which doesn't get any player information)
                 if (interactedBlock instanceof IPneumaticWrenchable) {
                     ((IPneumaticWrenchable) interactedBlock).rotateBlock(event.getWorld(), event.getEntityPlayer(), event.getPos(), event.getFace());
+                    event.setCanceled(true);
                 }
             }
         }

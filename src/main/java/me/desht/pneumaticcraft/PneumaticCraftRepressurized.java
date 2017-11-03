@@ -28,6 +28,8 @@ import me.desht.pneumaticcraft.common.recipes.CraftingHandler;
 import me.desht.pneumaticcraft.common.recipes.CraftingRegistrator;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockInitializer;
 import me.desht.pneumaticcraft.common.sensor.SensorHandler;
+import me.desht.pneumaticcraft.common.thirdparty.ModInteractionUtilImplementation;
+import me.desht.pneumaticcraft.common.thirdparty.ModInteractionUtils;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRegistrator;
 import me.desht.pneumaticcraft.common.util.OreDictionaryHelper;
@@ -163,6 +165,7 @@ public class PneumaticCraftRepressurized {
         AmadronOfferManager.getInstance().shufflePeriodicOffers();
         AmadronOfferManager.getInstance().recompileOffers();
         CraftingRegistrator.addProgrammingPuzzleRecipes();
+        ModInteractionUtils.setupWrenchItems();
 
         for (Block block : Blockss.blocks) {
             if (block instanceof IUpgradeAcceptor) {

@@ -11,24 +11,37 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+
+import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ModInteractionUtils {
     private static final ModInteractionUtils INSTANCE = new ModInteractionUtilImplementation();
+
+    @GameRegistry.ObjectHolder("thermalfoundation:wrench")
+    private static final Item CRESCENT_HAMMER = null;
+    // TODO add other modded wrenches here, and detect them in setupWrenchItems() below
+
+    // list is probably fine here, since the number of members is very small
+    // maybe use a set if we end up with a large number of wrench items?
+    private static final List<Item> wrenchItems = new ArrayList<>();
+
+    public static void setupWrenchItems() {
+        if (CRESCENT_HAMMER != null) wrenchItems.add(CRESCENT_HAMMER);
+    }
 
     public static ModInteractionUtils getInstance() {
         return INSTANCE;
     }
 
+    public boolean isModdedWrench(@Nonnull ItemStack stack) {
+        return wrenchItems.contains(stack.getItem());
+    }
+
     public boolean isModdedWrench(Item item) {
-        return item != Itemss.PNEUMATIC_WRENCH && (isBCWrench(item) || isTEWrench(item));
-    }
-
-    protected boolean isBCWrench(Item item) {
-        return false;
-    }
-
-    protected boolean isTEWrench(Item item) {
-        return false;
+        return wrenchItems.contains(item);
     }
 
     /**
