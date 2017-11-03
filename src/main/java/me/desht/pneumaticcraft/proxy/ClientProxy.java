@@ -107,11 +107,6 @@ public class ClientProxy extends CommonProxy {
         MinecraftForge.EVENT_BUS.register(HUDHandler.instance().getSpecificRenderer(CoordTrackUpgradeHandler.class));
         MinecraftForge.EVENT_BUS.register(AreaShowManager.getInstance());
 
-        if (!Loader.isModLoaded(ModIds.NOT_ENOUGH_KEYS) || !ConfigHandler.thirdParty.notEnoughKeys) {
-            MinecraftForge.EVENT_BUS.register(KeyHandler.getInstance());
-        } else {
-            KeyHandler.getInstance();
-        }
         ThirdPartyManager.instance().clientSide();
 
         /*  if(Config.enableUpdateChecker) {

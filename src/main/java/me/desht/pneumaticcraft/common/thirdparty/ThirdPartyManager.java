@@ -50,7 +50,6 @@ public class ThirdPartyManager implements IGuiHandler {
             thirdPartyClasses.put(ModIds.AE2, AE2.class);
             thirdPartyClasses.put(ModIds.FORESTRY, Forestry.class);
             thirdPartyClasses.put(ModIds.OPEN_BLOCKS, OpenBlocks.class);
-            thirdPartyClasses.put(ModIds.NOT_ENOUGH_KEYS, NotEnoughKeys.class);
             thirdPartyClasses.put(ModIds.EIO, EnderIO.class);
             thirdPartyClasses.put(ModIds.INDUSTRIALFOREGOING, IndustrialForegoing.class);
             if (Loader.isModLoaded(ModIds.MCMP)) {

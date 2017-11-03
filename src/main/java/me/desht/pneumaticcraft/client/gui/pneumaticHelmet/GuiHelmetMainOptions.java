@@ -34,10 +34,8 @@ public class GuiHelmetMainOptions implements IOptionPage {
     public void initGui(IGuiScreen gui) {
         gui.getButtonList().add(new GuiButton(10, 30, 128, 150, 20, "Move Pressure Stat Screen..."));
         gui.getButtonList().add(new GuiButton(11, 30, 150, 150, 20, "Move Message Screen..."));
-        if (!Loader.isModLoaded(ModIds.NOT_ENOUGH_KEYS)) {
-            changeKeybindingButton = new GuiButton(12, 30, 172, 150, 20, "Change open menu key...");
-            gui.getButtonList().add(changeKeybindingButton);
-        }
+        changeKeybindingButton = new GuiButton(12, 30, 172, 150, 20, "Change open menu key...");
+        gui.getButtonList().add(changeKeybindingButton);
     }
 
     @Override
