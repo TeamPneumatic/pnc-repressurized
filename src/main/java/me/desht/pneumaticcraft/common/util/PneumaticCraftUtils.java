@@ -921,13 +921,13 @@ public class PneumaticCraftUtils {
         Vec3d vec33 = null;
         float f1 = 1.0F;
         List<Entity> list = lookingEntity.world.getEntitiesWithinAABBExcludingEntity(lookingEntity, lookingEntity.getEntityBoundingBox()
-                .expand(vec31.x * range, vec31.y * range, vec31.z * range).expand(f1, f1, f1));
+                .grow(vec31.x * range, vec31.y * range, vec31.z * range).grow(f1, f1, f1));
         double d2 = d1;
 
         for (Entity entity : list) {
             if (entity.canBeCollidedWith()) {
                 float f2 = entity.getCollisionBorderSize();
-                AxisAlignedBB axisalignedbb = entity.getEntityBoundingBox().expand(f2, f2, f2);
+                AxisAlignedBB axisalignedbb = entity.getEntityBoundingBox().grow(f2, f2, f2);
                 RayTraceResult movingobjectposition = axisalignedbb.calculateIntercept(vec3, vec32);
 
                 if (axisalignedbb.contains(vec3)) {
