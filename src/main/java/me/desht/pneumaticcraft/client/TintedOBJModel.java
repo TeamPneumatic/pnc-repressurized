@@ -8,6 +8,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.gson.*;
+import com.google.gson.reflect.TypeToken;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.IBakedModel;
@@ -18,6 +20,7 @@ import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.client.resources.IResource;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.JsonUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StringUtils;
 import net.minecraftforge.client.model.IModel;
@@ -41,6 +44,7 @@ import javax.vecmath.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Function;
@@ -154,25 +158,10 @@ public class TintedOBJModel implements IModel
                 else if (e.getKey().equals("flip-v"))
                     this.flipV = Boolean.valueOf(e.getValue());
                 else if (e.getKey().equals("tintmap")) {
-                    this.tintMap = parseTintData(e.getValue());
+                    Type type = new TypeToken<Map<String,Integer>>(){}.getType();
+                    this.tintMap = new Gson().fromJson(e.getValue(), type);
                 }
             }
-        }
-
-        private Map<String, Integer> parseTintData(String value) {
-            ImmutableMap.Builder<String,Integer> builder = ImmutableMap.builder();
-            for (String element : value.replaceAll("[\\s\"]", "").split(",")) {
-                String[] parts = element.split(":");
-                if (parts.length != 2) {
-                    throw new LoaderException("invalid tintmap element: " + element);
-                }
-                try {
-                    builder.put(parts[0], Integer.parseInt(parts[1]));
-                } catch (IllegalArgumentException e) {
-                    throw new LoaderException(e);
-                }
-            }
-            return builder.build();
         }
     }
 

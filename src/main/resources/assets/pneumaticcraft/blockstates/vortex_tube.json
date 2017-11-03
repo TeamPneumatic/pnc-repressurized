@@ -13,7 +13,7 @@
           "facing=up":{
             "model": "pneumaticcraft:vortex_tube.obj",
             "textures": {},
-            "custom": { "flip-v": true, "tintmap": "Hot_1:1, Hot_2:1, Cold:0" },
+            "custom": { "flip-v": true, "tintmap": { "Hot_1": 1, "Hot_2": 1, "Cold": 0 } },
             "transform": {
               "rotation": {"z" : 90}
             }
@@ -25,7 +25,7 @@
           "facing=down":{
             "model": "pneumaticcraft:vortex_tube.obj",
             "textures": {},
-            "custom": { "flip-v": true, "tintmap": "Hot_1:1, Hot_2:1, Cold:0" },
+            "custom": { "flip-v": true, "tintmap": { "Hot_1": 1, "Hot_2": 1, "Cold": 0 } },
             "transform": {
               "rotation": {"z" : -90}
             }
@@ -37,7 +37,7 @@
           "facing=east":{
             "model": "pneumaticcraft:vortex_tube.obj",
             "textures": {},
-            "custom": { "flip-v": true, "tintmap": "Hot_1:1, Hot_2:1, Cold:0" },
+            "custom": { "flip-v": true, "tintmap": { "Hot_1": 1, "Hot_2": 1, "Cold": 0 } },
             "transform": {
             }
           }
@@ -48,7 +48,7 @@
           "facing=north":{
             "model": "pneumaticcraft:vortex_tube.obj",
             "textures": {},
-            "custom": { "flip-v": true, "tintmap": "Hot_1:1, Hot_2:1, Cold:0" },
+            "custom": { "flip-v": true, "tintmap": { "Hot_1": 1, "Hot_2": 1, "Cold": 0 } },
             "transform": {
               "rotation": {"y" : 90}
             }
@@ -60,7 +60,7 @@
           "facing=west":{
             "model": "pneumaticcraft:vortex_tube.obj",
             "textures": {},
-            "custom": { "flip-v": true, "tintmap": "Hot_1:1, Hot_2:1, Cold:0" },
+            "custom": { "flip-v": true, "tintmap": { "Hot_1": 1, "Hot_2": 1, "Cold": 0 } },
             "transform": {
               "rotation": {"y": 180}
             }
@@ -72,7 +72,7 @@
           "facing=south":{
             "model": "pneumaticcraft:vortex_tube.obj",
             "textures": {},
-            "custom": { "flip-v": true, "tintmap": "Hot_1:1, Hot_2:1, Cold:0" },
+            "custom": { "flip-v": true, "tintmap": { "Hot_1": 1, "Hot_2": 1, "Cold": 0 } },
             "transform": {
               "rotation": {"y" : 270}
             }
