@@ -14,6 +14,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Loader;
@@ -22,25 +23,25 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class OpenComputers implements IThirdParty {
-    public Block droneInterface;
+    @GameRegistry.ObjectHolder("pneumaticcraft:drone_interface")
+    public static final Block DRONE_INTERFACE = null;
 
     @SubscribeEvent
     public void registerBlocks(RegistryEvent.Register<Block> event) {
-        droneInterface = new BlockDroneInterface(Material.IRON);
-        Blockss.registerBlock(event.getRegistry(), droneInterface);
+        Blockss.registerBlock(event.getRegistry(), new BlockDroneInterface());
     }
 
     @Override
     public void preInit() {
-        GameRegistry.registerTileEntity(TileEntityDroneInterface.class, "droneInterface");
         MinecraftForge.EVENT_BUS.register(this);
+        GameRegistry.registerTileEntity(TileEntityDroneInterface.class, "droneInterface");
         WidgetRegistrator.register(new ProgWidgetCC());
     }
 
     @Override
     public void init() {
         if (!Loader.isModLoaded(ModIds.COMPUTERCRAFT)) {
-            CraftingRegistrator.addRecipe(new ItemStack(droneInterface),
+            CraftingRegistrator.addRecipe(new ItemStack(DRONE_INTERFACE),
                     true, " u ", "mp ", "iii",
                     'u', ItemRegistry.getInstance().getUpgrade(EnumUpgrade.RANGE),
                     'm', Items.ENDER_PEARL, 'p', Itemss.PRINTED_CIRCUIT_BOARD, 'i', Names.INGOT_IRON_COMPRESSED);

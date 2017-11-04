@@ -34,13 +34,13 @@ public class ComputerCraft extends OpenComputers implements IRegistryListener {
     public void init() {
         if (Loader.isModLoaded(ModIds.OPEN_COMPUTERS)) super.init();
         if (MODEM != null) {
-            CraftingRegistrator.addRecipe(new ItemStack(droneInterface),
+            CraftingRegistrator.addRecipe(new ItemStack(DRONE_INTERFACE),
                     true, " u ", "mp ", "iii",
                     'u', ItemRegistry.getInstance().getUpgrade(EnumUpgrade.RANGE),
                     'm', new ItemStack(MODEM, 1, 1), 'p', Itemss.PRINTED_CIRCUIT_BOARD, 'i', Names.INGOT_IRON_COMPRESSED);
         } else {
             Log.error("Wireless Modem block not found! Using the backup recipe");
-            CraftingRegistrator.addRecipe(new ItemStack(droneInterface),
+            CraftingRegistrator.addRecipe(new ItemStack(DRONE_INTERFACE),
                     " u ", "mp ", "iii",
                     'u', ItemRegistry.getInstance().getUpgrade(EnumUpgrade.RANGE),
                     'm', Items.ENDER_PEARL, 'p', Itemss.PRINTED_CIRCUIT_BOARD, 'i', Names.INGOT_IRON_COMPRESSED);

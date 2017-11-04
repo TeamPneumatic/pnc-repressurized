@@ -10,8 +10,8 @@ import java.util.Set;
 
 public class BlockDroneInterface extends BlockPneumaticCraftModeled {
 
-    protected BlockDroneInterface(Material material) {
-        super(material, "drone_interface");
+    protected BlockDroneInterface() {
+        super(Material.IRON, "drone_interface");
     }
 
     @Override
