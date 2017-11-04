@@ -211,15 +211,16 @@ public abstract class PneumaticCraftCategory<T extends IRecipeWrapper> implement
                 recipeLayout.getItemStacks().set(i + recipe.input.size(), recipe.output.get(i).getStacks());
             }
 
-            IDrawable tankOverlay = new ResourceDrawable(Textures.WIDGET_TANK, 0, 0, 0, 0, 16, 16, 16, 16);
             for (int i = 0; i < ingredients.getInputs(FluidStack.class).size(); i++) {
                 WidgetTank tank = recipe.inputLiquids.get(i);
+                IDrawable tankOverlay = new ResourceDrawable(Textures.WIDGET_TANK, 0, 0, 0, 0, tank.getBounds().width, tank.getBounds().height, tank.getBounds().width, tank.getBounds().height);
                 recipeLayout.getFluidStacks().init(i, true, tank.x, tank.y, tank.getBounds().width, tank.getBounds().height, tank.getTank().getCapacity(), true, tankOverlay);
                 recipeLayout.getFluidStacks().set(i, tank.getFluid());
             }
 
             for (int i = 0; i < ingredients.getOutputs(FluidStack.class).size(); i++) {
                 WidgetTank tank = recipe.outputLiquids.get(i);
+                IDrawable tankOverlay = new ResourceDrawable(Textures.WIDGET_TANK, 0, 0, 0, 0, tank.getBounds().width, tank.getBounds().height, tank.getBounds().width, tank.getBounds().height);
                 recipeLayout.getFluidStacks().init(recipe.inputLiquids.size() + i, false, tank.x, tank.y, tank.getBounds().width, tank.getBounds().height, tank.getTank().getCapacity(), true, tankOverlay);
                 recipeLayout.getFluidStacks().set(recipe.inputLiquids.size() + i, tank.getFluid());
             }
