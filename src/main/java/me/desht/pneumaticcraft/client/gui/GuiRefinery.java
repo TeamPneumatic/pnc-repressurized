@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
 import me.desht.pneumaticcraft.common.inventory.ContainerRefinery;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefinery;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.EnumFacing;
 import org.lwjgl.opengl.GL11;
@@ -49,23 +50,20 @@ public class GuiRefinery extends GuiPneumaticContainerBase<TileEntityRefinery> {
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(int x, int y) {
-//        fontRenderer.drawString(I18n.format(Blockss.REFINERY.getUnlocalizedName() + ".name"), 28, 5, 4210752);
-        super.drawGuiContainerForegroundLayer(x, y);
-    }
-
-    @Override
     protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
         super.drawGuiContainerBackgroundLayer(f, x, y);
         if (refineries.size() < 4) {
-            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-            bindGuiTexture();
-            drawTexturedModalRect(guiLeft + 155, guiTop + 5, xSize, 0, 16, 64);
-            //drawTexturedModalRect(guiLeft + 48, guiTop + 22, xSize + 16, 0, 26, 10);
+            GlStateManager.enableBlend();
+            GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+            drawRect(guiLeft + 155, guiTop + 5, guiLeft + 171, guiTop + 69, 0x40FF0000);
             if (refineries.size() < 3) {
-                drawTexturedModalRect(guiLeft + 135, guiTop + 9, xSize, 0, 16, 64);
-                // drawTexturedModalRect(guiLeft + 48, guiTop + 32, xSize + 42, 0, 26, 15);
+                drawRect(guiLeft + 135, guiTop + 9, guiLeft + 151, guiTop + 73, 0x40FF0000);
             }
+            if (refineries.size() < 2) {
+                drawRect(guiLeft + 115, guiTop + 13, guiLeft + 131, guiTop + 77, 0x40FF0000);
+            }
+            GlStateManager.disableBlend();
         }
     }
 

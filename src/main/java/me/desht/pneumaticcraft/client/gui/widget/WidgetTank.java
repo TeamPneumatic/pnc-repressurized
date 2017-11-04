@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.client.gui.GuiUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fluids.Fluid;
@@ -45,9 +46,19 @@ public class WidgetTank extends WidgetBase {
         GL11.glDisable(GL11.GL_LIGHTING);
         GuiUtils.drawFluid(new Rectangle(x, y, getBounds().width, getBounds().height), getFluid(), getTank());
 
-        GL11.glColor4d(1, 1, 1, 1);
-        Minecraft.getMinecraft().getTextureManager().bindTexture(Textures.WIDGET_TANK);
-        Gui.drawModalRectWithCustomSizedTexture(x, y, 0, 0, 16, 64, 16, 64);
+        // drawing a gauge rather than using the widget_tank texture since for some reason it doesn't work
+        // https://github.com/desht/pnc-repressurized/issues/25
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(0, 0, 300);
+        for (int i = 3; i < getBounds().height - 1; i += 4) {
+            int width = (i - 3) % 20 == 0 ? 16 : 2;
+            Gui.drawRect(x, y + i, x + width, y + i + 1, 0xFF2F2F2F);
+        }
+        GlStateManager.popMatrix();
+
+//        GL11.glColor4d(1, 1, 1, 1);
+//        Minecraft.getMinecraft().getTextureManager().bindTexture(Textures.WIDGET_TANK);
+//        Gui.drawModalRectWithCustomSizedTexture(x, y, 0, 0, 16, 64, 16, 64);
     }
 
     @Override
