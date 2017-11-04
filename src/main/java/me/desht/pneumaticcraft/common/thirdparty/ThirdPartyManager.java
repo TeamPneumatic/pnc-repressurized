@@ -58,11 +58,8 @@ public class ThirdPartyManager implements IGuiHandler {
             thirdPartyClasses.put(ModIds.COFH_CORE, CoFHCore.class);
             thirdPartyClasses.put(ModIds.WAILA, Waila.class);
             thirdPartyClasses.put(ModIds.TOP, TheOneProbe.class);
-            // thirdPartyClasses.put(ModIds.EE3, EE3.class);
             // thirdPartyClasses.put(ModIds.INDUSTRIALCRAFT, IC2.class);
             // thirdPartyClasses.put(ModIds.THAUMCRAFT, Thaumcraft.class);
-            // thirdPartyClasses.put(ModIds.CHISEL, Chisel.class);
-            // DramaSplash.newDrama();
         } catch (Throwable e) {
             Log.error("A class loader loaded a class where we didn't expect it to do so! Please report, as third party content is broken.");
             e.printStackTrace();

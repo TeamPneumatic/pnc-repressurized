@@ -907,13 +907,4 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         te.showInfo = showInfo.checked;
         super.onGuiClosed();
     }
-
-    /* @Override
-     * TODO NEI dep
-     @Optional.Method(modid = ModIds.NEI)
-     public VisiblityData modifyVisiblity(GuiContainer gui, VisiblityData currentVisibility){
-         currentVisibility.showNEI = false;
-         return currentVisibility;
-     }*/
-
 }

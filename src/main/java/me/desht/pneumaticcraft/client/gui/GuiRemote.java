@@ -85,13 +85,4 @@ public class GuiRemote extends GuiPneumaticContainerBase {
             }
         }
     }
-
-    /* @Override
-     * TODO NEI dep
-     @Optional.Method(modid = ModIds.NEI)
-     public VisiblityData modifyVisiblity(GuiContainer gui, VisiblityData currentVisibility){
-         currentVisibility.showNEI = false;
-         return currentVisibility;
-     }*/
-
 }
