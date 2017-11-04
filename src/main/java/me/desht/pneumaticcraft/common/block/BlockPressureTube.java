@@ -35,6 +35,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.tuple.Pair;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,10 +56,9 @@ public class BlockPressureTube extends BlockPneumaticCraftModeled {
     public static final PropertyBool WEST = PropertyBool.create("west");
     public static final PropertyBool[] CONNECTION_PROPERTIES = new PropertyBool[]{DOWN, UP, NORTH, SOUTH, WEST, EAST};
 
-    public AxisAlignedBB[] boundingBoxes = new AxisAlignedBB[6];
+    private AxisAlignedBB[] boundingBoxes = new AxisAlignedBB[6];
     private final float dangerPressure, criticalPressure;
     private final int volume;
-    private static final Object CENTER_TUBE_HIT_MARKER = new Object(); //Object that is assigned to a MOP's hitInfo when a player hovers over the center part of a tube.
 
     public BlockPressureTube(String registryName, float dangerPressure, float criticalPressure, int volume) {
         super(Material.IRON, registryName);
@@ -105,16 +105,6 @@ public class BlockPressureTube extends BlockPneumaticCraftModeled {
         }
         return state;
     }
-
-//    @Override
-//    public IBlockState getStateFromMeta(int meta) {
-//        IBlockState state = super.getStateFromMeta(meta);
-//        for (PropertyBool property : CONNECTION_PROPERTIES) {
-//            state = state.withProperty(property, (meta & 1) == 1);
-//            meta >>= 1;
-//        }
-//        return state;
-//    }
 
     @Override
     public int getMetaFromState(IBlockState state) {
@@ -183,23 +173,36 @@ public class BlockPressureTube extends BlockPneumaticCraftModeled {
     public static TubeModule getLookedModule(World world, BlockPos pos, EntityPlayer player) {
         Pair<Vec3d, Vec3d> vecs = PneumaticCraftUtils.getStartAndEndLookVec(player);
         IBlockState state = world.getBlockState(pos);
-        RayTraceResult mop = state.collisionRayTrace(world, pos, vecs.getLeft(), vecs.getRight());
-        if (mop != null && mop.hitInfo instanceof EnumFacing) {
+        RayTraceResult rayTraceResult = state.collisionRayTrace(world, pos, vecs.getLeft(), vecs.getRight());
+        TubeHitInfo tubeHitInfo = getHitInfo(rayTraceResult);
+        if (tubeHitInfo.type == TubeHitInfo.PartType.MODULE) {
             TileEntityPressureTube tube = ModInteractionUtils.getInstance().getTube(getTE(world, pos));
-            return tube.modules[((EnumFacing) mop.hitInfo).ordinal()];
+            return tube.modules[tubeHitInfo.dir.ordinal()];
+        }
+        return null;
+    }
+
+    private static EnumFacing getLookedTube(World world, BlockPos pos, EntityPlayer player) {
+        Pair<Vec3d, Vec3d> vecs = PneumaticCraftUtils.getStartAndEndLookVec(player);
+        IBlockState state = world.getBlockState(pos);
+        RayTraceResult rayTraceResult = state.collisionRayTrace(world, pos, vecs.getLeft(), vecs.getRight());
+        TubeHitInfo tubeHitInfo = getHitInfo(rayTraceResult);
+        if (tubeHitInfo.type == TubeHitInfo.PartType.TUBE) {
+            return tubeHitInfo.dir;
         }
         return null;
     }
 
     @Override
     public RayTraceResult collisionRayTrace(IBlockState state, World world, BlockPos pos, Vec3d origin, Vec3d direction) {
-        RayTraceResult bestMOP = null;
+        RayTraceResult bestRTR = null;
         AxisAlignedBB bestAABB = null;
 
         setBlockBounds(BASE_BOUNDS);
-        RayTraceResult mop = super.collisionRayTrace(state, world, pos, origin, direction);
-        if (isCloserMOP(origin, bestMOP, mop)) {
-            bestMOP = mop;
+        RayTraceResult rtr = super.collisionRayTrace(state, world, pos, origin, direction);
+        if (rtr != null) {
+            rtr.hitInfo = TubeHitInfo.CENTER;
+            bestRTR = rtr;
             bestAABB = getBoundingBox(state, world, pos);
         }
 
@@ -207,29 +210,29 @@ public class BlockPressureTube extends BlockPneumaticCraftModeled {
         for (int i = 0; i < 6; i++) {
             if (tube.sidesConnected[i]) {
                 setBlockBounds(boundingBoxes[i]);
-                mop = super.collisionRayTrace(state, world, pos, origin, direction);
-                if (isCloserMOP(origin, bestMOP, mop)) {
-                    bestMOP = mop;
+                rtr = super.collisionRayTrace(state, world, pos, origin, direction);
+                if (isCloserMOP(origin, bestRTR, rtr)) {
+                    rtr.hitInfo = new TubeHitInfo(EnumFacing.getFront(i), TubeHitInfo.PartType.TUBE);  // tube connection arm
+                    bestRTR = rtr;
                     bestAABB = getBoundingBox(state, world, pos);
                 }
             }
         }
-        if (bestMOP != null) bestMOP.hitInfo = CENTER_TUBE_HIT_MARKER;
 
         TubeModule[] modules = tube.modules;
         for (EnumFacing dir : EnumFacing.VALUES) {
             if (modules[dir.ordinal()] != null) {
                 setBlockBounds(modules[dir.ordinal()].boundingBoxes[dir.ordinal()]);
-                mop = super.collisionRayTrace(state, world, pos, origin, direction);
-                if (isCloserMOP(origin, bestMOP, mop)) {
-                    mop.hitInfo = dir;
-                    bestMOP = mop;
+                rtr = super.collisionRayTrace(state, world, pos, origin, direction);
+                if (isCloserMOP(origin, bestRTR, rtr)) {
+                    rtr.hitInfo = new TubeHitInfo(dir, TubeHitInfo.PartType.MODULE);  // tube module
+                    bestRTR = rtr;
                     bestAABB = getBoundingBox(state, world, pos);
                 }
             }
         }
         if (bestAABB != null) setBlockBounds(bestAABB);
-        return bestMOP;
+        return bestRTR;
     }
 
     private boolean isCloserMOP(Vec3d origin, RayTraceResult originalMOP, RayTraceResult newMOP) {
@@ -240,12 +243,13 @@ public class BlockPressureTube extends BlockPneumaticCraftModeled {
 
     @Override
     public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player) {
-        if (target.hitInfo == CENTER_TUBE_HIT_MARKER) {
+        TubeHitInfo tubeHitInfo = getHitInfo(target);
+        if (tubeHitInfo.type == TubeHitInfo.PartType.TUBE) {
             return super.getPickBlock(state, target, world, pos, player);
-        } else if (target.hitInfo instanceof EnumFacing) {
+        } else if (tubeHitInfo.type == TubeHitInfo.PartType.MODULE) {
             TileEntityPressureTube tube = (TileEntityPressureTube) getTE(world, pos);
             if (tube != null) {
-                TubeModule module = tube.modules[((EnumFacing) target.hitInfo).ordinal()];
+                TubeModule module = tube.modules[tubeHitInfo.dir.ordinal()];
                 if (module != null) {
                     return new ItemStack(ModuleRegistrator.getModuleItem(module.getType()));
                 }
@@ -282,6 +286,9 @@ public class BlockPressureTube extends BlockPneumaticCraftModeled {
             ModInteractionUtils.getInstance().removeTube(getTE(world, pos));
             return true;
         } else {
+            // TODO: code to close/open tube connections goes here
+//            EnumFacing tubeFace = getLookedTube(world, pos, player);
+//            System.out.println("clicked tube arm: " + tubeFace);
             return super.rotateBlock(world, player, pos, side);
         }
 
@@ -381,5 +388,24 @@ public class BlockPressureTube extends BlockPneumaticCraftModeled {
     @Override
     public boolean canProvidePower(IBlockState state) {
         return true;
+    }
+
+    @Nonnull
+    private static TubeHitInfo getHitInfo(RayTraceResult result) {
+        return result != null && result.hitInfo instanceof TubeHitInfo ? (TubeHitInfo) result.hitInfo : TubeHitInfo.NO_HIT;
+    }
+
+    private static class TubeHitInfo {
+        static TubeHitInfo NO_HIT = new TubeHitInfo(null, null);
+        static TubeHitInfo CENTER = new TubeHitInfo(null, PartType.TUBE);
+
+        enum PartType { TUBE, MODULE }
+        final EnumFacing dir;
+        final PartType type;
+
+        TubeHitInfo(EnumFacing dir, PartType type) {
+            this.dir = dir;
+            this.type = type;
+        }
     }
 }
