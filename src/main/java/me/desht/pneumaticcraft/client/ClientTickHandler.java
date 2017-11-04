@@ -73,18 +73,4 @@ public class ClientTickHandler {
             }
         }
     }
-
-    private boolean firstTick = true;
-
-    @SubscribeEvent
-    public void onPlayerJoin(TickEvent.PlayerTickEvent event) {
-        if (firstTick && event.player.world.isRemote && event.player == FMLClientHandler.instance().getClientPlayerEntity()) {
-            event.player.sendStatusMessage(new TextComponentString(
-                    TextFormatting.RED + "PneumaticCraft is unstable at this point! A few blocks/items " +
-                            TextFormatting.RED + "don't have a proper model yet. THIS IS NOT A BUG. Most " +
-                            TextFormatting.RED + "features should work though (regardless of how it's " +
-                            TextFormatting.RED + "displayed as of now)."), false);
-            firstTick = false;
-        }
-    }
 }

@@ -56,7 +56,9 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.LootEntry;
 import net.minecraft.world.storage.loot.LootEntryTable;
@@ -84,6 +86,7 @@ import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.eventhandler.Event.Result;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -99,6 +102,13 @@ public class EventHandlerPneumaticCraft {
 
     private static final ItemStack IRON_INGOT = new ItemStack(Items.IRON_INGOT);
     private static final ItemStack IRON_BLOCK = new ItemStack(Blocks.IRON_BLOCK);
+
+    @SubscribeEvent
+    public void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
+        event.player.sendStatusMessage(new TextComponentString(
+                TextFormatting.RED + "PneumaticCraft is in unstable pre-release status at this time.  " +
+                        "While functionally complete, bugs are likely!"), false);
+    }
 
     @SubscribeEvent
     public void handleFuelEvent(FurnaceFuelBurnTimeEvent event) {
