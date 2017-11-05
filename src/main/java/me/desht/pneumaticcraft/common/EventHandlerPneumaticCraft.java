@@ -106,8 +106,8 @@ public class EventHandlerPneumaticCraft {
     @SubscribeEvent
     public void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         event.player.sendStatusMessage(new TextComponentString(
-                TextFormatting.RED + "PneumaticCraft is in unstable pre-release status at this time. " +
-                        "While functionally complete, bugs are likely!"), false);
+                TextFormatting.RED + "PneumaticCraft is in unstable pre-release status at this time.\n" +
+                TextFormatting.RED + "While functionally complete, bugs are likely!"), false);
     }
 
     @SubscribeEvent
