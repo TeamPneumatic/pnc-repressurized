@@ -37,7 +37,7 @@ public class BlockVortexTube extends BlockPneumaticCraftModeled {
     @Override
     protected BlockStateContainer createBlockState() {
         return new ExtendedBlockState(this,
-                new IProperty[]{ROTATION, BlockPressureTube.DOWN, BlockPressureTube.UP, BlockPressureTube.NORTH, BlockPressureTube.SOUTH, BlockPressureTube.WEST, BlockPressureTube.EAST},
+                new IProperty[]{ROTATION, BlockPneumaticCraft.DOWN, BlockPneumaticCraft.UP, BlockPneumaticCraft.NORTH, BlockPneumaticCraft.SOUTH, BlockPneumaticCraft.WEST, BlockPneumaticCraft.EAST},
                 new IUnlistedProperty[]{OBJProperty.INSTANCE});
     }
 
@@ -46,7 +46,7 @@ public class BlockVortexTube extends BlockPneumaticCraftModeled {
         state = super.getActualState(state, worldIn, pos);
         TileEntityVortexTube tube = (TileEntityVortexTube) PneumaticCraftUtils.getTileEntitySafely(worldIn, pos); //worldIn.getTileEntity(pos);
         for (int i = 0; i < 6; i++) {
-            state = state.withProperty(BlockPressureTube.CONNECTION_PROPERTIES[i], tube.sidesConnected[i]);
+            state = state.withProperty(BlockPneumaticCraft.CONNECTION_PROPERTIES[i], tube.sidesConnected[i]);
         }
 
         return state;

@@ -37,7 +37,7 @@ public class BlockAssemblyController extends BlockPneumaticCraftModeled {
     @Override
     protected BlockStateContainer createBlockState() {
         return new BlockStateContainer(this,
-                BlockPressureTube.DOWN, BlockPressureTube.NORTH, BlockPressureTube.SOUTH, BlockPressureTube.WEST, BlockPressureTube.EAST);
+                BlockPneumaticCraft.DOWN, BlockPneumaticCraft.NORTH, BlockPneumaticCraft.SOUTH, BlockPneumaticCraft.WEST, BlockPneumaticCraft.EAST);
     }
 
     @Override
@@ -51,7 +51,7 @@ public class BlockAssemblyController extends BlockPneumaticCraftModeled {
         if (te instanceof TileEntityAssemblyController) {
             for (int i = 0; i < 6; i++) {
                 if (i == 1) continue;  // never connects on the UP face
-                state = state.withProperty(BlockPressureTube.CONNECTION_PROPERTIES[i], ((TileEntityAssemblyController) te).sidesConnected[i]);
+                state = state.withProperty(BlockPneumaticCraft.CONNECTION_PROPERTIES[i], ((TileEntityAssemblyController) te).sidesConnected[i]);
             }
         }
         return state;

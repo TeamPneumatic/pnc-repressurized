@@ -16,7 +16,7 @@ import me.desht.pneumaticcraft.lib.ModIds;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyBool;
+import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -43,20 +43,22 @@ import java.util.List;
 import java.util.Random;
 
 public class BlockPressureTube extends BlockPneumaticCraftModeled {
+
     public static final AxisAlignedBB BASE_BOUNDS = new AxisAlignedBB(
             BBConstants.PRESSURE_PIPE_MIN_POS, BBConstants.PRESSURE_PIPE_MIN_POS, BBConstants.PRESSURE_PIPE_MIN_POS,
             BBConstants.PRESSURE_PIPE_MAX_POS, BBConstants.PRESSURE_PIPE_MAX_POS, BBConstants.PRESSURE_PIPE_MAX_POS
     );
 
-    public static final PropertyBool UP = PropertyBool.create("up");
-    public static final PropertyBool DOWN = PropertyBool.create("down");
-    public static final PropertyBool NORTH = PropertyBool.create("north");
-    public static final PropertyBool EAST = PropertyBool.create("east");
-    public static final PropertyBool SOUTH = PropertyBool.create("south");
-    public static final PropertyBool WEST = PropertyBool.create("west");
-    public static final PropertyBool[] CONNECTION_PROPERTIES = new PropertyBool[]{DOWN, UP, NORTH, SOUTH, WEST, EAST};
+    public static final PropertyEnum<ConnectionType> UP = PropertyEnum.create("up", ConnectionType.class);
+    public static final PropertyEnum<ConnectionType> DOWN = PropertyEnum.create("down", ConnectionType.class);
+    public static final PropertyEnum<ConnectionType> NORTH = PropertyEnum.create("north", ConnectionType.class);
+    public static final PropertyEnum<ConnectionType> EAST = PropertyEnum.create("east", ConnectionType.class);
+    public static final PropertyEnum<ConnectionType> SOUTH = PropertyEnum.create("south", ConnectionType.class);
+    public static final PropertyEnum<ConnectionType> WEST = PropertyEnum.create("west", ConnectionType.class);
+    public static final PropertyEnum<ConnectionType>[] CONNECTION_PROPERTIES_3 = new PropertyEnum[]{DOWN, UP, NORTH, SOUTH, WEST, EAST};
 
     private AxisAlignedBB[] boundingBoxes = new AxisAlignedBB[6];
+    private AxisAlignedBB[] closedBoundingBoxes = new AxisAlignedBB[6];
     private final float dangerPressure, criticalPressure;
     private final int volume;
 
@@ -72,6 +74,14 @@ public class BlockPressureTube extends BlockPneumaticCraftModeled {
         boundingBoxes[3] = new AxisAlignedBB(0.5 - width, 0.5 - width, BBConstants.PRESSURE_PIPE_MAX_POS, 0.5 + width, 0.5 + width, BBConstants.PRESSURE_PIPE_MAX_POS + height);
         boundingBoxes[4] = new AxisAlignedBB(BBConstants.PRESSURE_PIPE_MIN_POS - height, 0.5 - width, 0.5 - width, BBConstants.PRESSURE_PIPE_MIN_POS, 0.5 + width, 0.5 + width);
         boundingBoxes[5] = new AxisAlignedBB(BBConstants.PRESSURE_PIPE_MAX_POS, 0.5 - width, 0.5 - width, BBConstants.PRESSURE_PIPE_MAX_POS + height, 0.5 + width, 0.5 + width);
+
+        height = 2.5 / 16f;  // size of "plug"
+        closedBoundingBoxes[0] = new AxisAlignedBB(0.5 - width, BBConstants.PRESSURE_PIPE_MIN_POS - height, 0.5 - width, 0.5 + width, BBConstants.PRESSURE_PIPE_MIN_POS, 0.5 + width);
+        closedBoundingBoxes[1] = new AxisAlignedBB(0.5 - width, BBConstants.PRESSURE_PIPE_MAX_POS, 0.5 - width, 0.5 + width, BBConstants.PRESSURE_PIPE_MAX_POS + height, 0.5 + width);
+        closedBoundingBoxes[2] = new AxisAlignedBB(0.5 - width, 0.5 - width, BBConstants.PRESSURE_PIPE_MIN_POS - height, 0.5 + width, 0.5 + width, BBConstants.PRESSURE_PIPE_MIN_POS);
+        closedBoundingBoxes[3] = new AxisAlignedBB(0.5 - width, 0.5 - width, BBConstants.PRESSURE_PIPE_MAX_POS, 0.5 + width, 0.5 + width, BBConstants.PRESSURE_PIPE_MAX_POS + height);
+        closedBoundingBoxes[4] = new AxisAlignedBB(BBConstants.PRESSURE_PIPE_MIN_POS - height, 0.5 - width, 0.5 - width, BBConstants.PRESSURE_PIPE_MIN_POS, 0.5 + width, 0.5 + width);
+        closedBoundingBoxes[5] = new AxisAlignedBB(BBConstants.PRESSURE_PIPE_MAX_POS, 0.5 - width, 0.5 - width, BBConstants.PRESSURE_PIPE_MAX_POS + height, 0.5 + width, 0.5 + width);
 
         this.dangerPressure = dangerPressure;
         this.criticalPressure = criticalPressure;
@@ -90,7 +100,7 @@ public class BlockPressureTube extends BlockPneumaticCraftModeled {
 
     @Override
     protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, Arrays.copyOf(BlockPressureTube.CONNECTION_PROPERTIES, BlockPressureTube.CONNECTION_PROPERTIES.length));
+        return new BlockStateContainer(this, Arrays.copyOf(BlockPressureTube.CONNECTION_PROPERTIES_3, BlockPressureTube.CONNECTION_PROPERTIES_3.length));
     }
 
     @Override
@@ -100,7 +110,8 @@ public class BlockPressureTube extends BlockPneumaticCraftModeled {
         if (te instanceof TileEntityPressureTube) {
             TileEntityPressureTube tube = (TileEntityPressureTube) te;
             for (int i = 0; i < 6; i++) {
-                state = state.withProperty(CONNECTION_PROPERTIES[i], tube.sidesConnected[i]);
+                ConnectionType conn = tube.sidesClosed[i] ? ConnectionType.CLOSED : tube.sidesConnected[i] ? ConnectionType.CONNECTED : ConnectionType.OPEN;
+                state = state.withProperty(CONNECTION_PROPERTIES_3[i], conn);
             }
         }
         return state;
@@ -142,7 +153,7 @@ public class BlockPressureTube extends BlockPneumaticCraftModeled {
         if (player.getHeldItemMainhand().getItem() instanceof ItemTubeModule) {
             TileEntity te = getTE(world, pos);
             TileEntityPressureTube pressureTube = ModInteractionUtils.getInstance().getTube(te);
-            if (pressureTube.modules[side.ordinal()] == null && ModInteractionUtils.getInstance().occlusionTest(boundingBoxes[side.ordinal()], te)) {
+            if (pressureTube.modules[side.ordinal()] == null && !pressureTube.sidesClosed[side.ordinal()] && ModInteractionUtils.getInstance().occlusionTest(boundingBoxes[side.ordinal()], te)) {
                 TubeModule module = ModuleRegistrator.getModule(((ItemTubeModule) player.getHeldItemMainhand().getItem()).moduleName);
                 if (simulate) module.markFake();
                 pressureTube.setModule(module, side);
@@ -182,13 +193,22 @@ public class BlockPressureTube extends BlockPneumaticCraftModeled {
         return null;
     }
 
-    private static EnumFacing getLookedTube(World world, BlockPos pos, EntityPlayer player) {
+    /**
+     * Get the part of the tube being looked at.
+     *
+     * @param world the world
+     * @param pos the blockpos
+     * @param player the player
+     * @return (true, side) if it's the side of the tube core, or (false, side) if it's a tube arm
+     */
+    private static Pair<Boolean,EnumFacing> getLookedTube(World world, BlockPos pos, EntityPlayer player) {
         Pair<Vec3d, Vec3d> vecs = PneumaticCraftUtils.getStartAndEndLookVec(player);
         IBlockState state = world.getBlockState(pos);
         RayTraceResult rayTraceResult = state.collisionRayTrace(world, pos, vecs.getLeft(), vecs.getRight());
         TubeHitInfo tubeHitInfo = getHitInfo(rayTraceResult);
         if (tubeHitInfo.type == TubeHitInfo.PartType.TUBE) {
-            return tubeHitInfo.dir;
+            // return either the tube arm (if connected), or the side of the centre face (if not)
+            return tubeHitInfo.dir == null ? Pair.of(true, rayTraceResult.sideHit) : Pair.of(false, tubeHitInfo.dir);
         }
         return null;
     }
@@ -208,8 +228,8 @@ public class BlockPressureTube extends BlockPneumaticCraftModeled {
 
         TileEntityPressureTube tube = ModInteractionUtils.getInstance().getTube(getTE(world, pos));
         for (int i = 0; i < 6; i++) {
-            if (tube.sidesConnected[i]) {
-                setBlockBounds(boundingBoxes[i]);
+            if (tube.sidesConnected[i] || tube.sidesClosed[i]) {
+                setBlockBounds(tube.sidesClosed[i] ? closedBoundingBoxes[i] : boundingBoxes[i]);
                 rtr = super.collisionRayTrace(state, world, pos, origin, direction);
                 if (isCloserMOP(origin, bestRTR, rtr)) {
                     rtr.hitInfo = new TubeHitInfo(EnumFacing.getFront(i), TubeHitInfo.PartType.TUBE);  // tube connection arm
@@ -264,6 +284,7 @@ public class BlockPressureTube extends BlockPneumaticCraftModeled {
         if (player.isSneaking()) {
             TubeModule module = getLookedModule(world, pos, player);
             if (module != null) {
+                // detach and drop the module as an item
                 if (!player.capabilities.isCreativeMode) {
                     List<ItemStack> drops = module.getDrops();
                     for (ItemStack drop : drops) {
@@ -276,22 +297,27 @@ public class BlockPressureTube extends BlockPneumaticCraftModeled {
                 tube.setModule(null, module.getDirection());
                 neighborChanged(world.getBlockState(pos), world, pos, this, pos.offset(side));
                 world.notifyNeighborsOfStateChange(pos, this, true);
-                return true;
+            } else {
+                // drop the pipe as an item
+                if (!player.capabilities.isCreativeMode) {
+                    EntityItem entity = new EntityItem(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, new ItemStack(tube.criticalPressure <= PneumaticValues.MAX_PRESSURE_PRESSURE_TUBE ? Blockss.PRESSURE_TUBE : Blockss.ADVANCED_PRESSURE_TUBE));
+                    world.spawnEntity(entity);
+                    entity.onCollideWithPlayer(player);
+                }
+                ModInteractionUtils.getInstance().removeTube(getTE(world, pos));
             }
-            if (!player.capabilities.isCreativeMode) {
-                EntityItem entity = new EntityItem(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, new ItemStack(tube.criticalPressure <= PneumaticValues.MAX_PRESSURE_PRESSURE_TUBE ? Blockss.PRESSURE_TUBE : Blockss.ADVANCED_PRESSURE_TUBE));
-                world.spawnEntity(entity);
-                entity.onCollideWithPlayer(player);
-            }
-            ModInteractionUtils.getInstance().removeTube(getTE(world, pos));
-            return true;
         } else {
-            // TODO: code to close/open tube connections goes here
-//            EnumFacing tubeFace = getLookedTube(world, pos, player);
-//            System.out.println("clicked tube arm: " + tubeFace);
-            return super.rotateBlock(world, player, pos, side);
+            // close (or reopen) this side of the pipe
+            Pair<Boolean, EnumFacing> lookData = getLookedTube(world, pos, player);
+            if (lookData != null) {
+                boolean isCore = lookData.getLeft();
+                EnumFacing sideHit = lookData.getRight();
+                tube.sidesClosed[sideHit.ordinal()] = !tube.sidesClosed[sideHit.ordinal()];
+                neighborChanged(world.getBlockState(pos), world, pos, this, pos.offset(side));
+                world.notifyNeighborsOfStateChange(pos, this, true);
+            }
         }
-
+        return true;
     }
 
     @Override
@@ -305,7 +331,7 @@ public class BlockPressureTube extends BlockPneumaticCraftModeled {
         super.breakBlock(world, pos, state);
     }
 
-    public static List<ItemStack> getModuleDrops(TileEntityPressureTube tube) {
+    private static List<ItemStack> getModuleDrops(TileEntityPressureTube tube) {
         List<ItemStack> drops = new ArrayList<>();
         for (TubeModule module : tube.modules) {
             if (module != null) {
@@ -335,18 +361,15 @@ public class BlockPressureTube extends BlockPneumaticCraftModeled {
 
     @Override
     @SideOnly(Side.CLIENT)
-    /**
-     * A randomly called display update to be able to add particles or other items for display
-     */
     public void randomDisplayTick(IBlockState state, World par1World, BlockPos pos, Random par5Random) {
         TileEntity te = getTE(par1World, pos);
         if (te instanceof TileEntityPressureTube) {
             TileEntityPressureTube tePt = (TileEntityPressureTube) te;
             int l = 0;
-            for (TubeModule module : tePt.modules)
+            for (TubeModule module : tePt.modules) {
                 if (module != null) l = Math.max(l, module.getRedstoneLevel());
+            }
             if (l > 0) {
-                // for(int i = 0; i < 4; i++){
                 double d0 = pos.getX() + 0.5D + (par5Random.nextFloat() - 0.5D) * 0.5D;
                 double d1 = pos.getY() + 0.5D + (par5Random.nextFloat() - 0.5D) * 0.5D;
                 double d2 = pos.getZ() + 0.5D + (par5Random.nextFloat() - 0.5D) * 0.5D;
@@ -395,6 +418,9 @@ public class BlockPressureTube extends BlockPneumaticCraftModeled {
         return result != null && result.hitInfo instanceof TubeHitInfo ? (TubeHitInfo) result.hitInfo : TubeHitInfo.NO_HIT;
     }
 
+    /**
+     * Stores information about the subpart of a pressure tube that is being looked at or interacted with.
+     */
     private static class TubeHitInfo {
         static TubeHitInfo NO_HIT = new TubeHitInfo(null, null);
         static TubeHitInfo CENTER = new TubeHitInfo(null, PartType.TUBE);
@@ -408,4 +434,23 @@ public class BlockPressureTube extends BlockPneumaticCraftModeled {
             this.type = type;
         }
     }
+
+    /**
+     * Tri-state representing the 3 possible states for a tube connection.
+     */
+    public enum ConnectionType implements IStringSerializable {
+        OPEN("open"),
+        CONNECTED("connected"),
+        CLOSED("closed");
+
+        private final String name;
+        ConnectionType(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String getName() {
+            return name;
+        }
+    };
 }

@@ -27,6 +27,8 @@ import java.util.List;
 public class TileEntityPressureTube extends TileEntityPneumaticBase implements IAirListener, IManoMeasurable, IMultipartTE {
     @DescSynced
     public boolean[] sidesConnected = new boolean[6];
+    @DescSynced
+    public boolean[] sidesClosed = new boolean[6];
     public TubeModule[] modules = new TubeModule[6];
 
     private Object part;
@@ -53,6 +55,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
         super.readFromNBT(nbt);
         for (int i = 0; i < 6; i++) {
             sidesConnected[i] = nbt.getBoolean("sideConnected" + i);
+            sidesClosed[i] = nbt.getBoolean("sideClosed" + i);
         }
     }
 
@@ -61,6 +64,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
         super.writeToNBT(nbt);
         for (int i = 0; i < 6; i++) {
             nbt.setBoolean("sideConnected" + i, sidesConnected[i]);
+            nbt.setBoolean("sideClosed" + i, sidesClosed[i]);
         }
         return nbt;
     }
@@ -169,7 +173,9 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
 
     @Override
     public boolean isConnectedTo(EnumFacing side) {
-        return (modules[side.ordinal()] == null || modules[side.ordinal()].isInline()) && (part == null || ModInteractionUtils.getInstance().isMultipartWiseConnected(part, side));
+        return !sidesClosed[side.ordinal()]
+                && (modules[side.ordinal()] == null || modules[side.ordinal()].isInline())
+                && (part == null || ModInteractionUtils.getInstance().isMultipartWiseConnected(part, side));
     }
 
     @Override

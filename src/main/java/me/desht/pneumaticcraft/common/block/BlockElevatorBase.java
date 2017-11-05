@@ -39,7 +39,7 @@ public class BlockElevatorBase extends BlockPneumaticCraftCamo {
     @Override
     protected BlockStateContainer createBlockState() {
         return new ExtendedBlockState(this,
-                new IProperty[] { BlockPressureTube.NORTH, BlockPressureTube.SOUTH, BlockPressureTube.WEST, BlockPressureTube.EAST },
+                new IProperty[] { BlockPneumaticCraft.NORTH, BlockPneumaticCraft.SOUTH, BlockPneumaticCraft.WEST, BlockPneumaticCraft.EAST },
                 new IUnlistedProperty[] { CAMO_STATE });
     }
 
@@ -53,7 +53,7 @@ public class BlockElevatorBase extends BlockPneumaticCraftCamo {
         state = super.getActualState(state, worldIn, pos);
         TileEntityElevatorBase te = (TileEntityElevatorBase) PneumaticCraftUtils.getTileEntitySafely(worldIn, pos);
         for (int i = 2; i < 6; i++) {  // 2..5 = horizontal directions
-            state = state.withProperty(BlockPressureTube.CONNECTION_PROPERTIES[i], te.sidesConnected[i]);
+            state = state.withProperty(BlockPneumaticCraft.CONNECTION_PROPERTIES[i], te.sidesConnected[i]);
         }
         return state;
     }

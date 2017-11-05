@@ -131,10 +131,10 @@ public class TileEntityPneumaticBase extends TileEntityBase implements IPneumati
     }
 
     /**
-     * Returns if TE's is connected pneumatically to the given side of this TE.
+     * Checks if the given side of this TE can be pneumatically connected to.
      *
-     * @param side
-     * @return
+     * @param side the side to check
+     * @return true if connected, false otherwise
      */
     public boolean isConnectedTo(EnumFacing side) {
         return true;
