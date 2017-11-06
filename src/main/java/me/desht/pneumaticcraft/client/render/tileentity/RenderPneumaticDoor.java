@@ -24,7 +24,7 @@ public class RenderPneumaticDoor extends AbstractModelRenderer<TileEntityPneumat
 
     @Override
     protected boolean shouldRender(TileEntityPneumaticDoor te) {
-        return te.rotationAngle > 0f || te.rotationAngle < 90f;
+        return te.rotationAngle > 0f && te.rotationAngle < 90f;
     }
 
     @Override
