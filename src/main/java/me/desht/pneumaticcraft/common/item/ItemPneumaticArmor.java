@@ -11,6 +11,7 @@ import me.desht.pneumaticcraft.common.DateEventHandler;
 import me.desht.pneumaticcraft.common.NBTUtil;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.inventory.ChargeableItemHandler;
+import me.desht.pneumaticcraft.common.recipes.RecipeOneProbe;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -71,6 +72,9 @@ IRepairable, IRevealer, IGoggles, IVisDiscountGear*/ {
     @Override
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack iStack, World world, List<String> textList, ITooltipFlag flag) {
+        if (iStack.hasTagCompound() && iStack.getTagCompound().getInteger(RecipeOneProbe.ONE_PROBE_TAG) == 1) {
+            textList.add(TextFormatting.BLUE + "The One Probe installed");
+        }
         float pressure = getPressure(iStack);
         textList.add((pressure < 0.5F ? TextFormatting.RED : TextFormatting.DARK_GREEN) + "Pressure: " + Math.round(pressure * 10D) / 10D + " bar");
         ItemStack[] inventoryStacks = getUpgradeStacks(iStack);
@@ -226,7 +230,7 @@ IRepairable, IRevealer, IGoggles, IVisDiscountGear*/ {
     @Override
     @SideOnly(Side.CLIENT)
     public ModelBiped getArmorModel(EntityLivingBase entityLiving, ItemStack itemStack, EntityEquipmentSlot armorSlot, ModelBiped _default) {
-        if (armorSlot == EntityEquipmentSlot.HEAD && (ConfigHandler.general.useHelmetModel || DateEventHandler.isIronManEvent())) {
+        if (armorSlot == EntityEquipmentSlot.HEAD && (ConfigHandler.client.useHelmetModel || DateEventHandler.isIronManEvent())) {
             /*RenderItemPneumaticHelmet.INSTANCE.render(entityLiving);
 
             RenderPlayer render = (RenderPlayer)Minecraft.getMinecraft().getRenderManager().entityRenderMap.get(EntityPlayer.class);

@@ -25,7 +25,7 @@ public class GuiAphorismTile extends GuiScreen {
     public GuiAphorismTile(TileEntityAphorismTile tile) {
         this.tile = tile;
         textLines = tile.getTextLines();
-        if (ConfigHandler.general.aphorismDrama && textLines.length == 1 && textLines[0].equals("")) {
+        if (ConfigHandler.client.aphorismDrama && textLines.length == 1 && textLines[0].equals("")) {
             List<String> l = PneumaticCraftUtils.convertStringIntoList(DramaSplash.getInstance().getSplash(), 20);
             tile.setTextLines(l.toArray(new String[0]));
         }

@@ -34,11 +34,11 @@ public class ConfigHandler {
     @Config.Name("recipes")
     public static Recipes recipes = new Recipes();
 
+    @Config.Name("client")
+    public static ClientOptions client = new ClientOptions();
+
     @Config.Name("helmet")
     public static HelmetOptions helmetOptions = new HelmetOptions();
-
-    @Config.Name("thirdparty")
-    public static ThirdParty thirdParty = new ThirdParty();
 
     public static void sync() {
         ConfigManager.sync(Names.MOD_ID, Config.Type.INSTANCE);
@@ -76,24 +76,17 @@ public class ConfigHandler {
         @Config.Comment("Chance per chunk in percentage to generate an Oil Lake. Set to 0 for no spawns")
         @Config.RangeDouble(min = 0d, max = 100d)
         public double oilGenerationChance = 15d;
-        @Config.Comment("Loss percentage (on average) of Compressed Iron ingots/blocks when exposed to an explosion.")
+        @Config.Comment("Loss percentage (on average) of Compressed Iron ingots/blocks when exposed to an explosion")
         @Config.RangeInt(min = 0, max = 100)
         public int configCompressedIngotLossRate = 20;
-        @Config.Comment("Enables the dungeon loot generation of the Nuke Virus and Stop! Worm. Useless items when playing SSP")
+        @Config.Comment("Enables the dungeon loot generation of the Nuke Virus and Stop! Worm (not useful in single-player worlds)")
         public boolean enableDungeonLoot = true;
-        @Config.Comment("When true, the Pneumatic Helmet will be a model. Warning: this model looks far too good to be in MC")
-        public boolean useHelmetModel = false;
-        @Config.Comment("Defines the difficulty of the programmer shown to the user. 0 = easy, 1 = medium, 2 = advanced")
-        @Config.RangeInt(min = 0, max = 2)
-        public int programmerDifficulty = 0;
         @Config.Comment("Damage of the Miniguns. This applies to the Sentry Gun, Handheld Minigun, and Drone-based minigun")
         public float configMinigunDamage = 4f;
         @Config.Comment("Enable Update Checker")
         public boolean enableUpdateChecker = true;
         @Config.Comment("Enable Drone Suffocation Damage")
         public boolean enableDroneSuffocationDamage = true;
-        @Config.Comment("Enable Aphorism Tile Drama!")
-        public boolean aphorismDrama = true;
     }
 
     public static class MachineProperties {
@@ -114,7 +107,7 @@ public class ConfigHandler {
         @Config.Comment("The max height of an elevator per stacked Elevator Base.")
         @Config.RangeInt(min = 1, max = 256)
         public int elevatorBaseBlocksPerBase = 4;
-        @Config.Comment("Can the Kerosene Lamp burn any fuel?  If false, only Kerosene can be burnt")
+        @Config.Comment("Can the Kerosene Lamp burn any kind of fuel?  If false, only Kerosene can be burnt")
         public boolean keroseneLampCanUseAnyFuel = true;
         @Config.Comment("Kerosene Lamp fuel efficiency: higher values mean fuel will last longer in the lamp")
         public float keroseneLampFuelEfficiency = 1.0f;
@@ -138,6 +131,18 @@ public class ConfigHandler {
         public boolean enablePneumaticPumpRecipe = true;
         @Config.Comment("8 Block of Coal --> 1 Diamond (Pressure Chamber)")
         public boolean enableCoalToDiamondsRecipe = true;
+    }
+
+    public static class ClientOptions {
+        @Config.Comment("Enable Aphorism Tile Drama!")
+        public boolean aphorismDrama = true;
+        @Config.Comment("When true, the Pneumatic Helmet will be a model. Warning: this model looks far too good to be in MC (currently ignored)")
+        public boolean useHelmetModel = false;
+        @Config.Comment("Defines the difficulty of the Programmer shown to the user. 0 = easy, 1 = medium, 2 = advanced")
+        @Config.RangeInt(min = 0, max = 2)
+        public int programmerDifficulty = 0;
+        @Config.Comment("Show tank fluids with the The One Probe.  Note that TOP also has support for showing tanks, which may or may not be enabled.")
+        public boolean topShowsFluids = true;
     }
 
     public static class HelmetOptions {
@@ -181,18 +186,13 @@ public class ConfigHandler {
         public int pathUpdateSetting = 1;
     }
 
-    public static class ThirdParty {
-        @Config.Comment("Enable notenoughkeys mod (note: not ported beyond MC1.8)")
-        public boolean notEnoughKeys = false;
-    }
-
     public static void setProgrammerDifficulty(int difficulty) {
-        general.programmerDifficulty = difficulty;
+        client.programmerDifficulty = difficulty;
         sync();
     }
 
     public static int getProgrammerDifficulty() {
-        return general.programmerDifficulty;
+        return client.programmerDifficulty;
     }
 
     @Mod.EventBusSubscriber

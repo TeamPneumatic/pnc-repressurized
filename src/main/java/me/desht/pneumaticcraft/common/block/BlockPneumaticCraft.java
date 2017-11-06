@@ -9,6 +9,7 @@ import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.block.IPneumaticWrenchable;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
+import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.thirdparty.ModInteractionUtils;
 import me.desht.pneumaticcraft.common.thirdparty.theoneprobe.ITOPInfoProvider;
@@ -45,6 +46,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
@@ -396,6 +399,10 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
         }
         if (te instanceof IHeatExchanger) {
             TOPCallback.handleHeat(mode, probeInfo, (IHeatExchanger) te);
+        }
+        if (ConfigHandler.client.topShowsFluids && te != null && te.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, data.getSideHit())) {
+            IFluidHandler handler = te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, data.getSideHit());
+            TOPCallback.handleFluidTanks(mode, probeInfo, handler);
         }
         if (te instanceof TileEntityBase) {
             TOPCallback.handleRedstoneMode(mode, probeInfo, (TileEntityBase) te);

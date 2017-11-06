@@ -1,11 +1,13 @@
 package me.desht.pneumaticcraft.common.thirdparty.theoneprobe;
 
 import mcjty.theoneprobe.api.*;
+import mcjty.theoneprobe.apiimpl.styles.LayoutStyle;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IPressurizable;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
+import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerManager;
 import me.desht.pneumaticcraft.common.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockBasic;
@@ -24,6 +26,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidTankProperties;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,11 +84,16 @@ public class TOPCallback implements Function<ITheOneProbe, Void> {
 
     public static void handlePneumatic(ProbeMode mode, IProbeInfo probeInfo, TileEntityPneumaticBase te) {
         IAirHandler airHandler = te.getAirHandler(null);
-        probeInfo.horizontal()
-                .element(new ElementPressure(te))
-                .vertical()
-                .text("")
-                .text("  \u2b05 " + PneumaticCraftUtils.roundNumberTo(airHandler.getPressure(), 1) + " bar");
+        if (mode == ProbeMode.EXTENDED) {
+            probeInfo.text("Pressure:");
+            probeInfo.horizontal()
+                    .element(new ElementPressure(te))
+                    .vertical()
+                    .text("")
+                    .text("  \u2b05 " + PneumaticCraftUtils.roundNumberTo(airHandler.getPressure(), 2) + " bar");
+        } else {
+            probeInfo.text(TextFormatting.GRAY + "Pressure: " + TextFormatting.WHITE + PneumaticCraftUtils.roundNumberTo(airHandler.getPressure(), 2) + " bar");
+        }
     }
 
     public static void handleHeat(ProbeMode mode, IProbeInfo probeInfo, IHeatExchanger heatExchanger) {
@@ -114,7 +124,7 @@ public class TOPCallback implements Function<ITheOneProbe, Void> {
     public static void handleRedstoneMode(ProbeMode mode, IProbeInfo probeInfo, TileEntityBase te) {
         if (te instanceof IRedstoneControl) {
             int redstoneMode = ((IRedstoneControl) te).getRedstoneMode();
-            probeInfo.text(TextFormatting.RED + I18n.format(te.getRedstoneString()) + ": " + I18n.format(te.getRedstoneButtonText(redstoneMode)));
+            probeInfo.text(TextFormatting.GRAY + I18n.format(te.getRedstoneString()) + ": " + TextFormatting.RED + I18n.format(te.getRedstoneButtonText(redstoneMode)));
         }
     }
 
@@ -122,10 +132,20 @@ public class TOPCallback implements Function<ITheOneProbe, Void> {
         if (face != null) {
             TubeModule module = te.modules[face.ordinal()];
             if (module != null) {
+                IProbeInfo vert = probeInfo.vertical(new LayoutStyle().borderColor(0xFF4040FF).spacing(3));
                 List<String> currenttip = new ArrayList<>();
                 module.addInfo(currenttip);
-                for (String s : currenttip) probeInfo.text(s);
+                for (String s : currenttip) vert.text(s);
             }
+        }
+    }
+
+    public static void handleFluidTanks(ProbeMode mode, IProbeInfo probeInfo, IFluidHandler handler) {
+        int n = 1;
+        for (IFluidTankProperties properties : handler.getTankProperties()) {
+            FluidStack fluidStack = properties.getContents();
+            String fluidDesc = fluidStack == null ? I18n.format("gui.liquid.empty") : fluidStack.amount + "mB " + fluidStack.getLocalizedName();
+            probeInfo.text(I18n.format("waila.fluid", n++, fluidDesc));
         }
     }
 }

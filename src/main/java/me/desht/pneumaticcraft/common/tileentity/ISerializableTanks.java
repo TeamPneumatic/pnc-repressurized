@@ -10,7 +10,16 @@ import net.minecraftforge.fluids.FluidTank;
 import javax.annotation.Nonnull;
 import java.util.Map;
 
+/**
+ * Represents a tile entity which stores tank data that should be serialized onto the dropped item stack when the block
+ * is broken, and deserialized back to the tile entity when the block is placed down again.
+ */
 public interface ISerializableTanks {
+    /**
+     * Get a mapping of all tanks; this maps a tag name, which is used as the serialization key, to a fluid tank.
+     *
+     * @return a map of tag names to tanks
+     */
     @Nonnull
     Map<String,FluidTank> getSerializableTanks();
 

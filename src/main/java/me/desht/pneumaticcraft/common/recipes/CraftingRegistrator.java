@@ -17,6 +17,7 @@ import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
@@ -40,6 +41,9 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
 // TODO convert to JSON recipes
 public class CraftingRegistrator {
+    @GameRegistry.ObjectHolder("theoneprobe:probe")
+    static final Item ONE_PROBE = null;
+
     public static void init() {
         ItemStack lapis = new ItemStack(Items.DYE, 1, 4);
         ItemStack cobbleSlab = new ItemStack(Blocks.STONE_SLAB, 1, 3);
@@ -148,6 +152,7 @@ public class CraftingRegistrator {
         ForgeRegistries.RECIPES.register(new RecipeLogisticToDrone());
         ForgeRegistries.RECIPES.register(new RecipeGunAmmo());
         ForgeRegistries.RECIPES.register(new RecipeAmadronTablet());
+        if (ONE_PROBE != null) ForgeRegistries.RECIPES.register(new RecipeOneProbe());
 
         //Heat related
         addRecipe(new ItemStack(Blockss.HEAT_SINK), "bbb", "igi", 'i', Names.INGOT_IRON_COMPRESSED, 'b', Blocks.IRON_BARS, 'g', "ingotGold");
@@ -205,6 +210,10 @@ public class CraftingRegistrator {
         addThermopneumaticProcessingPlantRecipes();
         registerAmadronOffers();
         addCoolingRecipes();
+    }
+
+    private static void addOneProbeRecipe() {
+
     }
 
     public static ItemStack getUpgrade(EnumUpgrade upgrade) {
@@ -319,7 +328,7 @@ public class CraftingRegistrator {
         }
     }
 
-    public static void addThermopneumaticProcessingPlantRecipes() {
+    private static void addThermopneumaticProcessingPlantRecipes() {
         PneumaticRecipeRegistry registry = PneumaticRecipeRegistry.getInstance();
         registry.registerThermopneumaticProcessingPlantRecipe(new FluidStack(Fluids.LPG, 100), new ItemStack(Items.COAL), new FluidStack(Fluids.PLASTIC, 1000), 373, 0);
         registry.registerThermopneumaticProcessingPlantRecipe(new FluidStack(Fluids.DIESEL, 1000), new ItemStack(Items.REDSTONE), new FluidStack(Fluids.LUBRICANT, 1000), 373, 0);

@@ -118,7 +118,7 @@ public class ClientEventHandler {
 
     private void setRenderHead(EntityLivingBase entity, boolean setRender) {
         if (entity.getItemStackFromSlot(EntityEquipmentSlot.HEAD).getItem() == Itemss.PNEUMATIC_HELMET
-                && (ConfigHandler.general.useHelmetModel || DateEventHandler.isIronManEvent())) {
+                && (ConfigHandler.client.useHelmetModel || DateEventHandler.isIronManEvent())) {
             Render renderer = Minecraft.getMinecraft().getRenderManager().getEntityRenderObject(entity);
             if (renderer instanceof RenderBiped) {
                 ModelBiped modelBiped = (ModelBiped) ((RenderBiped) renderer).getMainModel();

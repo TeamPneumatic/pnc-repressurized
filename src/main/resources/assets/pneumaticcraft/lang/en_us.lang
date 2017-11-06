@@ -834,23 +834,27 @@ gui.tooltip.item.uvLightBox.putInAcid=Throw in Etching Acid to develop...
 gui.tooltip.item.upgrade.usedIn=Used in:
 gui.tooltip.item.upgrade.shiftMessage=Hold Shift to see which machines use this upgrade
 
+# Config Screen
+gui.config.thirdparty=Thirdparty Config
+
 # Waila
 hud.msg.state=State
 hud.msg.active=Active
 hud.msg.inactive=Inactive
 
-waila.temperature=Temperature: §f%sC
-waila.temperature.north=North Temperature: §f%sC
-waila.temperature.south=South Temperature: §f%sC
-waila.temperature.west=West Temperature: §f%sC
-waila.temperature.east=East Temperature: §f%sC
-waila.temperature.up=Top Temperature: §f%sC
-waila.temperature.down=Bottom Temperature: §f%sC
+waila.temperature=§7Temperature: §f%sC
+waila.temperature.north=§7North Temperature: §f%sC
+waila.temperature.south=§7South Temperature: §f%sC
+waila.temperature.west=§7West Temperature: §f%sC
+waila.temperature.east=§7East Temperature: §f%sC
+waila.temperature.up=§7Top Temperature: §f%sC
+waila.temperature.down=§7Bottom Temperature: §f%sC
 waila.logisticsModule.transporting=§9Transporting
 waila.logisticsModule.notEnoughAir=§6Not enough pressure to transport the items/fluids over that distance.
 waila.logisticsModule.powered=§2Online
 waila.logisticsModule.noPower=§cOffline (apply at least 3 bar)
 waila.logisticsModule.channel=Channel:
+waila.fluid=§7Tank %d: §b%s
 
 # Misc
 itemGroup.tabPneumaticCraft=PneumaticCraft
