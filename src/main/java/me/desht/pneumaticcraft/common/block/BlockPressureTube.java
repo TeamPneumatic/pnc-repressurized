@@ -16,6 +16,7 @@ import me.desht.pneumaticcraft.lib.ModIds;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
@@ -31,6 +32,8 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.property.ExtendedBlockState;
+import net.minecraftforge.common.property.IUnlistedProperty;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.tuple.Pair;
@@ -42,7 +45,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-public class BlockPressureTube extends BlockPneumaticCraftModeled {
+public class BlockPressureTube extends BlockPneumaticCraftCamo {
 
     public static final AxisAlignedBB BASE_BOUNDS = new AxisAlignedBB(
             BBConstants.PRESSURE_PIPE_MIN_POS, BBConstants.PRESSURE_PIPE_MIN_POS, BBConstants.PRESSURE_PIPE_MIN_POS,
@@ -100,7 +103,9 @@ public class BlockPressureTube extends BlockPneumaticCraftModeled {
 
     @Override
     protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, Arrays.copyOf(BlockPressureTube.CONNECTION_PROPERTIES_3, BlockPressureTube.CONNECTION_PROPERTIES_3.length));
+        return new ExtendedBlockState(this,
+                Arrays.copyOf(BlockPressureTube.CONNECTION_PROPERTIES_3, BlockPressureTube.CONNECTION_PROPERTIES_3.length),
+                new IUnlistedProperty[] { CAMO_STATE });
     }
 
     @Override
@@ -299,12 +304,8 @@ public class BlockPressureTube extends BlockPneumaticCraftModeled {
                 world.notifyNeighborsOfStateChange(pos, this, true);
             } else {
                 // drop the pipe as an item
-                if (!player.capabilities.isCreativeMode) {
-                    EntityItem entity = new EntityItem(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, new ItemStack(tube.criticalPressure <= PneumaticValues.MAX_PRESSURE_PRESSURE_TUBE ? Blockss.PRESSURE_TUBE : Blockss.ADVANCED_PRESSURE_TUBE));
-                    world.spawnEntity(entity);
-                    entity.onCollideWithPlayer(player);
-                }
-                ModInteractionUtils.getInstance().removeTube(getTE(world, pos));
+                if (!player.capabilities.isCreativeMode) dropBlockAsItem(world, pos, world.getBlockState(pos), 0);
+                world.setBlockToAir(pos);
             }
         } else {
             // close (or reopen) this side of the pipe

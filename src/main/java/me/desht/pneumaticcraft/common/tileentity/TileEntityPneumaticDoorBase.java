@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.common.tileentity;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticDoor;
 import me.desht.pneumaticcraft.common.block.Blockss;
-import me.desht.pneumaticcraft.common.inventory.CamoItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
@@ -12,28 +11,21 @@ import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemStackHandler;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 
 public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase
         implements IRedstoneControl, IMinWorkingPressure, ICamouflageableTE {
-    public static final int CAMO_SLOT = 0;
     public static final int INVENTORY_SIZE = 1;
 
     private TileEntityPneumaticDoor door;
     private TileEntityPneumaticDoorBase doubleDoor;
-    private IBlockState camoState;
     @DescSynced
     private boolean rightGoing;
     @DescSynced
@@ -43,18 +35,14 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase
     private boolean opening;
     public boolean wasPowered;
     @DescSynced
-    private ItemStackHandler inventory = new CamoItemStackHandler(this, INVENTORY_SIZE);
+    private ItemStack camoStack = ItemStack.EMPTY;
+    private IBlockState camoState;
     @GuiSynced
     public int redstoneMode;
 
     public TileEntityPneumaticDoorBase() {
         super(PneumaticValues.DANGER_PRESSURE_PNEUMATIC_DOOR, PneumaticValues.MAX_PRESSURE_PNEUMATIC_DOOR, PneumaticValues.VOLUME_PNEUMATIC_DOOR, 4);
         addApplicableUpgrade(EnumUpgrade.SPEED, EnumUpgrade.RANGE);
-    }
-
-    @Override
-    public IItemHandlerModifiable getPrimaryInventory() {
-        return inventory;
     }
 
     @Override
@@ -187,8 +175,8 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase
         opening = tag.getBoolean("opening");
         redstoneMode = tag.getInteger("redstoneMode");
         rightGoing = tag.getBoolean("rightGoing");
-        inventory.deserializeNBT(tag.getCompoundTag("Items"));
-        setCamouflage(inventory.getStackInSlot(CAMO_SLOT));
+        camoStack  = ICamouflageableTE.readCamoStackFromNBT(tag);
+        camoState = ICamouflageableTE.getStateForStack(camoStack);
     }
 
     @Override
@@ -198,7 +186,7 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase
         tag.setBoolean("opening", opening);
         tag.setInteger("redstoneMode", redstoneMode);
         tag.setBoolean("rightGoing", rightGoing);
-        tag.setTag("Items", inventory.serializeNBT());
+        ICamouflageableTE.writeCamoStackToNBT(camoStack, tag);
         return tag;
     }
 
@@ -226,22 +214,22 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase
     }
 
     @Override
-    public void setCamouflage(@Nonnull ItemStack stack) {
-        if (!stack.isEmpty() && stack.getItem() instanceof ItemBlock) {
-            camoState = ((ItemBlock)stack.getItem()).getBlock().getStateFromMeta(stack.getMetadata());
-        } else {
-            camoState = null;
-        }
-    }
-
-    @Override
-    public IItemHandler getCamoInventory() {
-        return inventory;
-    }
-
-    @Override
     public IBlockState getCamouflage() {
         return camoState;
+    }
+
+    @Override
+    public void setCamouflage(IBlockState state) {
+        camoState = state;
+        camoStack = ICamouflageableTE.getStackForState(state);
+        sendDescriptionPacket();
+        markDirty();
+    }
+
+    @Override
+    public void onDescUpdate() {
+        camoState = ICamouflageableTE.getStateForStack(camoStack);
+        rerenderTileEntity();
     }
 
     @Override

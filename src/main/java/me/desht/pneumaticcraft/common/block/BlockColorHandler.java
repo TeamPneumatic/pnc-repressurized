@@ -1,15 +1,15 @@
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.common.tileentity.TileEntityCompressedIronBlock;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityLiquidHopper;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityUVLightBox;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityVortexTube;
+import me.desht.pneumaticcraft.common.tileentity.*;
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.color.IBlockColor;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import java.util.stream.Collectors;
 
 @SideOnly(Side.CLIENT)
 public class BlockColorHandler {
@@ -45,19 +45,21 @@ public class BlockColorHandler {
         };
         Minecraft.getMinecraft().getBlockColors().registerBlockColorHandler(uvLightBoxLampColor, Blockss.UV_LIGHT_BOX);
 
-        final IBlockColor liquidHopperColor = (state, blockAccess, pos, tintIndex) -> {
-            if (blockAccess != null && pos != null) {
-                TileEntity te = blockAccess.getTileEntity(pos);
-                if (te instanceof TileEntityLiquidHopper) {
-                    FluidStack fluidStack = ((TileEntityLiquidHopper) te).getTank().getFluid();
-                    if (fluidStack != null && fluidStack.amount > 0) {
-                        return fluidStack.getFluid().getColor();
-                    }
-                }
+        final IBlockColor camoColor = (state, worldIn, pos, tintIndex) -> {
+            if (pos == null || worldIn == null) return 0xffffff;
+            TileEntity te = worldIn.getTileEntity(pos);
+            if (te instanceof ICamouflageableTE && ((ICamouflageableTE) te).getCamouflage() != null) {
+                return Minecraft.getMinecraft().getBlockColors().colorMultiplier(((ICamouflageableTE) te).getCamouflage(), te.getWorld(), pos, tintIndex);
+            } else {
+                return 0xffffff;
             }
-            return 0xFFFFFFFF;
         };
-        Minecraft.getMinecraft().getBlockColors().registerBlockColorHandler(liquidHopperColor, Blockss.LIQUID_HOPPER);
+
+        for (Block b : Blockss.blocks) {
+            if (b instanceof BlockPneumaticCraftCamo) {
+                Minecraft.getMinecraft().getBlockColors().registerBlockColorHandler(camoColor, b);
+            }
+        }
     }
 
 }

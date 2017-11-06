@@ -11,8 +11,8 @@ public class ContainerElevator extends ContainerPneumaticBase<TileEntityElevator
         addUpgradeSlots(23, 29);
 
         // Add the camo slots.
-        addSlotToContainer(new SlotCamouflage(te, 0, 77, 36));
-        addSlotToContainer(new SlotCamouflage(te, 1, 77, 55));
+//        addSlotToContainer(new SlotCamouflage(te, 0, 77, 36));
+//        addSlotToContainer(new SlotCamouflage(te, 1, 77, 55));
 
         addPlayerSlots(inventoryPlayer, 84);
 

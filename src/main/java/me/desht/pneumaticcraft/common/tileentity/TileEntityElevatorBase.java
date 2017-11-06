@@ -6,7 +6,6 @@ import me.desht.pneumaticcraft.api.tileentity.IAirListener;
 import me.desht.pneumaticcraft.common.block.BlockElevatorBase;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
-import me.desht.pneumaticcraft.common.inventory.CamoItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
@@ -22,7 +21,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -34,18 +32,12 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemStackHandler;
 import org.apache.commons.lang3.tuple.Pair;
 
-import javax.annotation.Nonnull;
 import java.util.*;
 
 public class TileEntityElevatorBase extends TileEntityPneumaticBase
         implements IGUITextFieldSensitive, IRedstoneControlled, IMinWorkingPressure, IAirListener, ICamouflageableTE {
-    private static final int INVENTORY_SIZE = 2;
-
     @DescSynced
     public boolean[] sidesConnected = new boolean[6];
     public float oldExtension;
@@ -64,10 +56,10 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     private HashMap<Integer, String> floorNames = new HashMap<>();
     @GuiSynced
     private int maxFloorHeight;
-    private int redstoneInputLevel; //current redstone input level
+    private int redstoneInputLevel; // current redstone input level
     @DescSynced
-    private ItemStackHandler inventory = new CamoItemStackHandler(this, INVENTORY_SIZE);
-    private IBlockState baseCamo, frameCamo;
+    private ItemStack camoStack = ItemStack.EMPTY;
+    private IBlockState camoState;
 
     public TileEntityElevatorBase() {
         super(PneumaticValues.DANGER_PRESSURE_ELEVATOR, PneumaticValues.MAX_PRESSURE_ELEVATOR, PneumaticValues.VOLUME_ELEVATOR, 4);
@@ -294,8 +286,8 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
         for (int i = 0; i < 6; i++) {
             sidesConnected[i] = tag.getBoolean("sideConnected" + i);
         }
-        inventory = new ItemStackHandler(INVENTORY_SIZE);
-        inventory.deserializeNBT(tag);
+        camoStack = ICamouflageableTE.readCamoStackFromNBT(tag);
+        camoState = ICamouflageableTE.getStateForStack(camoStack);
     }
 
     @Override
@@ -308,7 +300,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
         for (int i = 0; i < 6; i++) {
             tag.setBoolean("sideConnected" + i, sidesConnected[i]);
         }
-        tag.setTag("Items", inventory.serializeNBT());
+        ICamouflageableTE.writeCamoStackToNBT(camoStack, tag);
         return tag;
     }
 
@@ -377,8 +369,9 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     }
 
     @Override
-    protected boolean shouldRerenderChunkOnDescUpdate() {
-        return true;
+    public void onDescUpdate() {
+        camoState = ICamouflageableTE.getStateForStack(camoStack);
+        rerenderTileEntity();
     }
 
     public void updateConnections() {
@@ -403,10 +396,12 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     public void moveInventoryToThis() {
         TileEntity te = getWorld().getTileEntity(getPos().offset(EnumFacing.UP));
         if (te instanceof TileEntityElevatorBase) {
-            for (int i = 0; i < inventory.getSlots(); i++) {
-                inventory.setStackInSlot(i, ((TileEntityElevatorBase) te).inventory.getStackInSlot(i));
-                ((TileEntityElevatorBase) te).inventory.setStackInSlot(i, ItemStack.EMPTY);
-            }
+            camoStack = ((TileEntityElevatorBase) te).camoStack;
+            sendDescriptionPacket();
+//            for (int i = 0; i < inventory.getSlots(); i++) {
+//                inventory.setStackInSlot(i, ((TileEntityElevatorBase) te).inventory.getStackInSlot(i));
+//                ((TileEntityElevatorBase) te).inventory.setStackInSlot(i, ItemStack.EMPTY);
+//            }
         }
     }
 
@@ -647,11 +642,6 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     }
 
     @Override
-    public IItemHandlerModifiable getPrimaryInventory() {
-        return inventory;
-    }
-
-    @Override
     public int getRedstoneMode() {
         return redstoneMode;
     }
@@ -663,21 +653,15 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
 
     @Override
     public IBlockState getCamouflage() {
-        return baseCamo;
+        return camoState;
     }
 
     @Override
-    public void setCamouflage(@Nonnull ItemStack stack) {
-        if (!stack.isEmpty() && stack.getItem() instanceof ItemBlock) {
-            baseCamo = ((ItemBlock)stack.getItem()).getBlock().getStateFromMeta(stack.getMetadata());
-        } else {
-            baseCamo = null;
-        }
-    }
-
-    @Override
-    public IItemHandler getCamoInventory() {
-        return inventory;
+    public void setCamouflage(IBlockState state) {
+        camoState = state;
+        camoStack = ICamouflageableTE.getStackForState(state);
+        sendDescriptionPacket();
+        markDirty();
     }
 
     @Override

@@ -3,13 +3,11 @@ package me.desht.pneumaticcraft.common.tileentity;
 import me.desht.pneumaticcraft.common.block.BlockElevatorCaller;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 
@@ -39,18 +37,11 @@ public class TileEntityElevatorCaller extends TileEntityBase implements ICamoufl
         }
     }
 
-    public void setCamoStack(@Nonnull ItemStack stack) {
-        camoStack = stack;
-        sendDescriptionPacket();
-        markDirty();
-    }
-
     @Override
     public void onDescUpdate() {
-        setCamouflage(camoStack);
-        getWorld().markBlockRangeForRenderUpdate(getPos(), getPos());
+        camoState = ICamouflageableTE.getStateForStack(camoStack);
+        rerenderTileEntity();
     }
-
 
     public boolean getEmittingRedstone() {
         return emittingRedstone;
@@ -61,7 +52,8 @@ public class TileEntityElevatorCaller extends TileEntityBase implements ICamoufl
         super.readFromNBT(tag);
         emittingRedstone = tag.getBoolean("emittingRedstone");
         thisFloor = tag.getInteger("thisFloor");
-        camoStack = tag.hasKey("camoStack") ? new ItemStack(tag.getCompoundTag("camoStack")) : ItemStack.EMPTY;
+        camoStack = ICamouflageableTE.readCamoStackFromNBT(tag);
+        camoState = ICamouflageableTE.getStateForStack(camoStack);
         shouldUpdateNeighbors = tag.getBoolean("shouldUpdateNeighbors");
     }
 
@@ -70,11 +62,7 @@ public class TileEntityElevatorCaller extends TileEntityBase implements ICamoufl
         super.writeToNBT(tag);
         tag.setBoolean("emittingRedstone", emittingRedstone);
         tag.setInteger("thisFloor", thisFloor);
-        if (camoStack != ItemStack.EMPTY) {
-            NBTTagCompound camoTag = new NBTTagCompound();
-            camoStack.writeToNBT(camoTag);
-            tag.setTag("camoStack", camoTag);
-        }
+        ICamouflageableTE.writeCamoStackToNBT(camoStack, tag);
         tag.setBoolean("shouldUpdateNeighbors", shouldUpdateNeighbors);
         return tag;
     }
@@ -133,17 +121,11 @@ public class TileEntityElevatorCaller extends TileEntityBase implements ICamoufl
     }
 
     @Override
-    public void setCamouflage(@Nonnull ItemStack stack) {
-        if (!stack.isEmpty() && camoStack.getItem() instanceof ItemBlock) {
-            camoState = ((ItemBlock) camoStack.getItem()).getBlock().getStateFromMeta(stack.getMetadata());
-        } else {
-            camoState = null;
-        }
-    }
-
-    @Override
-    public IItemHandler getCamoInventory() {
-        return null;
+    public void setCamouflage(IBlockState state) {
+        camoState = state;
+        camoStack = ICamouflageableTE.getStackForState(state);
+        sendDescriptionPacket();
+        markDirty();
     }
 
     public static class ElevatorButton {

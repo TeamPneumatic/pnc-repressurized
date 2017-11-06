@@ -36,16 +36,31 @@ public class BlockElevatorCaller extends BlockPneumaticCraftCamo {
         if (te instanceof TileEntityElevatorCaller) {
             TileEntityElevatorCaller teEC = (TileEntityElevatorCaller) te;
             if (!world.isRemote) {
-                RayTraceResult mop = PneumaticCraftUtils.getEntityLookedObject(player);
-                if (mop != null && mop.subHit >= 0) {
-                    setSurroundingElevators(world, pos, mop.subHit);
-                } else if (player.isSneaking() && (player.getHeldItemMainhand().isEmpty() || player.getHeldItemMainhand().getItem() instanceof ItemBlock)) {
-                    teEC.setCamoStack(player.getHeldItemMainhand());
-                    return true;
-                }
+                int floor = getFloorForHit(teEC, side, hitX, hitY, hitZ);
+                if (floor >= 0) setSurroundingElevators(world, pos, floor);
             }
         }
         return getRotation(state).getOpposite() == side;
+    }
+
+    private int getFloorForHit(TileEntityElevatorCaller teEC, EnumFacing side, float hitX, float hitY, float hitZ) {
+        float x;
+        switch (side) {
+            case NORTH: x = hitX; break;
+            case SOUTH: x = 1.0f - hitX; break;
+            case EAST: x = hitZ; break;
+            case WEST: x = 1.0f - hitZ; break;
+            default: return -1;
+        }
+//        float x = side == EnumFacing.NORTH || side == EnumFacing.SOUTH ? hitX : hitZ;
+        float y = 1.0f - hitY;
+
+        for (TileEntityElevatorCaller.ElevatorButton button : teEC.getFloors()) {
+            if (x >= button.posX && x <= button.posX + button.width && y >= button.posY && y <= button.posY + button.height) {
+                return button.floorNumber;
+            }
+        }
+        return -1;
     }
 
     @Override

@@ -11,7 +11,7 @@ public class ContainerPneumaticDoor extends ContainerPneumaticBase<TileEntityPne
         addUpgradeSlots(23, 29);
 
         // Add the camo slot.
-        addSlotToContainer(new SlotCamouflage(te, TileEntityPneumaticDoorBase.CAMO_SLOT, 77, 36));
+//        addSlotToContainer(new SlotCamouflage(te, TileEntityPneumaticDoorBase.CAMO_SLOT, 77, 36));
 
         addPlayerSlots(inventoryPlayer, 84);
     }

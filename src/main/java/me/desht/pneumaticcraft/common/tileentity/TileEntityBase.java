@@ -192,7 +192,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     public void onBlockRotated() {
     }
 
-    public void rerenderChunk() {
+    public void rerenderTileEntity() {
         world.markBlockRangeForRenderUpdate(getPos(), getPos());
     }
 
@@ -255,7 +255,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
 
     @Override
     public void onDescUpdate() {
-        if (shouldRerenderChunkOnDescUpdate()) rerenderChunk();
+        if (shouldRerenderChunkOnDescUpdate()) rerenderTileEntity();
     }
 
     /**
@@ -592,6 +592,13 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
         if (getUpgradesInventory() != null) {
             for (int i = 0; i < getUpgradesInventory().getSlots(); i++) {
                 drops.add(getUpgradesInventory().getStackInSlot(i));
+            }
+        }
+
+        if (this instanceof ICamouflageableTE) {
+            IBlockState camoState = ((ICamouflageableTE) this).getCamouflage();
+            if (camoState != null) {
+                drops.add(ICamouflageableTE.getStackForState(camoState));
             }
         }
     }

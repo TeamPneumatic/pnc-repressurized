@@ -73,8 +73,9 @@ public class PneumaticValues {
     public static final int USAGE_UV_LIGHTBOX = 2; //mL per tick the UV light is on.
     public static final int USAGE_UNIVERSAL_SENSOR = 1;//mL per tick.
     public static final int USAGE_AERIAL_INTERFACE = 1; //mL per Tick;
-    public static final int USAGE_PNEUMATIC_WRENCH = 100;//mL per usage.
-    public static final int USAGE_LOGISTICS_CONFIGURATOR = 100;//mL per usage.
+    public static final int USAGE_PNEUMATIC_WRENCH = 50;//mL per usage.
+    public static final int USAGE_LOGISTICS_CONFIGURATOR = 50;//mL per usage.
+    public static final int USAGE_CAMO_APPLICATOR = 50;//mL per usage.
 
     public static final int PRODUCTION_COMPRESSOR = 10; // mL per tick
     public static final int PRODUCTION_ADVANCED_COMPRESSOR = 50; // mL per tick

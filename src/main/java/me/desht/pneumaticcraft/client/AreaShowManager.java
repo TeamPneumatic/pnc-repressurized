@@ -54,13 +54,21 @@ public class AreaShowManager {
         if (curItem.getItem() == Itemss.GPS_TOOL) {
             BlockPos gpsLocation = ItemGPSTool.getGPSLocation(curItem);
             if (gpsLocation != null) {
-                Set<BlockPos> set = new HashSet<BlockPos>();
+                Set<BlockPos> set = new HashSet<>();
                 set.add(gpsLocation);
                 GL11.glDisable(GL11.GL_DEPTH_TEST);
-                new AreaShowHandler(set, 0xFFFF00).render();
+                new AreaShowHandler(set, 0x90FFFF00).render();
+                GL11.glEnable(GL11.GL_DEPTH_TEST);
+            }
+        } else if (curItem.getItem() == Itemss.CAMO_APPLICATOR) {
+            Set<BlockPos> posSet = CamoTECache.getCamouflageableBlockPos(world, player);
+            if (!posSet.isEmpty()) {
+                GL11.glDisable(GL11.GL_DEPTH_TEST);
+                new AreaShowHandler(posSet, 0x2080FFFF, 1.0).render();
                 GL11.glEnable(GL11.GL_DEPTH_TEST);
             }
         }
+        if (curItem.getItem() != Itemss.CAMO_APPLICATOR) CamoTECache.clearCache();
 
         PlayerArmorInvWrapper armor = new PlayerArmorInvWrapper(player.inventory);
         ItemStack helmet = armor.getStackInSlot(3);
@@ -69,7 +77,7 @@ public class AreaShowManager {
                 droneDebugger = HUDHandler.instance().getSpecificRenderer(DroneDebugUpgradeHandler.class);
             Set<BlockPos> set = droneDebugger.getShowingPositions();
             GL11.glDisable(GL11.GL_DEPTH_TEST);
-            new AreaShowHandler(set, 0xFF0000).render();
+            new AreaShowHandler(set, 0x90FF0000).render();
             GL11.glEnable(GL11.GL_DEPTH_TEST);
         }
 
@@ -80,7 +88,7 @@ public class AreaShowManager {
     }
 
     public AreaShowHandler showArea(BlockPos[] area, int color, TileEntity areaShower) {
-        return showArea(new HashSet<BlockPos>(Arrays.asList(area)), color, areaShower);
+        return showArea(new HashSet<>(Arrays.asList(area)), color, areaShower);
     }
 
     public AreaShowHandler showArea(Set<BlockPos> area, int color, TileEntity areaShower) {

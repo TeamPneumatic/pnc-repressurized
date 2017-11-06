@@ -44,7 +44,7 @@ public class PacketShowArea extends LocationIntPacket<PacketShowArea> {
 
     @Override
     public void handleClientSide(PacketShowArea message, EntityPlayer player) {
-        AreaShowManager.getInstance().showArea(message.area, 0x00FFFF, message.getTileEntity(player.world));
+        AreaShowManager.getInstance().showArea(message.area, 0x9000FFFF, message.getTileEntity(player.world));
     }
 
     @Override

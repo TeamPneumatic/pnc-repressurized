@@ -17,6 +17,10 @@ public class RenderPressureTubeModule extends TileEntitySpecialRenderer<TileEnti
 
     @Override
     public void render(TileEntityPressureTube tile, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
+        if (tile.getCamouflage() != null) {
+            return;
+        }
+
         boolean holdingModule = Minecraft.getMinecraft().player.getHeldItemMainhand().getItem() instanceof ItemTubeModule;
         boolean render = false;
         for (int i = 0; i < tile.modules.length; i++) {

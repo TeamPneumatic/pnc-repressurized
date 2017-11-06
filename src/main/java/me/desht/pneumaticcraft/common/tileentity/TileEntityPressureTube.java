@@ -11,7 +11,9 @@ import me.desht.pneumaticcraft.common.thirdparty.ModInteractionUtils;
 import me.desht.pneumaticcraft.common.thirdparty.mcmultipart.IMultipartTE;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumFacing;
@@ -24,12 +26,15 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.util.Arrays;
 import java.util.List;
 
-public class TileEntityPressureTube extends TileEntityPneumaticBase implements IAirListener, IManoMeasurable, IMultipartTE {
+public class TileEntityPressureTube extends TileEntityPneumaticBase implements IAirListener, IManoMeasurable, IMultipartTE, ICamouflageableTE {
     @DescSynced
     public boolean[] sidesConnected = new boolean[6];
     @DescSynced
     public boolean[] sidesClosed = new boolean[6];
     public TubeModule[] modules = new TubeModule[6];
+    @DescSynced
+    private ItemStack camoStack = ItemStack.EMPTY;
+    private IBlockState camoState;
 
     private Object part;
 
@@ -57,6 +62,8 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
             sidesConnected[i] = nbt.getBoolean("sideConnected" + i);
             sidesClosed[i] = nbt.getBoolean("sideClosed" + i);
         }
+        camoStack = ICamouflageableTE.readCamoStackFromNBT(nbt);
+        camoState = ICamouflageableTE.getStateForStack(camoStack);
     }
 
     @Override
@@ -66,6 +73,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
             nbt.setBoolean("sideConnected" + i, sidesConnected[i]);
             nbt.setBoolean("sideClosed" + i, sidesClosed[i]);
         }
+        ICamouflageableTE.writeCamoStackToNBT(camoStack, nbt);
         return nbt;
     }
 
@@ -101,7 +109,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
             setModule(module, EnumFacing.getFront(moduleTag.getInteger("side")));
         }
         if (hasWorld() && getWorld().isRemote) {
-            rerenderChunk();
+            rerenderTileEntity();
         }
     }
 
@@ -251,6 +259,25 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     @Override
     public String getMultipartId() {
         return "pressure_tube";
+    }
+
+    @Override
+    public IBlockState getCamouflage() {
+        return camoState;
+    }
+
+    @Override
+    public void setCamouflage(IBlockState state) {
+        camoState = state;
+        camoStack = ICamouflageableTE.getStackForState(state);
+        sendDescriptionPacket();
+        markDirty();
+    }
+
+    @Override
+    public void onDescUpdate() {
+        camoState = ICamouflageableTE.getStateForStack(camoStack);
+        rerenderTileEntity();
     }
 
 //    @Override

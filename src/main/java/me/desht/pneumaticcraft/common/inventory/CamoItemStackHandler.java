@@ -28,9 +28,9 @@ public class CamoItemStackHandler extends FilteredItemStackHandler {
 
     @Override
     protected void onContentsChanged(int slot) {
-        te.setCamouflage(getStackInSlot(slot));
+        te.setCamouflage(ICamouflageableTE.getStateForStack(getStackInSlot(slot)));
         if (te instanceof TileEntityPneumaticBase) {
-            ((TileEntityPneumaticBase) te).rerenderChunk();
+            ((TileEntityPneumaticBase) te).rerenderTileEntity();
         }
     }
 }

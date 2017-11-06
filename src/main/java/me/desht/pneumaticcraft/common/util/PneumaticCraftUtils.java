@@ -26,6 +26,7 @@ import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -992,6 +993,19 @@ public class PneumaticCraftUtils {
     public static boolean consumeInventoryItem(InventoryPlayer inv, Item item) {
         for (int i = 0; i < inv.mainInventory.size(); ++i) {
             if (inv.mainInventory.get(i).getItem() == item) {
+                inv.mainInventory.get(i).shrink(1);
+                if (inv.mainInventory.get(i).getCount() <= 0) {
+                    inv.mainInventory.set(i, ItemStack.EMPTY);
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean consumeInventoryItem(InventoryPlayer inv, ItemStack item) {
+        for (int i = 0; i < inv.mainInventory.size(); ++i) {
+            if (ItemStack.areItemsEqual(inv.mainInventory.get(i), item)) {
                 inv.mainInventory.get(i).shrink(1);
                 if (inv.mainInventory.get(i).getCount() <= 0) {
                     inv.mainInventory.set(i, ItemStack.EMPTY);

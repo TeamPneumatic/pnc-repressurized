@@ -445,7 +445,7 @@ public class TileEntityProgrammer extends TileEntityBase implements IGUITextFiel
             if (w.getX() == widgetX && w.getY() == widgetY && w instanceof IAreaProvider) {
                 Set<BlockPos> area = new HashSet<BlockPos>();
                 ((IAreaProvider) w).getArea(area);
-                AreaShowManager.getInstance().showArea(area, 0x00FF00, this);
+                AreaShowManager.getInstance().showArea(area, 0x9000FF00, this);
             }
         }
         return true;

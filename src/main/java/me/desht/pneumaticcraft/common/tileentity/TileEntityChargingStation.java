@@ -17,7 +17,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -62,14 +61,14 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
         addApplicableUpgrade(EnumUpgrade.SPEED, EnumUpgrade.DISPENSER);
     }
 
-    public void setCamoStack(@Nonnull ItemStack stack) {
-        camoStack = stack;
-        sendDescriptionPacket();
-    }
+//    public void setCamoStack(@Nonnull ItemStack stack) {
+//        camoStack = stack;
+//        sendDescriptionPacket();
+//    }
 
     @Override
     public void onDescUpdate() {
-        setCamouflage(camoStack);
+        camoState = ICamouflageableTE.getStateForStack(camoStack);
         getWorld().markBlockRangeForRenderUpdate(getPos(), getPos());
     }
 
@@ -230,12 +229,8 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
             setChargeableInventory(new ChargeableItemHandler(this));
         }
 
-        if (tag.hasKey("camoStack")) {
-            camoStack = new ItemStack(tag.getCompoundTag("camoStack"));
-        } else {
-            camoStack = ItemStack.EMPTY;
-        }
-        setCamouflage(camoStack);
+        camoStack = ICamouflageableTE.readCamoStackFromNBT(tag);
+        camoState = ICamouflageableTE.getStateForStack(camoStack);
     }
 
     @Override
@@ -246,11 +241,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
         }
         tag.setInteger("redstoneMode", redstoneMode);
         tag.setTag("Items", inventory.serializeNBT());
-        if (!camoStack.isEmpty()) {
-            NBTTagCompound subTag = new NBTTagCompound();
-            camoStack.writeToNBT(subTag);
-            tag.setTag("camoStack", subTag);
-        }
+        ICamouflageableTE.writeCamoStackToNBT(camoStack, tag);
         return tag;
     }
 
@@ -303,17 +294,11 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     }
 
     @Override
-    public void setCamouflage(@Nonnull ItemStack stack) {
-        if (!stack.isEmpty() && camoStack.getItem() instanceof ItemBlock) {
-            camoState = ((ItemBlock) camoStack.getItem()).getBlock().getStateFromMeta(stack.getMetadata());
-        } else {
-            camoState = null;
-        }
-    }
-
-    @Override
-    public IItemHandler getCamoInventory() {
-        return null;
+    public void setCamouflage(IBlockState state) {
+        camoState = state;
+        camoStack = ICamouflageableTE.getStackForState(state);
+        sendDescriptionPacket();
+        markDirty();
     }
 
     private class ChargingStationHandler extends FilteredItemStackHandler {

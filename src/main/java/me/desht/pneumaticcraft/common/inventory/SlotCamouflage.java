@@ -11,7 +11,8 @@ public class SlotCamouflage extends SlotItemHandler {
     private final ICamouflageableTE te;
 
     public SlotCamouflage(ICamouflageableTE te, int index, int xPosition, int yPosition) {
-        super(te.getCamoInventory(), index, xPosition, yPosition);
+//        super(te.getCamoInventory(), index, xPosition, yPosition);
+        super(null, index, xPosition, yPosition);
         this.te = te;
     }
 

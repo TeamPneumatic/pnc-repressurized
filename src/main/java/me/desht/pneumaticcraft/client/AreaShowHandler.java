@@ -12,12 +12,18 @@ import java.util.Set;
 public class AreaShowHandler {
     private final Set<BlockPos> showingPositions;
     private final int color;
+    private final double size;
     private int renderList;
 
-    public AreaShowHandler(Set<BlockPos> area, int color) {
+    AreaShowHandler(Set<BlockPos> area, int color, double size) {
         showingPositions = area;
         this.color = color;
+        this.size = size;
         compileRenderList();
+    }
+
+    AreaShowHandler(Set<BlockPos> area, int color) {
+        this(area, color, 0.5);
     }
 
     private void compileRenderList() {
@@ -25,80 +31,82 @@ public class AreaShowHandler {
         GL11.glNewList(renderList, GL11.GL_COMPILE);
 
         BufferBuilder wr = Tessellator.getInstance().getBuffer();
-        RenderUtils.glColorHex(color, 150);
+        RenderUtils.glColorHex(color);
         wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
 
+        double start = (1 - size) / 2.0;
+        
         for (BlockPos pos : showingPositions) {
-            wr.setTranslation(pos.getX() + 0.25F, pos.getY() + 0.25F, pos.getZ() + 0.25F);
+            wr.setTranslation(pos.getX() + start, pos.getY() + start, pos.getZ() + start);
 
             wr.pos(0, 0, 0).endVertex();
-            wr.pos(0, 0.5, 0).endVertex();
-            wr.pos(0.5, 0.5, 0).endVertex();
-            wr.pos(0.5, 0, 0).endVertex();
+            wr.pos(0, size, 0).endVertex();
+            wr.pos(size, size, 0).endVertex();
+            wr.pos(size, 0, 0).endVertex();
 
-            wr.pos(0.5, 0, 0.5).endVertex();
-            wr.pos(0.5, 0.5, 0.5).endVertex();
-            wr.pos(0, 0.5, 0.5).endVertex();
-            wr.pos(0, 0, 0.5).endVertex();
-
-            wr.pos(0, 0, 0).endVertex();
-            wr.pos(0, 0, 0.5).endVertex();
-            wr.pos(0, 0.5, 0.5).endVertex();
-            wr.pos(0, 0.5, 0).endVertex();
-
-            wr.pos(0.5, 0.5, 0).endVertex();
-            wr.pos(0.5, 0.5, 0.5).endVertex();
-            wr.pos(0.5, 0, 0.5).endVertex();
-            wr.pos(0.5, 0, 0).endVertex();
+            wr.pos(size, 0, size).endVertex();
+            wr.pos(size, size, size).endVertex();
+            wr.pos(0, size, size).endVertex();
+            wr.pos(0, 0, size).endVertex();
 
             wr.pos(0, 0, 0).endVertex();
-            wr.pos(0.5, 0, 0).endVertex();
-            wr.pos(0.5, 0, 0.5).endVertex();
-            wr.pos(0, 0, 0.5).endVertex();
+            wr.pos(0, 0, size).endVertex();
+            wr.pos(0, size, size).endVertex();
+            wr.pos(0, size, 0).endVertex();
 
-            wr.pos(0, 0.5, 0.5).endVertex();
-            wr.pos(0.5, 0.5, 0.5).endVertex();
-            wr.pos(0.5, 0.5, 0).endVertex();
-            wr.pos(0, 0.5, 0).endVertex();
+            wr.pos(size, size, 0).endVertex();
+            wr.pos(size, size, size).endVertex();
+            wr.pos(size, 0, size).endVertex();
+            wr.pos(size, 0, 0).endVertex();
+
+            wr.pos(0, 0, 0).endVertex();
+            wr.pos(size, 0, 0).endVertex();
+            wr.pos(size, 0, size).endVertex();
+            wr.pos(0, 0, size).endVertex();
+
+            wr.pos(0, size, size).endVertex();
+            wr.pos(size, size, size).endVertex();
+            wr.pos(size, size, 0).endVertex();
+            wr.pos(0, size, 0).endVertex();
         }
 
         Tessellator.getInstance().draw();
 
         wr.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION);
-        RenderUtils.glColorHex(0, 150);
+        RenderUtils.glColorHex(0X202020, 128);
 
         for (BlockPos pos : showingPositions) {
-            wr.setTranslation(pos.getX() + 0.25F, pos.getY() + 0.25F, pos.getZ() + 0.25F);
+            wr.setTranslation(pos.getX() + start, pos.getY() + start, pos.getZ() + start);
 
             wr.pos(0, 0, 0).endVertex();
-            wr.pos(0, 0.5, 0).endVertex();
-            wr.pos(0.5, 0.5, 0).endVertex();
-            wr.pos(0.5, 0, 0).endVertex();
+            wr.pos(0, size, 0).endVertex();
+            wr.pos(size, size, 0).endVertex();
+            wr.pos(size, 0, 0).endVertex();
 
-            wr.pos(0.5, 0, 0.5).endVertex();
-            wr.pos(0.5, 0.5, 0.5).endVertex();
-            wr.pos(0, 0.5, 0.5).endVertex();
-            wr.pos(0, 0, 0.5).endVertex();
-
-            wr.pos(0, 0, 0).endVertex();
-            wr.pos(0, 0, 0.5).endVertex();
-            wr.pos(0, 0.5, 0.5).endVertex();
-            wr.pos(0, 0.5, 0).endVertex();
-
-            wr.pos(0.5, 0.5, 0).endVertex();
-            wr.pos(0.5, 0.5, 0.5).endVertex();
-            wr.pos(0.5, 0, 0.5).endVertex();
-            wr.pos(0.5, 0, 0).endVertex();
+            wr.pos(size, 0, size).endVertex();
+            wr.pos(size, size, size).endVertex();
+            wr.pos(0, size, size).endVertex();
+            wr.pos(0, 0, size).endVertex();
 
             wr.pos(0, 0, 0).endVertex();
-            wr.pos(0.5, 0, 0).endVertex();
-            wr.pos(0.5, 0, 0.5).endVertex();
-            wr.pos(0, 0, 0.5).endVertex();
+            wr.pos(0, 0, size).endVertex();
+            wr.pos(0, size, size).endVertex();
+            wr.pos(0, size, 0).endVertex();
 
-            wr.pos(0, 0.5, 0.5).endVertex();
-            wr.pos(0.5, 0.5, 0.5).endVertex();
-            wr.pos(0.5, 0.5, 0).endVertex();
-            wr.pos(0, 0.5, 0).endVertex();
+            wr.pos(size, size, 0).endVertex();
+            wr.pos(size, size, size).endVertex();
+            wr.pos(size, 0, size).endVertex();
+            wr.pos(size, 0, 0).endVertex();
+
+            wr.pos(0, 0, 0).endVertex();
+            wr.pos(size, 0, 0).endVertex();
+            wr.pos(size, 0, size).endVertex();
+            wr.pos(0, 0, size).endVertex();
+
+            wr.pos(0, size, size).endVertex();
+            wr.pos(size, size, size).endVertex();
+            wr.pos(size, size, 0).endVertex();
+            wr.pos(0, size, 0).endVertex();
         }
 
         wr.setTranslation(0, 0, 0);

@@ -1,7 +1,12 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
@@ -20,17 +25,41 @@ public interface ICamouflageableTE {
     IBlockState getCamouflage();
 
     /**
-     * Set the camouflage item for the tile entity.
+     * Set the camouflage for the tile entity.  The tile entity should sync this state to the client, and force
+     * any necessary re-rendering.  Storing the state as an ItemStack may be useful, since ItemStacks can be
+     * marked as @DescSynced.
      *
-     * @param stack the itemstack to use
+     * @param state the camo block state
      */
-    void setCamouflage(@Nonnull ItemStack stack);
+    void setCamouflage(IBlockState state);
 
     /**
-     * Get the item handler object which holds the camo item(s).  May be null if this TE doesn't store camo items
-     * in an item handler.
+     * Convenience method: get the itemstack for the given block state.
      *
-     * @return the item handler
+     * @param state
+     * @return
      */
-    IItemHandler getCamoInventory();
+    static ItemStack getStackForState(IBlockState state) {
+        return state == null ? ItemStack.EMPTY : new ItemStack(state.getBlock(), 1, state.getBlock().getMetaFromState(state));
+    }
+
+    static IBlockState getStateForStack(ItemStack stack) {
+        if (stack.getItem() instanceof ItemBlock) {
+            Block b = ((ItemBlock) stack.getItem()).getBlock();
+            return b.getStateFromMeta(stack.getMetadata());
+        }
+        return null;
+    }
+
+    static ItemStack readCamoStackFromNBT(NBTTagCompound tag) {
+        return tag.hasKey("camoStack") ? new ItemStack(tag.getCompoundTag("camoStack")) : ItemStack.EMPTY;
+    }
+
+    static void writeCamoStackToNBT(ItemStack camoStack, NBTTagCompound tag) {
+        if (camoStack != ItemStack.EMPTY) {
+            NBTTagCompound camoTag = new NBTTagCompound();
+            camoStack.writeToNBT(camoTag);
+            tag.setTag("camoStack", camoTag);
+        }
+    }
 }

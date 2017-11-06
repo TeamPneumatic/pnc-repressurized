@@ -52,14 +52,14 @@ public class BlockChargingStation extends BlockPneumaticCraftCamo {
 
     @Override
     public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float par7, float par8, float par9) {
-        if (!world.isRemote && player.isSneaking()) {
-            TileEntity te = world.getTileEntity(pos);
-            if (te instanceof TileEntityChargingStation) {
-                TileEntityChargingStation teCS = (TileEntityChargingStation) te;
-                teCS.setCamoStack(player.getHeldItemMainhand());
-                return true;
-            }
-        }
+//        if (!world.isRemote && player.isSneaking()) {
+//            TileEntity te = world.getTileEntity(pos);
+//            if (te instanceof TileEntityChargingStation) {
+//                TileEntityChargingStation teCS = (TileEntityChargingStation) te;
+//                teCS.setCamoStack(player.getHeldItemMainhand());
+//                return true;
+//            }
+//        }
         return super.onBlockActivated(world, pos, state, player, hand, side, par7, par8, par9);
     }
 
