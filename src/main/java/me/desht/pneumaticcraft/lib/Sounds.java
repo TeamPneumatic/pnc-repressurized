@@ -57,7 +57,7 @@ public class Sounds {
                 buildSound("interface_door"),
                 buildSound("elevator_rising_start"),
                 buildSound("elevator_rising_stop"),
-                buildSound("elevator_moving"),
+                buildSound("elevator_rising"),
                 buildSound("helmet_hack_finish"),
                 buildSound("hud_init"),
                 buildSound("hud_init_complete"),
