@@ -155,7 +155,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
 
             if (soundCounter > 0) soundCounter--;
             if (soundName != null && getWorld().isRemote && soundCounter == 0) {
-                getWorld().playSound(getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5, soundName, SoundCategory.BLOCKS, 0.1F, 1.0F, true);
+                getWorld().playSound(getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5, soundName, SoundCategory.BLOCKS, 0.5F, 1.0F, true);
                 soundCounter = 10;
             }
 
