@@ -10,7 +10,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public abstract class EntityDroneBase extends EntityCreature {
     public float oldPropRotation;
     public float propRotation;
-    public float laserExtension; //How far the laser comes out of the drone. 1F is fully extended
+    public float laserExtension; // How far the laser comes out of the drone. 1F is fully extended
     public float oldLaserExtension;
     @SideOnly(Side.CLIENT)
     protected RenderLaser digLaser;

@@ -75,6 +75,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.IFluidTank;
@@ -172,9 +173,10 @@ public class EntityDrone extends EntityDroneBase
     }
 
     private void initializeFakePlayer() {
-        fakePlayer = new DroneFakePlayer((WorldServer) world,
+        fakePlayer = new DroneFakePlayer(
+                (WorldServer) world,
                 new GameProfile(playerUUID != null ? UUID.fromString(playerUUID) : null, playerName),
-                new FakePlayerItemInWorldManager(world, fakePlayer, this), this);
+                this);
         fakePlayer.connection = new NetHandlerPlayServer(FMLCommonHandler.instance().getMinecraftServerInstance(), new NetworkManager(EnumPacketDirection.SERVERBOUND), fakePlayer);
         fakePlayer.inventory = new InventoryFakePlayer(fakePlayer);
     }
@@ -371,7 +373,7 @@ public class EntityDrone extends EntityDroneBase
         oldPropRotation = propRotation;
         propRotation += propSpeed;
 
-        if (!world.isRemote && isEntityAlive()/*((FakePlayerItemInWorldManager)fakePlayer.theItemInWorldManager).isDigging()*/) {
+        if (!world.isRemote && isEntityAlive()) {
             for (int i = 0; i < 4; i++) {
                 getFakePlayer().interactionManager.updateBlockRemoving();
             }
@@ -656,7 +658,7 @@ public class EntityDrone extends EntityDroneBase
                 }
             }
         }
-        if (!world.isRemote) ((FakePlayerItemInWorldManager) getFakePlayer().interactionManager).cancelDigging();
+        if (!world.isRemote) getFakePlayer().interactionManager.cancelDestroyingBlock();
         super.onDeath(par1DamageSource);
     }
 
@@ -680,7 +682,6 @@ public class EntityDrone extends EntityDroneBase
     @Override
     public float getPressure(ItemStack iStack) {
         return dataManager.get(PRESSURE);
-//        return dataWatcher.getWatchableObjectFloat(12);
     }
 
     @Override
@@ -688,7 +689,6 @@ public class EntityDrone extends EntityDroneBase
         if (!world().isRemote) {
             currentAir += amount;
             dataManager.set(PRESSURE, currentAir / volume);
-//            dataWatcher.updateObject(12, currentAir / volume);
         }
     }
 
@@ -702,11 +702,6 @@ public class EntityDrone extends EntityDroneBase
         if (hasCustomName()) curInfo.add(TextFormatting.AQUA + getCustomNameTag());
         curInfo.add("Owner: " + getFakePlayer().getName());
         curInfo.add("Current pressure: " + PneumaticCraftUtils.roundNumberTo(getPressure(null), 1) + " bar.");
-        /*for(int i = 0; i < 9; i++) {
-            if(upgradeInventory[i] != null) {
-                player.addChatMessage("inv " + i + ": " + upgradeInventory[i].stackSize + "x " + upgradeInventory[i].getDisplayName());
-            }
-        }*/
     }
 
     @Override
@@ -939,12 +934,12 @@ public class EntityDrone extends EntityDroneBase
         }
     }
 
-    public static class DroneFakePlayer extends EntityPlayerMP {
+    public static class DroneFakePlayer extends FakePlayer {
         private final IDroneBase drone;
         private boolean sneaking;
 
-        public DroneFakePlayer(WorldServer world, GameProfile name, PlayerInteractionManager interactionManager, IDroneBase drone) {
-            super(FMLCommonHandler.instance().getMinecraftServerInstance(), world, name, interactionManager);
+        public DroneFakePlayer(WorldServer world, GameProfile name, IDroneBase drone) {
+            super(world, name);
             this.drone = drone;
         }
 
@@ -953,11 +948,6 @@ public class EntityDrone extends EntityDroneBase
             Vec3d pos = drone.getDronePos();
             EntityXPOrb orb = new EntityXPOrb(drone.world(), pos.x, pos.y, pos.z, amount);
             drone.world().spawnEntity(orb);
-        }
-
-        @Override
-        public boolean canUseCommand(int permLevel, String commandName) {
-            return false;
         }
 
         @Nonnull
@@ -976,39 +966,6 @@ public class EntityDrone extends EntityDroneBase
             if (slotIn == EntityEquipmentSlot.MAINHAND) {
                 drone.getInv().setStackInSlot(0, stack);
             }
-        }
-
-        @Override
-        public void sendStatusMessage(ITextComponent chatComponent, boolean actionBar) {
-            // do nothing
-        }
-
-        @Override
-        public void addStat(StatBase par1StatBase, int par2) {
-        }
-
-        @Override
-        public void openGui(Object mod, int modGuiId, World world, int x, int y, int z) {
-        }
-
-        @Override
-        public boolean canAttackPlayer(EntityPlayer player) {
-            return false;
-        }
-
-        @Override
-        public void onDeath(DamageSource source) {
-            return;
-        }
-
-        @Override
-        public void onUpdate() {
-            return;
-        }
-
-        @Override
-        public Entity changeDimension(int dim) {
-            return this;
         }
 
         @Override

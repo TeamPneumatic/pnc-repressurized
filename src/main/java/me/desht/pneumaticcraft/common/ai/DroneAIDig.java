@@ -2,11 +2,13 @@ package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.Reflections;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.management.PlayerInteractionManager;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
@@ -72,7 +74,8 @@ public class DroneAIDig extends DroneAIBlockInteraction {
 
     @Override
     protected boolean doBlockInteraction(BlockPos pos, double distToBlock) {
-        if (!((FakePlayerItemInWorldManager) drone.getFakePlayer().interactionManager).isDigging() || !((FakePlayerItemInWorldManager) drone.getFakePlayer().interactionManager).isAcknowledged()) {
+        PlayerInteractionManager manager = drone.getFakePlayer().interactionManager;
+        if (!Reflections.isDestroyingBlock(manager) || !Reflections.isAcknowledged(manager)) {
             IBlockState blockState = worldCache.getBlockState(pos);
             Block block = blockState.getBlock();
             if (!ignoreBlock(block) && isBlockValidForFilter(worldCache, drone, pos, widget)) {
@@ -82,9 +85,9 @@ public class DroneAIDig extends DroneAIBlockInteraction {
                     drone.setDugBlock(null);
                     return false;
                 }
-                FakePlayerItemInWorldManager manager = (FakePlayerItemInWorldManager) drone.getFakePlayer().interactionManager;
                 manager.onBlockClicked(pos, EnumFacing.DOWN);
-                if (!manager.isAccepted) {
+                manager.blockRemoving(pos);
+                if (!Reflections.isDestroyingBlock(manager)) {
                     addToBlacklist(pos);
                     drone.addDebugEntry("gui.progWidget.dig.debug.cantDigBlock", pos);
                     drone.setDugBlock(null);

@@ -10,14 +10,11 @@ import net.minecraftforge.fml.client.registry.IRenderFactory;
 import org.lwjgl.opengl.GL11;
 
 public class RenderDrone extends RenderLiving<EntityDroneBase> {
-//    private final ModelDrone model;
-
     public static final IRenderFactory<EntityDroneBase> REGULAR_FACTORY = manager -> new RenderDrone(manager, false);
     public static final IRenderFactory<EntityDroneBase> LOGISTICS_FACTORY = manager -> new RenderDrone(manager, true);
 
     public RenderDrone(RenderManager manager, boolean isLogisticsDrone) {
         super(manager, new ModelDrone(isLogisticsDrone), 0);
-//        model = new ModelDrone(isLogisticsDrone);
     }
 
     private void renderDrone(EntityDroneBase drone, double x, double y, double z, float yaw, float partialTicks) {

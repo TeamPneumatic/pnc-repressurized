@@ -6,7 +6,6 @@ import me.desht.pneumaticcraft.api.drone.IPathNavigator;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
-import me.desht.pneumaticcraft.common.ai.FakePlayerItemInWorldManager;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.entity.EntityProgrammableController;
@@ -61,7 +60,6 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
     private DroneAIManager aiManager;
     private DroneFakePlayer fakePlayer;
     private ItemStackHandler droneItems;
-//    private final Map<String, IExtendedEntityProperties> properties = new HashMap<String, IExtendedEntityProperties>();
     private List<IProgWidget> progWidgets = new ArrayList<IProgWidget>();
     private final int[] redstoneLevels = new int[6];
     private String droneName = "";
@@ -149,11 +147,6 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
                 getWorld().spawnEntity(drone);
             }
             drone.setPosition(curX, curY, curZ);
-            // drone.getMoveHelper().setMoveTo(curX, curY, curZ, 0);
-            /*   drone.prevPosX = oldCurX;
-            drone.prevPosY = oldCurY;
-            drone.prevPosZ = oldCurZ;*/
-            //drone.getMoveHelper().setMoveTo(curX, curY, curZ, getSpeed());
         }
     }
 
@@ -171,7 +164,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
 
     private void initializeFakePlayer() {
         String playerName = "Drone";
-        fakePlayer = new DroneFakePlayer((WorldServer) getWorld(), new GameProfile(null, playerName), new FakePlayerItemInWorldManager(getWorld(), fakePlayer, this), this);
+        fakePlayer = new DroneFakePlayer((WorldServer) getWorld(), new GameProfile(null, playerName), this);
         fakePlayer.connection = new NetHandlerPlayServer(FMLCommonHandler.instance().getMinecraftServerInstance(), new NetworkManager(EnumPacketDirection.SERVERBOUND), fakePlayer);
         fakePlayer.inventory = new InventoryPlayer(fakePlayer) {
             private ItemStack oldStack;
@@ -257,18 +250,6 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
         tank.readFromNBT(tag.getCompoundTag("tank"));
         droneItems = new ItemStackHandler(getDroneSlots());
         droneItems.deserializeNBT(tag.getCompoundTag("droneItems"));
-
-//        NBTTagList extendedList = tag.getTagList("extendedProperties", 10);
-//        for (int i = 0; i < extendedList.tagCount(); ++i) {
-//            NBTTagCompound propertyTag = extendedList.getCompoundTagAt(i);
-//            String key = propertyTag.getString("key");
-//            IExtendedEntityProperties property = properties.get(key);
-//            if (property != null) {
-//                property.loadNBTData(propertyTag);
-//            } else {
-//                Log.warning("Extended entity property \"" + key + "\" doesn't exist in a Programmable Controller");
-//            }
-//        }
     }
 
     @Override
@@ -286,15 +267,6 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
             handler.setStackInSlot(i, getFakePlayer().inventory.getStackInSlot(i));
         }
         tag.setTag("droneItems", handler.serializeNBT());
-
-//        NBTTagList extendedList = new NBTTagList();
-//        for (Map.Entry<String, IExtendedEntityProperties> entry : properties.entrySet()) {
-//            NBTTagCompound propertyTag = new NBTTagCompound();
-//            propertyTag.setString("key", entry.getKey());
-//            entry.getValue().saveNBTData(propertyTag);
-//            extendedList.appendTag(propertyTag);
-//        }
-//        tag.setTag("extendedProperties", extendedList);
 
         return tag;
     }
@@ -484,16 +456,6 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
         return null;
     }
 
-//    @Override
-//    public IExtendedEntityProperties getProperty(String key) {
-//        return properties.get(key);
-//    }
-//
-//    @Override
-//    public void setProperty(String key, IExtendedEntityProperties property) {
-//        properties.put(key, property);
-//    }
-
     @Override
     public void setEmittingRedstone(EnumFacing orientation, int emittingRedstone) {
         redstoneLevels[orientation.ordinal()] = emittingRedstone;
@@ -535,42 +497,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
 
     @Override
     public void onItemPickupEvent(EntityItem curPickingUpEntity, int stackSize) {
-
     }
-
-    /*
-     * Liquid handling
-     */
-//
-//    @Override
-//    public int fill(EnumFacing from, FluidStack resource, boolean doFill) {
-//        return tank.fill(resource, doFill);
-//    }
-//
-//    @Override
-//    public FluidStack drain(EnumFacing from, FluidStack resource, boolean doDrain) {
-//        return tank.getFluid() != null && tank.getFluid().isFluidEqual(resource) ? tank.drain(resource.amount, doDrain) : null;
-//    }
-//
-//    @Override
-//    public FluidStack drain(EnumFacing from, int maxDrain, boolean doDrain) {
-//        return tank.drain(maxDrain, doDrain);
-//    }
-//
-//    @Override
-//    public boolean canFill(EnumFacing from, Fluid fluid) {
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean canDrain(EnumFacing from, Fluid fluid) {
-//        return true;
-//    }
-//
-//    @Override
-//    public FluidTankInfo[] getTankInfo(EnumFacing from) {
-//        return new FluidTankInfo[]{new FluidTankInfo(tank)};
-//    }
 
     @Override
     public void overload() {
@@ -582,7 +509,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
     @Override
     public DroneAIManager getAIManager() {
         if (aiManager == null && !getWorld().isRemote) {
-            aiManager = new DroneAIManager(this, new ArrayList<IProgWidget>());
+            aiManager = new DroneAIManager(this, new ArrayList<>());
             aiManager.setWidgets(getProgWidgets());
             aiManager.dontStopWhenEndReached();
         }
