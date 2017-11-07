@@ -64,7 +64,7 @@ public class AreaShowManager {
             Set<BlockPos> posSet = CamoTECache.getCamouflageableBlockPos(world, player);
             if (!posSet.isEmpty()) {
                 GL11.glDisable(GL11.GL_DEPTH_TEST);
-                new AreaShowHandler(posSet, 0x2080FFFF, 1.0).render();
+                new AreaShowHandler(posSet, 0x2080FFFF, 0.75).render();
                 GL11.glEnable(GL11.GL_DEPTH_TEST);
             }
         }

@@ -73,7 +73,7 @@ public class AreaShowHandler {
         Tessellator.getInstance().draw();
 
         wr.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION);
-        RenderUtils.glColorHex(0X202020, 128);
+        RenderUtils.glColorHex(0X404040, 128);
 
         for (BlockPos pos : showingPositions) {
             wr.setTranslation(pos.getX() + start, pos.getY() + start, pos.getZ() + start);

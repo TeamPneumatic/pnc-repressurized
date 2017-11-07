@@ -20,7 +20,7 @@ class CamoTECache {
         if (lastPlayerPos == null || teSet == null || entityIn.getDistanceSq(lastPlayerPos) > 9) {
             lastPlayerPos = entityIn.getPosition();
             teSet = worldIn.loadedTileEntityList.stream()
-                    .filter(te -> te instanceof ICamouflageableTE && te.getPos().distanceSq(entityIn.posX, entityIn.posY, entityIn.posZ) < 100
+                    .filter(te -> te instanceof ICamouflageableTE && te.getPos().distanceSq(entityIn.posX, entityIn.posY, entityIn.posZ) < 144
                     )
                     .map(TileEntity::getPos)
                     .collect(Collectors.toSet());
