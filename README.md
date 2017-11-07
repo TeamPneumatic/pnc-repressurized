@@ -90,4 +90,11 @@ Features & enhancements tracked for beta release: https://github.com/desht/pnc-r
 
 Features & enhancements tracked for post-beta: https://github.com/desht/pnc-repressurized/milestone/3
 
+### Other Stuff
+
+PneumaticCraft: Repressurized is licensed under the GNU GPLv3: https://www.gnu.org/licenses/gpl-3.0.en.html
+
+PneumaticCraft: Repressurized also includes the following free sound resources, which are licensed separately:
+
+* https://freesound.org/people/ThompsonMan/sounds/237245/ (CC BY 3.0)
 
