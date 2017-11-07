@@ -2,12 +2,10 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorBase;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorCaller;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumFacing.Axis;
@@ -52,7 +50,6 @@ public class BlockElevatorCaller extends BlockPneumaticCraftCamo {
             case WEST: x = 1.0f - hitZ; break;
             default: return -1;
         }
-//        float x = side == EnumFacing.NORTH || side == EnumFacing.SOUTH ? hitX : hitZ;
         float y = 1.0f - hitY;
 
         for (TileEntityElevatorCaller.ElevatorButton button : teEC.getFloors()) {
@@ -123,6 +120,11 @@ public class BlockElevatorCaller extends BlockPneumaticCraftCamo {
 
         setBlockBounds(FULL_BLOCK_AABB);
         return rayTrace;
+    }
+
+    @Override
+    protected boolean doesCamoOverrideBounds() {
+        return false;  // need to be able to highlight the buttons
     }
 
     public static void setSurroundingElevators(World world, BlockPos pos, int floor) {

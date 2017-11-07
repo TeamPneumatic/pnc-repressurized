@@ -33,6 +33,16 @@ public abstract class BlockPneumaticCraftCamo extends BlockPneumaticCraftModeled
         super(par2Material, registryName);
     }
 
+    /**
+     * When camouflaged, should getBoundingBox() return the bounding box of the camo block?  Override this
+     * to return false if the subclass needs to be able to highlight subsections, e.g. elevator caller buttons
+     *
+     * @return true if camouflage block's bounding box should always be used
+     */
+    protected boolean doesCamoOverrideBounds() {
+        return true;
+    }
+
     @Override
     protected BlockStateContainer createBlockState() {
         return isRotatable() ?
@@ -60,7 +70,7 @@ public abstract class BlockPneumaticCraftCamo extends BlockPneumaticCraftModeled
     @Override
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
         IBlockState camo = getCamoState(source, pos);
-        return camo != null ? camo.getBoundingBox(source, pos) : super.getBoundingBox(state, source, pos);
+        return camo != null && doesCamoOverrideBounds() ? camo.getBoundingBox(source, pos) : super.getBoundingBox(state, source, pos);
     }
 
     @Nullable
