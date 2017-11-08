@@ -72,7 +72,7 @@ public class BlockHeatSink extends BlockPneumaticCraftModeled {
     @Override
     public void onEntityCollidedWithBlock(World world, BlockPos pos, IBlockState state, Entity entity) {
         TileEntity te = world.getTileEntity(pos);
-        if (te instanceof TileEntityHeatSink) {
+        if (te instanceof TileEntityHeatSink && entity instanceof EntityLivingBase) {
             IHeatExchangerLogic heat = ((TileEntityHeatSink) te).getHeatExchangerLogic(null);
             int temp = (int) ((TileEntityHeatSink) te).getHeatExchangerLogic(null).getTemperature();
             if (temp > 323) { // +50C
@@ -80,7 +80,7 @@ public class BlockHeatSink extends BlockPneumaticCraftModeled {
                 if (temp > 373) { // +100C
                     entity.setFire(3);
                 }
-            } else if (temp < 243 && entity instanceof EntityLivingBase) { // -30C
+            } else if (temp < 243) { // -30C
                 int durationSec = (243 - (int)heat.getTemperature()) / 10;
                 int amplifier = (243 - (int) heat.getTemperature()) / 80;
                 ((EntityLivingBase) entity).addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, durationSec * 20, amplifier));
