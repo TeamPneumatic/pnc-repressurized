@@ -26,6 +26,9 @@ import java.util.Map;
 public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implements IRedstoneControlled, ISerializableTanks {
     public static final int INVENTORY_SIZE = 2;
 
+    private static final int INPUT_SLOT = 0;
+    private static final int OUTPUT_SLOT = 1;
+
     @GuiSynced
     private final FluidTank tank = new FluidTank(PneumaticValues.NORMAL_TANK_CAPACITY);
     private final ItemStackHandler inventory = new FilteredItemStackHandler(INVENTORY_SIZE) {
@@ -72,7 +75,7 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
         super.update();
 
         if (!getWorld().isRemote) {
-            processFluidItem(0, 1);
+            processFluidItem(INPUT_SLOT, OUTPUT_SLOT);
 
             isProducing = false;
             if (redstoneAllows()) {

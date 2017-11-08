@@ -6,11 +6,13 @@ import dan200.computercraft.api.peripheral.IComputerAccess;
 import dan200.computercraft.api.peripheral.IPeripheral;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
+import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
 import me.desht.pneumaticcraft.common.inventory.SyncedField;
+import me.desht.pneumaticcraft.common.item.ItemMachineUpgrade;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.ILuaMethod;
@@ -48,10 +50,7 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Optional.InterfaceList({@Optional.Interface(iface = "dan200.computercraft.api.peripheral.IPeripheral", modid = ModIds.COMPUTERCRAFT)})
 public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, IDescSynced, ITickable, IUpgradeAcceptor, IPeripheral {
@@ -163,6 +162,8 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
         firstRun = false;
 
         if (!world.isRemote) {
+            upgradeCache.validate();
+
             if (this instanceof IHeatExchanger) {
                 ((IHeatExchanger) this).getHeatExchangerLogic(null).update();
             }
@@ -239,7 +240,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
         if (tag.hasKey("Upgrades") && upgradeHandler != null) {
             upgradeHandler = new UpgradeHandler(upgradeHandler.getSlots());
             upgradeHandler.deserializeNBT(tag.getCompoundTag("Upgrades"));
-            upgradeCache.cacheUpgrades();
+            upgradeCache.validate();
         }
         readFromPacket(tag);
         if (this instanceof IHeatExchanger) {
@@ -290,7 +291,6 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
 
     public int getUpgrades(EnumUpgrade upgrade) {
         return upgradeCache.getUpgrades(upgrade);
-//        return getUpgrades(Itemss.upgrades.get(upgrade));
     }
 
     public static int getUpgrades(IItemHandler inv, EnumUpgrade upgrade) {
@@ -408,29 +408,45 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
         return Type.TILE_ENTITY;
     }
 
+    /**
+     * Take a fluid-containing from the input slot, use it to fill the primary input tank of the tile entity,
+     * and place the resulting emptied container in the output slot.
+     *
+     * @param inputSlot input slot
+     * @param outputSlot output slot
+     */
     protected void processFluidItem(int inputSlot, int outputSlot) {
         if (!hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)
                 || !hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null))
             return;
         IItemHandler itemHandler = getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
 
-        if (itemHandler.getStackInSlot(inputSlot).isEmpty()) {
-            return;
-        }
         ItemStack fluidContainer = itemHandler.getStackInSlot(inputSlot);
         IFluidHandlerItem fluidHandlerItem = FluidUtil.getFluidHandler(fluidContainer);
         if (fluidHandlerItem == null) {
             return;
         }
+        if (fluidContainer.getCount() > 1) {
+            FluidStack stack = fluidHandlerItem.drain(1, false);
+            if (stack != null && stack.amount > 0) {
+                // disallow multiple filled items (shouldn't normally happen anyway but let's be paranoid)
+                return;
+            } else {
+                // multiple empty items OK, but be sure to only fill one of them...
+                ItemStack itemToFill = fluidContainer.copy();
+                itemToFill.setCount(1);
+                fluidHandlerItem = FluidUtil.getFluidHandler(fluidContainer);
+            }
+        }
 
         IFluidHandler fluidHandler = getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
 
-        FluidStack itemContents = fluidHandlerItem.drain(Integer.MAX_VALUE, false);
+        FluidStack itemContents = fluidHandlerItem.drain(1000, false);
         if (itemContents != null && itemContents.amount > 0) {
             // input item contains fluid: drain from input item into tank, move to output if empty
             FluidStack transferred = FluidUtil.tryFluidTransfer(fluidHandler, fluidHandlerItem, itemContents.amount, true);
             if (transferred != null && transferred.amount == itemContents.amount) {
-                // all transferred, move empty container to output
+                // all transferred; move empty container to output if possible
                 ItemStack emptyContainerStack = fluidHandlerItem.getContainer();
                 ItemStack excess = itemHandler.insertItem(outputSlot, emptyContainerStack, false);
                 if (excess.isEmpty()) {
@@ -438,7 +454,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
                 }
             }
         } else if (itemHandler.getStackInSlot(outputSlot).isEmpty()) {
-            // input item is empty: drain from tank to input item, move to output
+            // input item(s) is/are empty: drain from tank to one input item, move to output
             FluidStack transferred = FluidUtil.tryFluidTransfer(fluidHandlerItem, fluidHandler, Integer.MAX_VALUE, true);
             if (transferred != null && transferred.amount > 0) {
                 itemHandler.extractItem(inputSlot, 1, false);
@@ -557,7 +573,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     @Override
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
         if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-            return facing == EnumFacing.DOWN || getPrimaryInventory() != null;
+            return getPrimaryInventory() != null;
         } else {
             return super.hasCapability(capability, facing);
         }
@@ -566,12 +582,8 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     @Nullable
     @Override
     public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
-        if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-            if (facing == EnumFacing.DOWN) {
-                return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(upgradeHandler);
-            } else if (getPrimaryInventory() != null) {
-                return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(getPrimaryInventory());
-            }
+        if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && getPrimaryInventory() != null) {
+            return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(getPrimaryInventory());
         }
         return super.getCapability(capability, facing);
     }
@@ -609,6 +621,27 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     public void onTileEntityCreated() {
     }
 
+    public String getRedstoneButtonText(int mode) {
+        switch (mode) {
+            case 0:
+                return "gui.tab.redstoneBehaviour.button.anySignal";
+            case 1:
+                return "gui.tab.redstoneBehaviour.button.highSignal";
+            case 2:
+                return "gui.tab.redstoneBehaviour.button.lowSignal";
+        }
+        return "<ERROR>";
+    }
+
+    public String getRedstoneString() {
+        return this instanceof IRedstoneControlled ? "gui.tab.redstoneBehaviour.enableOn" : "gui.tab.redstoneBehaviour.emitRedstoneWhen";
+    }
+
+    /**
+     * Called when a machine's upgrades have changed in any way.
+     */
+    protected void onUpgradesChanged() {}
+
     public UpgradeCache getUpgradeCache() {
         return upgradeCache;
     }
@@ -625,29 +658,43 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
 
         @Override
         protected void onContentsChanged(int slot) {
-            upgradeCache.cacheUpgrades();
-            onUpgradesChanged();
+            upgradeCache.invalidate();
         }
     }
 
-    /**
-     * Called when a machine's upgrades have changed in some way.
-     */
-    protected void onUpgradesChanged() {}
+    public class UpgradeCache {
+        private final int upgradeCount[] = new int[IItemRegistry.EnumUpgrade.values().length];
+        private final TileEntityBase te;
+        private boolean isValid = false;
 
-    public String getRedstoneButtonText(int mode) {
-        switch (mode) {
-            case 0:
-                return "gui.tab.redstoneBehaviour.button.anySignal";
-            case 1:
-                return "gui.tab.redstoneBehaviour.button.highSignal";
-            case 2:
-                return "gui.tab.redstoneBehaviour.button.lowSignal";
+        UpgradeCache(TileEntityBase te) {
+            this.te = te;
         }
-        return "<ERROR>";
-    }
 
-    public String getRedstoneString() {
-        return this instanceof IRedstoneControlled ? "gui.tab.redstoneBehaviour.enableOn" : "gui.tab.redstoneBehaviour.emitRedstoneWhen";
+        void validate() {
+            if (isValid) return;
+
+            Arrays.fill(upgradeCount, 0);
+            IItemHandler inv = te.getUpgradesInventory();
+            for (int i = 0; i < inv.getSlots(); i++) {
+                if (inv.getStackInSlot(i).getItem() instanceof ItemMachineUpgrade) {
+                    int idx = ((ItemMachineUpgrade) inv.getStackInSlot(i).getItem()).getUpgradeType().ordinal();
+                    upgradeCount[idx] += inv.getStackInSlot(i).getCount();
+                }
+            }
+            te.onUpgradesChanged();
+            isValid = true;
+        }
+
+        /**
+         * Mark the upgrade cache as invalid.  It will be revalidated at the start of the next update tick for the TE.
+         */
+        public void invalidate() {
+            isValid = false;
+        }
+
+        public int getUpgrades(IItemRegistry.EnumUpgrade type) {
+            return upgradeCount[type.ordinal()];
+        }
     }
 }

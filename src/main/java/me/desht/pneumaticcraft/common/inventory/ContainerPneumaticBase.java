@@ -90,7 +90,7 @@ public class ContainerPneumaticBase<Tile extends TileEntityBase> extends Contain
 
     protected void addUpgradeSlots(int xBase, int yBase) {
         for (int i = 0; i < te.getUpgradesInventory().getSlots(); i++) {
-            addSlotToContainer(new SlotInventoryLimiting(te.getUpgradesInventory(), i, xBase + (i % 2) * 18, yBase + (i / 2) * 18));
+            addSlotToContainer(new SlotUpgrade(te, i, xBase + (i % 2) * 18, yBase + (i / 2) * 18));
         }
     }
 

@@ -32,11 +32,9 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
     @GuiSynced
     public int burnTime;
     @GuiSynced
-    public int maxBurnTime; // in here the total burn time of the current
-    // burning item is stored.
+    public int maxBurnTime; // in here the total burn time of the current burning item is stored.
     @GuiSynced
-    public int redstoneMode = 0; // determines how the compressor responds to
-    // redstone.
+    public int redstoneMode = 0; // determines how the compressor responds to redstone.
     @DescSynced
     private boolean isActive;
     @GuiSynced

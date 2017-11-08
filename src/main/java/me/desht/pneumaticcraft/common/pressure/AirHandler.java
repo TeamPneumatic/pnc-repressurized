@@ -12,7 +12,6 @@ import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.thirdparty.ModInteractionUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
-import me.desht.pneumaticcraft.common.tileentity.UpgradeCache;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.TileEntityCache;
 import me.desht.pneumaticcraft.lib.Log;
@@ -47,7 +46,7 @@ public class AirHandler implements IAirHandler {
     private TileEntityCache[] tileCache;
     private int[] upgradeSlots;
 
-    private UpgradeCache upgradeCache;
+    private TileEntityBase.UpgradeCache upgradeCache;
 //    private IItemHandler parentInventory;  // just for finding upgrades..?
     private IAirListener airListener;
     private IPneumaticMachine parentPneumatic;

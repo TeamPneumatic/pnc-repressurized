@@ -38,6 +38,9 @@ import java.util.Set;
 public class TileEntityKeroseneLamp extends TileEntityBase implements IRedstoneControlled, ISerializableTanks {
     public static final int INVENTORY_SIZE = 2;
 
+    private static final int INPUT_SLOT = 0;
+    private static final int OUTPUT_SLOT = 1;
+
     private final Set<BlockPos> managingLights = new HashSet<>();
     @DescSynced
     private boolean isOn;
@@ -85,7 +88,7 @@ public class TileEntityKeroseneLamp extends TileEntityBase implements IRedstoneC
         super.update();
         if (!getWorld().isRemote) {
             if (fuelQuality < 0) recalculateFuelQuality();
-            processFluidItem(0, 1);
+            processFluidItem(INPUT_SLOT, OUTPUT_SLOT);
             if (getWorld().getTotalWorldTime() % 5 == 0) {
                 int realTargetRange = redstoneAllows() && fuel > 0 ? targetRange : 0;
                 if (redstoneMode == 3) realTargetRange = (int) (poweredRedstone / 15D * targetRange);
