@@ -22,6 +22,8 @@ public class ModInteractionUtils {
 
     @GameRegistry.ObjectHolder("thermalfoundation:wrench")
     private static final Item CRESCENT_HAMMER = null;
+    @GameRegistry.ObjectHolder("rftools:smartwrench")
+    private static final Item SMART_WRENCH = null;
     // TODO add other modded wrenches here, and detect them in setupWrenchItems() below
 
     // list is probably fine here, since the number of members is very small
@@ -30,6 +32,7 @@ public class ModInteractionUtils {
 
     public static void setupWrenchItems() {
         if (CRESCENT_HAMMER != null) wrenchItems.add(CRESCENT_HAMMER);
+        if (SMART_WRENCH != null) wrenchItems.add(SMART_WRENCH);
     }
 
     public static ModInteractionUtils getInstance() {
