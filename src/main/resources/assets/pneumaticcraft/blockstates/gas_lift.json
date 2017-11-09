@@ -1,14 +1,76 @@
 {
-    "forge_marker": 1,
-    "defaults": {
-        "textures": {},
-        "custom": { "flip-v" : true},
-        "model": "pneumaticcraft:gas_lift.obj"
+  "forge_marker": 1,
+  "defaults": {
+    "textures": {
+      "pipe": "pneumaticcraft:blocks/advanced_pressure_tube"
     },
-	"variants": {
-		"normal": [{}],
-		"inventory": [{
-          "transform": "forge:default-block"
-        }]
-	}
+    "custom": { "flip-v" : true},
+    "model": "pneumaticcraft:gas_lift.obj"
+  },
+  "variants": {
+    "normal": [{}],
+    "inventory": [{
+      "transform": "forge:default-block"
+    }],
+    "up": {
+      "false": {
+        "submodel": {
+          "up": { "model": "pneumaticcraft:pressure_tube_disconnected" }
+        }
+      },
+      "true": {
+        "submodel": {
+          "up": { "model": "pneumaticcraft:pressure_tube_connected" }
+        }
+      }
+    },
+    "north": {
+      "false": {
+        "submodel": {
+          "north": { "model": "pneumaticcraft:pressure_tube_disconnected", "x": 90 }
+        }
+      },
+      "true": {
+        "submodel": {
+          "north": { "model": "pneumaticcraft:pressure_tube_connected", "x": 90 }
+        }
+      }
+    },
+    "south": {
+      "false": {
+        "submodel": {
+          "south": { "model": "pneumaticcraft:pressure_tube_disconnected", "x": 90, "y": 180 }
+        }
+      },
+      "true": {
+        "submodel": {
+          "south": { "model": "pneumaticcraft:pressure_tube_connected", "x": 90, "y": 180 }
+        }
+      }
+    },
+    "west": {
+      "false": {
+        "submodel": {
+          "west": { "model": "pneumaticcraft:pressure_tube_disconnected", "x": 90, "y": 270 }
+        }
+      },
+      "true": {
+        "submodel": {
+          "west": { "model": "pneumaticcraft:pressure_tube_connected", "x": 90, "y": 270 }
+        }
+      }
+    },
+    "east": {
+      "false": {
+        "submodel": {
+          "east": { "model": "pneumaticcraft:pressure_tube_disconnected", "x": 90, "y": 90 }
+        }
+      },
+      "true": {
+        "submodel": {
+          "east": { "model": "pneumaticcraft:pressure_tube_connected", "x": 90, "y": 90 }
+        }
+      }
+    }
+  }
 }

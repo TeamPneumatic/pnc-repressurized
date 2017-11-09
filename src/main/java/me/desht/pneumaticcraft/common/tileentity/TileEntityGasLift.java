@@ -22,8 +22,6 @@ import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
 import org.apache.commons.lang3.tuple.Pair;
@@ -60,7 +58,7 @@ public class TileEntityGasLift extends TileEntityPneumaticBase implements IMinWo
 
     public TileEntityGasLift() {
         super(5, 7, 3000, 4);
-        addApplicableUpgrade(EnumUpgrade.SPEED);
+        addApplicableUpgrade(EnumUpgrade.SPEED, EnumUpgrade.DISPENSER);
     }
 
     @Override
@@ -68,14 +66,29 @@ public class TileEntityGasLift extends TileEntityPneumaticBase implements IMinWo
         return d != EnumFacing.DOWN;
     }
 
-    @Override
-    public void onNeighborTileUpdate() {
-        super.onNeighborTileUpdate();
+    private void updateConnections() {
         List<Pair<EnumFacing, IAirHandler>> connections = getAirHandler(null).getConnectedPneumatics();
         Arrays.fill(sidesConnected, false);
         for (Pair<EnumFacing, IAirHandler> entry : connections) {
             sidesConnected[entry.getKey().ordinal()] = true;
         }
+    }
+
+    @Override
+    public void onNeighborBlockUpdate() {
+        super.onNeighborBlockUpdate();
+        updateConnections();
+    }
+
+    @Override
+    public void onNeighborTileUpdate() {
+        super.onNeighborTileUpdate();
+        updateConnections();
+    }
+
+    @Override
+    protected boolean shouldRerenderChunkOnDescUpdate() {
+        return true;
     }
 
     @Override

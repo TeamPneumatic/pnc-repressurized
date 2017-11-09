@@ -58,10 +58,10 @@ public class TickHandlerPneumaticCraft {
 
     //TODO 1.8 test Electrostatic compressor
     private void handleElectrostaticGeneration(World world, Entity entity) {
-        Set<BlockPos> posList = new HashSet<BlockPos>();
-        getElectrostaticGrid(posList, world, new BlockPos(Math.round(entity.posX), Math.round(entity.posY), Math.round(entity.posZ)));
-        List<TileEntityElectrostaticCompressor> compressors = new ArrayList<TileEntityElectrostaticCompressor>();
-        for (BlockPos pos : posList) {
+        Set<BlockPos> posSet = new HashSet<>();
+        getElectrostaticGrid(posSet, world, new BlockPos(Math.round(entity.posX), Math.round(entity.posY), Math.round(entity.posZ)));
+        List<TileEntityElectrostaticCompressor> compressors = new ArrayList<>();
+        for (BlockPos pos : posSet) {
             if (world.getBlockState(pos).getBlock() == Blockss.ELECTROSTATIC_COMPRESSOR) {
                 TileEntity te = world.getTileEntity(pos);
                 if (te instanceof TileEntityElectrostaticCompressor) {

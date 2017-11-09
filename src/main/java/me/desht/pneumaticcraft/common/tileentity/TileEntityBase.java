@@ -388,7 +388,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     public void autoExportLiquid() {
         if (hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null)) {
             IFluidHandler handler = getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
-            FluidStack toDrain = handler.drain(Integer.MAX_VALUE, false);
+            FluidStack toDrain = handler.drain(1000, false);
             if (toDrain != null && toDrain.amount > 0) {
                 for (EnumFacing d : EnumFacing.VALUES) {
                     TileEntity te = getTileCache()[d.ordinal()].getTileEntity();
