@@ -65,9 +65,10 @@ public class EntityVortex extends EntityThrowable {
                     }
                 }
                 // slow the vortex down for each plant it broke
-                motionX *= Math.pow(0.95D, plantsCut);
-                motionY *= Math.pow(0.95D, plantsCut);
-                motionZ *= Math.pow(0.95D, plantsCut);
+                double mult = Math.pow(0.8D, plantsCut);
+                motionX *= mult;
+                motionY *= mult;
+                motionZ *= mult;
             }
         }
 
