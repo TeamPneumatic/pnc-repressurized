@@ -270,7 +270,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
                 NetworkHandler.sendToServer(new PacketGuiButton(0));
             }
         }
-        if (Keyboard.KEY_SPACE == keyCode) {
+        if (Keyboard.KEY_SPACE == keyCode && !nameField.isFocused()) {
             toggleShowWidgets();
         }
         if (Keyboard.KEY_DELETE == keyCode) {
