@@ -1,12 +1,6 @@
 # PneumaticCraft: Repressurized
 
-This is a port to Minecraft 1.12.2 of MineMaarten's awesome PneumaticCraft mod: https://github.com/MineMaarten/PneumaticCraft.  It is *mostly* functional at this point, although likely to be fairly buggy and unstable. There are no official JAR releases; if you want to play with it, you can either:
-
-* Use CI builds from https://circleci.com/gh/desht/pnc-repressurized
-
-or 
-
-* Build it from source.  It should be enough to clone the repository and do:
+This is a port to Minecraft 1.12.2 of MineMaarten's awesome PneumaticCraft mod: https://github.com/MineMaarten/PneumaticCraft.  It is *mostly* functional at this point, although likely to be fairly buggy and unstable. There are no official JAR releases just yet; if you want to play with it, you can build it from source.  It should be enough to clone the repository and do:
 
 ```
 $ ./gradlew setupDecompWorkspace
@@ -15,9 +9,9 @@ $ ./gradlew build
 
 ...and any IDE-specific steps (genIntellijRuns etc.)
 
-I'm welcoming any GitHub issue if you find problems but **please**:
+I'm welcoming GitHub issues if you find problems but **please**:
 1. Check that there isn't already an issue for your problem
-1. Be as descriptive as possible, including stacktrackes (link to gist/pastebin/etc. please), and full instructions on reproducing the problem.
+1. Be as descriptive as possible, including stacktraces (link to gist/pastebin/etc. please), and full instructions on reproducing the problem.
 
 This code is based on MineMaarten's 1.8.9 code (see the *MC1.8.8* branch in the above-linked repo), which is fairly functional on 1.8 but missing a lot of client-side models & rendering.  At the time of writing (2 Nov 2017), pretty much all of that is re-implemented for 1.12.2!
 
@@ -31,48 +25,20 @@ With all that said, have fun!
 
 ### Generally Working Well
 
-* Explosions convert iron -> compressed iron
-* Solid and liquid-fuelled air compressors, creative compressor
-* Pressure tubes (but with MCMP2 disabled in config)
-* Pressure chamber multiblock
-* Pressure chamber interface
-* Etching Acid
-* UV Light Box
-* Assembly system
-* Pneumatic Helmet
-* Oil lake generation
-* Gas Lift
-* Refinery (including support for 3rd party oils; as of now Thermal Expansion Crude Oil and Actually Additions Oil - that's the 2nd tier oil - should work)
-* Thermopneumatic Processing Plant
-* Plastic Mixer
-* Vacuum Pump (and pressure chamber disenchanting)
-* Kerosene Lamp (also works with any burnable liquid fuel, duration dependent on fuel quality)
-* Omni Hopper and Liquid Hopper
-* Heat system (including 3rd-party interaction: Gelid Cryotheum cooling is a thing!)
-* Programmer
-* Drones (tested several functions; mostly working but there are some pathfinding issues causing drones to teleport when they need to move to a distant location because they can't pathfind far enough)
-* Amadron trading system (but see drone pathfinding issues above)
-* Pneumatic Wrench
-* GPS Tool
-* Manometer
-* Seismic Sensor
-* Aphorism Tiles
-* Air Cannon
-* Aerial Interface
-* Pneumatic Doors
-* Tube Modules
-* Heat Frame
-* ComputerCraft integration
-* Logistics Drones & Frames (reasonably well tested)
-* Elevators
-* Pneumatic Villagers (mechanics)
-* Flux Compressor & Pneumatic Dynamo (using Forge Energy; no Tesla or direct CoFH support at this point - not sure if it will be necessary to add)
-* Universal Sensor
-* Programmable Controller (only basic testing done, but a simple "break blocks in area" program works)
+Just about everything!  At least, all of the functionality from the 1.7.10 PneumaticCraft should now be replicated on 1.12.2, along with a few little extras:
+
+* Aphorism tiles can now be edited (right-click with an empty hand).  They can also now have Minecraft markup (colours, bold/italic/underline/strikethrough) by using Alt + 0-9/a-f/l/m/n/o/r, and there's popup keymapping help if you hold down F1.  Also, drama splash is back, without the Drama Splash mod dependency (that mod hasn't been ported to 1.12).  And drama splash can be disabled in config.
+* The kerosene lamp can now burn *any* burnable fuel; better fuels last longer (LPG is the best right now).  That can be disabled in config, to have the old behaviour of burning kerosene only.
+* A new tool: the Camouflage Applicator.  This can be used to camouflage pressure tubes, elevator bases & callers, charging stations and pneumatic door bases with pretty much any solid block.
+* Pressure tubes can be disconnected with a wrench, allowing ends to be closed off, and preventing connections where you don't want them.  Note that pressure tubes are not multiblocks in this version (MCMP2 just isn't ready for prime time on 1.12 yet, IMHO).
+* The One Probe is supported, and the probe can be crafted with the Pneumatic Helmet.
+* Vortex Cannon is now more effective at breaking plants and leaves.  You can also use the cannon to fling yourself considerable distances (but beware fall damage!)
+* Touching a very cold heatsink (< -30C) will give you a slowness debuff.  Extremely cold heatsinks (< -60C) will also cause damage.  Hot heatsinks (> 60C) still hurt, but don't set you on fire until over 100C.
+* GUI problem tab now shows a green tick icon (instead of the red "!" icon) when there are no problems with the machine.
 
 ### Not Working Yet
 
-I'm now tracking work that's needed before the initial Alpha release here: https://github.com/desht/pnc-repressurized/milestone/1 (and general issues here: https://github.com/desht/pnc-repressurized/issues)
+I'm now tracking work that's needed before the initial Alpha release here: https://github.com/desht/pnc-repressurized/milestone/1 (and issues in general here: https://github.com/desht/pnc-repressurized/issues)
 
 If you're playing with the mod and encounter problems, check there first before raising a new issue.
 
