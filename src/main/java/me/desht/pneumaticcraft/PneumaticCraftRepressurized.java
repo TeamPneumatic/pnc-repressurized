@@ -60,7 +60,7 @@ import org.apache.logging.log4j.Logger;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
 @Mod(modid = Names.MOD_ID, name = Names.MOD_NAME, version = PneumaticCraftRepressurized.MODVERSION,
-        dependencies = "required-after:forge@[14.23.0.2491,);after:forestry",
+        dependencies = "required-after:forge@[14.23.0.2528,);after:forestry",
         acceptedMinecraftVersions = "1.12"
 )
 public class PneumaticCraftRepressurized {
