@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.recipes.programs;
 
 import me.desht.pneumaticcraft.common.item.ItemAssemblyProgram;
 import me.desht.pneumaticcraft.common.recipes.AssemblyRecipe;
+import me.desht.pneumaticcraft.common.recipes.PneumaticRecipeRegistry;
 import me.desht.pneumaticcraft.common.tileentity.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -53,7 +54,7 @@ public class ProgramDrill extends AssemblyProgram {
 
     @Override
     public List<AssemblyRecipe> getRecipeList() {
-        return AssemblyRecipe.drillRecipes;
+        return PneumaticRecipeRegistry.getInstance().drillRecipes;
     }
 
     @Override

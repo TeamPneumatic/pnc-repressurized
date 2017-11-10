@@ -50,7 +50,7 @@ public class IntegratorPressureChamber implements IRecipeIntegrator {
         } else {
 
             PressureChamberRecipe foundRecipe = null;
-            for (PressureChamberRecipe recipe : PressureChamberRecipe.chamberRecipes) {
+            for (PressureChamberRecipe recipe : PneumaticRecipeRegistry.getInstance().chamberRecipes) {
                 for (ItemStack output : recipe.output) {
                     if (WikiUtils.getNameFromStack(output).equals(arguments[2])) {
                         foundRecipe = recipe;

@@ -20,6 +20,13 @@ public class PneumaticRecipeRegistry implements IPneumaticRecipeRegistry {
     public List<IThermopneumaticProcessingPlantRecipe> thermopneumaticProcessingPlantRecipes = new ArrayList<>();
     public List<Pair<Object, ItemStack>> heatFrameCoolingRecipes = new ArrayList<>();
 
+    public List<PressureChamberRecipe> chamberRecipes = new ArrayList<>();
+    public List<IPressureChamberRecipe> chamberSpecialRecipes = new ArrayList<>();
+    
+    public List<AssemblyRecipe> drillRecipes = new ArrayList<>();
+    public List<AssemblyRecipe> laserRecipes = new ArrayList<>();
+    public List<AssemblyRecipe> drillLaserRecipes = new ArrayList<>();
+
     private static final PneumaticRecipeRegistry INSTANCE = new PneumaticRecipeRegistry();
 
     public static PneumaticRecipeRegistry getInstance() {
@@ -42,21 +49,21 @@ public class PneumaticRecipeRegistry implements IPneumaticRecipeRegistry {
     public void addAssemblyDrillRecipe(Object input, Object output) {
         if (output == null) throw new NullPointerException("Output can't be null!");
         if (input == null) throw new NullPointerException("Input can't be null!");
-        AssemblyRecipe.drillRecipes.add(new AssemblyRecipe(getStackFromObject(input), getStackFromObject(output)));
+        drillRecipes.add(new AssemblyRecipe(getStackFromObject(input), getStackFromObject(output)));
     }
 
     @Override
     public void addAssemblyLaserRecipe(Object input, Object output) {
         if (output == null) throw new NullPointerException("Output can't be null!");
         if (input == null) throw new NullPointerException("Input can't be null!");
-        AssemblyRecipe.laserRecipes.add(new AssemblyRecipe(getStackFromObject(input), getStackFromObject(output)));
+        laserRecipes.add(new AssemblyRecipe(getStackFromObject(input), getStackFromObject(output)));
     }
 
     @Override
     public void registerPressureChamberRecipe(Object[] input, float pressureRequired, ItemStack[] output) {
         if (output == null) throw new NullPointerException("Output can't be null!");
         if (input == null) throw new NullPointerException("Input can't be null!");
-        PressureChamberRecipe.chamberRecipes.add(new PressureChamberRecipe(input, pressureRequired, output));
+        chamberRecipes.add(new PressureChamberRecipe(input, pressureRequired, output));
     }
 
     public static boolean isItemEqual(Object o, @Nonnull ItemStack stack) {
@@ -88,7 +95,7 @@ public class PneumaticRecipeRegistry implements IPneumaticRecipeRegistry {
     @Override
     public void registerPressureChamberRecipe(IPressureChamberRecipe recipe) {
         if (recipe == null) throw new NullPointerException("Recipe can't be null!");
-        PressureChamberRecipe.specialRecipes.add(recipe);
+        chamberSpecialRecipes.add(recipe);
     }
 
     private static ItemStack getStackFromObject(Object object) {
