@@ -85,13 +85,14 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase implements
 
     @Override
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
-        return capability == CapabilityEnergy.ENERGY || super.hasCapability(capability, facing);
+        // back face is where pneumatics connect
+        return (capability == CapabilityEnergy.ENERGY && facing != getRotation().getOpposite())
+                || super.hasCapability(capability, facing);
     }
 
     @Nullable
     @Override
     public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
-        // back face is where pneumatics connect
         if (capability == CapabilityEnergy.ENERGY && facing != getRotation().getOpposite()) {
             return CapabilityEnergy.ENERGY.cast(energy);
         } else {
