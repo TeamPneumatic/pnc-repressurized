@@ -10,6 +10,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.management.PlayerInteractionManager;
 import net.minecraft.tileentity.MobSpawnerBaseLogic;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -38,6 +39,7 @@ public class Reflections {
     private static Field itemRenderer_equippedProgress;
     @SideOnly(Side.CLIENT)
     private static Field itemRenderer_prevEquippedProgress;
+    private static Field soundEvent_soundName;
 
     public static Class blaze_aiFireballAttack;
     public static Class ghast_aiFireballAttack;
@@ -55,6 +57,7 @@ public class Reflections {
         entity_inventoryHandsDropChances = ReflectionHelper.findField(EntityLiving.class, "field_82174_bp", "inventoryHandsDropChances");
         player_invulnerableDimensionChange = ReflectionHelper.findField(EntityPlayerMP.class, "field_184851_cj", "invulnerableDimensionChange");
         witch_potionUseTimer = ReflectionHelper.findField(EntityWitch.class, "field_82200_e", "potionUseTimer");
+        soundEvent_soundName = ReflectionHelper.findField(SoundEvent.class, "field_187506_b", "soundName");
 
         // access to non-public entity AI's for hacking purposes
         blaze_aiFireballAttack = findEnclosedClass(EntityBlaze.class, "AIFireballAttack", "a");
@@ -213,6 +216,15 @@ public class Reflections {
             itemRenderer_prevEquippedProgress.setInt(itemRenderer, 1);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
+        }
+    }
+
+    public static ResourceLocation getSoundName(SoundEvent event) {
+        try {
+            return (ResourceLocation) soundEvent_soundName.get(event);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 }
