@@ -7,7 +7,6 @@ import me.desht.pneumaticcraft.api.item.IPressurizable;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
-import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerManager;
 import me.desht.pneumaticcraft.common.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockBasic;
@@ -19,7 +18,6 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -29,6 +27,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
+import net.minecraft.util.text.translation.I18n;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -102,12 +101,12 @@ public class TOPCallback implements Function<ITheOneProbe, Void> {
             for (EnumFacing face : EnumFacing.values()) {
                 if (tempData.hasData(face)) {
                     int tempInt = (int) tempData.getTemperature(face) - 273;
-                    probeInfo.text(I18n.format("waila.temperature." + face, tempInt));
+                    probeInfo.text(I18n.translateToLocalFormatted("waila.temperature." + face, tempInt));
                 }
             }
         } else if (tempData.hasData(null)) {
             int tempInt = (int) tempData.getTemperature(null) - 273;
-            probeInfo.text(I18n.format("waila.temperature", tempInt));
+            probeInfo.text(I18n.translateToLocalFormatted("waila.temperature", tempInt));
         }
     }
 
@@ -124,7 +123,7 @@ public class TOPCallback implements Function<ITheOneProbe, Void> {
     public static void handleRedstoneMode(ProbeMode mode, IProbeInfo probeInfo, TileEntityBase te) {
         if (te instanceof IRedstoneControl) {
             int redstoneMode = ((IRedstoneControl) te).getRedstoneMode();
-            probeInfo.text(TextFormatting.GRAY + I18n.format(te.getRedstoneString()) + ": " + TextFormatting.RED + I18n.format(te.getRedstoneButtonText(redstoneMode)));
+            probeInfo.text(TextFormatting.GRAY + I18n.translateToLocalFormatted(te.getRedstoneString()) + ": " + TextFormatting.RED + I18n.translateToLocalFormatted(te.getRedstoneButtonText(redstoneMode)));
         }
     }
 
@@ -144,8 +143,8 @@ public class TOPCallback implements Function<ITheOneProbe, Void> {
         int n = 1;
         for (IFluidTankProperties properties : handler.getTankProperties()) {
             FluidStack fluidStack = properties.getContents();
-            String fluidDesc = fluidStack == null ? I18n.format("gui.liquid.empty") : fluidStack.amount + "mB " + fluidStack.getLocalizedName();
-            probeInfo.text(I18n.format("waila.fluid", n++, fluidDesc));
+            String fluidDesc = fluidStack == null ? I18n.translateToLocalFormatted("gui.liquid.empty") : fluidStack.amount + "mB " + fluidStack.getLocalizedName();
+            probeInfo.text(I18n.translateToLocalFormatted("waila.fluid", n++, fluidDesc));
         }
     }
 }
