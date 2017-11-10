@@ -2,7 +2,7 @@
 {
   "modid": "pneumaticcraft",
   "name": "PneumaticCraft: Repressurized",
-  "description": "A port of PneumaticCraft to Minecraft 1.12+",
+  "description": "A port of MineMaarten's PneumaticCraft to Minecraft 1.12+",
   "version": "${version}",
   "mcversion": "${mcversion}",
   "url": "",

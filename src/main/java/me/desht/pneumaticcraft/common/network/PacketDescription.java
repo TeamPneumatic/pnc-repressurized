@@ -118,6 +118,7 @@ public class PacketDescription extends LocationIntPacket<PacketDescription> {
             element.setByteArray("Value", Arrays.copyOf(buf.array(), buf.writerIndex()));
             list.appendTag(element);
         }
+        buf.release();
         compound.setTag("Data", list);
         compound.setTag("Extra", extraData);
 
