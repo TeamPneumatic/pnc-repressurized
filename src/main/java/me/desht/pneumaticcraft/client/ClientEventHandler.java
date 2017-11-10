@@ -20,6 +20,7 @@ import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -39,6 +40,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBucket;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.Vec3d;
@@ -50,7 +52,10 @@ import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.IFluidBlock;
+import net.minecraftforge.fluids.UniversalBucket;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -71,7 +76,7 @@ public class ClientEventHandler {
             IProgrammable programmable = (IProgrammable) event.getItemStack().getItem();
             if (programmable.canProgram(event.getItemStack()) && programmable.showProgramTooltip()) {
                 boolean hasInvalidPrograms = false;
-                List<String> addedEntries = new ArrayList<String>();
+                List<String> addedEntries = new ArrayList<>();
                 Map<String, Integer> widgetMap = getPuzzleSummary(TileEntityProgrammer.getProgWidgets(event.getItemStack()));
                 for (Map.Entry<String, Integer> entry : widgetMap.entrySet()) {
                     IProgWidget widget = ItemProgrammingPuzzle.getWidgetForName(entry.getKey());
@@ -90,6 +95,23 @@ public class ClientEventHandler {
                 }
                 Collections.sort(addedEntries);
                 event.getToolTip().addAll(addedEntries);
+            }
+        } else if (event.getItemStack().getItem() instanceof ItemBucket || event.getItemStack().getItem() instanceof UniversalBucket) {
+            FluidStack fluidStack = FluidUtil.getFluidContained(event.getItemStack());
+            if (fluidStack != null && fluidStack.amount > 0) {
+                String key = "gui.tooltip.item." + fluidStack.getFluid().getName() + "_bucket";
+                if (I18n.hasKey(key)) {
+                    if (event.getToolTip().get(event.getToolTip().size() - 1).contains("Minecraft Forge")) {
+                        // bit of a kludge!  otherwise the blue "Minecraft Forge" string gets shown twice
+                        event.getToolTip().remove(event.getToolTip().size() - 1);
+                    }
+                    if (PneumaticCraftRepressurized.proxy.isSneakingInGui()) {
+                        String translatedInfo = TextFormatting.AQUA + I18n.format(key);
+                        event.getToolTip().addAll(PneumaticCraftUtils.convertStringIntoList(translatedInfo, 40));
+                    } else {
+                        event.getToolTip().add(TextFormatting.AQUA + I18n.format("gui.tooltip.sneakForInfo"));
+                    }
+                }
             }
         }
     }
