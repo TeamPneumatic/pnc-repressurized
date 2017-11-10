@@ -2,7 +2,6 @@ package me.desht.pneumaticcraft.common.recipes.programs;
 
 import me.desht.pneumaticcraft.common.item.ItemAssemblyProgram;
 import me.desht.pneumaticcraft.common.recipes.AssemblyRecipe;
-import me.desht.pneumaticcraft.common.recipes.PneumaticRecipeRegistry;
 import me.desht.pneumaticcraft.common.tileentity.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -49,14 +48,14 @@ public class ProgramDrillLaser extends AssemblyProgram {
     */
 
     private boolean canItemBeLasered(ItemStack item) {
-        for (AssemblyRecipe recipe : PneumaticRecipeRegistry.getInstance().laserRecipes) {
+        for (AssemblyRecipe recipe : AssemblyRecipe.laserRecipes) {
             if (isValidInput(recipe, item)) return true;
         }
         return false;
     }
 
     private boolean canItemBeDrilled(ItemStack item) {
-        for (AssemblyRecipe recipe : PneumaticRecipeRegistry.getInstance().drillRecipes) {
+        for (AssemblyRecipe recipe : AssemblyRecipe.drillRecipes) {
             if (isValidInput(recipe, item)) return true;
         }
         return false;
@@ -74,7 +73,7 @@ public class ProgramDrillLaser extends AssemblyProgram {
 
     @Override
     public List<AssemblyRecipe> getRecipeList() {
-        return PneumaticRecipeRegistry.getInstance().drillLaserRecipes;
+        return AssemblyRecipe.drillLaserRecipes;
     }
 
     @Override

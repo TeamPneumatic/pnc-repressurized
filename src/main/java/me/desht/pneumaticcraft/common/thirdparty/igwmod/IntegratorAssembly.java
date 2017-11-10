@@ -7,7 +7,6 @@ import igwmod.gui.*;
 import me.desht.pneumaticcraft.common.item.ItemAssemblyProgram;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.recipes.AssemblyRecipe;
-import me.desht.pneumaticcraft.common.recipes.PneumaticRecipeRegistry;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.item.ItemStack;
 
@@ -49,15 +48,15 @@ public class IntegratorAssembly implements IRecipeIntegrator {
 
         int[] hits = new int[]{recipeIndex};
         int program = ItemAssemblyProgram.DRILL_LASER_DAMAGE;
-        AssemblyRecipe foundRecipe = findRecipe(hits, PneumaticRecipeRegistry.getInstance().drillRecipes, arguments[2]);
+        AssemblyRecipe foundRecipe = findRecipe(hits, AssemblyRecipe.drillRecipes, arguments[2]);
         if (foundRecipe == null) {
-            foundRecipe = findRecipe(hits, PneumaticRecipeRegistry.getInstance().laserRecipes, arguments[2]);
+            foundRecipe = findRecipe(hits, AssemblyRecipe.laserRecipes, arguments[2]);
         } else {
             program = ItemAssemblyProgram.DRILL_DAMAGE;
         }
 
         if (foundRecipe == null) {
-            foundRecipe = findRecipe(hits, PneumaticRecipeRegistry.getInstance().drillLaserRecipes, arguments[2]);
+            foundRecipe = findRecipe(hits, AssemblyRecipe.drillLaserRecipes, arguments[2]);
         } else {
             program = ItemAssemblyProgram.LASER_DAMAGE;
         }

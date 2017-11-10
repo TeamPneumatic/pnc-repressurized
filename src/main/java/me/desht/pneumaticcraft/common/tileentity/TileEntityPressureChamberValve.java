@@ -155,7 +155,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
             recipePressure = Float.MAX_VALUE;
 
             // simple recipes
-            for (PressureChamberRecipe recipe : PneumaticRecipeRegistry.getInstance().chamberRecipes) {
+            for (PressureChamberRecipe recipe : PressureChamberRecipe.chamberRecipes) {
                 boolean isValidRecipeInChamberFlag = canBeCompressed(recipe, stacksInChamber);
                 boolean isSufficientPressureInChamberFlag = recipe.pressure <= getPressure() && recipe.pressure > 0F || recipe.pressure >= getPressure() && recipe.pressure < 0F;
                 if (isValidRecipeInChamberFlag) {
@@ -172,7 +172,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
             }
 
             // special recipes
-            for (IPressureChamberRecipe recipe : PneumaticRecipeRegistry.getInstance().chamberSpecialRecipes) {
+            for (IPressureChamberRecipe recipe : PressureChamberRecipe.specialRecipes) {
                 ItemStack[] removedStacks = recipe.isValidRecipe(stacksInChamber);
                 boolean isValidRecipeInChamberFlag = removedStacks != null;
                 boolean isSufficientPressureInChamberFlag = recipe.getCraftingPressure() <= getPressure() && recipe.getCraftingPressure() > 0F || recipe.getCraftingPressure() >= getPressure() && recipe.getCraftingPressure() < 0F;

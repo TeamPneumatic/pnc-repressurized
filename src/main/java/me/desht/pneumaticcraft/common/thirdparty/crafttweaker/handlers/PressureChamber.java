@@ -15,7 +15,6 @@ import crafttweaker.annotations.ModOnly;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.item.IIngredient;
 import crafttweaker.api.item.IItemStack;
-import me.desht.pneumaticcraft.common.recipes.PneumaticRecipeRegistry;
 import me.desht.pneumaticcraft.common.recipes.PressureChamberRecipe;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.CraftTweaker;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.util.RemoveAllRecipes;
@@ -39,17 +38,17 @@ public class PressureChamber {
     @ZenMethod
     public static void removeRecipe(IIngredient[] output)
     {
-    	CraftTweaker.REMOVALS.add(new Remove(PneumaticRecipeRegistry.getInstance().chamberRecipes, output));
+    	CraftTweaker.REMOVALS.add(new Remove(PressureChamberRecipe.chamberRecipes, output));
     }
     
     @ZenMethod
     public static void removeAllRecipes() {
-        CraftTweaker.REMOVALS.add(new RemoveAllRecipes<PressureChamberRecipe>(PressureChamber.name, PneumaticRecipeRegistry.getInstance().chamberRecipes));
+        CraftTweaker.REMOVALS.add(new RemoveAllRecipes<PressureChamberRecipe>(PressureChamber.name, PressureChamberRecipe.chamberRecipes));
     }   
     
     private static class Add extends BaseListAddition<PressureChamberRecipe> {
         public Add(PressureChamberRecipe recipe) {
-            super(PressureChamber.name, PneumaticRecipeRegistry.getInstance().chamberRecipes);
+            super(PressureChamber.name, PressureChamberRecipe.chamberRecipes);
             recipes.add(recipe);
         }
 
@@ -63,7 +62,7 @@ public class PressureChamber {
     	private final IIngredient[] output;
     	
         public Remove(List<PressureChamberRecipe> recipes, IIngredient[] output) {
-            super(PressureChamber.name, PneumaticRecipeRegistry.getInstance().chamberRecipes, recipes);
+            super(PressureChamber.name, PressureChamberRecipe.chamberRecipes, recipes);
             this.output = output;
         }
         

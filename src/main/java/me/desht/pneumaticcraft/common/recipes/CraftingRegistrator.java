@@ -280,7 +280,7 @@ public class CraftingRegistrator {
     }
 
     public static void addAssemblyCombinedRecipes() {
-        calculateAssemblyChain(PneumaticRecipeRegistry.getInstance().drillRecipes, PneumaticRecipeRegistry.getInstance().laserRecipes, PneumaticRecipeRegistry.getInstance().drillLaserRecipes);
+        calculateAssemblyChain(AssemblyRecipe.drillRecipes, AssemblyRecipe.laserRecipes, AssemblyRecipe.drillLaserRecipes);
     }
 
     private static void calculateAssemblyChain(List<AssemblyRecipe> firstRecipeList, List<AssemblyRecipe> secondRecipeList, List<AssemblyRecipe> totalRecipeList) {
@@ -317,11 +317,11 @@ public class CraftingRegistrator {
                 if (valid) {
                     ItemStack inputStack = ref.copy();
                     inputStack.setCount(9);
-                    PneumaticRecipeRegistry.getInstance().chamberRecipes.add(new PressureChamberRecipe(new ItemStack[]{inputStack}, 1.0F, new ItemStack[]{shaped.getRecipeOutput()}, false));
+                    PressureChamberRecipe.chamberRecipes.add(new PressureChamberRecipe(new ItemStack[]{inputStack}, 1.0F, new ItemStack[]{shaped.getRecipeOutput()}, false));
 
                     ItemStack inputStack2 = shaped.getRecipeOutput().copy();
                     inputStack2.setCount(1);
-                    PneumaticRecipeRegistry.getInstance().chamberRecipes.add(new PressureChamberRecipe(new ItemStack[]{inputStack2}, -0.5F, new ItemStack[]{inputStack}, false));
+                    PressureChamberRecipe.chamberRecipes.add(new PressureChamberRecipe(new ItemStack[]{inputStack2}, -0.5F, new ItemStack[]{inputStack}, false));
 
                 }
             }

@@ -13,7 +13,6 @@ import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.item.IIngredient;
 import crafttweaker.api.item.IItemStack;
 import me.desht.pneumaticcraft.common.recipes.AssemblyRecipe;
-import me.desht.pneumaticcraft.common.recipes.PneumaticRecipeRegistry;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.CraftTweaker;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.util.RemoveAllRecipes;
 import stanhebben.zenscript.annotations.ZenClass;
@@ -30,47 +29,47 @@ public class Assembly {
 	
     @ZenMethod
     public static void addDrillRecipe(IItemStack input, IItemStack output) {
-        addRecipe(nameDrill, input, output, PneumaticRecipeRegistry.getInstance().drillRecipes);
+        addRecipe(nameDrill, input, output, AssemblyRecipe.drillRecipes);
     }
 
     @ZenMethod
     public static void addLaserRecipe(IItemStack input, IItemStack output) {
-        addRecipe(nameLaser, input, output, PneumaticRecipeRegistry.getInstance().laserRecipes);
+        addRecipe(nameLaser, input, output, AssemblyRecipe.laserRecipes);
     }
 
     @ZenMethod
     public static void addDrillLaserRecipe(IItemStack input, IItemStack output) {
-        addRecipe(nameDrillLaser, input, output, PneumaticRecipeRegistry.getInstance().drillLaserRecipes);
+        addRecipe(nameDrillLaser, input, output, AssemblyRecipe.drillLaserRecipes);
     }
     
     @ZenMethod
     public static void removeDrillRecipe(IIngredient output) {
-        removeRecipe(nameDrill, PneumaticRecipeRegistry.getInstance().drillRecipes, output);
+        removeRecipe(nameDrill, AssemblyRecipe.drillRecipes, output);
     }
 
     @ZenMethod
     public static void removeAllDrillRecipes() {
-        CraftTweaker.REMOVALS.add(new RemoveAllRecipes<AssemblyRecipe>(nameDrill, PneumaticRecipeRegistry.getInstance().drillRecipes));
+        CraftTweaker.REMOVALS.add(new RemoveAllRecipes<AssemblyRecipe>(nameDrill, AssemblyRecipe.drillRecipes));
     }
 
     @ZenMethod
     public static void removeLaserRecipe(IIngredient output) {
-        removeRecipe(nameLaser, PneumaticRecipeRegistry.getInstance().laserRecipes, output);
+        removeRecipe(nameLaser, AssemblyRecipe.laserRecipes, output);
     }
     
     @ZenMethod
     public static void removeAllLaserRecipes() {
-        CraftTweaker.REMOVALS.add(new RemoveAllRecipes<AssemblyRecipe>(nameLaser, PneumaticRecipeRegistry.getInstance().laserRecipes));
+        CraftTweaker.REMOVALS.add(new RemoveAllRecipes<AssemblyRecipe>(nameLaser, AssemblyRecipe.laserRecipes));
     }
 
     @ZenMethod
     public static void removeDrillLaserRecipe(IIngredient output) {
-        removeRecipe(nameDrillLaser, PneumaticRecipeRegistry.getInstance().drillLaserRecipes, output);
+        removeRecipe(nameDrillLaser, AssemblyRecipe.drillLaserRecipes, output);
     }
     
     @ZenMethod
     public static void removeAllDrillLaserRecipes() {
-        CraftTweaker.REMOVALS.add(new RemoveAllRecipes<AssemblyRecipe>(nameDrillLaser, PneumaticRecipeRegistry.getInstance().drillLaserRecipes));
+        CraftTweaker.REMOVALS.add(new RemoveAllRecipes<AssemblyRecipe>(nameDrillLaser, AssemblyRecipe.drillLaserRecipes));
     }
     
     @ZenMethod

@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.common.tileentity;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
 import me.desht.pneumaticcraft.common.recipes.AssemblyRecipe;
-import me.desht.pneumaticcraft.common.recipes.PneumaticRecipeRegistry;
 import me.desht.pneumaticcraft.common.recipes.programs.AssemblyProgram;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
@@ -122,7 +121,7 @@ public class TileEntityAssemblyDrill extends TileEntityAssemblyRobot {
     }
 
     public static ItemStack getDrilledOutputForItem(ItemStack input) {
-        for (AssemblyRecipe recipe : PneumaticRecipeRegistry.getInstance().drillRecipes) {
+        for (AssemblyRecipe recipe : AssemblyRecipe.drillRecipes) {
             if (AssemblyProgram.isValidInput(recipe, input)) return recipe.getOutput().copy();
         }
         return null;

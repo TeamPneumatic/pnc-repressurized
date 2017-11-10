@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.common.recipes.programs;
 import me.desht.pneumaticcraft.common.item.ItemAssemblyProgram;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.recipes.AssemblyRecipe;
-import me.desht.pneumaticcraft.common.recipes.PneumaticRecipeRegistry;
 import me.desht.pneumaticcraft.common.tileentity.*;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.GuiConstants;
@@ -69,8 +68,8 @@ public abstract class AssemblyProgram {
     }
 
     public static AssemblyProgram fromRecipe(AssemblyRecipe recipe) {
-        int meta = PneumaticRecipeRegistry.getInstance().drillRecipes.contains(recipe) ? ItemAssemblyProgram.DRILL_DAMAGE :
-        	PneumaticRecipeRegistry.getInstance().laserRecipes.contains(recipe) ? ItemAssemblyProgram.LASER_DAMAGE :
+        int meta = AssemblyRecipe.drillRecipes.contains(recipe) ? ItemAssemblyProgram.DRILL_DAMAGE :
+                AssemblyRecipe.laserRecipes.contains(recipe) ? ItemAssemblyProgram.LASER_DAMAGE :
                         ItemAssemblyProgram.DRILL_LASER_DAMAGE;
         return ItemAssemblyProgram.getProgramFromItem(meta);
     }
