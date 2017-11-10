@@ -1,6 +1,10 @@
 package me.desht.pneumaticcraft.client.render;
 
+import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.math.BlockPos;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
@@ -9,13 +13,19 @@ import java.util.List;
 import java.util.Random;
 
 public class RenderRangeLines {
-    private final List<RenderProgressingLine> rangeLines = new ArrayList<RenderProgressingLine>();
+    private final List<RenderProgressingLine> rangeLines = new ArrayList<>();
     private int rangeLinesTimer = 0;
     private static Random rand = new Random();
     private final int color;
+    private BlockPos pos;
 
     public RenderRangeLines(int color) {
+        this(color, null);
+    }
+
+    public RenderRangeLines(int color, BlockPos pos) {
         this.color = color;
+        this.pos = pos;
     }
 
     public void resetRendering(double range) {
@@ -53,8 +63,8 @@ public class RenderRangeLines {
         if (rangeLinesTimer > 0) {
             rangeLinesTimer--;
             for (RenderProgressingLine line : rangeLines) {
-                if (line.getProgress() > 0.005F || rand.nextInt(60) == 0) {
-                    line.incProgress(0.01F);
+                if (line.getProgress() > 0.005F || rand.nextInt(15) == 0) {
+                    line.incProgress(0.025F);
                 }
             }
         } else {
@@ -62,7 +72,7 @@ public class RenderRangeLines {
             while (iterator.hasNext()) {
                 RenderProgressingLine line = iterator.next();
                 if (line.getProgress() > 0.005F) {
-                    line.incProgress(0.01F);
+                    line.incProgress(0.025F);
                 }
                 if (rand.nextInt(10) == 0) {
                     iterator.remove();
@@ -72,16 +82,24 @@ public class RenderRangeLines {
     }
 
     public void render() {
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        if (rangeLines.isEmpty()) return;
+
+        GlStateManager.pushMatrix();
+        GlStateManager.disableTexture2D();
+        GlStateManager.enableBlend();
+        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         RenderUtils.glColorHex(color);
-        GL11.glLineWidth(1.0F);
+        EntityPlayer player = PneumaticCraftRepressurized.proxy.getPlayer();
+        if (pos != null) {
+            GlStateManager.translate(pos.getX() - player.posX + 0.5, pos.getY() - player.posY + 0.5, pos.getZ() - player.posZ + 0.5);
+        }
+        GlStateManager.glLineWidth(2.0F);
         for (RenderProgressingLine line : rangeLines) {
             line.render();
         }
-        GL11.glColor4d(1, 1, 1, 1);
-        GL11.glDisable(GL11.GL_BLEND);
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GlStateManager.color(1, 1, 1, 1);
+        GlStateManager.disableBlend();
+        GlStateManager.enableTexture2D();
+        GlStateManager.popMatrix();
     }
 }

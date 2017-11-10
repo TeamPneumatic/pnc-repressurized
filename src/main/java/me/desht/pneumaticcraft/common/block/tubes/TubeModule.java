@@ -201,4 +201,8 @@ public abstract class TubeModule implements ISidedPart {
         }
         return model;
     }
+
+    @SideOnly(Side.CLIENT)
+    public void doExtraRendering() {
+    }
 }

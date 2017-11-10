@@ -19,6 +19,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -55,10 +56,10 @@ public class GuiSecurityStationHacking extends GuiSecurityStationBase {
         int yStart = (height - ySize) / 2;
 
         statusStat = addAnimatedStat("Security Status", new ItemStack(Blockss.SECURITY_STATION), 0xFFFFAA00, false);
-        addAnimatedStat("gui.tab.info", Textures.GUI_INFO_LOCATION, 0xFF8888FF, true).setText("gui.tab.info.tile.securityStation.hacking");
-        addAnimatedStat("gui.tab.upgrades", Textures.GUI_UPGRADES_LOCATION, 0xFF0000FF, true).setText("gui.tab.upgrades.tile.securityStation.hacking");
-        addAnimatedStat(Itemss.NUKE_VIRUS.getUnlocalizedName() + ".name", new ItemStack(Itemss.NUKE_VIRUS), 0xFF18c9e8, false).setText("gui.tab.info.tile.securityStation.nukeVirus");
-        addAnimatedStat(Itemss.STOP_WORM.getUnlocalizedName() + ".name", new ItemStack(Itemss.STOP_WORM), 0xFFc13232, false).setText("gui.tab.info.tile.securityStation.stopWorm");
+        addAnimatedStat("gui.tab.info", Textures.GUI_INFO_LOCATION, 0xFF8888FF, true).setText("gui.tab.info.tile.security_station.hacking");
+        addAnimatedStat("gui.tab.upgrades", Textures.GUI_UPGRADES_LOCATION, 0xFF0000FF, true).setText("gui.tab.upgrades.tile.security_station.hacking");
+        addAnimatedStat(Itemss.NUKE_VIRUS.getUnlocalizedName() + ".name", new ItemStack(Itemss.NUKE_VIRUS), 0xFF18c9e8, false).setText("gui.tab.info.tile.security_station.nukeVirus");
+        addAnimatedStat(Itemss.STOP_WORM.getUnlocalizedName() + ".name", new ItemStack(Itemss.STOP_WORM), 0xFFc13232, false).setText("gui.tab.info.tile.security_station.stopWorm");
 
         if (playerBackgroundBridges == null) {
             playerBackgroundBridges = new NetworkConnectionBackground(this, te, xStart + 21, yStart + 26, 31, 0xAA4444FF);
@@ -181,10 +182,10 @@ public class GuiSecurityStationHacking extends GuiSecurityStationBase {
     }
 
     @Override
-    protected void mouseClicked(int par1, int par2, int par3) throws IOException {
-        if (par3 != 2) super.mouseClicked(par1, par2, par3);
-        hackerBridges.mouseClicked(par1, par2, par3, getSlotAtPosition(par1, par2));
-        if (aiBridges.isTracing() && par1 >= guiLeft + 155 && par1 <= guiLeft + 171 && par2 >= guiTop + 55 && par2 <= guiTop + 75) {
+    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+        if (mouseButton != 2) super.mouseClicked(mouseX, mouseY, mouseButton);
+        hackerBridges.mouseClicked(mouseX, mouseY, mouseButton, getSlotAtPosition(mouseX, mouseY));
+        if (aiBridges.isTracing() && mouseX >= guiLeft + 155 && mouseX <= guiLeft + 171 && mouseY >= guiTop + 55 && mouseY <= guiTop + 75) {
             EntityPlayer player = FMLClientHandler.instance().getClient().player;
             NetworkHandler.sendToServer(new PacketUseItem(Itemss.STOP_WORM, 1));
             PneumaticCraftUtils.consumeInventoryItem(player.inventory, Itemss.STOP_WORM);
@@ -192,39 +193,22 @@ public class GuiSecurityStationHacking extends GuiSecurityStationBase {
         }
     }
 
-    /* @Override
-     protected void drawItemStackTooltip(ItemStack par1ItemStack, int par2, int par3){
-         List list = par1ItemStack.getTooltip(mc.thePlayer, mc.gameSettings.advancedItemTooltips);
-
-         for(int k = 0; k < list.size(); ++k) {
-             if(k == 0) {
-                 list.set(k, "\u00a7" + Integer.toHexString(par1ItemStack.getRarity().rarityColor) + (String)list.get(k));
-             } else {
-                 list.set(k, TextFormatting.GRAY + (String)list.get(k));
-             }
-         }
-
-         handleItemTooltip(par1ItemStack, par2, par3, list);
-         func_102021_a(list, par2, par3);
-     }*/
-    //TODO fix for without NEI
-    public List<String> handleItemTooltip(ItemStack stack, int mousex, int mousey, List<String> currenttip) {
-        if (stack != null) {
-            Slot slot = getSlotAtPosition(mousex, mousey);
-            if (slot != null) {
-                if (hackerBridges.slotHacked[slot.slotNumber]) {
-                    if (!hackerBridges.slotFortified[slot.slotNumber]) {
-                        currenttip.add(TextFormatting.RED + "DETECTION: " + te.getDetectionChance() + "%");
-                        currenttip.add(TextFormatting.YELLOW + "Right-click to fortify");
-                    }
-                } else if (hackerBridges.canHackSlot(slot.slotNumber)) {
+    public void addExtraHackInfo(List<String> currenttip) {
+        int mouseX = Mouse.getX() * this.width / this.mc.displayWidth;
+        int mouseY = this.height - Mouse.getY() * this.height / this.mc.displayHeight - 1;
+        Slot slot = getSlotAtPosition(mouseX, mouseY);
+        if (slot != null) {
+            if (hackerBridges.slotHacked[slot.slotNumber]) {
+                if (!hackerBridges.slotFortified[slot.slotNumber]) {
                     currenttip.add(TextFormatting.RED + "DETECTION: " + te.getDetectionChance() + "%");
-                    currenttip.add(TextFormatting.GREEN + "Left-click to hack");
-
+                    currenttip.add(TextFormatting.YELLOW + "Right-click to fortify");
                 }
+            } else if (hackerBridges.canHackSlot(slot.slotNumber)) {
+                currenttip.add(TextFormatting.RED + "DETECTION: " + te.getDetectionChance() + "%");
+                currenttip.add(TextFormatting.GREEN + "Left-click to hack");
+
             }
         }
-        return currenttip;
     }
 
     public boolean hasNukeViruses() {

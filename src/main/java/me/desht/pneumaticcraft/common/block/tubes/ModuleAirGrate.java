@@ -181,4 +181,8 @@ public class ModuleAirGrate extends TubeModule {
         return ModelAirGrate.class;
     }
 
+    @Override
+    public void doExtraRendering() {
+        rangeLineRenderer.render();
+    }
 }

@@ -111,10 +111,10 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<TileEntityUniv
     }
 
     @Override
-    protected void mouseClicked(int par1, int par2, int par3) throws IOException {
-        super.mouseClicked(par1, par2, par3);
+    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+        super.mouseClicked(mouseX, mouseY, mouseButton);
 
-        nameFilterField.mouseClicked(par1, par2, par3);
+        nameFilterField.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
     @Override

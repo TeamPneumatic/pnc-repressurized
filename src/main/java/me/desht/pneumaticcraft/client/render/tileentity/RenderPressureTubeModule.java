@@ -55,6 +55,7 @@ public class RenderPressureTubeModule extends TileEntitySpecialRenderer<TileEnti
                 }
 
                 module.getModel().renderModel(0.0625f, module.getDirection(), partialTicks);
+                module.doExtraRendering();
 
                 if (module.isFake()) {
                     tile.modules[i] = null;

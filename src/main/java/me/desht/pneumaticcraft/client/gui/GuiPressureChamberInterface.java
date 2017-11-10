@@ -190,11 +190,11 @@ public class GuiPressureChamberInterface extends GuiPneumaticContainerBase<TileE
     }
 
     @Override
-    protected void mouseClicked(int par1, int par2, int par3) throws IOException {
-        super.mouseClicked(par1, par2, par3);
+    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+        super.mouseClicked(mouseX, mouseY, mouseButton);
 
         if (te.filterMode == TileEntityPressureChamberInterface.EnumFilterMode.NAME_BEGINS || te.filterMode == TileEntityPressureChamberInterface.EnumFilterMode.NAME_CONTAINS) {
-            nameFilterField.mouseClicked(par1, par2, par3);
+            nameFilterField.mouseClicked(mouseX, mouseY, mouseButton);
         }
     }
 

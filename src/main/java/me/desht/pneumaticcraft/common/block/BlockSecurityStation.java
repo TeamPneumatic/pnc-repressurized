@@ -52,18 +52,6 @@ public class BlockSecurityStation extends BlockPneumaticCraftModeled {
         return TileEntitySecurityStation.class;
     }
 
-//    @Override
-//    public void setBlockBoundsBasedOnState(IBlockAccess par1IBlockAccess, BlockPos pos) {
-//        setBlockBounds(BBConstants.SECURITY_STATION_MIN_POS, 0F, BBConstants.SECURITY_STATION_MIN_POS, BBConstants.SECURITY_STATION_MAX_POS, BBConstants.SECURITY_STATION_MAX_POS_TOP, BBConstants.SECURITY_STATION_MAX_POS);
-//    }
-//
-//    @Override
-//    public void addCollisionBoxesToList(World world, BlockPos pos, IBlockState state, AxisAlignedBB axisalignedbb, List arraylist, Entity par7Entity) {
-//        setBlockBounds(BBConstants.SECURITY_STATION_MIN_POS, BBConstants.SECURITY_STATION_MIN_POS, BBConstants.SECURITY_STATION_MIN_POS, BBConstants.SECURITY_STATION_MAX_POS, BBConstants.SECURITY_STATION_MAX_POS_TOP, BBConstants.SECURITY_STATION_MAX_POS);
-//        super.addCollisionBoxesToList(world, pos, state, axisalignedbb, arraylist, par7Entity);
-//        setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
-//    }
-
     /**
      * Called when the block is placed in the world.
      */
@@ -108,5 +96,19 @@ public class BlockSecurityStation extends BlockPneumaticCraftModeled {
     private int getPlayerHackLevel(EntityPlayer player) {
         ItemStack armorStack = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
         return armorStack.getItem() == Itemss.PNEUMATIC_HELMET ? ItemPneumaticArmor.getUpgrades(EnumUpgrade.SECURITY, armorStack) : 0;
+    }
+
+    @Override
+    public boolean canProvidePower(IBlockState state) {
+        return true;
+    }
+
+    @Override
+    public int getWeakPower(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
+        TileEntity te = blockAccess.getTileEntity(pos);
+        if (te instanceof TileEntitySecurityStation) {
+            return ((TileEntitySecurityStation) te).shouldEmitRedstone() ? 15 : 0;
+        }
+        return 0;
     }
 }

@@ -161,8 +161,8 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
         }
         firstRun = false;
 
+        upgradeCache.validate();
         if (!world.isRemote) {
-            upgradeCache.validate();
 
             if (this instanceof IHeatExchanger) {
                 ((IHeatExchanger) this).getHeatExchangerLogic(null).update();

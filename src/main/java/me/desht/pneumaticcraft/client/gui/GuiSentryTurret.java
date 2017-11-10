@@ -38,8 +38,8 @@ public class GuiSentryTurret extends GuiPneumaticContainerBase<TileEntitySentryT
     }
 
     @Override
-    protected void mouseClicked(int par1, int par2, int par3) throws IOException {
-        super.mouseClicked(par1, par2, par3);
+    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+        super.mouseClicked(mouseX, mouseY, mouseButton);
         if (!entityFilter.isFocused()) {
             te.setText(0, entityFilter.getText());
             NetworkHandler.sendToServer(new PacketUpdateTextfield(te, 0));

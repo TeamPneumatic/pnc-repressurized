@@ -40,7 +40,7 @@ public class TileEntitySecurityStation extends TileEntityBase implements IGUITex
     public String textFieldText = "";
     private int securityRange;
     private int oldSecurityRange; //range used by the range line renderer, to figure out if the range has been changed.
-    private final RenderRangeLines rangeLineRenderer = new RenderRangeLines(0x33FF0000);
+    private RenderRangeLines rangeLineRenderer;
 
     @GuiSynced
     public int redstoneMode;
@@ -52,6 +52,12 @@ public class TileEntitySecurityStation extends TileEntityBase implements IGUITex
         super(4);
         inventory = new SecurityStationHandler();
         addApplicableUpgrade(EnumUpgrade.ENTITY_TRACKER, EnumUpgrade.SECURITY, EnumUpgrade.RANGE);
+    }
+
+    @Override
+    public void validate() {
+        super.validate();
+        rangeLineRenderer = new RenderRangeLines(0x33FF0000, getPos());
     }
 
     @Override
@@ -176,7 +182,7 @@ public class TileEntitySecurityStation extends TileEntityBase implements IGUITex
     @Override
     @SideOnly(Side.CLIENT)
     public AxisAlignedBB getRenderBoundingBox() {
-        if (!rangeLineRenderer.isCurrentlyRendering()) return super.getRenderBoundingBox();
+        if (rangeLineRenderer == null || !rangeLineRenderer.isCurrentlyRendering()) return super.getRenderBoundingBox();
         int range = getSecurityRange();
         return new AxisAlignedBB(getPos().getX() - range, getPos().getY() - range, getPos().getZ() - range, getPos().getX() + 1 + range, getPos().getY() + 1 + range, getPos().getZ() + 1 + range);
     }

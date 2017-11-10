@@ -58,7 +58,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
     public float oldDishRotation;
     private float dishSpeed;
     @GuiSynced
-    public boolean invertedRedstone;
+    private boolean invertedRedstone;
     @DescSynced
     public boolean isSensorActive;
     @GuiSynced
@@ -66,7 +66,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
     private boolean requestPollPullEvent;
     private final Set<BlockPos> positions = new HashSet<>();
 
-    private int oldSensorRange; //range used by the range line renderer, to figure out if the range has been changed.
+    private int oldSensorRange; // range used by the range line renderer, to figure out if the range has been changed.
     private final RenderRangeLines rangeLineRenderer = new RenderRangeLines(0x330000FF);
 
     private final List<IComputerAccess> attachedComputers = new ArrayList<>(); // keep track of the computers so we can raise a os.pullevent.
@@ -159,7 +159,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
     @Override
     @SideOnly(Side.CLIENT)
     public AxisAlignedBB getRenderBoundingBox() {
-        if (!rangeLineRenderer.isCurrentlyRendering()) return super.getRenderBoundingBox();
+        if (rangeLineRenderer == null || !rangeLineRenderer.isCurrentlyRendering()) return super.getRenderBoundingBox();
         int range = getRange();
         return new AxisAlignedBB(getPos().getX() - range, getPos().getY() - range, getPos().getZ() - range, getPos().getX() + 1 + range, getPos().getY() + 1 + range, getPos().getZ() + 1 + range);
     }

@@ -881,16 +881,16 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
     }
 
     @Override
-    protected void mouseClicked(int x, int y, int par3) throws IOException {
+    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         ItemStack programmedItem = te.getIteminProgrammingSlot();
         if (nameField.isFocused() && !programmedItem.isEmpty()) {
             programmedItem.setStackDisplayName(nameField.getText());
             NetworkHandler.sendToServer(new PacketUpdateTextfield(te, 0));
         }
-        super.mouseClicked(x, y, par3);
+        super.mouseClicked(mouseX, mouseY, mouseButton);
 
-        if (par3 == 1 && showingWidgetProgress == 0) {
-            IProgWidget widget = programmerUnit.getHoveredWidget(x, y);
+        if (mouseButton == 1 && showingWidgetProgress == 0) {
+            IProgWidget widget = programmerUnit.getHoveredWidget(mouseX, mouseY);
             if (widget != null) {
                 GuiScreen screen = widget.getOptionWindow(this);
                 if (screen != null) mc.displayGuiScreen(screen);

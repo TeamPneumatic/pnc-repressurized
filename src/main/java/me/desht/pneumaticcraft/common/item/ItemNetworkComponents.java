@@ -1,6 +1,9 @@
 package me.desht.pneumaticcraft.common.item;
 
+import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
+import me.desht.pneumaticcraft.client.gui.GuiSecurityStationHacking;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
@@ -47,8 +50,14 @@ public class ItemNetworkComponents extends ItemPneumaticSubtyped implements IPro
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
-    public void addInformation(ItemStack stack, World player, List<String> infoList, ITooltipFlag par4) {
+    public void addInformation(ItemStack stack, World worldIn, List<String> curInfo, ITooltipFlag extraInfo) {
+        super.addInformation(stack, worldIn, curInfo, extraInfo);
+
+        if (PneumaticCraftRepressurized.proxy.getClientWorld() != null) {
+            if (Minecraft.getMinecraft().currentScreen instanceof GuiSecurityStationHacking) {
+                ((GuiSecurityStationHacking) Minecraft.getMinecraft().currentScreen).addExtraHackInfo(curInfo);
+            }
+        }
     }
 
     @Override

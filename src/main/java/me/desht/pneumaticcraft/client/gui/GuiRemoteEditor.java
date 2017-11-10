@@ -181,14 +181,14 @@ public class GuiRemoteEditor extends GuiRemote {
     }
 
     @Override
-    protected void mouseClicked(int x, int y, int par3) throws IOException {
-        super.mouseClicked(x, y, par3);
+    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+        super.mouseClicked(mouseX, mouseY, mouseButton);
 
-        if (par3 == 1) {
+        if (mouseButton == 1) {
             for (ActionWidget widget : remoteLayout.getActionWidgets()) {
                 if (!isOutsideProgrammingArea(widget)) {
                     Rectangle bounds = widget.getWidget().getBounds();
-                    if (x >= bounds.x && y >= bounds.y && x <= bounds.x + bounds.width && y <= bounds.y + bounds.height) {
+                    if (mouseX >= bounds.x && mouseY >= bounds.y && mouseX <= bounds.x + bounds.width && mouseY <= bounds.y + bounds.height) {
                         GuiScreen screen = widget.getGui(this);
                         if (screen != null) mc.displayGuiScreen(screen);
                     }

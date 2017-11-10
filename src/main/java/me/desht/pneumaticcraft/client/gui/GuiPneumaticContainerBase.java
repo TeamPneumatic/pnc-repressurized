@@ -383,11 +383,11 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
     }
 
     @Override
-    protected void mouseClicked(int par1, int par2, int par3) throws IOException {
-        super.mouseClicked(par1, par2, par3);
+    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+        super.mouseClicked(mouseX, mouseY, mouseButton);
         for (IGuiWidget widget : widgets) {
-            if (widget.getBounds().contains(par1, par2)) widget.onMouseClicked(par1, par2, par3);
-            else widget.onMouseClickedOutsideBounds(par1, par2, par3);
+            if (widget.getBounds().contains(mouseX, mouseY)) widget.onMouseClicked(mouseX, mouseY, mouseButton);
+            else widget.onMouseClickedOutsideBounds(mouseX, mouseY, mouseButton);
         }
     }
 

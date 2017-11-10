@@ -33,22 +33,8 @@ public class ItemPneumatic extends Item {
         addTooltip(stack, worldIn, curInfo);
     }
 
-//    public void registerItemVariants() {
-//        List<ItemStack> stacks = new ArrayList<ItemStack>();
-//        getSubItems(this, null, stacks);
-//        for (ItemStack stack : stacks) {
-//            ResourceLocation resLoc = new ResourceLocation(Names.MOD_ID, getModelLocation(stack));
-//            ModelBakery.registerItemVariants(this, resLoc);
-//            Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(this, stack.getItemDamage(), new ModelResourceLocation(resLoc, "inventory"));
-//        }
-//    }
-//
-//    protected String getModelLocation(ItemStack stack) {
-//        return stack.getUnlocalizedName().substring(5);
-//    }
-
     public static void addTooltip(ItemStack stack, World world, List<String> curInfo) {
-        String info = "gui.tooltip." + stack.getItem().getUnlocalizedName();
+        String info = "gui.tooltip." + stack.getUnlocalizedName();//getItem().getUnlocalizedName();
         String translatedInfo = I18n.format(info);
         if (!translatedInfo.equals(info)) {
             if (PneumaticCraftRepressurized.proxy.isSneakingInGui()) {

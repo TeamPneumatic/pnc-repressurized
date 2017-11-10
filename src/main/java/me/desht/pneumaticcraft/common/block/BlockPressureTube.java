@@ -118,7 +118,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
                 ConnectionType conn = tube.sidesClosed[i] ? ConnectionType.CLOSED : tube.sidesConnected[i] ? ConnectionType.CONNECTED : ConnectionType.OPEN;
                 state = state.withProperty(CONNECTION_PROPERTIES_3[i], conn);
             }
-            // bit of a hack, but pressure tube should appear to connect to underside of a gas lift
+            // bit of a hack, but pressure tube should appear to connect to underside of gas lift
             if (worldIn.getBlockState(pos.up()).getBlock() == Blockss.GAS_LIFT) {
                 state = state.withProperty(CONNECTION_PROPERTIES_3[EnumFacing.UP.getIndex()], ConnectionType.CONNECTED);
             }
