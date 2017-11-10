@@ -67,13 +67,17 @@ public class Fluids {
     private static <T extends Block & IFluidBlock> Fluid createFluid(String name,
                                                                      Consumer<Fluid> fluidPropertyApplier, Function<Fluid, T> blockFactory) {
         try {
-            Fluid fluid = new FluidPneumaticCraft(name);
-            final boolean useOwnFluid = FluidRegistry.registerFluid(fluid);
-            if (useOwnFluid) {
+            Fluid fluid;
+            Fluid preExistingFluid = FluidRegistry.getFluid(name);
+            if (preExistingFluid != null) {
+                fluid = preExistingFluid;
+                PneumaticCraftRepressurized.logger.warn("Fluid '" + name + "' already registered by another mod: "
+                        + FluidRegistry.getDefaultFluidName(fluid) + " - we'll use it, but it might not be available in block form!");
+            } else {
+                fluid = new FluidPneumaticCraft(name);
+                FluidRegistry.registerFluid(fluid);
                 fluidPropertyApplier.accept(fluid);
                 MOD_FLUID_BLOCKS.add(blockFactory.apply(fluid));
-            } else {
-                fluid = FluidRegistry.getFluid(name);
             }
             FLUIDS.add(fluid);
 
