@@ -90,10 +90,12 @@ public final class PneumaticRegistry {
         void registerXPLiquid(Fluid fluid, int liquidToPointRatio);
 
         /**
-         * Register this fluid as a raw input to the refinery.
+         * Register this fluid as a raw input to the refinery. This methods is deprecated.
+         * You should use {@link IPneumaticRecipeRegistry#registerRefineryRecipe(net.minecraftforge.fluids.FluidStack, net.minecraftforge.fluids.FluidStack...)} instead.
          *
          * @param fluid the fluid to register
          */
+        @Deprecated
         void registerRefineryInput(Fluid fluid);
     }
 }

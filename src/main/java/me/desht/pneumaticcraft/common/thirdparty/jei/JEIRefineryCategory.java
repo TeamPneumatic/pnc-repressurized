@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.thirdparty.jei;
 
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.fluid.Fluids;
+import me.desht.pneumaticcraft.common.recipes.RefineryRecipe;
 import me.desht.pneumaticcraft.common.thirdparty.jei.JEIRefineryCategory.RefineryRecipeWrapper;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefinery;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -36,16 +37,15 @@ public class JEIRefineryCategory extends PneumaticCraftCategory<RefineryRecipeWr
     static class RefineryRecipeWrapper extends PneumaticCraftCategory.MultipleInputOutputRecipeWrapper {
         final int refineries;
 
-        private RefineryRecipeWrapper(int refineries, int[] outputs) {
-            this.refineries = refineries;
-            addInputLiquid(new FluidStack(Fluids.OIL, 10), 2, 10);
+        private RefineryRecipeWrapper(RefineryRecipe recipe) {
+            this.refineries = recipe.outputs.length;
+            addInputLiquid(recipe.input, 2, 10);
             int x = 69;
             int y = 18;
-            for (int i = 0; i < outputs.length; i++) {
-                if (outputs[i] == 0) continue;
+            for (int i = 0; i < recipe.outputs.length; i++) {
                 x += 20;
                 y -= 4;
-                addOutputLiquid(new FluidStack(TileEntityRefinery.getRefiningFluids()[i], outputs[i]), x, y);
+                addOutputLiquid(recipe.outputs[i], x, y);
             }
             setUsedTemperature(26, 18, 373);
         }
@@ -54,8 +54,8 @@ public class JEIRefineryCategory extends PneumaticCraftCategory<RefineryRecipeWr
 
     List<MultipleInputOutputRecipeWrapper> getAllRecipes() {
         List<MultipleInputOutputRecipeWrapper> recipes = new ArrayList<>();
-        for (int i = 0; i < TileEntityRefinery.REFINING_TABLE.length; i++) {
-            recipes.add(new RefineryRecipeWrapper(2 + i, TileEntityRefinery.REFINING_TABLE[i]));
+        for (RefineryRecipe recipe : RefineryRecipe.recipes) {
+        	recipes.add(new RefineryRecipeWrapper(recipe));
         }
         return recipes;
     }

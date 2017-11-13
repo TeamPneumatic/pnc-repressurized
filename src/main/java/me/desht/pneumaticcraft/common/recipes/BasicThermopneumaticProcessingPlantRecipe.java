@@ -6,10 +6,14 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.Nonnull;
 
 public class BasicThermopneumaticProcessingPlantRecipe implements IThermopneumaticProcessingPlantRecipe {
-
+	public static List<IThermopneumaticProcessingPlantRecipe> recipes = new ArrayList<>();
+	
     private final FluidStack inputLiquid, outputLiquid;
     private final ItemStack inputItem;
     private final float requiredPressure;

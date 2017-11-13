@@ -11,6 +11,7 @@ import me.desht.pneumaticcraft.api.tileentity.IHeatRegistry;
 import me.desht.pneumaticcraft.api.universalSensor.ISensorRegistry;
 import me.desht.pneumaticcraft.client.GuiRegistry;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.PneumaticHelmetRegistry;
+import me.desht.pneumaticcraft.common.fluid.Fluids;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerManager;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.pressure.AirHandlerSupplier;
@@ -79,8 +80,13 @@ public class PneumaticCraftAPIHandler implements IPneumaticCraftInterface {
     }
 
     @Override
+    @Deprecated
     public void registerRefineryInput(Fluid fluid) {
-        TileEntityRefinery.registerInputFluid(fluid);
+    	// Register old refinery mapping for compatibility 
+    	PneumaticRecipeRegistry registry = PneumaticRecipeRegistry.getInstance();
+    	registry.registerRefineryRecipe(new FluidStack(fluid, 10), new FluidStack(Fluids.DIESEL, 4), new FluidStack(Fluids.LPG, 2));
+    	registry.registerRefineryRecipe(new FluidStack(fluid, 10), new FluidStack(Fluids.DIESEL, 2), new FluidStack(Fluids.KEROSENE, 3), new FluidStack(Fluids.LPG, 2));
+    	registry.registerRefineryRecipe(new FluidStack(fluid, 10), new FluidStack(Fluids.DIESEL, 2), new FluidStack(Fluids.KEROSENE, 3), new FluidStack(Fluids.GASOLINE, 3), new FluidStack(Fluids.LPG, 2));
     }
 
     @Override

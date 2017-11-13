@@ -44,19 +44,19 @@ public class ThermopneumaticProcessingPlant {
 	@ZenMethod
     public static void removeRecipe(IIngredient output)
     {
-		CraftTweaker.REMOVALS.add(new Remove(PneumaticRecipeRegistry.getInstance().thermopneumaticProcessingPlantRecipes, output));
+		CraftTweaker.REMOVALS.add(new Remove(BasicThermopneumaticProcessingPlantRecipe.recipes, output));
     }
 
 	@ZenMethod
 	public static void removeAllRecipes() {
-		CraftTweaker.REMOVALS.add(new RemoveAllRecipes<IThermopneumaticProcessingPlantRecipe>(name, PneumaticRecipeRegistry.getInstance().thermopneumaticProcessingPlantRecipes));
+		CraftTweaker.REMOVALS.add(new RemoveAllRecipes<IThermopneumaticProcessingPlantRecipe>(name, BasicThermopneumaticProcessingPlantRecipe.recipes));
 	}
 	
     private static class Add extends BaseListAddition<IThermopneumaticProcessingPlantRecipe> {
     	private final ILiquidStack output;
     	
         public Add(IThermopneumaticProcessingPlantRecipe recipe, ILiquidStack output) {
-            super(ThermopneumaticProcessingPlant.name, PneumaticRecipeRegistry.getInstance().thermopneumaticProcessingPlantRecipes);
+            super(ThermopneumaticProcessingPlant.name, BasicThermopneumaticProcessingPlantRecipe.recipes);
             this.output = output;
             recipes.add(recipe);
         }

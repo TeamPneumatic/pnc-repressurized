@@ -28,7 +28,7 @@ public class JEI implements IModPlugin {
     public void register(IModRegistry registry) {
         IJeiHelpers jeiHelpers = registry.getJeiHelpers();
 
-        registry.addRecipes(PneumaticRecipeRegistry.getInstance().thermopneumaticProcessingPlantRecipes, ModCategoryUid.THERMO_PNEUMATIC);
+        registry.addRecipes(BasicThermopneumaticProcessingPlantRecipe.recipes, ModCategoryUid.THERMO_PNEUMATIC);
         registry.addRecipes(PressureChamberRecipe.chamberRecipes, ModCategoryUid.PRESSURE_CHAMBER);
         registry.addRecipes(new JEIPlasticMixerCategory(jeiHelpers).getAllRecipes(), ModCategoryUid.PLASTIC_MIXER);
         registry.addRecipes(new JEIRefineryCategory(jeiHelpers).getAllRecipes(), ModCategoryUid.REFINERY);

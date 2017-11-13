@@ -16,7 +16,7 @@ public class RenderRefinery extends TileEntitySpecialRenderer<TileEntityRefinery
 
     @Override
     public void render(TileEntityRefinery te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
-        if (te.getOilTank().getFluidAmount() == 0 && te.getOutputTank().getFluidAmount() == 0) return;
+        if (te.getInputTank().getFluidAmount() == 0 && te.getOutputTank().getFluidAmount() == 0) return;
 
         GlStateManager.pushMatrix();
         GlStateManager.translate(x, y, z);
@@ -30,7 +30,7 @@ public class RenderRefinery extends TileEntitySpecialRenderer<TileEntityRefinery
 
         TankRenderHelper.doRotate(te.getRotation());
 
-        FluidTank oilTank = te.getOilTank();
+        FluidTank oilTank = te.getInputTank();
         if (oilTank.getFluidAmount() > 0) {
             AxisAlignedBB bounds = getRenderBounds(oilTank);
             PneumaticCraftUtils.renderFluid(oilTank.getFluid().getFluid(), bounds);

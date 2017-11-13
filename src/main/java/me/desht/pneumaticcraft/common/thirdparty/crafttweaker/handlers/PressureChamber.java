@@ -15,8 +15,14 @@ import crafttweaker.annotations.ModOnly;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.item.IIngredient;
 import crafttweaker.api.item.IItemStack;
+import crafttweaker.api.liquid.ILiquidStack;
+import crafttweaker.api.oredict.IOreDict;
+import crafttweaker.api.oredict.IOreDictEntry;
+import crafttweaker.api.oredict.IngredientOreDict;
+import crafttweaker.api.item.IIngredient;
 import me.desht.pneumaticcraft.common.recipes.PressureChamberRecipe;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.CraftTweaker;
+import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.util.OreDictHelper;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.util.RemoveAllRecipes;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
@@ -28,12 +34,10 @@ public class PressureChamber {
 	
 	public static final String name = "PneumaticCraft Pressure Chamber";
 	
-	
-    @ZenMethod
-    public static void addRecipe(IItemStack[] input, double pressure, IItemStack[] output, boolean asBlock)
-    {
-    	CraftTweaker.ADDITIONS.add(new Add(new PressureChamberRecipe(toStacks(input), (float) pressure, toStacks(output), asBlock)));
-    }
+	@ZenMethod
+	public static void addRecipe(IIngredient[] input, double pressure, IItemStack[] output) {
+		CraftTweaker.ADDITIONS.add(new Add(new PressureChamberRecipe(OreDictHelper.toInput(input), (float)pressure, toStacks(output))));
+	}
     
     @ZenMethod
     public static void removeRecipe(IIngredient[] output)

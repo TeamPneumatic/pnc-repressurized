@@ -5,8 +5,8 @@ import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.common.block.Blockss;
-import me.desht.pneumaticcraft.common.fluid.Fluids;
 import me.desht.pneumaticcraft.common.network.*;
+import me.desht.pneumaticcraft.common.recipes.RefineryRecipe;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -32,49 +32,36 @@ public class TileEntityRefinery extends TileEntityBase implements IHeatExchanger
     @GuiSynced
     @DescSynced
     @LazySynced
-    private final OilTank oilTank = new OilTank(PneumaticValues.NORMAL_TANK_CAPACITY);
+    private final OilTank inputTank = new OilTank(PneumaticValues.NORMAL_TANK_CAPACITY);
+    
     @GuiSynced
     @DescSynced
     @LazySynced
     private final FluidTank outputTank = new FluidTank(PneumaticValues.NORMAL_TANK_CAPACITY);
+    
     @GuiSynced
     private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().getHeatExchangerLogic();
+    
     @DescSynced
-    private int oilTankAmount, outputTankAmount;//amount divided by 100 to decrease network load.
+    private int inputTankAmount, outputTankAmount; //amount divided by 100 to decrease network load.
+    
     @GuiSynced
     private int redstoneMode;
+
+    @GuiSynced
+    private boolean blocked;
+    
+    private RefineryRecipe currentRecipe;
     private int workTimer = 0;
     private int comparatorValue;
 
     private final RefineryFluidHandler refineryFluidHandler = new RefineryFluidHandler();
 
-    /**
-     * The amounts of LPG, Gasoline, Kerosine and Diesel produced per 10mL Oil, depending on how many refineries are stacked on top of eachother.
-     * Type \ Refineries | 2 | 3 | 4
-     * ------------------------------
-     * LPG               | 2 | 2 | 2
-     * Gasoline          | - | - | 3
-     * Kerosene          | - | 3 | 3
-     * Diesel            | 4 | 2 | 2
-     */
-    public static final int[][] REFINING_TABLE = new int[][]{{4, 0, 0, 2}, {2, 3, 0, 2}, {2, 3, 3, 2}};
-    private final Fluid[] refiningFluids = getRefiningFluids();
-
-    private static final Set<String> validFluids = new HashSet<>();
-
     public TileEntityRefinery() {
     }
 
-    public static void registerInputFluid(Fluid fluid) {
-        validFluids.add(fluid.getName());
-    }
-
-    public static boolean isInputFluidValid(Fluid fluid) {
-        return validFluids.contains(fluid.getName());
-    }
-
-    public static Fluid[] getRefiningFluids() {
-        return new Fluid[]{Fluids.DIESEL, Fluids.KEROSENE, Fluids.GASOLINE, Fluids.LPG};
+    public static boolean isInputFluidValid(Fluid fluid, int size) {
+        return RefineryRecipe.getRecipe(fluid, size).isPresent();
     }
 
     @Override
@@ -86,29 +73,37 @@ public class TileEntityRefinery extends TileEntityBase implements IHeatExchanger
     public void update() {
         super.update();
         if (!getWorld().isRemote) {
-            oilTankAmount = oilTank.getFluidAmount() / 100;
+            inputTankAmount = inputTank.getFluidAmount() / 100;
             outputTankAmount = outputTank.getFluidAmount() / 100;
 
             if (isMaster()) {
                 List<TileEntityRefinery> refineries = getRefineries();
-                if (redstoneAllows() && oilTank.getFluidAmount() >= 10 && isInputFluidValid(oilTank.getFluid().getFluid())) {
-                    if (refineries.size() > 1 && refineries.size() <= refiningFluids.length && refine(refineries, true)) {
-                        int progress = Math.max(0, ((int) heatExchanger.getTemperature() - 343) / 30);
-                        progress = Math.min(5, progress);
-                        heatExchanger.addHeat(-progress);
-                        workTimer += progress;
-                        while (workTimer >= 20 && oilTank.getFluidAmount() >= 10) {
-                            workTimer -= 20;
+                Optional<RefineryRecipe> recipe = RefineryRecipe.getRecipe(inputTank.getFluidAmount() > 0 ? inputTank.getFluid().getFluid() : null, refineries.size());
+                
+                if(recipe.isPresent()) {
+                	currentRecipe = recipe.get();
 
-                            refine(refineries, false);
-                            oilTank.drain(10, true);
-                            for (int i = 0; i < 5; i++)
-                                NetworkHandler.sendToAllAround(new PacketSpawnParticle(EnumParticleTypes.SMOKE_LARGE, getPos().getX() + getWorld().rand.nextDouble(), getPos().getY() + refineries.size(), getPos().getZ() + getWorld().rand.nextDouble(), 0, 0, 0), getWorld());
-
-                        }
-                    } else {
-                        workTimer = 0;
-                    }
+                	if (redstoneAllows() && inputTank.getFluidAmount() >= currentRecipe.input.amount) {
+	                    if (refineries.size() > 1 && refine(refineries, true)) {
+	                        int progress = Math.max(0, ((int) heatExchanger.getTemperature() - 343) / 30);
+	                        progress = Math.min(5, progress);
+	                        heatExchanger.addHeat(-progress);
+	                        workTimer += progress;
+	                        while (workTimer >= 20 && inputTank.getFluidAmount() >= currentRecipe.input.amount) {
+	                            workTimer -= 20;
+	
+	                            refine(refineries, false);
+	                            inputTank.drain(currentRecipe.input.amount, true);
+	                            for (int i = 0; i < 5; i++)
+	                                NetworkHandler.sendToAllAround(new PacketSpawnParticle(EnumParticleTypes.SMOKE_LARGE, getPos().getX() + getWorld().rand.nextDouble(), getPos().getY() + refineries.size(), getPos().getZ() + getWorld().rand.nextDouble(), 0, 0, 0), getWorld());
+	
+	                        }
+	                    } else {
+	                        workTimer = 0;
+	                    }
+	                }
+                } else {
+                	currentRecipe = null;
                 }
                 updateComparatorValue(refineries);
             }
@@ -127,17 +122,30 @@ public class TileEntityRefinery extends TileEntityBase implements IHeatExchanger
     }
 
     public boolean refine(List<TileEntityRefinery> refineries, boolean simulate) {
-        int[] outputTable = REFINING_TABLE[refineries.size() - 2];
+    	if(currentRecipe == null) {
+    		blocked = true;
+    		return !blocked;
+    	}
+    	
+        FluidStack[] outputs = currentRecipe.outputs;
 
         int i = 0;
         for (TileEntityRefinery refinery : refineries) {
-            while (outputTable[i] == 0)
-                i++;
-            if (outputTable[i] != refinery.outputTank.fill(new FluidStack(refiningFluids[i], outputTable[i]), !simulate))
-                return false;
+        	if (i >= outputs.length - 1) {
+        		blocked = false;
+        		return !blocked;
+        	}
+        	
+            if (outputs[i].amount != refinery.outputTank.fill(outputs[i], !simulate)) {
+            	blocked = true;
+            	return !blocked;
+            }
+            
             i++;
         }
-        return true;
+
+        blocked = false;
+        return !blocked;
     }
 
     public TileEntityRefinery getMasterRefinery() {
@@ -176,13 +184,18 @@ public class TileEntityRefinery extends TileEntityBase implements IHeatExchanger
     }
 
     @SideOnly(Side.CLIENT)
-    public FluidTank getOilTank() {
-        return oilTank;
+    public FluidTank getInputTank() {
+        return inputTank;
     }
 
     @SideOnly(Side.CLIENT)
     public FluidTank getOutputTank() {
         return outputTank;
+    }
+    
+    @SideOnly(Side.CLIENT)
+    public boolean isBlocked() {
+        return blocked;
     }
 
     @Override
@@ -190,7 +203,7 @@ public class TileEntityRefinery extends TileEntityBase implements IHeatExchanger
         super.writeToNBT(tag);
 
         NBTTagCompound tankTag = new NBTTagCompound();
-        oilTank.writeToNBT(tankTag);
+        inputTank.writeToNBT(tankTag);
         tag.setTag("oilTank", tankTag);
 
         tankTag = new NBTTagCompound();
@@ -205,7 +218,7 @@ public class TileEntityRefinery extends TileEntityBase implements IHeatExchanger
     @Override
     public void readFromNBT(NBTTagCompound tag) {
         super.readFromNBT(tag);
-        oilTank.readFromNBT(tag.getCompoundTag("oilTank"));
+        inputTank.readFromNBT(tag.getCompoundTag("oilTank"));
         outputTank.readFromNBT(tag.getCompoundTag("outputTank"));
         redstoneMode = tag.getByte("redstoneMode");
     }
@@ -230,7 +243,7 @@ public class TileEntityRefinery extends TileEntityBase implements IHeatExchanger
 
     private void updateComparatorValue(List<TileEntityRefinery> refineries) {
         int value;
-        if (oilTank.getFluidAmount() < 10 || refineries.size() < 2 || refineries.size() > refiningFluids.length) {
+        if (inputTank.getFluidAmount() < 10 || refineries.size() < 2 || currentRecipe == null || refineries.size() > currentRecipe.outputs.length) {
             value = 0;
         } else {
             value = refine(refineries, true) ? 15 : 0;
@@ -264,7 +277,7 @@ public class TileEntityRefinery extends TileEntityBase implements IHeatExchanger
     @Nonnull
     @Override
     public Map<String, FluidTank> getSerializableTanks() {
-        return ImmutableMap.of("OilTank", oilTank, "OutputTank", outputTank);
+        return ImmutableMap.of("OilTank", inputTank, "OutputTank", outputTank);
     }
 
 
@@ -275,22 +288,22 @@ public class TileEntityRefinery extends TileEntityBase implements IHeatExchanger
 
         @Override
         public boolean canFillFluidType(FluidStack fluid) {
-            return isInputFluidValid(fluid.getFluid());
+            return isInputFluidValid(fluid.getFluid(), 1);
         }
     }
 
     private class RefineryFluidHandler implements IFluidHandler {
         @Override
         public IFluidTankProperties[] getTankProperties() {
-            return ArrayUtils.addAll(getMasterRefinery().oilTank.getTankProperties(), outputTank.getTankProperties());
+            return ArrayUtils.addAll(getMasterRefinery().inputTank.getTankProperties(), outputTank.getTankProperties());
         }
 
         @Override
         public int fill(FluidStack resource, boolean doFill) {
             if (isMaster()) {
-                return oilTank.fill(resource, doFill);
+                return inputTank.fill(resource, doFill);
             } else {
-                return getMasterRefinery().oilTank.fill(resource, doFill);
+                return getMasterRefinery().inputTank.fill(resource, doFill);
             }
         }
 
