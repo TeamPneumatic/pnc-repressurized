@@ -49,7 +49,6 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
     private final EntityPlayer player;
     private GuiPastebin pastebinGui;
 
-    //  private GuiButton redstoneButton;
     private GuiButtonSpecial importButton;
     private GuiButtonSpecial exportButton;
     private GuiButtonSpecial allWidgetsButton;
@@ -668,14 +667,14 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         if (showingAllWidgets) {
             int maxProgress = maxPage * 22;
             if (showingWidgetProgress < maxProgress) {
-                showingWidgetProgress += 30;
+                showingWidgetProgress += 60;
                 if (showingWidgetProgress >= maxProgress) {
                     showingWidgetProgress = maxProgress;
                     updateVisibleProgWidgets();
                 }
             }
         } else {
-            showingWidgetProgress -= 30;
+            showingWidgetProgress -= 60;
             if (showingWidgetProgress < 0) showingWidgetProgress = 0;
         }
 

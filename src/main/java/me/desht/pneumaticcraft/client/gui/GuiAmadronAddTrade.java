@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.client.gui.semiblock.GuiLogisticsLiquidFilter;
 import me.desht.pneumaticcraft.client.gui.widget.IGuiWidget;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetFluidFilter;
@@ -188,6 +189,7 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase {
     public void actionPerformed(IGuiWidget widget) {
         if (widget.getID() == 6 || widget.getID() == 7) {
             gpsSearchGui = new GuiInventorySearcher(FMLClientHandler.instance().getClientPlayerEntity());
+            gpsSearchGui.setStackPredicate(itemStack -> itemStack.getItem() instanceof IPositionProvider);
             isSettingInput = widget.getID() == 6;
             ItemStack gps = new ItemStack(Itemss.GPS_TOOL);
             BlockPos pos;

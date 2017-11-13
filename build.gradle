@@ -99,6 +99,9 @@ dependencies {
 	runtime "CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-${crafttweaker_version}"
 	deobfCompile "com.blamejared:MTLib:${mtlib_version}"
     // compile "igwmod:IGW-Mod-1.9.4:1.3.0-5:userdev"
+    deobfCompile("appeng:appliedenergistics2:${ae2_version}:api") {
+        transitive = false
+    }
 }
 
 processResources {

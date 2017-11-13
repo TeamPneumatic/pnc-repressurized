@@ -45,6 +45,7 @@ public class WidgetComboBox extends WidgetTextField {
     @Override
     public void postRender(int mouseX, int mouseY, float partialTick) {
         super.postRender(mouseX, mouseY, partialTick);
+        fontRenderer.drawString("\u25bc", x + width - 6, y + 1, 0xc0c0c0);
         if (enabled && isFocused()) {
             List<String> applicableElements = getApplicableElements();
             drawRect(x - 1, y + height + 1, x + width + 1, y + height + 3 + applicableElements.size() * fontRenderer.FONT_HEIGHT, 0xFFA0A0A0);
@@ -52,7 +53,10 @@ public class WidgetComboBox extends WidgetTextField {
             for (int i = 0; i < applicableElements.size(); i++) {
                 String element = applicableElements.get(i);
                 fontRenderer.drawStringWithShadow(fontRenderer.trimStringToWidth(element, getWidth()), x + 4, y + height + 2 + i * fontRenderer.FONT_HEIGHT, 0xE0E0E0);
+                fontRenderer.drawString("\u25bc", x + width - 6, y + 1, 0xc0c0c0);
             }
+        } else {
+
         }
     }
 
