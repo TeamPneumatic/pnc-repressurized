@@ -179,7 +179,7 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
 
         if(!world.isRemote) {
             if(needToCheckForInterface) {
-                if(Loader.isModLoaded(ModIds.AE2) && !world.isRemote && aeMode && gridNode == null) {
+                if(Loader.isModLoaded(ModIds.AE2) && aeMode && gridNode == null) {
                     needToCheckForInterface = checkForInterface();
                 } else {
                 	needToCheckForInterface = false;
@@ -238,7 +238,7 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
 
     @Optional.Method(modid = ModIds.AE2)
     public boolean isPlacedOnInterface(){
-        return getTileEntity() != null && AEApi.instance().definitions().blocks().iface().maybeBlock().get() == getTileEntity().getBlockType();
+        return AEApi.instance().definitions().blocks().iface().maybeEntity().map(e -> e.isInstance(getTileEntity())).orElse(false);
     }
 
     @Optional.Method(modid = ModIds.AE2)
@@ -249,7 +249,7 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
                 if(((IGridHost)te).getGridNode(null) == null) return true;
                 if(getGridNode(null) == null) return true;
                 try {
-                    AEApi.instance().grid().createGridConnection(getGridNode(null), ((IGridHost)te).getGridNode(null));
+                    AEApi.instance().grid().createGridConnection(((IGridHost)te).getGridNode(null), getGridNode(null));
                 } catch(FailedConnectionException e) {
                     Log.error("Couldn't connect to an ME Interface!");
                     e.printStackTrace();
