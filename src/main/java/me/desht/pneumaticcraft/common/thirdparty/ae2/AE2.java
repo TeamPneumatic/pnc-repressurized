@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.thirdparty.ae2;
 
+import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
 
 public class AE2 implements IThirdParty {
@@ -10,7 +11,7 @@ public class AE2 implements IThirdParty {
 
     @Override
     public void init() {
-        //TODO AE2 dep PneumaticRegistry.getInstance().registerInventoryItem(new AE2DiskInventoryItemHandler());
+    	PneumaticRegistry.getInstance().getItemRegistry().registerInventoryItem(new AE2DiskInventoryItemHandler());
     }
 
     @Override
