@@ -1,5 +1,7 @@
 package me.desht.pneumaticcraft.client.gui.programmer;
 
+import com.google.common.collect.Lists;
+import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.client.gui.GuiButtonSpecial;
 import me.desht.pneumaticcraft.client.gui.GuiInventorySearcher;
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
@@ -14,12 +16,12 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.FMLClientHandler;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Predicate;
 
 public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
     private GuiInventorySearcher invSearchGui;
@@ -44,8 +46,6 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
         boolean advancedMode = ConfigHandler.getProgrammerDifficulty() == 2;
         GuiButtonSpecial gpsButton1 = new GuiButtonSpecial(0, guiLeft + (advancedMode ? 6 : 55), guiTop + 20, 20, 20, "");
         GuiButtonSpecial gpsButton2 = new GuiButtonSpecial(1, guiLeft + (advancedMode ? 133 : 182), guiTop + 20, 20, 20, "");
-        gpsButton1.setTooltipText(I18n.format("gui.progWidget.area.selectGPS1"));
-        gpsButton2.setTooltipText(I18n.format("gui.progWidget.area.selectGPS2"));
         gpsButton1.setRenderStacks(new ItemStack(Itemss.GPS_TOOL));
         gpsButton2.setRenderStacks(new ItemStack(Itemss.GPS_TOOL));
         buttonList.add(gpsButton1);
@@ -97,6 +97,18 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
                 }
             }
         }
+
+        List<String> b1List = Lists.newArrayList(I18n.format("gui.progWidget.area.selectGPS1"));
+        if (widget.x1 != 0 || widget.y1 != 0 || widget.z1 != 0) {
+            b1List.add(String.format(TextFormatting.GRAY + "[Current] %d, %d, %d", widget.x1, widget.y1, widget.z1));
+        }
+        gpsButton1.setTooltipText(b1List);
+
+        List<String> b2List = Lists.newArrayList(I18n.format("gui.progWidget.area.selectGPS2"));
+        if (widget.x2 != 0 || widget.y2 != 0 || widget.z2 != 0) {
+            b2List.add(String.format(TextFormatting.GRAY + "[Current] %d, %d, %d", widget.x2, widget.y2, widget.z2));
+        }
+        gpsButton2.setTooltipText(b2List);
     }
 
     @Override
@@ -112,6 +124,7 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
     public void actionPerformed(GuiButton button) throws IOException {
         if (button.id == 0 || button.id == 1) {
             invSearchGui = new GuiInventorySearcher(FMLClientHandler.instance().getClient().player);
+            invSearchGui.setStackPredicate(itemStack -> itemStack.getItem() instanceof IPositionProvider);
             ItemStack gps = new ItemStack(Itemss.GPS_TOOL);
             if (button.id == 0) {
                 ItemGPSTool.setGPSLocation(gps, new BlockPos(widget.x1, widget.y1, widget.z1));

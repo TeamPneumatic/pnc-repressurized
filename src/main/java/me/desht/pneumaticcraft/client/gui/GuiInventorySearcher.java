@@ -15,19 +15,25 @@ import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
+import java.util.function.Predicate;
 
 @SideOnly(Side.CLIENT)
 public class GuiInventorySearcher extends GuiContainer {
     private final ItemStackHandler inventory = new ItemStackHandler(1);
     private final GuiScreen parentScreen;
+    private Predicate<ItemStack> stackPredicate = itemStack -> true;
 
     public GuiInventorySearcher(EntityPlayer par1EntityPlayer) {
         super(new ContainerInventorySearcher(par1EntityPlayer.inventory));
         par1EntityPlayer.openContainer = inventorySlots;
         allowUserInput = true;
-        ySize = 176;//TODO change
+        ySize = 176; //TODO change
         parentScreen = FMLClientHandler.instance().getClient().currentScreen;
         ((ContainerInventorySearcher) inventorySlots).init(inventory);
+    }
+
+    public void setStackPredicate(Predicate<ItemStack> predicate) {
+        stackPredicate = predicate;
     }
 
     @Nonnull
@@ -36,7 +42,11 @@ public class GuiInventorySearcher extends GuiContainer {
     }
 
     public void setSearchStack(@Nonnull ItemStack stack) {
-        inventory.setStackInSlot(0, stack);
+        if (!stack.isEmpty() && stackPredicate.test(stack)) {
+            stack = stack.copy();
+            stack.setCount(1);
+            inventory.setStackInSlot(0, stack);
+        }
     }
 
     @Override
@@ -45,12 +55,7 @@ public class GuiInventorySearcher extends GuiContainer {
             if (par1Slot.slotNumber == 36) {
                 par1Slot.putStack(ItemStack.EMPTY);
             } else {
-                ItemStack stack = par1Slot.getStack();
-                if (!stack.isEmpty()) {
-                    stack = stack.copy();
-                    stack.setCount(1);
-                }
-                inventory.setStackInSlot(0, stack);
+                setSearchStack(par1Slot.getStack());
             }
         }
     }
@@ -85,6 +90,7 @@ public class GuiInventorySearcher extends GuiContainer {
     @Override
     public void drawScreen(int par1, int par2, float par3) {
         super.drawScreen(par1, par2, par3);
+        renderHoveredToolTip(par1, par2);
         /*
                 GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
                 GL11.glDisable(GL11.GL_LIGHTING);*/
@@ -95,10 +101,10 @@ public class GuiInventorySearcher extends GuiContainer {
      */
     @Override
     protected void drawGuiContainerBackgroundLayer(float par1, int par2, int par3) {
+        drawDefaultBackground();
         mc.getTextureManager().bindTexture(Textures.GUI_INVENTORY_SEARCHER);
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
         drawTexturedModalRect(xStart, yStart, 0, 0, xSize, ySize);
     }
-
 }

@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.gui.programmer;
 
+import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.client.gui.GuiButtonSpecial;
 import me.desht.pneumaticcraft.client.gui.GuiInventorySearcher;
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
@@ -88,6 +89,7 @@ public class GuiProgWidgetCoordinate extends GuiProgWidgetAreaShow<ProgWidgetCoo
     public void actionPerformed(GuiButton button) throws IOException {
         if (button.id == 0) {
             invSearchGui = new GuiInventorySearcher(FMLClientHandler.instance().getClient().player);
+            invSearchGui.setStackPredicate(itemStack -> itemStack.getItem() instanceof IPositionProvider);
             BlockPos area = widget.getRawCoordinate();
             ItemStack gps = new ItemStack(Itemss.GPS_TOOL);
             ItemGPSTool.setGPSLocation(gps, area);

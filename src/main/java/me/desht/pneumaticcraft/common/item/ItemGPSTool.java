@@ -1,5 +1,7 @@
 package me.desht.pneumaticcraft.common.item;
 
+import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
+import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.client.gui.GuiGPSTool;
 import me.desht.pneumaticcraft.common.NBTUtil;
 import me.desht.pneumaticcraft.common.remote.GlobalVariableManager;
@@ -20,9 +22,10 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
-public class ItemGPSTool extends ItemPneumatic {
+public class ItemGPSTool extends ItemPneumatic implements IPositionProvider {
     public ItemGPSTool() {
         super("gps_tool");
         setMaxStackSize(1);
@@ -79,7 +82,7 @@ public class ItemGPSTool extends ItemPneumatic {
         NBTTagCompound compound = gpsTool.getTagCompound();
         if (compound != null) {
             String var = getVariable(gpsTool);
-            if (!var.equals("") && FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER) {
+            if (!var.equals("") && PneumaticCraftRepressurized.proxy.getClientWorld() == null) {
                 BlockPos pos = GlobalVariableManager.getInstance().getPos(var);
                 setGPSLocation(gpsTool, pos);
             }
@@ -108,5 +111,10 @@ public class ItemGPSTool extends ItemPneumatic {
 
     public static String getVariable(ItemStack gpsTool) {
         return gpsTool.hasTagCompound() ? gpsTool.getTagCompound().getString("variable") : "";
+    }
+
+    @Override
+    public BlockPos getStoredPos(@Nonnull ItemStack stack) {
+        return getGPSLocation(stack);
     }
 }
