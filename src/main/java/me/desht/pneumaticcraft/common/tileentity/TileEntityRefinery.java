@@ -131,7 +131,7 @@ public class TileEntityRefinery extends TileEntityBase implements IHeatExchanger
 
         int i = 0;
         for (TileEntityRefinery refinery : refineries) {
-        	if (i >= outputs.length - 1) {
+        	if (i > outputs.length - 1) {
         		blocked = false;
         		return !blocked;
         	}
@@ -288,7 +288,7 @@ public class TileEntityRefinery extends TileEntityBase implements IHeatExchanger
 
         @Override
         public boolean canFillFluidType(FluidStack fluid) {
-            return isInputFluidValid(fluid.getFluid(), 1);
+            return isInputFluidValid(fluid.getFluid(), 4);
         }
     }
 

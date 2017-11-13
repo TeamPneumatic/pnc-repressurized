@@ -180,7 +180,7 @@ public class EventHandlerPneumaticCraft {
                     event.setFilledBucket(FluidUtil.getFilledBucket(new FluidStack(fluid, 1000)));
                     event.getWorld().setBlockToAir(rtr.getBlockPos());
                     event.setResult(Result.ALLOW);
-                    if (TileEntityRefinery.isInputFluidValid(fluid, 1) && event.getEntityPlayer() instanceof EntityPlayerMP) {
+                    if (TileEntityRefinery.isInputFluidValid(fluid, 4) && event.getEntityPlayer() instanceof EntityPlayerMP) {
                         AdvancementTriggers.OIL_BUCKET.trigger((EntityPlayerMP) event.getEntityPlayer());
                     }
                 }
