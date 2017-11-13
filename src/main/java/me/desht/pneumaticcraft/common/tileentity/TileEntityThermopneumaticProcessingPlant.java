@@ -9,6 +9,7 @@ import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.recipes.BasicThermopneumaticProcessingPlantRecipe;
 import me.desht.pneumaticcraft.common.recipes.PneumaticRecipeRegistry;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.player.EntityPlayer;
@@ -109,7 +110,7 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
     }
 
     private IThermopneumaticProcessingPlantRecipe getValidRecipe() {
-        for (IThermopneumaticProcessingPlantRecipe recipe : PneumaticRecipeRegistry.getInstance().thermopneumaticProcessingPlantRecipes) {
+        for (IThermopneumaticProcessingPlantRecipe recipe : BasicThermopneumaticProcessingPlantRecipe.recipes) {
             if (recipe.isValidRecipe(inputTank.getFluid(), handler.getStackInSlot(0))) {
                 if (outputTank.getFluid() == null) {
                     return recipe;

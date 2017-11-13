@@ -373,6 +373,13 @@ public class CraftingRegistrator {
         registry.registerHeatFrameCoolRecipe(new ItemStack(Items.WATER_BUCKET), new ItemStack(Blocks.ICE));
         registry.registerHeatFrameCoolRecipe(new ItemStack(Items.LAVA_BUCKET), new ItemStack(Blocks.OBSIDIAN));
     }
+    
+    private static void addRefineryRecipes() {
+    	PneumaticRecipeRegistry registry = PneumaticRecipeRegistry.getInstance();
+    	registry.registerRefineryRecipe(new FluidStack(Fluids.OIL, 10), new FluidStack(Fluids.DIESEL, 4), new FluidStack(Fluids.LPG, 2));
+    	registry.registerRefineryRecipe(new FluidStack(Fluids.OIL, 10), new FluidStack(Fluids.DIESEL, 2), new FluidStack(Fluids.KEROSENE, 3), new FluidStack(Fluids.LPG, 2));
+    	registry.registerRefineryRecipe(new FluidStack(Fluids.OIL, 10), new FluidStack(Fluids.DIESEL, 2), new FluidStack(Fluids.KEROSENE, 3), new FluidStack(Fluids.GASOLINE, 3), new FluidStack(Fluids.LPG, 2));
+    }
 
     private static int recipeIndex = 0;
 

@@ -27,7 +27,7 @@ public class GuiRefinery extends GuiPneumaticContainerBase<TileEntityRefinery> {
 
         addWidget(new WidgetTemperature(-1, guiLeft + 32, guiTop + 20, 273, 673, te.getHeatExchangerLogic(null), 373));
 
-        addWidget(new WidgetTank(-1, guiLeft + 8, guiTop + 13, te.getOilTank()));
+        addWidget(new WidgetTank(-1, guiLeft + 8, guiTop + 13, te.getInputTank()));
 
         int x = guiLeft + 95;
         int y = guiTop + 17;
@@ -83,14 +83,14 @@ public class GuiRefinery extends GuiPneumaticContainerBase<TileEntityRefinery> {
         if (te.getHeatExchangerLogic(null).getTemperature() < 395) {
             curInfo.add("gui.tab.problems.notEnoughHeat");
         }
-        if (te.getOilTank().getFluidAmount() < 10) {
+        if (te.getInputTank().getFluidAmount() < 10) {
             curInfo.add("gui.tab.problems.refinery.noOil");
         }
         if (refineries.size() < 2) {
             curInfo.add("gui.tab.problems.refinery.notEnoughRefineries");
         } else if (refineries.size() > 4) {
             curInfo.add("gui.tab.problems.refinery.tooManyRefineries");
-        } else if (!te.refine(refineries, true)) {
+        } else if (te.isBlocked()) {
             curInfo.add("gui.tab.problems.refinery.outputBlocked");
         }
     }

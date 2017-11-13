@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.common.network.DescSynced;
+import me.desht.pneumaticcraft.common.recipes.HeatFrameCoolingRecipe;
 import me.desht.pneumaticcraft.common.recipes.PneumaticRecipeRegistry;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityCompressedIronBlock;
 import me.desht.pneumaticcraft.common.util.IOHelper;
@@ -111,9 +112,9 @@ public class SemiBlockHeatFrame extends SemiBlockBasic implements IHeatExchanger
     private boolean tryCoolSlot(IItemHandler handler, int slot) {
         ItemStack stack = handler.getStackInSlot(slot);
         if (!stack.isEmpty()) {
-            for (Pair<Object, ItemStack> recipe : PneumaticRecipeRegistry.getInstance().heatFrameCoolingRecipes) {
-                if (PneumaticRecipeRegistry.isItemEqual(recipe.getKey(), stack)) {
-                    int amount = PneumaticRecipeRegistry.getItemAmount(recipe.getKey());
+            for (HeatFrameCoolingRecipe recipe : HeatFrameCoolingRecipe.recipes) {
+                if (PneumaticRecipeRegistry.isItemEqual(recipe.input, stack)) {
+                    int amount = PneumaticRecipeRegistry.getItemAmount(recipe.input);
                     if (stack.getCount() >= amount) {
                         ItemStack containerItem = stack.getItem().getContainerItem(stack);
                         boolean canStoreContainerItem = false;
@@ -127,7 +128,7 @@ public class SemiBlockHeatFrame extends SemiBlockBasic implements IHeatExchanger
                                     canStoreOutput = true;
                                 }
                             } else {
-                                if (s.isItemEqual(recipe.getRight()) && ItemStack.areItemStackTagsEqual(s, recipe.getRight()) && s.getMaxStackSize() >= s.getCount() + recipe.getRight().getCount()) {
+                                if (s.isItemEqual(recipe.output) && ItemStack.areItemStackTagsEqual(s, recipe.output) && s.getMaxStackSize() >= s.getCount() + recipe.output.getCount()) {
                                     canStoreOutput = true;
                                 }
                                 if (!containerItem.isEmpty() && s.isItemEqual(containerItem) && ItemStack.areItemStackTagsEqual(s, containerItem) && s.getMaxStackSize() >= s.getCount() + containerItem.getCount()) {
@@ -137,7 +138,7 @@ public class SemiBlockHeatFrame extends SemiBlockBasic implements IHeatExchanger
                         }
                         if (canStoreOutput && (containerItem.isEmpty() || canStoreContainerItem)) {
                             handler.extractItem(slot, 1, false);
-                            IOHelper.insert(getTileEntity(), recipe.getValue().copy(), false);
+                            IOHelper.insert(getTileEntity(), recipe.output.copy(), false);
                             if (!containerItem.isEmpty()) {
                                 IOHelper.insert(getTileEntity(), containerItem.copy(), false);
                             }
