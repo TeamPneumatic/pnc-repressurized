@@ -50,9 +50,9 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic {
 
     @Override
     public boolean canPlace() {
-        return getTileEntity().hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)
-                || getTileEntity().hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
-//        return getTileEntity() instanceof IInventory || getTileEntity() instanceof IFluidHandler;
+        return getTileEntity() != null &&
+                (getTileEntity().hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)
+                || getTileEntity().hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null));
     }
 
     public abstract int getColor();
