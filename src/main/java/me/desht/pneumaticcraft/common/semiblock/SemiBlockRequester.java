@@ -408,7 +408,7 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
             ICraftingGrid grid = (ICraftingGrid)craftingGrid;
             for(int i = 0; i < getFilters().getSlots(); i++) {
                 ItemStack s = getFilters().getStackInSlot(i);
-                if(s != null) {
+                if(!s.isEmpty()) {
                     if(!grid.isRequesting(AEApi.instance().storage().getStorageChannel( IItemStorageChannel.class ).createStack(s))) {
                         getFilters().setStackInSlot(i, ItemStack.EMPTY);
                         notifyNetworkOfCraftingChange();
