@@ -843,7 +843,12 @@ gui.tooltip.item.network_component4=Required component in a Security Station. \n
 gui.tooltip.item.network_component5=This is a generic Security Station component which allows a path to be created between the required Security Station components.
 
 # Config Screen
-gui.config.thirdparty=Thirdparty Config
+gui.config.category.general=General
+gui.config.category.machine=Machine
+gui.config.category.advanced=Advanced
+gui.config.category.recipes=Recipes
+gui.config.category.client=Clientside Options
+gui.config.category.helmet=Pneumatic Helmet
 
 # Waila
 hud.msg.state=State

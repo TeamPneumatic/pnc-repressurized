@@ -23,21 +23,33 @@ public class ConfigHandler {
     };
 
     @Config.Name("general")
+    @Config.LangKey("gui.config.category.general")
+    @Config.Comment("General stuff that doesn't fit anywhere else")
     public static General general = new General();
 
     @Config.Name("machine_properties")
+    @Config.LangKey("gui.config.category.machine")
+    @Config.Comment("Settings affecting the operation of machines")
     public static MachineProperties machineProperties = new MachineProperties();
 
     @Config.Name("advanced")
+    @Config.LangKey("gui.config.category.advanced")
+    @Config.Comment("Advanced settings (shouldn't need to touch under normal circumstances)")
     public static Advanced advanced = new Advanced();
 
     @Config.Name("recipes")
+    @Config.LangKey("gui.config.category.recipes")
+    @Config.Comment("Enable/disable certain recipes (note: better done with CraftTweaker if you have it)")
     public static Recipes recipes = new Recipes();
 
     @Config.Name("client")
+    @Config.LangKey("gui.config.category.client")
+    @Config.Comment("Settings affecting only the client")
     public static ClientOptions client = new ClientOptions();
 
     @Config.Name("helmet")
+    @Config.LangKey("gui.config.category.helmet")
+    @Config.Comment("Pneumatic Helmet HUD settings (note: you can also set this up via helmet GUI)")
     public static HelmetOptions helmetOptions = new HelmetOptions();
 
     public static void sync() {
