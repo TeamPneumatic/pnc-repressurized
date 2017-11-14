@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.client.gui.widget.*;
+import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
@@ -18,6 +19,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
@@ -188,20 +190,22 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
         return true;
     }
 
+    protected int getBackgoundTint() { return 0xFFFFFF; }
+
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int i, int j) {
         drawDefaultBackground();
 
         if (shouldDrawBackground()) {
-            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+            RenderUtils.glColorHex(0xFF000000 | getBackgoundTint());
             bindGuiTexture();
             int xStart = (width - xSize) / 2;
             int yStart = (height - ySize) / 2;
             drawTexturedModalRect(xStart, yStart, 0, 0, xSize, ySize);
         }
 
-        GL11.glColor4d(1, 1, 1, 1);
-        GL11.glDisable(GL11.GL_LIGHTING);
+        GlStateManager.color(1, 1, 1, 1);
+        GlStateManager.disableLighting();
         for (IGuiWidget widget : widgets) {
             widget.render(i, j, partialTicks);
         }
@@ -224,7 +228,7 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
     protected void bindGuiTexture() {
         if (guiTexture != null) {
             mc.getTextureManager().bindTexture(guiTexture);
-            GL11.glEnable(GL11.GL_TEXTURE_2D);
+            GlStateManager.enableTexture2D();
         }
     }
 
@@ -269,8 +273,8 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
             }
         }
 
-        GL11.glColor4d(1, 1, 1, 1);
-        GL11.glDisable(GL11.GL_LIGHTING);
+        GlStateManager.color(1, 1, 1, 1);
+        GlStateManager.disableLighting();
         for (IGuiWidget widget : widgets) {
             if (widget.getBounds().contains(x, y))
                 widget.addTooltip(x, y, tooltip, PneumaticCraftRepressurized.proxy.isSneakingInGui());

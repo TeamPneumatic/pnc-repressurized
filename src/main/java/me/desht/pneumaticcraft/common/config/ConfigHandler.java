@@ -143,6 +143,8 @@ public class ConfigHandler {
         public int programmerDifficulty = 0;
         @Config.Comment("Show tank fluids with the The One Probe.  Note that TOP also has support for showing tanks, which may or may not be enabled.")
         public boolean topShowsFluids = true;
+        @Config.Comment("Tint Logistics configuration GUI backgrounds according to the colour of the logistics frame you are configuring")
+        public boolean logisticsGUITint = true;
     }
 
     public static class HelmetOptions {

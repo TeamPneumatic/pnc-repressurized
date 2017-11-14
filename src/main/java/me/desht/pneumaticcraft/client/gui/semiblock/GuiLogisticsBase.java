@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.client.gui.widget.GuiCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.IGuiWidget;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetFluidStack;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
+import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.inventory.ContainerLogistics;
 import me.desht.pneumaticcraft.common.inventory.SlotPhantom;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -25,6 +26,7 @@ import net.minecraftforge.fluids.IFluidTank;
 import org.apache.commons.lang3.text.WordUtils;
 import org.lwjgl.input.Mouse;
 
+import java.awt.*;
 import java.util.Arrays;
 
 public class GuiLogisticsBase<Logistics extends SemiBlockLogistics> extends GuiPneumaticContainerBase {
@@ -64,6 +66,18 @@ public class GuiLogisticsBase<Logistics extends SemiBlockLogistics> extends GuiP
             addWidget(new WidgetFluidStack(i, guiLeft + i * 18 + 8, guiTop + 101, logistics.getTankFilter(i)));
         }
         addInfoTab(I18n.format("gui.tab.info." + SemiBlockManager.getKeyForSemiBlock(logistics)));
+    }
+
+    @Override
+    protected int getBackgoundTint() {
+        if (!ConfigHandler.client.logisticsGUITint) return super.getBackgoundTint();
+
+        int c = logistics.getColor();
+        // desaturate; this is a background colour...
+        float[] hsb = Color.RGBtoHSB((c & 0xFF0000) >> 16, (c & 0xFF00) >> 8, c & 0xFF, null);
+        Color color = Color.getHSBColor(hsb[0], hsb[1] * 0.2f, hsb[2]);
+        if (hsb[2] < 0.7) color = color.brighter();
+        return color.getRGB();
     }
 
     @Override
