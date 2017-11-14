@@ -374,14 +374,12 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
     @Optional.Method(modid = ModIds.AE2)
     public void onRequestChange(ICraftingGrid grid, IAEItemStack aeStack){
         craftingGrid = grid;
-        ItemStack stack = aeStack.createItemStack();
         int freeSlot = -1;
         for(int i = 0; i < getFilters().getSlots(); i++) {
             ItemStack s = getFilters().getStackInSlot(i);
             if(!s.isEmpty()) {
-                if(stack.isItemEqual(s)) {
-                    s.setCount( stack.getCount() );
-                    if(s.getCount() == 0) getFilters().setStackInSlot(i, ItemStack.EMPTY);
+                if(aeStack.isSameType(s)) {
+                    s.setCount( (int) aeStack.getStackSize() );
                     return;
                 }
             } else if(freeSlot == -1) {
@@ -389,7 +387,7 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
             }
         }
         if(freeSlot >= 0) {
-            getFilters().setStackInSlot(freeSlot, stack.copy());
+            getFilters().setStackInSlot(freeSlot, aeStack.createItemStack());
         }
     }
 
