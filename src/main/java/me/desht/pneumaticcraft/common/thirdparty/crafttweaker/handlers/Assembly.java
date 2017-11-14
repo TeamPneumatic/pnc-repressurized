@@ -2,24 +2,20 @@ package me.desht.pneumaticcraft.common.thirdparty.crafttweaker.handlers;
 
 import java.util.List;
 
-import com.blamejared.mtlib.helpers.InputHelper;
-import com.blamejared.mtlib.helpers.LogHelper;
-import com.blamejared.mtlib.helpers.StackHelper;
-import com.blamejared.mtlib.utils.BaseListAddition;
-import com.blamejared.mtlib.utils.BaseListRemoval;
-
 import crafttweaker.annotations.ModOnly;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.item.IIngredient;
 import crafttweaker.api.item.IItemStack;
 import me.desht.pneumaticcraft.common.recipes.AssemblyRecipe;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.CraftTweaker;
+import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.util.Helper;
+import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.util.ListAddition;
+import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.util.ListRemoval;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.util.RemoveAllRecipes;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
 
 @ZenClass("mods.pneumaticcraft.assembly")
-@ModOnly("mtlib")
 @ZenRegister
 public class Assembly {
 	public static final String name = "PneumaticCraft Assembly";
@@ -81,30 +77,24 @@ public class Assembly {
     
     public static void addRecipe(String name, IItemStack input, IItemStack output, List<AssemblyRecipe> list) {
         if(input == null || output == null) {
-            LogHelper.logError(String.format("Required parameters missing for %s Recipe.", name));
+            Helper.logError(String.format("Required parameters missing for %s Recipe.", name));
             return;
         }
         
-        CraftTweaker.ADDITIONS.add(new Add(name, new AssemblyRecipe(InputHelper.toStack(input), InputHelper.toStack(output)), list));
+        CraftTweaker.ADDITIONS.add(new Add(name, new AssemblyRecipe(Helper.toStack(input), Helper.toStack(output)), list));
     }
-    
-    private static class Add extends BaseListAddition<AssemblyRecipe> {
-        public Add(String name, AssemblyRecipe recipe, List<AssemblyRecipe> list) {
-            super(name, list);
-            recipes.add(recipe);
-        }
-
-        @Override
-        public String getRecipeInfo(AssemblyRecipe recipe) {
-            return LogHelper.getStackDescription(recipe.getOutput());
-        }
-    }
-    
+        
     public static void removeRecipe(String name, List<AssemblyRecipe> list, IIngredient output) {
         CraftTweaker.REMOVALS.add(new Remove(name, list, output));
     }
     
-    private static class Remove extends BaseListRemoval<AssemblyRecipe> {
+    private static class Add extends ListAddition<AssemblyRecipe> {
+        public Add(String name, AssemblyRecipe recipe, List<AssemblyRecipe> list) {
+            super(name, list, recipe);
+        }
+    }
+    
+    private static class Remove extends ListRemoval<AssemblyRecipe> {
     	private final IIngredient output;
     	
         public Remove(String name, List<AssemblyRecipe> list, IIngredient output) {
@@ -115,32 +105,26 @@ public class Assembly {
         @Override
         public void apply() {
         	addRecipes();
-        	
         	super.apply();
         }
 
         private void addRecipes() {
-            for (AssemblyRecipe r : list) {
-                if (StackHelper.matches(output,  InputHelper.toIItemStack(r.getOutput()))) {
-                    recipes.add(r);
+            for (AssemblyRecipe r : recipes) {
+                if (Helper.matches(output,  Helper.toIItemStack(r.getOutput()))) {
+                    entries.add(r);
                 }
             }
             
-            if(recipes.isEmpty()) {
-            	LogHelper.logWarning(String.format("No %s Recipe found for %s. Command ignored!", name, LogHelper.getStackDescription(output)));
+            if(entries.isEmpty()) {
+            	Helper.logWarning(String.format("No %s Recipe found for %s. Command ignored!", name, Helper.getStackDescription(output)));
             } else {
-            	LogHelper.logInfo(String.format("Found %d %s Recipe(s) for %s.", recipes.size(), name, LogHelper.getStackDescription(output)));
+            	Helper.logInfo(String.format("Found %d %s Recipe(s) for %s.", entries.size(), name, Helper.getStackDescription(output)));
             }
 		}
-
-		@Override
-        public String getRecipeInfo(AssemblyRecipe recipe) {
-            return LogHelper.getStackDescription(recipe.getOutput());
-        }
 		
 		@Override
 		public String describe() {
-			return String.format("Removing %s Recipe(s) for %s", this.name, LogHelper.getStackDescription(output));
+			return String.format("Removing %s Recipe(s) for %s", this.name, Helper.getStackDescription(output));
 		}
     }
 }
