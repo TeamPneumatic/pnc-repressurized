@@ -100,8 +100,8 @@ dependencies {
     deobfCompile "mcp.mobius.waila:Hwyla:${hwyla_version}"
     deobfCompile "mcjty.theoneprobe:TheOneProbe-1.12:${top_version}"
 	deobfProvided "CraftTweaker2:CraftTweaker2-API:${crafttweaker_version}"
+	deobfProvided "CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-${crafttweaker_version}"
 	runtime "CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-${crafttweaker_version}"
-	deobfCompile "com.blamejared:MTLib:${mtlib_version}"
     compile "igwmod:IGW-Mod-1.12.2:${igwmod_version}:userdev"
     deobfCompile("appeng:appliedenergistics2:${ae2_version}:api") {
         transitive = false
