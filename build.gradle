@@ -39,7 +39,7 @@ repositories {
         url = "http://maven.tterrag.com/"
     }
     maven {
-        name 'BlameJared - Crafttweaker'
+        name 'BlameJared - CraftTweaker'
         url 'http://maven.blamejared.com/'
     }
 	maven {
