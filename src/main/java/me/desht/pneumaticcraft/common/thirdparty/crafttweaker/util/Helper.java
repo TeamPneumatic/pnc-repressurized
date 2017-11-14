@@ -131,6 +131,32 @@ public class Helper {
         }
     }
     
+    public static String getStackDescription(IIngredient stack) {
+        Object internalObject = stack.getInternal();
+        
+        if(internalObject instanceof ItemStack) {
+            return getStackDescription((ItemStack) internalObject);
+        } else if(internalObject instanceof FluidStack) {
+            return getStackDescription((FluidStack) internalObject);
+        } else if(internalObject instanceof IOreDictEntry) {
+            return getStackDescription(((IOreDictEntry) internalObject).getName());
+        } else {
+            return "null";
+        }
+    }
+    
+    public static String getStackDescription(FluidStack stack) {
+        StringBuilder sb = new StringBuilder();
+        
+        sb.append("<liquid:").append(stack.getFluid().getName()).append('>');
+        
+        if(stack.amount > 1) {
+            sb.append(" * ").append(stack.amount);
+        }
+        
+        return sb.toString();
+    }
+    
     public static String getListDescription(List<?> objects) {
         StringBuilder sb = new StringBuilder();
         
