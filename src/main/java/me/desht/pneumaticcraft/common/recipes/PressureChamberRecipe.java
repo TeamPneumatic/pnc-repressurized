@@ -1,17 +1,12 @@
 package me.desht.pneumaticcraft.common.recipes;
 
-import me.desht.pneumaticcraft.api.recipe.IPressureChamberRecipe;
-import net.minecraft.item.ItemStack;
-import org.apache.commons.lang3.tuple.Pair;
-
-import com.blamejared.mtlib.helpers.InputHelper;
-
-import crafttweaker.api.item.IIngredient;
-import crafttweaker.api.item.IItemStack;
-import crafttweaker.api.oredict.IOreDictEntry;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.lang3.tuple.Pair;
+
+import me.desht.pneumaticcraft.api.recipe.IPressureChamberRecipe;
+import net.minecraft.item.ItemStack;
 
 public class PressureChamberRecipe {
     // standard recipes: list of inputs, list of outputs and required pressure

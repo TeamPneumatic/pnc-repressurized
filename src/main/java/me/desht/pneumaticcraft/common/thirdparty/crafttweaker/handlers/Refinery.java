@@ -2,31 +2,26 @@ package me.desht.pneumaticcraft.common.thirdparty.crafttweaker.handlers;
 
 import java.util.stream.Stream;
 
-import com.blamejared.mtlib.helpers.InputHelper;
-import com.blamejared.mtlib.helpers.LogHelper;
-import com.blamejared.mtlib.helpers.StackHelper;
-import com.blamejared.mtlib.utils.BaseListAddition;
-import com.blamejared.mtlib.utils.BaseListRemoval;
-
-import crafttweaker.annotations.ModOnly;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.item.IIngredient;
 import crafttweaker.api.liquid.ILiquidStack;
 import me.desht.pneumaticcraft.common.recipes.RefineryRecipe;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.CraftTweaker;
+import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.util.Helper;
+import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.util.ListAddition;
+import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.util.ListRemoval;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.util.RemoveAllRecipes;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
 
 @ZenClass("mods.pneumaticcraft.refinery")
-@ModOnly("mtlib")
 @ZenRegister
 public class Refinery {
 public static final String name = "PneumaticCraft Refinery";
 	
 	@ZenMethod
 	public static void addRecipe(ILiquidStack input, ILiquidStack[] outputs) {
-		CraftTweaker.ADDITIONS.add(new Add(new RefineryRecipe(InputHelper.toFluid(input), InputHelper.toFluids(outputs))));
+		CraftTweaker.ADDITIONS.add(new Add(new RefineryRecipe(Helper.toFluid(input), Helper.toFluids(outputs))));
 	}
 	
 	@ZenMethod
@@ -44,19 +39,13 @@ public static final String name = "PneumaticCraft Refinery";
 		CraftTweaker.REMOVALS.add(new RemoveAllRecipes<RefineryRecipe>(Refinery.name, RefineryRecipe.recipes));
 	}
 	
-    private static class Add extends BaseListAddition<RefineryRecipe> {
+    private static class Add extends ListAddition<RefineryRecipe> {
         public Add(RefineryRecipe recipe) {
-            super(Refinery.name, RefineryRecipe.recipes);
-            recipes.add(recipe);
-        }
-
-        @Override
-        public String getRecipeInfo(RefineryRecipe recipe) {
-            return LogHelper.getStackDescription(recipe.input);
+            super(Refinery.name, RefineryRecipe.recipes, recipe);
         }
     }
     
-    private static class RemoveInput extends BaseListRemoval<RefineryRecipe> {
+    private static class RemoveInput extends ListRemoval<RefineryRecipe> {
     	private final ILiquidStack input;
     	
         public RemoveInput(ILiquidStack input) {
@@ -72,32 +61,28 @@ public static final String name = "PneumaticCraft Refinery";
         }
         
         private void addRecipes() {
-            for (RefineryRecipe r : list) {
+            for (RefineryRecipe r : recipes) {
             	
-            	if(StackHelper.areEqual(r.input, InputHelper.toFluid(input))) {
-            		recipes.add(r);
+            	if(Helper.areEqual(r.input, Helper.toFluid(input))) {
+            		entries.add(r);
             	}
             }
             
-            if(recipes.isEmpty()) {
-            	LogHelper.logWarning(String.format("No %s Recipe found for %s. Command ignored!", name, LogHelper.getStackDescription(input)));
+            if(entries.isEmpty()) {
+            	Helper.logWarning(String.format("No %s Recipe found for %s. Command ignored!", name, Helper.getStackDescription(input)));
             } else {
-            	LogHelper.logInfo(String.format("Found %d %s Recipe(s) for %s.", recipes.size(), name, LogHelper.getStackDescription(input)));
+            	Helper.logInfo(String.format("Found %d %s Recipe(s) for %s.", entries.size(), name, Helper.getStackDescription(input)));
             }
 		}
-        
-        @Override
-        public String getRecipeInfo(RefineryRecipe recipe) {
-            return LogHelper.getStackDescription(recipe.input);
-        }
+
         
 		@Override
 		public String describe() {
-			return String.format("Removing %s Recipe(s) for %s", this.name, LogHelper.getStackDescription(input));
+			return String.format("Removing %s Recipe(s) for %s", this.name, Helper.getStackDescription(input));
 		}
     }
     
-    private static class RemoveOutput extends BaseListRemoval<RefineryRecipe> {
+    private static class RemoveOutput extends ListRemoval<RefineryRecipe> {
     	private final IIngredient[] outputs;
     	
         public RemoveOutput(IIngredient[] outputs) {
@@ -113,23 +98,18 @@ public static final String name = "PneumaticCraft Refinery";
         }
         
         private void addRecipes() {
-            for (RefineryRecipe r : list) {
-            	if(Stream.of(outputs).allMatch(o -> Stream.of(r.outputs).anyMatch(ro -> StackHelper.matches(o, InputHelper.toILiquidStack(ro))))) {
-            		recipes.add(r);
+            for (RefineryRecipe r : recipes) {
+            	if(Stream.of(outputs).allMatch(o -> Stream.of(r.outputs).anyMatch(ro -> Helper.matches(o, Helper.toILiquidStack(ro))))) {
+            		entries.add(r);
             	}
             }
             
-            if(recipes.isEmpty()) {
-            	LogHelper.logWarning(String.format("No %s Recipe found for outputs. Command ignored!", name));
+            if(entries.isEmpty()) {
+            	Helper.logWarning(String.format("No %s Recipe found for outputs. Command ignored!", name));
             } else {
-            	LogHelper.logInfo(String.format("Found %d %s Recipe(s) for outputs.", recipes.size(), name));
+            	Helper.logInfo(String.format("Found %d %s Recipe(s) for outputs.", entries.size(), name));
             }
 		}
-        
-        @Override
-        public String getRecipeInfo(RefineryRecipe recipe) {
-            return LogHelper.getStackDescription(recipe.input);
-        }
         
 		@Override
 		public String describe() {
