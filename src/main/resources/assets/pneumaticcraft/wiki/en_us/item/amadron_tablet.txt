@@ -1,0 +1,18 @@
+The Amadron Tablet is an item that when charged can be used to order items and fluids. Offers can be selected in the interface and ordered. To do so, first an inventory needs to be right-clicked with the Amadron Tablet to bind it. This inventory will then be used to take items to pay with, and the items bought will be delivered into this inventory. The same goes for a tank.
+
+The Amadron Tablet GUI is smart enough to figure out what you can buy and how many by looking at the bound inventory and/or tank. When you order the items, a Drone will spawn to pick-up the items you use to pay with. After it picks up the items and disappears, and it has gotten all the items it needed for the order, a second drone will spawn to deliver the purchased items. It will deliver them and return.
+
+This item is a way to get items you can't get otherwise, like the PCB Blueprint and the Assembly Programs. It also adds some random Villager Trades. Note with the villager trades that they randomize every morning.
+
+[prefix{l}]Player to player trading[prefix{}]
+By clicking the 'Add trade' button you can offer your own items/fluids to be traded for other items/fluids. In there you can select an item/fluid to sell on the left side of the GUI, and an item/fluid you want to have on the right. Secondly you can set amounts by using the text boxes.
+
+Lastly you need to specify where you want to provide the items/fluids from, and where you want to receive payments from other players. When no such locations are provided, the locations stored in the Amadron Tablet used for normal offers are used.
+
+When all is set, the 'Add trade' button will be clickable. A trade will be added. Players can buy this trade by using the Amadron Tablet just like how they would with normal offers. The difference is that there is no unlimited stock. When you put in items/fluids in the inventory/tank you sell items from, when there's enough, a Drone will come in to pick up these items/fluids. When the Drone has gone, the stock will be increased. This can be seen in the Amadron Tablet.
+
+Other players can now accept the offer up to the amount that is in stock. When a player accepts an offer you'll be notified provided you are online. A drone will come in to deliver you the items/fluids the player has bought your items/fluids with. A trade has been completed.
+
+By sneak-right-clicking your own trade the trade will be removed, and any item/fluid in stock will be tried to be returned to the inventory/tank that provided them. When (partially) unsuccessful, these items/fluids are lost!
+
+Note that the trading system is fully configurable: A maximum amount of trades per player can be set, and all trades (including non-player trades) can be configured via JSON files in the config folder.

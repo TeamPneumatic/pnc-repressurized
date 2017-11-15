@@ -1,0 +1,6 @@
+Programming Puzzles are used in [link{block/programmer}]programmers [link{}].
+
+[prefix{l}]The 'I-ftr' (Item Filter) piece [prefix{}]
+The Item Filter is a piece solely used as parameter for other pieces. You can do things like specifying which blocks/items are allowed to be picked up/placed/mined/... Start by right clicking the piece. Then you can either search for an item in the game by clicking 'Search Item...' or you can select an item from your inventory by clicking 'Search Inventory...'.
+
+Then you can apply some extra filter options. How these options work is displayed in the tooltip of the checkboxes.

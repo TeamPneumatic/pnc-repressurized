@@ -1,0 +1,3 @@
+This is a Condition. [link{pneumaticcraft:progwidget/conditions}]Click here[link{}] to read general information about Conditions.
+
+The Condition: Coordinate compares two [link{pneumaticcraft:progwidget/coordinate}]coordinates [link{}]. Different tests can be done on these coordinates, and more specifically on every axis the coordinate exists out of. You can check if just the Z value of both coordinates match, or the X, Y and Z value. Which axis or axes are being compared is defined by checking the checkboxes of the Condition: Coordinate. Likewise, which condition ('=', '>=') is checked for for all axes is defined by the radio buttons. You can review your condition, as it's displayed textually.

@@ -1,0 +1,16 @@
+The plant this seed belongs to is part of PneumaticCraft's [link{pneumaticcraft:menu/worldgen}]worldgen [link{}]. Generic information about all the plastic plants can be found by clicking on the link. The following is a summary of the behaviour of this particular plant:
+
+[prefix{l}]Color: [prefix{}]
+Pink
+
+[prefix{l}]Soil: [prefix{}]
+Dirt, Grass and Farmland
+
+[prefix{l}]How to acquire in survival:[prefix{}]
+Potion Plants are spawned on top of Grass in the Overworld. Also, Splash Potions have a small chance to spawn a Potion Plant where they impact.
+
+[prefix{l}]full-grown behaviour:[prefix{}]
+Emits a Potion Cloud of a random potion type (including potion effects from other mods), which rides on the air. When living entities come in contact with it they get the potion effect for 10 seconds. Be [prefix{n}]very [prefix{}]careful with these plants: The effect can be instant healing, but can also be as bad as instant damage!
+
+[prefix{l}]propagation theory:[prefix{}]
+When the Potion Cloud dies off (after 100 seconds) a Potion Plant Seed will drop.

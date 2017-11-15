@@ -1,0 +1,3 @@
+This is a Condition. [link{pneumaticcraft:progwidget/conditions}]Click here[link{}] to read general information about Conditions.
+
+The Condition: Items piece allows you to check an inventory for a certain amount of items. It will count up all matching items (specified by a connected Item Filter, or no filter to count every item).

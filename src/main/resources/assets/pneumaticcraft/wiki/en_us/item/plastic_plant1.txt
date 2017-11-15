@@ -1,0 +1,16 @@
+The plant this seed belongs to is part of PneumaticCraft's [link{pneumaticcraft:menu/worldgen}]worldgen [link{}]. Generic information about all the plastic plants can be found by clicking on the link. The following is a summary of the behaviour of this particular plant:
+
+[prefix{l}]Color: [prefix{}]
+Red
+
+[prefix{l}]Soil: [prefix{}]
+Netherrack
+
+[prefix{l}]How to acquire in survival:[prefix{}]
+Fire Flowers are spawned on the ground in the Nether.
+
+[prefix{l}]full-grown behaviour:[prefix{}]
+They shoot fire particles, and sometimes Fire Flower Seeds.
+
+[prefix{l}]propagation theory:[prefix{}]
+By sometimes shooting a Fire Flower Seed when full-grown.

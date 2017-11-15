@@ -1,0 +1,5 @@
+[image{350, 20, 0.4, pneumaticcraft:textures/wiki/pneumatic_generator.png}]
+The Pneumatic Generator can generate IndustrialCraft 2's EU from compressed air. This is a tier two machine, indicated by its minimal working pressure of 15 bar. By default it has an efficiency of 40%, but this can be changed in the config. Without any upgrades, it outputs at a rate of 32 EU/tick. With one Speed Upgrade inserted 128 EU/tick and with two 512 EU/tick. *The energy usage in mL/tick = output rate / efficiency * 400, in which the efficiency is in %. For instance, when the efficiency is 40% while you're outputting at a rate of 32EU/tick, the compressed air usage equals 32 / 40 * 400 = 320mL/tick.
+
+Another factor that influences the efficiency, is the machine's heat. The machine needs to be [link{pneumaticcraft:menu/heat}] cooled[link{}], as the efficiency will drop as the temperature rises, up to the point where no air is generated at all.
+[crafting{200, 260, key=block/pneumatic_generator}]

@@ -897,19 +897,19 @@ death.drone.named=Your Drone named "%s" has died at X: %s, Y: %s, Z: %s.
 # IGW pages
 igwtab.entry.oil=Oil
 igwtab.entry.worldgen=Worldgen
-igwtab.entry.baseConcepts=Base Concepts
-igwtab.entry.machineUpgrades=Machine Upgrades
-igwtab.entry.generatingPressure=Generating Pressure
-igwtab.entry.pressureTubes=Tubes & Modules
-igwtab.entry.pressureChamber=Pressure Chamber
+igwtab.entry.base_concepts=Base Concepts
+igwtab.entry.machine_upgrades=Machine Upgrades
+igwtab.entry.generating_pressure=Generating Pressure
+igwtab.entry.pressure_tubes=Tubes & Modules
+igwtab.entry.pressure_chamber=Pressure Chamber
 igwtab.entry.elevator=Elevator
-igwtab.entry.pneumaticDoor=Pneumatic Door
-igwtab.entry.printedCircuitBoards=Printed Circuit Boards
-igwtab.entry.assemblyMachines=Assembly Machines
-igwtab.entry.ic2Integration=IC2 Integration
-igwtab.entry.bcIntegration=Buildcraft Integration
-igwtab.entry.cofhIntegration=CoFH Integration
-igwtab.entry.ccIntegration=Computercraft/Open Computers Integration
+igwtab.entry.pneumatic_door=Pneumatic Door
+igwtab.entry.printed_circuit_boards=Printed Circuit Boards
+igwtab.entry.assembly_machines=Assembly Machines
+igwtab.entry.ic2integration=IC2 Integration
+igwtab.entry.bc_integration=Buildcraft Integration
+igwtab.entry.cofh_integration=CoFH Integration
+igwtab.entry.cc_integration=Computercraft/Open Computers Integration
 igwmod.pressureChamber.requiredPressure=Required Pressure
 
 # commands

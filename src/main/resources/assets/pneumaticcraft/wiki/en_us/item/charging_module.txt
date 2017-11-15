@@ -1,0 +1,22 @@
+[image{200,100,0.45,pneumaticcraft:textures/wiki/charging_module.png}]
+This item is a [link{pneumaticcraft:menu/pressure_tubes}]Tube Module[link{}]. this means that it can be placed on a Pressure Tube only. For general information about Tube Modules click the link.
+
+The Charging Module allows you to (dis)charge any item in any inventory it's pointing towards. By default it can (dis)charge up to 10mL/tick/item.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[prefix{l}]Applying an    [link{item/advanced_pcb}]Advanced PCB[link{}][prefix{}]
+When you apply an Advanced PCB to a Charging Module the maximum (dis)charging speed increases to 100mL/tick/item.

@@ -1,4 +1,0 @@
-Programming Puzzles are used in [link{block/programmer}]programmers [link{}].
-
-[prefix{l}]The 'text' (Text) piece [prefix{}]
-This piece can only be used as parameter for other pieces. For now its only purpose is supplying the [link{item/programmingPuzzle_attk}]Entity Attack piece [link{}] with an [link{pneumaticcraft:misc/entityFilter}]Entity Filter[link{}].

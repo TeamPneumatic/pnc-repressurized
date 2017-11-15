@@ -1,0 +1,1 @@
+The Creative Compressor is a non-craftable creative only [link{pneumaticcraft:menu/generating_pressure}]air compressor[link{}]. The desired pressure can be selected in the GUI.

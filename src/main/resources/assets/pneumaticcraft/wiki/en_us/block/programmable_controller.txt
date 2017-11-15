@@ -1,0 +1,10 @@
+A Programmable Controller can do very similar things to what [link{item/drone}]Drones [link{}] can do. a program can be written in a [link{block/programmer}]Programmer [link{}] and can be put either on a Drone or a Network API. Either of these items can then be placed in the Programmable Controller. Provided that there is enough pressure, the Programmable Controller will execute the program just like it would when programmed onto a Drone. There are a few differences with Drones though:
+
+-A Programmable Controller uses a miniature version of a Drone. It actually is not an entity, meaning that no pathfinding is involved, and the Drone can move through walls. This has the additional benefit of being more friendly to the server and it is more reliable to use.
+-The items/fluids the Drone has imported can be interfaced through the Programmable Interface block. Items can be interfaced on every side but the top: that side can be used to insert/extract programs.
+-When executing a program the Programmable Controller will use 10mL/tick (where Drones only use 1mL/tick).
+-The Programmable Controller cannot execute the following commands: Computer Piece, Entity Attack, Drone Condition: Entity, Entity Export, Entity Import, Teleport, Standby, Suicide.
+
+Because of this the Programmable Controller is aimed at bigger sized applications, like excavating big areas or building bases.
+
+[crafting{200, 340, key=block/programmable_controller}] 

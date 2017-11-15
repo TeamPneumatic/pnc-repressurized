@@ -1,0 +1,35 @@
+[image{200,20,0.56,pneumaticcraft:textures/wiki/worldgen.png}]
+
+
+
+
+
+
+
+
+
+
+
+
+In PneumaticCraft there is only one thing that's being generated, and that's plants. There are 14 types, each with their own unique way of propagating itself. The only visual difference between plants is their color. To plant a seed, throw it on the ground with Q. It will grow in 6 growth stages to a full-grown plant. Then, when full-grown, it will perform its own unique behaviour that allows the plant to self-propagate. You can also break the plant before that happens: at full-grown stage it'll drop 2-3 seeds where it normally would drop 1.
+
+Because of the self-propagation methods the plants possess, you would think the plants could take over the world. This fortunately is not the case. Every time the plants perform their propagation 'ritual', they have a small chance of becoming idle. They will grow to their maximum size, but won't perform their effect. This unfortunately also means that creating a farm based of the plant's properties will eventually die off. Plants can be re-activated by applying bonemeal, or by making players pick the seeds up.
+
+Be aware the most plants require a certain light level. If you're throwing the seeds on the ground without result, check the light level.
+
+The seeds can be compressed into plastic of the same color as the plant is colored by throwing the seed in a [link{block.pressure_chamber}]Pressure Chamber[link{}]. Different kinds of plastic are used in the mod in different recipes. The following is a list of all the plants you can find:
+
+[link{item/plastic_plant0}]Squid Plant [link{}]
+[link{item/plastic_plant1}]Fire Flower [link{}]
+[link{item/plastic_plant2}]Creeper Plant [link{}]
+[link{item/plastic_plant3}]Slime Plant [link{}]
+[link{item/plastic_plant4}]Rain Plant [link{}]
+[link{item/plastic_plant5}]Ender Plant [link{}]
+[link{item/plastic_plant6}]Lightning Plant [link{}]
+[link{item/plastic_plant8}]Burst Plant [link{}]
+[link{item/plastic_plant9}]Potion Plant [link{}]
+[link{item/plastic_plant10}]Repulsion Plant [link{}]
+[link{item/plastic_plant11}]Helium Plant [link{}]
+[link{item/plastic_plant12}]Chopper Plant [link{}]
+[link{item/plastic_plant14}]Propulsion Plant [link{}]
+[link{item/plastic_plant15}]Flying Flower [link{}]

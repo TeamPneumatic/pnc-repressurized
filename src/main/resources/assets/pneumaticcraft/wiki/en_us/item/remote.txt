@@ -1,0 +1,51 @@
+With a Remote you can create your own GUI (Graphical User Interface). This user interface can be used to remotely control [link{item/drone}]Drones [link{}] or [link{block/universal_sensor}]Universal Sensors[link{}] via [link{pneumaticcraft:progwidget/coordinate_operator}]variable [link{}] manipulation. Note that with Universal Sensors, you can use these Remotes to create wireless redstone!
+
+[image{200,85,0.33,pneumaticcraft:textures/wiki/remote_example.png}]
+
+To start creating your own GUI, sneak right click the Remote. This will open up the editor window. Filling in the window works similar to how programming in a [link{programmer}]Programmer [link{}] works. Simply click and drag widgets from the right panel into the main panel on the left. To copy a widget, middle click and drag an existing widget. To edit the properties of a widget, right click the widget. For a button, this will open up the following window:
+
+[image{200,465,0.35,pneumaticcraft:textures/wiki/remote_button.png}]
+
+In this window you can configure how the button should look like and how it should behave.
+
+[prefix{l}]Text: [prefix{}]
+The text displayed in the Button.
+For the Label widget this can include a special tag: You can include the value of [link{pneumaticcraft:progwidget/coordinate_operator}]variables [link{}] by including ${<var_name>} in the name. For example:
+
+"Counter: ${counter}"
+
+When the counter is equal to x=1, y=2, z=3, the Label will be shown as "Counter: 1, 2, 3". This is nice for debugging purposes.
+
+By postfixing the variable name with ".x", ".y" or ".z" you can just show one value. For instance:
+
+"Counter: ${counter.x}"
+
+Given a value of x=1, y=2, z=3, the Label will be shown as "Counter: 1".
+
+[prefix{l}]Tooltip: [prefix{}]
+When it has text, this will show as tooltip text when the mouse hovers over this button.
+
+[prefix{l}]Variable name:[prefix{}]
+The name of the (global) variable this button will set, when the button gets pressed.
+
+[prefix{l}]Setting Value:[prefix{}]
+The value the variable gets set to when the button gets pressed.
+
+[prefix{l}]Width: [prefix{}]
+The width of the button widget. Can be increased to make the text fit, or to make the button line up nicely with other widgets.
+
+[prefix{l}]Height: [prefix{}]
+The height of the button widget. Can only be decreased to allow for mini buttons (as buttons will look _really_ weird when sized up).
+
+[prefix{l}]Enabling variable:[prefix{}]
+When filled in, the button will only be visible and sensitive to mouse clicks, when the variable specified is evaluated true. This means that the variable has an X value that is not equal to 0.
+
+
+
+[prefix{l}]Copying Remote lay-outs (other Remotes or Pastebin)[prefix{}]
+You can copy a lay-out from an existing remote by clicking one of the buttons on the left side of the editor.
+
+[prefix{l}]Protecting a Remote[prefix{}]
+If you're borrowing your Remote you might not want to allow this user to modify your lay-out. By right clicking your Remote on a Security Station, editing the Remote lay-out is limited to the ones that have access to the Security Station.
+
+[crafting{200, 1420, key=item/remote}]

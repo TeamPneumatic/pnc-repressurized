@@ -1,0 +1,3 @@
+Item you can right click on most [link{pneumaticcraft:menu/pressure_tubes}]Tube Modules[link{}] to upgrade it.
+
+[crafting{200, 50, key=item/advanced_pcb}]

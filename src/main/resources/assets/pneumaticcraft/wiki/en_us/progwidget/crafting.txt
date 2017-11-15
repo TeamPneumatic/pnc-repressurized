@@ -1,0 +1,9 @@
+Programming Puzzles are used in [link{block/programmer}]programmers [link{}].
+
+[prefix{l}]The Crafting piece [prefix{}]
+The Drone will items using items it has in its inventory. To specify a crafting recipe, place [link{pneumaticcraft:progwidget/item_filter}]Item Filter[link{}] on the right side of the Crafting widget, in the pattern of the crafting recipe.
+[image{200,95,0.97,pneumaticcraft:textures/wiki/crafting_piece.png}]
+
+You are not obliged to use exactly nine Item Filters: As long as you can create the recipe pattern it will work.
+
+By default the Crafting piece will try to craft as many sets as it can using the items stored in the Drone. You can limit this by right-clicking the piece, enabling 'Use Count', and specifying the maximum amount of sets to craft.

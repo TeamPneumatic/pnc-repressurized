@@ -3,51 +3,53 @@ package me.desht.pneumaticcraft.common.thirdparty.igwmod;
 import igwmod.gui.GuiWiki;
 import igwmod.gui.tabs.BaseWikiTab;
 import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 
 public class PneumaticCraftWikiTab extends BaseWikiTab {
 
     public PneumaticCraftWikiTab() {
-        pageEntries.add("baseConcepts");
-        pageEntries.add("machineUpgrades");
-        pageEntries.add("generatingPressure");
-        pageEntries.add("pressureTubes");
-        pageEntries.add("pressureChamber");
+        pageEntries.add("base_concepts");
+        pageEntries.add("machine_upgrades");
+        pageEntries.add("generating_pressure");
+        pageEntries.add("pressure_tubes");
+        pageEntries.add("pressure_chamber");
+        pageEntries.add("block/pneumatic_dynamo");
         skipLine();
-        pageEntries.add("block/omnidirectionalHopper");
-        pageEntries.add("block/liquidHopper");
-        pageEntries.add("block/airCannon");
-        pageEntries.add("pneumaticDoor");
-        pageEntries.add("block/chargingStation");
+        pageEntries.add("block/omnidirectional_hopper");
+        pageEntries.add("block/liquid_hopper");
+        pageEntries.add("block/air_cannon");
+        pageEntries.add("pneumatic_door");
+        pageEntries.add("block/charging_station");
         skipLine();
         pageEntries.add("oil");
-        pageEntries.add("block/plasticMixer");
+        pageEntries.add("block/plastic_mixer");
         pageEntries.add("elevator");
-        pageEntries.add("block/universalSensor");
-        pageEntries.add("item/logisticDrone");
-        pageEntries.add("item/logisticsModule");
+        pageEntries.add("block/universal_sensor");
+        pageEntries.add("item/logistic_drone");
+        pageEntries.add("item/logistics_module");
         skipLine();
-        pageEntries.add("item/pneumaticHelmet");
+        pageEntries.add("item/pneumatic_helmet");
         pageEntries.add("item/drone");
-        pageEntries.add("block/programmableController");
+        pageEntries.add("block/programmable_controller");
         pageEntries.add("item/remote");
         skipLine();
-        pageEntries.add("printedCircuitBoards");
-        pageEntries.add("assemblyMachines");
-        pageEntries.add("block/aphorismTile");
-        pageEntries.add("block/securityStation");
-        pageEntries.add("block/aerialInterface");
+        pageEntries.add("printed_circuit_boards");
+        pageEntries.add("assembly_machines");
+        pageEntries.add("block/aphorism_tile");
+        pageEntries.add("block/security_station");
+        pageEntries.add("block/aerial_interface");
         skipLine();
-        pageEntries.add("ic2Integration");
-        pageEntries.add("cofhIntegration");
-        pageEntries.add("ccIntegration");
+        pageEntries.add("ic2integration");
+        pageEntries.add("cofh_integration");
+        pageEntries.add("cc_integration");
 
     }
 
     @Override
     public String getName() {
-        return "PneumaticCraft";
+        return Names.MOD_NAME;
     }
 
     @Override

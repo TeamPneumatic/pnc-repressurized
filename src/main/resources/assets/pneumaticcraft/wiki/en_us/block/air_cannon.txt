@@ -1,0 +1,70 @@
+[image{325, 20,0.5, pneumaticcraft:textures/wiki/air_cannon.png}]
+The Air Cannon is a device you can use to transport your items quite some distance, through the air. It uses compressed air as propellant.
+
+[crafting{200, 130, key=item/cannon_barrel}]
+[crafting{200, 250,key=item/stone_base}]
+[crafting{200, 370, key=block/air_cannon}]
+[crafting{200, 490, key=item/gps_tool}]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[prefix{l}]Setting a destination coordinate[prefix{}]
+Place the Air Cannon down in the world. Take a GPS Tool, and right click with it on the block you want the cannon to shoot to. Place this GPS Tool in the GPS slot of the Air Cannon. The cannon will automatically adjust it's angles to be able to shoot to the given location. You can take out the GPS Tool now if you want, it doesn't need to stay in the cannon. When you've built up enough pressure, put items in the cannon slot, and you apply a redstone signal, the cannon will shoot the items to the given coordinate with pinpoint precision.
+
+[prefix{l}]Dispenser Upgrade[prefix{}]
+Apart from the usual [link{pneumaticcraft:menu/machine_upgrades}]upgrades [link{}] (Volume and Security) you can also put in a Dispenser Upgrade. This upgrade will make the cannon act like a Dispenser. Any item that would act special in a Dispenser, will be handled the same way in here. This opens up the Cannon to be a TNT cannon, or you could fire mobs when putting in spawn eggs.
+
+[prefix{l}]Entity Tracker Upgrade[prefix{}]
+It can also shoot any living entity by inserting an Entity Tracker Upgrade. This includes players, meaning that you can use this machine as player transport mechanic.
+
+[prefix{l}]Block Tracker Upgrade[prefix{}]
+When fired, items being shot automatically will try to go into inventories they hit. When firing at a Chest for example, items will land in the Chest without needing a Hopper. The side the item will be tried to put in is dependent on the side of the block the item hits.

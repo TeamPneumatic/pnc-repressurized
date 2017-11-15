@@ -1,0 +1,10 @@
+Programming Puzzles are used in [link{block/programmer}]programmers [link{}].
+
+[prefix{l}]The 'Inv-I' (Inventory Import) piece [prefix{}]
+This will make the Drone move to the nearest inventory within the specified area. It will then take items from that inventory and it will put them in the Drone's inventory.
+
+You can specify from which side the Drone should extract the items from. This could be used for example to extract items from the Furnace's output slot only. Right click the puzzle piece for this. In here you can specify a maximum amount of imported items too.
+
+You can also apply an item filter by connecting up the 'I-ftr' (Item Filter) piece. With a filter, only items that are allowed by the filter will be retrieved from the inventories.
+
+This program is done when the Drone's inventory is full or when no more (allowed) items can be found in the inventories.

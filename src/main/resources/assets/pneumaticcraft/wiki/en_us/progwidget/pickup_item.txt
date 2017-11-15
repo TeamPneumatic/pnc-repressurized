@@ -1,0 +1,8 @@
+Programming Puzzles are used in [link{block/programmer}]programmers [link{}].
+
+[prefix{l}]The 'I-pick' (Item Pick) piece [prefix{}]
+This will make the Drone pick up items that are within the specified area. The Drone will put these items in it's inventory. Keep in mind that the 'Area' pieces connected to an 'I-pick' piece always will be interpreted with cuboid mode, regardless of the 'Area' piece's area mode. It's possible to create strange shapes though by using whitelisting/blacklisting of areas.
+
+You can apply an item filter. With a filter, only items that are allowed by the filter will be picked up.
+
+The program is done when none of the (by the item filter allowed) items laying on the ground can fit in the Drone's inventory or when there are no items left to pick up.

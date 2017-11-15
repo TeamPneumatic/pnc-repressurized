@@ -1,0 +1,6 @@
+Programming Puzzles are used in [link{block/programmer}]programmers [link{}].
+
+[prefix{l}]The External Program piece [prefix{}]
+Also known as 'Programception' piece. This piece will search for any inventory in the selected area. For every inventory, it will go through every slot. When a programmable item is found, which uses pieces to program it (a Drone or Network API), it will run the program stored on there. When the program finishes, the Drone will move onto the next slot/inventory.
+
+This piece could be used to debug Drone programs, as [link{block/programmer}] Programmers[link{}] also count as inventory. Just program a Drone with the External Program piece with as area the Programmer, and place it down. Now put a Drone or Network API in the programmer, and program it how you want it. When you hit the 'export' button in the Programmer, the flying Drone will immediately execute the program.

@@ -1,0 +1,4 @@
+The Pneumatic Wrench can be used to rotate PneumaticCraft (and many more) blocks. It's a 'Buildcraft-compatible Wrench' so to speak. 
+
+
+[crafting{200, 110, key=item/pneumatic_wrench}]

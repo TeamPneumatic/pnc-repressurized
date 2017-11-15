@@ -1,0 +1,6 @@
+Programming Puzzles are used in [link{block/programmer}]programmers [link{}].
+
+[prefix{l}]The Item Assign piece [prefix{}]
+The Item Assign piece is an advanced piece that allows you to store an item in a variable. Variables are either coordinates or items. Currently we are talking about the latter. For information about coordinate variables and a generic explanation about variables, [link{pneumaticcraft:progwidget/coordinate_operator}]click here[link{}].
+
+To store an item in a certain variable, place an Item Filter piece on the righthand side of the Item Assign item. The selected filter will be transfered into the variable name you can specify in the GUI which you can open by right clicking the Item Assign piece. Only the actual item will be transfered. The filter settings (like OreDictionary) are not.

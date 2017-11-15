@@ -1,0 +1,16 @@
+The plant this seed belongs to is part of PneumaticCraft's [link{pneumaticcraft:menu/worldgen}]worldgen [link{}]. Generic information about all the plastic plants can be found by clicking on the link. The following is a summary of the behaviour of this particular plant:
+
+[prefix{l}]Color: [prefix{}]
+Black
+
+[prefix{l}]Soil: [prefix{}]
+Water
+
+[prefix{l}]How to acquire in survival:[prefix{}]
+Squid Plants are spawned on top of water in the Overworld. You can also acquire them by killing squids: Squids have a small chance to drop Squid Plant Seeds
+
+[prefix{l}]full-grown behaviour:[prefix{}]
+Spawning a Squid
+
+[prefix{l}]propagation theory:[prefix{}]
+The propagation theory relies on Squids being derpy. The Squid Plant spawns a squid, and because Squids are derpy they randomly take suffocation damage. When they die, they have a chance of dropping a new seed.

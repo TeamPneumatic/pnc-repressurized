@@ -1,0 +1,16 @@
+The plant this seed belongs to is part of PneumaticCraft's [link{pneumaticcraft:menu/worldgen}]worldgen [link{}]. Generic information about all the plastic plants can be found by clicking on the link. The following is a summary of the behaviour of this particular plant:
+
+[prefix{l}]Color: [prefix{}]
+Yellow
+
+[prefix{l}]Soil: [prefix{}]
+Netherrack
+
+[prefix{l}]How to acquire in survival:[prefix{}]
+Helium Plants are spawned upside down in the Nether, on top of the ceiling.
+
+[prefix{l}]full-grown behaviour:[prefix{}]
+Shooting Helium Plant Seeds downwards. The seeds will because of the Helium travel upwards.
+
+[prefix{l}]propagation theory:[prefix{}]
+Shooting seeds

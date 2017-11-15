@@ -1,0 +1,8 @@
+Programming Puzzles are used in [link{block/programmer}]programmers [link{}].
+
+[prefix{l}]The Rename piece [prefix{}]
+The rename piece is as if you right click a drone with a name tag. The name can be put in as text piece. This can be used as debug feature, as a Drone can be named on the fly with this. Additionally you can include the value of [link{pneumaticcraft:progwidget/coordinate_operator}]variables [link{}] by including ${<var_name>} in the name. For example:
+
+"Counter: ${counter}"
+
+When the counter is equal to x=1, y=2, z=3, the Drone will be renamed to "Counter: 1, 2, 3". This will also work with all other variables like global variables (by prefixing a '#' like usual).

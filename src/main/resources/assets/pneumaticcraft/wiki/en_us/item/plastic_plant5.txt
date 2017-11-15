@@ -1,0 +1,16 @@
+The plant this seed belongs to is part of PneumaticCraft's [link{pneumaticcraft:menu/worldgen}]worldgen [link{}]. Generic information about all the plastic plants can be found by clicking on the link. The following is a summary of the behaviour of this particular plant:
+
+[prefix{l}]Color: [prefix{}]
+Purple
+
+[prefix{l}]Soil: [prefix{}]
+End Stone
+
+[prefix{l}]How to acquire in survival:[prefix{}]
+Any ender teleportation (players with Ender Pearls or Endermen teleporting) has a very small chance to leave an Ender Plant Seed behind.
+
+[prefix{l}]full-grown behaviour:[prefix{}]
+Teleporting an Ender Plant Seed to a random location. You can track where it spawned the seed by following the trace of Ender particles.
+
+[prefix{l}]propagation theory:[prefix{}]
+Teleporting an Ender Plant Seed to a random location where it will be able to grow another plant.

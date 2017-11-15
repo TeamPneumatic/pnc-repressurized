@@ -1,0 +1,12 @@
+The GPS Tool is an item that when right click saves a coordinate. This data can be used by a couple of things in PneumaticCraft. These are the current users:
+
+[link{block/air_cannon}]-Air Cannon[link{}]
+[link{block/universal_sensor}]-Universal Sensor[link{}]
+[link{item/drone}]-Drones [link{}]
+
+[prefix{l}]Linking variables[prefix{}]
+You can link a GPS Tool to a [link{pneumaticcraft:progwidget/coordinate_operator}]global variable[link{}] in the GUI of the GPS Tool (right-click in the air). Now, when you change the coordinate in the GPS Tool by right-clicking it, the Global Variable will be set to this coordinate. This can be used for example to make Drone programs that use dynamic areas.
+
+On the other hand when a Global Variable changes, the GPS Tool's coordinate will change as well. The showed cube will change along with the changed variable.
+
+[crafting{200, 250, key=item/gps_tool}]

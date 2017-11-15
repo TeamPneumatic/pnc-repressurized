@@ -1,0 +1,10 @@
+[image{200,20,0.572,pneumaticcraft:textures/wiki/seismic_sensor.png}]
+A Seismic Sensor is an early game item used to track down Oil. The sensor does not use air. Upon right click, it will show whether or not Oil was found directly under where the sensor was clicked on.
+
+A Seismic Sensor can have two results:
+
+"No Oil found."
+No Oil is found right under this block.
+
+"Found Oil <distance> m below. It contains about <amount> buckets of Oil."
+Oil is found! The clicked block would be a suitable place to put a Gas Lift. It will be able to pump the amount of Oil buckets specified by the <amount>.

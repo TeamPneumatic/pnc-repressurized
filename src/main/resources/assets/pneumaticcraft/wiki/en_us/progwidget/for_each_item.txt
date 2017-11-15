@@ -1,0 +1,9 @@
+Programming Puzzles are used in [link{block/programmer}]programmers [link{}].
+
+[prefix{l}]The 'For Each Item' piece[prefix{}]
+This advanced piece will execute a subroutine for every attached Item Filter. For each Item Filter, it will set the specified variable to that filter, and jump to the [link{pneumaticcraft:progwidget/label}]Label [link{}] specified. When that routine is done executing (when it reaches the end of a program where it would usually jump back to Start), it will come back to this piece and do the same for the next Item Filter.
+
+When all coordinates are traversed, the flow will continue to the bottom of the For Each Item piece.
+
+[prefix{l}]Breaking [prefix{}]
+You can break out of the loop by setting the item variable used by the For Each Item to an empty filter. Next time when the program jumps back to the For Each Item it will notice this and cancel further traversal of Item Filters.

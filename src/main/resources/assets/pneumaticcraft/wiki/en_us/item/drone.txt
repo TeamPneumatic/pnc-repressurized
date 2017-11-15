@@ -1,0 +1,33 @@
+[prefix{l}]Drone [prefix{}]
+
+Drones are programmable flying robots. They can perform all sorts of tasks and are quite advanced. The following is a recipe to craft them, but more resources are required.
+[crafting{200,90,item/drone,x_rx,rpr,x_rx,r=item/turbine_rotor,p=item/printed_circuit_board}]
+
+
+
+
+
+
+
+
+
+
+
+
+Drones need programming before they'll do anything. For this you'll need a [link{block/programmer}]Programmer [link{}].
+
+Apart from needing to program it, Drones need compressed air. You can charge Drones in a [link{block/charging_station}]Charging Station [link{}]. Now, when you place down a programmed and charged Drone, it'll perform the tasks that have been programmed in.
+
+[prefix{l}]Automatic charging [prefix{}]
+Drones are smart. When they get low on air they'll search for a Charging Station with pressure that has a Dispenser Upgrade in it within the same dimension as the Drone. This will happen regardless of the currently running program. When found, the Drone will go to this Charging Station and it will stay charging until the Charging Station can't supply anymore. After that the Drone will continue its program.
+
+On a multiplayer server you might want to only allow your Drones to charge on your Charging Station(s). You can make your Charging Station private by covering it by a [link{block/security_station}]Security Station[link{}]. Now only the Drones that have been placed by players who are whitelisted in the Security Station will be allowed to charge. 
+
+When the Drone's air runs out the propellers of the Drone will stop and the Drone falls straight to the ground.
+
+[prefix{l}]Dyeing a Drone [prefix{}]
+You can dye a Drone by putting a Drone in a crafting table together with a piece of dye. You can also craft a Drone in-world, by right clicking it with a piece of dye.
+[image{200, 570, 0.64, pneumaticcraft:textures/wiki/drone_dye.png}]
+
+[prefix{l}]Debugging [prefix{}]
+Hmm why does the Drone act like it does? Why doesn't it do anything at all? You can debug your program by using a [link{item/pneumatic_helmet}]Pneumatic Helmet[link{}] together with a Dispenser Upgrade.

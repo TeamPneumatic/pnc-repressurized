@@ -1,0 +1,13 @@
+This item is a [link{pneumaticcraft:menu/pressure_tubes}]Tube Module[link{}]. this means that it can be placed on a Pressure Tube only. For general information about Tube Modules click the link.
+
+This module shows the pressure currently in the network. It also emits a (directional) redstone signal of which the strenght equals:
+
+[prefix{l}]strength = 2 x pressure(bar) [prefix{}]
+
+So a pressure of 3.5 bar results in a redstone signal of strength 7.
+
+[prefix{l}]Applying an    [link{item/advanced_pcb}]Advanced PCB[link{}][prefix{}]
+When you apply an Advanced PCB to the Pressure Gauge Module you will be able to control when the module produces which redstone signal. To do this you need to configure the module in a GUI. This GUI is [prefix{n}]very [prefix{}]much like that of the [link{item/safety_tube_module}]Safety Valve Tube Module[link{}], except it's the exact opposite. What is meant by that is that now the redstone is dependent of the pressure. I suggest navigating to that page for more information.
+
+[prefix{l}]Making the module emit a full redstone signal when xxx bar is hit[prefix{}]
+Example: You want to have the Pressure Gauge Module emit a redstone signal of 15 as soon as the system hits 4.5 bar. To do this, you could set the lower bound (the pressure at which the module emits 0 redstone) to 4.49 bar using the text field. Now set the high bound (the pressure at which the module emits 15 redstone) to 4.50 bar. This creates a very steep slope, resulting in the module to emit 0 redstone from -1 to 4.49 bar, and 15 redstone from 4.50 bar and up. You can easily invert this effect by making the lower bound 4.50 and the higher bound 4.49.

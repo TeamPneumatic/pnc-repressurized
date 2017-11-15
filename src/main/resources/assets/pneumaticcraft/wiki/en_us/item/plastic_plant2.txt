@@ -1,0 +1,16 @@
+The plant this seed belongs to is part of PneumaticCraft's [link{pneumaticcraft:menu/worldgen}]worldgen [link{}]. Generic information about all the plastic plants can be found by clicking on the link. The following is a summary of the behaviour of this particular plant:
+
+[prefix{l}]Color: [prefix{}]
+Dark Green
+
+[prefix{l}]Soil: [prefix{}]
+Dirt, Grass and Farmland
+
+[prefix{l}]How to acquire in survival:[prefix{}]
+Creeper Plants are spawned on top of grass in the Overworld. The second way to acquire them is by killing Creepers: Creepers have a small chance to repel some Creeper Plant Seeds when they die (not explode). When they do, they'll create the explosion sound, even though the explosion isn't big enough to do any harm.
+
+[prefix{l}]full-grown behaviour:[prefix{}]
+After you hear the fuse sound of a Creeper, the plant will suicide by way of a small explosion into 1 or 2 Creeper Plant Seeds.
+
+[prefix{l}]propagation theory:[prefix{}]
+Suiciding in more than one new plant.

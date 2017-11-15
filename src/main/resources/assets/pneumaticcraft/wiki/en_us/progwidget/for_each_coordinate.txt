@@ -1,0 +1,9 @@
+Programming Puzzles are used in [link{block/programmer}]programmers [link{}].
+
+[prefix{l}]The 'For Each Coordinate' piece[prefix{}]
+This advanced piece will loop through every single coordinate in a specified area. For each coordinate, it will set the specified variable to that coordinate, and jump to the [link{pneumaticcraft:progwidget/label}]Label [link{}] specified. When that routine is done executing (when it reaches the end of a program where it would usually jump back to Start), it will come back to this piece and do the same for the next coordinate.
+
+When all coordinates are traversed, the flow will continue to the bottom of the For Each Coordinate piece.
+
+[prefix{l}]Breaking [prefix{}]
+You can break out of the loop by setting the coordinate variable used by the For Each Coordinate to 0,0,0. Next time when the program jumps back to the For Each Coordinate it will notice this and cancel further traversal of coordinates.

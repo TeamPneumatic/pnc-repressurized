@@ -1,0 +1,10 @@
+This item is a [link{pneumaticcraft:menu/pressure_tubes}]Tube Module[link{}]. this means that it can be placed on a Pressure Tube only. For general information about Tube Modules click the link.
+
+The Flow Detector Tube Module is an in-line module which measures the airflow through a tube. It emits a redstone signal as result of this. This redstone signal follows the following formula:
+
+[prefix{l}]redstone = 0.2 * flow (in ml/tick)[prefix{}]
+
+Note that flow is different physical quantity than pressure. Flow is the amount of air traveling through a tube per tick. So if you have an [link{pneumaticcraft:menu/elevator}]Elevator [link{}], when it isn't running the flow will be 0, while when it is running the Elevator uses air, so air in the tubes start to flow to be able to equalize the pressure.
+
+[prefix{l}]Applying an    [link{item/advanced_pcb}]Advanced PCB[link{}][prefix{}]
+Currently you can't upgrade a Flow Detector Tube Module.

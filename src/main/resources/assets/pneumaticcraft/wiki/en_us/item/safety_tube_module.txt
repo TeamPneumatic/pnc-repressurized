@@ -1,0 +1,42 @@
+[image{200,190,0.4,pneumaticcraft:textures/wiki/safety_valve1.png}]
+[image{340,190,0.4,pneumaticcraft:textures/wiki/safety_valve2.png}]
+This item is a [link{pneumaticcraft:menu/pressure_tubes}]Tube Module[link{}]. this means that it can be placed on a Pressure Tube only. For general information about Tube Modules click the link.
+
+The Safety Valve Tube Module is used to limit the pressure in a tube network to a certain value. Any additional pressure will get dispersed into the open air, which means energy loss. To set the threshold pressure at which the Safety Valve Tube Module is going to disperse air, you can apply a redstone signal. This signal can be applied only from the side that the module is pointing at. On the [prefix{n}]left [prefix{}]you see redstone applied [prefix{n}]wrongly [prefix{}]. In the WAILA tooltip you can confirm this. On the [prefix{n}]right [prefix{}]you see a [prefix{n}]correctly [prefix{}]configurated Safety Valve module. Notice the "Threshold: 1.0 bar".
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+The desired strength of this signal can be determined using the following formula:
+
+[prefix{l}]Redstone strength = 15 - (2 x threshold pressure).[prefix{}]
+
+For instance, if you want to have a threshold pressure of 1.0 bar, you should apply a redstone strength of (15 - (2 * 1.0) = ) 13.  This can be seen in the picture.
+
+[prefix{l}]Applying an    [link{item/advanced_pcb}]Advanced PCB[link{}][prefix{}]
+When you apply an Advanced PCB to a Safety Valve Tube Module or [link{item/regulator_tube_module}]Regulator Tube Module[link{}] you can control the pressure threshold using a GUI. You can configure it to respond to a redstone signal how you like, or just to be a constant threshold. When right-clicked, the following GUI appears:
+
+[image{200, 540, 0.36, pneumaticcraft:textures/wiki/threshold_gui.png}]
+
+The red and blue have been photoshopped in to make it more clear what it's connected to what. Apart from the red line hovering at 5.
+
+With  this GUI you can basically design your own formula for the threshold. This threshold can be made dependent on the applied redstone. The configuration shown above is the configuration when you open up this GUI for the first time. Furthermore, this is the configuration it is in without an Advanced PCB in it.
+
+The (red) 'lower' is the lowerbound, the threshold when 0 redstone is applied. The (blue) 'higher' is the higherbound, the threshold when 15 redstone is applied. You can draw a straight line between these two, meaning that at a redstone signal of 5 you'll get a threshold of 5. This whole idea is visualized in the lower part of the user interface, by way of a graph. Vertically the redstone is displayed, and horizontally the threshold. The red line is representing the current applied redstone. In this example the module is powered by 5. If you look at where the black and red line meet, you see that's when the threshold is 5 bar. And that's exactly what the current threshold is of the module.
+
+You can either tinker with the scrollbars or type in the desired lower and upper bounds.
+
+[prefix{l}]Configurating a constant threshold[prefix{}]
+To configurate a redstone-independent constant threshold, type in both the lower and higher bounds the same (desired) pressure. This will make the black line in the graph go vertical.

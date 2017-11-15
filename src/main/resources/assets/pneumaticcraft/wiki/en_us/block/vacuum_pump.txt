@@ -1,0 +1,4 @@
+[image{320, 20, 0.5, pneumaticcraft:textures/wiki/vacuum_pump.png}]
+The Vacuum Pump is a machine used to create... a vacuum. To do this the machine consumes pressurized air. The set-up is displayed in the picture on the right. Positive (pressurized air) pressure should be applied on the '+' tube of the Vacuum Pump. Then when the minimal working pressure is reached, the Vacuum Pump starts pumping and the pressure on  the '-' tube will drop. When -1.0 bar is reached, which means no air is existing in the network anymore, the Vacuum Pump will automatically stop running.
+
+[crafting{200, 180, key=block/vacuum_pump}]

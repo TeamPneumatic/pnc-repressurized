@@ -1,0 +1,16 @@
+The plant this seed belongs to is part of PneumaticCraft's [link{pneumaticcraft:menu/worldgen}]worldgen [link{}]. Generic information about all the plastic plants can be found by clicking on the link. The following is a summary of the behaviour of this particular plant:
+
+[prefix{l}]Color: [prefix{}]
+Dark Blue
+
+[prefix{l}]Soil: [prefix{}]
+Dirt, Grass and Farmland
+
+[prefix{l}]How to acquire in survival:[prefix{}]
+Rain Plants are spawned on top of grass in the Overworld.
+
+[prefix{l}]full-grown behaviour:[prefix{}]
+When it rains, the Rain Plant will influence clouds. They will drop a Rain Plant Seed which eventually will make it's way to the ground.
+
+[prefix{l}]propagation theory:[prefix{}]
+Making seeds drop from the cloud on top of fertile ground.

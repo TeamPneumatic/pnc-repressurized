@@ -1,0 +1,35 @@
+Programming Puzzles are used in [link{block/programmer}]programmers [link{}].
+
+[prefix{l}]The Coordinate Operation piece [prefix{}]
+The Coordinate Operation comes into play when dealing with [link{pneumaticcraft:progwidget/coordinate}]Coordinates [link{}] as variables.
+
+You can [link{www.youtube.com/watch?v=f_ij_ed_d_yj9y}]click here[link{}] to see a video where these variables are explained graphically.
+
+The Coordinate Operation piece takes all connected Coordinate pieces connected to it and performs a certain operation on them, depending on the selected operator. Operations all operate separately per axis. Available operations are:
+
+[prefix{l}]+ -[prefix{}]
+Adds up the pieces connected to the right. Subtracts the pieces on the left.
+
+[prefix{l}]* /[prefix{}]
+Multiplies the pieces connected to the right. Divides the result by the pieces on the left.
+
+[prefix{l}]Max Min[prefix{}]
+Takes the maximum x, y and z from the connected pieces on the right. Then it will take the minimum of the pieces on the left and the maximum that was determined earlier.
+
+The end result is stored in a variable, defined by the name put in the Coordinate Operation when you right click it. Using this name, you can get this coordinate back later. In the [link{pneumaticcraft:progwidget/area}] Area[link{}] piece you can instead of putting in a GPS coordinate, put in a variable name of a coordinate. These variables are kept saved, even if the world reloads. These variables could be used to create an endless mining program for example.
+
+Variables only allow you to store coordinates. However, if you think about it more carefully, you will notice it allows you to work with integers (whole number variables) and booleans (true and false) as well. You just need to use only one axis, and in case of booleans, define something like '0' means false, and everything else means true. Have fun!
+
+You can debug a program by showing the value of variables using the [link{pneumaticcraft:progwidget/rename}]Rename [link{}] piece, or by using a label in a [link{pneumaticcraft:item/remote}]Remote [link{}].
+
+[prefix{l}]Special Variables ($)[prefix{}]
+Apart from assigning variables yourself, there are a few special variables, which are set externally. They all are prefixed with '$':
+
+$owner = Gets the coordinate of the player who owns the Drone. This will be 0,0,0 if the owner is not online.
+$drone = Gets the coordinate of the drone itself.
+$player=<playername> = Gets the coordinate of the player inserted for '<playername>' (case insensitive). For example, '$player=MineMaarten' will get the coordinate of MineMaarten. This will be 0,0,0 if the player does not exist or is not online.
+
+[prefix{l}]Global Variables (#)[prefix{}]
+Another special kind of variable is the global variable. They are prefixed with '#'. Normal variables are unique per Drone. They can't be shared. Global variables are variables that ARE shared. This allows Drones to communicate with each other. Additionally, the [link{block/universal_sensor}]Universal Sensor[link{}] can look for global variables, and emit a redstone signal based on them.
+
+For convenience sake global variables can be set by using "/setGlobalVariable <varName> <x> <y> <z>". This is useful in custom maps or for debugging. The command execution is not just limited to OP's. To get the variable state (useful for debugging specifically), use "getGlobalVariable <varName>". This will get both the coordinate and item value.

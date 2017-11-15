@@ -1,0 +1,16 @@
+The plant this seed belongs to is part of PneumaticCraft's [link{pneumaticcraft:menu/worldgen}]worldgen [link{}]. Generic information about all the plastic plants can be found by clicking on the link. The following is a summary of the behaviour of this particular plant:
+
+[prefix{l}]Color: [prefix{}]
+Grey
+
+[prefix{l}]Soil: [prefix{}]
+Dirt, Grass and Farmland
+
+[prefix{l}]How to acquire in survival:[prefix{}]
+Burst Plants are spawned on top of grass in the Overworld.
+
+[prefix{l}]full-grown behaviour:[prefix{}]
+They will shoot a Burst Plant seed in a random direction.
+
+[prefix{l}]propagation theory:[prefix{}] 
+Shooting seeds to a place where a new plant can grow.

@@ -1,0 +1,3 @@
+This is a Condition. [link{pneumaticcraft:progwidget/conditions}]Click here[link{}] to read general information about Conditions.
+
+The Condition: Redstone allows you to (remotely) check if a block is powered by a certain Redstone signal.

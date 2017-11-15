@@ -1,0 +1,16 @@
+The plant this seed belongs to is part of PneumaticCraft's [link{pneumaticcraft:menu/worldgen}]worldgen [link{}]. Generic information about all the plastic plants can be found by clicking on the link. The following is a summary of the behaviour of this particular plant:
+
+[prefix{l}]Color: [prefix{}]
+Orange
+
+[prefix{l}]Soil: [prefix{}]
+Dirt, Grass and Farmland
+
+[prefix{l}]How to acquire in survival:[prefix{}]
+Propulsion Plants are spawned on top of Grass in the Overworld.
+
+[prefix{l}]full-grown behaviour:[prefix{}]
+Shoots seeds at a low angle which slide over the ground until they hit a wall
+
+[prefix{l}]propagation theory:[prefix{}]
+Shooting seeds

@@ -1,0 +1,1 @@
+With this piece you can make a Drone emit a redstone signal. You can specify the sides it affects by right clicking the piece and configuring in the interface. The redstone strength that is being set is specified by attaching a Text puzzle piece with a number in it (from 0 - 15).

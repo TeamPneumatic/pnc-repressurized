@@ -1,0 +1,4 @@
+Programming Puzzles are used in [link{block/programmer}]programmers [link{}].
+
+[prefix{l}]The Liquid Filter Piece [prefix{}]
+The Liquid Filter is a piece solely used as parameter for other pieces. You can specify a certain liquid, by right clicking the piece and selecting/searching for a liquid. This can be used to only import/export/check certain liquids.
