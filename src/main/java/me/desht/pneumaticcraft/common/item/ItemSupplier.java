@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.api.item;
+package me.desht.pneumaticcraft.common.item;
 
 public class ItemSupplier {
 //    public static Item getItem(String itemName) {

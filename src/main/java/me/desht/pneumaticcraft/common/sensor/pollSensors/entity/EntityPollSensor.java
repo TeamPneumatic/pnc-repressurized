@@ -1,6 +1,7 @@
-package me.desht.pneumaticcraft.api.universalSensor;
+package me.desht.pneumaticcraft.common.sensor.pollSensors.entity;
 
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
+import me.desht.pneumaticcraft.api.universalSensor.IPollSensorSetting;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;

@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.sensor.eventSensors;
 
-import me.desht.pneumaticcraft.api.universalSensor.PlayerEventSensor;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.text.TextFormatting;

@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.sensor.pollSensors.entity;
 
-import me.desht.pneumaticcraft.api.universalSensor.EntityPollSensor;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.entity.Entity;

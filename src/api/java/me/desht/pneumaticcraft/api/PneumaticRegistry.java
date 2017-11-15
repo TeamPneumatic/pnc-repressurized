@@ -8,7 +8,6 @@ import me.desht.pneumaticcraft.api.recipe.IPneumaticRecipeRegistry;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerSupplier;
 import me.desht.pneumaticcraft.api.tileentity.IHeatRegistry;
 import me.desht.pneumaticcraft.api.universalSensor.ISensorRegistry;
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -26,9 +25,9 @@ public final class PneumaticRegistry {
     }
 
     public static void init(IPneumaticCraftInterface inter) {
-        if (instance == null && Loader.instance().activeModContainer().getModId().equals(Names.MOD_ID))
+        if (instance == null && Loader.instance().activeModContainer().getModId().equals("pneumaticcraft"))
             instance = inter;//only allow initialization once; by PneumaticCraft
-        else throw new IllegalStateException("Only " + Names.MOD_ID + " is allowed to call this method!");
+        else throw new IllegalStateException("Only pneumaticcraft is allowed to call this method!");
     }
 
     public interface IPneumaticCraftInterface {
