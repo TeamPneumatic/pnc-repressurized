@@ -1,6 +1,0 @@
-The Liquid Hopper is a hopper which you can use to transfer liquids. Like the [link{block/omnidirectionalHopper}]Omnidirectional Hopper[link{}] it's omnidirectional. You can put in Speed Upgrades to increase the liquid transfer speed.
-
-[prefix{l}]Dispenser Upgrade[prefix{}]
-If a Dispenser Upgrade is inserted into the Liquid Hopper, it will suck any liquid block at the input side, and it will place down any liquid at the output side. This can be used for example as water pump.
-
-[crafting{200, 130, key=block/liquidHopper}]

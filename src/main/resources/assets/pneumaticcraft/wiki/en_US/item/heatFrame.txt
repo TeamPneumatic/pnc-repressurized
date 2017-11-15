@@ -1,5 +1,0 @@
-This item can be placed on any inventory. When heated by an adjacent [link{pneumaticcraft:menu/heat}]Heat source[link{}] it will try to smelt any item in the inventory as well as freeze it when cooled. It will only succeed when there is room in the inventory for the outputted item. The more heat applied, the faster the smelting process will be, up to a maximum of 1 item smelted per second. Similarly the more it's cooled, the faster it will freeze objects.
-
-By default the only thing that can be frozen is Water Buckets into Ice, or Lava Buckets into Obsidian (both giving back the Bucket).
-
-[crafting{200, 140, key=item/heatFrame}]

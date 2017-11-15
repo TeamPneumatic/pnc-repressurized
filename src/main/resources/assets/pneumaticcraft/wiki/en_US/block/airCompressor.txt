@@ -1,2 +1,0 @@
-The Air Compressor is a machine which can [link{pneumaticcraft:menu/generatingPressure}]produce compressed air[link{}]. It works on any fuel that works in a regular Furnace.
-[crafting{200, 60, key=block/airCompressor}]

@@ -1,3 +1,0 @@
-This is a Condition. [link{pneumaticcraft:progwidget/conditions}]Click here[link{}] to read general information about Conditions.
-
-The Drone Condition: Entity allows you to check the entity the Drone is currently carrying. When it is carrying an entity that is allowed by the [link{pneumaticcraft:misc/entityFilter}]Entity Filter[link{}] it will consider the condition to be true, and false otherwise.

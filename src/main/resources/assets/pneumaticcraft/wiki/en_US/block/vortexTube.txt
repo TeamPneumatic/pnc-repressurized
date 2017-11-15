@@ -1,6 +1,0 @@
-The Vortex Tube is a device which is based on real life [link{www.en.wikipedia.org/wiki/Vortex_tube}](click here for info)[link{}]. It splits the air flowing into it into a hot air part and a cold air part. It heats up one side of the Tube, and cools down the opposite side. Mind that the hot and cold side are connected, so it's more efficient to vent the cold side when you want to utilize the heat, and vice versa if you want to use the cold. This can be done with a [link{block/heatSink}]Heat Sink[link{}] or any other [link{pneumaticcraft:menu/heat}]Heat source[link{}]. When you place down a Vortex Tube the side that's creating heat is shown red, and the side that's cooling down is shown blue. The image below shows this, the Vortex Tube displayed left has just been placed down.
-
-Air is required to make the Vortex Tube work. The higher the pressure, the higher the air use, but also the faster the Vortex Tube works.
-[image{200,155,0.68,pneumaticcraft:textures/wiki/vortexTube.png}]
-
-[crafting{200,410,key=block/vortexTube}]

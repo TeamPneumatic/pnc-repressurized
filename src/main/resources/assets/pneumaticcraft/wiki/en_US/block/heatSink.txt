@@ -1,8 +1,0 @@
-The Heat Sink is a block used to get rid of [link{pneumaticcraft:menu/heat}]heat [link{}]. It has a reasonably low resistance to the air, which is used to get rid of the heat. Its general purpose is to help cool down compressors which create heat. Be careful, a Heat Sink hotter than 50 degrees C will burn you when touched!
-[image{200,5,0.60,pneumaticcraft:textures/wiki/heatSink.png}]
- 
-Heat Sinks are only connecting heat wise on the single solid side of the Heat Sink. So to connect up a row of Heat Sinks, conductors like a [link{block/compressedIronBlock}]Blocks of Compressed Iron[link{}] are required.
-[image{200,245,0.60,pneumaticcraft:textures/wiki/compressorCooling.png}]
-
-You can increase the effectiveness of a Heat Sink by placing it in range of an [link{item/airGrateModule}]Air Grate Module[link{}]. The range is displayed when you place down an Air Grate Tube. The effectiveness can be stacked by using multiple Air Grate Modules.
-[crafting{200, 450, key=block/heatSink}]
