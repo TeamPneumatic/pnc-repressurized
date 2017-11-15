@@ -7,40 +7,22 @@
 	"variants": {
 		"facing": {
 			"south": {
-			    "transform": {
-    			     "rotation" : {"x" : -90},
-    			     "translation": [ 0, 0, 0 ]
-    			}
+			    "transform": { "rotation" : [ {"x" : -90}, { "y" : 90 } ] }
 			},
 			"north": {
-                "transform": {
-                     "rotation" : {"x" : 90},
-                     "translation": [ 0, 0, 0 ]
-                }
+                "transform": { "rotation" : [ {"x" : 90}, { "y" : -90 } ] }
             },
 			"down": {
-				"transform": {
-					"rotation": {"y" : 90},
-					"translation": [ 0, 0, 0 ]
-				}
+				"transform": { "rotation": {"y" : 90} }
 			},
 			"up": {
-				"transform": {
-				    "translation": [ 0, 0, 0 ],
-					"rotation": {"x" : 180}
-				}
+				"transform": { }
 			},
 			"west": {
-				"transform": {
-					"translation": [ 0, 0, 0 ],
-					"rotation": {"z": 270}
-				}
+				"transform": { "rotation": {"z": 270} }
 			},
 			"east": {
-				"transform": {
-                    "rotation": {"z": 90},
-					"translation": [ 0, 0, 0 ]
-				}
+				"transform": { "rotation": {"z": 90} }
 			}
 		},
 		"inventory": [{
