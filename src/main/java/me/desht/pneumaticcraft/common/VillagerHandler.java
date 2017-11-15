@@ -28,7 +28,7 @@ public class VillagerHandler {
         );
         for (int i = 0; i < ItemAssemblyProgram.PROGRAMS_AMOUNT; i++) {
             career.addTrade(1,
-                    new ListItemForEmeralds(new ItemStack(Itemss.ASSEMBLY_PROGRAM, i, 1), new PriceInfo(5, 11)));
+                    new ListItemForEmeralds(new ItemStack(Itemss.ASSEMBLY_PROGRAM, 1, i), new PriceInfo(5, 11)));
         }
     }
 
