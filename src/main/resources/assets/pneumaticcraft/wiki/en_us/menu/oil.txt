@@ -8,4 +8,4 @@ To create plastic, the first step is to refine the Oil in a [link{block/refinery
 
 One of the products is LPG. This liquid combined with Coal processed in a [link{block/thermopneumatic_processing_plant}]Thermopneumatic Processing Plant[link{}] will yield Plastic.
 
-This all sounds quite extensive, however it is all early game. The machines are fairly cheap.
+This all sounds quite expensive, however it is all early game. The default recipes for the machines are fairly cheap.

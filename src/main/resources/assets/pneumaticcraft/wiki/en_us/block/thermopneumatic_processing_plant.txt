@@ -14,4 +14,7 @@ Diesel --> Kerosene
 Kerosene --> Gasoline
 Gasoline --> LPG
 
+[prefix{l}]CraftTweaker Support[prefix{}]
+This machine has CraftTweaker support; if CraftTweaker is in your pack, the above (default) recipes may or may not apply. It's recommended to use JEI to see the "live" recipes for this machine.
+
 [crafting{200, 410, key=block/thermopneumatic_processing_plant}]
