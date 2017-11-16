@@ -62,26 +62,44 @@ version = "${mc_version}-${mod_version_massive}.${mod_version_major}.${mod_versi
 group = "me.desht.pneumaticcraft"
 archivesBaseName = "pneumaticcraft-repressurized"
 
+if (System.getenv().CIRCLE_BUILD_NUM != null) {
+    version += "-${System.getenv().CIRCLE_BUILD_NUM}"
+} else {
+    version += "-CUSTOM"
+}
+
 sourceCompatibility = targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
-sourceSets {
-    api
-    main
+// prevent java 8's strict doclint for javadocs from failing builds
+allprojects {
+    tasks.withType(Javadoc) {
+        options.addStringOption('Xdoclint:none', '-quiet')
+    }
+}
+
+jar {
+	from sourceSets.main.output
+	from sourceSets.api.output
+}
+
+task sourcesJar(type: Jar) {
+	classifier = 'sources'
+	from sourceSets.main.allJava
+	from sourceSets.api.allJava
 }
 
 task apiJar(type: Jar) {
-    from sourceSets.api.java
-    include "me/desht/pneumaticcraft/api/**"
-
-    from sourceSets.api.output
-    include "me/desht/pneumaticcraft/api/**"
-
     classifier = 'api'
+    from sourceSets.api.java
+    // TODO: when FG bug is fixed, remove allJava from the api jar.
+	// https://github.com/MinecraftForge/ForgeGradle/issues/369
+	// Gradle should be able to pull them from the -sources jar.
+	from sourceSets.api.allJava
 }
 
 artifacts {
+    archives sourcesJar
     archives apiJar
-    archives sourceJar
 }
 
 compileJava {
