@@ -158,15 +158,20 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
             if ((inputStack.isEmpty() || inputStack.isItemEqual(chamberStack)) && filterHandler.doesItemMatchFilter(chamberStack)) {
                 int maxAllowedItems = Math.abs(core.getAirHandler(null).getAir()) / PneumaticValues.USAGE_CHAMBER_INTERFACE;
                 if (maxAllowedItems > 0) {
-                    if (!inputStack.isEmpty())
+                    if (!inputStack.isEmpty()) {
                         maxAllowedItems = Math.min(maxAllowedItems, chamberStack.getMaxStackSize() - inputStack.getCount());
+                    }
                     int transferredItems = Math.min(chamberStack.getCount(), maxAllowedItems);
-                    core.addAir((core.getAirHandler(null).getAir() > 0 ? -1 : 1) * transferredItems * PneumaticValues.USAGE_CHAMBER_INTERFACE);
-                    ItemStack transferedStack = chamberStack.copy().splitStack(transferredItems);
-                    ItemStack insertedStack = transferedStack.copy();
-                    insertedStack.grow(inputStack.getCount());
-                    inventory.setStackInSlot(0, insertedStack);
-                    core.clearStacksInChamber(transferedStack);
+                    ItemStack toTransferStack = chamberStack.copy().splitStack(transferredItems);
+                    ItemStack excess = inventory.insertItem(0, toTransferStack, true);
+                    if (excess.getCount() < toTransferStack.getCount()) {
+                        // we can transfer at least some of the items
+                        transferredItems = toTransferStack.getCount() - excess.getCount();
+                        core.addAir((core.getAirHandler(null).getAir() > 0 ? -1 : 1) * transferredItems * PneumaticValues.USAGE_CHAMBER_INTERFACE);
+                        toTransferStack.setCount(transferredItems);
+                        inventory.insertItem(0, toTransferStack, false);
+                        core.clearStacksInChamber(toTransferStack);
+                    }
                 }
             }
         }
