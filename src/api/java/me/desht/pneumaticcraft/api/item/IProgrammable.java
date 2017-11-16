@@ -4,8 +4,8 @@ import net.minecraft.item.ItemStack;
 
 /**
  * Implement this for items that can get programmed in a Programmer.
- * For now the only thing you can do with this is make program storages, later more interaction with programming puzzles is planned.
- * Puzzle pieces will be written onto the implementer's itemstack NBT, using the "progWidget" tag.
+ * For now the only thing you can do with this is make program storages, later more interaction with programming puzzles
+ * is planned.  Puzzle pieces will be written onto the implementer's itemstack NBT, using the "progWidget" tag.
  */
 public interface IProgrammable {
 

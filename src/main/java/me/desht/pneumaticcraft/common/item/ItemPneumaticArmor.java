@@ -39,9 +39,8 @@ import javax.annotation.Nullable;
 import java.util.*;
 
 //TODO 1.8 Thaumcraft dep @Optional.InterfaceList({@Interface(iface = "thaumcraft.api.IRepairable", modid = ModIds.THAUMCRAFT), @Interface(iface = "thaumcraft.api.IGoggles", modid = ModIds.THAUMCRAFT), @Interface(iface = "thaumcraft.api.IVisDiscountGear", modid = ModIds.THAUMCRAFT), @Interface(iface = "thaumcraft.api.nodes.IRevealer", modid = ModIds.THAUMCRAFT)})
-public class ItemPneumaticArmor extends ItemArmor implements IPressurizable, IChargingStationGUIHolderItem,
-        IUpgradeAcceptor/*,
-IRepairable, IRevealer, IGoggles, IVisDiscountGear*/ {
+public class ItemPneumaticArmor extends ItemArmor implements IPressurizable, IChargingStationGUIHolderItem, IUpgradeAcceptor
+        /*,IRepairable, IRevealer, IGoggles, IVisDiscountGear*/ {
 
     public ItemPneumaticArmor(ItemArmor.ArmorMaterial material, int renderIndex, EntityEquipmentSlot armorType, int maxAir) {
         super(material, renderIndex, armorType);
