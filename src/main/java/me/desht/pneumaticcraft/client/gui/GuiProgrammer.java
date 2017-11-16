@@ -1,6 +1,8 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.google.common.base.CaseFormat;
+
+import igwmod.api.WikiRegistry;
 import igwmod.gui.GuiWiki;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.client.gui.widget.GuiCheckBox;
@@ -294,17 +296,13 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         int y = lastMouseY;
 
         IProgWidget hoveredWidget = programmerUnit.getHoveredWidget(x, y);
-        if (hoveredWidget != null) {
-            GuiWiki gui = new GuiWiki();
-            FMLClientHandler.instance().showGuiScreen(gui);
-            gui.setCurrentFile("pneumaticcraft:progwidget/" + CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, hoveredWidget.getWidgetString()));
+        if(hoveredWidget != null) {
+            WikiRegistry.getWikiHooks().showWikiGui("pneumaticcraft:progwidget/" + CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, hoveredWidget.getWidgetString()));
         }
 
-        for (IProgWidget widget : visibleSpawnWidgets) {
-            if (widget != draggingWidget && x - guiLeft >= widget.getX() && y - guiTop >= widget.getY() && x - guiLeft <= widget.getX() + widget.getWidth() / 2 && y - guiTop <= widget.getY() + widget.getHeight() / 2) {
-                GuiWiki gui = new GuiWiki();
-                FMLClientHandler.instance().showGuiScreen(gui);
-                gui.setCurrentFile("pneumaticcraft:progwidget/" + CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, widget.getWidgetString()));
+        for(IProgWidget widget : visibleSpawnWidgets) {
+            if(widget != draggingWidget && x - guiLeft >= widget.getX() && y - guiTop >= widget.getY() && x - guiLeft <= widget.getX() + widget.getWidth() / 2 && y - guiTop <= widget.getY() + widget.getHeight() / 2) {
+                WikiRegistry.getWikiHooks().showWikiGui("pneumaticcraft:progwidget/" + CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, widget.getWidgetString()));
             }
         }
     }
