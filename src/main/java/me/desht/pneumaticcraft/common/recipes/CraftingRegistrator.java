@@ -91,6 +91,7 @@ public class CraftingRegistrator {
         addRecipe(new ItemStack(Blockss.LIQUID_COMPRESSOR), true, "pbp", "lcl", 'p', Blockss.PRESSURE_TUBE, 'l', Items.LEATHER, 'b', Items.BUCKET, 'c', Blockss.AIR_COMPRESSOR);
         addRecipe(new ItemStack(Blockss.ADVANCED_LIQUID_COMPRESSOR), true, "iii", "ibt", "ici", 'i', new ItemStack(Itemss.PLASTIC, 1, ItemPlastic.BLUE), 'b', Items.BUCKET, 'c', Blockss.LIQUID_COMPRESSOR, 't', Blockss.ADVANCED_PRESSURE_TUBE);
         addRecipe(new ItemStack(Blockss.ELECTROSTATIC_COMPRESSOR), "bpb", "prp", "bcb", 'b', Blocks.IRON_BARS, 'p', new ItemStack(Itemss.PLASTIC, 1, ItemPlastic.GREY), 'r', Itemss.TURBINE_ROTOR, 'c', Blockss.AIR_COMPRESSOR);
+        addRecipe(new ItemStack(Itemss.COMPRESSED_IRON_GEAR), " c ", "cic", " c ", 'c', Itemss.INGOT_IRON_COMPRESSED, 'i', "ingotIron");
         addRecipe(new ItemStack(Blockss.PNEUMATIC_DYNAMO), " t ", "gig", "ipi",
                 'i', Names.INGOT_IRON_COMPRESSED, 'g', Itemss.COMPRESSED_IRON_GEAR, 't', Blockss.ADVANCED_PRESSURE_TUBE,
                 'p', Itemss.PRINTED_CIRCUIT_BOARD);
