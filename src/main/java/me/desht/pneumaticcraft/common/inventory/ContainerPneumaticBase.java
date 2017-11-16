@@ -97,37 +97,30 @@ public class ContainerPneumaticBase<Tile extends TileEntityBase> extends Contain
     @Override
     @Nonnull
     public ItemStack transferStackInSlot(EntityPlayer player, int slot) {
-        ItemStack var3 = ItemStack.EMPTY;
         Slot srcSlot = inventorySlots.get(slot);
+        if (srcSlot == null || !srcSlot.getHasStack()) {
+            return ItemStack.EMPTY;
+        }
+        ItemStack srcStack = srcSlot.getStack();
+        ItemStack copyOfSrcStack = srcStack.copy();
 
-        if (srcSlot != null && srcSlot.getHasStack()) {
-            ItemStack stackInSlot = srcSlot.getStack().copy();
-            var3 = stackInSlot.copy();
-
-            if (slot < playerSlotsStart) {
-                if (!mergeItemStack(stackInSlot, playerSlotsStart, playerSlotsStart + 36, false))
-                    return ItemStack.EMPTY;
-
-                srcSlot.onSlotChange(stackInSlot, var3);
-            } else {
-                if (!mergeItemStack(stackInSlot, 0, playerSlotsStart, false))
-                    return ItemStack.EMPTY;
-                srcSlot.onSlotChange(stackInSlot, var3);
-            }
-
-            if (stackInSlot.isEmpty()) {
-                srcSlot.putStack(ItemStack.EMPTY);
-            } else {
-                srcSlot.onSlotChanged();
-            }
-
-            if (stackInSlot.getCount() == var3.getCount())
+        if (slot < playerSlotsStart) {
+            if (!mergeItemStack(srcStack, playerSlotsStart, playerSlotsStart + 36, false))
                 return ItemStack.EMPTY;
+        } else {
+            if (!mergeItemStack(srcStack, 0, playerSlotsStart, false))
+                return ItemStack.EMPTY;
+        }
+        srcSlot.onSlotChange(srcStack, copyOfSrcStack);
 
-            srcSlot.onTake(player, stackInSlot);
+        if (srcStack.isEmpty()) {
+            srcSlot.putStack(ItemStack.EMPTY);
+        } else {
+            srcSlot.onSlotChanged();
         }
 
-        return var3;
+        srcSlot.onTake(player, srcStack);
+        return copyOfSrcStack;
     }
 
     @Nonnull
