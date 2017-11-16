@@ -401,18 +401,16 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
 
     private EnumFacing[] getExportLocationForItem(ItemStack exportedItem) {
         if (!exportedItem.isEmpty()) {
-            for (EnumFacing dir : EnumFacing.VALUES) {
-                if (dir != EnumFacing.UP && dir != EnumFacing.DOWN) {
-                    TileEntity te = getWorld().getTileEntity(getPos().offset(dir));
-                    int slot = getInventoryPlaceLocation(exportedItem, te);
-                    if (slot >= 0) return new EnumFacing[]{dir, null};
-                }
+            for (EnumFacing dir : EnumFacing.HORIZONTALS) {
+                TileEntity te = getWorld().getTileEntity(getPos().offset(dir));
+                int slot = getPlacementSlot(exportedItem, te);
+                if (slot >= 0) return new EnumFacing[]{dir, null};
             }
             if (canMoveToDiagonalNeighbours()) {
                 for (EnumFacing secDir : new EnumFacing[]{EnumFacing.WEST, EnumFacing.EAST}) {
                     for (EnumFacing primDir : new EnumFacing[]{EnumFacing.NORTH, EnumFacing.SOUTH}) {
                         TileEntity te = getWorld().getTileEntity(getPos().offset(primDir).offset(secDir));
-                        int slot = getInventoryPlaceLocation(exportedItem, te);
+                        int slot = getPlacementSlot(exportedItem, te);
                         if (slot >= 0) return new EnumFacing[]{primDir, secDir};
                     }
                 }
@@ -422,13 +420,16 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
     }
 
     /**
+     * Find a slot into which to place an exported item.  Note that other assembly robots are not valid export
+     * locations, but any other TE which provides CAPABILITY_ITEM_HANDLER on the top face is a valid candidate.
+     *
      * @param exportedItem item to export
-     * @param te where the item is being tried to be placed in the top (respects ISidedInventory)
-     * @return returns -1 when the item can't be placed / accessed
+     * @param te where the item is being attempted to insert to (will use the top face for IItemHandler cap.)
+     * @return the placement slot, or -1 when the item can't be placed / accessed
      */
-    private static int getInventoryPlaceLocation(ItemStack exportedItem, TileEntity te) {
-        if (te != null && te.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)) {
-            IItemHandler handler = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+    private static int getPlacementSlot(ItemStack exportedItem, TileEntity te) {
+        if (te != null && !(te instanceof TileEntityAssemblyRobot) && te.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.UP)) {
+            IItemHandler handler = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.UP);
             for (int slot = 0; slot < handler.getSlots(); slot++) {
                 ItemStack excess = handler.insertItem(slot, exportedItem, true);
                 if (excess.getCount() < exportedItem.getCount()) {
