@@ -20,9 +20,9 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.relauncher.Side;
 
 import javax.annotation.Nonnull;
+import java.util.Collections;
 import java.util.List;
 
 public class ItemGPSTool extends ItemPneumatic implements IPositionProvider {
@@ -114,7 +114,12 @@ public class ItemGPSTool extends ItemPneumatic implements IPositionProvider {
     }
 
     @Override
-    public BlockPos getStoredPos(@Nonnull ItemStack stack) {
-        return getGPSLocation(stack);
+    public List<BlockPos> getStoredPositions(@Nonnull ItemStack stack) {
+        return Collections.singletonList(getGPSLocation(stack));
+    }
+
+    @Override
+    public int getRenderColor(int index) {
+        return 0x90FFFF00;
     }
 }

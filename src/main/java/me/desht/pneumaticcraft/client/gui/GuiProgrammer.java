@@ -1,9 +1,7 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.google.common.base.CaseFormat;
-
 import igwmod.api.WikiRegistry;
-import igwmod.gui.GuiWiki;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.client.gui.widget.GuiCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.GuiRadioButton;

@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
+import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.common.NBTUtil;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncAmadronOffers;
@@ -33,11 +34,13 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
+import javax.annotation.Nonnull;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ItemAmadronTablet extends ItemPressurizable implements IAmadronInterface {
+public class ItemAmadronTablet extends ItemPressurizable implements IAmadronInterface, IPositionProvider {
 
     public ItemAmadronTablet() {
         super("amadron_tablet", PneumaticValues.AIR_CANISTER_MAX_AIR, PneumaticValues.AIR_CANISTER_VOLUME);
@@ -193,5 +196,19 @@ public class ItemAmadronTablet extends ItemPressurizable implements IAmadronInte
             list.appendTag(tag);
         }
         NBTUtil.setCompoundTag(tablet, "shoppingCart", list);
+    }
+
+    @Override
+    public List<BlockPos> getStoredPositions(@Nonnull ItemStack stack) {
+        return Arrays.asList(getItemProvidingLocation(stack), getLiquidProvidingLocation(stack));
+    }
+
+    @Override
+    public int getRenderColor(int index) {
+        switch (index) {
+            case 0: return 0x90A0490E;  // item
+            case 1: return 0x9000C0C0;  // liquid
+            default: return -1;
+        }
     }
 }

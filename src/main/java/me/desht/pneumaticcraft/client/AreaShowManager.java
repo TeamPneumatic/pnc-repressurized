@@ -1,12 +1,14 @@
 package me.desht.pneumaticcraft.client;
 
+import com.google.common.collect.ImmutableSet;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
+import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.DroneDebugUpgradeHandler;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.HUDHandler;
-import me.desht.pneumaticcraft.common.item.ItemGPSTool;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -39,33 +41,34 @@ public class AreaShowManager {
         double playerY = player.prevPosY + (player.posY - player.prevPosY) * event.getPartialTicks();
         double playerZ = player.prevPosZ + (player.posZ - player.prevPosZ) * event.getPartialTicks();
 
-        GL11.glPushMatrix();
-        GL11.glTranslated(-playerX, -playerY, -playerZ);
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(-playerX, -playerY, -playerZ);
 
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        //    GL11.glDisable(GL11.GL_DEPTH_TEST);
+        GlStateManager.disableTexture2D();
+        GlStateManager.enableBlend();
+        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+
         for (AreaShowHandler handler : showHandlers.values()) {
             handler.render();
         }
 
         ItemStack curItem = player.getHeldItemMainhand();
-        if (curItem.getItem() == Itemss.GPS_TOOL) {
-            BlockPos gpsLocation = ItemGPSTool.getGPSLocation(curItem);
-            if (gpsLocation != null) {
-                Set<BlockPos> set = new HashSet<>();
-                set.add(gpsLocation);
-                GL11.glDisable(GL11.GL_DEPTH_TEST);
-                new AreaShowHandler(set, 0x90FFFF00).render();
-                GL11.glEnable(GL11.GL_DEPTH_TEST);
+        if (curItem.getItem() instanceof IPositionProvider) {
+            IPositionProvider positionProvider = (IPositionProvider) curItem.getItem();
+            List<BlockPos> posList = positionProvider.getStoredPositions(curItem);
+            for (int i = 0; i < posList.size(); i++) {
+                if (positionProvider.getRenderColor(i) != 0) {
+                    GlStateManager.disableDepth();
+                    new AreaShowHandler(ImmutableSet.of(posList.get(i)), positionProvider.getRenderColor(i)).render();
+                    GlStateManager.enableDepth();
+                }
             }
         } else if (curItem.getItem() == Itemss.CAMO_APPLICATOR) {
             Set<BlockPos> posSet = CamoTECache.getCamouflageableBlockPos(world, player);
             if (!posSet.isEmpty()) {
-                GL11.glDisable(GL11.GL_DEPTH_TEST);
+                GlStateManager.disableDepth();
                 new AreaShowHandler(posSet, 0x2080FFFF, 0.75).render();
-                GL11.glEnable(GL11.GL_DEPTH_TEST);
+                GlStateManager.enableDepth();
             }
         }
         if (curItem.getItem() != Itemss.CAMO_APPLICATOR) CamoTECache.clearCache();
@@ -76,15 +79,14 @@ public class AreaShowManager {
             if (droneDebugger == null)
                 droneDebugger = HUDHandler.instance().getSpecificRenderer(DroneDebugUpgradeHandler.class);
             Set<BlockPos> set = droneDebugger.getShowingPositions();
-            GL11.glDisable(GL11.GL_DEPTH_TEST);
+            GlStateManager.disableDepth();
             new AreaShowHandler(set, 0x90FF0000).render();
-            GL11.glEnable(GL11.GL_DEPTH_TEST);
+            GlStateManager.enableDepth();
         }
 
-        // GL11.glEnable(GL11.GL_DEPTH_TEST);
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
-        GL11.glDisable(GL11.GL_BLEND);
-        GL11.glPopMatrix();
+        GlStateManager.enableTexture2D();
+        GlStateManager.disableBlend();
+        GlStateManager.popMatrix();
     }
 
     public AreaShowHandler showArea(BlockPos[] area, int color, TileEntity areaShower) {
