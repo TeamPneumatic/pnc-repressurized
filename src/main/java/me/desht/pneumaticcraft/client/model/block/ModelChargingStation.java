@@ -1,14 +1,12 @@
 package me.desht.pneumaticcraft.client.model.block;
 
 import me.desht.pneumaticcraft.client.render.tileentity.AbstractModelRenderer;
-import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderEntityItem;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraftforge.fml.client.FMLClientHandler;
 
 public class ModelChargingStation extends AbstractModelRenderer.BaseModel {
     private final ModelRenderer shape3;

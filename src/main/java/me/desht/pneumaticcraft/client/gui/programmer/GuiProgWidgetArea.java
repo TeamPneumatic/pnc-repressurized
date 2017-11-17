@@ -20,8 +20,9 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.FMLClientHandler;
 
 import java.io.IOException;
-import java.util.*;
-import java.util.function.Predicate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
     private GuiInventorySearcher invSearchGui;

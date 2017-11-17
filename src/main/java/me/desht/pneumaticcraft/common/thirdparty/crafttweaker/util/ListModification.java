@@ -1,9 +1,9 @@
 package me.desht.pneumaticcraft.common.thirdparty.crafttweaker.util;
 
+import crafttweaker.IAction;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import crafttweaker.IAction;
 
 public abstract class ListModification<T> implements IAction {
 	protected final List<T> recipes;

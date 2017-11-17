@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.client.model.block;
 import me.desht.pneumaticcraft.api.client.assemblymachine.IAssemblyRenderOverriding;
 import me.desht.pneumaticcraft.client.GuiRegistry;
 import me.desht.pneumaticcraft.client.render.tileentity.AbstractModelRenderer;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderEntityItem;

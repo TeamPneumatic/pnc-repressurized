@@ -4,7 +4,6 @@ import me.desht.pneumaticcraft.api.block.IPneumaticWrenchable;
 import me.desht.pneumaticcraft.api.tileentity.IPneumaticMachine;
 import me.desht.pneumaticcraft.common.block.tubes.IPneumaticPosProvider;
 import me.desht.pneumaticcraft.common.item.ItemTubeModule;
-import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;

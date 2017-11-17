@@ -1,14 +1,11 @@
 package me.desht.pneumaticcraft.common.recipes;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import org.apache.commons.lang3.tuple.Pair;
-
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class RefineryRecipe {
 	

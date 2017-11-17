@@ -1,14 +1,11 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
 import me.desht.pneumaticcraft.common.block.Blockss;
-import me.desht.pneumaticcraft.common.fluid.Fluids;
 import me.desht.pneumaticcraft.common.recipes.RefineryRecipe;
 import me.desht.pneumaticcraft.common.thirdparty.jei.JEIRefineryCategory.RefineryRecipeWrapper;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityRefinery;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.IJeiHelpers;
 import net.minecraft.client.resources.I18n;
-import net.minecraftforge.fluids.FluidStack;
 
 import java.util.ArrayList;
 import java.util.List;

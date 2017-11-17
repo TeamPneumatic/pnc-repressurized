@@ -1,11 +1,10 @@
 package me.desht.pneumaticcraft.common.recipes;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import net.minecraft.item.ItemStack;
 import org.apache.commons.lang3.tuple.Pair;
 
-import net.minecraft.item.ItemStack;
+import java.util.ArrayList;
+import java.util.List;
 
 public class HeatFrameCoolingRecipe {
 	public static List<HeatFrameCoolingRecipe> recipes = new ArrayList<>();

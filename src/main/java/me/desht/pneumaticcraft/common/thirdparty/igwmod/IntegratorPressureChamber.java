@@ -4,7 +4,6 @@ import igwmod.TextureSupplier;
 import igwmod.WikiUtils;
 import igwmod.api.IRecipeIntegrator;
 import igwmod.gui.*;
-import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.recipes.PneumaticRecipeRegistry;
 import me.desht.pneumaticcraft.common.recipes.PressureChamberRecipe;
 import me.desht.pneumaticcraft.lib.Textures;

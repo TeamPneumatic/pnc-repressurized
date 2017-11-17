@@ -25,7 +25,10 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public class TileEntityRefinery extends TileEntityBase implements IHeatExchanger, IRedstoneControlled, IComparatorSupport, ISerializableTanks {
 

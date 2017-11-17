@@ -1,7 +1,5 @@
 package me.desht.pneumaticcraft.common.thirdparty.crafttweaker.handlers;
 
-import java.util.stream.Stream;
-
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.item.IIngredient;
 import crafttweaker.api.liquid.ILiquidStack;
@@ -13,6 +11,8 @@ import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.util.ListRemoval;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.util.RemoveAllRecipes;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
+
+import java.util.stream.Stream;
 
 @ZenClass("mods.pneumaticcraft.refinery")
 @ZenRegister

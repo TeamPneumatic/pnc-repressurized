@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.client.model.block;
 
 import me.desht.pneumaticcraft.client.render.tileentity.AbstractModelRenderer;
-import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;

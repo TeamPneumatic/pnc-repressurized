@@ -1,24 +1,21 @@
 package me.desht.pneumaticcraft.common.thirdparty.crafttweaker.handlers;
 
-import java.util.List;
-
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.item.IIngredient;
 import crafttweaker.api.item.IItemStack;
+import crafttweaker.api.liquid.ILiquidStack;
 import me.desht.pneumaticcraft.api.recipe.IThermopneumaticProcessingPlantRecipe;
-import me.desht.pneumaticcraft.common.recipes.AssemblyRecipe;
 import me.desht.pneumaticcraft.common.recipes.BasicThermopneumaticProcessingPlantRecipe;
-import me.desht.pneumaticcraft.common.recipes.PneumaticRecipeRegistry;
-import me.desht.pneumaticcraft.common.recipes.PressureChamberRecipe;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.CraftTweaker;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.util.Helper;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.util.ListAddition;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.util.ListRemoval;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.util.RemoveAllRecipes;
 import net.minecraft.item.ItemStack;
-import crafttweaker.api.liquid.ILiquidStack;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
+
+import java.util.List;
 
 @ZenClass("mods.pneumaticcraft.thermopneumaticprocessingplant")
 @ZenRegister

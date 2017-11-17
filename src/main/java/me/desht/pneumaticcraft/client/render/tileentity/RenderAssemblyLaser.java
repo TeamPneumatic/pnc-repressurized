@@ -3,10 +3,7 @@ package me.desht.pneumaticcraft.client.render.tileentity;
 import me.desht.pneumaticcraft.client.model.block.ModelAssemblyLaser;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyLaser;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.client.FMLClientHandler;
 
 public class RenderAssemblyLaser extends AbstractModelRenderer<TileEntityAssemblyLaser> {
     private final ModelAssemblyLaser model;

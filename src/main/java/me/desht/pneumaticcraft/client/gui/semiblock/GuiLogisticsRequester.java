@@ -1,8 +1,5 @@
 package me.desht.pneumaticcraft.client.gui.semiblock;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import appeng.api.AEApi;
 import appeng.api.util.AEColor;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
@@ -17,6 +14,9 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.Loader;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class GuiLogisticsRequester extends GuiLogisticsBase<SemiBlockRequester> {
     private GuiCheckBox aeIntegration;

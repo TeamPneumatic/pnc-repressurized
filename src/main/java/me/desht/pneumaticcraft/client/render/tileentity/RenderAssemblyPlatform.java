@@ -4,12 +4,9 @@ import me.desht.pneumaticcraft.client.model.block.ModelAssemblyPlatform;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyPlatform;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.client.FMLClientHandler;
 
 public class RenderAssemblyPlatform extends AbstractModelRenderer<TileEntityAssemblyPlatform> {
     private final ModelAssemblyPlatform model;

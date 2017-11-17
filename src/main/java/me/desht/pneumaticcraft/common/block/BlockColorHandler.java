@@ -1,15 +1,15 @@
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.common.tileentity.*;
+import me.desht.pneumaticcraft.common.tileentity.ICamouflageableTE;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityCompressedIronBlock;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityUVLightBox;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityVortexTube;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.color.IBlockColor;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import java.util.stream.Collectors;
 
 @SideOnly(Side.CLIENT)
 public class BlockColorHandler {

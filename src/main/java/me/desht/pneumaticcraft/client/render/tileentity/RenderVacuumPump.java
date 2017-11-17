@@ -5,9 +5,7 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityVacuumPump;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.client.FMLClientHandler;
 
 public class RenderVacuumPump extends AbstractModelRenderer<TileEntityVacuumPump> {
     private final ModelVacuumPump model;

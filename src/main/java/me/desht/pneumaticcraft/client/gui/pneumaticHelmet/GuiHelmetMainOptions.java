@@ -5,14 +5,12 @@ import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IOptionPage;
 import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.MainHelmetHandler;
-import me.desht.pneumaticcraft.lib.ModIds;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.Loader;
 import org.lwjgl.input.Keyboard;
 
 public class GuiHelmetMainOptions implements IOptionPage {

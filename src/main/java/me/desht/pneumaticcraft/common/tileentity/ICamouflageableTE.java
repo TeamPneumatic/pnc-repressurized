@@ -5,11 +5,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
-import net.minecraftforge.items.IItemHandler;
-
-import javax.annotation.Nonnull;
 
 /**
  * Implement this interface in tile entities which should store a camouflaged state.  The corresponding block should
