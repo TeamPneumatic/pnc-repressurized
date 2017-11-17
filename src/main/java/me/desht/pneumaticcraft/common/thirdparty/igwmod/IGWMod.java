@@ -19,7 +19,7 @@ public class IGWMod implements IThirdParty {
         try {
             int minorVersion = Integer.parseInt(ReflectionHelper.getPrivateValue(Constants.class, null, "MINOR"));
             int buildVersion = Integer.parseInt(ReflectionHelper.getPrivateValue(Constants.class, null, "BUILD"));
-            if (minorVersion < 1 || buildVersion < 9) MinecraftForge.EVENT_BUS.register(this);
+            if (minorVersion < 2 || buildVersion < 12) MinecraftForge.EVENT_BUS.register(this);
         } catch (Throwable e) {
             e.printStackTrace();
         }
