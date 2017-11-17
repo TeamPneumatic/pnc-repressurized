@@ -135,7 +135,7 @@ public class ThirdPartyManager implements IGuiHandler {
     public void clientSide() {
         for (IThirdParty thirdParty : thirdPartyMods) {
             try {
-                thirdParty.clientSide();
+                thirdParty.clientPreInit();
             } catch (Throwable e) {
                 Log.error("PneumaticCraft wasn't able to load third party content from the third party class " + thirdParty.getClass() + " client side!");
                 e.printStackTrace();

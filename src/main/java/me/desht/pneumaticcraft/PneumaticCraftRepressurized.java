@@ -28,7 +28,6 @@ import me.desht.pneumaticcraft.common.recipes.CraftingHandler;
 import me.desht.pneumaticcraft.common.recipes.CraftingRegistrator;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockInitializer;
 import me.desht.pneumaticcraft.common.sensor.SensorHandler;
-import me.desht.pneumaticcraft.common.thirdparty.ModInteractionUtilImplementation;
 import me.desht.pneumaticcraft.common.thirdparty.ModInteractionUtils;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRegistrator;
@@ -42,7 +41,6 @@ import me.desht.pneumaticcraft.proxy.CommonProxy;
 import net.minecraft.block.Block;
 import net.minecraft.command.ServerCommandManager;
 import net.minecraft.item.Item;
-import net.minecraft.world.storage.loot.LootTable;
 import net.minecraft.world.storage.loot.LootTableList;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.Fluid;
@@ -60,7 +58,7 @@ import org.apache.logging.log4j.Logger;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
 @Mod(modid = Names.MOD_ID, name = Names.MOD_NAME, version = PneumaticCraftRepressurized.MODVERSION,
-        dependencies = "required-after:forge@[14.23.0.2528,);after:forestry",
+        dependencies = "required-after:forge@[14.23.0.2528,);after:forestry;after:igwmod@[1.4.2-11,)",
         acceptedMinecraftVersions = "1.12"
 )
 public class PneumaticCraftRepressurized {

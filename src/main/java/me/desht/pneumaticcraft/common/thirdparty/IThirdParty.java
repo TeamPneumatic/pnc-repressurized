@@ -11,7 +11,7 @@ public interface IThirdParty {
     /**
      * Gets called from the ClientProxy in the preInit.
      */
-    default void clientSide() {}
+    default void clientPreInit() {}
 
     /**
      * Gets called from the ClientProxy in the Init.
