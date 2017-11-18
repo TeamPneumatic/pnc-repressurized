@@ -194,7 +194,7 @@ public class EntityPathNavigateDrone extends PathNavigateFlying implements IPath
     @Override
     protected PathFinder getPathFinder() {
         this.nodeProcessor = new NodeProcessorDrone();
-        return new PathFinder(this.nodeProcessor);
+        return new PathfinderDrone(this.nodeProcessor);
     }
 
     @Override
