@@ -65,6 +65,7 @@ public class EntityPathNavigateDrone extends PathNavigateFlying implements IPath
     @Nullable
     @Override
     public Path getPathToPos(BlockPos pos) {
+        telPos = pos;
         if (forceTeleport) {
             teleportCounter = 0;
             return null;
@@ -72,7 +73,6 @@ public class EntityPathNavigateDrone extends PathNavigateFlying implements IPath
         if (!pathfindingEntity.isBlockValidPathfindBlock(pos) || pathfindingEntity.getDistanceSqToCenter(pos) < 0.3)
             return null;
 
-        telPos = pos;
         pathfindingEntity.setStandby(false);
         teleportCounter = -1;
         Path path = super.getPathToPos(pos);
