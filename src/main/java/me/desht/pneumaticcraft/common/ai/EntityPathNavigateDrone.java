@@ -12,6 +12,7 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.pathfinding.PathFinder;
 import net.minecraft.pathfinding.PathNavigateFlying;
+import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
@@ -76,6 +77,15 @@ public class EntityPathNavigateDrone extends PathNavigateFlying implements IPath
         pathfindingEntity.setStandby(false);
         teleportCounter = -1;
         Path path = super.getPathToPos(pos);
+        
+        //Only paths that actually end up where we want to are valid, not just halfway.
+        if(path != null){
+            PathPoint lastPoint = path.getFinalPathPoint();
+            if(lastPoint != null && (lastPoint.x != pos.getX() || lastPoint.y != pos.getY() || lastPoint.z != pos.getZ())){
+                path = null;
+            }
+        }
+        
         if (path == null) {
             teleportCounter = 0;
         }
@@ -184,7 +194,7 @@ public class EntityPathNavigateDrone extends PathNavigateFlying implements IPath
     @Override
     protected PathFinder getPathFinder() {
         this.nodeProcessor = new NodeProcessorDrone();
-        return new PathFinder(this.nodeProcessor);
+        return new PathfinderDrone(this.nodeProcessor);
     }
 
     @Override
