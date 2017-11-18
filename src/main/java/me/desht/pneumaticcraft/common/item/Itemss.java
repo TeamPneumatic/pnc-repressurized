@@ -10,6 +10,7 @@ import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockAir;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
@@ -165,7 +166,9 @@ public class Itemss {
         registerUpgrades(registry);
 
         for (Block b : Blockss.blocks) {
-            registerItem(registry, new ItemBlock(b).setRegistryName(b.getRegistryName()));
+            if(!(b instanceof BlockAir)){
+                registerItem(registry, new ItemBlock(b).setRegistryName(b.getRegistryName()));
+            }
         }
     }
 
