@@ -209,13 +209,13 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         buttonList.add(convertToRelativeButton);
 
         String containerName = I18n.format(te.getName() + ".name");
-        addLabel(containerName, guiLeft + 7, guiTop + 5, 0xFFFFFFFF);
+        addLabel(containerName, guiLeft + 7, guiTop + 5, 0xFF404040);
 
         nameField = new WidgetTextField(fontRenderer, guiLeft + 200, guiTop + 5, 98, fontRenderer.FONT_HEIGHT);
         addWidget(nameField);
 
         String name = I18n.format("gui.programmer.name");
-        addLabel(name, guiLeft + 197 - fontRenderer.getStringWidth(name), guiTop + 5, 0xFFFFFFFF);
+        addLabel(name, guiLeft + 197 - fontRenderer.getStringWidth(name), guiTop + 5, 0xFF404040);
 
         updateVisibleProgWidgets();
     }
