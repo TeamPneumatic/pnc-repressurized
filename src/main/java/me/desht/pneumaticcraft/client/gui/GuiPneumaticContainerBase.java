@@ -194,9 +194,8 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
 
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int i, int j) {
-        drawDefaultBackground();
-
         if (shouldDrawBackground()) {
+            drawDefaultBackground();
             RenderUtils.glColorHex(0xFF000000 | getBackgoundTint());
             bindGuiTexture();
             int xStart = (width - xSize) / 2;
@@ -465,10 +464,12 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
         return new WidgetTextField(fontRenderer, textFieldSize.x, textFieldSize.y, textFieldSize.width, textFieldSize.height);
     }
 
+    @Override
     public int getGuiLeft() {
         return guiLeft;
     }
 
+    @Override
     public int getGuiTop() {
         return guiTop;
     }
