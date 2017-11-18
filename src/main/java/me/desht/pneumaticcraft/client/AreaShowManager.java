@@ -56,11 +56,13 @@ public class AreaShowManager {
         if (curItem.getItem() instanceof IPositionProvider) {
             IPositionProvider positionProvider = (IPositionProvider) curItem.getItem();
             List<BlockPos> posList = positionProvider.getStoredPositions(curItem);
-            for (int i = 0; i < posList.size(); i++) {
-                if (positionProvider.getRenderColor(i) != 0) {
-                    GlStateManager.disableDepth();
-                    new AreaShowHandler(ImmutableSet.of(posList.get(i)), positionProvider.getRenderColor(i)).render();
-                    GlStateManager.enableDepth();
+            if(posList != null){
+                for (int i = 0; i < posList.size(); i++) {
+                    if (posList.get(i) != null && positionProvider.getRenderColor(i) != 0) {
+                        GlStateManager.disableDepth();
+                        new AreaShowHandler(ImmutableSet.of(posList.get(i)), positionProvider.getRenderColor(i)).render();
+                        GlStateManager.enableDepth();
+                    }
                 }
             }
         } else if (curItem.getItem() == Itemss.CAMO_APPLICATOR) {
