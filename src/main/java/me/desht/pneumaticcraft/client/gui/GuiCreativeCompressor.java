@@ -49,6 +49,12 @@ public class GuiCreativeCompressor extends GuiPneumaticContainerBase<TileEntityC
         super.drawScreen(x, y, partialTicks);
         drawCenteredString(fontRenderer, PneumaticCraftUtils.roundNumberTo(te.getPressure(), 1) + " bar", width / 2, height / 2, 0xFFFFFF);
     }
+    
+    @Override
+    protected void drawGuiContainerBackgroundLayer(float partialTicks, int i, int j){
+        drawDefaultBackground();
+        super.drawGuiContainerBackgroundLayer(partialTicks, i, j);
+    }
 
     @Override
     protected boolean shouldDrawBackground() {

@@ -313,6 +313,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int x, int y) {
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        drawDefaultBackground();
         bindGuiTexture();
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;

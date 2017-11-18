@@ -108,6 +108,7 @@ public class GuiRemoteEditor extends GuiRemote {
 
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int x, int y) {
+        drawDefaultBackground();
         bindGuiTexture();
         Gui.drawModalRectWithCustomSizedTexture(guiLeft, guiTop, 0, 0, xSize, ySize, 320, 256);
         super.drawGuiContainerBackgroundLayer(partialTicks, x, y);
