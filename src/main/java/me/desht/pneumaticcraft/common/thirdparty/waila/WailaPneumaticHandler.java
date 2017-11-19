@@ -61,7 +61,7 @@ public class WailaPneumaticHandler implements IWailaDataProvider {
         values.put("Pressure", PneumaticCraftUtils.roundNumberTo(pressure, 1) + " bar");
 
         IAirHandler base = machine.getAirHandler(null);
-        values.put("Max Pressure", PneumaticCraftUtils.roundNumberTo(base.getMaxPressure(), 1) + " bar");
+        values.put("Max Pressure", PneumaticCraftUtils.roundNumberTo(base.getDangerPressure(), 1) + " bar");
 
         for (Map.Entry<String, String> entry : values.entrySet()) {
             currenttip.add(entry.getKey() + ": " + TextFormatting.WHITE + entry.getValue());
