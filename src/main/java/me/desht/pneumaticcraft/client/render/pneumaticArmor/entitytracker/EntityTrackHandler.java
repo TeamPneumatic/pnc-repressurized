@@ -25,6 +25,7 @@ import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.input.Keyboard;
 
@@ -270,10 +271,18 @@ public class EntityTrackHandler {
                 }
             }
             curInfo.add(TextFormatting.GRAY + "Armor:" + (isArmorEmpty ? " -" : ""));
-            PneumaticCraftUtils.sortCombineItemStacksAndToString(curInfo, (ItemStack[]) player.inventory.armorInventory.toArray());
+            PneumaticCraftUtils.sortCombineItemStacksAndToString(curInfo, asItemStackArray(player.inventory.armorInventory));
             curInfo.add(TextFormatting.GRAY + "Held item:" + (isMainInventoryEmpty ? " -" : ""));
-            PneumaticCraftUtils.sortCombineItemStacksAndToString(curInfo, (ItemStack[]) player.inventory.mainInventory.toArray());
+            PneumaticCraftUtils.sortCombineItemStacksAndToString(curInfo, asItemStackArray(player.inventory.mainInventory));
         }
+    }
+
+    private static ItemStack[] asItemStackArray(NonNullList<ItemStack> stacks) {
+        ItemStack[] result = new ItemStack[stacks.size()];
+        for (int i = 0; i < stacks.size(); i++) {
+            result[i] = stacks.get(i);
+        }
+        return result;
     }
 
     public static class EntityTrackEntryHackable extends EntityTrackEntry {
