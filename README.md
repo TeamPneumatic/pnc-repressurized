@@ -1,5 +1,7 @@
 # PneumaticCraft: Repressurized
 
+*Note: this repo has now been moved to https://github.com/TeamPneumatic/pnc-repressurized !*
+
 This is a port to Minecraft 1.12.2 of MineMaarten's awesome PneumaticCraft mod: https://github.com/MineMaarten/PneumaticCraft.  It is *mostly* functional at this point, although likely to be fairly buggy and unstable.
 
 Alpha-quality builds are now available!  Get them at https://minecraft.curseforge.com/projects/pneumaticcraft-repressurized
