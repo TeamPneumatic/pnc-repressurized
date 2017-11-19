@@ -2,9 +2,10 @@ package me.desht.pneumaticcraft.common.thirdparty.theoneprobe;
 
 import io.netty.buffer.ByteBuf;
 import mcjty.theoneprobe.api.IElement;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
+import me.desht.pneumaticcraft.api.tileentity.IPneumaticMachine;
 import me.desht.pneumaticcraft.client.gui.GuiUtils;
 import me.desht.pneumaticcraft.common.tileentity.IMinWorkingPressure;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticBase;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 
@@ -16,11 +17,12 @@ public class ElementPressure implements IElement {
 
     private static final float SCALE = 0.7f;
 
-    public ElementPressure(TileEntityPneumaticBase te) {
+    public ElementPressure(IPneumaticMachine te) {
         min = te instanceof IMinWorkingPressure ? ((IMinWorkingPressure) te).getMinWorkingPressure() : -1;
-        pressure = te.getPressure();
-        danger = te.dangerPressure;
-        crit = te.criticalPressure;
+        IAirHandler airHandler = te.getAirHandler(null);
+        pressure = airHandler.getPressure();
+        danger = airHandler.getDangerPressure();
+        crit = airHandler.getCriticalPressure();
     }
 
     public ElementPressure(ByteBuf byteBuf) {

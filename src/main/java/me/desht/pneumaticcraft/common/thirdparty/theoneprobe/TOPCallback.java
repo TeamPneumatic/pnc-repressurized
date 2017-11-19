@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IPressurizable;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
+import me.desht.pneumaticcraft.api.tileentity.IPneumaticMachine;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerManager;
 import me.desht.pneumaticcraft.common.semiblock.ISemiBlock;
@@ -81,12 +82,12 @@ public class TOPCallback implements Function<ITheOneProbe, Void> {
         return null;
     }
 
-    public static void handlePneumatic(ProbeMode mode, IProbeInfo probeInfo, TileEntityPneumaticBase te) {
-        IAirHandler airHandler = te.getAirHandler(null);
+    public static void handlePneumatic(ProbeMode mode, IProbeInfo probeInfo, IPneumaticMachine pneumaticMachine) {
+        IAirHandler airHandler = pneumaticMachine.getAirHandler(null);
         if (mode == ProbeMode.EXTENDED) {
             probeInfo.text("Pressure:");
             probeInfo.horizontal()
-                    .element(new ElementPressure(te))
+                    .element(new ElementPressure(pneumaticMachine))
                     .vertical()
                     .text("")
                     .text("  \u2b05 " + PneumaticCraftUtils.roundNumberTo(airHandler.getPressure(), 2) + " bar");

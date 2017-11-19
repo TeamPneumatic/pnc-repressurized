@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
 import me.desht.pneumaticcraft.common.block.BlockPressureChamberWall;
 import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.thirdparty.waila.IInfoForwarder;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -11,7 +12,7 @@ import net.minecraft.util.math.BlockPos;
 
 import java.util.List;
 
-public class TileEntityPressureChamberWall extends TileEntityBase implements IManoMeasurable {
+public class TileEntityPressureChamberWall extends TileEntityBase implements IManoMeasurable, IInfoForwarder {
 
     private TileEntityPressureChamberValve teValve;
     private int valveX;
@@ -103,6 +104,11 @@ public class TileEntityPressureChamberWall extends TileEntityBase implements IMa
     @Override
     protected boolean shouldRerenderChunkOnDescUpdate() {
         return true;
+    }
+
+    @Override
+    public TileEntity getInfoTileEntity(){
+        return getCore();
     }
 
 }

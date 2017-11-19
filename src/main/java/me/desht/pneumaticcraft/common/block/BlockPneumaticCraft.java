@@ -9,11 +9,13 @@ import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.block.IPneumaticWrenchable;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
+import me.desht.pneumaticcraft.api.tileentity.IPneumaticMachine;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.thirdparty.ModInteractionUtils;
 import me.desht.pneumaticcraft.common.thirdparty.theoneprobe.ITOPInfoProvider;
 import me.desht.pneumaticcraft.common.thirdparty.theoneprobe.TOPCallback;
+import me.desht.pneumaticcraft.common.thirdparty.waila.IInfoForwarder;
 import me.desht.pneumaticcraft.common.tileentity.*;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -54,6 +56,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -394,8 +397,12 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
     @Optional.Method(modid = "theoneprobe")
     public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, EntityPlayer player, World world, IBlockState blockState, IProbeHitData data) {
         TileEntity te = world.getTileEntity(data.getPos());
-        if (te instanceof TileEntityPneumaticBase) {
-            TOPCallback.handlePneumatic(mode, probeInfo, (TileEntityPneumaticBase) te);
+        if(te instanceof IInfoForwarder){
+            te = ((IInfoForwarder)te).getInfoTileEntity();
+        }
+        
+        if (te instanceof IPneumaticMachine) {
+            TOPCallback.handlePneumatic(mode, probeInfo, (IPneumaticMachine)te);
         }
         if (te instanceof IHeatExchanger) {
             TOPCallback.handleHeat(mode, probeInfo, (IHeatExchanger) te);

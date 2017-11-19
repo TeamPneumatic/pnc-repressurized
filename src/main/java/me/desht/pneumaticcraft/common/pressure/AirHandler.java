@@ -39,6 +39,7 @@ public class AirHandler implements IAirHandler {
     private int volume;
     private int defaultVolume;
     private final float dangerPressure;
+    private final float criticalPressure;
     @GuiSynced
     private int air; //Pressure = air / volume
     private int soundCounter;
@@ -56,6 +57,7 @@ public class AirHandler implements IAirHandler {
     public AirHandler(float dangerPressure, float criticalPressure, int volume) {
         if (volume <= 0) throw new IllegalArgumentException("Volume can't be lower than or equal to 0!");
         this.dangerPressure = dangerPressure;
+        this.criticalPressure = criticalPressure;
         maxPressure = dangerPressure + (criticalPressure - dangerPressure) * (float) Math.random();
         this.volume = volume;
         defaultVolume = volume;
@@ -370,6 +372,16 @@ public class AirHandler implements IAirHandler {
     @Override
     public float getMaxPressure() {
         return maxPressure;
+    }
+    
+    @Override
+    public float getDangerPressure(){
+        return dangerPressure;
+    }
+    
+    @Override
+    public float getCriticalPressure(){
+        return criticalPressure;
     }
 
     @Override

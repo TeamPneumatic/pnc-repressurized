@@ -5,6 +5,7 @@ import mcp.mobius.waila.api.IWailaDataAccessor;
 import mcp.mobius.waila.api.IWailaDataProvider;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IPneumaticMachine;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberWall;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
@@ -15,6 +16,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,10 +39,15 @@ public class WailaPneumaticHandler implements IWailaDataProvider {
     }
 
     private static void addTipToMachine(List<String> currenttip, IWailaDataAccessor accessor) {
-        NBTTagCompound tCompound = accessor.getNBTData();
+        NBTTagCompound tag = accessor.getNBTData();
         TileEntity te = accessor.getTileEntity();
+        if(te instanceof IInfoForwarder){
+            BlockPos infoPos = new BlockPos(tag.getInteger("infoX"), tag.getInteger("infoY"), tag.getInteger("infoZ"));
+            te = accessor.getWorld().getTileEntity(infoPos);
+        }
+        
         if (te instanceof IPneumaticMachine) {
-            addTipToMachine(currenttip, (IPneumaticMachine) te, tCompound.getFloat("pressure"));
+            addTipToMachine(currenttip, (IPneumaticMachine) te, tag.getFloat("pressure"));
         }
     }
 
@@ -69,9 +76,22 @@ public class WailaPneumaticHandler implements IWailaDataProvider {
     @Nonnull
     @Override
     public NBTTagCompound getNBTData(EntityPlayerMP player, TileEntity te, NBTTagCompound tag, World world, BlockPos pos) {
-        if (te instanceof IPneumaticMachine) {
-            tag.setFloat("pressure", ((IPneumaticMachine) te).getAirHandler(null).getPressure());
+        TileEntity teInfo;
+        if(te instanceof IInfoForwarder){
+            teInfo = ((IInfoForwarder)te).getInfoTileEntity();
+            if(teInfo != null){
+                tag.setInteger("infoX", teInfo.getPos().getX());
+                tag.setInteger("infoY", teInfo.getPos().getY());
+                tag.setInteger("infoZ", teInfo.getPos().getZ());
+            }
+        }else{
+            teInfo = te;
         }
+        
+        if (teInfo instanceof IPneumaticMachine) {
+            tag.setFloat("pressure", ((IPneumaticMachine) teInfo).getAirHandler(null).getPressure());
+        }
+        
         return tag;
     }
 }
