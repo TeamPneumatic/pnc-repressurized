@@ -51,9 +51,6 @@ public class JEI implements IModPlugin {
         registry.addRecipeClickArea(GuiRefinery.class, 47, 21, 27, 47, ModCategoryUid.REFINERY);
         registry.addRecipeClickArea(GuiThermopneumaticProcessingPlant.class, 30, 31, 48, 20, ModCategoryUid.THERMO_PNEUMATIC);
 
-        jeiHelpers.getIngredientBlacklist().addIngredientToBlacklist(new ItemStack(Blockss.DRONE_REDSTONE_EMITTER, 1, OreDictionary.WILDCARD_VALUE));
-        jeiHelpers.getIngredientBlacklist().addIngredientToBlacklist(new ItemStack(Blockss.KEROSENE_LAMP_LIGHT));
-
         registry.addRecipeCatalyst(new ItemStack(Itemss.AMADRON_TABLET), ModCategoryUid.AMADRON_TRADE);
         registry.addRecipeCatalyst(new ItemStack(Blockss.ASSEMBLY_CONTROLLER), ModCategoryUid.ASSEMBLY_CONTROLLER);
         registry.addRecipeCatalyst(FluidUtil.getFilledBucket(new FluidStack(Fluids.ETCHING_ACID, 1000)), ModCategoryUid.ETCHING_ACID);
