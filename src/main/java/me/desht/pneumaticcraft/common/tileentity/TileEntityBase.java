@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
+import com.google.common.collect.Maps;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.lua.LuaException;
 import dan200.computercraft.api.peripheral.IComputerAccess;
@@ -64,6 +65,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     protected List<ILuaMethod> luaMethods = new ArrayList<>();
     private IBlockState cachedBlockState;
     private final Set<Item> applicableUpgrades = new HashSet<>();
+    private final Set<String> applicableCustomUpgrades = new HashSet<>();
     private final UpgradeCache upgradeCache = new UpgradeCache(this);
 
     public TileEntityBase() {
@@ -82,6 +84,12 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
 
     protected void addApplicableUpgrade(Item upgrade) {
         applicableUpgrades.add(upgrade);
+    }
+
+    protected void addApplicableCustomUpgrade(ItemStack... upgrades) {
+        for (ItemStack upgrade : upgrades) {
+            applicableCustomUpgrades.add(makeUpgradeKey(upgrade));
+        }
     }
 
     // server side, chunk sending
@@ -302,6 +310,11 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
             }
         }
         return upgrades;
+    }
+
+
+    public int getCustomUpgrades(ItemStack upgradeStack) {
+        return upgradeCache.getUpgrades(upgradeStack);
     }
 
     public float getSpeedMultiplierFromUpgrades() {
@@ -566,7 +579,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
         return null;
     }
 
-    public IItemHandlerModifiable getUpgradesInventory() {
+    public UpgradeHandler getUpgradesInventory() {
         return upgradeHandler;
     }
 
@@ -646,14 +659,20 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
         return upgradeCache;
     }
 
-    class UpgradeHandler extends FilteredItemStackHandler {
+    private static String makeUpgradeKey(ItemStack stack) {
+        return stack.getItem().getRegistryName() + ":" + stack.getMetadata();
+    }
+
+    public class UpgradeHandler extends FilteredItemStackHandler {
         UpgradeHandler(int upgradeSize) {
             super(upgradeSize);
         }
 
         @Override
         public boolean test(Integer integer, ItemStack itemStack) {
-            return itemStack.isEmpty() || applicableUpgrades.contains(itemStack.getItem());
+            return itemStack.isEmpty()
+                    || applicableUpgrades.contains(itemStack.getItem())
+                    || applicableCustomUpgrades.contains(makeUpgradeKey(itemStack));
         }
 
         @Override
@@ -664,6 +683,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
 
     public class UpgradeCache {
         private final int upgradeCount[] = new int[IItemRegistry.EnumUpgrade.values().length];
+        private Map<String,Integer> customUpgradeCount;
         private final TileEntityBase te;
         private boolean isValid = false;
 
@@ -675,11 +695,20 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
             if (isValid) return;
 
             Arrays.fill(upgradeCount, 0);
+            customUpgradeCount = null;
             IItemHandler inv = te.getUpgradesInventory();
             for (int i = 0; i < inv.getSlots(); i++) {
-                if (inv.getStackInSlot(i).getItem() instanceof ItemMachineUpgrade) {
-                    int idx = ((ItemMachineUpgrade) inv.getStackInSlot(i).getItem()).getUpgradeType().ordinal();
+                ItemStack stack = inv.getStackInSlot(i);
+                if (stack.getItem() instanceof ItemMachineUpgrade) {
+                    // native upgrade
+                    int idx = ((ItemMachineUpgrade) stack.getItem()).getUpgradeType().ordinal();
                     upgradeCount[idx] += inv.getStackInSlot(i).getCount();
+                } else if (!inv.getStackInSlot(i).isEmpty()) {
+                    // custom upgrade from another mod
+                    if (customUpgradeCount == null)
+                        customUpgradeCount = Maps.newHashMap();
+                    String key = makeUpgradeKey(stack);
+                    customUpgradeCount.put(key, customUpgradeCount.getOrDefault(key, 0) + stack.getCount());
                 }
             }
             te.onUpgradesChanged();
@@ -695,6 +724,10 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
 
         public int getUpgrades(IItemRegistry.EnumUpgrade type) {
             return upgradeCount[type.ordinal()];
+        }
+
+        public int getUpgrades(ItemStack stack) {
+            return customUpgradeCount == null ? 0 : customUpgradeCount.getOrDefault(makeUpgradeKey(stack), 0);
         }
     }
 }
