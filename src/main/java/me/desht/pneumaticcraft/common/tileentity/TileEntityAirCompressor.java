@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntityFurnace;
@@ -47,7 +48,7 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
 
         @Override
         public boolean test(Integer slot, ItemStack itemStack) {
-            return slot == FUEL_SLOT && (TileEntityFurnace.isItemFuel(itemStack) || itemStack.isEmpty());
+            return slot == FUEL_SLOT && (TileEntityFurnace.isItemFuel(itemStack) || itemStack.isEmpty() || itemStack.getItem() == Items.BUCKET);
         }
     }
 
@@ -68,14 +69,9 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
                 burnTime += TileEntityFurnace.getItemBurnTime(fuelStack);
                 maxBurnTime = burnTime;
 
+                ItemStack containerStack  = fuelStack.getItem().getContainerItem(fuelStack);
                 fuelStack.shrink(1);
-                inventory.setStackInSlot(FUEL_SLOT, fuelStack);
-//                inventory.extractItem(FUEL_SLOT, 1, false);
-
-                if (inventory.getStackInSlot(FUEL_SLOT).isEmpty()) {
-                    inventory.setStackInSlot(FUEL_SLOT, fuelStack.getItem().getContainerItem(fuelStack));
-//                    inventory.insertItem(FUEL_SLOT, fuelStack.getItem().getContainerItem(fuelStack), false);
-                }
+                inventory.setStackInSlot(FUEL_SLOT, fuelStack.isEmpty() ? containerStack : fuelStack);
             }
 
             curFuelUsage = (int) (getBaseProduction() * getSpeedUsageMultiplierFromUpgrades() / 10);
