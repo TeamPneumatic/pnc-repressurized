@@ -139,6 +139,30 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
         }
     }
 
+    @Override
+    public void onNeighborBlockUpdate() {
+        super.onNeighborBlockUpdate();
+        updateConnections();
+    }
+
+    public void updateConnections() {
+        List<Pair<EnumFacing, IAirHandler>> connections = getAirHandler(null).getConnectedPneumatics();
+        Arrays.fill(sidesConnected, false);
+        for (Pair<EnumFacing, IAirHandler> entry : connections) {
+            sidesConnected[entry.getKey().ordinal()] = true;
+        }
+    }
+
+    @Override
+    protected boolean shouldRerenderChunkOnDescUpdate() {
+        return true;
+    }
+
+    @Override
+    public boolean isConnectedTo(EnumFacing side) {
+        return side != EnumFacing.UP;
+    }
+
     /**
      * Will initiate the wireframe rendering. When invoked on the server, it sends a packet to every client to render the box.
      */
@@ -270,16 +294,6 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
             }
         }
         return true;
-    }
-
-    @Override
-    public void onNeighborTileUpdate() {
-        super.onNeighborTileUpdate();
-        List<Pair<EnumFacing, IAirHandler>> connections = getAirHandler(null).getConnectedPneumatics();
-        Arrays.fill(sidesConnected, false);
-        for (Pair<EnumFacing, IAirHandler> entry : connections) {
-            sidesConnected[entry.getKey().ordinal()] = true;
-        }
     }
 
     @Nonnull

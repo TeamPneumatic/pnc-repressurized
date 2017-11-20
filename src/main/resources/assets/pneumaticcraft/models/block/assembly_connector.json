@@ -59,6 +59,18 @@
         "east": { "texture": "#pipe" },
         "west": { "texture": "#pipe" }
       }
+    },
+    {
+      "from": [ 6, 7, 9 ],
+      "to": [ 10, 9, 10 ],
+      "faces": {
+        "north": { "texture": "#pipe" },
+        "south": { "texture": "#pipe" },
+        "down": { "texture": "#pipe" },
+        "up": { "texture": "#pipe" },
+        "east": { "texture": "#pipe" },
+        "west": { "texture": "#pipe" }
+      }
     }
   ]
 }

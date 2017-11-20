@@ -69,7 +69,7 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
     @Override
     public void update() {
 
-        if (!getWorld().isRemote && firstRun) updateConnections();
+//        if (!getWorld().isRemote && firstRun) updateConnections();
 
         ItemStack programStack = inventory.getStackInSlot(PROGRAM_INVENTORY_INDEX);
 
@@ -173,9 +173,8 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
     }
 
     @Override
-    public void onDescUpdate() {
-        // appears to be necessary to allow the connector tube to be redrawn (or not)
-        getWorld().markBlockRangeForRenderUpdate(getPos(), getPos());
+    protected boolean shouldRerenderChunkOnDescUpdate() {
+        return true;
     }
 
     private void setStatus(String text) {
@@ -254,19 +253,18 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
         }
     }
 
-    public void updateConnections() {
+    @Override
+    public void onNeighborBlockUpdate() {
+        super.onNeighborBlockUpdate();
+        updateConnections();
+    }
+
+    private void updateConnections() {
         List<Pair<EnumFacing, IAirHandler>> connections = getAirHandler(null).getConnectedPneumatics();
         Arrays.fill(sidesConnected, false);
         for (Pair<EnumFacing, IAirHandler> entry : connections) {
             sidesConnected[entry.getKey().ordinal()] = true;
         }
-        sendDescriptionPacket();
-    }
-
-    @Override
-    public void onNeighborBlockUpdate() {
-        super.onNeighborBlockUpdate();
-        updateConnections();
     }
 
     @Override
