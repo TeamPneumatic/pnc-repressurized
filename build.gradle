@@ -42,10 +42,14 @@ repositories {
         name 'BlameJared - Crafttweaker'
         url 'http://maven.blamejared.com/'
     }
-	maven {
-		name = "K-4u Mod maven"
-		url = "https://modmaven.k-4u.nl/"
-	}
+    maven {
+        name = "K-4u Mod maven"
+        url = "https://modmaven.k-4u.nl/"
+    }
+    maven {
+        name = "ic2"
+        url = "http://maven.ic2.player.to/"
+    }
 }
 
 task copyCIArtifacts << {
@@ -78,23 +82,23 @@ allprojects {
 }
 
 jar {
-	from sourceSets.main.output
-	from sourceSets.api.output
+    from sourceSets.main.output
+    from sourceSets.api.output
 }
 
 task sourcesJar(type: Jar) {
-	classifier = 'sources'
-	from sourceSets.main.allJava
-	from sourceSets.api.allJava
+    classifier = 'sources'
+    from sourceSets.main.allJava
+    from sourceSets.api.allJava
 }
 
 task apiJar(type: Jar) {
     classifier = 'api'
     from sourceSets.api.java
     // TODO: when FG bug is fixed, remove allJava from the api jar.
-	// https://github.com/MinecraftForge/ForgeGradle/issues/369
-	// Gradle should be able to pull them from the -sources jar.
-	from sourceSets.api.allJava
+    // https://github.com/MinecraftForge/ForgeGradle/issues/369
+    // Gradle should be able to pull them from the -sources jar.
+    from sourceSets.api.allJava
 }
 
 artifacts {
@@ -112,15 +116,15 @@ minecraft {
     mappings = "${mappings_version}"
     clientJvmArgs += "-Dfml.coreMods.load=elucent.albedo.asm.FMLPlugin"
     replace '@VERSION@', project.version
-        replaceIn 'PneumaticCraftRepressurized.java'
+    replaceIn 'PneumaticCraftRepressurized.java'
     replace '@MASSIVE@', mod_version_massive
-        replaceIn 'lib/Versions.java'
+    replaceIn 'lib/Versions.java'
     replace '@MAJOR@', mod_version_major
-        replaceIn 'lib/Versions.java'
+    replaceIn 'lib/Versions.java'
     replace '@MINOR@', mod_version_minor
-        replaceIn 'lib/Versions.java'
+    replaceIn 'lib/Versions.java'
     replace '@MC_VERSION@', version
-        replaceIn 'lib/Versions.java'
+    replaceIn 'lib/Versions.java'
     if (System.getenv("CIRCLE_BUILD_NUM") != null) {
         replace '@BUILD_NUMBER@', System.getenv("CIRCLE_BUILD_NUM")
     } else {
@@ -137,9 +141,10 @@ dependencies {
     deobfCompile "dan200.computercraft:ComputerCraft-SquidDev-CC-ComputerCraft-feature-minecraft-1.12.2:${computercraft_version}"
     deobfCompile "mcp.mobius.waila:Hwyla:${hwyla_version}"
     deobfCompile "mcjty.theoneprobe:TheOneProbe-1.12:${top_version}"
-	deobfProvided "CraftTweaker2:CraftTweaker2-API:${crafttweaker_version}"
-	deobfProvided "CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-${crafttweaker_version}"
+    deobfProvided "CraftTweaker2:CraftTweaker2-API:${crafttweaker_version}"
+    deobfProvided "CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-${crafttweaker_version}"
     compile "igwmod:IGW-Mod-1.12.2:${igwmod_version}:universal"  // using universal instead of userdev for now
+    compile "net.industrial-craft:industrialcraft-2:2.8.27-ex112:api"
     deobfCompile("appeng:appliedenergistics2:${ae2_version}:api") {
         transitive = false
     }
@@ -153,11 +158,11 @@ processResources {
     // replace stuff in mcmod.info, nothing else
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
-                
+
         // replace version and mcversion
         expand 'version':project.version, 'mcversion':project.minecraft.version
     }
-        
+
     // copy everything else except the mcmod.info
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'

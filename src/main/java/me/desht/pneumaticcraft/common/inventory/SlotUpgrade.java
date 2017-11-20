@@ -17,7 +17,7 @@ public class SlotUpgrade extends SlotItemHandler {
 
     @Override
     public boolean isItemValid(@Nonnull ItemStack stack) {
-        return te.getApplicableUpgrades().contains(stack.getItem());
+        return te.getUpgradesInventory().test(getSlotIndex(), stack);
     }
 
     @Override

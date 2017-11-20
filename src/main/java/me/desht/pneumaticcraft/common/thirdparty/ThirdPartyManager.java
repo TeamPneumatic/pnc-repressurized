@@ -11,6 +11,7 @@ import me.desht.pneumaticcraft.common.thirdparty.computercraft.OpenComputers;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.CraftTweaker;
 import me.desht.pneumaticcraft.common.thirdparty.enderio.EnderIO;
 import me.desht.pneumaticcraft.common.thirdparty.forestry.Forestry;
+import me.desht.pneumaticcraft.common.thirdparty.ic2.IC2;
 import me.desht.pneumaticcraft.common.thirdparty.igwmod.IGWMod;
 import me.desht.pneumaticcraft.common.thirdparty.industrialforegoing.IndustrialForegoing;
 import me.desht.pneumaticcraft.common.thirdparty.mcmultipart.PneumaticMultiPart;
@@ -60,7 +61,7 @@ public class ThirdPartyManager implements IGuiHandler {
             thirdPartyClasses.put(ModIds.WAILA, Waila.class);
             thirdPartyClasses.put(ModIds.TOP, TheOneProbe.class);
             thirdPartyClasses.put(ModIds.CRAFTTWEAKER, CraftTweaker.class);
-            // thirdPartyClasses.put(ModIds.INDUSTRIALCRAFT, IC2.class);
+            thirdPartyClasses.put(ModIds.INDUSTRIALCRAFT, IC2.class);
             // thirdPartyClasses.put(ModIds.THAUMCRAFT, Thaumcraft.class);
         } catch (Throwable e) {
             Log.error("A class loader loaded a class where we didn't expect it to do so! Please report, as third party content is broken.");
