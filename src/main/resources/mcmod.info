@@ -5,11 +5,11 @@
   "description": "A port of MineMaarten's PneumaticCraft to Minecraft 1.12+",
   "version": "${version}",
   "mcversion": "${mcversion}",
-  "url": "",
+  "url": "https://minecraft.curseforge.com/projects/pneumaticcraft-repressurized",
   "updateUrl": "",
   "authorList": ["desht", "MineMaarten"],
   "credits": "",
-  "logoFile": "",
+  "logoFile": "assets/pneumaticcraft/textures/wiki/pressure_tubes.png",
   "screenshots": [],
   "dependencies": []
 }
