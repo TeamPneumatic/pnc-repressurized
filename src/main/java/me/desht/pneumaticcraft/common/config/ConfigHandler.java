@@ -106,12 +106,12 @@ public class ConfigHandler {
         public int pneumaticGeneratorEfficiency = 40;
         @Config.Comment("Changing this value will alter the pressurized air production of the Electric Compressor. The input, EU, will stay the same")
         public int electricCompressorEfficiency = 40;
-        @Config.Comment("Changing this value will alter the pressurized air usage of the Pneumatic Engine. The output, MJ, will stay the same")
-        public int pneumaticEngineEfficiency = 40;
-        @Config.Comment("Changing this value will alter the pressurized air production of the Kinetic Compressor. The input, MJ, will stay the same")
-        public int kineticCompressorEfficiency = 40;
-        @Config.Comment("Changing this value will alter the hydraulic bar production of the Pneumatic Pump. The input, air, will stay the same")
-        public int pneumaticPumpEfficiency = 40;
+//        @Config.Comment("Changing this value will alter the pressurized air usage of the Pneumatic Engine. The output, MJ, will stay the same")
+//        public int pneumaticEngineEfficiency = 40;
+//        @Config.Comment("Changing this value will alter the pressurized air production of the Kinetic Compressor. The input, MJ, will stay the same")
+//        public int kineticCompressorEfficiency = 40;
+//        @Config.Comment("Changing this value will alter the hydraulic bar production of the Pneumatic Pump. The input, air, will stay the same")
+//        public int pneumaticPumpEfficiency = 40;
         @Config.Comment("Changing this value will alter the pressurized air production of the Flux Compressor. The input, RF, will stay the same")
         public int fluxCompressorEfficiency = 40;
         @Config.Comment("Changing this value will alter the pressurized air usage of the Pneumatic Dynamo. The output, RF, will stay the same")
@@ -128,8 +128,8 @@ public class ConfigHandler {
     public static class Advanced {
         @Config.Comment("When set to true, Drones will not execute any program. This is useful to set to true when due to a bug Drones are lagging your server or crashing it. Please report the bug if you encounter it.")
         public boolean stopDroneAI = false;
-        @Config.Comment("ONLY SET TO TRUE WHEN YOU KNOW WHAT YOU'RE DOING. When set to true, this will convert any Pressure Tube in the world that was a FMP to its block variant. Handy when you're about to remove FMP from the instance. This will remove any other parts from the block like covers. Exception are tube modules.")
-        public boolean convertMultipartsTBlock = false;
+//        @Config.Comment("ONLY SET TO TRUE WHEN YOU KNOW WHAT YOU'RE DOING. When set to true, this will convert any Pressure Tube in the world that was a FMP to its block variant. Handy when you're about to remove FMP from the instance. This will remove any other parts from the block like covers. Exception are tube modules.")
+//        public boolean convertMultipartsTBlock = false;
         @Config.Comment("When set to true, the Kerosene Lamp's fake air blocks won't be registered and therefore removed from the world. Useful if this causes trouble (it shouldn't though)")
         public boolean disableKeroseneLampFakeAirBlock = false;
     }
@@ -139,8 +139,8 @@ public class ConfigHandler {
         public boolean enableElectricCompressorRecipe = true;
         @Config.Comment("Pneumatic Generator")
         public boolean enablePneumaticGeneratorRecipe = true;
-        @Config.Comment("Pneumatic Pump")
-        public boolean enablePneumaticPumpRecipe = true;
+//        @Config.Comment("Pneumatic Pump")
+//        public boolean enablePneumaticPumpRecipe = true;
         @Config.Comment("8 Block of Coal --> 1 Diamond (Pressure Chamber)")
         public boolean enableCoalToDiamondsRecipe = true;
     }
