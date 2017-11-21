@@ -1,0 +1,10 @@
+{
+  "homepage": "https://minecraft.curseforge.com/projects/pneumaticcraft-repressurized",
+  "promos": {
+    "1.12.2-latest": "0.1.0-47"
+  },
+  "1.12.2": {
+    "0.1.0-45": "Initial release",
+    "0.1.0-47": "* https://github.com/TeamPneumatic/pnc-repressurized/blob/master/Changelog.md"
+  }
+}

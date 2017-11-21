@@ -59,7 +59,11 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nonnull;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.Method;
+import java.net.URL;
 import java.util.*;
 import java.util.regex.PatternSyntaxException;
 
@@ -419,6 +423,32 @@ public class PneumaticCraftUtils {
      */
     public static int getRedstoneLevel(World world, BlockPos pos, EnumFacing face) {
         return world.getRedstonePower(pos, face);
+    }
+
+    /**
+     * Retrieve a web page from the given URL.
+     *
+     * @param urlString the URL
+     * @return the web page
+     * @throws IOException if there are any problems
+     */
+    public static String getPage(final String urlString) throws IOException {
+        StringBuilder all = new StringBuilder();
+        BufferedReader in = null;
+        try {
+            URL myUrl = new URL(urlString);
+            in = new BufferedReader(new InputStreamReader(myUrl.openStream()));
+            String line;
+            while ((line = in.readLine()) != null) {
+                all.append(line).append(System.getProperty("line.separator"));
+            }
+        } finally {
+            if (in != null) {
+                in.close();
+            }
+        }
+
+        return all.toString();
     }
 
 //    /**

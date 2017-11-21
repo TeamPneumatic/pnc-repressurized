@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.util;
 
-import me.desht.pneumaticcraft.common.UpdateChecker;
 import me.desht.pneumaticcraft.lib.Log;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
@@ -148,6 +147,6 @@ public class PastebinHandler extends Thread {
 
     public String getInternal(String key) throws IOException {
         if (key.contains("pastebin")) key = key.substring(key.lastIndexOf('/') + 1);
-        return UpdateChecker.getPage("http://pastebin.com/raw.php?i=" + key);
+        return PneumaticCraftUtils.getPage("http://pastebin.com/raw.php?i=" + key);
     }
 }
