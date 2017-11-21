@@ -66,8 +66,8 @@ version = "${mc_version}-${mod_version_massive}.${mod_version_major}.${mod_versi
 group = "me.desht.pneumaticcraft"
 archivesBaseName = "pneumaticcraft-repressurized"
 
-if (System.getenv().CIRCLE_BUILD_NUM != null) {
-    version += "-${System.getenv().CIRCLE_BUILD_NUM}"
+if (System.getenv().BUILD_NUMBER != null) {
+    version += "-${System.getenv().BUILD_NUMBER}"
 } else {
     version += "-CUSTOM"
 }
@@ -99,6 +99,20 @@ task apiJar(type: Jar) {
     // https://github.com/MinecraftForge/ForgeGradle/issues/369
     // Gradle should be able to pull them from the -sources jar.
     from sourceSets.api.allJava
+}
+
+task("uploadJars", dependsOn:"reobf") {
+    description = "uploads JARs"
+    if (System.getenv("local_maven") != null) {
+        apply plugin: 'maven'
+        uploadArchives {
+            repositories {
+                mavenDeployer {
+                    repository(url: "file://" + System.getenv("local_maven"))
+                }
+            }
+        }
+    }
 }
 
 artifacts {
