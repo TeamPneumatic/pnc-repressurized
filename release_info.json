@@ -1,6 +1,7 @@
 {
   "homepage": "https://minecraft.curseforge.com/projects/pneumaticcraft-repressurized",
   "promos": {
+    "1.12.2-recommended": "0.1.0-47",
     "1.12.2-latest": "0.1.0-47"
   },
   "1.12.2": {
