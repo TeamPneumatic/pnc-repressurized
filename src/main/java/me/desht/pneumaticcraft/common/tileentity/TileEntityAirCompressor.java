@@ -8,13 +8,13 @@ import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.IItemHandlerModifiable;
@@ -48,7 +48,8 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
 
         @Override
         public boolean test(Integer slot, ItemStack itemStack) {
-            return slot == FUEL_SLOT && (TileEntityFurnace.isItemFuel(itemStack) || itemStack.isEmpty() || itemStack.getItem() == Items.BUCKET);
+            return slot == FUEL_SLOT &&
+                    (itemStack.isEmpty() || TileEntityFurnace.isItemFuel(itemStack) && FluidUtil.getFluidContained(itemStack) == null);
         }
     }
 

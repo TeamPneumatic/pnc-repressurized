@@ -52,7 +52,7 @@ public class Fluids {
     public static void preInit() {
         registerFluidContainers();
 
-        PneumaticRegistry.getInstance().registerFuel(OIL, 150000);
+        PneumaticRegistry.getInstance().registerFuel(OIL, 64000);
         PneumaticRegistry.getInstance().registerFuel(DIESEL, 700000);
         PneumaticRegistry.getInstance().registerFuel(KEROSENE, 1100000);
         PneumaticRegistry.getInstance().registerFuel(GASOLINE, 1500000);

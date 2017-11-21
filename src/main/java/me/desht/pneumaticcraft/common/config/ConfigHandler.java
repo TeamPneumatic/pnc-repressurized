@@ -99,6 +99,8 @@ public class ConfigHandler {
         public boolean enableUpdateChecker = true;
         @Config.Comment("Enable Drone Suffocation Damage")
         public boolean enableDroneSuffocationDamage = true;
+        @Config.Comment("Efficiency of fuel buckets as furnace fuel (default 0.05 means 1 bucket of LPG smelts 450 items in a vanilla furnace")
+        public float fuelBucketEfficiencyMultiplier = 0.05f;
     }
 
     public static class MachineProperties {

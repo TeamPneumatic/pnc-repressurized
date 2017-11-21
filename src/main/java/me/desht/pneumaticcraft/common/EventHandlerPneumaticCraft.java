@@ -114,7 +114,7 @@ public class EventHandlerPneumaticCraft {
         FluidStack fluidStack = FluidUtil.getFluidContained(event.getItemStack());
         if (fluidStack != null) {
             int value = PneumaticCraftAPIHandler.getInstance().liquidFuels.getOrDefault(fluidStack.getFluid().getName(), -1);
-            event.setBurnTime(value > 0 ? value / 2 : -1);
+            event.setBurnTime(value > 0 ? (int)(value * ConfigHandler.general.fuelBucketEfficiencyMultiplier) : -1);
         }
     }
 
