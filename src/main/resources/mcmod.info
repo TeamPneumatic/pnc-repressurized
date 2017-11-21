@@ -7,8 +7,8 @@
   "mcversion": "${mcversion}",
   "url": "",
   "updateUrl": "",
-  "authorList": ["desht"],
-  "credits": "MineMaarten",
+  "authorList": ["desht", "MineMaarten"],
+  "credits": "",
   "logoFile": "",
   "screenshots": [],
   "dependencies": []
