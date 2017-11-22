@@ -98,6 +98,21 @@ public class PneumaticCraftUtils {
         else return EnumFacing.SOUTH;
     }
 
+    public static int getYawFromFacing(EnumFacing facing) {
+        switch (facing) {
+            case NORTH:
+                return 180;
+            case SOUTH:
+                return 0;
+            case WEST:
+                return 90;
+            case EAST:
+                return -90;
+            default:
+                return 0;
+        }
+    }
+
     /**
      * Rotates the render matrix dependant on the given metadata of a block. Used in the render methods of many PneumaticCraft TileEntities.
      *
