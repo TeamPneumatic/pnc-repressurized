@@ -10,6 +10,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 * Fixed Pneumatic Helmet block tracker crash with unopened loot chests
 * Fixed Pneumatic Helmet entity tracker crash when targeting other players
+* IC2 machines are back: Pneumatic Generator and Electric Compressor (but lacking the pretty models they had in 1.7.10, sorry)
 * Air Compressor & Advanced Air Compressor no longer take fuel buckets
 * Furnace burn time of fuel buckets is now configurable, and 10x shorter by default than before
 * Drone pathfinding is a lot better now
