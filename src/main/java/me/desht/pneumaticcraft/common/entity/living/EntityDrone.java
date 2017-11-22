@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.api.drone.IPathNavigator;
 import me.desht.pneumaticcraft.api.drone.IPathfindHandler;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
+import me.desht.pneumaticcraft.client.render.RenderDroneHeldItem;
 import me.desht.pneumaticcraft.client.render.RenderProgressingLine;
 import me.desht.pneumaticcraft.common.DroneRegistry;
 import me.desht.pneumaticcraft.common.NBTUtil;
@@ -190,6 +191,7 @@ public class EntityDrone extends EntityDroneBase
     private static final DataParameter<String> LABEL = EntityDataManager.createKey(EntityDrone.class, DataSerializers.STRING);
     private static final DataParameter<Integer> ACTIVE_WIDGET = EntityDataManager.createKey(EntityDrone.class, DataSerializers.VARINT);
     private static final DataParameter<BlockPos> TARGET_POS = EntityDataManager.createKey(EntityDrone.class, DataSerializers.BLOCK_POS);
+    private static final DataParameter<ItemStack> HELD_ITEM = EntityDataManager.createKey(EntityDrone.class, DataSerializers.ITEM_STACK);
 
     @Override
     protected void entityInit() {
@@ -207,6 +209,7 @@ public class EntityDrone extends EntityDroneBase
         dataManager.register(LABEL, "");
         dataManager.register(ACTIVE_WIDGET, 0);
         dataManager.register(TARGET_POS, BlockPos.ORIGIN);
+        dataManager.register(HELD_ITEM, ItemStack.EMPTY);
     }
 
     @Override
@@ -416,6 +419,11 @@ public class EntityDrone extends EntityDroneBase
     }
 
     @Override
+    public ItemStack getDroneHeldItem() {
+        return ConfigHandler.client.dronesRenderHeldItem ? dataManager.get(HELD_ITEM) : ItemStack.EMPTY;
+    }
+
+    @Override
     public void setDugBlock(BlockPos pos) {
         dataManager.set(DUG_POS, pos == null ? BlockPos.ORIGIN : pos);
     }
@@ -583,6 +591,14 @@ public class EntityDrone extends EntityDroneBase
         double y = lastTickPosY + (posY - lastTickPosY) * partialTicks;
         double z = lastTickPosZ + (posZ - lastTickPosZ) * partialTicks;
         getMinigun().render(x, y, z, 0.6);
+
+        ItemStack held = getDroneHeldItem();
+        if (!held.isEmpty()) {
+            if (renderDroneHeldItem == null) {
+                renderDroneHeldItem = new RenderDroneHeldItem(world);
+            }
+            renderDroneHeldItem.render(held);
+        }
     }
 
     public double getRange() {
@@ -927,6 +943,8 @@ public class EntityDrone extends EntityDroneBase
                 }
 
                 oldStack = newStack;
+
+                if (ConfigHandler.client.dronesRenderHeldItem) dataManager.set(HELD_ITEM, newStack);
             }
         }
     }

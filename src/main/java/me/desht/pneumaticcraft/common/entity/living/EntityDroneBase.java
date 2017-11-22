@@ -1,11 +1,15 @@
 package me.desht.pneumaticcraft.common.entity.living;
 
+import me.desht.pneumaticcraft.client.render.RenderDroneHeldItem;
 import me.desht.pneumaticcraft.client.render.RenderLaser;
 import net.minecraft.entity.EntityCreature;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import javax.annotation.Nonnull;
 
 public abstract class EntityDroneBase extends EntityCreature {
     public float oldPropRotation;
@@ -14,6 +18,8 @@ public abstract class EntityDroneBase extends EntityCreature {
     public float oldLaserExtension;
     @SideOnly(Side.CLIENT)
     protected RenderLaser digLaser;
+    @SideOnly(Side.CLIENT)
+    protected RenderDroneHeldItem renderDroneHeldItem;
 
     public EntityDroneBase(World world) {
         super(world);
@@ -49,4 +55,6 @@ public abstract class EntityDroneBase extends EntityCreature {
 
     protected abstract BlockPos getDugBlock();
 
+    @Nonnull
+    public abstract ItemStack getDroneHeldItem();
 }

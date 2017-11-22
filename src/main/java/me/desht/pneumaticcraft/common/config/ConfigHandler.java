@@ -157,6 +157,8 @@ public class ConfigHandler {
         public boolean topShowsFluids = true;
         @Config.Comment("Tint Logistics configuration GUI backgrounds according to the colour of the logistics frame you are configuring")
         public boolean logisticsGUITint = true;
+        @Config.Comment("Drones render their held item (the item in slot 0 of their inventory) ?")
+        public boolean dronesRenderHeldItem = true;
     }
 
     public static class HelmetOptions {

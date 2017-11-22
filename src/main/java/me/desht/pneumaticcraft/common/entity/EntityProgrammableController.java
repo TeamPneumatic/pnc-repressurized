@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.entity;
 
 import me.desht.pneumaticcraft.common.entity.living.EntityDroneBase;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammableController;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -57,5 +58,10 @@ public class EntityProgrammableController extends EntityDroneBase {
     @Override
     protected BlockPos getDugBlock() {
         return controller.getDugPosition();
+    }
+
+    @Override
+    public ItemStack getDroneHeldItem() {
+        return controller.getFakePlayer().getHeldItemMainhand();
     }
 }
