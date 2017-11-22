@@ -73,10 +73,6 @@ public class DroneAIBlockInteract extends DroneAIBlockInteraction {
         if (stack.getItem() instanceof ItemBlock) {
             return false; // use a place block widget place blocks; this is for right-clicking items
         }
-//        int dx = faceDir.getFrontOffsetX();
-//        int dy = faceDir.getFrontOffsetY();
-//        int dz = faceDir.getFrontOffsetZ();
-
         player.setPosition(pos.getX() + 0.5, pos.getY() + 0.5 - player.eyeHeight, pos.getZ() + 0.5);
         player.rotationPitch = faceDir.getFrontOffsetY() * -90;
         switch (faceDir) {
@@ -98,49 +94,25 @@ public class DroneAIBlockInteract extends DroneAIBlockInteraction {
         float hitZ = (float)(player.posZ - pos.getZ());
 
         try {
-//            PlayerInteractEvent.RightClickEmpty event = new PlayerInteractEvent.RightClickEmpty(player, EnumHand.MAIN_HAND);
-//            MinecraftForge.EVENT_BUS.post(event);
-//            if (event.isCanceled()) return false;
-
             IBlockState state = world.getBlockState(pos);
             Block block = state.getBlock();
 
-            if (block.isAir(state, world, pos)) {
-                // right-clicking nothing...
-            } else {
-                // right-clicking a block with a held item
-                PlayerInteractEvent.RightClickBlock event = ForgeHooks.onRightClickBlock(player, EnumHand.MAIN_HAND, pos, faceDir.getOpposite(),  ForgeHooks.rayTraceEyeHitVec(player, 2.0D));
-                if (event.isCanceled() || event.getUseItem() == Event.Result.DENY) return false;
-                if (stack.onItemUseFirst(player, world, pos, EnumHand.MAIN_HAND, faceDir.getOpposite(), hitX, hitY, hitZ) == EnumActionResult.PASS) {
-                    stack.onItemUse(player, world, pos, EnumHand.MAIN_HAND, faceDir.getOpposite(), hitX, hitY, hitZ);
-                }
-                ItemStack copy = stack.copy();
-                ActionResult<ItemStack> res = stack.getItem().onItemRightClick(world, player, EnumHand.MAIN_HAND);
-                player.setHeldItem(EnumHand.MAIN_HAND, res.getResult());
-                if (!copy.isItemEqual(stack)) {
-                    return !stack.isEmpty();
-                }
+            PlayerInteractEvent.RightClickBlock event = ForgeHooks.onRightClickBlock(player, EnumHand.MAIN_HAND, pos, faceDir.getOpposite(),  ForgeHooks.rayTraceEyeHitVec(player, 2.0D));
+            if (event.isCanceled() || event.getUseItem() == Event.Result.DENY) {
+                return false;
             }
-
-//            if (stack.getItem().onItemUseFirst(player, world, pos, faceDir, dx, dy, dz, EnumHand.MAIN_HAND) == EnumActionResult.PASS)
-//                return false;
-//
-//            if (!world.isAirBlock(pos) && block.onBlockActivated(world, pos, state, player, EnumHand.MAIN_HAND, faceDir, dx, dy, dz))
-//                return false;
-//
-//            if (!stack.isEmpty()) {
-//                boolean isGoingToShift = false;
-//                if (stack.getItem() == Items.REEDS || stack.getItem() instanceof ItemRedstone) {
-//                    isGoingToShift = true;
-//                }
-//                if (stack.getItem().onItemUse(player, world, pos, EnumHand.MAIN_HAND, faceDir, dx, dy, dz) == EnumActionResult.PASS)
-//                    return false;
-//
-//                ItemStack copy = stack.copy();
-//                ActionResult<ItemStack> res = stack.getItem().onItemRightClick(world, player, EnumHand.MAIN_HAND);
-//                player.setHeldItem(EnumHand.MAIN_HAND, res.getResult());
-//                if (!copy.isItemEqual(stack)) return true;
-//            }
+            if (block.onBlockActivated(world, pos, state, player, EnumHand.MAIN_HAND, faceDir.getOpposite(), hitX, hitY, hitZ)) {
+                return false;
+            }
+            if (stack.onItemUseFirst(player, world, pos, EnumHand.MAIN_HAND, faceDir.getOpposite(), hitX, hitY, hitZ) == EnumActionResult.PASS) {
+                stack.onItemUse(player, world, pos, EnumHand.MAIN_HAND, faceDir.getOpposite(), hitX, hitY, hitZ);
+            }
+            ItemStack copy = stack.copy();
+            ActionResult<ItemStack> res = stack.getItem().onItemRightClick(world, player, EnumHand.MAIN_HAND);
+            player.setHeldItem(EnumHand.MAIN_HAND, res.getResult());
+            if (!copy.isItemEqual(stack)) {
+                return !stack.isEmpty();
+            }
             return false;
         } catch (Throwable e) {
             Log.error("DroneAIBlockInteract crashed! Stacktrace: ");
