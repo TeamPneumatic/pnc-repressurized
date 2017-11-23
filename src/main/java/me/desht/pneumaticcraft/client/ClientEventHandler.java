@@ -3,12 +3,12 @@ package me.desht.pneumaticcraft.client;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.client.gui.IGuiDrone;
+import me.desht.pneumaticcraft.client.model.pressureglass.PressureGlassBakedModel;
 import me.desht.pneumaticcraft.client.render.RenderProgressingLine;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.DateEventHandler;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
 import me.desht.pneumaticcraft.common.block.Blockss;
-import me.desht.pneumaticcraft.common.block.tubes.ModuleRegistrator;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleRegulatorTube;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
@@ -22,6 +22,7 @@ import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Names;
+import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -33,9 +34,9 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.renderer.block.statemap.StateMapperBase;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderBiped;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -44,12 +45,10 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBucket;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.client.event.ModelBakeEvent;
-import net.minecraftforge.client.event.ModelRegistryEvent;
-import net.minecraftforge.client.event.RenderLivingEvent;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.client.event.*;
 import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
@@ -260,35 +259,17 @@ public class ClientEventHandler {
         }
     }
 
-//    @SubscribeEvent
-//    public void onTextureStitch(TextureStitchEvent.Pre event) {
-//        System.out.println("Stitching...");
-//        ModuleRegistrator.models = Maps.newHashMap();
-//        for (Class<? extends TubeModule> moduleClass : ModuleRegistrator.modules.values()) {
-//            try {
-//                TubeModule module = moduleClass.newInstance();
-//
-//                OBJLoader objLoader = OBJLoader.INSTANCE;
-//                IModel modelDefinition = objLoader.loadModel(new ResourceLocation(Names.MOD_ID, "models/block/modules/" + module.getModelName() + ".obj"));
-//                modelDefinition = modelDefinition.process(ImmutableMap.of("flip-v", "true"));
-//                awaitingBaking.put(modelDefinition, moduleClass);
-//                for (ResourceLocation texture : modelDefinition.getTextures()) {
-//                    event.getMap().registerSprite(texture);
-//                }
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        }
-//    }
+    @SubscribeEvent
+    public void onTextureStitch(TextureStitchEvent.Pre event) {
+        // pressure glass connected textures
+        for (int i = 0; i < PressureGlassBakedModel.TEXTURE_COUNT; i++) {
+            ResourceLocation loc = new ResourceLocation(Textures.PRESSURE_GLASS_LOCATION + "window_" + (i + 1));
+            PressureGlassBakedModel.SPRITES[i] = event.getMap().registerSprite(loc);
+        }
+    }
 
     @SubscribeEvent
     public void onModelBaking(ModelBakeEvent event) {
-        System.out.println("Baking...");
-        for (Map.Entry<IModel, Class<? extends TubeModule>> entry : awaitingBaking.entrySet()) {
-            IBakedModel model = entry.getKey().bake(entry.getKey().getDefaultState(), DefaultVertexFormats.BLOCK, RenderUtils.TEXTURE_GETTER);
-            ModuleRegistrator.models.put(entry.getValue(), model);
-        }
-
         // set up camo models for camouflagable blocks
         for (Block block : Blockss.blocks) {
             if (block instanceof BlockPneumaticCraftCamo) {
@@ -335,6 +316,12 @@ public class ClientEventHandler {
 
         ModelLoader.setCustomStateMapper(Blockss.DRONE_REDSTONE_EMITTER, blockIn -> Collections.emptyMap());
         ModelLoader.setCustomStateMapper(Blockss.KEROSENE_LAMP_LIGHT, blockIn -> Collections.emptyMap());
+        ModelLoader.setCustomStateMapper(Blockss.PRESSURE_CHAMBER_GLASS, new StateMapperBase() {
+            @Override
+            protected ModelResourceLocation getModelResourceLocation(IBlockState iBlockState) {
+                return PressureGlassBakedModel.BAKED_MODEL;
+            }
+        });
     }
 
     private void registerFluidModels() {

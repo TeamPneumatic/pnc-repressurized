@@ -117,7 +117,7 @@ public class ModelProgrammingPuzzle implements IModel {
     }
 
     public enum LoaderProgrammingPuzzle implements ICustomModelLoader {
-        instance;
+        INSTANCE;
 
         @Override
         public boolean accepts(ResourceLocation modelLocation) {

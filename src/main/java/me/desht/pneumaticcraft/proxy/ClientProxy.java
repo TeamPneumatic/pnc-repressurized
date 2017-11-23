@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.client.*;
 import me.desht.pneumaticcraft.client.gui.pneumaticHelmet.GuiHelmetMainScreen;
 import me.desht.pneumaticcraft.client.model.item.ModelProgrammingPuzzle.LoaderProgrammingPuzzle;
+import me.desht.pneumaticcraft.client.model.pressureglass.PressureGlassModelLoader;
 import me.desht.pneumaticcraft.client.render.entity.RenderDrone;
 import me.desht.pneumaticcraft.client.render.entity.RenderEntityRing;
 import me.desht.pneumaticcraft.client.render.entity.RenderEntityVortex;
@@ -67,10 +68,10 @@ public class ClientProxy extends CommonProxy {
     public void preInit() {
         Reflections.initClientOnly();
 
-//        OBJLoader.INSTANCE.addDomain(Names.MOD_ID);
         TintedOBJLoader.INSTANCE.addDomain(Names.MOD_ID);
         ModelLoaderRegistry.registerLoader(TintedOBJLoader.INSTANCE);
-        ModelLoaderRegistry.registerLoader(LoaderProgrammingPuzzle.instance);
+        ModelLoaderRegistry.registerLoader(LoaderProgrammingPuzzle.INSTANCE);
+        ModelLoaderRegistry.registerLoader(PressureGlassModelLoader.INSTANCE);
 
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPressureTube.class, new RenderPressureTubeModule());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAphorismTile.class, new RenderAphorismTile());
