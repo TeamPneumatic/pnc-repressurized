@@ -17,6 +17,7 @@ public class Textures {
     public static final String ENTITY_LOCATION = ICON_LOCATION + "textures/entities/";
     public static final String ARMOR_LOCATION = ICON_LOCATION + "textures/armor/";
     public static final String RENDER_LOCATION = ICON_LOCATION + "textures/render/";
+    public static final String PRESSURE_GLASS_LOCATION = ICON_LOCATION + "blocks/pressure_chamber/windows/";
 
     public static final ResourceLocation MODEL_GREY_TEXTURE = new ResourceLocation(MODEL_LOCATION + "pressure_tube_texture.png");
     public static final ResourceLocation MODEL_PRESSURE_TUBE = new ResourceLocation(MODEL_LOCATION + "pressure_tube.png");
