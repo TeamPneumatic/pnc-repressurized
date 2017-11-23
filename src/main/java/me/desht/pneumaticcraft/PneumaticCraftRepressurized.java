@@ -59,7 +59,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
 @Mod(modid = Names.MOD_ID, name = Names.MOD_NAME, version = PneumaticCraftRepressurized.MODVERSION,
         dependencies = "required-after:forge@[14.23.0.2528,);after:forestry;after:igwmod@[1.4.2-11,)",
-        updateJSON = "https://github.com/TeamPneumatic/pnc-repressurized/blob/master/release_info.json",
+        updateJSON = "https://raw.github.com/TeamPneumatic/pnc-repressurized/master/release_info.json",
         acceptedMinecraftVersions = "1.12"
 )
 public class PneumaticCraftRepressurized {
