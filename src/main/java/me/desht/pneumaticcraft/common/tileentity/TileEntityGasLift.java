@@ -48,7 +48,7 @@ public class TileEntityGasLift extends TileEntityPneumaticBase implements IMinWo
     @GuiSynced
     public int redstoneMode, mode;
     @GuiSynced
-    public Status status;
+    public Status status = Status.IDLE;
     @DescSynced
     public boolean[] sidesConnected = new boolean[6];
     private int workTimer;

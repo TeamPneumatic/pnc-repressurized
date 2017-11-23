@@ -76,7 +76,7 @@ public class GuiGasLift extends GuiPneumaticContainerBase<TileEntityGasLift> {
     }
 
     private List<String> getStatus() {
-        List<String> textList = new ArrayList<String>();
+        List<String> textList = new ArrayList<>();
         textList.add(I18n.format("gui.tab.status.gasLift.action"));
         String status = "gui.tab.status.gasLift.action.";
         switch (te.status) {
