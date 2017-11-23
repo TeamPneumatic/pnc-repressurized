@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.item;
 
+import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.tileentity.ICamouflageableTE;
@@ -55,8 +56,13 @@ public class ItemCamoApplicator extends ItemPressurizable {
             if (player.isSneaking()) {
                 // copy blockstate of clicked block
                 IBlockState state = world.getBlockState(pos);
-                setCamoState(stack, state);
-            } else {
+                if (state.getBlock() instanceof BlockPneumaticCraftCamo) {
+                    NetworkHandler.sendToAllAround(new PacketPlaySound(SoundEvents.BLOCK_COMPARATOR_CLICK, SoundCategory.PLAYERS, pos, 1.0F, 2.0F, false), world);
+                    player.sendStatusMessage(new TextComponentTranslation("message.camo.invalidBlock", getCamoStateDisplayName(state)), true);
+                } else {
+                    setCamoState(stack, state);
+                }
+            } else{
                 // either apply saved camo, or remove current camo from block
                 TileEntity te = world.getTileEntity(pos);
                 if (!(te instanceof ICamouflageableTE)) {

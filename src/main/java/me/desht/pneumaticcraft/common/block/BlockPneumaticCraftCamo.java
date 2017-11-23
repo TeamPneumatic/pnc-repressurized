@@ -103,15 +103,14 @@ public abstract class BlockPneumaticCraftCamo extends BlockPneumaticCraftModeled
         return camo == null ? super.isSideSolid(base_state, world, pos, side) : camo.isSideSolid(world, pos, side);
     }
 
-//    @Override
-//    public boolean shouldSideBeRendered(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
-//        IBlockState camo = getCamoState(blockAccess, pos);
-//        return camo == null ? super.shouldSideBeRendered(blockState, blockAccess, pos, side) : camo.shouldSideBeRendered(blockAccess, pos, side);
-//    }
-
-    protected IBlockState getCamoState(IBlockAccess blockAccess, BlockPos pos) {
+    private IBlockState getCamoState(IBlockAccess blockAccess, BlockPos pos) {
         TileEntity te = PneumaticCraftUtils.getTileEntitySafely(blockAccess, pos);
-        return te instanceof ICamouflageableTE ? ((ICamouflageableTE) te).getCamouflage() : null;
+        if (!(te instanceof ICamouflageableTE))
+            return null;
+
+        // must not use a camouflageable block as camouflage!
+        IBlockState camoState = ((ICamouflageableTE) te).getCamouflage();
+        return camoState == null || camoState.getBlock() instanceof BlockPneumaticCraftCamo ? null : camoState;
     }
 
     @Override
