@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "sts"
+  ],
+  "key": {
+    "s": {
+      "item": "pneumaticcraft:safety_tube_module"
+    },
+    "t": {
+      "item": "pneumaticcraft:pressure_tube"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:regulator_tube_module"
+  }
+}

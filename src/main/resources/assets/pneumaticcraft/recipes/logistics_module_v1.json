@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "pip", 
+    "iri", 
+    "pip"
+  ],
+  "key": {
+    "r": {
+      "item": "pneumaticcraft:regulator_tube_module"
+    },
+    "p": {
+      "type": "forge:ore_dict",
+      "ore": "plasticBlack"
+    },
+    "i": {
+      "type": "forge:ore_dict",
+      "ore": "ingotIronCompressed"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:logistics_module"
+  }
+}

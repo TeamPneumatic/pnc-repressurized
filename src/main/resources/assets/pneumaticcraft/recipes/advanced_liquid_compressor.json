@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "iii", 
+    "ibt", 
+    "ici"
+  ],
+  "key": {
+    "i": {
+      "type": "forge:ore_dict",
+      "ore": "plasticBlue"
+    },
+    "c": {
+      "item": "pneumaticcraft:liquid_compressor"
+    },
+    "t": {
+      "item": "pneumaticcraft:advanced_pressure_tube"
+    },
+    "b": {
+      "item": "minecraft:bucket"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:advanced_liquid_compressor"
+  }
+}

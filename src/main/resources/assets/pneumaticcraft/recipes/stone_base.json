@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "s s", 
+    "sts"
+  ],
+  "key": {
+    "t": {
+       "item": "pneumaticcraft:pressure_tube"
+    },
+    "s": {
+      "type": "forge:ore_dict",
+      "ore": "stone"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:stone_base"
+  }
+}

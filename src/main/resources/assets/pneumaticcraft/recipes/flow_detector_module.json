@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "bbb", 
+    "btb", 
+    "bbb"
+  ],
+  "key": {
+    "t": {
+      "item": "pneumaticcraft:pressure_tube"
+    },
+    "b": {
+      "item": "pneumaticcraft:turbine_blade"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:flow_detector_module"
+  }
+}

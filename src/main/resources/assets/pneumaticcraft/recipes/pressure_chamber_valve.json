@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "iii", 
+    "iti", 
+    "iii"
+  ],
+  "key": {
+    "t": {
+      "item": "pneumaticcraft:pressure_tube"
+    },
+    "i": {
+      "type": "forge:ore_dict",
+      "ore": "ingotIronCompressed"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:pressure_chamber_valve",
+    "count": 16
+  }
+}

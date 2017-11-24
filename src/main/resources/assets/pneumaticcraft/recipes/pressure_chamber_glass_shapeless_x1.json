@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "type": "forge:ore_dict",
+      "ore": "blockGlass"
+    },
+    {
+      "item": "pneumaticcraft:pressure_chamber_wall"
+    }
+  ],
+  "result": {
+    "item": "pneumaticcraft:pressure_chamber_glass"
+  }
+}

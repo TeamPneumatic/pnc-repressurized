@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " c ", 
+    "cic", 
+    " c "
+  ],
+  "key": {
+    "c": {
+      "type": "forge:ore_dict",
+      "ore": "ingotIronCompressed"
+    },
+    "i": {
+      "type": "forge:ore_dict",
+      "ore": "ingotIron"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:compressed_iron_gear"
+  }
+}

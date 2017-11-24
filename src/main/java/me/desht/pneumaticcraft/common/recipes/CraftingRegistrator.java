@@ -47,61 +47,7 @@ public class CraftingRegistrator {
     public static void init() {
         ItemStack lapis = new ItemStack(Items.DYE, 1, 4);
         ItemStack cobbleSlab = new ItemStack(Blocks.STONE_SLAB, 1, 3);
-        // tubes
-        addRecipe(new ItemStack(Blockss.PRESSURE_TUBE, 8, 0 /* normal */), "igi", 'i', Names.INGOT_IRON_COMPRESSED, 'g', "blockGlass");
-        addRecipe(new ItemStack(ModuleRegistrator.getModuleItem(Names.MODULE_FLOW_DETECTOR)), "bbb", "btb", "bbb", 'b', Itemss.TURBINE_BLADE, 't', new ItemStack(Blockss.PRESSURE_TUBE, 1, 0));
-        addRecipe(new ItemStack(ModuleRegistrator.getModuleItem(Names.MODULE_SAFETY_VALVE)), " g ", "ltl", 'g', Itemss.PRESSURE_GAUGE, 'l', Blocks.LEVER, 't', new ItemStack(Blockss.PRESSURE_TUBE, 1, 0));
-        addRecipe(new ItemStack(ModuleRegistrator.getModuleItem(Names.MODULE_REGULATOR)), "sts", 's', ModuleRegistrator.getModuleItem(Names.MODULE_SAFETY_VALVE), 't', new ItemStack(Blockss.PRESSURE_TUBE, 1, 0));
-        addRecipe(new ItemStack(ModuleRegistrator.getModuleItem(Names.MODULE_AIR_GRATE)), " b ", "btb", " b ", 'b', Blocks.IRON_BARS, 't', new ItemStack(Blockss.PRESSURE_TUBE, 1, 0));
-        addRecipe(new ItemStack(ModuleRegistrator.getModuleItem(Names.MODULE_GAUGE)), " g ", "rtr", 'g', Itemss.PRESSURE_GAUGE, 'r', Items.REDSTONE, 't', new ItemStack(Blockss.PRESSURE_TUBE, 1, 0));
-        addRecipe(new ItemStack(ModuleRegistrator.getModuleItem(Names.MODULE_CHARGING)), " r ", "rtr", " r ", 'r', Blockss.CHARGING_STATION, 't', new ItemStack(Blockss.PRESSURE_TUBE, 1, 0));
-        addRecipe(new ItemStack(ModuleRegistrator.getModuleItem(Names.MODULE_LOGISTICS), 4), "pip", "iri", "pip", 'i', Names.INGOT_IRON_COMPRESSED, 'p', new ItemStack(Itemss.PLASTIC, 1, ItemPlastic.BLACK), 'r', ModuleRegistrator.getModuleItem(Names.MODULE_REGULATOR));
-        addRecipe(new ItemStack(ModuleRegistrator.getModuleItem(Names.MODULE_LOGISTICS), 4), "ipi", "prp", "ipi", 'i', Names.INGOT_IRON_COMPRESSED, 'p', new ItemStack(Itemss.PLASTIC, 1, ItemPlastic.BLACK), 'r', ModuleRegistrator.getModuleItem(Names.MODULE_REGULATOR));
-
-        // tube addons
-        addRecipe(new ItemStack(Itemss.PRESSURE_GAUGE), " g ", "gig", " g ", 'g', Items.GOLD_INGOT, 'i', Names.INGOT_IRON_COMPRESSED);
-
-        // pressure chamber
-        addRecipe(new ItemStack(Blockss.PRESSURE_CHAMBER_WALL, 16), "iii", "i i", "iii", 'i', Names.INGOT_IRON_COMPRESSED);
-        addRecipe(new ItemStack(Blockss.PRESSURE_CHAMBER_GLASS, 16), "iii", "igi", "iii", 'i', Names.INGOT_IRON_COMPRESSED, 'g', "blockGlass");
-        addShapelessRecipe(new ItemStack(Blockss.PRESSURE_CHAMBER_GLASS, 4), new ItemStack(Blockss.PRESSURE_CHAMBER_WALL), new ItemStack(Blockss.PRESSURE_CHAMBER_WALL), new ItemStack(Blockss.PRESSURE_CHAMBER_WALL), new ItemStack(Blockss.PRESSURE_CHAMBER_WALL), Blocks.GLASS);
-        addRecipe(new ItemStack(Blockss.PRESSURE_CHAMBER_VALVE, 16, 0), "iii", "iti", "iii", 'i', Names.INGOT_IRON_COMPRESSED, 't', new ItemStack(Blockss.PRESSURE_TUBE, 1, 0));
-        addShapelessRecipe(new ItemStack(Blockss.PRESSURE_CHAMBER_VALVE, 4, 0), new ItemStack(Blockss.PRESSURE_CHAMBER_WALL, 1, 0), new ItemStack(Blockss.PRESSURE_CHAMBER_WALL), new ItemStack(Blockss.PRESSURE_CHAMBER_WALL), new ItemStack(Blockss.PRESSURE_CHAMBER_WALL), new ItemStack(Blockss.PRESSURE_TUBE));
-        addShapelessRecipe(new ItemStack(Blockss.PRESSURE_CHAMBER_INTERFACE), Blockss.PRESSURE_CHAMBER_WALL, Blocks.HOPPER);
-        addShapelessRecipe(new ItemStack(Blockss.PRESSURE_CHAMBER_VALVE, 1, 0), Blockss.PRESSURE_CHAMBER_WALL, Blockss.PRESSURE_TUBE);
-        addShapelessRecipe(new ItemStack(Blockss.PRESSURE_CHAMBER_GLASS), new ItemStack(Blockss.PRESSURE_CHAMBER_WALL), Blocks.GLASS);
-
-        //Oil related
-        addRecipe(new ItemStack(Itemss.SEISMIC_SENSOR), " t ", "grg", "gcg", 't', Blocks.REDSTONE_TORCH, 'g', "blockGlass", 'r', Items.REPEATER, 'c', Items.COAL);
-        addRecipe(new ItemStack(Blockss.REFINERY), "iii", "gdg", "iii", 'i', Names.INGOT_IRON_COMPRESSED, 'g', "blockGlass", 'd', "gemDiamond");
-        addRecipe(new ItemStack(Blockss.THERMOPNEUMATIC_PROCESSING_PLANT), "igi", "tri", "igi", 'i', Names.INGOT_IRON_COMPRESSED, 'g', "blockGlass", 'r', "dustRedstone", 't', Blockss.PRESSURE_TUBE);
-        addRecipe(new ItemStack(Blockss.GAS_LIFT), " t ", "tgt", "iii", 'i', Names.INGOT_IRON_COMPRESSED, 'g', "blockGlass", 't', Blockss.PRESSURE_TUBE);
-
-        // cannon
-        addRecipe(new ItemStack(Blockss.AIR_CANNON), " b ", " st", "hhh", 'b', Itemss.CANNON_BARREL, 's', Itemss.STONE_BASE, 't', new ItemStack(Blockss.PRESSURE_TUBE, 1, 0 /* normal */), 'h', cobbleSlab);
-        addRecipe(new ItemStack(Itemss.STONE_BASE), "s s", "sts", 's', Blocks.STONE, 't', new ItemStack(Blockss.PRESSURE_TUBE, 1, 0));
-        addRecipe(new ItemStack(Itemss.CANNON_BARREL), true, "i i", "i i", "pii", 'i', Names.INGOT_IRON_COMPRESSED, 'p', ModuleRegistrator.getModuleItem(Names.MODULE_SAFETY_VALVE));
-
-        addRecipe(new ItemStack(Itemss.GPS_TOOL), " r ", "pgp", "pdp", 'r', Blocks.REDSTONE_TORCH, 'p', new ItemStack(Itemss.PLASTIC, 1, ItemPlastic.RED), 'g', Blocks.GLASS_PANE, 'd', Items.DIAMOND);
-        addRecipe(new ItemStack(Itemss.REMOTE), " i ", "tgt", "tdt", 'i', new ItemStack(Itemss.NETWORK_COMPONENT, 1, ItemNetworkComponents.NETWORK_IO_PORT), 't', Itemss.TRANSISTOR, 'g', Itemss.GPS_TOOL, 'd', new ItemStack(Itemss.NETWORK_COMPONENT, 1, ItemNetworkComponents.NETWORK_DATA_STORAGE));
-
-        // compressor
-        addRecipe(new ItemStack(Blockss.AIR_COMPRESSOR), true, "iii", "i t", "ifi", 'i', Names.INGOT_IRON_COMPRESSED, 't', new ItemStack(Blockss.PRESSURE_TUBE, 1, 0), 'f', Blocks.FURNACE);
-        addRecipe(new ItemStack(Blockss.ADVANCED_AIR_COMPRESSOR), true, "iii", "i t", "ifi", 'i', Names.INGOT_IRON_COMPRESSED, 't', new ItemStack(Blockss.ADVANCED_PRESSURE_TUBE, 1, 0), 'f', Blockss.AIR_COMPRESSOR);
-        addRecipe(new ItemStack(Blockss.LIQUID_COMPRESSOR), true, "pbp", "lcl", 'p', Blockss.PRESSURE_TUBE, 'l', Items.LEATHER, 'b', Items.BUCKET, 'c', Blockss.AIR_COMPRESSOR);
-        addRecipe(new ItemStack(Blockss.ADVANCED_LIQUID_COMPRESSOR), true, "iii", "ibt", "ici", 'i', new ItemStack(Itemss.PLASTIC, 1, ItemPlastic.BLUE), 'b', Items.BUCKET, 'c', Blockss.LIQUID_COMPRESSOR, 't', Blockss.ADVANCED_PRESSURE_TUBE);
-        addRecipe(new ItemStack(Blockss.ELECTROSTATIC_COMPRESSOR), "bpb", "prp", "bcb", 'b', Blocks.IRON_BARS, 'p', new ItemStack(Itemss.PLASTIC, 1, ItemPlastic.GREY), 'r', Itemss.TURBINE_ROTOR, 'c', Blockss.AIR_COMPRESSOR);
-        addRecipe(new ItemStack(Itemss.COMPRESSED_IRON_GEAR), " c ", "cic", " c ", 'c', Itemss.INGOT_IRON_COMPRESSED, 'i', "ingotIron");
-        addRecipe(new ItemStack(Blockss.PNEUMATIC_DYNAMO), " t ", "gig", "ipi",
-                'i', Names.INGOT_IRON_COMPRESSED, 'g', Itemss.COMPRESSED_IRON_GEAR, 't', Blockss.ADVANCED_PRESSURE_TUBE,
-                'p', Itemss.PRINTED_CIRCUIT_BOARD);
-        addRecipe(new ItemStack(Blockss.FLUX_COMPRESSOR), "gcp", "frt", "gqp",
-                'p', Itemss.PRINTED_CIRCUIT_BOARD, 'c', Itemss.COMPRESSED_IRON_GEAR, 'g', Items.REDSTONE, 't', Blockss.ADVANCED_PRESSURE_TUBE,
-                'r', Itemss.TURBINE_ROTOR, 'f', Blocks.REDSTONE_BLOCK, 'q', Blocks.FURNACE);
-
-        // Charging Station
-        addRecipe(new ItemStack(Blockss.CHARGING_STATION), "  t", "ppp", "sss", 's', cobbleSlab, 't', new ItemStack(Blockss.PRESSURE_TUBE, 1, 0), 'p', Items.BRICK);
-
+        
         // Elevators
         addRecipe(new ItemStack(Blockss.ELEVATOR_FRAME, 4, 0), "i i", "i i", "i i", 'i', Names.INGOT_IRON_COMPRESSED);
         addRecipe(new ItemStack(Itemss.PNEUMATIC_CYLINDER), "pip", "pip", "pbp", 'p', new ItemStack(Itemss.PLASTIC, 1, ItemPlastic.BLUE), 'i', Names.INGOT_IRON_COMPRESSED, 'b', Itemss.CANNON_BARREL);
