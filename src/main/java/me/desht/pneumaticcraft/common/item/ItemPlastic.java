@@ -26,6 +26,26 @@ public class ItemPlastic extends ItemPneumaticSubtyped {
     public static final int MAGENTA = 13;
     public static final int ORANGE = 14;
     public static final int WHITE = 15;
+    
+    //Names, as defined consistently with dyeX
+    public static final String[] ORE_NAMES = new String[]{
+      "plasticBlack",
+      "plasticRed",
+      "plasticGreen",
+      "plasticBrown",
+      "plasticBlue",
+      "plasticPurple",
+      "plasticCyan",
+      "plasticLightGray",
+      "plasticGray",
+      "plasticPink",
+      "plasticLime",
+      "plasticYellow",
+      "plasticLightBlue",
+      "plasticMagenta",
+      "plasticOrange",
+      "plasticWhite"        
+    };
 
     public ItemPlastic() {
         super("plastic");
