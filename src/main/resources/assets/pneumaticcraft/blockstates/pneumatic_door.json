@@ -51,7 +51,11 @@
       }
     },
     "inventory": [{
-      "transform": "forge:default-block"
+      "transform": {
+        "rotation": [ {"x": 30 }, { "y": 135 }, { "z": 0 }],
+        "translation": [ 0.2, -0.1, 0],
+        "scale":[ 0.47, 0.47, 0.47 ]
+      }
     }]
   }
 }
