@@ -1,5 +1,6 @@
 {
   "type": "minecraft:crafting_shapeless",
+  "group": "pressure_chamber_valve",
   "ingredients": [
     {
       "item": "pneumaticcraft:pressure_tube"
