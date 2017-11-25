@@ -1,0 +1,24 @@
+{
+  "type": "forge:ore_shaped",
+  "pattern": [
+    "pip",
+    "pip",
+    "pbp"
+  ],
+  "key": {
+    "p": {
+      "type": "forge:ore_dict",
+      "ore": "plasticBlue"
+    },
+    "b": {
+      "item": "pneumaticcraft:cannon_barrel"
+    },
+    "i": {
+      "type": "forge:ore_dict",
+      "ore": "ingotIronCompressed"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:pneumatic_cylinder"
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "conditions": [
+	{
+		"type": "forge:mod_loaded",
+  		"modid": "ic2"
+	}
+  ],
+  "pattern": [
+    "acp", 
+    "frt", 
+    "agp"
+  ],
+  "key": {
+    "p": {
+      "item": "pneumaticcraft:printed_circuit_board"
+    },
+    "t": {
+      "item": "pneumaticcraft:advanced_pressure_tube"
+    },
+    "c": {
+      "item": "ic2:crafting",
+      "data": 2
+    },
+    "a": {
+      "item": "ic2:crafting",
+      "data": 3
+    },
+    "r": {
+      "item": "pneumaticcraft:turbine_rotor"
+    },
+    "f": {
+      "type": "minecraft:item_nbt",
+      "item": "ic2:cable",
+      "data": 1,
+      "nbt": "{type:1b,insulation:0b}"
+    },
+    "g": {
+      "item": "ic2:te",
+      "data": 3
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:electric_compressor"
+  }
+}

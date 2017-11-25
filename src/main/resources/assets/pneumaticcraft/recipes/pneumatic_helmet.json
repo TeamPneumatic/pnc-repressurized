@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "cec",
+    "c c"
+  ],
+  "key": {
+    "c": {
+      "item": "pneumaticcraft:air_canister",
+      "data": 30000
+    },
+    "e": {
+      "item": "pneumaticcraft:printed_circuit_board"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:pneumatic_helmet"
+  }
+}

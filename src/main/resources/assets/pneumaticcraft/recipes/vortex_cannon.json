@@ -1,0 +1,29 @@
+{
+  "type": "forge:ore_shaped",
+  "pattern": [
+    "idi",
+    "c  ",
+    "ili"
+  ],
+  "key": {
+    "c": {
+      "item": "pneumaticcraft:air_canister",
+      "data": 30000
+    },
+    "d": {
+      "type": "forge:ore_dict",
+      "ore": "dyeYellow"
+    },
+    "i": {
+      "type": "forge:ore_dict",
+      "ore": "ingotIronCompressed"
+    },
+    "l": {
+      "item": "minecraft:lever"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:vortex_cannon",
+    "data": 30000
+  }
+}

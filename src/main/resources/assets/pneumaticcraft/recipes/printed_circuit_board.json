@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "pneumaticcraft:unassembled_pcb"
+    },
+    {
+      "item": "pneumaticcraft:transistor"
+    },
+    {
+      "item": "pneumaticcraft:transistor"
+    },
+    {
+      "item": "pneumaticcraft:transistor"
+    },
+    {
+      "item": "pneumaticcraft:capacitor"
+    },
+    {
+      "item": "pneumaticcraft:capacitor"
+    },
+    {
+      "item": "pneumaticcraft:capacitor"
+    }
+  ],
+  "result": {
+    "item": "pneumaticcraft:printed_circuit_board"
+  }
+}

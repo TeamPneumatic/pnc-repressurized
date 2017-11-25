@@ -1,0 +1,6 @@
+{
+	"recipes": {
+		"always_invalid_shapeless" : "me.desht.pneumaticcraft.common.recipes.AlwaysInvalidShapelessRecipeFactory"	
+	}
+
+}

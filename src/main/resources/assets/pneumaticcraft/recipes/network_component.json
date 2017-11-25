@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ttt",
+    "tct",
+    "ttt"
+  ],
+  "key": {
+    "c": {
+      "item": "minecraft:chest"
+    },
+    "t": {
+      "item": "pneumaticcraft:transistor"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:network_component",
+    "data": 5,
+    "count": 16
+  }
+}

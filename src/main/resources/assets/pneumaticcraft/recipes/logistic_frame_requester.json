@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ppp",
+    "p p",
+    "ppp"
+  ],
+  "key": {
+    "p": {
+      "type": "forge:ore_dict",
+      "ore": "plasticBlue"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:logistic_frame_requester"
+  }
+}

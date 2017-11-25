@@ -1,0 +1,24 @@
+{
+  "type": "forge:ore_shaped",
+  "pattern": [
+    " t ",
+    "iri",
+    "iri"
+  ],
+  "key": {
+    "r": {
+      "item": "minecraft:redstone"
+    },
+    "t": {
+      "item": "pneumaticcraft:pressure_tube"
+    },
+    "i": {
+      "type": "forge:ore_dict",
+      "ore": "ingotIronCompressed"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:air_canister",
+    "data": 30000
+  }
+}

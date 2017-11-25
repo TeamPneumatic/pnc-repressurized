@@ -163,7 +163,6 @@ public class PneumaticCraftRepressurized {
         ConfigHandler.postInit();
         AmadronOfferManager.getInstance().shufflePeriodicOffers();
         AmadronOfferManager.getInstance().recompileOffers();
-        CraftingRegistrator.addProgrammingPuzzleRecipes();
         ModInteractionUtils.setupWrenchItems();
 
         for (Block block : Blockss.blocks) {

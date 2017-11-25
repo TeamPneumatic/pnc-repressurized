@@ -1,0 +1,13 @@
+{
+  "type": "forge:ore_shapeless",
+  "ingredients": [
+    {
+      "type": "forge:ore_dict",
+      "ore": "blockIronCompressed"
+    }
+  ],
+  "result": {
+    "item": "ingot_iron_compressed",
+    "count": 9
+  }
+}

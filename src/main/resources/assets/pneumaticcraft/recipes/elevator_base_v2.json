@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "pc",
+    "cp"
+  ],
+  "key": {
+    "p": {
+      "type": "forge:ore_dict",
+      "ore": "plasticGray"
+    },
+    "c": {
+      "item": "pneumaticcraft:pneumatic_cylinder"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:elevator_base",
+    "count": 4
+  }
+}

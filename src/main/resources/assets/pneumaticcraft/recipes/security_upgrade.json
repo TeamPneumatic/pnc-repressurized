@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "lol",
+    "obo",
+    "lol"
+  ],
+  "key": {
+    "b": {
+      "item": "pneumaticcraft:safety_tube_module"
+    },
+    "l": {
+      "item": "minecraft:dye",
+      "data": 4
+    },
+    "o": {
+      "item": "minecraft:obsidian"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:security_upgrade"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ttt",
+    "tct",
+    "ttt"
+  ],
+  "key": {
+    "c": {
+      "item": "minecraft:chest"
+    },
+    "t": {
+      "type": "forge:ore_dict",
+      "ore": "plasticBlue"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:network_component",
+    "data": 1
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "cpc",
+    "prp",
+    "cpc"
+  ],
+  "key": {
+    "p": {
+      "type": "forge:ore_dict",
+      "ore": "plasticWhite"
+    },
+    "r": {
+      "item": "minecraft:redstone"
+    },
+    "c": {
+      "type": "forge:ore_dict",
+      "ore": "plasticBrown"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:elevator_caller"
+  }
+}

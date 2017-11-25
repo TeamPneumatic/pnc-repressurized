@@ -1,0 +1,23 @@
+{
+  "type": "forge:ore_shaped",
+  "pattern": [
+    " c ",
+    "tcc",
+    "iii"
+  ],
+  "key": {
+    "c": {
+      "item": "pneumaticcraft:printed_circuit_board"
+    },
+    "t": {
+      "item": "pneumaticcraft:pressure_tube"
+    },
+    "i": {
+      "type": "forge:ore_dict",
+      "ore": "ingotIronCompressed"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:assembly_controller"
+  }
+}

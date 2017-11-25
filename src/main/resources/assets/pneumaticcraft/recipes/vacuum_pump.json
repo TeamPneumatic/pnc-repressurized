@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "grg",
+    "trt",
+    "sss"
+  ],
+  "key": {
+    "r": {
+      "item": "pneumaticcraft:turbine_rotor"
+    },
+    "s": {
+      "item": "minecraft:stone_slab",
+      "data": 3
+    },
+    "t": {
+      "item": "pneumaticcraft:pressure_tube"
+    },
+    "g": {
+      "item": "pneumaticcraft:pressure_gauge"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:vacuum_pump"
+  }
+}
