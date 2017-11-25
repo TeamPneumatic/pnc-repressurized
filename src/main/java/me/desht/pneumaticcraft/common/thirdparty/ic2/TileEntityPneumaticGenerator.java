@@ -61,6 +61,7 @@ public class TileEntityPneumaticGenerator extends TileEntityPneumaticBase implem
 
     @Override
     protected void onFirstServerUpdate() {
+        super.onFirstServerUpdate();
         MinecraftForge.EVENT_BUS.post(new EnergyTileLoadEvent(this));
     }
 

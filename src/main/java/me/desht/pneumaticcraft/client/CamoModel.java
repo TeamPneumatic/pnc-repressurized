@@ -36,7 +36,7 @@ public class CamoModel implements IBakedModel {
         if (state instanceof IExtendedBlockState) {
             IExtendedBlockState ext = (IExtendedBlockState) state;
             IBlockState camoState = ext.getValue(BlockPneumaticCraftCamo.CAMO_STATE);
-            if (camoState != null) {
+            if (camoState != null && !(camoState.getBlock() instanceof BlockPneumaticCraftCamo)) {
                 BlockModelShapes blockModelShapes = Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelShapes();
                 return blockModelShapes.getModelForState(camoState);
             }

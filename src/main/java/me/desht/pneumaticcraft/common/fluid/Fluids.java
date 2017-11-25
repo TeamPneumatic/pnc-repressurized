@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.block.BlockFluidEtchingAcid;
 import me.desht.pneumaticcraft.common.block.BlockFluidPneumaticCraft;
+import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.MaterialLiquid;
@@ -71,8 +72,8 @@ public class Fluids {
             Fluid preExistingFluid = FluidRegistry.getFluid(name);
             if (preExistingFluid != null) {
                 fluid = preExistingFluid;
-                PneumaticCraftRepressurized.logger.warn("Fluid '" + name + "' already registered by another mod: "
-                        + FluidRegistry.getDefaultFluidName(fluid) + " - we'll use it, but it might not be available in block form!");
+                Log.warning("Fluid '" + name + "' already registered by another mod: [" + FluidRegistry.getDefaultFluidName(fluid)
+                        + "] - we'll use it, but it might not be available in block form!");
             } else {
                 fluid = new FluidPneumaticCraft(name);
                 FluidRegistry.registerFluid(fluid);
@@ -101,6 +102,7 @@ public class Fluids {
                 block.setCreativeTab(PneumaticCraftRepressurized.tabPneumaticCraft);
                 registry.register(block);
                 fluidToBlockMap.put(fluidBlock.getFluid().getName(), block);
+                Log.info("registered block for fluid: " + fluidBlock.getFluid().getName());
             }
         }
 

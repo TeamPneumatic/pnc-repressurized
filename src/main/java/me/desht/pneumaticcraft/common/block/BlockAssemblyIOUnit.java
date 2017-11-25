@@ -4,9 +4,12 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyIOUnit;
 import me.desht.pneumaticcraft.lib.BBConstants;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -15,8 +18,6 @@ import net.minecraft.world.World;
 import javax.annotation.Nullable;
 
 public class BlockAssemblyIOUnit extends BlockPneumaticCraftModeled {
-//    private static final PropertyBool IMPORT = PropertyBool.create("import");
-
     private static final AxisAlignedBB BASE_BOUNDS = new AxisAlignedBB(
             BBConstants.ASSEMBLY_ROBOT_MIN_POS, 0F, BBConstants.ASSEMBLY_ROBOT_MIN_POS,
             BBConstants.ASSEMBLY_ROBOT_MAX_POS, BBConstants.ASSEMBLY_ROBOT_MAX_POS_TOP, BBConstants.ASSEMBLY_ROBOT_MAX_POS);
@@ -38,80 +39,35 @@ public class BlockAssemblyIOUnit extends BlockPneumaticCraftModeled {
         }
     }
 
-//    @Override
-//    protected BlockStateContainer createBlockState() {
-//        return new BlockStateContainer(this, IMPORT);
-//    }
-//
-//    @Override
-//    public int getMetaFromState(IBlockState state) {
-//        return 0;  // import/export value is stored in the TE
-//    }
-//
-//    @Override
-//    public IBlockState getStateFromMeta(int meta) {
-//        return this.getDefaultState();
-//    }
-
     @Nullable
     @Override
     public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos) {
         return COLLISION_BOUNDS;
     }
 
-//    @Override
-//    public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
-//        TileEntity te = PneumaticCraftUtils.getTileEntitySafely(worldIn, pos);
-//        if (te instanceof TileEntityAssemblyIOUnit) {
-//            boolean importing = ((TileEntityAssemblyIOUnit) te).isImportUnit();
-//            return state.withProperty(IMPORT, importing);
-//        }
-//        return state;
-//    }
+    @Override
+    public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
+        TileEntity te = world.getTileEntity(pos);
+        if (te instanceof TileEntityAssemblyIOUnit) {
+            drops.add(new ItemStack(Blockss.ASSEMBLY_IO_UNIT, 1, ((TileEntityAssemblyIOUnit) te).isImportUnit() ? 1 : 0));
+        }
+    }
 
-    //    @Override
-//    public void setBlockBoundsBasedOnState(IBlockAccess par1IBlockAccess, BlockPos pos) {
-//        setBlockBounds(BBConstants.ASSEMBLY_ROBOT_MIN_POS, 0F, BBConstants.ASSEMBLY_ROBOT_MIN_POS, BBConstants.ASSEMBLY_ROBOT_MAX_POS, BBConstants.ASSEMBLY_ROBOT_MAX_POS_TOP, BBConstants.ASSEMBLY_ROBOT_MAX_POS);
-//    }
-//
-//    @Override
-//    public void addCollisionBoxesToList(World world, BlockPos pos, IBlockState state, AxisAlignedBB axisalignedbb, List arraylist, Entity par7Entity) {
-//        setBlockBounds(BBConstants.ASSEMBLY_ROBOT_MIN_POS, BBConstants.ASSEMBLY_ROBOT_MIN_POS, BBConstants.ASSEMBLY_ROBOT_MIN_POS, BBConstants.ASSEMBLY_ROBOT_MAX_POS, BBConstants.ASSEMBLY_ROBOT_MAX_POS_TOP, BBConstants.ASSEMBLY_ROBOT_MAX_POS);
-//        super.addCollisionBoxesToList(world, pos, state, axisalignedbb, arraylist, par7Entity);
-//        setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
-//    }
+    @Override
+    public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase entity, ItemStack stack) {
+        TileEntity te = world.getTileEntity(pos);
+        if (te instanceof TileEntityAssemblyIOUnit) {
+            TileEntityAssemblyIOUnit teIO = (TileEntityAssemblyIOUnit) te;
+            if (stack.getMetadata() == 0 && teIO.isImportUnit() || stack.getMetadata() == 1 && !teIO.isImportUnit()) {
+                teIO.switchMode();
+            }
+        }
+        super.onBlockPlacedBy(world, pos, state, entity, stack);
+    }
 
     @Override
     protected Class<? extends TileEntity> getTileEntityClass() {
         return TileEntityAssemblyIOUnit.class;
     }
-
-//    @Override
-//    //Overriden here because the IOUnit isn't implementing IInventory (intentionally).
-//    protected void dropInventory(World world, BlockPos pos) {
-//        TileEntity tileEntity = world.getTileEntity(pos);
-//
-//        if (!(tileEntity instanceof TileEntityAssemblyIOUnit)) return;
-//
-//        TileEntityAssemblyIOUnit ioUnit = (TileEntityAssemblyIOUnit) tileEntity;
-//        Random rand = new Random();
-//
-//        ItemStack itemStack = ioUnit.getPrimaryInventory().getStackInSlot(0);
-//
-//        if (itemStack.getCount() > 0) {
-//            float dX = rand.nextFloat() * 0.8F + 0.1F;
-//            float dY = rand.nextFloat() * 0.8F + 0.1F;
-//            float dZ = rand.nextFloat() * 0.8F + 0.1F;
-//
-//            EntityItem entityItem = new EntityItem(world, pos.getX() + dX, pos.getY() + dY, pos.getZ() + dZ, itemStack.copy());
-//
-//            float factor = 0.05F;
-//            entityItem.motionX = rand.nextGaussian() * factor;
-//            entityItem.motionY = rand.nextGaussian() * factor + 0.2F;
-//            entityItem.motionZ = rand.nextGaussian() * factor;
-//            world.spawnEntity(entityItem);
-//            itemStack.setCount(0);
-//        }
-//    }
 
 }

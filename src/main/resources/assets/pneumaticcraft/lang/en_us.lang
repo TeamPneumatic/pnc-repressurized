@@ -975,4 +975,5 @@ message.amadron.duplicateReversedOffer=§c[Amadron] Can't add trade: You have a 
 message.amadron.playerBought=§a[Amadron] §6%s§b bought §6%s§b from you in exchange for §6%s§b.
 
 # Camo Applicator
-message.camo.notEnoughBlocks=§cOut of §e%s§c !
+message.camo.notEnoughBlocks=§4Out of §c%s !
+message.camo.invalidBlock=§4Invalid camo block: §c%s !
