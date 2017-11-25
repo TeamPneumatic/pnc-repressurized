@@ -8,7 +8,7 @@ import net.minecraft.world.World;
 public class RecipeManometer extends AbstractRecipe {
 
     public RecipeManometer() {
-        super("manometer");
+        super("manometer_actual");
     }
 
     @Override

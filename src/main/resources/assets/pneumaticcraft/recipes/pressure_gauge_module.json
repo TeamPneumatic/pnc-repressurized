@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " g ", 
+    "rtr"
+  ],
+  "key": {
+    "t": {
+      "item": "pneumaticcraft:pressure_tube"
+    },
+    "g": {
+      "item": "pneumaticcraft:pressure_gauge"
+    },
+    "r": {
+      "type": "forge:ore_dict",
+      "ore": "dustRedstone"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:pressure_gauge_module"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "pneumaticcraft:assembly_program",
+      "data": 0
+    },
+    {
+      "item": "pneumaticcraft:assembly_program",
+      "data": 1
+    }
+  ],
+  "result": {
+    "item": "pneumaticcraft:assembly_program",
+    "data": 2
+  }
+}

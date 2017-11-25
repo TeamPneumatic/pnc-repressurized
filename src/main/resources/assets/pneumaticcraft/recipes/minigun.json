@@ -1,0 +1,27 @@
+{
+  "type": "forge:ore_shaped",
+  "pattern": [
+    "cib",
+    "g  "
+  ],
+  "key": {
+    "b": {
+      "item": "pneumaticcraft:cannon_barrel"
+    },
+    "c": {
+      "type": "forge:ore_dict",
+      "ore": "blockIronCompressed"
+    },
+    "g": {
+      "type": "forge:ore_dict",
+      "ore": "ingotGold"
+    },
+    "i": {
+      "type": "forge:ore_dict",
+      "ore": "ingotIronCompressed"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:minigun"
+  }
+}

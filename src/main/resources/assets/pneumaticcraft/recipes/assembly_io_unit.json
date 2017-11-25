@@ -1,0 +1,26 @@
+{
+  "type": "forge:ore_shaped",
+  "pattern": [
+    "hcc",
+    "  c",
+    "ipi"
+  ],
+  "key": {
+    "p": {
+      "item": "pneumaticcraft:printed_circuit_board"
+    },
+    "c": {
+      "item": "pneumaticcraft:pneumatic_cylinder"
+    },
+    "h": {
+      "item": "minecraft:hopper"
+    },
+    "i": {
+      "type": "forge:ore_dict",
+      "ore": "ingotIronCompressed"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:assembly_io_unit"
+  }
+}

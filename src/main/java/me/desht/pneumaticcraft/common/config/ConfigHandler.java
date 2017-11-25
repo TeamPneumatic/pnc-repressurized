@@ -135,9 +135,9 @@ public class ConfigHandler {
     }
 
     public static class Recipes {
-        @Config.Comment("Electric Compressor")
+        @Config.Comment("Electric Compressor (currently ignored, defined in JSON)")
         public boolean enableElectricCompressorRecipe = true;
-        @Config.Comment("Pneumatic Generator")
+        @Config.Comment("Pneumatic Generator (currently ignored, defined in JSON)")
         public boolean enablePneumaticGeneratorRecipe = true;
 //        @Config.Comment("Pneumatic Pump")
 //        public boolean enablePneumaticPumpRecipe = true;

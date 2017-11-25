@@ -1,0 +1,17 @@
+{
+  "type": "pneumaticcraft:always_invalid_shapeless",
+  "ingredients": [
+    {
+      "item": "pneumaticcraft:drone"
+    },
+    {
+      "type": "forge:ore_dict",
+      "ore": "dyeGray"
+    }
+  ],
+  "result": {
+    "nbt": "{color:4408131}",
+    "item": "pneumaticcraft:drone",
+    "type": "minecraft:item_nbt"
+  }
+}

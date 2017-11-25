@@ -59,24 +59,6 @@ public class IC2 implements IThirdParty, IGuiHandler {
         overclockerUpgrade = IC2Items.getItem("upgrade", "overclocker");
         transformerUpgrade = IC2Items.getItem("upgrade", "transformer");
         energyStorageUpgrade = IC2Items.getItem("upgrade", "energy_storage");
-
-        // crafting ingredients
-        ItemStack advancedCircuit = IC2Items.getItem("crafting", "advanced_circuit");
-        ItemStack advancedAlloy = IC2Items.getItem("crafting", "alloy");
-        ItemStack generator = IC2Items.getItem("te", "generator");
-
-        if (ConfigHandler.recipes.enablePneumaticGeneratorRecipe) {
-            CraftingRegistrator.addRecipe(new ItemStack(PNEUMATIC_GENERATOR), "pca", "trg", "pca",
-                    'p', Itemss.PRINTED_CIRCUIT_BOARD, 'c', advancedCircuit, 'a', advancedAlloy,
-                    't', new ItemStack(Blockss.ADVANCED_PRESSURE_TUBE, 1, 0),
-                    'r', Itemss.TURBINE_ROTOR, 'g', glassFibreCable);
-        }
-        if (ConfigHandler.recipes.enableElectricCompressorRecipe) {
-            CraftingRegistrator.addRecipe(new ItemStack(ELECTRIC_COMPRESSOR), "acp", "frt", "agp",
-                    'p', Itemss.PRINTED_CIRCUIT_BOARD, 'c', advancedCircuit, 'a', advancedAlloy,
-                    't', new ItemStack(Blockss.ADVANCED_PRESSURE_TUBE, 1, 0),
-                    'r', Itemss.TURBINE_ROTOR, 'f', glassFibreCable, 'g', generator);
-        }
     }
 
     @SubscribeEvent

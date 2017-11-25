@@ -1,0 +1,25 @@
+{
+  "type": "forge:ore_shaped",
+  "pattern": [
+    "plp",
+    "lpl",
+    "pcp"
+  ],
+  "key": {
+    "p": {
+      "type": "forge:ore_dict",
+      "ore": "plasticPurple"
+    },
+    "c": {
+      "type": "forge:ore_dict",
+      "ore": "dustRedstone"
+    },
+    "l": {
+      "type": "forge:ore_dict",
+      "ore": "plasticLightBlue"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:universal_sensor"
+  }
+}

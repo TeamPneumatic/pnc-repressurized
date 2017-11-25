@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " r ", 
+    "pgp", 
+    "pdp"
+  ],
+  "key": {
+    "r": {
+      "item": "minecraft:redstone_torch"
+    },
+    "p": {
+      "type": "forge:ore_dict",
+      "ore": "plasticRed"
+    },
+    "g": {
+      "item": "minecraft:glass_pane"
+    },
+   	"d": {
+      "type": "forge:ore_dict",
+      "ore": "gemDiamond"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:gps_tool"
+  }
+}

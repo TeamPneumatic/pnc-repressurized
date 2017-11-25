@@ -135,16 +135,6 @@ public class ClientProxy extends CommonProxy {
             ModelLoader.setBucketModelDefinition(Fluids.getBucket(fluid));
         }
 
-        // Only register these recipes client side, so NEI compatibility works, but drones don't lose their program when dyed.
-        for (int i = 0; i < 16; i++) {
-            ItemStack drone = new ItemStack(Itemss.DRONE);
-            NBTTagCompound tag = new NBTTagCompound();
-            tag.setInteger("color", ItemDye.DYE_COLORS[i]);
-            drone.setTagCompound(tag);
-            CraftingRegistrator.addShapelessRecipe(drone, Itemss.DRONE, TileEntityPlasticMixer.DYES[i]);
-        }
-        CraftingRegistrator.addShapelessRecipe(new ItemStack(Itemss.DRONE), new ItemStack(Itemss.LOGISTICS_DRONE), Itemss.PRINTED_CIRCUIT_BOARD);
-
         ThirdPartyManager.instance().clientInit();
 
         RenderingRegistry.registerEntityRenderingHandler(EntityRing.class, RenderEntityRing.FACTORY);

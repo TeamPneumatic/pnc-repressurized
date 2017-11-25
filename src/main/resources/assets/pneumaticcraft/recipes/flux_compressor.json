@@ -1,0 +1,35 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "gcp", 
+    "frt", 
+    "gqp"
+  ],
+  "key": {
+    "g": {
+      "type": "forge:ore_dict",
+      "ore": "dustRedstone"
+    },
+    "f": {
+      "item": "minecraft:redstone_block"
+    },
+    "q": {
+      "item": "minecraft:furnace"
+    },
+    "r": {
+      "item": "pneumaticcraft:turbine_rotor"
+    },
+    "t": {
+      "item": "pneumaticcraft:advanced_pressure_tube"
+    },
+    "c": {
+      "item": "pneumaticcraft:compressed_iron_gear"
+    },
+    "p": {
+      "item": "pneumaticcraft:printed_circuit_board"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:flux_compressor"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "type": "forge:ore_shaped",
+  "pattern": [
+    " i ",
+    "g g",
+    "ibi"
+  ],
+  "key": {
+    "b": {
+      "item": "minecraft:bucket"
+    },
+    "g": {
+      "type": "forge:ore_dict",
+      "ore": "blockGlass"
+    },
+    "i": {
+      "type": "forge:ore_dict",
+      "ore": "ingotIronCompressed"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:kerosene_lamp"
+  }
+}

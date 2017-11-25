@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "lal",
+    "aba",
+    "lal"
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:arrow"
+    },
+    "b": {
+      "item": "minecraft:bow"
+    },
+    "l": {
+      "item": "minecraft:dye",
+      "data": 4
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:range_upgrade"
+  }
+}

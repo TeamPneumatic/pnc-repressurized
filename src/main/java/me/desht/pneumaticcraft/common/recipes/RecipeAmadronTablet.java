@@ -16,7 +16,7 @@ public class RecipeAmadronTablet extends AbstractRecipe {
     private final CraftingHelper.ShapedPrimer primer;
 
     RecipeAmadronTablet() {
-        super("amadron_tablet");
+        super("amadron_tablet_actual");
 
         this.primer = CraftingHelper.parseShaped("ppp", "pgp", "pcp",
                 'p', new ItemStack(Itemss.PLASTIC, 1, ItemPlastic.GREY),

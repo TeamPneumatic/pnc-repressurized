@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " b ", 
+    "btb", 
+    " b "
+  ],
+  "key": {
+    "b": {
+      "item": "minecraft:iron_bars"
+    },
+    "t": {
+      "item": "pneumaticcraft:pressure_tube"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:air_grate_module"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "minecraft:hopper"
+    },
+    {
+      "item": "pneumaticcraft:pressure_chamber_wall"
+    }
+  ],
+  "result": {
+    "item": "pneumaticcraft:pressure_chamber_interface"
+  }
+}

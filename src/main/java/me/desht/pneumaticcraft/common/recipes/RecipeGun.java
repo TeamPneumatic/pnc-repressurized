@@ -18,7 +18,7 @@ public class RecipeGun extends AbstractRecipe {
     private final CraftingHelper.ShapedPrimer primer;
 
     public RecipeGun(String dyeName, Item output) {
-        super(output.getRegistryName().getResourcePath());
+        super(output.getRegistryName().getResourcePath() + "_actual");
         this.output = output;
         this.primer = CraftingHelper.parseShaped("idi", "c  ", "ili",
                 'd', dyeName, 'i', Itemss.INGOT_IRON_COMPRESSED, 'l', Blocks.LEVER,

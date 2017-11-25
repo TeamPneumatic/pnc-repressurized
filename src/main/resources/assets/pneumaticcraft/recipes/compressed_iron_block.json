@@ -1,0 +1,17 @@
+{
+  "type": "forge:ore_shaped",
+  "pattern": [
+    "iii",
+    "iii",
+    "iii"
+  ],
+  "key": {
+    "i": {
+      "type": "forge:ore_dict",
+      "ore": "ingotIronCompressed"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:compressed_iron_block"
+  }
+}

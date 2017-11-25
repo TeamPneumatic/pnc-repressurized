@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "lal",
+    "aca",
+    "lal"
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:apple"
+    },
+    "c": {
+      "item": "minecraft:clock"
+    },
+    "l": {
+      "item": "minecraft:dye",
+      "data": 4
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:item_life_upgrade"
+  }
+}

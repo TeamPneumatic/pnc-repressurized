@@ -1,0 +1,17 @@
+{
+  "type": "forge:ore_shaped",
+  "pattern": [
+    "cc",
+    "cc",
+    "cc"
+  ],
+  "key": {
+    "c": {
+      "type": "forge:ore_dict",
+      "ore": "ingotIronCompressed"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:pneumatic_door"
+  }
+}

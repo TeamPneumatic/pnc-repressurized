@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "lsl",
+    "scs",
+    "lsl"
+  ],
+  "key": {
+    "s": {
+      "item": "minecraft:sugar"
+    },
+    "c": {
+      "nbt": "{FluidName:\"lubricant\",Amount:1000}",
+      "item": "forge:bucketfilled",
+      "type": "minecraft:item_nbt"
+    },
+    "l": {
+      "item": "minecraft:dye",
+      "data": 4
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:speed_upgrade"
+  }
+}

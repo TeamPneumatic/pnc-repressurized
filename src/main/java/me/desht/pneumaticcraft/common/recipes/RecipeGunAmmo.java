@@ -10,7 +10,7 @@ import net.minecraft.world.World;
 public class RecipeGunAmmo extends AbstractRecipe {
 
     RecipeGunAmmo() {
-        super("gun_ammo");
+        super("gun_ammo_potion");
     }
 
     @Override

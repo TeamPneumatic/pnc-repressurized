@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "pressure_chamber_glass",
+  "pattern": [
+    "iii", 
+    "igi", 
+    "iii"
+  ],
+  "key": {
+    "i": {
+      "type": "forge:ore_dict",
+      "ore": "ingotIronCompressed"
+    },
+    "g": {
+      "type": "forge:ore_dict",
+      "ore": "blockGlass"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:pressure_chamber_glass",
+    "count": 16
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "type": "forge:ore_shaped",
+  "pattern": [
+    "i i",
+    "ici",
+    " i "
+  ],
+  "key": {
+    "c": {
+      "item": "minecraft:hopper"
+    },
+    "i": {
+      "type": "forge:ore_dict",
+      "ore": "blockGlass"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:liquid_hopper"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " t ", 
+    "gig", 
+    "ipi"
+  ],
+  "key": {
+    "i": {
+      "type": "forge:ore_dict",
+      "ore": "ingotIronCompressed"
+    },
+    "t": {
+      "item": "pneumaticcraft:advanced_pressure_tube"
+    },
+    "g": {
+      "item": "pneumaticcraft:compressed_iron_gear"
+    },
+    "p": {
+      "item": "pneumaticcraft:printed_circuit_board"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:pneumatic_dynamo"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "type": "forge:ore_shaped",
+  "pattern": [
+    "a a",
+    "ppp",
+    "ici"
+  ],
+  "key": {
+    "p": {
+      "type": "forge:ore_dict",
+      "ore": "plasticOrange"
+    },
+    "a": {
+      "item": "pneumaticcraft:pneumatic_cylinder"
+    },
+    "c": {
+      "item": "pneumaticcraft:printed_circuit_board"
+    },
+    "i": {
+      "type": "forge:ore_dict",
+      "ore": "ingotIronCompressed"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:assembly_platform"
+  }
+}

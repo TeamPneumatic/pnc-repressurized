@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "gbg",
+    "tpt",
+    "ggg"
+  ],
+  "key": {
+    "p": {
+      "item": "pneumaticcraft:printed_circuit_board"
+    },
+    "b": {
+      "type": "forge:ore_dict",
+      "ore": "plasticBlack"
+    },
+    "t": {
+      "item": "pneumaticcraft:turbine_rotor"
+    },
+    "g": {
+      "type": "forge:ore_dict",
+      "ore": "plasticGray"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:security_station"
+  }
+}

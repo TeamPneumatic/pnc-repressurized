@@ -10,34 +10,38 @@ import net.minecraft.world.World;
 public class RecipePneumaticHelmet extends AbstractRecipe {
 
     public RecipePneumaticHelmet() {
-        super("pneumatic_helmet");
+        super("pneumatic_helmet_actual");
     }
 
     @Override
     public boolean matches(InventoryCrafting inventory, World world) {
-
+        //As the recipe is 2 high it could be in the 2nd row too.
+        int offsetY = inventory.getStackInRowAndColumn(0, 0).isEmpty() ? 1 : 0;
+        int slotOffset = offsetY == 1 ? 3 : 0;
         for (int i = 0; i < inventory.getSizeInventory(); i++) {
-            if (i != 4 && i < 6) {
-                if (inventory.getStackInSlot(i).isEmpty()) return false;
-            } else {
+            if (i < slotOffset || i == 4 + slotOffset || i >= 6 + slotOffset) {
                 if (!inventory.getStackInSlot(i).isEmpty()) return false;
+            } else {
+                if (inventory.getStackInSlot(i).isEmpty()) return false;
             }
         }
 
-        if (inventory.getStackInRowAndColumn(0, 0).getItem() != Itemss.AIR_CANISTER) return false;
-        if (inventory.getStackInRowAndColumn(1, 0).getItem() != Itemss.PRINTED_CIRCUIT_BOARD) return false;
-        if (inventory.getStackInRowAndColumn(2, 0).getItem() != Itemss.AIR_CANISTER) return false;
-        if (inventory.getStackInRowAndColumn(0, 1).getItem() != Itemss.AIR_CANISTER) return false;
-        return inventory.getStackInRowAndColumn(2, 1).getItem() == Itemss.AIR_CANISTER;
+        if (inventory.getStackInRowAndColumn(0, offsetY).getItem() != Itemss.AIR_CANISTER) return false;
+        if (inventory.getStackInRowAndColumn(1, offsetY).getItem() != Itemss.PRINTED_CIRCUIT_BOARD) return false;
+        if (inventory.getStackInRowAndColumn(2, offsetY).getItem() != Itemss.AIR_CANISTER) return false;
+        if (inventory.getStackInRowAndColumn(0, offsetY + 1).getItem() != Itemss.AIR_CANISTER) return false;
+        return inventory.getStackInRowAndColumn(2, offsetY + 1).getItem() == Itemss.AIR_CANISTER;
     }
 
     @Override
     public ItemStack getCraftingResult(InventoryCrafting inventory) {
         ItemStack output = getRecipeOutput();
-        int totalDamage = inventory.getStackInRowAndColumn(0, 0).getItemDamage()
-                + inventory.getStackInRowAndColumn(2, 0).getItemDamage()
-                + inventory.getStackInRowAndColumn(0, 1).getItemDamage()
-                + inventory.getStackInRowAndColumn(2, 1).getItemDamage();
+      //As the recipe is 2 high it could be in the 2nd row too.
+        int offsetY = inventory.getStackInRowAndColumn(0, 0).isEmpty() ? 1 : 0;
+        int totalDamage = inventory.getStackInRowAndColumn(0, offsetY).getItemDamage()
+                + inventory.getStackInRowAndColumn(2, offsetY).getItemDamage()
+                + inventory.getStackInRowAndColumn(0, offsetY + 1).getItemDamage()
+                + inventory.getStackInRowAndColumn(2, offsetY + 1).getItemDamage();
 
         ((IPressurizable) output.getItem()).addAir(output, PneumaticValues.PNEUMATIC_HELMET_VOLUME * 10 - totalDamage);
         return output;
