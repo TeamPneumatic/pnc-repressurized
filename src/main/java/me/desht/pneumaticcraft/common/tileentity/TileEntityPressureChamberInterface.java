@@ -144,8 +144,12 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
         EnumFacing facing = getRotation();
         TileEntity te = getWorld().getTileEntity(getPos().offset(facing));
         if (te != null) {
-            ItemStack leftoverStack = PneumaticCraftUtils.exportStackToInventory(te, inventory.getStackInSlot(0), facing.getOpposite());
-            if (leftoverStack.isEmpty()) {
+            ItemStack stack = inventory.getStackInSlot(0);
+            int count = stack.getCount();
+            ItemStack leftoverStack = PneumaticCraftUtils.exportStackToInventory(te, stack, facing.getOpposite());
+            int exportedItems = count - leftoverStack.getCount();
+            stack.shrink(exportedItems);
+            if (stack.getCount() <= 0) {
                 inventory.setStackInSlot(0, ItemStack.EMPTY);
             }
         }
