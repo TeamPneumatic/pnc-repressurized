@@ -147,11 +147,7 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
             ItemStack stack = inventory.getStackInSlot(0);
             int count = stack.getCount();
             ItemStack leftoverStack = PneumaticCraftUtils.exportStackToInventory(te, stack, facing.getOpposite());
-            int exportedItems = count - leftoverStack.getCount();
-            stack.shrink(exportedItems);
-            if (stack.getCount() <= 0) {
-                inventory.setStackInSlot(0, ItemStack.EMPTY);
-            }
+            stack.shrink(count - leftoverStack.getCount());
         }
     }
 

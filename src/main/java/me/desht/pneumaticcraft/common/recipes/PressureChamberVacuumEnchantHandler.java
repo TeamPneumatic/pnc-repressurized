@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.common.recipes;
 
 import com.google.common.collect.ImmutableMap;
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.recipe.IPressureChamberRecipe;
+import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.init.Items;
@@ -51,8 +51,8 @@ public class PressureChamberVacuumEnchantHandler implements IPressureChamberReci
                 break;
             }
         }
-        if (enchantedStack == ItemStack.EMPTY) {
-            PneumaticCraftRepressurized.logger.error("[Pressure Chamber Vacuum Enchantment Handler] No enchanted stack found!");
+        if (enchantedStack.isEmpty()) {
+            Log.error("[Pressure Chamber Vacuum Enchantment Handler] No enchanted stack found!");
             return null;
         }
 
