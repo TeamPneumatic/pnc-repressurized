@@ -35,12 +35,14 @@ public class HackableCaveSpider implements IHackableEntity {
 
     @Override
     public void onHackFinished(Entity entity, EntityPlayer player) {
-        entity.setDead();
-        EntitySpider spider = new EntitySpider(entity.world);
-        spider.setPositionAndRotation(entity.posX, entity.posY, entity.posZ, entity.rotationYaw, entity.rotationPitch);
-        spider.setHealth(((EntitySpider) entity).getHealth());
-        spider.renderYawOffset = ((EntitySpider) entity).renderYawOffset;
-        entity.world.spawnEntity(spider);
+        if (!entity.world.isRemote) {
+            entity.setDead();
+            EntitySpider spider = new EntitySpider(entity.world);
+            spider.setPositionAndRotation(entity.posX, entity.posY, entity.posZ, entity.rotationYaw, entity.rotationPitch);
+            spider.setHealth(((EntitySpider) entity).getHealth());
+            spider.renderYawOffset = ((EntitySpider) entity).renderYawOffset;
+            entity.world.spawnEntity(spider);
+        }
     }
 
     @Override
