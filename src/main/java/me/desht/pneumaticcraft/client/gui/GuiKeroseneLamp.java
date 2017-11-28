@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityKeroseneLamp;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
+import org.lwjgl.input.Keyboard;
 
 import java.io.IOException;
 import java.util.List;
@@ -72,4 +73,12 @@ public class GuiKeroseneLamp extends GuiPneumaticContainerBase<TileEntityKerosen
         }
     }
 
+    @Override
+    protected void keyTyped(char key, int keyCode) throws IOException {
+        if ((keyCode == Keyboard.KEY_RETURN || keyCode == Keyboard.KEY_TAB) && rangeWidget.isFocused()) {
+            sendPacketToServer(rangeWidget.getValue());
+        } else {
+            super.keyTyped(key, keyCode);
+        }
+    }
 }
