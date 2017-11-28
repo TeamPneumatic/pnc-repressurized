@@ -1,13 +1,16 @@
 package me.desht.pneumaticcraft.client.gui.tubemodule;
 
+import me.desht.pneumaticcraft.client.gui.GuiUtils;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleAirGrate;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateAirGrateModule;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.input.Keyboard;
 
 import java.io.IOException;
 
@@ -34,6 +37,10 @@ public class GuiAirGrateModule extends GuiTubeModule {
         super.drawScreen(mouseX, mouseY, partialTicks);
         if (!textfield.isFocused()) textfield.setText(((ModuleAirGrate) module).entityFilter);
         textfield.drawTextBox();
+        if (Keyboard.isKeyDown(Keyboard.KEY_F1)) {
+            GuiUtils.showPopupHelpScreen(this, fontRenderer,
+                    PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.entityFilter.helpText"), 60));
+        }
     }
 
     @Override

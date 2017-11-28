@@ -3,10 +3,10 @@ package me.desht.pneumaticcraft.client.gui;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.RenderItem;
-import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -222,5 +222,34 @@ public class GuiUtils {
         worldrenderer.pos(xCoord + 16 - maskRight, yCoord + maskTop, zLevel).tex(uMax, vMin).endVertex();
         worldrenderer.pos(xCoord, yCoord + maskTop, zLevel).tex(uMin, vMin).endVertex();
         tessellator.draw();
+    }
+
+    public static void showPopupHelpScreen(GuiScreen screen, FontRenderer fontRenderer, List<String> helpText) {
+        int boxWidth = 0;
+        int boxHeight = helpText.size() * fontRenderer.FONT_HEIGHT;
+        for (String s : helpText) {
+            boxWidth = Math.max(boxWidth, fontRenderer.getStringWidth(s));
+        }
+
+        int x, y;
+        if (screen instanceof GuiContainer) {
+            x = (((GuiContainer) screen).getXSize() - boxWidth) / 2;
+            y = (((GuiContainer) screen).getYSize() - boxHeight) / 2;
+        } else {
+            x = (screen.width - boxWidth) / 2;
+            y = (screen.height - boxHeight) / 2;
+        }
+        GlStateManager.translate(0, 0, 300);
+        Gui.drawRect(x - 4, y - 4, x + boxWidth + 8, y + boxHeight + 8, 0xC0000000);
+        Gui.drawRect(x - 4, y - 4, x + boxWidth + 8, y - 3, 0xFF808080);
+        Gui.drawRect(x - 4, y + boxHeight + 8, x + boxWidth + 8, y + boxHeight + 9, 0xFF808080);
+        Gui.drawRect(x - 4, y - 4, x - 3, y + boxHeight + 8, 0xFF808080);
+        Gui.drawRect(x + boxWidth + 8, y - 4, x + boxWidth + 9, y + boxHeight + 8, 0xFF808080);
+
+        for (String s : helpText) {
+            fontRenderer.drawString(s, x, y, 0xFFE0E0E0);
+            y += fontRenderer.FONT_HEIGHT;
+        }
+        GlStateManager.translate(0, 0, -300);
     }
 }

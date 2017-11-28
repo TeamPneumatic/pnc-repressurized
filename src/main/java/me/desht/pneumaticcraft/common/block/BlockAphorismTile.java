@@ -15,7 +15,10 @@ import net.minecraft.util.EnumFacing.Axis;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
@@ -82,7 +85,7 @@ public class BlockAphorismTile extends BlockPneumaticCraft {
         }
         if (world.isRemote && entityLiving instanceof EntityPlayer) {
             ((EntityPlayer) entityLiving).openGui(PneumaticCraftRepressurized.instance, EnumGuiId.APHORISM_TILE.ordinal(), world, pos.getX(), pos.getY(), pos.getZ());
-            ((EntityPlayer) entityLiving).sendStatusMessage(new TextComponentTranslation("gui.aphorismTile.message"), true);
+            sendEditorMessage((EntityPlayer) entityLiving);
         }
     }
 
@@ -90,9 +93,17 @@ public class BlockAphorismTile extends BlockPneumaticCraft {
     public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         if (world.isRemote && player.getHeldItem(hand).isEmpty() && !player.isSneaking()) {
             player.openGui(PneumaticCraftRepressurized.instance, EnumGuiId.APHORISM_TILE.ordinal(), world, pos.getX(), pos.getY(), pos.getZ());
-            player.sendStatusMessage(new TextComponentTranslation("gui.aphorismTile.message"), true);
+            sendEditorMessage(player);
         }
         return true;
+    }
+
+    private void sendEditorMessage(EntityPlayer player) {
+        ITextComponent msg = new TextComponentString(TextFormatting.WHITE.toString())
+                .appendSibling(new TextComponentTranslation("gui.aphorismTileEditor"))
+                .appendSibling(new TextComponentString(": "))
+                .appendSibling(new TextComponentTranslation("gui.holdF1forHelp"));
+        player.sendStatusMessage(msg, true);
     }
 
     @Override

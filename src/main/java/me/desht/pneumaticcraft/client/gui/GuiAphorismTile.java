@@ -41,27 +41,8 @@ public class GuiAphorismTile extends GuiScreen {
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         super.drawScreen(mouseX, mouseY, partialTicks);
         if (Keyboard.isKeyDown(Keyboard.KEY_F1)) {
-            showHelpScreen();
-        }
-    }
-
-    private void showHelpScreen() {
-        List<String> helpText = PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.aphorismTile.helpText"), 40);
-        int boxWidth = 0;
-        int boxHeight = helpText.size() * fontRenderer.FONT_HEIGHT;
-        for (String s : helpText) {
-            boxWidth = Math.max(boxWidth, fontRenderer.getStringWidth(s));
-        }
-        int x = (this.width - boxWidth)  / 2;
-        int y = (this.height - boxHeight)  / 2;
-        drawRect(x - 4, y - 4, x + boxWidth + 8, y + boxHeight + 8, 0x80000000);
-        drawHorizontalLine(x - 4, x + boxWidth + 8, y - 4, 0xFF808080);
-        drawHorizontalLine(x - 4, x + boxWidth + 8, y + boxHeight + 8, 0xFF808080);
-        drawVerticalLine(x - 4, y - 4, y + boxHeight + 8, 0xFF808080);
-        drawVerticalLine(x + boxWidth + 8, y - 4, y + boxHeight + 8, 0xFF808080);
-        for (String s : helpText) {
-            drawString(fontRenderer, s, x, y, 0xFFE0E0E0);
-            y += fontRenderer.FONT_HEIGHT;
+            GuiUtils.showPopupHelpScreen(this, fontRenderer,
+                    PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.aphorismTile.helpText"), 40));
         }
     }
 

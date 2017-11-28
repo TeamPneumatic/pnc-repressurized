@@ -5,11 +5,13 @@ import me.desht.pneumaticcraft.common.inventory.ContainerSentryTurret;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateTextfield;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySentryTurret;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.input.Keyboard;
 
 import java.io.IOException;
 import java.util.List;
@@ -60,6 +62,14 @@ public class GuiSentryTurret extends GuiPneumaticContainerBase<TileEntitySentryT
         fontRenderer.drawString("Upgr.", 28, 19, 4210752);
         fontRenderer.drawString(I18n.format("gui.sentryTurret.ammo"), 80, 19, 4210752);
         fontRenderer.drawString(I18n.format("gui.sentryTurret.targetFilter"), 80, 53, 4210752);
+        if (Keyboard.isKeyDown(Keyboard.KEY_F1)) {
+            GuiUtils.showPopupHelpScreen(this, fontRenderer,
+                    PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.entityFilter.helpText"), 60));
+        } else if (x >= guiLeft + 76 && y >= guiTop + 51 && x <= guiLeft + 153 && y <= guiTop + 74) {
+            // cursor inside the entity filter area
+            String str = I18n.format("gui.entityFilter");
+            fontRenderer.drawString(str, (xSize - fontRenderer.getStringWidth(str)) / 2, ySize + 5, 0x808080);
+        }
     }
 
     @Override

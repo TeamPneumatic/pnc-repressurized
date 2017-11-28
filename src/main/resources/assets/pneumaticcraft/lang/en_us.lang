@@ -568,9 +568,11 @@ gui.universalSensor.desc.heatSensor=The coordinate(s) marked by the GPS Tool(s) 
 gui.universalSensor.desc.playerHealth=This sensor option emits a redstone signal proportional to the player's health. no health = 0, max health = 15, and anything in between. The player's name needs to be put into the textbox.
 
 # GUI strings
-gui.aphorismTile.message=§fAphorism Tile Editor: Hold §eF1§f for help text
-gui.aphorismTile.helpText=§aAphorism Tile Editor \n \n§eCursor Left/Up:§r move up a line \n§eCursor Down:§r move down a line \n§eReturn:§r new line \n§eBackspace:§r delete character \n§eDelete:§r delete line \n§e Shift-Delete:§r delete all lines §eEscape:§r finish editing \n§eAlt + §ochr§r: insert control code \n §7- codes: 0-9, a-f, l, m, n, o, r
-gui.entityFilter=Entity filter ('Pig', or '@mob')
+gui.holdF1forHelp=Hold §eF1§r for help
+gui.aphorismTileEditor=Aphorism Tile Editor
+gui.aphorismTile.helpText=§a§nAphorism Tile Editor \n \n§eCursor Left/Up:§r move up a line \n§eCursor Down:§r move down a line \n§eReturn:§r new line \n§eBackspace:§r delete character \n§eDelete:§r delete line \n§e Shift-Delete:§r delete all lines §eEscape:§r finish editing \n§eAlt + §ochr§r: insert control code \n §7- codes: 0-9, a-f, l, m, n, o, r
+gui.entityFilter=Entity filter (Hold §lF1§r for help)
+gui.entityFilter.helpText=§a§nEntity Filtering \n \n§e@player§f: allows all players only \n§e@mob§f: allows all aggressive creatures only \n§e@animal§f: allows all passive creatures only \n§e@animal(age = adult)§f: allows all adult passive creatures \n§e@animal(age = baby)§f: allows all baby passive creatures \n§e@animal(breedable = yes)§f: allows all passive creatures that \n  can breed at this very moment (they'll consume wheat/carrots/...) \n§e@minecart§f: allows minecarts only \n§e@living§f: allows all living entities only \n§e@item§f: allows item entities only \n§e@drone§f: allows drone entities only \n§eCreeper§f: allows Creepers only \n§eMineMaarten§f: allows MineMaarten only \n§ec*§f: allows any entity starting with the letter 'c' only (like Creepers, or Cows). \n§e*pig*§f: allows any entity that includes 'pig' in the name only (like a Pig or Zombie Pigman)
 gui.redstone=Redstone
 gui.threshold=Threshold(bar)
 gui.tubeModule.advancedConfig=Advanced config
