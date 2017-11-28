@@ -14,6 +14,18 @@ public class WidgetTextFieldNumber extends WidgetTextField {
     public WidgetTextFieldNumber(FontRenderer fontRenderer, int x, int y, int width, int height) {
         super(fontRenderer, x, y, width, height);
         setValue(0);
+
+        setValidator(input -> {
+            if (input == null || input.isEmpty() || input.equals("-")) {
+                return true;  // treat as numeric zero
+            }
+            try {
+                double d = Double.parseDouble(input);
+                return d >= this.minValue && d <= this.maxValue;
+            } catch (NumberFormatException e) {
+                return false;
+            }
+        });
     }
 
     public WidgetTextFieldNumber setDecimals(int decimals) {
