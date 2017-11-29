@@ -34,7 +34,7 @@ public class TileEntityHeatSink extends TileEntityCompressedIronBlock implements
 
     @Override
     protected boolean shouldRerenderChunkOnDescUpdate() {
-        return false;
+        return true;
     }
 
     @Override
