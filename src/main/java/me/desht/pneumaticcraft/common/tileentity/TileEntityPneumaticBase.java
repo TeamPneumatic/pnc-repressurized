@@ -21,7 +21,6 @@ public class TileEntityPneumaticBase extends TileEntityBase implements IPneumati
     public TileEntityPneumaticBase(float dangerPressure, float criticalPressure, int volume, int upgradeSlots) {
         super(upgradeSlots);
         airHandler = PneumaticRegistry.getInstance().getAirHandlerSupplier().createAirHandler(dangerPressure, criticalPressure, volume);
-        airHandler.setUpgradeSlots(upgradeSlots);
         for (Item upgrade : airHandler.getApplicableUpgrades()) {
             addApplicableUpgrade(upgrade);
         }

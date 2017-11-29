@@ -8,11 +8,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.tuple.Pair;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
  * A way for you to access about everything you need from a pneumatic machine.
- * DO NOT IMPLEMENT THIS YOURSELF! Use AirHandlerSupplier to get an instance for your TileEntity, and implement IPneumaticMachine instead.
+ * DO NOT IMPLEMENT THIS YOURSELF! Use AirHandlerSupplier to get an instance for your TileEntity,
+ * and implement IPneumaticMachine instead.
  */
 
 public interface IAirHandler extends IManoMeasurable, IUpgradeAcceptor {
@@ -50,8 +52,9 @@ public interface IAirHandler extends IManoMeasurable, IUpgradeAcceptor {
     void onNeighborChange();
 
     /**
-     * Method to release air in the air. It takes air from a specific side, plays a sound effect, and spawns smoke particles.
-     * It automatically detects if it needs to release air (when under pressure), suck air (when in vacuum) or do nothing.
+     * Method to release air into the atmosphere. It takes air from a specific side, plays a sound effect, and spawns
+     * smoke particles.  It automatically detects if it needs to release air (when under pressure), suck air (when in
+     * vacuum) or do nothing.
      *
      * @param side this only affects the direction the steam is pointing.
      */
@@ -103,18 +106,24 @@ public interface IAirHandler extends IManoMeasurable, IUpgradeAcceptor {
     /**
      * Returns the amount of air (that has a relation to the pressure: air = pressure * volume)
      *
-     * @return
+     * @return the air in this air handler
      */
     int getAir();
 
     /**
-     * When your TileEntity is implementing IInventory and has slots that accept PneumaticCraft upgrades, register these slots
-     * to the air handler by calling this method once on initialization of the TileEntity. Then they'll automatically be used to get Volume/Security upgrades.
+     * Deprecated method.  This applied in earlier versions of PneumaticCraft but should not be used now,
+     * and does nothing useful.  Will be removed in a later release.
      *
      * @param upgradeSlots all upgrade slots stored in an array.
      */
+    @Deprecated
     void setUpgradeSlots(int... upgradeSlots);
 
+    /**
+     * Deprecated method.  This applied in earlier versions of PneumaticCraft but should not be used now,
+     * and does nothing useful.  Will be removed in a later release.
+     */
+    @Deprecated
     int[] getUpgradeSlots();
 
     World getWorld();
@@ -142,13 +151,6 @@ public interface IAirHandler extends IManoMeasurable, IUpgradeAcceptor {
      */
     void setPneumaticMachine(IPneumaticMachine machine);
 
-//    /**
-//     * Not necessary if you use validate(), or when the parent's inventory isn't used to handle like volume upgrades.
-//     *
-//     * @param inv
-//     */
-//    void setParentInventory(IItemHandler inv);
-
     /**
      * Not necessary if you use validate(), or when the parent doesn't implement IAirListener.
      *
@@ -162,13 +164,13 @@ public interface IAirHandler extends IManoMeasurable, IUpgradeAcceptor {
      *
      * @param otherHandler
      */
-    void createConnection(IAirHandler otherHandler);
+    void createConnection(@Nonnull IAirHandler otherHandler);
 
     /**
      * Remove a connection created with createConnection. You need to call this when one of the hosts of this IAirHandlers is invalidated.
      *
      * @param otherHandler
      */
-    void removeConnection(IAirHandler otherHandler);
+    void removeConnection(@Nonnull IAirHandler otherHandler);
 
 }

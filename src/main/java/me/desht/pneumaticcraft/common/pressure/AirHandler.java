@@ -27,10 +27,12 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
+import javax.annotation.Nonnull;
 import java.util.*;
 
 public class AirHandler implements IAirHandler {
@@ -43,19 +45,17 @@ public class AirHandler implements IAirHandler {
     @GuiSynced
     private int air; //Pressure = air / volume
     private int soundCounter;
-    private final Set<IAirHandler> specialConnectedHandlers = new HashSet<IAirHandler>();
+    private final Set<IAirHandler> specialConnectedHandlers = new HashSet<>();
     private TileEntityCache[] tileCache;
-    private int[] upgradeSlots;
 
     private TileEntityBase.UpgradeCache upgradeCache;
-//    private IItemHandler parentInventory;  // just for finding upgrades..?
     private IAirListener airListener;
     private IPneumaticMachine parentPneumatic;
     private World world;
     private BlockPos pos;
 
-    public AirHandler(float dangerPressure, float criticalPressure, int volume) {
-        if (volume <= 0) throw new IllegalArgumentException("Volume can't be lower than or equal to 0!");
+    AirHandler(float dangerPressure, float criticalPressure, int volume) {
+        Validate.isTrue(volume > 0, "Volume can't be lower than or equal to 0!");
         this.dangerPressure = dangerPressure;
         this.criticalPressure = criticalPressure;
         maxPressure = dangerPressure + (criticalPressure - dangerPressure) * (float) Math.random();
@@ -69,16 +69,14 @@ public class AirHandler implements IAirHandler {
     }
 
     @Override
-    public void createConnection(IAirHandler otherHandler) {
-        if (otherHandler == null) throw new NullPointerException("Can't connect with a null air handler!");
+    public void createConnection(@Nonnull IAirHandler otherHandler) {
         if (specialConnectedHandlers.add(otherHandler)) {
             otherHandler.createConnection(this);
         }
     }
 
     @Override
-    public void removeConnection(IAirHandler otherHandler) {
-        if (otherHandler == null) throw new NullPointerException("Can't disconnect a null air handler!");
+    public void removeConnection(@Nonnull IAirHandler otherHandler) {
         if (specialConnectedHandlers.remove(otherHandler)) {
             otherHandler.removeConnection(this);
         }
@@ -91,29 +89,21 @@ public class AirHandler implements IAirHandler {
 
     @Override
     public void update() {
-        // volume calculations
-        if (!getWorld().isRemote && getUpgradeSlots() != null) {
+        if (!getWorld().isRemote) {
             updateVolume();
 
             if (getUpgrades(EnumUpgrade.SECURITY) > 0) {
-                if (getPressure() >= dangerPressure - 0.1) {
-                    airLeak(EnumFacing.DOWN);
-                }
+                doSecurityAirChecks();
+            }
 
-                //Remove the remaining air if there is any still.
-                int excessAir = getAir() - (int) (getVolume() * (dangerPressure - 0.1));
-                if (excessAir > 0) {
-                    addAir(-excessAir);
-                    onAirDispersion(null, -excessAir);
-                }
+            if (getPressure() > maxPressure) {
+                getWorld().createExplosion(null, getPos().getX() + 0.5D, getPos().getY() + 0.5D, getPos().getZ() + 0.5D, 1.0F, true);
+                getWorld().setBlockToAir(getPos());
+            } else {
+                disperseAir();
             }
         }
 
-        if (!getWorld().isRemote && getPressure() > maxPressure) {
-            getWorld().createExplosion(null, getPos().getX() + 0.5D, getPos().getY() + 0.5D, getPos().getZ() + 0.5D, 1.0F, true);
-            getWorld().setBlockToAir(getPos());
-        }
-        if (!getWorld().isRemote) disperseAir();
         if (soundCounter > 0) soundCounter--;
     }
 
@@ -122,15 +112,29 @@ public class AirHandler implements IAirHandler {
         setVolume(defaultVolume + upgradeVolume);
     }
 
+    private void doSecurityAirChecks() {
+        if (getPressure() >= dangerPressure - 0.1) {
+            airLeak(EnumFacing.DOWN);
+        }
+
+        // Remove any remaining air
+        int excessAir = getAir() - (int) (getVolume() * (dangerPressure - 0.1));
+        if (excessAir > 0) {
+            addAir(-excessAir);
+            onAirDispersion(null, -excessAir);
+        }
+    }
+
     /**
      * Sets the volume of this TE's air tank. When the volume decreases the pressure will remain the same, meaning air will
      * be lost. When the volume increases, the air remains the same meaning the pressure will drop.
      * Used in the Volume Upgrade calculations.
      *
-     * @param newVolume
+     * @param newVolume the new volume
      */
     public void setVolume(int newVolume) {
-        if (newVolume <= 0) throw new IllegalArgumentException("Volume can't be lower or equal than 0!");
+        Validate.isTrue(newVolume > 0, "Volume can't be lower or equal than 0!");
+
         if (newVolume < volume) air = (int) (air * (float) newVolume / volume); // lose air when we decrease in volume.
         volume = newVolume;
     }
@@ -147,23 +151,23 @@ public class AirHandler implements IAirHandler {
         return upgradeCache == null ? 0 : upgradeCache.getUpgrades(upgrade);
     }
 
-    protected int getVolumeFromUpgrades() {
+    private int getVolumeFromUpgrades() {
         return getUpgrades(EnumUpgrade.VOLUME) * PneumaticValues.VOLUME_VOLUME_UPGRADE;
     }
 
     /**
      * Method invoked every update tick which is used to handle air dispersion. It retrieves the pneumatics connecting
-     * with this TE, and sends air to it when it has a lower pressure than this TE.
+     * with this TE, and pushes air to those with a lower pressure than this one.
      */
-    protected void disperseAir() {
+    private void disperseAir() {
         if (getWorld().isRemote) return;
         disperseAir(getConnectedPneumatics());
     }
 
     private void disperseAir(List<Pair<EnumFacing, IAirHandler>> teList) {
 
-        boolean shouldRepeat = false;
-        List<Pair<Integer, Integer>> dispersion = new ArrayList<Pair<Integer, Integer>>();
+        boolean shouldRepeat;
+        List<Pair<Integer, Integer>> dispersion = new ArrayList<>();
         do {
             shouldRepeat = false;
             //Add up every volume and air.
@@ -187,7 +191,7 @@ public class AirHandler implements IAirHandler {
                     dispersion.clear();
                     break;
                 } else {
-                    dispersion.add(new MutablePair(getMaxDispersion(entry.getKey()), airDispersed));
+                    dispersion.add(new MutablePair<>(getMaxDispersion(entry.getKey()), airDispersed));
                 }
             }
         } while (shouldRepeat);
@@ -232,7 +236,7 @@ public class AirHandler implements IAirHandler {
     /**
      * Adds air to the tank of the given side of this TE.
      *
-     * @param amount
+     * @param amount amount of air (in mL) to add
      */
     @Override
     public void addAir(int amount) {
@@ -274,7 +278,6 @@ public class AirHandler implements IAirHandler {
     @Override
     public void validate(TileEntity parent) {
         upgradeCache = parent instanceof TileEntityBase ? ((TileEntityBase) parent).getUpgradeCache() : null;
-//        parentInventory = parent instanceof TileEntityBase ? ((TileEntityBase) parent).getUpgradesInventory() : null;
         airListener = parent instanceof IAirListener ? (IAirListener) parent : null;
         parentPneumatic = (IPneumaticMachine) parent;
         setWorld(parent.getWorld());
@@ -286,21 +289,11 @@ public class AirHandler implements IAirHandler {
         parentPneumatic = machine;
     }
 
-//    @Override
-//    public void setParentInventory(IItemHandler inv) {
-//        parentInventory = inv;
-//    }
-
     @Override
     public void setAirListener(IAirListener airListener) {
         this.airListener = airListener;
     }
 
-    /**
-     * Method to release air in the air. It takes air from a specific side, plays a sound effect, and spawns smoke particles.
-     *
-     * @param side
-     */
     @Override
     public void airLeak(EnumFacing side) {
         if (getWorld().isRemote || Math.abs(getPressure()) < 0.01F) return;
@@ -338,7 +331,7 @@ public class AirHandler implements IAirHandler {
     /**
      * Retrieves a list of all the connecting pneumatics. It takes sides in account.
      *
-     * @return
+     * @return a list of face->air-handler pairs
      */
     @Override
     public List<Pair<EnumFacing, IAirHandler>> getConnectedPneumatics() {
@@ -389,14 +382,19 @@ public class AirHandler implements IAirHandler {
         return air;
     }
 
+    /**
+     * Sets the amount of air in this handler.  Currently only used for server->client sync'ing.
+     *
+     * @param air air amount in mL
+     */
     public void setAir(int air) {
         this.air = air;
     }
 
     /**
-     * Used in the Creative Compressor
+     * Set the air pressure directly.  Currently only used by the Creative Compressor.
      *
-     * @param pressure
+     * @param pressure the pressure, in bar
      */
     public void setPressure(float pressure) {
         air = (int) (pressure * volume);
@@ -404,12 +402,12 @@ public class AirHandler implements IAirHandler {
 
     @Override
     public void setUpgradeSlots(int... upgradeSlots) {
-        this.upgradeSlots = upgradeSlots;
+        // does nothing - deprecated method
     }
 
     @Override
     public int[] getUpgradeSlots() {
-        return upgradeSlots;
+        return new int[0];
     }
 
     @Override
@@ -434,7 +432,7 @@ public class AirHandler implements IAirHandler {
 
     @Override
     public Set<Item> getApplicableUpgrades() {
-        Set<Item> upgrades = new HashSet<Item>(2);
+        Set<Item> upgrades = new HashSet<>(2);
         upgrades.add(Itemss.upgrades.get(EnumUpgrade.VOLUME));
         upgrades.add(Itemss.upgrades.get(EnumUpgrade.SECURITY));
         return upgrades;
