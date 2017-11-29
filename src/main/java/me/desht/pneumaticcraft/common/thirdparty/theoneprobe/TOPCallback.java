@@ -9,12 +9,12 @@ import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.api.tileentity.IPneumaticMachine;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerManager;
+import me.desht.pneumaticcraft.common.item.ItemCamoApplicator;
 import me.desht.pneumaticcraft.common.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockBasic;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
 import me.desht.pneumaticcraft.common.tileentity.IRedstoneControl;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticBase;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Names;
@@ -147,5 +147,9 @@ public class TOPCallback implements Function<ITheOneProbe, Void> {
             String fluidDesc = fluidStack == null ? I18n.translateToLocalFormatted("gui.liquid.empty") : fluidStack.amount + "mB " + fluidStack.getLocalizedName();
             probeInfo.text(I18n.translateToLocalFormatted("waila.fluid", n++, fluidDesc));
         }
+    }
+
+    public static void handleCamo(ProbeMode mode, IProbeInfo probeInfo, IBlockState camo) {
+        probeInfo.text(TextFormatting.YELLOW + "[Camo: " + ItemCamoApplicator.getCamoStateDisplayName(camo) + "]");
     }
 }

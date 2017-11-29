@@ -135,7 +135,7 @@ public class ItemCamoApplicator extends ItemPressurizable {
         return null;
     }
 
-    private static String getCamoStateDisplayName(IBlockState state) {
+    public static String getCamoStateDisplayName(IBlockState state) {
         if (state != null) {
             Block b = state.getBlock();
             Item item = Item.getItemFromBlock(b);

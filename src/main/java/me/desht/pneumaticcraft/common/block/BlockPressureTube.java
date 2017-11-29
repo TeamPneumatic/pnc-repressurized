@@ -346,6 +346,11 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
 
     @Override
     public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean isActualState) {
+        if (getCamoState(worldIn, pos) != null) {
+            super.addCollisionBoxToList(state, worldIn, pos, entityBox, collidingBoxes, entityIn, isActualState);
+            return;
+        }
+
         addCollisionBoxToList(pos, entityBox, collidingBoxes, BASE_BOUNDS);
 
         TileEntity te = getTE(worldIn, pos);

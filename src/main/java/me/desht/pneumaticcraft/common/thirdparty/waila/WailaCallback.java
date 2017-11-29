@@ -4,8 +4,8 @@ import mcp.mobius.waila.api.IWailaRegistrar;
 import me.desht.pneumaticcraft.api.item.IPressurizable;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.api.tileentity.IPneumaticMachine;
+import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
 import me.desht.pneumaticcraft.common.tileentity.IRedstoneControl;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberWall;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import net.minecraft.block.Block;
 
@@ -18,6 +18,7 @@ public class WailaCallback {
         registrar.registerBodyProvider(new WailaRedstoneControl(), IRedstoneControl.class);
         registrar.registerBodyProvider(new WailaTubeModuleHandler(), TileEntityPressureTube.class);
         registrar.registerBodyProvider(new WailaEntityHandler(), IPressurizable.class);
+        registrar.registerBodyProvider(new WailaCamoHandler(), BlockPneumaticCraftCamo.class);
 
         registrar.registerNBTProvider(new WailaPneumaticHandler(), IPneumaticMachine.class);
         registrar.registerNBTProvider(new WailaPneumaticHandler(), IInfoForwarder.class);
@@ -26,6 +27,7 @@ public class WailaCallback {
         registrar.registerNBTProvider(new WailaRedstoneControl(), IRedstoneControl.class);
         registrar.registerNBTProvider(new WailaTubeModuleHandler(), TileEntityPressureTube.class);
         registrar.registerNBTProvider(new WailaEntityHandler(), IPressurizable.class);
+        registrar.registerNBTProvider(new WailaCamoHandler(), BlockPneumaticCraftCamo.class);
     }
 
 }

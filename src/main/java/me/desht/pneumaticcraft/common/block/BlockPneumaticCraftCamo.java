@@ -1,5 +1,9 @@
 package me.desht.pneumaticcraft.common.block;
 
+import mcjty.theoneprobe.api.IProbeHitData;
+import mcjty.theoneprobe.api.IProbeInfo;
+import mcjty.theoneprobe.api.ProbeMode;
+import me.desht.pneumaticcraft.common.thirdparty.theoneprobe.TOPCallback;
 import me.desht.pneumaticcraft.common.tileentity.ICamouflageableTE;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.PropertyObject;
@@ -8,6 +12,7 @@ import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
@@ -18,6 +23,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.property.ExtendedBlockState;
 import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.common.property.IUnlistedProperty;
+import net.minecraftforge.fml.common.Optional;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -103,7 +109,7 @@ public abstract class BlockPneumaticCraftCamo extends BlockPneumaticCraftModeled
         return camo == null ? super.isSideSolid(base_state, world, pos, side) : camo.isSideSolid(world, pos, side);
     }
 
-    private IBlockState getCamoState(IBlockAccess blockAccess, BlockPos pos) {
+    protected IBlockState getCamoState(IBlockAccess blockAccess, BlockPos pos) {
         TileEntity te = PneumaticCraftUtils.getTileEntitySafely(blockAccess, pos);
         if (!(te instanceof ICamouflageableTE))
             return null;
@@ -116,5 +122,16 @@ public abstract class BlockPneumaticCraftCamo extends BlockPneumaticCraftModeled
     @Override
     public boolean canRenderInLayer(IBlockState state, BlockRenderLayer layer) {
         return true;
+    }
+
+    @Override
+    @Optional.Method(modid = "theoneprobe")
+    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, EntityPlayer player, World world, IBlockState blockState, IProbeHitData data) {
+        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
+
+        IBlockState camo = getCamoState(world, data.getPos());
+        if (camo != null) {
+            TOPCallback.handleCamo(mode, probeInfo, camo);
+        }
     }
 }
