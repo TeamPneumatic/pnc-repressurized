@@ -9,6 +9,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
+import net.minecraftforge.oredict.OreDictionary;
+
 import org.apache.commons.lang3.tuple.Pair;
 
 public class JEIPressureChamberRecipeCategory extends PneumaticCraftCategory<JEIPressureChamberRecipeCategory.ChamberRecipeWrapper> {
@@ -43,7 +45,7 @@ public class JEIPressureChamberRecipeCategory extends PneumaticCraftCategory<JEI
                 if (recipe.input[i] instanceof Pair) {
                     NonNullList<ItemStack> oreInputs = NonNullList.create();
                     Pair<String, Integer> oreDictEntry = (Pair<String, Integer>) recipe.input[i];
-                    for (ItemStack s : OreDictionaryHelper.getOreDictEntries(oreDictEntry.getKey())) {
+                    for (ItemStack s : OreDictionary.getOres(oreDictEntry.getKey())) {
                         s = s.copy();
                         s.setCount(oreDictEntry.getValue());
                         oreInputs.add(s);
