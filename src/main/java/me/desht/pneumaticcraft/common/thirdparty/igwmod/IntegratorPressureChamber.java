@@ -67,8 +67,8 @@ public class IntegratorPressureChamber implements IRecipeIntegrator {
                 locatedStacks.add(stack);
             }
 
-            for (int i = 0; i < foundRecipe.output.length; i++) {
-                LocatedStack stack = new LocatedStack(foundRecipe.output[i], (int) ((x + 180 + i % 3 * 36) * GuiWiki.TEXT_SCALE), (int) ((y + 60 + i / 3 * 36) * GuiWiki.TEXT_SCALE));
+            for (int i = 0; i < foundRecipe.output.size(); i++) {
+                LocatedStack stack = new LocatedStack(foundRecipe.output.get(i), (int) ((x + 180 + i % 3 * 36) * GuiWiki.TEXT_SCALE), (int) ((y + 60 + i / 3 * 36) * GuiWiki.TEXT_SCALE));
                 locatedStacks.add(stack);
             }
         }

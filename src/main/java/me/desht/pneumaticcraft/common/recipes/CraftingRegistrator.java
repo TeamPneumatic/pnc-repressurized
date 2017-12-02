@@ -105,6 +105,9 @@ public class CraftingRegistrator {
                 1.0F,
                 new ItemStack[]{new ItemStack(Itemss.CAPACITOR)});
 
+        // Pressure enchanting
+        registry.registerPressureChamberRecipe(new PressureChamberPressureEnchantHandler());
+        
         // Vacuum dis-enchanting
         registry.registerPressureChamberRecipe(new PressureChamberVacuumEnchantHandler());
     }

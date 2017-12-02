@@ -56,8 +56,8 @@ public class JEIPressureChamberRecipeCategory extends PneumaticCraftCategory<JEI
                 }
                 this.addIngredient(stack);
             }
-            for (int i = 0; i < recipe.output.length; i++) {
-                PositionedStack stack = new PositionedStack(recipe.output[i], 101 + i % 3 * 18, 59 + i / 3 * 18);
+            for (int i = 0; i < recipe.output.size(); i++) {
+                PositionedStack stack = new PositionedStack(recipe.output.get(i), 101 + i % 3 * 18, 59 + i / 3 * 18);
                 this.addOutput(stack);
             }
             this.recipePressure = recipe.pressure;
