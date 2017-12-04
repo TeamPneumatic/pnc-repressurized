@@ -49,10 +49,9 @@ import org.apache.commons.lang3.tuple.Pair;
 import com.google.common.collect.Streams;
 
 public class TileEntityPressureChamberValve extends TileEntityPneumaticBase implements IMinWorkingPressure, IAirListener {
-    public int multiBlockX;
-    public int multiBlockY;
-    public int multiBlockZ;
-    @GuiSynced
+    @DescSynced
+    public int multiBlockX, multiBlockY, multiBlockZ;
+    @DescSynced
     public int multiBlockSize;
     public List<TileEntityPressureChamberValve> accessoryValves;
     private final List<BlockPos> nbtValveList;
@@ -332,7 +331,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
         }
     }
 
-    ItemStackHandler getStacksInChamber() {
+    public ItemStackHandler getStacksInChamber() {
         return itemsInChamber;
     }
 
@@ -560,9 +559,13 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
         return true;
     }
     
-    private void captureEntityItemsInChamber(){
-        AxisAlignedBB bbBox = new AxisAlignedBB(multiBlockX, multiBlockY, multiBlockZ,
+    private AxisAlignedBB getChamberAABB(){
+        return new AxisAlignedBB(multiBlockX, multiBlockY, multiBlockZ,
                 multiBlockX + multiBlockSize, multiBlockY + multiBlockSize, multiBlockZ + multiBlockSize);
+    }
+    
+    private void captureEntityItemsInChamber(){
+        AxisAlignedBB bbBox = getChamberAABB();
         List<EntityItem> items = getWorld().getEntitiesWithinAABB(EntityItem.class, bbBox);
         for(EntityItem item : items){
             if(!item.isDead){
@@ -579,6 +582,11 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
         int y = pos.getY();
         int z = pos.getZ();
         return x > multiBlockX && x < multiBlockX + multiBlockSize - 1 && y > multiBlockY && y < multiBlockY + multiBlockSize - 1 && z > multiBlockZ && z < multiBlockZ + multiBlockSize - 1;
+    }
+    
+    @Override
+    public AxisAlignedBB getRenderBoundingBox(){
+        return getChamberAABB();
     }
 
     @Override
