@@ -18,7 +18,6 @@ public class RenderPressureChamber extends TileEntitySpecialRenderer<TileEntityP
 
     @Override
     public void render(TileEntityPressureChamberValve te, double x, double y, double z, float partialTicks, int destroyStage, float alpha){
-        super.render(te, x, y, z, partialTicks, destroyStage, alpha);
 
         List<ItemStack> stacks = new ItemStackHandlerIterable(te.getStacksInChamber())
                                         .stream()
