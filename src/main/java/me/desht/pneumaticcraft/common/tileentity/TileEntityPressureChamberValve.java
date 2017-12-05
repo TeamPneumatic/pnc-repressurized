@@ -1,13 +1,5 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.recipe.IPressureChamberRecipe;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IAirListener;
@@ -23,7 +15,6 @@ import me.desht.pneumaticcraft.common.recipes.PneumaticRecipeRegistry;
 import me.desht.pneumaticcraft.common.recipes.PressureChamberRecipe;
 import me.desht.pneumaticcraft.common.util.ItemStackHandlerIterable;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.common.util.Reflections;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -42,11 +33,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
-
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
-import com.google.common.collect.Streams;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
+import java.util.stream.Stream;
 
 public class TileEntityPressureChamberValve extends TileEntityPneumaticBase implements IMinWorkingPressure, IAirListener {
     @DescSynced
@@ -396,9 +390,9 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
     }
     
     private void dropItemOnGround(ItemStack stack){
-        PneumaticCraftUtils.dropItemOnGround(stack, getWorld(), multiBlockX + multiBlockSize / 2 + 2, 
+        PneumaticCraftUtils.dropItemOnGroundPrecisely(stack, getWorld(), multiBlockX + multiBlockSize / 2,
                                                                 multiBlockY + 1,  
-                                                                multiBlockZ + multiBlockSize / 2 + 2);
+                                                                multiBlockZ + multiBlockSize / 2);
     }
 
     private void invalidateMultiBlock() {
