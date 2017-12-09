@@ -38,7 +38,12 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
     @GuiSynced
     public int redstoneMode;
     @DescSynced
-    public ItemStackHandler inventory = new ItemStackHandler(INVENTORY_SIZE);
+    public ItemStackHandler inventory = new ItemStackHandler(INVENTORY_SIZE){
+        @Override
+        public int getSlotLimit(int slot) {
+            return 1; //Only process one item at a time.
+        }
+    };
     public int ticksExisted;
     private boolean oldRedstoneStatus;
 

@@ -24,7 +24,6 @@ public class ItemEmptyPCB extends ItemNonDespawning {
 
     public ItemEmptyPCB() {
         super("empty_pcb");
-        setMaxStackSize(1);
         setMaxDamage(100);
         setNoRepair();
     }
@@ -72,8 +71,26 @@ public class ItemEmptyPCB extends ItemNonDespawning {
                     double z = entityItem.posZ + world.rand.nextDouble() * 0.5 - 0.25;
                     world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, x, y, z, 0.0, 0.05, 0.0);
                 }
-            } else {
-                entityItem.setItem(new ItemStack(rand.nextInt(100) >= stack.getItemDamage() ? Itemss.UNASSEMBLED_PCB : Itemss.FAILED_PCB));
+            } else if(!entityItem.world.isRemote){
+                int successCount = 0;
+                int failedCount = 0;
+                for(int i = 0; i < stack.getCount(); i++){
+                    if(rand.nextInt(100) >= stack.getItemDamage()){
+                        successCount++;
+                    }else{
+                        failedCount++;
+                    }
+                }
+                
+                ItemStack successStack = new ItemStack(successCount == 0 ? Itemss.FAILED_PCB : Itemss.UNASSEMBLED_PCB, 
+                                                       successCount == 0 ? failedCount : successCount);
+                entityItem.setItem(successStack);
+                
+                //Only when we have failed items and the existing item entity wasn't reused already for the failed items.
+                if(successCount > 0 && failedCount > 0){
+                    ItemStack failedStack = new ItemStack(Itemss.FAILED_PCB, failedCount);
+                    entityItem.world.spawnEntity(new EntityItem(entityItem.world, entityItem.posX, entityItem.posY, entityItem.posZ, failedStack));
+                }
             }
         }
         return false;

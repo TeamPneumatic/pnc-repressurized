@@ -18,6 +18,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Drone pathfinding is a lot better now
 * Drone "Right Click Block" now works a lot better
 * Drones now render their held item (can be disabled in config)
+* Empty PCB's now stack
 * Build artifacts (including API) are now available at https://modmaven.k-4u.nl/me/desht/pneumaticcraft/pneumaticcraft-repressurized/
 * Recipes are now pretty much all done with JSON
 * Many, many, other minor bugfixes and overall polishing (see https://github.com/TeamPneumatic/pnc-repressurized/commits/master)
