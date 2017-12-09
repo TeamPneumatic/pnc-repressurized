@@ -924,6 +924,17 @@ public class PneumaticCraftUtils {
         stack.setCount(0);
     }
 
+    public static void dropItemOnGroundPrecisely(ItemStack stack, World world, double x, double y, double z) {
+        EntityItem entityItem = new EntityItem(world, x, y, z, new ItemStack(stack.getItem(), stack.getCount(), stack.getItemDamage()));
+
+        if (stack.hasTagCompound()) {
+            entityItem.getItem().setTagCompound(stack.getTagCompound().copy());
+        }
+
+        world.spawnEntity(entityItem);
+        stack.setCount(0);
+    }
+
     public static TileEntity getTileEntity(BlockPos pos, int dimension) {
         World world = DimensionManager.getWorld(dimension);
         if (world != null && world.isBlockLoaded(pos)) {

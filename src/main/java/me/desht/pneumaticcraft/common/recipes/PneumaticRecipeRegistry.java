@@ -73,7 +73,7 @@ public class PneumaticRecipeRegistry implements IPneumaticRecipeRegistry {
             return (ItemStack) o;
         } else {
             Pair<String, Integer> pair = (Pair) o;
-            ItemStack s = OreDictionaryHelper.getOreDictEntries(pair.getKey()).get(0);
+            ItemStack s = OreDictionary.getOres(pair.getKey()).get(0);
             s = s.copy();
             s.setCount(pair.getValue());
             return s;

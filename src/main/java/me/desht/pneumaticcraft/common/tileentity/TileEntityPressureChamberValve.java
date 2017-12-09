@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.recipe.IPressureChamberRecipe;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IAirListener;
@@ -10,10 +9,12 @@ import me.desht.pneumaticcraft.common.VillagerHandler;
 import me.desht.pneumaticcraft.common.block.BlockPressureChamberValve;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.block.IBlockPressureChamber;
+import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.recipes.PneumaticRecipeRegistry;
 import me.desht.pneumaticcraft.common.recipes.PressureChamberRecipe;
-import me.desht.pneumaticcraft.common.util.Reflections;
+import me.desht.pneumaticcraft.common.util.ItemStackHandlerIterable;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -26,22 +27,25 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraftforge.items.ItemStackHandler;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class TileEntityPressureChamberValve extends TileEntityPneumaticBase implements IMinWorkingPressure, IAirListener {
-    public int multiBlockX;
-    public int multiBlockY;
-    public int multiBlockZ;
-    @GuiSynced
+    @DescSynced
+    public int multiBlockX, multiBlockY, multiBlockZ;
+    @DescSynced
     public int multiBlockSize;
     public List<TileEntityPressureChamberValve> accessoryValves;
     private final List<BlockPos> nbtValveList;
@@ -51,10 +55,10 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
     @GuiSynced
     public boolean isSufficientPressureInChamber;
     @GuiSynced
-    public boolean areEntitiesDoneMoving;
-    @GuiSynced
     public float recipePressure;
 //    private final Item etchingAcid = Fluids.getBucket(Fluids.ETCHING_ACID);
+    @DescSynced
+    private ItemStackHandler itemsInChamber = new ItemStackHandler(100);
 
     private final Random rand = new Random();
 
@@ -62,7 +66,6 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
         super(PneumaticValues.DANGER_PRESSURE_PRESSURE_CHAMBER, PneumaticValues.MAX_PRESSURE_PRESSURE_CHAMBER, PneumaticValues.VOLUME_PRESSURE_CHAMBER, 4);
         accessoryValves = new ArrayList<>();
         nbtValveList = new ArrayList<>();
-        addApplicableUpgrade(EnumUpgrade.ITEM_LIFE);
     }
 
     @Override
@@ -148,14 +151,14 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
          */
 
         if (multiBlockSize != 0 && !getWorld().isRemote) {
-            ItemStack[] stacksInChamber = getStacksInChamber();
             isValidRecipeInChamber = false;
             isSufficientPressureInChamber = false;
             recipePressure = Float.MAX_VALUE;
 
             // simple recipes
+            //TODO: Express 'simple' recipes in terms of the generic IPressureChamberRecipe.
             for (PressureChamberRecipe recipe : PressureChamberRecipe.chamberRecipes) {
-                boolean isValidRecipeInChamberFlag = canBeCompressed(recipe, stacksInChamber);
+                boolean isValidRecipeInChamberFlag = canBeCompressed(recipe);
                 boolean isSufficientPressureInChamberFlag = recipe.pressure <= getPressure() && recipe.pressure > 0F || recipe.pressure >= getPressure() && recipe.pressure < 0F;
                 if (isValidRecipeInChamberFlag) {
                     isValidRecipeInChamber = true;
@@ -164,16 +167,15 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
                     }
                 }
                 if (isSufficientPressureInChamberFlag) isSufficientPressureInChamber = true;
-                if (isValidRecipeInChamberFlag && isSufficientPressureInChamberFlag && areEntitiesDoneMoving) {
-                    double[] outputPosition = clearStacksInChamber(recipe.input);
-                    giveOutput(recipe.output, outputPosition);
+                if (isValidRecipeInChamberFlag && isSufficientPressureInChamberFlag) {
+                    clearStacksInChamber(recipe.input);
+                    giveOutput(recipe.output);
                 }
             }
 
             // special recipes
             for (IPressureChamberRecipe recipe : PressureChamberRecipe.specialRecipes) {
-                ItemStack[] removedStacks = recipe.isValidRecipe(stacksInChamber);
-                boolean isValidRecipeInChamberFlag = removedStacks != null;
+                boolean isValidRecipeInChamberFlag = recipe.isValidRecipe(itemsInChamber);
                 boolean isSufficientPressureInChamberFlag = recipe.getCraftingPressure() <= getPressure() && recipe.getCraftingPressure() > 0F || recipe.getCraftingPressure() >= getPressure() && recipe.getCraftingPressure() < 0F;
                 if (isValidRecipeInChamberFlag) {
                     isValidRecipeInChamber = true;
@@ -182,9 +184,8 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
                     }
                 }
                 if (isSufficientPressureInChamberFlag) isSufficientPressureInChamber = true;
-                if (isValidRecipeInChamberFlag && isSufficientPressureInChamberFlag && areEntitiesDoneMoving) {
-                    double[] outputPosition = clearStacksInChamber((Object[]) removedStacks);
-                    giveOutput(recipe.craftRecipe(stacksInChamber, removedStacks), outputPosition);
+                if (isValidRecipeInChamberFlag && isSufficientPressureInChamberFlag) {
+                    giveOutput(recipe.craftRecipe(itemsInChamber));
                 }
             }
 
@@ -206,38 +207,6 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
                     }
                     entity.attackEntityFrom(DamageSourcePneumaticCraft.PRESSURE, (int) (getPressure() * 2D));
                 }
-            }
-        }
-
-        // move entities to each other
-        AxisAlignedBB bbBox = new AxisAlignedBB(multiBlockX, multiBlockY, multiBlockZ, multiBlockX + multiBlockSize, multiBlockY + multiBlockSize, multiBlockZ + multiBlockSize);
-        List<EntityItem> entities = getWorld().getEntitiesWithinAABB(EntityItem.class, bbBox);
-        areEntitiesDoneMoving = true;
-        // set to true, set to false when one of the entities is moving.
-        for (int i = 0; i < entities.size() - 1; i++) {
-            EntityItem lastEntity = entities.get(i);
-            EntityItem entity = entities.get(i + 1);
-            // XP Orb code snippet
-            double d0 = 8.0D;
-            double d1 = (lastEntity.posX - entity.posX) / d0;
-            double d3 = (lastEntity.posZ - entity.posZ) / d0;
-            double d4 = Math.sqrt(d1 * d1 + d3 * d3);
-            double d5 = 1.0D - d4;
-
-            if (d5 > 0.0D && d4 > 0.02D) {
-                d5 *= d5;
-                entity.motionX += d1 / d4 * d5 * 0.01D;
-                entity.motionZ += d3 / d4 * d5 * 0.01D;
-                lastEntity.motionX -= d1 / d4 * d5 * 0.01D;
-                lastEntity.motionZ -= d3 / d4 * d5 * 0.01D;
-                areEntitiesDoneMoving = false;
-            }
-        }
-
-        boolean lifeUpgrade = getUpgrades(EnumUpgrade.ITEM_LIFE) > 0;
-        if (lifeUpgrade && !getWorld().isRemote) {
-            for (EntityItem entityItem : entities) {
-                Reflections.setItemAge(entityItem, Reflections.getItemAge(entityItem) - 1);
             }
         }
 
@@ -315,72 +284,49 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
             if (!connected[i]) getAirHandler(null).airLeak(EnumFacing.getFront(i));
         }
     }
+    
+    private Stream<ItemStack> getFilteredChamberContents(Object item){
+        return new ItemStackHandlerIterable(itemsInChamber)
+                    .stream()
+                    .filter(stack -> !stack.isEmpty() && PneumaticRecipeRegistry.isItemEqual(item, stack));
+    }
 
-    private boolean canBeCompressed(PressureChamberRecipe recipe, ItemStack[] items) {
+    private boolean canBeCompressed(PressureChamberRecipe recipe) {
         for (Object in : recipe.input) {
             if (in != null) {
-                int amount = 0;
-                for (ItemStack item : items) {
-                    if (!item.isEmpty() && PneumaticRecipeRegistry.isItemEqual(in, item)) amount += item.getCount();
-                }
+                int amount = getFilteredChamberContents(in)
+                                   .mapToInt(stack -> stack.getCount())
+                                   .sum();
+
                 if (amount < PneumaticRecipeRegistry.getItemAmount(in)) return false;
             }
         }
         return true;
     }
-
-    ItemStack[] getStacksInChamber() {
-        // add item entities lying on the ground
-        AxisAlignedBB bbBox = new AxisAlignedBB(multiBlockX, multiBlockY, multiBlockZ,
-                multiBlockX + multiBlockSize, multiBlockY + multiBlockSize, multiBlockZ + multiBlockSize);
-        List<ItemStack> stackList = getWorld().getEntitiesWithinAABB(EntityItem.class, bbBox).stream().
-                filter(entityItem -> !entityItem.isDead).
-                map(EntityItem::getItem).
-                collect(Collectors.toList());
-
-        return stackList.toArray(new ItemStack[stackList.size()]);
-    }
-
-    double[] clearStacksInChamber(Object... stacksToClear) {
-        int[] stackSizes = new int[stacksToClear.length];
-        for (int i = 0; i < stacksToClear.length; i++) {
-            stackSizes[i] = PneumaticRecipeRegistry.getItemAmount(stacksToClear[i]);
-        }
-        // default the output position to the middle of the chamber.
-        double[] outputPosition = new double[]{multiBlockX + multiBlockSize / 2D, multiBlockY + 1.2D, multiBlockZ + multiBlockSize / 2D};
-
-        // get the in world EntityItems
-        AxisAlignedBB bbBox = new AxisAlignedBB(multiBlockX, multiBlockY, multiBlockZ, multiBlockX + multiBlockSize, multiBlockY + multiBlockSize, multiBlockZ + multiBlockSize);
-        List<EntityItem> entities = getWorld().getEntitiesWithinAABB(EntityItem.class, bbBox);
-        for (EntityItem entity : entities) {
-            if (entity.isDead) continue;
-            ItemStack entityStack = entity.getItem();
-            for (int l = 0; l < stacksToClear.length; l++) {
-                if (PneumaticRecipeRegistry.isItemEqual(stacksToClear[l], entityStack) && stackSizes[l] > 0) {
-                    outputPosition[0] = entity.posX;
-                    outputPosition[1] = entity.posY;
-                    outputPosition[2] = entity.posZ;
-                    int removedItems = Math.min(stackSizes[l], entityStack.getCount());
-                    stackSizes[l] -= removedItems;
-                    entityStack.shrink(removedItems);
-                    if (entityStack.getCount() <= 0) entity.setDead();
-                    break;
+    
+    private void clearStacksInChamber(Object... stacks){
+        for(Object stack : stacks){
+            int amountLeft = PneumaticRecipeRegistry.getItemAmount(stack);
+            for(int i = 0; i < itemsInChamber.getSlots(); i++){
+                ItemStack itemInChamber = itemsInChamber.getStackInSlot(i);
+                if(PneumaticRecipeRegistry.isItemEqual(stack, itemInChamber)){
+                    amountLeft -= itemsInChamber.extractItem(i, amountLeft, false).getCount();
                 }
+                if(amountLeft <= 0) break;
             }
         }
-        return outputPosition;
+    }
+    
+    private void giveOutput(NonNullList<ItemStack> stacks){
+        for(ItemStack stack : stacks){            
+            stack = stack.copy();
+            stack = ItemHandlerHelper.insertItem(itemsInChamber, stack, false);
+            if(!stack.isEmpty()) dropItemOnGround(stack); //As a last resort, actually drop an item in the chamber.
+        }
     }
 
-    private void giveOutput(ItemStack[] output, double[] outputPosition) {
-        for (ItemStack iStack : output) {
-//            if (iStack.getItem() == etchingAcid) {
-//                for (EntityPlayer player : getWorld().getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(getPos().getX() - 32, getPos().getY() - 32, getPos().getZ() - 32, getPos().getX() + 32, getPos().getY() + 32, getPos().getZ() + 32))) {
-//                    AchievementHandler.giveAchievement(player, new ItemStack(etchingAcid));
-//                }
-//            }
-            EntityItem item = new EntityItem(getWorld(), outputPosition[0], outputPosition[1], outputPosition[2], iStack.copy());
-            getWorld().spawnEntity(item);
-        }
+    public ItemStackHandler getStacksInChamber() {
+        return itemsInChamber;
     }
 
     // NBT methods-----------------------------------------------
@@ -391,7 +337,8 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
         isSufficientPressureInChamber = tag.getBoolean("sufPressure");
         isValidRecipeInChamber = tag.getBoolean("validRecipe");
         recipePressure = tag.getFloat("recipePressure");
-
+        itemsInChamber.deserializeNBT(tag.getCompoundTag("itemsInChamber"));
+        
         // Read in the accessory valves from NBT
         NBTTagList tagList2 = tag.getTagList("Valves", 10);
         nbtValveList.clear();
@@ -399,6 +346,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
             NBTTagCompound tagCompound = tagList2.getCompoundTagAt(i);
             nbtValveList.add(NBTUtil.getPos(tagCompound));
         }
+        
         readNBT = true;
     }
 
@@ -412,6 +360,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
         tag.setBoolean("sufPressure", isSufficientPressureInChamber);
         tag.setBoolean("validRecipe", isValidRecipeInChamber);
         tag.setFloat("recipePressure", recipePressure);
+        tag.setTag("itemsInChamber", itemsInChamber.serializeNBT());
 
         // Write the accessory valve to NBT
         NBTTagList tagList2 = new NBTTagList();
@@ -428,8 +377,22 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
     }
 
     public void onMultiBlockBreak() {
-//        dropInventory(getWorld(), multiBlockX + multiBlockSize / 2D, multiBlockY + multiBlockSize / 2D, multiBlockZ + multiBlockSize / 2D);
+        if(multiBlockSize > 0){
+            Iterator<ItemStack> itemsInChamberIterator = new ItemStackHandlerIterable(itemsInChamber).iterator();
+            while(itemsInChamberIterator.hasNext()){
+                ItemStack stack = itemsInChamberIterator.next();
+                dropItemOnGround(stack);
+                itemsInChamberIterator.remove();
+            }
+        }
+
         invalidateMultiBlock();
+    }
+    
+    private void dropItemOnGround(ItemStack stack){
+        PneumaticCraftUtils.dropItemOnGroundPrecisely(stack, getWorld(), multiBlockX + multiBlockSize / 2,
+                                                                multiBlockY + 1,  
+                                                                multiBlockZ + multiBlockSize / 2);
     }
 
     private void invalidateMultiBlock() {
@@ -583,9 +546,29 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
                 }
             }
         }
+        
+        teValve.captureEntityItemsInChamber();
 
         teValve.sendDescriptionPacket();
         return true;
+    }
+    
+    private AxisAlignedBB getChamberAABB(){
+        return new AxisAlignedBB(multiBlockX, multiBlockY, multiBlockZ,
+                multiBlockX + multiBlockSize, multiBlockY + multiBlockSize, multiBlockZ + multiBlockSize);
+    }
+    
+    private void captureEntityItemsInChamber(){
+        AxisAlignedBB bbBox = getChamberAABB();
+        List<EntityItem> items = getWorld().getEntitiesWithinAABB(EntityItem.class, bbBox);
+        for(EntityItem item : items){
+            if(!item.isDead){
+                ItemStack stack = item.getItem();
+                ItemStack leftover = ItemHandlerHelper.insertItem(itemsInChamber, stack, false);
+                if(leftover.isEmpty()) item.setDead();
+                else item.setItem(stack);
+            }
+        }
     }
 
     public boolean isCoordWithinChamber(World world, BlockPos pos) {
@@ -593,6 +576,11 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
         int y = pos.getY();
         int z = pos.getZ();
         return x > multiBlockX && x < multiBlockX + multiBlockSize - 1 && y > multiBlockY && y < multiBlockY + multiBlockSize - 1 && z > multiBlockZ && z < multiBlockZ + multiBlockSize - 1;
+    }
+    
+    @Override
+    public AxisAlignedBB getRenderBoundingBox(){
+        return getChamberAABB();
     }
 
     @Override

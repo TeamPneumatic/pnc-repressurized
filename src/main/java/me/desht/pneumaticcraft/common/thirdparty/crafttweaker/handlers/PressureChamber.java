@@ -61,7 +61,7 @@ public class PressureChamber {
         private void addRecipes() {
             for (PressureChamberRecipe r : recipes) {
             	
-            	if(Stream.of(output).allMatch(o -> Stream.of(r.output).anyMatch(ro -> Helper.matches(o, Helper.toIItemStack(ro))))) {
+            	if(Stream.of(output).allMatch(o -> r.output.stream().anyMatch(ro -> Helper.matches(o, Helper.toIItemStack(ro))))) {
             		entries.add(r);
             	}
             }

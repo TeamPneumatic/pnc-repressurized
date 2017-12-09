@@ -81,9 +81,6 @@ public class GuiPressureChamber extends GuiPneumaticContainerBase<TileEntityPres
                 textList.add("\u00a70Remove air from the input");
             }
             textList.add("\u00a70Pressure required: " + te.recipePressure + " bar");
-        } else if (!te.areEntitiesDoneMoving) {
-            textList.add("\u00a77Items are too far away from each other");
-            textList.add("\u00a70Wait until the items are blown to the middle.");
         }
     }
 }

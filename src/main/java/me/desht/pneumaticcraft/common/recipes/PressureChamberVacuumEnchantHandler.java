@@ -1,12 +1,17 @@
 package me.desht.pneumaticcraft.common.recipes;
 
 import com.google.common.collect.ImmutableMap;
+
 import me.desht.pneumaticcraft.api.recipe.IPressureChamberRecipe;
+import me.desht.pneumaticcraft.common.util.ItemStackHandlerIterable;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
+import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraftforge.items.ItemStackHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,42 +25,32 @@ public class PressureChamberVacuumEnchantHandler implements IPressureChamberReci
     }
 
     @Override
-    public ItemStack[] isValidRecipe(ItemStack[] inputStacks) {
-        int enchantmentCount = 0;
-        for (ItemStack stack : inputStacks) {
-            if (stack.getItem() == Items.ENCHANTED_BOOK) continue;
-            enchantmentCount = EnchantmentHelper.getEnchantments(stack).size();
-            if (enchantmentCount > 0) break;
-        }
-        if (enchantmentCount == 0) return null;
-        for (ItemStack stack : inputStacks) {
-            if (stack.getItem() == Items.BOOK) {
-                return new ItemStack[]{new ItemStack(Items.BOOK)};
-            }
-        }
-        return null;
+    public boolean isValidRecipe(ItemStackHandler inputStacks) {
+        return !getDisenchantableItem(inputStacks).isEmpty() && !getBook(inputStacks).isEmpty();
 
+    }
+    
+    public ItemStack getDisenchantableItem(ItemStackHandler inputStacks){
+        return new ItemStackHandlerIterable(inputStacks)
+                        .stream()
+                        .filter(stack -> stack.getItem() != Items.ENCHANTED_BOOK && EnchantmentHelper.getEnchantments(stack).size() > 0)
+                        .findFirst()
+                        .orElse(ItemStack.EMPTY);
+    }
+    
+    public ItemStack getBook(ItemStackHandler inputStacks){
+        return new ItemStackHandlerIterable(inputStacks)
+                        .stream()
+                        .filter(stack -> stack.getItem() == Items.BOOK)
+                        .findFirst()
+                        .orElse(ItemStack.EMPTY);
     }
 
     @Override
-    public ItemStack[] craftRecipe(ItemStack[] inputStacks, ItemStack[] removedStacks) {
-        ItemStack enchantedStack = ItemStack.EMPTY;
-        int enchantmentCount;
-
-        // find an enchanted item (other than an enchanted book)
-        for (ItemStack stack : inputStacks) {
-            if (stack.getItem() == Items.ENCHANTED_BOOK) continue;
-            enchantmentCount = EnchantmentHelper.getEnchantments(stack).size();
-            if (enchantmentCount > 0) {
-                enchantedStack = stack;
-                break;
-            }
-        }
-        if (enchantedStack.isEmpty()) {
-            Log.error("[Pressure Chamber Vacuum Enchantment Handler] No enchanted stack found!");
-            return null;
-        }
-
+    public NonNullList<ItemStack> craftRecipe(ItemStackHandler inputStacks) {
+        ItemStack enchantedStack = getDisenchantableItem(inputStacks);
+        getBook(inputStacks).shrink(1);
+        
         // take a random enchantment off the enchanted item...
         Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(enchantedStack);
         List<Enchantment> l = new ArrayList<>(enchantments.keySet());
@@ -68,12 +63,6 @@ public class PressureChamberVacuumEnchantHandler implements IPressureChamberReci
         ItemStack enchantedBook = new ItemStack(Items.ENCHANTED_BOOK);
         EnchantmentHelper.setEnchantments(ImmutableMap.of(strippedEnchantment, level), enchantedBook);
 
-        return new ItemStack[]{enchantedBook};
+        return NonNullList.from(ItemStack.EMPTY, enchantedBook);
     }
-
-    @Override
-    public boolean shouldRemoveExactStacks() {
-        return false;
-    }
-
 }

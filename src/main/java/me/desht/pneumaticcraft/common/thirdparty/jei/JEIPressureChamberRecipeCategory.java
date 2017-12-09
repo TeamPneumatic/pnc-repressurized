@@ -9,6 +9,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
+import net.minecraftforge.oredict.OreDictionary;
+
 import org.apache.commons.lang3.tuple.Pair;
 
 public class JEIPressureChamberRecipeCategory extends PneumaticCraftCategory<JEIPressureChamberRecipeCategory.ChamberRecipeWrapper> {
@@ -43,7 +45,7 @@ public class JEIPressureChamberRecipeCategory extends PneumaticCraftCategory<JEI
                 if (recipe.input[i] instanceof Pair) {
                     NonNullList<ItemStack> oreInputs = NonNullList.create();
                     Pair<String, Integer> oreDictEntry = (Pair<String, Integer>) recipe.input[i];
-                    for (ItemStack s : OreDictionaryHelper.getOreDictEntries(oreDictEntry.getKey())) {
+                    for (ItemStack s : OreDictionary.getOres(oreDictEntry.getKey())) {
                         s = s.copy();
                         s.setCount(oreDictEntry.getValue());
                         oreInputs.add(s);
@@ -54,8 +56,8 @@ public class JEIPressureChamberRecipeCategory extends PneumaticCraftCategory<JEI
                 }
                 this.addIngredient(stack);
             }
-            for (int i = 0; i < recipe.output.length; i++) {
-                PositionedStack stack = new PositionedStack(recipe.output[i], 101 + i % 3 * 18, 59 + i / 3 * 18);
+            for (int i = 0; i < recipe.output.size(); i++) {
+                PositionedStack stack = new PositionedStack(recipe.output.get(i), 101 + i % 3 * 18, 59 + i / 3 * 18);
                 this.addOutput(stack);
             }
             this.recipePressure = recipe.pressure;

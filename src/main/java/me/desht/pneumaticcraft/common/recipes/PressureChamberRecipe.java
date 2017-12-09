@@ -2,6 +2,8 @@ package me.desht.pneumaticcraft.common.recipes;
 
 import me.desht.pneumaticcraft.api.recipe.IPressureChamberRecipe;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
+
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
@@ -14,12 +16,12 @@ public class PressureChamberRecipe {
     public static List<IPressureChamberRecipe> specialRecipes = new ArrayList<>();
 
     public final Object[] input;
-    public final ItemStack[] output;
+    public final NonNullList<ItemStack> output;
     public final float pressure;
 
     public PressureChamberRecipe(ItemStack[] input, float pressureRequired, ItemStack[] output, boolean outputAsBlock) {
         this.input = input;
-        this.output = output;
+        this.output = NonNullList.from(ItemStack.EMPTY, output);
         pressure = pressureRequired;
     }
 
@@ -36,7 +38,7 @@ public class PressureChamberRecipe {
             }
         }
         this.input = input;
-        this.output = output;
+        this.output = NonNullList.from(ItemStack.EMPTY, output);
         pressure = pressureRequired;
     }
 }

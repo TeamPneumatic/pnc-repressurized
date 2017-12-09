@@ -1,10 +1,14 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
+import me.desht.pneumaticcraft.common.util.ItemStackHandlerIterable;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Sounds;
@@ -20,10 +24,8 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class TileEntityPressureChamberInterface extends TileEntityPressureChamberWall implements IGUITextFieldSensitive, IRedstoneControlled {
     public static final int MAX_PROGRESS = 40;
@@ -146,14 +148,14 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
         if (te != null) {
             ItemStack stack = inventory.getStackInSlot(0);
             int count = stack.getCount();
-            ItemStack leftoverStack = PneumaticCraftUtils.exportStackToInventory(te, stack, facing.getOpposite());
+            ItemStack leftoverStack = PneumaticCraftUtils.exportStackToInventory(te, stack.copy(), facing.getOpposite());
             stack.shrink(count - leftoverStack.getCount());
         }
     }
 
     private void importFromChamber(TileEntityPressureChamberValve core) {
-        ItemStack[] chamberStacks = core.getStacksInChamber();
-        for (ItemStack chamberStack : chamberStacks) {
+        ItemStackHandler chamberStacks = core.getStacksInChamber();
+        for (ItemStack chamberStack : new ItemStackHandlerIterable(chamberStacks)) {
             ItemStack inputStack = inventory.getStackInSlot(0);
             if ((inputStack.isEmpty() || inputStack.isItemEqual(chamberStack)) && filterHandler.doesItemMatchFilter(chamberStack)) {
                 int maxAllowedItems = Math.abs(core.getAirHandler(null).getAir()) / PneumaticValues.USAGE_CHAMBER_INTERFACE;
@@ -170,7 +172,7 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
                         core.addAir((core.getAirHandler(null).getAir() > 0 ? -1 : 1) * transferredItems * PneumaticValues.USAGE_CHAMBER_INTERFACE);
                         toTransferStack.setCount(transferredItems);
                         inventory.insertItem(0, toTransferStack, false);
-                        core.clearStacksInChamber(toTransferStack);
+                        chamberStack.shrink(transferredItems);
                     }
                 }
             }
@@ -182,19 +184,13 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
         // all items in the interface will be moved at once, but the pressure chamber must have enough presure to do so
         TileEntityPressureChamberValve valve = getCore();
         if (valve != null) {
-            for (EnumFacing d : EnumFacing.VALUES) {
-                BlockPos neighborPos = getPos().offset(d);
-                ItemStack inputStack = inventory.getStackInSlot(0);
-                if (valve.isCoordWithinChamber(getWorld(), neighborPos)) {
-                    enoughAir = Math.abs(valve.getAirHandler(null).getAir()) > inputStack.getCount() * PneumaticValues.USAGE_CHAMBER_INTERFACE;
-                    if (enoughAir) {
-                        valve.addAir((valve.getAirHandler(null).getAir() > 0 ? -1 : 1) * inputStack.getCount() * PneumaticValues.USAGE_CHAMBER_INTERFACE);
-                        EntityItem item = new EntityItem(getWorld(), neighborPos.getX() + 0.5, neighborPos.getY() + 0.5, neighborPos.getZ() + 0.5D, inputStack.copy());
-                        getWorld().spawnEntity(item);
-                        inventory.setStackInSlot(0, ItemStack.EMPTY);
-                        break;
-                    }
-                }
+            ItemStack inputStack = inventory.getStackInSlot(0);
+            enoughAir = Math.abs(valve.getAirHandler(null).getAir()) > inputStack.getCount() * PneumaticValues.USAGE_CHAMBER_INTERFACE;
+            if (enoughAir) {
+                ItemStack leftover = ItemHandlerHelper.insertItem(valve.getStacksInChamber(), inputStack.copy(), false);
+                int inserted = inputStack.getCount() - leftover.getCount();
+                valve.addAir((valve.getAirHandler(null).getAir() > 0 ? -1 : 1) * inserted * PneumaticValues.USAGE_CHAMBER_INTERFACE);
+                inventory.setStackInSlot(0, leftover);
             }
         }
     }

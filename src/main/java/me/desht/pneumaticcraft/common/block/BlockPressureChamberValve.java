@@ -119,4 +119,8 @@ public class BlockPressureChamberValve extends BlockPneumaticCraft implements IB
         }
     }
 
+    @Override
+    public boolean isOpaqueCube(IBlockState state) {
+        return false;
+    }
 }
