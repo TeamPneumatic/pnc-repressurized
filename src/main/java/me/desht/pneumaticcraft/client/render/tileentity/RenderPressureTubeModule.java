@@ -32,7 +32,6 @@ public class RenderPressureTubeModule extends TileEntitySpecialRenderer<TileEnti
         GlStateManager.pushMatrix();
 
         FMLClientHandler.instance().getClient().getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-        GlStateManager.disableLighting();
         GlStateManager.enableTexture2D();
         GlStateManager.disableAlpha();
         GlStateManager.color(1, 1, 1);
@@ -69,7 +68,6 @@ public class RenderPressureTubeModule extends TileEntitySpecialRenderer<TileEnti
         }
         GlStateManager.color(1, 1, 1, 1);
 
-        GlStateManager.enableLighting();
         GlStateManager.enableAlpha();
 
         GlStateManager.popMatrix();
