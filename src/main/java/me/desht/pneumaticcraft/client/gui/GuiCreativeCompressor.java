@@ -43,6 +43,16 @@ public class GuiCreativeCompressor extends GuiPneumaticContainerBase<TileEntityC
     protected boolean shouldAddProblemTab() {
         return false;
     }
+    
+    @Override
+    protected boolean shouldAddInfoTab(){
+        return false;
+    }
+    
+    @Override
+    protected boolean shouldAddUpgradeTab(){
+        return false;
+    }
 
     @Override
     public void drawScreen(int x, int y, float partialTicks) {
