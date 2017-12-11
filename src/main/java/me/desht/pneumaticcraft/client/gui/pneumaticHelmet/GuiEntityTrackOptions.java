@@ -3,10 +3,12 @@ package me.desht.pneumaticcraft.client.gui.pneumaticHelmet;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IOptionPage;
+import me.desht.pneumaticcraft.client.gui.GuiUtils;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.EntityTrackUpgradeHandler;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateEntityFilter;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
@@ -15,6 +17,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import org.lwjgl.input.Keyboard;
 
 public class GuiEntityTrackOptions implements IOptionPage {
 
@@ -56,6 +59,10 @@ public class GuiEntityTrackOptions implements IOptionPage {
         textField.drawTextBox();
         FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
         fontRenderer.drawString(I18n.format("gui.entityFilter"), 35, 50, 0xFFFFFFFF);
+        if (Keyboard.isKeyDown(Keyboard.KEY_F1)) {
+            GuiUtils.showPopupHelpScreen(Minecraft.getMinecraft().currentScreen, fontRenderer,
+                    PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.entityFilter.helpText"), 60));
+        }
     }
 
     @Override
