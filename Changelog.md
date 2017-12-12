@@ -6,6 +6,10 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
+## 0.x.x-xx (Unreleased)
+
+* Fixed the Heat Sink looking like it is facing up when actually facing down.
+
 ## 0.2.0-85 (12 Dec 2017)
 
 * Fixed Pneumatic Helmet block tracker client crash with unopened loot chests

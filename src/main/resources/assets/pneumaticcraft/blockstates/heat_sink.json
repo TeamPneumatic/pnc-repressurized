@@ -13,10 +13,10 @@
                 "transform": { "rotation" : [ {"x" : 90}, { "y" : -90 } ] }
             },
 			"down": {
-				"transform": { "rotation": {"y" : 90} }
+				"transform": { }
 			},
 			"up": {
-				"transform": { }
+				"transform": { "rotation": {"x" : -180} }
 			},
 			"west": {
 				"transform": { "rotation": {"z": 270} }
