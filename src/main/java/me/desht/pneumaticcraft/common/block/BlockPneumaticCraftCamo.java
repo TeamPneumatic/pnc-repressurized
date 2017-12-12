@@ -24,7 +24,9 @@ import net.minecraftforge.common.property.ExtendedBlockState;
 import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.common.property.IUnlistedProperty;
 import net.minecraftforge.fml.common.Optional;
+import team.chisel.ctm.api.IFacade;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
@@ -32,7 +34,8 @@ import java.util.List;
  * Base class for blocks which may be camouflaged, storing the camouflaged block state in the
  * CAMO_STATE unlisted property
  */
-public abstract class BlockPneumaticCraftCamo extends BlockPneumaticCraftModeled {
+@Optional.Interface (iface = "team.chisel.ctm.api.IFacade", modid = "ctm-api")
+public abstract class BlockPneumaticCraftCamo extends BlockPneumaticCraftModeled implements IFacade {
     public static final PropertyObject<IBlockState> CAMO_STATE = new PropertyObject<>("camo_state", IBlockState.class);
 
     protected BlockPneumaticCraftCamo(Material par2Material, String registryName) {
@@ -133,5 +136,16 @@ public abstract class BlockPneumaticCraftCamo extends BlockPneumaticCraftModeled
         if (camo != null) {
             TOPCallback.handleCamo(mode, probeInfo, camo);
         }
+    }
+
+    @Nonnull
+    @Override
+    @Optional.Method(modid = "ctm-api")
+    public IBlockState getFacade(@Nonnull IBlockAccess world, @Nonnull BlockPos pos, @Nullable EnumFacing side) {
+        TileEntity te = world.getTileEntity(pos);
+        if (te instanceof ICamouflageableTE && ((ICamouflageableTE) te).getCamouflage() != null) {
+            return ((ICamouflageableTE) te).getCamouflage();
+        }
+        return world.getBlockState(pos);
     }
 }
