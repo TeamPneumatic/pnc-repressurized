@@ -6,7 +6,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
-## 0.1.0-XX (unreleased)
+## 0.2.0-85 (12 Dec 2017)
 
 * Fixed Pneumatic Helmet block tracker client crash with unopened loot chests
 * Fixed Pneumatic Helmet entity tracker client crash when targeting other players
