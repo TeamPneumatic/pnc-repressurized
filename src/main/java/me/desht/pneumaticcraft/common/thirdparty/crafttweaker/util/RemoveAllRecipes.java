@@ -5,11 +5,13 @@ import java.util.List;
 public class RemoveAllRecipes<T> extends ListRemoval<T> {
 
 	public RemoveAllRecipes(String name, List<T> recipes) {
-		super(name, recipes, recipes);
+		super(name, recipes);
 	}
 	
 	@Override
 	public void apply() {
+	    entries.addAll(recipes);
+	    
 		super.apply();
 	}
 	
