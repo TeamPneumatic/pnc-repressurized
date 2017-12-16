@@ -8,6 +8,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## 0.x.x-xx (Unreleased)
 
+* Added CraftTweaker support for liquid fuels used in the Liquid Compressors and Kerosene Lamp.
 * Fixed the Heat Sink looking like it is facing up when actually facing down.
 * Fixed CraftTweaker 'RemoveAllRecipes' function not working for all recipe handlers.
 
