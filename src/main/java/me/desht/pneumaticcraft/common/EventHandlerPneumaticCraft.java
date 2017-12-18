@@ -125,7 +125,7 @@ public class EventHandlerPneumaticCraft {
             Entity entity = iterator.next();
             if (entity instanceof EntityItem) {
                 ItemStack stack = ((EntityItem) entity).getItem();
-                if (!stack.isEmpty() && !entity.isDead && PneumaticCraftUtils.isSameOreDictStack(stack, IRON_INGOT) || PneumaticCraftUtils.isSameOreDictStack(stack, IRON_BLOCK)) {
+                if (!stack.isEmpty() && !entity.isDead && (PneumaticCraftUtils.isSameOreDictStack(stack, IRON_INGOT) || PneumaticCraftUtils.isSameOreDictStack(stack, IRON_BLOCK))) {
                     Random rand = new Random();
                     int lossRate = ConfigHandler.general.configCompressedIngotLossRate;
                     if (stack.getCount() >= 3 || rand.nextDouble() >= lossRate / 100D) {
