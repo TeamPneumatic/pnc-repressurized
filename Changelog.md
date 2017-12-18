@@ -11,6 +11,8 @@ Changes are in reverse chronological order; newest changes at the top.
 * Added CraftTweaker support for liquid fuels used in the Liquid Compressors and Kerosene Lamp.
 * Fixed the Heat Sink looking like it is facing up when actually facing down.
 * Fixed CraftTweaker 'RemoveAllRecipes' function not working for all recipe handlers.
+* Fixed item dupe when breaking charging stations holding items (helmet/drone..) with installed upgrades 
+* Vortex tube tube now briefly shows its hot and cold sides when placed or rotated
 
 ## 0.2.0-85 (12 Dec 2017)
 
