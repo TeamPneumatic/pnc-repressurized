@@ -20,6 +20,7 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -36,6 +37,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     private ChargingStationHandler inventory;
     private ChargeableItemHandler chargeableInventory;
     private CombinedInvWrapper invWrapper;
+    private boolean droppingItems = false; // https://github.com/TeamPneumatic/pnc-repressurized/issues/80
 
     private static final int INVENTORY_SIZE = 1;
 
@@ -59,11 +61,6 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
         inventory = new ChargingStationHandler();
         addApplicableUpgrade(EnumUpgrade.SPEED, EnumUpgrade.DISPENSER);
     }
-
-//    public void setCamoStack(@Nonnull ItemStack stack) {
-//        camoStack = stack;
-//        sendDescriptionPacket();
-//    }
 
     @Override
     public void onDescUpdate() {
@@ -178,10 +175,6 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     }
 
     public boolean shouldEmitRedstone() {
-        // if(!getWorld().isRemote) System.out.println("redstone mode: " +
-        // redstoneMode + ", charging: " + charging + ",discharging: " +
-        // disCharging);
-
         switch (redstoneMode) {
             case 0:
                 return false;
@@ -208,7 +201,14 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
 
     @Override
     public IItemHandlerModifiable getPrimaryInventory() {
-        return invWrapper == null ? inventory : invWrapper;
+        return invWrapper == null || droppingItems ? inventory : invWrapper;
+    }
+
+    @Override
+    public void getAllDrops(NonNullList<ItemStack> drops) {
+        droppingItems = true;
+        super.getAllDrops(drops);
+        droppingItems = false;
     }
 
     @Override
