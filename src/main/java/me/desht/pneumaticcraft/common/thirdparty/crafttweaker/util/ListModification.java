@@ -19,7 +19,7 @@ public abstract class ListModification<T> implements IAction {
 		this(name, recipes);
 		
         if(entries != null) {
-        	entries.addAll(entries);
+        	this.entries.addAll(entries);
         }
 	}
 	
