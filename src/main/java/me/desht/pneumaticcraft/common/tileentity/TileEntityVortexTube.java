@@ -83,15 +83,11 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
     }
 
     public int getColdHeatLevel() {
-        return coldHeatLevel;
+        return visualize ? 0 : coldHeatLevel;
     }
 
     public int getHotHeatLevel() {
-        return hotHeatLevel;
-    }
-
-    public boolean shouldVisualize() {
-        return visualize;
+        return visualize ? 20 : hotHeatLevel;
     }
 
     @Override
@@ -126,7 +122,7 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
         updateConnections();
     }
 
-    public void updateConnections() {
+    private void updateConnections() {
         List<Pair<EnumFacing, IAirHandler>> connections = getAirHandler(null).getConnectedPneumatics();
         Arrays.fill(sidesConnected, false);
         for (Pair<EnumFacing, IAirHandler> entry : connections) {
