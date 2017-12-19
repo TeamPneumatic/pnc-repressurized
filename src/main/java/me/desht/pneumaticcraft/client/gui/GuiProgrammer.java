@@ -262,6 +262,10 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
     protected void keyTyped(char key, int keyCode) throws IOException {
         super.keyTyped(key, keyCode);
 
+        if (nameField.isFocused()) {
+            return;
+        }
+
         if (Keyboard.KEY_I == keyCode && Loader.isModLoaded(ModIds.IGWMOD)) {
             onIGWAction();
         }
@@ -270,7 +274,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
                 NetworkHandler.sendToServer(new PacketGuiButton(0));
             }
         }
-        if (Keyboard.KEY_SPACE == keyCode && !nameField.isFocused()) {
+        if (Keyboard.KEY_SPACE == keyCode) {
             toggleShowWidgets();
         }
         if (Keyboard.KEY_DELETE == keyCode) {
