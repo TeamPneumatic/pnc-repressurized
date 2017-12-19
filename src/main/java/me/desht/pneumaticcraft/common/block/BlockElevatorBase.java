@@ -3,13 +3,11 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorBase;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.proxy.CommonProxy.EnumGuiId;
-import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -18,8 +16,6 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.property.ExtendedBlockState;
 import net.minecraftforge.common.property.IUnlistedProperty;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
 
 public class BlockElevatorBase extends BlockPneumaticCraftCamo {
 
@@ -71,32 +67,6 @@ public class BlockElevatorBase extends BlockPneumaticCraftCamo {
     @Override
     public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float par7, float par8, float par9) {
         return super.onBlockActivated(world, getCoreElevatorPos(world, pos), state, player, hand, side, par7, par8, par9);
-    }
-
-    @Override
-    public void neighborChanged(IBlockState state, World world, BlockPos pos, Block block, BlockPos fromPos) {
-        super.neighborChanged(state, world, pos, block, fromPos);
-        TileEntity te = world.getTileEntity(pos);
-        if (te instanceof TileEntityElevatorBase) {
-            TileEntityElevatorBase thisTe = (TileEntityElevatorBase) te;
-            if (thisTe.isCoreElevator()) {
-                TileEntityElevatorBase teAbove = getCoreTileEntity(world, pos);
-                if (teAbove != null && teAbove != thisTe) {
-                    IItemHandler handler = thisTe.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
-                    for (int i = 0; i < handler.getSlots(); i++) {
-                        ItemStack stack = handler.getStackInSlot(i);
-                        if (!stack.isEmpty()) {
-                            ItemStack excess = PneumaticCraftUtils.exportStackToInventory(teAbove, stack, null);
-                            handler.extractItem(i, stack.getCount(), false);
-//                            thisTe.setInventorySlotContents(i, ItemStack.EMPTY);
-                            if (!excess.isEmpty()) {
-                                PneumaticCraftUtils.dropItemOnGround(stack, world, teAbove.getPos().getX() + 0.5, teAbove.getPos().getY() + 1.5, teAbove.getPos().getZ() + 0.5);
-                            }
-                        }
-                    }
-                }
-            }
-        }
     }
 
     public static BlockPos getCoreElevatorPos(World world, BlockPos pos) {
