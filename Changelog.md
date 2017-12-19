@@ -9,10 +9,15 @@ Changes are in reverse chronological order; newest changes at the top.
 ## 0.x.x-xx (Unreleased)
 
 * Added CraftTweaker support for liquid fuels used in the Liquid Compressors and Kerosene Lamp.
+* Vortex tube tube now briefly shows its hot and cold sides when placed or rotated
 * Fixed the Heat Sink looking like it is facing up when actually facing down.
 * Fixed CraftTweaker 'RemoveAllRecipes' function not working for all recipe handlers.
-* Fixed item dupe when breaking charging stations holding items (helmet/drone..) with installed upgrades 
-* Vortex tube tube now briefly shows its hot and cold sides when placed or rotated
+* Fixed item dupe when breaking charging stations holding items (helmet/drone...) with installed upgrades 
+* Fixed fully UV Lightbox-ed Empty PCB's stacking with new Empty PCB's
+* Fixed explosion-handling event related server crash after killing the wither (and potentially in other situations)
+* Fixed keypresses in Programmer GUI "leaking" when the naming textfield was focused (e.g. pressing 'z' would do an Undo action)
+* Zoom scrollbar in Programmer GUI can now be dragged with mouse (you can also zoom in/out with mouse wheel)
+* Zoom behaviour in Programmer GUI is now more consistent (zoom in & back out and you will be at the same place in the view)
 
 ## 0.2.0-85 (12 Dec 2017)
 

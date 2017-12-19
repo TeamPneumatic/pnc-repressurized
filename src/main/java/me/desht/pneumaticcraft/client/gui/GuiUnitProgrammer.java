@@ -139,13 +139,8 @@ public class GuiUnitProgrammer extends GuiScreen {
 
         if (scaleScroll.getState() != lastZoom) {
             float shift = SCALE_PER_STEP * (scaleScroll.getState() - lastZoom);
-            if (new Rectangle(guiLeft + startX, guiTop + startY, areaWidth, areaHeight).contains(origX, origY)) {
-                translatedX += shift * x;
-                translatedY += shift * y;
-            } else {
-                translatedX += areaWidth / 2 * shift;
-                translatedY += areaHeight / 2 * shift;
-            }
+            translatedX += areaWidth / 2 * shift;
+            translatedY += areaHeight / 2 * shift;
         }
         lastZoom = scaleScroll.getState();
 
@@ -202,7 +197,7 @@ public class GuiUnitProgrammer extends GuiScreen {
         GL11.glDisable(GL11.GL_SCISSOR_TEST);
 
         boolean isLeftClicking = Mouse.isButtonDown(0);
-        if (translate && isLeftClicking && wasClicking && new Rectangle(guiLeft + startX, guiTop + startY, areaWidth, areaHeight).contains(origX, origY)) {
+        if (translate && isLeftClicking && wasClicking && !scaleScroll.isDragging() && new Rectangle(guiLeft + startX, guiTop + startY, areaWidth, areaHeight).contains(origX, origY)) {
             translatedX += origX - lastMouseX;
             translatedY += origY - lastMouseY;
         }

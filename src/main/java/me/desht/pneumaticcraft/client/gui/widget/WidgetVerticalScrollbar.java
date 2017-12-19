@@ -59,7 +59,7 @@ public class WidgetVerticalScrollbar extends WidgetBase {
 
     public WidgetVerticalScrollbar setEnabled(boolean enabled) {
         this.enabled = enabled;
-        wasClicking = true;
+        if (!enabled) wasClicking = false;
         return this;
     }
 
@@ -85,4 +85,7 @@ public class WidgetVerticalScrollbar extends WidgetBase {
         GL11.glColor4d(1, 1, 1, 1);
     }
 
+    public boolean isDragging() {
+        return dragging;
+    }
 }
