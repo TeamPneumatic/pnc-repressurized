@@ -26,6 +26,7 @@ public class ItemEmptyPCB extends ItemNonDespawning {
         super("empty_pcb");
         setMaxDamage(100);
         setNoRepair();
+        setHasSubtypes(true);
     }
 
     @Override
