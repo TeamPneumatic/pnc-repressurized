@@ -18,6 +18,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed keypresses in Programmer GUI "leaking" when the naming textfield was focused (e.g. pressing 'z' would do an Undo action)
 * Zoom scrollbar in Programmer GUI can now be dragged with mouse (you can also zoom in/out with mouse wheel)
 * Zoom behaviour in Programmer GUI is now more consistent (zoom in & back out and you will be at the same place in the view)
+* Fixed NPE when stacking Elevator Base blocks vertically
 
 ## 0.2.0-85 (12 Dec 2017)
 
