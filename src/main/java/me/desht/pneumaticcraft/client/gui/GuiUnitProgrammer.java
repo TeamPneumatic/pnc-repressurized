@@ -139,8 +139,13 @@ public class GuiUnitProgrammer extends GuiScreen {
 
         if (scaleScroll.getState() != lastZoom) {
             float shift = SCALE_PER_STEP * (scaleScroll.getState() - lastZoom);
-            translatedX += areaWidth / 2 * shift;
-            translatedY += areaHeight / 2 * shift;
+            if (new Rectangle(guiLeft + startX, guiTop + startY, areaWidth, areaHeight).contains(origX, origY) && !scaleScroll.isDragging()) {
+                translatedX += shift * x;
+                translatedY += shift * y;
+            } else {
+                translatedX += areaWidth / 2 * shift;
+                translatedY += areaHeight / 2 * shift;
+            }
         }
         lastZoom = scaleScroll.getState();
 
