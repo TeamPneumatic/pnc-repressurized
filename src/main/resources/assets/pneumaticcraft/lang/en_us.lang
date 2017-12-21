@@ -843,6 +843,11 @@ gui.tooltip.item.network_component3=Required component in a Security Station. \n
 gui.tooltip.item.network_component4=Required component in a Security Station. \n \nThis is the target for hackers; if all Registries are hacked, the Security Station has been compromised.
 gui.tooltip.item.network_component5=This is a generic Security Station component which allows a path to be created between the required Security Station components.
 
+# Keybindings screen
+pneumaticcraft.helmet.hack=Pneumatic Helmet Hacking
+pneumaticcraft.helmet.options=Pneumatic Helmet Options
+pneumaticcraft.helmet.debugging.drone=Pneumatic Helmet Drone Debugging
+
 # Config Screen
 gui.config.category.general=General
 gui.config.category.machine=Machine
