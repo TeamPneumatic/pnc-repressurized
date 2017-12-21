@@ -31,7 +31,7 @@ public class KeyHandler {
     private KeyHandler() {
         registerKeyListener(HUDHandler.instance());
 
-        keybindOpenOptions = registerKeyBinding(new KeyBinding(KeyHandler.DESCRIPTION_HELMET_OPTIONS, Keyboard.KEY_F, Names.PNEUMATIC_KEYBINDING_CATEGORY));
+        keybindOpenOptions = registerKeyBinding(new KeyBinding(KeyHandler.DESCRIPTION_HELMET_OPTIONS, Keyboard.KEY_U, Names.PNEUMATIC_KEYBINDING_CATEGORY));
         keybindHack = registerKeyBinding(new KeyBinding(KeyHandler.DESCRIPTION_HELMET_HACK, Keyboard.KEY_H, Names.PNEUMATIC_KEYBINDING_CATEGORY));
         keybindDebuggingDrone = registerKeyBinding(new KeyBinding(KeyHandler.DESCRIPTION_HELMET_DEBUGGING_DRONE, Keyboard.KEY_Y, Names.PNEUMATIC_KEYBINDING_CATEGORY));
     }
