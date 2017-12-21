@@ -96,7 +96,7 @@ public class GuiHelmetMainScreen extends GuiPneumaticScreenBase implements IGuiS
         super.drawScreen(x, y, partialTicks);
         optionPage.drawScreen(x, y, partialTicks);
         drawCenteredString(fontRenderer, upgradePages.get(page).getPageName(), 100, 25, 0xFFFFFFFF);
-        if (optionPage.displaySettingsText()) drawCenteredString(fontRenderer, "Settings", 100, 115, 0xFFFFFFFF);
+        if (optionPage.displaySettingsText()) drawCenteredString(fontRenderer, "Settings", 100, optionPage.settingsYposition(), 0xFFFFFFFF);
     }
 
     @Override

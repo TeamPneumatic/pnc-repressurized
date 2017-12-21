@@ -58,4 +58,6 @@ public interface IOptionPage {
     boolean canBeTurnedOff();
 
     boolean displaySettingsText();
+
+    default int settingsYposition() { return 115; }
 }
