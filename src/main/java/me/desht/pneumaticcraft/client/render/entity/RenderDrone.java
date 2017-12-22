@@ -18,6 +18,8 @@ public class RenderDrone extends RenderLiving<EntityDroneBase> {
     }
 
     private void renderDrone(EntityDroneBase drone, double x, double y, double z, float yaw, float partialTicks) {
+        if (drone.getHealth() <= 0) return;
+
         GL11.glPushMatrix();
         GL11.glTranslatef((float) x, (float) y, (float) z);
 
