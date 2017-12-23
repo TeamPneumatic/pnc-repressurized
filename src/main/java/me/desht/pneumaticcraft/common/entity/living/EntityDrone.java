@@ -31,6 +31,7 @@ import me.desht.pneumaticcraft.common.tileentity.PneumaticEnergyStorage;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPlasticMixer;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Sounds;
@@ -173,7 +174,7 @@ public class EntityDrone extends EntityDroneBase
     private void initializeFakePlayer() {
         fakePlayer = new DroneFakePlayer(
                 (WorldServer) world,
-                new GameProfile(playerUUID != null ? UUID.fromString(playerUUID) : null, playerName),
+                new GameProfile(UUID.fromString(getOwnerUUID()), playerName),
                 this);
         fakePlayer.connection = new NetHandlerPlayServer(FMLCommonHandler.instance().getMinecraftServerInstance(), new NetworkManager(EnumPacketDirection.SERVERBOUND), fakePlayer);
         fakePlayer.inventory = new InventoryFakePlayer(fakePlayer);
@@ -801,6 +802,14 @@ public class EntityDrone extends EntityDroneBase
         }
         offerTimes = tag.getInteger("offerTimes");
     }
+    
+    private String getOwnerUUID(){
+        if(playerUUID == null){
+            Log.warning(String.format("Drone with owner '%s' has no UUID! Substituting the Drone's UUID (%s).", playerName, getUniqueID().toString()));
+            playerUUID = getUniqueID().toString();
+        }
+        return playerUUID;
+    }
 
     /**
      * This and readFromNBT are _not_ being transfered from/to the Drone item.
@@ -808,10 +817,9 @@ public class EntityDrone extends EntityDroneBase
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound tag) {
         super.writeToNBT(tag);
-        if (fakePlayer != null) {
-            tag.setString("owner", fakePlayer.getName());
-            if (fakePlayer.getGameProfile().getId() != null)
-                tag.setString("ownerUUID", fakePlayer.getGameProfile().getId().toString());
+        if(playerName != null){
+            tag.setString("owner", playerName);
+            tag.setString("ownerUUID", getOwnerUUID());
         }
         return tag;
     }
