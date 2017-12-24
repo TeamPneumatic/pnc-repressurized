@@ -8,6 +8,6 @@ public class Forestry implements IThirdParty {
     @Override
     public void init() {
         PneumaticRegistry.getInstance().registerFuel(FluidRegistry.getFluid("biomass"), 500000);
-        PneumaticRegistry.getInstance().registerFuel(FluidRegistry.getFluid("bioethanol"), 500000);
+        PneumaticRegistry.getInstance().registerFuel(FluidRegistry.getFluid("bio.ethanol"), 500000);
     }
 }
