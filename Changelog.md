@@ -6,7 +6,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
-## 0.x.x-xx (Unreleased)
+## 0.2.1-101 (25 Dec 2017)
 
 * Added CraftTweaker support for liquid fuels used in the Liquid Compressors and Kerosene Lamp.
 * Vortex tube tube now briefly shows its hot and cold sides when placed or rotated
@@ -19,6 +19,11 @@ Changes are in reverse chronological order; newest changes at the top.
 * Zoom scrollbar in Programmer GUI can now be dragged with mouse (you can also zoom in/out with mouse wheel)
 * Zoom behaviour in Programmer GUI is now more consistent (zoom in & back out and you will be at the same place in the view)
 * Fixed NPE when stacking Elevator Base blocks vertically
+* A sound effect now plays when writing a program to a Drone.
+* Added missing translations for Pneumatic Helmet keybindings.
+* Changed default keybinding for opening the Pneumatic Helmet from 'F' to 'U' (as 'F' is the 'switch to offhand' button).
+* Fixed Drones causing a crash in very specific situations in combination with FTB Utiltities (having to do with authorization).
+* Bugfix: Forestry ethanol does not get registered as a fuel and posts a stacktrace in the log.
 
 ## 0.2.0-85 (12 Dec 2017)
 
