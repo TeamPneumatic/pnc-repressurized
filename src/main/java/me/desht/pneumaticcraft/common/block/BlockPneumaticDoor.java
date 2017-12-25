@@ -60,8 +60,12 @@ public class BlockPneumaticDoor extends BlockPneumaticCraftModeled {
         if (te instanceof TileEntityPneumaticDoor) {
             TileEntityPneumaticDoor teDoor = (TileEntityPneumaticDoor) te;
             if (teDoor.rotationAngle == 90) {
-                EnumFacing facing = teDoor.rightGoing ? state.getValue(ROTATION).rotateY() : state.getValue(ROTATION).rotateYCCW();
-                state = state.withProperty(ROTATION, facing).withProperty(DOOR_STATE, DoorState.OPEN);
+                EnumFacing originalRotation = state.getValue(ROTATION);
+                if(originalRotation != EnumFacing.UP && originalRotation != EnumFacing.DOWN){
+                    EnumFacing facing = teDoor.rightGoing ? originalRotation.rotateY() : originalRotation.rotateYCCW();
+                    state = state.withProperty(ROTATION, facing);
+                }
+                state = state.withProperty(DOOR_STATE, DoorState.OPEN);
             } else if (teDoor.rotationAngle == 0) {
                 state = state.withProperty(DOOR_STATE, DoorState.CLOSED);
             } else if (teDoor.rotationAngle > 0) {

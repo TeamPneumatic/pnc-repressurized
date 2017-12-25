@@ -6,6 +6,10 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
+## 0.2.2-102 (25 Dec 2017)
+
+* Fixed crash when removing an opened Pneumatic Door in survival mode.
+
 ## 0.2.1-101 (25 Dec 2017)
 
 * Added CraftTweaker support for liquid fuels used in the Liquid Compressors and Kerosene Lamp.
