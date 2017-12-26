@@ -98,7 +98,7 @@ public class LogisticsManager {
         }
 
         for (EnumFacing d : EnumFacing.VALUES) {
-            if (provider.getTileEntity().hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, d)) {
+            if (provider.getTileEntity() != null && provider.getTileEntity().hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, d)) {
                 IFluidHandler handler = provider.getTileEntity().getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, d);
                 FluidStack providingStack = handler.drain(16000, false);
                 boolean canDrain = Arrays.stream(handler.getTankProperties()).anyMatch(p -> p.canDrainFluidType(providingStack));
