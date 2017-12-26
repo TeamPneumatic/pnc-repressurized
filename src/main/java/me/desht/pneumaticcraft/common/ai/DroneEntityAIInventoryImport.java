@@ -42,7 +42,10 @@ public class DroneEntityAIInventoryImport extends DroneAIImExBase {
                 ItemStack stack = inv.getStackInSlot(i);
                 if (!stack.isEmpty()) {
                     if (widget.isItemValidForFilters(stack)) {
-                        ItemStack importedStack = stack.copy();
+                        ItemStack importedStack = IOHelper.extract(inv, i, true);
+                        if (importedStack.isEmpty()) {
+                            continue;
+                        }
                         if (((ICountWidget) widget).useCount())
                             importedStack.setCount(Math.min(importedStack.getCount(), getRemainingCount()));
                         ItemStack remainder = IOHelper.insert(drone, importedStack.copy(), EnumFacing.UP, simulate);
