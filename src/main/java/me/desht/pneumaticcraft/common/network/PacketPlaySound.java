@@ -30,7 +30,7 @@ public class PacketPlaySound extends LocationDoublePacket<PacketPlaySound> {
     public PacketPlaySound(SoundEvent soundEvent, SoundCategory category, double x, double y, double z, float volume, float pitch, boolean bool) {
         super(x, y, z);
         this.soundEvent = soundEvent;
-        this.soundName = Reflections.getSoundName(soundEvent);  // getSoundName() is client-only :(
+        this.soundName = soundEvent.soundName;
         this.category = category;
         this.volume = volume;
         this.pitch = pitch;

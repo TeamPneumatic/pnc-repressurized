@@ -55,7 +55,8 @@ public class ItemMinigun extends ItemPressurizable {
         Minecraft mc = Minecraft.getMinecraft();
         ItemRenderer renderer = mc.entityRenderer.itemRenderer;
         renderer.updateEquippedItem();
-        Reflections.resetEquippedProgress(renderer);
+        renderer.equippedProgressMainHand = 1;
+        renderer.prevEquippedProgressMainHand = 1;
     }
 
     public Minigun getMinigun(ItemStack stack, EntityPlayer player) {

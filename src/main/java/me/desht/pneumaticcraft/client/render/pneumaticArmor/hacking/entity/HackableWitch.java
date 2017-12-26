@@ -42,7 +42,7 @@ public class HackableWitch implements IHackableEntity {
     @Override
     public boolean afterHackTick(Entity entity) {
         if (entity instanceof EntityWitch) {
-            Reflections.setWitchPotionUseTimer((EntityWitch) entity, 20);
+            ((EntityWitch) entity).potionUseTimer = 20;
             ((EntityWitch) entity).setDrinkingPotion(true);
             return true;
         } else {

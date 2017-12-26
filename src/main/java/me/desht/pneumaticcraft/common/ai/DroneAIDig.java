@@ -2,7 +2,6 @@ package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.common.util.Reflections;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Items;
@@ -75,7 +74,7 @@ public class DroneAIDig extends DroneAIBlockInteraction {
     @Override
     protected boolean doBlockInteraction(BlockPos pos, double distToBlock) {
         PlayerInteractionManager manager = drone.getFakePlayer().interactionManager;
-        if (!Reflections.isDestroyingBlock(manager) || !Reflections.isAcknowledged(manager)) {
+        if (!manager.isDestroyingBlock || !manager.receivedFinishDiggingPacket) { //is not destroying and is not acknowledged.
             IBlockState blockState = worldCache.getBlockState(pos);
             Block block = blockState.getBlock();
             if (!ignoreBlock(block) && isBlockValidForFilter(worldCache, drone, pos, widget)) {
@@ -87,7 +86,7 @@ public class DroneAIDig extends DroneAIBlockInteraction {
                 }
                 manager.onBlockClicked(pos, EnumFacing.DOWN);
                 manager.blockRemoving(pos);
-                if (!Reflections.isDestroyingBlock(manager)) {
+                if (!manager.isDestroyingBlock) {
                     addToBlacklist(pos);
                     drone.addDebugEntry("gui.progWidget.dig.debug.cantDigBlock", pos);
                     drone.setDugBlock(null);

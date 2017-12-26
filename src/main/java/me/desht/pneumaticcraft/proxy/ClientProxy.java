@@ -66,8 +66,6 @@ public class ClientProxy extends CommonProxy {
 
     @Override
     public void preInit() {
-        Reflections.initClientOnly();
-
         TintedOBJLoader.INSTANCE.addDomain(Names.MOD_ID);
         ModelLoaderRegistry.registerLoader(TintedOBJLoader.INSTANCE);
         ModelLoaderRegistry.registerLoader(LoaderProgrammingPuzzle.INSTANCE);

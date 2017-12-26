@@ -41,7 +41,7 @@ public class BlockTrackEntryMobSpawner implements IBlockTrackEntry {
 //            infoList.add("Spawner Type: " + I18n.format("entity." + spawner.getEntityNameToSpawn() + ".name"));
             infoList.add("Spawner Type: " + (rl == null ? "?" : rl.toString()));
             if (Reflections.isActivated(spawner)) {
-                infoList.add("Time until next spawn: " + PneumaticCraftUtils.convertTicksToMinutesAndSeconds(Reflections.getSpawnDelay(spawner), false));
+                infoList.add("Time until next spawn: " + PneumaticCraftUtils.convertTicksToMinutesAndSeconds(spawner.spawnDelay, false));
             } else if (HackableMobSpawner.isHacked(world, pos)) {
                 infoList.add("Spawner is hacked");
             } else {

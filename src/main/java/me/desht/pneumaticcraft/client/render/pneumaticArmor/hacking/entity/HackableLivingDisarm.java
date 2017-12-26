@@ -55,11 +55,9 @@ public class HackableLivingDisarm implements IHackableEntity {
             // access from vertical gets hands, horizontal gets armor - see EntityLivingBase#getCapability
             IItemHandler handsHandler = entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.UP);
             IItemHandler armorHandler = entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.NORTH);
-            float[] handsDropChances = Reflections.getHandsDropChances(entityLiving);
-            float[] armorDropChances = Reflections.getArmorDropChances(entityLiving);
 
-            doDisarm(entityLiving, rand, handsHandler, handsDropChances);
-            doDisarm(entityLiving, rand, armorHandler, armorDropChances);
+            doDisarm(entityLiving, rand, handsHandler, entityLiving.inventoryHandsDropChances);
+            doDisarm(entityLiving, rand, armorHandler, entityLiving.inventoryArmorDropChances);
             entityLiving.setCanPickUpLoot(false);
         }
     }

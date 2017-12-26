@@ -34,8 +34,7 @@ public class RenderDroneAI {
     }
 
     public void update() {
-        Reflections.setItemAge(entityItem, Reflections.getItemAge(entityItem) + 4);
-//        entityItem.age += 4;
+        entityItem.age += 4;
         BlockPos lastPos = pos;
         pos = drone.getTargetedBlock();
         if (pos != null) {
@@ -104,10 +103,10 @@ public class RenderDroneAI {
 
     private static float[] colorToRGBA(int color) {
         float[] c = new float[4];
-        c[0] = (float)(color >> 24 & 255) / 255.0F;
-        c[1] = (float)(color >> 16 & 255) / 255.0F;
-        c[2] = (float)(color >> 8 & 255) / 255.0F;
-        c[3] = (float)(color & 255) / 255.0F;
+        c[0] = (color >> 24 & 255) / 255.0F;
+        c[1] = (color >> 16 & 255) / 255.0F;
+        c[2] = (color >> 8 & 255) / 255.0F;
+        c[3] = (color & 255) / 255.0F;
         return c;
     }
 }

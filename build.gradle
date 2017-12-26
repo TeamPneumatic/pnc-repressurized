@@ -185,3 +185,8 @@ processResources {
 
 idea { module { inheritOutputDirs = true } }
 
+jar {
+    manifest {
+        attributes 'FMLAT': 'pneumaticcraft_at.cfg'
+    }
+}

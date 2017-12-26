@@ -27,7 +27,7 @@ public class HackableMobSpawner implements IHackableBlock {
 
     public static boolean isHacked(IBlockAccess world, BlockPos pos) {
         TileEntity te = world.getTileEntity(pos);
-        return te instanceof TileEntityMobSpawner && Reflections.getActivatingRangeFromPlayer(((TileEntityMobSpawner) te).getSpawnerBaseLogic()) == 0;
+        return te instanceof TileEntityMobSpawner && ((TileEntityMobSpawner) te).getSpawnerBaseLogic().activatingRangeFromPlayer == 0;
     }
 
     @Override
@@ -64,8 +64,8 @@ public class HackableMobSpawner implements IHackableBlock {
     @Override
     public boolean afterHackTick(World world, BlockPos pos) {
         MobSpawnerBaseLogic spawner = ((TileEntityMobSpawner) world.getTileEntity(pos)).getSpawnerBaseLogic();
-        Reflections.setPrevMobRotation(spawner, spawner.getMobRotation());
-        Reflections.setSpawnDelay(spawner, 10);
+        spawner.prevMobRotation = spawner.getMobRotation();
+        spawner.spawnDelay = 10;
         return false;
     }
 }

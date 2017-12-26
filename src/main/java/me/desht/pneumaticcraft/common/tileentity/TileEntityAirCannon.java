@@ -9,7 +9,6 @@ import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaConstant;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethod;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.common.util.Reflections;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Sounds;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
@@ -498,7 +497,11 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements IMin
             } else if (itemShot instanceof EntityPlayer) {
                 EntityPlayerMP entityplayermp = (EntityPlayerMP) itemShot;
                 if (entityplayermp.connection.getNetworkManager().isChannelOpen()) {
-                    Reflections.setInvulnerableDimensionChange(entityplayermp);
+                    
+                    //This is a nasty hack to get around "player moved wrongly!" messages, which can be caused if player movement
+                    // triggers a player teleport (e.g. player moves onto pressure plate, triggers air cannon with an entity tracker).
+                    entityplayermp.invulnerableDimensionChange = true;
+                    
                     entityplayermp.setPositionAndUpdate(getPos().getX() + 0.5D, getPos().getY() + 1.8D, getPos().getZ() + 0.5D);
                 }
             }
