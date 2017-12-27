@@ -14,6 +14,7 @@ public class SemiBlockInitializer {
         SemiBlockManager.registerSemiBlock(SemiBlockDefaultStorage.ID, SemiBlockDefaultStorage.class);
         SemiBlockManager.registerSemiBlock(SemiBlockRequester.ID, SemiBlockRequester.class);
         SemiBlockManager.registerSemiBlock(SemiBlockHeatFrame.ID, SemiBlockHeatFrame.class);
+        SemiBlockManager.registerSemiBlock(SemiBlockSpawnerAgitator.ID, SemiBlockSpawnerAgitator.class);
     }
 
     public static void init() {
@@ -34,5 +35,8 @@ public class SemiBlockInitializer {
 
         PneumaticCraftRepressurized.proxy.registerSemiBlockRenderer(Itemss.HEAT_FRAME);
         SemiBlockManager.registerSemiBlockToItemMapping(SemiBlockHeatFrame.class, Itemss.HEAT_FRAME);
+        
+        PneumaticCraftRepressurized.proxy.registerSemiBlockRenderer(Itemss.SPAWNER_AGITATOR);
+        SemiBlockManager.registerSemiBlockToItemMapping(SemiBlockSpawnerAgitator.class, Itemss.SPAWNER_AGITATOR);
     }
 }

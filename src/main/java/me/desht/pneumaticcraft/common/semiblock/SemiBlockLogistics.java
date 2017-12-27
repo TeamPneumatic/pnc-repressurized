@@ -14,6 +14,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
@@ -31,7 +32,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-public abstract class SemiBlockLogistics extends SemiBlockBasic {
+public abstract class SemiBlockLogistics extends SemiBlockBasic<TileEntity> {
     private final Map<ItemStack, Integer> incomingStacks = new HashMap<>();
     private final Map<FluidStackWrapper, Integer> incomingFluid = new HashMap<>();
     private final ItemStackHandler filters = new ItemStackHandler(27);

@@ -1,0 +1,7 @@
+When placed on Mob Spawners, this item will agitate the Mob Spawner in the following two ways:
+1. It will prevent the spawned entity to despawn when the player leaves the area.
+2. The spawner will keep spawning while the player is not in the area.
+
+Mob farm anyone? 
+
+[crafting{200, 140, key=item/spawner_agitator}]

@@ -13,13 +13,14 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
 import java.util.List;
 
-public class SemiBlockHeatFrame extends SemiBlockBasic implements IHeatExchanger {
+public class SemiBlockHeatFrame extends SemiBlockBasic<TileEntity> implements IHeatExchanger {
     public static final String ID = "heat_frame";
 
     private final IHeatExchangerLogic logic = PneumaticRegistry.getInstance().getHeatRegistry().getHeatExchangerLogic();

@@ -17,11 +17,11 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
-public class SemiBlockBasic implements ISemiBlock, IDescSynced, IGUIButtonSensitive {
+public class SemiBlockBasic<TTileEntity extends TileEntity> implements ISemiBlock, IDescSynced, IGUIButtonSensitive {
     protected World world;
     protected BlockPos pos;
     private boolean isInvalid;
-    private TileEntity cachedTE;
+    private TTileEntity cachedTE;
     private List<SyncedField> descriptionFields;
     private boolean descriptionPacketScheduled;
 
@@ -85,9 +85,11 @@ public class SemiBlockBasic implements ISemiBlock, IDescSynced, IGUIButtonSensit
         return world.getBlockState(pos);
     }
 
-    public TileEntity getTileEntity() {
+    @SuppressWarnings("unchecked")
+    public TTileEntity getTileEntity() {
         if (cachedTE == null || cachedTE.isInvalid()) {
-            cachedTE = world.getTileEntity(pos);
+            TileEntity te = world.getTileEntity(pos);
+            cachedTE = (TTileEntity)te;
         }
         return cachedTE;
     }

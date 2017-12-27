@@ -1,19 +1,16 @@
 package me.desht.pneumaticcraft.common.semiblock;
 
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
-import net.minecraft.item.Item;
+import me.desht.pneumaticcraft.common.item.ItemPneumatic;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class ItemSemiBlockBase extends Item implements ISemiBlockItem {
+public class ItemSemiBlockBase extends ItemPneumatic implements ISemiBlockItem {
     public final String semiBlockId;
 
     public ItemSemiBlockBase(String semiBlockId) {
+        super(semiBlockId);
         this.semiBlockId = semiBlockId;
-        setRegistryName(semiBlockId);
-        setUnlocalizedName(semiBlockId);
-        setCreativeTab(PneumaticCraftRepressurized.tabPneumaticCraft);
     }
 
     public ItemSemiBlockBase(Class<? extends ISemiBlock> semiBlock) {
