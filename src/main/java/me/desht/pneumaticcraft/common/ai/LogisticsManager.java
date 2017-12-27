@@ -142,6 +142,7 @@ public class LogisticsManager {
         FluidStack remainder = providingStack.copy();
         remainder.amount += requester.getIncomingFluid(remainder.getFluid());
         TileEntity te = requester.getTileEntity();
+        if (te == null) return 0;
         for (EnumFacing d : EnumFacing.VALUES) {
             if (te.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, d)) {
                 IFluidHandler handler = te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, d);
