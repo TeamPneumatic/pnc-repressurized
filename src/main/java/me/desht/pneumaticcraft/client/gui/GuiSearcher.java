@@ -1,5 +1,13 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javax.annotation.Nonnull;
+
 import me.desht.pneumaticcraft.client.gui.pneumaticHelmet.GuiHelmetMainScreen;
 import me.desht.pneumaticcraft.common.inventory.ContainerSearcher;
 import me.desht.pneumaticcraft.common.item.Itemss;
@@ -23,18 +31,17 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
+
+import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
-
-import javax.annotation.Nonnull;
-import java.io.IOException;
-import java.util.Iterator;
 
 @SideOnly(Side.CLIENT)
 public class GuiSearcher extends InventoryEffectRenderer {
     private static final ResourceLocation GUI_TEXTURE = new ResourceLocation(Textures.GUI_ITEM_SEARCHER_LOCATION);
     private static final ResourceLocation SCROLL_TEXTURE = new ResourceLocation("textures/gui/container/creative_inventory/tabs.png");
+    private static List<SearchEntry> cachedSearchEntries;
 //    private final InventoryBasic inventory = new InventoryBasic("tmp", true, 49);
     private final ItemStackHandler inventory = new ItemStackHandler(49);
     private final GuiScreen parentScreen;
@@ -160,53 +167,45 @@ public class GuiSearcher extends InventoryEffectRenderer {
             list.add(itemstack);
         }
     }
+    
+    /**
+     * Lazy cache.
+     * @return
+     */
+    private Stream<SearchEntry> getSearchEntries(){
+        if(cachedSearchEntries == null){
+            NonNullList<ItemStack> itemList = NonNullList.create();
+
+            for(Item item : Item.REGISTRY){
+                if (item != null && item.getCreativeTab() != null) {
+                    item.getSubItems(item.getCreativeTab(), itemList);
+                }
+            }
+
+            for (Enchantment enchantment : Enchantment.REGISTRY) {
+                if (enchantment != null && enchantment.type != null) {
+                    getAllEnchantedBooks(enchantment, itemList);
+                }
+            }
+
+            cachedSearchEntries = itemList.stream().map(SearchEntry::new).collect(Collectors.toList());
+        }
+        return cachedSearchEntries.stream();
+    }
 
     private void updateCreativeSearch() {
         ContainerSearcher containerSearcher = (ContainerSearcher) inventorySlots;
         containerSearcher.itemList.clear();
 
-        Iterator iterator = Item.REGISTRY.iterator();
-
-        while (iterator.hasNext()) {
-            Item item = (Item) iterator.next();
-
-            if (item != null && item.getCreativeTab() != null) {
-                item.getSubItems(item.getCreativeTab(), containerSearcher.itemList);
-            }
-        }
-
-        for (Enchantment enchantment : Enchantment.REGISTRY) {
-            if (enchantment != null && enchantment.type != null) {
-                getAllEnchantedBooks(enchantment, containerSearcher.itemList);
-            }
-        }
-
-        iterator = containerSearcher.itemList.iterator();
+        
         String s = searchField.getText().toLowerCase();
 
-        while (iterator.hasNext()) {
-            ItemStack itemstack = (ItemStack) iterator.next();
-            boolean flag = false;
-            Iterator iterator1 = itemstack.getTooltip(mc.player, mc.gameSettings.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL).iterator();
-
-            while (true) {
-                if (iterator1.hasNext()) {
-                    String s1 = (String) iterator1.next();
-
-                    if (!s1.toLowerCase().contains(s)) {
-                        continue;
-                    }
-
-                    flag = true;
-                }
-
-                if (!flag) {
-                    iterator.remove();
-                }
-
-                break;
-            }
-        }
+        List<ItemStack> applicableEntries = getSearchEntries()
+                                                .filter(entry -> entry.test(s))
+                                                .map(entry -> entry.stack)
+                                                .collect(Collectors.toList());
+        
+        containerSearcher.itemList.addAll(applicableEntries);
 
         currentScroll = 0.0F;
         containerSearcher.scrollTo(0.0F);
@@ -228,84 +227,6 @@ public class GuiSearcher extends InventoryEffectRenderer {
     private boolean needsScrollBars() {
         return ((ContainerSearcher) inventorySlots).hasMoreThan1PageOfItemsInList();
     }
-
-    /*
-    private void setCurrentCreativeTab(CreativeTabs par1CreativeTabs){
-        if(par1CreativeTabs == null) {
-            return;
-        }
-
-        int i = selectedTabIndex;
-        selectedTabIndex = par1CreativeTabs.getTabIndex();
-        ContainerSearcher ContainerSearcher = (ContainerSearcher)inventorySlots;
-        field_94077_p.clear();
-        ContainerSearcher.itemList.clear();
-        par1CreativeTabs.displayAllReleventItems(ContainerSearcher.itemList);
-
-        if(par1CreativeTabs == CreativeTabs.tabInventory) {
-            Container container = mc.thePlayer.inventoryContainer;
-
-            if(backupContainerSlots == null) {
-                backupContainerSlots = ContainerSearcher.inventorySlots;
-            }
-
-            ContainerSearcher.inventorySlots = new ArrayList();
-
-            for(int j = 0; j < container.inventorySlots.size(); ++j) {
-                SlotCreativeInventory slotcreativeinventory = new SlotCreativeInventory(this, (Slot)container.inventorySlots.get(j), j);
-                ContainerSearcher.inventorySlots.add(slotcreativeinventory);
-                int k;
-                int l;
-                int i1;
-
-                if(j >= 5 && j < 9) {
-                    k = j - 5;
-                    l = k / 2;
-                    i1 = k % 2;
-                    slotcreativeinventory.xDisplayPosition = 9 + l * 54;
-                    slotcreativeinventory.yDisplayPosition = 6 + i1 * 27;
-                } else if(j >= 0 && j < 5) {
-                    slotcreativeinventory.yDisplayPosition = -2000;
-                    slotcreativeinventory.xDisplayPosition = -2000;
-                } else if(j < container.inventorySlots.size()) {
-                    k = j - 9;
-                    l = k % 9;
-                    i1 = k / 9;
-                    slotcreativeinventory.xDisplayPosition = 9 + l * 18;
-
-                    if(j >= 36) {
-                        slotcreativeinventory.yDisplayPosition = 112;
-                    } else {
-                        slotcreativeinventory.yDisplayPosition = 54 + i1 * 18;
-                    }
-                }
-            }
-
-            field_74235_v = new Slot(inventory, 0, 173, 112);
-            ContainerSearcher.inventorySlots.add(field_74235_v);
-        } else if(i == CreativeTabs.tabInventory.getTabIndex()) {
-            ContainerSearcher.inventorySlots = backupContainerSlots;
-            backupContainerSlots = null;
-        }
-
-        if(searchField != null) {
-            if(par1CreativeTabs == CreativeTabs.tabAllSearch) {
-                searchField.setVisible(true);
-                searchField.setCanLoseFocus(false);
-                searchField.setFocused(true);
-                searchField.setText("");
-                updateCreativeSearch();
-            } else {
-                searchField.setVisible(false);
-                searchField.setCanLoseFocus(true);
-                searchField.setFocused(false);
-            }
-        }
-
-        currentScroll = 0.0F;
-        ContainerSearcher.scrollTo(0.0F);
-    }
-    */
 
     /**
      * Handles mouse input.
@@ -414,5 +335,21 @@ public class GuiSearcher extends InventoryEffectRenderer {
      */
     public IItemHandlerModifiable getInventory() {
         return inventory;
+    }
+    
+    public class SearchEntry implements Predicate<String>{
+        public final ItemStack stack;
+        private final String tooltip;
+        
+        public SearchEntry(ItemStack stack){
+            this.stack = stack;
+            List<String> t = stack.getTooltip(mc.player, mc.gameSettings.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL);
+            tooltip = StringUtils.join(t, "\n").toLowerCase();
+        }
+        
+        @Override
+        public boolean test(String searchString){
+            return tooltip.contains(searchString);
+        }
     }
 }
