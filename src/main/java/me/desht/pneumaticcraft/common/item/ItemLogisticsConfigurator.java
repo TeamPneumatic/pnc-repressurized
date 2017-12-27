@@ -22,6 +22,12 @@ public class ItemLogisticsConfigurator extends ItemPressurizable {
         ItemStack stack = player.getHeldItem(hand);
         if (!world.isRemote && stack.getMaxDamage() - stack.getItemDamage() >= 100) {
             ISemiBlock semiBlock = SemiBlockManager.getInstance(world).getSemiBlock(world, pos);
+            
+            if(semiBlock == null){
+                pos = pos.offset(side);
+                semiBlock = SemiBlockManager.getInstance(world).getSemiBlock(world, pos);
+            }
+
             if (semiBlock != null) {
                 if (player.isSneaking()) {
                     SemiBlockManager.getInstance(world).breakSemiBlock(world, pos, player);

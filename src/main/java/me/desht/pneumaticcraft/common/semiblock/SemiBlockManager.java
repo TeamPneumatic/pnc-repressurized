@@ -272,35 +272,47 @@ public class SemiBlockManager {
         ItemStack curItem = event.getEntityPlayer().getHeldItemMainhand();
         if (!event.getWorld().isRemote && event.getHand() == EnumHand.MAIN_HAND) {
             if (curItem.getItem() instanceof ISemiBlockItem) {
-                if (getSemiBlock(event.getWorld(), event.getPos()) != null) {
-                    if (event.getEntityPlayer().capabilities.isCreativeMode) {
-                        setSemiBlock(event.getWorld(), event.getPos(), null);
-                    } else {
-                        breakSemiBlock(event.getWorld(), event.getPos(), event.getEntityPlayer());
-                    }
-                    event.setCanceled(true);
-                } else {
-                    ISemiBlock newBlock = ((ISemiBlockItem) curItem.getItem()).getSemiBlock(event.getWorld(), event.getPos(), curItem);
-                    newBlock.initialize(event.getWorld(), event.getPos());
-                    if (newBlock.canPlace()) {
-                        setSemiBlock(event.getWorld(), event.getPos(), newBlock);
-                        newBlock.onPlaced(event.getEntityPlayer(), curItem);
-                        event.getWorld().playSound(event.getPos().getX() + 0.5, event.getPos().getY() + 0.5, event.getPos().getZ() + 0.5,
-                                SoundType.GLASS.getPlaceSound(), SoundCategory.BLOCKS,
-                                (SoundType.GLASS.getVolume() + 1.0F) / 2.0F, SoundType.GLASS.getPitch() * 0.8F,
-                                false);
-                        if (!event.getEntityPlayer().capabilities.isCreativeMode) {
-                            curItem.shrink(1);
-                            if (curItem.getCount() <= 0) event.getEntityPlayer().setHeldItem(event.getHand(), ItemStack.EMPTY);
-                        }
-                        event.setCanceled(true);
-                    }
-                }
+                boolean success = interact(event, curItem, event.getPos());
+                
+                //If the block can't be placed in the pos, then try to place it next to the block.
+                if(!success && event.getFace() != null)
+                    success = interact(event, curItem, event.getPos().offset(event.getFace()));
+                
+                if(success) event.setCanceled(true);
             }
         } else if (event.getWorld().isRemote && curItem.getItem() instanceof ISemiBlockItem) {
             event.setCancellationResult(EnumActionResult.SUCCESS);
             event.setCanceled(true);
         }
+    }
+
+    private boolean interact(PlayerInteractEvent.RightClickBlock event, ItemStack curItem, BlockPos pos){
+        if (getSemiBlock(event.getWorld(), pos) != null) {
+            if (event.getEntityPlayer().capabilities.isCreativeMode) {
+                setSemiBlock(event.getWorld(), pos, null);
+            } else {
+                breakSemiBlock(event.getWorld(), pos, event.getEntityPlayer());
+            }
+            return true;
+        } else {            
+            ISemiBlock newBlock = ((ISemiBlockItem) curItem.getItem()).getSemiBlock(event.getWorld(), pos, curItem);
+            newBlock.initialize(event.getWorld(), pos);
+            
+            if (newBlock.canPlace()) {
+                setSemiBlock(event.getWorld(), pos, newBlock);
+                newBlock.onPlaced(event.getEntityPlayer(), curItem);
+                event.getWorld().playSound(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
+                        SoundType.GLASS.getPlaceSound(), SoundCategory.BLOCKS,
+                        (SoundType.GLASS.getVolume() + 1.0F) / 2.0F, SoundType.GLASS.getPitch() * 0.8F,
+                        false);
+                if (!event.getEntityPlayer().capabilities.isCreativeMode) {
+                    curItem.shrink(1);
+                    if (curItem.getCount() <= 0) event.getEntityPlayer().setHeldItem(event.getHand(), ItemStack.EMPTY);
+                }
+                return true;
+            }
+        }
+        return false;
     }
 
     private Map<BlockPos, ISemiBlock> getOrCreateMap(Chunk chunk) {

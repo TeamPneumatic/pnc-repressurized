@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.client.semiblock;
 
 import me.desht.pneumaticcraft.common.semiblock.ISemiBlock;
+import me.desht.pneumaticcraft.common.semiblock.SemiBlockCropSupport;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockHeatFrame;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockLogistics;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
@@ -25,6 +26,7 @@ public class ClientSemiBlockManager {
         registerRenderer(SemiBlockLogistics.class, new SemiBlockRendererLogistics());
         registerRenderer(SemiBlockHeatFrame.class, new SemiBlockRendererHeatFrame());
         registerRenderer(SemiBlockSpawnerAgitator.class, new SemiBlockRendererSpawnerAgitator());
+        registerRenderer(SemiBlockCropSupport.class, new SemiBlockRendererCropSupport());
     }
 
     public static <T extends ISemiBlock> void registerRenderer(Class<T> semiBlock, ISemiBlockRenderer<T> renderer) {
