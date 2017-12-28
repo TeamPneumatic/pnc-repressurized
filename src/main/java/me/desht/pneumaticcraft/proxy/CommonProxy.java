@@ -130,7 +130,7 @@ public class CommonProxy implements IGuiHandler {
             case LOGISTICS_REQUESTER:
             case LOGISTICS_STORAGE:
             case LOGISTICS_PASSIVE_PROVIDER:
-                return new ContainerLogistics(player.inventory, (SemiBlockLogistics) SemiBlockManager.getInstance(world).getSemiBlock(world, pos));
+                return new ContainerLogistics(player.inventory, SemiBlockManager.getInstance(world).getSemiBlock(SemiBlockLogistics.class, world, pos));
             case AMADRON:
                 return new ContainerAmadron(player);
             case AMADRON_ADD_TRADE:
@@ -221,11 +221,11 @@ public class CommonProxy implements IGuiHandler {
             case THERMOPNEUMATIC_PROCESSING_PLANT:
                 return new GuiThermopneumaticProcessingPlant(player.inventory, (TileEntityThermopneumaticProcessingPlant) te);
             case LOGISTICS_REQUESTER:
-                return new GuiLogisticsRequester(player.inventory, (SemiBlockRequester) SemiBlockManager.getInstance(world).getSemiBlock(world, pos));
+                return new GuiLogisticsRequester(player.inventory, SemiBlockManager.getInstance(world).getSemiBlock(SemiBlockRequester.class, world, pos));
             case LOGISTICS_STORAGE:
-                return new GuiLogisticsStorage(player.inventory, (SemiBlockStorage) SemiBlockManager.getInstance(world).getSemiBlock(world, pos));
+                return new GuiLogisticsStorage(player.inventory, SemiBlockManager.getInstance(world).getSemiBlock(SemiBlockStorage.class,world, pos));
             case LOGISTICS_PASSIVE_PROVIDER:
-                return new GuiLogisticsProvider(player.inventory, (SemiBlockActiveProvider) SemiBlockManager.getInstance(world).getSemiBlock(world, pos));
+                return new GuiLogisticsProvider(player.inventory, SemiBlockManager.getInstance(world).getSemiBlock(SemiBlockActiveProvider.class,world, pos));
             case AMADRON:
                 return new GuiAmadron(player.inventory);
             case AMADRON_ADD_TRADE:

@@ -1,5 +1,7 @@
 package me.desht.pneumaticcraft.common.network;
 
+import org.apache.commons.lang3.Validate;
+
 import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.common.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
@@ -7,24 +9,21 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 
-public class PacketSetSemiBlock extends LocationIntPacket<PacketSetSemiBlock> {
+public class PacketAddSemiBlock extends LocationIntPacket<PacketAddSemiBlock> {
 
     private String id;
 
-    public PacketSetSemiBlock() {
+    public PacketAddSemiBlock() {
     }
 
-    public PacketSetSemiBlock(ISemiBlock semiBlock) {
+    public PacketAddSemiBlock(ISemiBlock semiBlock) {
         this(semiBlock.getPos(), semiBlock);
     }
 
-    public PacketSetSemiBlock(BlockPos pos, ISemiBlock semiBlock) {
+    public PacketAddSemiBlock(BlockPos pos, ISemiBlock semiBlock) {
         super(pos);
-        if (semiBlock != null) {
-            id = SemiBlockManager.getKeyForSemiBlock(semiBlock);
-        } else {
-            id = "";
-        }
+        Validate.notNull(semiBlock);
+        id = SemiBlockManager.getKeyForSemiBlock(semiBlock);
     }
 
     @Override
@@ -40,12 +39,12 @@ public class PacketSetSemiBlock extends LocationIntPacket<PacketSetSemiBlock> {
     }
 
     @Override
-    public void handleClientSide(PacketSetSemiBlock message, EntityPlayer player) {
-        SemiBlockManager.getInstance(player.world).setSemiBlock(player.world, message.pos, message.id.equals("") ? null : SemiBlockManager.getSemiBlockForKey(message.id));
+    public void handleClientSide(PacketAddSemiBlock message, EntityPlayer player) {
+        SemiBlockManager.getInstance(player.world).addSemiBlock(player.world, message.pos, SemiBlockManager.getSemiBlockForKey(message.id));
     }
 
     @Override
-    public void handleServerSide(PacketSetSemiBlock message, EntityPlayer player) {
+    public void handleServerSide(PacketAddSemiBlock message, EntityPlayer player) {
 
     }
 

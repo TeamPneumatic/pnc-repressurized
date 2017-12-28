@@ -17,6 +17,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.opengl.GL11;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ClientSemiBlockManager {
@@ -46,14 +47,16 @@ public class ClientSemiBlockManager {
         GL11.glTranslated(-playerX, -playerY, -playerZ);
         RenderHelper.enableStandardItemLighting();
 
-        for (Map<BlockPos, ISemiBlock> map : SemiBlockManager.getInstance(player.world).getSemiBlocks().values()) {
-            for (ISemiBlock semiBlock : map.values()) {
-                ISemiBlockRenderer renderer = getRenderer(semiBlock);
-                if (renderer != null) {
-                    GL11.glPushMatrix();
-                    GL11.glTranslated(semiBlock.getPos().getX(), semiBlock.getPos().getY(), semiBlock.getPos().getZ());
-                    renderer.render(semiBlock, event.getPartialTicks());
-                    GL11.glPopMatrix();
+        for (Map<BlockPos, List<ISemiBlock>> map : SemiBlockManager.getInstance(player.world).getSemiBlocks().values()) {
+            for (List<ISemiBlock> semiBlocks : map.values()) {
+                for(ISemiBlock semiBlock : semiBlocks){
+                    ISemiBlockRenderer renderer = getRenderer(semiBlock);
+                    if (renderer != null) {
+                        GL11.glPushMatrix();
+                        GL11.glTranslated(semiBlock.getPos().getX(), semiBlock.getPos().getY(), semiBlock.getPos().getZ());
+                        renderer.render(semiBlock, event.getPartialTicks());
+                        GL11.glPopMatrix();
+                    }
                 }
             }
         }

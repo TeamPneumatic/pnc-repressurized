@@ -20,6 +20,7 @@ import java.util.List;
 public class SemiBlockBasic<TTileEntity extends TileEntity> implements ISemiBlock, IDescSynced, IGUIButtonSensitive {
     protected World world;
     protected BlockPos pos;
+    private int index = -1; //There can be multiple semi blocks in one block.
     private boolean isInvalid;
     private TTileEntity cachedTE;
     private List<SyncedField> descriptionFields;
@@ -29,6 +30,20 @@ public class SemiBlockBasic<TTileEntity extends TileEntity> implements ISemiBloc
     public void initialize(World world, BlockPos pos) {
         this.world = world;
         this.pos = pos;
+    }
+    
+    @Override
+    public int getIndex(){
+        if(index == -1){
+            index = SemiBlockManager.getInstance(world).getSemiBlocksAsList(world, getPos()).indexOf(this);
+            if(index == -1) throw new IllegalStateException("Semi block is not part of the world! " + this);
+        }
+        return index;
+    }
+    
+    @Override
+    public void onSemiBlockRemovedFromThisPos(ISemiBlock semiBlock){
+        index = -1; //Invalidate cache, only update on removing, because added semiblocks are appended to the back, not influencing the index.
     }
 
     @Override
@@ -74,7 +89,7 @@ public class SemiBlockBasic<TTileEntity extends TileEntity> implements ISemiBloc
     }
 
     protected void drop() {
-        SemiBlockManager.getInstance(world).breakSemiBlock(world, pos);
+        SemiBlockManager.getInstance(world).breakSemiBlock(this);
     }
 
     protected boolean isAirBlock() {
@@ -162,10 +177,12 @@ public class SemiBlockBasic<TTileEntity extends TileEntity> implements ISemiBloc
         }
         return descriptionFields;
     }
+    
+    
 
     @Override
     public void writeToPacket(NBTTagCompound tag) {
-
+        tag.setByte("index", (byte)getIndex()); //Used in packet decoding to figure out which semiblock updated.
     }
 
     @Override
@@ -181,5 +198,10 @@ public class SemiBlockBasic<TTileEntity extends TileEntity> implements ISemiBloc
     @Override
     public void handleGUIButtonPress(int guiID, EntityPlayer player) {
 
+    }
+    
+    @Override
+    public String toString(){
+        return String.format("Pos: %s, %s", getPos(), getClass());
     }
 }

@@ -58,10 +58,9 @@ public class TOPCallback implements Function<ITheOneProbe, Void> {
                     ITOPInfoProvider provider = (ITOPInfoProvider) blockState.getBlock();
                     provider.addProbeInfo(mode, probeInfo, player, world, blockState, data);
                 }
-                ISemiBlock semiBlock = SemiBlockManager.getInstance(world).getSemiBlock(world, data.getPos());
-                if (semiBlock != null) {
+                SemiBlockManager.getInstance(world).getSemiBlocks(world, data.getPos()).forEach(semiBlock ->{
                     handleSemiblock(mode, probeInfo, semiBlock);
-                }
+                });
             }
         });
 

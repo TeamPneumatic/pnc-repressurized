@@ -13,6 +13,8 @@ public interface ISemiBlock {
     World getWorld();
 
     BlockPos getPos();
+    
+    int getIndex();
 
     void writeToNBT(NBTTagCompound tag);
 
@@ -33,6 +35,12 @@ public interface ISemiBlock {
     void onPlaced(EntityPlayer player, ItemStack stack);
 
     boolean onRightClickWithConfigurator(EntityPlayer player);
+    
+    void onSemiBlockRemovedFromThisPos(ISemiBlock semiBlock);
+    
+    default boolean canCoexistInSameBlock(ISemiBlock semiBlock){
+        return false;
+    }
 
     PacketDescription getDescriptionPacket();
 }

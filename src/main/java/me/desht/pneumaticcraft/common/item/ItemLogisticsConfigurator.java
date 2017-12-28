@@ -1,5 +1,7 @@
 package me.desht.pneumaticcraft.common.item;
 
+import java.util.List;
+
 import me.desht.pneumaticcraft.common.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -21,19 +23,20 @@ public class ItemLogisticsConfigurator extends ItemPressurizable {
     public EnumActionResult onItemUseFirst(EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, EnumHand hand) {
         ItemStack stack = player.getHeldItem(hand);
         if (!world.isRemote && stack.getMaxDamage() - stack.getItemDamage() >= 100) {
-            ISemiBlock semiBlock = SemiBlockManager.getInstance(world).getSemiBlock(world, pos);
+            List<ISemiBlock> semiBlocks = SemiBlockManager.getInstance(world).getSemiBlocksAsList(world, pos);
             
-            if(semiBlock == null){
+            if(semiBlocks.isEmpty()){
                 pos = pos.offset(side);
-                semiBlock = SemiBlockManager.getInstance(world).getSemiBlock(world, pos);
+                semiBlocks = SemiBlockManager.getInstance(world).getSemiBlocksAsList(world, pos);
             }
 
-            if (semiBlock != null) {
+            if (!semiBlocks.isEmpty()) {
                 if (player.isSneaking()) {
-                    SemiBlockManager.getInstance(world).breakSemiBlock(world, pos, player);
+                    semiBlocks.forEach(s -> SemiBlockManager.getInstance(world).breakSemiBlock(s, player));
                     return EnumActionResult.SUCCESS;
                 } else {
-                    if (semiBlock.onRightClickWithConfigurator(player)) {
+                    //TODO raytrace?
+                    if (semiBlocks.stream().anyMatch(s -> s.onRightClickWithConfigurator(player))) {
                         addAir(stack, -PneumaticValues.USAGE_LOGISTICS_CONFIGURATOR);
                         return EnumActionResult.SUCCESS;
                     }

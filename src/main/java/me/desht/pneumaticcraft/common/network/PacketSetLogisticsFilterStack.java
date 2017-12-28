@@ -51,9 +51,9 @@ public class PacketSetLogisticsFilterStack extends LocationIntPacket<PacketSetLo
                 ((ContainerLogistics) player.openContainer).logistics.getFilters().setStackInSlot(message.settingIndex, message.settingStack);
             }
         } else {
-            ISemiBlock semiBlock = SemiBlockManager.getInstance(player.world).getSemiBlock(player.world, message.pos);
-            if (semiBlock instanceof SemiBlockLogistics) {
-                ((SemiBlockLogistics) semiBlock).getFilters().setStackInSlot(message.settingIndex, message.settingStack);
+            SemiBlockLogistics semiBlock = SemiBlockManager.getInstance(player.world).getSemiBlock(SemiBlockLogistics.class, player.world, message.pos);
+            if (semiBlock != null) {
+                semiBlock.getFilters().setStackInSlot(message.settingIndex, message.settingStack);
             }
         }
     }
