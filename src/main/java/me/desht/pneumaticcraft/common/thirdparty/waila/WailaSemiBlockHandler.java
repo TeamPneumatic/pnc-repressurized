@@ -34,7 +34,7 @@ public class WailaSemiBlockHandler implements IWailaDataProvider {
     @Override
     public List<String> getWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
         
-        List<SemiBlockBasic> semiBlocks = SemiBlockManager.getInstance(accessor.getWorld()).getSemiBlocks(SemiBlockBasic.class, accessor.getWorld(), accessor.getPosition());
+        List<SemiBlockBasic> semiBlocks = SemiBlockManager.getInstance(accessor.getWorld()).getSemiBlocksAsList(SemiBlockBasic.class, accessor.getWorld(), accessor.getPosition());
         NBTTagList tagList = accessor.getNBTData().getTagList("semiBlocks", Constants.NBT.TAG_COMPOUND);
         for(int i = 0; i < semiBlocks.size(); i++){
             semiBlocks.get(i).addWailaTooltip(currenttip, tagList.getCompoundTagAt(i));
@@ -50,7 +50,7 @@ public class WailaSemiBlockHandler implements IWailaDataProvider {
     @Override
     public NBTTagCompound getNBTData(EntityPlayerMP player, TileEntity te, NBTTagCompound tag, World world, BlockPos pos) {
         @SuppressWarnings("rawtypes")
-        List<SemiBlockBasic> semiBlocks = SemiBlockManager.getInstance(world).getSemiBlocks(SemiBlockBasic.class, world, pos);
+        List<SemiBlockBasic> semiBlocks = SemiBlockManager.getInstance(world).getSemiBlocksAsList(SemiBlockBasic.class, world, pos);
         NBTTagList tagList = new NBTTagList();
         tag.setTag("semiBlocks", tagList);
         for(SemiBlockBasic<?> semiBlock : semiBlocks){

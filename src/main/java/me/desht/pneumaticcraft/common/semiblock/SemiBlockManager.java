@@ -315,6 +315,7 @@ public class SemiBlockManager {
     private boolean interact(PlayerInteractEvent.RightClickBlock event, ItemStack curItem, BlockPos pos){
         ISemiBlock newBlock = ((ISemiBlockItem) curItem.getItem()).getSemiBlock(event.getWorld(), pos, curItem);
         newBlock.initialize(event.getWorld(), pos);
+        newBlock.prePlacement(event.getEntityPlayer(), curItem, event.getFace());
         
         Stream<ISemiBlock> existingSemiblocks = getSemiBlocks(event.getWorld(), pos);
         List<ISemiBlock> collidingBlocks = existingSemiblocks.filter(s -> !s.canCoexistInSameBlock(newBlock)).collect(Collectors.toList());
@@ -330,9 +331,9 @@ public class SemiBlockManager {
             
             return true;
         } else {            
-            if (newBlock.canPlace()) {
+            if (newBlock.canPlace(event.getFace())) {
                 addSemiBlock(event.getWorld(), pos, newBlock);
-                newBlock.onPlaced(event.getEntityPlayer(), curItem);
+                newBlock.onPlaced(event.getEntityPlayer(), curItem, event.getFace());
                 event.getWorld().playSound(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
                         SoundType.GLASS.getPlaceSound(), SoundCategory.BLOCKS,
                         (SoundType.GLASS.getVolume() + 1.0F) / 2.0F, SoundType.GLASS.getPitch() * 0.8F,
@@ -419,21 +420,22 @@ public class SemiBlockManager {
     }
     
     public <T extends ISemiBlock> T getSemiBlock(Class<T> clazz, World world, BlockPos pos){
-        List<T> semiBlocks = getSemiBlocks(clazz, world, pos);
-        return semiBlocks.isEmpty() ? null : semiBlocks.get(0);
+        return getSemiBlocks(clazz, world, pos).findFirst().orElse(null);
     }
     
-    public <T extends ISemiBlock> List<T> getSemiBlocks(Class<T> clazz, World world, BlockPos pos) {
-        return StreamUtils.ofType(clazz, getSemiBlocks(world, pos)).collect(Collectors.toList());
+    public <T extends ISemiBlock> Stream<T> getSemiBlocks(Class<T> clazz, World world, BlockPos pos) {
+        return StreamUtils.ofType(clazz, getSemiBlocks(world, pos));
     }
     
     public List<ISemiBlock> getSemiBlocksAsList(World world, BlockPos pos) {
         return getSemiBlocks(world, pos).collect(Collectors.toList());
     }
+    
+    public <T extends ISemiBlock> List<T> getSemiBlocksAsList(Class<T> clazz, World world, BlockPos pos) {
+        return getSemiBlocks(clazz, world, pos).collect(Collectors.toList());
+    }
 
     public Stream<ISemiBlock> getSemiBlocks(World world, BlockPos pos) {
-        
-
         Stream<ISemiBlock> stream = null;
         Chunk chunk = world.getChunkFromBlockCoords(pos);
         Map<BlockPos, List<ISemiBlock>> map = semiBlocks.get(chunk);

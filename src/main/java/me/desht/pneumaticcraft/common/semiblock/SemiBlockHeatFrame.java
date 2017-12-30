@@ -31,7 +31,7 @@ public class SemiBlockHeatFrame extends SemiBlockBasic<TileEntity> implements IH
     private int heatLevel = 10;
 
     @Override
-    public boolean canPlace() {
+    public boolean canPlace(EnumFacing facing) {
         return getTileEntity() != null && getTileEntity().hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
     }
 
@@ -164,8 +164,8 @@ public class SemiBlockHeatFrame extends SemiBlockBasic<TileEntity> implements IH
     }
 
     @Override
-    public void onPlaced(EntityPlayer player, ItemStack stack) {
-        super.onPlaced(player, stack);
+    public void onPlaced(EntityPlayer player, ItemStack stack, EnumFacing facing) {
+        super.onPlaced(player, stack, facing);
         getWorld().notifyNeighborsOfStateChange(getPos(), getBlockState().getBlock(), true);
     }
 

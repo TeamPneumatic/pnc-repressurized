@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.common.network.PacketDescription;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -23,6 +24,8 @@ public interface ISemiBlock {
     void update();
 
     void initialize(World world, BlockPos pos);
+    
+    void prePlacement(EntityPlayer player, ItemStack stack, EnumFacing facing);
 
     void invalidate();
 
@@ -30,9 +33,9 @@ public interface ISemiBlock {
 
     void addDrops(NonNullList<ItemStack> drops);
 
-    boolean canPlace();
+    boolean canPlace(EnumFacing facing);
 
-    void onPlaced(EntityPlayer player, ItemStack stack);
+    void onPlaced(EntityPlayer player, ItemStack stack, EnumFacing facing);
 
     boolean onRightClickWithConfigurator(EntityPlayer player);
     

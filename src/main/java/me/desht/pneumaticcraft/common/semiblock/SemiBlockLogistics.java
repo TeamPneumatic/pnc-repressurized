@@ -15,6 +15,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
@@ -50,7 +51,7 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic<TileEntity> {
     }
 
     @Override
-    public boolean canPlace() {
+    public boolean canPlace(EnumFacing facing) {
         return getTileEntity() != null &&
                 (getTileEntity().hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)
                 || getTileEntity().hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null));
@@ -226,7 +227,7 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic<TileEntity> {
     }
 
     @Override
-    public void onPlaced(EntityPlayer player, ItemStack stack) {
+    public void onPlaced(EntityPlayer player, ItemStack stack, EnumFacing facing) {
         NBTTagCompound tag = stack.getTagCompound();
         if (tag != null) {
             readFromNBT(tag);

@@ -9,6 +9,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
@@ -59,7 +60,7 @@ public class SemiBlockBasic<TTileEntity extends TileEntity> implements ISemiBloc
     @Override
     public void update() {
         if (!world.isRemote && !canStay()) drop();
-        if (!world.isRemote) {
+        if (!world.isRemote && !isInvalid()) {
             if (descriptionFields == null) descriptionPacketScheduled = true;
             for (SyncedField field : getDescriptionFields()) {
                 if (field.update()) {
@@ -99,6 +100,11 @@ public class SemiBlockBasic<TTileEntity extends TileEntity> implements ISemiBloc
     public IBlockState getBlockState() {
         return world.getBlockState(pos);
     }
+    
+    public boolean isAir(){
+        IBlockState state = getBlockState();
+        return state.getBlock().isAir(state, world, pos);
+    }
 
     @SuppressWarnings("unchecked")
     public TTileEntity getTileEntity() {
@@ -136,17 +142,22 @@ public class SemiBlockBasic<TTileEntity extends TileEntity> implements ISemiBloc
     }
 
     @Override
-    public boolean canPlace() {
+    public boolean canPlace(EnumFacing facing) {
         return true;
+    }
+    
+    @Override
+    public void prePlacement(EntityPlayer player, ItemStack stack, EnumFacing facing){
+        
     }
 
     @Override
-    public void onPlaced(EntityPlayer player, ItemStack stack) {
+    public void onPlaced(EntityPlayer player, ItemStack stack, EnumFacing facing) {
 
     }
 
     public boolean canStay() {
-        return canPlace();
+        return canPlace(null);
     }
 
     @Override

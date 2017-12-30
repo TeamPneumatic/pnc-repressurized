@@ -1,5 +1,7 @@
 package me.desht.pneumaticcraft.common.network;
 
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.Validate;
 
 import io.netty.buffer.ByteBuf;
@@ -38,6 +40,7 @@ public class PacketRemoveSemiBlock extends LocationIntPacket<PacketRemoveSemiBlo
         SemiBlockManager manager = SemiBlockManager.getInstance(player.world);
         manager.getSemiBlocks(player.world, message.pos)
               .filter(s -> s.getIndex() == message.index)
+              .collect(Collectors.toList()) //To list is necessary, because the indeces will get updated through the removal iterations.
               .forEach(s -> manager.removeSemiBlock(s));
     }
 

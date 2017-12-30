@@ -201,4 +201,26 @@ public class IOHelper {
         }
         return ItemStack.EMPTY;
     }
+    
+    /**
+     * Returns true if succeeded
+     * @param input
+     * @param output
+     * @return
+     */
+    public static boolean transferOneItem(IItemHandler input, IItemHandler output){
+        if(input == null || output == null) return false;
+        
+        for(int i = 0; i < input.getSlots(); i++){
+            ItemStack extracted = input.extractItem(i, 1, true);
+            if(!extracted.isEmpty()){
+                if(ItemHandlerHelper.insertItemStacked(output, extracted, false).isEmpty()){
+                    input.extractItem(i, 1, false);
+                    return true;
+                }
+            }
+        }
+        
+        return false;
+    }
 }

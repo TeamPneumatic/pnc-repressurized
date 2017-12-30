@@ -54,7 +54,7 @@ public class ContainerLogistics extends ContainerPneumaticBase {
         if (itemRequester.getItem() instanceof ItemLogisticsFrame) {
             SemiBlockLogistics logistics = (SemiBlockLogistics) SemiBlockManager.getSemiBlockForKey(((ItemLogisticsFrame) itemRequester.getItem()).semiBlockId);
             logistics.initialize(player.world, new BlockPos(0, 0, 0));
-            logistics.onPlaced(player, itemRequester);
+            logistics.onPlaced(player, itemRequester, null);
             return logistics;
         } else {
             return null;

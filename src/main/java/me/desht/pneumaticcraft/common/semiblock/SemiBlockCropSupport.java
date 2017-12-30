@@ -21,7 +21,7 @@ public class SemiBlockCropSupport extends SemiBlockBasic<TileEntity>{
      * Use this custom addition to prevent placement derpyness, where the crop gets placed on the tilled earth.
      */
     @Override
-    public boolean canPlace() {
+    public boolean canPlace(EnumFacing facing) {
         IBlockState state = getBlockState();
         if(!state.getBlock().isAir(state, world, getPos()) && 
            !(state.getBlock() instanceof IPlantable)) return false;

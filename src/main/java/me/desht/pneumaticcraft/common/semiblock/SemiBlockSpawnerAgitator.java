@@ -10,15 +10,17 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.MobSpawnerBaseLogic;
 import net.minecraft.tileentity.TileEntityMobSpawner;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.util.FakePlayerFactory;
 
 public class SemiBlockSpawnerAgitator extends SemiBlockBasic<TileEntityMobSpawner>{
 
     public static final String ID = "spawner_agitator";
+    public static final GameProfile FAKE_PLAYER_PROFILE = new GameProfile(UUID.randomUUID(), "SemiBlockSpawnerAgitator");
     
     @Override
-    public boolean canPlace(){
+    public boolean canPlace(EnumFacing facing){
         return getBlockState().getBlock() == Blocks.MOB_SPAWNER;
     }
     
@@ -34,8 +36,7 @@ public class SemiBlockSpawnerAgitator extends SemiBlockBasic<TileEntityMobSpawne
                 if(!Reflections.isActivated(spawnerLogic)){
                     
                     //Temporarily add a fake player to the world to trick the spawner into thinking there's a player nearby
-                    GameProfile profile = new GameProfile(UUID.randomUUID(), "SemiBlockSpawnerAgitator");
-                    EntityPlayer fakePlayer = FakePlayerFactory.get((WorldServer)world, profile);
+                    EntityPlayer fakePlayer = FakePlayerFactory.get((WorldServer)world, FAKE_PLAYER_PROFILE);
                     fakePlayer.posX = getPos().getX();
                     fakePlayer.posY = getPos().getY();
                     fakePlayer.posZ = getPos().getZ();
@@ -49,8 +50,8 @@ public class SemiBlockSpawnerAgitator extends SemiBlockBasic<TileEntityMobSpawne
     }
     
     @Override
-    public void onPlaced(EntityPlayer player, ItemStack stack) {
-        super.onPlaced(player, stack);
+    public void onPlaced(EntityPlayer player, ItemStack stack, EnumFacing facing) {
+        super.onPlaced(player, stack, facing);
         if (!world.isRemote) {
             setSpawnPersistentEntities(true);
         }

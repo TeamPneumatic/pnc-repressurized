@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.common.semiblock.SemiBlockHeatFrame;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockLogistics;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockSpawnerAgitator;
+import me.desht.pneumaticcraft.common.semiblock.SemiBlockTransferGadget;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.EntityPlayer;
@@ -28,6 +29,7 @@ public class ClientSemiBlockManager {
         registerRenderer(SemiBlockHeatFrame.class, new SemiBlockRendererHeatFrame());
         registerRenderer(SemiBlockSpawnerAgitator.class, new SemiBlockRendererSpawnerAgitator());
         registerRenderer(SemiBlockCropSupport.class, new SemiBlockRendererCropSupport());
+        registerRenderer(SemiBlockTransferGadget.class, new SemiBlockRendererTransferGadget());
     }
 
     public static <T extends ISemiBlock> void registerRenderer(Class<T> semiBlock, ISemiBlockRenderer<T> renderer) {

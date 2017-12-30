@@ -111,6 +111,7 @@ item.amadron_tablet.name=Amadron Tablet
 item.heat_frame.name=Heat Frame
 item.spawner_agitator.name=Spawner Agitator
 item.crop_support.name=Crop Support
+item.transfer_gadget.name=Transfer Gadget
 item.minigun.name=Minigun
 item.camo_applicator.name=Camouflage Applicator
 
