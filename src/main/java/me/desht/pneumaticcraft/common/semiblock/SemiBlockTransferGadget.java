@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.semiblock;
 
 import me.desht.pneumaticcraft.common.network.DescSynced;
+import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -8,6 +9,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
+import net.minecraftforge.fluids.FluidUtil;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
@@ -95,13 +99,22 @@ public class SemiBlockTransferGadget extends SemiBlockBasic<TileEntity>{
         TileEntity inputTE = getTileEntity();
         TileEntity outputTE = getConnectedGadget().getTileEntity();
         if(inputTE == null || outputTE == null) return;
-        tryTransferItem(inputTE, outputTE);        
+        tryTransferItem(inputTE, outputTE); 
+        tryTransferFluid(inputTE, outputTE);
     }
 
     private void tryTransferItem(TileEntity inputTE, TileEntity outputTE){
         IItemHandler input = inputTE.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing);
         IItemHandler output = outputTE.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing.getOpposite());
         IOHelper.transferOneItem(input, output);
+    }
+    
+    private void tryTransferFluid(TileEntity inputTE, TileEntity outputTE){
+        IFluidHandler input = inputTE.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing);
+        IFluidHandler output = outputTE.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing.getOpposite());
+        if(input != null && output != null){
+            FluidUtil.tryFluidTransfer(output, input, 100, true);
+        }
     }
     
     public EnumFacing getFacing(){
