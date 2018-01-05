@@ -99,6 +99,8 @@ public class ConfigHandler {
         public boolean enableDroneSuffocationDamage = true;
         @Config.Comment("Efficiency of fuel buckets as furnace fuel (default 0.05 means 1 bucket of LPG smelts 450 items in a vanilla furnace")
         public float fuelBucketEfficiencyMultiplier = 0.05f;
+        @Config.Comment("Maximum number of blocks in the area defined in an Area Programming Puzzle Piece")
+        public int maxProgrammingArea = 250000;
     }
 
     public static class MachineProperties {
@@ -150,7 +152,7 @@ public class ConfigHandler {
         public boolean aphorismDrama = true;
         @Config.Comment("When true, the Pneumatic Helmet will be a model. Warning: this model looks far too good to be in MC (currently ignored)")
         public boolean useHelmetModel = false;
-        @Config.Comment("Defines the difficulty of the Programmer shown to the user. 0 = easy, 1 = medium, 2 = advanced")
+        @Config.Comment("Defines the default difficulty of the Programmer shown to the user. 0 = easy, 1 = medium, 2 = advanced")
         @Config.RangeInt(min = 0, max = 2)
         public int programmerDifficulty = 0;
         @Config.Comment("Show tank fluids with the The One Probe.  Note that TOP also has support for showing tanks, which may or may not be enabled.")

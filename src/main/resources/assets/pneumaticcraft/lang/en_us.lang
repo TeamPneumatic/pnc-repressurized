@@ -598,7 +598,7 @@ gui.programmer.checkbox.showFlow=Show Flow
 gui.programmer.pressIForInfo=§2Press 'I' for info
 gui.programmer.errors=Errors:
 gui.programmer.warnings=Warnings:
-gui.programmer.errorCount=Cannot export program: There are %s errors.
+gui.programmer.errorCount=Cannot export program: %s error(s) found.
 gui.programmer.warningCount=There are %s warnings in the program.
 gui.programmer.difficulty=Difficulty:
 gui.programmer.difficulty.medium.tooltip=Enables Conditions, Jump and Labels
@@ -645,6 +645,7 @@ gui.progWidget.externalProgram.shareVariables=Share Variables
 gui.progWidget.externalProgram.shareVariables.tooltip=When checked, the variables stored in the calling program will be shared with the called program.
 
 gui.progWidget.area.error.noArea=No area specified.
+gui.progWidget.area.error.areaTooBig=Specified area has too many blocks (%d > %d). See 'I:maxProgrammingArea' in config.
 gui.progWidget.general.error.emptyVariable=Variable is empty. Specify a valid variable.
 gui.progWidget.general.error.noSideActive=Affecting no sides. Select at least one side.
 gui.progWidget.general.error.noPieceConnected=No piece connected (on the bottom).

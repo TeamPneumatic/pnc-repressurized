@@ -4,8 +4,11 @@ import com.google.common.base.Predicate;
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
 import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetArea;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
+import me.desht.pneumaticcraft.common.ai.IDroneBase;
+import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.item.ItemPlastic;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.Entity;
@@ -166,10 +169,22 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
             minY = maxY = areaPoints[0].getY();
             minZ = maxZ = areaPoints[0].getZ();
         }
+
+
+        // Size validation is now done at compile-time - see ProgWidgetAreaItemBase#addErrors
+        // https://github.com/TeamPneumatic/pnc-repressurized/issues/95
+        // However, keep this code around to catch any drones programmed before that change.
         int size = (maxX - minX) * (maxY - minY) * (maxZ - minZ);
-        if (size > 100000) { //Prevent memory problems when getting to ridiculous areas.
-            if (aiManager != null) aiManager.getDrone().overload();
-            return;
+        if (size > ConfigHandler.general.maxProgrammingArea) { // Prevent memory problems when getting to ridiculous areas.
+            if (aiManager != null) {
+                IDroneBase drone = aiManager.getDrone();
+                Log.warning(String.format("Drone @ %s (DIM %d) was killed due to excessively large area (%d > %d). See 'I:maxProgrammingArea' in config.",
+                        drone.getDronePos().toString(), drone.world().provider.getDimension(), size, ConfigHandler.general.maxProgrammingArea));
+                drone.overload();
+                return;
+            }
+            // No aiManager; we must be in the Programmer.  Continue to calculate the area size;
+            // we want it for compile-time checking.
         }
 
         switch (type) {

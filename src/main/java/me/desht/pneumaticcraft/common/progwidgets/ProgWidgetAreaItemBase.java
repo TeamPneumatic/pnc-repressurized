@@ -5,8 +5,10 @@ import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
 import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetAreaShow;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.ai.StringFilterEntitySelector;
+import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
@@ -47,6 +49,11 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
         if (getConnectedParameters()[0] == null) {
             curInfo.add("gui.progWidget.area.error.noArea");
         }
+        Set<BlockPos> posSet = getCachedAreaSet();
+        if (posSet.size() > ConfigHandler.general.maxProgrammingArea) {
+            curInfo.add(I18n.format("gui.progWidget.area.error.areaTooBig",
+                    posSet.size(), ConfigHandler.general.maxProgrammingArea));
+        }
     }
 
     public static IBlockAccess getCache(Collection<BlockPos> area, World world) {
@@ -72,15 +79,15 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
     public List<BlockPos> getCachedAreaList() {
         if (areaListCache != null) {
             if (!canCache || updateVariables()) {
-                areaSetCache = new HashSet<BlockPos>(areaListCache.size());
+                areaSetCache = new HashSet<>(areaListCache.size());
                 getArea(areaSetCache);
-                areaListCache = new ArrayList<BlockPos>(areaSetCache.size());
+                areaListCache = new ArrayList<>(areaSetCache.size());
                 areaListCache.addAll(areaSetCache);
             }
         } else {
-            areaSetCache = new HashSet<BlockPos>();
+            areaSetCache = new HashSet<>();
             getArea(areaSetCache);
-            areaListCache = new ArrayList<BlockPos>(areaSetCache.size());
+            areaListCache = new ArrayList<>(areaSetCache.size());
             areaListCache.addAll(areaSetCache);
             initializeVariableCache();
         }
@@ -93,7 +100,7 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
     }
 
     private void initializeVariableCache() {
-        areaVariableStates = new HashMap<String, BlockPos>();
+        areaVariableStates = new HashMap<>();
         ProgWidgetArea whitelistWidget = (ProgWidgetArea) getConnectedParameters()[0];
         ProgWidgetArea blacklistWidget = (ProgWidgetArea) getConnectedParameters()[getParameters().length];
         if (whitelistWidget == null) return;
@@ -142,7 +149,7 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
             widget = (ProgWidgetArea) widget.getConnectedParameters()[0];
         }
         widget = blacklistWidget;
-        Set<BlockPos> blacklistedArea = new HashSet<BlockPos>();
+        Set<BlockPos> blacklistedArea = new HashSet<>();
         while (widget != null) {
             widget.getArea(blacklistedArea);
             widget = (ProgWidgetArea) widget.getConnectedParameters()[0];
