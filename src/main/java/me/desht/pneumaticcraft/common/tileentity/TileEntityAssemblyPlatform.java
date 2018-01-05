@@ -9,7 +9,7 @@ import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 
-public class TileEntityAssemblyPlatform extends TileEntityBase implements IAssemblyMachine, IResettable {
+public class TileEntityAssemblyPlatform extends TileEntityTickableBase implements IAssemblyMachine, IResettable {
     @DescSynced
     private boolean shouldClawClose;
     @DescSynced

@@ -12,6 +12,7 @@ import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.thirdparty.ModInteractionUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityTickableBase;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.TileEntityCache;
 import me.desht.pneumaticcraft.lib.Log;
@@ -48,7 +49,7 @@ public class AirHandler implements IAirHandler {
     private final Set<IAirHandler> specialConnectedHandlers = new HashSet<>();
     private TileEntityCache[] tileCache;
 
-    private TileEntityBase.UpgradeCache upgradeCache;
+    private TileEntityTickableBase.UpgradeCache upgradeCache;
     private IAirListener airListener;
     private IPneumaticMachine parentPneumatic;
     private World world;
@@ -277,7 +278,7 @@ public class AirHandler implements IAirHandler {
 
     @Override
     public void validate(TileEntity parent) {
-        upgradeCache = parent instanceof TileEntityBase ? ((TileEntityBase) parent).getUpgradeCache() : null;
+        upgradeCache = parent instanceof TileEntityTickableBase ? ((TileEntityBase) parent).getUpgradeCache() : null;
         airListener = parent instanceof IAirListener ? (IAirListener) parent : null;
         parentPneumatic = (IPneumaticMachine) parent;
         setWorld(parent.getWorld());

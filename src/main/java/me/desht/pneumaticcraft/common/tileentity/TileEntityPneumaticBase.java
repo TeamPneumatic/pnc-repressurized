@@ -12,7 +12,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class TileEntityPneumaticBase extends TileEntityBase implements IPneumaticPosProvider {
+public class TileEntityPneumaticBase extends TileEntityTickableBase implements IPneumaticPosProvider {
     @GuiSynced
     final IAirHandler airHandler;
     public final float dangerPressure, criticalPressure;

@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class TileEntitySecurityStation extends TileEntityBase implements IGUITextFieldSensitive,
+public class TileEntitySecurityStation extends TileEntityTickableBase implements IGUITextFieldSensitive,
         IRangeLineShower, IRedstoneControl {
     private SecurityStationHandler inventory;
     private static final int INVENTORY_SIZE = 35;

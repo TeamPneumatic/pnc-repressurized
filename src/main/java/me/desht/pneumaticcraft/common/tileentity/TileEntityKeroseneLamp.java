@@ -35,7 +35,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-public class TileEntityKeroseneLamp extends TileEntityBase implements IRedstoneControlled, ISerializableTanks {
+public class TileEntityKeroseneLamp extends TileEntityTickableBase implements IRedstoneControlled, ISerializableTanks {
     public static final int INVENTORY_SIZE = 2;
 
     private static final int INPUT_SLOT = 0;

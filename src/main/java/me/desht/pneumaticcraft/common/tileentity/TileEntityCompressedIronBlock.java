@@ -6,7 +6,7 @@ import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import net.minecraft.util.EnumFacing;
 
-public class TileEntityCompressedIronBlock extends TileEntityBase implements IHeatExchanger, IComparatorSupport {
+public class TileEntityCompressedIronBlock extends TileEntityTickableBase implements IHeatExchanger, IComparatorSupport {
 
     protected final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().getHeatExchangerLogic();
     @DescSynced

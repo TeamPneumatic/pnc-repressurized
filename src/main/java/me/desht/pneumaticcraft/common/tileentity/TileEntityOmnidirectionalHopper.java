@@ -20,7 +20,7 @@ import net.minecraftforge.items.ItemStackHandler;
 
 import java.util.List;
 
-public class TileEntityOmnidirectionalHopper extends TileEntityBase implements IRedstoneControlled {
+public class TileEntityOmnidirectionalHopper extends TileEntityTickableBase implements IRedstoneControlled {
     public static final int INVENTORY_SIZE = 5;
     @DescSynced
     protected EnumFacing inputDir = EnumFacing.UP;

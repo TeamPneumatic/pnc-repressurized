@@ -32,7 +32,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
-public class TileEntitySentryTurret extends TileEntityBase implements IRedstoneControlled, IGUITextFieldSensitive {
+public class TileEntitySentryTurret extends TileEntityTickableBase implements IRedstoneControlled, IGUITextFieldSensitive {
 
     public static final int INVENTORY_SIZE = 4;
     private final ItemStackHandler inventory = new TurretItemStackHandler();
