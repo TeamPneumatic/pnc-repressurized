@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class TileEntityRefinery extends TileEntityBase implements IHeatExchanger, IRedstoneControlled, IComparatorSupport, ISerializableTanks {
+public class TileEntityRefinery extends TileEntityTickableBase implements IHeatExchanger, IRedstoneControlled, IComparatorSupport, ISerializableTanks {
 
     @GuiSynced
     @DescSynced

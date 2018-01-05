@@ -10,7 +10,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class TileEntityPneumaticDoor extends TileEntityBase {
+public class TileEntityPneumaticDoor extends TileEntityTickableBase {
     @DescSynced
     @LazySynced
     public float rotationAngle;

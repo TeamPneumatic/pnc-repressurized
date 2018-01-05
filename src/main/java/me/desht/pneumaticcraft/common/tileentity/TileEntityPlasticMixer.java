@@ -32,7 +32,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Map;
 
-public class TileEntityPlasticMixer extends TileEntityBase implements IHeatExchanger, IRedstoneControlled, ISerializableTanks {
+public class TileEntityPlasticMixer extends TileEntityTickableBase implements IHeatExchanger, IRedstoneControlled, ISerializableTanks {
     private static final int BASE_TEMPERATURE = FluidRegistry.WATER.getTemperature();
     public static final int INVENTORY_SIZE = 5;
     public static final int DYE_PER_DYE = 0xFF * 10;

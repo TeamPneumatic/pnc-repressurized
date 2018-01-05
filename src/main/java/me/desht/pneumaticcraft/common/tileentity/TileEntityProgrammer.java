@@ -32,7 +32,7 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 import javax.annotation.Nonnull;
 import java.util.*;
 
-public class TileEntityProgrammer extends TileEntityBase implements IGUITextFieldSensitive {
+public class TileEntityProgrammer extends TileEntityTickableBase implements IGUITextFieldSensitive {
     private static final int INVENTORY_SIZE = 1;
 
     public final List<IProgWidget> progWidgets = new ArrayList<IProgWidget>();

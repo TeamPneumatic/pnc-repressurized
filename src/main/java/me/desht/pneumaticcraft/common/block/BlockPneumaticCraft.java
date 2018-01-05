@@ -94,7 +94,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
         try {
             TileEntity te = getTileEntityClass().newInstance();
             te.setWorld(world);
-            if (te instanceof TileEntityBase) {
+            if (te instanceof TileEntityTickableBase) {
                 ((TileEntityBase) te).onTileEntityCreated();
             }
             return te;
@@ -248,7 +248,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
     public void onNeighborChange(IBlockAccess world, BlockPos pos, BlockPos tilePos) {
         if (world instanceof World && !((World) world).isRemote) {
             TileEntity te = world.getTileEntity(pos);
-            if (te instanceof TileEntityBase) {
+            if (te instanceof TileEntityTickableBase) {
                 ((TileEntityBase) te).onNeighborTileUpdate();
             }
         }
@@ -258,7 +258,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
     public void neighborChanged(IBlockState state, World world, BlockPos pos, Block block, BlockPos fromPos) {
         if (!world.isRemote) {
             TileEntity te = world.getTileEntity(pos);
-            if (te instanceof TileEntityBase) {
+            if (te instanceof TileEntityTickableBase) {
                 ((TileEntityBase) te).onNeighborBlockUpdate();
             }
         }
@@ -379,7 +379,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
         boolean hasCustomDrops = false;
 
         TileEntity te = world.getTileEntity(pos);
-        if (te instanceof TileEntityBase) {
+        if (te instanceof TileEntityTickableBase) {
             ((TileEntityBase) te).getAllDrops(drops);
         }
 
@@ -411,7 +411,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
             IFluidHandler handler = te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, data.getSideHit());
             TOPCallback.handleFluidTanks(mode, probeInfo, handler);
         }
-        if (te instanceof TileEntityBase) {
+        if (te instanceof TileEntityTickableBase) {
             TOPCallback.handleRedstoneMode(mode, probeInfo, (TileEntityBase) te);
         }
         if (te instanceof TileEntityPressureTube) {

@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.client.gui.GuiPneumaticContainerBase;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
 import me.desht.pneumaticcraft.common.tileentity.IRedstoneControl;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityTickableBase;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
@@ -48,7 +49,7 @@ public class WailaRedstoneControl implements IWailaDataProvider {
             GuiPneumaticContainerBase gui = (GuiPneumaticContainerBase) PneumaticCraftRepressurized.proxy.getClientGuiElement(((BlockPneumaticCraft) accessor.getBlock()).getGuiID().ordinal(),
                     accessor.getPlayer(), accessor.getWorld(), accessor.getPosition().getX(), accessor.getPosition().getY(), accessor.getPosition().getZ());
             TileEntity te = accessor.getTileEntity();
-            if (te instanceof TileEntityBase) {
+            if (te instanceof TileEntityTickableBase) {
                 values.put(((TileEntityBase) te).getRedstoneString(), ((TileEntityBase) te).getRedstoneButtonText(mode));
             }
 //            if (gui != null) {
