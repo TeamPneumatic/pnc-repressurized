@@ -6,6 +6,14 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
+## 0.2.3-? (not released)
+
+* Fixed (hopefully) reflection-based crashes on startup when running with many other coremods
+* Fixed NPE's when breaking certain inventories or tanks with a Logistics Frame attached
+* Fixed item dupe when Logistics Drone imported from inventories under certain circumstances
+* Big performance improvement when opening the item search GUI
+* Network Data Storage item now shows required puzzle pieces in its item tooltip when holding Shift
+
 ## 0.2.2-102 (25 Dec 2017)
 
 * Fixed crash when removing an opened Pneumatic Door in survival mode.
