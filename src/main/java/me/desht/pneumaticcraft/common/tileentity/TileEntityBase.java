@@ -8,7 +8,6 @@ import dan200.computercraft.api.peripheral.IPeripheral;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
@@ -31,7 +30,6 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ITickable;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
@@ -45,7 +43,7 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.fml.common.Optional;
-import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
@@ -53,20 +51,19 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 import javax.annotation.Nullable;
 import java.util.*;
 
-@Optional.InterfaceList({@Optional.Interface(iface = "dan200.computercraft.api.peripheral.IPeripheral", modid = ModIds.COMPUTERCRAFT)})
-public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, IDescSynced, ITickable, IUpgradeAcceptor, IPeripheral {
-    @DescSynced
-    protected UpgradeHandler upgradeHandler;
-    protected boolean firstRun = true;  // True only the first time updateEntity invokes in a session
-    private boolean descriptionPacketScheduled;
-    private List<SyncedField> descriptionFields;
-    protected int poweredRedstone; // The redstone strength currently applied to the block.
-    private TileEntityCache[] tileCache;
-    protected List<ILuaMethod> luaMethods = new ArrayList<>();
-    private IBlockState cachedBlockState;
+public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, IDescSynced, IUpgradeAcceptor, IPeripheral {
     private final Set<Item> applicableUpgrades = new HashSet<>();
     private final Set<String> applicableCustomUpgrades = new HashSet<>();
     private final UpgradeCache upgradeCache = new UpgradeCache(this);
+    @DescSynced
+    protected UpgradeHandler upgradeHandler;
+    protected boolean firstRun = true;  // True only the first time updateEntity invokes in a session
+    protected int poweredRedstone; // The redstone strength currently applied to the block.
+    protected List<ILuaMethod> luaMethods = new ArrayList<>();
+    private boolean descriptionPacketScheduled;
+    private List<SyncedField> descriptionFields;
+    private TileEntityCache[] tileCache;
+    private IBlockState cachedBlockState;
 
     public TileEntityBase() {
         this(0);
@@ -77,8 +74,23 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
         this.upgradeHandler = new UpgradeHandler(upgradeSize);
     }
 
-    protected void addApplicableUpgrade(EnumUpgrade... upgrades) {
-        for (EnumUpgrade upgrade : upgrades)
+    public static int getUpgrades(IItemHandler inv, IItemRegistry.EnumUpgrade upgrade) {
+        int upgrades = 0;
+        Item upgradeItem = Itemss.upgrades.get(upgrade);
+        for (int i = 0; i < inv.getSlots(); i++) {
+            if (inv.getStackInSlot(i).getItem() == upgradeItem) {
+                upgrades += inv.getStackInSlot(i).getCount();
+            }
+        }
+        return upgrades;
+    }
+
+    private static String makeUpgradeKey(ItemStack stack) {
+        return stack.getItem().getRegistryName() + ":" + stack.getMetadata();
+    }
+
+    protected void addApplicableUpgrade(IItemRegistry.EnumUpgrade... upgrades) {
+        for (IItemRegistry.EnumUpgrade upgrade : upgrades)
             addApplicableUpgrade(Itemss.upgrades.get(upgrade));
     }
 
@@ -122,7 +134,6 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
         packet.handleClientSide(packet, PneumaticCraftRepressurized.proxy.getPlayer());
     }
 
-
     @Override
     public BlockPos getPosition() {
         return getPos();
@@ -156,10 +167,9 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     }
 
     public void sendDescPacket(double maxPacketDistance) {
-        NetworkHandler.sendToAllAround(new PacketDescription(this), new TargetPoint(world.provider.getDimension(), getPos().getX(), getPos().getY(), getPos().getZ(), maxPacketDistance));
+        NetworkHandler.sendToAllAround(new PacketDescription(this), new NetworkRegistry.TargetPoint(world.provider.getDimension(), getPos().getX(), getPos().getY(), getPos().getZ(), maxPacketDistance));
     }
 
-    @Override
     public void update() {
         if (firstRun && !world.isRemote) {
             //firstRun = false;
@@ -297,49 +307,21 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
         return upgrades;
     }
 
-    public int getUpgrades(EnumUpgrade upgrade) {
+    public int getUpgrades(IItemRegistry.EnumUpgrade upgrade) {
         return upgradeCache.getUpgrades(upgrade);
     }
-
-    public static int getUpgrades(IItemHandler inv, EnumUpgrade upgrade) {
-        int upgrades = 0;
-        Item upgradeItem = Itemss.upgrades.get(upgrade);
-        for (int i = 0; i < inv.getSlots(); i++) {
-            if (inv.getStackInSlot(i).getItem() == upgradeItem) {
-                upgrades += inv.getStackInSlot(i).getCount();
-            }
-        }
-        return upgrades;
-    }
-
 
     public int getCustomUpgrades(ItemStack upgradeStack) {
         return upgradeCache.getUpgrades(upgradeStack);
     }
 
     public float getSpeedMultiplierFromUpgrades() {
-        return (float) Math.pow(PneumaticValues.SPEED_UPGRADE_MULTIPLIER, Math.min(10, getUpgrades(EnumUpgrade.SPEED)));
+        return (float) Math.pow(PneumaticValues.SPEED_UPGRADE_MULTIPLIER, Math.min(10, getUpgrades(IItemRegistry.EnumUpgrade.SPEED)));
     }
 
     public float getSpeedUsageMultiplierFromUpgrades() {
-        return (float) Math.pow(PneumaticValues.SPEED_UPGRADE_USAGE_MULTIPLIER, Math.min(10, getUpgrades(EnumUpgrade.SPEED)));
+        return (float) Math.pow(PneumaticValues.SPEED_UPGRADE_USAGE_MULTIPLIER, Math.min(10, getUpgrades(IItemRegistry.EnumUpgrade.SPEED)));
     }
-
-    /* TODO IC2 dep @Optional.Method(modid = ModIds.INDUSTRIALCRAFT)
-     protected int getIC2Upgrades(String ic2ItemKey, int[] upgradeSlots){
-         ItemStack itemStack = IC2Items.getItem(ic2ItemKey);
-         if(itemStack == null) return 0;
-         int upgrades = 0;
-         if(this instanceof IInventory) {// this always should be true.
-             IInventory inv = (IInventory)this;
-             for(int i : upgradeSlots) {
-                 if(inv.getStackInSlot(i) != null && inv.getStackInSlot(i).getItem() == itemStack.getItem()) {
-                     upgrades += inv.getStackInSlot(i).stackSize;
-                 }
-             }
-         }
-         return upgrades;
-     }*/
 
     @Override
     public void handleGUIButtonPress(int guiID, EntityPlayer player) {
@@ -497,10 +479,6 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
         return oldState.getBlock() != newSate.getBlock();
     }
 
-    /*
-     * COMPUTERCRAFT API 
-     */
-
     protected void addLuaMethods() {
         if (this instanceof IHeatExchanger) {
             final IHeatExchanger exchanger = (IHeatExchanger) this;
@@ -657,10 +635,6 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
 
     public UpgradeCache getUpgradeCache() {
         return upgradeCache;
-    }
-
-    private static String makeUpgradeKey(ItemStack stack) {
-        return stack.getItem().getRegistryName() + ":" + stack.getMetadata();
     }
 
     public class UpgradeHandler extends FilteredItemStackHandler {

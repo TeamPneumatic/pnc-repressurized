@@ -11,7 +11,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public abstract class TileEntityAssemblyRobot extends TileEntityBase implements IAssemblyMachine, IResettable {
+public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase implements IAssemblyMachine, IResettable {
     public float[] oldAngles = new float[5];
     @DescSynced
     @LazySynced

@@ -11,7 +11,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 
-public class TileEntityElevatorCaller extends TileEntityBase implements ICamouflageableTE {
+public class TileEntityElevatorCaller extends TileEntityTickableBase implements ICamouflageableTE {
     private ElevatorButton[] floors = new ElevatorButton[0];
     private int thisFloor;
     private boolean emittingRedstone;
