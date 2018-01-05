@@ -700,7 +700,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
             List<ItemStack> returnedPieces = te.getReturnedPuzzleStacks();
             if (!requiredPieces.isEmpty() || !returnedPieces.isEmpty()) exportButtonTooltip.add("");
             if (!requiredPieces.isEmpty()) {
-                exportButtonTooltip.add("Required Programming Puzzles:");
+                exportButtonTooltip.add(I18n.format("gui.tooltip.programmable.requiredPieces"));
                 if (player.capabilities.isCreativeMode)
                     exportButtonTooltip.add("(Creative mode, so the following is free)");
                 for (ItemStack stack : requiredPieces) {

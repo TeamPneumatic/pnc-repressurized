@@ -548,10 +548,10 @@ gui.tab.info.logisticsRequester.aeIntegration.title=AE2 Integration
 gui.tab.info.logisticsRequester.aeIntegration=When checked, Logistic Drones will inform the AE Network about providable items (which then can be 'crafted'). When asked to craft, the Requester Frame is set up to request the requested items.
 gui.tab.info.logisticsRequester.aeIntegration.enable=Enable Integration
 
-gui.programmer.button.export.programmingWhen=§cProgramming when: %s
+gui.programmer.button.export.programmingWhen=§aProgramming when: %s
 gui.programmer.button.export.pressingButton=Pressing button
 gui.programmer.button.export.onItemInsert=Item inserted
-gui.programmer.button.export.pressRToChange=§cPress 'R' to change
+gui.programmer.button.export.pressRToChange=§aPress 'R' to change
 gui.programmer.button.convertToRelative.desc=§2Converts the program to use relative coordinates everywhere. Useful to share programs, or use them in some place elsewhere. This will generate Coordinate Operator pieces under the Start piece.
 gui.programmer.button.convertToRelative.noStartPiece=§c-A Start piece is required.
 gui.programmer.button.convertToRelative.noBaseCoordinate=§c-A Coordinate Operator piece is required directly under the Start piece to define a base coordinate, the only coordinate that the user will have to change.
