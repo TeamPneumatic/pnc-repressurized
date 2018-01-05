@@ -100,15 +100,13 @@ public class ClientEventHandler {
             }
             Collections.sort(addedEntries);
             event.getToolTip().addAll(addedEntries);
-            if (!widgets.isEmpty()) {
+            if (PneumaticCraftRepressurized.proxy.isSneakingInGui() && !widgets.isEmpty()) {
                 Map<Integer,Integer> widgetColorMap = TileEntityProgrammer.getPuzzleSummary(widgets);
-                if (PneumaticCraftRepressurized.proxy.isSneakingInGui()) {
-                    event.getToolTip().add(I18n.format("gui.tooltip.programmable.requiredPieces"));
-                    for (int color : widgetColorMap.keySet()) {
-                        ItemStack stack = ItemProgrammingPuzzle.getStackForColor(color);
-                        stack.setCount(widgetColorMap.get(color));
-                        event.getToolTip().add("- " + widgetColorMap.get(color) + " x " + stack.getDisplayName());
-                    }
+                event.getToolTip().add(TextFormatting.WHITE + I18n.format("gui.tooltip.programmable.requiredPieces"));
+                for (int color : widgetColorMap.keySet()) {
+                    ItemStack stack = ItemProgrammingPuzzle.getStackForColor(color);
+                    stack.setCount(widgetColorMap.get(color));
+                    event.getToolTip().add("- " + widgetColorMap.get(color) + " x " + stack.getDisplayName());
                 }
             }
         }
