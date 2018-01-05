@@ -70,49 +70,69 @@ public class ClientEventHandler {
     @SubscribeEvent
     public void onItemTooltip(ItemTooltipEvent event) {
         if (event.getItemStack().getItem() instanceof IProgrammable) {
-            IProgrammable programmable = (IProgrammable) event.getItemStack().getItem();
-            if (programmable.canProgram(event.getItemStack()) && programmable.showProgramTooltip()) {
-                boolean hasInvalidPrograms = false;
-                List<String> addedEntries = new ArrayList<>();
-                Map<String, Integer> widgetMap = getPuzzleSummary(TileEntityProgrammer.getProgWidgets(event.getItemStack()));
-                for (Map.Entry<String, Integer> entry : widgetMap.entrySet()) {
-                    IProgWidget widget = ItemProgrammingPuzzle.getWidgetForName(entry.getKey());
-                    String prefix = "";
-                    GuiScreen curScreen = Minecraft.getMinecraft().currentScreen;
-                    if (curScreen instanceof IGuiDrone) {
-                        if (!((IGuiDrone) curScreen).getDrone().isProgramApplicable(widget)) {
-                            prefix = TextFormatting.RED + "";
-                            hasInvalidPrograms = true;
-                        }
-                    }
-                    addedEntries.add(prefix + "-" + entry.getValue() + "x " + I18n.format("programmingPuzzle." + entry.getKey() + ".name"));
-                }
-                if (hasInvalidPrograms) {
-                    event.getToolTip().add(TextFormatting.RED + I18n.format("gui.tooltip.programmable.invalidPieces"));
-                }
-                Collections.sort(addedEntries);
-                event.getToolTip().addAll(addedEntries);
-            }
+            handleProgrammableTooltip(event);
         } else if (event.getItemStack().getItem() instanceof ItemBucket || event.getItemStack().getItem() instanceof UniversalBucket) {
-            FluidStack fluidStack = FluidUtil.getFluidContained(event.getItemStack());
-            if (fluidStack != null && fluidStack.amount > 0) {
-                String key = "gui.tooltip.item." + fluidStack.getFluid().getName() + "_bucket";
-                if (I18n.hasKey(key)) {
-                    if (event.getToolTip().get(event.getToolTip().size() - 1).contains("Minecraft Forge")) {
-                        // bit of a kludge!  otherwise the blue "Minecraft Forge" string gets shown twice
-                        event.getToolTip().remove(event.getToolTip().size() - 1);
+            handleFluidContainerTooltip(event);
+        }
+    }
+
+    private void handleProgrammableTooltip(ItemTooltipEvent event) {
+        IProgrammable programmable = (IProgrammable) event.getItemStack().getItem();
+        if (programmable.canProgram(event.getItemStack()) && programmable.showProgramTooltip()) {
+            boolean hasInvalidPrograms = false;
+            List<String> addedEntries = new ArrayList<>();
+            List<IProgWidget> widgets = TileEntityProgrammer.getProgWidgets(event.getItemStack());
+            Map<String, Integer> widgetMap = getPuzzleSummary(widgets);
+            for (Map.Entry<String, Integer> entry : widgetMap.entrySet()) {
+                IProgWidget widget = ItemProgrammingPuzzle.getWidgetForName(entry.getKey());
+                String prefix = "";
+                GuiScreen curScreen = Minecraft.getMinecraft().currentScreen;
+                if (curScreen instanceof IGuiDrone) {
+                    if (!((IGuiDrone) curScreen).getDrone().isProgramApplicable(widget)) {
+                        prefix = TextFormatting.RED + "";
+                        hasInvalidPrograms = true;
                     }
-                    String prefix = "";
-                    if (!FluidRegistry.getDefaultFluidName(fluidStack.getFluid()).startsWith(Names.MOD_ID)) {
-                        // fluid is owned by another mod; let's make it clear that this tooltip applies to PneumaticCraft
-                        prefix = TextFormatting.DARK_AQUA + "" + TextFormatting.ITALIC + "[" + Names.MOD_NAME + "] ";
+                }
+                addedEntries.add(prefix + "- " + entry.getValue() + "x " + I18n.format("programmingPuzzle." + entry.getKey() + ".name"));
+            }
+            if (hasInvalidPrograms) {
+                event.getToolTip().add(TextFormatting.RED + I18n.format("gui.tooltip.programmable.invalidPieces"));
+            }
+            Collections.sort(addedEntries);
+            event.getToolTip().addAll(addedEntries);
+            if (!widgets.isEmpty()) {
+                Map<Integer,Integer> widgetColorMap = TileEntityProgrammer.getPuzzleSummary(widgets);
+                if (PneumaticCraftRepressurized.proxy.isSneakingInGui()) {
+                    event.getToolTip().add(I18n.format("gui.tooltip.programmable.requiredPieces"));
+                    for (int color : widgetColorMap.keySet()) {
+                        ItemStack stack = ItemProgrammingPuzzle.getStackForColor(color);
+                        stack.setCount(widgetColorMap.get(color));
+                        event.getToolTip().add("- " + widgetColorMap.get(color) + " x " + stack.getDisplayName());
                     }
-                    if (PneumaticCraftRepressurized.proxy.isSneakingInGui()) {
-                        String translatedInfo = TextFormatting.AQUA + I18n.format(key);
-                        event.getToolTip().addAll(PneumaticCraftUtils.convertStringIntoList(prefix + translatedInfo, 40));
-                    } else {
-                        event.getToolTip().add(TextFormatting.AQUA + I18n.format("gui.tooltip.sneakForInfo"));
-                    }
+                }
+            }
+        }
+    }
+
+    private void handleFluidContainerTooltip(ItemTooltipEvent event) {
+        FluidStack fluidStack = FluidUtil.getFluidContained(event.getItemStack());
+        if (fluidStack != null && fluidStack.amount > 0) {
+            String key = "gui.tooltip.item." + fluidStack.getFluid().getName() + "_bucket";
+            if (I18n.hasKey(key)) {
+                if (event.getToolTip().get(event.getToolTip().size() - 1).contains("Minecraft Forge")) {
+                    // bit of a kludge!  otherwise the blue "Minecraft Forge" string gets shown twice
+                    event.getToolTip().remove(event.getToolTip().size() - 1);
+                }
+                String prefix = "";
+                if (!FluidRegistry.getDefaultFluidName(fluidStack.getFluid()).startsWith(Names.MOD_ID)) {
+                    // fluid is owned by another mod; let's make it clear that this tooltip applies to PneumaticCraft
+                    prefix = TextFormatting.DARK_AQUA + "" + TextFormatting.ITALIC + "[" + Names.MOD_NAME + "] ";
+                }
+                if (PneumaticCraftRepressurized.proxy.isSneakingInGui()) {
+                    String translatedInfo = TextFormatting.AQUA + I18n.format(key);
+                    event.getToolTip().addAll(PneumaticCraftUtils.convertStringIntoList(prefix + translatedInfo, 40));
+                } else {
+                    event.getToolTip().add(TextFormatting.AQUA + I18n.format("gui.tooltip.sneakForInfo"));
                 }
             }
         }
