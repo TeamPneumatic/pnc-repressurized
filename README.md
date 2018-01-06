@@ -2,10 +2,11 @@
 
 This is a port to Minecraft 1.12.2 of MineMaarten's awesome PneumaticCraft mod: https://github.com/MineMaarten/PneumaticCraft.  It is highly functional at this point, although still likely to be fairly buggy and unstable.
 
-* Alpha-quality builds are available from https://minecraft.curseforge.com/projects/pneumaticcraft-repressurized
+* Beta-quality builds are available from https://minecraft.curseforge.com/projects/pneumaticcraft-repressurized
+* Development builds are available from http://jenkins.k-4u.nl/job/PneumaticCraft-Repressurized/
 * Maven artifacts are available from https://modmaven.k-4u.nl/me/desht/pneumaticcraft/pneumaticcraft-repressurized/
 
-To build this mod from source, clone the repository and do:
+To build from source, clone the repository and do:
 
 ```
 $ ./gradlew setupDecompWorkspace
@@ -14,11 +15,9 @@ $ ./gradlew build
 
 ...and any IDE-specific steps that you need (``genIntellijRuns`` etc.)
 
-I'm welcoming GitHub issues if you find problems but **please**:
+GitHub issues are welcome if you find problems or have enhancement request but **please**:
 1. Check that there isn't already an issue for your problem
 1. Be as descriptive as possible, including stacktraces (link to gist/pastebin/etc. please), and full instructions on reproducing the problem.
-
-This code is based on MineMaarten's 1.8.9 code (see the *MC1.8.8* branch in the above-linked repo), which is fairly functional on 1.8 but missing a lot of client-side models & rendering.  At the time of writing (2 Nov 2017), pretty much all of that is re-implemented for 1.12.2!
 
 Have fun!
 
