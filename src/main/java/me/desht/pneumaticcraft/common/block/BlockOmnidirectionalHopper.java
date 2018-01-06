@@ -12,6 +12,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -76,12 +77,22 @@ public class BlockOmnidirectionalHopper extends BlockPneumaticCraftModeled {
     }
 
     @Override
+    public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand) {
+        return this.getDefaultState()
+                .withProperty(ROTATION, facing.getOpposite())
+                .withProperty(INPUT, PneumaticCraftUtils.getDirectionFacing(placer, true).getOpposite());
+    }
+
+    @Override
     public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase par5EntityLiving, ItemStack par6ItemStack) {
         super.onBlockPlacedBy(world, pos, state, par5EntityLiving, par6ItemStack);
 
-        TileEntityOmnidirectionalHopper hopper = (TileEntityOmnidirectionalHopper) world.getTileEntity(pos);
-        hopper.setRotation(PneumaticCraftUtils.getDirectionFacing(par5EntityLiving, true));
-        hopper.setInputDirection(hopper.getRotation().getOpposite());
+        TileEntity te = world.getTileEntity(pos);
+        if (te instanceof TileEntityOmnidirectionalHopper) {
+            TileEntityOmnidirectionalHopper hopper = (TileEntityOmnidirectionalHopper) te;
+            hopper.setInputDirection(state.getValue(INPUT));
+            hopper.setRotation(state.getValue(ROTATION));
+        }
     }
 
     @Override
