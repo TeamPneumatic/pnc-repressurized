@@ -1,6 +1,6 @@
 # PneumaticCraft: Repressurized
 
-This is a port to Minecraft 1.12.2 of MineMaarten's awesome PneumaticCraft mod: https://github.com/MineMaarten/PneumaticCraft.  It is highly functional at this point, although still likely to be fairly buggy and unstable.
+This is a port to Minecraft 1.12.2 of MineMaarten's awesome PneumaticCraft mod: https://github.com/MineMaarten/PneumaticCraft.  It is fully functional at this point, and stability is steadily improving.
 
 * Beta-quality builds are available from https://minecraft.curseforge.com/projects/pneumaticcraft-repressurized
 * Development builds are available from http://jenkins.k-4u.nl/job/PneumaticCraft-Repressurized/
