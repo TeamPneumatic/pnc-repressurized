@@ -56,7 +56,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -363,9 +362,22 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
 
     @Override
     public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest) {
-        // This delays harvesting until after getDrops() is called, giving getDrops() a chance to serialize any TE
-        // data onto the itemstack.  harvestBlock() must also be overridden to remove the block (see below)
-        return willHarvest || super.removedByPlayer(state, world, pos, player, false);
+        if (player.isCreative()) {
+            if (!world.isRemote) {
+                // Drop any contained items here (but don't drop the block itself as an item; this is creative mode)
+                TileEntity te = world.getTileEntity(pos);
+                if (te instanceof TileEntityBase) {
+                    NonNullList<ItemStack> drops = NonNullList.create();
+                    ((TileEntityBase) te).getAllDrops(drops);
+                    drops.forEach(stack -> PneumaticCraftUtils.dropItemOnGround(stack, world, pos.getX(), pos.getY(), pos.getZ()));
+                }
+            }
+            return super.removedByPlayer(state, world, pos, player, false);
+        } else {
+            // This delays harvesting until after getDrops() is called, giving getDrops() a chance to serialize any TE
+            // data onto the itemstack.  harvestBlock() must also be overridden to remove the block (see below)
+            return willHarvest || super.removedByPlayer(state, world, pos, player, false);
+        }
     }
 
     @Override
