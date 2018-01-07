@@ -9,12 +9,14 @@ Changes are in reverse chronological order; newest changes at the top.
 ## 0.2.3-? (not released)
 
 * Network Data Storage item now shows required puzzle pieces in its item tooltip when holding Shift
+* Big performance improvement when opening the item search GUI
+* Better default orientation of the Omnidirection Hopper when it's placed: output now faces the clicked block, and input faces the player.
 * The size limit for programming puzzle piece areas has been increased from 100,000 to 250,000 and can now be adjusted in config (see I:maxProgrammingArea)
 * The size limit for programming puzzle piece areas is now validated in the Programmer before the drone is programmed, instead of forcing a drone with an over-large area to suicide after it's placed.
 * Fixed (hopefully) reflection-based crashes on startup when running with certain ASM-using coremods
 * Fixed NPE's when breaking certain inventories or tanks with a Logistics Frame attached
 * Fixed item dupe when Logistics Drone imported from inventories under certain circumstances
-* Big performance improvement when opening the item search GUI
+* Breaking any PneumaticCraft: Repressurized inventory in creative mode now drops the inventory contents instead of voiding them.
 
 ## 0.2.2-102 (25 Dec 2017)
 
