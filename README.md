@@ -34,11 +34,11 @@ Pretty much all of the functionality from the 1.7.10 PneumaticCraft is now repli
 * Touching a very cold heatsink (< -30C) will give you a slowness debuff.  Extremely cold heatsinks (< -60C) will also cause damage.  Hot heatsinks (> 60C) still hurt, but don't set you on fire until over 100C.
 * GUI problem tab now shows a green tick icon (instead of the red "!" icon) when there are no problems with the machine.
 
-### Roadmap
+Further changes can be found in the [Changelog](https://github.com/TeamPneumatic/pnc-repressurized/blob/master/Changelog.md) for more information.
 
-Features & enhancements tracked for beta release: https://github.com/desht/pnc-repressurized/milestone/2
+### Who is Team Pneumatic?
 
-Features & enhancements tracked for post-beta: https://github.com/desht/pnc-repressurized/milestone/3
+Team Pneumatic consists of two developers: MineMaarten and desht; MineMaarten is the original author of PneumaticCraft for 1.6.x/1.7.x/1.8.x, and desht carried out the port to 1.12.x.  Both MineMaarten and desht are currently actively developing & maintaining the 1.12.2 version.  Of course, being an open-source project, there are other welcome contributors - see https://github.com/TeamPneumatic/pnc-repressurized/graphs/contributors for a full list (this includes contributors to the original PneumaticCraft project too).
 
 ### Licensing Information
 
