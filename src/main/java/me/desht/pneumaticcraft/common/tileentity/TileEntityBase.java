@@ -170,6 +170,10 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
         NetworkHandler.sendToAllAround(new PacketDescription(this), new NetworkRegistry.TargetPoint(world.provider.getDimension(), getPos().getX(), getPos().getY(), getPos().getZ(), maxPacketDistance));
     }
 
+    /*
+     * Even though this class doesn't implement ITickable, we'll keep the base update() logic here; classes
+     * which extend non-tickable subclasses might need it (e.g. TileEntityPressureChamberInterface)
+     */
     public void update() {
         if (firstRun && !world.isRemote) {
             //firstRun = false;
