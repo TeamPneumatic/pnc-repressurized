@@ -13,13 +13,14 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
 import java.util.List;
 
-public class SemiBlockHeatFrame extends SemiBlockBasic implements IHeatExchanger {
+public class SemiBlockHeatFrame extends SemiBlockBasic<TileEntity> implements IHeatExchanger {
     public static final String ID = "heat_frame";
 
     private final IHeatExchangerLogic logic = PneumaticRegistry.getInstance().getHeatRegistry().getHeatExchangerLogic();
@@ -30,7 +31,7 @@ public class SemiBlockHeatFrame extends SemiBlockBasic implements IHeatExchanger
     private int heatLevel = 10;
 
     @Override
-    public boolean canPlace() {
+    public boolean canPlace(EnumFacing facing) {
         return getTileEntity() != null && getTileEntity().hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
     }
 
@@ -163,8 +164,8 @@ public class SemiBlockHeatFrame extends SemiBlockBasic implements IHeatExchanger
     }
 
     @Override
-    public void onPlaced(EntityPlayer player, ItemStack stack) {
-        super.onPlaced(player, stack);
+    public void onPlaced(EntityPlayer player, ItemStack stack, EnumFacing facing) {
+        super.onPlaced(player, stack, facing);
         getWorld().notifyNeighborsOfStateChange(getPos(), getBlockState().getBlock(), true);
     }
 

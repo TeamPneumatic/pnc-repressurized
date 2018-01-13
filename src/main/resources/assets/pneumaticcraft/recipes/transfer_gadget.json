@@ -1,0 +1,15 @@
+{
+  "type": "forge:ore_shapeless",
+  "ingredients": [
+    {
+      "item": "minecraft:hopper"
+    },
+    {
+      "type": "forge:ore_dict",
+      "ore": "ingotIronCompressed"
+    }
+  ],
+  "result": {
+    "item": "pneumaticcraft:transfer_gadget"
+  }
+}

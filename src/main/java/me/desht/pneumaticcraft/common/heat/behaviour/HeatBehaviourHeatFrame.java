@@ -7,11 +7,12 @@ import me.desht.pneumaticcraft.common.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockHeatFrame;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
 import me.desht.pneumaticcraft.lib.Names;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class HeatBehaviourHeatFrame extends HeatBehaviour {
-    private ISemiBlock semiBlock;
+public class HeatBehaviourHeatFrame extends HeatBehaviour<TileEntity> {
+    private SemiBlockHeatFrame semiBlock;
 
     @Override
     public void initialize(IHeatExchangerLogic connectedHeatLogic, World world, BlockPos pos) {
@@ -24,22 +25,21 @@ public class HeatBehaviourHeatFrame extends HeatBehaviour {
         return Names.MOD_ID + ":heatFrame";
     }
 
-    private ISemiBlock getSemiBlock() {
+    private SemiBlockHeatFrame getSemiBlock() {
         if (semiBlock == null) {
-            semiBlock = SemiBlockManager.getInstance(getWorld()).getSemiBlock(getWorld(), getPos());
+            semiBlock = SemiBlockManager.getInstance(getWorld()).getSemiBlock(SemiBlockHeatFrame.class, getWorld(), getPos());
         }
         return semiBlock;
     }
 
     @Override
     public boolean isApplicable() {
-        return getSemiBlock() instanceof SemiBlockHeatFrame;
+        return getSemiBlock() != null;
     }
 
     @Override
     public void update() {
-        SemiBlockHeatFrame frame = (SemiBlockHeatFrame) getSemiBlock();
-        HeatExchangerLogic.exchange(frame.getHeatExchangerLogic(null), getHeatExchanger());
+        HeatExchangerLogic.exchange(getSemiBlock().getHeatExchangerLogic(null), getHeatExchanger());
     }
 
 }

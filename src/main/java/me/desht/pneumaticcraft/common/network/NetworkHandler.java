@@ -63,7 +63,8 @@ public class NetworkHandler {
         INSTANCE.registerMessage(PacketUpdateRemoteLayout.class, PacketUpdateRemoteLayout.class, discriminant++, Side.SERVER);
         INSTANCE.registerMessage(PacketSetGlobalVariable.class, PacketSetGlobalVariable.class, discriminant++, Side.SERVER);
         INSTANCE.registerMessage(PacketSetGlobalVariable.class, PacketSetGlobalVariable.class, discriminant++, Side.CLIENT);
-        INSTANCE.registerMessage(PacketSetSemiBlock.class, PacketSetSemiBlock.class, discriminant++, Side.CLIENT);
+        INSTANCE.registerMessage(PacketAddSemiBlock.class, PacketAddSemiBlock.class, discriminant++, Side.CLIENT);
+        INSTANCE.registerMessage(PacketRemoveSemiBlock.class, PacketRemoveSemiBlock.class, discriminant++, Side.CLIENT);
         INSTANCE.registerMessage(PacketSetLogisticsFilterStack.class, PacketSetLogisticsFilterStack.class, discriminant++, Side.SERVER);
         INSTANCE.registerMessage(PacketSetLogisticsFluidFilterStack.class, PacketSetLogisticsFluidFilterStack.class, discriminant++, Side.SERVER);
         INSTANCE.registerMessage(PacketServerTickTime.class, PacketServerTickTime.class, discriminant++, Side.CLIENT);

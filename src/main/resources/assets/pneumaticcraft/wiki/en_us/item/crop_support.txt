@@ -1,0 +1,3 @@
+When placed on soil between a crop, this will improve the growth speed of this crop.
+
+[crafting{200, 140, key=item/crop_support}]

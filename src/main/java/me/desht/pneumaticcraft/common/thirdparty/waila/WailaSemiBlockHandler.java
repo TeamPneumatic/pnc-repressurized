@@ -9,11 +9,15 @@ import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants;
 
 import java.util.List;
+
+import crafttweaker.mc1120.data.NBTConverter;
 
 public class WailaSemiBlockHandler implements IWailaDataProvider {
     @Override
@@ -26,11 +30,14 @@ public class WailaSemiBlockHandler implements IWailaDataProvider {
         return currenttip;
     }
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public List<String> getWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
-        ISemiBlock semiBlock = SemiBlockManager.getInstance(accessor.getWorld()).getSemiBlock(accessor.getWorld(), accessor.getPosition());
-        if (semiBlock instanceof SemiBlockBasic) {
-            ((SemiBlockBasic) semiBlock).addWailaTooltip(currenttip, accessor.getNBTData());
+        
+        List<SemiBlockBasic> semiBlocks = SemiBlockManager.getInstance(accessor.getWorld()).getSemiBlocksAsList(SemiBlockBasic.class, accessor.getWorld(), accessor.getPosition());
+        NBTTagList tagList = accessor.getNBTData().getTagList("semiBlocks", Constants.NBT.TAG_COMPOUND);
+        for(int i = 0; i < semiBlocks.size(); i++){
+            semiBlocks.get(i).addWailaTooltip(currenttip, tagList.getCompoundTagAt(i));
         }
         return currenttip;
     }
@@ -42,9 +49,14 @@ public class WailaSemiBlockHandler implements IWailaDataProvider {
 
     @Override
     public NBTTagCompound getNBTData(EntityPlayerMP player, TileEntity te, NBTTagCompound tag, World world, BlockPos pos) {
-        ISemiBlock semiBlock = SemiBlockManager.getInstance(world).getSemiBlock(world, pos);
-        if (semiBlock instanceof SemiBlockBasic) {
-            ((SemiBlockBasic) semiBlock).addWailaInfoToTag(tag);
+        @SuppressWarnings("rawtypes")
+        List<SemiBlockBasic> semiBlocks = SemiBlockManager.getInstance(world).getSemiBlocksAsList(SemiBlockBasic.class, world, pos);
+        NBTTagList tagList = new NBTTagList();
+        tag.setTag("semiBlocks", tagList);
+        for(SemiBlockBasic<?> semiBlock : semiBlocks){
+            NBTTagCompound subTag = new NBTTagCompound();
+            ((SemiBlockBasic<?>) semiBlock).addWailaInfoToTag(subTag);
+            tagList.appendTag(subTag);
         }
         return tag;
     }

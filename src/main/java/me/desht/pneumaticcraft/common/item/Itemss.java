@@ -106,6 +106,12 @@ public class Itemss {
     public static final Item LOGISTICS_FRAME_ACTIVE_PROVIDER = null;
     @ObjectHolder(SemiBlockHeatFrame.ID)
     public static final Item HEAT_FRAME = null;
+    @ObjectHolder(SemiBlockSpawnerAgitator.ID)
+    public static final Item SPAWNER_AGITATOR = null;
+    @ObjectHolder(SemiBlockCropSupport.ID)
+    public static final Item CROP_SUPPORT = null;
+    @ObjectHolder(SemiBlockTransferGadget.ID)
+    public static final Item TRANSFER_GADGET = null;
     @ObjectHolder("logistic_drone")
     public static final Item LOGISTICS_DRONE = null;
     @ObjectHolder("gun_ammo")

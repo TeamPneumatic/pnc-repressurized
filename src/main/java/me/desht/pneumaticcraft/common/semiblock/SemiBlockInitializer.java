@@ -14,6 +14,9 @@ public class SemiBlockInitializer {
         SemiBlockManager.registerSemiBlock(SemiBlockDefaultStorage.ID, SemiBlockDefaultStorage.class);
         SemiBlockManager.registerSemiBlock(SemiBlockRequester.ID, SemiBlockRequester.class);
         SemiBlockManager.registerSemiBlock(SemiBlockHeatFrame.ID, SemiBlockHeatFrame.class);
+        SemiBlockManager.registerSemiBlock(SemiBlockSpawnerAgitator.ID, SemiBlockSpawnerAgitator.class);
+        SemiBlockManager.registerSemiBlock(SemiBlockCropSupport.ID, SemiBlockCropSupport.class);
+        SemiBlockManager.registerSemiBlock(SemiBlockTransferGadget.ID, SemiBlockTransferGadget.class);
     }
 
     public static void init() {
@@ -34,5 +37,14 @@ public class SemiBlockInitializer {
 
         PneumaticCraftRepressurized.proxy.registerSemiBlockRenderer(Itemss.HEAT_FRAME);
         SemiBlockManager.registerSemiBlockToItemMapping(SemiBlockHeatFrame.class, Itemss.HEAT_FRAME);
+        
+        PneumaticCraftRepressurized.proxy.registerSemiBlockRenderer(Itemss.SPAWNER_AGITATOR);
+        SemiBlockManager.registerSemiBlockToItemMapping(SemiBlockSpawnerAgitator.class, Itemss.SPAWNER_AGITATOR);
+        
+        PneumaticCraftRepressurized.proxy.registerSemiBlockRenderer(Itemss.CROP_SUPPORT);
+        SemiBlockManager.registerSemiBlockToItemMapping(SemiBlockCropSupport.class, Itemss.CROP_SUPPORT);
+        
+        PneumaticCraftRepressurized.proxy.registerSemiBlockRenderer(Itemss.TRANSFER_GADGET);
+        SemiBlockManager.registerSemiBlockToItemMapping(SemiBlockTransferGadget.class, Itemss.TRANSFER_GADGET);
     }
 }

@@ -8,20 +8,24 @@ import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
 import me.desht.pneumaticcraft.common.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockLogistics;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
+import me.desht.pneumaticcraft.common.util.StreamUtils;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 
 import javax.annotation.Nonnull;
+
 import java.util.HashSet;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
+import java.util.stream.Stream;
 
 public class DroneAILogistics extends EntityAIBase {
     private EntityAIBase curAI;
@@ -40,28 +44,23 @@ public class DroneAILogistics extends EntityAIBase {
         manager.clearLogistics();
         Set<BlockPos> area = widget.getCachedAreaSet();
         if (area.size() == 0) return false;
-        int minX = Integer.MAX_VALUE, maxX = Integer.MIN_VALUE, minZ = Integer.MAX_VALUE, maxZ = Integer.MIN_VALUE;
+        int minX = Integer.MAX_VALUE, maxX = Integer.MIN_VALUE;
+        int minY = Integer.MAX_VALUE, maxY = Integer.MIN_VALUE;
+        int minZ = Integer.MAX_VALUE, maxZ = Integer.MIN_VALUE;
         for (BlockPos pos : area) {
             minX = Math.min(minX, pos.getX());
             maxX = Math.max(maxX, pos.getX());
+            minY = Math.min(minY, pos.getY());
+            maxY = Math.max(maxY, pos.getY());
             minZ = Math.min(minZ, pos.getZ());
             maxZ = Math.max(maxZ, pos.getZ());
         }
 
-        for (int x = minX; x < maxX + 16; x += 16) {
-            for (int z = minZ; z < maxZ + 16; z += 16) {
-                Chunk chunk = drone.world().getChunkFromBlockCoords(new BlockPos(x, 0, z));
-                Map<BlockPos, ISemiBlock> map = SemiBlockManager.getInstance(drone.world()).getSemiBlocks().get(chunk);
-                if (map != null) {
-                    for (Map.Entry<BlockPos, ISemiBlock> entry : map.entrySet()) {
-                        if (entry.getValue() instanceof SemiBlockLogistics && area.contains(entry.getKey())) {
-                            SemiBlockLogistics logisticsBlock = (SemiBlockLogistics) entry.getValue();
-                            manager.addLogisticFrame(logisticsBlock);
-                        }
-                    }
-                }
-            }
-        }
+        AxisAlignedBB aabb = new AxisAlignedBB(new BlockPos(minX, minY, minZ), new BlockPos(maxX, maxY, maxZ));
+        Stream<ISemiBlock> semiBlocksInArea = SemiBlockManager.getInstance(drone.world()).getSemiBlocksInArea(drone.world(), aabb);
+        Stream<SemiBlockLogistics> logisticFrames = StreamUtils.ofType(SemiBlockLogistics.class, semiBlocksInArea);
+        logisticFrames.filter(frame -> area.contains(frame.getPos())).forEach(frame -> manager.addLogisticFrame(frame));
+        
         curTask = null;
         return doLogistics();
     }

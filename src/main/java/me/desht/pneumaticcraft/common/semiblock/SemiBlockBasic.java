@@ -9,6 +9,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
@@ -17,11 +18,12 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
-public class SemiBlockBasic implements ISemiBlock, IDescSynced, IGUIButtonSensitive {
+public class SemiBlockBasic<TTileEntity extends TileEntity> implements ISemiBlock, IDescSynced, IGUIButtonSensitive {
     protected World world;
     protected BlockPos pos;
+    private int index = -1; //There can be multiple semi blocks in one block.
     private boolean isInvalid;
-    private TileEntity cachedTE;
+    private TTileEntity cachedTE;
     private List<SyncedField> descriptionFields;
     private boolean descriptionPacketScheduled;
 
@@ -29,6 +31,20 @@ public class SemiBlockBasic implements ISemiBlock, IDescSynced, IGUIButtonSensit
     public void initialize(World world, BlockPos pos) {
         this.world = world;
         this.pos = pos;
+    }
+    
+    @Override
+    public int getIndex(){
+        if(index == -1){
+            index = SemiBlockManager.getInstance(world).getSemiBlocksAsList(world, getPos()).indexOf(this);
+            if(index == -1) throw new IllegalStateException("Semi block is not part of the world! " + this);
+        }
+        return index;
+    }
+    
+    @Override
+    public void onSemiBlockRemovedFromThisPos(ISemiBlock semiBlock){
+        index = -1; //Invalidate cache, only update on removing, because added semiblocks are appended to the back, not influencing the index.
     }
 
     @Override
@@ -44,7 +60,7 @@ public class SemiBlockBasic implements ISemiBlock, IDescSynced, IGUIButtonSensit
     @Override
     public void update() {
         if (!world.isRemote && !canStay()) drop();
-        if (!world.isRemote) {
+        if (!world.isRemote && !isInvalid()) {
             if (descriptionFields == null) descriptionPacketScheduled = true;
             for (SyncedField field : getDescriptionFields()) {
                 if (field.update()) {
@@ -74,7 +90,7 @@ public class SemiBlockBasic implements ISemiBlock, IDescSynced, IGUIButtonSensit
     }
 
     protected void drop() {
-        SemiBlockManager.getInstance(world).breakSemiBlock(world, pos);
+        SemiBlockManager.getInstance(world).breakSemiBlock(this);
     }
 
     protected boolean isAirBlock() {
@@ -84,10 +100,17 @@ public class SemiBlockBasic implements ISemiBlock, IDescSynced, IGUIButtonSensit
     public IBlockState getBlockState() {
         return world.getBlockState(pos);
     }
+    
+    public boolean isAir(){
+        IBlockState state = getBlockState();
+        return state.getBlock().isAir(state, world, pos);
+    }
 
-    public TileEntity getTileEntity() {
+    @SuppressWarnings("unchecked")
+    public TTileEntity getTileEntity() {
         if (cachedTE == null || cachedTE.isInvalid()) {
-            cachedTE = world.getTileEntity(pos);
+            TileEntity te = world.getTileEntity(pos);
+            cachedTE = (TTileEntity)te;
         }
         return cachedTE;
     }
@@ -119,17 +142,22 @@ public class SemiBlockBasic implements ISemiBlock, IDescSynced, IGUIButtonSensit
     }
 
     @Override
-    public boolean canPlace() {
+    public boolean canPlace(EnumFacing facing) {
         return true;
+    }
+    
+    @Override
+    public void prePlacement(EntityPlayer player, ItemStack stack, EnumFacing facing){
+        
     }
 
     @Override
-    public void onPlaced(EntityPlayer player, ItemStack stack) {
+    public void onPlaced(EntityPlayer player, ItemStack stack, EnumFacing facing) {
 
     }
 
     public boolean canStay() {
-        return canPlace();
+        return canPlace(null);
     }
 
     @Override
@@ -160,10 +188,12 @@ public class SemiBlockBasic implements ISemiBlock, IDescSynced, IGUIButtonSensit
         }
         return descriptionFields;
     }
+    
+    
 
     @Override
     public void writeToPacket(NBTTagCompound tag) {
-
+        tag.setByte("index", (byte)getIndex()); //Used in packet decoding to figure out which semiblock updated.
     }
 
     @Override
@@ -179,5 +209,10 @@ public class SemiBlockBasic implements ISemiBlock, IDescSynced, IGUIButtonSensit
     @Override
     public void handleGUIButtonPress(int guiID, EntityPlayer player) {
 
+    }
+    
+    @Override
+    public String toString(){
+        return String.format("Pos: %s, %s", getPos(), getClass());
     }
 }

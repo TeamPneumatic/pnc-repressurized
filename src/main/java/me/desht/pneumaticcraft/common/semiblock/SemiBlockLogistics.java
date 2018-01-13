@@ -6,7 +6,7 @@ import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketSetSemiBlock;
+import me.desht.pneumaticcraft.common.network.PacketAddSemiBlock;
 import me.desht.pneumaticcraft.proxy.CommonProxy.EnumGuiId;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
@@ -14,6 +14,8 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
@@ -31,7 +33,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-public abstract class SemiBlockLogistics extends SemiBlockBasic {
+public abstract class SemiBlockLogistics extends SemiBlockBasic<TileEntity> {
     private final Map<ItemStack, Integer> incomingStacks = new HashMap<>();
     private final Map<FluidStackWrapper, Integer> incomingFluid = new HashMap<>();
     private final ItemStackHandler filters = new ItemStackHandler(27);
@@ -49,7 +51,7 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic {
     }
 
     @Override
-    public boolean canPlace() {
+    public boolean canPlace(EnumFacing facing) {
         return getTileEntity() != null &&
                 (getTileEntity().hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)
                 || getTileEntity().hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null));
@@ -225,7 +227,7 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic {
     }
 
     @Override
-    public void onPlaced(EntityPlayer player, ItemStack stack) {
+    public void onPlaced(EntityPlayer player, ItemStack stack, EnumFacing facing) {
         NBTTagCompound tag = stack.getTagCompound();
         if (tag != null) {
             readFromNBT(tag);
@@ -235,7 +237,7 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic {
     @Override
     public boolean onRightClickWithConfigurator(EntityPlayer player) {
         if (getGuiID() != null) {
-            NetworkHandler.sendTo(new PacketSetSemiBlock(pos, this), (EntityPlayerMP) player);
+            NetworkHandler.sendTo(new PacketAddSemiBlock(pos, this), (EntityPlayerMP) player);
             player.openGui(PneumaticCraftRepressurized.instance, getGuiID().ordinal(), world, pos.getX(), pos.getY(), pos.getZ());
         }
         return true;

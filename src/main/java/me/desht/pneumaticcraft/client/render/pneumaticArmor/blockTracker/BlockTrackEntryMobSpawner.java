@@ -2,6 +2,8 @@ package me.desht.pneumaticcraft.client.render.pneumaticArmor.blockTracker;
 
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IBlockTrackEntry;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.hacking.block.HackableMobSpawner;
+import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
+import me.desht.pneumaticcraft.common.semiblock.SemiBlockSpawnerAgitator;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.Reflections;
 import net.minecraft.block.state.IBlockState;
@@ -40,7 +42,8 @@ public class BlockTrackEntryMobSpawner implements IBlockTrackEntry {
             ResourceLocation rl = Reflections.getEntityId(spawner);
 //            infoList.add("Spawner Type: " + I18n.format("entity." + spawner.getEntityNameToSpawn() + ".name"));
             infoList.add("Spawner Type: " + (rl == null ? "?" : rl.toString()));
-            if (Reflections.isActivated(spawner)) {
+            
+            if (Reflections.isActivated(spawner) || SemiBlockManager.getInstance(world).getSemiBlock(SemiBlockSpawnerAgitator.class, world, pos) != null) {
                 infoList.add("Time until next spawn: " + PneumaticCraftUtils.convertTicksToMinutesAndSeconds(spawner.spawnDelay, false));
             } else if (HackableMobSpawner.isHacked(world, pos)) {
                 infoList.add("Spawner is hacked");

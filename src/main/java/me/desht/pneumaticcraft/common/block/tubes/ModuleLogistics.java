@@ -114,8 +114,7 @@ public class ModuleLogistics extends TubeModule {
 
     public SemiBlockLogistics getFrame() {
         if (cachedFrame == null) {
-            ISemiBlock semiBlock = SemiBlockManager.getInstance(getTube().world()).getSemiBlock(getTube().world(), getTube().pos().offset(dir));
-            if (semiBlock instanceof SemiBlockLogistics) cachedFrame = (SemiBlockLogistics) semiBlock;
+            cachedFrame = SemiBlockManager.getInstance(getTube().world()).getSemiBlock(SemiBlockLogistics.class, getTube().world(), getTube().pos().offset(dir));
         }
         return cachedFrame;
     }

@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import me.desht.pneumaticcraft.common.inventory.ContainerLogistics;
 import me.desht.pneumaticcraft.common.inventory.SyncedField;
+import me.desht.pneumaticcraft.common.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
@@ -65,7 +66,7 @@ public class PacketDescription extends LocationIntPacket<PacketDescription> {
         extraData = ByteBufUtils.readTag(buf);
     }
 
-    public static Object getSyncableForType(LocationIntPacket message, EntityPlayer player, IDescSynced.Type type) {
+    public static Object getSyncableForType(PacketDescription message, EntityPlayer player, IDescSynced.Type type) {
         switch (type) {
             case TILE_ENTITY:
                 return message.getTileEntity(player.world);
@@ -76,7 +77,9 @@ public class PacketDescription extends LocationIntPacket<PacketDescription> {
                         return ((ContainerLogistics) container).logistics;
                     }
                 } else {
-                    return SemiBlockManager.getInstance(player.world).getSemiBlock(player.world, message.pos);
+                    List<ISemiBlock> semiBlocks = SemiBlockManager.getInstance(player.world).getSemiBlocksAsList(player.world, message.pos);
+                    int index = message.extraData.getByte("index");
+                    return index < semiBlocks.size() ? semiBlocks.get(index) : null;
                 }
         }
         return null;
