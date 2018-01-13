@@ -72,9 +72,17 @@ public class ProgWidgetBlockCondition extends ProgWidgetCondition {
 
             @Override
             public void actionPerformed(IGuiWidget widget) {
-                if (widget.getID() == 500) checkingForAir = !checkingForAir;
-                if (widget.getID() == 501) checkingForLiquids = !checkingForLiquids;
-                else super.actionPerformed(widget);
+                switch (widget.getID()) {
+                    case 500:
+                        checkingForAir = !checkingForAir;
+                        break;
+                    case 501:
+                        checkingForLiquids = !checkingForLiquids;
+                        break;
+                    default:
+                        super.actionPerformed(widget);
+                        break;
+                }
             }
 
         };
