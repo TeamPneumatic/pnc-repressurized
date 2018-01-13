@@ -5,3 +5,5 @@ When placed on Mob Spawners, this item will agitate the Mob Spawner in the follo
 Mob farm anyone? 
 
 [crafting{200, 140, key=item/spawner_agitator}]
+
+[image{200,270,0.2,pneumaticcraft:textures/wiki/spawner_agitator.png}]

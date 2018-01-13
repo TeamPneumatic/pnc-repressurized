@@ -1,3 +1,5 @@
-When placed on soil between a crop, this will improve the growth speed of this crop.
+When placed on soil between a crop, this will improve the growth speed of this crop. Green particles are emitted to show when the Crop Support speeds up the growth.
 
-[crafting{200, 140, key=item/crop_support}]
+[crafting{200, 80, key=item/crop_support}]
+
+[image{200,200,0.18,pneumaticcraft:textures/wiki/crop_support.png}]

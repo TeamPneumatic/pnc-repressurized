@@ -8,8 +8,11 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## 0.2.3-? (not released)
 
+* Added Transfer Widget, an early game item/fluid transfer item that can be placed _between_ blocks.
+* Added Spawner Agitator, which keeps Mob Spawners active even if players are not around.
+* Added Crop Support, an item which when placed on a crop improves growth speed.
 * Network Data Storage item now shows required puzzle pieces in its item tooltip when holding Shift
-* Big performance improvement when opening the item search GUI
+* Big performance improvement when searching in the item search GUI
 * Better default orientation of the Omnidirection Hopper when it's placed: output now faces the clicked block, and input faces the player.
 * The size limit for programming puzzle piece areas has been increased from 100,000 to 250,000 and can now be adjusted in config (see I:maxProgrammingArea)
 * The size limit for programming puzzle piece areas is now validated in the Programmer before the drone is programmed, instead of forcing a drone with an over-large area to suicide after it's placed.
