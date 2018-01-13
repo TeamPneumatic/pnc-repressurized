@@ -278,7 +278,7 @@ public class AirHandler implements IAirHandler {
 
     @Override
     public void validate(TileEntity parent) {
-        upgradeCache = parent instanceof TileEntityTickableBase ? ((TileEntityBase) parent).getUpgradeCache() : null;
+        upgradeCache = parent instanceof TileEntityBase ? ((TileEntityBase) parent).getUpgradeCache() : null;
         airListener = parent instanceof IAirListener ? (IAirListener) parent : null;
         parentPneumatic = (IPneumaticMachine) parent;
         setWorld(parent.getWorld());
