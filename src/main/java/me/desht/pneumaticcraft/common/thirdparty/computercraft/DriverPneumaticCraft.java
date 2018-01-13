@@ -10,7 +10,6 @@ import li.cil.oc.api.network.Visibility;
 import li.cil.oc.api.prefab.AbstractManagedEnvironment;
 import li.cil.oc.api.prefab.DriverSidedTileEntity;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityTickableBase;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -29,7 +28,7 @@ public class DriverPneumaticCraft extends DriverSidedTileEntity {
 
     @Override
     public Class<?> getTileEntityClass() {
-        return TileEntityTickableBase.class;
+        return TileEntityBase.class;
     }
 
     public static class InternalManagedEnvironment extends AbstractManagedEnvironment implements ManagedPeripheral, NamedBlock {
