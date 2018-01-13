@@ -1,8 +1,5 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.network.DescSynced;
@@ -13,21 +10,23 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Sounds;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ITickable;
 import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
 
-public class TileEntityPressureChamberInterface extends TileEntityPressureChamberWall implements IGUITextFieldSensitive, IRedstoneControlled {
+import java.util.ArrayList;
+import java.util.List;
+
+public class TileEntityPressureChamberInterface extends TileEntityPressureChamberWall implements ITickable, IGUITextFieldSensitive, IRedstoneControlled {
     public static final int MAX_PROGRESS = 40;
     public static final int INVENTORY_SIZE = 1;
     private static final int FILTER_SIZE = 9;
