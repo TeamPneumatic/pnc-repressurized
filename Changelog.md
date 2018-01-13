@@ -17,6 +17,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed NPE's when breaking certain inventories or tanks with a Logistics Frame attached
 * Fixed item dupe when Logistics Drone imported from inventories under certain circumstances
 * Breaking any PneumaticCraft: Repressurized inventory in creative mode now drops the inventory contents instead of voiding them.
+* Fixed clientside crash when selecting the "Check For Air" option in "Condition: Block" programming widget
 
 ## 0.2.2-102 (25 Dec 2017)
 
