@@ -2,4 +2,4 @@ The Vortex Cannon is a weapon which shoots vortexes. A vortex is when air is spi
 
 Note that it's possible to catch yourself in a fired vortex, which can be very useful for fast transport. But beware: it provides no fall damage protection!
 
-[crafting{200,140,key=item/vortex_cannon}]
+[crafting{200,180,key=item/vortex_cannon}]

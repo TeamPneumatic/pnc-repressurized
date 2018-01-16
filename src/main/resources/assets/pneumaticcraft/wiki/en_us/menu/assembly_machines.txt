@@ -26,6 +26,10 @@ To craft items with the Assembly machines, put an Assembly Program in the Assemb
 
 Note: The Assembly Program: Drill & Laser doesn't mean it can handle both recipes, it only means it will do items that require lasering right after being drilled!
 
+[link{https://crafttweaker.readthedocs.io/en/latest/#Mods/PneumaticCraft_Repressurized/PneumaticCraft_Repressurized/}]CraftTweaker support[link{}]
+
+If CraftTweaker is in your pack, the above (default) recipes may or may not apply. It's recommended to use JEI to see the "live" recipes for the Assembly system.
+
 [crafting{200, 1000, key=block/assembly_controller}]
 [crafting{200, 1120, key=block/assembly_platform}]
 [crafting{200, 1240, key=block/assembly_io_unit}]

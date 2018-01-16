@@ -1,8 +1,9 @@
 [image{320,10,0.32,pneumaticcraft:textures/wiki/pressure_chamber.png}]
 This is a Pressure Chamber. This multi-block structure is used to compress various materials into others. To build a valid Pressure Chamber you have to make a hollow cube out of Pressure Chamber Walls/Windows. The size of the cube can vary from 3x3x3 to 5x5x5. It doesn't matter whether you use walls or windows. Next you need to make one hole where you place your Pressure Chamber Valve. The Valve has to connect to the air blocks in the Pressure Chamber. You need at least one Valve per Pressure Chamber, but you can add more. When you've successfully built the Pressure Chamber, you'll be able to open the interface of the Pressure Chamber when you right-click any block of it.
 
-[prefix{l}]CraftTweaker Support[prefix{}]
-This machine has CraftTweaker support; if CraftTweaker is in your pack, the default recipes may or may not apply. It's recommended to use JEI to see the "live" recipes for this machine.
+[link{https://crafttweaker.readthedocs.io/en/latest/#Mods/PneumaticCraft_Repressurized/PneumaticCraft_Repressurized/}]CraftTweaker support[link{}]
+
+If CraftTweaker is in your pack, the above (default) recipes may or may not apply. It's recommended to use JEI to see the "live" recipes for this machine.
 
 [crafting{200, 250, key=block/pressure_chamber_wall}]
 [crafting{200, 370, key=block/pressure_chamber_glass}]

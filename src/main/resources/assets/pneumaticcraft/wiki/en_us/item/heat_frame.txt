@@ -2,4 +2,8 @@ This item can be placed on any inventory. When heated by an adjacent [link{pneum
 
 By default the only thing that can be frozen is Water Buckets into Ice, or Lava Buckets into Obsidian (both giving back the Bucket).
 
-[crafting{200, 140, key=item/heat_frame}]
+[link{https://crafttweaker.readthedocs.io/en/latest/#Mods/PneumaticCraft_Repressurized/PneumaticCraft_Repressurized/}]CraftTweaker support[link{}]
+
+If CraftTweaker is in your pack, the above (default) recipes may or may not apply. It's recommended to use JEI to see the "live" recipes for this machine.
+
+[crafting{200, 180, key=item/heat_frame}]
