@@ -51,6 +51,7 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 import javax.annotation.Nullable;
 import java.util.*;
 
+@Optional.InterfaceList({@Optional.Interface(iface = "dan200.computercraft.api.peripheral.IPeripheral", modid = ModIds.COMPUTERCRAFT)})
 public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, IDescSynced, IUpgradeAcceptor, IPeripheral {
     private final Set<Item> applicableUpgrades = new HashSet<>();
     private final Set<String> applicableCustomUpgrades = new HashSet<>();
