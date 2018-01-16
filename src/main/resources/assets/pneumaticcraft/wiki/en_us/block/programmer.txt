@@ -58,6 +58,7 @@ The following is a list of all the different Programming Puzzles:
 [link{pneumaticcraft:progwidget/place}]-Place blocks [link{}]
 [link{pneumaticcraft:progwidget/block_right_click}]-Right Click Blocks [link{}]
 [link{pneumaticcraft:progwidget/entity_right_click}]-Right Click Entities [link{}]
+[link{pneumaticcraft:progwidget/crafting}]-Craft Items [link{}]
 [link{pneumaticcraft:progwidget/goto}]-Go To Location [link{}]
 [link{pneumaticcraft:progwidget/teleport}]-Teleport To Location [link{}]
 [link{pneumaticcraft:progwidget/entity_attack}]-Entity Attack [link{}]

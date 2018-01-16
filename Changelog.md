@@ -19,8 +19,9 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed (hopefully) reflection-based crashes on startup when running with certain ASM-using coremods
 * Fixed NPE's when breaking certain inventories or tanks with a Logistics Frame attached
 * Fixed item dupe when Logistics Drone imported from inventories under certain circumstances
-* Breaking any PneumaticCraft: Repressurized inventory in creative mode now drops the inventory contents instead of voiding them.
+* Breaking any PneumaticCraft: Repressurized inventory in creative mode now drops the inventory contents instead of voiding them
 * Fixed clientside crash when selecting the "Check For Air" option in "Condition: Block" programming widget
+* Performance improvement: the tile entities for Pressure Chamber Wall/Glass & Elevator Frames no longer tick. Pressure Chamber Glass should be fine to use in small-scale decorative builds, or for its excellent blast-resistant properties. 
 
 ## 0.2.2-102 (25 Dec 2017)
 
