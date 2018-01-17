@@ -4,12 +4,16 @@ The Charging Station is a machine in which pneumatic items can be charged (or di
 Most charged items have a maximum pressure of 10 bar. Don't worry for explosions though, items never can explode, they will simply stop charging beyond 10 bar.
 
 [prefix{l}]Charge Pad[prefix{}]
-You can turn the Charging Station into a Charge Pad by putting in a [link{pneumaticcraft:menu/machine_upgrades}]Dispenser Upgrade[link{}]. This will charge any items lying on top of the Station and/or items that are in a player's inventory who is standing on top of the Station. The pad can be camouflaged with a [link{item/camo_applicator}]Camouflage Aplicator[link{}].
+You can turn the Charging Station into a Charge Pad by putting in a [link{pneumaticcraft:menu/machine_upgrades}]Dispenser Upgrade[link{}]. This will charge any items lying on top of the Station and/or items that are in a player's inventory who is standing on top of the Station. The pad can be camouflaged with a [link{item/camo_applicator}]Camouflage Applicator[link{}].
 
 This is a list of the current items that can be charged:
-[link{item/air_canister}]-Air Canister[link{}]
-[link{item/manometer}]-Manometer[link{}]
-[link{item/pneumatic_wrench}]-Pneumatic Wrench[link{}]
-[link{item/vortex_cannon}]-Vortex Cannon[link{}]
-[link{item/drone}]-Drone [link{}]
-[link{item/pneumatic_helmet}]-Pneumatic Helmet[link{}]
+
+• [link{item/air_canister}]Air Canister[link{}]
+• [link{item/pneumatic_wrench}]Pneumatic Wrench[link{}]
+• [link{item/logistics_configurator}]Logistics Configurator[link{}]
+• [link{item/camo_applicator}]Camouflage Applicator[link{}]
+• [link{item/vortex_cannon}]Vortex Cannon[link{}]
+• [link{item/minigun}]Minigun[link{}]
+• [link{item/drone}]Drone [link{}]
+• [link{item/manometer}]Manometer[link{}]
+• [link{item/pneumatic_helmet}]Pneumatic Helmet[link{}]

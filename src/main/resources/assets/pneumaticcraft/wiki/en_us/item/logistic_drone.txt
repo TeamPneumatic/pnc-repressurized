@@ -16,16 +16,67 @@ Logistic Drones are a special type of [link{item/drone}]drone [link{}]. They are
 
 Logistic Drones are heavily based on [link{www.factorioforums.com/wiki/index.php?title=logistic_network}]Factorio's Logistics system[link{}]. Instead of having different logistic Chests, Logistic Frames are a thing. These frames can be crafted and framed around any inventory/tank by right clicking the inventory/tank. The following frames exist:
 
--Logistic Passive Provider Frame, provides items/fluids to Requester Frames. Can be configured to supply only certain items/fluids.
+• Logistic Passive Provider Frame, provides items/fluids to Requester Frames. Can be configured to supply only certain items/fluids.
 [crafting{200,305,key=item/logistic_frame_passive_provider}]
--Logistic Active Provider Frame, provides items/fluids to Storage Frames and Requester Frames. Can be configured to supply only certain items/fluids.
+
+
+
+
+
+
+
+
+
+
+
+
+• Logistic Active Provider Frame, provides items/fluids to Storage Frames and Requester Frames. Can be configured to supply only certain items/fluids.
 [crafting{200,455,key=item/logistic_frame_active_provider}]
--Logistic Storage Frame, a place for items/fluids to be stored that are not requested. Also provides to the logistics network. Can be configured to only supply/accept certain items/fluids.
-[crafting{200,615,key=item/logistic_frame_storage}]
--Logistic Default Storage Frame, similarly to the Storage frame it can receive from Active Provider Frames and provide to Requester Frames. Additionally, it can provide to Storage Frames. and has a lower priority to Storage frames. This last property means it's suitable to be used in 'default chest' purposes in a sorting system.
-[crafting{200,805,key=item/logistic_frame_default_storage}]
--Logistic Requester Frame, can be configured to keep a certain amount of items/fluids supplied in the framed inventory.
-[crafting{200,955,key=item/logistic_frame_requester}]
+
+
+
+
+
+
+
+
+
+
+
+
+
+• Logistic Storage Frame, a place for items/fluids to be stored that are not requested. Also provides to the logistics network. Can be configured to only supply/accept certain items/fluids.
+[crafting{200,625,key=item/logistic_frame_storage}]
+
+
+
+
+
+
+
+
+
+
+
+
+
+• Logistic Default Storage Frame, similarly to the Storage frame it can receive from Active Provider Frames and provide to Requester Frames. Additionally, it can provide to Storage Frames. and has a lower priority to Storage frames. This last property means it's suitable to be used in 'default chest' purposes in a sorting system.
+[crafting{200,825,key=item/logistic_frame_default_storage}]
+
+
+
+
+
+
+
+
+
+
+
+
+
+• Logistic Requester Frame, can be configured to keep a certain amount of items/fluids supplied in the framed inventory.
+[crafting{200,985,key=item/logistic_frame_requester}]
 
 
 
@@ -61,4 +112,4 @@ When the Drone's air runs out the propellers of the Drone will stop and the Dron
 
 [prefix{l}]Dyeing a Drone [prefix{}]
 You can dye a Drone by putting a Drone in a crafting table together with a piece of dye. You can also craft a Drone in-world, by right clicking it with a piece of dye.
-[image{200, 1730, 0.64, pneumaticcraft:textures/wiki/drone_dye.png}]
+[image{200, 1760, 0.64, pneumaticcraft:textures/wiki/drone_dye.png}]

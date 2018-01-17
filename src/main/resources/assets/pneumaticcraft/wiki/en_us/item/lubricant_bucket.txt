@@ -1,1 +1,1 @@
-Lubricant is created in a [link{block/thermopneumatic_processing_plant}]Thermopneumatic Processing Plant[link{}].
+Lubricant is created in a [link{block/thermopneumatic_processing_plant}]Thermopneumatic Processing Plant[link{}].  It is a required component for crafting Speed Upgrades.

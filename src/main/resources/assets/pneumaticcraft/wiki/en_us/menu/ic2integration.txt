@@ -1,4 +1,4 @@
-PneumaticCraft adds a pair of machines which specifically are designed to work with IndustrialCraft 2. Therefore, these machines are only useful when having IndustrialCraft 2 installed. Both machines their recipes can be disabled completely in the config, which forces players to build both power networks if they want to use machines of both mods. Also the efficiency can be tinkered in the config. Both machines can be interacted with a IndustrialCraft 2 Wrench.
+PneumaticCraft adds a pair of machines which specifically are designed to work with IndustrialCraft 2. Therefore, these machines are only available when having IndustrialCraft 2 installed. Both machines' recipes can be disabled completely in the config even when IC2 is installed, which forces players to build both power networks if they want to use machines of both mods. Also, the machines' efficiency can be tinkered in the config to make EU <-> Pressure conversion easier or harder. Both machines can be interacted with a IndustrialCraft 2 Wrench.
 
 PneumaticCraft air --> IndustrialCraft 2 EU conversion:
 [link{block/pneumatic_generator}]Pneumatic Generator[link{}]

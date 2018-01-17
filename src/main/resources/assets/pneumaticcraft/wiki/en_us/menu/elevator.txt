@@ -1,14 +1,16 @@
 [image{357, 20, 0.7, pneumaticcraft:textures/wiki/elevator.png}]
 The Elevator is a machine that can be used to vertically transport any entities, whether it be an item, mob, animal or player. You need to place an Elevator Base at the bottom. You can stack multiple on top of each other. On top of this you can place Elevator Frames, which act as a support for the elevator. 
 
-Both the amount of Elevator Bases and the amount of Elevator Frames defines how far the Elevator can extend. The maximum height of an Elevator is:
+Both the number of Elevator Bases and the number of Elevator Frames define how far the Elevator can extend. The maximum height of an Elevator is:
 
 
 
 
-[prefix{l}]Whichever is the lowest: 4x the amount of Elevator Bases, or 1x the amount of Elevator Frames.[prefix{}]
+[prefix{l}]Whichever is the lowest: 4x the number of Elevator Bases, or 1x the number of Elevator Frames.[prefix{}]
 
-To make the elevator work you'll need pneumatic pressure. When there is, there are two modes the Elevator can operate in.
+(note you can change the "4x" multiplier in mod config - see "I:elevatorBaseBlocksPerBase")
+
+To make the elevator work you'll need pneumatic pressure. When there is sufficient pressure, there are two modes the Elevator can operate in.
 
 [prefix{l}]Redstone mode[prefix{}]
 A redstone signal (applied to any Elevator Base) will define whether the elevator should ascent or descent. A redstone strength of 0 means the Elevator will go to 0% extension, a redstone strength of 15 means it will go to 100% of the maximum height, and anything in between.
@@ -17,7 +19,7 @@ A redstone signal (applied to any Elevator Base) will define whether the elevato
 Go to the [link{block/elevator_caller}]Elevator Caller[link{}] for info.
 
 [prefix{l}]Expanding in width[prefix{}]
-You can create bigger Elevators by connecting more Elevator Bases next to each other. When the top Elevator Base of every connected Elevator is at the same height, the Elevators will share the floors (defined by Elevator Callers), redstone input, and therefore the desired height.
+You can create bigger Elevators by connecting more Elevator Bases next to each other horizontally. When the top Elevator Base of every connected Elevator is at the same height, the Elevators will share the floors (defined by Elevator Callers), redstone input, and therefore the desired height.
 
 [prefix{l}]Camouflaging [prefix{}]
 You can camouflage the Elevator floor with the [link{item/camo_applicator}]Camouflage Applicator[link{}].

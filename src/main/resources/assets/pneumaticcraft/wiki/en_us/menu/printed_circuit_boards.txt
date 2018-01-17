@@ -39,7 +39,7 @@ Then there are two ways to make an Unassembled PCB. You can throw the Empty PCB 
 
 
 
-Or you can develop a PCB chemically by throwing it in a [link{block/uv_lightbox}]UV Light Box[link{}] and then etch it in [link{item/etching_acid_bucket}]Etching Acid[link{}].
+Or you can develop a PCB chemically by throwing it in a [link{block/uv_light_box}]UV Light Box[link{}] and then etch it in [link{pneumaticcraft:item/etching_acid_bucket}]Etching Acid[link{}].
 
 After you've created an Unassembled PCB you can finish it by adding some components:
 

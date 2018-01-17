@@ -11,10 +11,10 @@ public class PneumaticCraftWikiTab extends BaseWikiTab {
 
     public PneumaticCraftWikiTab() {
         pageEntries.add("base_concepts");
-        pageEntries.add("machine_upgrades");
         pageEntries.add("generating_pressure");
         pageEntries.add("pressure_tubes");
         pageEntries.add("pressure_chamber");
+        pageEntries.add("machine_upgrades");
         pageEntries.add("block/pneumatic_dynamo");
         skipLine();
         pageEntries.add("block/omnidirectional_hopper");
@@ -27,10 +27,11 @@ public class PneumaticCraftWikiTab extends BaseWikiTab {
         pageEntries.add("block/plastic_mixer");
         pageEntries.add("elevator");
         pageEntries.add("block/universal_sensor");
-        pageEntries.add("item/logistic_drone");
         pageEntries.add("item/logistics_module");
+        pageEntries.add("item/logistic_drone");
         skipLine();
         pageEntries.add("item/pneumatic_helmet");
+        pageEntries.add("block/programmer");
         pageEntries.add("item/drone");
         pageEntries.add("block/programmable_controller");
         pageEntries.add("item/remote");

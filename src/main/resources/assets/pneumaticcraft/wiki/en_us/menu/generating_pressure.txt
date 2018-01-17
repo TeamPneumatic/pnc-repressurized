@@ -2,12 +2,12 @@ In PneumaticCraft there currently are a few 'Vanilla' ways of generating pressur
 
 [prefix{l}]Tier one[prefix{}]
 
--[link{block/air_compressor}]Air Compressor[link{}]
--[link{block/liquid_compressor}]Liquid Compressor[link{}]
+• [link{block/air_compressor}]Air Compressor[link{}]
+• [link{block/liquid_compressor}]Liquid Compressor[link{}]
 
 [prefix{l}]Tier two[prefix{}]
 
--[link{block/advanced_air_compressor}]Advanced Air Compressor[link{}]
--[link{block/advanced_liquid_compressor}]Advanced Liquid Compressor[link{}]
--[link{block/electrostatic_compressor}]Electrostatic Compressor[link{}]
--[link{block/flux_compressor}]Flux Compressor[link{}]
+• [link{block/advanced_air_compressor}]Advanced Air Compressor[link{}]
+• [link{block/advanced_liquid_compressor}]Advanced Liquid Compressor[link{}]
+• [link{block/electrostatic_compressor}]Electrostatic Compressor[link{}]
+• [link{block/flux_compressor}]Flux Compressor[link{}]

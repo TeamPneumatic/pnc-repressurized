@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.thirdparty.igwmod;
 
 import igwmod.TextureSupplier;
-import igwmod.WikiUtils;
 import igwmod.api.IRecipeIntegrator;
 import igwmod.gui.*;
 import me.desht.pneumaticcraft.common.recipes.PneumaticRecipeRegistry;
@@ -51,7 +50,7 @@ public class IntegratorPressureChamber implements IRecipeIntegrator {
             PressureChamberRecipe foundRecipe = null;
             for (PressureChamberRecipe recipe : PressureChamberRecipe.chamberRecipes) {
                 for (ItemStack output : recipe.output) {
-                    if (WikiUtils.getNameFromStack(output).equals(arguments[2])) {
+                    if (IGWHandler.getNameFromStack(output).equals(arguments[2])) {
                         foundRecipe = recipe;
                         break;
                     }

@@ -2,6 +2,6 @@ Note: the [link{block/pneumatic_dynamo}]Pneumatic Dynamo[link{}] and [link{block
 
 If CoFH mods are detected, then:
 
-- CoFH fuels will work in the Liquid and Advanced Liquid Compressors
-- CoFH Crude Oil will be usable in the Refinery
-- PneumaticCraft: Repressurized fuels will work in the Compression Dynamo
+• CoFH fuels will work in the Liquid and Advanced Liquid Compressors
+• CoFH Crude Oil will be usable in the Refinery
+• PneumaticCraft: Repressurized fuels will work in the Compression Dynamo

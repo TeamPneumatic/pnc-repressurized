@@ -9,6 +9,8 @@ import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidUtil;
 
 public class IGWHandler {
     public static void init() {
@@ -69,5 +71,23 @@ public class IGWHandler {
         WikiRegistry.registerBlockAndItemPageEntry(Itemss.LOGISTICS_FRAME_DEFAULT_STORAGE, "pneumaticcraft:item/logistic_drone");
 
         Log.info("Loaded PneumaticCraft IGW-Mod plug-in! Thanks IGW-Mod!");
+    }
+
+    /**
+     * TODO: raise a PR to get this into IGW.  This adds support for Forge filled buckets (use "item/bucket/{fluid_name}")
+     *
+     * @param stack
+     * @return
+     */
+    static String getNameFromStack(ItemStack stack) {
+        if (stack.getItem().getRegistryName().toString().equals("forge:bucketfilled")) {
+            FluidStack fluidStack = FluidUtil.getFluidContained(stack);
+            if (fluidStack != null) {
+                return "item/bucket/" + fluidStack.getFluid().getName();
+            } else {
+                return "item/bucket";
+            }
+        }
+        return stack.getUnlocalizedName().replace("tile.", "block/").replace("item.", "item/");
     }
 }

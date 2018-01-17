@@ -6,4 +6,4 @@ By default the only thing that can be frozen is Water Buckets into Ice, or Lava 
 
 If CraftTweaker is in your pack, the above (default) recipes may or may not apply. It's recommended to use JEI to see the "live" recipes for this machine.
 
-[crafting{200, 180, key=item/heat_frame}]
+[crafting{200, 200, key=item/heat_frame}]

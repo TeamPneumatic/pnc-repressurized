@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.thirdparty.igwmod;
 
 import igwmod.TextureSupplier;
-import igwmod.WikiUtils;
 import igwmod.api.IRecipeIntegrator;
 import igwmod.gui.*;
 import me.desht.pneumaticcraft.common.item.ItemAssemblyProgram;
@@ -74,7 +73,7 @@ public class IntegratorAssembly implements IRecipeIntegrator {
 
     public AssemblyRecipe findRecipe(int[] curHits, List<AssemblyRecipe> recipes, String search) {
         for (AssemblyRecipe recipe : recipes) {
-            if (WikiUtils.getNameFromStack(recipe.getOutput()).equals(search)) {
+            if (IGWHandler.getNameFromStack(recipe.getOutput()).equals(search)) {
                 if (curHits[0] == 0) return recipe;
                 curHits[0]--;
             }
