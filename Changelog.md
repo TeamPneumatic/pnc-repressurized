@@ -6,7 +6,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
-## 0.2.3-? (not released)
+## 0.3.0-124 (17 Jan 2018)
 
 * Added Transfer Widget, an early game item/fluid transfer item that can be placed _between_ blocks.
 * Added Spawner Agitator, which keeps Mob Spawners active even if players are not around.
@@ -22,6 +22,8 @@ Changes are in reverse chronological order; newest changes at the top.
 * Breaking any PneumaticCraft: Repressurized inventory in creative mode now drops the inventory contents instead of voiding them
 * Fixed clientside crash when selecting the "Check For Air" option in "Condition: Block" programming widget
 * Performance improvement: the tile entities for Pressure Chamber Wall/Glass & Elevator Frames no longer tick. Pressure Chamber Glass should be fine to use in small-scale decorative builds, or for its excellent blast-resistant properties. 
+* Lots of work (mainly cleanup) on the In-Game-Wiki docs.
+* Fixed Elevator Callers not working above the level of Elevator Frames - frames can now stop two blocks below the top Elevator Caller (thanks TeamSpen210)
 
 ## 0.2.2-102 (25 Dec 2017)
 
