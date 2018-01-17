@@ -129,7 +129,7 @@ public class BlockElevatorCaller extends BlockPneumaticCraftCamo {
 
     public static void setSurroundingElevators(World world, BlockPos pos, int floor) {
         for (EnumFacing dir : EnumFacing.HORIZONTALS) {
-            TileEntityElevatorBase elevator = getElevatorBase(world, pos.offset(dir));
+            TileEntityElevatorBase elevator = getElevatorBase(world, pos.offset(dir).offset(EnumFacing.DOWN, 2));
             if (elevator != null) {
                 elevator.goToFloor(floor);
             }
