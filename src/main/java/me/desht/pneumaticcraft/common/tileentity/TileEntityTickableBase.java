@@ -15,4 +15,9 @@ public class TileEntityTickableBase extends TileEntityBase implements ITickable 
     public TileEntityTickableBase(int upgradeSize) {
         super(upgradeSize);
     }
+
+    @Override
+    public void update() {
+        super.update();
+    }
 }

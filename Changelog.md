@@ -6,6 +6,10 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
+## 0.3.1-125 (18 Jan 2018)
+
+* Fix AbstractMethodError crashes introduced in 0.3.0.
+
 ## 0.3.0-124 (17 Jan 2018)
 
 * Added Transfer Widget, an early game item/fluid transfer item that can be placed _between_ blocks.
