@@ -3,7 +3,6 @@
   "textures" : {
      "layer0" : "pneumaticcraft:items/seismic_sensor"
   },
-  "parent" : "item/generated",
   "display": {
     "thirdperson_lefthand": {
        "rotation": [ 0, 0, 0 ],
