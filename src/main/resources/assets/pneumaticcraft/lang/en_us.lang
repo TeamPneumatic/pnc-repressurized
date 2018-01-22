@@ -648,7 +648,7 @@ gui.progWidget.externalProgram.shareVariables=Share Variables
 gui.progWidget.externalProgram.shareVariables.tooltip=When checked, the variables stored in the calling program will be shared with the called program.
 
 gui.progWidget.area.error.noArea=No area specified.
-gui.progWidget.area.error.areaTooBig=Specified area has too many blocks (%d > %d). See 'I:maxProgrammingArea' in config.
+gui.progWidget.area.error.areaTooBig=Over-large area: > %d blocks. See 'I:maxProgrammingArea' in config.
 gui.progWidget.general.error.emptyVariable=Variable is empty. Specify a valid variable.
 gui.progWidget.general.error.noSideActive=Affecting no sides. Select at least one side.
 gui.progWidget.general.error.noPieceConnected=No piece connected (on the bottom).
@@ -904,8 +904,12 @@ death.attack.acid2=%1$s turned into a PCB!
 death.attack.securityStation1=%1$s failed to hack a Security Station and died!
 death.attack.freezing1=%1$s froze to death!
 death.attack.freezing2=%1$s got a bit too cool!
-death.drone=Your Drone has died at X: %s, Y: %s, Z: %s.
-death.drone.named=Your Drone named "%s" has died at X: %s, Y: %s, Z: %s.
+death.drone=Your Drone has died at X: %s, Y: %s, Z: %s
+death.drone.named=Your Drone named "%s" has died at X: %s, Y: %s, Z: %s
+death.drone.overload.jumpStackTooLarge=Jump stack too large (> %d)
+death.drone.overload.areaTooLarge=Area too large (> %d blocks)
+death.drone.overload.wrenched=Dismantled by wrench
+death.drone.overload.suicide=Executed a Suicide puzzle piece
 
 # IGW pages
 igwtab.entry.oil=Oil

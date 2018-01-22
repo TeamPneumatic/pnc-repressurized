@@ -10,6 +10,7 @@ import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
 import me.desht.pneumaticcraft.client.render.RenderDroneHeldItem;
 import me.desht.pneumaticcraft.client.render.RenderProgressingLine;
+import me.desht.pneumaticcraft.common.DamageSourcePneumaticCraft.DamageSourceDroneOverload;
 import me.desht.pneumaticcraft.common.DroneRegistry;
 import me.desht.pneumaticcraft.common.NBTUtil;
 import me.desht.pneumaticcraft.common.ai.*;
@@ -69,6 +70,8 @@ import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
@@ -636,7 +639,7 @@ public class EntityDrone extends EntityDroneBase
     public boolean rotateBlock(World world, EntityPlayer player, BlockPos pos, EnumFacing side) {
         if (!naturallySpawned) {
             if (player.capabilities.isCreativeMode) naturallySpawned = true;//don't drop the drone in creative.
-            attackEntityFrom(DamageSource.OUT_OF_WORLD, 2000.0F);
+            attackEntityFrom(new DamageSourceDroneOverload("wrenched"), 2000.0F);
             return true;
         } else {
             return false;
@@ -651,9 +654,7 @@ public class EntityDrone extends EntityDroneBase
                 inventory.setStackInSlot(i, ItemStack.EMPTY);
             }
         }
-        if (naturallySpawned) {
-
-        } else {
+        if (!naturallySpawned) {
             ItemStack drone = getDroppedStack();
             if (hasCustomName()) drone.setStackDisplayName(getCustomNameTag());
             entityDropItem(drone, 0);
@@ -664,11 +665,11 @@ public class EntityDrone extends EntityDroneBase
                     int x = (int) Math.floor(posX);
                     int y = (int) Math.floor(posY);
                     int z = (int) Math.floor(posZ);
-                    if (hasCustomName()) {
-                        owner.sendStatusMessage(new TextComponentTranslation("death.drone.named", getCustomNameTag(), x, y, z), false);
-                    } else {
-                        owner.sendStatusMessage(new TextComponentTranslation("death.drone", x, y, z), false);
-                    }
+                    ITextComponent msg = hasCustomName() ?
+                            new TextComponentTranslation("death.drone.named", getCustomNameTag(), x, y, z) :
+                            new TextComponentTranslation("death.drone", x, y, z);
+                    msg = msg.appendSibling(new TextComponentString(" - ")).appendSibling(par1DamageSource.getDeathMessage(this));
+                    owner.sendStatusMessage(msg, false);
                 }
             }
         }
@@ -1207,8 +1208,8 @@ public class EntityDrone extends EntityDroneBase
     }
 
     @Override
-    public void overload() {
-        attackEntityFrom(DamageSource.OUT_OF_WORLD, 2000.0F);
+    public void overload(String msgKey, Object... params) {
+        attackEntityFrom(new DamageSourceDroneOverload(msgKey, params), 2000.0F);
     }
 
     @Override

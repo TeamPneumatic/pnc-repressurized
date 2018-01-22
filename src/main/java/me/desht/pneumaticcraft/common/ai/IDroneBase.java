@@ -14,7 +14,7 @@ public interface IDroneBase extends IDrone {
 
     boolean isProgramApplicable(IProgWidget widget);
 
-    void overload();
+    void overload(String msgKey, Object... params);
 
     DroneAIManager getAIManager();
 

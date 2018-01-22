@@ -55,4 +55,23 @@ public class DamageSourcePneumaticCraft extends DamageSource {
                 new TextComponentTranslation(s1, par1EntityLivingBase.getDisplayName(), entitylivingbase1.getDisplayName()) :
                 new TextComponentTranslation(s, par1EntityLivingBase.getDisplayName());
     }
+
+    public static class DamageSourceDroneOverload extends DamageSourcePneumaticCraft {
+        private final String msgKey;
+        private final Object[] params;
+
+        public DamageSourceDroneOverload(String msgKey, Object... params) {
+            super("droneOverload");
+            setDamageBypassesArmor();
+            setDamageAllowedInCreativeMode();
+            this.msgKey = msgKey;
+            this.params = new Object[params.length];
+            System.arraycopy(params, 0, this.params, 0, params.length);
+        }
+
+        @Override
+        public ITextComponent getDeathMessage(EntityLivingBase par1EntityLivingBase) {
+            return new TextComponentTranslation("death.drone.overload." + msgKey, params);
+        }
+    }
 }

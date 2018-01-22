@@ -253,7 +253,7 @@ public class DroneAIManager {
     private boolean addJumpBackWidget(IProgWidget widget) {
         if (widget instanceof IJumpBackWidget) {
             if (jumpBackWidgets.size() >= MAX_JUMP_STACK_SIZE) {
-                drone.overload();
+                drone.overload("jumpStackTooLarge", MAX_JUMP_STACK_SIZE);
                 jumpBackWidgets.clear();
                 setActiveWidget(null);
                 return true;

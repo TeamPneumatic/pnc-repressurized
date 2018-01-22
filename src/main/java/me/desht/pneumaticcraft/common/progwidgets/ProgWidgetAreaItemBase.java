@@ -51,8 +51,7 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
         }
         Set<BlockPos> posSet = getCachedAreaSet();
         if (posSet.size() > ConfigHandler.general.maxProgrammingArea) {
-            curInfo.add(I18n.format("gui.progWidget.area.error.areaTooBig",
-                    posSet.size(), ConfigHandler.general.maxProgrammingArea));
+            curInfo.add(I18n.format("gui.progWidget.area.error.areaTooBig", ConfigHandler.general.maxProgrammingArea));
         }
     }
 
@@ -107,19 +106,23 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
         ProgWidgetArea widget = whitelistWidget;
         while (widget != null) {
             if (widget.type == ProgWidgetArea.EnumAreaType.RANDOM) canCache = false;
-            if (!widget.getCoord1Variable().equals(""))
-                areaVariableStates.put(widget.getCoord1Variable(), aiManager.getCoordinate(widget.getCoord1Variable()));
-            if (!widget.getCoord2Variable().equals(""))
-                areaVariableStates.put(widget.getCoord2Variable(), aiManager.getCoordinate(widget.getCoord2Variable()));
+            if (aiManager != null) {
+                if (!widget.getCoord1Variable().equals(""))
+                    areaVariableStates.put(widget.getCoord1Variable(), aiManager.getCoordinate(widget.getCoord1Variable()));
+                if (!widget.getCoord2Variable().equals(""))
+                    areaVariableStates.put(widget.getCoord2Variable(), aiManager.getCoordinate(widget.getCoord2Variable()));
+            }
             widget = (ProgWidgetArea) widget.getConnectedParameters()[0];
         }
         widget = blacklistWidget;
         while (widget != null) {
             if (widget.type == ProgWidgetArea.EnumAreaType.RANDOM) canCache = false;
-            if (!widget.getCoord1Variable().equals(""))
-                areaVariableStates.put(widget.getCoord1Variable(), aiManager.getCoordinate(widget.getCoord1Variable()));
-            if (!widget.getCoord2Variable().equals(""))
-                areaVariableStates.put(widget.getCoord2Variable(), aiManager.getCoordinate(widget.getCoord2Variable()));
+            if (aiManager != null) {
+                if (!widget.getCoord1Variable().equals(""))
+                    areaVariableStates.put(widget.getCoord1Variable(), aiManager.getCoordinate(widget.getCoord1Variable()));
+                if (!widget.getCoord2Variable().equals(""))
+                    areaVariableStates.put(widget.getCoord2Variable(), aiManager.getCoordinate(widget.getCoord2Variable()));
+            }
             widget = (ProgWidgetArea) widget.getConnectedParameters()[0];
         }
     }

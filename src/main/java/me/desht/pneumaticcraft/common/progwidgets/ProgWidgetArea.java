@@ -173,18 +173,21 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
 
         // Size validation is now done at compile-time - see ProgWidgetAreaItemBase#addErrors
         // https://github.com/TeamPneumatic/pnc-repressurized/issues/95
-        // However, keep this code around to catch any drones programmed before that change.
+        // https://github.com/TeamPneumatic/pnc-repressurized/issues/104
         int size = (maxX - minX) * (maxY - minY) * (maxZ - minZ);
         if (size > ConfigHandler.general.maxProgrammingArea) { // Prevent memory problems when getting to ridiculous areas.
             if (aiManager != null) {
+                // We still need to do run-time checks:
+                // 1) Drones programmed before the compile-time validation was added
+                // 2) Programs using variables where we don't necessarily have the values at compile-time
                 IDroneBase drone = aiManager.getDrone();
                 Log.warning(String.format("Drone @ %s (DIM %d) was killed due to excessively large area (%d > %d). See 'I:maxProgrammingArea' in config.",
                         drone.getDronePos().toString(), drone.world().provider.getDimension(), size, ConfigHandler.general.maxProgrammingArea));
-                drone.overload();
+                drone.overload("areaTooLarge", ConfigHandler.general.maxProgrammingArea);
                 return;
             }
-            // No aiManager; we must be in the Programmer.  Continue to calculate the area size;
-            // we want it for compile-time checking.
+            // We're in the Programmer (no AI manager).  Continue to update the area,
+            // but don't let it grow without bounds.
         }
 
         switch (type) {
@@ -193,6 +196,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
                     for (int y = Math.min(255, maxY); y >= minY && y >= 0; y--) {
                         for (int z = minZ; z <= maxZ; z++) {
                             area.add(new BlockPos(x, y, z));
+                            if (area.size() > ConfigHandler.general.maxProgrammingArea) return;
                         }
                     }
                 }
@@ -207,6 +211,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
                             if (z == minZ || z == maxZ) axisRight++;
                             if (axisRight > 1) {
                                 area.add(new BlockPos(x, y, z));
+                                if (area.size() > ConfigHandler.general.maxProgrammingArea) return;
                             }
                         }
                     }
@@ -218,6 +223,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
                         for (int z = minZ; z <= maxZ; z++) {
                             if (x == minX || x == maxX || y == minY || y == maxY || z == minZ || z == maxZ) {
                                 area.add(new BlockPos(x, y, z));
+                                if (area.size() > ConfigHandler.general.maxProgrammingArea) return;
                             }
                         }
                     }
@@ -236,6 +242,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
                         for (int z = minZ; z <= maxZ; z++) {
                             if (PneumaticCraftUtils.distBetween(areaPoints[0], x + 0.5, y + 0.5, z + 0.5) <= radius) {
                                 area.add(new BlockPos(x, y, z));
+                                if (area.size() > ConfigHandler.general.maxProgrammingArea) return;
                             }
                         }
                     }
@@ -257,7 +264,10 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
                         curZ += lineVec.z;
                         if (curY >= 0 && curY < 256) {
                             BlockPos pos = new BlockPos((int) curX, (int) curY, (int) curZ);
-                            if (!area.contains(pos)) area.add(pos);
+                            if (!area.contains(pos)) {
+                                area.add(pos);
+                                if (area.size() > ConfigHandler.general.maxProgrammingArea) return;
+                            }
                         }
                     }
                 }
@@ -277,7 +287,10 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
                         for (int i = minX; i <= maxX; i++) {
                             if (curY >= 0 && curY < 256) {
                                 BlockPos pos = new BlockPos(i, (int) curY, (int) curZ);
-                                if (!area.contains(pos)) area.add(pos);
+                                if (!area.contains(pos)) {
+                                    area.add(pos);
+                                    if (area.size() > ConfigHandler.general.maxProgrammingArea) return;
+                                }
                             }
                         }
                     }
@@ -297,7 +310,10 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
                         curZ += lineVec.z;
                         for (int i = Math.max(0, minY); i <= Math.min(maxY, 255); i++) {
                             BlockPos pos = new BlockPos((int) curX, i, (int) curZ);
-                            if (!area.contains(pos)) area.add(pos);
+                            if (!area.contains(pos)) {
+                                area.add(pos);
+                                if (area.size() > ConfigHandler.general.maxProgrammingArea) return;
+                            }
                         }
                     }
                 }
@@ -317,7 +333,10 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
                         for (int i = minZ; i <= maxZ; i++) {
                             if (curY >= 0 && curY < 256) {
                                 BlockPos pos = new BlockPos((int) curX, (int) curY, i);
-                                if (!area.contains(pos)) area.add(pos);
+                                if (!area.contains(pos)) {
+                                    area.add(pos);
+                                    if (area.size() > ConfigHandler.general.maxProgrammingArea) return;
+                                }
                             }
                         }
                     }
@@ -326,15 +345,17 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
             case X_CYLINDER:
                 if (areaPoints[1] != null) {
                     double rad = areaPoints[1] != null ? PneumaticCraftUtils.distBetween(areaPoints[0].getY(), areaPoints[0].getZ(), areaPoints[1].getY(), areaPoints[1].getZ()) : 0;
+                    double radSq = rad * rad;
                     minY = (int) (areaPoints[0].getY() - rad - 1);
                     minZ = (int) (areaPoints[0].getZ() - rad - 1);
                     maxY = (int) (areaPoints[0].getY() + rad + 1);
                     maxZ = (int) (areaPoints[0].getZ() + rad + 1);
                     for (int y = Math.max(0, minY); y <= maxY && y < 256; y++) {
                         for (int z = minZ; z <= maxZ; z++) {
-                            if (PneumaticCraftUtils.distBetween(areaPoints[0].getY(), areaPoints[0].getZ(), y, z) <= rad) {
+                            if (PneumaticCraftUtils.distBetweenSq(areaPoints[0].getY(), areaPoints[0].getZ(), y, z) <= radSq) {
                                 for (int x = minX; x <= maxX; x++) {
                                     area.add(new BlockPos(x, y, z));
+                                    if (area.size() > ConfigHandler.general.maxProgrammingArea) return;
                                 }
                             }
                         }
@@ -344,15 +365,17 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
             case Y_CYLINDER:
                 if (areaPoints[1] != null) {
                     double rad = areaPoints[1] != null ? PneumaticCraftUtils.distBetween(areaPoints[0].getX(), areaPoints[0].getZ(), areaPoints[1].getX(), areaPoints[1].getZ()) : 0;
+                    double radSq = rad * rad;
                     minX = (int) (areaPoints[0].getX() - rad - 1);
                     minZ = (int) (areaPoints[0].getZ() - rad - 1);
                     maxX = (int) (areaPoints[0].getX() + rad + 1);
                     maxZ = (int) (areaPoints[0].getZ() + rad + 1);
                     for (int x = minX; x <= maxX; x++) {
                         for (int z = minZ; z <= maxZ; z++) {
-                            if (PneumaticCraftUtils.distBetween(areaPoints[0].getX(), areaPoints[0].getZ(), x, z) <= rad) {
+                            if (PneumaticCraftUtils.distBetweenSq(areaPoints[0].getX(), areaPoints[0].getZ(), x, z) <= radSq) {
                                 for (int y = Math.max(0, minY); y <= maxY && y < 256; y++) {
                                     area.add(new BlockPos(x, y, z));
+                                    if (area.size() > ConfigHandler.general.maxProgrammingArea) return;
                                 }
                             }
                         }
@@ -362,15 +385,17 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
             case Z_CYLINDER:
                 if (areaPoints[1] != null) {
                     double rad = areaPoints[1] != null ? PneumaticCraftUtils.distBetween(areaPoints[0].getX(), areaPoints[0].getY(), areaPoints[1].getX(), areaPoints[1].getY()) : 0;
+                    double radSq = rad * rad;
                     minX = (int) (areaPoints[0].getX() - rad - 1);
                     minY = (int) (areaPoints[0].getY() - rad - 1);
                     maxX = (int) (areaPoints[0].getX() + rad + 1);
                     maxY = (int) (areaPoints[0].getY() + rad + 1);
                     for (int x = minX; x <= maxX; x++) {
                         for (int y = Math.max(0, minY); y <= maxY && y < 256; y++) {
-                            if (PneumaticCraftUtils.distBetween(areaPoints[0].getX(), areaPoints[0].getY(), x, y) <= rad) {
+                            if (PneumaticCraftUtils.distBetweenSq(areaPoints[0].getX(), areaPoints[0].getY(), x, y) <= radSq) {
                                 for (int z = minZ; z <= maxZ; z++) {
                                     area.add(new BlockPos(x, y, z));
+                                    if (area.size() > ConfigHandler.general.maxProgrammingArea) return;
                                 }
                             }
                         }
@@ -395,6 +420,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
                         for (int y = areaPoints[0].getY() - dY; y <= areaPoints[0].getY() + dY; y++) {
                             for (int z = areaPoints[0].getZ() - dZ; z <= areaPoints[0].getZ() + dZ; z++) {
                                 if (y > 0 && y < 256) area.add(new BlockPos(x, y, z));
+                                if (area.size() > ConfigHandler.general.maxProgrammingArea) return;
                             }
                         }
                     }
@@ -418,6 +444,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
                         for (int x = areaPoints[0].getX() - dX; x <= areaPoints[0].getX() + dX; x++) {
                             for (int z = areaPoints[0].getZ() - dZ; z <= areaPoints[0].getZ() + dZ; z++) {
                                 if (y > 0 && y < 256) area.add(new BlockPos(x, y, z));
+                                if (area.size() > ConfigHandler.general.maxProgrammingArea) return;
                             }
                         }
                     }
@@ -441,6 +468,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
                         for (int x = areaPoints[0].getX() - dX; x <= areaPoints[0].getX() + dX; x++) {
                             for (int y = areaPoints[0].getY() - dY; y <= areaPoints[0].getY() + dY; y++) {
                                 if (y > 0 && y < 256) area.add(new BlockPos(x, y, z));
+                                if (area.size() > ConfigHandler.general.maxProgrammingArea) return;
                             }
                         }
                     }
@@ -455,6 +483,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
                         for (int y = areaPoints[0].getY(); areaPoints[0].getY() < areaPoints[1].getY() ? y <= areaPoints[1].getY() : y >= areaPoints[1].getY(); y += (areaPoints[0].getY() < areaPoints[1].getY() ? 1 : -1) * interval) {
                             for (int z = areaPoints[0].getZ(); areaPoints[0].getZ() < areaPoints[1].getZ() ? z <= areaPoints[1].getZ() : z >= areaPoints[1].getZ(); z += (areaPoints[0].getZ() < areaPoints[1].getZ() ? 1 : -1) * interval) {
                                 if (y > 0 && y < 256) area.add(new BlockPos(x, y, z));
+                                if (area.size() > ConfigHandler.general.maxProgrammingArea) return;
                             }
                         }
                     }
