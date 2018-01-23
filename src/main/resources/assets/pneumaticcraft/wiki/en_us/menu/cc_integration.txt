@@ -26,7 +26,9 @@ Apart from the methods that apply to any pneumatic machine, you can also use the
 Apart from the methods that apply to any pneumatic machine, you can also use the following functions when connected to any Elevator Base:
 • setExternalControl(<true/false>) - When parsed true, this will set the Elevator's 'redstone mode' to 'Elevator Caller' mode, which is also applicable for ComputerCraft control. You don't have to set it prior to calling setTargetHeight though: The mode will be changed to external control automatically.
 • getMinWorkingPressure() - Returns the minimal pressure needed to extend the Elevator (the yellow to green threshold in the GUI). Making the Elevator go down is free.
-• setTargetHeight(<height>) - Sets the Elevator's target height to the height parsed (in meters/blocks).
+• setTargetHeight(<height>) - Sets the Elevator's target height to the height parsed (in meters/blocks, floating point).
+• getTargetHeight() - Gets the Elevator's target height (in meters/blocks, floating point).
+• getCurrentHeight() - Gets the Elevator's current height (in meters/blocks, floating point).
 
 [link{pneumaticcraft:block/universal_sensor}]Universal Sensor[link{}]
 Apart from the methods that apply to any pneumatic machine, you can also use the following functions when connected to any Universal Sensor:

@@ -381,7 +381,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
             sidesConnected[entry.getKey().ordinal()] = true;
         }
 
-        if (getWorld().getBlockState(getPos().offset(EnumFacing.UP)) != Blockss.ELEVATOR_BASE) {
+        if (getWorld().getBlockState(getPos().offset(EnumFacing.UP)).getBlock() != Blockss.ELEVATOR_BASE) {
             coreElevator = this;
             int i = -1;
             TileEntity te = getWorld().getTileEntity(getPos().offset(EnumFacing.DOWN));
@@ -622,6 +622,27 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
                     return null;
                 } else {
                     throw new IllegalArgumentException("setHeight does take one argument (height)");
+                }
+            }
+        });
+
+        luaMethods.add(new LuaMethod("getCurrentHeight") {
+            @Override
+            public Object[] call(Object[] args) throws Exception {
+                if (args.length == 0) {
+                    return new Object[] { getCoreElevator().extension };
+                } else {
+                    throw new IllegalArgumentException("getCurrentHeight method takes no arguments!");
+                }
+            }
+        });
+        luaMethods.add(new LuaMethod("getTargetHeight") {
+            @Override
+            public Object[] call(Object[] args) throws Exception {
+                if (args.length == 0) {
+                    return new Object[] { getCoreElevator().targetExtension };
+                } else {
+                    throw new IllegalArgumentException("getTargetHeight method takes no arguments!");
                 }
             }
         });
