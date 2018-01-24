@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
+import org.apache.commons.lang3.Validate;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
@@ -31,8 +32,7 @@ public class WidgetVerticalScrollbar extends WidgetBase {
     }
 
     public WidgetVerticalScrollbar setCurrentState(int state) {
-        if (state >= states)
-            throw new IllegalArgumentException("State to high! max = " + states + ", tried to assign " + state);
+        Validate.isTrue(state >= 0 && state <= states, "State " + state + " out of range! Valid range [1 - " + states + "] inclusive");
         currentScroll = (float) state / states;
         return this;
     }
