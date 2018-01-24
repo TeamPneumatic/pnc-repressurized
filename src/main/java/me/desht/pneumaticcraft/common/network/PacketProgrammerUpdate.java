@@ -11,7 +11,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 
 import java.util.List;
 
-public class PacketProgrammerUpdate extends LocationIntPacket<PacketProgrammerUpdate> {
+public class PacketProgrammerUpdate extends LocationIntPacket<PacketProgrammerUpdate> implements ILargePayload {
     private NBTTagCompound progWidgets;
 
     public PacketProgrammerUpdate() {

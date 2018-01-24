@@ -17,6 +17,8 @@
 
 package me.desht.pneumaticcraft.common.network;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
@@ -24,9 +26,16 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 public class NetworkHandler {
 
     private static final SimpleNetworkWrapper INSTANCE = NetworkRegistry.INSTANCE.newSimpleChannel("PneumaticCraft");
+    static final int MAX_PAYLOAD_SIZE = 32000;
+
     private static int discriminant;
 
     /*
@@ -98,6 +107,9 @@ public class NetworkHandler {
         INSTANCE.registerMessage(PacketSetEntityMotion.class, PacketSetEntityMotion.class, discriminant++, Side.CLIENT);
         INSTANCE.registerMessage(PacketDebugBlock.class, PacketDebugBlock.class, discriminant++, Side.CLIENT);
         INSTANCE.registerMessage(PacketAmadronInvSync.class, PacketAmadronInvSync.class, discriminant++, Side.SERVER);
+
+        INSTANCE.registerMessage(PacketMultiHeader.class, PacketMultiHeader.class, discriminant++, Side.SERVER);
+        INSTANCE.registerMessage(PacketMultiPart.class, PacketMultiPart.class, discriminant++, Side.SERVER);
     }
 
     /* public static void INSTANCE.registerMessage(Class<? extends AbstractPacket<? extends IMessage>> clazz){
@@ -133,6 +145,28 @@ public class NetworkHandler {
     }
 
     public static void sendToServer(IMessage message) {
-        INSTANCE.sendToServer(message);
+        if (message instanceof ILargePayload) {
+            getSplitMessages(message).forEach(m -> INSTANCE.sendToServer(m));
+        } else {
+            INSTANCE.sendToServer(message);
+        }
+    }
+
+    private static List<IMessage> getSplitMessages(IMessage message) {
+        ByteBuf buf = Unpooled.buffer();
+        message.toBytes(buf);
+        byte[] bytes = buf.array();
+        if (bytes.length < MAX_PAYLOAD_SIZE) {
+            return Collections.singletonList(message);
+        } else {
+            List<IMessage> messages = new ArrayList<>();
+            messages.add(new PacketMultiHeader(buf.writerIndex(), message.getClass().getName()));
+            int offset = 0;
+            while (offset < buf.writerIndex()) {
+                messages.add(new PacketMultiPart(Arrays.copyOfRange(bytes, offset, Math.min(offset + MAX_PAYLOAD_SIZE, buf.writerIndex()))));
+                offset += MAX_PAYLOAD_SIZE;
+            }
+            return messages;
+        }
     }
 }
