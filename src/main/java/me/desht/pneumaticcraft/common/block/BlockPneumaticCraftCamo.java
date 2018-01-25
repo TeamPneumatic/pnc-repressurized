@@ -9,6 +9,7 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.PropertyObject;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -120,6 +121,12 @@ public abstract class BlockPneumaticCraftCamo extends BlockPneumaticCraftModeled
         // must not use a camouflageable block as camouflage!
         IBlockState camoState = ((ICamouflageableTE) te).getCamouflage();
         return camoState == null || camoState.getBlock() instanceof BlockPneumaticCraftCamo ? null : camoState;
+    }
+
+    @Override
+    public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face) {
+        IBlockState camoState = getCamoState(worldIn, pos);
+        return camoState != null ? camoState.getBlockFaceShape(worldIn, pos, face) : BlockFaceShape.UNDEFINED;
     }
 
     @Override
