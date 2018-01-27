@@ -8,6 +8,8 @@ import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.ai.StringFilterEntitySelector;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.item.ItemPlastic;
+import me.desht.pneumaticcraft.common.progwidgets.area.AreaType;
+import me.desht.pneumaticcraft.common.progwidgets.area.AreaTypeBox;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.Entity;
@@ -90,20 +92,14 @@ public class ProgWidgetEntityAttack extends ProgWidget implements IAreaProvider,
         if (whitelistWidget == null) return;
         ProgWidgetArea widget = whitelistWidget;
         while (widget != null) {
-            ProgWidgetArea.EnumAreaType oldAreaType = widget.type;
-            widget.type = ProgWidgetArea.EnumAreaType.FILL;
-            widget.getArea(area);
-            widget.type = oldAreaType;
+            widget.getArea(area, new AreaTypeBox());
             widget = (ProgWidgetArea) widget.getConnectedParameters()[0];
         }
         widget = blacklistWidget;
         while (widget != null) {
-            ProgWidgetArea.EnumAreaType oldAreaType = widget.type;
-            widget.type = ProgWidgetArea.EnumAreaType.FILL;
             Set<BlockPos> blacklistedArea = new HashSet<BlockPos>();
-            widget.getArea(area);
+            widget.getArea(blacklistedArea, new AreaTypeBox());
             area.removeAll(blacklistedArea);
-            widget.type = oldAreaType;
             widget = (ProgWidgetArea) widget.getConnectedParameters()[0];
         }
     }

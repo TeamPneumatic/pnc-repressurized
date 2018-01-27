@@ -105,7 +105,7 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
         if (whitelistWidget == null) return;
         ProgWidgetArea widget = whitelistWidget;
         while (widget != null) {
-            if (widget.type == ProgWidgetArea.EnumAreaType.RANDOM) canCache = false;
+            if (!widget.type.isDeterministic()) canCache = false;
             if (aiManager != null) {
                 if (!widget.getCoord1Variable().equals(""))
                     areaVariableStates.put(widget.getCoord1Variable(), aiManager.getCoordinate(widget.getCoord1Variable()));
@@ -116,7 +116,7 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
         }
         widget = blacklistWidget;
         while (widget != null) {
-            if (widget.type == ProgWidgetArea.EnumAreaType.RANDOM) canCache = false;
+            if (!widget.type.isDeterministic()) canCache = false;
             if (aiManager != null) {
                 if (!widget.getCoord1Variable().equals(""))
                     areaVariableStates.put(widget.getCoord1Variable(), aiManager.getCoordinate(widget.getCoord1Variable()));

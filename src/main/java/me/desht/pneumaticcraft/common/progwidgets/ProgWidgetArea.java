@@ -1,17 +1,34 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
-import com.google.common.base.Predicate;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
 import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetArea;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.item.ItemPlastic;
+import me.desht.pneumaticcraft.common.progwidgets.area.*;
+import me.desht.pneumaticcraft.common.progwidgets.area.AreaType.AreaTypeWidget;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.advancements.critereon.NBTPredicate;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
+import net.minecraft.nbt.NBTPrimitive;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -21,15 +38,54 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import java.util.*;
+import com.google.common.base.Predicate;
 
 public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariableWidget {
     public int x1, y1, z1, x2, y2, z2;
     private String coord1Variable = "", coord2Variable = "";
     private DroneAIManager aiManager;
-    public EnumAreaType type = EnumAreaType.FILL;
-    public int typeInfo;//For the grid type, it's the grid interval, for Random it's the amount of selected blocks.
+    public AreaType type = new AreaTypeBox();
 
+    private static final Map<String, Supplier<? extends AreaType>> areaTypes = new LinkedHashMap<>(); //We want to preserve order in the GUI
+    private static final Map<Class<? extends AreaType>, String> typeToIDs = new HashMap<>();
+    
+    /**
+     * A way to map from the old to the new format
+     * Remove in 1.13.
+     */
+    @Deprecated
+    private static final Map<EnumAreaType, String> oldFormatToAreaTypes = new HashMap<>();
+    
+    static{
+        register(AreaTypeBox.ID, AreaTypeBox.class, () -> new AreaTypeBox(), EnumAreaType.FILL, EnumAreaType.WALL, EnumAreaType.FRAME);
+        register(AreaTypeSphere.ID, AreaTypeSphere.class, () -> new AreaTypeSphere(), EnumAreaType.SPHERE);
+        register(AreaTypeLine.ID, AreaTypeLine.class, () -> new AreaTypeLine(), EnumAreaType.LINE);
+        register(AreaTypeWall.ID, AreaTypeWall.class, () -> new AreaTypeWall(), EnumAreaType.X_WALL, EnumAreaType.Y_WALL, EnumAreaType.Z_WALL);
+        register(AreaTypeCylinder.ID, AreaTypeCylinder.class, () -> new AreaTypeCylinder(), EnumAreaType.X_CYLINDER, EnumAreaType.Y_CYLINDER, EnumAreaType.Z_CYLINDER);
+        register(AreaTypePyramid.ID, AreaTypePyramid.class, () -> new AreaTypePyramid(), EnumAreaType.X_PYRAMID, EnumAreaType.Y_PYRAMID, EnumAreaType.Z_PYRAMID);
+        register(AreaTypeGrid.ID, AreaTypeGrid.class, () -> new AreaTypeGrid(), EnumAreaType.GRID);
+        register(AreaTypeRandom.ID, AreaTypeRandom.class, () -> new AreaTypeRandom(), EnumAreaType.RANDOM);
+        if(oldFormatToAreaTypes.size() != EnumAreaType.values().length) throw new IllegalStateException("Not all old formats are handled!");
+    }
+    
+    private static <T extends AreaType> void register(String id, Class<T> clazz, Supplier<T> creator, EnumAreaType... oldTypes){
+        if(areaTypes.containsKey(id)){
+            throw new IllegalStateException("Area type " + clazz + " could not be registered, duplicate id: " + id);
+        }
+        
+        areaTypes.put(id, creator);
+        typeToIDs.put(clazz, id);
+        
+        for(EnumAreaType oldType : oldTypes){
+            oldFormatToAreaTypes.put(oldType, id);
+        }
+    }
+   
+    public static List<AreaType> getAllAreaTypes(){
+        return areaTypes.values().stream().map(Supplier::get).collect(Collectors.toList());
+    }
+    
+    @Deprecated
     public enum EnumAreaType {
         FILL("Filled"), FRAME("Frame"), WALL("Walls"), SPHERE("Sphere"), LINE("Line"), X_WALL("X-Wall"), Y_WALL(
                 "Y-Wall"), Z_WALL("Z-Wall"), X_CYLINDER("X-Cylinder"), Y_CYLINDER("Y-Cylinder"), Z_CYLINDER(
@@ -86,7 +142,13 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
             }
         }
 
-        curTooltip.add("Area type: " + type);
+        curTooltip.add("Area type: " + type.getName());
+        
+        List<AreaTypeWidget> widgets = new ArrayList<>();
+        type.addUIWidgets(widgets);
+        for(AreaTypeWidget widget : widgets){
+            curTooltip.add(String.format("%s %s", I18n.format(widget.title), widget.getCurValue()));
+        }
     }
 
     @Override
@@ -145,9 +207,13 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     public ResourceLocation getTexture() {
         return Textures.PROG_WIDGET_AREA;
     }
-
+    
     @Override
     public void getArea(Set<BlockPos> area) {
+        getArea(area, type);
+    }
+
+    public void getArea(Set<BlockPos> area, AreaType areaType) {
         BlockPos[] areaPoints = getAreaPoints();
         if (areaPoints[0] == null && areaPoints[1] == null) return;
 
@@ -190,328 +256,18 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
             // but don't let it grow without bounds.
         }
 
-        switch (type) {
-            case FILL:
-                for (int x = minX; x <= maxX; x++) {
-                    for (int y = Math.min(255, maxY); y >= minY && y >= 0; y--) {
-                        for (int z = minZ; z <= maxZ; z++) {
-                            area.add(new BlockPos(x, y, z));
-                            if (area.size() > ConfigHandler.general.maxProgrammingArea) return;
-                        }
-                    }
-                }
-                break;
-            case FRAME:
-                for (int x = minX; x <= maxX; x++) {
-                    for (int y = Math.max(0, minY); y <= maxY && y < 256; y++) {
-                        for (int z = minZ; z <= maxZ; z++) {
-                            int axisRight = 0;
-                            if (x == minX || x == maxX) axisRight++;
-                            if (y == minY || y == maxY) axisRight++;
-                            if (z == minZ || z == maxZ) axisRight++;
-                            if (axisRight > 1) {
-                                area.add(new BlockPos(x, y, z));
-                                if (area.size() > ConfigHandler.general.maxProgrammingArea) return;
-                            }
-                        }
-                    }
-                }
-                break;
-            case WALL:
-                for (int x = minX; x <= maxX; x++) {
-                    for (int y = Math.max(0, minY); y <= maxY && y < 256; y++) {
-                        for (int z = minZ; z <= maxZ; z++) {
-                            if (x == minX || x == maxX || y == minY || y == maxY || z == minZ || z == maxZ) {
-                                area.add(new BlockPos(x, y, z));
-                                if (area.size() > ConfigHandler.general.maxProgrammingArea) return;
-                            }
-                        }
-                    }
-                }
-                break;
-            case SPHERE:
-                double radius = areaPoints[1] != null ? PneumaticCraftUtils.distBetween(areaPoints[0], areaPoints[1]) : 0;
-                minX = (int) (areaPoints[0].getX() - radius - 1);
-                minY = (int) (areaPoints[0].getY() - radius - 1);
-                minZ = (int) (areaPoints[0].getZ() - radius - 1);
-                maxX = (int) (areaPoints[0].getX() + radius + 1);
-                maxY = (int) (areaPoints[0].getY() + radius + 1);
-                maxZ = (int) (areaPoints[0].getZ() + radius + 1);
-                for (int x = minX; x <= maxX; x++) {
-                    for (int y = Math.max(0, minY); y <= maxY && y < 256; y++) {
-                        for (int z = minZ; z <= maxZ; z++) {
-                            if (PneumaticCraftUtils.distBetween(areaPoints[0], x + 0.5, y + 0.5, z + 0.5) <= radius) {
-                                area.add(new BlockPos(x, y, z));
-                                if (area.size() > ConfigHandler.general.maxProgrammingArea) return;
-                            }
-                        }
-                    }
-                }
-                break;
-            case LINE:
-                if (areaPoints[1] != null) {
-                    Vec3d lineVec = new Vec3d(areaPoints[1].getX() - areaPoints[0].getX(), areaPoints[1].getY() - areaPoints[0].getY(), areaPoints[1].getZ() - areaPoints[0].getZ()).normalize();
-                    lineVec = new Vec3d(lineVec.x / 10, lineVec.y / 10, lineVec.z / 10);
-                    double curX = areaPoints[0].getX() + 0.5;
-                    double curY = areaPoints[0].getY() + 0.5;
-                    double curZ = areaPoints[0].getZ() + 0.5;
-                    double totalDistance = 0;
-                    double maxDistance = PneumaticCraftUtils.distBetween(areaPoints[0], areaPoints[1]);
-                    while (totalDistance <= maxDistance) {
-                        totalDistance += 0.1;
-                        curX += lineVec.x;
-                        curY += lineVec.y;
-                        curZ += lineVec.z;
-                        if (curY >= 0 && curY < 256) {
-                            BlockPos pos = new BlockPos((int) curX, (int) curY, (int) curZ);
-                            if (!area.contains(pos)) {
-                                area.add(pos);
-                                if (area.size() > ConfigHandler.general.maxProgrammingArea) return;
-                            }
-                        }
-                    }
-                }
-                break;
-            case X_WALL:
-                if (areaPoints[1] != null) {
-                    Vec3d lineVec = new Vec3d(0, areaPoints[1].getY() - areaPoints[0].getY(), areaPoints[1].getZ() - areaPoints[0].getZ()).normalize();
-                    lineVec = new Vec3d(lineVec.x, lineVec.y / 10, lineVec.z / 10);
-                    double curY = areaPoints[0].getY() + 0.5;
-                    double curZ = areaPoints[0].getZ() + 0.5;
-                    double totalDistance = 0;
-                    double maxDistance = Math.sqrt(Math.pow(areaPoints[0].getY() - areaPoints[1].getY(), 2) + Math.pow(areaPoints[0].getZ() - areaPoints[1].getZ(), 2));
-                    while (totalDistance <= maxDistance) {
-                        totalDistance += 0.1;
-                        curY += lineVec.y;
-                        curZ += lineVec.z;
-                        for (int i = minX; i <= maxX; i++) {
-                            if (curY >= 0 && curY < 256) {
-                                BlockPos pos = new BlockPos(i, (int) curY, (int) curZ);
-                                if (!area.contains(pos)) {
-                                    area.add(pos);
-                                    if (area.size() > ConfigHandler.general.maxProgrammingArea) return;
-                                }
-                            }
-                        }
-                    }
-                }
-                break;
-            case Y_WALL:
-                if (areaPoints[1] != null) {
-                    Vec3d lineVec = new Vec3d(areaPoints[1].getX() - areaPoints[0].getX(), 0, areaPoints[1].getZ() - areaPoints[0].getZ()).normalize();
-                    lineVec = new Vec3d(lineVec.x, lineVec.y / 10, lineVec.z / 10);
-                    double curX = areaPoints[0].getX() + 0.5;
-                    double curZ = areaPoints[0].getZ() + 0.5;
-                    double totalDistance = 0;
-                    double maxDistance = Math.sqrt(Math.pow(areaPoints[0].getX() - areaPoints[1].getX(), 2) + Math.pow(areaPoints[0].getZ() - areaPoints[1].getZ(), 2));
-                    while (totalDistance <= maxDistance) {
-                        totalDistance += 0.1;
-                        curX += lineVec.x;
-                        curZ += lineVec.z;
-                        for (int i = Math.max(0, minY); i <= Math.min(maxY, 255); i++) {
-                            BlockPos pos = new BlockPos((int) curX, i, (int) curZ);
-                            if (!area.contains(pos)) {
-                                area.add(pos);
-                                if (area.size() > ConfigHandler.general.maxProgrammingArea) return;
-                            }
-                        }
-                    }
-                }
-                break;
-            case Z_WALL:
-                if (areaPoints[1] != null) {
-                    Vec3d lineVec = new Vec3d(areaPoints[1].getX() - areaPoints[0].getX(), areaPoints[1].getY() - areaPoints[0].getY(), 0).normalize();
-                    lineVec = new Vec3d(lineVec.x / 10, lineVec.y / 10, lineVec.z);
-                    double curX = areaPoints[0].getX() + 0.5;
-                    double curY = areaPoints[0].getY() + 0.5;
-                    double totalDistance = 0;
-                    double maxDistance = Math.sqrt(Math.pow(areaPoints[0].getX() - areaPoints[1].getX(), 2) + Math.pow(areaPoints[0].getY() - areaPoints[1].getY(), 2));
-                    while (totalDistance <= maxDistance) {
-                        totalDistance += 0.1;
-                        curX += lineVec.x;
-                        curY += lineVec.y;
-                        for (int i = minZ; i <= maxZ; i++) {
-                            if (curY >= 0 && curY < 256) {
-                                BlockPos pos = new BlockPos((int) curX, (int) curY, i);
-                                if (!area.contains(pos)) {
-                                    area.add(pos);
-                                    if (area.size() > ConfigHandler.general.maxProgrammingArea) return;
-                                }
-                            }
-                        }
-                    }
-                }
-                break;
-            case X_CYLINDER:
-                if (areaPoints[1] != null) {
-                    double rad = areaPoints[1] != null ? PneumaticCraftUtils.distBetween(areaPoints[0].getY(), areaPoints[0].getZ(), areaPoints[1].getY(), areaPoints[1].getZ()) : 0;
-                    double radSq = rad * rad;
-                    minY = (int) (areaPoints[0].getY() - rad - 1);
-                    minZ = (int) (areaPoints[0].getZ() - rad - 1);
-                    maxY = (int) (areaPoints[0].getY() + rad + 1);
-                    maxZ = (int) (areaPoints[0].getZ() + rad + 1);
-                    for (int y = Math.max(0, minY); y <= maxY && y < 256; y++) {
-                        for (int z = minZ; z <= maxZ; z++) {
-                            if (PneumaticCraftUtils.distBetweenSq(areaPoints[0].getY(), areaPoints[0].getZ(), y, z) <= radSq) {
-                                for (int x = minX; x <= maxX; x++) {
-                                    area.add(new BlockPos(x, y, z));
-                                    if (area.size() > ConfigHandler.general.maxProgrammingArea) return;
-                                }
-                            }
-                        }
-                    }
-                }
-                break;
-            case Y_CYLINDER:
-                if (areaPoints[1] != null) {
-                    double rad = areaPoints[1] != null ? PneumaticCraftUtils.distBetween(areaPoints[0].getX(), areaPoints[0].getZ(), areaPoints[1].getX(), areaPoints[1].getZ()) : 0;
-                    double radSq = rad * rad;
-                    minX = (int) (areaPoints[0].getX() - rad - 1);
-                    minZ = (int) (areaPoints[0].getZ() - rad - 1);
-                    maxX = (int) (areaPoints[0].getX() + rad + 1);
-                    maxZ = (int) (areaPoints[0].getZ() + rad + 1);
-                    for (int x = minX; x <= maxX; x++) {
-                        for (int z = minZ; z <= maxZ; z++) {
-                            if (PneumaticCraftUtils.distBetweenSq(areaPoints[0].getX(), areaPoints[0].getZ(), x, z) <= radSq) {
-                                for (int y = Math.max(0, minY); y <= maxY && y < 256; y++) {
-                                    area.add(new BlockPos(x, y, z));
-                                    if (area.size() > ConfigHandler.general.maxProgrammingArea) return;
-                                }
-                            }
-                        }
-                    }
-                }
-                break;
-            case Z_CYLINDER:
-                if (areaPoints[1] != null) {
-                    double rad = areaPoints[1] != null ? PneumaticCraftUtils.distBetween(areaPoints[0].getX(), areaPoints[0].getY(), areaPoints[1].getX(), areaPoints[1].getY()) : 0;
-                    double radSq = rad * rad;
-                    minX = (int) (areaPoints[0].getX() - rad - 1);
-                    minY = (int) (areaPoints[0].getY() - rad - 1);
-                    maxX = (int) (areaPoints[0].getX() + rad + 1);
-                    maxY = (int) (areaPoints[0].getY() + rad + 1);
-                    for (int x = minX; x <= maxX; x++) {
-                        for (int y = Math.max(0, minY); y <= maxY && y < 256; y++) {
-                            if (PneumaticCraftUtils.distBetweenSq(areaPoints[0].getX(), areaPoints[0].getY(), x, y) <= radSq) {
-                                for (int z = minZ; z <= maxZ; z++) {
-                                    area.add(new BlockPos(x, y, z));
-                                    if (area.size() > ConfigHandler.general.maxProgrammingArea) return;
-                                }
-                            }
-                        }
-                    }
-                }
-                break;
-            case X_PYRAMID:
-                if (areaPoints[1] != null && areaPoints[1].getX() != areaPoints[0].getX()) {
-                    Vec3d lineVec = new Vec3d(areaPoints[1].getX() - areaPoints[0].getX(), areaPoints[1].getY() - areaPoints[0].getY(), areaPoints[1].getZ() - areaPoints[0].getZ()).normalize();
-                    lineVec = new Vec3d(lineVec.x, lineVec.y / lineVec.x, lineVec.z / lineVec.x);
-                    double curY = areaPoints[0].getY() - lineVec.y;
-                    int x = areaPoints[0].getX() + (areaPoints[1].getX() > areaPoints[0].getX() ? -1 : 1);
-                    double curZ = areaPoints[0].getZ() - lineVec.z;
-                    while (x != areaPoints[1].getX()) {
-
-                        x += areaPoints[1].getX() > areaPoints[0].getX() ? 1 : -1;
-                        curY += lineVec.y;
-                        curZ += lineVec.z;
-
-                        int dY = Math.abs((int) (curY - areaPoints[0].getY()));
-                        int dZ = Math.abs((int) (curZ - areaPoints[0].getZ()));
-                        for (int y = areaPoints[0].getY() - dY; y <= areaPoints[0].getY() + dY; y++) {
-                            for (int z = areaPoints[0].getZ() - dZ; z <= areaPoints[0].getZ() + dZ; z++) {
-                                if (y > 0 && y < 256) area.add(new BlockPos(x, y, z));
-                                if (area.size() > ConfigHandler.general.maxProgrammingArea) return;
-                            }
-                        }
-                    }
-                }
-                break;
-            case Y_PYRAMID:
-                if (areaPoints[1] != null && areaPoints[1].getY() != areaPoints[0].getY()) {
-                    Vec3d lineVec = new Vec3d(areaPoints[1].getX() - areaPoints[0].getX(), areaPoints[1].getY() - areaPoints[0].getY(), areaPoints[1].getZ() - areaPoints[0].getZ()).normalize();
-                    lineVec = new Vec3d(lineVec.x / lineVec.y, lineVec.y, lineVec.z / lineVec.y);
-                    double curX = areaPoints[0].getX() - lineVec.x;
-                    int y = areaPoints[0].getY() + (areaPoints[1].getY() > areaPoints[0].getY() ? -1 : 1);
-                    double curZ = areaPoints[0].getZ() - lineVec.z;
-                    while (y != areaPoints[1].getY()) {
-
-                        y += areaPoints[1].getY() > areaPoints[0].getY() ? 1 : -1;
-                        curX += lineVec.x;
-                        curZ += lineVec.z;
-
-                        int dX = Math.abs((int) (curX - areaPoints[0].getX()));
-                        int dZ = Math.abs((int) (curZ - areaPoints[0].getZ()));
-                        for (int x = areaPoints[0].getX() - dX; x <= areaPoints[0].getX() + dX; x++) {
-                            for (int z = areaPoints[0].getZ() - dZ; z <= areaPoints[0].getZ() + dZ; z++) {
-                                if (y > 0 && y < 256) area.add(new BlockPos(x, y, z));
-                                if (area.size() > ConfigHandler.general.maxProgrammingArea) return;
-                            }
-                        }
-                    }
-                }
-                break;
-            case Z_PYRAMID:
-                if (areaPoints[1] != null && areaPoints[1].getZ() != areaPoints[0].getZ()) {
-                    Vec3d lineVec = new Vec3d(areaPoints[1].getX() - areaPoints[0].getX(), areaPoints[1].getY() - areaPoints[0].getY(), areaPoints[1].getZ() - areaPoints[0].getZ()).normalize();
-                    lineVec = new Vec3d(lineVec.x / lineVec.z, lineVec.y / lineVec.z, lineVec.z);
-                    double curX = areaPoints[0].getX() - lineVec.x;
-                    int z = areaPoints[0].getZ() + (areaPoints[1].getZ() > areaPoints[0].getZ() ? -1 : 1);
-                    double curY = areaPoints[0].getY() - lineVec.y;
-                    while (z != areaPoints[1].getZ()) {
-
-                        z += areaPoints[1].getZ() > areaPoints[0].getZ() ? 1 : -1;
-                        curX += lineVec.x;
-                        curY += lineVec.y;
-
-                        int dX = Math.abs((int) (curX - areaPoints[0].getX()));
-                        int dY = Math.abs((int) (curY - areaPoints[0].getY()));
-                        for (int x = areaPoints[0].getX() - dX; x <= areaPoints[0].getX() + dX; x++) {
-                            for (int y = areaPoints[0].getY() - dY; y <= areaPoints[0].getY() + dY; y++) {
-                                if (y > 0 && y < 256) area.add(new BlockPos(x, y, z));
-                                if (area.size() > ConfigHandler.general.maxProgrammingArea) return;
-                            }
-                        }
-                    }
-                }
-                break;
-            case GRID:
-                if (areaPoints[1] == null || areaPoints[0].equals(areaPoints[1]) || typeInfo <= 0) {
-                    area.add(areaPoints[0]);
-                } else {
-                    int interval = typeInfo;
-                    for (int x = areaPoints[0].getX(); areaPoints[0].getX() < areaPoints[1].getX() ? x <= areaPoints[1].getX() : x >= areaPoints[1].getX(); x += (areaPoints[0].getX() < areaPoints[1].getX() ? 1 : -1) * interval) {
-                        for (int y = areaPoints[0].getY(); areaPoints[0].getY() < areaPoints[1].getY() ? y <= areaPoints[1].getY() : y >= areaPoints[1].getY(); y += (areaPoints[0].getY() < areaPoints[1].getY() ? 1 : -1) * interval) {
-                            for (int z = areaPoints[0].getZ(); areaPoints[0].getZ() < areaPoints[1].getZ() ? z <= areaPoints[1].getZ() : z >= areaPoints[1].getZ(); z += (areaPoints[0].getZ() < areaPoints[1].getZ() ? 1 : -1) * interval) {
-                                if (y > 0 && y < 256) area.add(new BlockPos(x, y, z));
-                                if (area.size() > ConfigHandler.general.maxProgrammingArea) return;
-                            }
-                        }
-                    }
-                }
-                break;
-            case RANDOM:
-                type = EnumAreaType.FILL;
-
-                Set<BlockPos> filledArea = new HashSet<BlockPos>();
-                getArea(filledArea);
-                type = EnumAreaType.RANDOM;
-                if (typeInfo >= filledArea.size()) {
-                    area.addAll(filledArea);
-                    return;
-                }
-                Random rand = new Random();
-                Set<Integer> randomIndexes = new HashSet<Integer>();
-                while (randomIndexes.size() < typeInfo) {
-                    randomIndexes.add(rand.nextInt(filledArea.size()));
-                }
-                int curIndex = 0;
-                for (BlockPos pos : filledArea) {
-                    if (randomIndexes.contains(curIndex)) area.add(pos);
-                    curIndex++;
-                }
-                break;
-        }
-    }
+        Consumer<BlockPos> addFunc = p -> {
+            if (p.getY() >= 0 && p.getY() < 256 && area.add(p) && area.size() > ConfigHandler.general.maxProgrammingArea){
+                throw new AreaTooBigException();
+            }
+        };
+        BlockPos p1 = areaPoints[0];
+        BlockPos p2 = areaPoints[1] != null ? areaPoints[1] : p1;
+        
+        try{
+            areaType.addArea(addFunc, p1, p2, minX, minY, minZ, maxX, maxY, maxZ);
+        }catch(AreaTooBigException ex){}
+    } 
 
     private AxisAlignedBB getAABB() {
         BlockPos[] areaPoints = getAreaPoints();
@@ -551,8 +307,16 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         tag.setInteger("x2", x2);
         tag.setInteger("y2", y2);
         tag.setInteger("z2", z2);
-        if (type != null) tag.setInteger("type", type.ordinal());
-        tag.setInteger("typeInfo", typeInfo);
+        
+        String typeId = typeToIDs.get(type.getClass());
+        if(typeId == null){
+            Log.error("No type id for area type " + type + "! Substituting Box.");
+            typeId = AreaTypeBox.ID;
+        }else{
+            type.writeToNBT(tag);
+        }
+        tag.setString("type", typeId);
+        
         tag.setString("coord1Variable", coord1Variable);
         tag.setString("coord2Variable", coord2Variable);
     }
@@ -566,10 +330,49 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         x2 = tag.getInteger("x2");
         y2 = tag.getInteger("y2");
         z2 = tag.getInteger("z2");
-        type = EnumAreaType.values()[tag.getInteger("type")];
-        typeInfo = tag.getInteger("typeInfo");
+        
+        if(tag.getTag("type") instanceof NBTPrimitive){ 
+            //Old format
+            EnumAreaType oldType = EnumAreaType.values()[tag.getInteger("type")];
+            int typeInfo = tag.getInteger("typeInfo");
+            type = convertFromLegacyFormat(oldType, typeInfo);
+        }else{
+            //New format
+            type = createType(tag.getString("type"));
+            type.readFromNBT(tag);
+        }
+        
         coord1Variable = tag.getString("coord1Variable");
         coord2Variable = tag.getString("coord2Variable");
+    }
+    
+    private static AreaType createType(String id){
+        Supplier<? extends AreaType> creator = areaTypes.get(id);
+        if(creator != null){
+            return creator.get();
+        }else{
+            Log.error("No Area type found for id '" + id + "'! Substituting Box!");
+            return new AreaTypeBox();
+        }
+    }
+    
+    /**
+     * Remove in 1.13
+     * @param oldType
+     * @param typeInfo
+     * @return
+     */
+    @Deprecated
+    public static AreaType convertFromLegacyFormat(EnumAreaType oldType, int typeInfo){
+        String newTypeId = oldFormatToAreaTypes.get(oldType);
+        if(newTypeId == null){
+            Log.error("No area converter found for EnumAreaType " + oldType + "! Substituting Box.");
+            return new AreaTypeBox();
+        }else{
+            AreaType type = createType(newTypeId);
+            type.convertFromLegacy(oldType, typeInfo);
+            return type;
+        }
     }
 
     @Override

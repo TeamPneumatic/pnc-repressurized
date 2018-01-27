@@ -6,6 +6,11 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
+## x.x.x-xxx (Unreleased)
+
+* Programmer Area enhancements: Sphere, Cylinder and Pyramid types can now be configured as 'hollow'.  
+* Fixed missing textures in the Area wikipage.
+
 ## 0.3.1-125 (18 Jan 2018)
 
 * Fix AbstractMethodError crashes introduced in 0.3.0.

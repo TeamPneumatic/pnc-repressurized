@@ -142,7 +142,7 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
         helperWidget.x2 = x2;
         helperWidget.y2 = y2;
         helperWidget.z2 = z2;
-        helperWidget.type = type;
+        helperWidget.type = ProgWidgetArea.convertFromLegacyFormat(type, 0);
         Set<BlockPos> a = new HashSet<BlockPos>();
         helperWidget.getArea(a);
         return a;

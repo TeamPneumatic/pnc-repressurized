@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.FMLClientHandler;
+
 import org.apache.commons.lang3.text.WordUtils;
 
 import java.awt.*;
@@ -20,6 +21,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public abstract class GuiPneumaticScreenBase extends GuiScreen implements IWidgetListener {
 
@@ -102,7 +104,7 @@ public abstract class GuiPneumaticScreenBase extends GuiScreen implements IWidge
     @Override
     protected void mouseClicked(int par1, int par2, int par3) throws IOException {
         super.mouseClicked(par1, par2, par3);
-        for (IGuiWidget widget : widgets) {
+        for (IGuiWidget widget : widgets.stream().collect(Collectors.toList())) {
             if (widget.getBounds().contains(par1, par2)) widget.onMouseClicked(par1, par2, par3);
             else widget.onMouseClickedOutsideBounds(par1, par2, par3);
         }
