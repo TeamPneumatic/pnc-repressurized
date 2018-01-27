@@ -74,7 +74,7 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
 
     @Override
     public void update() {
-        super.update();
+        updateImpl();
 
         boolean wasOpeningI = isOpeningI;
         boolean wasOpeningO = isOpeningO;

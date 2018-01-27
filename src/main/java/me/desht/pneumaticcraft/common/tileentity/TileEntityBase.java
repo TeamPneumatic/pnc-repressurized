@@ -175,7 +175,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
      * Even though this class doesn't implement ITickable, we'll keep the base update() logic here; classes
      * which extend non-tickable subclasses might need it (e.g. TileEntityPressureChamberInterface)
      */
-    public void update() {
+    public void updateImpl() {
         if (firstRun && !world.isRemote) {
             //firstRun = false;
             onFirstServerUpdate();
