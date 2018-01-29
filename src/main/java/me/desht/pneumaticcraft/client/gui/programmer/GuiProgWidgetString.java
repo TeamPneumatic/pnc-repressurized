@@ -18,6 +18,7 @@ public class GuiProgWidgetString extends GuiProgWidgetOptionBase {
         textfield = new WidgetTextField(fontRenderer, guiLeft + 10, guiTop + 20, 160, 10);
         textfield.setMaxStringLength(1000);
         textfield.setText(((ProgWidgetString) widget).string);
+        textfield.setFocused(true);
         addWidget(textfield);
     }
 

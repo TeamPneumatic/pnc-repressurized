@@ -24,6 +24,7 @@ public class GuiProgWidgetForEach extends GuiProgWidgetAreaShow {
         variableField.setElements(guiProgrammer.te.getAllVariables());
         addWidget(variableField);
         variableField.setText(((IVariableSetWidget) widget).getVariable());
+        variableField.setFocused(true);
     }
 
     @Override
