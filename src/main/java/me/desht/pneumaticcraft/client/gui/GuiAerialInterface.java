@@ -40,7 +40,7 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<TileEntityAeri
         super.initGui();
 
         if (PneumaticCraftAPIHandler.getInstance().liquidXPs.size() > 0)
-            addAnimatedStat("gui.tab.info.aerialInterface.liquidXp.info.title", new ItemStack(Items.WATER_BUCKET), 0xFF55FF55, false).setText(getLiquidXPText());
+            addAnimatedStat("gui.tab.info.aerialInterface.liquidXp.info.title", new ItemStack(Items.EXPERIENCE_BOTTLE), 0xFF55FF55, false).setText(getLiquidXPText());
 
         addAnimatedStat("gui.tab.info.aerialInterface.interfacingRF.info.title", Textures.GUI_BUILDCRAFT_ENERGY, 0xFFc02222, false).setText("gui.tab.info.aerialInterface.interfacingRF.info");
 
