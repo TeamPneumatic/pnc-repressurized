@@ -19,6 +19,7 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.ModIds;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
@@ -80,7 +81,8 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
     private static final int PROGRAMMING_WIDTH = 294;
     private static final int PROGRAMMING_HEIGHT = 154;
 
-    private static final int WIDGET_X_SPACING = 22; // widgets in the widget tray
+    private static final int WIDGET_TRAY_RIGHT = 322; // distance from gui left to right hand side of expanded widget tray
+    private static final int WIDGET_X_SPACING = 22; // x size of widgets in the widget tray
 
     public GuiProgrammer(InventoryPlayer player, TileEntityProgrammer te) {
 
@@ -93,7 +95,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
 
     private void updateVisibleProgWidgets() {
         int y = 0, page = 0;
-        int x = 322 - maxPage * WIDGET_X_SPACING;
+        int x = WIDGET_TRAY_RIGHT - maxPage * WIDGET_X_SPACING;
         boolean showAllWidgets = showingWidgetProgress == WIDGET_X_SPACING * maxPage && showingAllWidgets;
         filterField.setVisible(showAllWidgets);
 
@@ -109,7 +111,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         for (IProgWidget widget : WidgetRegistrator.registeredWidgets) {
             if (difficulty >= widget.getDifficulty().ordinal()) {
                 widget.setY(y + 40);
-                widget.setX(showAllWidgets ? x : 322);
+                widget.setX(showAllWidgets ? x : WIDGET_TRAY_RIGHT);
                 int widgetHeight = widget.getHeight() / 2 + (widget.hasStepOutput() ? 5 : 0) + 1;
                 y += widgetHeight;
 
@@ -126,6 +128,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
             }
         }
 
+        filterField.x = guiLeft + WIDGET_TRAY_RIGHT - (maxPage * WIDGET_X_SPACING) - 2;
         filterSpawnWidgets();
 
         if (widgetPage > maxPage) {
@@ -236,8 +239,9 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         nameField = new WidgetTextField(fontRenderer, guiLeft + 200, guiTop + 5, 98, fontRenderer.FONT_HEIGHT);
         addWidget(nameField);
 
-        filterField = new WidgetTextField(fontRenderer, guiLeft + 78, guiTop + 26, 100, fontRenderer.FONT_HEIGHT);
+        filterField = new FilterTextField(fontRenderer, guiLeft + 78, guiTop + 26, 100, fontRenderer.FONT_HEIGHT);
         filterField.setListener(this);
+
         addWidget(filterField);
 
         String name = I18n.format("gui.programmer.name");
@@ -707,7 +711,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         ItemStack programmedItem = te.getIteminProgrammingSlot();
         oldShowingWidgetProgress = showingWidgetProgress;
         if (showingAllWidgets) {
-            int maxProgress = maxPage * 22;
+            int maxProgress = maxPage * WIDGET_X_SPACING;
             if (showingWidgetProgress < maxProgress) {
                 showingWidgetProgress += 60;
                 if (showingWidgetProgress >= maxProgress) {
@@ -953,6 +957,21 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
     public void onKeyTyped(IGuiWidget widget) {
         if (widget.getID() == filterField.getID()) {
             filterSpawnWidgets();
+        }
+    }
+
+    private class FilterTextField extends WidgetTextField {
+        FilterTextField(FontRenderer fontRenderer, int x, int y, int width, int height) {
+            super(fontRenderer, x, y, width, height);
+        }
+
+        @Override
+        public void drawTextBox() {
+            // this is needed to force the textfield to draw on top of any
+            // widgets in the programming area
+            GlStateManager.translate(0, 0, 300);
+            super.drawTextBox();
+            GlStateManager.translate(0, 0, -300);
         }
     }
 }
