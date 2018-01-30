@@ -9,7 +9,16 @@ Changes are in reverse chronological order; newest changes at the top.
 ## x.x.x-xxx (Unreleased)
 
 * Programmer Area enhancements: Sphere, Cylinder and Pyramid types can now be configured as 'hollow'.  
+* Added a search textfield to the Programmer, shown when the full widget tray is expanded, allows easy location of puzzle pieces by name.
+* The Programmer widget tray can now be toggled with the Tab hotkey (in addition to the existing Space hotkey)
+* Added two ComputerCraft methods for Elevators: getCurrentHeight() and getTargetHeight()
+* Drone death messages to the owner are now more informative (include reason why drone died)
 * Fixed missing textures in the Area wikipage.
+* Minigun tracers and Vortex entities no longer look weird (bad X offset) when fired from the left hand
+* Fixed client being kicked when trying to load very large drone programs from pastebin (exceeded 32K client->server packet limit; now sent in multiple packets)
+* Fixed client crash when using variables to define areas (related to changes in 0.3.0 regarding size limit validation)
+* Fixed client crash in Programmer when zooming all the way, exiting Programmer and then re-opening it
+* IGW updates to Aerial Interface and Programmer wiki pages
 
 ## 0.3.1-125 (18 Jan 2018)
 
