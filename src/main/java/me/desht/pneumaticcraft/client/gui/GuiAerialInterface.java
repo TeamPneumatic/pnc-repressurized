@@ -1,10 +1,13 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
+import me.desht.pneumaticcraft.client.gui.widget.IGuiWidget;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetEnergy;
 import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.inventory.ContainerEnergy;
+import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAerialInterface;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -17,7 +20,9 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.text.WordUtils;
@@ -29,6 +34,7 @@ import java.util.List;
 @SideOnly(Side.CLIENT)
 public class GuiAerialInterface extends GuiPneumaticContainerBase<TileEntityAerialInterface> {
     private final GuiButtonSpecial[] modeButtons = new GuiButtonSpecial[3];
+    private GuiButtonSpecial xpButton;
 
     public GuiAerialInterface(InventoryPlayer player, TileEntityAerialInterface te) {
 
@@ -39,10 +45,18 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<TileEntityAeri
     public void initGui() {
         super.initGui();
 
-        if (PneumaticCraftAPIHandler.getInstance().liquidXPs.size() > 0)
-            addAnimatedStat("gui.tab.info.aerialInterface.liquidXp.info.title", new ItemStack(Items.EXPERIENCE_BOTTLE), 0xFF55FF55, false).setText(getLiquidXPText());
+        if (PneumaticCraftAPIHandler.getInstance().liquidXPs.size() > 0) {
+            GuiAnimatedStat xpStat = addAnimatedStat("gui.tab.info.aerialInterface.liquidXp.info.title",
+                    new ItemStack(Items.EXPERIENCE_BOTTLE), 0xFF55FF55, false);
+            xpStat.setText(getLiquidXPText());
+            xpButton = new GuiButtonSpecial(4, 20, 15, 20, 20, "");
+            xpButton.setListener(this);
+            setupXPButton();
+            xpStat.addWidget(xpButton);
+        }
 
-        addAnimatedStat("gui.tab.info.aerialInterface.interfacingRF.info.title", Textures.GUI_BUILDCRAFT_ENERGY, 0xFFc02222, false).setText("gui.tab.info.aerialInterface.interfacingRF.info");
+        addAnimatedStat("gui.tab.info.aerialInterface.interfacingRF.info.title",
+                Textures.GUI_BUILDCRAFT_ENERGY, 0xFFc02222, false).setText("gui.tab.info.aerialInterface.interfacingRF.info");
 
         if (te.hasCapability(CapabilityEnergy.ENERGY, null)) {
             IEnergyStorage storage = te.getCapability(CapabilityEnergy.ENERGY, null);
@@ -50,7 +64,8 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<TileEntityAeri
         }
 
         if (te.getUpgrades(EnumUpgrade.DISPENSER) > 0) {
-            GuiAnimatedStat optionStat = addAnimatedStat("gui.tab.aerialInterface.feedMode", new ItemStack(Items.BEEF), 0xFFFFCC00, false);
+            GuiAnimatedStat optionStat = addAnimatedStat("gui.tab.aerialInterface.feedMode",
+                    new ItemStack(Items.BEEF), 0xFFFFCC00, false);
             List<String> text = new ArrayList<String>();
             for (int i = 0; i < 4; i++)
                 text.add("                 ");
@@ -95,11 +110,47 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<TileEntityAeri
         }
     }
 
+    @Override
+    public void actionPerformed(IGuiWidget widget) {
+        if (widget.getID() == 4) {
+            te.curXPFluidIndex++;
+            if (te.curXPFluidIndex >= PneumaticCraftAPIHandler.getInstance().availableLiquidXPs.size()) {
+                te.curXPFluidIndex = -1;
+            }
+            setupXPButton();
+        }
+        super.actionPerformed(widget);
+    }
+
+    private void setupXPButton() {
+        Fluid fluid = te.curXPFluidIndex >= 0 && te.curXPFluidIndex < PneumaticCraftAPIHandler.getInstance().availableLiquidXPs.size() ?
+                PneumaticCraftAPIHandler.getInstance().availableLiquidXPs.get(te.curXPFluidIndex) : null;
+        if (fluid != null) {
+            FluidStack fluidStack = new FluidStack(fluid, 1000);
+            xpButton.setRenderStacks(FluidUtil.getFilledBucket(fluidStack));
+            String modname = ModNameCache.getModName(FluidRegistry.getModId(fluidStack));
+            xpButton.setTooltipText(ImmutableList.of(fluid.getLocalizedName(fluidStack), TextFormatting.BLUE.toString() + TextFormatting.ITALIC + modname));
+        } else {
+            xpButton.setRenderStacks(new ItemStack(Items.BUCKET));
+            xpButton.setTooltipText(I18n.format("gui.tooltip.aerial_interface.xpDisabled"));
+        }
+    }
+
     private List<String> getLiquidXPText() {
         List<String> liquidXpText = new ArrayList<String>();
+        liquidXpText.add("");
+        liquidXpText.add("");
+        liquidXpText.add("");
         liquidXpText.add("gui.tab.info.aerialInterface.liquidXp.info");
-        for (Fluid fluid : PneumaticCraftAPIHandler.getInstance().liquidXPs.keySet()) {
-            liquidXpText.add(TextFormatting.DARK_AQUA + new FluidStack(fluid, 1).getLocalizedName() + " (" + fluid.getName() + ")");
+        liquidXpText.add("");
+        if (PneumaticCraftAPIHandler.getInstance().availableLiquidXPs.isEmpty()) {
+            liquidXpText.add(TextFormatting.ITALIC + "None");
+        } else {
+            for (Fluid f : PneumaticCraftAPIHandler.getInstance().availableLiquidXPs) {
+                FluidStack stack = new FluidStack(f, 1000);
+                String modId = FluidRegistry.getModId(stack);
+                liquidXpText.add(TextFormatting.BLACK + "\u2022  " + f.getLocalizedName(stack) + " (" + ModNameCache.getModName(modId) + ")");
+            }
         }
         return liquidXpText;
     }

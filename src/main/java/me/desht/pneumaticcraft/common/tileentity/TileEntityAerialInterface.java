@@ -31,7 +31,7 @@ import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
-import java.util.Iterator;
+import java.util.List;
 
 public class TileEntityAerialInterface extends TileEntityPneumaticBase implements IMinWorkingPressure, IRedstoneControl, IComparatorSupport {
     @GuiSynced
@@ -41,6 +41,8 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
     private String playerUUID = "";
 
     private Fluid curXpFluid;
+    @GuiSynced
+    public int curXPFluidIndex = -1;  // index into PneumaticCraftAPIHandler.availableLiquidXPs, -1 = disabled
 
     @GuiSynced
     public int redstoneMode;
@@ -137,6 +139,17 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
             // updateNeighbours();
         } else if (buttonID >= 1 && buttonID < 4) {
             feedMode = buttonID - 1;
+        } else if (buttonID == 4) {
+            curXPFluidIndex++;
+            List<Fluid> available = PneumaticCraftAPIHandler.getInstance().availableLiquidXPs;
+            if (curXPFluidIndex >= available.size()) {
+                curXPFluidIndex = -1;
+            }
+            if (curXPFluidIndex >= 0 && curXPFluidIndex < available.size()) {
+                curXpFluid = available.get(curXPFluidIndex);
+            } else {
+                curXpFluid = null;
+            }
         }
     }
 
@@ -157,7 +170,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
     @Override
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
         return ((isConnectedToPlayer &&
-                (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && dispenserUpgradeInserted)
+                (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && dispenserUpgradeInserted && curXpFluid != null)
                 || capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY))
                 || capability == CapabilityEnergy.ENERGY
                 || super.hasCapability(capability, facing);
@@ -179,7 +192,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
                             CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(playerFoodHandler) :
                             CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(playerMainInvHandler);
             }
-        } else if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && dispenserUpgradeInserted) {
+        } else if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && dispenserUpgradeInserted && curXpFluid != null) {
             return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(playerExperienceHandler);
         } else if (capability == CapabilityEnergy.ENERGY) {
             return CapabilityEnergy.ENERGY.cast(energyRF);
@@ -198,7 +211,12 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
         redstoneMode = tag.getInteger("redstoneMode");
         feedMode = tag.getInteger("feedMode");
         setPlayer(tag.getString("playerName"), tag.getString("playerUUID"));
-        if (tag.hasKey("curXpFluid")) curXpFluid = FluidRegistry.getFluid(tag.getString("curXpFluid"));
+        if (tag.hasKey("curXpFluid")) {
+            curXpFluid = FluidRegistry.getFluid(tag.getString("curXpFluid"));
+        } else {
+            curXpFluid = null;
+        }
+        curXPFluidIndex = curXpFluid == null ? -1 : PneumaticCraftAPIHandler.getInstance().availableLiquidXPs.indexOf(curXpFluid);
         if (energyRF != null) readRF(tag);
 
         dispenserUpgradeInserted = getUpgrades(EnumUpgrade.DISPENSER) > 0;
@@ -398,16 +416,9 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
     }
 
     private class PlayerExperienceHandler implements IFluidHandler {
-        private void updateXpFluid() {
-            if (curXpFluid == null) {
-                Iterator<Fluid> fluids = PneumaticCraftAPIHandler.getInstance().liquidXPs.keySet().iterator();
-                if (fluids.hasNext()) curXpFluid = fluids.next();
-            }
-        }
 
         @Override
         public IFluidTankProperties[] getTankProperties() {
-            updateXpFluid();
             if (curXpFluid != null) {
                 EntityPlayer player = getPlayer();
                 if (player != null) {
@@ -430,7 +441,6 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
                     int xpPoints = resource.amount / liquidToXP;
                     if (doFill) {
                         player.addExperience(xpPoints);
-                        curXpFluid = resource.getFluid();
                     }
                     return xpPoints * liquidToXP;
                 }
@@ -439,7 +449,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
         }
 
         private boolean canFill(Fluid fluid) {
-            return dispenserUpgradeInserted && fluid != null
+            return dispenserUpgradeInserted && fluid != null && fluid == curXpFluid
                     && PneumaticCraftAPIHandler.getInstance().liquidXPs.containsKey(fluid)
                     && getPlayer() != null
                     && getPressure() > PneumaticValues.MIN_PRESSURE_AERIAL_INTERFACE;
@@ -470,11 +480,9 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
         @Nullable
         @Override
         public FluidStack drain(int maxDrain, boolean doDrain) {
-            updateXpFluid();
             if (curXpFluid == null) return null;
             return drain(new FluidStack(curXpFluid, maxDrain), doDrain);
         }
-
 
         /**
          * This method is copied from OpenMods' OpenModsLib

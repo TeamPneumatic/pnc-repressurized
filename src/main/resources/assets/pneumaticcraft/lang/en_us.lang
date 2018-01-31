@@ -341,7 +341,7 @@ gui.tab.liquidCompressor.fuel=Available Fuels
 gui.tab.info.tile.aerial_interface=§0By using an advanced technology which compresses items so much they become as small as atoms, this machine can use a player's inventory as its own. This means you can hopper items in and out of this machine, and they will be added or removed to the inventory of the player who placed the block. Smarter insertion methods like (the mod) Translocators could be used to keep the player's inventory supplied with 64 torches for example.
 gui.tab.info.tile.air_cannon=§0This machine can be used to transport items through the air. To be able to use it you'll have to make a GPS Tool. Once made, right click with it on the block you want the items to travel to, and insert the GPS Tool in the GPS slot.
 gui.tab.info.aerialInterface.liquidXp.info.title=Interfacing XP
-gui.tab.info.aerialInterface.liquidXp.info=§0With a Dispenser Upgrade installed in the Aerial Interface, you can pump liquid XP into or out of the Interface. When there are multiple liquid XP options, you can teach the Interface which one to pump out by pumping in a bit of the liquid you want. The supported liquids you can use in your instance are:
+gui.tab.info.aerialInterface.liquidXp.info=§0With a Dispenser Upgrade installed in the Aerial Interface, you can pump liquid XP into or out of the Interface, directly filling or draining the player's stored experience. You can select which type of liquid XP to use with the above button; clicking it cycles through the available types, as well as the (default) disabled setting. \n \nAvailable XP types:
 gui.tab.info.aerialInterface.interfacingRF.info.title=Interfacing RF
 gui.tab.info.aerialInterface.interfacingRF.info=The Aerial Interface is able to accept RF. The RF stored in its internal buffer (100,000RF) is used to charge any chargeable RF item in the player's inventory (and armor slots).
 
@@ -824,6 +824,7 @@ gui.tooltip.amadronTablet.fluidLocation=Fluid Providing Location: %s, %s, %s in 
 gui.tooltip.amadronTablet.selectItemLocation=Right click an inventory to allow it to provide items to vendors.
 gui.tooltip.amadronTablet.selectFluidLocation=Right click a tank to allow it to provide fluids to vendors.
 gui.tooltip.gpsTool.variable=Linked variable: "#%s"
+gui.tooltip.aerial_interface.xpDisabled=XP handling disabled
 
 # Item tooltips
 gui.tooltip.item.plastic_bucket=Place in a Plastic Mixer (along with some dyes) to solidify into solid Plastic.

@@ -40,24 +40,17 @@ public class EnderIO implements IThirdParty {
 
     @Override
     public void postInit() {
-        Fluid hootch = FluidRegistry.getFluid("hootch");
-        Fluid rocketFuel = FluidRegistry.getFluid("rocket_fuel");
-        Fluid fireWater = FluidRegistry.getFluid("fire_water");
+        registerEnderIOFuel("hootch", 60 * 6000);
+        registerEnderIOFuel("rocket_fuel", 160 * 7000);
+        registerEnderIOFuel("fire_water", 80 * 15000);
+    }
 
-        if (hootch != null) {
-            PneumaticRegistry.getInstance().registerFuel(hootch, 60 * 6000);
+    private void registerEnderIOFuel(String fluidName, int value) {
+        Fluid fluid = FluidRegistry.getFluid(fluidName);
+        if (fluid == null) {
+            Log.warning("Couldn't find EnderIO fuel fluid '" + fluidName + "'.  Has it been registered as a fuel?");
         } else {
-            Log.warning("Couldn't find a fluid with name 'hootch' even though EnderIO is in the instance. It hasn't been registered as fuel!");
-        }
-        if (rocketFuel != null) {
-            PneumaticRegistry.getInstance().registerFuel(rocketFuel, 160 * 7000);
-        } else {
-            Log.warning("Couldn't find a fluid with name 'rocket_fuel' even though EnderIO is in the instance. It hasn't been registered as fuel!");
-        }
-        if (fireWater != null) {
-            PneumaticRegistry.getInstance().registerFuel(fireWater, 80 * 15000);
-        } else {
-            Log.warning("Couldn't find a fluid with name 'fire_water' even though EnderIO is in the instance. It hasn't been registered as fuel!");
+            PneumaticRegistry.getInstance().registerFuel(fluid, value);
         }
     }
 }

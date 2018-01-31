@@ -52,7 +52,8 @@ public class GuiButtonSpecial extends GuiButton implements IGuiWidget {
     }
 
     public GuiButtonSpecial setTooltipText(List<String> tooltip) {
-        tooltipText = tooltip;
+        tooltipText.clear();
+        tooltipText.addAll(tooltip);
         return this;
     }
 
