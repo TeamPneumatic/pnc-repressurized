@@ -6,18 +6,21 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
-## x.x.x-xxx (Unreleased)
+## 0.4.0-135 (1 Feb 2018)
 
-* Programmer Area enhancements: Sphere, Cylinder and Pyramid types can now be configured as 'hollow'.  
-* Added a search textfield to the Programmer, shown when the full widget tray is expanded, allows easy location of puzzle pieces by name.
-* The Programmer widget tray can now be toggled with the Tab hotkey (in addition to the existing Space hotkey)
+* Programmer Area enhancements: Sphere, Cylinder and Pyramid types can now be configured as 'hollow', and the Area widget configuration GUI now has a much cleaner layout
+* Programmer enhancement: added a search textfield, shown when the full widget tray is expanded, allowing easy location of puzzle pieces by name
+* Programmer widget tray can now be toggled with the Tab hotkey (in addition to the existing Space hotkey), possibly useful when the new search field has focus
+* Aerial Interface: added support for CoFH "Essence of Knowledge" experience fluid
+* Aerial Interface: the Experience tab in the GUI now has a button to select the desired fluid type when you have multiple mods providing experience fluids (the old method of inserting some fluid to set the accepted type no longer works)
 * Added two ComputerCraft methods for Elevators: getCurrentHeight() and getTargetHeight()
 * Drone death messages to the owner are now more informative (include reason why drone died)
-* Fixed missing textures in the Area wikipage.
-* Minigun tracers and Vortex entities no longer look weird (bad X offset) when fired from the left hand
-* Fixed client being kicked when trying to load very large drone programs from pastebin (exceeded 32K client->server packet limit; now sent in multiple packets)
+* Minigun tracers and Vortex entities no longer look so weird (bad X offset) when fired from the left hand
+* Fixed client being kicked when trying to load very large drone programs from pastebin (exceeding 32K client->server packet limit; now sent in multiple packets - 1.7.10 had a higher packet size limit)
 * Fixed client crash when using variables to define areas (related to changes in 0.3.0 regarding size limit validation)
-* Fixed client crash in Programmer when zooming all the way, exiting Programmer and then re-opening it
+* Fixed client crash in Programmer when zooming all the way out, exiting Programmer and then re-opening it
+* Fixed some XP calculation inaccuracies in the Aerial Interface; pumping XP in & out should not cause any unexpected XP loss or gain now
+* Fixed missing textures in the Area wiki page
 * IGW updates to Aerial Interface and Programmer wiki pages
 
 ## 0.3.1-125 (18 Jan 2018)
