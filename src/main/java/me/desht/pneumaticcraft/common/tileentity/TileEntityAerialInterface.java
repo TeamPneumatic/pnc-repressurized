@@ -41,7 +41,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
     private String playerUUID = "";
 
     private Fluid curXpFluid;
-    @GuiSynced
+    @DescSynced
     public int curXPFluidIndex = -1;  // index into PneumaticCraftAPIHandler.availableLiquidXPs, -1 = disabled
 
     @GuiSynced
@@ -74,11 +74,15 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
 
     public void setPlayer(EntityPlayer player) {
         playerRef = new WeakReference<>(player);
+        boolean old = isConnectedToPlayer;
         if (player == null) {
             isConnectedToPlayer = false;
         } else {
             setPlayer(player.getGameProfile().getName(), player.getGameProfile().getId().toString());
             isConnectedToPlayer = true;
+        }
+        if (old != isConnectedToPlayer) {
+            updateNeighbours = true;
         }
     }
 
@@ -234,7 +238,6 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
         if (energyRF != null) saveRF(tag);
         return tag;
     }
-
 
     @Override
     public float getMinWorkingPressure() {
