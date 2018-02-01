@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.util.EnchantmentUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.player.EntityPlayer;
@@ -427,7 +428,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
                 if (player != null) {
                     return new FluidTankProperties[] {
                         new FluidTankProperties(
-                                new FluidStack(curXpFluid, getPlayerXP(player) * PneumaticCraftAPIHandler.getInstance().liquidXPs.get(curXpFluid)),
+                                new FluidStack(curXpFluid, EnchantmentUtils.getPlayerXP(player) * PneumaticCraftAPIHandler.getInstance().liquidXPs.get(curXpFluid)),
                                 Integer.MAX_VALUE)
                     };
                 }
@@ -441,11 +442,11 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
                 EntityPlayer player = getPlayer();
                 if (player != null) {
                     int liquidToXP = PneumaticCraftAPIHandler.getInstance().liquidXPs.get(resource.getFluid());
-                    int xpPoints = resource.amount / liquidToXP;
+                    int pointsAdded = resource.amount / liquidToXP;
                     if (doFill) {
-                        player.addExperience(xpPoints);
+                        player.addExperience(pointsAdded);
                     }
-                    return xpPoints * liquidToXP;
+                    return pointsAdded * liquidToXP;
                 }
             }
             return 0;
@@ -465,8 +466,8 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
                 EntityPlayer player = getPlayer();
                 if (player != null) {
                     int liquidToXP = PneumaticCraftAPIHandler.getInstance().liquidXPs.get(resource.getFluid());
-                    int pointsDrained = Math.min(getPlayerXP(player), resource.amount / liquidToXP);
-                    if (doDrain) addPlayerXP(player, -pointsDrained);
+                    int pointsDrained = Math.min(EnchantmentUtils.getPlayerXP(player), resource.amount / liquidToXP);
+                    if (doDrain) EnchantmentUtils.addPlayerXP(player, -pointsDrained);
                     return new FluidStack(resource.getFluid(), pointsDrained * liquidToXP);
                 }
             }
@@ -485,70 +486,6 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
         public FluidStack drain(int maxDrain, boolean doDrain) {
             if (curXpFluid == null) return null;
             return drain(new FluidStack(curXpFluid, maxDrain), doDrain);
-        }
-
-        /**
-         * This method is copied from OpenMods' OpenModsLib
-         * https://github.com/OpenMods/OpenModsLib/blob/master/src/main/java/openmods/utils/EnchantmentUtils.java
-         *
-         * @param player
-         * @return
-         */
-        private int getPlayerXP(EntityPlayer player) {
-            return (int) (getExperienceForLevel(player.experienceLevel) + player.experience * player.xpBarCap());
-        }
-
-        /**
-         * This method is copied from OpenMods' OpenModsLib
-         * https://github.com/OpenMods/OpenModsLib/blob/master/src/main/java/openmods/utils/EnchantmentUtils.java
-         *
-         * @param level
-         * @return
-         */
-
-        private int getExperienceForLevel(int level) {
-            if (level == 0) {
-                return 0;
-            }
-            if (level > 0 && level < 16) {
-                return level * 17;
-            } else if (level > 15 && level < 31) {
-                return (int) (1.5 * Math.pow(level, 2) - 29.5 * level + 360);
-            } else {
-                return (int) (3.5 * Math.pow(level, 2) - 151.5 * level + 2220);
-            }
-        }
-
-        /**
-         * This method is copied from OpenMods' OpenModsLib
-         * https://github.com/OpenMods/OpenModsLib/blob/master/src/main/java/openmods/utils/EnchantmentUtils.java
-         *
-         * @param player
-         * @return
-         */
-
-        private void addPlayerXP(EntityPlayer player, int amount) {
-            int experience = getPlayerXP(player) + amount;
-            player.experienceTotal = experience;
-            player.experienceLevel = getLevelForExperience(experience);
-            int expForLevel = getExperienceForLevel(player.experienceLevel);
-            player.experience = (float) (experience - expForLevel) / (float) player.xpBarCap();
-        }
-
-        /**
-         * This method is copied from OpenMods' OpenModsLib
-         * https://github.com/OpenMods/OpenModsLib/blob/master/src/main/java/openmods/utils/EnchantmentUtils.java
-         *
-         * @param experience
-         * @return
-         */
-
-        private int getLevelForExperience(int experience) {
-            int i = 0;
-            while (getExperienceForLevel(i) <= experience) {
-                i++;
-            }
-            return i - 1;
         }
     }
 }
