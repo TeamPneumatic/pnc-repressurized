@@ -847,8 +847,8 @@ public class PneumaticCraftUtils {
         return distBetween(vec1, vec2.x, vec2.y, vec2.z);
     }
 
-    public static boolean areStacksEqual(ItemStack stack1, ItemStack stack2, boolean checkMeta, boolean checkNBT, boolean checkOreDict, boolean checkModSimilarity) {
-        if (stack1.isEmpty() && stack1.isEmpty()) return true;
+    public static boolean areStacksEqual(@Nonnull ItemStack stack1, @Nonnull ItemStack stack2, boolean checkMeta, boolean checkNBT, boolean checkOreDict, boolean checkModSimilarity) {
+        if (stack1.isEmpty() && stack2.isEmpty()) return true;
         if (stack1.isEmpty() && !stack2.isEmpty() || !stack1.isEmpty() && stack2.isEmpty()) return false;
 
         if (checkModSimilarity) {
@@ -862,10 +862,10 @@ public class PneumaticCraftUtils {
 
         if (stack1.getItem() != stack2.getItem()) return false;
 
-        boolean metaSame = stack1.getItemDamage() == stack2.getItemDamage();
-        boolean nbtSame = stack1.hasTagCompound() ? stack1.getTagCompound().equals(stack2.getTagCompound()) : !stack2.hasTagCompound();
+        boolean metaOK = !checkMeta || (stack1.getItemDamage() == stack2.getItemDamage());
+        boolean nbtOK = !checkNBT || (stack1.hasTagCompound() ? stack1.getTagCompound().equals(stack2.getTagCompound()) : !stack2.hasTagCompound());
 
-        return (!checkMeta || metaSame) && (!checkNBT || nbtSame);
+        return metaOK && nbtOK;
     }
 
     public static boolean isSameOreDictStack(ItemStack stack1, ItemStack stack2) {

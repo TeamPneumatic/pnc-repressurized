@@ -15,6 +15,7 @@ import net.minecraft.profiler.Profiler;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.MinecraftForge;
 
+import javax.annotation.Nonnull;
 import java.util.*;
 
 /**
@@ -145,6 +146,7 @@ public class DroneAIManager {
         } else if (!varName.startsWith("$")) coordinateVariables.put(varName, coord);
     }
 
+    @Nonnull
     public ItemStack getStack(String varName) {
         ItemStack item;
         if (varName.startsWith("$")) {
@@ -154,12 +156,12 @@ public class DroneAIManager {
         } else if (varName.startsWith("#")) {
             item = GlobalVariableManager.getInstance().getItem(varName.substring(1));
         } else {
-            item = itemVariables.get(varName);
+            item = itemVariables.getOrDefault(varName, ItemStack.EMPTY);
         }
         return item;
     }
 
-    public void setItem(String varName, ItemStack item) {
+    public void setItem(String varName, @Nonnull ItemStack item) {
         if (varName.startsWith("#")) {
             GlobalVariableManager.getInstance().set(varName.substring(1), item);
         } else if (!varName.startsWith("$")) itemVariables.put(varName, item);

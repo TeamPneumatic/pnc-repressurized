@@ -42,7 +42,7 @@ public abstract class SpecialVariableRetrievalEvent extends Event {
     }
 
     public static abstract class ItemVariable extends SpecialVariableRetrievalEvent {
-        public ItemStack item;
+        public ItemStack item = ItemStack.EMPTY;
 
         public ItemVariable(String specialVarName) {
             super(specialVarName);
