@@ -188,11 +188,10 @@ public class PneumaticCraftRepressurized {
                 String modName = FluidRegistry.getDefaultFluidName(oil).split(":")[0];
                 Log.error(String.format("Oil fluid does not have a block associated with it. The fluid is owned by [%s]. " +
                         "This might be fixable by creating the world with having this mod loaded after PneumaticCraft.", modName));
-                Log.error(String.format("This can be done by adding a injectedDependencies.json inside the config folder containing: " +
-                        "[{\"modId\": \"%s\",\"deps\": [{\"type\":\"after\",\"target\":\"%s\"}]}]", modName, Names.MOD_ID));
-                Log.error(String.format("Alternatively, you can disable PneumaticCraft oil generation by setting 'D:oilGenerationChance=0.0' " +
-                        "in the config file pneumaticcraft.cfg, and use the the oil from [%s].", modName));
-                throw new IllegalStateException("Oil fluid does not have a block associated with it (see errors above for more information)");
+                Log.error(String.format("Now disabling PneumaticCraft oil world gen: setting 'D:oilGenerationChance=0.0' " +
+                        "in the config file pneumaticcraft.cfg.  PneumaticCraft machines should however accept the oil from [%s].", modName));
+                ConfigHandler.general.oilGenerationChance = 0;
+                ConfigHandler.sync();
             }
         }
     }
