@@ -101,6 +101,8 @@ public class ConfigHandler {
         public float fuelBucketEfficiencyMultiplier = 0.05f;
         @Config.Comment("Maximum number of blocks in the area defined in an Area Programming Puzzle Piece")
         public int maxProgrammingArea = 250000;
+        @Config.Comment("Disable explosion crafting (iron->compressed iron).  If you disable this, you'll need another way to get compressed iron initially")
+        public boolean explosionCrafting = true;
     }
 
     public static class MachineProperties {

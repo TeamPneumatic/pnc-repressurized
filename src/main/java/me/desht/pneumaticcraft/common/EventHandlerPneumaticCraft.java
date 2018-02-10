@@ -109,6 +109,10 @@ public class EventHandlerPneumaticCraft {
 
     @SubscribeEvent
     public void handleIronExplosions(ExplosionEvent.Detonate event) {
+        if (!ConfigHandler.general.explosionCrafting) {
+            return;
+        }
+
         Iterator<Entity> iterator = event.getAffectedEntities().iterator();
         while (iterator.hasNext()) {
             Entity entity = iterator.next();
