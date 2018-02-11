@@ -44,6 +44,7 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBucket;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
@@ -197,15 +198,17 @@ public class ClientEventHandler {
     @SubscribeEvent
     public void onWorldRender(RenderWorldLastEvent event) {
         // render our own minigun bullet traces
-        renderMinigunFirstPerson();
+        if (Minecraft.getMinecraft().gameSettings.thirdPersonView == 0) {
+            renderMinigunFirstPerson();
+        }
 
         // render everyone else's minigun bullet traces
         EntityPlayer thisPlayer = Minecraft.getMinecraft().player;
         double playerX = thisPlayer.prevPosX + (thisPlayer.posX - thisPlayer.prevPosX) * event.getPartialTicks();
         double playerY = thisPlayer.prevPosY + (thisPlayer.posY - thisPlayer.prevPosY) * event.getPartialTicks();
         double playerZ = thisPlayer.prevPosZ + (thisPlayer.posZ - thisPlayer.prevPosZ) * event.getPartialTicks();
-        GL11.glPushMatrix();
-        GL11.glTranslated(-playerX, -playerY, -playerZ);
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(-playerX, -playerY, -playerZ);
 
         for (EntityPlayer player : Minecraft.getMinecraft().world.playerEntities) {
             if (thisPlayer == player && Minecraft.getMinecraft().gameSettings.thirdPersonView == 0) continue;
@@ -213,36 +216,36 @@ public class ClientEventHandler {
             if (curItem.getItem() == Itemss.MINIGUN) {
                 Minigun minigun = ((ItemMinigun) Itemss.MINIGUN).getMinigun(curItem, player);
                 if (minigun.isMinigunActivated() && minigun.getMinigunSpeed() == Minigun.MAX_GUN_SPEED) {
-                    GL11.glPushMatrix();
+                    GlStateManager.pushMatrix();
                     playerX = player.prevPosX + (player.posX - player.prevPosX) * event.getPartialTicks();
                     playerY = player.prevPosY + (player.posY - player.prevPosY) * event.getPartialTicks();
                     playerZ = player.prevPosZ + (player.posZ - player.prevPosZ) * event.getPartialTicks();
-                    GL11.glTranslated(playerX, playerY + 0.5, playerZ);
-
-                    GL11.glDisable(GL11.GL_TEXTURE_2D);
-                    //GL11.glDisable(GL11.GL_LIGHTING);
-                    RenderUtils.glColorHex(0xFF000000 | minigun.getAmmoColor());
+                    GlStateManager.translate(playerX, playerY + 0.5, playerZ);
+                    GlStateManager.disableTexture2D();
+                    GlStateManager.disableLighting();
+                    GlStateManager.enableBlend();
+                    GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+                    RenderUtils.glColorHex(0x40000000 | minigun.getAmmoColor());
+                    Vec3d directionVec = player.getLookVec().normalize();
+                    Vec3d vec = new Vec3d(directionVec.x, 0, directionVec.z).normalize();
+                    vec.rotateYaw((float) Math.toRadians(-15 + (player.rotationYawHead - player.renderYawOffset)));
+                    minigunFire.startX = vec.x * GUN_RADIUS;
+                    minigunFire.startY = vec.y * GUN_RADIUS - player.getYOffset();
+                    minigunFire.startZ = vec.z * GUN_RADIUS;
                     for (int i = 0; i < 5; i++) {
-
-                        Vec3d directionVec = player.getLookVec().normalize();
-                        Vec3d vec = new Vec3d(directionVec.x, 0, directionVec.z).normalize();
-                        vec.rotateYaw((float) Math.toRadians(-15 + (player.rotationYawHead - player.renderYawOffset)));
-                        minigunFire.startX = vec.x * GUN_RADIUS;
-                        minigunFire.startY = vec.y * GUN_RADIUS - player.getYOffset();
-                        minigunFire.startZ = vec.z * GUN_RADIUS;
                         minigunFire.endX = directionVec.x * 20 + player.getRNG().nextDouble() - 0.5;
-                        minigunFire.endY = directionVec.y * 20 + player.getRNG().nextDouble() - 0.5;
+                        minigunFire.endY = directionVec.y * 20 + player.getEyeHeight() + player.getRNG().nextDouble() - 0.5;
                         minigunFire.endZ = directionVec.z * 20 + player.getRNG().nextDouble() - 0.5;
                         minigunFire.render();
                     }
-                    GL11.glColor4d(1, 1, 1, 1);
-                    // GL11.glEnable(GL11.GL_LIGHTING);
-                    GL11.glEnable(GL11.GL_TEXTURE_2D);
-                    GL11.glPopMatrix();
+                    GlStateManager.color(1, 1, 1, 1);
+                    GlStateManager.enableLighting();
+                    GlStateManager.enableTexture2D();
+                    GlStateManager.popMatrix();
                 }
             }
         }
-        GL11.glPopMatrix();
+        GlStateManager.popMatrix();
     }
 
     private void renderMinigunFirstPerson() {
@@ -255,15 +258,15 @@ public class ClientEventHandler {
                 GlStateManager.disableLighting();
                 GlStateManager.enableBlend();
                 GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-
                 RenderUtils.glColorHex(0x40000000 | minigun.getAmmoColor());
+                float yawAngle = player.getPrimaryHand() == EnumHandSide.RIGHT ? -(float)Math.PI / 2f : (float)Math.PI / 2f;
+                Vec3d directionVec = player.getLookVec().normalize();
+                Vec3d vec2 = new Vec3d(directionVec.x, directionVec.y, directionVec.z);
+                vec2 = vec2.rotateYaw(yawAngle);
+                minigunFire.startX = vec2.x ;
+                minigunFire.startY = 1.0;
+                minigunFire.startZ = vec2.z;
                 for (int i = 0; i < 5; i++) {
-                    Vec3d directionVec = player.getLookVec().normalize();
-                    Vec3d vec2 = new Vec3d(directionVec.x, directionVec.y, directionVec.z);
-                    vec2 = vec2.rotateYaw(-(float)Math.PI / 2f);
-                    minigunFire.startX = vec2.x ;
-                    minigunFire.startY = 1.0;
-                    minigunFire.startZ = vec2.z;
                     minigunFire.endX = directionVec.x * 20 + player.getRNG().nextDouble() - 0.5;
                     minigunFire.endY = directionVec.y * 20 + player.getEyeHeight() + player.getRNG().nextDouble() - 0.5;
                     minigunFire.endZ = directionVec.z * 20 + player.getRNG().nextDouble() - 0.5;

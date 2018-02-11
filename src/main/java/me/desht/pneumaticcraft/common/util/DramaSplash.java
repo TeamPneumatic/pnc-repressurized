@@ -42,7 +42,7 @@ public class DramaSplash {
         if (dramaFifo.size() < MIN_SIZE) {
             fetchMoreSplash();
         }
-        return res;
+        return res == null ? "" : res;
     }
 
     private void fetchMoreSplash() {

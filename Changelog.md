@@ -6,10 +6,30 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
-## x.x.x-xxx (Unreleased)
+## 0.4.1-141 (10 Feb 2018)
 
-* Programmer Area enhancements: Sphere, Cylinder and Pyramid types can now be configured as 'hollow'.  
-* Fixed missing textures in the Area wikipage.
+* Hopefully made PNC:R more robust with compatibility with other mods adding "oil" as a fluid.  PNC:R will now log an error and disable oil worldgen if it can't find oil as a block, rather than crashing the instance.
+* Added config option 'B:explosionCrafting', true by default. Setting this to false disables explosion crafting of compressed iron. If you disable this, you'll need another way to get initial compressed iron (e.g. via a CraftTweaker recipe)
+* Picking up modded fluids with Ceramics Clay Bucket no longer converts the Clay Bucket to a vanilla iron Bucket.
+* Drone "Condition: Items" puzzle piece now works properly.
+* Fixed potential client-side NPE in Aphorism Tiles when drama text is unavailable.
+
+## 0.4.0-135 (1 Feb 2018)
+
+* Programmer Area enhancements: Sphere, Cylinder and Pyramid types can now be configured as 'hollow', and the Area widget configuration GUI now has a much cleaner layout
+* Programmer enhancement: added a search textfield, shown when the full widget tray is expanded, allowing easy location of puzzle pieces by name
+* Programmer widget tray can now be toggled with the Tab hotkey (in addition to the existing Space hotkey), possibly useful when the new search field has focus
+* Aerial Interface: added support for CoFH "Essence of Knowledge" experience fluid
+* Aerial Interface: the Experience tab in the GUI now has a button to select the desired fluid type when you have multiple mods providing experience fluids (the old method of inserting some fluid to set the accepted type no longer works)
+* Added two ComputerCraft methods for Elevators: getCurrentHeight() and getTargetHeight()
+* Drone death messages to the owner are now more informative (include reason why drone died)
+* Minigun tracers and Vortex entities no longer look so weird (bad X offset) when fired from the left hand
+* Fixed client being kicked when trying to load very large drone programs from pastebin (exceeding 32K client->server packet limit; now sent in multiple packets - 1.7.10 had a higher packet size limit)
+* Fixed client crash when using variables to define areas (related to changes in 0.3.0 regarding size limit validation)
+* Fixed client crash in Programmer when zooming all the way out, exiting Programmer and then re-opening it
+* Fixed some XP calculation inaccuracies in the Aerial Interface; pumping XP in & out should not cause any unexpected XP loss or gain now
+* Fixed missing textures in the Area wiki page
+* IGW updates to Aerial Interface and Programmer wiki pages
 
 ## 0.3.1-125 (18 Jan 2018)
 

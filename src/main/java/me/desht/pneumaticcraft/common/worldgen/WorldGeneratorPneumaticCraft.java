@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.common.worldgen;
 
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.fluid.Fluids;
+import net.minecraft.block.Block;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.IChunkProvider;
@@ -40,9 +40,11 @@ public class WorldGeneratorPneumaticCraft implements IWorldGenerator {
 
     public void generateSurface(World world, Random rand, int chunkX, int chunkZ) {
         if (rand.nextDouble() < ConfigHandler.general.oilGenerationChance / 100D) {
-            PneumaticCraftRepressurized.instance.validateFluids(null);
-            int y = rand.nextInt(rand.nextInt(128) + 8);
-            new WorldGenLakes(FluidRegistry.getFluid(Fluids.OIL.getName()).getBlock()).generate(world, rand, new BlockPos(chunkX + 8, y, chunkZ + 8));
+            Block oil =  FluidRegistry.getFluid(Fluids.OIL.getName()).getBlock();
+            if (oil != null) {
+                int y = rand.nextInt(rand.nextInt(128) + 8);
+                new WorldGenLakes(oil).generate(world, rand, new BlockPos(chunkX + 8, y, chunkZ + 8));
+            }
         }
 
     }

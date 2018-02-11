@@ -22,6 +22,9 @@ public class EntityVortex extends EntityThrowable {
     private double oldMotionY;
     private double oldMotionZ;
 
+    // clientside: rendering X offset of vortex, depends on which hand the vortex was fired from
+    private float renderOffsetX = -Float.MAX_VALUE;
+
     public EntityVortex(World world) {
         super(world);
     }
@@ -72,6 +75,18 @@ public class EntityVortex extends EntityThrowable {
             }
         }
 
+    }
+
+    public boolean hasRenderOffsetX() {
+        return renderOffsetX > -Float.MAX_VALUE;
+    }
+
+    public float getRenderOffsetX() {
+        return renderOffsetX;
+    }
+
+    public void setRenderOffsetX(float renderOffsetX) {
+        this.renderOffsetX = renderOffsetX;
     }
 
     private boolean tryCutPlants(BlockPos pos) {

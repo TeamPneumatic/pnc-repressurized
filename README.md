@@ -2,7 +2,7 @@
 
 This is a port to Minecraft 1.12.2 of MineMaarten's awesome PneumaticCraft mod: https://github.com/MineMaarten/PneumaticCraft.  It is fully functional at this point, and stability is steadily improving.
 
-* Beta-quality builds are available from https://minecraft.curseforge.com/projects/pneumaticcraft-repressurized
+* Beta-level builds are available from https://minecraft.curseforge.com/projects/pneumaticcraft-repressurized
 * Development builds are available from http://jenkins.k-4u.nl/job/PneumaticCraft-Repressurized/
 * Maven artifacts are available from https://modmaven.k-4u.nl/me/desht/pneumaticcraft/pneumaticcraft-repressurized/
 
@@ -23,7 +23,7 @@ Have fun!
 
 ## New Features in PneumaticCraft: Repressurized
 
-Pretty much all of the functionality from the 1.7.10 PneumaticCraft is now replicated on 1.12.2, along with a few little extras:
+The following new features were added to the initial 1.12.2 alpha release, relative to the original 1.7.10 PneumaticCraft:
 
 * Aphorism tiles can now be edited (right-click with an empty hand).  They can also now have Minecraft markup (colours, bold/italic/underline/strikethrough) by using Alt + 0-9/a-f/l/m/n/o/r, and there's popup keymapping help if you hold down F1.  Also, drama splash is back, without the Drama Splash mod dependency (that mod hasn't been ported to 1.12).  Drama splash can be disabled in client-side config if you don't like it.
 * The kerosene lamp can now burn *any* burnable fuel; better fuels last longer (LPG is the best right now).  That can be disabled in config, to have the old behaviour of burning kerosene only.

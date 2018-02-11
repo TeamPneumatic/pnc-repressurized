@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorBase;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorCaller;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
@@ -120,6 +121,12 @@ public class BlockElevatorCaller extends BlockPneumaticCraftCamo {
 
         setBlockBounds(FULL_BLOCK_AABB);
         return rayTrace;
+    }
+
+    @Override
+    public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face) {
+        IBlockState camoState = getCamoState(worldIn, pos);
+        return camoState != null ? camoState.getBlockFaceShape(worldIn, pos, face) : BlockFaceShape.SOLID;
     }
 
     @Override

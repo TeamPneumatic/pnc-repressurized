@@ -13,9 +13,7 @@ import me.desht.pneumaticcraft.common.thirdparty.enderio.EnderIO;
 import me.desht.pneumaticcraft.common.thirdparty.forestry.Forestry;
 import me.desht.pneumaticcraft.common.thirdparty.ic2.IC2;
 import me.desht.pneumaticcraft.common.thirdparty.igwmod.IGWMod;
-import me.desht.pneumaticcraft.common.thirdparty.industrialforegoing.IndustrialForegoing;
 import me.desht.pneumaticcraft.common.thirdparty.mcmultipart.PneumaticMultiPart;
-import me.desht.pneumaticcraft.common.thirdparty.openblocks.OpenBlocks;
 import me.desht.pneumaticcraft.common.thirdparty.theoneprobe.TheOneProbe;
 import me.desht.pneumaticcraft.common.thirdparty.waila.Waila;
 import me.desht.pneumaticcraft.lib.Log;
@@ -51,9 +49,7 @@ public class ThirdPartyManager implements IGuiHandler {
             }
             thirdPartyClasses.put(ModIds.AE2, AE2.class);
             thirdPartyClasses.put(ModIds.FORESTRY, Forestry.class);
-            thirdPartyClasses.put(ModIds.OPEN_BLOCKS, OpenBlocks.class);
             thirdPartyClasses.put(ModIds.EIO, EnderIO.class);
-            thirdPartyClasses.put(ModIds.INDUSTRIALFOREGOING, IndustrialForegoing.class);
             if (Loader.isModLoaded(ModIds.MCMP)) {
                 thirdPartyClasses.put(ModIds.MCMP, PneumaticMultiPart.class);
             }
@@ -131,6 +127,9 @@ public class ThirdPartyManager implements IGuiHandler {
                 e.printStackTrace();
             }
         }
+
+        ModNameCache.init();
+        XPFluids.registerXPFluids();
     }
 
     public void clientSide() {

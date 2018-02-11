@@ -1,13 +1,17 @@
 package me.desht.pneumaticcraft.client.render.entity;
 
 import me.desht.pneumaticcraft.common.entity.projectile.EntityVortex;
+import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderEntity;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 import net.minecraftforge.fml.relauncher.Side;
@@ -27,6 +31,10 @@ public class RenderEntityVortex extends RenderEntity {
     }
 
     private void renderVortex(EntityVortex entity, double x, double y, double z, float var1, float partialTicks) {
+        if (!entity.hasRenderOffsetX()) {
+            entity.setRenderOffsetX(calculateXoffset());
+        }
+
         int circlePoints = 200;
         double radius = 0.5D;
         GL11.glPushMatrix();
@@ -44,7 +52,7 @@ public class RenderEntityVortex extends RenderEntity {
             float angleRadians = (float) i / (float) circlePoints * 2F * (float) Math.PI;
             GL11.glPushMatrix();
             GL11.glTranslated(radius * Math.sin(angleRadians), radius * Math.cos(angleRadians), 0);
-            renderGust();
+            renderGust(entity.getRenderOffsetX());
             GL11.glPopMatrix();
         }
 
@@ -53,6 +61,16 @@ public class RenderEntityVortex extends RenderEntity {
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glPopMatrix();
 
+    }
+
+    private float calculateXoffset() {
+        EntityPlayerSP player = Minecraft.getMinecraft().player;
+        EnumHandSide hs = player.getPrimaryHand();
+        if (player.getHeldItemMainhand().getItem() != Itemss.VORTEX_CANNON) {
+            hs = hs.opposite();
+        }
+        // yeah, this is supposed to be asymmetric; it looks better that way
+        return hs == EnumHandSide.RIGHT ? -4.0F : 16.0F;
     }
 
     /*
@@ -69,7 +87,7 @@ public class RenderEntityVortex extends RenderEntity {
      * (double)(1.0F - f9), 0.0D, (double)f3, (double)f5); Tessellator.getInstance().draw(); }
      */
 
-    private void renderGust() {
+    private void renderGust(float xOffset) {
         byte b0 = 0;
         //float f2 = 0.0F;
         //float f3 = 0.5F;
@@ -86,7 +104,7 @@ public class RenderEntityVortex extends RenderEntity {
 
         GL11.glRotatef(45.0F, 1.0F, 0.0F, 0.0F);
         GL11.glScalef(f10, f10, f10);
-        GL11.glTranslatef(-4.0F, 0.0F, 0.0F);
+        GL11.glTranslatef(xOffset, 0.0F, 0.0F);
         GL11.glNormal3f(f10, 0.0F, 0.0F);
         BufferBuilder wr = Tessellator.getInstance().getBuffer();
         wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);

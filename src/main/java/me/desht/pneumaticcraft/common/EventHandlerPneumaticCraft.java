@@ -83,7 +83,6 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.IFluidBlock;
 import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.common.eventhandler.Event.Result;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
@@ -113,6 +112,10 @@ public class EventHandlerPneumaticCraft {
 
     @SubscribeEvent
     public void handleIronExplosions(ExplosionEvent.Detonate event) {
+        if (!ConfigHandler.general.explosionCrafting) {
+            return;
+        }
+
         Iterator<Entity> iterator = event.getAffectedEntities().iterator();
         while (iterator.hasNext()) {
             Entity entity = iterator.next();
@@ -167,14 +170,8 @@ public class EventHandlerPneumaticCraft {
             Block b = event.getWorld().getBlockState(rtr.getBlockPos()).getBlock();
             if (b instanceof IFluidBlock) {
                 Fluid fluid = ((IFluidBlock) b).getFluid();
-                ItemStack filled = FluidUtil.getFilledBucket(new FluidStack(fluid, 1000));
-                if (!filled.isEmpty()) {
-                    event.setFilledBucket(FluidUtil.getFilledBucket(new FluidStack(fluid, 1000)));
-                    event.getWorld().setBlockToAir(rtr.getBlockPos());
-                    event.setResult(Result.ALLOW);
-                    if (TileEntityRefinery.isInputFluidValid(fluid, 4) && event.getEntityPlayer() instanceof EntityPlayerMP) {
-                        AdvancementTriggers.OIL_BUCKET.trigger((EntityPlayerMP) event.getEntityPlayer());
-                    }
+                if (TileEntityRefinery.isInputFluidValid(fluid, 4) && event.getEntityPlayer() instanceof EntityPlayerMP) {
+                    AdvancementTriggers.OIL_BUCKET.trigger((EntityPlayerMP) event.getEntityPlayer());
                 }
             }
         }
