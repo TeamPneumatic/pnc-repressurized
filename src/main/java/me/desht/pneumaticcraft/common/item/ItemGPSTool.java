@@ -28,7 +28,6 @@ import java.util.List;
 public class ItemGPSTool extends ItemPneumatic implements IPositionProvider {
     public ItemGPSTool() {
         super("gps_tool");
-        setMaxStackSize(1);
     }
 
     @Override

@@ -32,6 +32,8 @@ import java.util.Map;
 public class Itemss {
     @ObjectHolder("gps_tool")
     public static final Item GPS_TOOL = null;
+    @ObjectHolder("gps_area_tool")
+    public static final Item GPS_AREA_TOOL = null;
     @ObjectHolder("ingot_iron_compressed")
     public static final Item INGOT_IRON_COMPRESSED = null;
     @ObjectHolder("pressure_gauge")
@@ -132,6 +134,7 @@ public class Itemss {
         IForgeRegistry<Item> registry = event.getRegistry();
 
         registerItem(registry, new ItemGPSTool());
+        registerItem(registry, new ItemGPSAreaTool());
         registerItem(registry, new ItemPneumatic("ingot_iron_compressed"));
         registerItem(registry, new ItemPneumatic("pressure_gauge"));
         registerItem(registry, new ItemPneumatic("stone_base"));

@@ -12,6 +12,7 @@ import me.desht.pneumaticcraft.common.TickHandlerPneumaticCraft;
 import me.desht.pneumaticcraft.common.ai.DroneInteractRFExport;
 import me.desht.pneumaticcraft.common.ai.DroneInteractRFImport;
 import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.capabilities.CapabilityGPSAreaTool;
 import me.desht.pneumaticcraft.common.commands.PCCommandManager;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.entity.EntityRegistrator;
@@ -44,6 +45,7 @@ import net.minecraft.command.ServerCommandManager;
 import net.minecraft.item.Item;
 import net.minecraft.world.storage.loot.LootTableList;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fml.common.Loader;
@@ -124,6 +126,8 @@ public class PneumaticCraftRepressurized {
 
         MinecraftForge.EVENT_BUS.register(new CraftingHandler());
         MinecraftForge.EVENT_BUS.register(new ConfigHandler());
+        
+        CapabilityGPSAreaTool.register();
     }
 
     @EventHandler
@@ -141,6 +145,7 @@ public class PneumaticCraftRepressurized {
         }
 
         OreDictionaryHelper.addOreDictEntries();
+        MinecraftForge.EVENT_BUS.register(Itemss.GPS_AREA_TOOL);
 
         proxy.init();
         ThirdPartyManager.instance().init();

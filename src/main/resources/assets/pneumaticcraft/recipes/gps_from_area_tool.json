@@ -1,0 +1,12 @@
+{
+  "type": "forge:ore_shapeless",
+  "ingredients": [
+    {
+      "item": "pneumaticcraft:gps_area_tool"
+    }
+  ],
+  "result": {
+    "item": "pneumaticcraft:gps_tool",
+    "count": 2
+  }
+}

@@ -158,6 +158,18 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
             curInfo.add("gui.progWidget.area.error.noArea");
         }
     }
+    
+    public void setAreaPoint(BlockPos p, int index){
+        if(index == 0){
+            x1 = p.getX();
+            y1 = p.getY();
+            z1 = p.getZ();
+        }else{
+            x2 = p.getX();
+            y2 = p.getY();
+            z2 = p.getZ();
+        }
+    }
 
     private BlockPos[] getAreaPoints() {
         BlockPos c1;

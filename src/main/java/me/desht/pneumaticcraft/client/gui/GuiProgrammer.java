@@ -1,12 +1,14 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.google.common.base.CaseFormat;
+
 import igwmod.api.WikiRegistry;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.client.gui.widget.GuiCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.GuiRadioButton;
 import me.desht.pneumaticcraft.client.gui.widget.IGuiWidget;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
+import me.desht.pneumaticcraft.common.capabilities.CapabilityGPSAreaTool;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.inventory.ContainerProgrammer;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -34,6 +36,7 @@ import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -396,6 +399,21 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
                     dragMouseStartY = y - guiTop;
                     dragWidgetStartX = widget.getX();
                     dragWidgetStartY = widget.getY();
+                }
+            }
+            if(draggingWidget == null){
+                //create area widgets straight from GPS Area Tools
+                ItemStack heldItem = mc.player.inventory.getItemStack();
+                if(heldItem.hasCapability(CapabilityGPSAreaTool.INSTANCE, null)){
+                    CapabilityGPSAreaTool cap = heldItem.getCapability(CapabilityGPSAreaTool.INSTANCE, null);
+                    draggingWidget = cap.createWidget();
+                    draggingWidget.setX(Integer.MAX_VALUE);
+                    draggingWidget.setY(Integer.MAX_VALUE);
+                    te.progWidgets.add(draggingWidget);
+                    dragMouseStartX = draggingWidget.getWidth() / 3;
+                    dragMouseStartY = draggingWidget.getHeight() / 4;
+                    dragWidgetStartX = 0;
+                    dragWidgetStartY = 0;
                 }
             }
         } else if (isMiddleClicking && !wasClicking && showingWidgetProgress == 0) {

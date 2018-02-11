@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.client;
 
 import com.google.common.collect.ImmutableSet;
+
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.DroneDebugUpgradeHandler;
@@ -19,7 +20,11 @@ import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.items.wrapper.PlayerArmorInvWrapper;
+
 import org.lwjgl.opengl.GL11;
+
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
 
 import java.util.*;
 
@@ -29,6 +34,9 @@ public class AreaShowManager {
     private World world;
     private DroneDebugUpgradeHandler droneDebugger;
 
+    private List<BlockPos> cachedPositionProviderData;
+    private List<AreaShowHandler> cachedPositionProviderShowers;
+    
     public static AreaShowManager getInstance() {
         return INSTANCE;
     }
@@ -57,13 +65,31 @@ public class AreaShowManager {
             IPositionProvider positionProvider = (IPositionProvider) curItem.getItem();
             List<BlockPos> posList = positionProvider.getStoredPositions(curItem);
             if(posList != null){
-                for (int i = 0; i < posList.size(); i++) {
-                    if (posList.get(i) != null && positionProvider.getRenderColor(i) != 0) {
-                        GlStateManager.disableDepth();
-                        new AreaShowHandler(ImmutableSet.of(posList.get(i)), positionProvider.getRenderColor(i)).render();
-                        GlStateManager.enableDepth();
+                GlStateManager.disableDepth();
+                
+                if(!posList.equals(cachedPositionProviderData)){ //Cache miss
+                    TIntObjectMap<Set<BlockPos>> colorsToPositions = new TIntObjectHashMap<>();
+                    for (int i = 0; i < posList.size(); i++) {
+                        int renderColor = positionProvider.getRenderColor(i);
+                        if (posList.get(i) != null && renderColor != 0) {
+                            Set<BlockPos> positionsForColor = colorsToPositions.get(renderColor);
+                            if(positionsForColor == null){
+                                positionsForColor = new HashSet<BlockPos>();
+                                colorsToPositions.put(renderColor, positionsForColor);
+                            }
+                            positionsForColor.add(posList.get(i));
+                        }
                     }
+                    cachedPositionProviderData = posList;
+                    cachedPositionProviderShowers = new ArrayList<>(colorsToPositions.size());
+                    colorsToPositions.forEachEntry((color, positions) -> {   
+                        cachedPositionProviderShowers.add(new AreaShowHandler(positions, color));
+                        return true;
+                    });
                 }
+                
+                cachedPositionProviderShowers.forEach(AreaShowHandler::render);
+                GlStateManager.enableDepth();
             }
         } else if (curItem.getItem() == Itemss.CAMO_APPLICATOR) {
             Set<BlockPos> posSet = CamoTECache.getCamouflageableBlockPos(world, player);

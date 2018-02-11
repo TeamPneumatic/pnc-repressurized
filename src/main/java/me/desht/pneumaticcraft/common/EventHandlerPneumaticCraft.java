@@ -16,6 +16,7 @@ import me.desht.pneumaticcraft.client.render.pneumaticArmor.hacking.entity.Hacka
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.capabilities.CapabilityGPSAreaTool;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.entity.EntityProgrammableController;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
@@ -33,6 +34,7 @@ import me.desht.pneumaticcraft.common.thirdparty.ModInteractionUtilImplementatio
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefinery;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -50,6 +52,7 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -381,6 +384,13 @@ public class EventHandlerPneumaticCraft {
                         break;
                 }
             }
+        }
+    }
+    
+    @SubscribeEvent
+    public void onCapabilityAttachmentStack(AttachCapabilitiesEvent<ItemStack> event){
+        if(event.getObject().getItem() == Itemss.GPS_AREA_TOOL) {
+            event.addCapability(new ResourceLocation(Names.MOD_ID, "gpsAreaTool"), new CapabilityGPSAreaTool.Provider());
         }
     }
 }
