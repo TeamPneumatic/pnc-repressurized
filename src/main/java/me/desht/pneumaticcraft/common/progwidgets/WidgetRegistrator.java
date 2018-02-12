@@ -1,5 +1,7 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
+import me.desht.pneumaticcraft.common.ai.DroneInteractRFExport;
+import me.desht.pneumaticcraft.common.ai.DroneInteractRFImport;
 import me.desht.pneumaticcraft.common.config.ProgWidgetConfig;
 
 import java.util.*;
@@ -62,6 +64,10 @@ public class WidgetRegistrator {
         register(new ProgWidgetDroneConditionPressure());
         register(new ProgWidgetRFCondition());
         register(new ProgWidgetDroneConditionRF());
+
+        // TODO: should really be their own widgets, but historical reasons...
+        register(new ProgWidgetCustomBlockInteract().setInteractor(new DroneInteractRFExport()));
+        register(new ProgWidgetCustomBlockInteract().setInteractor(new DroneInteractRFImport()));
     }
 
     public static void register(IProgWidget widget) {

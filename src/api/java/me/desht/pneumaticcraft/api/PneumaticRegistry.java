@@ -20,10 +20,19 @@ import net.minecraftforge.fml.common.Loader;
 public final class PneumaticRegistry {
     private static IPneumaticCraftInterface instance;
 
+    /**
+     * Get an instance of the top-level API interface.
+     *
+     * @return the top-level API interface
+     */
     public static IPneumaticCraftInterface getInstance() {
         return instance;
     }
 
+    /**
+     * Do not call this method yourself.  For PneumaticCraft internal usage only!
+     * @param inter reference to the API interface object
+     */
     public static void init(IPneumaticCraftInterface inter) {
         if (instance == null && Loader.instance().activeModContainer().getModId().equals("pneumaticcraft"))
             instance = inter;//only allow initialization once; by PneumaticCraft
@@ -67,7 +76,7 @@ public final class PneumaticRegistry {
          */
 
         /**
-         * Returns the amount of Security Stations that disallow interaction with the given coordinate for the given player.
+         * Returns the number of Security Stations that disallow interaction with the given coordinate for the given player.
          * Usually you'd disallow interaction when this returns > 0.
          *
          * @param world

@@ -6,7 +6,9 @@ package me.desht.pneumaticcraft.api.drone;
 public interface IBlockInteractHandler {
 
     /**
-     * Returns a boolean[6] of all sides. when true, this side is accessible
+     * Returns a boolean[6] of all sides. when true, this side is accessible.  The sides are in order D,U,N,S,W,E,
+     * same as for EnumFacing.  You can use {@link net.minecraft.util.EnumFacing#getFront(int)} with an index into this
+     * array to get the facing direction.
      *
      * @return
      */

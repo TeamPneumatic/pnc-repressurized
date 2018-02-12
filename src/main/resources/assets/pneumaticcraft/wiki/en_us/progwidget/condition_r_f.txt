@@ -1,0 +1,5 @@
+This is a Condition. [link{pneumaticcraft:progwidget/conditions}]Click here[link{}] to read general information about Conditions.
+
+Note: although this piece is named 'Condition: RF', it actually uses Forge Energy, which is RF-compatible, but not necessarily limited to just RF.
+
+The 'Condition: RF' piece allows you to check the energy levels of an energy-containing block.
