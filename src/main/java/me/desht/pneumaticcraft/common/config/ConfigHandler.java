@@ -101,8 +101,10 @@ public class ConfigHandler {
         public float fuelBucketEfficiencyMultiplier = 0.05f;
         @Config.Comment("Maximum number of blocks in the area defined in an Area Programming Puzzle Piece")
         public int maxProgrammingArea = 250000;
-        @Config.Comment("Disable explosion crafting (iron->compressed iron).  If you disable this, you'll need another way to get compressed iron initially")
+        @Config.Comment("Enable/disable explosion crafting (iron->compressed iron).  If you disable this, you'll need another way to get compressed iron initially")
         public boolean explosionCrafting = true;
+        @Config.Comment("Oil worldgen blacklist: add dimension IDs to this list if you don't want oil worldgen to happen there.")
+        public int[] oilWorldGenBlacklist = new int[] { 1, -1 };
     }
 
     public static class MachineProperties {
