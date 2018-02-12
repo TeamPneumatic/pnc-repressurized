@@ -66,14 +66,19 @@ public class EntityPathNavigateDrone extends PathNavigateFlying implements IPath
     @Nullable
     @Override
     public Path getPathToPos(BlockPos pos) {
-        telPos = pos;
+        //When the destination is not a valid block, we can stop right away
+        if (!pathfindingEntity.isBlockValidPathfindBlock(pos) || pathfindingEntity.getDistanceSqToCenter(pos) < 0.3)
+            return null;
+
+        //Store the potential teleport destination
+        telPos = pos;        
+        
+        //If we are forced to teleport, trigger right away
         if (forceTeleport) {
             teleportCounter = 0;
             return null;
         }
-        if (!pathfindingEntity.isBlockValidPathfindBlock(pos) || pathfindingEntity.getDistanceSqToCenter(pos) < 0.3)
-            return null;
-
+        
         pathfindingEntity.setStandby(false);
         teleportCounter = -1;
         Path path = super.getPathToPos(pos);
@@ -86,6 +91,7 @@ public class EntityPathNavigateDrone extends PathNavigateFlying implements IPath
             }
         }
         
+        //If no valid flight path, teleport instead.
         if (path == null) {
             teleportCounter = 0;
         }

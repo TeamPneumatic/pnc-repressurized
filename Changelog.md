@@ -6,6 +6,10 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
+## x.x.x-xxx (Unreleased)
+
+* Fixed Drones sometimes refusing to teleport while they should (most likely to notice with Place Block commands).
+
 ## 0.4.1-141 (10 Feb 2018)
 
 * Hopefully made PNC:R more robust with compatibility with other mods adding "oil" as a fluid.  PNC:R will now log an error and disable oil worldgen if it can't find oil as a block, rather than crashing the instance.
