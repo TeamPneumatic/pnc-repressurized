@@ -15,14 +15,14 @@
        "scale": [ 0.6, 0.6, 0.6 ]
     },
     "firstperson_lefthand": {
-       "rotation": [ 0, 180, 67.5 ],
-       "translation": [ 4, 0, -6],
-       "scale": [ 0.6, 0.6, 0.6 ]
+       "rotation": [ 20, 100, 10 ],
+       "translation": [ 4, -1, -6],
+       "scale": [ 0.75, 0.75, 0.75 ]
     },
     "firstperson_righthand": {
-       "rotation": [ 0, 0, -67.5 ],
-       "translation": [ 4, 0, -6],
-       "scale": [ 0.6, 0.6, 0.6 ]
+       "rotation": [ 20, -80, -10 ],
+       "translation": [ 4, -1, -6],
+       "scale": [ 0.75, 0.75, 0.75 ]
     }
   }
 }
