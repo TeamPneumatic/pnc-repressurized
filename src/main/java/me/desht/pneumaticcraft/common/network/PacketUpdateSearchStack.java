@@ -16,7 +16,7 @@ public class PacketUpdateSearchStack extends AbstractPacket<PacketUpdateSearchSt
     }
 
     public PacketUpdateSearchStack(ItemStack stack) {
-        if (stack != null) {
+        if (!stack.isEmpty()) {
             itemId = Item.getIdFromItem(stack.getItem());
             itemDamage = stack.getItemDamage();
         } else {

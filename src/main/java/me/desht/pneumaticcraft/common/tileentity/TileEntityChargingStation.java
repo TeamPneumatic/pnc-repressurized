@@ -89,7 +89,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
             for (Entity entity : entitiesPadding) {
                 if (entity instanceof IPressurizable) {
                     chargingItems.add((IPressurizable) entity);
-                    chargedStacks.add(null);
+                    chargedStacks.add(ItemStack.EMPTY);
                 } else if (entity instanceof EntityItem) {
                     ItemStack entityStack = ((EntityItem) entity).getItem();
                     if (entityStack.getItem() instanceof IPressurizable) {

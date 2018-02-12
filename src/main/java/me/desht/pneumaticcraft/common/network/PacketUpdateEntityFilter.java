@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.network;
 import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.common.NBTUtil;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 
@@ -33,8 +34,8 @@ public class PacketUpdateEntityFilter extends AbstractPacket<PacketUpdateEntityF
 
     @Override
     public void handleServerSide(PacketUpdateEntityFilter message, EntityPlayer player) {
-        ItemStack stack = player.inventory.armorItemInSlot(3);
-        if (stack != null) {
+        ItemStack stack = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
+        if (!stack.isEmpty()) {
             NBTUtil.setString(stack, "entityFilter", message.filter);
         }
     }

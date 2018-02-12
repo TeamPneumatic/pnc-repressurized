@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.lib.NBTKeys;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 
 public class PacketUpdateDebuggingDrone extends AbstractPacket<PacketUpdateDebuggingDrone> {
@@ -38,8 +39,8 @@ public class PacketUpdateDebuggingDrone extends AbstractPacket<PacketUpdateDebug
 
     @Override
     public void handleServerSide(PacketUpdateDebuggingDrone message, EntityPlayer player) {
-        ItemStack stack = player.inventory.armorItemInSlot(3);
-        if (stack != null) {
+        ItemStack stack = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
+        if (!stack.isEmpty()) {
             NBTUtil.setInteger(stack, NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE, message.entityId);
             Entity entity = player.world.getEntityByID(message.entityId);
             if (entity instanceof EntityDrone) {
