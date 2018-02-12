@@ -1,8 +1,6 @@
 package me.desht.pneumaticcraft.common.item;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -10,9 +8,10 @@ import javax.annotation.Nonnull;
 
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
-import me.desht.pneumaticcraft.client.gui.GuiGPSTool;
+import me.desht.pneumaticcraft.client.gui.areatool.GuiGPSAreaTool;
 import me.desht.pneumaticcraft.common.NBTUtil;
 import me.desht.pneumaticcraft.common.capabilities.CapabilityGPSAreaTool;
+import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea;
 import me.desht.pneumaticcraft.common.remote.GlobalVariableManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
@@ -28,7 +27,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -41,7 +39,7 @@ public class ItemGPSAreaTool extends ItemPneumatic implements IPositionProvider 
     @Override
     public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         if (hand != EnumHand.MAIN_HAND) return EnumActionResult.PASS;
-        setPos(player, pos, 0);
+        setGPSPosAndNotify(player, pos, 0);
         return EnumActionResult.SUCCESS; // we don't want to use the item.
     }
 
@@ -59,7 +57,7 @@ public class ItemGPSAreaTool extends ItemPneumatic implements IPositionProvider 
     public void onBlockLeftClick(PlayerInteractEvent.LeftClickBlock event){
         if(event.getItemStack().getItem() == this){
             if(!event.getPos().equals(getGPSLocation(event.getItemStack(), 1))){
-                setPos(event.getEntityPlayer(), event.getPos(), 1);
+                setGPSPosAndNotify(event.getEntityPlayer(), event.getPos(), 1);
                 event.setCanceled(true);
             }
         }
@@ -71,35 +69,34 @@ public class ItemGPSAreaTool extends ItemPneumatic implements IPositionProvider 
             showGUI(event.getItemStack(), 1);
         }
     }
-    
-    private void setPos(EntityPlayer player, BlockPos pos, int index){
+
+    public static void setGPSPosAndNotify(EntityPlayer player, BlockPos pos, int index){
         setGPSLocation(player.getHeldItemMainhand(), pos, index);
         if (!player.world.isRemote)
             player.sendStatusMessage(new TextComponentString(TextFormatting.GREEN + String.format("[GPS Area Tool] Set P%d to %d, %d, %d.", index + 1, pos.getX(), pos.getY(), pos.getZ())), false);
     }
     
     private void showGUI(ItemStack stack, int index){
-        BlockPos pos = getGPSLocation(stack, index);
-        FMLCommonHandler.instance().showGuiScreen(new GuiGPSTool(pos != null ? pos : new BlockPos(0, 0, 0), getVariable(stack, index)));
+        FMLCommonHandler.instance().showGuiScreen(new GuiGPSAreaTool(stack, index));
     }
 
     @Override
     public void addInformation(ItemStack stack, World worldIn, List<String> infoList, ITooltipFlag par4) {
         super.addInformation(stack, worldIn, infoList, par4);
         for(int index = 0; index < 2; index++){
-            NBTTagCompound compound = getCoordTag(stack, index);
-            if (compound != null) {
-                int x = compound.getInteger("x");
-                int y = compound.getInteger("y");
-                int z = compound.getInteger("z");
-                if (x != 0 || y != 0 || z != 0) {
-                    infoList.add(String.format("\u00a72P%d: %d, %d, %d", index, x, y, z));
-                }
-                String varName = getVariable(stack, index);
-                if (!varName.equals("")) {
-                    infoList.add(I18n.format("gui.tooltip.gpsTool.variable", varName));
-                }
+            BlockPos pos = getGPSLocation(stack, index);
+            if (pos != null) {
+                infoList.add(String.format("\u00a72P%d: %d, %d, %d", index + 1, pos.getX(), pos.getY(), pos.getZ()));
             }
+            String varName = getVariable(stack, index);
+            if (!varName.equals("")) {
+                infoList.add(I18n.format("gui.tooltip.gpsTool.variable", varName));
+            }
+        }
+        CapabilityGPSAreaTool cap = getCap(stack);
+        if(cap != null){
+            ProgWidgetArea area = cap.getWidget();
+            area.addAreaTypeTooltip(infoList);
         }
     }
 
@@ -115,61 +112,49 @@ public class ItemGPSAreaTool extends ItemPneumatic implements IPositionProvider 
     }
 
     public static BlockPos getGPSLocation(ItemStack gpsTool, int index) {
-        NBTTagCompound compound = getCoordTag(gpsTool, index);
-        if (compound != null) {
-            String var = getVariable(gpsTool, index);
-            if (!var.equals("") && PneumaticCraftRepressurized.proxy.getClientWorld() == null) {
-                BlockPos pos = GlobalVariableManager.getInstance().getPos(var);
-                setGPSLocation(gpsTool, pos, index);
-            }
-            int x = compound.getInteger("x");
-            int y = compound.getInteger("y");
-            int z = compound.getInteger("z");
-            if (x != 0 || y != 0 || z != 0) {
-                return new BlockPos(x, y, z);
-            } else {
-                return null;
-            }
-        } else {
-            return null;
+        String var = getVariable(gpsTool, index);
+        if (!var.equals("") && PneumaticCraftRepressurized.proxy.getClientWorld() == null) {
+            BlockPos pos = GlobalVariableManager.getInstance().getPos(var);
+            setGPSLocation(gpsTool, pos, index);
         }
+        return getCap(gpsTool).getPos(index);
     }
 
     public static void setGPSLocation(ItemStack gpsTool, BlockPos pos, int index) {
         getCap(gpsTool).setPos(pos, index);
         
-        NBTTagCompound tag = getCoordTag(gpsTool, index);
-        
-        NBTUtil.setPos(tag, pos);
         String var = getVariable(gpsTool, index);
         if (!var.equals("")) GlobalVariableManager.getInstance().set(var, pos);
-    }
-    
-    private static NBTTagCompound getCoordTag(ItemStack gpsTool, int index){
-        return NBTUtil.getCompoundTag(gpsTool, "coord" + index);
+        
+        NBTUtil.setBoolean(gpsTool, "dummy", !NBTUtil.getBoolean(gpsTool, "dummy"));
     }
 
     public static void setVariable(ItemStack gpsTool, String variable, int index) {
-        getCoordTag(gpsTool, index).setString("variable", variable);
+        getCap(gpsTool).setVariable(variable, index);
+        NBTUtil.setBoolean(gpsTool, "dummy", !NBTUtil.getBoolean(gpsTool, "dummy"));
     }
 
     public static String getVariable(ItemStack gpsTool, int index) {
-        return getCoordTag(gpsTool, index).getString("variable");
+        return getCap(gpsTool).getVariable(index);
     }
 
     @Override
     public List<BlockPos> getStoredPositions(@Nonnull ItemStack stack) {
         Set<BlockPos> area = getCap(stack).getArea();
         return new ArrayList<>(area);
-        //return Arrays.asList(getGPSLocation(stack, 0), getGPSLocation(stack, 1));
     }
 
     @Override
     public int getRenderColor(int index) {
-        return 0x90FFFF00;
+        return 0xFFFFFF00;
     }
     
-    private static CapabilityGPSAreaTool getCap(ItemStack stack){
+    @Override
+    public boolean disableDepthTest(){
+        return false;
+    }
+    
+    public static CapabilityGPSAreaTool getCap(ItemStack stack){
         return stack.getCapability(CapabilityGPSAreaTool.INSTANCE, null);
     }
 }

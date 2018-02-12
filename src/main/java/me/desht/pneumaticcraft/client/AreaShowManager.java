@@ -1,7 +1,5 @@
 package me.desht.pneumaticcraft.client;
 
-import com.google.common.collect.ImmutableSet;
-
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.DroneDebugUpgradeHandler;
@@ -65,7 +63,6 @@ public class AreaShowManager {
             IPositionProvider positionProvider = (IPositionProvider) curItem.getItem();
             List<BlockPos> posList = positionProvider.getStoredPositions(curItem);
             if(posList != null){
-                GlStateManager.disableDepth();
                 
                 if(!posList.equals(cachedPositionProviderData)){ //Cache miss
                     TIntObjectMap<Set<BlockPos>> colorsToPositions = new TIntObjectHashMap<>();
@@ -83,20 +80,17 @@ public class AreaShowManager {
                     cachedPositionProviderData = posList;
                     cachedPositionProviderShowers = new ArrayList<>(colorsToPositions.size());
                     colorsToPositions.forEachEntry((color, positions) -> {   
-                        cachedPositionProviderShowers.add(new AreaShowHandler(positions, color));
+                        cachedPositionProviderShowers.add(new AreaShowHandler(positions, color, positionProvider.disableDepthTest()));
                         return true;
                     });
                 }
                 
                 cachedPositionProviderShowers.forEach(AreaShowHandler::render);
-                GlStateManager.enableDepth();
             }
         } else if (curItem.getItem() == Itemss.CAMO_APPLICATOR) {
             Set<BlockPos> posSet = CamoTECache.getCamouflageableBlockPos(world, player);
             if (!posSet.isEmpty()) {
-                GlStateManager.disableDepth();
-                new AreaShowHandler(posSet, 0x2080FFFF, 0.75).render();
-                GlStateManager.enableDepth();
+                new AreaShowHandler(posSet, 0x2080FFFF, 0.75, true).render();
             }
         }
         if (curItem.getItem() != Itemss.CAMO_APPLICATOR) CamoTECache.clearCache();
@@ -107,9 +101,7 @@ public class AreaShowManager {
             if (droneDebugger == null)
                 droneDebugger = HUDHandler.instance().getSpecificRenderer(DroneDebugUpgradeHandler.class);
             Set<BlockPos> set = droneDebugger.getShowingPositions();
-            GlStateManager.disableDepth();
-            new AreaShowHandler(set, 0x90FF0000).render();
-            GlStateManager.enableDepth();
+            new AreaShowHandler(set, 0x90FF0000, true).render();
         }
 
         GlStateManager.enableTexture2D();
@@ -124,7 +116,7 @@ public class AreaShowManager {
     public AreaShowHandler showArea(Set<BlockPos> area, int color, TileEntity areaShower) {
         if (areaShower == null) return null;
         removeHandlers(areaShower);
-        AreaShowHandler handler = new AreaShowHandler(area, color);
+        AreaShowHandler handler = new AreaShowHandler(area, color, false);
         showHandlers.put(new BlockPos(areaShower.getPos().getX(), areaShower.getPos().getY(), areaShower.getPos().getZ()), handler);
         return handler;
     }

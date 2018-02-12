@@ -2,9 +2,11 @@ package me.desht.pneumaticcraft.client;
 
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.math.BlockPos;
+
 import org.lwjgl.opengl.GL11;
 
 import java.util.Set;
@@ -13,23 +15,27 @@ public class AreaShowHandler {
     private final Set<BlockPos> showingPositions;
     private final int color;
     private final double size;
-    private int renderList;
+    private final int renderList;
+    private final boolean disableDepthTest;
 
-    AreaShowHandler(Set<BlockPos> area, int color, double size) {
-        showingPositions = area;
+    AreaShowHandler(Set<BlockPos> area, int color, double size, boolean disableDepthTest) {
+        this.showingPositions = area;
         this.color = color;
         this.size = size;
-        compileRenderList();
+        this.disableDepthTest = disableDepthTest;
+        this.renderList = compileRenderList();
     }
 
-    AreaShowHandler(Set<BlockPos> area, int color) {
-        this(area, color, 0.5);
+    AreaShowHandler(Set<BlockPos> area, int color, boolean disableDepthTest) {
+        this(area, color, 0.5, disableDepthTest);
     }
 
-    private void compileRenderList() {
-        renderList = GL11.glGenLists(1);
+    private int compileRenderList() {
+        int renderList = GL11.glGenLists(1);
         GL11.glNewList(renderList, GL11.GL_COMPILE);
 
+        if(disableDepthTest) GlStateManager.disableDepth();
+        
         BufferBuilder wr = Tessellator.getInstance().getBuffer();
         RenderUtils.glColorHex(color);
         wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
@@ -111,10 +117,20 @@ public class AreaShowHandler {
 
         wr.setTranslation(0, 0, 0);
         Tessellator.getInstance().draw();
+        
+        if(disableDepthTest) GlStateManager.enableDepth();
+        
         GL11.glEndList();
+        return renderList;
     }
 
     public void render() {
-        GL11.glCallList(renderList);
+        /*if(disableDepthTest){
+            GlStateManager.disableDepth();
+            GL11.glCallList(renderList);
+            GlStateManager.enableDepth();
+        }else{*/
+            GL11.glCallList(renderList);
+        //}
     }
 }

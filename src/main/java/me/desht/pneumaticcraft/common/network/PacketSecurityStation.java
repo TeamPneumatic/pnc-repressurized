@@ -5,7 +5,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 
-public abstract class PacketSecurityStation<REQ extends PacketSecurityStation> extends LocationIntPacket<REQ> {
+public abstract class PacketSecurityStation<REQ extends PacketSecurityStation<REQ>> extends LocationIntPacket<REQ> {
 
     protected String username;
 

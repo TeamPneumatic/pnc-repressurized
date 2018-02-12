@@ -7,7 +7,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 
-public abstract class AbstractPacket<REQ extends AbstractPacket> implements IMessage, IMessageHandler<REQ, REQ> {
+public abstract class AbstractPacket<REQ extends AbstractPacket<REQ>> implements IMessage, IMessageHandler<REQ, REQ> {
 
     @Override
     public REQ onMessage(final REQ message, final MessageContext ctx) {

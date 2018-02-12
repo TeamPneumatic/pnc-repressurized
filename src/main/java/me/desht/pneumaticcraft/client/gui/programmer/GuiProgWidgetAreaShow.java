@@ -19,7 +19,7 @@ public class GuiProgWidgetAreaShow<Widget extends IProgWidget> extends GuiProgWi
     public void initGui() {
         super.initGui();
 
-        if (widget instanceof IAreaProvider) {
+        if (showShowAreaButtons() && widget instanceof IAreaProvider) {
             buttonList.add(new GuiButton(1000, guiLeft + xSize / 2 - 50, guiTop + 150, 100, 20, I18n.format("gui.programmer.button.showArea")));
             if (AreaShowManager.getInstance().isShowing(guiProgrammer.te))
                 buttonList.add(new GuiButton(1001, guiLeft + xSize / 2 - 50, guiTop + 175, 100, 20, I18n.format("gui.programmer.button.stopShowingArea")));
@@ -28,7 +28,7 @@ public class GuiProgWidgetAreaShow<Widget extends IProgWidget> extends GuiProgWi
 
     @Override
     public void actionPerformed(GuiButton button) throws IOException {
-        if (widget instanceof IAreaProvider) {
+        if (showShowAreaButtons() && widget instanceof IAreaProvider) {
             if (button.id == 1000) {
                 if (!AreaShowManager.getInstance().isShowing(guiProgrammer.te))
                     buttonList.add(new GuiButton(1001, guiLeft + xSize / 2 - 50, guiTop + 175, 100, 20, I18n.format("gui.programmer.button.stopShowingArea")));
@@ -42,5 +42,9 @@ public class GuiProgWidgetAreaShow<Widget extends IProgWidget> extends GuiProgWi
         }
         // PacketDispatcher.sendPacketToServer(PacketHandlerPneumaticCraft.showDroneArea(guiProgrammer.te.getPos().getX(), guiProgrammer.te.getPos().getY(), guiProgrammer.te.getPos().getZ(), widget.getX(), widget.getY()));
         super.actionPerformed(button);
+    }
+    
+    public boolean showShowAreaButtons(){
+        return true;
     }
 }

@@ -19,10 +19,16 @@ public class GuiGPSTool extends GuiPneumaticScreenBase {
     private final BlockPos oldGPSLoc;
     private String oldVarName;
     private static final int[] BUTTON_ACTIONS = {-10, -1, 1, 10};
+    private final int metadata;
 
-    public GuiGPSTool(BlockPos gpsLoc, String oldVarName) {
+    public GuiGPSTool(BlockPos gpsLoc, String oldVarName, int metadata) {
         oldGPSLoc = gpsLoc;
         this.oldVarName = oldVarName;
+        this.metadata = metadata;
+    }
+    
+    public GuiGPSTool(BlockPos gpsLoc, String oldVarName) {
+        this(gpsLoc, oldVarName, -1);
     }
 
     @Override
@@ -88,7 +94,7 @@ public class GuiGPSTool extends GuiPneumaticScreenBase {
     @Override
     public void onGuiClosed() {
         BlockPos newPos = new BlockPos(textFields[0].getValue(), textFields[1].getValue(), textFields[2].getValue());
-        NetworkHandler.sendToServer(new PacketChangeGPSToolCoordinate(newPos.equals(oldGPSLoc) ? new BlockPos(-1, -1, -1) : newPos, variableField.getText()));
+        NetworkHandler.sendToServer(new PacketChangeGPSToolCoordinate(newPos.equals(oldGPSLoc) ? new BlockPos(-1, -1, -1) : newPos, variableField.getText(), metadata));
     }
 
     @Override

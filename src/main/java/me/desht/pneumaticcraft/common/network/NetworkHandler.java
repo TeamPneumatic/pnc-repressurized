@@ -46,6 +46,7 @@ public class NetworkHandler {
         INSTANCE.registerMessage(PacketAddChatMessage.class, PacketAddChatMessage.class, discriminant++, Side.SERVER);
         INSTANCE.registerMessage(PacketAphorismTileUpdate.class, PacketAphorismTileUpdate.class, discriminant++, Side.SERVER);
         INSTANCE.registerMessage(PacketChangeGPSToolCoordinate.class, PacketChangeGPSToolCoordinate.class, discriminant++, Side.SERVER);
+        INSTANCE.registerMessage(PacketUpdateGPSAreaTool.class, PacketUpdateGPSAreaTool.class, discriminant++, Side.SERVER);
         INSTANCE.registerMessage(PacketCoordTrackUpdate.class, PacketCoordTrackUpdate.class, discriminant++, Side.SERVER);
         INSTANCE.registerMessage(PacketDescription.class, PacketDescription.class, discriminant++, Side.CLIENT);
         INSTANCE.registerMessage(PacketDescriptionPacketRequest.class, PacketDescriptionPacketRequest.class, discriminant++, Side.SERVER);

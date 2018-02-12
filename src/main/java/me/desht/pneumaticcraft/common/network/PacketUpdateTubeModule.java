@@ -7,7 +7,7 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumFacing;
 
-public abstract class PacketUpdateTubeModule<REQ extends PacketUpdateTubeModule> extends LocationIntPacket<REQ> {
+public abstract class PacketUpdateTubeModule<REQ extends PacketUpdateTubeModule<REQ>> extends LocationIntPacket<REQ> {
 
     protected EnumFacing moduleSide;
 

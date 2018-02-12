@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.network;
 import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.common.recipes.AmadronOfferCustom;
 
-public abstract class PacketAbstractAmadronTrade<REQ extends PacketAbstractAmadronTrade> extends AbstractPacket<REQ> {
+public abstract class PacketAbstractAmadronTrade<REQ extends PacketAbstractAmadronTrade<REQ>> extends AbstractPacket<REQ> {
     private AmadronOfferCustom offer;
 
     public PacketAbstractAmadronTrade() {

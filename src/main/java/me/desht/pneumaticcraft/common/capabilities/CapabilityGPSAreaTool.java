@@ -23,6 +23,26 @@ public class CapabilityGPSAreaTool{
         area.setAreaPoint(pos, index);
     }
     
+    public void setVariable(String variable, int index){
+        if(index == 0){
+            area.setCoord1Variable(variable);
+        }else{
+            area.setCoord2Variable(variable);
+        }
+    }
+    
+    public String getVariable(int index){
+        return index == 0 ? area.getCoord1Variable() : area.getCoord2Variable();
+    }
+    
+    public BlockPos getPos(int index){
+        return area.getRawAreaPoint(index);
+    }
+    
+    public void updateAreaFromNBT(NBTTagCompound tag){
+        area.readFromNBT(tag);
+    }
+    
     public Set<BlockPos> getArea(){
         Set<BlockPos> set = new HashSet<BlockPos>();
         area.getArea(set);
@@ -33,6 +53,9 @@ public class CapabilityGPSAreaTool{
         return (ProgWidgetArea)area.copy();
     }
     
+    public ProgWidgetArea getWidget(){
+        return area;
+    }
     
     public static void register(){
         CapabilityManager.INSTANCE.register(CapabilityGPSAreaTool.class, new Capability.IStorage<CapabilityGPSAreaTool>(){

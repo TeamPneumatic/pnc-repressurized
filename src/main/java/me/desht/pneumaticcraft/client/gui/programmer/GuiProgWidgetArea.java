@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.client.gui.programmer;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -69,7 +70,7 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
 
         variableField1 = new WidgetComboBox(fontRenderer, guiLeft + 28, guiTop + 25, 88, fontRenderer.FONT_HEIGHT + 1);
         variableField2 = new WidgetComboBox(fontRenderer, guiLeft + 155, guiTop + 25, 88, fontRenderer.FONT_HEIGHT + 1);
-        Set<String> variables = guiProgrammer.te.getAllVariables();
+        Set<String> variables = guiProgrammer == null ? Collections.emptySet() : guiProgrammer.te.getAllVariables();
         variableField1.setElements(variables);
         variableField2.setElements(variables);
         variableField1.setText(widget.getCoord1Variable());

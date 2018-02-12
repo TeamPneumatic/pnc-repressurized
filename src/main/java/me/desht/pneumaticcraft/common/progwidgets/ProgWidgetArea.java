@@ -142,6 +142,10 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
             }
         }
 
+        addAreaTypeTooltip(curTooltip);
+    }
+    
+    public void addAreaTypeTooltip(List<String> curTooltip){
         curTooltip.add("Area type: " + type.getName());
         
         List<AreaTypeWidget> widgets = new ArrayList<>();
@@ -169,6 +173,10 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
             y2 = p.getY();
             z2 = p.getZ();
         }
+    }
+    
+    public BlockPos getRawAreaPoint(int index){
+        return index == 0 ? new BlockPos(x1, y1, z1) : new BlockPos(x2, y2, z2);
     }
 
     private BlockPos[] getAreaPoints() {
