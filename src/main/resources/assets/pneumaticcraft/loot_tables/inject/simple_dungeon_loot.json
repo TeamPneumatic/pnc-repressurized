@@ -18,11 +18,11 @@
       {
         "type": "item",
         "name": "pneumaticcraft:spawner_agitator",
-        "weight": 30
+        "weight": 3
       },
       {
         "type": "empty",
-        "weight": 40
+        "weight": 67
       }
     ]
   }]
