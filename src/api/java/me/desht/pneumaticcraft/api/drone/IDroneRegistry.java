@@ -21,7 +21,8 @@ public interface IDroneRegistry {
     /**
      * This will add a puzzle piece that has only a Area white- and blacklist parameter (similar to a GoTo piece).
      * It will do the specified behaviour. This can be used to create energy import/export widgets.  This must be called
-     * in the pre-init phase, or registration will be silently ignored.
+     * from an event handler for {@link me.desht.pneumaticcraft.api.event.PuzzleRegistryEvent} to ensure registration
+     * is done at the right time - don't call it directly from a (pre/post) init handler.
      *
      * @param interactor the custom interactor object
      */

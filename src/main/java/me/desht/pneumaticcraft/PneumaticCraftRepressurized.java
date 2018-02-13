@@ -91,14 +91,18 @@ public class PneumaticCraftRepressurized {
         Reflections.init();
 
         PneumaticRegistry.init(PneumaticCraftAPIHandler.getInstance());
+
         UpgradeRenderHandlerList.init();
+
         WidgetRegistrator.init();
+
         ConfigHandler.init(event.getSuggestedConfigurationFile());
         ThirdPartyManager.instance().index();
 
         NetworkRegistry.INSTANCE.registerGuiHandler(instance, proxy);
         tabPneumaticCraft = new CreativeTabPneumaticCraft("tabPneumaticCraft");
         Fluids.preInit();
+
         ThirdPartyManager.instance().preInit();
 
         TileEntityRegistrator.init();
@@ -124,7 +128,6 @@ public class PneumaticCraftRepressurized {
     public void onInit(FMLInitializationEvent event) {
         NetworkHandler.init();
 
-        WidgetRegistrator.compileBlacklist();  // compile this after 3rd party pre-init has happened
 
         Fluids.init();
         SemiBlockInitializer.init();

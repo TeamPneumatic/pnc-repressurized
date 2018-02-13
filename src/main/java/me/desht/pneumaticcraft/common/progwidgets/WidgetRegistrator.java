@@ -1,8 +1,10 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
+import me.desht.pneumaticcraft.api.event.PuzzleRegistryEvent;
 import me.desht.pneumaticcraft.common.ai.DroneInteractRFExport;
 import me.desht.pneumaticcraft.common.ai.DroneInteractRFImport;
 import me.desht.pneumaticcraft.common.config.ProgWidgetConfig;
+import net.minecraftforge.common.MinecraftForge;
 
 import java.util.*;
 
@@ -68,6 +70,10 @@ public class WidgetRegistrator {
         // TODO: should really be their own widgets, but historical reasons...
         register(new ProgWidgetCustomBlockInteract().setInteractor(new DroneInteractRFExport()));
         register(new ProgWidgetCustomBlockInteract().setInteractor(new DroneInteractRFImport()));
+
+        MinecraftForge.EVENT_BUS.post(new PuzzleRegistryEvent());
+
+        compileBlacklist();
     }
 
     public static void register(IProgWidget widget) {
@@ -82,7 +88,7 @@ public class WidgetRegistrator {
         return allRegisteredWidgets.get(name);
     }
 
-    public static void compileBlacklist() {
+    private static void compileBlacklist() {
         registeredWidgets.clear();
         for (Map.Entry<String, IProgWidget> entry : allRegisteredWidgets.entrySet()) {
             if (!ProgWidgetConfig.blacklistedPieces.contains(entry.getKey())) {
