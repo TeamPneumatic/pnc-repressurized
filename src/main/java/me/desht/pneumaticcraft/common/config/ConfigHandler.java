@@ -68,6 +68,9 @@ public class ConfigHandler {
                 } catch(IOException e) {
                     PneumaticCraftRepressurized.logger.error("Config file " + subConfig.getConfigFilename() + " failed to create! Unexpected things can happen!");
                     e.printStackTrace();
+                } catch (ClassCastException e) {
+                    PneumaticCraftRepressurized.logger.error("Config file " + subConfig.getConfigFilename() + " appears to be invalid JSON! Unexpected things can happen!");
+                    e.printStackTrace();
                 }
             }
         }
@@ -79,6 +82,9 @@ public class ConfigHandler {
                 subConfig.postInit();
             } catch(IOException e) {
                 PneumaticCraftRepressurized.logger.error("Config file " + subConfig.getConfigFilename() + " failed to create! Unexpected things can happen!");
+                e.printStackTrace();
+            } catch (ClassCastException e) {
+                PneumaticCraftRepressurized.logger.error("Config file " + subConfig.getConfigFilename() + " appears to be invalid JSON! Unexpected things can happen!");
                 e.printStackTrace();
             }
         }
