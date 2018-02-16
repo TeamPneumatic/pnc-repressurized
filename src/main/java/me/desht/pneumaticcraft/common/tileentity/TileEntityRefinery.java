@@ -10,6 +10,7 @@ import me.desht.pneumaticcraft.common.recipes.RefineryRecipe;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraftforge.common.capabilities.Capability;
@@ -113,6 +114,20 @@ public class TileEntityRefinery extends TileEntityTickableBase implements IHeatE
         }
     }
 
+    @Override
+    protected void initializeHeatExchanger(IHeatExchangerLogic heatExchanger, EnumFacing... connectedSides) {
+        super.initializeHeatExchanger(heatExchanger, connectedSides);
+
+        if (!isMaster()) {
+            // share heat with any refinery block below us; allows heating via any block in the multiblock
+            TileEntity te = getWorld().getTileEntity(getPos().down());
+            if (te instanceof TileEntityRefinery) {
+                // refinery doesn't care about sidedness, null side is OK here
+                heatExchanger.addConnectedExchanger(((TileEntityRefinery) te).getHeatExchangerLogic(null));
+            }
+        }
+    }
+
     private List<TileEntityRefinery> getRefineries() {
         List<TileEntityRefinery> refineries = new ArrayList<>();
         refineries.add(this);
@@ -124,10 +139,10 @@ public class TileEntityRefinery extends TileEntityTickableBase implements IHeatE
         return refineries;
     }
 
-    public boolean refine(List<TileEntityRefinery> refineries, boolean simulate) {
+    private boolean refine(List<TileEntityRefinery> refineries, boolean simulate) {
     	if(currentRecipe == null) {
     		blocked = true;
-    		return !blocked;
+    		return false;
     	}
     	
         FluidStack[] outputs = currentRecipe.outputs;
@@ -136,19 +151,19 @@ public class TileEntityRefinery extends TileEntityTickableBase implements IHeatE
         for (TileEntityRefinery refinery : refineries) {
         	if (i > outputs.length - 1) {
         		blocked = false;
-        		return !blocked;
+        		return true;
         	}
         	
             if (outputs[i].amount != refinery.outputTank.fill(outputs[i], !simulate)) {
             	blocked = true;
-            	return !blocked;
+            	return false;
             }
             
             i++;
         }
 
         blocked = false;
-        return !blocked;
+        return true;
     }
 
     public TileEntityRefinery getMasterRefinery() {
