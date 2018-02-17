@@ -434,6 +434,15 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
                     break;
                 }
             }
+            
+            //create area widgets straight from GPS Area Tools
+            ItemStack heldItem = mc.player.inventory.getItemStack();
+            ProgWidgetArea areaToolWidget = null;
+            if(heldItem.hasCapability(CapabilityGPSAreaTool.INSTANCE, null)){
+                CapabilityGPSAreaTool cap = heldItem.getCapability(CapabilityGPSAreaTool.INSTANCE, null);
+                areaToolWidget = cap.createWidget();
+            }
+            
             if (draggingWidget == null && showingWidgetProgress == 0) {
                 IProgWidget widget = programmerUnit.getHoveredWidget(origX, origY);
                 if (widget != null) {
@@ -442,22 +451,25 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
                     dragMouseStartY = y - guiTop;
                     dragWidgetStartX = widget.getX();
                     dragWidgetStartY = widget.getY();
+                    
+                    if(areaToolWidget != null && widget instanceof ProgWidgetArea){
+                        NBTTagCompound tag = new NBTTagCompound();
+                        areaToolWidget.writeToNBT(tag);
+                        widget.readFromNBT(tag);
+                    }
                 }
             }
-            if(draggingWidget == null){
-                //create area widgets straight from GPS Area Tools
-                ItemStack heldItem = mc.player.inventory.getItemStack();
-                if(heldItem.hasCapability(CapabilityGPSAreaTool.INSTANCE, null)){
-                    CapabilityGPSAreaTool cap = heldItem.getCapability(CapabilityGPSAreaTool.INSTANCE, null);
-                    draggingWidget = cap.createWidget();
-                    draggingWidget.setX(Integer.MAX_VALUE);
-                    draggingWidget.setY(Integer.MAX_VALUE);
-                    te.progWidgets.add(draggingWidget);
-                    dragMouseStartX = draggingWidget.getWidth() / 3;
-                    dragMouseStartY = draggingWidget.getHeight() / 4;
-                    dragWidgetStartX = 0;
-                    dragWidgetStartY = 0;
-                }
+            
+            //Create a new widget from a GPS Area tool when nothing was selected
+            if(draggingWidget == null && areaToolWidget != null){
+                draggingWidget = areaToolWidget;
+                draggingWidget.setX(Integer.MAX_VALUE);
+                draggingWidget.setY(Integer.MAX_VALUE);
+                te.progWidgets.add(draggingWidget);
+                dragMouseStartX = draggingWidget.getWidth() / 3;
+                dragMouseStartY = draggingWidget.getHeight() / 4;
+                dragWidgetStartX = 0;
+                dragWidgetStartY = 0;
             }
         } else if (isMiddleClicking && !wasClicking && showingWidgetProgress == 0) {
             IProgWidget widget = programmerUnit.getHoveredWidget(origX, origY);

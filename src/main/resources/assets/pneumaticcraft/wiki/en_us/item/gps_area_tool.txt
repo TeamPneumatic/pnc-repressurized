@@ -1,0 +1,7 @@
+The GPS Area Tool is an advanced version of the [link{item/gps_tool}]GPS Tool[link{}].
+
+The GPS Area Tool can store two coordinates in the world. Left-click a block (or air) to change the first coordinate, and right-click for the second coordinate. By right or left clicking in the air, you can configure the positions in a GUI. Additionally, you can change the Area type, allowing you to preview the area in different configurations.
+
+In a Programmer, left-click empty programming area with the Area Tool to create a new Area puzzle piece, or click on an existing Area piece to overwrite it.
+
+[crafting{200, 250, key=item/gps_area_tool}]
