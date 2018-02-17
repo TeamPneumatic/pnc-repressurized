@@ -12,6 +12,7 @@ import me.desht.pneumaticcraft.common.TickHandlerPneumaticCraft;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.commands.PCCommandManager;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
+import me.desht.pneumaticcraft.common.dispenser.BehaviorDispenseDrone;
 import me.desht.pneumaticcraft.common.entity.EntityRegistrator;
 import me.desht.pneumaticcraft.common.event.DroneSpecialVariableHandler;
 import me.desht.pneumaticcraft.common.fluid.FluidFuelManager;
@@ -38,6 +39,7 @@ import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.Versions;
 import me.desht.pneumaticcraft.proxy.CommonProxy;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockDispenser;
 import net.minecraft.command.ServerCommandManager;
 import net.minecraft.item.Item;
 import net.minecraft.world.storage.loot.LootTableList;
@@ -134,6 +136,9 @@ public class PneumaticCraftRepressurized {
         CraftingRegistrator.init();
         HackableHandler.addDefaultEntries();
         SensorHandler.getInstance().init();
+        
+        BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(Itemss.DRONE, new BehaviorDispenseDrone());
+        BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(Itemss.LOGISTICS_DRONE, new BehaviorDispenseDrone());
 
         if (ConfigHandler.general.enableDungeonLoot) {
             LootTableList.register(RL("inject/simple_dungeon_loot"));
