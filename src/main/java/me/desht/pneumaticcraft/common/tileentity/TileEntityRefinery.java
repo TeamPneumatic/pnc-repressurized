@@ -10,7 +10,6 @@ import me.desht.pneumaticcraft.common.recipes.RefineryRecipe;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraftforge.common.capabilities.Capability;
@@ -110,20 +109,6 @@ public class TileEntityRefinery extends TileEntityTickableBase implements IHeatE
                 	currentRecipe = null;
                 }
                 updateComparatorValue(refineries);
-            }
-        }
-    }
-
-    @Override
-    protected void initializeHeatExchanger(IHeatExchangerLogic heatExchanger, EnumFacing... connectedSides) {
-        super.initializeHeatExchanger(heatExchanger, connectedSides);
-
-        if (!isMaster()) {
-            // share heat with any refinery block below us; allows heating via any block in the multiblock
-            TileEntity te = getWorld().getTileEntity(getPos().down());
-            if (te instanceof TileEntityRefinery) {
-                // refinery doesn't care about sidedness, null side is OK here
-                heatExchanger.addConnectedExchanger(((TileEntityRefinery) te).getHeatExchangerLogic(null));
             }
         }
     }
