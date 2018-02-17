@@ -199,7 +199,7 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase {
                 pos = getOutputPosition();
             }
             if (pos != null) ItemGPSTool.setGPSLocation(gps, pos);
-            gpsSearchGui.setSearchStack(ItemGPSTool.getGPSLocation(gps) != null ? gps : null);
+            gpsSearchGui.setSearchStack(ItemGPSTool.getGPSLocation(gps) != null ? gps : ItemStack.EMPTY);
             FMLClientHandler.instance().showGuiScreen(gpsSearchGui);
         }
         super.actionPerformed(widget);
