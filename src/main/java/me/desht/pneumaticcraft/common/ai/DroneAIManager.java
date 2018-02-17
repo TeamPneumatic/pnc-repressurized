@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.api.drone.SpecialVariableRetrievalEvent;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.progwidgets.IJumpBackWidget;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
+import me.desht.pneumaticcraft.common.progwidgets.IVariableProvider;
 import me.desht.pneumaticcraft.common.progwidgets.IVariableWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetStart;
 import me.desht.pneumaticcraft.common.remote.GlobalVariableManager;
@@ -16,6 +17,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.MinecraftForge;
 
 import javax.annotation.Nonnull;
+
 import java.util.*;
 
 /**
@@ -23,7 +25,7 @@ import java.util.*;
  * accesstransformers or reflection calls to do what I want, I've copied most of that class in here.
  */
 
-public class DroneAIManager {
+public class DroneAIManager implements IVariableProvider {
     /**
      * A list of EntityAITaskEntrys in EntityAITasks.
      */
@@ -126,6 +128,7 @@ public class DroneAIManager {
         GlobalVariableManager.readItemVars(tag, itemVariables);
     }
 
+    @Override
     public BlockPos getCoordinate(String varName) {
         BlockPos pos;
         if (varName.startsWith("$")) {

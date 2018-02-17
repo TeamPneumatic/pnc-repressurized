@@ -58,8 +58,8 @@ public class ItemGPSAreaTool extends ItemPneumatic implements IPositionProvider 
         if(event.getItemStack().getItem() == this){
             if(!event.getPos().equals(getGPSLocation(event.getItemStack(), 1))){
                 setGPSPosAndNotify(event.getEntityPlayer(), event.getPos(), 1);
-                event.setCanceled(true);
             }
+            event.setCanceled(true);
         }
     }
     
@@ -121,17 +121,23 @@ public class ItemGPSAreaTool extends ItemPneumatic implements IPositionProvider 
     }
 
     public static void setGPSLocation(ItemStack gpsTool, BlockPos pos, int index) {
-        getCap(gpsTool).setPos(pos, index);
-        
-        String var = getVariable(gpsTool, index);
-        if (!var.equals("")) GlobalVariableManager.getInstance().set(var, pos);
-        
-        NBTUtil.setBoolean(gpsTool, "dummy", !NBTUtil.getBoolean(gpsTool, "dummy"));
+        if(!getCap(gpsTool).getPos(index).equals(pos)){
+            getCap(gpsTool).setPos(pos, index);
+            
+            String var = getVariable(gpsTool, index);
+            if (!var.equals("")) GlobalVariableManager.getInstance().set(var, pos);
+            
+            sync(gpsTool);
+        }
     }
 
     public static void setVariable(ItemStack gpsTool, String variable, int index) {
         getCap(gpsTool).setVariable(variable, index);
-        NBTUtil.setBoolean(gpsTool, "dummy", !NBTUtil.getBoolean(gpsTool, "dummy"));
+        sync(gpsTool);
+    }
+    
+    private static void sync(ItemStack gpsTool){
+        NBTUtil.setByte(gpsTool, "dummy", (byte)(NBTUtil.getByte(gpsTool, "dummy") + 1));
     }
 
     public static String getVariable(ItemStack gpsTool, int index) {
@@ -146,7 +152,7 @@ public class ItemGPSAreaTool extends ItemPneumatic implements IPositionProvider 
 
     @Override
     public int getRenderColor(int index) {
-        return 0xFFFFFF00;
+        return 0x90FFFF00;
     }
     
     @Override

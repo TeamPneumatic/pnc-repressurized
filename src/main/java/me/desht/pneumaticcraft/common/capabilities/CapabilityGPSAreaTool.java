@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.capabilities;
 import java.util.HashSet;
 import java.util.Set;
 
+import me.desht.pneumaticcraft.common.progwidgets.IVariableProvider;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
@@ -13,12 +14,16 @@ import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 
-public class CapabilityGPSAreaTool{
+public class CapabilityGPSAreaTool implements IVariableProvider{
     @CapabilityInject(CapabilityGPSAreaTool.class)
     public static Capability<CapabilityGPSAreaTool> INSTANCE;
 
     private ProgWidgetArea area = new ProgWidgetArea();
 
+    public CapabilityGPSAreaTool(){
+        area.setVariableProvider(this);
+    }
+    
     public void setPos(BlockPos pos, int index){
         area.setAreaPoint(pos, index);
     }
@@ -47,6 +52,17 @@ public class CapabilityGPSAreaTool{
         Set<BlockPos> set = new HashSet<BlockPos>();
         area.getArea(set);
         return set;
+    }
+    
+    @Override
+    public BlockPos getCoordinate(String varName){
+        if(area.getCoord1Variable().equals(varName)){
+            return getPos(0);
+        }else if(area.getCoord2Variable().equals(varName)){
+            return getPos(1);
+        }else{
+            return null;
+        }
     }
     
     public ProgWidgetArea createWidget(){

@@ -21,6 +21,7 @@ import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.item.ItemPlastic;
 import me.desht.pneumaticcraft.common.progwidgets.area.*;
 import me.desht.pneumaticcraft.common.progwidgets.area.AreaType.AreaTypeWidget;
+import me.desht.pneumaticcraft.common.remote.GlobalVariableManager;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -44,6 +45,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     public int x1, y1, z1, x2, y2, z2;
     private String coord1Variable = "", coord2Variable = "";
     private DroneAIManager aiManager;
+    private IVariableProvider variableProvider;
     public AreaType type = new AreaTypeBox();
 
     private static final Map<String, Supplier<? extends AreaType>> areaTypes = new LinkedHashMap<>(); //We want to preserve order in the GUI
@@ -184,13 +186,13 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         if (coord1Variable.equals("")) {
             c1 = x1 != 0 || y1 != 0 || z1 != 0 ? new BlockPos(x1, y1, z1) : null;
         } else {
-            c1 = aiManager != null ? aiManager.getCoordinate(coord1Variable) : null;
+            c1 = variableProvider != null ? variableProvider.getCoordinate(coord1Variable) : null;
         }
         BlockPos c2;
         if (coord2Variable.equals("")) {
             c2 = x2 != 0 || y2 != 0 || z2 != 0 ? new BlockPos(x2, y2, z2) : null;
         } else {
-            c2 = aiManager != null ? aiManager.getCoordinate(coord2Variable) : null;
+            c2 = variableProvider != null ? variableProvider.getCoordinate(coord2Variable) : null;
         }
         if (c1 == null && c2 == null) {
             return new BlockPos[]{null, null};
@@ -430,6 +432,11 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     @Override
     public void setAIManager(DroneAIManager aiManager) {
         this.aiManager = aiManager;
+        this.variableProvider = aiManager;
+    }
+    
+    public void setVariableProvider(IVariableProvider variableProvider){
+        this.variableProvider = variableProvider;
     }
 
     @Override
