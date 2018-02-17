@@ -8,6 +8,10 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## x.x.x-xxx (Unreleased)
 
+* Added GPS Area Tool, a way to make selecting areas with the Programmer easier.
+* You can 'paste' Coordinate puzzle pieces in the Programmer by taking a GPS Tool and left-clicking it on the programming area (the GPS Area Tool does the same for the Area piece).
+* (Logistics) Drones can now be spawned from a Dispenser.
+* Fixed a crash with the Amadron Tablet when adding a trade when not having a item supply location bound to the tablet.
 * Fixed Drones sometimes refusing to teleport while they should (most likely to notice with Place Block commands).
 * Altered camera orientations for some held items (wrenches & other tools)
 * Oil worldgen can now be blacklisted by dimension ID (e.g. disable oil generation in Twilight Forest)
