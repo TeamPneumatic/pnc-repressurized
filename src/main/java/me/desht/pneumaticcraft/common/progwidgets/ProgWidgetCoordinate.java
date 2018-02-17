@@ -1,19 +1,21 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
+import java.util.List;
+import java.util.Set;
+
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
 import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetCoordinate;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
+import me.desht.pneumaticcraft.common.item.ItemGPSTool;
 import me.desht.pneumaticcraft.common.item.ItemPlastic;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import java.util.List;
-import java.util.Set;
 
 public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget {
 
@@ -134,6 +136,17 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
 
     public void setUsingVariable(boolean useVariable) {
         this.useVariable = useVariable;
+    }
+    
+    public void loadFromGPSTool(ItemStack gpsTool){
+        String variable = ItemGPSTool.getVariable(gpsTool);
+        if("".equals(variable)){
+            setCoordinate(ItemGPSTool.getGPSLocation(gpsTool));
+            setUsingVariable(false);
+        }else{
+            setVariable("#" + variable);
+            setUsingVariable(true);
+        }
     }
 
     @Override
