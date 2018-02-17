@@ -48,30 +48,34 @@ public class ItemDrone extends ItemPneumatic implements IPressurizable, IChargin
 
         if (!world.isRemote) {
             ItemStack iStack = player.getHeldItemMainhand();
-            EntityDrone drone = new EntityDrone(world, player);
-
             BlockPos placePos = pos.offset(facing);
-            drone.setPosition(placePos.getX() + 0.5, placePos.getY() + 0.5, placePos.getZ() + 0.5);
-            world.spawnEntity(drone);
-
-            NBTTagCompound stackTag = iStack.getTagCompound();
-            NBTTagCompound entityTag = new NBTTagCompound();
-            drone.writeEntityToNBT(entityTag);
-            if (stackTag != null) {
-                entityTag.setTag("widgets", stackTag.getTagList("widgets", 10).copy());
-                entityTag.setFloat("currentAir", stackTag.getFloat("currentAir"));
-                entityTag.setInteger("color", stackTag.getInteger("color"));
-                entityTag.setTag(ChargeableItemHandler.NBT_UPGRADE_TAG, stackTag.getCompoundTag(ChargeableItemHandler.NBT_UPGRADE_TAG));
-            }
-            drone.readEntityFromNBT(entityTag);
-            if (iStack.hasDisplayName()) drone.setCustomNameTag(iStack.getDisplayName());
-
-            drone.naturallySpawned = false;
-            //TODO 1.8 check if valid replacement drone.onSpawnWithEgg(null);
-            drone.onInitialSpawn(world.getDifficultyForLocation(placePos), null);
+            spawnDrone(player, world, placePos, iStack);
             iStack.shrink(1);
         }
         return EnumActionResult.SUCCESS;
+    }
+
+    public void spawnDrone(EntityPlayer player, World world, BlockPos placePos, ItemStack iStack){
+        EntityDrone drone = new EntityDrone(world, player);
+
+        drone.setPosition(placePos.getX() + 0.5, placePos.getY() + 0.5, placePos.getZ() + 0.5);
+        world.spawnEntity(drone);
+
+        NBTTagCompound stackTag = iStack.getTagCompound();
+        NBTTagCompound entityTag = new NBTTagCompound();
+        drone.writeEntityToNBT(entityTag);
+        if (stackTag != null) {
+            entityTag.setTag("widgets", stackTag.getTagList("widgets", 10).copy());
+            entityTag.setFloat("currentAir", stackTag.getFloat("currentAir"));
+            entityTag.setInteger("color", stackTag.getInteger("color"));
+            entityTag.setTag(ChargeableItemHandler.NBT_UPGRADE_TAG, stackTag.getCompoundTag(ChargeableItemHandler.NBT_UPGRADE_TAG));
+        }
+        drone.readEntityFromNBT(entityTag);
+        if (iStack.hasDisplayName()) drone.setCustomNameTag(iStack.getDisplayName());
+
+        drone.naturallySpawned = false;
+        //TODO 1.8 check if valid replacement drone.onSpawnWithEgg(null);
+        drone.onInitialSpawn(world.getDifficultyForLocation(placePos), null);
     }
 
     public static void setProgWidgets(List<IProgWidget> widgets, ItemStack iStack) {

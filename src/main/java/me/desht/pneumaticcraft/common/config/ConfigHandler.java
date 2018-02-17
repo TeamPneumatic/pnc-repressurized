@@ -68,6 +68,9 @@ public class ConfigHandler {
                 } catch(IOException e) {
                     PneumaticCraftRepressurized.logger.error("Config file " + subConfig.getConfigFilename() + " failed to create! Unexpected things can happen!");
                     e.printStackTrace();
+                } catch (ClassCastException e) {
+                    PneumaticCraftRepressurized.logger.error("Config file " + subConfig.getConfigFilename() + " appears to be invalid JSON! Unexpected things can happen!");
+                    e.printStackTrace();
                 }
             }
         }
@@ -79,6 +82,9 @@ public class ConfigHandler {
                 subConfig.postInit();
             } catch(IOException e) {
                 PneumaticCraftRepressurized.logger.error("Config file " + subConfig.getConfigFilename() + " failed to create! Unexpected things can happen!");
+                e.printStackTrace();
+            } catch (ClassCastException e) {
+                PneumaticCraftRepressurized.logger.error("Config file " + subConfig.getConfigFilename() + " appears to be invalid JSON! Unexpected things can happen!");
                 e.printStackTrace();
             }
         }
@@ -101,8 +107,10 @@ public class ConfigHandler {
         public float fuelBucketEfficiencyMultiplier = 0.05f;
         @Config.Comment("Maximum number of blocks in the area defined in an Area Programming Puzzle Piece")
         public int maxProgrammingArea = 250000;
-        @Config.Comment("Disable explosion crafting (iron->compressed iron).  If you disable this, you'll need another way to get compressed iron initially")
+        @Config.Comment("Enable/disable explosion crafting (iron->compressed iron).  If you disable this, you'll need another way to get compressed iron initially")
         public boolean explosionCrafting = true;
+        @Config.Comment("Oil worldgen blacklist: add dimension IDs to this list if you don't want oil worldgen to happen there.")
+        public int[] oilWorldGenBlacklist = new int[] { 1, -1 };
     }
 
     public static class MachineProperties {

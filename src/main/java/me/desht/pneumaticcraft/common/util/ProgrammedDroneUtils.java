@@ -18,7 +18,7 @@ import java.util.List;
 
 public class ProgrammedDroneUtils {
     private static EntityDrone getChargedDispenserUpgradeDrone(World world) {
-        EntityDrone drone = new EntityDrone(world);
+        EntityDrone drone = new EntityDrone(world, null);
 
         NBTTagCompound tag = new NBTTagCompound();
         drone.writeEntityToNBT(tag);

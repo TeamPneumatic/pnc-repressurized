@@ -6,6 +6,15 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
+## x.x.x-xxx (Unreleased)
+
+* Fixed Drones sometimes refusing to teleport while they should (most likely to notice with Place Block commands).
+* Altered camera orientations for some held items (wrenches & other tools)
+* Oil worldgen can now be blacklisted by dimension ID (e.g. disable oil generation in Twilight Forest)
+* Using entity filters in Pneumatic Helmet entity tracker module now works on dedicated servers
+* RF Import & RF Export programming pieces are now available (they were in, but registration was getting skipped due to a bug).  Also note that despite the name, these pieces work with Forge Energy, which is RF-compatible.
+* The Spawner Agitator is now found far less frequently in dungeon loot chests (it can still be crafted, though)
+
 ## 0.4.1-141 (10 Feb 2018)
 
 * Hopefully made PNC:R more robust with compatibility with other mods adding "oil" as a fluid.  PNC:R will now log an error and disable oil worldgen if it can't find oil as a block, rather than crashing the instance.

@@ -27,33 +27,27 @@ public class ItemLogisticsDrone extends ItemDrone {
     }
 
     @Override
-    public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-        ItemStack iStack = player.getHeldItem(hand);
-        if (!world.isRemote) {
-            EntityDrone drone = new EntityLogisticsDrone(world, player);
+    public void spawnDrone(EntityPlayer player, World world, BlockPos placePos, ItemStack iStack){
+        EntityDrone drone = new EntityLogisticsDrone(world, player);
 
-            BlockPos placePos = pos.offset(facing);
-            drone.setPosition(placePos.getX() + 0.5, placePos.getY() + 0.5, placePos.getZ() + 0.5);
-            world.spawnEntity(drone);
+        drone.setPosition(placePos.getX() + 0.5, placePos.getY() + 0.5, placePos.getZ() + 0.5);
+        world.spawnEntity(drone);
 
-            NBTTagCompound stackTag = iStack.getTagCompound();
-            NBTTagCompound entityTag = new NBTTagCompound();
-            drone.writeEntityToNBT(entityTag);
-            if (stackTag != null) {
-                entityTag.setFloat("currentAir", stackTag.getFloat("currentAir"));
-                entityTag.setInteger("color", stackTag.getInteger("color"));
-                entityTag.setTag(ChargeableItemHandler.NBT_UPGRADE_TAG, stackTag.getCompoundTag(ChargeableItemHandler.NBT_UPGRADE_TAG));
-            }
-            drone.readEntityFromNBT(entityTag);
-            addLogisticsProgram(pos, drone.progWidgets);
-            if (iStack.hasDisplayName()) drone.setCustomNameTag(iStack.getDisplayName());
-
-            drone.naturallySpawned = false;
-            //TODO 1.8 check if valid replacement drone.onSpawnWithEgg(null);
-            drone.onInitialSpawn(world.getDifficultyForLocation(placePos), null);
-            iStack.shrink(1);
+        NBTTagCompound stackTag = iStack.getTagCompound();
+        NBTTagCompound entityTag = new NBTTagCompound();
+        drone.writeEntityToNBT(entityTag);
+        if (stackTag != null) {
+            entityTag.setFloat("currentAir", stackTag.getFloat("currentAir"));
+            entityTag.setInteger("color", stackTag.getInteger("color"));
+            entityTag.setTag(ChargeableItemHandler.NBT_UPGRADE_TAG, stackTag.getCompoundTag(ChargeableItemHandler.NBT_UPGRADE_TAG));
         }
-        return EnumActionResult.SUCCESS;
+        drone.readEntityFromNBT(entityTag);
+        addLogisticsProgram(placePos, drone.progWidgets);
+        if (iStack.hasDisplayName()) drone.setCustomNameTag(iStack.getDisplayName());
+
+        drone.naturallySpawned = false;
+        //TODO 1.8 check if valid replacement drone.onSpawnWithEgg(null);
+        drone.onInitialSpawn(world.getDifficultyForLocation(placePos), null);
     }
 
     private void addLogisticsProgram(BlockPos pos, List<IProgWidget> widgets) {

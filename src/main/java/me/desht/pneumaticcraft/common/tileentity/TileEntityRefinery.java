@@ -124,10 +124,10 @@ public class TileEntityRefinery extends TileEntityTickableBase implements IHeatE
         return refineries;
     }
 
-    public boolean refine(List<TileEntityRefinery> refineries, boolean simulate) {
+    private boolean refine(List<TileEntityRefinery> refineries, boolean simulate) {
     	if(currentRecipe == null) {
     		blocked = true;
-    		return !blocked;
+    		return false;
     	}
     	
         FluidStack[] outputs = currentRecipe.outputs;
@@ -136,19 +136,19 @@ public class TileEntityRefinery extends TileEntityTickableBase implements IHeatE
         for (TileEntityRefinery refinery : refineries) {
         	if (i > outputs.length - 1) {
         		blocked = false;
-        		return !blocked;
+        		return true;
         	}
         	
             if (outputs[i].amount != refinery.outputTank.fill(outputs[i], !simulate)) {
             	blocked = true;
-            	return !blocked;
+            	return false;
             }
             
             i++;
         }
 
         blocked = false;
-        return !blocked;
+        return true;
     }
 
     public TileEntityRefinery getMasterRefinery() {

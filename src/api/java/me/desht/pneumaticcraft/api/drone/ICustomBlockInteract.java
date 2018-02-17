@@ -4,7 +4,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 
 /**
- * Implement this and register it to PneumaticRegistry.registerCustomBlockInteractor().
+ * Implement this and register it with {@link IDroneRegistry#registerCustomBlockInteractor(ICustomBlockInteract)}.
  * This will add a puzzle piece that has only a Area white- and blacklist parameter (similar to a GoTo piece).
  * It will do the specified behaviour. This can be used to create energy import/export widgets.
  */
@@ -16,7 +16,8 @@ public interface ICustomBlockInteract {
     String getName();
 
     /**
-     * Should return the puzzle piece texture. Should be a multiple of 80x64 (width x height). I'd recommend starting out with copying the Go To widget texture.
+     * Should return the puzzle piece texture. Should be a multiple of 80x64 (width x height). I'd recommend starting
+     * out with copying the Go To widget texture.
      *
      * @return
      */
@@ -31,9 +32,9 @@ public interface ICustomBlockInteract {
      * In the interface of the puzzle piece users can specify a 'use count' and fill in the maximum count they want to use. When not simulating, you should only import/export up to interactHandler.getRemainingCount(), and you should notify the removed/added count by doing interactHandler.decreaseCount(int count).
      *
      * @param pos             current visited location
-     * @param drone
+     * @param drone a reference to the drone object
      * @param interactHandler object you can use to use to get accessible sides and give feedback about counts.
-     * @param simulate        will be true when trying to figure out whether or not the drone should navigate to this block, false when next to this block.
+     * @param simulate        true when trying to figure out whether or not the drone should navigate to this block, false when next to this block.
      * @return
      */
     boolean doInteract(BlockPos pos, IDrone drone, IBlockInteractHandler interactHandler, boolean simulate);

@@ -161,8 +161,12 @@ public class EntityDrone extends EntityDroneBase
 
     public EntityDrone(World world, EntityPlayer player) {
         this(world);
-        playerUUID = player.getGameProfile().getId().toString();
-        playerName = player.getName();
+        if(player != null){
+            playerUUID = player.getGameProfile().getId().toString();
+            playerName = player.getName();
+        }else{
+            playerUUID = getUniqueID().toString(); //Anonymous drone used for Amadron or spawned with a Dispenser
+        }
     }
 
     @Override
