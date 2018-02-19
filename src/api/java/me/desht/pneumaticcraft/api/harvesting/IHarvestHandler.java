@@ -31,6 +31,20 @@ public interface IHarvestHandler{
     }
     
     /**
+     * Should harvest the block (drop items), and replant the plant if applicable. For example, for crops it should reset the growth stage to 0.
+     * @param world
+     * @param chunkCache Use preferably methods from this cache as it's generally quicker than accessing via 'world'. 
+     * The cache has access to the chunks that are accessed by the Drone current program, so as long as only the y pos is varied of the
+     * supplied pos, you are good. If not, use 'world'.
+     * @param pos
+     * @param state
+     * @return
+     */
+    public default void harvestAndReplant(World world, IBlockAccess chunkCache, BlockPos pos, IBlockState state){
+        harvest(world, chunkCache, pos, state);
+    }
+    
+    /**
      * Determines if the currently checked block can be harvested.
      * @param world
      * @param chunkCache Use preferably methods from this cache as it's generally quicker than accessing via 'world'. 
