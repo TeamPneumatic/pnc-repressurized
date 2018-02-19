@@ -1,9 +1,12 @@
 package me.desht.pneumaticcraft.api.harvesting;
 
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
 /**
@@ -35,4 +38,11 @@ public interface IHarvestRegistry{
      * @param isSeed return true if the given stack is the seed you target. Be aware that this can be called for item stacks that are not dropped from this crop.
      */
     public void registerHarvestHandlerCroplike(Predicate<IBlockState> blockChecker, PropertyInteger ageProperty, Predicate<ItemStack> isSeed);
+    
+    /**
+     * Registers a custom hoe to be used by drones, by default any subclass of ItemHoe should work already.
+     * @param isHoeWithDurability return true if the given item stack is a hoe, with durability left.
+     * @param useDurability Called when isHoeWithDurability returns true, durability should be used in this implementation.
+     */
+    public void registerHoe(Predicate<ItemStack> isHoeWithDurability, BiConsumer<ItemStack, EntityPlayer> useDurability);
 }

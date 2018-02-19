@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.api.harvesting;
 
+import me.desht.pneumaticcraft.api.drone.IDrone;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemStack;
@@ -24,9 +25,10 @@ public interface IHarvestHandler{
      * supplied pos, you are good. If not, use 'world'.
      * @param pos
      * @param state
+     * @param drone
      * @return
      */
-    public default void harvest(World world, IBlockAccess chunkCache, BlockPos pos, IBlockState state){
+    public default void harvest(World world, IBlockAccess chunkCache, BlockPos pos, IBlockState state, IDrone drone){
         world.destroyBlock(pos, true);
     }
     
@@ -38,10 +40,11 @@ public interface IHarvestHandler{
      * supplied pos, you are good. If not, use 'world'.
      * @param pos
      * @param state
+     * @param drone
      * @return
      */
-    public default void harvestAndReplant(World world, IBlockAccess chunkCache, BlockPos pos, IBlockState state){
-        harvest(world, chunkCache, pos, state);
+    public default void harvestAndReplant(World world, IBlockAccess chunkCache, BlockPos pos, IBlockState state, IDrone drone){
+        harvest(world, chunkCache, pos, state, drone);
     }
     
     /**
@@ -52,9 +55,10 @@ public interface IHarvestHandler{
      * supplied pos, you are good. If not, use 'world'.
      * @param pos
      * @param state
+     * @param drone
      * @return true if the block can be harvested, false if not.
      */
-    public boolean canHarvest(World world, IBlockAccess chunkCache, BlockPos pos, IBlockState state);
+    public boolean canHarvest(World world, IBlockAccess chunkCache, BlockPos pos, IBlockState state, IDrone drone);
     
     /**
      * Should add the items the connected item filters in the Harvest puzzle piece in the Programmer can use to determine if a block should be harvested.
@@ -66,8 +70,9 @@ public interface IHarvestHandler{
      * @param pos
      * @param state
      * @param stacks
+     * @param drone
      */
-    public default void addFilterItems(World world, IBlockAccess chunkCache, BlockPos pos, IBlockState state, NonNullList<ItemStack> stacks){
+    public default void addFilterItems(World world, IBlockAccess chunkCache, BlockPos pos, IBlockState state, NonNullList<ItemStack> stacks, IDrone drone){
         Block block = state.getBlock();
         block.getDrops(stacks, chunkCache, pos, state, 0);
     }

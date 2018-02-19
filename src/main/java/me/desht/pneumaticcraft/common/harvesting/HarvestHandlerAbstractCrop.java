@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.harvesting;
 import java.util.List;
 import java.util.function.Predicate;
 
+import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.api.harvesting.IHarvestHandler;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.IBlockState;
@@ -23,13 +24,13 @@ public abstract class HarvestHandlerAbstractCrop implements IHarvestHandler{
     }
     
     @Override
-    public boolean canHarvest(World world, IBlockAccess chunkCache, BlockPos pos, IBlockState state){
+    public boolean canHarvest(World world, IBlockAccess chunkCache, BlockPos pos, IBlockState state, IDrone drone){
         return blockChecker.test(state) && isMaxAge(state);
     }
     
     @Override
-    public void harvestAndReplant(World world, IBlockAccess chunkCache, BlockPos pos, IBlockState state){
-        harvest(world, chunkCache, pos, state);
+    public void harvestAndReplant(World world, IBlockAccess chunkCache, BlockPos pos, IBlockState state, IDrone drone){
+        harvest(world, chunkCache, pos, state, drone);
         List<EntityItem> seedItems = world.getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(pos), entityItem -> isSeed(world, pos, state, entityItem.getItem()));
         if(!seedItems.isEmpty()){
             seedItems.get(0).getItem().shrink(1);//Use a seed

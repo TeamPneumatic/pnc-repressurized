@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.harvesting;
 
 import java.util.function.Predicate;
 
+import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.api.harvesting.IHarvestHandler;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
@@ -18,7 +19,7 @@ public class HarvestHandlerCactusLike implements IHarvestHandler{
     }
     
     @Override
-    public boolean canHarvest(World world, IBlockAccess chunkCache, BlockPos pos, IBlockState state){
+    public boolean canHarvest(World world, IBlockAccess chunkCache, BlockPos pos, IBlockState state, IDrone drone){
         if(blockChecker.test(state)){
             IBlockState stateBelow = chunkCache.getBlockState(pos.offset(EnumFacing.DOWN));
             return blockChecker.test(stateBelow);
