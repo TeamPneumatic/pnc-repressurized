@@ -15,7 +15,7 @@ import net.minecraft.world.IBlockAccess;
 
 import javax.annotation.Nonnull;
 
-public class DroneAIDig extends DroneAIBlockInteraction {
+public class DroneAIDig extends DroneAIBlockInteraction<ProgWidgetAreaItemBase> {
 
     /**
      * @param drone the drone

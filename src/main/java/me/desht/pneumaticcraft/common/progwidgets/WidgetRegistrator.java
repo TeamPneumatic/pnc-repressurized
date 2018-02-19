@@ -25,6 +25,7 @@ public class WidgetRegistrator {
         register(new ProgWidgetCoordinateOperator());
         register(new ProgWidgetEntityAttack());
         register(new ProgWidgetDig());
+        register(new ProgWidgetHarvest());
         register(new ProgWidgetPlace());
         register(new ProgWidgetBlockRightClick());
         register(new ProgWidgetEntityRightClick());

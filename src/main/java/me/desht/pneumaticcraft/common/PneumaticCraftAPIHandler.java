@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.api.PneumaticRegistry.IPneumaticCraftInterface;
 import me.desht.pneumaticcraft.api.client.IClientRegistry;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IPneumaticHelmetRegistry;
 import me.desht.pneumaticcraft.api.drone.IDroneRegistry;
+import me.desht.pneumaticcraft.api.harvesting.IHarvestRegistry;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.api.recipe.IPneumaticRecipeRegistry;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerSupplier;
@@ -12,6 +13,7 @@ import me.desht.pneumaticcraft.api.universalSensor.ISensorRegistry;
 import me.desht.pneumaticcraft.client.GuiRegistry;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.PneumaticHelmetRegistry;
 import me.desht.pneumaticcraft.common.fluid.Fluids;
+import me.desht.pneumaticcraft.common.harvesting.HarvestRegistry;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerManager;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.pressure.AirHandlerSupplier;
@@ -24,6 +26,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
+
 import org.apache.commons.lang3.Validate;
 
 import java.util.ArrayList;
@@ -121,5 +124,10 @@ public class PneumaticCraftAPIHandler implements IPneumaticCraftInterface {
     @Override
     public IItemRegistry getItemRegistry() {
         return ItemRegistry.getInstance();
+    }
+
+    @Override
+    public IHarvestRegistry getHarvestRegistry(){
+        return HarvestRegistry.getInstance();
     }
 }
