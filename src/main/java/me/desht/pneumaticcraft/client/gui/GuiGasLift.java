@@ -78,20 +78,7 @@ public class GuiGasLift extends GuiPneumaticContainerBase<TileEntityGasLift> {
     private List<String> getStatus() {
         List<String> textList = new ArrayList<>();
         textList.add(I18n.format("gui.tab.status.gasLift.action"));
-        String status = "gui.tab.status.gasLift.action.";
-        switch (te.status) {
-            case IDLE:
-                status += "idling";
-                break;
-            case PUMPING:
-                status += "pumping";
-                break;
-            case DIGGING:
-                status += "diggingDown";
-                break;
-            case RETRACTING:
-                status += "retracting";
-        }
+        String status = "gui.tab.status.gasLift.action." + te.status.desc;
         textList.add(I18n.format(status, te.getTank().getFluid() != null ? te.getTank().getFluid().getLocalizedName() : ""));
         textList.add(I18n.format("gui.tab.status.gasLift.currentDepth", te.currentDepth));
         return textList;
@@ -106,6 +93,9 @@ public class GuiGasLift extends GuiPneumaticContainerBase<TileEntityGasLift> {
             }
             if (te.getPrimaryInventory().getStackInSlot(0).isEmpty()) {
                 curInfo.add(I18n.format("gui.tab.problems.gasLift.noTubes"));
+            }
+            if (te.status == TileEntityGasLift.Status.STUCK) {
+                curInfo.add(I18n.format("gui.tab.problems.gasLift.stuck"));
             }
         } else {
             if (te.getPrimaryInventory().getStackInSlot(0).getCount() == 64) {

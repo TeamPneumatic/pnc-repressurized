@@ -33,7 +33,13 @@ import java.util.*;
 public class TileEntityGasLift extends TileEntityPneumaticBase implements IMinWorkingPressure, IRedstoneControlled, ISerializableTanks {
     private static final int INVENTORY_SIZE = 1;
 
-    public enum Status { IDLE, PUMPING, DIGGING, RETRACTING }
+    public enum Status {
+        IDLE("idling"), PUMPING("pumping"), DIGGING("diggingDown"), RETRACTING("retracting"), STUCK("stuck");
+        public final String desc;
+        Status(String desc) {
+            this.desc = desc;
+        }
+    }
 
     @GuiSynced
     private final FluidTank tank = new FluidTank(PneumaticValues.NORMAL_TANK_CAPACITY);
@@ -127,7 +133,9 @@ public class TileEntityGasLift extends TileEntityPneumaticBase implements IMinWo
                         }
                     } else {
                         if (!suckLiquid()) {
-                            if (getPos().getY() - currentDepth >= 0 && !isUnbreakable(getPos().offset(EnumFacing.DOWN, currentDepth))) {
+                            if (isUnbreakable(getPos().offset(EnumFacing.DOWN, currentDepth + 1))) {
+                                status = Status.STUCK;
+                            } else if (getPos().getY() - currentDepth >= 0) {
                                 status = Status.DIGGING;
                                 currentDepth++;
                                 BlockPos pos1 = getPos().offset(EnumFacing.DOWN, currentDepth);
