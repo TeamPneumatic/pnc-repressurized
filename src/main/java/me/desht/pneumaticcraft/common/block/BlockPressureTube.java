@@ -13,6 +13,7 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.BBConstants;
 import me.desht.pneumaticcraft.lib.ModIds;
+import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyEnum;
@@ -60,10 +61,28 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
 
     private AxisAlignedBB[] boundingBoxes = new AxisAlignedBB[6];
     private AxisAlignedBB[] closedBoundingBoxes = new AxisAlignedBB[6];
-    private final float dangerPressure, criticalPressure;
-    private final int volume;
+    private final Tier tier;
+//    private final float dangerPressure, criticalPressure;
+//    private final int volume;
 
-    public BlockPressureTube(String registryName, float dangerPressure, float criticalPressure, int volume) {
+    public enum Tier {
+        ONE(1, PneumaticValues.DANGER_PRESSURE_PRESSURE_TUBE, PneumaticValues.MAX_PRESSURE_PRESSURE_TUBE, PneumaticValues.VOLUME_PRESSURE_TUBE),
+        TWO(2, PneumaticValues.DANGER_PRESSURE_ADVANCED_PRESSURE_TUBE, PneumaticValues.MAX_PRESSURE_ADVANCED_PRESSURE_TUBE, PneumaticValues.VOLUME_ADVANCED_PRESSURE_TUBE);
+
+        private final int tier;
+        final float dangerPressure;
+        final float criticalPressure;
+        final int volume;
+
+        Tier(int tier, float dangerPressure, float criticalPressure, int volume) {
+            this.tier = tier;
+            this.dangerPressure = dangerPressure;
+            this.criticalPressure = criticalPressure;
+            this.volume = volume;
+        }
+    }
+
+    public BlockPressureTube(String registryName, Tier tier) {
         super(Material.IRON, registryName);
 
         double width = (BBConstants.PRESSURE_PIPE_MAX_POS - BBConstants.PRESSURE_PIPE_MIN_POS) / 2;
@@ -84,9 +103,10 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
         closedBoundingBoxes[4] = new AxisAlignedBB(BBConstants.PRESSURE_PIPE_MIN_POS - height, 0.5 - width, 0.5 - width, BBConstants.PRESSURE_PIPE_MIN_POS, 0.5 + width, 0.5 + width);
         closedBoundingBoxes[5] = new AxisAlignedBB(BBConstants.PRESSURE_PIPE_MAX_POS, 0.5 - width, 0.5 - width, BBConstants.PRESSURE_PIPE_MAX_POS + height, 0.5 + width, 0.5 + width);
 
-        this.dangerPressure = dangerPressure;
-        this.criticalPressure = criticalPressure;
-        this.volume = volume;
+        this.tier = tier;
+//        this.dangerPressure = tier.dangerPressure;
+//        this.criticalPressure = tier.criticalPressure;
+//        this.volume = tier.volume;
     }
 
     @Override
@@ -96,7 +116,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
 
     @Override
     public TileEntity createTileEntity(World world, IBlockState state) {
-        return new TileEntityPressureTube(dangerPressure, criticalPressure, volume);
+        return new TileEntityPressureTube(tier.dangerPressure, tier.criticalPressure, tier.volume);
     }
 
     @Override
@@ -148,6 +168,10 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
             }
         }
         return false;
+    }
+
+    public int getTier() {
+        return tier.tier;
     }
 
     private static TileEntity getTE(IBlockAccess world, BlockPos pos) {

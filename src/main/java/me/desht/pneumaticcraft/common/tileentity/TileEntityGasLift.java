@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.common.ai.ChunkPositionSorter;
+import me.desht.pneumaticcraft.common.block.BlockPressureTube;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
@@ -11,11 +12,14 @@ import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
@@ -46,7 +50,8 @@ public class TileEntityGasLift extends TileEntityPneumaticBase implements IMinWo
     private final ItemStackHandler inventory = new FilteredItemStackHandler(INVENTORY_SIZE) {
         @Override
         public boolean test(Integer integer, ItemStack itemStack) {
-            return itemStack.isEmpty() || itemStack.isItemEqual(new ItemStack(Blockss.PRESSURE_TUBE));
+            return itemStack.isEmpty()
+                    || itemStack.getItem() instanceof ItemBlock && ((ItemBlock) itemStack.getItem()).getBlock() instanceof BlockPressureTube;
         }
     };
     @GuiSynced
@@ -104,11 +109,14 @@ public class TileEntityGasLift extends TileEntityPneumaticBase implements IMinWo
             ticker++;
             if (currentDepth > 0) {
                 int curCheckingPipe = ticker % currentDepth;
-                if (curCheckingPipe > 0 && !isPipe(getPos().offset(EnumFacing.DOWN, curCheckingPipe))) {
+                if (curCheckingPipe > 0 && !isPipe(world, getPos().offset(EnumFacing.DOWN, curCheckingPipe))) {
                     currentDepth = curCheckingPipe - 1;
                 }
             }
-            if (ticker % 400 == 0) pumpingLake = null;
+            if (ticker == 400) {
+                pumpingLake = null;
+                ticker = 0;
+            }
 
             if (redstoneAllows() && getPressure() >= getMinWorkingPressure()) {
                 workTimer += this.getSpeedMultiplierFromUpgrades();
@@ -116,44 +124,10 @@ public class TileEntityGasLift extends TileEntityPneumaticBase implements IMinWo
                     workTimer -= 20;
                     status = Status.IDLE;
                     if (mode == 2) {
-                        // retracting pipes
-                        if (currentDepth > 0) {
-                            status = Status.RETRACTING;
-                            if (isPipe(getPos().add(0, -currentDepth, 0))) {
-                                if (inventory.insertItem(0, new ItemStack(Blockss.PRESSURE_TUBE), false).isEmpty()) {
-                                    world.destroyBlock(getPos().offset(EnumFacing.DOWN, currentDepth), false);
-                                    addAir(-100);
-                                    currentDepth--;
-                                } else {
-                                    status = Status.IDLE;
-                                }
-                            } else {
-                                currentDepth--;
-                            }
-                        }
+                        retractPipes();
                     } else {
-                        if (!suckLiquid()) {
-                            if (isUnbreakable(getPos().offset(EnumFacing.DOWN, currentDepth + 1))) {
-                                status = Status.STUCK;
-                            } else if (getPos().getY() - currentDepth >= 0) {
-                                status = Status.DIGGING;
-                                currentDepth++;
-                                BlockPos pos1 = getPos().offset(EnumFacing.DOWN, currentDepth);
-                                if (!isPipe(pos1)) {
-                                    if (!inventory.getStackInSlot(0).isEmpty()) {
-                                        inventory.extractItem(0, 1, false);
-                                        world.destroyBlock(pos1, false);
-                                        world.setBlockState(pos1, Blockss.PRESSURE_TUBE.getDefaultState());
-                                        addAir(-100);
-                                    } else {
-                                        status = Status.IDLE;
-                                        currentDepth--;
-                                        break;
-                                    }
-                                }
-                            } else {
-                                break;
-                            }
+                        if (!suckLiquid() && !tryDigDown()) {
+                            break;
                         }
                     }
                 }
@@ -166,8 +140,69 @@ public class TileEntityGasLift extends TileEntityPneumaticBase implements IMinWo
         }
     }
 
-    private boolean isPipe(BlockPos pos) {
-        return world.getBlockState(pos).getBlock() == Blockss.PRESSURE_TUBE;
+    private void retractPipes() {
+        if (currentDepth > 0) {
+            status = Status.RETRACTING;
+            if (isPipe(world, getPos().add(0, -currentDepth, 0))) {
+                BlockPos pos1 = getPos().offset(EnumFacing.DOWN, currentDepth);
+                ItemStack toInsert = new ItemStack(world.getBlockState(pos1).getBlock());
+                if (inventory.insertItem(0, toInsert, true).isEmpty()) {
+                    inventory.insertItem(0, toInsert, false);
+                    world.destroyBlock(pos1, false);
+                    addAir(-100);
+                    currentDepth--;
+                } else {
+                    status = Status.IDLE;
+                }
+            } else {
+                currentDepth--;
+            }
+        }
+    }
+
+    private boolean tryDigDown() {
+        if (isUnbreakable(getPos().offset(EnumFacing.DOWN, currentDepth + 1))) {
+            status = Status.STUCK;
+        } else if (getPos().getY() - currentDepth >= 0) {
+            status = Status.DIGGING;
+            currentDepth++;
+            BlockPos pos1 = getPos().offset(EnumFacing.DOWN, currentDepth);
+            if (!isPipe(world, pos1)) {
+                ItemStack extracted = inventory.extractItem(0, 1, true);
+                if (extracted.getItem() instanceof ItemBlock) {
+                    IBlockState currentState = world.getBlockState(pos1);
+                    IBlockState newState = ((ItemBlock) extracted.getItem()).getBlock().getDefaultState();
+
+                    int airRequired = Math.round(66.66f * currentState.getBlockHardness(world, pos1));
+                    if (getPipeTier(newState) > 1) airRequired /= 2;
+
+                    if (getAirHandler(null).getAir() > airRequired) {
+                        inventory.extractItem(0, 1, false);
+                        world.destroyBlock(pos1, false);
+                        world.setBlockState(pos1, newState);
+                        addAir(-airRequired);
+                    } else {
+                        status = Status.IDLE;
+                        currentDepth--;
+                    }
+                } else {
+                    status = Status.IDLE;
+                    currentDepth--;
+                }
+            }
+        } else {
+            status = Status.IDLE;
+        }
+        return status == Status.DIGGING;
+    }
+
+    private boolean isPipe(World world, BlockPos pos) {
+        return getPipeTier(world.getBlockState(pos)) >= 1;
+    }
+
+    private int getPipeTier(IBlockState state) {
+        Block b = state.getBlock();
+        return b instanceof BlockPressureTube ? ((BlockPressureTube) b).getTier() : 0;
     }
 
     private boolean isUnbreakable(BlockPos pos) {

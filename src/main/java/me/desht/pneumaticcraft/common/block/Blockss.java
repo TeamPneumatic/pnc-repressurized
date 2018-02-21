@@ -4,7 +4,6 @@ import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.tileentity.ICamouflageableTE;
 import me.desht.pneumaticcraft.lib.Names;
-import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.tileentity.TileEntity;
@@ -125,8 +124,8 @@ public class Blockss {
     public static void registerBlocks(RegistryEvent.Register<Block> event) {
         IForgeRegistry<Block> registry = event.getRegistry();
 
-        registerBlock(registry, new BlockPressureTube("pressure_tube", PneumaticValues.DANGER_PRESSURE_PRESSURE_TUBE, PneumaticValues.MAX_PRESSURE_PRESSURE_TUBE, PneumaticValues.VOLUME_PRESSURE_TUBE));
-        registerBlock(registry, new BlockPressureTube("advanced_pressure_tube", PneumaticValues.DANGER_PRESSURE_ADVANCED_PRESSURE_TUBE, PneumaticValues.MAX_PRESSURE_ADVANCED_PRESSURE_TUBE, PneumaticValues.VOLUME_ADVANCED_PRESSURE_TUBE));
+        registerBlock(registry, new BlockPressureTube("pressure_tube", BlockPressureTube.Tier.ONE));
+        registerBlock(registry, new BlockPressureTube("advanced_pressure_tube", BlockPressureTube.Tier.TWO));
         registerBlock(registry, new BlockAirCompressor());
         registerBlock(registry, new BlockAdvancedAirCompressor());
         registerBlock(registry, new BlockAirCannon());
