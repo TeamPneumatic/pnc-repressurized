@@ -90,7 +90,7 @@ public abstract class DroneAIBlockInteraction<Widget extends ProgWidgetAreaItemB
                 curPos = null;
                 lastSuccessfulY = curY;
                 if (sorter == null || sorter.isDone())
-                    sorter = new ThreadedSorter(area, new ChunkPositionSorter(drone));
+                    sorter = new ThreadedSorter<BlockPos>(area, new ChunkPositionSorter(drone));
                 return true;
             } else {
                 return false;
@@ -111,7 +111,7 @@ public abstract class DroneAIBlockInteraction<Widget extends ProgWidgetAreaItemB
         return order == ProgWidgetPlace.EnumOrder.CLOSEST || y == curY;
     }
 
-    public DroneAIBlockInteraction setMaxActions(int maxActions) {
+    public DroneAIBlockInteraction<Widget> setMaxActions(int maxActions) {
         this.maxActions = maxActions;
         return this;
     }

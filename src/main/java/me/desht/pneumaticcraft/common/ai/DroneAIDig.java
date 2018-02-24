@@ -1,6 +1,10 @@
 package me.desht.pneumaticcraft.common.ai;
 
+import javax.annotation.Nonnull;
+
+import me.desht.pneumaticcraft.common.progwidgets.IToolUser;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
+import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetDig;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -13,13 +17,11 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
-import javax.annotation.Nonnull;
-
 public class DroneAIDig extends DroneAIBlockInteraction<ProgWidgetAreaItemBase> {
 
     /**
      * @param drone the drone
-     * @param widget needs to implement IBlockOrdered
+     * @param widget needs to implement IBlockOrdered, IToolUser
      */
     public DroneAIDig(IDroneBase drone, ProgWidgetAreaItemBase widget) {
         super(drone, widget);
@@ -38,8 +40,7 @@ public class DroneAIDig extends DroneAIBlockInteraction<ProgWidgetAreaItemBase> 
             }
             for (ItemStack droppedStack : droppedStacks) {
                 if (widget.isItemValidForFilters(droppedStack, blockState)) {
-                    swapBestItemToFirstSlot(pos);
-                    return true;
+                    return swapBestItemToFirstSlot(pos) || !((IToolUser)widget).requiresTool();
                 }
             }
         }
@@ -51,16 +52,27 @@ public class DroneAIDig extends DroneAIBlockInteraction<ProgWidgetAreaItemBase> 
         return true;
     }
 
-    private void swapBestItemToFirstSlot(BlockPos pos) {
+    //gui.progWidget.dig.debug.missingDiggingTool
+    private boolean swapBestItemToFirstSlot(BlockPos pos) {
+        
+        ItemStack oldCurrentStack = drone.getInv().getStackInSlot(0).copy();
+        drone.getInv().setStackInSlot(0, ItemStack.EMPTY);
+        float baseSoftness = worldCache.getBlockState(pos).getPlayerRelativeBlockHardness(drone.getFakePlayer(), drone.world(), pos);
+        drone.getInv().setStackInSlot(0, oldCurrentStack);
+        boolean hasDiggingTool = false;
+        
         int bestSlot = 0;
         float bestSoftness = Float.MIN_VALUE;
-        ItemStack oldCurrentStack = drone.getInv().getStackInSlot(0).copy();
         for (int i = 0; i < drone.getInv().getSlots(); i++) {
             drone.getInv().setStackInSlot(0, drone.getInv().getStackInSlot(i));
             float softness = worldCache.getBlockState(pos).getPlayerRelativeBlockHardness(drone.getFakePlayer(), drone.world(), pos);
             if (softness > bestSoftness) {
                 bestSlot = i;
                 bestSoftness = softness;
+                
+                if(softness > baseSoftness){
+                    hasDiggingTool = true;
+                }
             }
         }
         drone.getInv().setStackInSlot(0, oldCurrentStack);
@@ -69,6 +81,7 @@ public class DroneAIDig extends DroneAIBlockInteraction<ProgWidgetAreaItemBase> 
             drone.getInv().setStackInSlot(bestSlot, drone.getInv().getStackInSlot(0));
             drone.getInv().setStackInSlot(0, bestItem);
         }
+        return hasDiggingTool;
     }
 
     @Override

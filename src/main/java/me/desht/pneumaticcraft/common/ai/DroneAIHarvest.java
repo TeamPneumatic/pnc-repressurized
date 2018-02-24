@@ -5,7 +5,9 @@ import java.util.function.Consumer;
 
 import me.desht.pneumaticcraft.api.harvesting.IHarvestHandler;
 import me.desht.pneumaticcraft.common.harvesting.HarvestRegistry;
+import me.desht.pneumaticcraft.common.progwidgets.IToolUser;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
+import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetHarvest;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -16,15 +18,32 @@ public class DroneAIHarvest extends DroneAIBlockInteraction<ProgWidgetAreaItemBa
 
     /**
      * @param drone the drone
-     * @param widget needs to implement IBlockOrdered
+     * @param widget needs to implement IBlockOrdered, IToolUser
      */
     public DroneAIHarvest(IDroneBase drone, ProgWidgetAreaItemBase widget) {
         super(drone, widget);
     }
 
     @Override
+    public boolean shouldExecute(){
+        if(abortIfRequiredHoeIsMissing()) return false;        
+        return super.shouldExecute();
+    }
+    
+    @Override
     protected boolean isValidPosition(BlockPos pos) {
+        if(abortIfRequiredHoeIsMissing()) return false;        
         return getApplicableHandler(pos) != null;
+    }
+    
+    private boolean abortIfRequiredHoeIsMissing(){
+        if(((IToolUser)widget).requiresTool() && getDamageableHoe() == null){
+            abort();
+            drone.addDebugEntry("gui.progWidget.harvest.debug.missingHoe");
+            return true;
+        }else{
+            return false;
+        }
     }
     
     private IHarvestHandler getApplicableHandler(BlockPos pos){

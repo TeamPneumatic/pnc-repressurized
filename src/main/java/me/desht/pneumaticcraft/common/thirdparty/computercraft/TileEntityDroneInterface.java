@@ -768,6 +768,19 @@ public class TileEntityDroneInterface extends TileEntity implements ITickable, I
             }
 
         });
+        
+        luaMethods.add(new LuaMethod("setRequiresTool") {
+            @Override
+            public Object[] call(Object[] args) throws Exception {
+                if (args.length == 1) {
+                    getWidget().setRequiresTool((Boolean) args[0]);
+                    messageToDrone(0xFFFFFFFF);
+                    return null;
+                } else {
+                    throw new IllegalArgumentException("setRequiresTool takes 1 argument (boolean requires tool true/false!");
+                }
+            }
+        });
     }
 
     @Override

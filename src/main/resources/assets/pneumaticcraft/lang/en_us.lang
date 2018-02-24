@@ -200,6 +200,7 @@ programmingPuzzle.area.name=Area
 programmingPuzzle.text.name=Text
 programmingPuzzle.itemFilter.name=Item Filter
 programmingPuzzle.dig.name=Dig Area
+programmingPuzzle.harvest.name=Harvest
 programmingPuzzle.pickupItem.name=Pick up Items
 programmingPuzzle.inventoryExport.name=Export to Inventory
 programmingPuzzle.inventoryImport.name=Import from Inventory
@@ -673,6 +674,10 @@ gui.progWidget.coordinateOperator.multiply_divide=* /
 gui.progWidget.coordinateOperator.max_min=Max Min
 gui.progWidget.externalProgram.shareVariables=Share Variables
 gui.progWidget.externalProgram.shareVariables.tooltip=When checked, the variables stored in the calling program will be shared with the called program.
+gui.progWidget.harvest.requiresHoe=Requires hoe
+gui.progWidget.harvest.requiresHoe.tooltip=Drones equipped with a Hoe automatically replant harvested plants. When checked, Drones will only harvest plants when equipped with a Hoe.
+gui.progWidget.dig.requiresDiggingTool=Requires digging tool
+gui.progWidget.dig.requiresDiggingTool.tooltip=Drones equipped with a digging tool (Pickaxe/Shovel/...) dig blocks faster and inherit the properties of the tool like Silk Touch. When checked, Drones will only dig blocks as long as the Drones is equipped with a tool that is suited for a given block.
 
 gui.progWidget.area.error.noArea=No area specified.
 gui.progWidget.area.error.areaTooBig=Over-large area: > %d blocks. See 'I:maxProgrammingArea' in config.
@@ -727,6 +732,8 @@ gui.progWidget.condition.evaluatedFalse=Condition was evaluated false.
 gui.progWidget.jump.nowhereToJump=Nowhere to jump. Going back to Start.
 gui.progWidget.debug.hasPositions=This contains positions that can be showed.
 gui.progWidget.debug.clickToShow=Click to show the positions permanently.
+gui.progWidget.harvest.debug.missingHoe=No damageable hoe found.
+gui.progWidget.dig.debug.missingDiggingTool=No damageable digging tool found.
 
 gui.pastebin.button.login=Log In
 gui.pastebin.button.logout=Log Out
