@@ -27,6 +27,9 @@ public class GuiDrone extends GuiPneumaticInventoryItem {
         addAnimatedStat(dispenserUpgrade.getDisplayName(), dispenserUpgrade, 0xFF0000FF, false).setText("gui.tab.info.item.drone.dispenserUpgrade");
         ItemStack itemLifeUpgrade = CraftingRegistrator.getUpgrade(EnumUpgrade.ITEM_LIFE);
         addAnimatedStat(itemLifeUpgrade.getDisplayName(), itemLifeUpgrade, 0xFF0000FF, false).setText("gui.tab.info.item.drone.itemLifeUpgrade");
+        ItemStack magnetUpgrade = CraftingRegistrator.getUpgrade(EnumUpgrade.MAGNET);
+        addAnimatedStat(magnetUpgrade.getDisplayName(), magnetUpgrade, 0xFF0000FF, false).setText("gui.tab.info.item.drone.magnetUpgrade");
+        
         addAnimatedStat("gui.tab.info", Textures.GUI_INFO_LOCATION, 0xFF8888FF, true).setText("gui.tab.info.item.drone");
         ItemStack securityUpgrade = CraftingRegistrator.getUpgrade(EnumUpgrade.SECURITY);
         addAnimatedStat(securityUpgrade.getDisplayName(), securityUpgrade, 0xFF0000FF, true).setText("gui.tab.info.item.drone.securityUpgrade");

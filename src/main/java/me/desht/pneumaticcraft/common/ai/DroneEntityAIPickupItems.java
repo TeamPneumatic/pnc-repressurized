@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.ai;
 
+import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.entity.Entity;
@@ -61,16 +62,21 @@ public class DroneEntityAIPickupItems extends EntityAIBase {
         if (new Vec3d(curPickingUpEntity.posX, curPickingUpEntity.posY, curPickingUpEntity.posZ).distanceTo(drone.getDronePos()) < 1.5) {
             ItemStack stack = curPickingUpEntity.getItem();
             if (itemPickupWidget.isItemValidForFilters(stack)) {
-//                new EventHandlerPneumaticCraft().onPlayerPickup(new EntityItemPickupEvent(drone.getFakePlayer(), curPickingUpEntity));//not posting the event globally, as I don't have a way of handling a canceled event.
-                int stackSize = stack.getCount();
-                ItemStack remainder = PneumaticCraftUtils.exportStackToInventory(drone, stack, EnumFacing.UP); // side doesn't matter, drones aren't ISided.
-                if (remainder.isEmpty()) {
-                    drone.onItemPickupEvent(curPickingUpEntity, stackSize);
-                    curPickingUpEntity.setDead();
-                }
+                tryPickupItem(drone, curPickingUpEntity);
             }
             return false;
         }
         return !drone.getPathNavigator().hasNoPath();
+    }
+
+    public static void tryPickupItem(IDrone drone, EntityItem itemEntity){
+        ItemStack stack = itemEntity.getItem();
+        int stackSize = stack.getCount();
+        ItemStack remainder = PneumaticCraftUtils.exportStackToInventory(drone, stack, EnumFacing.UP); // side doesn't matter, drones aren't ISided.
+        if (remainder.isEmpty()) {
+//          new EventHandlerPneumaticCraft().onPlayerPickup(new EntityItemPickupEvent(drone.getFakePlayer(), curPickingUpEntity));//not posting the event globally, as I don't have a way of handling a canceled event.
+            drone.onItemPickupEvent(itemEntity, stackSize);
+            itemEntity.setDead();
+        }
     }
 }

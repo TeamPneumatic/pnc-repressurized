@@ -153,6 +153,7 @@ public class ItemDrone extends ItemPneumatic implements IPressurizable, IChargin
         set.add(Itemss.upgrades.get(EnumUpgrade.SECURITY));
         set.add(Itemss.upgrades.get(EnumUpgrade.SPEED));
         set.add(Itemss.upgrades.get(EnumUpgrade.ENTITY_TRACKER));
+        set.add(Itemss.upgrades.get(EnumUpgrade.MAGNET));
         return set;
     }
 

@@ -9,3 +9,4 @@ Most machines in PneumaticCraft have upgrade slots. The sole purpose of these sl
 [crafting{200,950,key=item/coordinate_tracker_upgrade}]
 [crafting{200,1070,key=item/range_upgrade}]
 [crafting{200,1190,key=item/security_upgrade}]
+[crafting{200,1310,key=item/magnet_upgrade}]
