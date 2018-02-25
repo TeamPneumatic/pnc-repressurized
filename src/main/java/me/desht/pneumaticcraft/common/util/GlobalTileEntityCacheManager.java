@@ -1,8 +1,10 @@
 package me.desht.pneumaticcraft.common.util;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.WeakHashMap;
 import java.util.stream.Stream;
 
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
@@ -40,7 +42,7 @@ public class GlobalTileEntityCacheManager{
     }
     
     public static class GlobalTileEntityCache<T extends TileEntity> implements Iterable<T>{
-        private final Set<T> tileEntities = new HashSet<>();
+        private final Set<T> tileEntities = Collections.newSetFromMap(new WeakHashMap<>());
         
         public void add(T te){
             tileEntities.add(te);
