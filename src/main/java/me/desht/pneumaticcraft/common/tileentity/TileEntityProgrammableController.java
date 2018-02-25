@@ -54,6 +54,9 @@ import java.util.*;
 public class TileEntityProgrammableController extends TileEntityPneumaticBase implements IMinWorkingPressure, IDroneBase {
     private static final int INVENTORY_SIZE = 1;
 
+    private static final String FALLBACK_NAME = "[ProgController]";
+    private static final UUID FALLBACK_UUID = UUID.fromString(FALLBACK_NAME);
+
     private ProgrammableItemStackHandler inventory;
 
     private final FluidTank tank = new FluidTank(16000);
@@ -86,6 +89,9 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
         WIDGET_BLACKLIST.add(ProgWidgetEntityExport.class);
         WIDGET_BLACKLIST.add(ProgWidgetEntityImport.class);
     }
+
+    private UUID ownerID;
+    private String ownerName;
 
     public TileEntityProgrammableController() {
         super(5, 7, 5000, 4);
@@ -163,8 +169,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
     }
 
     private void initializeFakePlayer() {
-        String playerName = "Drone";
-        fakePlayer = new DroneFakePlayer((WorldServer) getWorld(), new GameProfile(null, playerName), this);
+        fakePlayer = new DroneFakePlayer((WorldServer) getWorld(), new GameProfile(ownerID, ownerName), this);
         fakePlayer.connection = new NetHandlerPlayServer(FMLCommonHandler.instance().getMinecraftServerInstance(), new NetworkManager(EnumPacketDirection.SERVERBOUND), fakePlayer);
         fakePlayer.inventory = new InventoryPlayer(fakePlayer) {
             private ItemStack oldStack;
@@ -200,6 +205,11 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
     @Override
     public IItemHandlerModifiable getPrimaryInventory() {
         return inventory;
+    }
+
+    public void setOwner(EntityPlayer ownerID) {
+        this.ownerID = ownerID.getUniqueID();
+        this.ownerName = ownerID.getName();
     }
 
     private class ProgrammableItemStackHandler extends FilteredItemStackHandler {
@@ -250,6 +260,8 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
         tank.readFromNBT(tag.getCompoundTag("tank"));
         droneItems = new ItemStackHandler(getDroneSlots());
         droneItems.deserializeNBT(tag.getCompoundTag("droneItems"));
+        ownerID = tag.hasKey("ownerID") ? UUID.fromString(tag.getString("ownerID")) : FALLBACK_UUID;
+        ownerName = tag.hasKey("ownerName") ? tag.getString("ownerName") : FALLBACK_NAME;
     }
 
     @Override
@@ -267,6 +279,9 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
             handler.setStackInSlot(i, getFakePlayer().inventory.getStackInSlot(i));
         }
         tag.setTag("droneItems", handler.serializeNBT());
+
+        tag.setString("ownerID", ownerID.toString());
+        tag.setString("ownerName", ownerName);
 
         return tag;
     }
