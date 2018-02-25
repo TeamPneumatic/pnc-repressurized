@@ -55,7 +55,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
     private static final int INVENTORY_SIZE = 1;
 
     private static final String FALLBACK_NAME = "[ProgController]";
-    private static final UUID FALLBACK_UUID = UUID.fromString(FALLBACK_NAME);
+    private static final UUID FALLBACK_UUID = UUID.nameUUIDFromBytes(FALLBACK_NAME.getBytes());
 
     private ProgrammableItemStackHandler inventory;
 
