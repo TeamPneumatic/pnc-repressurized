@@ -19,6 +19,7 @@ import me.desht.pneumaticcraft.common.sensor.SensorHandler;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaConstant;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethod;
+import me.desht.pneumaticcraft.common.util.GlobalTileEntityCacheManager;
 import me.desht.pneumaticcraft.lib.ModIds;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
@@ -36,9 +37,11 @@ import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
+
 import java.util.*;
 
 public class TileEntityUniversalSensor extends TileEntityPneumaticBase implements IRangeLineShower,
@@ -546,6 +549,18 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
     @Override
     public String getRedstoneButtonText(int mode) {
         return invertedRedstone ? "gui.tab.redstoneBehaviour.universalSensor.button.inverted" : "gui.tab.redstoneBehaviour.universalSensor.button.normal";
+    }
+    
+    @Override
+    public void invalidate(){
+        super.invalidate();
+        GlobalTileEntityCacheManager.getInstance().universalSensor.remove(this);
+    }
+    
+    @Override
+    public void validate(){
+        super.validate();
+        GlobalTileEntityCacheManager.getInstance().universalSensor.add(this);
     }
 
     private class UniversalSensorUpgradeHandler extends UpgradeHandler {
