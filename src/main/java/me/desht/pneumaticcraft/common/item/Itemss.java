@@ -1,9 +1,24 @@
 package me.desht.pneumaticcraft.common.item;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.common.block.Blockss;
-import me.desht.pneumaticcraft.common.semiblock.*;
+import me.desht.pneumaticcraft.common.entity.living.EntityHarvestingDrone;
+import me.desht.pneumaticcraft.common.entity.living.EntityLogisticsDrone;
+import me.desht.pneumaticcraft.common.semiblock.SemiBlockActiveProvider;
+import me.desht.pneumaticcraft.common.semiblock.SemiBlockCropSupport;
+import me.desht.pneumaticcraft.common.semiblock.SemiBlockDefaultStorage;
+import me.desht.pneumaticcraft.common.semiblock.SemiBlockHeatFrame;
+import me.desht.pneumaticcraft.common.semiblock.SemiBlockPassiveProvider;
+import me.desht.pneumaticcraft.common.semiblock.SemiBlockRequester;
+import me.desht.pneumaticcraft.common.semiblock.SemiBlockSpawnerAgitator;
+import me.desht.pneumaticcraft.common.semiblock.SemiBlockStorage;
+import me.desht.pneumaticcraft.common.semiblock.SemiBlockTransferGadget;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.lib.ModIds;
 import me.desht.pneumaticcraft.lib.Names;
@@ -21,11 +36,6 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 import net.minecraftforge.registries.IForgeRegistry;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Mod.EventBusSubscriber
 @ObjectHolder(Names.MOD_ID)
@@ -116,6 +126,8 @@ public class Itemss {
     public static final Item TRANSFER_GADGET = null;
     @ObjectHolder("logistic_drone")
     public static final Item LOGISTICS_DRONE = null;
+    @ObjectHolder("harvesting_drone")
+    public static final Item HARVESTING_DRONE = null;
     @ObjectHolder("gun_ammo")
     public static final Item GUN_AMMO = null;
     @ObjectHolder("amadron_tablet")
@@ -166,7 +178,8 @@ public class Itemss {
         registerItem(registry, new ItemRemote());
         registerItem(registry, new ItemSeismicSensor());
         registerItem(registry, new ItemLogisticsConfigurator());
-        registerItem(registry, new ItemLogisticsDrone());
+        registerItem(registry, new ItemBasicDrone("logistic_drone", (world, player) -> new EntityLogisticsDrone(world, player)));
+        registerItem(registry, new ItemBasicDrone("harvesting_drone", (world, player) -> new EntityHarvestingDrone(world, player)));
         registerItem(registry, new ItemGunAmmo());
         registerItem(registry, new ItemAmadronTablet());
         registerItem(registry, new ItemMinigun());

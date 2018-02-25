@@ -70,7 +70,7 @@ public interface IProgWidget {
 
     Class<? extends IProgWidget> returnType();//true for widgets that can give info to the widget left of it (like areas or filters)
 
-    Class[] getParameters(); //the entity attack widget for instance returns the filter and area class.
+    Class<? extends IProgWidget>[] getParameters(); //the entity attack widget for instance returns the filter and area class.
 
     void setParameter(int index, IProgWidget parm);
 

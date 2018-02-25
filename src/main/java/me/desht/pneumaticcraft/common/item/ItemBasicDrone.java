@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.item;
 
+import me.desht.pneumaticcraft.common.entity.living.EntityBasicDrone;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.entity.living.EntityLogisticsDrone;
 import me.desht.pneumaticcraft.common.inventory.ChargeableItemHandler;
@@ -18,17 +19,21 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.util.List;
+import java.util.function.BiFunction;
 
-public class ItemLogisticsDrone extends ItemDrone {
+public class ItemBasicDrone extends ItemDrone {
 
-    public ItemLogisticsDrone() {
-        super("logistic_drone");
+    private final BiFunction<World, EntityPlayer, EntityBasicDrone> droneCreator;
+    
+    public ItemBasicDrone(String name, BiFunction<World, EntityPlayer, EntityBasicDrone> droneCreator) {
+        super(name);
+        this.droneCreator = droneCreator;
         setMaxStackSize(64);
     }
 
     @Override
-    public void spawnDrone(EntityPlayer player, World world, BlockPos placePos, ItemStack iStack){
-        EntityDrone drone = new EntityLogisticsDrone(world, player);
+    public void spawnDrone(EntityPlayer player, World world, BlockPos clickPos, EnumFacing facing, BlockPos placePos, ItemStack iStack){
+        EntityBasicDrone drone = droneCreator.apply(world, player);
 
         drone.setPosition(placePos.getX() + 0.5, placePos.getY() + 0.5, placePos.getZ() + 0.5);
         world.spawnEntity(drone);
@@ -42,36 +47,12 @@ public class ItemLogisticsDrone extends ItemDrone {
             entityTag.setTag(ChargeableItemHandler.NBT_UPGRADE_TAG, stackTag.getCompoundTag(ChargeableItemHandler.NBT_UPGRADE_TAG));
         }
         drone.readEntityFromNBT(entityTag);
-        addLogisticsProgram(placePos, drone.progWidgets);
+        drone.addProgram(clickPos, facing, placePos, drone.progWidgets);
+        TileEntityProgrammer.updatePuzzleConnections(drone.progWidgets);
         if (iStack.hasDisplayName()) drone.setCustomNameTag(iStack.getDisplayName());
 
         drone.naturallySpawned = false;
-        //TODO 1.8 check if valid replacement drone.onSpawnWithEgg(null);
         drone.onInitialSpawn(world.getDifficultyForLocation(placePos), null);
-    }
-
-    private void addLogisticsProgram(BlockPos pos, List<IProgWidget> widgets) {
-        ProgWidgetStart start = new ProgWidgetStart();
-        start.setX(0);
-        start.setY(0);
-        widgets.add(start);
-
-        ProgWidgetLogistics logistics = new ProgWidgetLogistics();
-        logistics.setX(0);
-        logistics.setY(11);
-        widgets.add(logistics);
-
-        ProgWidgetArea area = new ProgWidgetArea();
-        area.setX(15);
-        area.setY(11);
-        area.x1 = pos.getX() - 16;
-        area.y1 = pos.getY() - 16;
-        area.z1 = pos.getZ() - 16;
-        area.x2 = pos.getX() + 16;
-        area.y2 = pos.getY() + 16;
-        area.z2 = pos.getZ() + 16;
-        widgets.add(area);
-        TileEntityProgrammer.updatePuzzleConnections(widgets);
     }
 
     @Override

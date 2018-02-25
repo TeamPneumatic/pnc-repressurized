@@ -2,14 +2,18 @@ package me.desht.pneumaticcraft.common.recipes;
 
 import me.desht.pneumaticcraft.common.item.Itemss;
 import net.minecraft.inventory.InventoryCrafting;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
-public class RecipeLogisticToDrone extends AbstractRecipe {
+public class RecipeBasicDroneToDrone extends AbstractRecipe {
 
-    RecipeLogisticToDrone() {
-        super("logistic_to_drone");
+    private final Item basicDrone;
+    
+    RecipeBasicDroneToDrone(Item basicDrone) {
+        super(basicDrone.getUnlocalizedName() + "_to_drone");
+        this.basicDrone = basicDrone;
     }
 
     @Override
@@ -17,7 +21,7 @@ public class RecipeLogisticToDrone extends AbstractRecipe {
         boolean hasDrone = false, hasPCB = false;
         for (int i = 0; i < inventoryCrafting.getSizeInventory(); i++) {
             ItemStack stack = inventoryCrafting.getStackInSlot(i);
-            if (stack.getItem() == Itemss.LOGISTICS_DRONE) {
+            if (stack.getItem() == basicDrone) {
                 if (!hasDrone) hasDrone = true;
                 else return false;
             } else if (stack.getItem() == Itemss.PRINTED_CIRCUIT_BOARD) {
@@ -33,7 +37,7 @@ public class RecipeLogisticToDrone extends AbstractRecipe {
         ItemStack logisticDrone = ItemStack.EMPTY;
         for (int i = 0; i < inventoryCrafting.getSizeInventory(); i++) {
             ItemStack stack = inventoryCrafting.getStackInSlot(i);
-            if (stack.getItem() == Itemss.LOGISTICS_DRONE) {
+            if (stack.getItem() == basicDrone) {
                 logisticDrone = stack.copy();
                 break;
             }

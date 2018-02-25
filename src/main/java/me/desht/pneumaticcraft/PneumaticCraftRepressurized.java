@@ -146,6 +146,7 @@ public class PneumaticCraftRepressurized {
         
         BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(Itemss.DRONE, new BehaviorDispenseDrone());
         BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(Itemss.LOGISTICS_DRONE, new BehaviorDispenseDrone());
+        BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(Itemss.HARVESTING_DRONE, new BehaviorDispenseDrone());
 
         if (ConfigHandler.general.enableDungeonLoot) {
             LootTableList.register(RL("inject/simple_dungeon_loot"));

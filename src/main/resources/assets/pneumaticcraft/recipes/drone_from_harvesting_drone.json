@@ -1,0 +1,14 @@
+{
+  "type": "pneumaticcraft:always_invalid_shapeless",
+  "ingredients": [
+    {
+      "item": "pneumaticcraft:harvesting_drone"
+    },
+    {
+      "item": "pneumaticcraft:printed_circuit_board"
+    }
+  ],
+  "result": {
+    "item": "pneumaticcraft:drone"
+  }
+}

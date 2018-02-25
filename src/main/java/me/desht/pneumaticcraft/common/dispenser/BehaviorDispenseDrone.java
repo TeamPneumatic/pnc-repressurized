@@ -13,7 +13,7 @@ public class BehaviorDispenseDrone extends BehaviorDefaultDispenseItem{
     protected ItemStack dispenseStack(IBlockSource source, ItemStack stack){
         EnumFacing facing = source.getBlockState().getValue(BlockDispenser.FACING);
         BlockPos placePos = source.getBlockPos().offset(facing);
-        ((ItemDrone)stack.getItem()).spawnDrone(null, source.getWorld(), placePos, stack);
+        ((ItemDrone)stack.getItem()).spawnDrone(null, source.getWorld(), null, null, placePos, stack);
         
         stack.shrink(1);
         return stack;
