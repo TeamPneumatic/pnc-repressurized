@@ -25,9 +25,12 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -87,6 +90,7 @@ public class ItemGPSAreaTool extends ItemPneumatic implements IPositionProvider 
         FMLCommonHandler.instance().showGuiScreen(new GuiGPSAreaTool(stack, index));
     }
 
+    @SideOnly(Side.CLIENT)
     @Override
     public void addInformation(ItemStack stack, World worldIn, List<String> infoList, ITooltipFlag par4) {
         super.addInformation(stack, worldIn, infoList, par4);
