@@ -41,10 +41,11 @@ public interface IHarvestHandler{
      * @param pos
      * @param state
      * @param drone
-     * @return
+     * @return true if the replanting succeeded (and the hoe the Drone carries needs to be damaged). If nothing needed to be replanted return false.
      */
-    public default void harvestAndReplant(World world, IBlockAccess chunkCache, BlockPos pos, IBlockState state, IDrone drone){
+    public default boolean harvestAndReplant(World world, IBlockAccess chunkCache, BlockPos pos, IBlockState state, IDrone drone){
         harvest(world, chunkCache, pos, state, drone);
+        return false;
     }
     
     /**

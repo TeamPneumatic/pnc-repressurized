@@ -29,7 +29,7 @@ public interface IHarvestRegistry{
     public void registerHarvestHandlerCactuslike(Predicate<IBlockState> blockChecker);
     
     /**
-     * Registers a harvest handler for block stats that need to farmed like wheat/carrots/beetroot,
+     * Registers a harvest handler for block states that need to farmed like wheat/carrots/beetroot,
      * in that the block can be harvested when 'ageProperty' gets to its max growth value. Additionally,
      * when needing to replant, this means using a dropped seed (defined by 'isSeed'), and resetting the age to the min growth value.
      * @param blockChecker return true if the given block state is of a block you target. Checking for the right age is not necessary, this is done automatically.
@@ -38,6 +38,14 @@ public interface IHarvestRegistry{
      * @param isSeed return true if the given stack is the seed you target. Be aware that this can be called for item stacks that are not dropped from this crop.
      */
     public void registerHarvestHandlerCroplike(Predicate<IBlockState> blockChecker, PropertyInteger ageProperty, Predicate<ItemStack> isSeed);
+    
+    /**
+     * Registers a harvest handler for trees.
+     * @param blockChecker should return for the logs of this tree.
+     * @param isSapling    should return if the given item stack is a sapling item (which can be used to replant)
+     * @param saplingState the state of the sapling to be planted.
+     */
+    public void registerHarvestHandlerTreelike(Predicate<IBlockState> blockChecker, Predicate<ItemStack> isSapling, IBlockState saplingState);
     
     /**
      * Registers a custom hoe to be used by drones, by default any subclass of ItemHoe should work already.

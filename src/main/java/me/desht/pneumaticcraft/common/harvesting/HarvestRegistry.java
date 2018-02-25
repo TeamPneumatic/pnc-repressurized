@@ -9,13 +9,20 @@ import java.util.function.Predicate;
 import me.desht.pneumaticcraft.api.harvesting.IHarvestHandler;
 import me.desht.pneumaticcraft.api.harvesting.IHarvestRegistry;
 import net.minecraft.block.BlockCocoa;
+import net.minecraft.block.BlockLog;
 import net.minecraft.block.BlockNetherWart;
+import net.minecraft.block.BlockNewLeaf;
+import net.minecraft.block.BlockNewLog;
+import net.minecraft.block.BlockOldLeaf;
+import net.minecraft.block.BlockOldLog;
+import net.minecraft.block.BlockPlanks;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.EnumDyeColor;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemHoe;
 import net.minecraft.item.ItemStack;
 
@@ -48,7 +55,22 @@ public class HarvestRegistry implements IHarvestRegistry {
         //Melons/Pumpkins, just harvest the block when found
         registerHarvestHandler((w, c, p, state, drone) -> state.getBlock() == Blocks.PUMPKIN ||
                                                    state.getBlock() == Blocks.MELON_BLOCK);
-
+        
+        //Trees
+        registerHarvestHandler(new HarvestHandlerLeaves()); //Handle all leaves in one go, as we do not replant after removing leaves, only after removing logs.
+        
+        for(BlockPlanks.EnumType treeType : BlockPlanks.EnumType.values()){
+            Predicate<IBlockState> isOldLog = state -> state.getBlock() == Blocks.LOG && state.getValue(BlockOldLog.VARIANT) == treeType;
+            Predicate<IBlockState> isNewLog = state -> state.getBlock() == Blocks.LOG2 && state.getValue(BlockNewLog.VARIANT) == treeType;
+            Predicate<IBlockState> blockChecker = isOldLog.or(isNewLog);
+           
+            Predicate<ItemStack> isSapling = item -> item.getItem() == Item.getItemFromBlock(Blocks.SAPLING) && item.getMetadata() == treeType.getMetadata();
+            @SuppressWarnings("deprecation")
+            IBlockState saplingState = Blocks.SAPLING.getStateFromMeta(treeType.getMetadata()); //Will have to replaced in 1.13 by individual blocks
+            
+            registerHarvestHandlerTreelike(blockChecker, isSapling, saplingState);
+        }
+        
         //Register hoe
         registerHoe(item -> item.getItem() instanceof ItemHoe, (stack, player) -> stack.damageItem(1, player));
     }
@@ -87,6 +109,14 @@ public class HarvestRegistry implements IHarvestRegistry {
         Validate.notNull(ageProperty);
         Validate.notNull(isSeed);
         registerHarvestHandler(new HarvestHandlerCropLike(blockChecker, ageProperty, isSeed));
+    }
+    
+    @Override
+    public void registerHarvestHandlerTreelike(Predicate<IBlockState> blockChecker, Predicate<ItemStack> isSapling, IBlockState saplingState){
+        Validate.notNull(blockChecker);
+        Validate.notNull(isSapling);
+        Validate.notNull(saplingState);
+        registerHarvestHandler(new HarvestHandlerTree(blockChecker, isSapling, saplingState));
     }
 
     @Override

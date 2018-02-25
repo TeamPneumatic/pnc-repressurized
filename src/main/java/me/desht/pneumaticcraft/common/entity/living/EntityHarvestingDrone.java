@@ -8,6 +8,9 @@ import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetHarvest;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetInventoryImport;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetStart;
+import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetString;
+import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetWait;
+import me.desht.pneumaticcraft.common.progwidgets.IBlockOrdered.EnumOrder;
 import me.desht.pneumaticcraft.common.util.DroneProgramBuilder;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -37,11 +40,13 @@ public class EntityHarvestingDrone extends EntityBasicDrone {
         TileEntity te = world.getTileEntity(clickPos);
         ProgWidgetHarvest harvestPiece = new ProgWidgetHarvest();
         harvestPiece.setRequiresTool(te != null && te.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null));
+        harvestPiece.setOrder(EnumOrder.HIGH_TO_LOW);
         
         DroneProgramBuilder builder = new DroneProgramBuilder();
         builder.add(new ProgWidgetStart());
         builder.add(new ProgWidgetInventoryImport(), ProgWidgetArea.fromPosition(clickPos)); //No filter, because we cannot guarantee we won't filter away modded hoes...
-        builder.add(harvestPiece, standard16x16x16Area(clickPos));
+        builder.add(harvestPiece, ProgWidgetArea.fromPosAndExpansions(clickPos, 16, 16, 16));
+        builder.add(new ProgWidgetWait(), ProgWidgetString.withText("10s")); //Wait 10 seconds for performance reasons.
         widgets.addAll(builder.build());
     }
     

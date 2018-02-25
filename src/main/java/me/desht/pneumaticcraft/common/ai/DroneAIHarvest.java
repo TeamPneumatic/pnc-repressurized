@@ -83,8 +83,9 @@ public class DroneAIHarvest extends DroneAIBlockInteraction<ProgWidgetAreaItemBa
             if(applicableHandler.canHarvest(drone.world(), worldCache, pos, state, drone)){
                 Consumer<EntityPlayer> damageableHoe = getDamageableHoe();
                 if(damageableHoe != null){
-                    applicableHandler.harvestAndReplant(drone.world(), worldCache, pos, state, drone);
-                    damageableHoe.accept(drone.getFakePlayer());
+                    if(applicableHandler.harvestAndReplant(drone.world(), worldCache, pos, state, drone)){
+                        damageableHoe.accept(drone.getFakePlayer());
+                    }
                 }else{
                     applicableHandler.harvest(drone.world(), worldCache, pos, state, drone);
                 }
