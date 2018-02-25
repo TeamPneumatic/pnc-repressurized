@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import com.mojang.authlib.GameProfile;
+
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.client.render.RenderRangeLines;
@@ -9,6 +10,7 @@ import me.desht.pneumaticcraft.common.item.ItemNetworkComponents;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketRenderRangeLines;
+import me.desht.pneumaticcraft.common.util.GlobalTileEntityCacheManager;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
 import me.desht.pneumaticcraft.proxy.CommonProxy.EnumGuiId;
@@ -53,10 +55,17 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
         inventory = new SecurityStationHandler();
         addApplicableUpgrade(EnumUpgrade.ENTITY_TRACKER, EnumUpgrade.SECURITY, EnumUpgrade.RANGE);
     }
-
+    
     @Override
-    public void validate() {
+    public void invalidate(){
+        super.invalidate();
+        GlobalTileEntityCacheManager.getInstance().securityStations.remove(this);
+    }
+    
+    @Override
+    public void validate(){
         super.validate();
+        GlobalTileEntityCacheManager.getInstance().securityStations.add(this);
         rangeLineRenderer = new RenderRangeLines(0x33FF0000, getPos());
     }
 
@@ -183,8 +192,12 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
     @SideOnly(Side.CLIENT)
     public AxisAlignedBB getRenderBoundingBox() {
         if (rangeLineRenderer == null || !rangeLineRenderer.isCurrentlyRendering()) return super.getRenderBoundingBox();
+        return getAffectingAABB();
+    }
+    
+    public AxisAlignedBB getAffectingAABB(){
         int range = getSecurityRange();
-        return new AxisAlignedBB(getPos().getX() - range, getPos().getY() - range, getPos().getZ() - range, getPos().getX() + 1 + range, getPos().getY() + 1 + range, getPos().getZ() + 1 + range);
+        return new AxisAlignedBB(getPos().getX() - range - 1, getPos().getY() - range - 1, getPos().getZ() - range - 1, getPos().getX() + 1 + range, getPos().getY() + 1 + range, getPos().getZ() + 1 + range);
     }
 
     public int getSecurityRange() {

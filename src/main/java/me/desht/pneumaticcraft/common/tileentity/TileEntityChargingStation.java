@@ -10,6 +10,7 @@ import me.desht.pneumaticcraft.common.inventory.ContainerChargingStationItemInve
 import me.desht.pneumaticcraft.common.item.IChargingStationGUIHolderItem;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.util.GlobalTileEntityCacheManager;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.proxy.CommonProxy.EnumGuiId;
 import net.minecraft.block.state.IBlockState;
@@ -26,9 +27,11 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.wrapper.CombinedInvWrapper;
+
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -298,6 +301,18 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
         camoStack = ICamouflageableTE.getStackForState(state);
         sendDescriptionPacket();
         markDirty();
+    }
+    
+    @Override
+    public void invalidate(){
+        super.invalidate();
+        GlobalTileEntityCacheManager.getInstance().chargingStations.remove(this);
+    }
+    
+    @Override
+    public void validate(){
+        super.validate();
+        GlobalTileEntityCacheManager.getInstance().chargingStations.add(this);
     }
 
     private class ChargingStationHandler extends FilteredItemStackHandler {

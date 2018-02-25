@@ -1,13 +1,14 @@
 package me.desht.pneumaticcraft.common.util;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.stream.Stream;
 
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
+import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUniversalSensor;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.tileentity.TileEntity;
@@ -35,10 +36,14 @@ public class GlobalTileEntityCacheManager{
         getInstance().removeFromWorld(event.getWorld());
     }
     
-    public final GlobalTileEntityCache<TileEntityUniversalSensor> universalSensor = new GlobalTileEntityCache<>();
+    public final GlobalTileEntityCache<TileEntityUniversalSensor> universalSensors = new GlobalTileEntityCache<>();
+    public final GlobalTileEntityCache<TileEntityChargingStation> chargingStations = new GlobalTileEntityCache<>();
+    public final GlobalTileEntityCache<TileEntitySecurityStation> securityStations = new GlobalTileEntityCache<>();
     
     private void removeFromWorld(World world){
-        universalSensor.removeFromWorld(world);
+        universalSensors.removeFromWorld(world);
+        chargingStations.removeFromWorld(world);
+        securityStations.removeFromWorld(world);
     }
     
     public static class GlobalTileEntityCache<T extends TileEntity> implements Iterable<T>{

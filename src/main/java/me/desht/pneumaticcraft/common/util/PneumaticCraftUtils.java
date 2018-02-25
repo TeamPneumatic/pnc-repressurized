@@ -53,12 +53,14 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.oredict.OreDictionary;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nonnull;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -66,6 +68,8 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.*;
 import java.util.regex.PatternSyntaxException;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class PneumaticCraftUtils {
     public static final String SAVED_TANKS = "SavedTanks";  // NBT top-level tag to store saved fluid tank data
@@ -538,7 +542,9 @@ public class PneumaticCraftUtils {
 
     public static int getProtectingSecurityStations(World world, BlockPos pos, EntityPlayer player, boolean showRangeLines, boolean placementRange) {
         int blockingStations = 0;
-        for (TileEntitySecurityStation station : getSecurityStations(world, pos, placementRange)) {
+        Iterator<TileEntitySecurityStation> iterator = getSecurityStations(world, pos, placementRange).iterator();
+        for (TileEntitySecurityStation station; iterator.hasNext();) {
+            station = iterator.next();
             if (!station.doesAllowPlayer(player)) {
                 blockingStations++;
                 if (showRangeLines) station.showRangeLines();
@@ -547,61 +553,19 @@ public class PneumaticCraftUtils {
         return blockingStations;
     }
 
-    public static Iterable<TileEntitySecurityStation> getSecurityStations(final World world, final BlockPos pos, final boolean placementRange) {
-        return () -> new Iterator<TileEntitySecurityStation>() {
-            private final int range = placementRange ? 32 : 16;
-            private int i = pos.getX() - range;
-            private int j = pos.getZ() - range;
-            private TileEntitySecurityStation curStation;
-            private int chunkTileEntityIndex = -1;
-
-            @Override
-            public boolean hasNext() {
-                if (curStation != null) return true;
-                for (; i <= pos.getX() + range; i += 16) {
-                    for (; j <= pos.getZ() + range; j += 16) {
-                        Chunk chunk = world.getChunkFromBlockCoords(new BlockPos(i, 0, j));
-                        int curIndex = 0;
-                        for (TileEntity te : chunk.getTileEntityMap().values()) {
-                            if (curIndex > chunkTileEntityIndex && te instanceof TileEntitySecurityStation) {
-                                TileEntitySecurityStation station = (TileEntitySecurityStation) te;
-                                if (station.hasValidNetwork()) {
-                                    if (Math.abs(station.getPos().getX() - pos.getX()) <= station.getSecurityRange() + (placementRange ? 16 : 0)) {
-                                        if (Math.abs(station.getPos().getY() - pos.getY()) <= station.getSecurityRange() + (placementRange ? 16 : 0)) {
-                                            if (Math.abs(station.getPos().getZ() - pos.getZ()) <= station.getSecurityRange() + (placementRange ? 16 : 0)) {
-                                                curStation = station;
-                                                chunkTileEntityIndex = curIndex;
-                                                return true;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            curIndex++;
-                        }
-                        chunkTileEntityIndex = -1;
-                    }
-                    j = pos.getZ() - range;
-                }
-                return false;
-            }
-
-            @Override
-            public TileEntitySecurityStation next() {
-                if (hasNext()) {
-                    TileEntitySecurityStation station = curStation;
-                    curStation = null;
-                    return station;
-                } else {
-                    throw new NoSuchElementException();
-                }
-            }
-
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException();
-            }
-        };
+    public static Stream<TileEntitySecurityStation> getSecurityStations(final World world, final BlockPos pos, final boolean placementRange) {
+        return GlobalTileEntityCacheManager.getInstance().securityStations
+                                                         .stream()
+                                                         .filter(station -> isValidAndInRange(pos, placementRange, station));     
+    }
+    
+    private static boolean isValidAndInRange(BlockPos pos, boolean placementRange, TileEntitySecurityStation station){
+        if (station.hasValidNetwork()) {
+            AxisAlignedBB aabb = station.getAffectingAABB();
+            if(placementRange) aabb = aabb.grow(16);
+            return aabb.contains(new Vec3d(pos));
+        }
+        return false;
     }
 
     public static RayTraceResult getEntityLookedObject(EntityLivingBase entity) {

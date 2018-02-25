@@ -28,7 +28,7 @@ public class EventHandlerUniversalSensor {
 
     private void sendEventToSensors(World world, Event event) {
         if (!world.isRemote) {
-            for (TileEntityUniversalSensor sensor : GlobalTileEntityCacheManager.getInstance().universalSensor) {
+            for (TileEntityUniversalSensor sensor : GlobalTileEntityCacheManager.getInstance().universalSensors) {
                 sensor.onEvent(event);
             }
         }

@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.ai;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
+import me.desht.pneumaticcraft.common.util.GlobalTileEntityCacheManager;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.ai.EntityAIBase;
@@ -31,9 +32,8 @@ public class DroneGoToChargingStation extends EntityAIBase {
     public boolean shouldExecute() {
         List<TileEntityChargingStation> validChargingStations = new ArrayList<TileEntityChargingStation>();
         if (drone.getPressure(null) < PneumaticValues.DRONE_LOW_PRESSURE) {
-            for (TileEntity te : drone.world.loadedTileEntityList) {
-                if (te instanceof TileEntityChargingStation) {
-                    TileEntityChargingStation station = (TileEntityChargingStation) te;
+            for (TileEntityChargingStation station : GlobalTileEntityCacheManager.getInstance().chargingStations) {
+                if (station.getWorld() == drone.world) {
                     BlockPos pos = new BlockPos(station.getPos().getX(), station.getPos().getY(), station.getPos().getZ());
                     if (DroneClaimManager.getInstance(drone.world).isClaimed(pos)) {
                         drone.addDebugEntry("gui.progWidget.chargingStation.debug.claimed", pos);

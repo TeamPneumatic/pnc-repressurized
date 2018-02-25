@@ -554,13 +554,13 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
     @Override
     public void invalidate(){
         super.invalidate();
-        GlobalTileEntityCacheManager.getInstance().universalSensor.remove(this);
+        GlobalTileEntityCacheManager.getInstance().universalSensors.remove(this);
     }
     
     @Override
     public void validate(){
         super.validate();
-        GlobalTileEntityCacheManager.getInstance().universalSensor.add(this);
+        GlobalTileEntityCacheManager.getInstance().universalSensors.add(this);
     }
 
     private class UniversalSensorUpgradeHandler extends UpgradeHandler {
