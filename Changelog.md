@@ -6,18 +6,23 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
-## x.x.x-xxx (Unreleased)
+## 0.5.0-159 (26 Feb 2018)
 
 * Added GPS Area Tool, a way to make selecting areas with the Programmer easier.
 * You can 'paste' Coordinate puzzle pieces in the Programmer by taking a GPS Tool and left-clicking it on the programming area (the GPS Area Tool does the same for the Area piece).
-* (Logistics) Drones can now be spawned from a Dispenser.
-* Fixed a crash with the Amadron Tablet when adding a trade when not having a item supply location bound to the tablet.
-* Fixed Drones sometimes refusing to teleport while they should (most likely to notice with Place Block commands).
-* Altered camera orientations for some held items (wrenches & other tools)
-* Oil worldgen can now be blacklisted by dimension ID (e.g. disable oil generation in Twilight Forest)
-* Using entity filters in Pneumatic Helmet entity tracker module now works on dedicated servers
+* Drones & Logistics Drones can now be spawned from a Dispenser
+* Altered camera orientations for some held items (wrenches & other tools - thanks Teamspen210)
+* Oil worldgen can now be blacklisted by dimension ID (e.g. disable oil generation in Twilight Forest) - see I:oilWorldGenBlacklist in pneumaticcraft.cfg
 * RF Import & RF Export programming pieces are now available (they were in, but registration was getting skipped due to a bug).  Also note that despite the name, these pieces work with Forge Energy, which is RF-compatible.
-* The Spawner Agitator is now found far less frequently in dungeon loot chests (it can still be crafted, though)
+* Gas Lift air (pressure) usage when extending the tube is now dependent on the hardness of the block being broken (stone is the same, softer blocks are cheaper, and obsidian is much more expensive to break)
+* Advanced Pressure Tubes can now be used in the Gas Lift, and will reduce the pressure cost to break blocks to 50%
+* The Spawner Agitator is now found 10x less frequently in dungeon loot chests (it can still be crafted, though)
+* Fixed a crash with the Amadron Tablet when adding a trade when not having a item supply location bound to the tablet
+* Fixed Drones sometimes refusing to teleport while they should (most likely to notice with Place Block commands)
+* Fixed entity filters in Pneumatic Helmet entity tracker module not working on dedicated servers
+* Reworked some event handling code which should provide a significant performance improvement in worlds with many loaded tile entities
+* Hopefully fixed server-side NPE with Programmable Controller and FTB Utilities claim protection
+* Fixed Gas Lift being able to break unbreakable blocks (bedrock, ender portal frames...)
 
 ## 0.4.1-141 (10 Feb 2018)
 

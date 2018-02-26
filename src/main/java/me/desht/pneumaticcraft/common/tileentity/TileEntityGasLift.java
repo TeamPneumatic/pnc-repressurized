@@ -180,6 +180,9 @@ public class TileEntityGasLift extends TileEntityPneumaticBase implements IMinWo
                         inventory.extractItem(0, 1, false);
                         world.destroyBlock(pos1, false);
                         world.setBlockState(pos1, newState);
+                        // kludge: don't permit placing more than one tube per tick
+                        // causes TE cache problems - root cause to be determined
+                        workTimer = 19;
                         addAir(-airRequired);
                     } else {
                         status = Status.IDLE;
