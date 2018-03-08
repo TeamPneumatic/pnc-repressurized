@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import com.mojang.authlib.GameProfile;
+import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.drone.DroneConstructingEvent;
 import me.desht.pneumaticcraft.api.drone.IPathNavigator;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
@@ -172,7 +173,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
         fakePlayer = new DroneFakePlayer((WorldServer) getWorld(), new GameProfile(ownerID, ownerName), this);
         fakePlayer.connection = new NetHandlerPlayServer(FMLCommonHandler.instance().getMinecraftServerInstance(), new NetworkManager(EnumPacketDirection.SERVERBOUND), fakePlayer);
         fakePlayer.inventory = new InventoryPlayer(fakePlayer) {
-            private ItemStack oldStack;
+            private ItemStack oldStack = ItemStack.EMPTY;
 
             @Override
             public int getSizeInventory() {
@@ -308,7 +309,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
     }
 
     private int getDroneSlots() {
-        return getWorld().isRemote ? 0 : Math.min(36, 1 + dispenserUpgrades);
+        return PneumaticCraftRepressurized.proxy.getClientWorld() != null ? 0 : Math.min(36, 1 + dispenserUpgrades);
     }
 
     private static boolean isProgrammableAndValidForDrone(IDroneBase drone, ItemStack programmable) {
