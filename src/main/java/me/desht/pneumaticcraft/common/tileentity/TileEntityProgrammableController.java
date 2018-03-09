@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import com.mojang.authlib.GameProfile;
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.drone.DroneConstructingEvent;
 import me.desht.pneumaticcraft.api.drone.IPathNavigator;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
@@ -33,6 +32,7 @@ import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -46,8 +46,10 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
+import net.minecraftforge.items.wrapper.PlayerInvWrapper;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -64,21 +66,21 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
     private DroneAIManager aiManager;
     private DroneFakePlayer fakePlayer;
     private ItemStackHandler droneItems;
-    private List<IProgWidget> progWidgets = new ArrayList<IProgWidget>();
+    private List<IProgWidget> progWidgets = new ArrayList<>();
     private final int[] redstoneLevels = new int[6];
-    private String droneName = "";
     @DescSynced
     private double targetX, targetY, targetZ;
     @DescSynced
     @LazySynced
     private double curX, curY, curZ;
-    public double oldCurX, oldCurY, oldCurZ;
     private EntityProgrammableController drone;
     @DescSynced
     private int diggingX, diggingY, diggingZ;
-    private int dispenserUpgrades, speedUpgrades;
+    private int dispenserUpgrades;
+    @DescSynced
+    private int speedUpgrades;
 
-    private static final Set<Class<? extends IProgWidget>> WIDGET_BLACKLIST = new HashSet<Class<? extends IProgWidget>>();
+    private static final Set<Class<? extends IProgWidget>> WIDGET_BLACKLIST = new HashSet<>();
 
     static {
         WIDGET_BLACKLIST.add(ProgWidgetCC.class);
@@ -105,39 +107,21 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
     public void update() {
         super.update();
 
-        oldCurX = curX;
-        oldCurY = curY;
-        oldCurZ = curZ;
-        if (PneumaticCraftUtils.distBetween(getPos(), targetX, targetY, targetZ) <= getSpeed()) {
+        double speed = getSpeed();
+        if (PneumaticCraftUtils.distBetweenSq(getPos(), targetX, targetY, targetZ) <= speed * speed) {
             curX = targetX;
             curY = targetY;
             curZ = targetZ;
-        } else {
-            Vec3d vec = new Vec3d(targetX - curX, targetY - curY, targetZ - curZ).normalize();
-            curX += vec.x * getSpeed();
-            curY += vec.y * getSpeed();
-            curZ += vec.z * getSpeed();
+        } else if (PneumaticCraftUtils.distBetweenSq(curX, curY, curZ, targetX, targetY, targetZ) > 0.25) {
+            // dist-between check here avoids drone "jitter" when it's very near its target
+            Vec3d vec = new Vec3d(targetX - curX, targetY - curY, targetZ - curZ).normalize().scale(speed);
+            curX += vec.x;
+            curY += vec.y;
+            curZ += vec.z;
         }
 
         if (!getWorld().isRemote) {
             getAIManager();
-            if (getWorld().getTotalWorldTime() % 40 == 0) {
-                dispenserUpgrades = getUpgrades(EnumUpgrade.DISPENSER);
-                speedUpgrades = getUpgrades(EnumUpgrade.SPEED);
-
-                for (int i = getDroneSlots(); i < 36; i++) {
-                    ItemStack stack = getFakePlayer().inventory.getStackInSlot(i);
-                    if (!stack.isEmpty()) {
-                        getWorld().spawnEntity(new EntityItem(getWorld(), getPos().getX() + 0.5, getPos().getY() + 1.5, getPos().getZ() + 0.5, stack));
-                        getFakePlayer().inventory.setInventorySlotContents(i, ItemStack.EMPTY);
-                    }
-                }
-
-                tank.setCapacity((dispenserUpgrades + 1) * 16000);
-                if (tank.getFluidAmount() > tank.getCapacity()) {
-                    tank.getFluid().amount = tank.getCapacity();
-                }
-            }
             for (int i = 0; i < 4; i++) {
                 getFakePlayer().interactionManager.updateBlockRemoving();
             }
@@ -156,6 +140,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
             drone.setPosition(curX, curY, curZ);
         }
     }
+
 
     @Override
     public void onDescUpdate() {
@@ -254,6 +239,33 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
     }
 
     @Override
+    protected void onUpgradesChanged() {
+        if (getWorld() != null && !getWorld().isRemote) {
+            calculateUpgrades();
+        }
+    }
+
+    private void calculateUpgrades() {
+        int oldDispenserUpgrades = dispenserUpgrades;
+        dispenserUpgrades = getUpgrades(EnumUpgrade.DISPENSER);
+        if (!getWorld().isRemote && oldDispenserUpgrades != dispenserUpgrades) {
+            for (int i = getDroneSlots(); i < 36; i++) {
+                ItemStack stack = getFakePlayer().inventory.getStackInSlot(i);
+                if (!stack.isEmpty()) {
+                    getWorld().spawnEntity(new EntityItem(getWorld(), getPos().getX() + 0.5, getPos().getY() + 1.5, getPos().getZ() + 0.5, stack));
+                    getFakePlayer().inventory.setInventorySlotContents(i, ItemStack.EMPTY);
+                }
+            }
+            tank.setCapacity((dispenserUpgrades + 1) * 16000);
+            if (tank.getFluidAmount() > tank.getCapacity()) {
+                tank.getFluid().amount = tank.getCapacity();
+            }
+        }
+
+        speedUpgrades = getUpgrades(EnumUpgrade.SPEED);
+    }
+
+    @Override
     public void readFromNBT(NBTTagCompound tag) {
         super.readFromNBT(tag);
 
@@ -267,8 +279,8 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
 
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound tag) {
-
         super.writeToNBT(tag);
+
         tag.setTag("Items", inventory.serializeNBT());
 
         NBTTagCompound tankTag = new NBTTagCompound();
@@ -289,7 +301,13 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
 
     @Override
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
-        return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
+        if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
+            return true;
+        } else if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+            return fakePlayer != null || facing != EnumFacing.UP;
+        } else {
+            return super.hasCapability(capability, facing);
+        }
     }
 
     @Nullable
@@ -297,6 +315,8 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
     public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
         if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
             return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(tank);
+        } else if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && facing == EnumFacing.UP && fakePlayer != null) {
+            return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(new PlayerInvWrapper(fakePlayer.inventory));
         } else {
             return super.getCapability(capability, facing);
         }
@@ -305,11 +325,12 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
     @Override
     protected void onFirstServerUpdate() {
         super.onFirstServerUpdate();
-        inventory.setStackInSlot(0, inventory.getStackInSlot(0));
+        calculateUpgrades();
+        inventory.onContentsChanged(0);  // force initial read of any installed drone/network api
     }
 
     private int getDroneSlots() {
-        return PneumaticCraftRepressurized.proxy.getClientWorld() != null ? 0 : Math.min(36, 1 + dispenserUpgrades);
+        return world != null && world.isRemote ? 0 : Math.min(36, 1 + dispenserUpgrades);
     }
 
     private static boolean isProgrammableAndValidForDrone(IDroneBase drone, ItemStack programmable) {
@@ -417,12 +438,14 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
 
     @Override
     public EntityPlayerMP getFakePlayer() {
-        if (fakePlayer == null) initializeFakePlayer();
-        if (droneItems != null) {
-            for (int i = 0; i < droneItems.getSlots(); i++) {
-                fakePlayer.inventory.setInventorySlotContents(i, droneItems.getStackInSlot(i).copy());
+        if (fakePlayer == null) {
+            initializeFakePlayer();
+            if (droneItems != null) {
+                for (int i = 0; i < droneItems.getSlots(); i++) {
+                    fakePlayer.inventory.setInventorySlotContents(i, droneItems.getStackInSlot(i).copy());
+                }
+                droneItems = null;
             }
-            droneItems = null;
         }
         return fakePlayer;
     }
@@ -436,6 +459,17 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
     public void dropItem(ItemStack stack) {
         Vec3d pos = getDronePos();
         getWorld().spawnEntity(new EntityItem(getWorld(), pos.x, pos.y, pos.z, stack));
+    }
+
+    @Override
+    public void getAllDrops(NonNullList<ItemStack> drops) {
+        super.getAllDrops(drops);
+
+        for (int i = 0; i < getDroneSlots(); i++) {
+            if (!fakePlayer.inventory.getStackInSlot(i).isEmpty()) {
+                drops.add(fakePlayer.inventory.getStackInSlot(i).copy());
+            }
+        }
     }
 
     @Override
@@ -484,9 +518,8 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
 
     @Override
     public void setName(String string) {
-        droneName = string;
         if (drone != null) {
-            drone.setCustomNameTag(droneName);
+            drone.setCustomNameTag(string);
         }
         ItemStack stack = inventory.getStackInSlot(0).copy();
         if (!stack.isEmpty()) {

@@ -634,7 +634,8 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     }
 
     /**
-     * Called when a machine's upgrades have changed in any way.
+     * Called when a machine's upgrades have changed in any way.  This is also called from readNBT() when saved upgrades
+     * are deserialized, so it is not guaranteed that the world field is non-null - beware.
      */
     protected void onUpgradesChanged() {}
 
