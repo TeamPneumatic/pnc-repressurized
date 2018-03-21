@@ -46,7 +46,7 @@ public class GuiAmadron extends GuiPneumaticContainerBase {
         addLabel(amadron, guiLeft + xSize / 2 - mc.fontRenderer.getStringWidth(amadron) / 2, guiTop + 5);
         addLabel(I18n.format("gui.search"), guiLeft + 76 - mc.fontRenderer.getStringWidth(I18n.format("gui.search")), guiTop + 41);
 
-        addInfoTab(I18n.format("gui.tooltip.item.amadronTablet"));
+        addInfoTab(I18n.format("gui.tooltip.item.amadron_tablet"));
         addAnimatedStat("gui.tab.info.ghostSlotInteraction.title", new ItemStack(Blocks.HOPPER), 0xFF00AAFF, true).setText("gui.tab.info.ghostSlotInteraction");
         addAnimatedStat("gui.tab.amadron.disclaimer.title", new ItemStack(Items.WRITABLE_BOOK), 0xFF0000FF, true).setText("gui.tab.amadron.disclaimer");
 
