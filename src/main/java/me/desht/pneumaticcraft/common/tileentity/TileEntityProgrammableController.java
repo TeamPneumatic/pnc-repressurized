@@ -154,8 +154,16 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
         return Math.min(10, speedUpgrades) * 0.1 + 0.1;
     }
 
+    private UUID getOwnerUUID() {
+        if (ownerID == null) {
+            ownerID = UUID.randomUUID();
+            Log.warning(String.format("Programmable controller with owner '%s' has no UUID! Substituting a random UUID (%s).", ownerName, ownerID.toString()));
+        }
+        return ownerID;
+    }
+
     private void initializeFakePlayer() {
-        fakePlayer = new DroneFakePlayer((WorldServer) getWorld(), new GameProfile(ownerID, ownerName), this);
+        fakePlayer = new DroneFakePlayer((WorldServer) getWorld(), new GameProfile(getOwnerUUID(), ownerName), this);
         fakePlayer.connection = new NetHandlerPlayServer(FMLCommonHandler.instance().getMinecraftServerInstance(), new NetworkManager(EnumPacketDirection.SERVERBOUND), fakePlayer);
         fakePlayer.inventory = new InventoryPlayer(fakePlayer) {
             private ItemStack oldStack = ItemStack.EMPTY;
