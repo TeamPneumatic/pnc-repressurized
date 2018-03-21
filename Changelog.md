@@ -6,7 +6,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
-## 0.5.1-161 (21 Mar 2018)
+## 0.5.1-163 (21 Mar 2018)
 
 * Drones now also render held hoes upside down (just like other tools).
 * Fixed the Programmable Controller since the initial port (most notably a crash involving FTB Utilities).
