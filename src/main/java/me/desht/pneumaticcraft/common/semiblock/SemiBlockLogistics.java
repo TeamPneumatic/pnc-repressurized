@@ -45,6 +45,7 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic<TileEntity> {
     private int alpha = 255;
 
     public SemiBlockLogistics() {
+        super(TileEntity.class);
         for (int i = 0; i < fluidFilters.length; i++) {
             fluidFilters[i] = new FluidTank(canFilterStack() ? 64000 : 1000);
         }

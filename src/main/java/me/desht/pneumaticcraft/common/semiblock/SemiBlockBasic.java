@@ -18,7 +18,8 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
-public class SemiBlockBasic<TTileEntity extends TileEntity> implements ISemiBlock, IDescSynced, IGUIButtonSensitive {
+public abstract class SemiBlockBasic<TTileEntity extends TileEntity> implements ISemiBlock, IDescSynced, IGUIButtonSensitive {
+    private final Class<TTileEntity> tileClass;
     protected World world;
     protected BlockPos pos;
     private int index = -1; //There can be multiple semi blocks in one block.
@@ -27,6 +28,10 @@ public class SemiBlockBasic<TTileEntity extends TileEntity> implements ISemiBloc
     private List<SyncedField> descriptionFields;
     private boolean descriptionPacketScheduled;
 
+    public SemiBlockBasic(Class<TTileEntity> tileClass){
+        this.tileClass = tileClass;
+    }
+    
     @Override
     public void initialize(World world, BlockPos pos) {
         this.world = world;
@@ -110,7 +115,11 @@ public class SemiBlockBasic<TTileEntity extends TileEntity> implements ISemiBloc
     public TTileEntity getTileEntity() {
         if (cachedTE == null || cachedTE.isInvalid()) {
             TileEntity te = world.getTileEntity(pos);
-            cachedTE = (TTileEntity)te;
+            if(te != null && tileClass.isAssignableFrom(te.getClass())){
+                cachedTE = (TTileEntity)te;
+            }else{
+                cachedTE = null;
+            }
         }
         return cachedTE;
     }

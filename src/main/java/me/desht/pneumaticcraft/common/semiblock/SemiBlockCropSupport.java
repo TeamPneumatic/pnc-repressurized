@@ -17,6 +17,10 @@ public class SemiBlockCropSupport extends SemiBlockBasic<TileEntity>{
     
     public static final String ID = "crop_support";
     
+    public SemiBlockCropSupport(){
+        super(TileEntity.class);
+    }
+    
     /**
      * Use this custom addition to prevent placement derpyness, where the crop gets placed on the tilled earth.
      */

@@ -6,6 +6,13 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
+## 0.5.1-163 (21 Mar 2018)
+
+* Drones now also render held hoes upside down (just like other tools).
+* Fixed the Programmable Controller since the initial port (most notably a crash involving FTB Utilities).
+* Inserting/extracting the top side of the Programmable Controller block inserts/extracts "drone" inventory.
+* Fix server crash with Mekanism cardboard box & spawner agitator
+
 ## 0.5.0-159 (26 Feb 2018)
 
 * Added GPS Area Tool, a way to make selecting areas with the Programmer easier.

@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.semiblock;
 
 import com.mojang.authlib.GameProfile;
+
 import me.desht.pneumaticcraft.common.util.Reflections;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -19,6 +20,10 @@ public class SemiBlockSpawnerAgitator extends SemiBlockBasic<TileEntityMobSpawne
     public static final String ID = "spawner_agitator";
     public static final GameProfile FAKE_PLAYER_PROFILE = new GameProfile(UUID.randomUUID(), "SemiBlockSpawnerAgitator");
     
+    public SemiBlockSpawnerAgitator(){
+        super(TileEntityMobSpawner.class);
+    }
+    
     @Override
     public boolean canPlace(EnumFacing facing){
         return getBlockState().getBlock() == Blocks.MOB_SPAWNER;
@@ -28,11 +33,9 @@ public class SemiBlockSpawnerAgitator extends SemiBlockBasic<TileEntityMobSpawne
     public void update() {
         super.update();
         if (!world.isRemote) {
-            TileEntity te = getTileEntity();
-            // can't assume the tile entity is definitely a mob spawner -
-            // https://github.com/TeamPneumatic/pnc-repressurized/issues/133
-            if (te instanceof TileEntityMobSpawner){
-                MobSpawnerBaseLogic spawnerLogic = ((TileEntityMobSpawner) te).getSpawnerBaseLogic();
+            TileEntityMobSpawner te = getTileEntity();
+            if(te != null){
+                MobSpawnerBaseLogic spawnerLogic = te.getSpawnerBaseLogic();
                 
                 //Only tick the logic if it wasn't ticked already by the TE itself, to prevent double ticking.
                 if(!Reflections.isActivated(spawnerLogic)){
@@ -68,11 +71,9 @@ public class SemiBlockSpawnerAgitator extends SemiBlockBasic<TileEntityMobSpawne
     }
     
     private void setSpawnPersistentEntities(boolean persistent){
-        TileEntity te = getTileEntity();
-        // can't assume the tile entity is definitely a mob spawner -
-        // https://github.com/TeamPneumatic/pnc-repressurized/issues/133
-        if (te instanceof TileEntityMobSpawner) {
-            MobSpawnerBaseLogic spawnerLogic = ((TileEntityMobSpawner) te).getSpawnerBaseLogic();
+        TileEntityMobSpawner te = getTileEntity();
+        if(te != null){
+            MobSpawnerBaseLogic spawnerLogic = te.getSpawnerBaseLogic();
             spawnerLogic.spawnData.getNbt().setBoolean("PersistenceRequired", persistent);
         }
     }

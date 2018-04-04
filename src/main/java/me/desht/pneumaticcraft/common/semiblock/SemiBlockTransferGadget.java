@@ -32,6 +32,10 @@ public class SemiBlockTransferGadget extends SemiBlockBasic<TileEntity>{
     
     private int counter;
     
+    public SemiBlockTransferGadget(){
+        super(TileEntity.class);
+    }
+    
     @Override
     public boolean canStay(){
         return super.canStay() && getConnectedGadget() != null && (!isAir() || !getConnectedGadget().isAir());

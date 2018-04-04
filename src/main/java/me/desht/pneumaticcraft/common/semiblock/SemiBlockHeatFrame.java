@@ -30,6 +30,10 @@ public class SemiBlockHeatFrame extends SemiBlockBasic<TileEntity> implements IH
     @DescSynced
     private int heatLevel = 10;
 
+    public SemiBlockHeatFrame(Class<TileEntity> tileClass){
+        super(tileClass);
+    }
+    
     @Override
     public boolean canPlace(EnumFacing facing) {
         return getTileEntity() != null && getTileEntity().hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
