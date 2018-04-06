@@ -2,17 +2,14 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.block.tubes.ModuleRegistrator;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
-import me.desht.pneumaticcraft.common.config.ThirdPartyConfig;
 import me.desht.pneumaticcraft.common.item.ItemTubeModule;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.thirdparty.ModInteractionUtils;
-import me.desht.pneumaticcraft.common.thirdparty.mcmultipart.PneumaticMultiPart;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.BBConstants;
-import me.desht.pneumaticcraft.lib.ModIds;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -175,8 +172,9 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
     }
 
     private static TileEntity getTE(IBlockAccess world, BlockPos pos) {
-        return ThirdPartyConfig.isEnabled(ModIds.MCMP) ?
-                PneumaticMultiPart.unwrapTile(world, pos) :
+        // TODO: maybe one day I'll get round to making MCMP2 support work!
+        return /*ThirdPartyConfig.isEnabled(ModIds.MCMP) ?
+                PneumaticMultiPart.unwrapTile(world, pos) :*/
                 PneumaticCraftUtils.getTileEntitySafely(world, pos);
     }
 

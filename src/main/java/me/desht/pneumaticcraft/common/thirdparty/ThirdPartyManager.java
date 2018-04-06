@@ -13,7 +13,6 @@ import me.desht.pneumaticcraft.common.thirdparty.enderio.EnderIO;
 import me.desht.pneumaticcraft.common.thirdparty.forestry.Forestry;
 import me.desht.pneumaticcraft.common.thirdparty.ic2.IC2;
 import me.desht.pneumaticcraft.common.thirdparty.igwmod.IGWMod;
-import me.desht.pneumaticcraft.common.thirdparty.mcmultipart.PneumaticMultiPart;
 import me.desht.pneumaticcraft.common.thirdparty.theoneprobe.TheOneProbe;
 import me.desht.pneumaticcraft.common.thirdparty.waila.Waila;
 import me.desht.pneumaticcraft.lib.Log;
@@ -50,9 +49,10 @@ public class ThirdPartyManager implements IGuiHandler {
             thirdPartyClasses.put(ModIds.AE2, AE2.class);
             thirdPartyClasses.put(ModIds.FORESTRY, Forestry.class);
             thirdPartyClasses.put(ModIds.EIO, EnderIO.class);
-            if (Loader.isModLoaded(ModIds.MCMP)) {
-                thirdPartyClasses.put(ModIds.MCMP, PneumaticMultiPart.class);
-            }
+            // TODO: MCMP2 support just doesn't work at this time
+//            if (Loader.isModLoaded(ModIds.MCMP)) {
+//                thirdPartyClasses.put(ModIds.MCMP, PneumaticMultiPart.class);
+//            }
             thirdPartyClasses.put(ModIds.COFH_CORE, CoFHCore.class);
             thirdPartyClasses.put(ModIds.WAILA, Waila.class);
             thirdPartyClasses.put(ModIds.TOP, TheOneProbe.class);
@@ -67,8 +67,6 @@ public class ThirdPartyManager implements IGuiHandler {
         ThirdPartyConfig.setupDefaults(thirdPartyClasses.keySet());
 
         Set<String> enabledThirdParty = thirdPartyClasses.keySet().stream().filter(ThirdPartyConfig::isEnabled).collect(Collectors.toSet());
-        // mcmp2 is just too broken to contemplate trying to make work: blacklist it for the foreseeable future
-        enabledThirdParty.remove(ModIds.MCMP);
 
         PneumaticCraftRepressurized.logger.info("Thirdparty integration activated for [" + Strings.join(enabledThirdParty, ", ") + "]");
 
