@@ -27,11 +27,9 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.wrapper.CombinedInvWrapper;
-
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -208,9 +206,9 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     }
 
     @Override
-    public void getAllDrops(NonNullList<ItemStack> drops) {
+    public void getContentsToDrop(NonNullList<ItemStack> drops) {
         droppingItems = true;
-        super.getAllDrops(drops);
+        super.getContentsToDrop(drops);
         droppingItems = false;
     }
 

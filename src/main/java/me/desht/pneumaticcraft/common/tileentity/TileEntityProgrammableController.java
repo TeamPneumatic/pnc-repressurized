@@ -470,8 +470,8 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
     }
 
     @Override
-    public void getAllDrops(NonNullList<ItemStack> drops) {
-        super.getAllDrops(drops);
+    public void getContentsToDrop(NonNullList<ItemStack> drops) {
+        super.getContentsToDrop(drops);
 
         for (int i = 0; i < getDroneSlots(); i++) {
             if (!fakePlayer.inventory.getStackInSlot(i).isEmpty()) {

@@ -53,14 +53,12 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.oredict.OreDictionary;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nonnull;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -68,7 +66,6 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.*;
 import java.util.regex.PatternSyntaxException;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class PneumaticCraftUtils {
@@ -160,7 +157,7 @@ public class PneumaticCraftUtils {
     public static double[] tan;
     public static final int circlePoints = 500;
 
-    /**
+    /*
      * Initializes the sin,cos and tan variables, so that they can't be used without having to calculate them every time (render tick).
      */
     static {
@@ -875,6 +872,10 @@ public class PneumaticCraftUtils {
                 dropItemOnGround(itemStack, world, x, y, z);
             }
         }
+    }
+
+    public static void dropItemOnGround(ItemStack stack, World world, BlockPos pos) {
+        dropItemOnGround(stack, world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
     }
 
     public static void dropItemOnGround(ItemStack stack, World world, double x, double y, double z) {

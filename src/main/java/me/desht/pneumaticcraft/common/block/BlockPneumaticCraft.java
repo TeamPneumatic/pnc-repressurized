@@ -368,8 +368,8 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
                 TileEntity te = world.getTileEntity(pos);
                 if (te instanceof TileEntityBase) {
                     NonNullList<ItemStack> drops = NonNullList.create();
-                    ((TileEntityBase) te).getAllDrops(drops);
-                    drops.forEach(stack -> PneumaticCraftUtils.dropItemOnGround(stack, world, pos.getX(), pos.getY(), pos.getZ()));
+                    ((TileEntityBase) te).getContentsToDrop(drops);
+                    drops.forEach(stack -> PneumaticCraftUtils.dropItemOnGround(stack, world, pos));
                 }
             }
             return super.removedByPlayer(state, world, pos, player, false);
@@ -387,13 +387,21 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
     }
 
     @Override
+    public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
+        TileEntity te = worldIn.getTileEntity(pos);
+        if (te instanceof TileEntityBase) {
+            NonNullList<ItemStack> drops = NonNullList.create();
+            ((TileEntityBase) te).getContentsToDrop(drops);
+            drops.forEach(stack -> PneumaticCraftUtils.dropItemOnGround(stack, worldIn, pos));
+        }
+        super.breakBlock(worldIn, pos, state);
+    }
+
+    @Override
     public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
         boolean hasCustomDrops = false;
 
         TileEntity te = world.getTileEntity(pos);
-        if (te instanceof TileEntityBase) {
-            ((TileEntityBase) te).getAllDrops(drops);
-        }
 
         if (te instanceof ISerializableTanks) {
             hasCustomDrops = true;

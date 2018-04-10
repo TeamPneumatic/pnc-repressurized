@@ -585,21 +585,24 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     }
 
     /**
-     * Collect all items which should be dropped when this TE is broken.  Override this if the subclassing TE has
-     * extra inventories which need to be dropped.
+     * Collect all items which should be dropped when this TE is broken.  Override and extend this in subclassing
+     * TE's which have extra inventories to be dropped.
      *
      * @param drops list in which to collect dropped items
      */
-    public void getAllDrops(NonNullList<ItemStack> drops) {
+    public void getContentsToDrop(NonNullList<ItemStack> drops) {
         if (getPrimaryInventory() != null) {
             for (int i = 0; i < getPrimaryInventory().getSlots(); i++) {
                 drops.add(getPrimaryInventory().getStackInSlot(i));
             }
         }
         // TODO consider preserving upgrades in the dropped block
-        if (getUpgradesInventory() != null) {
-            for (int i = 0; i < getUpgradesInventory().getSlots(); i++) {
-                drops.add(getUpgradesInventory().getStackInSlot(i));
+        IItemHandler upgrades = getUpgradesInventory();
+        if (upgrades != null) {
+            for (int i = 0; i < upgrades.getSlots(); i++) {
+                if (!upgrades.getStackInSlot(i).isEmpty()) {
+                    drops.add(upgrades.getStackInSlot(i));
+                }
             }
         }
 
