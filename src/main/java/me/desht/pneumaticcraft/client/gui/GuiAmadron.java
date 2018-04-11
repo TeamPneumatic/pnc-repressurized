@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetVerticalScrollbar;
 import me.desht.pneumaticcraft.common.inventory.ContainerAmadron;
 import me.desht.pneumaticcraft.common.inventory.ContainerAmadron.EnumProblemState;
+import me.desht.pneumaticcraft.common.inventory.SlotUntouchable;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketAmadronInvSync;
 import me.desht.pneumaticcraft.common.network.PacketAmadronOrderUpdate;
@@ -118,10 +119,12 @@ public class GuiAmadron extends GuiPneumaticContainerBase {
         for (int i = 0; i < visibleOffers.size(); i++) {
             AmadronOffer offer = visibleOffers.get(i);
             if (offer.getInput() instanceof ItemStack) {
-                container.inventorySlots.get(i * 2).putStack((ItemStack) offer.getInput());
+                container.getSlot(i * 2).putStack((ItemStack) offer.getInput());
+                ((SlotUntouchable) container.getSlot(i * 2)).setEnabled(true);
             }
             if (offer.getOutput() instanceof ItemStack) {
-                container.inventorySlots.get(i * 2 + 1).putStack((ItemStack) offer.getOutput());
+                container.getSlot(i * 2 + 1).putStack((ItemStack) offer.getOutput());
+                ((SlotUntouchable) container.getSlot(i * 2 + 1)).setEnabled(true);
             }
 
             WidgetAmadronOffer widget = new WidgetAmadronOffer(i, guiLeft + 6 + 73 * (i % 2), guiTop + 55 + 35 * (i / 2), offer) {
@@ -133,6 +136,12 @@ public class GuiAmadron extends GuiPneumaticContainerBase {
             addWidget(widget);
             widgetOffers.add(widget);
         }
+
+        // avoid drawing phantom slot highlights where there's no widget
+        for (int i = visibleOffers.size() * 2; i < container.inventorySlots.size(); i++) {
+            ((SlotUntouchable) container.getSlot(i)).setEnabled(false);
+        }
+
         // the server also needs to know what's in the tablet, or the next
         // "window items" packet will empty all the client-side slots
         NetworkHandler.sendToServer(new PacketAmadronInvSync(container.getInventory()));

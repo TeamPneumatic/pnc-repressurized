@@ -10,6 +10,8 @@ import javax.annotation.Nonnull;
  * @author CovertJaguar <http://www.railcraft.info>
  */
 public class SlotUntouchable extends SlotBase implements IPhantomSlot {
+    private boolean enabled = true;
+
     SlotUntouchable(IItemHandler handler, int slotIndex, int x, int y) {
         super(handler, slotIndex, x, y);
     }
@@ -32,5 +34,14 @@ public class SlotUntouchable extends SlotBase implements IPhantomSlot {
     @Override
     public boolean canShift() {
         return false;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
     }
 }
