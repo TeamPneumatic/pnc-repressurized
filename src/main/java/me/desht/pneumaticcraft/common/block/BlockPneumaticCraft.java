@@ -138,8 +138,8 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
             setRotation(world, pos, rotation, state);
         }
         TileEntity te = world.getTileEntity(pos);
-        if (te instanceof ISerializableTanks && stack.hasTagCompound() && stack.getTagCompound().hasKey(PneumaticCraftUtils.SAVED_TANKS, Constants.NBT.TAG_COMPOUND)) {
-            ((ISerializableTanks) te).deserializeTanks(stack.getTagCompound().getCompoundTag(PneumaticCraftUtils.SAVED_TANKS));
+        if (te instanceof ISerializableTanks && stack.hasTagCompound() && stack.getTagCompound().hasKey(ISerializableTanks.SAVED_TANKS, Constants.NBT.TAG_COMPOUND)) {
+            ((ISerializableTanks) te).deserializeTanks(stack.getTagCompound().getCompoundTag(ISerializableTanks.SAVED_TANKS));
         }
     }
 
@@ -279,8 +279,8 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
     @SideOnly(Side.CLIENT)
     @Override
     public void addInformation(ItemStack stack, World world, List<String> curInfo, ITooltipFlag flag) {
-        if (stack.hasTagCompound() && stack.getTagCompound().hasKey(PneumaticCraftUtils.SAVED_TANKS, Constants.NBT.TAG_COMPOUND)) {
-            NBTTagCompound tag = stack.getTagCompound().getCompoundTag(PneumaticCraftUtils.SAVED_TANKS);
+        if (stack.hasTagCompound() && stack.getTagCompound().hasKey(ISerializableTanks.SAVED_TANKS, Constants.NBT.TAG_COMPOUND)) {
+            NBTTagCompound tag = stack.getTagCompound().getCompoundTag(ISerializableTanks.SAVED_TANKS);
             for (String s : tag.getKeySet()) {
                 NBTTagCompound tankTag = tag.getCompoundTag(s);
                 FluidTank tank = new FluidTank(tankTag.getInteger("Amount"));

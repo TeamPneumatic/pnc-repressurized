@@ -9,12 +9,6 @@ import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityLiving;
@@ -28,7 +22,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.pathfinding.PathFinder;
 import net.minecraft.pathfinding.WalkNodeProcessor;
 import net.minecraft.tileentity.TileEntity;
@@ -42,9 +35,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.IFluidBlock;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
@@ -69,9 +59,6 @@ import java.util.regex.PatternSyntaxException;
 import java.util.stream.Stream;
 
 public class PneumaticCraftUtils {
-    public static final String SAVED_TANKS = "SavedTanks";  // NBT top-level tag to store saved fluid tank data
-    private static final float FLUID_ALPHA = 1.0f;  // fluid transparency
-
     private static Random rand = new Random();
     private static final List<Item> inventoryItemBlacklist = new ArrayList<Item>();
 
@@ -1068,171 +1055,4 @@ public class PneumaticCraftUtils {
         return new ResourceLocation(Names.MOD_ID, path);
     }
 
-    /**
-     * Serialize some tank data onto an ItemStack.  Useful to preserve tile entity tank data when breaking
-     * the block.
-     *
-     * @param tank the fluid tank
-     * @param stack the itemstack to save to
-     * @param tagName name of the tag in the itemstack's NBT to store the tank data
-     */
-    public static void serializeTank(FluidTank tank, ItemStack stack, String tagName) {
-        if (tank.getFluidAmount() > 0) {
-            if (!stack.hasTagCompound()) {
-                stack.setTagCompound(new NBTTagCompound());
-            }
-            NBTTagCompound tag = stack.getTagCompound();
-            if (!tag.hasKey(SAVED_TANKS, Constants.NBT.TAG_COMPOUND)) {
-                tag.setTag(SAVED_TANKS, new NBTTagCompound());
-            }
-            NBTTagCompound subTag = tag.getCompoundTag(SAVED_TANKS);
-            NBTTagCompound tankTag = new NBTTagCompound();
-            tank.writeToNBT(tankTag);
-            subTag.setTag(tagName, tankTag);
-        }
-    }
-
-    /**
-     * Deserialize some fluid tank data from an ItemStack into a fluid tank.  Useful to restore tile entity
-     * tank data when placing down a block which has previously been serialized.
-     *
-     * @param tank the fluid tank
-     * @param stack the itemstack to load from
-     * @param tagName name of the tag in the itemstack's NBT which holds the saved tank data
-     */
-    public static void deserializeTank(FluidTank tank, ItemStack stack, String tagName) {
-        if (stack.hasTagCompound() && stack.getTagCompound().hasKey(SAVED_TANKS ,Constants.NBT.TAG_COMPOUND)) {
-            NBTTagCompound subTag = stack.getTagCompound().getCompoundTag(SAVED_TANKS);
-            tank.readFromNBT(subTag.getCompoundTag(tagName));
-        }
-    }
-
-    /**
-     * Render a fluid with a given bounding box.  The bounding box should be within the range 0..1 for x,y,z so
-     * it is expected that the necessary GL translations have already been done.
-     *
-     * @param fluid the fluid to render (still texture)
-     * @param bounds the bounds within to render
-     */
-    @SideOnly(Side.CLIENT)
-    public static void renderFluid(Fluid fluid, AxisAlignedBB bounds) {
-        Tessellator tess = Tessellator.getInstance();
-        TextureMap map =  Minecraft.getMinecraft().getTextureMapBlocks();
-        TextureAtlasSprite sprite = map.getAtlasSprite(fluid.getStill().toString());
-        BufferBuilder buffer = tess.getBuffer();
-
-        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
-        buffer.pos(bounds.minX, bounds.minY, bounds.minZ)
-                .tex(sprite.getInterpolatedU(16 * bounds.minX), sprite.getInterpolatedV(16 * bounds.minY))
-                .color(1.0f, 1.0f, 1.0f, FLUID_ALPHA)
-                .endVertex();
-        buffer.pos(bounds.minX, bounds.maxY, bounds.minZ)
-                .tex(sprite.getInterpolatedU(16 * bounds.minX), sprite.getInterpolatedV(16 * bounds.maxY))
-                .color(1.0f, 1.0f, 1.0f, FLUID_ALPHA)
-                .endVertex();
-        buffer.pos(bounds.maxX, bounds.maxY, bounds.minZ)
-                .tex(sprite.getInterpolatedU(16 * bounds.maxX), sprite.getInterpolatedV(16 * bounds.maxY))
-                .color(1.0f, 1.0f, 1.0f, FLUID_ALPHA)
-                .endVertex();
-        buffer.pos(bounds.maxX, bounds.minY, bounds.minZ)
-                .tex(sprite.getInterpolatedU(16 * bounds.maxX), sprite.getInterpolatedV(16 * bounds.minY))
-                .color(1.0f, 1.0f, 1.0f, FLUID_ALPHA)
-                .endVertex();
-        tess.draw();
-
-        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
-        buffer.pos(bounds.maxX, bounds.minY, bounds.maxZ)
-                .tex(sprite.getInterpolatedU(16 * bounds.maxX), sprite.getInterpolatedV(16 * bounds.minY))
-                .color(1.0f, 1.0f, 1.0f, FLUID_ALPHA)
-                .endVertex();
-        buffer.pos(bounds.maxX, bounds.maxY, bounds.maxZ)
-                .tex(sprite.getInterpolatedU(16 * bounds.maxX), sprite.getInterpolatedV(16 * bounds.maxY))
-                .color(1.0f, 1.0f, 1.0f, FLUID_ALPHA)
-                .endVertex();
-        buffer.pos(bounds.minX, bounds.maxY, bounds.maxZ)
-                .tex(sprite.getInterpolatedU(16 * bounds.minX), sprite.getInterpolatedV(16 * bounds.maxY))
-                .color(1.0f, 1.0f, 1.0f, FLUID_ALPHA)
-                .endVertex();
-        buffer.pos(bounds.minX, bounds.minY, bounds.maxZ)
-                .tex(sprite.getInterpolatedU(16 * bounds.minX), sprite.getInterpolatedV(16 * bounds.minY))
-                .color(1.0f, 1.0f, 1.0f, FLUID_ALPHA)
-                .endVertex();
-        tess.draw();
-
-        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
-        buffer.pos(bounds.minX, bounds.minY, bounds.maxZ)
-                .tex(sprite.getInterpolatedU(16 * bounds.maxZ), sprite.getInterpolatedV(16 * bounds.minY))
-                .color(1.0f, 1.0f, 1.0f, FLUID_ALPHA)
-                .endVertex();
-        buffer.pos(bounds.minX, bounds.maxY, bounds.maxZ)
-                .tex(sprite.getInterpolatedU(16 * bounds.maxZ), sprite.getInterpolatedV(16 * bounds.maxY))
-                .color(1.0f, 1.0f, 1.0f, FLUID_ALPHA)
-                .endVertex();
-        buffer.pos(bounds.minX, bounds.maxY, bounds.minZ)
-                .tex(sprite.getInterpolatedU(16 * bounds.minZ), sprite.getInterpolatedV(16 * bounds.maxY))
-                .color(1.0f, 1.0f, 1.0f, FLUID_ALPHA)
-                .endVertex();
-        buffer.pos(bounds.minX, bounds.minY, bounds.minZ)
-                .tex(sprite.getInterpolatedU(16 * bounds.minZ), sprite.getInterpolatedV(16 * bounds.minY))
-                .color(1.0f, 1.0f, 1.0f, FLUID_ALPHA)
-                .endVertex();
-        tess.draw();
-
-        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
-        buffer.pos(bounds.maxX, bounds.minY, bounds.minZ)
-                .tex(sprite.getInterpolatedU(16 * bounds.minZ), sprite.getInterpolatedV(16 * bounds.minY))
-                .color(1.0f, 1.0f, 1.0f, FLUID_ALPHA)
-                .endVertex();
-        buffer.pos(bounds.maxX, bounds.maxY, bounds.minZ)
-                .tex(sprite.getInterpolatedU(16 * bounds.minZ), sprite.getInterpolatedV(16 * bounds.maxY))
-                .color(1.0f, 1.0f, 1.0f, FLUID_ALPHA)
-                .endVertex();
-        buffer.pos(bounds.maxX, bounds.maxY, bounds.maxZ)
-                .tex(sprite.getInterpolatedU(16 * bounds.maxZ), sprite.getInterpolatedV(16 * bounds.maxY))
-                .color(1.0f, 1.0f, 1.0f, FLUID_ALPHA)
-                .endVertex();
-        buffer.pos(bounds.maxX, bounds.minY, bounds.maxZ)
-                .tex(sprite.getInterpolatedU(16 * bounds.maxZ), sprite.getInterpolatedV(16 * bounds.minY))
-                .color(1.0f, 1.0f, 1.0f, FLUID_ALPHA)
-                .endVertex();
-        tess.draw();
-
-        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
-        buffer.pos(bounds.minX, bounds.maxY, bounds.maxZ)
-                .tex(sprite.getInterpolatedU(16 * bounds.minX), sprite.getInterpolatedV(16 * bounds.maxZ))
-                .color(1.0f, 1.0f, 1.0f, FLUID_ALPHA)
-                .endVertex();
-        buffer.pos(bounds.maxX, bounds.maxY, bounds.maxZ)
-                .tex(sprite.getInterpolatedU(16 * bounds.maxX), sprite.getInterpolatedV(16 * bounds.maxZ))
-                .color(1.0f, 1.0f, 1.0f, FLUID_ALPHA)
-                .endVertex();
-        buffer.pos(bounds.maxX, bounds.maxY, bounds.minZ)
-                .tex(sprite.getInterpolatedU(16 * bounds.maxX), sprite.getInterpolatedV(16 * bounds.minZ))
-                .color(1.0f, 1.0f, 1.0f, FLUID_ALPHA)
-                .endVertex();
-        buffer.pos(bounds.minX, bounds.maxY, bounds.minZ)
-                .tex(sprite.getInterpolatedU(16 * bounds.minX), sprite.getInterpolatedV(16 * bounds.minZ))
-                .color(1.0f, 1.0f, 1.0f, FLUID_ALPHA)
-                .endVertex();
-        tess.draw();
-
-        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
-        buffer.pos(bounds.minX, bounds.minY, bounds.maxZ)
-                .tex(sprite.getInterpolatedU(16 * bounds.minX), sprite.getInterpolatedV(16 * bounds.maxZ))
-                .color(1.0f, 1.0f, 1.0f, FLUID_ALPHA)
-                .endVertex();
-        buffer.pos(bounds.minX, bounds.minY, bounds.minZ)
-                .tex(sprite.getInterpolatedU(16 * bounds.minX), sprite.getInterpolatedV(16 * bounds.minZ))
-                .color(1.0f, 1.0f, 1.0f, FLUID_ALPHA)
-                .endVertex();
-        buffer.pos(bounds.maxX, bounds.minY, bounds.minZ)
-                .tex(sprite.getInterpolatedU(16 * bounds.maxX), sprite.getInterpolatedV(16 * bounds.minZ))
-                .color(1.0f, 1.0f, 1.0f, FLUID_ALPHA)
-                .endVertex();
-        buffer.pos(bounds.maxX, bounds.minY, bounds.maxZ)
-                .tex(sprite.getInterpolatedU(16 * bounds.maxX), sprite.getInterpolatedV(16 * bounds.maxZ))
-                .color(1.0f, 1.0f, 1.0f, FLUID_ALPHA)
-                .endVertex();
-        tess.draw();
-    }
 }
