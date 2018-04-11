@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.item;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.block.ICustomItemBlock;
 import me.desht.pneumaticcraft.common.semiblock.*;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.lib.ModIds;
@@ -176,7 +177,8 @@ public class Itemss {
 
         for (Block b : Blockss.blocks) {
             if(!(b instanceof BlockAir)){
-                registerItem(registry, new ItemBlock(b).setRegistryName(b.getRegistryName()));
+                ItemBlock itemBlock = b instanceof ICustomItemBlock ? ((ICustomItemBlock) b).getCustomItemBlock() : new ItemBlock(b);
+                registerItem(registry, itemBlock.setRegistryName(b.getRegistryName()));
             }
         }
     }

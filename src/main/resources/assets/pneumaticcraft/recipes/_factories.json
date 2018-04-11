@@ -1,6 +1,9 @@
 {
+	"ingredients": {
+		"fluid": "me.desht.pneumaticcraft.common.recipes.FluidIngredientFactory"
+	},
 	"recipes": {
+		"shaped_fluid": "me.desht.pneumaticcraft.common.recipes.ShapedFluidRecipeFactory",
 		"always_invalid_shapeless" : "me.desht.pneumaticcraft.common.recipes.AlwaysInvalidShapelessRecipeFactory"	
 	}
-
 }

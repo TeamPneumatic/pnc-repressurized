@@ -40,43 +40,41 @@ public interface ISerializableTanks {
         }
     }
 
-
     /**
      * Serialize some tank data onto an ItemStack.  Useful to preserve tile entity tank data when breaking
-     * the block.
+     * the block, or when using the item's fluid handler capability.
      *
      * @param tank the fluid tank
      * @param stack the itemstack to save to
      * @param tagName name of the tag in the itemstack's NBT to store the tank data
      */
     static void serializeTank(FluidTank tank, ItemStack stack, String tagName) {
-        if (tank.getFluidAmount() > 0) {
-            if (!stack.hasTagCompound()) {
-                stack.setTagCompound(new NBTTagCompound());
-            }
-            NBTTagCompound tag = stack.getTagCompound();
-            if (!tag.hasKey(SAVED_TANKS, Constants.NBT.TAG_COMPOUND)) {
-                tag.setTag(SAVED_TANKS, new NBTTagCompound());
-            }
-            NBTTagCompound subTag = tag.getCompoundTag(SAVED_TANKS);
-            NBTTagCompound tankTag = new NBTTagCompound();
-            tank.writeToNBT(tankTag);
-            subTag.setTag(tagName, tankTag);
+        if (!stack.hasTagCompound()) {
+            stack.setTagCompound(new NBTTagCompound());
         }
+        NBTTagCompound tag = stack.getTagCompound();
+        if (!tag.hasKey(SAVED_TANKS, Constants.NBT.TAG_COMPOUND)) {
+            tag.setTag(SAVED_TANKS, new NBTTagCompound());
+        }
+        NBTTagCompound subTag = tag.getCompoundTag(SAVED_TANKS);
+        NBTTagCompound tankTag = new NBTTagCompound();
+        tank.writeToNBT(tankTag);
+        subTag.setTag(tagName, tankTag);
     }
 
     /**
-     * Deserialize some fluid tank data from an ItemStack into a fluid tank.  Useful to restore tile entity
-     * tank data when placing down a block which has previously been serialized.
+     * Deserialize some fluid tank data from an ItemStack into a fluid tank.  Useful when using the
+     * item's fluid handler capability.
      *
-     * @param tank the fluid tank
      * @param stack the itemstack to load from
      * @param tagName name of the tag in the itemstack's NBT which holds the saved tank data
      */
-    static void deserializeTank(FluidTank tank, ItemStack stack, String tagName) {
+    static FluidTank deserializeTank(ItemStack stack, String tagName, int capacity) {
         if (stack.hasTagCompound() && stack.getTagCompound().hasKey(SAVED_TANKS ,Constants.NBT.TAG_COMPOUND)) {
+            FluidTank tank = new FluidTank(capacity);
             NBTTagCompound subTag = stack.getTagCompound().getCompoundTag(SAVED_TANKS);
-            tank.readFromNBT(subTag.getCompoundTag(tagName));
+            return tank.readFromNBT(subTag.getCompoundTag(tagName));
         }
+        return null;
     }
 }
