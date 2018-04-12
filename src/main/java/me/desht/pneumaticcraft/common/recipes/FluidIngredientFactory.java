@@ -21,7 +21,7 @@ public class FluidIngredientFactory implements IIngredientFactory {
     public Ingredient parse(JsonContext context, JsonObject json) {
         String fluidName = JsonUtils.getString(json, "fluid");
 
-		return new FluidIngredient(fluidName);
+        return new FluidIngredient(fluidName);
     }
 
     public static class FluidIngredient extends Ingredient {
@@ -29,28 +29,28 @@ public class FluidIngredientFactory implements IIngredientFactory {
 
         public FluidIngredient(String fluidName) {
             super(FluidUtil.getFilledBucket(new FluidStack(FluidRegistry.getFluid(fluidName), Fluid.BUCKET_VOLUME)));
-			fluid = FluidRegistry.getFluidStack(fluidName, Fluid.BUCKET_VOLUME);
+            fluid = FluidRegistry.getFluidStack(fluidName, Fluid.BUCKET_VOLUME);
         }
 
         @Override
-		public boolean apply(ItemStack input) {
-			if (input == null || input.isEmpty()) {
-				return false;
-			}
-			IFluidHandlerItem handler = input.getCount() > 1 ?
+        public boolean apply(ItemStack input) {
+            if (input == null || input.isEmpty()) {
+                return false;
+            }
+            IFluidHandlerItem handler = input.getCount() > 1 ?
                     FluidUtil.getFluidHandler(ItemHelper.cloneStack(input, 1)) :
                     FluidUtil.getFluidHandler(input);
 
-			if (handler == null) {
-				return false;
-			}
+            if (handler == null) {
+                return false;
+            }
             return fluid.isFluidStackIdentical(handler.drain(Fluid.BUCKET_VOLUME, false));
         }
 
-		@Override
-		public boolean isSimple() {
+        @Override
+        public boolean isSimple() {
 
-			return false;
-		}
+            return false;
+        }
     }
 }

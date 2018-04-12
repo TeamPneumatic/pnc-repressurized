@@ -70,8 +70,6 @@ public class ClientEventHandler {
 
     @SubscribeEvent
     public void onItemTooltip(ItemTooltipEvent event) {
-        if (event.getEntityPlayer() == null) return;
-
         if (event.getItemStack().getItem() instanceof IProgrammable) {
             handleProgrammableTooltip(event);
         } else if (event.getItemStack().getItem() instanceof ItemBucket || event.getItemStack().getItem() instanceof UniversalBucket) {
