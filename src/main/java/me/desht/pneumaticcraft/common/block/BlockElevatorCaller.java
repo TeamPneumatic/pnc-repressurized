@@ -45,10 +45,10 @@ public class BlockElevatorCaller extends BlockPneumaticCraftCamo {
     private int getFloorForHit(TileEntityElevatorCaller teEC, EnumFacing side, float hitX, float hitY, float hitZ) {
         float x;
         switch (side) {
-            case NORTH: x = hitX; break;
-            case SOUTH: x = 1.0f - hitX; break;
-            case EAST: x = hitZ; break;
-            case WEST: x = 1.0f - hitZ; break;
+            case NORTH: x = 1.0f - hitX; break;
+            case SOUTH: x = hitX; break;
+            case EAST: x = 1.0f - hitZ; break;
+            case WEST: x = hitZ; break;
             default: return -1;
         }
         float y = 1.0f - hitY;
