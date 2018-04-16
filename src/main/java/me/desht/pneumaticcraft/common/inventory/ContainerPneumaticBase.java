@@ -6,7 +6,6 @@ import me.desht.pneumaticcraft.common.network.NetworkUtils;
 import me.desht.pneumaticcraft.common.network.PacketUpdateGui;
 import me.desht.pneumaticcraft.common.tileentity.IGUIButtonSensitive;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityTickableBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -102,7 +101,7 @@ public class ContainerPneumaticBase<Tile extends TileEntityBase> extends Contain
         if (srcSlot == null || !srcSlot.getHasStack()) {
             return ItemStack.EMPTY;
         }
-        ItemStack srcStack = srcSlot.getStack();
+        ItemStack srcStack = srcSlot.getStack().copy();
         ItemStack copyOfSrcStack = srcStack.copy();
 
         if (slot < playerSlotsStart) {
