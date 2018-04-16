@@ -18,4 +18,5 @@ public class ModIds {
     public static final String TOP = "theoneprobe";
     public static final String JEI = "jei";
     public static final String CRAFTTWEAKER = "crafttweaker";
+    public static final String IMMERSIVEENGINEERING = "immersiveengineering";
 }
