@@ -51,6 +51,7 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.wrapper.PlayerInvWrapper;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
@@ -95,6 +96,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
 
     private UUID ownerID;
     private String ownerName;
+    private IItemHandlerModifiable droneInventoryWrapper = new DummyInventory();
 
     public TileEntityProgrammableController() {
         super(5, 7, 5000, 4);
@@ -121,7 +123,6 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
         }
 
         if (!getWorld().isRemote) {
-            getAIManager();
             for (int i = 0; i < 4; i++) {
                 getFakePlayer().interactionManager.updateBlockRemoving();
             }
@@ -189,6 +190,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
                 }
             }
         };
+        droneInventoryWrapper = new PlayerInvWrapper(fakePlayer.inventory);
     }
 
     @Override
@@ -217,7 +219,6 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
             ItemStack stack = getStackInSlot(slot);
             if (!stack.isEmpty() && isProgrammableAndValidForDrone(TileEntityProgrammableController.this, stack)) {
                 progWidgets = TileEntityProgrammer.getProgWidgets(stack);
-                if (!getWorld().isRemote) getAIManager().setWidgets(progWidgets);
             } else {
                 progWidgets.clear();
                 targetX = getPos().getX() + 0.5;
@@ -232,12 +233,14 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
                 }
                 if (updateNeighbours) updateNeighbours();
             }
-            getAIManager();
+            if (!getWorld().isRemote) {
+                getAIManager().setWidgets(progWidgets);
+            }
         }
 
         @Override
         public boolean test(Integer integer, ItemStack itemStack) {
-            return isProgrammableAndValidForDrone(TileEntityProgrammableController.this, itemStack);
+            return itemStack.isEmpty() || isProgrammableAndValidForDrone(TileEntityProgrammableController.this, itemStack);
         }
     }
 
@@ -312,7 +315,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
         if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
             return true;
         } else if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-            return fakePlayer != null || facing != EnumFacing.UP;
+            return fakePlayer != null || facing == EnumFacing.DOWN;
         } else {
             return super.hasCapability(capability, facing);
         }
@@ -323,8 +326,8 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
     public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
         if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
             return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(tank);
-        } else if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && facing == EnumFacing.UP && fakePlayer != null) {
-            return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(new PlayerInvWrapper(fakePlayer.inventory));
+        } else if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+            return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(facing == EnumFacing.DOWN ? inventory : droneInventoryWrapper);
         } else {
             return super.getCapability(capability, facing);
         }
@@ -390,7 +393,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
 
     @Override
     public IItemHandlerModifiable getInv() {
-        return inventory;
+        return droneInventoryWrapper;
     }
 
     @Override
@@ -429,7 +432,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
 
             @Override
             public boolean hasNoPath() {
-                return targetX == curX && targetY == curY && targetZ == curZ;
+                return PneumaticCraftUtils.distBetweenSq(curX, curY, curZ, targetX, targetY, targetZ) < 0.5;
             }
 
             @Override
@@ -565,10 +568,11 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
 
     @Override
     public DroneAIManager getAIManager() {
-        if (aiManager == null && !getWorld().isRemote) {
-            aiManager = new DroneAIManager(this, new ArrayList<>());
-            aiManager.setWidgets(getProgWidgets());
-            aiManager.dontStopWhenEndReached();
+        if (!getWorld().isRemote) {
+            if (aiManager == null) {
+                aiManager = new DroneAIManager(this, new ArrayList<>());
+                aiManager.dontStopWhenEndReached();
+            }
         }
         return aiManager;
     }
@@ -585,5 +589,39 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
     @Override
     public void addDebugEntry(String message, BlockPos pos) {
 
+    }
+
+    private static class DummyInventory implements IItemHandlerModifiable {
+        @Override
+        public void setStackInSlot(int slot, @Nonnull ItemStack stack) {
+        }
+
+        @Override
+        public int getSlots() {
+            return 0;
+        }
+
+        @Nonnull
+        @Override
+        public ItemStack getStackInSlot(int slot) {
+            return ItemStack.EMPTY;
+        }
+
+        @Nonnull
+        @Override
+        public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
+            return stack;
+        }
+
+        @Nonnull
+        @Override
+        public ItemStack extractItem(int slot, int amount, boolean simulate) {
+            return ItemStack.EMPTY;
+        }
+
+        @Override
+        public int getSlotLimit(int slot) {
+            return 0;
+        }
     }
 }

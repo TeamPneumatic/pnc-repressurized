@@ -2,11 +2,7 @@ package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.api.drone.SpecialVariableRetrievalEvent;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
-import me.desht.pneumaticcraft.common.progwidgets.IJumpBackWidget;
-import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
-import me.desht.pneumaticcraft.common.progwidgets.IVariableProvider;
-import me.desht.pneumaticcraft.common.progwidgets.IVariableWidget;
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetStart;
+import me.desht.pneumaticcraft.common.progwidgets.*;
 import me.desht.pneumaticcraft.common.remote.GlobalVariableManager;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.item.ItemStack;
@@ -17,7 +13,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.MinecraftForge;
 
 import javax.annotation.Nonnull;
-
 import java.util.*;
 
 /**
@@ -77,12 +72,16 @@ public class DroneAIManager implements IVariableProvider {
 
     public void setWidgets(List<IProgWidget> progWidgets) {
         this.progWidgets = progWidgets;
-        for (IProgWidget widget : progWidgets) {
-            if (widget instanceof IVariableWidget) {
-                ((IVariableWidget) widget).setAIManager(this);
+        if (progWidgets.isEmpty()) {
+            setActiveWidget(null);
+        } else {
+            for (IProgWidget widget : progWidgets) {
+                if (widget instanceof IVariableWidget) {
+                    ((IVariableWidget) widget).setAIManager(this);
+                }
             }
+            gotoFirstWidget();
         }
-        gotoFirstWidget();
     }
 
     public void connectVariables(DroneAIManager subAI) {
