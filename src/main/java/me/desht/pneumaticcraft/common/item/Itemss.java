@@ -4,6 +4,8 @@ import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.block.ICustomItemBlock;
+import me.desht.pneumaticcraft.common.entity.living.EntityHarvestingDrone;
+import me.desht.pneumaticcraft.common.entity.living.EntityLogisticsDrone;
 import me.desht.pneumaticcraft.common.semiblock.*;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.lib.ModIds;
@@ -117,6 +119,8 @@ public class Itemss {
     public static final Item TRANSFER_GADGET = null;
     @ObjectHolder("logistic_drone")
     public static final Item LOGISTICS_DRONE = null;
+    @ObjectHolder("harvesting_drone")
+    public static final Item HARVESTING_DRONE = null;
     @ObjectHolder("gun_ammo")
     public static final Item GUN_AMMO = null;
     @ObjectHolder("amadron_tablet")
@@ -167,7 +171,8 @@ public class Itemss {
         registerItem(registry, new ItemRemote());
         registerItem(registry, new ItemSeismicSensor());
         registerItem(registry, new ItemLogisticsConfigurator());
-        registerItem(registry, new ItemLogisticsDrone());
+        registerItem(registry, new ItemBasicDrone("logistic_drone", (world, player) -> new EntityLogisticsDrone(world, player)));
+        registerItem(registry, new ItemBasicDrone("harvesting_drone", (world, player) -> new EntityHarvestingDrone(world, player)));
         registerItem(registry, new ItemGunAmmo());
         registerItem(registry, new ItemAmadronTablet());
         registerItem(registry, new ItemMinigun());

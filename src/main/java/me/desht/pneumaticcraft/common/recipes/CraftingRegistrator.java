@@ -49,7 +49,8 @@ public class CraftingRegistrator {
         ForgeRegistries.RECIPES.register(new RecipeAmadronTablet());
         
         ForgeRegistries.RECIPES.register(new RecipeColorDrone());
-        ForgeRegistries.RECIPES.register(new RecipeLogisticToDrone());
+        ForgeRegistries.RECIPES.register(new RecipeBasicDroneToDrone(Itemss.LOGISTICS_DRONE));
+        ForgeRegistries.RECIPES.register(new RecipeBasicDroneToDrone(Itemss.HARVESTING_DRONE));
         ForgeRegistries.RECIPES.register(new RecipeGunAmmo());
 
         if (ONE_PROBE != null) ForgeRegistries.RECIPES.register(new RecipeOneProbe());

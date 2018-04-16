@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.api;
 import me.desht.pneumaticcraft.api.client.IClientRegistry;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IPneumaticHelmetRegistry;
 import me.desht.pneumaticcraft.api.drone.IDroneRegistry;
+import me.desht.pneumaticcraft.api.harvesting.IHarvestRegistry;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.api.recipe.IPneumaticRecipeRegistry;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerSupplier;
@@ -56,6 +57,8 @@ public final class PneumaticRegistry {
         ISensorRegistry getSensorRegistry();
 
         IItemRegistry getItemRegistry();
+        
+        IHarvestRegistry getHarvestRegistry();
 
         /*
          * ---------------- Power Generation -----------

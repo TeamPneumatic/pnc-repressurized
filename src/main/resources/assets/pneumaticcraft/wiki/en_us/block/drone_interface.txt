@@ -130,6 +130,9 @@ Returns the value of the variable from this Drone (x, y and z). It is possible t
 [prefix{l}]setSignText(<line1>, <line2>, ..., <lineN>)
 Sets the text that's going to be set to Signs using the Edit Sign command.
 
+[prefix{l}]setRequiresTool(<true/false>)
+This configures whether or not the Drone should use a tool when executing the Dig or Harvest piece.
+
 [prefix{l}]setAction(<action>) [prefix{}] 
 String that represents the action. This should be one of the actions returned by getAllActions().
 

@@ -1,18 +1,23 @@
 package me.desht.pneumaticcraft.common.ai;
 
+import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.drone.SpecialVariableRetrievalEvent;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
+import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.progwidgets.*;
 import me.desht.pneumaticcraft.common.remote.GlobalVariableManager;
 import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.profiler.Profiler;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.MinecraftForge;
 
 import javax.annotation.Nonnull;
+
 import java.util.*;
 
 /**
@@ -304,8 +309,24 @@ public class DroneAIManager implements IVariableProvider {
             }
         }
     }
+    
+    private void pickupItemsIfMagnet(){
+        int magnetUpgrades = drone.getUpgrades(ItemRegistry.getInstance().getUpgrade(EnumUpgrade.MAGNET));
+        if(magnetUpgrades > 0){
+            int range = Math.min(6, 1 + magnetUpgrades);
+            AxisAlignedBB aabb = new AxisAlignedBB(drone.getDronePos(), drone.getDronePos()).grow(range);
+            List<EntityItem> items = drone.world().getEntitiesWithinAABB(EntityItem.class, aabb, 
+                                                                         item -> drone.getDronePos().distanceTo(item.getPositionVector()) <= range);
+            
+            for(EntityItem item : items){
+                DroneEntityAIPickupItems.tryPickupItem(drone, item);
+            }
+        }
+    }
 
     public void onUpdateTasks() {
+        pickupItemsIfMagnet();
+        
         if (ConfigHandler.advanced.stopDroneAI) return;
         if (!drone.isAIOverriden()) {
             if (wasAIOveridden && curWidgetTargetAI != null) drone.getTargetAI().addTask(2, curWidgetTargetAI);

@@ -18,6 +18,7 @@ import me.desht.pneumaticcraft.common.entity.EntityRegistrator;
 import me.desht.pneumaticcraft.common.event.DroneSpecialVariableHandler;
 import me.desht.pneumaticcraft.common.fluid.FluidFuelManager;
 import me.desht.pneumaticcraft.common.fluid.Fluids;
+import me.desht.pneumaticcraft.common.harvesting.HarvestRegistry;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerManager;
 import me.desht.pneumaticcraft.common.heat.behaviour.HeatBehaviourManager;
 import me.desht.pneumaticcraft.common.item.Itemss;
@@ -56,6 +57,7 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+
 import org.apache.logging.log4j.Logger;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
@@ -99,6 +101,7 @@ public class PneumaticCraftRepressurized {
         UpgradeRenderHandlerList.init();
 
         WidgetRegistrator.init();
+        HarvestRegistry.getInstance().init();
 
         ConfigHandler.init(event.getSuggestedConfigurationFile());
         ThirdPartyManager.instance().index();
@@ -143,6 +146,7 @@ public class PneumaticCraftRepressurized {
         
         BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(Itemss.DRONE, new BehaviorDispenseDrone());
         BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(Itemss.LOGISTICS_DRONE, new BehaviorDispenseDrone());
+        BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(Itemss.HARVESTING_DRONE, new BehaviorDispenseDrone());
 
         if (ConfigHandler.general.enableDungeonLoot) {
             LootTableList.register(RL("inject/simple_dungeon_loot"));

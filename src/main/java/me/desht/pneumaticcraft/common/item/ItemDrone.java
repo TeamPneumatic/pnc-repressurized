@@ -49,13 +49,13 @@ public class ItemDrone extends ItemPneumatic implements IPressurizable, IChargin
         if (!world.isRemote) {
             ItemStack iStack = player.getHeldItemMainhand();
             BlockPos placePos = pos.offset(facing);
-            spawnDrone(player, world, placePos, iStack);
+            spawnDrone(player, world, pos, facing, placePos, iStack);
             iStack.shrink(1);
         }
         return EnumActionResult.SUCCESS;
     }
 
-    public void spawnDrone(EntityPlayer player, World world, BlockPos placePos, ItemStack iStack){
+    public void spawnDrone(EntityPlayer player, World world, BlockPos clickPos, EnumFacing facing, BlockPos placePos, ItemStack iStack){
         EntityDrone drone = new EntityDrone(world, player);
 
         drone.setPosition(placePos.getX() + 0.5, placePos.getY() + 0.5, placePos.getZ() + 0.5);
@@ -74,7 +74,6 @@ public class ItemDrone extends ItemPneumatic implements IPressurizable, IChargin
         if (iStack.hasDisplayName()) drone.setCustomNameTag(iStack.getDisplayName());
 
         drone.naturallySpawned = false;
-        //TODO 1.8 check if valid replacement drone.onSpawnWithEgg(null);
         drone.onInitialSpawn(world.getDifficultyForLocation(placePos), null);
     }
 
@@ -153,6 +152,7 @@ public class ItemDrone extends ItemPneumatic implements IPressurizable, IChargin
         set.add(Itemss.upgrades.get(EnumUpgrade.SECURITY));
         set.add(Itemss.upgrades.get(EnumUpgrade.SPEED));
         set.add(Itemss.upgrades.get(EnumUpgrade.ENTITY_TRACKER));
+        set.add(Itemss.upgrades.get(EnumUpgrade.MAGNET));
         return set;
     }
 

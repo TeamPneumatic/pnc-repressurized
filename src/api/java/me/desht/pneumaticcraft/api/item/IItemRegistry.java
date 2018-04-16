@@ -6,7 +6,17 @@ import java.util.List;
 
 public interface IItemRegistry {
     enum EnumUpgrade {
-        VOLUME, DISPENSER, ITEM_LIFE, ENTITY_TRACKER, BLOCK_TRACKER, SPEED, SEARCH, COORDINATE_TRACKER, RANGE, SECURITY, THAUMCRAFT /*Only around when Thaumcraft is */
+        VOLUME, 
+        DISPENSER, 
+        ITEM_LIFE, 
+        ENTITY_TRACKER, 
+        BLOCK_TRACKER, 
+        SPEED, SEARCH, 
+        COORDINATE_TRACKER, 
+        RANGE, 
+        SECURITY, 
+        MAGNET,
+        THAUMCRAFT /*Only around when Thaumcraft is */
     }
 
     /**

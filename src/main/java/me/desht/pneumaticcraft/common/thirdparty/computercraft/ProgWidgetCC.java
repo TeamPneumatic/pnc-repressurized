@@ -33,7 +33,7 @@ import java.util.Set;
 
 public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdered, ISidedWidget, IGotoWidget,
         IEntityProvider, ITextWidget, ICondition, ICountWidget, IItemDropper, ILiquidFiltered, IRedstoneEmissionWidget,
-        IRenamingWidget, ICraftingWidget, IMaxActions, IBlockRightClicker, ILiquidExport, ISignEditWidget {
+        IRenamingWidget, ICraftingWidget, IMaxActions, IBlockRightClicker, ILiquidExport, ISignEditWidget, IToolUser {
     private EnumOrder order = EnumOrder.CLOSEST;
     private boolean[] sides = new boolean[6];
     private final Set<BlockPos> area = new HashSet<BlockPos>();
@@ -56,6 +56,7 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
     private boolean sneaking;
     private boolean placeFluidBlocks;
     public String[] signText = new String[0];
+    private boolean requiresTool;
 
     @Override
     public Class<? extends IProgWidget>[] getParameters() {
@@ -479,6 +480,16 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
     @Override
     public String[] getLines() {
         return signText;
+    }
+
+    @Override
+    public boolean requiresTool(){
+        return requiresTool;
+    }
+
+    @Override
+    public void setRequiresTool(boolean requiresTool){
+        this.requiresTool = requiresTool;
     }
 
 }

@@ -32,6 +32,12 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
 
     @SideOnly(Side.CLIENT)
     private static RenderItem itemRender;
+    
+    public static ProgWidgetItemFilter withFilter(ItemStack filter){
+        ProgWidgetItemFilter widget = new ProgWidgetItemFilter();
+        widget.filter = filter;
+        return widget;
+    }
 
     @Override
     public void addErrors(List<String> curInfo, List<IProgWidget> widgets) {

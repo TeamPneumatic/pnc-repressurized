@@ -320,6 +320,11 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
             super(INVENTORY_SIZE);
             this.te = TileEntityChargingStation.this;
         }
+        
+        @Override
+        public int getSlotLimit(int slot){
+            return 1;
+        }
 
         @Override
         public boolean test(Integer slot, ItemStack itemStack) {

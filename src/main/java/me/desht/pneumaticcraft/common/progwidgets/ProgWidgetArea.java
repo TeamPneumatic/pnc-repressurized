@@ -111,6 +111,24 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
             return name;
         }
     }
+    
+    public static ProgWidgetArea fromPosition(BlockPos p1){
+        return fromPositions(p1, p1);
+    }
+    
+    public static ProgWidgetArea fromPosAndExpansions(BlockPos p1, int expX, int expY, int expZ){
+        int x = expX / 2;
+        int y = expY / 2;
+        int z = expZ / 2;
+        return fromPositions(p1.add(-x, -y, -z), p1.add(x, y, z));
+    }
+    
+    public static ProgWidgetArea fromPositions(BlockPos p1, BlockPos p2){
+        ProgWidgetArea area = new ProgWidgetArea();
+        area.setP1(p1);
+        area.setP2(p2);
+        return area;
+    }
 
     @Override
     public void getTooltip(List<String> curTooltip) {
@@ -165,15 +183,23 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         }
     }
     
+    public void setP1(BlockPos p){
+        x1 = p.getX();
+        y1 = p.getY();
+        z1 = p.getZ();
+    }
+    
+    public void setP2(BlockPos p){
+        x2 = p.getX();
+        y2 = p.getY();
+        z2 = p.getZ();
+    }
+    
     public void setAreaPoint(BlockPos p, int index){
         if(index == 0){
-            x1 = p.getX();
-            y1 = p.getY();
-            z1 = p.getZ();
+            setP1(p);
         }else{
-            x2 = p.getX();
-            y2 = p.getY();
-            z2 = p.getZ();
+            setP2(p);
         }
     }
     

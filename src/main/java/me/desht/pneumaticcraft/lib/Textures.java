@@ -107,6 +107,7 @@ public class Textures {
     public static final ResourceLocation PROG_WIDGET_ATTACK = new ResourceLocation(PROG_WIDGET_LOCATION + "attack_piece.png");
     public static final ResourceLocation PROG_WIDGET_CC = new ResourceLocation(PROG_WIDGET_LOCATION + "computer_craft_piece.png");
     public static final ResourceLocation PROG_WIDGET_DIG = new ResourceLocation(PROG_WIDGET_LOCATION + "dig_piece.png");
+    public static final ResourceLocation PROG_WIDGET_HARVEST = new ResourceLocation(PROG_WIDGET_LOCATION + "harvest_piece.png");
     public static final ResourceLocation PROG_WIDGET_GOTO = new ResourceLocation(PROG_WIDGET_LOCATION + "goto_piece.png");
     public static final ResourceLocation PROG_WIDGET_TELEPORT = new ResourceLocation(PROG_WIDGET_LOCATION + "teleport_piece.png");
     public static final ResourceLocation PROG_WIDGET_INV_EX = new ResourceLocation(PROG_WIDGET_LOCATION + "inventory_export_piece.png");

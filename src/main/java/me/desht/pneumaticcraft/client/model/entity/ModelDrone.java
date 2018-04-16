@@ -40,10 +40,16 @@ public class ModelDrone extends ModelBase {
     private final ModelRenderer LaserArm;
     private final ModelRenderer LaserSource;
     private final ModelDroneMinigun minigun = new ModelDroneMinigun();
-    private final boolean isLogisticsDrone;
+    private boolean renderFrame = false;
+    private int frameColor = 0;
 
-    public ModelDrone(boolean isLogisticsDrone) {
-        this.isLogisticsDrone = isLogisticsDrone;
+    public ModelDrone(int frameColor){
+        this();
+        renderFrame = true;
+        this.frameColor = frameColor;
+    }
+    
+    public ModelDrone() {
         textureWidth = 64;
         textureHeight = 32;
 
@@ -235,9 +241,9 @@ public class ModelDrone extends ModelBase {
         LaserSource.render(f5);
         if (entity instanceof EntityDrone && ((EntityDrone) entity).hasMinigun())
             minigun.render(entity, f, f1, f2, f3, f4, f5);
-        if (isLogisticsDrone) {
+        if (renderFrame) {
             GL11.glDisable(GL11.GL_TEXTURE_2D);
-            RenderUtils.glColorHex(0xFFFF0000);
+            RenderUtils.glColorHex(frameColor);
             double s = 3 / 16D;
             double y = 17 / 16D;
             SemiBlockRendererLogistics.renderFrame(new AxisAlignedBB(-s, y - s, -s, s, y + s, s), 1 / 32D);

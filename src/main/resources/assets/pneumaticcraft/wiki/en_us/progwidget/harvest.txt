@@ -1,0 +1,17 @@
+Programming Puzzles are used in [link{block/programmer}]programmers [link{}].
+
+[prefix{l}]The 'Harvest' piece [prefix{}]
+The Drone will harvest any fully grown crop within the specified area. Items that are dropped from the blocks will not be picked up by the Drone.
+
+[prefix{l}]Using tools[prefix{}]
+You can make the drone [link{pneumaticcraft:progwidget/inventory_import}] import[link{}] a Hoe. When equipped with a Hoe, the crops will automatically be replanted.
+
+You can force the Drone to only harvest when having a Hoe by checking the 'Requires Hoe' checkbox.
+
+[prefix{l}]Limiting blocks harvested[prefix{}]
+The amount of harvest actions can be limited to a specified amount by right clicking the Harvest piece. If set to 1 for example, the Drone will only harvest one block, and end the Harvest program after harvesting that one block.
+
+[prefix{l}]Harvesting specific blocks[prefix{}]
+Lastly you can specify which crops are allowed to be harvested by using an item filter. Use the seed of the crop as the item.
+
+This program is done when every fully grown and reachable crop within the area is harvested.

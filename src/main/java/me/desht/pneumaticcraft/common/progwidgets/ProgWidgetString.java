@@ -15,6 +15,12 @@ import java.util.List;
 public class ProgWidgetString extends ProgWidget {
     public String string = "";
 
+    public static ProgWidgetString withText(String string){
+        ProgWidgetString widget = new ProgWidgetString();
+        widget.string = string;
+        return widget;
+    }
+    
     @Override
     public void getTooltip(List<String> curTooltip) {
         super.getTooltip(curTooltip);

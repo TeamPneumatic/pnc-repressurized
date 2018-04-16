@@ -1,0 +1,7 @@
+{
+   "textures" : {
+      "layer0" : "pneumaticcraft:items/drones/basic_drone_layer0",
+      "layer1" : "pneumaticcraft:items/drones/harvesting_drone"
+   },
+   "parent" : "item/generated"
+}

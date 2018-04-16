@@ -1,13 +1,21 @@
 package me.desht.pneumaticcraft.common.entity.living;
 
-import me.desht.pneumaticcraft.common.inventory.ChargeableItemHandler;
+import java.util.List;
+
 import me.desht.pneumaticcraft.common.item.Itemss;
+import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
+import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea;
+import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetLogistics;
+import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetStart;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class EntityLogisticsDrone extends EntityDrone {
+public class EntityLogisticsDrone extends EntityBasicDrone {
 
     public EntityLogisticsDrone(World world) {
         super(world);
@@ -18,15 +26,13 @@ public class EntityLogisticsDrone extends EntityDrone {
     }
 
     @Override
-    protected ItemStack getDroppedStack() {
-        NBTTagCompound tag = new NBTTagCompound();
-        tag.setFloat("currentAir", currentAir);
-        tag.setInteger("color", getDroneColor());
-        NBTTagCompound invTag = new NBTTagCompound();
-        writeEntityToNBT(invTag);
-        tag.setTag(ChargeableItemHandler.NBT_UPGRADE_TAG, invTag.getTag(ChargeableItemHandler.NBT_UPGRADE_TAG));
-        ItemStack drone = new ItemStack(Itemss.LOGISTICS_DRONE);
-        drone.setTagCompound(tag);
-        return drone;
+    protected Item getDroneItem(){
+        return Itemss.LOGISTICS_DRONE;
     }
+
+    @Override
+    public void addProgram(BlockPos clickPos, EnumFacing facing, BlockPos pos, List<IProgWidget> widgets) {
+        addBasicProgram(pos, widgets, new ProgWidgetLogistics());
+    }
+    
 }
