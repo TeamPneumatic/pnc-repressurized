@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityRefinery;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 
+import java.util.Collections;
 import java.util.List;
 
 public class RenderRefinery extends FastFluidTESR<TileEntityRefinery> {
@@ -29,9 +30,14 @@ public class RenderRefinery extends FastFluidTESR<TileEntityRefinery> {
 
     @Override
     List<TankRenderInfo> getTanksToRender(TileEntityRefinery te) {
-        return ImmutableList.of(
-                new TankRenderInfo(te.getInputTank(), BOUNDS_IN[te.getRotation().getHorizontalIndex()]).without(EnumFacing.DOWN),
-                new TankRenderInfo(te.getOutputTank(), BOUNDS_OUT[te.getRotation().getHorizontalIndex()]).without(EnumFacing.DOWN)
-        );
+        int rot = te.getRotation().getHorizontalIndex();
+        if (rot >= 0 && rot < 4) {
+            return ImmutableList.of(
+                    new TankRenderInfo(te.getInputTank(), BOUNDS_IN[te.getRotation().getHorizontalIndex()]).without(EnumFacing.DOWN),
+                    new TankRenderInfo(te.getOutputTank(), BOUNDS_OUT[te.getRotation().getHorizontalIndex()]).without(EnumFacing.DOWN)
+            );
+        } else {
+            return Collections.emptyList();
+        }
     }
 }

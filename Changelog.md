@@ -6,6 +6,15 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
+## 0.5.2-??? (unreleased)
+
+* Speed upgrades can now be crafted with fluid containers holding more than a bucket of lubricant.  The Liquid Hopper works for this, and the Thermal Expansion and EnderIO tanks can also be used.  Other mod containers may also work.
+* Fix (cosmetic): Amadron no longer shows slot highlights where there isn't a trade widget (i.e. on the last page of trades).
+* Fix: Breaking any PneumaticCraft tile entity with an autosmelt pick (e.g. from Tinker's Construct) no longer smelts the tile entity's contents.
+* Fix: MCMP2 support hard-disabled for now (switching it on in config would crash your game before)
+* Fix: Elevator Caller now works properly when you have more than 12 floors
+* Performance: fluid tank rendering now uses a FastTESR, better for client FPS.
+
 ## 0.5.1-163 (21 Mar 2018)
 
 * Drones now also render held hoes upside down (just like other tools).

@@ -58,6 +58,8 @@ public class TileEntityRefinery extends TileEntityTickableBase implements IHeatE
     private int workTimer = 0;
     private int comparatorValue;
 
+    private int prevRefineryCount = -1;
+
     private final RefineryFluidHandler refineryFluidHandler = new RefineryFluidHandler();
 
     public TileEntityRefinery() {
@@ -82,9 +84,13 @@ public class TileEntityRefinery extends TileEntityTickableBase implements IHeatE
             if (isMaster()) {
                 List<TileEntityRefinery> refineries = getRefineries();
                 Optional<RefineryRecipe> recipe = RefineryRecipe.getRecipe(inputTank.getFluidAmount() > 0 ? inputTank.getFluid().getFluid() : null, refineries.size());
-                
+
                 if(recipe.isPresent()) {
-                	currentRecipe = recipe.get();
+                    currentRecipe = recipe.get();
+                    if (prevRefineryCount != refineries.size()) {
+                        redistributeFluids(refineries, currentRecipe);
+                        prevRefineryCount = refineries.size();
+                    }
 
                 	if (redstoneAllows() && inputTank.getFluidAmount() >= currentRecipe.input.amount) {
 	                    if (refineries.size() > 1 && refine(refineries, true)) {
@@ -106,9 +112,61 @@ public class TileEntityRefinery extends TileEntityTickableBase implements IHeatE
 	                    }
 	                }
                 } else {
-                	currentRecipe = null;
+                    currentRecipe = null;
                 }
                 updateComparatorValue(refineries);
+            }
+        }
+    }
+
+    /**
+     * Called when the number of refineries in the multiblock changes. Redistribute existing fluids (both input
+     * and output) to match the current recipe so the refinery can continue to run.  Of course, it might not be
+     * possible to move fluids if there's already something in the new tank, but we'll do our best.
+     *
+     * @param refineries list of all refineries (master - this one - is the first)
+     * @param currentRecipe the current recipe, guaranteed to match the list of refineries
+     */
+    private void redistributeFluids(List<TileEntityRefinery> refineries, RefineryRecipe currentRecipe) {
+        // only the master refinery should have fluid in its input tank
+        // scan all non-master refineries, move any fluid from their input tank to the master (this TE), if possible
+        for (int i = 1; i < refineries.size(); i++) {
+            tryMoveFluid(refineries.get(i).getInputTank(), this.getInputTank());
+        }
+
+        FluidTank[] tempTanks = new FluidTank[refineries.size()];
+        for (int i = 0; i < refineries.size(); i++) {
+            tempTanks[i] = new FluidTank(PneumaticValues.NORMAL_TANK_CAPACITY);
+        }
+
+        // now scan all refineries and ensure each one has the correct output, according to the current recipe
+        for (int i = 0; i < refineries.size(); i++) {
+            FluidTank sourceTank = refineries.get(i).getOutputTank();
+            FluidStack fluid = sourceTank.getFluid();
+            if (fluid != null && !fluid.isFluidEqual(currentRecipe.outputs[i])) {
+                // this fluid shouldn't be here; find the appropriate output tank to move it to
+                // using an intermediate temporary tank here to allow for possible swapping of fluids
+                for (int j = 0; j < currentRecipe.outputs.length; j++) {
+                    if (currentRecipe.outputs[j].isFluidEqual(fluid)) {
+                        tryMoveFluid(sourceTank, tempTanks[j]);
+                        break;
+                    }
+                }
+            }
+        }
+
+        // and finally move fluids back to the actual output tanks
+        for (int i = 0; i < refineries.size(); i++) {
+            tryMoveFluid(tempTanks[i], refineries.get(i).getOutputTank());
+        }
+    }
+
+    private void tryMoveFluid(FluidTank sourceTank, FluidTank destTank) {
+        FluidStack fluid = sourceTank.drain(sourceTank.getCapacity(), false);
+        if (fluid != null && fluid.amount > 0) {
+            int moved = destTank.fill(fluid, true);
+            if (moved > 0) {
+                sourceTank.drain(moved, true);
             }
         }
     }
