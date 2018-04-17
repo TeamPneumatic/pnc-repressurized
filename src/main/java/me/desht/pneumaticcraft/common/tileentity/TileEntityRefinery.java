@@ -19,8 +19,6 @@ import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.ArrayUtils;
 
 import javax.annotation.Nonnull;
@@ -244,17 +242,14 @@ public class TileEntityRefinery extends TileEntityTickableBase implements IHeatE
         return false;
     }
 
-    @SideOnly(Side.CLIENT)
     public FluidTank getInputTank() {
         return inputTank;
     }
 
-    @SideOnly(Side.CLIENT)
     public FluidTank getOutputTank() {
         return outputTank;
     }
     
-    @SideOnly(Side.CLIENT)
     public boolean isBlocked() {
         return blocked;
     }
