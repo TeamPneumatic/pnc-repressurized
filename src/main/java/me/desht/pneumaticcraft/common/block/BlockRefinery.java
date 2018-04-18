@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.recipes.RefineryRecipe;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefinery;
 import me.desht.pneumaticcraft.proxy.CommonProxy.EnumGuiId;
 import net.minecraft.block.material.Material;
@@ -25,9 +26,12 @@ public class BlockRefinery extends BlockPneumaticCraftModeled {
 
     @Override
     public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float par7, float par8, float par9) {
-        TileEntityRefinery refinery = (TileEntityRefinery) world.getTileEntity(pos);
-        refinery = refinery.getMasterRefinery();
-        return super.onBlockActivated(world, refinery.getPos(), state, player, hand, side, par7, par8, par9);
+        TileEntity te = world.getTileEntity(pos);
+        if (te instanceof TileEntityRefinery) {
+            TileEntityRefinery master = ((TileEntityRefinery) te).getMasterRefinery();
+            return super.onBlockActivated(world, master.getPos(), state, player, hand, side, par7, par8, par9);
+        }
+        return false;
     }
 
     @Override
@@ -43,5 +47,18 @@ public class BlockRefinery extends BlockPneumaticCraftModeled {
     @Override
     public BlockRenderLayer getBlockLayer() {
         return BlockRenderLayer.CUTOUT_MIPPED;
+    }
+
+    @Override
+    public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {
+        int nRefineries = 0;
+        int up = 1, down = 1;
+        while (worldIn.getBlockState(pos.up(up++)).getBlock() instanceof BlockRefinery) {
+            nRefineries++;
+        }
+        while (worldIn.getBlockState(pos.down(down++)).getBlock() instanceof BlockRefinery) {
+            nRefineries++;
+        }
+        return nRefineries < RefineryRecipe.MAX_OUTPUTS && super.canPlaceBlockAt(worldIn, pos);
     }
 }
