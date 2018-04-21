@@ -42,6 +42,16 @@ public class BasicThermopneumaticProcessingPlantRecipe implements IThermopneumat
         }
         return true;
     }
+    
+    @Override
+    public boolean isValidInput(FluidStack inputFluid){
+        return inputLiquid != null && Fluids.areFluidsEqual(inputFluid.getFluid(), inputLiquid.getFluid());
+    }
+    
+    @Override
+    public boolean isValidInput(ItemStack inputItem){
+        return !this.inputItem.isEmpty() && inputItem.isItemEqual(this.inputItem) || PneumaticCraftUtils.isSameOreDictStack(inputItem, this.inputItem);
+    }
 
     @Override
     public FluidStack getRecipeOutput(FluidStack inputTank, @Nonnull ItemStack inputItem) {
