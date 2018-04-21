@@ -6,13 +6,15 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
-## 0.5.2-??? (unreleased)
+## x.x.x-xxx (unreleased)
+
+## 0.6.0-174 (21 Apr 2018)
 
 * Added Harvesting Drone, and Harvesting Piece.
 * QoL improvement: Speed Upgrades can now be crafted with fluid containers holding more than a bucket of lubricant.  The Liquid Hopper works for this, and the Thermal Expansion and EnderIO tanks can also be used.  Other mods' containers may also work.
 * QoL improvement: adding extra Refinery blocks to an existing stack will now automatically redistribute any output fluids to the appropriate tanks, so the Refinery can continue to run.  E.g. adding a Refinery to a 2-block stack which already contains Diesel and LPG will auto-move the LPG from the second to the third (newly added) block.
 * Programmable Controller: all faces except the bottom face can be used to access the fake drone's inventory.  The bottom face can be used to insert or extract the programmable item (Drone or Network API).
-* Thermopneumatic Processing Plant now only accepts items/fluids that can be used in recipes.
+* QoL improvement: Thermopneumatic Processing Plant now only accepts items/fluids that can be used in recipes.
 * Fix (cosmetic): Amadron no longer shows slot highlights where there isn't a trade widget (i.e. on the last page of trades).
 * Fix: Breaking any PneumaticCraft tile entity with an auto-smelt pick (e.g. from Tinker's Construct) no longer smelts the tile entity's contents.
 * Fix: MCMP2 support hard-disabled for now (switching it on in config would crash your game before)
