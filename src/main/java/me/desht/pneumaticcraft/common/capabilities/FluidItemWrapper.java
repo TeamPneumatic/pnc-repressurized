@@ -15,6 +15,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class FluidItemWrapper implements ICapabilityProvider {
+    private static final IFluidTankProperties[] EMPTY = new IFluidTankProperties[0];
     private final ItemStack stack;
     private final String tankName;
     private final int capacity;
@@ -46,7 +47,7 @@ public class FluidItemWrapper implements ICapabilityProvider {
             @Override
             public IFluidTankProperties[] getTankProperties() {
                 FluidTank tank = ISerializableTanks.deserializeTank(stack, tankName, capacity);
-                return tank == null ? null : tank.getTankProperties();
+                return tank == null ? EMPTY : tank.getTankProperties();
             }
 
             @Override

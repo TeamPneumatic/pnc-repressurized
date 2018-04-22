@@ -8,6 +8,11 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## x.x.x-xxx (unreleased)
 
+## 0.6.1-176 (22 Apr 2018)
+
+* Fix: Crash with liquid lookup with JEI.
+* Fix: Drones being quirky sometimes when digging.
+
 ## 0.6.0-174 (21 Apr 2018)
 
 * Added Harvesting Drone, and Harvesting Piece.
