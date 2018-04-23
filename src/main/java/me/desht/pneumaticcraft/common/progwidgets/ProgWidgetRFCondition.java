@@ -34,7 +34,7 @@ public class ProgWidgetRFCondition extends ProgWidgetCondition {
                 TileEntity te = drone.world().getTileEntity(pos);
                 if (te == null) return false;
                 int energy = 0;
-                for (EnumFacing face : EnumFacing.values()) {
+                for (EnumFacing face : EnumFacing.VALUES) {
                     if (getSides()[face.getIndex()] && te.hasCapability(CapabilityEnergy.ENERGY, face)) {
                         IEnergyStorage storage = te.getCapability(CapabilityEnergy.ENERGY, face);
                         energy = Math.max(storage.getEnergyStored(), energy);

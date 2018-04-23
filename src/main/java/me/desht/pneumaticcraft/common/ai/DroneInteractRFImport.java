@@ -34,7 +34,7 @@ public class DroneInteractRFImport implements ICustomBlockInteract {
         } else {
             TileEntity te = drone.world().getTileEntity(pos);
             if (te == null) return false;
-            for (EnumFacing face : EnumFacing.values()) {
+            for (EnumFacing face : EnumFacing.VALUES) {
                 if (te.hasCapability(CapabilityEnergy.ENERGY, face)) {
                     IEnergyStorage teStorage = te.getCapability(CapabilityEnergy.ENERGY, face);
                     int transferredEnergy = droneStorage.receiveEnergy(

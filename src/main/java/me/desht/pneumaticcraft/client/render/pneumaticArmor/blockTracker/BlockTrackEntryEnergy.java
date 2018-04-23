@@ -19,7 +19,7 @@ public class BlockTrackEntryEnergy implements IBlockTrackEntry {
         if (te.hasCapability(CapabilityEnergy.ENERGY, null)) {
             return true;
         }
-        for (EnumFacing face: EnumFacing.values()) {
+        for (EnumFacing face: EnumFacing.VALUES) {
             if (te.hasCapability(CapabilityEnergy.ENERGY, face)) {
                 return true;
             }

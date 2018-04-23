@@ -109,7 +109,7 @@ public class HeatExchangerManager implements IHeatRegistry {
 
             Set<IHeatExchangerLogic> heatExchangers = new HashSet<>();
             IHeatExchangerLogic logic = null;
-            for (EnumFacing face : EnumFacing.values()) {
+            for (EnumFacing face : EnumFacing.VALUES) {
                 logic = heatExchanger.getHeatExchangerLogic(face);
                 if (logic != null) {
                     if (heatExchangers.contains(logic)) {
@@ -122,7 +122,7 @@ public class HeatExchangerManager implements IHeatRegistry {
             }
 
             if (isMultisided) {
-                for (EnumFacing face : EnumFacing.values()) {
+                for (EnumFacing face : EnumFacing.VALUES) {
                     logic = heatExchanger.getHeatExchangerLogic(face);
                     if (logic != null) {
                         temp[face.ordinal()] = logic.getTemperature();

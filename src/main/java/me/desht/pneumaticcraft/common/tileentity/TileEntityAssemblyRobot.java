@@ -194,8 +194,8 @@ public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase imp
         }
         slowMode = tag.getBoolean("slowMode");
         speed = tag.getFloat("speed");
-        targetDirection[0] = tag.hasKey("targetDir1") ? EnumFacing.values()[tag.getInteger("targetDir1")] : null;
-        targetDirection[1] = tag.hasKey("targetDir2") ? EnumFacing.values()[tag.getInteger("targetDir2")] : null;
+        targetDirection[0] = tag.hasKey("targetDir1") ? EnumFacing.VALUES[tag.getInteger("targetDir1")] : null;
+        targetDirection[1] = tag.hasKey("targetDir2") ? EnumFacing.VALUES[tag.getInteger("targetDir2")] : null;
 
     }
 
