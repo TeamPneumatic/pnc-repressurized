@@ -99,12 +99,12 @@ public class DroneAIDig extends DroneAIBlockInteraction<ProgWidgetAreaItemBase> 
                 }
                 manager.onBlockClicked(pos, EnumFacing.DOWN);
                 manager.blockRemoving(pos);
-                if (!manager.isDestroyingBlock) {
+                /*if (!manager.isDestroyingBlock) { Commenting this a fix for #142? This statement always holds when blockRemoving(pos) is called.
                     addToBlacklist(pos);
                     drone.addDebugEntry("gui.progWidget.dig.debug.cantDigBlock", pos);
                     drone.setDugBlock(null);
                     return false;
-                }
+                }*/
                 drone.setDugBlock(pos);
                 return true;
             }
