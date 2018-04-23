@@ -98,7 +98,7 @@ public class TOPCallback implements Function<ITheOneProbe, Void> {
     public static void handleHeat(ProbeMode mode, IProbeInfo probeInfo, IHeatExchanger heatExchanger) {
         HeatExchangerManager.TemperatureData tempData = new HeatExchangerManager.TemperatureData(heatExchanger);
         if (tempData.isMultisided()) {
-            for (EnumFacing face : EnumFacing.values()) {
+            for (EnumFacing face : EnumFacing.VALUES) {
                 if (tempData.hasData(face)) {
                     int tempInt = (int) tempData.getTemperature(face) - 273;
                     probeInfo.text(I18n.translateToLocalFormatted("waila.temperature." + face, tempInt));
