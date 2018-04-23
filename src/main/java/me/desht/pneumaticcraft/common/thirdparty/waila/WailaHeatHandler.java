@@ -63,7 +63,7 @@ public class WailaHeatHandler implements IWailaDataProvider {
             Set<IHeatExchangerLogic> heatExchangers = new HashSet<>();
             IHeatExchangerLogic logic = null;
             boolean isMultisided = true;
-            for (EnumFacing face : EnumFacing.values()) {
+            for (EnumFacing face : EnumFacing.VALUES) {
                 logic = ((IHeatExchanger) te).getHeatExchangerLogic(face);
                 if (logic != null) {
                     if (heatExchangers.contains(logic)) {
@@ -77,7 +77,7 @@ public class WailaHeatHandler implements IWailaDataProvider {
 
             if (isMultisided) {
                 NBTTagList tagList = new NBTTagList();
-                for (EnumFacing face : EnumFacing.values()) {
+                for (EnumFacing face : EnumFacing.VALUES) {
                     logic = ((IHeatExchanger) te).getHeatExchangerLogic(face);
                     if (logic != null) {
                         NBTTagCompound heatTag = new NBTTagCompound();
