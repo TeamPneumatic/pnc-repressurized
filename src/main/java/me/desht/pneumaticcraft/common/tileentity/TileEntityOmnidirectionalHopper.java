@@ -97,7 +97,7 @@ public class TileEntityOmnidirectionalHopper extends TileEntityTickableBase impl
         boolean success = false;
 
         // Suck from input inventory
-        IItemHandler handler = IOHelper.getInventoryForTE(IOHelper.getNeighbor(this, inputDir));
+        IItemHandler handler = IOHelper.getInventoryForTE(IOHelper.getNeighbor(this, inputDir), inputDir.getOpposite());
         if (handler != null) {
             for (int i = 0; i < maxItems; i++) {
                 LocatedItemStack extracted = IOHelper.extractOneItem(handler, true);
