@@ -179,9 +179,9 @@ public class EventHandlerPneumaticCraft {
         if (event instanceof PlayerInteractEvent.RightClickEmpty) return;
 
         ItemStack heldItem = event.getEntityPlayer().getHeldItem(event.getHand());
-
         IBlockState interactedBlockState = event.getWorld().getBlockState(event.getPos());
         Block interactedBlock = interactedBlockState.getBlock();
+
         if (!event.getEntityPlayer().capabilities.isCreativeMode || !event.getEntityPlayer().canUseCommand(2, "securityStation")) {
             if (event.getWorld() != null && !event.getWorld().isRemote) {
                 if (interactedBlock != Blockss.SECURITY_STATION || event instanceof PlayerInteractEvent.LeftClickBlock) {
@@ -199,16 +199,12 @@ public class EventHandlerPneumaticCraft {
         }
 
         if (!event.isCanceled() && event instanceof PlayerInteractEvent.RightClickBlock && !event.getWorld().isRemote) {
-            if (event.getEntityPlayer().isSneaking() && (interactedBlock == Blockss.ELEVATOR_CALLER || interactedBlock == Blockss.CHARGING_STATION)) {
-                // work around the fact that Block#onBlockActivated doesn't get called server-side when sneaking
-                event.setCanceled(interactedBlock.onBlockActivated(event.getWorld(), event.getPos(), interactedBlockState, event.getEntityPlayer(), event.getHand(), event.getFace(), 0, 0, 0));
-            } else if (ModInteractionUtilImplementation.getInstance().isModdedWrench(heldItem)) {
+            if (ModInteractionUtilImplementation.getInstance().isModdedWrench(heldItem) && interactedBlock instanceof IPneumaticWrenchable) {
                 // when player clicks with a modded wrench, enforce our rotation behaviour and cancel default behaviour
                 // (which is probably to call the "vanilla" rotateBlock(), which doesn't get any player information)
-                if (interactedBlock instanceof IPneumaticWrenchable) {
-                    ((IPneumaticWrenchable) interactedBlock).rotateBlock(event.getWorld(), event.getEntityPlayer(), event.getPos(), event.getFace());
-                    event.setCanceled(true);
-                }
+                ((IPneumaticWrenchable) interactedBlock).rotateBlock(event.getWorld(), event.getEntityPlayer(), event.getPos(), event.getFace());
+                event.setCanceled(true);
+
             }
         }
 
