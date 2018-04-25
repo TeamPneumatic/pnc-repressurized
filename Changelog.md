@@ -6,6 +6,12 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
+## 0.6.3-181 (25 Apr 2018)
+
+* Fix: Shift-click dupe bug (introduced in 0.6.0) when clicking items into some PneumaticCraft inventories.
+* Fix: Dyeing a drone by right-clicking it now only uses one dye from the stack, not two.
+* Fix: Blocks can now be placed against the Charging Station & Elevator Caller by with sneak-right-click.
+
 ## 0.6.2-179 (24 Apr 2018)
 
 * Fix: Server crash when Spawner Agitators are used in conjunction with the Despawning Spawners mod.
