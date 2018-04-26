@@ -17,7 +17,7 @@ public class TrackerBlacklistManager {
     }
 
     public static void addInventoryTEToBlacklist(TileEntity te, Throwable e) {
-        addEntry(ENERGY_BLACKLIST, te, e);
+        addEntry(INVENTORY_BLACKLIST, te, e);
     }
 
     private static void addEntry(Set<ResourceLocation> blacklist, TileEntity te, Throwable e) {
@@ -35,6 +35,6 @@ public class TrackerBlacklistManager {
     }
 
     static boolean isInventoryBlacklisted(TileEntity te) {
-        return ENERGY_BLACKLIST.contains(TileEntity.getKey(te.getClass()));
+        return INVENTORY_BLACKLIST.contains(TileEntity.getKey(te.getClass()));
     }
 }
