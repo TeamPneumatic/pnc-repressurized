@@ -15,7 +15,9 @@ import java.util.List;
 public class BlockTrackEntryEnergy implements IBlockTrackEntry {
     @Override
     public boolean shouldTrackWithThisEntry(IBlockAccess world, BlockPos pos, IBlockState state, TileEntity te) {
-        if (te == null) return false;
+        if (te == null || TrackerBlacklistManager.isEnergyBlacklisted(te)) {
+            return false;
+        }
         if (te.hasCapability(CapabilityEnergy.ENERGY, null)) {
             return true;
         }
@@ -39,10 +41,16 @@ public class BlockTrackEntryEnergy implements IBlockTrackEntry {
 
     @Override
     public void addInformation(World world, BlockPos pos, TileEntity te, List<String> infoList) {
-        infoList.add("blockTracker.info.rf");
-        if (te.hasCapability(CapabilityEnergy.ENERGY, null)) {
-            IEnergyStorage storage = te.getCapability(CapabilityEnergy.ENERGY, null);
-            infoList.add(storage.getEnergyStored() + " / " + storage.getMaxEnergyStored() + " RF");
+        try {
+            infoList.add("blockTracker.info.rf");
+            // TODO: getting capabilities client-side is not a reliable way to do this
+            // Need a more formal framework for sync'ing server-side data to the client
+            if (te.hasCapability(CapabilityEnergy.ENERGY, null)) {
+                IEnergyStorage storage = te.getCapability(CapabilityEnergy.ENERGY, null);
+                infoList.add(storage.getEnergyStored() + " / " + storage.getMaxEnergyStored() + " RF");
+            }
+        } catch (Throwable e) {
+            TrackerBlacklistManager.addEnergyTEToBlacklist(te, e);
         }
     }
 

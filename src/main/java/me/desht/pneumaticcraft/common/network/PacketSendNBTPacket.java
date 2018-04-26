@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.ByteBuf;
-import me.desht.pneumaticcraft.client.render.pneumaticArmor.blockTracker.BlockTrackEntryInventory;
+import me.desht.pneumaticcraft.client.render.pneumaticArmor.blockTracker.TrackerBlacklistManager;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -50,7 +50,7 @@ public class PacketSendNBTPacket extends LocationIntPacket<PacketSendNBTPacket> 
             try {
                 te.readFromNBT(message.tag);
             } catch (Throwable e) {
-                BlockTrackEntryInventory.addTileEntityToBlackList(te, e);
+                TrackerBlacklistManager.addInventoryTEToBlacklist(te, e);
             }
         }
     }
