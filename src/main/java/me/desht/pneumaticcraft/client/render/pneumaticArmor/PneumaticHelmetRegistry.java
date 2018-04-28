@@ -10,6 +10,11 @@ import net.minecraft.entity.Entity;
 
 import java.util.*;
 
+import org.apache.commons.lang3.Validate;
+
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
+
 public class PneumaticHelmetRegistry implements IPneumaticHelmetRegistry {
 
     private static final PneumaticHelmetRegistry INSTANCE = new PneumaticHelmetRegistry();
@@ -18,6 +23,7 @@ public class PneumaticHelmetRegistry implements IPneumaticHelmetRegistry {
     public final Map<Block, Class<? extends IHackableBlock>> hackableBlocks = new HashMap<Block, Class<? extends IHackableBlock>>();
     public final Map<String, Class<? extends IHackableEntity>> stringToEntityHackables = new HashMap<>();
     public final Map<String, Class<? extends IHackableBlock>> stringToBlockHackables = new HashMap<>();
+    public final Multimap<Class<? extends Block>, IBlockTrackProvider> blockTrackProviders = Multimaps.newListMultimap(new HashMap<>(), () -> new ArrayList<>());
 
     public static PneumaticHelmetRegistry getInstance() {
         return INSTANCE;
@@ -94,4 +100,13 @@ public class PneumaticHelmetRegistry implements IPneumaticHelmetRegistry {
         if (renderHandler == null) throw new NullPointerException("Render handler can't be null!");
         UpgradeRenderHandlerList.instance().upgradeRenderers.add(renderHandler);
     }
+
+    @Override
+    public void registerBlockTrackProvider(Class<? extends Block> blockClass, IBlockTrackProvider provider){
+        Validate.notNull(blockClass, "blockClass may not be null!");
+        Validate.notNull(provider, "provider may not be null!");
+        blockTrackProviders.put(blockClass, provider);
+    }
+    
+    
 }

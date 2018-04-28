@@ -9,6 +9,8 @@ public interface IPneumaticHelmetRegistry {
     void registerEntityTrackEntry(Class<? extends IEntityTrackEntry> entry);
 
     void registerBlockTrackEntry(IBlockTrackEntry entry);
+    
+    void registerBlockTrackProvider(Class<? extends Block> blockClass, IBlockTrackProvider provider);
 
     void addHackable(Class<? extends Entity> entityClazz, Class<? extends IHackableEntity> iHackable);
 
