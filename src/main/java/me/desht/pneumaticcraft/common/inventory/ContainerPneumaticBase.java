@@ -111,15 +111,11 @@ public class ContainerPneumaticBase<Tile extends TileEntityBase> extends Contain
             if (!mergeItemStack(srcStack, 0, playerSlotsStart, false))
                 return ItemStack.EMPTY;
         }
+
+        srcSlot.putStack(srcStack);
         srcSlot.onSlotChange(srcStack, copyOfSrcStack);
-
-        if (srcStack.isEmpty()) {
-            srcSlot.putStack(ItemStack.EMPTY);
-        } else {
-            srcSlot.onSlotChanged();
-        }
-
         srcSlot.onTake(player, srcStack);
+
         return copyOfSrcStack;
     }
 

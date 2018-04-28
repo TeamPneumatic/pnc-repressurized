@@ -85,7 +85,7 @@ public class TileEntityRefinery extends TileEntityTickableBase implements IHeatE
 
                 if(recipe.isPresent()) {
                     currentRecipe = recipe.get();
-                    if (prevRefineryCount != refineries.size()) {
+                    if (prevRefineryCount != refineries.size() && refineries.size() > 1) {
                         redistributeFluids(refineries, currentRecipe);
                         prevRefineryCount = refineries.size();
                     }

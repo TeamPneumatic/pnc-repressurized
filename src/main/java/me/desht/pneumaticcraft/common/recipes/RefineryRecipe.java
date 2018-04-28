@@ -8,15 +8,16 @@ import java.util.List;
 import java.util.Optional;
 
 public class RefineryRecipe {
-	
+
+	public static final int MAX_OUTPUTS = 4;
 	public static List<RefineryRecipe> recipes = new ArrayList<>();
 	
 	public final FluidStack input;
 	public final FluidStack[] outputs;
 	
 	public RefineryRecipe(FluidStack input, FluidStack[] outputs) {
-		if (outputs.length < 2 || outputs.length > 4) {
-			throw new IllegalArgumentException("It must be at least 2 outputs present and ");
+		if (outputs.length < 2 || outputs.length > MAX_OUTPUTS) {
+			throw new IllegalArgumentException("Recipe must have between 2 and " + MAX_OUTPUTS + " (inclusive) outputs");
 		}
 		this.input = input;
 		this.outputs = outputs;

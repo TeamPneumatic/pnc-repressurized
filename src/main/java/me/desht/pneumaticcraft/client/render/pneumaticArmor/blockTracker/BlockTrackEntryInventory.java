@@ -2,7 +2,6 @@ package me.desht.pneumaticcraft.client.render.pneumaticArmor.blockTracker;
 
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IBlockTrackEntry;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.InventoryTrackEvent;
-import me.desht.pneumaticcraft.client.render.pneumaticArmor.HUDHandler;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketDescriptionPacketRequest;
 import me.desht.pneumaticcraft.common.util.IOHelper;
@@ -11,7 +10,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -19,23 +17,9 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class BlockTrackEntryInventory implements IBlockTrackEntry {
-    private static final Set<ResourceLocation> invBlackList = new HashSet<>();
-
-    public static void addTileEntityToBlackList(TileEntity te, Throwable e) {
-        e.printStackTrace();
-        String title = te.getWorld().getBlockState(te.getPos()).getBlock().getLocalizedName();
-        HUDHandler.instance().addMessage(
-                "Block tracking failed for " + title + "! A stacktrace can be found in the log.",
-                new ArrayList<>(), 60, 0xFFFF0000);
-        invBlackList.add(TileEntity.getKey(te.getClass()));
-    }
-
     @Override
     public boolean shouldTrackWithThisEntry(IBlockAccess world, BlockPos pos, IBlockState state, TileEntity te) {
         if (te instanceof TileEntityChest) {
@@ -44,7 +28,7 @@ public class BlockTrackEntryInventory implements IBlockTrackEntry {
         }
 
         return te != null
-                && !invBlackList.contains(TileEntity.getKey(te.getClass()))
+                && !TrackerBlacklistManager.isInventoryBlacklisted(te)
                 && te.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)
                 && !MinecraftForge.EVENT_BUS.post(new InventoryTrackEvent(te));
     }
@@ -88,7 +72,7 @@ public class BlockTrackEntryInventory implements IBlockTrackEntry {
                 }
             }
         } catch (Throwable e) {
-            addTileEntityToBlackList(te, e);
+            TrackerBlacklistManager.addInventoryTEToBlacklist(te, e);
         }
     }
 

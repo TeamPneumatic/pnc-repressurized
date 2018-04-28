@@ -23,22 +23,18 @@ public class ContainerRefinery extends ContainerPneumaticBase<TileEntityRefinery
         }
 
         addPlayerSlots(inventoryPlayer, 84);
-
-//        if (te.getTankInfo(EnumFacing.UP)[0].fluid != null && te.getTankInfo(EnumFacing.UP)[0].fluid.getFluid() == Fluids.OIL) {
-//            AchievementHandler.giveAchievement(inventoryPlayer.player, new ItemStack(Fluids.getBucket(Fluids.OIL)));
-//        }
     }
 
     @Override
     public boolean canInteractWith(EntityPlayer player) {
-        return true;//te.isUseableByPlayer(player);
-        //return te.isGuiUseableByPlayer(player);
+        return te.isGuiUseableByPlayer(player);
     }
 
 
     @Nonnull
     @Override
     public ItemStack transferStackInSlot(EntityPlayer par1EntityPlayer, int slotIndex) {
+        // Refinery itself has no item slots, but this allows shift-clicking items between player's inventory & hotbar
         ItemStack stack = ItemStack.EMPTY;
         Slot srcSlot = inventorySlots.get(slotIndex);
 

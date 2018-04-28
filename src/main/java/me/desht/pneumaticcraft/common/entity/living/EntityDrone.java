@@ -615,7 +615,7 @@ public class EntityDrone extends EntityDroneBase
 
     @Override
     public boolean processInteract(EntityPlayer player, EnumHand hand) {
-        ItemStack equippedItem = player.getHeldItemMainhand();
+        ItemStack equippedItem = player.getHeldItem(hand);
         if (!world.isRemote && !equippedItem.isEmpty()) {
             if (equippedItem.getItem() == Itemss.GPS_TOOL) {
                 BlockPos gpsLoc = ItemGPSTool.getGPSLocation(equippedItem);
