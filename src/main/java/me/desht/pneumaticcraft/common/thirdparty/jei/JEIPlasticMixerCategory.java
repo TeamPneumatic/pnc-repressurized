@@ -10,7 +10,9 @@ import mezz.jei.api.IJeiHelpers;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.oredict.OreDictionary;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,11 +49,16 @@ public class JEIPlasticMixerCategory extends PneumaticCraftCategory<PlasticMixer
 
         private PlasticMixerRecipeWrapper(FluidStack input, ItemStack output) {
             addInputLiquid(input, 146, 11);
-            addIngredient(new PositionedStack(new ItemStack(Items.DYE, 1, 1), 121, 19));
-            addIngredient(new PositionedStack(new ItemStack(Items.DYE, 1, 2), 121, 37));
-            addIngredient(new PositionedStack(new ItemStack(Items.DYE, 1, 4), 121, 55));
+            addIngredient(new PositionedStack(getDye("dyeRed", 1), 121, 19));
+            addIngredient(new PositionedStack(getDye("dyeGreen", 2), 121, 37));
+            addIngredient(new PositionedStack(getDye("dyeBlue", 4), 121, 55));
             addOutput(new PositionedStack(output, 92, 55));
             setUsedTemperature(76, 22, PneumaticValues.PLASTIC_MIXER_MELTING_TEMP);
+        }
+
+        private ItemStack getDye(String oreDictName, int fallbackMeta) {
+            NonNullList<ItemStack> entries = OreDictionary.getOres(oreDictName);
+            return entries.isEmpty() ? new ItemStack(Items.DYE, 1, fallbackMeta) : entries.get(0);
         }
     }
 
