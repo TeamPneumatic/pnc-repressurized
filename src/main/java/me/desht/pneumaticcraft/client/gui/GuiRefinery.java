@@ -94,4 +94,9 @@ public class GuiRefinery extends GuiPneumaticContainerBase<TileEntityRefinery> {
             curInfo.add("gui.tab.problems.refinery.outputBlocked");
         }
     }
+
+    @Override
+    protected boolean shouldAddUpgradeTab() {
+        return false;
+    }
 }
