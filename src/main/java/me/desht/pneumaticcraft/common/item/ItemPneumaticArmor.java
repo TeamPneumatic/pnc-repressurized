@@ -188,13 +188,15 @@ public class ItemPneumaticArmor extends ItemArmor implements IPressurizable, ICh
     public float getPressure(ItemStack iStack) {
         int volume = ItemPneumaticArmor.getUpgrades(EnumUpgrade.VOLUME, iStack) * PneumaticValues.VOLUME_VOLUME_UPGRADE + PneumaticValues.PNEUMATIC_HELMET_VOLUME;
         int oldVolume = NBTUtil.getInteger(iStack, "volume");
+        int currentAir = NBTUtil.getInteger(iStack, "air");
         if (volume < oldVolume) {
-            int currentAir = NBTUtil.getInteger(iStack, "air");
             currentAir = currentAir * volume / oldVolume;
             NBTUtil.setInteger(iStack, "air", currentAir);
         }
-        NBTUtil.setInteger(iStack, "volume", volume);
-        return (float) NBTUtil.getInteger(iStack, "air") / volume;
+        if (volume != oldVolume) {
+            NBTUtil.setInteger(iStack, "volume", volume);
+        }
+        return (float) currentAir / volume;
     }
 
     public boolean hasSufficientPressure(ItemStack iStack) {

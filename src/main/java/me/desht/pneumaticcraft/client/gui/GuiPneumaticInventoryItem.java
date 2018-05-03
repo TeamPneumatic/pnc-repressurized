@@ -33,7 +33,7 @@ public abstract class GuiPneumaticInventoryItem extends GuiPneumaticContainerBas
         super.initGui();
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
-        GuiButton guiSelectButton = new GuiButton(2, xStart + 90, yStart + 15, 25, 20, "<--");
+        GuiButton guiSelectButton = new GuiButton(2, xStart + 90, yStart + 15, 25, 20, "\u27f5");
         buttonList.add(guiSelectButton);
     }
 

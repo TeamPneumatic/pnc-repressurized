@@ -6,17 +6,19 @@ import me.desht.pneumaticcraft.common.network.NetworkUtils;
 import me.desht.pneumaticcraft.common.network.PacketUpdateGui;
 import me.desht.pneumaticcraft.common.tileentity.IGUIButtonSensitive;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.ClickType;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.IContainerListener;
-import net.minecraft.inventory.Slot;
+import net.minecraft.inventory.*;
+import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -91,6 +93,42 @@ public class ContainerPneumaticBase<Tile extends TileEntityBase> extends Contain
     protected void addUpgradeSlots(int xBase, int yBase) {
         for (int i = 0; i < te.getUpgradesInventory().getSlots(); i++) {
             addSlotToContainer(new SlotUpgrade(te, i, xBase + (i % 2) * 18, yBase + (i / 2) * 18));
+        }
+    }
+
+    private static final EntityEquipmentSlot[] VALID_EQUIPMENT_SLOTS = new EntityEquipmentSlot[] {EntityEquipmentSlot.HEAD, EntityEquipmentSlot.CHEST, EntityEquipmentSlot.LEGS, EntityEquipmentSlot.FEET};
+
+    /*
+     * This is pretty much lifted from the ContainerPlayer constructor
+     * We can't use EntityArmorInvWrapper because the wrapped setStackInSlot() method always sends a "set slot"
+     * packet to the client when the item changes in any way.  Draining pressure in the helmet will cause that packet
+     * to be sent continually, causing a horrible item-equip sound loop to be played (and using unnecessary network
+     * bandwith).
+     */
+    protected void addArmorSlots(InventoryPlayer inventoryPlayer, int xBase, int yBase) {
+        for (int i = 0; i < 4; ++i) {
+            final EntityEquipmentSlot entityequipmentslot = VALID_EQUIPMENT_SLOTS[i];
+            this.addSlotToContainer(new Slot(inventoryPlayer, 36 + (3 - i), xBase, yBase + i * 18) {
+
+                public int getSlotStackLimit() {
+                    return 1;
+                }
+
+                public boolean isItemValid(ItemStack stack) {
+                    return stack.getItem().isValidArmor(stack, entityequipmentslot, inventoryPlayer.player);
+                }
+
+                public boolean canTakeStack(EntityPlayer playerIn) {
+                    ItemStack itemstack = this.getStack();
+                    return (itemstack.isEmpty() || playerIn.isCreative() || !EnchantmentHelper.hasBindingCurse(itemstack)) && super.canTakeStack(playerIn);
+                }
+
+                @Nullable
+                @SideOnly(Side.CLIENT)
+                public String getSlotTexture() {
+                    return ItemArmor.EMPTY_SLOT_NAMES[entityequipmentslot.getIndex()];
+                }
+            });
         }
     }
 

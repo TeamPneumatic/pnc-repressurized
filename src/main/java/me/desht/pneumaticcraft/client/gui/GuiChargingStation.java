@@ -35,7 +35,7 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<TileEntityChar
 
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
-        guiSelectButton = new GuiButton(1, xStart + 90, yStart + 15, 25, 20, "inv.");
+        guiSelectButton = new GuiButton(1, xStart + 87, yStart + 15, 25, 20, "inv.");
         buttonList.add(guiSelectButton);
     }
 
