@@ -6,6 +6,14 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
+## 0.6.4-186 (3 May 2018)
+
+* Compressed Iron Gear now added to Ore Dictionary as "gearIronCompressed".  This allows Thermal Expansion Compactor to craft Compressed Iron Gears when the Gearworking Die Augment is installed.
+* Plastic Mixer JEI page now uses Ore Dictionary to show the dyes instead of hard-coded vanilla dye items. (Mods and/or packs can remove vanilla dyes from the oredict so hardcoded items can be misleading)
+* Fix: client crash when looking at RFTools Powercells with the Pneumatic Helmet Block Upgrade Tracker active (and RF scanning enabled).  The RF scanner still doesn't get the RF level; a more comprehensive data syncing framework for the Pneumatic Helmet is being considered.
+* Fix: Removed Upgrade Info tab from Refinery GUI (the block doesn't take any upgrades)
+* Fix: Nasty item-equip sound loop being player when Pneumatic Helmet equipped and Charging Station GUI open
+
 ## 0.6.3-181 (25 Apr 2018)
 
 * Fix: Shift-click dupe bug (introduced in 0.6.0) when clicking items into some PneumaticCraft inventories.
