@@ -2,11 +2,13 @@ package me.desht.pneumaticcraft.client.render.pneumaticArmor;
 
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IBlockTrackEntry;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IHackableBlock;
+import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IBlockTrackProvider.IBlockTrackHandler;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
 import me.desht.pneumaticcraft.client.render.RenderProgressBar;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.blockTracker.BlockTrackEntryList;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.hacking.HackableHandler;
 import me.desht.pneumaticcraft.common.CommonHUDHandler;
+import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketDescriptionPacketRequest;
 import me.desht.pneumaticcraft.common.network.PacketHackingBlockStart;
@@ -24,6 +26,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.fml.client.FMLClientHandler;
+
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
@@ -32,7 +35,7 @@ import java.util.List;
 public class RenderBlockTarget {
 
     private final World world;
-    private final BlockPos pos;
+    public final BlockPos pos;
     private final RenderBlockArrows arrowRenderer = new RenderBlockArrows();
     public int ticksExisted = 0;
     public final GuiAnimatedStat stat;
@@ -40,8 +43,9 @@ public class RenderBlockTarget {
     private boolean playerIsLooking;
     public List<String> textList = new ArrayList<String>();
     private int hackTime;
-    private final BlockTrackUpgradeHandler blockTracker;
+    public final BlockTrackUpgradeHandler blockTracker;
     private TileEntity te;
+    public final IBlockTrackHandler handler;
 
     public RenderBlockTarget(World world, EntityPlayer player, BlockPos pos, TileEntity te,
                              BlockTrackUpgradeHandler blockTracker) {
@@ -50,8 +54,10 @@ public class RenderBlockTarget {
         this.pos = pos;
         this.te = te;
         this.blockTracker = blockTracker;
+        Block block = world.getBlockState(pos).getBlock();
+        handler = PneumaticHelmetRegistry.getInstance().getBlockTrackHandler(world, block, pos, te, getApplicableEntries());
         // oldTicksExisted = entity.ticksExisted;
-        String title = world.getBlockState(pos).getBlock().getLocalizedName();
+        String title = block.getLocalizedName();
         if (title.contains(".name")) {
             try {
                 IBlockState state = world.getBlockState(pos);
@@ -78,10 +84,6 @@ public class RenderBlockTarget {
 
     public List<IBlockTrackEntry> getApplicableEntries() {
         return BlockTrackEntryList.instance.getEntriesForCoordinate(world, pos, te);
-    }
-
-    public boolean isSameTarget(World world, BlockPos pos) {
-        return this.pos.equals(pos);
     }
 
     public Block getBlock() {

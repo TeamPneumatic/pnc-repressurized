@@ -1,7 +1,9 @@
 package me.desht.pneumaticcraft.common.inventory;
 
+import mcjty.theoneprobe.items.ProbeHelmetRecipeFactory.HelmetRecipe;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
-import me.desht.pneumaticcraft.common.network.PacketSendNBTPacket;
+import me.desht.pneumaticcraft.client.render.pneumaticArmor.PneumaticHelmetRegistry;
+import me.desht.pneumaticcraft.common.network.PacketSendBlockTrackerUpdate;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -50,7 +52,7 @@ public class ContainerProgrammer extends ContainerPneumaticBase<TileEntityProgra
             for (EnumFacing d : EnumFacing.VALUES) {
                 TileEntity neighbor = te.getWorld().getTileEntity(te.getPos().offset(d));
                 if (neighbor != null && neighbor.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, d.getOpposite())) {
-                    sendToContainerListeners(new PacketSendNBTPacket(neighbor));
+                    sendToContainerListeners(new PacketSendBlockTrackerUpdate(neighbor.getPos(), PneumaticHelmetRegistry.getInstance().getBlockTrackHandler(te.getWorld(), neighbor.getPos())));
                 }
             }
         }

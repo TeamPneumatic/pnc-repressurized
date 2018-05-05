@@ -1,5 +1,7 @@
 package me.desht.pneumaticcraft.common.network;
 
+import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IBlockTrackProvider.IBlockTrackHandler;
+import me.desht.pneumaticcraft.client.render.pneumaticArmor.PneumaticHelmetRegistry;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.tileentity.TileEntity;
@@ -24,9 +26,12 @@ public class PacketDescriptionPacketRequest extends LocationIntPacket<PacketDesc
         TileEntity te = message.getTileEntity(player.world);
         if (te != null) {
             forceLootGeneration(te);
-            NetworkHandler.sendTo(new PacketSendNBTPacket(te), (EntityPlayerMP) player);
+            IBlockTrackHandler handler = PneumaticHelmetRegistry.getInstance().getBlockTrackHandler(player.world, message.pos);
+            NetworkHandler.sendTo(new PacketSendBlockTrackerUpdate(te.getPos(), handler), (EntityPlayerMP) player);
         }
     }
+    
+    
     
     /**
      * Force loot generation, as this is required on the client side to peek inside inventories.

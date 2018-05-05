@@ -1,14 +1,32 @@
 package me.desht.pneumaticcraft.client.render.pneumaticArmor;
 
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IBlockTrackEntry;
+import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IBlockTrackProvider;
+import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IBlockTrackProvider.IBlockTrackHandler;
+import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IEntityTrackEntry;
+import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IHackableBlock;
+import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IHackableEntity;
+import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IPneumaticHelmetRegistry;
+import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.hacking.IHacking;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.blockTracker.BlockTrackEntryList;
+import me.desht.pneumaticcraft.client.render.pneumaticArmor.blockTracker.CompositeBlockTrackHandler;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.hacking.CapabilityHackingProvider;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
-
-import java.util.*;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 import org.apache.commons.lang3.Validate;
 
@@ -23,7 +41,7 @@ public class PneumaticHelmetRegistry implements IPneumaticHelmetRegistry {
     public final Map<Block, Class<? extends IHackableBlock>> hackableBlocks = new HashMap<Block, Class<? extends IHackableBlock>>();
     public final Map<String, Class<? extends IHackableEntity>> stringToEntityHackables = new HashMap<>();
     public final Map<String, Class<? extends IHackableBlock>> stringToBlockHackables = new HashMap<>();
-    public final Multimap<Class<? extends Block>, IBlockTrackProvider> blockTrackProviders = Multimaps.newListMultimap(new HashMap<>(), () -> new ArrayList<>());
+    private final Multimap<Class<?>, IBlockTrackProvider> blockTrackProviders = Multimaps.newListMultimap(new HashMap<>(), ArrayList::new);
 
     public static PneumaticHelmetRegistry getInstance() {
         return INSTANCE;
@@ -108,5 +126,43 @@ public class PneumaticHelmetRegistry implements IPneumaticHelmetRegistry {
         blockTrackProviders.put(blockClass, provider);
     }
     
+    public IBlockTrackHandler getBlockTrackHandler(World world, BlockPos pos){
+        Block block = world.getBlockState(pos).getBlock();
+        TileEntity te = world.getTileEntity(pos);
+        List<IBlockTrackEntry> entries = BlockTrackEntryList.instance.getEntriesForCoordinate(world, pos, te);
+        return getBlockTrackHandler(world, block, pos, te, entries);
+    }
     
+    @SuppressWarnings("unchecked")
+    public IBlockTrackHandler getBlockTrackHandler(World world, Block block, BlockPos pos, TileEntity te, List<IBlockTrackEntry> blockTrackers){
+        //Retrieve the providers required to fulfill all blockTrackers
+        Multimap<IBlockTrackProvider, IBlockTrackEntry> providers = Multimaps.newSetMultimap(new HashMap<>(), HashSet::new);
+        for(IBlockTrackEntry blockTracker : blockTrackers){
+            providers.put(getBlockTrackProvider(block, blockTracker), blockTracker);
+        }
+        
+        //Retrieve the handlers
+        List<IBlockTrackHandler> handlers = new ArrayList<>(providers.size());
+        for(Map.Entry<IBlockTrackProvider, Collection<IBlockTrackEntry>> entry : providers.asMap().entrySet()){
+            handlers.add(entry.getKey().provideHandler(world, pos, te, (Set<IBlockTrackEntry>)blockTrackers));
+        }
+        
+        //Combine them into a single handler
+        return new CompositeBlockTrackHandler(handlers);
+    }
+    
+    /**
+     * Retrieve the block tracker provider using the block class. Move up the class hierarchy until an applicable provider is found.
+     * @param block
+     * @param blockTracker
+     * @return
+     */
+    private IBlockTrackProvider getBlockTrackProvider(Block block, IBlockTrackEntry blockTracker){
+        for(Class<?> blockClass = block.getClass(); blockClass != null; blockClass = blockClass.getSuperclass()){
+            for(IBlockTrackProvider provider : blockTrackProviders.get(blockClass)){
+                if(provider.canHandle(blockTracker)) return provider;
+            }
+        }        
+        throw new IllegalStateException("No IBlockEntryProvider found for block " + block.getRegistryName() + ", block tracker " + blockTracker.getEntryName());
+    }
 }

@@ -1,7 +1,14 @@
 package me.desht.pneumaticcraft.client.render.pneumaticArmor;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.BlockTrackEvent;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IBlockTrackEntry;
+import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IBlockTrackProvider.IBlockTrackHandler;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IOptionPage;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
@@ -28,14 +35,12 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.items.CapabilityItemHandler;
-import org.lwjgl.opengl.GL11;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.lwjgl.opengl.GL11;
 
 public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
     private static final int BLOCK_TRACKING_RANGE = 30;
-    private final List<RenderBlockTarget> blockTargets = new ArrayList<>();
+    private final Map<BlockPos, RenderBlockTarget> blockTargets = new HashMap<>();
     private GuiAnimatedStat blockTrackInfo;
     private int statX;
     private int statY;
@@ -101,16 +106,12 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
                     }
                     List<IBlockTrackEntry> entries = BlockTrackEntryList.instance.getEntriesForCoordinate(chunkCache, pos, te);
                     if (entries.isEmpty()) continue;
-                    boolean inList = false;
-                    for (int l = 0; l < blockTargets.size(); l++) {
-                        if (blockTargets.get(l).isSameTarget(player.world, pos)) {
-                            inList = true;
-                            blockTargets.get(l).ticksExisted = Math.abs(blockTargets.get(l).ticksExisted);// cancel lost targets
-                            blockTargets.get(l).setTileEntity(te);
-                            break;
-                        }
-                    }
-                    if (!inList) {
+                    
+                    RenderBlockTarget target = blockTargets.get(pos);
+                    if(target != null){
+                        target.ticksExisted = Math.abs(target.ticksExisted);// cancel lost targets
+                        target.setTileEntity(te);
+                    } else {
                         boolean sentUpdate = false;
                         for (IBlockTrackEntry entry : entries) {
                             if (entry.shouldBeUpdatedFromServer(te)) {
@@ -132,8 +133,9 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
         }
 
         accTime += System.currentTimeMillis();
-        for (int i = 0; i < blockTargets.size(); i++) {
-            RenderBlockTarget blockTarget = blockTargets.get(i);
+        Iterator<RenderBlockTarget> iterator = blockTargets.values().iterator();
+        while (iterator.hasNext()) {
+            RenderBlockTarget blockTarget = iterator.next();
 
             boolean wasNegative = blockTarget.ticksExisted < 0;
             blockTarget.ticksExisted += CommonHUDHandler.getHandlerForPlayer(player).getSpeedFromUpgrades();
@@ -144,15 +146,14 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
                 if (blockTarget.ticksExisted > 0) {
                     blockTarget.ticksExisted = -60;
                 } else if (blockTarget.ticksExisted == -1) {
-                    removeBlockTarget(i);
-                    i--;
+                    iterator.remove();
                 }
             }
         }
 
         List<String> textList = new ArrayList<String>();
         RenderBlockTarget focusedTarget = null;
-        for (RenderBlockTarget blockTarget : blockTargets) {
+        for (RenderBlockTarget blockTarget : blockTargets.values()) {
             if (blockTarget.isInitialized() && blockTarget.isPlayerLooking()) {
                 focusedTarget = blockTarget;
                 break;
@@ -165,7 +166,7 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
             blockTrackInfo.setTitle("Current tracked blocks:");
             if (blockTypeCount == null || ticksExisted % 40 == 0) {
                 blockTypeCount = new int[BlockTrackEntryList.instance.trackList.size()];
-                for (RenderBlockTarget target : blockTargets) {
+                for (RenderBlockTarget target : blockTargets.values()) {
                     for (IBlockTrackEntry validEntry : target.getApplicableEntries()) {
                         blockTypeCount[BlockTrackEntryList.instance.trackList.indexOf(validEntry)]++;
                     }
@@ -184,11 +185,12 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
     }
 
     private void addBlockTarget(RenderBlockTarget blockTarget) {
-        blockTargets.add(blockTarget);
+        blockTargets.put(blockTarget.pos, blockTarget);
     }
-
-    private void removeBlockTarget(int index) {
-        blockTargets.remove(index);
+    
+    public IBlockTrackHandler getBlockTrackHandler(BlockPos pos){
+        RenderBlockTarget target = blockTargets.get(pos);
+        return target != null ? target.handler : null;
     }
 
     public int countBlockTrackersOfType(IBlockTrackEntry type) {
@@ -204,7 +206,7 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
         GL11.glDisable(GL11.GL_CULL_FACE);
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        for (RenderBlockTarget blockTarget : blockTargets) {
+        for (RenderBlockTarget blockTarget : blockTargets.values()) { 
             blockTarget.render(partialTicks);
         }
         GL11.glEnable(GL11.GL_CULL_FACE);
@@ -252,20 +254,17 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
     }
 
     public void hack() {
-        for (RenderBlockTarget target : blockTargets) {
+        for (RenderBlockTarget target : blockTargets.values()) {
             target.hack();
         }
     }
 
     public RenderBlockTarget getTargetForCoord(BlockPos pos) {
-        for (RenderBlockTarget target : blockTargets) {
-            if (target.isSameTarget(null, pos)) return target;
-        }
-        return null;
+        return blockTargets.get(pos);
     }
 
     public boolean scroll(MouseEvent event) {
-        for (RenderBlockTarget target : blockTargets) {
+        for (RenderBlockTarget target : blockTargets.values()) {
             if (target.scroll(event)) {
                 getAnimatedStat().handleMouseWheel(event.getDwheel());
                 return true;

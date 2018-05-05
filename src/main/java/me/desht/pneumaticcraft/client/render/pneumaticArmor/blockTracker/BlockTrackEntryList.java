@@ -2,6 +2,8 @@ package me.desht.pneumaticcraft.client.render.pneumaticArmor.blockTracker;
 
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IBlockTrackEntry;
 import me.desht.pneumaticcraft.client.gui.widget.GuiKeybindCheckBox;
+import me.desht.pneumaticcraft.client.render.pneumaticArmor.PneumaticHelmetRegistry;
+import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
@@ -23,6 +25,8 @@ public class BlockTrackEntryList {
         trackList.add(new BlockTrackEntryMobSpawner());
         trackList.add(new BlockTrackEntrySimple());
         trackList.add(new BlockTrackEntryEnergy());
+        
+        PneumaticHelmetRegistry.getInstance().registerBlockTrackProvider(Block.class, new BlockTrackProviderNBT());
     }
 
     public List<IBlockTrackEntry> getEntriesForCoordinate(IBlockAccess blockAccess, BlockPos pos, TileEntity te) {
