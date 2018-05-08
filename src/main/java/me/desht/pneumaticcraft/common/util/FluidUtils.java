@@ -1,7 +1,5 @@
 package me.desht.pneumaticcraft.common.util;
 
-import net.minecraft.block.BlockLiquid;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -10,8 +8,9 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fluids.BlockFluidBase;
+import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidActionResult;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -111,10 +110,37 @@ public class FluidUtils {
      * @return true if there is a fluid source block at the given blockpos, false otherwise
      */
     public static boolean isSourceBlock(World world, BlockPos pos) {
-        IBlockState state = world.getBlockState(pos);
-        if (state.getProperties().containsKey(BlockLiquid.LEVEL)) {
-            return state.getValue(BlockLiquid.LEVEL) == 0;
-        } else
-            return state.getProperties().containsKey(BlockFluidBase.LEVEL) && state.getValue(BlockFluidBase.LEVEL) == 0;
+        return isSourceBlock(world, pos, null);
+    }
+
+
+    /**
+     * Check if the given blockpos contains a fluid source block of a certain fluid.
+     *
+     * @param world the world
+     * @param pos the blockpos
+     * @param fluid the fluid
+     * @return true if there is a fluid source block of the right fluid at the given blockpos, false otherwise
+     */
+    public static boolean isSourceBlock(World world, BlockPos pos, Fluid fluid) {
+        IFluidHandler handler = FluidUtil.getFluidHandler(world, pos, EnumFacing.UP);
+        if (handler != null) {
+            FluidStack fluidStack = handler.drain(Fluid.BUCKET_VOLUME, false);
+            return fluidStack != null && fluidStack.amount == Fluid.BUCKET_VOLUME && (fluid == null || fluidStack.getFluid().getName().equals(fluid.getName()));
+        }
+        return false;
+    }
+
+    /**
+     * Get a fluidstack for the fluid at the given position, possibly also draining it.
+     *
+     * @param world the world
+     * @param pos the blockpos
+     * @param doDrain true if the fluid at the position should be drained
+     * @return a fluidstack of the fluid, or null if no fluid could be drained
+     */
+    public static FluidStack getFluidAt(World world, BlockPos pos, boolean doDrain) {
+        IFluidHandler handler = FluidUtil.getFluidHandler(world, pos, EnumFacing.UP);
+        return handler != null ? handler.drain(Fluid.BUCKET_VOLUME, doDrain) : null;
     }
 }

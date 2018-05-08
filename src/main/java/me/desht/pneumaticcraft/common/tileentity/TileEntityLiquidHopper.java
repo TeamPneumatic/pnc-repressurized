@@ -16,7 +16,10 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.fluids.*;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidTank;
+import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 
@@ -127,11 +130,11 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
 
         if (getUpgrades(EnumUpgrade.DISPENSER) > 0) {
             BlockPos neighborPos = getPos().offset(inputDir);
-            Fluid fluid = FluidRegistry.lookupFluidForBlock(getWorld().getBlockState(neighborPos).getBlock());
-            if (fluid != null && FluidUtils.isSourceBlock(getWorld(), neighborPos)) {
-                if (tank.fill(new FluidStack(fluid, 1000), false) == 1000) {
-                    tank.fill(new FluidStack(fluid, 1000), true);
-                    getWorld().setBlockToAir(neighborPos);
+            FluidStack fluidStack = FluidUtils.getFluidAt(getWorld(), neighborPos, false);
+            if (fluidStack != null && fluidStack.amount == Fluid.BUCKET_VOLUME) {
+                if (tank.fill(fluidStack, false) == Fluid.BUCKET_VOLUME) {
+                    tank.fill(fluidStack, true);
+                    FluidUtils.getFluidAt(getWorld(), neighborPos, true);
                     return true;
                 }
             }

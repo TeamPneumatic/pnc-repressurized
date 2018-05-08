@@ -22,7 +22,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
@@ -212,42 +211,45 @@ public class TileEntityGasLift extends TileEntityPneumaticBase implements IMinWo
         return world().getBlockState(pos).getBlockHardness(world, pos) < 0;
     }
 
+
     private boolean suckLiquid() {
-        Block block = world.getBlockState(getPos().offset(EnumFacing.DOWN, currentDepth + 1)).getBlock();
-        Fluid fluid = FluidRegistry.lookupFluidForBlock(block);
-        if (fluid == null) {
+        BlockPos pos = getPos().offset(EnumFacing.DOWN, currentDepth + 1);
+
+        FluidStack fluidStack = FluidUtils.getFluidAt(world, pos, false);
+        if (fluidStack == null || fluidStack.amount < Fluid.BUCKET_VOLUME) {
             pumpingLake = null;
             return false;
         }
 
-        FluidStack fluidStack = new FluidStack(fluid, 1000);
-        if (tank.fill(fluidStack, false) == 1000) {
+        if (tank.fill(fluidStack, false) == Fluid.BUCKET_VOLUME) {
             if (pumpingLake == null) {
-                findLake(block);
+                findLake(fluidStack.getFluid());
             }
-            BlockPos curPos = null;
             boolean foundSource = false;
+            BlockPos curPos = null;
             while (pumpingLake.size() > 0) {
                 curPos = pumpingLake.get(0);
-                if (getWorld().getBlockState(curPos).getBlock() == block && FluidUtils.isSourceBlock(getWorld(), curPos)) {
+                if (FluidUtils.isSourceBlock(getWorld(), curPos, fluidStack.getFluid())) {
                     foundSource = true;
                     break;
                 }
                 pumpingLake.remove(0);
             }
-            if (pumpingLake.size() == 0) {
+            if (pumpingLake.isEmpty()) {
                 pumpingLake = null;
             } else if (foundSource) {
-                getWorld().setBlockToAir(curPos);
-                tank.fill(fluidStack, true);
-                addAir(-100);
-                status = Status.PUMPING;
+                FluidStack fluidStack1 = FluidUtils.getFluidAt(world, curPos, true);
+                if (fluidStack1 != null && fluidStack1.amount == Fluid.BUCKET_VOLUME) {
+                    tank.fill(fluidStack1, true);
+                    addAir(-100);
+                    status = Status.PUMPING;
+                }
             }
         }
         return true;
     }
 
-    private void findLake(Block block) {
+    private void findLake(Fluid fluid) {
         pumpingLake = new ArrayList<>();
         Stack<BlockPos> pendingPositions = new Stack<>();
         BlockPos thisPos = getPos().offset(EnumFacing.DOWN, currentDepth + 1);
@@ -257,9 +259,9 @@ public class TileEntityGasLift extends TileEntityPneumaticBase implements IMinWo
             BlockPos checkingPos = pendingPositions.pop();
             for (EnumFacing d : EnumFacing.VALUES) {
                 if (d == EnumFacing.DOWN) continue;
-                BlockPos newPos = checkingPos.offset(d); // new BlockPos(checkingPos.getX() + d.getFrontOffsetX(), checkingPos.getY() + d.getFrontOffsetY(), checkingPos.getZ() + d.getFrontOffsetZ());
-                if (PneumaticCraftUtils.distBetweenSq(newPos, getPos().offset(EnumFacing.DOWN, currentDepth + 1)) <= MAX_PUMP_RANGE_SQUARED
-                        && getWorld().getBlockState(newPos).getBlock() == block
+                BlockPos newPos = checkingPos.offset(d);
+                if (PneumaticCraftUtils.distBetweenSq(newPos, thisPos) <= MAX_PUMP_RANGE_SQUARED
+                        && FluidUtils.isSourceBlock(getWorld(), newPos, fluid)
                         && !pumpingLake.contains(newPos)) {
                     pendingPositions.add(newPos);
                     pumpingLake.add(newPos);

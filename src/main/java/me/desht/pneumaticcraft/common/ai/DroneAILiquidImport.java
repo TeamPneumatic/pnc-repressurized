@@ -9,7 +9,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -56,17 +55,24 @@ public class DroneAILiquidImport extends DroneAIImExBase {
                     }
                 }
                 drone.addDebugEntry("gui.progWidget.liquidImport.debug.emptiedToMax", pos);
-            } else if (!((ICountWidget) widget).useCount() || getRemainingCount() >= 1000) {
-                Fluid fluid = FluidRegistry.lookupFluidForBlock(drone.world().getBlockState(pos).getBlock());
-                if (fluid != null && ((ILiquidFiltered) widget).isFluidValid(fluid) && drone.getTank().fill(new FluidStack(fluid, 1000), false) == 1000 && FluidUtils.isSourceBlock(drone.world(), pos)) {
+            }
+
+            // fall through to fluid-in-world check here; it's possible for a fluid block to be a TE (with no
+            // fluid capability) and also a fluid block which can be drained directly
+            if (!((ICountWidget) widget).useCount() || getRemainingCount() >= Fluid.BUCKET_VOLUME) {
+                FluidStack fluidStack = FluidUtils.getFluidAt(drone.world(), pos, false);
+                if (fluidStack != null && fluidStack.amount == Fluid.BUCKET_VOLUME
+                        && ((ILiquidFiltered) widget).isFluidValid(fluidStack.getFluid())
+                        && drone.getTank().fill(fluidStack, false) == Fluid.BUCKET_VOLUME) {
                     if (!simulate) {
-                        decreaseCount(1000);
-                        drone.getTank().fill(new FluidStack(fluid, 1000), true);
-                        drone.world().setBlockToAir(pos);
+                        decreaseCount(Fluid.BUCKET_VOLUME);
+                        FluidStack fluidStack1 = FluidUtils.getFluidAt(drone.world(), pos, true);
+                        drone.getTank().fill(fluidStack1, true);
                     }
                     return true;
                 }
             }
+
             return false;
         }
     }

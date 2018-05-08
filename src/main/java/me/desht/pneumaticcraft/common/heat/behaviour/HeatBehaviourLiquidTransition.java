@@ -37,8 +37,8 @@ public abstract class HeatBehaviourLiquidTransition extends HeatBehaviourTransit
         if (FluidUtils.isSourceBlock(getWorld(), getPos())) {
             getWorld().setBlockState(getPos(), turningBlockSource.getDefaultState());
         } else {
-            Set<BlockPos> traversed = new HashSet<BlockPos>();
-            Stack<BlockPos> pending = new Stack<BlockPos>();
+            Set<BlockPos> traversed = new HashSet<>();
+            Stack<BlockPos> pending = new Stack<>();
             pending.push(getPos());
             traversed.add(getPos());
             while (!pending.isEmpty()) {

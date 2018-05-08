@@ -7,8 +7,6 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -45,8 +43,10 @@ public class ProgWidgetLiquidInventoryCondition extends ProgWidgetCondition {
                         }
                     }
                 } else {
-                    Fluid fluid = FluidRegistry.lookupFluidForBlock(drone.world().getBlockState(pos).getBlock());
-                    if (fluid != null && ProgWidgetLiquidFilter.isLiquidValid(fluid, widget, 1) && FluidUtils.isSourceBlock(drone.world(), pos)) {
+                    FluidStack fluidStack = FluidUtils.getFluidAt(drone.world(), pos, false);
+                    if (fluidStack != null && ProgWidgetLiquidFilter.isLiquidValid(fluidStack.getFluid(), widget, 1)) {
+//                    Fluid fluid = FluidRegistry.lookupFluidForBlock(drone.world().getBlockState(pos).getBlock());
+//                    if (fluid != null && ProgWidgetLiquidFilter.isLiquidValid(fluid, widget, 1) && FluidUtils.isSourceBlock(drone.world(), pos)) {
                         count += 1000;
                     }
                 }
