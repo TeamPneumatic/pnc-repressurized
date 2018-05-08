@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.client.gui.GuiPressureChamber;
 import me.desht.pneumaticcraft.client.gui.GuiRefinery;
 import me.desht.pneumaticcraft.client.gui.GuiThermopneumaticProcessingPlant;
 import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.fluid.Fluids;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.recipes.AssemblyRecipe;
@@ -18,7 +19,6 @@ import mezz.jei.api.recipe.IRecipeCategoryRegistration;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.oredict.OreDictionary;
 
 @JEIPlugin
 public class JEI implements IModPlugin {
@@ -31,13 +31,14 @@ public class JEI implements IModPlugin {
         registry.addRecipes(PressureChamberRecipe.chamberRecipes, ModCategoryUid.PRESSURE_CHAMBER);
         registry.addRecipes(new JEIPlasticMixerCategory(jeiHelpers).getAllRecipes(), ModCategoryUid.PLASTIC_MIXER);
         registry.addRecipes(new JEIRefineryCategory(jeiHelpers).getAllRecipes(), ModCategoryUid.REFINERY);
-        registry.addRecipes(new JEIEtchingAcidCategory(jeiHelpers).getAllRecipes(), ModCategoryUid.ETCHING_ACID);
-        registry.addRecipes(new JEICompressedIronCategory(jeiHelpers).getAllRecipes(), ModCategoryUid.COMPRESSED_IRON_EXPLOSION);
-        registry.addRecipes(new JEIUVLightBoxCategory(jeiHelpers).getAllRecipes(), ModCategoryUid.UV_LIGHT_BOX);
+        registry.addRecipes(new JEIEtchingAcidCategory(jeiHelpers).getAllRecipes(), ModCategoryUid.ETCHING_ACID);registry.addRecipes(new JEIUVLightBoxCategory(jeiHelpers).getAllRecipes(), ModCategoryUid.UV_LIGHT_BOX);
         registry.addRecipes(AssemblyRecipe.drillRecipes, ModCategoryUid.ASSEMBLY_CONTROLLER);
         registry.addRecipes(AssemblyRecipe.laserRecipes, ModCategoryUid.ASSEMBLY_CONTROLLER);
         registry.addRecipes(AssemblyRecipe.drillLaserRecipes, ModCategoryUid.ASSEMBLY_CONTROLLER);
         registry.addRecipes(new JEIAmadronTradeCategory(jeiHelpers).getAllRecipes(), ModCategoryUid.AMADRON_TRADE);
+        if (ConfigHandler.general.explosionCrafting) {
+            registry.addRecipes(new JEICompressedIronCategory(jeiHelpers).getAllRecipes(), ModCategoryUid.COMPRESSED_IRON_EXPLOSION);
+        }
 
         registry.handleRecipes(PressureChamberRecipe.class,
                 JEIPressureChamberRecipeCategory.ChamberRecipeWrapper::new, ModCategoryUid.PRESSURE_CHAMBER);
@@ -72,10 +73,12 @@ public class JEI implements IModPlugin {
                 new JEIThermopneumaticProcessingPlantCategory(helpers),
                 new JEIRefineryCategory(helpers),
                 new JEIEtchingAcidCategory(helpers),
-                new JEICompressedIronCategory(helpers),
                 new JEIUVLightBoxCategory(helpers),
                 new JEIAmadronTradeCategory(helpers),
                 new JEIPlasticMixerCategory(helpers)
         );
+        if (ConfigHandler.general.explosionCrafting) {
+            registry.addRecipeCategories(new JEICompressedIronCategory(helpers));
+        }
     }
 }
