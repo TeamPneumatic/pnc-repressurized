@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.recipes;
 
-import cofh.core.util.helpers.ItemHelper;
 import com.google.gson.JsonObject;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
@@ -46,7 +45,7 @@ public class ShapedFluidRecipeFactory implements IRecipeFactory {
             for (int i = 0; i < ret.size(); i++) {
                 ItemStack stack = inv.getStackInSlot(i);
                 IFluidHandlerItem handler = stack.getCount() > 1 ?
-                        FluidUtil.getFluidHandler(ItemHelper.cloneStack(stack, 1)) :
+                        FluidUtil.getFluidHandler(singleItem(stack)) :
                         FluidUtil.getFluidHandler(stack);
 
                 if (handler == null) {
@@ -57,6 +56,16 @@ public class ShapedFluidRecipeFactory implements IRecipeFactory {
                 }
             }
             return ret;
+        }
+
+        private static ItemStack singleItem(ItemStack stack) {
+            if (stack.isEmpty()) {
+                return ItemStack.EMPTY;
+            } else {
+                ItemStack ret = stack.copy();
+                ret.setCount(1);
+                return ret;
+            }
         }
 
         @Override
