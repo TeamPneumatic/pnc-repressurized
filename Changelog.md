@@ -6,6 +6,11 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
+## 0.6.5-189 (11 May 2018)
+
+* Fix: crash when crafting Speed Upgrades in some situations.
+* Fix: Gas Lift now works with infinite fluid blocks such as Better With Addons Aqueducts.
+
 ## 0.6.4-186 (3 May 2018)
 
 * Compressed Iron Gear now added to Ore Dictionary as "gearIronCompressed".  This allows Thermal Expansion Compactor to craft Compressed Iron Gears when the Gearworking Die Augment is installed.
