@@ -6,6 +6,12 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
+## 0.6.6-192 (14 May 2018)
+
+* The Universal Sensor no longer uses air in the "Constant" redstone emitter mode (still requires minimum pressure though)
+* Fix: crash when right-clicking some PneumaticCraft blocks with other mods' wrenches
+* Fix: another fix to Speed Upgrade crafting with stacks of more than one item in the table
+
 ## 0.6.5-189 (11 May 2018)
 
 * Fix: crash when crafting Speed Upgrades in some situations.
