@@ -37,11 +37,9 @@ import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
-
 import java.util.*;
 
 public class TileEntityUniversalSensor extends TileEntityPneumaticBase implements IRangeLineShower,
@@ -54,7 +52,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
 
     @GuiSynced
     private String sensorSetting = "";
-    private int ticksExisted;
+    private int tickTimer;
     public int redstoneStrength;
     private int eventTimer;
     public float dishRotation;
@@ -104,14 +102,13 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
         super.update();
 
         if (!getWorld().isRemote) {
-            ticksExisted++;
+            tickTimer++;
             ISensorSetting sensor = SensorHandler.getInstance().getSensorFromPath(sensorSetting);
             if (sensor != null && getPressure() > PneumaticValues.MIN_PRESSURE_UNIVERSAL_SENSOR) {
                 isSensorActive = true;
-                addAir(-PneumaticValues.USAGE_UNIVERSAL_SENSOR);
+                addAir(-sensor.getAirUsage(getWorld(), getPos()));
                 if (sensor instanceof IPollSensorSetting) {
-
-                    if (ticksExisted % ((IPollSensorSetting) sensor).getPollFrequency(this) == 0) {
+                    if (tickTimer >= ((IPollSensorSetting) sensor).getPollFrequency(this)) {
                         int newRedstoneStrength = ((IPollSensorSetting) sensor).getRedstoneValue(getWorld(), getPos(), getRange(), sensorGuiText);
                         if (invertedRedstone) newRedstoneStrength = 15 - newRedstoneStrength;
                         if (newRedstoneStrength != redstoneStrength) {
@@ -121,6 +118,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
                             }
                             updateNeighbours();
                         }
+                        tickTimer = 0;
                     }
                     eventTimer = 0;
                 } else {

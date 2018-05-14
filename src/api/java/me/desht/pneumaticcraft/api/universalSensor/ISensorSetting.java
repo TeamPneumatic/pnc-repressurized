@@ -2,6 +2,8 @@ package me.desht.pneumaticcraft.api.universalSensor;
 
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.item.Item;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import org.lwjgl.util.Rectangle;
 
 import java.util.List;
@@ -53,4 +55,12 @@ public interface ISensorSetting {
      * @return
      */
     Rectangle needsSlot();
+
+    /**
+     * Get the air usage (per tick) for this sensor.  Default is 1mL/tick.
+     * @return
+     */
+    default int getAirUsage(World world, BlockPos pos) {
+        return 1;
+    }
 }

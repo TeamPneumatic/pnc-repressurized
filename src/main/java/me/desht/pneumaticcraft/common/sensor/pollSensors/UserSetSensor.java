@@ -65,4 +65,9 @@ public class UserSetSensor implements IPollSensorSetting {
         return null;
     }
 
+    @Override
+    public int getAirUsage(World world, BlockPos pos) {
+        // it's just a constant redstone signal, let's make it free
+        return 0;
+    }
 }
