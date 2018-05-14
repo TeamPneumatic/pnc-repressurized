@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.recipes;
 
 import com.google.gson.JsonObject;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
@@ -18,6 +19,7 @@ import net.minecraftforge.oredict.ShapedOreRecipe;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
+// With thanks to CoFH for showing me how this works!
 public class ShapedFluidRecipeFactory implements IRecipeFactory {
     @Override
     public IRecipe parse(JsonContext context, JsonObject json) {
@@ -45,7 +47,7 @@ public class ShapedFluidRecipeFactory implements IRecipeFactory {
             for (int i = 0; i < ret.size(); i++) {
                 ItemStack stack = inv.getStackInSlot(i);
                 IFluidHandlerItem handler = stack.getCount() > 1 ?
-                        FluidUtil.getFluidHandler(singleItem(stack)) :
+                        FluidUtil.getFluidHandler(PneumaticCraftUtils.singleItem(stack)) :
                         FluidUtil.getFluidHandler(stack);
 
                 if (handler == null) {
@@ -56,16 +58,6 @@ public class ShapedFluidRecipeFactory implements IRecipeFactory {
                 }
             }
             return ret;
-        }
-
-        private static ItemStack singleItem(ItemStack stack) {
-            if (stack.isEmpty()) {
-                return ItemStack.EMPTY;
-            } else {
-                ItemStack ret = stack.copy();
-                ret.setCount(1);
-                return ret;
-            }
         }
 
         @Override
