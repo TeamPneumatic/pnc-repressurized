@@ -113,7 +113,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
     public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         ItemStack heldItem = player.getHeldItem(hand);
         if (player.isSneaking() || getGuiID() == null || isRotatable() && (heldItem.getItem() == Itemss.MANOMETER || ModInteractionUtils.getInstance().isModdedWrench(heldItem))) {
-            return true;
+            return false;
         } else {
             if (!world.isRemote) {
                 TileEntity te = world.getTileEntity(pos);
