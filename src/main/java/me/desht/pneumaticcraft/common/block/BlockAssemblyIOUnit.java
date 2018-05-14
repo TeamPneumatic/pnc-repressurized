@@ -32,7 +32,7 @@ public class BlockAssemblyIOUnit extends BlockPneumaticCraftModeled {
 
     @Override
     public boolean rotateBlock(World world, EntityPlayer player, BlockPos pos, EnumFacing side) {
-        if (player.isSneaking()) {
+        if (player != null && player.isSneaking()) {
             return super.rotateBlock(world, player, pos, side);
         } else {
             return ((TileEntityAssemblyIOUnit) world.getTileEntity(pos)).switchMode();

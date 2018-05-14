@@ -310,7 +310,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
     @Override
     public boolean rotateBlock(World world, EntityPlayer player, BlockPos pos, EnumFacing side) {
         TileEntityPressureTube tube = ModInteractionUtils.getInstance().getTube(getTE(world, pos));
-        if (player.isSneaking()) {
+        if (player != null && player.isSneaking()) {
             TubeModule module = getLookedModule(world, pos, player);
             if (module != null) {
                 // detach and drop the module as an item
