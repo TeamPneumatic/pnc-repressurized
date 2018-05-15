@@ -16,6 +16,9 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.EnumPacketDirection;
+import net.minecraft.network.NetHandlerPlayServer;
+import net.minecraft.network.NetworkManager;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -23,7 +26,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.FakePlayerFactory;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
 
@@ -140,7 +145,11 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
     }
 
     private EntityPlayer getFakePlayer() {
-        return FakePlayerFactory.get((WorldServer) getWorld(), new GameProfile(null, "Sentry Turret"));
+        FakePlayer fakePlayer = FakePlayerFactory.get((WorldServer) getWorld(), new GameProfile(null, "Sentry Turret"));
+        if (fakePlayer.connection == null) {
+            fakePlayer.connection = new NetHandlerPlayServer(FMLCommonHandler.instance().getMinecraftServerInstance(), new NetworkManager(EnumPacketDirection.SERVERBOUND), fakePlayer);
+        }
+        return fakePlayer;
     }
 
     @Override
