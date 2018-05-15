@@ -16,6 +16,7 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.progwidgets.*;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.ProgWidgetCC;
+import me.desht.pneumaticcraft.common.util.FakeNetHandlerPlayerServer;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.entity.Entity;
@@ -27,9 +28,6 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.EnumPacketDirection;
-import net.minecraft.network.NetHandlerPlayServer;
-import net.minecraft.network.NetworkManager;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.NonNullList;
@@ -165,7 +163,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
 
     private void initializeFakePlayer() {
         fakePlayer = new DroneFakePlayer((WorldServer) getWorld(), new GameProfile(getOwnerUUID(), ownerName), this);
-        fakePlayer.connection = new NetHandlerPlayServer(FMLCommonHandler.instance().getMinecraftServerInstance(), new NetworkManager(EnumPacketDirection.SERVERBOUND), fakePlayer);
+        fakePlayer.connection = new FakeNetHandlerPlayerServer(FMLCommonHandler.instance().getMinecraftServerInstance(), fakePlayer);
         fakePlayer.inventory = new InventoryPlayer(fakePlayer) {
             private ItemStack oldStack = ItemStack.EMPTY;
 

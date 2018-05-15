@@ -1,13 +1,11 @@
 package me.desht.pneumaticcraft.common.semiblock;
 
 import com.mojang.authlib.GameProfile;
+import me.desht.pneumaticcraft.common.util.FakeNetHandlerPlayerServer;
 import me.desht.pneumaticcraft.common.util.Reflections;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.EnumPacketDirection;
-import net.minecraft.network.NetHandlerPlayServer;
-import net.minecraft.network.NetworkManager;
 import net.minecraft.tileentity.MobSpawnerBaseLogic;
 import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.util.EnumFacing;
@@ -46,7 +44,7 @@ public class SemiBlockSpawnerAgitator extends SemiBlockBasic<TileEntityMobSpawne
                     //Temporarily add a fake player to the world to trick the spawner into thinking there's a player nearby
                     FakePlayer fakePlayer = FakePlayerFactory.get((WorldServer)world, FAKE_PLAYER_PROFILE);
                     if (fakePlayer.connection == null) {
-                        fakePlayer.connection = new NetHandlerPlayServer(FMLCommonHandler.instance().getMinecraftServerInstance(), new NetworkManager(EnumPacketDirection.SERVERBOUND), fakePlayer);
+                        fakePlayer.connection = new FakeNetHandlerPlayerServer(FMLCommonHandler.instance().getMinecraftServerInstance(), fakePlayer);
                     }
                     fakePlayer.posX = getPos().getX();
                     fakePlayer.posY = getPos().getY();
