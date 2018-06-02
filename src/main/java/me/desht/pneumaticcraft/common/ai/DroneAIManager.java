@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.ai;
 
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.drone.SpecialVariableRetrievalEvent;
+import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.progwidgets.*;
@@ -14,10 +14,10 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.profiler.Profiler;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.common.MinecraftForge;
 
 import javax.annotation.Nonnull;
-
 import java.util.*;
 
 /**
@@ -314,7 +314,8 @@ public class DroneAIManager implements IVariableProvider {
         int magnetUpgrades = drone.getUpgrades(ItemRegistry.getInstance().getUpgrade(EnumUpgrade.MAGNET));
         if(magnetUpgrades > 0){
             int range = Math.min(6, 1 + magnetUpgrades);
-            AxisAlignedBB aabb = new AxisAlignedBB(drone.getDronePos(), drone.getDronePos()).grow(range);
+            Vec3d v = drone.getDronePos();
+            AxisAlignedBB aabb = new AxisAlignedBB(v.x, v.y, v.z, v.x, v.y, v.z).grow(range);
             List<EntityItem> items = drone.world().getEntitiesWithinAABB(EntityItem.class, aabb, 
                                                                          item -> drone.getDronePos().distanceTo(item.getPositionVector()) <= range);
             
