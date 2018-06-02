@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.inventory.ComparatorItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.IOHelper;
@@ -16,17 +17,17 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.items.ItemStackHandler;
 
 import java.util.List;
 
-public class TileEntityOmnidirectionalHopper extends TileEntityTickableBase implements IRedstoneControlled {
+public class TileEntityOmnidirectionalHopper extends TileEntityTickableBase implements IRedstoneControlled, IComparatorSupport {
     public static final int INVENTORY_SIZE = 5;
     @DescSynced
     protected EnumFacing inputDir = EnumFacing.UP;
     @DescSynced
     protected EnumFacing outputDir = EnumFacing.UP;
-    private ItemStackHandler inventory = new ItemStackHandler(getInvSize());
+    private ComparatorItemStackHandler inventory = new ComparatorItemStackHandler(getInvSize());
+    private int lastComparatorValue = -1;
     @GuiSynced
     public int redstoneMode;
     private int cooldown;
@@ -65,7 +66,17 @@ public class TileEntityOmnidirectionalHopper extends TileEntityTickableBase impl
             success |= doExport(maxItems);
             // If we couldn't pull or push, slow down a bit for performance reasons
             cooldown = success ? getItemTransferInterval() : 8;
+
+            if (success) inventory.recalcComparatorValue();
+            if (lastComparatorValue != getComparatorValueInternal()) {
+                updateNeighbours();  // only update when comparator level has actually changed
+            }
+            lastComparatorValue = getComparatorValueInternal();
         }
+    }
+
+    protected int getComparatorValueInternal() {
+        return inventory.getComparatorValue();
     }
 
     protected boolean doExport(int maxItems) {
@@ -212,5 +223,10 @@ public class TileEntityOmnidirectionalHopper extends TileEntityTickableBase impl
 
     public boolean doesLeaveMaterial() {
         return leaveMaterial;
+    }
+
+    @Override
+    public int getComparatorValue() {
+        return inventory.getComparatorValue();
     }
 }

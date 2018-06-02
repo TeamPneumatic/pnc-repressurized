@@ -28,8 +28,16 @@ import javax.annotation.Nullable;
 import java.util.Map;
 
 public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper implements ISerializableTanks {
+    private int comparatorValue = -1;
+
     @DescSynced
-    private final FluidTank tank = new FluidTank(PneumaticValues.NORMAL_TANK_CAPACITY);
+    private final FluidTank tank = new FluidTank(PneumaticValues.NORMAL_TANK_CAPACITY) {
+        @Override
+        protected void onContentsChanged() {
+            super.onContentsChanged();
+            comparatorValue = -1;
+        }
+    };
 
     public TileEntityLiquidHopper() {
         super(4);
@@ -44,6 +52,11 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
     @Override
     public String getName() {
         return Blockss.LIQUID_HOPPER.getUnlocalizedName();
+    }
+
+    @Override
+    protected int getComparatorValueInternal() {
+        return getComparatorValue();
     }
 
     @Override
@@ -166,6 +179,7 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
     public void readFromNBT(NBTTagCompound tag) {
         super.readFromNBT(tag);
         tank.readFromNBT(tag.getCompoundTag("tank"));
+        comparatorValue = -1;
     }
 
     @Override
@@ -187,5 +201,20 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
     @Override
     public Map<String, FluidTank> getSerializableTanks() {
         return ImmutableMap.of("Tank", tank);
+    }
+
+    @Override
+    public int getComparatorValue() {
+        if (comparatorValue < 0) {
+            comparatorValue = updateComparatorValue();
+        }
+        return comparatorValue;
+    }
+
+    private int updateComparatorValue() {
+        FluidStack fluidStack = tank.getFluid();
+        if (fluidStack == null || fluidStack.amount == 0) return 0;
+
+        return (int) (1 + ((float) fluidStack.amount / tank.getCapacity() * 14f));
     }
 }
