@@ -117,6 +117,8 @@ public class Itemss {
     public static final Item CROP_SUPPORT = null;
     @ObjectHolder(SemiBlockTransferGadget.ID)
     public static final Item TRANSFER_GADGET = null;
+    @ObjectHolder(SemiBlockAssembly3DPrinter.ID)
+    public static final Item ASSEMBLY_3D_PRINTER = null;
     @ObjectHolder("logistic_drone")
     public static final Item LOGISTICS_DRONE = null;
     @ObjectHolder("harvesting_drone")

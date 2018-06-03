@@ -65,6 +65,7 @@ public class Textures {
     public static final ResourceLocation MODEL_HEAT_FRAME = new ResourceLocation(MODEL_LOCATION + "heat_frame.png");
     public static final ResourceLocation MODEL_KEROSENE_LAMP = new ResourceLocation(MODEL_LOCATION + "kerosene_lamp.png");
     public static final ResourceLocation MODEL_SENTRY_TURRET = new ResourceLocation(MODEL_LOCATION + "sentry_turret.png");
+    public static final ResourceLocation MODEL_ASSEMBLY_3D_PRINTER = new ResourceLocation(MODEL_LOCATION + "assembly_3d_printer.png");
 
     public static final ResourceLocation MODEL_FLOW_DETECTOR = new ResourceLocation(TUBE_MODULE_MODEL_LOCATION + "flow_detector.png");
     public static final ResourceLocation MODEL_GAUGE = new ResourceLocation(TUBE_MODULE_MODEL_LOCATION + "gauge_module.png");

@@ -17,6 +17,7 @@ public class SemiBlockInitializer {
         SemiBlockManager.registerSemiBlock(SemiBlockSpawnerAgitator.ID, SemiBlockSpawnerAgitator.class);
         SemiBlockManager.registerSemiBlock(SemiBlockCropSupport.ID, SemiBlockCropSupport.class);
         SemiBlockManager.registerSemiBlock(SemiBlockTransferGadget.ID, SemiBlockTransferGadget.class);
+        SemiBlockManager.registerSemiBlock(SemiBlockAssembly3DPrinter.ID, SemiBlockAssembly3DPrinter.class);
     }
 
     public static void init() {
@@ -46,5 +47,8 @@ public class SemiBlockInitializer {
         
         PneumaticCraftRepressurized.proxy.registerSemiBlockRenderer(Itemss.TRANSFER_GADGET);
         SemiBlockManager.registerSemiBlockToItemMapping(SemiBlockTransferGadget.class, Itemss.TRANSFER_GADGET);
+        
+        PneumaticCraftRepressurized.proxy.registerSemiBlockRenderer(Itemss.ASSEMBLY_3D_PRINTER);
+        SemiBlockManager.registerSemiBlockToItemMapping(SemiBlockAssembly3DPrinter.class, Itemss.ASSEMBLY_3D_PRINTER);
     }
 }
