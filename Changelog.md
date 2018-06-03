@@ -6,6 +6,9 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
+## x.x.x-xxx (unreleased)
+* Logistic Drones now grab as many of the requested item type as what fits in a single item stack, instead of taking simply the first stack from the inventory.
+
 ## 0.6.6-192 (14 May 2018)
 
 * The Universal Sensor no longer uses air in the "Constant" redstone emitter mode (still requires minimum pressure though)
