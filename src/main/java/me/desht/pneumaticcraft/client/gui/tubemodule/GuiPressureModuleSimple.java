@@ -79,21 +79,34 @@ public class GuiPressureModuleSimple extends GuiTubeModule {
                 // initGui();
                 break;
             case 1:
-                if (module.lowerBound < module.higherBound) {
-                    module.higherBound = module.lowerBound - 0.1F;
-                } else {
-                    module.higherBound = module.lowerBound + 0.1F;
-                }
+                //Toggle
+                float temp = module.lowerBound; 
+                module.higherBound = module.lowerBound;
+                module.lowerBound = temp;
+                
+                updateThreshold();
                 moreOrLessButton.displayString = module.lowerBound < module.higherBound ? ">" : "<";
                 moreOrLessButton.setTooltipText(I18n.format(module.lowerBound < module.higherBound ? "gui.tubeModule.simpleConfig.higherThan" : "gui.tubeModule.simpleConfig.lowerThan"));
                 NetworkHandler.sendToServer(new PacketUpdatePressureModule(module, 1, module.higherBound));
                 break;
         }
     }
+    
+    private void updateThreshold(){
+        boolean moreThanMode = module.lowerBound > module.higherBound;
+        module.lowerBound = (float) thresholdField.getDoubleValue();
+        if (moreThanMode) {
+            module.higherBound = module.lowerBound - 0.1F;
+        } else {
+            module.higherBound = module.lowerBound + 0.1F;
+        }
+    }
 
     @Override
     public void onGuiClosed() {
-        NetworkHandler.sendToServer(new PacketUpdatePressureModule(module, 0, (float) thresholdField.getDoubleValue()));
+        updateThreshold();
+        NetworkHandler.sendToServer(new PacketUpdatePressureModule(module, 0, module.lowerBound));
+        NetworkHandler.sendToServer(new PacketUpdatePressureModule(module, 1, module.higherBound));
         super.onGuiClosed();
     }
 }

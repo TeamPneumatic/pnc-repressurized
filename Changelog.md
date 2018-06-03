@@ -8,6 +8,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## x.x.x-xxx (unreleased)
 * Logistic Drones now grab as many of the requested item type as what fits in a single item stack, instead of taking simply the first stack from the inventory.
+* Fix: Sync issue with Pressure Gauge GUI toggling the '<' / '>' button.
 
 ## 0.6.6-192 (14 May 2018)
 
