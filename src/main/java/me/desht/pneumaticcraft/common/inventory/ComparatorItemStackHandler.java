@@ -41,9 +41,10 @@ public class ComparatorItemStackHandler extends ItemStackHandler {
 
     /**
      * Force a recalculation of the comparator level.  Recalculation will be done the next time
-     * getComparatorValue() is called.
+     * getComparatorValue() is called.  May be necessary to call this if the inventory has been changed
+     * indirectly, e.g. by modifying an ItemStack returned from getStackInSlot().
      */
-    public void recalcComparatorValue() {
+    public void invalidateComparatorValue() {
         signalLevel = -1;
     }
 }

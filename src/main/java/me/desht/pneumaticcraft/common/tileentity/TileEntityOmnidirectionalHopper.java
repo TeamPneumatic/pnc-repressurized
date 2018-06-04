@@ -60,18 +60,19 @@ public class TileEntityOmnidirectionalHopper extends TileEntityTickableBase impl
     @Override
     public void update() {
         super.update();
+
         if (!getWorld().isRemote && --cooldown <= 0 && redstoneAllows()) {
             int maxItems = getMaxItems();
             boolean success = doImport(maxItems);
             success |= doExport(maxItems);
+
             // If we couldn't pull or push, slow down a bit for performance reasons
             cooldown = success ? getItemTransferInterval() : 8;
 
-            if (success) inventory.recalcComparatorValue();
             if (lastComparatorValue != getComparatorValueInternal()) {
-                updateNeighbours();  // only update when comparator level has actually changed
+                lastComparatorValue = getComparatorValueInternal();
+                updateNeighbours();
             }
-            lastComparatorValue = getComparatorValueInternal();
         }
     }
 
@@ -94,9 +95,7 @@ public class TileEntityOmnidirectionalHopper extends TileEntityTickableBase impl
                 int exportedItems = count - remainder.getCount();
 
                 stack.shrink(exportedItems);
-                if (stack.getCount() <= 0) {
-                    inventory.setStackInSlot(i, ItemStack.EMPTY);
-                }
+                if (exportedItems > 0) inventory.invalidateComparatorValue();
                 maxItems -= exportedItems;
                 if (maxItems <= 0) return true;
             }
@@ -132,6 +131,10 @@ public class TileEntityOmnidirectionalHopper extends TileEntityTickableBase impl
                 ItemStack remainder = IOHelper.insert(this, entity.getItem(), null, false);
                 if (remainder.isEmpty()) {
                     entity.setDead();
+                    success = true;
+                } else if (remainder.getCount() < entity.getItem().getCount()) {
+                    // some but not all were inserted
+                    entity.setItem(remainder);
                     success = true;
                 }
             }
@@ -227,6 +230,6 @@ public class TileEntityOmnidirectionalHopper extends TileEntityTickableBase impl
 
     @Override
     public int getComparatorValue() {
-        return inventory.getComparatorValue();
+        return getComparatorValueInternal();
     }
 }

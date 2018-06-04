@@ -56,7 +56,13 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
 
     @Override
     protected int getComparatorValueInternal() {
-        return getComparatorValue();
+        if (comparatorValue < 0) {
+            FluidStack fluidStack = tank.getFluid();
+            if (fluidStack == null || fluidStack.amount == 0) return 0;
+
+            comparatorValue = (int) (1 + ((float) fluidStack.amount / tank.getCapacity() * 14f));
+        }
+        return comparatorValue;
     }
 
     @Override
@@ -203,18 +209,8 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
         return ImmutableMap.of("Tank", tank);
     }
 
-    @Override
-    public int getComparatorValue() {
-        if (comparatorValue < 0) {
-            comparatorValue = updateComparatorValue();
-        }
-        return comparatorValue;
-    }
-
-    private int updateComparatorValue() {
-        FluidStack fluidStack = tank.getFluid();
-        if (fluidStack == null || fluidStack.amount == 0) return 0;
-
-        return (int) (1 + ((float) fluidStack.amount / tank.getCapacity() * 14f));
-    }
+//    @Override
+//    public int getComparatorValue() {
+//        return getComparatorValueInternal();
+//    }
 }
