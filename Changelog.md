@@ -7,8 +7,13 @@ Changes are in reverse chronological order; newest changes at the top.
 ## Minecraft 1.12.2
 
 ## x.x.x-xxx (unreleased)
+
+* The Omnidirectional Hopper and Liquid Hopper now have comparator support to measure their fullness.
 * Logistic Drones now grab as many of the requested item type as what fits in a single item stack, instead of taking simply the first stack from the inventory.
 * Fix: Sync issue with Pressure Gauge GUI toggling the '<' / '>' button.
+* Fix: crash with drones and magnets on dedicated servers
+* Fix: crash with Ice & Fire cyclops attacking Sentry Turrets
+* Fix: it's now possible to place blocks against GUI-less blocks like compressed iron without needing to sneak-right-click
 
 ## 0.6.6-192 (14 May 2018)
 
