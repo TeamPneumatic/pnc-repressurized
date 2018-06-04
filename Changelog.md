@@ -8,12 +8,16 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## x.x.x-xxx (unreleased)
 
+* Added support for Thaumcraft 6.  Thaumcraft Upgrade is now craftable and adds Googgle of Revealing functionality to the Pneumatic Helmet.  Aspects have been added to a few PneumaticCraft items (beyond any Thaumcraft auto-detection).
 * The Omnidirectional Hopper and Liquid Hopper now have comparator support to measure their fullness.
-* Logistic Drones now grab as many of the requested item type as what fits in a single item stack, instead of taking simply the first stack from the inventory.
+* Logistics Drones now grab as many of the requested item type as can fit in a single item stack, instead of taking simply the first stack from the inventory.
+* Upgrade descriptions for Pneumatic Helmet & Drones in the Charging Station GUI are now much more complete and accurate; all applicable upgrades are documented, and inapplicable upgrades are no longer shown and cannot be installed (e.g. Logistics Drones can't use Dispenser Upgrades).
+* Particles in the Pressure Chamber are slightly less dense now, and render higher inside the chamber.  Allows items in the chamber to actually be seen when the pressure is high; previously particle cloud obscured any items.
 * Fix: Sync issue with Pressure Gauge GUI toggling the '<' / '>' button.
 * Fix: crash with drones and magnets on dedicated servers
-* Fix: crash with Ice & Fire cyclops attacking Sentry Turrets
-* Fix: it's now possible to place blocks against GUI-less blocks like compressed iron without needing to sneak-right-click
+* Fix: crash with Ice & Fire Cyclops attacking Sentry Turrets
+* Fix: it's now possible to place blocks against GUI-less blocks like Compressed Iron Block without needing to sneak-right-click
+* Fix: server crash when hacking mob spawners with Pneumatic Helmet
 
 ## 0.6.6-192 (14 May 2018)
 
