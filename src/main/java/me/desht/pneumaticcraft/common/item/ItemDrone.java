@@ -146,14 +146,27 @@ public class ItemDrone extends ItemPneumatic implements IPressurizable, IChargin
     @Override
     public Set<Item> getApplicableUpgrades() {
         Set<Item> set = new HashSet<>();
-        set.add(Itemss.upgrades.get(EnumUpgrade.VOLUME));
-        set.add(Itemss.upgrades.get(EnumUpgrade.DISPENSER));
-        set.add(Itemss.upgrades.get(EnumUpgrade.ITEM_LIFE));
-        set.add(Itemss.upgrades.get(EnumUpgrade.SECURITY));
-        set.add(Itemss.upgrades.get(EnumUpgrade.SPEED));
-        set.add(Itemss.upgrades.get(EnumUpgrade.ENTITY_TRACKER));
-        set.add(Itemss.upgrades.get(EnumUpgrade.MAGNET));
+        for (EnumUpgrade upgrade : EnumUpgrade.values()) {
+            if (upgradeApplies(upgrade)) {
+                set.add(Itemss.upgrades.get(upgrade));
+            }
+        }
         return set;
+    }
+
+    public boolean upgradeApplies(EnumUpgrade upgrade) {
+        switch (upgrade) {
+            case VOLUME:
+            case DISPENSER:
+            case ITEM_LIFE:
+            case SECURITY:
+            case SPEED:
+            case ENTITY_TRACKER:
+            case MAGNET:
+            case RANGE:
+                return true;
+        }
+        return false;
     }
 
     @Override

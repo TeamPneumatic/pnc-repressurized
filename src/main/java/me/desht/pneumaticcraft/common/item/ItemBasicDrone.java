@@ -1,24 +1,16 @@
 package me.desht.pneumaticcraft.common.item;
 
+import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.common.entity.living.EntityBasicDrone;
-import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
-import me.desht.pneumaticcraft.common.entity.living.EntityLogisticsDrone;
 import me.desht.pneumaticcraft.common.inventory.ChargeableItemHandler;
-import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea;
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetLogistics;
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetStart;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import java.util.List;
 import java.util.function.BiFunction;
 
 public class ItemBasicDrone extends ItemDrone {
@@ -57,6 +49,22 @@ public class ItemBasicDrone extends ItemDrone {
 
     @Override
     public boolean canProgram(ItemStack stack) {
+        return false;
+    }
+
+    @Override
+    public boolean upgradeApplies(IItemRegistry.EnumUpgrade upgrade) {
+        // Currently the only "basic" drones are Logistics & Harvesting, neither of which can take
+        // advantage of a larger inventory.  If future basic drones are added which can do so, we can
+        // subclass ItemBasicDrone and override this to allow dispenser upgrades.
+        switch (upgrade) {
+            case VOLUME:
+            case ITEM_LIFE:
+            case SECURITY:
+            case SPEED:
+            case MAGNET:
+                return true;
+        }
         return false;
     }
 }

@@ -6,17 +6,28 @@ import java.util.List;
 
 public interface IItemRegistry {
     enum EnumUpgrade {
-        VOLUME, 
-        DISPENSER, 
-        ITEM_LIFE, 
-        ENTITY_TRACKER, 
-        BLOCK_TRACKER, 
-        SPEED, SEARCH, 
-        COORDINATE_TRACKER, 
-        RANGE, 
-        SECURITY, 
-        MAGNET,
-        THAUMCRAFT /*Only around when Thaumcraft is */
+        VOLUME("volume"),
+        DISPENSER("dispenser"),
+        ITEM_LIFE("itemLife"),
+        ENTITY_TRACKER("entity"),
+        BLOCK_TRACKER("block"),
+        SPEED("speed"),
+        SEARCH("search"),
+        COORDINATE_TRACKER("coordinate"),
+        RANGE("range"),
+        SECURITY("security"),
+        MAGNET("magnet"),
+        THAUMCRAFT("thaumcraft") /*Only around when Thaumcraft is */;
+
+        private final String name;
+
+        EnumUpgrade(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
     }
 
     /**
