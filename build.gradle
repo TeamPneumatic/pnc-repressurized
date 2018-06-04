@@ -50,6 +50,10 @@ repositories {
         name = "ic2"
         url = "http://maven.ic2.player.to/"
     }
+    maven {
+        name = "Curseforge"
+        url = "https://minecraft.curseforge.com/api/maven/"
+    }
 }
 
 task copyCIArtifacts << {
@@ -161,6 +165,7 @@ dependencies {
     deobfProvided "CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-${crafttweaker_version}"
     compile "igwmod:IGW-Mod-1.12.2:${igwmod_version}:universal"  // using universal instead of userdev for now
     compile "net.industrial-craft:industrialcraft-2:2.8.27-ex112:api"
+    compile "thaumcraft:Thaumcraft:${thaumcraft_version}"
     deobfCompile("appeng:appliedenergistics2:${ae2_version}:api") {
         transitive = false
     }

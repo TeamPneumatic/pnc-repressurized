@@ -46,7 +46,6 @@ import net.minecraft.command.ServerCommandManager;
 import net.minecraft.item.Item;
 import net.minecraft.world.storage.loot.LootTableList;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fml.common.Loader;
@@ -57,13 +56,12 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-
 import org.apache.logging.log4j.Logger;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
 @Mod(modid = Names.MOD_ID, name = Names.MOD_NAME, version = PneumaticCraftRepressurized.MODVERSION,
-        dependencies = "required-after:forge@[14.23.0.2528,);after:forestry;after:igwmod@[1.4.2-11,)",
+        dependencies = "required-after:forge@[14.23.0.2528,);after:forestry;after:igwmod@[1.4.2-11,);after:thaumcraft",
         updateJSON = "https://raw.github.com/TeamPneumatic/pnc-repressurized/master/release_info.json",
         acceptedMinecraftVersions = "1.12"
 )

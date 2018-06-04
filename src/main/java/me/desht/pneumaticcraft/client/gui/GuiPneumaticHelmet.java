@@ -12,12 +12,14 @@ import me.desht.pneumaticcraft.common.recipes.CraftingRegistrator;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
+import me.desht.pneumaticcraft.lib.ModIds;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.common.Loader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +47,9 @@ public class GuiPneumaticHelmet extends GuiPneumaticInventoryItem {
         addUpgradeStat(EnumUpgrade.SPEED, true);
         addUpgradeStat(EnumUpgrade.VOLUME, true);
         addUpgradeStat(EnumUpgrade.RANGE, true);
+        if (Loader.isModLoaded(ModIds.THAUMCRAFT)) {
+            addUpgradeStat(EnumUpgrade.THAUMCRAFT, false);
+        }
     }
 
     private void addUpgradeStat(EnumUpgrade upgrade, boolean leftSided) {

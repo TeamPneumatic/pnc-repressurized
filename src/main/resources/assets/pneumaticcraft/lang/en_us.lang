@@ -370,6 +370,7 @@ gui.tab.info.item.pneumatic_helmet.volumeUpgrade=§0Each Volume Upgrade installe
 gui.tab.info.item.pneumatic_helmet.rangeUpgrade=§0Range Upgrades increase the range at which the Block and Entity Tracker Upgrades can operate.  Up to 5 Range Upgrades can be installed, and each upgrade increases the range by 5 blocks.
 gui.tab.info.item.pneumatic_helmet.securityUpgrade=§0With one or more Security Upgrades installed, you gain the ability to §ohack§0 various blocks and entities in the world with the hacking hotkey (default: H).  Hacking has a variety of useful effects; try targeting things in the world with a Block and/or Entity Tracker Upgrade also installed.
 gui.tab.info.item.pneumatic_helmet.dispenserUpgrade=§0When used in conjunction with the Entity Tracker upgrade, the Dispenser Upgrade allows debugging & monitoring of active drones; target a drone and use the drone-debug hotkey (default: Y), then open the helmet options GUI (default: U).
+gui.tab.info.item.pneumatic_helmet.thaumcraftUpgrade=§0With a Thaumcraft Upgrade installed, you gain the benefits of Goggles of Revealing: nodes are revealed, you get a 5%% Vis discount, and essentia levels of various containers are displayed on-screen.
 gui.tab.info.item.drone=§0In this interface you can insert upgrades into the Drone. Open up other tabs to see which enhancements can be done.
 gui.tab.info.item.drone.speedUpgrade=§0For each Speed Upgrade inserted, the movement speed of the Drone will increase by 10%% of its base speed. This can stack up to 10 upgrades, so 200%% speed is the max.
 gui.tab.info.item.drone.dispenserUpgrade=§0By default the Drone can carry one stack of items. For every Dispenser Upgrade inserted, the Drone gains an additional slot in its internal storage. \n \nIt will also increase the internal liquid tank by 16000mB per upgrade, and 100000RF storage per upgrade (if installed). It also increases the rate at which the Drone can transfer RF (transfer = max storage / 100). \n \n§lNote§0: only applies to regular (programmable) Drones. Logistics & Harvester Drones can not use Dispenser Upgrades.
@@ -821,6 +822,7 @@ blockTracker.info.hydraulicraft=Hydraulicraft Power Block
 blockTracker.info.ic2=IC2 Power Block
 blockTracker.info.rf=RF Power Block
 blockTracker.info.thaumcraft=Containing Aspects:
+blockTracker.info.thaumcraft.none=No Aspects
 blockTracker.info.thaumcraft.nodetype=Node Type:
 blockTracker.info.thaumcraft.nodeModifier=Node Modifier:
 
