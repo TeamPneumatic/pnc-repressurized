@@ -18,6 +18,8 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fix: crash with Ice & Fire Cyclops attacking Sentry Turrets
 * Fix: it's now possible to place blocks against GUI-less blocks like Compressed Iron Block without needing to sneak-right-click
 * Fix: server crash when hacking mob spawners with Pneumatic Helmet
+* Fix: client desync for Logistics Frames after configuring them with Logistics Configurator
+* Fix: items not always transferring in Logistics Network (using tubes & Logistics Modules)
 
 ## 0.6.6-192 (14 May 2018)
 
