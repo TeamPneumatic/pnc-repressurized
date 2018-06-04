@@ -119,7 +119,7 @@ public class LogisticsManager {
         TileEntity te = requester.getTileEntity();
         if (te == null) return 0;
 
-        int requestedAmount = requester instanceof ISpecificRequester ? ((ISpecificRequester) requester).amountRequested(providingStack) : providingStack.getMaxStackSize();
+        int requestedAmount = requester instanceof ISpecificRequester ? ((ISpecificRequester) requester).amountRequested(providingStack) : providingStack.getCount();
         if (requestedAmount == 0) return 0;
         providingStack = providingStack.copy();
         providingStack.setCount(requestedAmount);
