@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.client.render.pneumaticArmor.hacking.block;
 
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IHackableBlock;
-import me.desht.pneumaticcraft.common.util.Reflections;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -64,7 +63,7 @@ public class HackableMobSpawner implements IHackableBlock {
     @Override
     public boolean afterHackTick(World world, BlockPos pos) {
         MobSpawnerBaseLogic spawner = ((TileEntityMobSpawner) world.getTileEntity(pos)).getSpawnerBaseLogic();
-        spawner.prevMobRotation = spawner.getMobRotation();
+        spawner.prevMobRotation = spawner.mobRotation;
         spawner.spawnDelay = 10;
         return false;
     }
