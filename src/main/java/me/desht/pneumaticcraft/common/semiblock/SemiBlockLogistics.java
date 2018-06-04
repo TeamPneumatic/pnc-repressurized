@@ -5,12 +5,9 @@ import me.desht.pneumaticcraft.common.item.ItemLogisticsFrame;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
-import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketAddSemiBlock;
 import me.desht.pneumaticcraft.proxy.CommonProxy.EnumGuiId;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -238,7 +235,6 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic<TileEntity> {
     @Override
     public boolean onRightClickWithConfigurator(EntityPlayer player) {
         if (getGuiID() != null) {
-            NetworkHandler.sendTo(new PacketAddSemiBlock(pos, this), (EntityPlayerMP) player);
             player.openGui(PneumaticCraftRepressurized.instance, getGuiID().ordinal(), world, pos.getX(), pos.getY(), pos.getZ());
         }
         return true;
