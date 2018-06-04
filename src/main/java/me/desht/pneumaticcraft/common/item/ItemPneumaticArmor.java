@@ -10,9 +10,9 @@ import me.desht.pneumaticcraft.client.render.pneumaticArmor.UpgradeRenderHandler
 import me.desht.pneumaticcraft.common.DateEventHandler;
 import me.desht.pneumaticcraft.common.NBTUtil;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
-import me.desht.pneumaticcraft.common.inventory.ChargeableItemHandler;
+import me.desht.pneumaticcraft.common.recipes.CraftingRegistrator;
 import me.desht.pneumaticcraft.common.recipes.RecipeOneProbe;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import me.desht.pneumaticcraft.proxy.CommonProxy.EnumGuiId;
@@ -26,7 +26,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
@@ -36,7 +35,10 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 //TODO 1.8 Thaumcraft dep @Optional.InterfaceList({@Interface(iface = "thaumcraft.api.IRepairable", modid = ModIds.THAUMCRAFT), @Interface(iface = "thaumcraft.api.IGoggles", modid = ModIds.THAUMCRAFT), @Interface(iface = "thaumcraft.api.IVisDiscountGear", modid = ModIds.THAUMCRAFT), @Interface(iface = "thaumcraft.api.nodes.IRevealer", modid = ModIds.THAUMCRAFT)})
 public class ItemPneumaticArmor extends ItemArmor implements IPressurizable, IChargingStationGUIHolderItem, IUpgradeAcceptor
@@ -76,19 +78,8 @@ public class ItemPneumaticArmor extends ItemArmor implements IPressurizable, ICh
         }
         float pressure = getPressure(iStack);
         textList.add((pressure < 0.5F ? TextFormatting.RED : TextFormatting.DARK_GREEN) + "Pressure: " + Math.round(pressure * 10D) / 10D + " bar");
-        ItemStack[] inventoryStacks = getUpgradeStacks(iStack);
-        boolean isArmorEmpty = true;
-        for (ItemStack stack : inventoryStacks) {
-            if (!stack.isEmpty()) {
-                isArmorEmpty = false;
-                break;
-            }
-        }
-        if (isArmorEmpty) {
-            textList.add("Insert in Charging Station to install upgrades");
-        } else {
-            textList.add("Upgrades installed:");
-            PneumaticCraftUtils.sortCombineItemStacksAndToString(textList, inventoryStacks);
+        if (UpgradableItemUtils.addUpgradeInformation(iStack, world, textList, flag) > 0) {
+            // supplementary search & tracker information
             ItemStack searchedStack = getSearchedStack(iStack);
             if (!searchedStack.isEmpty()) {
                 for (int i = 0; i < textList.size(); i++) {
@@ -108,40 +99,8 @@ public class ItemPneumaticArmor extends ItemArmor implements IPressurizable, ICh
                 }
             }
         }
+
         ItemPneumatic.addTooltip(iStack, world, textList);
-    }
-
-    /**
-     * Retrieves the upgrades currently installed on the given armor stack.
-     */
-    public static ItemStack[] getUpgradeStacks(ItemStack iStack) {
-        NBTTagCompound tag = NBTUtil.getCompoundTag(iStack, ChargeableItemHandler.NBT_UPGRADE_TAG);
-        ItemStack[] inventoryStacks = new ItemStack[9];
-        Arrays.fill(inventoryStacks, ItemStack.EMPTY);
-        NBTTagList itemList = tag.getTagList("Items", 10);
-        for (int i = 0; i < itemList.tagCount(); i++) {
-            NBTTagCompound slotEntry = itemList.getCompoundTagAt(i);
-            int j = slotEntry.getByte("Slot");
-            if (j >= 0 && j < 9) {
-                inventoryStacks[j] = new ItemStack(slotEntry);
-            }
-        }
-        return inventoryStacks;
-    }
-
-    public static int getUpgrades(EnumUpgrade upgrade, ItemStack stack) {
-        return getUpgrades(Itemss.upgrades.get(upgrade), stack);
-    }
-
-    public static int getUpgrades(Item upgrade, ItemStack iStack) {
-        int upgrades = 0;
-        ItemStack[] stacks = getUpgradeStacks(iStack);
-        for (ItemStack stack : stacks) {
-            if (stack.getItem() == upgrade) {
-                upgrades += stack.getCount();
-            }
-        }
-        return upgrades;
     }
 
     @SideOnly(Side.CLIENT)
@@ -186,7 +145,7 @@ public class ItemPneumaticArmor extends ItemArmor implements IPressurizable, ICh
 
     @Override
     public float getPressure(ItemStack iStack) {
-        int volume = ItemPneumaticArmor.getUpgrades(EnumUpgrade.VOLUME, iStack) * PneumaticValues.VOLUME_VOLUME_UPGRADE + PneumaticValues.PNEUMATIC_HELMET_VOLUME;
+        int volume = UpgradableItemUtils.getUpgrades(EnumUpgrade.VOLUME, iStack) * PneumaticValues.VOLUME_VOLUME_UPGRADE + PneumaticValues.PNEUMATIC_HELMET_VOLUME;
         int oldVolume = NBTUtil.getInteger(iStack, "volume");
         int currentAir = NBTUtil.getInteger(iStack, "air");
         if (volume < oldVolume) {
@@ -248,6 +207,10 @@ public class ItemPneumaticArmor extends ItemArmor implements IPressurizable, ICh
         for (IUpgradeRenderHandler handler : UpgradeRenderHandlerList.instance().upgradeRenderers) {
             Collections.addAll(items, handler.getRequiredUpgrades());
         }
+        items.add(CraftingRegistrator.getUpgrade(EnumUpgrade.SPEED).getItem());
+        items.add(CraftingRegistrator.getUpgrade(EnumUpgrade.VOLUME).getItem());
+        items.add(CraftingRegistrator.getUpgrade(EnumUpgrade.RANGE).getItem());
+        items.add(CraftingRegistrator.getUpgrade(EnumUpgrade.SECURITY).getItem());
         return items;
     }
 

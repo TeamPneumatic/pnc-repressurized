@@ -2,9 +2,9 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
+import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.BBConstants;
 import me.desht.pneumaticcraft.proxy.CommonProxy.EnumGuiId;
 import net.minecraft.block.material.Material;
@@ -95,7 +95,7 @@ public class BlockSecurityStation extends BlockPneumaticCraftModeled {
 
     private int getPlayerHackLevel(EntityPlayer player) {
         ItemStack armorStack = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
-        return armorStack.getItem() == Itemss.PNEUMATIC_HELMET ? ItemPneumaticArmor.getUpgrades(EnumUpgrade.SECURITY, armorStack) : 0;
+        return armorStack.getItem() == Itemss.PNEUMATIC_HELMET ? UpgradableItemUtils.getUpgrades(EnumUpgrade.SECURITY, armorStack) : 0;
     }
 
     @Override

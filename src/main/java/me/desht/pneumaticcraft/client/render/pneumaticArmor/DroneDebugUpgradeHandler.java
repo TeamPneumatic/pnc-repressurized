@@ -5,8 +5,8 @@ import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IOptionPage;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.client.gui.pneumaticHelmet.GuiDroneDebuggerOptions;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.item.Itemss;
+import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
@@ -82,7 +82,7 @@ public class DroneDebugUpgradeHandler implements IUpgradeRenderHandler {
     public static boolean enabledForPlayer(EntityPlayer player) {
         ItemStack helmet = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
         if (!helmet.isEmpty()) {
-            return enabledForStacks(ItemPneumaticArmor.getUpgradeStacks(helmet));
+            return enabledForStacks(UpgradableItemUtils.getUpgradeStacks(helmet));
         } else {
             return false;
         }

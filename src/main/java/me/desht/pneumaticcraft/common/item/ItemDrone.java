@@ -10,6 +10,7 @@ import me.desht.pneumaticcraft.common.inventory.ChargeableItemHandler;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.proxy.CommonProxy.EnumGuiId;
 import net.minecraft.client.util.ITooltipFlag;
@@ -95,14 +96,15 @@ public class ItemDrone extends ItemPneumatic implements IPressurizable, IChargin
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void addInformation(ItemStack stack, World player, List<String> list, ITooltipFlag par4) {
+    public void addInformation(ItemStack stack, World world, List<String> list, ITooltipFlag flag) {
         list.add("Pressure: " + PneumaticCraftUtils.roundNumberTo(getPressure(stack), 1) + " bar");
-        super.addInformation(stack, player, list, par4);
+        UpgradableItemUtils.addUpgradeInformation(stack, world, list, flag);
+        super.addInformation(stack, world, list, flag);
     }
 
     @Override
     public float getPressure(ItemStack iStack) {
-        float volume = ItemPneumaticArmor.getUpgrades(EnumUpgrade.VOLUME, iStack) * PneumaticValues.VOLUME_VOLUME_UPGRADE + PneumaticValues.DRONE_VOLUME;
+        float volume = UpgradableItemUtils.getUpgrades(EnumUpgrade.VOLUME, iStack) * PneumaticValues.VOLUME_VOLUME_UPGRADE + PneumaticValues.DRONE_VOLUME;
         float oldVolume = NBTUtil.getFloat(iStack, "volume");
         if (volume < oldVolume) {
             float currentAir = NBTUtil.getFloat(iStack, "currentAir");

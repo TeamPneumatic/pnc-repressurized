@@ -8,11 +8,11 @@ import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IPressurizable;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.UpgradeRenderHandlerList;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.hacking.HackableHandler;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketHackingBlockFinish;
 import me.desht.pneumaticcraft.common.network.PacketHackingEntityFinish;
+import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.common.util.WorldAndCoord;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -110,9 +110,9 @@ public class CommonHUDHandler {
     }
 
     public void checkHelmetInventory(ItemStack helmetStack) {
-        ItemStack[] helmetStacks = ItemPneumaticArmor.getUpgradeStacks(helmetStack);
-        rangeUpgradesInstalled = ItemPneumaticArmor.getUpgrades(EnumUpgrade.RANGE, helmetStack);
-        speedUpgradesInstalled = ItemPneumaticArmor.getUpgrades(EnumUpgrade.SPEED, helmetStack);
+        ItemStack[] helmetStacks = UpgradableItemUtils.getUpgradeStacks(helmetStack);
+        rangeUpgradesInstalled = UpgradableItemUtils.getUpgrades(EnumUpgrade.RANGE, helmetStack);
+        speedUpgradesInstalled = UpgradableItemUtils.getUpgrades(EnumUpgrade.SPEED, helmetStack);
         upgradeRenderersInserted = new boolean[UpgradeRenderHandlerList.instance().upgradeRenderers.size()];
         for (int i = 0; i < UpgradeRenderHandlerList.instance().upgradeRenderers.size(); i++) {
             upgradeRenderersInserted[i] = isModuleEnabled(helmetStacks, UpgradeRenderHandlerList.instance().upgradeRenderers.get(i));

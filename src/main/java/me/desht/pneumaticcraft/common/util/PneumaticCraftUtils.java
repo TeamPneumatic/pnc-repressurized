@@ -350,7 +350,7 @@ public class PneumaticCraftUtils {
             if (!stack.isEmpty()) {
                 if (oldItemStack.isEmpty() || !stack.isItemEqual(oldItemStack) || oldInventoryItems != null && oldInventoryItems.size() > 0) {
                     if (!oldItemStack.isEmpty())
-                        textList.add("\u2022 " + PneumaticCraftUtils.convertAmountToString(itemCount) + " " + oldItemStack.getDisplayName());
+                        textList.add("\u2022 " + PneumaticCraftUtils.convertAmountToString(itemCount) + " x " + oldItemStack.getDisplayName());
                     if (oldInventoryItems != null) {
                         int oldSize = textList.size();
                         sortCombineItemStacksAndToString(textList, oldInventoryItems.toArray(new ItemStack[oldInventoryItems.size()]));
@@ -367,7 +367,7 @@ public class PneumaticCraftUtils {
             }
         }
         if (itemCount > 0 && !oldItemStack.isEmpty()) {
-            textList.add("\u2022 " + PneumaticCraftUtils.convertAmountToString(itemCount) + " " + oldItemStack.getDisplayName());
+            textList.add("\u2022 " + PneumaticCraftUtils.convertAmountToString(itemCount) + " x " + oldItemStack.getDisplayName());
             if (oldInventoryItems != null) {
                 int oldSize = textList.size();
                 sortCombineItemStacksAndToString(textList, oldInventoryItems.toArray(new ItemStack[oldInventoryItems.size()]));
