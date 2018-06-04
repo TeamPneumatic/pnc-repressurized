@@ -2,13 +2,12 @@ package me.desht.pneumaticcraft.common.semiblock;
 
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Streams;
-
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.common.NBTUtil;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketDescription;
 import me.desht.pneumaticcraft.common.network.PacketAddSemiBlock;
+import me.desht.pneumaticcraft.common.network.PacketDescription;
 import me.desht.pneumaticcraft.common.network.PacketRemoveSemiBlock;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.StreamUtils;
@@ -37,13 +36,11 @@ import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import org.apache.commons.lang3.Validate;
 
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import org.apache.commons.lang3.Validate;
 
 @Mod.EventBusSubscriber
 public class SemiBlockManager {
@@ -51,7 +48,9 @@ public class SemiBlockManager {
     private final List<ISemiBlock> addingBlocks = new ArrayList<>();
     private final Map<Chunk, Set<EntityPlayer>> syncList = new HashMap<>();
     private final Set<Chunk> chunksMarkedForRemoval = new HashSet<>();
-    private static final int SYNC_DISTANCE = 64;
+    private static final int SYNC_DISTANCE_SQ = 64 * 64;
+    private static final int SYNC_DISTANCE_SQ5 = 69 * 69;
+    private static final int SYNC_DISTANCE_SQ10 = 74 * 74;
     private static final HashBiMap<String, Class<? extends ISemiBlock>> registeredTypes = HashBiMap.create();
     private static final HashBiMap<Class<? extends ISemiBlock>, ItemSemiBlockBase> semiBlockToItems = HashBiMap.create();
     private static final SemiBlockManager INSTANCE = new SemiBlockManager();
@@ -183,6 +182,8 @@ public class SemiBlockManager {
 
     @SubscribeEvent
     public void onServerTick(TickEvent.ServerTickEvent event) {
+        if (event.phase == TickEvent.Phase.START) return;
+
         for (ISemiBlock semiBlock : addingBlocks) {
             Chunk chunk = semiBlock.getWorld().getChunkFromBlockCoords(semiBlock.getPos());
             addPendingBlock(chunk, semiBlock);
@@ -209,6 +210,8 @@ public class SemiBlockManager {
 
     @SubscribeEvent
     public void onClientTick(TickEvent.ClientTickEvent event) {
+        if (event.phase == TickEvent.Phase.START) return;
+
         if (this == getServerInstance()) getClientOldInstance().onClientTick(event);
         else {
             EntityPlayer player = PneumaticCraftRepressurized.proxy.getPlayer();
@@ -222,7 +225,7 @@ public class SemiBlockManager {
                 Iterator<Map.Entry<Chunk, Map<BlockPos, List<ISemiBlock>>>> iterator = semiBlocks.entrySet().iterator();
                 while (iterator.hasNext()) {
                     Map.Entry<Chunk, Map<BlockPos, List<ISemiBlock>>> entry = iterator.next();
-                    if (PneumaticCraftUtils.distBetween(player.posX, 0, player.posZ, entry.getKey().x * 16 - 8, 0, entry.getKey().z * 16 - 8) > SYNC_DISTANCE + 10) {
+                    if (PneumaticCraftUtils.distBetweenSq(player.posX, 0, player.posZ, entry.getKey().x * 16 - 8, 0, entry.getKey().z * 16 - 8) > SYNC_DISTANCE_SQ10) {
                         iterator.remove();
                     } else {
                         update(entry.getValue());
@@ -256,7 +259,7 @@ public class SemiBlockManager {
 
     @SubscribeEvent
     public void onWorldTick(TickEvent.WorldTickEvent event) {
-        if (!event.world.isRemote) {
+        if (event.phase == TickEvent.Phase.END && !event.world.isRemote) {
             syncWithPlayers(event.world);
         }
     }
@@ -270,8 +273,8 @@ public class SemiBlockManager {
             int chunkZ = chunk.z * 16 - 8;
             for (EntityPlayer player : players) {
                 if (chunk.getWorld() == world) {
-                    double dist = PneumaticCraftUtils.distBetween(player.posX, 0, player.posZ, chunkX, 0, chunkZ);
-                    if (dist < SYNC_DISTANCE) {
+                    double dist = PneumaticCraftUtils.distBetweenSq(player.posX, 0, player.posZ, chunkX, 0, chunkZ);
+                    if (dist < SYNC_DISTANCE_SQ) {
                         if (syncedPlayers.add(player)) {
                             for(List<ISemiBlock> semiBlocks : semiBlocks.get(chunk).values()){
                                 for (ISemiBlock semiBlock : semiBlocks) {
@@ -283,7 +286,7 @@ public class SemiBlockManager {
                                 }
                             }
                         }
-                    } else if (dist > SYNC_DISTANCE + 5) {
+                    } else if (dist > SYNC_DISTANCE_SQ5) {
                         syncedPlayers.remove(player);
                     }
                 } else {
