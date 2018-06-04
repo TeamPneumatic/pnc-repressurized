@@ -56,7 +56,6 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
     public boolean isSufficientPressureInChamber;
     @GuiSynced
     public float recipePressure;
-//    private final Item etchingAcid = Fluids.getBucket(Fluids.ETCHING_ACID);
     @DescSynced
     private ItemStackHandler itemsInChamber = new ItemStackHandler(100);
 
@@ -214,9 +213,9 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
         if (getWorld().isRemote && getPressure() > 0.2D) {
             int particles = (int) Math.pow(multiBlockSize - 2, 3);
             for (int i = 0; i < particles; i++) {
-                if (rand.nextInt(Math.max(1, 8 - (int) (getPressure() * 2D))) == 0) {
+                if (rand.nextInt(Math.max(1, 8 - (int) (getPressure() * 1.5D))) == 0) {
                     double posX = multiBlockX + 1D + rand.nextDouble() * (multiBlockSize - 2D);
-                    double posY = multiBlockY + 1D + rand.nextDouble() * (multiBlockSize - 2D);
+                    double posY = multiBlockY + 1.5D + rand.nextDouble() * (multiBlockSize - 2.5D);
                     double posZ = multiBlockZ + 1D + rand.nextDouble() * (multiBlockSize - 2D);
                     getWorld().spawnParticle(EnumParticleTypes.EXPLOSION_NORMAL, posX, posY, posZ, 0D, 0D, 0D);
                 }

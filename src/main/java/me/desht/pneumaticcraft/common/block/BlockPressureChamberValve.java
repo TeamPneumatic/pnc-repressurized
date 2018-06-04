@@ -71,17 +71,8 @@ public class BlockPressureChamberValve extends BlockPneumaticCraft implements IB
         if (!world.isRemote && te instanceof TileEntityPressureChamberValve) {
             if (((TileEntityPressureChamberValve) te).multiBlockSize > 0) {
                 player.openGui(PneumaticCraftRepressurized.instance, EnumGuiId.PRESSURE_CHAMBER.ordinal(), world, pos.getX(), pos.getY(), pos.getZ());
-            } else if (((TileEntityPressureChamberValve) te).accessoryValves.size() > 0) { // when
-                // this
-                // isn't
-                // the
-                // core
-                // Valve,
-                // track
-                // down
-                // the
-                // core
-                // Valve.
+            } else if (((TileEntityPressureChamberValve) te).accessoryValves.size() > 0) {
+                // when this isn't the core valve, track down the core valve
                 //  System.out.println("size: " + ((TileEntityPressureChamberValve)te).accessoryValves.size());
                 for (TileEntityPressureChamberValve valve : ((TileEntityPressureChamberValve) te).accessoryValves) {
                     if (valve.multiBlockSize > 0) {
