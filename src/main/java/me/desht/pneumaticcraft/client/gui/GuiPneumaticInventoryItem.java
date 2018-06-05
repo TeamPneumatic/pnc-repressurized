@@ -14,14 +14,17 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.input.Keyboard;
 
 import java.awt.*;
+import java.io.IOException;
 import java.util.List;
 
 @SideOnly(Side.CLIENT)
 public abstract class GuiPneumaticInventoryItem extends GuiPneumaticContainerBase<TileEntityChargingStation> {
 
     protected ItemStack itemStack;
+    private GuiButton guiBackButton;
 
     public GuiPneumaticInventoryItem(ContainerChargingStationItemInventory container, TileEntityChargingStation te) {
         super(container, te, Textures.GUI_PNEUMATIC_ARMOR_LOCATION);
@@ -33,8 +36,8 @@ public abstract class GuiPneumaticInventoryItem extends GuiPneumaticContainerBas
         super.initGui();
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
-        GuiButton guiSelectButton = new GuiButton(2, xStart + 90, yStart + 15, 25, 20, "\u27f5");
-        buttonList.add(guiSelectButton);
+        guiBackButton = new GuiButton(2, xStart + 90, yStart + 15, 25, 20, "\u27f5");
+        buttonList.add(guiBackButton);
     }
 
     @Override
@@ -107,5 +110,15 @@ public abstract class GuiPneumaticInventoryItem extends GuiPneumaticContainerBas
     @Override
     protected Point getGaugeLocation() {
         return null;
+    }
+
+    @Override
+    protected void keyTyped(char key, int keyCode) throws IOException {
+        if (keyCode == Keyboard.KEY_ESCAPE) {
+            // equivalent to pressing the Back button
+            actionPerformed(guiBackButton);
+        } else {
+            super.keyTyped(key, keyCode);
+        }
     }
 }
