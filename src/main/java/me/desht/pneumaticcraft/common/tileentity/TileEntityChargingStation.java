@@ -335,6 +335,8 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
         protected void onContentsChanged(int slot) {
             if (te.getWorld().isRemote || slot != CHARGE_INVENTORY_INDEX) return;
 
+            te.markDirty();
+
             if (te.chargeableInventory != null) {
                 te.chargeableInventory.saveInventory();
                 te.setChargeableInventory(null);
