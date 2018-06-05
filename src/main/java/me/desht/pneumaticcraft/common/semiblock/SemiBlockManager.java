@@ -239,10 +239,13 @@ public class SemiBlockManager {
     
     private void addPendingBlock(Chunk chunk, ISemiBlock semiBlock){
         Map<BlockPos, List<ISemiBlock>> map = getOrCreateMap(chunk);
-        List<ISemiBlock> semiBlocksForPos = map.get(semiBlock.getPos());
-        if(semiBlocksForPos == null){
-            semiBlocksForPos = new ArrayList<ISemiBlock>();
-            map.put(semiBlock.getPos(), semiBlocksForPos);
+        List<ISemiBlock> semiBlocksForPos = map.computeIfAbsent(semiBlock.getPos(), k -> new ArrayList<>());
+        for (int i = 0; i < semiBlocksForPos.size(); i++) {
+            // can't have multiple semiblocks of the same type; replace any such existing semiblock
+            if (semiBlocksForPos.get(i).getClass() == semiBlock.getClass()) {
+                semiBlocksForPos.set(i, semiBlock);
+                return;
+            }
         }
         semiBlocksForPos.add(semiBlock);
     }
@@ -404,21 +407,19 @@ public class SemiBlockManager {
 
     /**
      * Queue an addition of a semi block. Don't do it immediately, because CME's.
-     * @param world
-     * @param pos
-     * @param semiBlock
-     * @param chunk
+     * @param world the world
+     * @param pos blockpos to add semiblock at
+     * @param semiBlock the semiblock to add
+     * @param chunk the chunk that the blockpos is in
      */
     private void addSemiBlock(World world, BlockPos pos, ISemiBlock semiBlock, Chunk chunk) {
         Validate.notNull(semiBlock);
         if (!registeredTypes.containsValue(semiBlock.getClass()))
             throw new IllegalStateException("ISemiBlock \"" + semiBlock + "\" was not registered!");
-                
-        if (semiBlock != null) {
-            semiBlock.initialize(world, pos);
-            addingBlocks.add(semiBlock);
-        }
-        
+
+        semiBlock.initialize(world, pos);
+        addingBlocks.add(semiBlock);
+
         chunk.markDirty();
     }
     
@@ -448,13 +449,13 @@ public class SemiBlockManager {
                 stream = semiblocks.stream().filter(semiBlock -> !semiBlock.isInvalid());
             }
         }
-        
-        //Semiblocks that _just_ have been added, but not the the chunk maps yet.
+
+        // Semiblocks that _just_ have been added, but not the the chunk maps yet.
         Stream<ISemiBlock> addingStream = addingBlocks.stream()
-                                                      .filter(semiBlock -> semiBlock.getWorld() == world && 
-                                                              semiBlock.getPos().equals(pos) &&
-                                                              !semiBlock.isInvalid());
-        if(stream == null){
+                .filter(semiBlock -> semiBlock.getWorld() == world &&
+                        semiBlock.getPos().equals(pos) &&
+                        !semiBlock.isInvalid());
+        if (stream == null) {
             return addingStream;
         }else{
             return Streams.concat(stream, addingStream);
@@ -481,10 +482,10 @@ public class SemiBlockManager {
         //Retrieve all semi block storages from the relevant chunks
         Stream<Map<BlockPos, List<ISemiBlock>>> chunkMaps = applicableChunks.stream()
                                                                             .map(chunk -> getSemiBlocks().get(chunk))
-                                                                            .filter(map -> map != null);
+                                                                            .filter(Objects::nonNull);
         
         Stream<List<ISemiBlock>> semiBlocksPerPos = chunkMaps.flatMap(map -> map.values().stream());
-        Stream<ISemiBlock> existingSemiBlocksInArea = semiBlocksPerPos.flatMap(semiBlockLists -> semiBlockLists.stream());
+        Stream<ISemiBlock> existingSemiBlocksInArea = semiBlocksPerPos.flatMap(Collection::stream);
         Stream<ISemiBlock> allSemiBlocksInArea = Streams.concat(existingSemiBlocksInArea, addingBlocks.stream());
         return allSemiBlocksInArea.filter(s -> !s.isInvalid() &&
                                                minX <= s.getPos().getX() && s.getPos().getX() <= maxX &&
