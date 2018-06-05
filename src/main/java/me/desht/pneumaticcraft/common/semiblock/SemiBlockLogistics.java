@@ -105,9 +105,9 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic<TileEntity> {
 
         } else {
             if (invisible && !playerIsHoldingLogisticItems()) {
-                alpha = Math.max(0, alpha - 3);
+                alpha = Math.max(0, alpha - 9);
             } else {
-                alpha = Math.min(255, alpha + 3);
+                alpha = Math.min(255, alpha + 9);
             }
         }
     }
@@ -116,7 +116,7 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic<TileEntity> {
     private boolean playerIsHoldingLogisticItems() {
         EntityPlayer player = Minecraft.getMinecraft().player;
         ItemStack stack = player.getHeldItemMainhand();
-        return (stack.getItem() == Itemss.LOGISTICS_CONFIGURATOR || stack.getItem() instanceof ItemLogisticsFrame);
+        return (stack.getItem() == Itemss.LOGISTICS_CONFIGURATOR || stack.getItem() instanceof ItemSemiBlockBase);
     }
 
     public void informIncomingStack(ItemStack stack) {
