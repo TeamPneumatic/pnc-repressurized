@@ -16,10 +16,11 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fix: Sync issue with Pressure Gauge GUI toggling the '<' / '>' button.
 * Fix: crash with drones and magnets on dedicated servers
 * Fix: crash with Ice & Fire Cyclops attacking Sentry Turrets
-* Fix: it's now possible to place blocks against GUI-less blocks like Compressed Iron Block without needing to sneak-right-click
 * Fix: server crash when hacking mob spawners with Pneumatic Helmet
 * Fix: client desync for Logistics Frames after configuring them with Logistics Configurator
+* Fix: Logistics Frames & other semiblocks not always sync'ing properly to the client on initial player login
 * Fix: items not always transferring in Logistics Network (using tubes & Logistics Modules)
+* Fix: it's now possible to place blocks against GUI-less blocks like Compressed Iron Block without needing to sneak-right-click
 
 ## 0.6.6-192 (14 May 2018)
 
@@ -38,7 +39,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Plastic Mixer JEI page now uses Ore Dictionary to show the dyes instead of hard-coded vanilla dye items. (Mods and/or packs can remove vanilla dyes from the oredict so hardcoded items can be misleading)
 * Fix: client crash when looking at RFTools Powercells with the Pneumatic Helmet Block Upgrade Tracker active (and RF scanning enabled).  The RF scanner still doesn't get the RF level; a more comprehensive data syncing framework for the Pneumatic Helmet is being considered.
 * Fix: Removed Upgrade Info tab from Refinery GUI (the block doesn't take any upgrades)
-* Fix: Nasty item-equip sound loop being player when Pneumatic Helmet equipped and Charging Station GUI open
+* Fix: Nasty item-equip sound loop being played when Pneumatic Helmet equipped and Charging Station GUI open
 
 ## 0.6.3-181 (25 Apr 2018)
 
