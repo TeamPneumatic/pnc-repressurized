@@ -22,7 +22,6 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.village.MerchantRecipe;
 import net.minecraft.village.MerchantRecipeList;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
@@ -30,28 +29,10 @@ import java.util.List;
 
 public class CraftingRegistrator {
     @GameRegistry.ObjectHolder("theoneprobe:probe")
-    static final Item ONE_PROBE = null;
+    public static final Item ONE_PROBE = null;
 
     public static void init() {
-               
-        //While static recipes are defined for the empty air canisters, for the recipe book and tools like JEI,
-        //The following is defined to make them work for any air canister, and transfer the charge to the crafted item.
-        //TODO dynamically create these, based on the json defined lay-outs, as currently the json recipes are ignored when
-        //they get changed by resource pack creators.
-        ForgeRegistries.RECIPES.register(new RecipeGun("dyeYellow", Itemss.VORTEX_CANNON));
-        ForgeRegistries.RECIPES.register(new RecipeGun("dyeOrange", Itemss.PNEUMATIC_WRENCH));
-        ForgeRegistries.RECIPES.register(new RecipeGun("dyeRed", Itemss.LOGISTICS_CONFIGURATOR));
-        ForgeRegistries.RECIPES.register(new RecipeGun("dyeBlue", Itemss.CAMO_APPLICATOR));
-        ForgeRegistries.RECIPES.register(new RecipePneumaticHelmet());
-        ForgeRegistries.RECIPES.register(new RecipeManometer());
-        ForgeRegistries.RECIPES.register(new RecipeAmadronTablet());
-        
-        ForgeRegistries.RECIPES.register(new RecipeColorDrone());
-        ForgeRegistries.RECIPES.register(new RecipeBasicDroneToDrone(Itemss.LOGISTICS_DRONE));
-        ForgeRegistries.RECIPES.register(new RecipeBasicDroneToDrone(Itemss.HARVESTING_DRONE));
-        ForgeRegistries.RECIPES.register(new RecipeGunAmmo());
-
-        if (ONE_PROBE != null) ForgeRegistries.RECIPES.register(new RecipeOneProbe());
+        // All crafting recipes are now defined in JSON
 
         GameRegistry.addSmelting(Itemss.FAILED_PCB, new ItemStack(Itemss.EMPTY_PCB, 1, Itemss.EMPTY_PCB.getMaxDamage()), 0);
 

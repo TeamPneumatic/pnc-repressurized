@@ -1,5 +1,5 @@
 {
-  "type": "pneumaticcraft:always_invalid_shapeless",
+  "type": "pneumaticcraft:drone_upgrade",
   "ingredients": [
     {
       "item": "pneumaticcraft:harvesting_drone"

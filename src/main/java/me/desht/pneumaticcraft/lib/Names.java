@@ -5,6 +5,7 @@ public class Names {
     public static final String INGOT_IRON_COMPRESSED = "ingotIronCompressed";
     public static final String BLOCK_IRON_COMPRESSED = "blockIronCompressed";
     public static final String GEAR_IRON_COMPRESSED = "gearIronCompressed";
+    public static final String DRONE = "pneumaticDrone";
 
     public static final String MODULE_SAFETY_VALVE = "safety_tube_module";
     public static final String MODULE_REGULATOR = "regulator_tube_module";

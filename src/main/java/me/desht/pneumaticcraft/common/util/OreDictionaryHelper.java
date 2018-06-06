@@ -22,5 +22,8 @@ public class OreDictionaryHelper {
         for (int i = 0; i < ItemPlastic.ORE_NAMES.length; i++){
             OreDictionary.registerOre(ItemPlastic.ORE_NAMES[i], new ItemStack(Itemss.PLASTIC, 1, i));
         }
+        OreDictionary.registerOre(Names.DRONE, Itemss.DRONE);
+        OreDictionary.registerOre(Names.DRONE, Itemss.LOGISTICS_DRONE);
+        OreDictionary.registerOre(Names.DRONE, Itemss.HARVESTING_DRONE);
     }
 }

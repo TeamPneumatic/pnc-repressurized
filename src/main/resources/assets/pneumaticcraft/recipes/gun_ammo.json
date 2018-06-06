@@ -1,5 +1,5 @@
 {
-  "type": "forge:ore_shapeless",
+  "type": "pneumaticcraft:gun_ammo",
   "ingredients": [
     {
       "item": "minecraft:gunpowder"

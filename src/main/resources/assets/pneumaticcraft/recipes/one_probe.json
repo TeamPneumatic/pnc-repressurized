@@ -1,0 +1,21 @@
+{
+  "type": "pneumaticcraft:one_probe",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "theoneprobe"
+    }
+  ],
+  "ingredients": [
+    {
+      "item": "pneumaticcraft:pneumatic_helmet",
+      "data": 32767
+    },
+    {
+      "item": "theoneprobe:probe"
+    }
+  ],
+  "result": {
+    "item": "pneumaticcraft:pneumatic_helmet"
+  }
+}

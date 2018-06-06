@@ -1,16 +1,15 @@
 {
-  "type": "minecraft:crafting_shapeless",
+  "type": "pneumaticcraft:shapeless_pressurizable",
   "ingredients": [
     {
       "item": "pneumaticcraft:air_canister",
-      "data": 30000
+      "data": 32767
     },
     {
       "item": "pneumaticcraft:pressure_gauge"
     }
   ],
   "result": {
-    "item": "pneumaticcraft:manometer",
-    "data": 30000
+    "item": "pneumaticcraft:manometer"
   }
 }

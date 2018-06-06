@@ -1,5 +1,5 @@
 {
-  "type": "minecraft:crafting_shaped",
+  "type": "pneumaticcraft:shaped_pressurizable",
   "pattern": [
     "ppp",
     "pgp",
@@ -12,14 +12,13 @@
     },
     "c": {
       "item": "pneumaticcraft:air_canister",
-      "data": 30000
+      "data": 32767
     },
     "g": {
       "item": "pneumaticcraft:gps_tool"
     }
   },
   "result": {
-    "item": "pneumaticcraft:amadron_tablet",
-    "data": 30000
+    "item": "pneumaticcraft:amadron_tablet"
   }
 }

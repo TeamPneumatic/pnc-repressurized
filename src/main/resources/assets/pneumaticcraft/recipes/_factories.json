@@ -1,9 +1,15 @@
 {
 	"ingredients": {
-		"fluid": "me.desht.pneumaticcraft.common.recipes.FluidIngredientFactory"
+		"fluid": "me.desht.pneumaticcraft.common.recipes.factories.FluidIngredientFactory"
 	},
 	"recipes": {
-		"shaped_fluid": "me.desht.pneumaticcraft.common.recipes.ShapedFluidRecipeFactory",
-		"always_invalid_shapeless" : "me.desht.pneumaticcraft.common.recipes.AlwaysInvalidShapelessRecipeFactory"	
+		"shaped_fluid": "me.desht.pneumaticcraft.common.recipes.factories.ShapedFluidRecipeFactory",
+		"always_invalid_shapeless" : "me.desht.pneumaticcraft.common.recipes.factories.AlwaysInvalidShapelessRecipeFactory",
+		"shaped_pressurizable": "me.desht.pneumaticcraft.common.recipes.factories.ShapedPressurizableRecipeFactory",
+		"shapeless_pressurizable": "me.desht.pneumaticcraft.common.recipes.factories.ShapelessPressurizableRecipeFactory",
+        "color_drone": "me.desht.pneumaticcraft.common.recipes.factories.ColorDroneRecipeFactory",
+        "drone_upgrade": "me.desht.pneumaticcraft.common.recipes.factories.DroneUpgradeRecipeFactory",
+        "gun_ammo": "me.desht.pneumaticcraft.common.recipes.factories.GunAmmoRecipeFactory",
+        "one_probe": "me.desht.pneumaticcraft.common.recipes.factories.OneProbeRecipeFactory"
 	}
 }

@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.common.recipes;
+package me.desht.pneumaticcraft.common.recipes.factories;
 
 import com.google.gson.JsonObject;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;

@@ -1,5 +1,5 @@
 {
-  "type": "minecraft:crafting_shaped",
+  "type": "pneumaticcraft:shaped_pressurizable",
   "pattern": [
     "cec",
     "c c"
@@ -7,7 +7,7 @@
   "key": {
     "c": {
       "item": "pneumaticcraft:air_canister",
-      "data": 30000
+      "data": 32767
     },
     "e": {
       "item": "pneumaticcraft:printed_circuit_board"

@@ -1,5 +1,5 @@
 {
-  "type": "forge:ore_shaped",
+  "type": "pneumaticcraft:shaped_pressurizable",
   "pattern": [
     "idi",
     "c  ",
@@ -8,7 +8,7 @@
   "key": {
     "c": {
       "item": "pneumaticcraft:air_canister",
-      "data": 30000
+      "data": 32767
     },
     "d": {
       "type": "forge:ore_dict",
@@ -23,7 +23,6 @@
     }
   },
   "result": {
-    "item": "pneumaticcraft:pneumatic_wrench",
-    "data": 30000
+    "item": "pneumaticcraft:pneumatic_wrench"
   }
 }

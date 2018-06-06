@@ -1,0 +1,16 @@
+{
+  "type": "pneumaticcraft:color_drone",
+  "ingredients": [
+    {
+      "type": "forge:ore_dict",
+      "ore": "pneumaticDrone"
+    },
+    {
+      "type": "forge:ore_dict",
+      "ore": "dye"
+    }
+  ],
+  "result": {
+    "item": "pneumaticcraft:drone"
+  }
+}

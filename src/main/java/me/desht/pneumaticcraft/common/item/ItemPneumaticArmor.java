@@ -11,7 +11,7 @@ import me.desht.pneumaticcraft.common.DateEventHandler;
 import me.desht.pneumaticcraft.common.NBTUtil;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.recipes.CraftingRegistrator;
-import me.desht.pneumaticcraft.common.recipes.RecipeOneProbe;
+import me.desht.pneumaticcraft.common.recipes.factories.OneProbeRecipeFactory;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.ModIds;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -84,7 +84,7 @@ public class ItemPneumaticArmor extends ItemArmor implements IPressurizable, ICh
     @Override
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack iStack, World world, List<String> textList, ITooltipFlag flag) {
-        if (iStack.hasTagCompound() && iStack.getTagCompound().getInteger(RecipeOneProbe.ONE_PROBE_TAG) == 1) {
+        if (iStack.hasTagCompound() && iStack.getTagCompound().getInteger(OneProbeRecipeFactory.ONE_PROBE_TAG) == 1) {
             textList.add(TextFormatting.BLUE + "The One Probe installed");
         }
         float pressure = getPressure(iStack);
