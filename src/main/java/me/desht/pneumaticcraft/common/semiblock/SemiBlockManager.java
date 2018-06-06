@@ -45,7 +45,7 @@ import java.util.stream.Stream;
 @Mod.EventBusSubscriber
 public class SemiBlockManager {
     private final Map<Chunk, Map<BlockPos, List<ISemiBlock>>> semiBlocks = new HashMap<>();
-    private final List<ISemiBlock> addingBlocks = new ArrayList<>();
+    private final List<ISemiBlock> addingBlocks = new LinkedList<>();
     private final Map<Chunk, Set<EntityPlayer>> syncList = new HashMap<>();
     private final Set<Chunk> chunksMarkedForRemoval = new HashSet<>();
     private static final int SYNC_DISTANCE_SQ = 64 * 64;
@@ -90,11 +90,7 @@ public class SemiBlockManager {
     }
 
     static ItemSemiBlockBase getItemForSemiBlock(ISemiBlock semiBlock) {
-        return getItemForSemiBlock(semiBlock.getClass());
-    }
-
-    public static ItemSemiBlockBase getItemForSemiBlock(Class<? extends ISemiBlock> semiBlock) {
-        return semiBlockToItems.get(semiBlock);
+        return semiBlockToItems.get(semiBlock.getClass());
     }
 
     public static Class<? extends ISemiBlock> getSemiBlockForItem(ItemSemiBlockBase item) {
@@ -212,15 +208,22 @@ public class SemiBlockManager {
     public void onClientTick(TickEvent.ClientTickEvent event) {
         if (event.phase == TickEvent.Phase.START) return;
 
-        if (this == getServerInstance()) getClientOldInstance().onClientTick(event);
-        else {
+        if (this == getServerInstance()) {
+            getClientOldInstance().onClientTick(event);
+        } else {
             EntityPlayer player = PneumaticCraftRepressurized.proxy.getPlayer();
             if (player != null) {
-                for (ISemiBlock semiBlock : addingBlocks) {
+                for (Iterator<ISemiBlock> iterator = addingBlocks.iterator(); iterator.hasNext(); ) {
+                    // on the client, we can't assume the chunk is actually available yet; if we get an empty
+                    // chunk for the given blockpos, don't add the semiblock but leave it in the pending list
+                    // and try again next tick
+                    ISemiBlock semiBlock = iterator.next();
                     Chunk chunk = semiBlock.getWorld().getChunkFromBlockCoords(semiBlock.getPos());
-                    addPendingBlock(chunk, semiBlock);
+                    if (!chunk.isEmpty()) {
+                        addPendingBlock(chunk, semiBlock);
+                        iterator.remove();
+                    }
                 }
-                addingBlocks.clear();
 
                 Iterator<Map.Entry<Chunk, Map<BlockPos, List<ISemiBlock>>>> iterator = semiBlocks.entrySet().iterator();
                 while (iterator.hasNext()) {
@@ -236,7 +239,7 @@ public class SemiBlockManager {
             }
         }
     }
-    
+
     private void addPendingBlock(Chunk chunk, ISemiBlock semiBlock){
         Map<BlockPos, List<ISemiBlock>> map = getOrCreateMap(chunk);
         List<ISemiBlock> semiBlocksForPos = map.computeIfAbsent(semiBlock.getPos(), k -> new ArrayList<>());
@@ -279,8 +282,8 @@ public class SemiBlockManager {
                     double dist = PneumaticCraftUtils.distBetweenSq(player.posX, 0, player.posZ, chunkX, 0, chunkZ);
                     if (dist < SYNC_DISTANCE_SQ) {
                         if (syncedPlayers.add(player)) {
-                            for(List<ISemiBlock> semiBlocks : semiBlocks.get(chunk).values()){
-                                for (ISemiBlock semiBlock : semiBlocks) {
+                            for(List<ISemiBlock> semiBlockList : semiBlocks.get(chunk).values()){
+                                for (ISemiBlock semiBlock : semiBlockList) {
                                     if (!semiBlock.isInvalid()) {
                                         NetworkHandler.sendTo(new PacketAddSemiBlock(semiBlock), (EntityPlayerMP) player);
                                         PacketDescription descPacket = semiBlock.getDescriptionPacket();
@@ -427,7 +430,7 @@ public class SemiBlockManager {
         return getSemiBlocks(clazz, world, pos).findFirst().orElse(null);
     }
     
-    public <T extends ISemiBlock> Stream<T> getSemiBlocks(Class<T> clazz, World world, BlockPos pos) {
+    <T extends ISemiBlock> Stream<T> getSemiBlocks(Class<T> clazz, World world, BlockPos pos) {
         return StreamUtils.ofType(clazz, getSemiBlocks(world, pos));
     }
     
@@ -463,7 +466,7 @@ public class SemiBlockManager {
     }
     
     public Stream<ISemiBlock> getSemiBlocksInArea(World world, AxisAlignedBB aabb){
-        List<Chunk> applicableChunks = new ArrayList<Chunk>();
+        List<Chunk> applicableChunks = new ArrayList<>();
         int minX = (int)aabb.minX;
         int minY = (int)aabb.minY;
         int minZ = (int)aabb.minZ;
