@@ -6,17 +6,18 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
-## x.x.x-xxx (unreleased)
+## 0.6.7-204 (7 Jun 2018)
 
 * Added support for Thaumcraft 6.  Thaumcraft Upgrade is now craftable and adds Googgle of Revealing functionality to the Pneumatic Helmet.  Aspects have been added to a few PneumaticCraft items (beyond any Thaumcraft auto-detection).
 * The Omnidirectional Hopper and Liquid Hopper now have comparator support to measure their fullness.
 * Logistics Drones now grab as many of the requested item type as can fit in a single item stack, instead of taking simply the first stack from the inventory.
 * Upgrade descriptions for Pneumatic Helmet & Drones in the Charging Station GUI are now much more complete and accurate; all applicable upgrades are documented, and inapplicable upgrades are no longer shown and cannot be installed (e.g. Logistics Drones can't use Dispenser Upgrades).
 * Particles in the Pressure Chamber are slightly less dense now, and render higher inside the chamber.  Allows items in the chamber to actually be seen when the pressure is high; previously particle cloud obscured any items.
+* Any items crafted with Air Canisters now get any air in the canister(s)
 * Fix: Sync issue with Pressure Gauge GUI toggling the '<' / '>' button.
-* Fix: crash with drones and magnets on dedicated servers
 * Fix: crash with Ice & Fire Cyclops attacking Sentry Turrets
-* Fix: server crash when hacking mob spawners with Pneumatic Helmet
+* Fix: dedicated server crash with drones and the Magnet Upgrade
+* Fix: dedicated server crash when hacking mob spawners with Pneumatic Helmet
 * Fix: client desync for Logistics Frames after configuring them with Logistics Configurator
 * Fix: Logistics Frames & other semiblocks not always sync'ing properly to the client on initial player login
 * Fix: items not always transferring in Logistics Network (using tubes & Logistics Modules)
