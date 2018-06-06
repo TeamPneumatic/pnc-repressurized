@@ -22,10 +22,8 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.village.MerchantRecipe;
 import net.minecraft.village.MerchantRecipeList;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.oredict.ShapedOreRecipe;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
 import java.util.List;
@@ -215,18 +213,5 @@ public class CraftingRegistrator {
         PneumaticRecipeRegistry registry = PneumaticRecipeRegistry.getInstance();
         registry.registerHeatFrameCoolRecipe(new ItemStack(Items.WATER_BUCKET), new ItemStack(Blocks.ICE));
         registry.registerHeatFrameCoolRecipe(new ItemStack(Items.LAVA_BUCKET), new ItemStack(Blocks.OBSIDIAN));
-    }
-
-    //FIXME re-add this, to allow for other inputs to be used except buckets, in recipes that have a fluid requirement.
-    private static void scanForFluids(ShapedOreRecipe recipe) {
-        for (int i = 0; i < recipe.getIngredients().size(); i++) {
-            Ingredient ingredient = recipe.getIngredients().get(i);
-            for (ItemStack stack : ingredient.getMatchingStacks()) {
-                FluidStack fluid = FluidUtil.getFluidContained(stack);
-                if (fluid != null) {
-                    ForgeRegistries.RECIPES.register(new RecipeFluid(recipe, i));
-                }
-            }
-        }
     }
 }
