@@ -32,6 +32,21 @@ import javax.annotation.Nonnull;
  * @author Dynious
  */
 public class IOHelper {
+    public enum ExtractCount {
+        /**
+         * Extract exactly the items specified, including amount.  If the exact number isn't available, extract nothing.
+         */
+        EXACT,
+        /**
+         * Extract the first matching ItemStack in the inventory, but not more than the given amount.
+         */
+        FIRST_MATCHING,
+        /**
+         * Extract up to the number of items specified but not more.
+         */
+        UP_TO
+    };
+
     public static class LocatedItemStack {
         public final ItemStack stack;
         public final int slot;
@@ -65,26 +80,57 @@ public class IOHelper {
     }
 
     /**
-     * Extracts an exact item (including size) from the given tile entity, trying all sides.
+     * Extract an item from the given item handler
      *
-     * @param tile the tile to extract from
-     * @param itemStack the precise item stack to extract (size matters)
+     * @param handler the item handler
+     * @param requestedStack the item to search for, including the number of items
+     * @param countType how to interpret the item count of requestedStack
      * @param simulate true if extraction should only be simulated
-     * @return the extracted item stack
+     * @param fuzzyMeta true if item meta should be ignored when searching
+     *
+     * @return the extracted item stack, or ItemStack.EMPTY if nothing was extracted
      */
-    @Nonnull
-    public static ItemStack extract(TileEntity tile, ItemStack itemStack, boolean simulate) {
-        for (EnumFacing d : EnumFacing.VALUES) {
-            IItemHandler handler = getInventoryForTE(tile, d);
-            if (handler != null) {
-                ItemStack extracted = extract(handler, itemStack, true, simulate);
-                if (!extracted.isEmpty()) {
-                    return extracted;
+    public static ItemStack extract(IItemHandler handler, ItemStack requestedStack, ExtractCount countType, boolean simulate, boolean fuzzyMeta) {
+        if (requestedStack.isEmpty()) return requestedStack;
+
+        if (handler != null) {
+            int itemsFound = 0;
+            for (int slot = 0; slot < handler.getSlots(); slot++) {
+                ItemStack stack = handler.getStackInSlot(slot);
+                if (!stack.isEmpty() && matchStacks(stack, requestedStack, fuzzyMeta)) {
+                    if (countType == ExtractCount.FIRST_MATCHING) {
+                        return handler.extractItem(slot, Math.min(requestedStack.getCount(), stack.getCount()), simulate);
+                    }
+                    itemsFound += stack.getCount();
+                    if (itemsFound >= stack.getCount()) {
+                        break;
+                    }
                 }
+            }
+            if (countType == ExtractCount.UP_TO || itemsFound >= requestedStack.getCount()) {
+                ItemStack exportedStack = ItemStack.EMPTY;
+                int itemsNeeded = requestedStack.getCount();
+                int totalExtracted = 0;
+                for (int slot = 0; slot < handler.getSlots() && itemsNeeded > 0; slot++) {
+                    ItemStack stack = handler.getStackInSlot(slot);
+                    if (matchStacks(stack, requestedStack, fuzzyMeta)) {
+                        int itemsSubtracted = Math.min(itemsNeeded, stack.getCount());
+                        if (itemsSubtracted > 0) {
+                            exportedStack = stack;
+                        }
+                        itemsNeeded -= itemsSubtracted;
+                        ItemStack extracted = handler.extractItem(slot, itemsSubtracted, simulate);
+                        totalExtracted += extracted.getCount();
+                    }
+                }
+                exportedStack = exportedStack.copy();
+                exportedStack.setCount(totalExtracted);
+                return exportedStack;
             }
         }
         return ItemStack.EMPTY;
     }
+
 
     @Nonnull
     public static LocatedItemStack extract(IItemHandler handler, boolean simulate) {

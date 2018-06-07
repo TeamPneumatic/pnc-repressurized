@@ -6,7 +6,6 @@ import me.desht.pneumaticcraft.common.ai.LogisticsManager;
 import me.desht.pneumaticcraft.common.ai.LogisticsManager.LogisticsTask;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateLogisticModule;
-import me.desht.pneumaticcraft.common.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockLogistics;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPlasticMixer;
@@ -27,6 +26,7 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.items.IItemHandler;
 
 import java.util.HashMap;
 import java.util.List;
@@ -168,7 +168,8 @@ public class ModuleLogistics extends TubeModule {
                             if (remainder.getCount() != task.transportingItem.getCount()) {
                                 ItemStack toBeExtracted = task.transportingItem.copy();
                                 toBeExtracted.shrink(remainder.getCount());
-                                ItemStack extractedStack = IOHelper.extract(task.provider.getTileEntity(), toBeExtracted, true);
+                                IItemHandler handler = IOHelper.getInventoryForTE(task.provider.getTileEntity(), dir);
+                                ItemStack extractedStack = IOHelper.extract(handler, toBeExtracted, IOHelper.ExtractCount.UP_TO, true, false);
                                 if (!extractedStack.isEmpty()) {
                                     ModuleLogistics provider = frameToModuleMap.get(task.provider);
                                     ModuleLogistics requester = frameToModuleMap.get(task.requester);
@@ -177,7 +178,7 @@ public class ModuleLogistics extends TubeModule {
                                         sendModuleUpdate(provider, true);
                                         sendModuleUpdate(requester, true);
                                         requester.getTube().getAirHandler(null).addAir(-airUsed);
-                                        IOHelper.extract(task.provider.getTileEntity(), extractedStack, false);
+                                        IOHelper.extract(handler, extractedStack, IOHelper.ExtractCount.EXACT, false, false);
                                         IOHelper.insert(task.requester.getTileEntity(), extractedStack, false);
                                         ticksUntilNextCycle = 20;
                                     } else {
