@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.EntityAIBase;
@@ -36,13 +37,10 @@ public class DroneEntityAIPickupItems extends EntityAIBase {
         for (Entity ent : pickableItems) {
             ItemStack stack = ((EntityItem) ent).getItem();
             if (itemPickupWidget.isItemValidForFilters(stack)) {
-                for (int i = 0; i < drone.getInv().getSlots(); i++) {
-                    ItemStack droneStack = drone.getInv().getStackInSlot(i);
-                    if (droneStack.isEmpty() || droneStack.isItemEqual(stack) && droneStack.getCount() < droneStack.getMaxStackSize()) {
-                        if (drone.getPathNavigator().moveToEntity(ent)) {
-                            curPickingUpEntity = (EntityItem) ent;
-                            return true;
-                        }
+                if (IOHelper.insert(drone, stack, null, true).isEmpty()) {
+                    if (drone.getPathNavigator().moveToEntity(ent)) {
+                        curPickingUpEntity = (EntityItem) ent;
+                        return true;
                     }
                 }
             } else {
