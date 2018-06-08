@@ -1064,26 +1064,4 @@ public class PneumaticCraftUtils {
             return ret;
         }
     }
-
-    /**
-     * Get the comparator output for the given item handler.  Like Container#calcRedstone() but
-     * for IItemHandler.
-     *
-     * @param handler the item handler
-     * @return a redstone signal level
-     */
-    public static int calcRedstoneFromHandler(IItemHandler handler) {
-        float f = 0F;
-        int i = 0;
-        for (int slot = 0; slot < handler.getSlots(); slot++) {
-            ItemStack itemstack = handler.getStackInSlot(slot);
-            if (!itemstack.isEmpty()) {
-                f += (float)itemstack.getCount() / (float)Math.min(handler.getSlotLimit(slot), itemstack.getMaxStackSize());
-                ++i;
-            }
-        }
-
-        f /= (float)handler.getSlots();
-        return MathHelper.floor(f * 14.0F) + (i > 0 ? 1 : 0);
-    }
 }

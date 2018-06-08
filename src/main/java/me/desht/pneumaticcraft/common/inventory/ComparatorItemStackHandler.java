@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
 
 /**
@@ -34,7 +34,7 @@ public class ComparatorItemStackHandler extends ItemStackHandler {
      */
     public int getComparatorValue() {
         if (signalLevel < 0) {
-            signalLevel = PneumaticCraftUtils.calcRedstoneFromHandler(this);
+            signalLevel = ItemHandlerHelper.calcRedstoneFromInventory(this);
         }
         return signalLevel;
     }
