@@ -380,7 +380,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
         if (!searchedItem.isEmpty() && (stack.isEmpty() || stack.isItemEqual(searchedItem))) {
             for (EnumFacing dir : EnumFacing.HORIZONTALS) {
                 IItemHandler handler = IOHelper.getInventoryForTE(IOHelper.getNeighbor(this, dir), EnumFacing.UP);
-                if (handler != null && !IOHelper.extract(handler, searchedItem, true, true).isEmpty()) {
+                if (handler != null && !IOHelper.extract(handler, searchedItem, IOHelper.ExtractCount.EXACT, true, false).isEmpty()) {
                     return new EnumFacing[]{dir, null};
                 }
             }
@@ -389,7 +389,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
                     for (EnumFacing primDir : new EnumFacing[]{EnumFacing.NORTH, EnumFacing.SOUTH}) {
                         TileEntity te = getWorld().getTileEntity(getPos().offset(primDir).offset(secDir));
                         IItemHandler handler = IOHelper.getInventoryForTE(te, EnumFacing.UP);
-                        if (!IOHelper.extract(handler, searchedItem, true, true).isEmpty()) {
+                        if (!IOHelper.extract(handler, searchedItem, IOHelper.ExtractCount.EXACT, true, false).isEmpty()) {
                             return new EnumFacing[]{primDir, secDir};
                         }
                     }

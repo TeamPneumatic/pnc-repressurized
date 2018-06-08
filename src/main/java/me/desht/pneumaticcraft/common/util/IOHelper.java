@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.util;
 
+import com.google.common.collect.Lists;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -9,6 +10,7 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nonnull;
+import java.util.List;
 
 /*
  * This file is part of Blue Power.
@@ -80,7 +82,7 @@ public class IOHelper {
     }
 
     /**
-     * Extract an item from the given item handler
+     * Extract a specific number of the given item from the given item handler
      *
      * @param handler the item handler
      * @param requestedStack the item to search for, including the number of items
@@ -95,23 +97,22 @@ public class IOHelper {
 
         if (handler != null) {
             int itemsFound = 0;
-            for (int slot = 0; slot < handler.getSlots(); slot++) {
+            List<Integer> slotsOfInterest = Lists.newArrayList();
+            for (int slot = 0; slot < handler.getSlots() && itemsFound < requestedStack.getCount(); slot++) {
                 ItemStack stack = handler.getStackInSlot(slot);
                 if (!stack.isEmpty() && matchStacks(stack, requestedStack, fuzzyMeta)) {
                     if (countType == ExtractCount.FIRST_MATCHING) {
                         return handler.extractItem(slot, Math.min(requestedStack.getCount(), stack.getCount()), simulate);
                     }
                     itemsFound += stack.getCount();
-                    if (itemsFound >= stack.getCount()) {
-                        break;
-                    }
+                    slotsOfInterest.add(slot);
                 }
             }
             if (countType == ExtractCount.UP_TO || itemsFound >= requestedStack.getCount()) {
                 ItemStack exportedStack = ItemStack.EMPTY;
                 int itemsNeeded = requestedStack.getCount();
                 int totalExtracted = 0;
-                for (int slot = 0; slot < handler.getSlots() && itemsNeeded > 0; slot++) {
+                for (int slot : slotsOfInterest) {
                     ItemStack stack = handler.getStackInSlot(slot);
                     if (matchStacks(stack, requestedStack, fuzzyMeta)) {
                         int itemsSubtracted = Math.min(itemsNeeded, stack.getCount());
@@ -129,78 +130,6 @@ public class IOHelper {
             }
         }
         return ItemStack.EMPTY;
-    }
-
-
-    @Nonnull
-    public static LocatedItemStack extract(IItemHandler handler, boolean simulate) {
-        for (int slot = 0; slot < handler.getSlots(); ++slot) {
-            ItemStack stack = extract(handler, slot, simulate);
-            if (!stack.isEmpty()) return new LocatedItemStack(stack, slot);
-        }
-        return LocatedItemStack.NONE;
-    }
-
-
-    @Nonnull
-    public static ItemStack extract(IItemHandler handler, int slot, boolean simulate) {
-        ItemStack stack = handler.getStackInSlot(slot);
-        return handler.extractItem(slot, stack.getCount(), simulate);
-    }
-
-    @Nonnull
-    public static ItemStack extract(IItemHandler handler, ItemStack requestedStack, boolean useItemCount, boolean simulate) {
-        return extract(handler, requestedStack, useItemCount, simulate, false);
-    }
-
-    /**
-     * Retrieves a specfied item from the specified inventory.
-     *
-     * @param handler the item handler object
-     * @param requestedStack the item to retrieve
-     * @param useItemCount if true, only retrieve the exact number of items in requestedStack, looking in multiple slots
-     *                     of the inventory if necessary; if false, the first matching stack, regardless of item count,
-     *                     will be returned.
-     * @param simulate true to only simulate extraction
-     * @param fuzzyMeta if true, ignore metadata when finding items to extract
-     * @return the extracted items
-     */
-    @Nonnull
-    public static ItemStack extract(IItemHandler handler, ItemStack requestedStack, boolean useItemCount, boolean simulate, boolean fuzzyMeta) {
-        if (requestedStack.isEmpty()) return requestedStack;
-
-        if (handler != null) {
-            int itemsFound = 0;
-            for (int slot = 0; slot < handler.getSlots(); slot++) {
-                ItemStack stack = handler.getStackInSlot(slot);
-                if (!stack.isEmpty() && matchStacks(stack, requestedStack, fuzzyMeta)) {
-                    if (!useItemCount) {
-                        return handler.extractItem(slot, stack.getCount(), simulate);
-                    }
-                    itemsFound += stack.getCount();
-                }
-            }
-            if (itemsFound >= requestedStack.getCount()) {
-                ItemStack exportedStack = ItemStack.EMPTY;
-                int itemsNeeded = requestedStack.getCount();
-                for (int slot = 0; slot < handler.getSlots() && itemsNeeded > 0; slot++) {
-                    ItemStack stack = handler.getStackInSlot(slot);
-                    if (matchStacks(stack, requestedStack, fuzzyMeta)) {
-                        int itemsSubtracted = Math.min(itemsNeeded, stack.getCount());
-                        if (itemsSubtracted > 0) {
-                            exportedStack = stack;
-                        }
-                        itemsNeeded -= itemsSubtracted;
-                        handler.extractItem(slot, itemsSubtracted, simulate);
-                    }
-                }
-                exportedStack = exportedStack.copy();
-                exportedStack.setCount(requestedStack.getCount());
-                return exportedStack;
-            }
-        }
-        return ItemStack.EMPTY;
-
     }
 
     private static boolean matchStacks(ItemStack stack1, ItemStack stack2, boolean fuzzyMeta) {
