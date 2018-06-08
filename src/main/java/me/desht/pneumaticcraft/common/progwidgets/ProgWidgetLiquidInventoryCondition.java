@@ -50,9 +50,7 @@ public class ProgWidgetLiquidInventoryCondition extends ProgWidgetCondition {
                         count += 1000;
                     }
                 }
-                return ((ICondition) widget).getOperator() == ICondition.Operator.EQUALS ?
-                        count == ((ICondition) widget).getRequiredCount() :
-                        count >= ((ICondition) widget).getRequiredCount();
+                return ((ICondition) widget).getOperator().evaluate(count, ((ICondition) widget).getRequiredCount());
             }
 
         };

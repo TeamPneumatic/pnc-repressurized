@@ -28,8 +28,9 @@ public abstract class ProgWidgetDroneEvaluation extends ProgWidgetConditionBase 
 
     @Override
     public boolean evaluate(IDroneBase drone, IProgWidget widget) {
-        int count = getCount(drone, widget);
-        return getOperator() == Operator.EQUALS ? count == getRequiredCount() : count >= getRequiredCount();
+//        int count = getCount(drone, widget);
+        return getOperator().evaluate(getCount(drone, widget), getRequiredCount());
+//        return getOperator() == Operator.EQUALS ? count == getRequiredCount() : count >= getRequiredCount();
     }
 
     protected abstract int getCount(IDroneBase drone, IProgWidget widget);

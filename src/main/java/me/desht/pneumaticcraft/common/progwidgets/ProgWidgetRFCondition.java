@@ -40,9 +40,7 @@ public class ProgWidgetRFCondition extends ProgWidgetCondition {
                         energy = Math.max(storage.getEnergyStored(), energy);
                     }
                 }
-                return ((ICondition) widget).getOperator() == ICondition.Operator.EQUALS ?
-                        energy == ((ICondition) widget).getRequiredCount() :
-                        energy >= ((ICondition) widget).getRequiredCount();
+                return ((ICondition) widget).getOperator().evaluate(energy,((ICondition) widget).getRequiredCount());
             }
         };
     }

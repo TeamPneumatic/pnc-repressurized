@@ -68,8 +68,9 @@ public class GuiProgWidgetCondition extends GuiProgWidgetAreaShow<ProgWidget> {
                 radioButton.otherChoices = radioButtons;
             }
 
-            textField = new WidgetTextField(Minecraft.getMinecraft().fontRenderer, guiLeft + baseX, guiTop + baseY + 30, 50, 11);
+            textField = new WidgetTextField(Minecraft.getMinecraft().fontRenderer, guiLeft + baseX, guiTop + baseY + 40, 50, 11);
             textField.setText(((ICondition) widget).getRequiredCount() + "");
+            textField.setFocused(true);
             addWidget(textField);
         }
     }

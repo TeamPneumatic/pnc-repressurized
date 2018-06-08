@@ -37,7 +37,7 @@ public class ProgWidgetPressureCondition extends ProgWidgetCondition {
                             if (airHandler != null) pressure = Math.max(airHandler.getPressure(), pressure);
                         }
                     }
-                    return ((ICondition) widget).getOperator() == ICondition.Operator.EQUALS ? pressure == ((ICondition) widget).getRequiredCount() : pressure >= ((ICondition) widget).getRequiredCount();
+                    return ((ICondition) widget).getOperator().evaluate(pressure, ((ICondition) widget).getRequiredCount());
                 }
                 return false;
             }

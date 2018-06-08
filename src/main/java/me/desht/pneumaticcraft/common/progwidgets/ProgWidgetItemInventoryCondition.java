@@ -55,9 +55,7 @@ public class ProgWidgetItemInventoryCondition extends ProgWidgetCondition {
                         }
                     }
                 }
-                return ((ICondition) widget).getOperator() == ICondition.Operator.EQUALS ?
-                        count == ((ICondition) widget).getRequiredCount() :
-                        count >= ((ICondition) widget).getRequiredCount();
+                return ((ICondition) widget).getOperator().evaluate(count, ((ICondition) widget).getRequiredCount());
             }
 
         };
