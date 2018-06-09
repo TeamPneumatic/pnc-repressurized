@@ -12,13 +12,17 @@ import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketHackingBlockFinish;
 import me.desht.pneumaticcraft.common.network.PacketHackingEntityFinish;
+import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.common.util.WorldAndCoord;
+import me.desht.pneumaticcraft.lib.Sounds;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.SoundCategory;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -69,7 +73,11 @@ public class CommonHUDHandler {
                     ticksExisted++;
                     if (!player.world.isRemote) {
                         if (ticksExisted > getStartupTime() && !player.capabilities.isCreativeMode) {
+                            float oldPressure = ((IPressurizable) helmetStack.getItem()).getPressure(helmetStack);
                             ((IPressurizable) helmetStack.getItem()).addAir(helmetStack, (int) -UpgradeRenderHandlerList.instance().getAirUsage(player, false));
+                            if (oldPressure > 0F && ((IPressurizable) helmetStack.getItem()).getPressure(helmetStack) == 0F) {
+                                NetworkHandler.sendTo(new PacketPlaySound(Sounds.MINIGUN_STOP, SoundCategory.PLAYERS, player.posX, player.posY, player.posZ, 1.0f, 2.0f, false), (EntityPlayerMP) player);
+                            }
                         }
                     }
 

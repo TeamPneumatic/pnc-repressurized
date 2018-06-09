@@ -93,4 +93,13 @@ public interface IUpgradeRenderHandler {
      * @return
      */
     IOptionPage getGuiOptionsPage();
+
+    /**
+     * Get the minimum helmet pressure for this renderer to operate; the helmet pressure must be <i>greater</i>
+     * than this.  Most components require any pressure >0.0 bar.  Return any negative value for the component to
+     * always render.
+     */
+    default float getMinimumPressure() {
+        return 0.0f;
+    }
 }

@@ -40,50 +40,39 @@ public class MainHelmetHandler implements IUpgradeRenderHandler {
         messagesStatX = ConfigHandler.helmetOptions.messageX;
         messagesStatY = ConfigHandler.helmetOptions.messageY;
         messagesStatLeftSided = ConfigHandler.helmetOptions.messageLeft;
-
-//        powerStatX = config.get("Helmet_Options" + Configuration.CATEGORY_SPLITTER + "Power_Stat", "stat X", -1).getInt();
-//        powerStatY = config.get("Helmet_Options" + Configuration.CATEGORY_SPLITTER + "Power_Stat", "stat Y", 2).getInt();
-//        powerStatLeftSided = config.get("Helmet_Options" + Configuration.CATEGORY_SPLITTER + "Power_Stat", "stat leftsided", true).getBoolean(true);
-//        messagesStatX = config.get("Helmet_Options" + Configuration.CATEGORY_SPLITTER + "Message_Stat", "stat X", 2).getInt();
-//        messagesStatY = config.get("Helmet_Options" + Configuration.CATEGORY_SPLITTER + "Message_Stat", "stat Y", 2).getInt();
-//        messagesStatLeftSided = config.get("Helmet_Options" + Configuration.CATEGORY_SPLITTER + "Message_Stat", "stat leftsided", false).getBoolean(true);
     }
 
     @Override
     public void saveToConfig() {
-//        Configuration config = ConfigHandler.config;
-//        config.load();
         if (powerStat != null) {
             ConfigHandler.helmetOptions.powerX = powerStatX = powerStat.getBaseX();
             ConfigHandler.helmetOptions.powerY = powerStatY = powerStat.getBaseY();
             ConfigHandler.helmetOptions.powerLeft = powerStatLeftSided = powerStat.isLeftSided();
-//            config.get("Helmet_Options" + Configuration.CATEGORY_SPLITTER + "Power_Stat", "stat X", -1).set(powerStat.getBaseX());
-//            config.get("Helmet_Options" + Configuration.CATEGORY_SPLITTER + "Power_Stat", "stat Y", 2).set(powerStat.getBaseY());
-//            config.get("Helmet_Options" + Configuration.CATEGORY_SPLITTER + "Power_Stat", "stat leftsided", true).set(powerStat.isLeftSided());
-//            powerStatX = powerStat.getBaseX();
-//            powerStatY = powerStat.getBaseY();
-//            powerStatLeftSided = powerStat.isLeftSided();
         }
         if (testMessageStat != null) {
             ConfigHandler.helmetOptions.messageX = messagesStatX = testMessageStat.getBaseX();
             ConfigHandler.helmetOptions.messageY = messagesStatY = testMessageStat.getBaseY();
             ConfigHandler.helmetOptions.messageLeft = messagesStatLeftSided = testMessageStat.isLeftSided();
-//            config.get("Helmet_Options" + Configuration.CATEGORY_SPLITTER + "Message_Stat", "stat X", 2).set(testMessageStat.getBaseX());
-//            config.get("Helmet_Options" + Configuration.CATEGORY_SPLITTER + "Message_Stat", "stat Y", 2).set(testMessageStat.getBaseY());
-//            config.get("Helmet_Options" + Configuration.CATEGORY_SPLITTER + "Message_Stat", "stat leftsided", false).set(testMessageStat.isLeftSided());
-//            messagesStatX = testMessageStat.getBaseX();
-//            messagesStatY = testMessageStat.getBaseY();
-//            messagesStatLeftSided = testMessageStat.isLeftSided();
         }
 
         ConfigHandler.sync();
-//        config.save();
     }
 
     @Override
     @SideOnly(Side.CLIENT)
     public void update(EntityPlayer player, int rangeUpgrades) {
-        powerStat.setTitle((CommonHUDHandler.getHandlerForPlayer(player).helmetPressure < 0.5F ? TextFormatting.RED : "") + "Helmet Pressure: " + Math.round(CommonHUDHandler.getHandlerForPlayer(player).helmetPressure * 10F) / 10F + " bar");
+        TextFormatting colour;
+        float pressure = CommonHUDHandler.getHandlerForPlayer(player).helmetPressure;
+        if (pressure < 0.5F) {
+            colour = TextFormatting.RED;
+        } else if (pressure < 2.0F) {
+            colour = TextFormatting.GOLD;
+        } else if (pressure < 4.0F) {
+            colour = TextFormatting.YELLOW;
+        } else {
+            colour = TextFormatting.GREEN;
+        }
+        powerStat.setTitle(TextFormatting.WHITE + "Helmet Pressure: " + colour + Math.round(CommonHUDHandler.getHandlerForPlayer(player).helmetPressure * 10F) / 10F + " bar");
     }
 
     @Override
@@ -131,4 +120,9 @@ public class MainHelmetHandler implements IUpgradeRenderHandler {
         return new GuiHelmetMainOptions(this);
     }
 
+    @Override
+    public float getMinimumPressure() {
+        // pressure display always shows, even when empty
+        return -1.0f;
+    }
 }

@@ -194,7 +194,7 @@ public class HUDHandler implements IKeyListener {
                 if (comHudHandler.upgradeRenderersInserted[i] && GuiKeybindCheckBox.trackedCheckboxes.get("pneumaticHelmet.upgrade." + upgradeRenderHandler.getUpgradeName()).checked) {
                     IGuiAnimatedStat stat = upgradeRenderHandler.getAnimatedStat();
                     if (stat != null) {
-                        if (comHudHandler.helmetPressure > 0F) {
+                        if (comHudHandler.helmetPressure > upgradeRenderHandler.getMinimumPressure()) {
                             stat.openWindow();
                         } else {
                             stat.closeWindow();
