@@ -6,7 +6,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
-## 0.6.7-??? (unreleased)
+## 0.6.7-210 (10 Jun 2018)
 
 * Added support for Thaumcraft 6.  Thaumcraft Upgrade is now craftable and adds Googgle of Revealing functionality to the Pneumatic Helmet.  Aspects have been added to a few PneumaticCraft items (beyond any Thaumcraft auto-detection).
 * The Omnidirectional Hopper and Liquid Hopper now have comparator support to measure their fullness.
