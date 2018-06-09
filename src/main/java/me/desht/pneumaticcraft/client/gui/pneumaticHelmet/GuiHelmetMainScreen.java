@@ -126,9 +126,9 @@ public class GuiHelmetMainScreen extends GuiPneumaticScreenBase implements IGuiS
     }
 
     @Override
-    protected void mouseClicked(int par1, int par2, int par3) throws IOException {
-        super.mouseClicked(par1, par2, par3);
-        upgradePages.get(page).mouseClicked(par1, par2, par3);
+    protected void mouseClicked(int mouseX, int mouseY, int par3) throws IOException {
+        super.mouseClicked(mouseX, mouseY, par3);
+        upgradePages.get(page).mouseClicked(mouseX, mouseY, par3);
     }
 
     @Override

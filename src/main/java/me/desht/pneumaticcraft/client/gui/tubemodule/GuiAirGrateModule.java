@@ -44,9 +44,9 @@ public class GuiAirGrateModule extends GuiTubeModule {
     }
 
     @Override
-    protected void mouseClicked(int x, int y, int par3) throws IOException {
-        super.mouseClicked(x, y, par3);
-        textfield.mouseClicked(x, y, par3);
+    protected void mouseClicked(int mouseX, int mouseY, int par3) throws IOException {
+        super.mouseClicked(mouseX, mouseY, par3);
+        textfield.mouseClicked(mouseX, mouseY, par3);
     }
 
     @Override

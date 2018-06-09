@@ -19,7 +19,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.FMLClientHandler;
-import org.lwjgl.input.Mouse;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -29,12 +29,12 @@ public class GuiPressureModule extends GuiTubeModule {
 
     private GuiTextField lowerBoundField;
     private GuiTextField higherBoundField;
-    private GuiCheckBox advancedMode;
     private int graphLowY;
     private int graphHighY;
     private int graphLeft;
     private int graphRight;
-    private boolean waitTillRelease = true;
+    private Rectangle lowerBoundArea, higherBoundArea;
+    private boolean grabLower, grabHigher;
 
     public GuiPressureModule(EntityPlayer player, int x, int y, int z) {
         super(player, x, y, z);
@@ -71,9 +71,12 @@ public class GuiPressureModule extends GuiTubeModule {
         addWidget(new WidgetTooltipArea(graphLeft - 20, graphHighY, 25, graphLowY - graphHighY, "gui.redstone"));
         addWidget(new WidgetTooltipArea(graphLeft, graphLowY - 5, graphRight - graphLeft, 25, "gui.threshold"));
         addWidget((IGuiWidget) new GuiAnimatedStat(this, "gui.tab.info", Textures.GUI_INFO_LOCATION, xStart, yStart + 5, 0xFF8888FF, null, true).setText("gui.tab.info.tubeModule"));
-        advancedMode = new GuiCheckBox(0, guiLeft + 6, guiTop + 15, 0xFF404040, "gui.tubeModule.advancedConfig").setTooltip(I18n.format("gui.tubeModule.advancedConfig.tooltip"));
+        GuiCheckBox advancedMode = new GuiCheckBox(0, guiLeft + 6, guiTop + 15, 0xFF404040, "gui.tubeModule.advancedConfig").setTooltip(I18n.format("gui.tubeModule.advancedConfig.tooltip"));
         advancedMode.checked = true;
         addWidget(advancedMode);
+
+        higherBoundArea = new Rectangle(guiLeft + 11, guiTop + 59, 158, 15);
+        lowerBoundArea = new Rectangle(guiLeft + 11, guiTop + 73, 158, 15);
     }
 
     @Override
@@ -86,31 +89,10 @@ public class GuiPressureModule extends GuiTubeModule {
         super.drawScreen(mouseX, mouseY, partialTicks);
 
         GL11.glDisable(GL11.GL_LIGHTING);
-        if (!lowerBoundField.isFocused())
-            lowerBoundField.setText(PneumaticCraftUtils.roundNumberTo(module.lowerBound, 1));
-        if (!higherBoundField.isFocused())
-            higherBoundField.setText(PneumaticCraftUtils.roundNumberTo(module.higherBound, 1));
 
         FMLClientHandler.instance().getClient().getTextureManager().bindTexture(getTexture());
         int scrollbarLowerBoundX = (int) (guiLeft + 16 + (158 - 11) * (module.lowerBound / (module.maxValue + 1)));
         int scrollbarHigherBoundX = (int) (guiLeft + 16 + (158 - 11) * (module.higherBound / (module.maxValue + 1)));
-
-        if (!Mouse.isButtonDown(0)) waitTillRelease = false;
-        if (!waitTillRelease && Mouse.isButtonDown(0)) {
-            if (new Rectangle(guiLeft + 11, guiTop + 59, 158, 15).contains(mouseX, mouseY)) {
-                module.higherBound = (float) (mouseX - 6 - (guiLeft + 11)) / (158 - 11) * module.maxValue;
-                if (module.higherBound < -1) module.higherBound = -1;
-                if (module.higherBound > module.maxValue) module.higherBound = module.maxValue;
-                //higherBoundField.setText(PneumaticCraftUtils.roundNumberTo(module.higherBound, 1));
-                NetworkHandler.sendToServer(new PacketUpdatePressureModule(module, 1, module.higherBound));
-            } else if (new Rectangle(guiLeft + 11, guiTop + 73, 158, 15).contains(mouseX, mouseY)) {
-                module.lowerBound = (float) (mouseX - 6 - (guiLeft + 11)) / (158 - 11) * module.maxValue;
-                if (module.lowerBound < -1) module.lowerBound = -1;
-                if (module.lowerBound > module.maxValue) module.lowerBound = module.maxValue;
-                // lowerBoundField.setText(PneumaticCraftUtils.roundNumberTo(module.lowerBound, 1));
-                NetworkHandler.sendToServer(new PacketUpdatePressureModule(module, 0, module.lowerBound));
-            }
-        }
 
         drawTexturedModalRect(scrollbarLowerBoundX, guiTop + 73, 183, 0, 15, 12);
         drawTexturedModalRect(scrollbarHigherBoundX, guiTop + 59, 183, 0, 15, 12);
@@ -121,7 +103,6 @@ public class GuiPressureModule extends GuiTubeModule {
         /*
          * Draw graph
          */
-
         drawVerticalLine(graphLeft, graphHighY, graphLowY, 0xFF000000);
         for (int i = 0; i < 16; i++) {
             boolean longer = i % 5 == 0;
@@ -144,7 +125,6 @@ public class GuiPressureModule extends GuiTubeModule {
         /*
          * Draw the current redstone strength
          */
-
         if (module instanceof TubeModuleRedstoneReceiving) {
             module.onNeighborBlockUpdate();
             drawHorizontalLine(graphLeft + 4, graphRight, graphHighY + (graphLowY - graphHighY) * (15 - ((TubeModuleRedstoneReceiving) module).getReceivingRedstoneLevel()) / 15, 0xFFFF0000);
@@ -173,44 +153,88 @@ public class GuiPressureModule extends GuiTubeModule {
     }
 
     @Override
-    protected void mouseClicked(int par1, int par2, int par3) throws IOException {
-        super.mouseClicked(par1, par2, par3);
+    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+        super.mouseClicked(mouseX, mouseY, mouseButton);
         boolean wasFocused = lowerBoundField.isFocused();
-        lowerBoundField.mouseClicked(par1, par2, par3);
+        lowerBoundField.mouseClicked(mouseX, mouseY, mouseButton);
         if (wasFocused && !lowerBoundField.isFocused()) {
-            try {
-                module.lowerBound = Float.parseFloat(lowerBoundField.getText());
-                if (module.lowerBound < -1) module.lowerBound = -1;
-                if (module.lowerBound > 30) module.lowerBound = 30;
-                //   lowerBoundField.setText(module.lowerBound + "");
-                NetworkHandler.sendToServer(new PacketUpdatePressureModule(module, 0, module.lowerBound));
-            } catch (Exception e) {
-            }
+            updateBoundFromTextfield(0);
         }
 
         wasFocused = higherBoundField.isFocused();
-        higherBoundField.mouseClicked(par1, par2, par3);
+        higherBoundField.mouseClicked(mouseX, mouseY, mouseButton);
         if (wasFocused && !higherBoundField.isFocused()) {
-            try {
-                module.higherBound = Float.parseFloat(higherBoundField.getText());
-                if (module.higherBound < -1) module.higherBound = -1;
-                if (module.higherBound > 30) module.higherBound = 30;
-                //  higherBoundField.setText(module.higherBound + "");
-                NetworkHandler.sendToServer(new PacketUpdatePressureModule(module, 1, module.higherBound));
-            } catch (Exception e) {
+            updateBoundFromTextfield(1);
+        }
+
+        if (lowerBoundArea.contains(mouseX, mouseY)) {
+            module.lowerBound = (float) (mouseX - 6 - (guiLeft + 11)) / (158 - 11) * module.maxValue;
+            module.lowerBound = Math.min(Math.max(-1, module.lowerBound), module.maxValue);
+            grabLower = true;
+        } else if (higherBoundArea.contains(mouseX, mouseY)) {
+            module.higherBound = (float) (mouseX - 6 - (guiLeft + 11)) / (158 - 11) * module.maxValue;
+            module.higherBound = Math.min(Math.max(-1, module.higherBound), module.maxValue);
+            grabHigher = true;
+        }
+    }
+
+    private void updateBoundFromTextfield(int fieldId) {
+        try {
+            switch (fieldId) {
+                case 0:
+                    module.lowerBound = Float.parseFloat(lowerBoundField.getText());
+                    module.lowerBound = Math.max(-1, Math.min(module.lowerBound, module.maxValue));
+                    NetworkHandler.sendToServer(new PacketUpdatePressureModule(module, 0, module.lowerBound));
+                    break;
+                case 1:
+                    module.higherBound = Float.parseFloat(higherBoundField.getText());
+                    module.higherBound = Math.max(-1, Math.min(module.higherBound, module.maxValue));
+                    NetworkHandler.sendToServer(new PacketUpdatePressureModule(module, 1, module.higherBound));
+                    break;
+                default:
+                    throw new IllegalArgumentException("unknown field id " + fieldId);
             }
+        } catch (NumberFormatException e) {
+            // ignore
         }
     }
 
     @Override
-    protected void keyTyped(char par1, int par2) throws IOException {
-        if (lowerBoundField.isFocused() && par2 != 1) {
-            lowerBoundField.textboxKeyTyped(par1, par2);
-            //  NetworkHandler.sendToServer(new PacketUpdateTextfield(te, 0));
-        } else if (higherBoundField.isFocused() && par2 != 1) {
-            higherBoundField.textboxKeyTyped(par1, par2);
+    protected void mouseClickMove(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick) {
+        if (grabLower) {
+            module.lowerBound = (float) (mouseX - 6 - (guiLeft + 11)) / (158 - 11) * module.maxValue;
+            module.lowerBound = Math.min(Math.max(-1, module.lowerBound), module.maxValue);
+        } else if (grabHigher) {
+            module.higherBound = (float) (mouseX - 6 - (guiLeft + 11)) / (158 - 11) * module.maxValue;
+            module.higherBound = Math.min(Math.max(-1, module.higherBound), module.maxValue);
         } else {
-            super.keyTyped(par1, par2);
+            super.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
+        }
+    }
+
+    @Override
+    protected void mouseReleased(int mouseX, int mouseY, int state) {
+        if (grabLower) {
+            NetworkHandler.sendToServer(new PacketUpdatePressureModule(module, 0, module.lowerBound));
+            grabLower = false;
+        } else if (grabHigher) {
+            NetworkHandler.sendToServer(new PacketUpdatePressureModule(module, 1, module.higherBound));
+            grabHigher = false;
+        } else {
+            super.mouseReleased(mouseX, mouseY, state);
+        }
+    }
+
+    @Override
+    protected void keyTyped(char key, int keyCode) throws IOException {
+        if (lowerBoundField.isFocused() && keyCode != Keyboard.KEY_ESCAPE) {
+            lowerBoundField.textboxKeyTyped(key, keyCode);
+            if (keyCode == Keyboard.KEY_RETURN) updateBoundFromTextfield(0);
+        } else if (higherBoundField.isFocused() && keyCode != Keyboard.KEY_ESCAPE) {
+            higherBoundField.textboxKeyTyped(key, keyCode);
+            if (keyCode == Keyboard.KEY_RETURN) updateBoundFromTextfield(1);
+        } else {
+            super.keyTyped(key, keyCode);
         }
     }
 
@@ -227,5 +251,10 @@ public class GuiPressureModule extends GuiTubeModule {
     public void updateScreen() {
         super.updateScreen();
         if (!module.advancedConfig) mc.displayGuiScreen(new GuiPressureModuleSimple(module));
+
+        if (!lowerBoundField.isFocused())
+            lowerBoundField.setText(PneumaticCraftUtils.roundNumberTo(module.lowerBound, 1));
+        if (!higherBoundField.isFocused())
+            higherBoundField.setText(PneumaticCraftUtils.roundNumberTo(module.higherBound, 1));
     }
 }
