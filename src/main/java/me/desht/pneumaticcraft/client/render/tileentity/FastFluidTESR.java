@@ -18,8 +18,10 @@ public abstract class FastFluidTESR<T extends TileEntityBase> extends FastTESR<T
 
     @Override
     public void renderTileEntityFast(T te, double x, double y, double z, float partialTicks, int destroyStage, float partial, BufferBuilder buffer) {
-        for (TankRenderInfo tankRenderInfo : getTanksToRender(te)) {
-            doRender(te, x, y, z, buffer, tankRenderInfo);
+        if (!te.getWorld().getChunkProvider().provideChunk(te.getPos().getX() >> 4, te.getPos().getZ() >> 4).isEmpty()) {
+            for (TankRenderInfo tankRenderInfo : getTanksToRender(te)) {
+                doRender(te, x, y, z, buffer, tankRenderInfo);
+            }
         }
     }
 

@@ -23,7 +23,7 @@ public abstract class AbstractModelRenderer<T extends TileEntityTickableBase> ex
     public void render(T te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
         // boilerplate translation code, common to all model renders, done here
 
-        if (!shouldRender(te)) return;
+        if (!shouldRender(te) || te.getWorld().getChunkProvider().provideChunk(te.getPos().getX() >> 4, te.getPos().getZ() >> 4).isEmpty()) return;
 
         GlStateManager.pushMatrix();
         FMLClientHandler.instance().getClient().getTextureManager().bindTexture(getTexture(te));
