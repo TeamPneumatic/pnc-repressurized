@@ -749,7 +749,7 @@ public class EntityDrone extends EntityDroneBase
             handlingOffer.writeToNBT(subTag);
             tag.setTag("amadronOffer", subTag);
             tag.setInteger("offerTimes", offerTimes);
-            if (usedTablet != null) usedTablet.writeToNBT(subTag);
+            if (!usedTablet.isEmpty()) usedTablet.writeToNBT(subTag);
             tag.setString("buyingPlayer", buyingPlayer);
         }
     }
@@ -795,12 +795,12 @@ public class EntityDrone extends EntityDroneBase
             if (subTag.hasKey("id")) {
                 usedTablet = new ItemStack(subTag);
             } else {
-                usedTablet = null;
+                usedTablet = ItemStack.EMPTY;
             }
             buyingPlayer = subTag.getString("buyingPlayer");
         } else {
             handlingOffer = null;
-            usedTablet = null;
+            usedTablet = ItemStack.EMPTY;
             buyingPlayer = null;
         }
         offerTimes = tag.getInteger("offerTimes");
@@ -1189,7 +1189,7 @@ public class EntityDrone extends EntityDroneBase
     public void setHandlingOffer(AmadronOffer offer, int times, ItemStack usedTablet, String buyingPlayer) {
         handlingOffer = offer;
         offerTimes = times;
-        this.usedTablet = usedTablet != null ? usedTablet.copy() : null;
+        this.usedTablet = usedTablet.copy();
         this.buyingPlayer = buyingPlayer;
     }
 
