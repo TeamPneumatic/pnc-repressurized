@@ -149,6 +149,7 @@ public class EntityDrone extends EntityDroneBase
     private String buyingPlayer;
     private final SortedSet<DebugEntry> debugEntries = new TreeSet<DebugEntry>();
     private final Set<EntityPlayerMP> syncedPlayers = new HashSet<EntityPlayerMP>();
+    private boolean heldItemChanged;  // if true, force a check of item attribute modifiers
 
     public EntityDrone(World world) {
         super(world);
@@ -300,6 +301,9 @@ public class EntityDrone extends EntityDroneBase
         }
         boolean enabled = !disabledByHacking && getPressure(null) > 0.01F;
         if (!world.isRemote) {
+            if (heldItemChanged) {
+                inventory.heldItemChanged();
+            }
             setAccelerating(!standby && enabled);
             if (isAccelerating()) {
                 fallDistance = 0;
@@ -820,9 +824,13 @@ public class EntityDrone extends EntityDroneBase
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound tag) {
         super.writeToNBT(tag);
-        if(playerName != null){
-            tag.setString("owner", playerName);
-            tag.setString("ownerUUID", getOwnerUUID());
+        // this can be called client-side, e.g. TheOneProbe
+        // but this data isn't sync'd to the client
+        if (!getEntityWorld().isRemote) {
+            if (playerName != null) {
+                tag.setString("owner", playerName);
+                tag.setString("ownerUUID", getOwnerUUID());
+            }
         }
         return tag;
     }
@@ -830,9 +838,12 @@ public class EntityDrone extends EntityDroneBase
     @Override
     public void readFromNBT(NBTTagCompound tag) {
         super.readFromNBT(tag);
-        if (tag.hasKey("owner")) {
-            playerName = tag.getString("owner");
-            playerUUID = tag.hasKey("ownerUUID") ? tag.getString("ownerUUID") : null;
+        // see writeToNBT() above
+        if (!getEntityWorld().isRemote) {
+            if (tag.hasKey("owner")) {
+                playerName = tag.getString("owner");
+                playerUUID = tag.hasKey("ownerUUID") ? tag.getString("ownerUUID") : null;
+            }
         }
     }
 
@@ -939,24 +950,34 @@ public class EntityDrone extends EntityDroneBase
         protected void onContentsChanged(int slot) {
             super.onContentsChanged(slot);
 
-            if (slot == 0 && getFakePlayer() != null) {  // the "currently-held" item
-                ItemStack newStack = inventory.getStackInSlot(slot);
-                if (!oldStack.isEmpty()) {
-                    for (EntityEquipmentSlot s : EntityEquipmentSlot.values()) {
-                        getFakePlayer().getAttributeMap().removeAttributeModifiers(oldStack.getAttributeModifiers(s));
-                    }
-                }
-
-                if (!newStack.isEmpty()) {
-                    for (EntityEquipmentSlot s : EntityEquipmentSlot.values()) {
-                        getFakePlayer().getAttributeMap().applyAttributeModifiers(newStack.getAttributeModifiers(s));
-                    }
-                }
-
-                oldStack = newStack;
-
-                if (ConfigHandler.client.dronesRenderHeldItem) dataManager.set(HELD_ITEM, newStack);
+            if (slot == 0) {
+                // We can't call getFakePlayer() here since we might be still in entity initialization,
+                // i.e. the chunk is still being loaded.  Initializing a player at this stage
+                // can cause an endless loop (player constructor tries to find a random spawn point,
+                // which can lead to more chunk creation)
+                heldItemChanged = true;
             }
+        }
+
+        private void heldItemChanged() {
+            ItemStack newStack = inventory.getStackInSlot(0);
+            if (!oldStack.isEmpty()) {
+                for (EntityEquipmentSlot s : EntityEquipmentSlot.values()) {
+                    getFakePlayer().getAttributeMap().removeAttributeModifiers(oldStack.getAttributeModifiers(s));
+                }
+            }
+
+            if (!newStack.isEmpty()) {
+                for (EntityEquipmentSlot s : EntityEquipmentSlot.values()) {
+                    getFakePlayer().getAttributeMap().applyAttributeModifiers(newStack.getAttributeModifiers(s));
+                }
+            }
+
+            oldStack = newStack;
+
+            if (ConfigHandler.client.dronesRenderHeldItem) dataManager.set(HELD_ITEM, newStack);
+
+            heldItemChanged = false;
         }
     }
 
