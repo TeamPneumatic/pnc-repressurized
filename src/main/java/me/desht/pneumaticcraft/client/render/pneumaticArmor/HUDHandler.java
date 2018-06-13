@@ -10,6 +10,7 @@ import me.desht.pneumaticcraft.client.gui.pneumaticHelmet.GuiHelmetMainScreen;
 import me.desht.pneumaticcraft.client.gui.widget.GuiKeybindCheckBox;
 import me.desht.pneumaticcraft.client.render.RenderProgressBar;
 import me.desht.pneumaticcraft.common.CommonHUDHandler;
+import me.desht.pneumaticcraft.common.item.ItemPneumaticArmorBase;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketToggleHelmetFeature;
@@ -249,8 +250,7 @@ public class HUDHandler implements IKeyListener {
         Minecraft mc = FMLClientHandler.instance().getClient();
         if (mc.inGameHasFocus) {
             if (key == KeyHandler.getInstance().keybindOpenOptions) {
-                ItemStack helmetStack = mc.player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
-                if (helmetStack.getItem() == Itemss.PNEUMATIC_HELMET) {
+                if (ItemPneumaticArmorBase.isPlayerWearingPneumaticArmor(mc.player)) {
                     FMLCommonHandler.instance().showGuiScreen(GuiHelmetMainScreen.getInstance());
                 }
             } else if (key == KeyHandler.getInstance().keybindHack && HackUpgradeRenderHandler.enabledForPlayer(mc.player)) {

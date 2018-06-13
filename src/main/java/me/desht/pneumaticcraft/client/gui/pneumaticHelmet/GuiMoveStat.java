@@ -5,10 +5,15 @@ import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import org.lwjgl.input.Keyboard;
+
+import java.io.IOException;
 
 public class GuiMoveStat extends GuiScreen {
     private final IGuiAnimatedStat movedStat;
     private final IUpgradeRenderHandler renderHandler;
+    private boolean clicked = false;
 
     public GuiMoveStat(IUpgradeRenderHandler renderHandler) {
         movedStat = renderHandler.getAnimatedStat();
@@ -28,17 +33,34 @@ public class GuiMoveStat extends GuiScreen {
     protected void mouseClickMove(int x, int y, int lastButtonClicked, long timeSinceMouseClick) {
         movedStat.setBaseX(x);
         movedStat.setBaseY(y);
-        renderHandler.saveToConfig();
     }
 
     @Override
-    protected void mouseClicked(int x, int y, int mouseButton) {
-        if (mouseButton == 2) movedStat.setLeftSided(!movedStat.isLeftSided());
-        else {
-            movedStat.setBaseX(x);
-            movedStat.setBaseY(y);
+    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+        clicked = true;
+    }
+
+    @Override
+    protected void mouseReleased(int mouseX, int mouseY, int mouseButton) {
+        if (clicked) {
+            if (mouseButton == 2) {
+                movedStat.setLeftSided(!movedStat.isLeftSided());
+            } else {
+                movedStat.setBaseX(mouseX);
+                movedStat.setBaseY(mouseY);
+            }
+            renderHandler.saveToConfig();
+            clicked = false;
         }
-        renderHandler.saveToConfig();
+    }
+
+    @Override
+    protected void keyTyped(char typedChar, int keyCode) throws IOException {
+        if (keyCode == Keyboard.KEY_ESCAPE) {
+            FMLCommonHandler.instance().showGuiScreen(new GuiHelmetMainScreen());
+        } else {
+            super.keyTyped(typedChar, keyCode);
+        }
     }
 
     @Override

@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.item;
 
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IPressurizable;
@@ -15,20 +14,14 @@ import me.desht.pneumaticcraft.common.recipes.factories.OneProbeRecipeFactory;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.ModIds;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import me.desht.pneumaticcraft.lib.Textures;
-import me.desht.pneumaticcraft.proxy.CommonProxy.EnumGuiId;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.client.FMLClientHandler;
@@ -41,7 +34,6 @@ import thaumcraft.api.items.IRevealer;
 import thaumcraft.api.items.IVisDiscountGear;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -52,43 +44,22 @@ import java.util.Set;
         @Optional.Interface(iface = "thaumcraft.api.items.IVisDiscountGear", modid = ModIds.THAUMCRAFT),
         @Optional.Interface(iface = "thaumcraft.api.items.IRevealer", modid = ModIds.THAUMCRAFT)
 })
-public class ItemPneumaticArmor extends ItemArmor implements IPressurizable, IChargingStationGUIHolderItem, IUpgradeAcceptor,
+public class ItemPneumaticHelmet extends ItemPneumaticArmorBase implements IPressurizable, IChargingStationGUIHolderItem, IUpgradeAcceptor,
         IRevealer, IGoggles, IVisDiscountGear {
 
-    public ItemPneumaticArmor(ItemArmor.ArmorMaterial material, int renderIndex, EntityEquipmentSlot armorType, int maxAir) {
-        super(material, renderIndex, armorType);
-        // TODO other armor types?
-        setRegistryName("pneumatic_helmet");
-        setUnlocalizedName("pneumatic_helmet");
-        setMaxDamage(maxAir);
-        setCreativeTab(PneumaticCraftRepressurized.tabPneumaticCraft);
-    }
-
-    @Nullable
-    @Override
-    public String getArmorTexture(ItemStack stack, Entity entity, EntityEquipmentSlot slot, String type) {
-        return Textures.ARMOR_PNEUMATIC + "_1.png";
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> subItems) {
-        if (isInCreativeTab(tab)) {
-            subItems.add(new ItemStack(this));
-            ItemStack chargedStack = new ItemStack(this);
-            addAir(chargedStack, PneumaticValues.PNEUMATIC_HELMET_VOLUME * 10);
-            subItems.add(chargedStack);
-        }
+    public ItemPneumaticHelmet() {
+        super("pneumatic_helmet", EntityEquipmentSlot.HEAD);
     }
 
     @Override
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack iStack, World world, List<String> textList, ITooltipFlag flag) {
+        super.addInformation(iStack, world, textList, flag);
+
         if (iStack.hasTagCompound() && iStack.getTagCompound().getInteger(OneProbeRecipeFactory.ONE_PROBE_TAG) == 1) {
             textList.add(TextFormatting.BLUE + "The One Probe installed");
         }
-        float pressure = getPressure(iStack);
-        textList.add((pressure < 0.5F ? TextFormatting.RED : TextFormatting.DARK_GREEN) + "Pressure: " + Math.round(pressure * 10D) / 10D + " bar");
+
         if (UpgradableItemUtils.addUpgradeInformation(iStack, world, textList, flag) > 0) {
             // supplementary search & tracker information
             ItemStack searchedStack = getSearchedStack(iStack);
@@ -112,12 +83,6 @@ public class ItemPneumaticArmor extends ItemArmor implements IPressurizable, ICh
         }
 
         ItemPneumatic.addTooltip(iStack, world, textList);
-    }
-
-    @SideOnly(Side.CLIENT)
-    @Nonnull
-    public static ItemStack getSearchedStack() {
-        return getSearchedStack(PneumaticCraftRepressurized.proxy.getPlayer().getItemStackFromSlot(EntityEquipmentSlot.HEAD));
     }
 
     @Nonnull
@@ -147,46 +112,6 @@ public class ItemPneumaticArmor extends ItemArmor implements IPressurizable, ICh
         if (!helmetStack.isEmpty()) {
             NBTUtil.setString(helmetStack, "entityFilter", filter);
         }
-    }
-
-    @Override
-    public boolean getIsRepairable(ItemStack par1ItemStack, ItemStack par2ItemStack) {
-        return false;
-    }
-
-    @Override
-    public float getPressure(ItemStack iStack) {
-        int volume = UpgradableItemUtils.getUpgrades(EnumUpgrade.VOLUME, iStack) * PneumaticValues.VOLUME_VOLUME_UPGRADE + PneumaticValues.PNEUMATIC_HELMET_VOLUME;
-        int oldVolume = NBTUtil.getInteger(iStack, "volume");
-        int currentAir = NBTUtil.getInteger(iStack, "air");
-        if (volume < oldVolume) {
-            currentAir = currentAir * volume / oldVolume;
-            NBTUtil.setInteger(iStack, "air", currentAir);
-        }
-        if (volume != oldVolume) {
-            NBTUtil.setInteger(iStack, "volume", volume);
-        }
-        return (float) currentAir / volume;
-    }
-
-    public boolean hasSufficientPressure(ItemStack iStack) {
-        return getPressure(iStack) > 0F;
-    }
-
-    @Override
-    public float maxPressure(ItemStack iStack) {
-        return 10F;
-    }
-
-    @Override
-    public void addAir(ItemStack iStack, int amount) {
-        int oldAir = NBTUtil.getInteger(iStack, "air");
-        NBTUtil.setInteger(iStack, "air", Math.max(oldAir + amount, 0));
-    }
-
-    @Override
-    public EnumGuiId getGuiID() {
-        return EnumGuiId.PNEUMATIC_HELMET;
     }
 
     /**
@@ -229,15 +154,6 @@ public class ItemPneumaticArmor extends ItemArmor implements IPressurizable, ICh
     }
 
     @Override
-    public String getName() {
-        return getUnlocalizedName() + ".name";
-    }
-
-    private boolean hasThaumcraftUpgradeAndPressure(ItemStack stack) {
-        return hasSufficientPressure(stack) && UpgradableItemUtils.getUpgrades(EnumUpgrade.THAUMCRAFT, stack) > 0;
-    }
-
-    @Override
     @Optional.Method(modid = ModIds.THAUMCRAFT)
     public int getVisDiscount(ItemStack stack, EntityPlayer player) {
         return hasThaumcraftUpgradeAndPressure(stack) ? 5 : 0;
@@ -255,4 +171,13 @@ public class ItemPneumaticArmor extends ItemArmor implements IPressurizable, ICh
         return hasThaumcraftUpgradeAndPressure(itemstack);
     }
 
+    @Override
+    public int getVolume() {
+        return PneumaticValues.PNEUMATIC_HELMET_VOLUME;
+    }
+
+    @Override
+    public int getMaxAir() {
+        return PneumaticValues.PNEUMATIC_HELMET_MAX_AIR;
+    }
 }

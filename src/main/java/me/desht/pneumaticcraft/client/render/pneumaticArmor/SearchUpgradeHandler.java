@@ -7,7 +7,7 @@ import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.gui.pneumaticHelmet.GuiSearchUpgradeOptions;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
+import me.desht.pneumaticcraft.common.item.ItemPneumaticHelmet;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.recipes.CraftingRegistrator;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -89,7 +89,7 @@ public class SearchUpgradeHandler implements IUpgradeRenderHandler {
     @SideOnly(Side.CLIENT)
     public void update(EntityPlayer player, int rangeUpgrades) {
         ticksExisted++;
-        ItemStack searchStack = ItemPneumaticArmor.getSearchedStack(player.getItemStackFromSlot(EntityEquipmentSlot.HEAD));
+        ItemStack searchStack = ItemPneumaticHelmet.getSearchedStack(player.getItemStackFromSlot(EntityEquipmentSlot.HEAD));
 
         if (ticksExisted % 20 == 0) {
             List<EntityItem> items = player.world.getEntitiesWithinAABB(EntityItem.class, EntityTrackUpgradeHandler.getAABBFromRange(player, rangeUpgrades));
@@ -154,7 +154,7 @@ public class SearchUpgradeHandler implements IUpgradeRenderHandler {
     @Override
     @SideOnly(Side.CLIENT)
     public void render2D(float partialTicks, boolean helmetEnabled) {
-        ItemStack searchStack = ItemPneumaticArmor.getSearchedStack(FMLClientHandler.instance().getClient().player.getItemStackFromSlot(EntityEquipmentSlot.HEAD));
+        ItemStack searchStack = ItemPneumaticHelmet.getSearchedStack(FMLClientHandler.instance().getClient().player.getItemStackFromSlot(EntityEquipmentSlot.HEAD));
         List<String> textList = new ArrayList<String>();
         if (searchStack.isEmpty()) {
             textList.add("press '" + Keyboard.getKeyName(KeyHandler.getInstance().keybindOpenOptions.getKeyCode()) + "' to configure");
@@ -176,7 +176,7 @@ public class SearchUpgradeHandler implements IUpgradeRenderHandler {
      */
     public void checkInventoryForItems(TileEntity te) {
         try {
-            ItemStack searchStack = ItemPneumaticArmor.getSearchedStack(FMLClientHandler.instance().getClient().player.getItemStackFromSlot(EntityEquipmentSlot.HEAD));
+            ItemStack searchStack = ItemPneumaticHelmet.getSearchedStack(FMLClientHandler.instance().getClient().player.getItemStackFromSlot(EntityEquipmentSlot.HEAD));
             IItemHandler handler = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
             assert handler != null;
             boolean hasFoundItem = false;

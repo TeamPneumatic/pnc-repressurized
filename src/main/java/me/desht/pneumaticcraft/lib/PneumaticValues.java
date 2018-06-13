@@ -128,10 +128,12 @@ public class PneumaticValues {
     public static final int AIR_CANISTER_MAX_AIR = 30000;
     public static final int VORTEX_CANNON_MAX_AIR = 30000;
     public static final int PNEUMATIC_HELMET_MAX_AIR = 120000;
+    public static final int PNEUMATIC_CHESTPLATE_MAX_AIR = 210000;
 
     public static final int AIR_CANISTER_VOLUME = 3000;
     public static final int VORTEX_CANNON_VOLUME = 3000;
     public static final int PNEUMATIC_HELMET_VOLUME = 12000;
+    public static final int PNEUMATIC_CHESTPLATE_VOLUME = 28000;
 
     public static final int PNEUMATIC_WRENCH_VOLUME = 3000;
     public static final int PNEUMATIC_WRENCH_MAX_AIR = 30000;

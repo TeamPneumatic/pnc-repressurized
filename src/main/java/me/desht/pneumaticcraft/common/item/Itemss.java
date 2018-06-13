@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.item;
 
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.block.ICustomItemBlock;
@@ -11,12 +10,9 @@ import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.lib.ModIds;
 import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
-import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemBlock;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Loader;
@@ -149,7 +145,7 @@ public class Itemss {
         registerItem(registry, new ItemPressurizable("air_canister", PneumaticValues.AIR_CANISTER_MAX_AIR, PneumaticValues.AIR_CANISTER_VOLUME));
         registerItem(registry, new ItemVortexCannon());
         registerItem(registry, new ItemPneumatic("pneumatic_cylinder"));
-        registerItem(registry, new ItemPneumaticArmor(ItemArmor.ArmorMaterial.IRON, PneumaticCraftRepressurized.proxy.getArmorRenderID(Textures.ARMOR_PNEUMATIC), EntityEquipmentSlot.HEAD, PneumaticValues.PNEUMATIC_HELMET_MAX_AIR));
+        registerItem(registry, new ItemPneumaticHelmet());
         registerItem(registry, new ItemManometer());
         registerItem(registry, new ItemPneumatic("turbine_rotor"));
         registerItem(registry, new ItemAssemblyProgram());
@@ -171,8 +167,8 @@ public class Itemss {
         registerItem(registry, new ItemRemote());
         registerItem(registry, new ItemSeismicSensor());
         registerItem(registry, new ItemLogisticsConfigurator());
-        registerItem(registry, new ItemBasicDrone("logistic_drone", (world, player) -> new EntityLogisticsDrone(world, player)));
-        registerItem(registry, new ItemBasicDrone("harvesting_drone", (world, player) -> new EntityHarvestingDrone(world, player)));
+        registerItem(registry, new ItemBasicDrone("logistic_drone", EntityLogisticsDrone::new));
+        registerItem(registry, new ItemBasicDrone("harvesting_drone", EntityHarvestingDrone::new));
         registerItem(registry, new ItemGunAmmo());
         registerItem(registry, new ItemAmadronTablet());
         registerItem(registry, new ItemMinigun());

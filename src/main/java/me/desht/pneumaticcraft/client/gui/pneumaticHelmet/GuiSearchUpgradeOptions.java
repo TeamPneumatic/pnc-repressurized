@@ -5,7 +5,7 @@ import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IOptionPage;
 import me.desht.pneumaticcraft.client.gui.GuiSearcher;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.SearchUpgradeHandler;
 import me.desht.pneumaticcraft.common.NBTUtil;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
+import me.desht.pneumaticcraft.common.item.ItemPneumaticHelmet;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateSearchStack;
 import net.minecraft.client.gui.GuiButton;
@@ -38,7 +38,7 @@ public class GuiSearchUpgradeOptions implements IOptionPage {
         gui.getButtonList().add(new GuiButton(11, 30, 128, 150, 20, "Move Stat Screen..."));
         if (searchGui != null && !player.getItemStackFromSlot(EntityEquipmentSlot.HEAD).isEmpty()) {
             ItemStack searchStack = searchGui.getSearchStack();
-            ItemStack helmetStack = ItemPneumaticArmor.getSearchedStack(player.getItemStackFromSlot(EntityEquipmentSlot.HEAD));
+            ItemStack helmetStack = ItemPneumaticHelmet.getSearchedStack(player.getItemStackFromSlot(EntityEquipmentSlot.HEAD));
             if (searchStack.isEmpty() && !helmetStack.isEmpty() || !searchStack.isEmpty() && helmetStack.isEmpty() || !searchStack.isEmpty() && !helmetStack.isEmpty() && !searchStack.isItemEqual(helmetStack)) {
                 NetworkHandler.sendToServer(new PacketUpdateSearchStack(searchStack));
                 NBTTagCompound tag = NBTUtil.getCompoundTag(player.getItemStackFromSlot(EntityEquipmentSlot.HEAD), "SearchStack");
@@ -53,7 +53,7 @@ public class GuiSearchUpgradeOptions implements IOptionPage {
         if (button.id == 10) {
             searchGui = new GuiSearcher(player);
             if (!player.getItemStackFromSlot(EntityEquipmentSlot.HEAD).isEmpty()) {
-                searchGui.setSearchStack(ItemPneumaticArmor.getSearchedStack(player.getItemStackFromSlot(EntityEquipmentSlot.HEAD)));
+                searchGui.setSearchStack(ItemPneumaticHelmet.getSearchedStack(player.getItemStackFromSlot(EntityEquipmentSlot.HEAD)));
             }
             FMLClientHandler.instance().showGuiScreen(searchGui);
         } else {

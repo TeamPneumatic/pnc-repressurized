@@ -40,11 +40,9 @@ public class GuiHelmetMainOptions implements IOptionPage {
     public void actionPerformed(GuiButton button) {
         switch (button.id) {
             case 10:
-                FMLClientHandler.instance().getClient().player.closeScreen();
                 FMLCommonHandler.instance().showGuiScreen(new GuiMoveStat(renderHandler));
                 break;
             case 11:
-                FMLClientHandler.instance().getClient().player.closeScreen();
                 renderHandler.testMessageStat = new GuiAnimatedStat(null, "Test Message, keep in mind messages can be long!", renderHandler.messagesStatX, renderHandler.messagesStatY, 0x7000AA00, null, renderHandler.messagesStatLeftSided);
                 renderHandler.testMessageStat.openWindow();
                 FMLCommonHandler.instance().showGuiScreen(new GuiMoveStat(renderHandler, renderHandler.testMessageStat));

@@ -102,11 +102,11 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
                     List<IBlockTrackEntry> entries = BlockTrackEntryList.instance.getEntriesForCoordinate(chunkCache, pos, te);
                     if (entries.isEmpty()) continue;
                     boolean inList = false;
-                    for (int l = 0; l < blockTargets.size(); l++) {
-                        if (blockTargets.get(l).isSameTarget(player.world, pos)) {
+                    for (RenderBlockTarget blockTarget : blockTargets) {
+                        if (blockTarget.isSameTarget(player.world, pos)) {
                             inList = true;
-                            blockTargets.get(l).ticksExisted = Math.abs(blockTargets.get(l).ticksExisted);// cancel lost targets
-                            blockTargets.get(l).setTileEntity(te);
+                            blockTarget.ticksExisted = Math.abs(blockTarget.ticksExisted);// cancel lost targets
+                            blockTarget.setTileEntity(te);
                             break;
                         }
                     }

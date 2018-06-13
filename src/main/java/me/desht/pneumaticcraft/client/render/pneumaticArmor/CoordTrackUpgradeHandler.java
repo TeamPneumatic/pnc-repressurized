@@ -9,7 +9,7 @@ import me.desht.pneumaticcraft.common.NBTUtil;
 import me.desht.pneumaticcraft.common.ai.EntityPathNavigateDrone;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
+import me.desht.pneumaticcraft.common.item.ItemPneumaticHelmet;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketCoordTrackUpdate;
@@ -80,7 +80,7 @@ public class CoordTrackUpgradeHandler implements IUpgradeRenderHandler {
         if (coordTracker != null) {
             coordTracker.ticksExisted++;
         } else {
-            coordTracker = ItemPneumaticArmor.getCoordTrackLocation(player.getItemStackFromSlot(EntityEquipmentSlot.HEAD));
+            coordTracker = ItemPneumaticHelmet.getCoordTrackLocation(player.getItemStackFromSlot(EntityEquipmentSlot.HEAD));
             if (coordTracker != null) navigator = new RenderNavigator(coordTracker.world, coordTracker.pos);
         }
         if (noPathCooldown > 0) {
