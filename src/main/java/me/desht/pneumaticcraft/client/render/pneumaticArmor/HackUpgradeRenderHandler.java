@@ -9,6 +9,7 @@ import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 
 public class HackUpgradeRenderHandler implements IUpgradeRenderHandler {
@@ -78,6 +79,11 @@ public class HackUpgradeRenderHandler implements IUpgradeRenderHandler {
     @Override
     public IOptionPage getGuiOptionsPage() {
         return null;
+    }
+
+    @Override
+    public boolean appliesToArmorPiece(ItemArmor armorPiece) {
+        return armorPiece == Itemss.PNEUMATIC_HELMET;
     }
 
 }

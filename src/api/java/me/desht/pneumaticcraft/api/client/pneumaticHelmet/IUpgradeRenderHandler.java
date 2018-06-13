@@ -3,11 +3,12 @@ package me.desht.pneumaticcraft.api.client.pneumaticHelmet;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemArmor;
 
 /**
- * To add upgrades for in the Pneumatic Helmet implement this interface. You can add members to this class, however these can only
- * be client sided members as this class will be used as singleton. Therefore, only one of these instances exist at the server side
- * so any member that is used server side will affect every player.
+ * To add upgrades to a Pneumatic armor piece, implement this interface. You can add members to this class, but these
+ * can only be client sided members as this class will be used as a singleton. Therefore, only one of these instances
+ * exist at the server side, so any member that is used server side will affect every player.
  */
 public interface IUpgradeRenderHandler {
 
@@ -102,4 +103,9 @@ public interface IUpgradeRenderHandler {
     default float getMinimumPressure() {
         return 0.0f;
     }
+
+    /**
+     * Checks if this upgrade can be applied to this armor piece.
+     */
+    boolean appliesToArmorPiece(ItemArmor armorPiece);
 }

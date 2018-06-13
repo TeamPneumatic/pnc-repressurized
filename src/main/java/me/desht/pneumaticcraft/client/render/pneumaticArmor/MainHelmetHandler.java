@@ -7,10 +7,12 @@ import me.desht.pneumaticcraft.client.gui.pneumaticHelmet.GuiHelmetMainOptions;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
 import me.desht.pneumaticcraft.common.CommonHUDHandler;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
+import me.desht.pneumaticcraft.common.item.Itemss;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemArmor;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -124,5 +126,10 @@ public class MainHelmetHandler implements IUpgradeRenderHandler {
     public float getMinimumPressure() {
         // pressure display always shows, even when empty
         return -1.0f;
+    }
+
+    @Override
+    public boolean appliesToArmorPiece(ItemArmor armorPiece) {
+        return armorPiece == Itemss.PNEUMATIC_HELMET;
     }
 }

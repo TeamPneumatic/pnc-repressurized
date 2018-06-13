@@ -1,10 +1,14 @@
 package me.desht.pneumaticcraft.common.item;
 
+import com.google.common.collect.Sets;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
+import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IPressurizable;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
+import me.desht.pneumaticcraft.client.render.pneumaticArmor.UpgradeRenderHandlerList;
 import me.desht.pneumaticcraft.common.NBTUtil;
+import me.desht.pneumaticcraft.common.recipes.CraftingRegistrator;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.ModIds;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -14,17 +18,19 @@ import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.Optional;
+import net.minecraftforge.fml.common.Loader;
 import thaumcraft.api.items.IVisDiscountGear;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
-@Optional.Interface(iface = "thaumcraft.api.items.IVisDiscountGear", modid = ModIds.THAUMCRAFT)
 public abstract class ItemPneumaticArmorBase extends ItemArmor implements IPressurizable, IChargingStationGUIHolderItem, IUpgradeAcceptor,
         IVisDiscountGear
 {
@@ -58,13 +64,14 @@ public abstract class ItemPneumaticArmorBase extends ItemArmor implements IPress
     @Nullable
     @Override
     public String getArmorTexture(ItemStack stack, Entity entity, EntityEquipmentSlot slot, String type) {
-        return Textures.ARMOR_PNEUMATIC + "_1.png";
+        return slot == EntityEquipmentSlot.LEGS ? Textures.ARMOR_PNEUMATIC + "_2.png" : Textures.ARMOR_PNEUMATIC + "_1.png";
     }
 
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
         float pressure = getPressure(stack);
         tooltip.add((pressure < 0.5F ? TextFormatting.RED : TextFormatting.DARK_GREEN) + "Pressure: " + Math.round(pressure * 10D) / 10D + " bar");
+        UpgradableItemUtils.addUpgradeInformation(stack, worldIn, tooltip, flagIn);
     }
 
     @Override
@@ -72,6 +79,23 @@ public abstract class ItemPneumaticArmorBase extends ItemArmor implements IPress
         return false;
     }
 
+    @Override
+    public Set<Item> getApplicableUpgrades() {
+        Set<Item> upgrades = Sets.newHashSet();
+
+        for (IUpgradeRenderHandler handler : UpgradeRenderHandlerList.instance().upgradeRenderers) {
+            if (handler.appliesToArmorPiece(this)) {
+                Collections.addAll(upgrades, handler.getRequiredUpgrades());
+            }
+        }
+
+        upgrades.add(CraftingRegistrator.getUpgrade(EnumUpgrade.VOLUME).getItem());
+        if (Loader.isModLoaded(ModIds.THAUMCRAFT)) {
+            upgrades.add(CraftingRegistrator.getUpgrade(EnumUpgrade.THAUMCRAFT).getItem());
+        }
+
+        return upgrades;
+    }
 
     @Override
     public float getPressure(ItemStack iStack) {
@@ -118,4 +142,5 @@ public abstract class ItemPneumaticArmorBase extends ItemArmor implements IPress
     boolean hasThaumcraftUpgradeAndPressure(ItemStack stack) {
         return hasSufficientPressure(stack) && UpgradableItemUtils.getUpgrades(EnumUpgrade.THAUMCRAFT, stack) > 0;
     }
+
 }

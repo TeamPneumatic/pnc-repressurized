@@ -1,17 +1,12 @@
 package me.desht.pneumaticcraft.common.item;
 
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
-import me.desht.pneumaticcraft.api.item.IPressurizable;
-import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.RenderCoordWireframe;
-import me.desht.pneumaticcraft.client.render.pneumaticArmor.UpgradeRenderHandlerList;
 import me.desht.pneumaticcraft.common.DateEventHandler;
 import me.desht.pneumaticcraft.common.NBTUtil;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.recipes.CraftingRegistrator;
 import me.desht.pneumaticcraft.common.recipes.factories.OneProbeRecipeFactory;
-import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.ModIds;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.client.model.ModelBiped;
@@ -25,17 +20,13 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import thaumcraft.api.items.IGoggles;
 import thaumcraft.api.items.IRevealer;
-import thaumcraft.api.items.IVisDiscountGear;
 
 import javax.annotation.Nonnull;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -44,8 +35,7 @@ import java.util.Set;
         @Optional.Interface(iface = "thaumcraft.api.items.IVisDiscountGear", modid = ModIds.THAUMCRAFT),
         @Optional.Interface(iface = "thaumcraft.api.items.IRevealer", modid = ModIds.THAUMCRAFT)
 })
-public class ItemPneumaticHelmet extends ItemPneumaticArmorBase implements IPressurizable, IChargingStationGUIHolderItem, IUpgradeAcceptor,
-        IRevealer, IGoggles, IVisDiscountGear {
+public class ItemPneumaticHelmet extends ItemPneumaticArmorBase implements IRevealer, IGoggles {
 
     public ItemPneumaticHelmet() {
         super("pneumatic_helmet", EntityEquipmentSlot.HEAD);
@@ -60,24 +50,22 @@ public class ItemPneumaticHelmet extends ItemPneumaticArmorBase implements IPres
             textList.add(TextFormatting.BLUE + "The One Probe installed");
         }
 
-        if (UpgradableItemUtils.addUpgradeInformation(iStack, world, textList, flag) > 0) {
-            // supplementary search & tracker information
-            ItemStack searchedStack = getSearchedStack(iStack);
-            if (!searchedStack.isEmpty()) {
-                for (int i = 0; i < textList.size(); i++) {
-                    if (textList.get(i).contains("Item Search")) {
-                        textList.set(i, textList.get(i) + " (searching " + searchedStack.getDisplayName() + ")");
-                        break;
-                    }
+        // supplementary search & tracker information
+        ItemStack searchedStack = getSearchedStack(iStack);
+        if (!searchedStack.isEmpty()) {
+            for (int i = 0; i < textList.size(); i++) {
+                if (textList.get(i).contains("Item Search")) {
+                    textList.set(i, textList.get(i) + " (searching " + searchedStack.getDisplayName() + ")");
+                    break;
                 }
             }
-            RenderCoordWireframe coordHandler = getCoordTrackLocation(iStack);
-            if (coordHandler != null) {
-                for (int i = 0; i < textList.size(); i++) {
-                    if (textList.get(i).contains("Coordinate Tracker")) {
-                        textList.set(i, textList.get(i) + " (tracking " + coordHandler.pos.getX() + ", " + coordHandler.pos.getY() + ", " + coordHandler.pos.getZ() + " in " + coordHandler.world.provider.getDimensionType() + ")");
-                        break;
-                    }
+        }
+        RenderCoordWireframe coordHandler = getCoordTrackLocation(iStack);
+        if (coordHandler != null) {
+            for (int i = 0; i < textList.size(); i++) {
+                if (textList.get(i).contains("Coordinate Tracker")) {
+                    textList.set(i, textList.get(i) + " (tracking " + coordHandler.pos.getX() + ", " + coordHandler.pos.getY() + ", " + coordHandler.pos.getZ() + " in " + coordHandler.world.provider.getDimensionType() + ")");
+                    break;
                 }
             }
         }
@@ -139,17 +127,10 @@ public class ItemPneumaticHelmet extends ItemPneumaticArmorBase implements IPres
 
     @Override
     public Set<Item> getApplicableUpgrades() {
-        Set<Item> items = new HashSet<>();
-        for (IUpgradeRenderHandler handler : UpgradeRenderHandlerList.instance().upgradeRenderers) {
-            Collections.addAll(items, handler.getRequiredUpgrades());
-        }
+        Set<Item> items = super.getApplicableUpgrades();
         items.add(CraftingRegistrator.getUpgrade(EnumUpgrade.SPEED).getItem());
-        items.add(CraftingRegistrator.getUpgrade(EnumUpgrade.VOLUME).getItem());
         items.add(CraftingRegistrator.getUpgrade(EnumUpgrade.RANGE).getItem());
         items.add(CraftingRegistrator.getUpgrade(EnumUpgrade.SECURITY).getItem());
-        if (Loader.isModLoaded(ModIds.THAUMCRAFT)) {
-            items.add(CraftingRegistrator.getUpgrade(EnumUpgrade.THAUMCRAFT).getItem());
-        }
         return items;
     }
 

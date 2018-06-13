@@ -21,6 +21,7 @@ import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
@@ -197,6 +198,11 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler {
     @SideOnly(Side.CLIENT)
     public IOptionPage getGuiOptionsPage() {
         return new GuiEntityTrackOptions(this);
+    }
+
+    @Override
+    public boolean appliesToArmorPiece(ItemArmor armorPiece) {
+        return armorPiece == Itemss.PNEUMATIC_HELMET;
     }
 
     @Override

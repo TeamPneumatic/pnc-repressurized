@@ -53,6 +53,8 @@ public class Itemss {
     public static final Item PNEUMATIC_CYLINDER = null;
     @ObjectHolder("pneumatic_helmet")
     public static final Item PNEUMATIC_HELMET = null;
+    @ObjectHolder("pneumatic_chestplate")
+    public static final Item PNEUMATIC_CHESTPLATE = null;
     @ObjectHolder("manometer")
     public static final Item MANOMETER = null;
     @ObjectHolder("turbine_rotor")
@@ -146,6 +148,9 @@ public class Itemss {
         registerItem(registry, new ItemVortexCannon());
         registerItem(registry, new ItemPneumatic("pneumatic_cylinder"));
         registerItem(registry, new ItemPneumaticHelmet());
+        registerItem(registry, new ItemPneumaticChestPlate());
+        registerItem(registry, new ItemPneumaticLeggings());
+        registerItem(registry, new ItemPneumaticBoots());
         registerItem(registry, new ItemManometer());
         registerItem(registry, new ItemPneumatic("turbine_rotor"));
         registerItem(registry, new ItemAssemblyProgram());
