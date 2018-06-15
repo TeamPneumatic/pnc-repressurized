@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.client.render.pneumaticArmor.hacking.CapabilityHa
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
+import org.apache.commons.lang3.Validate;
 
 import java.util.*;
 
@@ -91,7 +92,7 @@ public class PneumaticHelmetRegistry implements IPneumaticHelmetRegistry {
 
     @Override
     public void registerRenderHandler(IUpgradeRenderHandler renderHandler) {
-        if (renderHandler == null) throw new NullPointerException("Render handler can't be null!");
-        UpgradeRenderHandlerList.instance().upgradeRenderers.add(renderHandler);
+        Validate.notNull(renderHandler, "Render handler can't be null!");
+        UpgradeRenderHandlerList.instance().addUpgradeRenderer(renderHandler);
     }
 }

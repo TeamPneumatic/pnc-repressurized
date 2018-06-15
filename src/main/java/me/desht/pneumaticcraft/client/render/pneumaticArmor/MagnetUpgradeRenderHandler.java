@@ -3,19 +3,17 @@ package me.desht.pneumaticcraft.client.render.pneumaticArmor;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IOptionPage;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.IItemRegistry;
+import me.desht.pneumaticcraft.client.gui.pneumaticHelmet.GuiMagnetOptions;
 import me.desht.pneumaticcraft.common.item.Itemss;
-import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 
-public class HackUpgradeRenderHandler implements IUpgradeRenderHandler {
-
+public class MagnetUpgradeRenderHandler implements IUpgradeRenderHandler {
     @Override
     public String getUpgradeName() {
-        return "hackingUpgrade";
+        return "magnet";
     }
 
     @Override
@@ -50,19 +48,7 @@ public class HackUpgradeRenderHandler implements IUpgradeRenderHandler {
 
     @Override
     public Item[] getRequiredUpgrades() {
-        return new Item[]{Itemss.upgrades.get(EnumUpgrade.SECURITY)};
-    }
-
-    private static boolean enabledForStacks(ItemStack[] upgradeStacks) {
-        for (ItemStack stack : upgradeStacks) {
-            if (stack != null && stack.getItem() == Itemss.upgrades.get(EnumUpgrade.SECURITY)) return true;
-        }
-        return false;
-    }
-
-    public static boolean enabledForPlayer(EntityPlayer player) {
-        ItemStack helmet = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
-        return !helmet.isEmpty() && enabledForStacks(UpgradableItemUtils.getUpgradeStacks(helmet));
+        return new Item[] {Itemss.upgrades.get(IItemRegistry.EnumUpgrade.MAGNET)};
     }
 
     @Override
@@ -77,11 +63,11 @@ public class HackUpgradeRenderHandler implements IUpgradeRenderHandler {
 
     @Override
     public IOptionPage getGuiOptionsPage() {
-        return null;
+        return new GuiMagnetOptions(this);
     }
 
     @Override
     public EntityEquipmentSlot getEquipmentSlot() {
-        return EntityEquipmentSlot.HEAD;
+        return EntityEquipmentSlot.CHEST;
     }
 }

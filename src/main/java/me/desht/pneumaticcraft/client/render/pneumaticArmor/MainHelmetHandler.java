@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.render.pneumaticArmor;
 
+import joptsimple.internal.Strings;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IOptionPage;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
@@ -7,15 +8,19 @@ import me.desht.pneumaticcraft.client.gui.pneumaticHelmet.GuiHelmetMainOptions;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
 import me.desht.pneumaticcraft.common.CommonHUDHandler;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
-import me.desht.pneumaticcraft.common.item.Itemss;
+import me.desht.pneumaticcraft.common.item.ItemPneumaticArmorBase;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemArmor;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class MainHelmetHandler implements IUpgradeRenderHandler {
     private GuiAnimatedStat powerStat;
@@ -63,8 +68,15 @@ public class MainHelmetHandler implements IUpgradeRenderHandler {
     @Override
     @SideOnly(Side.CLIENT)
     public void update(EntityPlayer player, int rangeUpgrades) {
+        List<String> l = Arrays.stream(UpgradeRenderHandlerList.ARMOR_SLOTS).map(slot -> getPressureStr(player, slot)).collect(Collectors.toList());
+        powerStat.setTitle(TextFormatting.WHITE + "Pressure: " + Strings.join(l, TextFormatting.WHITE + " | "));
+    }
+
+    private String getPressureStr(EntityPlayer player, EntityEquipmentSlot slot) {
+        if (!(player.getItemStackFromSlot(slot).getItem() instanceof ItemPneumaticArmorBase))
+            return "-";
+        float pressure = CommonHUDHandler.getHandlerForPlayer(player).armorPressure[slot.getIndex()];
         TextFormatting colour;
-        float pressure = CommonHUDHandler.getHandlerForPlayer(player).helmetPressure;
         if (pressure < 0.5F) {
             colour = TextFormatting.RED;
         } else if (pressure < 2.0F) {
@@ -74,7 +86,7 @@ public class MainHelmetHandler implements IUpgradeRenderHandler {
         } else {
             colour = TextFormatting.GREEN;
         }
-        powerStat.setTitle(TextFormatting.WHITE + "Helmet Pressure: " + colour + Math.round(CommonHUDHandler.getHandlerForPlayer(player).helmetPressure * 10F) / 10F + " bar");
+        return colour.toString() + slot.toString().charAt(0) + " " + Math.round(pressure * 100F) / 100F;
     }
 
     @Override
@@ -129,7 +141,8 @@ public class MainHelmetHandler implements IUpgradeRenderHandler {
     }
 
     @Override
-    public boolean appliesToArmorPiece(ItemArmor armorPiece) {
-        return armorPiece == Itemss.PNEUMATIC_HELMET;
+    public EntityEquipmentSlot getEquipmentSlot() {
+        return EntityEquipmentSlot.HEAD;
     }
+
 }

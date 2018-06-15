@@ -795,14 +795,17 @@ gui.liquid.empty=Empty
 key.pneumaticcraft.category=PneumaticCraft
 # gui.enableModule.coreComponents=Enable Helmet
 
+# All armor pieces use "pneumaticHelmet." as a prefix for historical reasons...
 # Pneumatic Helmet upgrades
 pneumaticHelmet.upgrade.blockTracker=Block Tracker
 pneumaticHelmet.upgrade.entityTracker=Entity Tracker
 pneumaticHelmet.upgrade.itemSearcher=Item Search Upgrade
 pneumaticHelmet.upgrade.coordinateTracker=Coordinate Tracker
 pneumaticHelmet.upgrade.hackingUpgrade=Hacking Upgrade
-pneumaticHelmet.upgrade.coreComponents=Helmet
+pneumaticHelmet.upgrade.coreComponents=Pneumatic Armor
 pneumaticHelmet.upgrade.droneDebugger=Drone Debugger
+# Pneumatic Chestplate upgrades
+pneumaticHelmet.upgrade.magnet=Magnet
 
 pneumaticHelmet.message.enableSetting=%s Enabled
 pneumaticHelmet.message.disableSetting=%s Disabled

@@ -5,13 +5,16 @@ import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IOptionPage;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticScreenBase;
 import me.desht.pneumaticcraft.client.gui.widget.GuiKeybindCheckBox;
+import me.desht.pneumaticcraft.client.render.pneumaticArmor.MainHelmetHandler;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.UpgradeRenderHandlerList;
 import me.desht.pneumaticcraft.common.CommonHUDHandler;
+import me.desht.pneumaticcraft.common.item.ItemPneumaticArmorBase;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.FMLClientHandler;
 
@@ -64,9 +67,11 @@ public class GuiHelmetMainScreen extends GuiPneumaticScreenBase implements IGuiS
             page = upgradePages.size() - 1;
         }
         GuiKeybindCheckBox checkBox = new GuiKeybindCheckBox(100, 40, 12, 0xFFFFFFFF,
-                I18n.format("gui.enableModule", I18n.format("pneumaticHelmet.upgrade." + upgradePageNames.get(page))),
-                "pneumaticHelmet.upgrade." + upgradePageNames.get(page));
-        if (upgradePages.get(page).canBeTurnedOff()) addWidget(checkBox);
+                I18n.format("gui.enableModule", I18n.format(GuiKeybindCheckBox.UPGRADE_PREFIX + upgradePageNames.get(page))),
+                GuiKeybindCheckBox.UPGRADE_PREFIX + upgradePageNames.get(page));
+        if (upgradePages.get(page).canBeTurnedOff()) {
+            addWidget(checkBox);
+        }
         upgradePages.get(page).initGui(this);
     }
 
@@ -76,13 +81,20 @@ public class GuiHelmetMainScreen extends GuiPneumaticScreenBase implements IGuiS
     }
 
     private void addPages() {
-        for (int i = 0; i < UpgradeRenderHandlerList.instance().upgradeRenderers.size(); i++) {
-            if (inInitPhase || CommonHUDHandler.getHandlerForPlayer().upgradeRenderersInserted[i]) {
-                IUpgradeRenderHandler upgradeRenderHandler = UpgradeRenderHandlerList.instance().upgradeRenderers.get(i);
-                IOptionPage optionPage = upgradeRenderHandler.getGuiOptionsPage();
-                if (optionPage != null) {
-                    upgradePageNames.add(upgradeRenderHandler.getUpgradeName());
-                    upgradePages.add(optionPage);
+        for (EntityEquipmentSlot slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
+            List<IUpgradeRenderHandler> renderHandlers = UpgradeRenderHandlerList.instance().getHandlersForSlot(slot);
+            for (int i = 0; i < renderHandlers.size(); i++) {
+                if (inInitPhase || CommonHUDHandler.getHandlerForPlayer().isUpgradeRendererInserted(slot, i)) {
+                    IUpgradeRenderHandler upgradeRenderHandler = renderHandlers.get(i);
+                    if (inInitPhase
+                            || FMLClientHandler.instance().getClient().player.getItemStackFromSlot(slot).getItem() instanceof ItemPneumaticArmorBase
+                            || upgradeRenderHandler instanceof MainHelmetHandler) {
+                        IOptionPage optionPage = upgradeRenderHandler.getGuiOptionsPage();
+                        if (optionPage != null) {
+                            upgradePageNames.add(upgradeRenderHandler.getUpgradeName());
+                            upgradePages.add(optionPage);
+                        }
+                    }
                 }
             }
         }

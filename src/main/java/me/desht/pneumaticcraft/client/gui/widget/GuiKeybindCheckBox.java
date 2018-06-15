@@ -13,6 +13,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -27,11 +28,14 @@ import java.util.List;
 import java.util.Map;
 
 public class GuiKeybindCheckBox extends GuiCheckBox {
+    public static final String UPGRADE_PREFIX = "pneumaticHelmet.upgrade.";
+
     private boolean isAwaitingKey;
     private String oldCheckboxText;
     private KeyBinding keyBinding;
-    public final String keyBindingName;
-    public static final Map<String, GuiKeybindCheckBox> trackedCheckboxes = new HashMap<>();
+    private final String keyBindingName;
+    private static final Map<String, GuiKeybindCheckBox> trackedCheckboxes = new HashMap<>();
+    private static GuiKeybindCheckBox coreComponents;
 
     public GuiKeybindCheckBox(int id, int x, int y, int color, String text) {
         this(id, x, y, color, text, text);
@@ -45,9 +49,21 @@ public class GuiKeybindCheckBox extends GuiCheckBox {
             checked = HelmetWidgetDefaults.INSTANCE.getKey(keyBindingName);
             trackedCheckboxes.put(keyBindingName, this);
             MinecraftForge.EVENT_BUS.register(this);
+            if (keyBindingName.equals(UPGRADE_PREFIX + "coreComponents")) {
+                // stash this one since it's referenced a lot
+                coreComponents = this;
+            }
         } else {
             checked = trackedCheckboxes.get(keyBindingName).checked;
         }
+    }
+
+    public static GuiKeybindCheckBox getCoreComponents() {
+        return coreComponents;
+    }
+
+    public static GuiKeybindCheckBox fromKeyBindingName(String name) {
+        return trackedCheckboxes.get(name);
     }
 
     @Override
@@ -64,15 +80,18 @@ public class GuiKeybindCheckBox extends GuiCheckBox {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                for (int i = 0; i < UpgradeRenderHandlerList.instance().upgradeRenderers.size(); i++) {
-                    IUpgradeRenderHandler upgradeRenderHandler = UpgradeRenderHandlerList.instance().upgradeRenderers.get(i);
-                    if (("pneumaticHelmet.upgrade." + upgradeRenderHandler.getUpgradeName()).equals(keyBindingName)) {
-                        NetworkHandler.sendToServer(new PacketToggleHelmetFeature((byte) i, GuiKeybindCheckBox.trackedCheckboxes.get("pneumaticHelmet.upgrade.coreComponents").checked && checked));
+                for (EntityEquipmentSlot slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
+                    List<IUpgradeRenderHandler> renderHandlers = UpgradeRenderHandlerList.instance().getHandlersForSlot(slot);
+                    for (int i = 0; i < renderHandlers.size(); i++) {
+                        IUpgradeRenderHandler upgradeRenderHandler = renderHandlers.get(i);
+                        if ((UPGRADE_PREFIX + upgradeRenderHandler.getUpgradeName()).equals(keyBindingName)) {
+                            NetworkHandler.sendToServer(new PacketToggleHelmetFeature((byte) i, coreComponents.checked && checked, slot));
+                        }
                     }
-                }
-                if (keyBindingName.equals("pneumaticHelmet.upgrade.coreComponents")) {
-                    for (int i = 0; i < UpgradeRenderHandlerList.instance().upgradeRenderers.size(); i++) {
-                        NetworkHandler.sendToServer(new PacketToggleHelmetFeature((byte) i, checked && GuiKeybindCheckBox.trackedCheckboxes.get("pneumaticHelmet.upgrade." + UpgradeRenderHandlerList.instance().upgradeRenderers.get(i).getUpgradeName()).checked));
+                    if (keyBindingName.equals(UPGRADE_PREFIX + "coreComponents")) {
+                        for (int i = 0; i < renderHandlers.size(); i++) {
+                            NetworkHandler.sendToServer(new PacketToggleHelmetFeature((byte) i, checked && GuiKeybindCheckBox.fromKeyBindingName(GuiKeybindCheckBox.UPGRADE_PREFIX + renderHandlers.get(i).getUpgradeName()).checked, slot));
+                        }
                     }
                 }
             }
@@ -93,6 +112,10 @@ public class GuiKeybindCheckBox extends GuiCheckBox {
             isAwaitingKey = false;
             keyBinding = setOrAddKeybind(keyBindingName, keyCode);
             text = oldCheckboxText;
+            if (trackedCheckboxes.containsKey(keyBindingName)) {
+                MinecraftForge.EVENT_BUS.unregister(trackedCheckboxes.get(keyBindingName));
+            }
+            MinecraftForge.EVENT_BUS.register(this);
             return true;
         }
         return false;
@@ -103,7 +126,7 @@ public class GuiKeybindCheckBox extends GuiCheckBox {
         Minecraft mc = FMLClientHandler.instance().getClient();
         if (mc.inGameHasFocus && keyBinding != null && keyBinding.isPressed()) {
             onMouseClicked(0, 0, 0);
-            HUDHandler.instance().addMessage(I18n.format("pneumaticHelmet.message." + (checked ? "enable" : "disable") + "Setting", I18n.format(text)), new ArrayList<String>(), 60, 0x7000AA00);
+            HUDHandler.instance().addMessage(I18n.format("pneumaticHelmet.message." + (checked ? "enable" : "disable") + "Setting", I18n.format(text)), new ArrayList<>(), 60, 0x7000AA00);
         }
     }
 
@@ -116,14 +139,12 @@ public class GuiKeybindCheckBox extends GuiCheckBox {
         GameSettings gameSettings = FMLClientHandler.instance().getClient().gameSettings;
         for (KeyBinding keyBinding : gameSettings.keyBindings) {
             if (keyBinding != null && keyBinding.getKeyDescription().equals(keybindName)) {
-                if (keybindName.equals(keyBinding.getKeyDescription())) {
-                    if (keyCode >= 0) {
-                        keyBinding.setKeyCode(keyCode);
-                        KeyBinding.resetKeyBindingArrayAndHash();
-                        gameSettings.saveOptions();
-                    }
-                    return keyBinding;
+                if (keyCode >= 0) {
+                    keyBinding.setKeyCode(keyCode);
+                    KeyBinding.resetKeyBindingArrayAndHash();
+                    gameSettings.saveOptions();
                 }
+                return keyBinding;
             }
         }
         // If the keybind wasn't added yet, look for it in the Minecraft options.txt file (which we scanned

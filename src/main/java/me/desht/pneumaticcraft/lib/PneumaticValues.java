@@ -161,4 +161,9 @@ public class PneumaticValues {
     public static final int MAX_DRAIN = 100;
     public static final int DRONE_TANK_SIZE = 16000;
 
+    public static final int MAGNET_AIR_USAGE = 20; // mL per stack pulled
+    public static final int MAGNET_INTERVAL = 20; // ticks
+    public static final int MAGNET_BASE_RANGE = 4;
+    public static final int MAGNET_MAX_UPGRADES = 6;
+    public static final int PNEUMATIC_ARMOR_DURABILITY_BASE = 24; // halfway between iron and diamond
 }

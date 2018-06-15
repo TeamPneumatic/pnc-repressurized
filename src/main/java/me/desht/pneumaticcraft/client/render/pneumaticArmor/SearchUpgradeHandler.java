@@ -19,7 +19,6 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.MathHelper;
@@ -39,10 +38,10 @@ import java.util.Map;
 
 public class SearchUpgradeHandler implements IUpgradeRenderHandler {
     private int totalSearchedItemCount;
-    public int searchedItemCounter;
+    private int searchedItemCounter;
     private int ticksExisted;
-    private final Map<EntityItem, Integer> searchedItems = new HashMap<EntityItem, Integer>();
-    private final List<RenderSearchItemBlock> searchedBlocks = new ArrayList<RenderSearchItemBlock>();
+    private final Map<EntityItem, Integer> searchedItems = new HashMap<>();
+    private final List<RenderSearchItemBlock> searchedBlocks = new ArrayList<>();
     @SideOnly(Side.CLIENT)
     private GuiAnimatedStat searchInfo;
     private int statX;
@@ -60,26 +59,14 @@ public class SearchUpgradeHandler implements IUpgradeRenderHandler {
         statX = ConfigHandler.helmetOptions.itemSearchX;
         statY = ConfigHandler.helmetOptions.itemSearchY;
         statLeftSided = ConfigHandler.helmetOptions.itemSearchLeft;
-//        statX = config.get("Helmet_Options" + Configuration.CATEGORY_SPLITTER + "Item_Search", "stat X", -1).getInt();
-//        statY = config.get("Helmet_Options" + Configuration.CATEGORY_SPLITTER + "Item_Search", "stat Y", 17).getInt();
-//        statLeftSided = config.get("Helmet_Options" + Configuration.CATEGORY_SPLITTER + "Item_Search", "stat leftsided", true).getBoolean(true);
     }
 
     @Override
     public void saveToConfig() {
-//        Configuration config = ConfigHandler.config;
-//        config.load();
         ConfigHandler.helmetOptions.itemSearchX = statX = searchInfo.getBaseX();
         ConfigHandler.helmetOptions.itemSearchY = statY = searchInfo.getBaseY();
         ConfigHandler.helmetOptions.itemSearchLeft = statLeftSided = searchInfo.isLeftSided();
         ConfigHandler.sync();
-//        config.get("Helmet_Options" + Configuration.CATEGORY_SPLITTER + "Item_Search", "stat X", -1).set(searchInfo.getBaseX());
-//        config.get("Helmet_Options" + Configuration.CATEGORY_SPLITTER + "Item_Search", "stat Y", 17).set(searchInfo.getBaseY());
-//        config.get("Helmet_Options" + Configuration.CATEGORY_SPLITTER + "Item_Search", "stat leftsided", true).set(searchInfo.isLeftSided());
-//        config.save();
-//        statX = searchInfo.getBaseX();
-//        statY = searchInfo.getBaseY();
-//        statLeftSided = searchInfo.isLeftSided();
     }
 
     public void addToSearchedItemCounter(int amount) {
@@ -229,8 +216,8 @@ public class SearchUpgradeHandler implements IUpgradeRenderHandler {
     }
 
     @Override
-    public boolean appliesToArmorPiece(ItemArmor armorPiece) {
-        return armorPiece == Itemss.PNEUMATIC_HELMET;
+    public EntityEquipmentSlot getEquipmentSlot() {
+        return EntityEquipmentSlot.HEAD;
     }
 
     @Override

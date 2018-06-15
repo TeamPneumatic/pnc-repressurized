@@ -16,6 +16,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -96,7 +97,7 @@ public class RenderBlockTarget {
         if (te != null && te.isInvalid()) te = null;
         stat.update();
         List<IBlockTrackEntry> applicableTrackEntries = getApplicableEntries();
-        if (CommonHUDHandler.getHandlerForPlayer().ticksExisted % 100 == 0) {
+        if (CommonHUDHandler.getHandlerForPlayer().getTicksSinceEquipped(EntityEquipmentSlot.HEAD) % 100 == 0) {
             boolean sentUpdate = false;
             for (IBlockTrackEntry entry : applicableTrackEntries) {
                 if (entry.shouldBeUpdatedFromServer(te)) {

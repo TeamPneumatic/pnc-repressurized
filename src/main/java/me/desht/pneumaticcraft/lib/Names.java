@@ -19,4 +19,7 @@ public class Names {
 
     public static final String MOD_ID = "pneumaticcraft";
     public static final String MOD_NAME = "PneumaticCraft: Repressurized";
+
+    // Agreed by convention among several mods to denote item entities which should not be magnet'd
+    public static final String PREVENT_REMOTE_MOVEMENT = "PreventRemoteMovement";
 }

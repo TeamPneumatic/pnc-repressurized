@@ -17,12 +17,14 @@ import me.desht.pneumaticcraft.proxy.CommonProxy;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.fml.common.Loader;
 import thaumcraft.api.items.IVisDiscountGear;
 
@@ -34,13 +36,20 @@ import java.util.Set;
 public abstract class ItemPneumaticArmorBase extends ItemArmor implements IPressurizable, IChargingStationGUIHolderItem, IUpgradeAcceptor,
         IVisDiscountGear
 {
+    private static final ArmorMaterial COMPRESSED_IRON_MATERIAL = EnumHelper.addArmorMaterial(
+            "compressedIron", "compressedIron",
+            PneumaticValues.PNEUMATIC_ARMOR_DURABILITY_BASE,
+            new int[]{2, 5, 6, 2}, 9,
+            SoundEvents.ITEM_ARMOR_EQUIP_IRON, 1.0F
+    );
+
     public ItemPneumaticArmorBase(String name, EntityEquipmentSlot equipmentSlotIn) {
-        super(ArmorMaterial.IRON, PneumaticCraftRepressurized.proxy.getArmorRenderID(Textures.ARMOR_PNEUMATIC), equipmentSlotIn);
+        super(COMPRESSED_IRON_MATERIAL, PneumaticCraftRepressurized.proxy.getArmorRenderID(Textures.ARMOR_PNEUMATIC), equipmentSlotIn);
 
         setRegistryName(name);
         setUnlocalizedName(name);
 
-        setMaxDamage(getMaxAir());
+//        setMaxDamage(PneumaticValues.PNEUMATIC_ARMOR_DURABILITY_BASE * MAX_DAMAGE_ARRAY[armorType.getIndex()]);
         setCreativeTab(PneumaticCraftRepressurized.tabPneumaticCraft);
     }
 
@@ -50,7 +59,7 @@ public abstract class ItemPneumaticArmorBase extends ItemArmor implements IPress
      * @param player the player
      * @return true if the player is wearing pneumatic armor
      */
-    public static boolean isPlayerWearingPneumaticArmor(EntityPlayer player) {
+    public static boolean isPlayerWearingAnyPneumaticArmor(EntityPlayer player) {
         return player.getItemStackFromSlot(EntityEquipmentSlot.HEAD).getItem() instanceof ItemPneumaticArmorBase
                 || player.getItemStackFromSlot(EntityEquipmentSlot.CHEST).getItem() instanceof ItemPneumaticArmorBase
                 || player.getItemStackFromSlot(EntityEquipmentSlot.LEGS).getItem() instanceof ItemPneumaticArmorBase
@@ -83,10 +92,8 @@ public abstract class ItemPneumaticArmorBase extends ItemArmor implements IPress
     public Set<Item> getApplicableUpgrades() {
         Set<Item> upgrades = Sets.newHashSet();
 
-        for (IUpgradeRenderHandler handler : UpgradeRenderHandlerList.instance().upgradeRenderers) {
-            if (handler.appliesToArmorPiece(this)) {
-                Collections.addAll(upgrades, handler.getRequiredUpgrades());
-            }
+        for (IUpgradeRenderHandler handler : UpgradeRenderHandlerList.instance().getHandlersForSlot(armorType)) {
+            Collections.addAll(upgrades, handler.getRequiredUpgrades());
         }
 
         upgrades.add(CraftingRegistrator.getUpgrade(EnumUpgrade.VOLUME).getItem());
@@ -99,7 +106,7 @@ public abstract class ItemPneumaticArmorBase extends ItemArmor implements IPress
 
     @Override
     public float getPressure(ItemStack iStack) {
-        int volume = UpgradableItemUtils.getUpgrades(EnumUpgrade.VOLUME, iStack) * PneumaticValues.VOLUME_VOLUME_UPGRADE + PneumaticValues.PNEUMATIC_HELMET_VOLUME;
+        int volume = UpgradableItemUtils.getUpgrades(EnumUpgrade.VOLUME, iStack) * PneumaticValues.VOLUME_VOLUME_UPGRADE + getVolume();
         int oldVolume = NBTUtil.getInteger(iStack, "volume");
         int currentAir = NBTUtil.getInteger(iStack, "air");
         if (volume < oldVolume) {

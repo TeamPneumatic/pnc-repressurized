@@ -16,8 +16,11 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.FMLClientHandler;
@@ -30,10 +33,12 @@ public class GuiPneumaticHelmet extends GuiPneumaticInventoryItem {
 
     private final String registryName;  // for translation purposes
     private GuiAnimatedStat statusStat;
+    private final EntityEquipmentSlot equipmentSlot;
 
     public GuiPneumaticHelmet(ContainerChargingStationItemInventory container, TileEntityChargingStation te) {
         super(container, te);
         registryName = itemStack.getItem().getRegistryName().getResourcePath();
+        equipmentSlot = ((ItemArmor) itemStack.getItem()).armorType;
     }
 
     @Override
@@ -50,19 +55,6 @@ public class GuiPneumaticHelmet extends GuiPneumaticInventoryItem {
                 leftSided = !leftSided;
             }
         }
-
-//        addUpgradeStat(EnumUpgrade.SEARCH, false);
-//        addUpgradeStat(EnumUpgrade.COORDINATE_TRACKER, false);
-//        addUpgradeStat(EnumUpgrade.SECURITY, false);
-//        addUpgradeStat(EnumUpgrade.DISPENSER, false);
-//        addUpgradeStat(EnumUpgrade.ENTITY_TRACKER, true);
-//        addUpgradeStat(EnumUpgrade.BLOCK_TRACKER, true);
-//        addUpgradeStat(EnumUpgrade.SPEED, true);
-//        addUpgradeStat(EnumUpgrade.VOLUME, true);
-//        addUpgradeStat(EnumUpgrade.RANGE, true);
-//        if (Loader.isModLoaded(ModIds.THAUMCRAFT)) {
-//            addUpgradeStat(EnumUpgrade.THAUMCRAFT, false);
-//        }
     }
 
     private void addUpgradeStat(EnumUpgrade upgrade, boolean leftSided) {
@@ -73,7 +65,7 @@ public class GuiPneumaticHelmet extends GuiPneumaticInventoryItem {
     @Override
     public void updateScreen() {
         super.updateScreen();
-        CommonHUDHandler.getHandlerForPlayer().checkHelmetInventory(itemStack);
+        CommonHUDHandler.getHandlerForPlayer().checkArmorInventory(Minecraft.getMinecraft().player, equipmentSlot);
         statusStat.setText(getStatusText());
     }
 
@@ -81,12 +73,13 @@ public class GuiPneumaticHelmet extends GuiPneumaticInventoryItem {
         List<String> text = new ArrayList<>();
 
         text.add("\u00a77Air Usage:");
-        float totalUsage = UpgradeRenderHandlerList.instance().getAirUsage(FMLClientHandler.instance().getClient().player, true);
+        float totalUsage = UpgradeRenderHandlerList.instance().getAirUsage(FMLClientHandler.instance().getClient().player, equipmentSlot, true);
         if (totalUsage > 0F) {
             EntityPlayer player = FMLClientHandler.instance().getClient().player;
-            for (int i = 0; i < UpgradeRenderHandlerList.instance().upgradeRenderers.size(); i++) {
-                if (CommonHUDHandler.getHandlerForPlayer(player).upgradeRenderersInserted[i]) {
-                    IUpgradeRenderHandler handler = UpgradeRenderHandlerList.instance().upgradeRenderers.get(i);
+            List<IUpgradeRenderHandler> renderHandlers = UpgradeRenderHandlerList.instance().getHandlersForSlot(equipmentSlot);
+            for (int i = 0; i < renderHandlers.size(); i++) {
+                if (CommonHUDHandler.getHandlerForPlayer(player).isUpgradeRendererInserted(equipmentSlot, i)) {
+                    IUpgradeRenderHandler handler = renderHandlers.get(i);
                     float upgradeUsage = handler.getEnergyUsage(CommonHUDHandler.getHandlerForPlayer(player).rangeUpgradesInstalled, player);
                     if (upgradeUsage > 0F) {
                         text.add(TextFormatting.BLACK.toString() + PneumaticCraftUtils.roundNumberTo(upgradeUsage, 1) + " mL/tick (" + handler.getUpgradeName() + ")");
@@ -113,6 +106,5 @@ public class GuiPneumaticHelmet extends GuiPneumaticInventoryItem {
     @Override
     protected int getDefaultVolume() {
         return ((ItemPneumaticArmorBase) itemStack.getItem()).getVolume();
-//        return PneumaticValues.PNEUMATIC_HELMET_VOLUME;
     }
 }

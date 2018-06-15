@@ -26,7 +26,7 @@ public interface IPneumaticHelmetRegistry {
     /**
      * Registers a Pneumatic Helmet module
      *
-     * @param renderHandler
+     * @param renderHandler the handler to register
      */
     void registerRenderHandler(IUpgradeRenderHandler renderHandler);
 }

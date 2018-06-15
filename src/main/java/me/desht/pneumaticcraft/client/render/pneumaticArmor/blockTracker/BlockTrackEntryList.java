@@ -28,7 +28,7 @@ public class BlockTrackEntryList {
     public List<IBlockTrackEntry> getEntriesForCoordinate(IBlockAccess blockAccess, BlockPos pos, TileEntity te) {
         List<IBlockTrackEntry> blockTrackers = new ArrayList<IBlockTrackEntry>();
         for (IBlockTrackEntry entry : trackList) {
-            if (GuiKeybindCheckBox.trackedCheckboxes.get(entry.getEntryName()).checked && entry.shouldTrackWithThisEntry(blockAccess, pos, blockAccess.getBlockState(pos), te))
+            if (GuiKeybindCheckBox.fromKeyBindingName(entry.getEntryName()).checked && entry.shouldTrackWithThisEntry(blockAccess, pos, blockAccess.getBlockState(pos), te))
                 blockTrackers.add(entry);
         }
         return blockTrackers;

@@ -19,8 +19,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemArmor;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -241,8 +241,8 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
     }
 
     @Override
-    public boolean appliesToArmorPiece(ItemArmor armorPiece) {
-        return armorPiece == Itemss.PNEUMATIC_HELMET;
+    public EntityEquipmentSlot getEquipmentSlot() {
+        return EntityEquipmentSlot.HEAD;
     }
 
     @Override

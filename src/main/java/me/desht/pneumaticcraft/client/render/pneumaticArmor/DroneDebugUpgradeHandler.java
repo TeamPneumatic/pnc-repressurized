@@ -10,7 +10,6 @@ import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 
@@ -105,8 +104,7 @@ public class DroneDebugUpgradeHandler implements IUpgradeRenderHandler {
     }
 
     @Override
-    public boolean appliesToArmorPiece(ItemArmor armorPiece) {
-        return armorPiece == Itemss.PNEUMATIC_HELMET;
+    public EntityEquipmentSlot getEquipmentSlot() {
+        return EntityEquipmentSlot.HEAD;
     }
-
 }

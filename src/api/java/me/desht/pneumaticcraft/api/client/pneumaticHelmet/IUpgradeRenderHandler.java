@@ -2,8 +2,8 @@ package me.desht.pneumaticcraft.api.client.pneumaticHelmet;
 
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemArmor;
 
 /**
  * To add upgrades to a Pneumatic armor piece, implement this interface. You can add members to this class, but these
@@ -13,7 +13,7 @@ import net.minecraft.item.ItemArmor;
 public interface IUpgradeRenderHandler {
 
     /**
-     * Return here the name of the upgrade. This is displayed in the formatting [upgradeName] + " " + "found"/"not found"  on
+     * Return here a unique ID for the upgrade. This is displayed in the formatting [upgradeName] + " " + "found"/"not found"  on
      * initialization of the helmet.
      *
      * @return
@@ -105,7 +105,7 @@ public interface IUpgradeRenderHandler {
     }
 
     /**
-     * Checks if this upgrade can be applied to this armor piece.
+     * Get the armor slot that this upgrade handler is attached to.
      */
-    boolean appliesToArmorPiece(ItemArmor armorPiece);
+    EntityEquipmentSlot getEquipmentSlot();
 }
