@@ -121,7 +121,7 @@ public class CommonHUDHandler {
         }
     }
 
-    private float useAir(ItemStack armorStack, EntityEquipmentSlot slot, int air) {
+    public float useAir(ItemStack armorStack, EntityEquipmentSlot slot, int air) {
         float oldPressure = armorPressure[slot.getIndex()];
         ((IPressurizable) armorStack.getItem()).addAir(armorStack, air);
         armorPressure[slot.getIndex()] = ((IPressurizable) armorStack.getItem()).getPressure(armorStack);

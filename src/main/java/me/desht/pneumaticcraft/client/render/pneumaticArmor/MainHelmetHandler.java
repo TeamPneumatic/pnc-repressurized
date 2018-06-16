@@ -86,7 +86,7 @@ public class MainHelmetHandler implements IUpgradeRenderHandler {
         } else {
             colour = TextFormatting.GREEN;
         }
-        return colour.toString() + slot.toString().charAt(0) + " " + Math.round(pressure * 100F) / 100F;
+        return colour.toString() + slot.toString().charAt(0) + " " + String.format("%.2f", pressure);
     }
 
     @Override
