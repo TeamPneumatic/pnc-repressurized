@@ -80,7 +80,7 @@ public class GuiPneumaticHelmet extends GuiPneumaticInventoryItem {
             for (int i = 0; i < renderHandlers.size(); i++) {
                 if (CommonHUDHandler.getHandlerForPlayer(player).isUpgradeRendererInserted(equipmentSlot, i)) {
                     IUpgradeRenderHandler handler = renderHandlers.get(i);
-                    float upgradeUsage = handler.getEnergyUsage(CommonHUDHandler.getHandlerForPlayer(player).rangeUpgradesInstalled, player);
+                    float upgradeUsage = handler.getEnergyUsage(CommonHUDHandler.getHandlerForPlayer(player).getUpgradeCount(equipmentSlot, EnumUpgrade.RANGE), player);
                     if (upgradeUsage > 0F) {
                         text.add(TextFormatting.BLACK.toString() + PneumaticCraftUtils.roundNumberTo(upgradeUsage, 1) + " mL/tick (" + handler.getUpgradeName() + ")");
                     }

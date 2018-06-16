@@ -166,4 +166,6 @@ public class PneumaticValues {
     public static final int MAGNET_BASE_RANGE = 4;
     public static final int MAGNET_MAX_UPGRADES = 6;
     public static final int PNEUMATIC_ARMOR_DURABILITY_BASE = 24; // halfway between iron and diamond
+    public static final int PNEUMATIC_ARMOR_REPAIR_USAGE = 100; // mL per durability repaired
+
 }

@@ -9,6 +9,7 @@ import me.desht.pneumaticcraft.api.item.IPressurizable;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.MagnetUpgradeRenderHandler;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.UpgradeRenderHandlerList;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.hacking.HackableHandler;
+import me.desht.pneumaticcraft.common.item.ItemMachineUpgrade;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmorBase;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketHackingBlockFinish;
@@ -41,15 +42,17 @@ import java.util.HashMap;
 import java.util.List;
 
 public class CommonHUDHandler {
+    private static final CommonHUDHandler clientHandler = new CommonHUDHandler();
+    private static final CommonHUDHandler serverHandler = new CommonHUDHandler();
+
     private final HashMap<String, CommonHUDHandler> playerHudHandlers = new HashMap<>();
-    public int rangeUpgradesInstalled;
-    private int speedUpgradesInstalled;
-    private int magnetUpgradesInstalled;
+    private int magnetRadius;
     private int magnetRadiusSq;
     private final boolean[][] upgradeRenderersInserted = new boolean[4][];
     private final boolean[][] upgradeRenderersEnabled = new boolean[4][];
     private final int[] ticksSinceEquip = new int[4];
     public float[] armorPressure = new float[4];
+    private int upgradeMatrix[][] = new int [4][];
 
     private int hackTime;
     private WorldAndCoord hackedBlock;
@@ -61,14 +64,16 @@ public class CommonHUDHandler {
             List<IUpgradeRenderHandler> renderHandlers = UpgradeRenderHandlerList.instance().getHandlersForSlot(slot);
             upgradeRenderersInserted[slot.getIndex()] = new boolean[renderHandlers.size()];
             upgradeRenderersEnabled[slot.getIndex()] = new boolean[renderHandlers.size()];
+            upgradeMatrix[slot.getIndex()] = new int[EnumUpgrade.values().length];
         }
     }
 
+    private static CommonHUDHandler getManagerInstance(EntityPlayer player) {
+        return player.world.isRemote ? clientHandler : serverHandler;
+    }
+
     public static CommonHUDHandler getHandlerForPlayer(EntityPlayer player) {
-        CommonHUDHandler handler = PneumaticCraftRepressurized.proxy.getCommonHudHandler().playerHudHandlers.get(player.getName());
-        if (handler != null) return handler;
-        PneumaticCraftRepressurized.proxy.getCommonHudHandler().playerHudHandlers.put(player.getName(), new CommonHUDHandler());
-        return getHandlerForPlayer(player);
+        return getManagerInstance(player).playerHudHandlers.computeIfAbsent(player.getName(), v -> new CommonHUDHandler());
     }
 
     @SideOnly(Side.CLIENT)
@@ -77,18 +82,17 @@ public class CommonHUDHandler {
     }
 
     @SubscribeEvent
-    public void tickEnd(TickEvent.PlayerTickEvent event) {
+    public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {
-            EntityPlayer player = event.player;
-            if (this == PneumaticCraftRepressurized.proxy.getCommonHudHandler()) {
-                getHandlerForPlayer(player).tickEnd(event);
-            } else {
-                for (EntityEquipmentSlot slot :UpgradeRenderHandlerList.ARMOR_SLOTS) {
-                    tickArmorPiece(player, slot);
-                }
-                if (!player.world.isRemote) handleHacking(player);
-            }
+            getHandlerForPlayer(event.player).tick(event.player);
         }
+    }
+
+    private void tick(EntityPlayer player) {
+        for (EntityEquipmentSlot slot :UpgradeRenderHandlerList.ARMOR_SLOTS) {
+            tickArmorPiece(player, slot);
+        }
+        if (!player.world.isRemote) handleHacking(player);
     }
 
     private void tickArmorPiece(EntityPlayer player, EntityEquipmentSlot slot) {
@@ -102,10 +106,9 @@ public class CommonHUDHandler {
             if (!player.world.isRemote) {
                 if (ticksSinceEquip[slot.getIndex()] > getStartupTime(slot) && !player.capabilities.isCreativeMode) {
                     // use up air in the armor piece
-                    float oldPressure = armorPressure[slot.getIndex()];
                     float airUsage = UpgradeRenderHandlerList.instance().getAirUsage(player, slot,false);
-                    ((IPressurizable) armorStack.getItem()).addAir(armorStack, (int) -airUsage);
-                    if (oldPressure > 0F && ((IPressurizable) armorStack.getItem()).getPressure(armorStack) == 0F) {
+                    float oldPressure = useAir(armorStack, slot, (int) -airUsage);
+                    if (oldPressure > 0F && armorPressure[slot.getIndex()] == 0F) {
                         // out of air!
                         NetworkHandler.sendTo(new PacketPlaySound(Sounds.MINIGUN_STOP, SoundCategory.PLAYERS, player.posX, player.posY, player.posZ, 1.0f, 2.0f, false), (EntityPlayerMP) player);
                     }
@@ -118,6 +121,13 @@ public class CommonHUDHandler {
         }
     }
 
+    private float useAir(ItemStack armorStack, EntityEquipmentSlot slot, int air) {
+        float oldPressure = armorPressure[slot.getIndex()];
+        ((IPressurizable) armorStack.getItem()).addAir(armorStack, air);
+        armorPressure[slot.getIndex()] = ((IPressurizable) armorStack.getItem()).getPressure(armorStack);
+        return oldPressure;
+    }
+
     private void doArmorActions(EntityPlayer player, ItemStack armorStack, EntityEquipmentSlot slot) {
         switch (slot) {
             case CHEST:
@@ -126,24 +136,38 @@ public class CommonHUDHandler {
                 }
                 break;
         }
+
+        if (getUpgradeCount(slot, EnumUpgrade.ITEM_LIFE) > 0) {
+            doItemRepair(armorStack, slot);
+        }
+    }
+
+    private void doItemRepair(ItemStack armorStack, EntityEquipmentSlot slot) {
+        int upgrades = Math.min(getUpgradeCount(slot, EnumUpgrade.ITEM_LIFE), 5);
+        int interval = 120 - (20 * upgrades);
+        int airUsage = PneumaticValues.PNEUMATIC_ARMOR_REPAIR_USAGE * upgrades;
+
+        if (armorStack.getItemDamage() > 0
+                && armorPressure[slot.getIndex()] > 0.1F
+                && ticksSinceEquip[slot.getIndex()] % interval == 0) {
+            useAir(armorStack, slot, -airUsage);
+            armorStack.setItemDamage(armorStack.getItemDamage() - 1);
+        }
     }
 
     private void doMagnet(EntityPlayer player, ItemStack armorStack) {
-        AxisAlignedBB box = new AxisAlignedBB(player.getPosition())
-                .grow(PneumaticValues.MAGNET_BASE_RANGE + Math.min(magnetUpgradesInstalled, PneumaticValues.MAGNET_MAX_UPGRADES));
+        AxisAlignedBB box = new AxisAlignedBB(player.getPosition()).grow(magnetRadius);
         List<EntityItem> itemList = player.getEntityWorld().getEntitiesWithinAABB(EntityItem.class, box, EntitySelectors.IS_ALIVE);
 
         for (EntityItem item : itemList) {
             // TODO solegnolia
-            if (item.getEntityData().getBoolean(Names.PREVENT_REMOTE_MOVEMENT)) {
-                continue;
-            }
-            if (!item.cannotPickup() && item.getPositionVector().squareDistanceTo(player.getPositionVector()) <= magnetRadiusSq) {
-                float pressure = ((IPressurizable) armorStack.getItem()).getPressure(armorStack);
-                if (pressure < 0.1F) break;
+            if (!item.cannotPickup()
+                    && item.getPositionVector().squareDistanceTo(player.getPositionVector()) <= magnetRadiusSq
+                    && !item.getEntityData().getBoolean(Names.PREVENT_REMOTE_MOVEMENT)) {
+                if (armorPressure[EntityEquipmentSlot.CHEST.getIndex()] < 0.1F) break;
                 item.setPosition(player.posX, player.posY, player.posZ);
                 item.setPickupDelay(0);
-                ((IPressurizable) armorStack.getItem()).addAir(armorStack, -PneumaticValues.MAGNET_AIR_USAGE);
+                useAir(armorStack, EntityEquipmentSlot.CHEST, -PneumaticValues.MAGNET_AIR_USAGE);
             }
         }
     }
@@ -180,20 +204,26 @@ public class CommonHUDHandler {
         // armorStack has already been validated as a pneumatic armor piece at this point
         ItemStack armorStack = player.getItemStackFromSlot(slot);
 
-        if (slot == EntityEquipmentSlot.HEAD) {
-            rangeUpgradesInstalled = UpgradableItemUtils.getUpgrades(EnumUpgrade.RANGE, armorStack);
-            speedUpgradesInstalled = UpgradableItemUtils.getUpgrades(EnumUpgrade.SPEED, armorStack);
-        } else if (slot == EntityEquipmentSlot.CHEST) {
-            magnetUpgradesInstalled = UpgradableItemUtils.getUpgrades(EnumUpgrade.MAGNET, armorStack);
-            magnetRadiusSq = PneumaticValues.MAGNET_BASE_RANGE + Math.min(magnetUpgradesInstalled, PneumaticValues.MAGNET_MAX_UPGRADES);
-            magnetRadiusSq *= magnetRadiusSq;
-        }
-
         ItemStack[] upgradeStacks = UpgradableItemUtils.getUpgradeStacks(armorStack);
         Arrays.fill(upgradeRenderersInserted[slot.getIndex()], false);
         for (int i = 0; i < upgradeRenderersInserted[slot.getIndex()].length; i++) {
             upgradeRenderersInserted[slot.getIndex()][i] = isModuleEnabled(upgradeStacks, UpgradeRenderHandlerList.instance().getHandlersForSlot(slot).get(i));
         }
+
+        Arrays.fill(upgradeMatrix[slot.getIndex()], 0);
+        for (ItemStack stack : upgradeStacks) {
+            if (stack.getItem() instanceof ItemMachineUpgrade) {
+                upgradeMatrix[slot.getIndex()][((ItemMachineUpgrade) stack.getItem()).getUpgradeType().ordinal()] += stack.getCount();
+            }
+        }
+
+        magnetRadius = PneumaticValues.MAGNET_BASE_RANGE
+                + Math.min(getUpgradeCount(EntityEquipmentSlot.CHEST, EnumUpgrade.MAGNET), PneumaticValues.MAGNET_MAX_UPGRADES);
+        magnetRadiusSq = magnetRadius * magnetRadius;
+    }
+
+    public int getUpgradeCount(EntityEquipmentSlot slot, EnumUpgrade upgrade) {
+        return upgradeMatrix[slot.getIndex()][upgrade.ordinal()];
     }
 
     public boolean isUpgradeRendererInserted(EntityEquipmentSlot slot, int i) {
@@ -235,7 +265,7 @@ public class CommonHUDHandler {
     }
 
     public int getSpeedFromUpgrades() {
-        return 1 + speedUpgradesInstalled;
+        return 1 + getUpgradeCount(EntityEquipmentSlot.HEAD, EnumUpgrade.SPEED);
     }
 
     public int getStartupTime(EntityEquipmentSlot slot) {
@@ -253,9 +283,5 @@ public class CommonHUDHandler {
         hackedEntity = entity;
         hackedBlock = null;
         hackTime = 0;
-    }
-
-    public boolean isMagnetEnabled() {
-        return magnetEnabled;
     }
 }

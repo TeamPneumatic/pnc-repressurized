@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.client.render.pneumaticArmor;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
+import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.api.item.IPressurizable;
 import me.desht.pneumaticcraft.client.IKeyListener;
 import me.desht.pneumaticcraft.client.KeyHandler;
@@ -214,7 +215,7 @@ public class HUDHandler implements IKeyListener {
                             }
                             stat.update();
                         }
-                        upgradeRenderHandler.update(player, comHudHandler.rangeUpgradesInstalled);
+                        upgradeRenderHandler.update(player, comHudHandler.getUpgradeCount(EntityEquipmentSlot.HEAD, IItemRegistry.EnumUpgrade.RANGE));
                     }
                 }
             }

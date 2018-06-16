@@ -15,7 +15,6 @@ import me.desht.pneumaticcraft.client.render.pneumaticArmor.UpgradeRenderHandler
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.entitytracker.EntityTrackHandler;
 import me.desht.pneumaticcraft.client.render.tileentity.*;
 import me.desht.pneumaticcraft.client.semiblock.ClientSemiBlockManager;
-import me.desht.pneumaticcraft.common.CommonHUDHandler;
 import me.desht.pneumaticcraft.common.HackTickHandler;
 import me.desht.pneumaticcraft.common.block.BlockColorHandler;
 import me.desht.pneumaticcraft.common.block.Blockss;
@@ -95,7 +94,6 @@ public class ClientProxy extends CommonProxy {
         MinecraftForge.EVENT_BUS.register(HUDHandler.instance());
         MinecraftForge.EVENT_BUS.register(ClientTickHandler.instance());
         MinecraftForge.EVENT_BUS.register(getHackTickHandler());
-        MinecraftForge.EVENT_BUS.register(clientHudHandler = new CommonHUDHandler());
         MinecraftForge.EVENT_BUS.register(new ClientSemiBlockManager());
 
         MinecraftForge.EVENT_BUS.register(HUDHandler.instance().getSpecificRenderer(CoordTrackUpgradeHandler.class));

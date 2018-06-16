@@ -27,8 +27,8 @@ import net.minecraftforge.fml.common.network.IGuiHandler;
 import net.minecraftforge.fml.relauncher.Side;
 
 public class CommonProxy implements IGuiHandler {
-    CommonHUDHandler clientHudHandler;
-    private CommonHUDHandler serverHudHandler;
+//    CommonHUDHandler clientHudHandler;
+//    private CommonHUDHandler serverHudHandler;
 
     public int PneumaticHelmetRenderID = 0;
 
@@ -49,13 +49,13 @@ public class CommonProxy implements IGuiHandler {
         return null;
     }
 
-    public CommonHUDHandler getCommonHudHandler() {
-        if (getSide() == Side.CLIENT) {
-            return clientHudHandler;
-        } else {
-            return serverHudHandler;
-        }
-    }
+//    public CommonHUDHandler getCommonHudHandler() {
+//        if (getSide() == Side.CLIENT) {
+//            return clientHudHandler;
+//        } else {
+//            return serverHudHandler;
+//        }
+//    }
 
     public Side getSide() {
         return FMLCommonHandler.instance().getEffectiveSide();
@@ -266,7 +266,7 @@ public class CommonProxy implements IGuiHandler {
     }
 
     public void init() {
-        MinecraftForge.EVENT_BUS.register(serverHudHandler = new CommonHUDHandler());
+        MinecraftForge.EVENT_BUS.register(CommonHUDHandler.class);
         MinecraftForge.EVENT_BUS.register(getHackTickHandler());
 
         SemiBlockManager.registerEventHandler(getClientWorld() != null);

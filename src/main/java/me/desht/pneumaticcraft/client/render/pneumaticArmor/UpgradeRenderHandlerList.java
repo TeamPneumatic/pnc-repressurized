@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.client.render.pneumaticArmor;
 
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
+import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.common.CommonHUDHandler;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -70,8 +71,9 @@ public class UpgradeRenderHandlerList {
     public float getAirUsage(EntityPlayer player, EntityEquipmentSlot slot, boolean countDisabled) {
         float totalUsage = 0;
         for (int i = 0; i < upgradeRenderers.get(slot.getIndex()).size(); i++) {
-            if (CommonHUDHandler.getHandlerForPlayer(player).isUpgradeRendererInserted(slot, i) && (countDisabled || CommonHUDHandler.getHandlerForPlayer(player).isUpgradeRendererEnabled(slot, i)))
-                totalUsage += upgradeRenderers.get(slot.getIndex()).get(i).getEnergyUsage(CommonHUDHandler.getHandlerForPlayer(player).rangeUpgradesInstalled, player);
+            CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer(player);
+            if (handler.isUpgradeRendererInserted(slot, i) && (countDisabled || handler.isUpgradeRendererEnabled(slot, i)))
+                totalUsage += upgradeRenderers.get(slot.getIndex()).get(i).getEnergyUsage(handler.getUpgradeCount(slot, IItemRegistry.EnumUpgrade.RANGE), player);
         }
         return totalUsage;
     }

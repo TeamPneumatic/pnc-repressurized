@@ -97,6 +97,7 @@ public abstract class ItemPneumaticArmorBase extends ItemArmor implements IPress
         }
 
         upgrades.add(CraftingRegistrator.getUpgrade(EnumUpgrade.VOLUME).getItem());
+        upgrades.add(CraftingRegistrator.getUpgrade(EnumUpgrade.ITEM_LIFE).getItem());
         if (Loader.isModLoaded(ModIds.THAUMCRAFT)) {
             upgrades.add(CraftingRegistrator.getUpgrade(EnumUpgrade.THAUMCRAFT).getItem());
         }
