@@ -72,7 +72,7 @@ public class HUDHandler implements IKeyListener {
             if (armorStack.getItem() instanceof ItemPneumaticArmorBase) {
                 if (((IPressurizable) armorStack.getItem()).getPressure(armorStack) > 0F) {
                     CommonHUDHandler comHudHandler = CommonHUDHandler.getHandlerForPlayer(player);
-                    if (comHudHandler.getTicksSinceEquipped(slot) > comHudHandler.getStartupTime(slot)) {
+                    if (comHudHandler.isArmorReady(slot)) {
 
                         GL11.glDisable(GL11.GL_TEXTURE_2D);
                         List<IUpgradeRenderHandler> renderHandlers = UpgradeRenderHandlerList.instance().getHandlersForSlot(slot);
@@ -132,7 +132,7 @@ public class HUDHandler implements IKeyListener {
             GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
             GL11.glColor4d(0, 1, 0, 0.8D);
             CommonHUDHandler comHudHandler = CommonHUDHandler.getHandlerForPlayer(player);
-            if (comHudHandler.getTicksSinceEquipped(slot) <= comHudHandler.getStartupTime(slot)) {
+            if (!comHudHandler.isArmorReady(slot)) {
                 // blockTrackInfo = null;
                 gaveEmptyWarning[slot.getIndex()] = false;
                 gaveNearlyEmptyWarning[slot.getIndex()] = false;

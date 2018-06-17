@@ -21,13 +21,11 @@ import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.entity.EntityProgrammableController;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.item.ItemAmadronTablet;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticArmorBase;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticHelmet;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.network.PacketSetMobTarget;
-import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.recipes.AmadronOffer;
 import me.desht.pneumaticcraft.common.recipes.AmadronOfferCustom;
 import me.desht.pneumaticcraft.common.recipes.AmadronOfferManager;
@@ -37,8 +35,6 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefinery;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
-import me.desht.pneumaticcraft.lib.PneumaticValues;
-import me.desht.pneumaticcraft.lib.Sounds;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -57,7 +53,6 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -78,7 +73,6 @@ import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.EnderTeleportEvent;
-import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -395,28 +389,6 @@ public class EventHandlerPneumaticCraft {
                         break;
                     default:
                         break;
-                }
-            }
-        }
-    }
-
-    @SubscribeEvent
-    public void onPlayerFall(LivingFallEvent event) {
-        if (event.getEntity() instanceof EntityPlayer && event.getDistance() > 3.0F) {
-            EntityPlayer player = (EntityPlayer) event.getEntity();
-            ItemStack stack = player.getItemStackFromSlot(EntityEquipmentSlot.FEET);
-            // TODO better calculate the minimum pressure reuquired to prevent damage
-            if (stack.getItem() instanceof ItemPneumaticArmorBase && ((ItemPneumaticArmorBase) stack.getItem()).getPressure(stack) > 0.1F) {
-                event.setCanceled(true);
-                if (!player.world.isRemote) {
-                      for (int i = 0; i < event.getDistance() / 3; i++) {
-                        float sx = player.getRNG().nextFloat() * 2F - 1F;
-                        float sz = player.getRNG().nextFloat() * 2F - 1F;
-                        NetworkHandler.sendToAllAround(new PacketSpawnParticle(EnumParticleTypes.EXPLOSION_NORMAL, player.posX, player.posY, player.posZ, sx, 0.2, sz), player.world);
-                    }
-                    NetworkHandler.sendToAllAround(new PacketPlaySound(Sounds.SHORT_HISS, SoundCategory.PLAYERS, player.posX, player.posY, player.posZ, 1.0f, 0.8f, false), player.world);
-                    CommonHUDHandler.getHandlerForPlayer(player).useAir(stack, EntityEquipmentSlot.FEET,
-                            (int) (-PneumaticValues.PNEUMATIC_ARMOR_FALL_USAGE * event.getDistance()));
                 }
             }
         }

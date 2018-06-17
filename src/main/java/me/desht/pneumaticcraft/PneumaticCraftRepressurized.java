@@ -5,10 +5,7 @@ import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.client.CreativeTabPneumaticCraft;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.UpgradeRenderHandlerList;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.hacking.HackableHandler;
-import me.desht.pneumaticcraft.common.EventHandlerPneumaticCraft;
-import me.desht.pneumaticcraft.common.EventHandlerUniversalSensor;
-import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
-import me.desht.pneumaticcraft.common.TickHandlerPneumaticCraft;
+import me.desht.pneumaticcraft.common.*;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.capabilities.CapabilityGPSAreaTool;
 import me.desht.pneumaticcraft.common.commands.PCCommandManager;
@@ -123,6 +120,7 @@ public class PneumaticCraftRepressurized {
         tickHandler = new TickHandlerPneumaticCraft();
         MinecraftForge.EVENT_BUS.register(tickHandler);
         MinecraftForge.EVENT_BUS.register(new EventHandlerPneumaticCraft());
+        MinecraftForge.EVENT_BUS.register(new EventHandlerPneumaticArmor());
         MinecraftForge.EVENT_BUS.register(new EventHandlerUniversalSensor());
         MinecraftForge.EVENT_BUS.register(new DroneSpecialVariableHandler());
 

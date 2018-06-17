@@ -106,7 +106,7 @@ public class CommonHUDHandler {
             }
             ticksSinceEquip[slot.getIndex()]++;
             if (!player.world.isRemote) {
-                if (ticksSinceEquip[slot.getIndex()] > getStartupTime(slot) && !player.capabilities.isCreativeMode) {
+                if (isArmorReady(slot) && !player.capabilities.isCreativeMode) {
                     // use up air in the armor piece
                     float airUsage = UpgradeRenderHandlerList.instance().getAirUsage(player, slot,false);
                     float oldPressure = useAir(armorStack, slot, (int) -airUsage);
@@ -316,5 +316,9 @@ public class CommonHUDHandler {
         hackedEntity = entity;
         hackedBlock = null;
         hackTime = 0;
+    }
+
+    public boolean isArmorReady(EntityEquipmentSlot slot) {
+        return getTicksSinceEquipped(slot) > getStartupTime(slot);
     }
 }
