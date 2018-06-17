@@ -39,12 +39,14 @@ import net.minecraft.item.Item;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
+import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -57,7 +59,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 public class ClientProxy extends CommonProxy {
 
     private final HackTickHandler clientHackTickHandler = new HackTickHandler();
-    public final Map<String, Integer> keybindToKeyCodes = new HashMap<String, Integer>();
+    public final Map<String, Pair<Integer,KeyModifier>> keybindToKeyCodes = new HashMap<>();
 
     @Override
     public void preInit() {
@@ -151,26 +153,17 @@ public class ClientProxy extends CommonProxy {
     private void getAllKeybindsFromOptionsFile() {
         File optionsFile = new File(FMLClientHandler.instance().getClient().mcDataDir, "options.txt");
         if (optionsFile.exists()) {
-            try {
-                BufferedReader bufferedreader = new BufferedReader(new FileReader(optionsFile));
-
-                try {
-                    String s = "";
-                    while ((s = bufferedreader.readLine()) != null) {
-                        try {
-                            String[] astring = s.split(":");
-                            if (astring[0].startsWith("key_")) {
-                                keybindToKeyCodes.put(astring[0].substring(4), Integer.parseInt(astring[1]));
-                            }
-                        } catch (Exception exception) {
-                            Log.warning("Skipping bad option: " + s);
-                        }
+            try (BufferedReader bufferedreader = new BufferedReader(new FileReader(optionsFile))) {
+                String s = "";
+                while ((s = bufferedreader.readLine()) != null) {
+                    String[] str = s.split(":");
+                    if (str[0].startsWith("key_")) {
+                        KeyModifier mod = str.length > 2 ? KeyModifier.valueFromString(str[2]) : KeyModifier.NONE;
+                        keybindToKeyCodes.put(str[0].substring(4), Pair.of(Integer.parseInt(str[1]), mod));
                     }
-                } finally {
-                    bufferedreader.close();
                 }
             } catch (Exception exception1) {
-                Log.error("Failed to load options");
+                Log.error("Failed to process options.txt:");
                 exception1.printStackTrace();
             }
         }

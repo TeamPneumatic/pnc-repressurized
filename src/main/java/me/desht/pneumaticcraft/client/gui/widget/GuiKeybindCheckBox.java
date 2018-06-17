@@ -14,11 +14,14 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraftforge.client.settings.KeyConflictContext;
+import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
+import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.input.Keyboard;
 
 import java.io.IOException;
@@ -44,7 +47,7 @@ public class GuiKeybindCheckBox extends GuiCheckBox {
     public GuiKeybindCheckBox(int id, int x, int y, int color, String text, String keyBindingName) {
         super(id, x, y, color, text);
         this.keyBindingName = keyBindingName;
-        keyBinding = setOrAddKeybind(keyBindingName, -1);//get the saved value.
+        keyBinding = setOrAddKeybind(keyBindingName, -1, KeyModifier.NONE); //get the saved value.
         if (!trackedCheckboxes.containsKey(keyBindingName)) {
             checked = HelmetWidgetDefaults.INSTANCE.getKey(keyBindingName);
             trackedCheckboxes.put(keyBindingName, this);
@@ -109,14 +112,18 @@ public class GuiKeybindCheckBox extends GuiCheckBox {
     @Override
     public boolean onKey(char key, int keyCode) {
         if (isAwaitingKey) {
-            isAwaitingKey = false;
-            keyBinding = setOrAddKeybind(keyBindingName, keyCode);
-            text = oldCheckboxText;
-            if (trackedCheckboxes.containsKey(keyBindingName)) {
-                MinecraftForge.EVENT_BUS.unregister(trackedCheckboxes.get(keyBindingName));
+            if (KeyModifier.isKeyCodeModifier(keyCode)) {
+                return true;
+            } else {
+                isAwaitingKey = false;
+                keyBinding = setOrAddKeybind(keyBindingName, keyCode, KeyModifier.getActiveModifier());
+                text = oldCheckboxText;
+                if (trackedCheckboxes.containsKey(keyBindingName)) {
+                    MinecraftForge.EVENT_BUS.unregister(trackedCheckboxes.get(keyBindingName));
+                }
+                MinecraftForge.EVENT_BUS.register(this);
+                return true;
             }
-            MinecraftForge.EVENT_BUS.register(this);
-            return true;
         }
         return false;
     }
@@ -131,32 +138,35 @@ public class GuiKeybindCheckBox extends GuiCheckBox {
     }
 
     /**
-     * @param keybindName
-     * @param keyCode     when a value of <0 is parsed, this will function as a getter, with a chance of returning null.
-     * @return
+     * @param keybindName name of the key binding
+     * @param keyCode     when < 0, this will function as a getter & may return null
+     * @param modifier key modifier (may be NONE)
+     * @return the key binding
      */
-    public static KeyBinding setOrAddKeybind(String keybindName, int keyCode) {
+    private static KeyBinding setOrAddKeybind(String keybindName, int keyCode, KeyModifier modifier) {
         GameSettings gameSettings = FMLClientHandler.instance().getClient().gameSettings;
         for (KeyBinding keyBinding : gameSettings.keyBindings) {
             if (keyBinding != null && keyBinding.getKeyDescription().equals(keybindName)) {
                 if (keyCode >= 0) {
-                    keyBinding.setKeyCode(keyCode);
+                    keyBinding.setKeyModifierAndCode(modifier, keyCode);
                     KeyBinding.resetKeyBindingArrayAndHash();
                     gameSettings.saveOptions();
                 }
                 return keyBinding;
             }
         }
-        // If the keybind wasn't added yet, look for it in the Minecraft options.txt file (which we scanned
-        // in ClientProxy#getAllKeybindsFromOptionsFile() during pre-init)
+        // If the keybind wasn't registered yet, look for it in the Minecraft options.txt file (which
+        // we scanned in ClientProxy#getAllKeybindsFromOptionsFile() during pre-init)
         if (keyCode < 0) {
             if (((ClientProxy) PneumaticCraftRepressurized.proxy).keybindToKeyCodes.containsKey(keybindName)) {
-                keyCode = ((ClientProxy) PneumaticCraftRepressurized.proxy).keybindToKeyCodes.get(keybindName);
+                Pair<Integer,KeyModifier> binding = ((ClientProxy) PneumaticCraftRepressurized.proxy).keybindToKeyCodes.get(keybindName);
+                keyCode = binding.getLeft();
+                modifier = binding.getRight();
             } else {
                 return null;
             }
         }
-        KeyBinding keyBinding = new KeyBinding(keybindName, keyCode, Names.PNEUMATIC_KEYBINDING_CATEGORY);
+        KeyBinding keyBinding = new KeyBinding(keybindName, KeyConflictContext.IN_GAME, modifier, keyCode, Names.PNEUMATIC_KEYBINDING_CATEGORY);
         ClientRegistry.registerKeyBinding(keyBinding);
         KeyBinding.resetKeyBindingArrayAndHash();
         gameSettings.saveOptions();
@@ -166,7 +176,8 @@ public class GuiKeybindCheckBox extends GuiCheckBox {
     @Override
     public void addTooltip(int mouseX, int mouseY, List<String> curTooltip, boolean shiftPressed) {
         if (keyBinding != null) {
-            curTooltip.add(I18n.format("gui.keybindBoundKey", Keyboard.getKeyName(keyBinding.getKeyCode())));
+            String s = keyBinding.getKeyModifier() != KeyModifier.NONE ? keyBinding.getKeyModifier() + " + " : "";
+            curTooltip.add(I18n.format("gui.keybindBoundKey", s + Keyboard.getKeyName(keyBinding.getKeyCode())));
         } else if (!isAwaitingKey) {
             curTooltip.add("gui.keybindRightClickToSet");
         }
