@@ -132,8 +132,10 @@ public abstract class ItemPneumaticArmorBase extends ItemArmor implements IPress
 
     @Override
     public void addAir(ItemStack iStack, int amount) {
+        int volume = UpgradableItemUtils.getUpgrades(EnumUpgrade.VOLUME, iStack) * PneumaticValues.VOLUME_VOLUME_UPGRADE + getVolume();
+        int maxAir = (int)(maxPressure(iStack) * volume);
         int oldAir = NBTUtil.getInteger(iStack, "air");
-        NBTUtil.setInteger(iStack, "air", Math.max(oldAir + amount, 0));
+        NBTUtil.setInteger(iStack, "air", Math.min(maxAir, Math.max(oldAir + amount, 0)));
     }
 
     @Override

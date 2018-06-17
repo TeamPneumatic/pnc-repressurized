@@ -48,6 +48,7 @@ public class UpgradeRenderHandlerList {
         addUpgradeRenderer(new CoordTrackUpgradeHandler());
         addUpgradeRenderer(new DroneDebugUpgradeHandler());
         addUpgradeRenderer(new MagnetUpgradeRenderHandler());
+        addUpgradeRenderer(new ChargingUpgradeRenderHandler());
     }
 
     public void addUpgradeRenderer(IUpgradeRenderHandler handler) {

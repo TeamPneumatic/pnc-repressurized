@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IHackableEntity;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IPressurizable;
+import me.desht.pneumaticcraft.client.render.pneumaticArmor.ChargingUpgradeRenderHandler;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.MagnetUpgradeRenderHandler;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.UpgradeRenderHandlerList;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.hacking.HackableHandler;
@@ -58,6 +59,7 @@ public class CommonHUDHandler {
     private WorldAndCoord hackedBlock;
     private Entity hackedEntity;
     private boolean magnetEnabled;
+    private boolean chargingEnabled;
 
     public CommonHUDHandler() {
         for (EntityEquipmentSlot slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
@@ -134,6 +136,9 @@ public class CommonHUDHandler {
                 if (magnetEnabled && ticksSinceEquip[slot.getIndex()] % PneumaticValues.MAGNET_INTERVAL == 0) {
                     doMagnet(player, armorStack);
                 }
+                if (chargingEnabled && ticksSinceEquip[slot.getIndex()] % PneumaticValues.ARMOR_CHARGER_INTERVAL == 5) {
+                    doCharging(player, armorStack);
+                }
                 break;
         }
 
@@ -142,8 +147,34 @@ public class CommonHUDHandler {
         }
     }
 
+    private void doCharging(EntityPlayer player, ItemStack chestplateStack) {
+        int upgrades = Math.min(getUpgradeCount(EntityEquipmentSlot.CHEST, EnumUpgrade.CHARGING), PneumaticValues.ARMOR_CHARGING_MAX_UPGRADES);
+        int airAmount = upgrades * 50 + 100;
+
+        for (EntityEquipmentSlot slot : EntityEquipmentSlot.values()) {
+            if (slot == EntityEquipmentSlot.CHEST) continue;
+            if (armorPressure[EntityEquipmentSlot.CHEST.getIndex()] < 0.1F) return;
+            ItemStack stack = player.getItemStackFromSlot(slot);
+            tryPressurize(chestplateStack, airAmount, stack);
+        }
+        for (ItemStack stack : player.inventory.mainInventory) {
+            if (armorPressure[EntityEquipmentSlot.CHEST.getIndex()] < 0.1F) return;
+            tryPressurize(chestplateStack, airAmount, stack);
+        }
+    }
+
+    private void tryPressurize(ItemStack chestplateStack, int airAmount, ItemStack destStack) {
+        if (destStack.getItem() instanceof IPressurizable) {
+            IPressurizable p = (IPressurizable) destStack.getItem();
+            if (p.getPressure(destStack) < p.maxPressure(destStack)) {
+                p.addAir(destStack, airAmount);
+                useAir(chestplateStack, EntityEquipmentSlot.CHEST, -airAmount);
+            }
+        }
+    }
+
     private void doItemRepair(ItemStack armorStack, EntityEquipmentSlot slot) {
-        int upgrades = Math.min(getUpgradeCount(slot, EnumUpgrade.ITEM_LIFE), 5);
+        int upgrades = Math.min(getUpgradeCount(slot, EnumUpgrade.ITEM_LIFE), PneumaticValues.ARMOR_REPAIR_MAX_UPGRADES);
         int interval = 120 - (20 * upgrades);
         int airUsage = PneumaticValues.PNEUMATIC_ARMOR_REPAIR_USAGE * upgrades;
 
@@ -239,6 +270,8 @@ public class CommonHUDHandler {
         IUpgradeRenderHandler handler = UpgradeRenderHandlerList.instance().getHandlersForSlot(slot).get(featureIndex);
         if (handler instanceof MagnetUpgradeRenderHandler) {
             magnetEnabled = state;
+        } else if (handler instanceof ChargingUpgradeRenderHandler) {
+            chargingEnabled = state;
         }
     }
 

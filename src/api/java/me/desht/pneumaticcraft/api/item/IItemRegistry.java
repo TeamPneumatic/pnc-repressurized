@@ -17,7 +17,8 @@ public interface IItemRegistry {
         RANGE("range"),
         SECURITY("security"),
         MAGNET("magnet"),
-        THAUMCRAFT("thaumcraft") /*Only around when Thaumcraft is */;
+        THAUMCRAFT("thaumcraft"), /*Only around when Thaumcraft is */
+        CHARGING("charging");
 
         private final String name;
 

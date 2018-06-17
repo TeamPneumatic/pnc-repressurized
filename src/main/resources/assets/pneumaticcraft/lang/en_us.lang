@@ -166,6 +166,7 @@ item.range_upgrade.name=Range Upgrade
 item.security_upgrade.name=Security Upgrade
 item.magnet_upgrade.name=Magnet Upgrade
 item.thaumcraft_upgrade.name=Thaumcraft Upgrade
+item.charging_upgrade.name=Charging Upgrade
 
 item.assembly_program0.name=Assembly Program: Drill
 item.assembly_program1.name=Assembly Program: Laser
@@ -806,6 +807,7 @@ pneumaticHelmet.upgrade.coreComponents=Pneumatic Armor
 pneumaticHelmet.upgrade.droneDebugger=Drone Debugger
 # Pneumatic Chestplate upgrades
 pneumaticHelmet.upgrade.magnet=Magnet
+pneumaticHelmet.upgrade.charging=Auto-Charger
 
 pneumaticHelmet.message.enableSetting=%s Enabled
 pneumaticHelmet.message.disableSetting=%s Disabled
