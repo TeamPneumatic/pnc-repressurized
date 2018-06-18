@@ -6,9 +6,7 @@ import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IHackableEntity;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IPressurizable;
-import me.desht.pneumaticcraft.client.render.pneumaticArmor.ChargingUpgradeRenderHandler;
-import me.desht.pneumaticcraft.client.render.pneumaticArmor.MagnetUpgradeRenderHandler;
-import me.desht.pneumaticcraft.client.render.pneumaticArmor.UpgradeRenderHandlerList;
+import me.desht.pneumaticcraft.client.render.pneumaticArmor.*;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.hacking.HackableHandler;
 import me.desht.pneumaticcraft.common.item.ItemMachineUpgrade;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmorBase;
@@ -60,6 +58,9 @@ public class CommonHUDHandler {
     private Entity hackedEntity;
     private boolean magnetEnabled;
     private boolean chargingEnabled;
+    private boolean stepAssistEnabled;
+    private boolean runSpeedEnabled;
+    private boolean jumpBoostEnabled;
 
     public CommonHUDHandler() {
         for (EntityEquipmentSlot slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
@@ -278,6 +279,12 @@ public class CommonHUDHandler {
             magnetEnabled = state;
         } else if (handler instanceof ChargingUpgradeRenderHandler) {
             chargingEnabled = state;
+        } else if (handler instanceof StepAssistUpgradeHandler) {
+            stepAssistEnabled = state;
+        } else if (handler instanceof RunSpeedUpgradeHandler) {
+            runSpeedEnabled = state;
+        } else if (handler instanceof JumpBoostUpgradeHandler) {
+            jumpBoostEnabled = state;
         }
     }
 
@@ -326,5 +333,17 @@ public class CommonHUDHandler {
 
     public boolean isArmorReady(EntityEquipmentSlot slot) {
         return getTicksSinceEquipped(slot) > getStartupTime(slot);
+    }
+
+    public boolean isStepAssistEnabled() {
+        return stepAssistEnabled;
+    }
+
+    public boolean isRunSpeedEnabled() {
+        return runSpeedEnabled;
+    }
+
+    public boolean isJumpBoostEnabled() {
+        return jumpBoostEnabled;
     }
 }

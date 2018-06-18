@@ -367,7 +367,7 @@ gui.tab.info.tile.elevator_base=§0This machine is like the name says an elevato
 gui.tab.info.item.pneumatic_helmet=§0On its own this helmet is slightly better than an Iron Helmet. However, you can install various upgrades here to unlock many useful extra features.
 gui.tab.info.item.pneumatic_chestplate=§0On its own this chestplate is slightly better than an Iron Chestplate. However, you can install various upgrades here to unlock many useful extra features.
 gui.tab.info.item.pneumatic_leggings=§0On its own these leggings are slightly better than Iron Leggings. However, you can install various upgrades here to unlock many useful extra features.
-gui.tab.info.item.pneumatic_boots=§0On its own these boots is slightly better than Iron Boots. However, you can install various upgrades here to unlock many useful extra features.
+gui.tab.info.item.pneumatic_boots=§0On its own these boots is slightly better than Iron Boots. However, you can install various upgrades here to unlock many useful extra features.  The Boots provide step assist functionality for free (no upgrade, no air cost); this can be disabled in the Pneumatic Armor GUI if you don't step assist.  The boots also negate fall damage at a small air cost.
 gui.tab.info.item.armor.head.searchUpgrade=§0The Search Upgrade allows you to search for a specific item in (for example) your base. This upgrade depends on the Block Tracker, to be able to find the item existing in inventories, and on the Entity Tracker, which allows it to find the searched item when it lies on the ground. To experience the full effect of the upgrade you should install both these upgrades.
 gui.tab.info.item.armor.head.coordinateTrackerUpgrade=§0The Coordinate Tracker upgrade allows you to track one specific coordinate, which can be used for example when you are tunneling to a certain location, without knowing the exact place this location is at in relation to where you are at that moment. Meant for people that don't like to use F3. As second feature this upgrade will use Minecraft's entity pathfinding to navigate you to wherever you want.
 gui.tab.info.item.armor.head.entityTrackerUpgrade=§0With the Entity Tracker upgrade in, the helmet is able to track any living entity within a range of 16 blocks. These entities don't have to be visible, making this upgrade a perfect way to prevent Creepers sneaking up on you.
@@ -379,6 +379,8 @@ gui.tab.info.item.armor.head.dispenserUpgrade=§0When used in conjunction with t
 gui.tab.info.item.armor.head.thaumcraftUpgrade=§0With a Thaumcraft Upgrade installed, you gain the benefits of Goggles of Revealing: nodes are revealed, you get a 5%% Vis discount, and essentia levels of various containers are displayed on-screen.
 gui.tab.info.item.armor.chest.magnetUpgrade=§0With a Magnet Upgrade installed, your chestplate can automatically pull nearby items toward you for a small air cost.  You can install up to 6 Magnet Upgrades to extend the magnet's range.
 gui.tab.info.item.armor.chest.chargingUpgrade=§0With the Charging Upgrade installed, your chestplate can automatically charge all other pressurizable items in your inventory, either worn or carried (note: will only charge items with a lower pressure than the chestplate).  Up to 6 Charging Upgrades can be installed to increase the charging rate.
+gui.tab.info.item.armor.legs.speedUpgrade=§0With one or more Speed Upgrades installed in your leggings, you will be able to run faster.  Up to 3 Speed Upgrades can be installed for progressively faster speeds (and higher air usage).
+gui.tab.info.item.armor.legs.rangeUpgrade=§0With one or more Range Upgrades installed in your leggings, you will be able to jump higher.  Up to 6 Range Upgrades can be installed for progressively higher jumps (and higher air usage).  Holding Sneak while jumping will reduce the jump height to be equivalent to a single Range Upgrade.  Fall protection is included (no need to wear Pneumatic Boots).
 gui.tab.info.item.armor.generic.volumeUpgrade=§0Each Volume Upgrade installed increase the armor piece's air storage capacity by 5000mL over the base 12000mL, allowing the piece to operate longer between recharges.
 gui.tab.info.item.armor.generic.itemLifeUpgrade=§0Item Life Upgrades allow the armor piece to be slowly auto-repaired, at a cost of air.  Up to 5 Item Life upgrades can be installed in each armor piece for faster repair (but progressively more inefficient air usage).
 gui.tab.info.item.armor.generic.thaumcraftUpgrade=§0With a Thaumcraft Upgrade installed, you get a Vis discount equivalent to the corresponding Thaumaturge's Armor piece.
@@ -815,6 +817,11 @@ pneumaticHelmet.upgrade.droneDebugger=Drone Debugger
 # Pneumatic Chestplate upgrades
 pneumaticHelmet.upgrade.magnet=Magnet
 pneumaticHelmet.upgrade.charging=Auto-Charger
+# Pneumatic Legs upgrades
+pneumaticHelmet.upgrade.runSpeed=Run Speed
+pneumaticHelmet.upgrade.jumpBoost=Jump Boost
+# Pneumatic Boots upgrades
+pneumaticHelmet.upgrade.stepAssist=Step Assist
 
 pneumaticHelmet.message.enableSetting=%s Enabled
 pneumaticHelmet.message.disableSetting=%s Disabled

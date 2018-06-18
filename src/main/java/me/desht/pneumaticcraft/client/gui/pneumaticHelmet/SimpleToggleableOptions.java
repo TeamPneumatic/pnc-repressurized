@@ -2,19 +2,23 @@ package me.desht.pneumaticcraft.client.gui.pneumaticHelmet;
 
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IOptionPage;
-import me.desht.pneumaticcraft.client.render.pneumaticArmor.ChargingUpgradeRenderHandler;
+import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.resources.I18n;
 
-public class GuiChargingOptions implements IOptionPage {
-    private final ChargingUpgradeRenderHandler handler;
+/**
+ * Suitable for a simple on/off armor option with no other settings or rendering
+ */
+public class SimpleToggleableOptions implements IOptionPage {
+    private final String name;
 
-    public GuiChargingOptions(ChargingUpgradeRenderHandler handler) {
-        this.handler = handler;
+    public SimpleToggleableOptions(IUpgradeRenderHandler handler) {
+        this.name = I18n.format("pneumaticHelmet.upgrade." + handler.getUpgradeName());
     }
 
     @Override
     public String getPageName() {
-        return "Auto-Charger";
+        return name;
     }
 
     @Override

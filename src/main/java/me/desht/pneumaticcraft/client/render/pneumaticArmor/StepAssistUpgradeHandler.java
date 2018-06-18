@@ -3,17 +3,15 @@ package me.desht.pneumaticcraft.client.render.pneumaticArmor;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IOptionPage;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
-import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.client.gui.pneumaticHelmet.SimpleToggleableOptions;
-import me.desht.pneumaticcraft.common.item.Itemss;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 
-public class ChargingUpgradeRenderHandler implements IUpgradeRenderHandler {
+public class StepAssistUpgradeHandler implements IUpgradeRenderHandler {
     @Override
     public String getUpgradeName() {
-        return "charging";
+        return "stepAssist";
     }
 
     @Override
@@ -48,7 +46,7 @@ public class ChargingUpgradeRenderHandler implements IUpgradeRenderHandler {
 
     @Override
     public Item[] getRequiredUpgrades() {
-        return new Item[] {Itemss.upgrades.get(IItemRegistry.EnumUpgrade.CHARGING)};
+        return new Item[0];
     }
 
     @Override
@@ -68,6 +66,6 @@ public class ChargingUpgradeRenderHandler implements IUpgradeRenderHandler {
 
     @Override
     public EntityEquipmentSlot getEquipmentSlot() {
-        return EntityEquipmentSlot.CHEST;
+        return EntityEquipmentSlot.FEET;
     }
 }

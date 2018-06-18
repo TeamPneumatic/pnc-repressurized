@@ -13,7 +13,7 @@ import me.desht.pneumaticcraft.client.render.RenderProgressBar;
 import me.desht.pneumaticcraft.common.CommonHUDHandler;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmorBase;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketToggleHelmetFeature;
+import me.desht.pneumaticcraft.common.network.PacketToggleArmorFeature;
 import me.desht.pneumaticcraft.lib.Sounds;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
@@ -193,7 +193,7 @@ public class HUDHandler implements IKeyListener {
                 handler.reset();
             }
             for (int i = 0; i < renderHandlers.size(); i++) {
-                NetworkHandler.sendToServer(new PacketToggleHelmetFeature(
+                NetworkHandler.sendToServer(new PacketToggleArmorFeature(
                         (byte) i,
                         armorEnabled && GuiKeybindCheckBox.fromKeyBindingName(GuiKeybindCheckBox.UPGRADE_PREFIX + renderHandlers.get(i).getUpgradeName()).checked,
                         slot)

@@ -4,7 +4,7 @@ import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IOptionPage;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
-import me.desht.pneumaticcraft.client.gui.pneumaticHelmet.GuiMagnetOptions;
+import me.desht.pneumaticcraft.client.gui.pneumaticHelmet.SimpleToggleableOptions;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -63,7 +63,7 @@ public class MagnetUpgradeRenderHandler implements IUpgradeRenderHandler {
 
     @Override
     public IOptionPage getGuiOptionsPage() {
-        return new GuiMagnetOptions(this);
+        return new SimpleToggleableOptions(this);
     }
 
     @Override

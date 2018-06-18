@@ -49,6 +49,9 @@ public class UpgradeRenderHandlerList {
         addUpgradeRenderer(new DroneDebugUpgradeHandler());
         addUpgradeRenderer(new MagnetUpgradeRenderHandler());
         addUpgradeRenderer(new ChargingUpgradeRenderHandler());
+        addUpgradeRenderer(new StepAssistUpgradeHandler());
+        addUpgradeRenderer(new RunSpeedUpgradeHandler());
+        addUpgradeRenderer(new JumpBoostUpgradeHandler());
     }
 
     public void addUpgradeRenderer(IUpgradeRenderHandler handler) {

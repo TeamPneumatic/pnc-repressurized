@@ -4,9 +4,10 @@ import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.UpgradeRenderHandlerList;
+import me.desht.pneumaticcraft.common.CommonHUDHandler;
 import me.desht.pneumaticcraft.common.config.HelmetWidgetDefaults;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketToggleHelmetFeature;
+import me.desht.pneumaticcraft.common.network.PacketToggleArmorFeature;
 import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.proxy.ClientProxy;
 import net.minecraft.client.Minecraft;
@@ -88,12 +89,14 @@ public class GuiKeybindCheckBox extends GuiCheckBox {
                     for (int i = 0; i < renderHandlers.size(); i++) {
                         IUpgradeRenderHandler upgradeRenderHandler = renderHandlers.get(i);
                         if ((UPGRADE_PREFIX + upgradeRenderHandler.getUpgradeName()).equals(keyBindingName)) {
-                            NetworkHandler.sendToServer(new PacketToggleHelmetFeature((byte) i, coreComponents.checked && checked, slot));
+                            NetworkHandler.sendToServer(new PacketToggleArmorFeature((byte) i, coreComponents.checked && checked, slot));
+                            CommonHUDHandler.getHandlerForPlayer().setUpgradeRenderEnabled(slot, (byte)i, coreComponents.checked && checked);
                         }
                     }
                     if (keyBindingName.equals(UPGRADE_PREFIX + "coreComponents")) {
                         for (int i = 0; i < renderHandlers.size(); i++) {
-                            NetworkHandler.sendToServer(new PacketToggleHelmetFeature((byte) i, checked && GuiKeybindCheckBox.fromKeyBindingName(GuiKeybindCheckBox.UPGRADE_PREFIX + renderHandlers.get(i).getUpgradeName()).checked, slot));
+                            NetworkHandler.sendToServer(new PacketToggleArmorFeature((byte) i, checked && GuiKeybindCheckBox.fromKeyBindingName(GuiKeybindCheckBox.UPGRADE_PREFIX + renderHandlers.get(i).getUpgradeName()).checked, slot));
+                            CommonHUDHandler.getHandlerForPlayer().setUpgradeRenderEnabled(slot, (byte)i, coreComponents.checked && checked);
                         }
                     }
                 }

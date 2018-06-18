@@ -6,15 +6,15 @@ import me.desht.pneumaticcraft.common.CommonHUDHandler;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 
-public class PacketToggleHelmetFeature extends AbstractPacket<PacketToggleHelmetFeature> {
+public class PacketToggleArmorFeature extends AbstractPacket<PacketToggleArmorFeature> {
     private byte featureIndex;
     private boolean state;
     private EntityEquipmentSlot slot;
 
-    public PacketToggleHelmetFeature() {
+    public PacketToggleArmorFeature() {
     }
 
-    public PacketToggleHelmetFeature(byte featureIndex, boolean state, EntityEquipmentSlot slot) {
+    public PacketToggleArmorFeature(byte featureIndex, boolean state, EntityEquipmentSlot slot) {
         this.featureIndex = featureIndex;
         this.state = state;
         this.slot = slot;
@@ -35,11 +35,11 @@ public class PacketToggleHelmetFeature extends AbstractPacket<PacketToggleHelmet
     }
 
     @Override
-    public void handleClientSide(PacketToggleHelmetFeature message, EntityPlayer player) {
+    public void handleClientSide(PacketToggleArmorFeature message, EntityPlayer player) {
     }
 
     @Override
-    public void handleServerSide(PacketToggleHelmetFeature message, EntityPlayer player) {
+    public void handleServerSide(PacketToggleArmorFeature message, EntityPlayer player) {
         if (message.featureIndex >= 0 && message.featureIndex < UpgradeRenderHandlerList.instance().getHandlersForSlot(message.slot).size()) {
             CommonHUDHandler.getHandlerForPlayer(player).setUpgradeRenderEnabled(message.slot, message.featureIndex, message.state);
         }

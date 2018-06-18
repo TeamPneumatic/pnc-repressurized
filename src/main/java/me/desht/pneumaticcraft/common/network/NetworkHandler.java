@@ -96,7 +96,7 @@ public class NetworkHandler {
         INSTANCE.registerMessage(PacketHackingEntityStart.class, PacketHackingEntityStart.class, discriminant++, Side.CLIENT);
         INSTANCE.registerMessage(PacketHackingEntityFinish.class, PacketHackingEntityFinish.class, discriminant++, Side.CLIENT);
 
-        INSTANCE.registerMessage(PacketToggleHelmetFeature.class, PacketToggleHelmetFeature.class, discriminant++, Side.SERVER);
+        INSTANCE.registerMessage(PacketToggleArmorFeature.class, PacketToggleArmorFeature.class, discriminant++, Side.SERVER);
         INSTANCE.registerMessage(PacketUpdateDebuggingDrone.class, PacketUpdateDebuggingDrone.class, discriminant++, Side.SERVER);
         INSTANCE.registerMessage(PacketSendDroneDebugEntry.class, PacketSendDroneDebugEntry.class, discriminant++, Side.CLIENT);
         INSTANCE.registerMessage(PacketSyncDroneEntityProgWidgets.class, PacketSyncDroneEntityProgWidgets.class, discriminant++, Side.CLIENT);

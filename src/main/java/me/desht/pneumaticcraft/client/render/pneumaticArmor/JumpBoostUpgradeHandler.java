@@ -10,10 +10,10 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 
-public class ChargingUpgradeRenderHandler implements IUpgradeRenderHandler {
+public class JumpBoostUpgradeHandler implements IUpgradeRenderHandler {
     @Override
     public String getUpgradeName() {
-        return "charging";
+        return "jumpBoost";
     }
 
     @Override
@@ -48,7 +48,7 @@ public class ChargingUpgradeRenderHandler implements IUpgradeRenderHandler {
 
     @Override
     public Item[] getRequiredUpgrades() {
-        return new Item[] {Itemss.upgrades.get(IItemRegistry.EnumUpgrade.CHARGING)};
+        return new Item[] { Itemss.upgrades.get(IItemRegistry.EnumUpgrade.RANGE) };
     }
 
     @Override
@@ -68,6 +68,6 @@ public class ChargingUpgradeRenderHandler implements IUpgradeRenderHandler {
 
     @Override
     public EntityEquipmentSlot getEquipmentSlot() {
-        return EntityEquipmentSlot.CHEST;
+        return EntityEquipmentSlot.LEGS;
     }
 }
