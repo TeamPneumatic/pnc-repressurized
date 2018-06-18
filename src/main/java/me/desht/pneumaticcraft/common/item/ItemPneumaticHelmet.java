@@ -153,7 +153,7 @@ public class ItemPneumaticHelmet extends ItemPneumaticArmorBase implements IReve
     }
 
     @Override
-    public int getVolume() {
+    public int getBaseVolume() {
         return PneumaticValues.PNEUMATIC_HELMET_VOLUME;
     }
 

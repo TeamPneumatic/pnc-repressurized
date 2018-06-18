@@ -17,7 +17,7 @@ public class ItemPneumaticBoots extends ItemPneumaticArmorBase {
     }
 
     @Override
-    public int getVolume() {
+    public int getBaseVolume() {
         return PneumaticValues.PNEUMATIC_BOOTS_VOLUME;
     }
 

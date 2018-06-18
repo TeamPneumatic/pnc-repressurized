@@ -121,6 +121,11 @@ public class ItemDrone extends ItemPneumatic implements IPressurizable, IChargin
     }
 
     @Override
+    public int getVolume(ItemStack iStack) {
+        return UpgradableItemUtils.getUpgrades(EnumUpgrade.VOLUME, iStack) * PneumaticValues.VOLUME_VOLUME_UPGRADE + PneumaticValues.DRONE_VOLUME;
+    }
+
+    @Override
     public float maxPressure(ItemStack iStack) {
         return PneumaticValues.DRONE_MAX_PRESSURE;
     }

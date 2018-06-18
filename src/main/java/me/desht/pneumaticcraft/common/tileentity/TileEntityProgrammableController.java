@@ -380,6 +380,11 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
     }
 
     @Override
+    public int getVolume(ItemStack itemStack) {
+        return getAirHandler(null).getVolume();
+    }
+
+    @Override
     public World world() {
         return getWorld();
     }

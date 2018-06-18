@@ -766,6 +766,11 @@ public class EntityDrone extends EntityDroneBase
     }
 
     @Override
+    public int getVolume(ItemStack iStack) {
+        return (int) volume;
+    }
+
+    @Override
     public void printManometerMessage(EntityPlayer player, List<String> curInfo) {
         if (hasCustomName()) curInfo.add(TextFormatting.AQUA + getCustomNameTag());
         curInfo.add("Owner: " + getFakePlayer().getName());

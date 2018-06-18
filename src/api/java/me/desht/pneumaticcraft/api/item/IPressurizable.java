@@ -32,4 +32,15 @@ public interface IPressurizable {
      * @return maximum pressure in bar.
      */
     float maxPressure(ItemStack iStack);
+
+    /**
+     * Get the volume for this item, i.e. the amount of air stored at a pressure
+     * of 1 bar.  It follows that the current air stored in an item is
+     * {@code getPressure(stack) * getVolume(stack)}, and the maximum air storage
+     * is {@code getMaxPressure(stack) * getVolume(stack)}.
+     *
+     * @param iStack the item
+     * @return the item's air volume
+     */
+    int getVolume(ItemStack iStack);
 }

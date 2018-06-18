@@ -109,10 +109,12 @@ public class CommonHUDHandler {
                 if (isArmorReady(slot) && !player.capabilities.isCreativeMode) {
                     // use up air in the armor piece
                     float airUsage = UpgradeRenderHandlerList.instance().getAirUsage(player, slot,false);
-                    float oldPressure = useAir(armorStack, slot, (int) -airUsage);
-                    if (oldPressure > 0F && armorPressure[slot.getIndex()] == 0F) {
-                        // out of air!
-                        NetworkHandler.sendTo(new PacketPlaySound(Sounds.MINIGUN_STOP, SoundCategory.PLAYERS, player.posX, player.posY, player.posZ, 1.0f, 2.0f, false), (EntityPlayerMP) player);
+                    if (airUsage != 0) {
+                        float oldPressure = useAir(armorStack, slot, (int) -airUsage);
+                        if (oldPressure > 0F && armorPressure[slot.getIndex()] == 0F) {
+                            // out of air!
+                            NetworkHandler.sendTo(new PacketPlaySound(Sounds.MINIGUN_STOP, SoundCategory.PLAYERS, player.posX, player.posY, player.posZ, 1.0f, 2.0f, false), (EntityPlayerMP) player);
+                        }
                     }
                     doArmorActions(player, armorStack, slot);
                 }
@@ -166,9 +168,13 @@ public class CommonHUDHandler {
     private void tryPressurize(ItemStack chestplateStack, int airAmount, ItemStack destStack) {
         if (destStack.getItem() instanceof IPressurizable) {
             IPressurizable p = (IPressurizable) destStack.getItem();
-            if (p.getPressure(destStack) < p.maxPressure(destStack)) {
-                p.addAir(destStack, airAmount);
-                useAir(chestplateStack, EntityEquipmentSlot.CHEST, -airAmount);
+            float pressure = p.getPressure(destStack);
+            if (pressure < p.maxPressure(destStack) && pressure < armorPressure[EntityEquipmentSlot.CHEST.getIndex()]) {
+                float currentAir = pressure * p.getVolume(destStack);
+                float targetAir = armorPressure[EntityEquipmentSlot.CHEST.getIndex()] * p.getVolume(destStack);
+                int amountToMove = Math.min((int)(targetAir - currentAir), airAmount);
+                p.addAir(destStack, amountToMove);
+                useAir(chestplateStack, EntityEquipmentSlot.CHEST, -amountToMove);
             }
         }
     }

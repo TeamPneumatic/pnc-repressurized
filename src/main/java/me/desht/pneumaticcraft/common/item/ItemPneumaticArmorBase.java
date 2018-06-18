@@ -66,7 +66,12 @@ public abstract class ItemPneumaticArmorBase extends ItemArmor implements IPress
                 || player.getItemStackFromSlot(EntityEquipmentSlot.FEET).getItem() instanceof ItemPneumaticArmorBase;
     }
 
-    public abstract int getVolume();
+    /**
+     * Get the base item volume before any volume upgrades are added.
+     *
+     * @return the base volume
+     */
+    public abstract int getBaseVolume();
 
     public abstract int getMaxAir();
 
@@ -107,7 +112,7 @@ public abstract class ItemPneumaticArmorBase extends ItemArmor implements IPress
 
     @Override
     public float getPressure(ItemStack iStack) {
-        int volume = UpgradableItemUtils.getUpgrades(EnumUpgrade.VOLUME, iStack) * PneumaticValues.VOLUME_VOLUME_UPGRADE + getVolume();
+        int volume = UpgradableItemUtils.getUpgrades(EnumUpgrade.VOLUME, iStack) * PneumaticValues.VOLUME_VOLUME_UPGRADE + getBaseVolume();
         int oldVolume = NBTUtil.getInteger(iStack, "volume");
         int currentAir = NBTUtil.getInteger(iStack, "air");
         if (volume < oldVolume) {
@@ -131,9 +136,13 @@ public abstract class ItemPneumaticArmorBase extends ItemArmor implements IPress
     }
 
     @Override
+    public int getVolume(ItemStack iStack) {
+        return UpgradableItemUtils.getUpgrades(EnumUpgrade.VOLUME, iStack) * PneumaticValues.VOLUME_VOLUME_UPGRADE + getBaseVolume();
+    }
+
+    @Override
     public void addAir(ItemStack iStack, int amount) {
-        int volume = UpgradableItemUtils.getUpgrades(EnumUpgrade.VOLUME, iStack) * PneumaticValues.VOLUME_VOLUME_UPGRADE + getVolume();
-        int maxAir = (int)(maxPressure(iStack) * volume);
+        int maxAir = (int)(maxPressure(iStack) * getVolume(iStack));
         int oldAir = NBTUtil.getInteger(iStack, "air");
         NBTUtil.setInteger(iStack, "air", Math.min(maxAir, Math.max(oldAir + amount, 0)));
     }

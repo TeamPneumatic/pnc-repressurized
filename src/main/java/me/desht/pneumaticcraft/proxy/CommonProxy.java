@@ -167,7 +167,7 @@ public class CommonProxy implements IGuiHandler {
             case ELEVATOR:
                 return new GuiElevator(player.inventory, (TileEntityElevatorBase) te);
             case PNEUMATIC_ARMOR:
-                return new GuiPneumaticHelmet(new ContainerChargingStationItemInventory(player.inventory, (TileEntityChargingStation) te), (TileEntityChargingStation) te);
+                return new GuiPneumaticArmor(new ContainerChargingStationItemInventory(player.inventory, (TileEntityChargingStation) te), (TileEntityChargingStation) te);
             case PRESSURE_CHAMBER_INTERFACE:
                 return new GuiPressureChamberInterface(player.inventory, (TileEntityPressureChamberInterface) te);
             case VACUUM_PUMP:

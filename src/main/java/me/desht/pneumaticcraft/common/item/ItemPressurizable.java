@@ -13,12 +13,14 @@ import java.util.List;
 
 public class ItemPressurizable extends ItemPneumatic implements IPressurizable {
     private final int volume;
+    private final float maxPressure;
 
     public ItemPressurizable(String registryName, int maxAir, int volume) {
         super(registryName);
         setMaxStackSize(1);
         setMaxDamage(maxAir);
         this.volume = volume;
+        maxPressure = maxAir / volume;
         setNoRepair();
     }
 
@@ -51,7 +53,13 @@ public class ItemPressurizable extends ItemPneumatic implements IPressurizable {
 
     @Override
     public float maxPressure(ItemStack iStack) {
-        return 10F;
+        return maxPressure;
+    }
+
+    @Override
+    public int getVolume(ItemStack itemStack) {
+        // note: no volume ugprade support by default
+        return volume;
     }
 
 }

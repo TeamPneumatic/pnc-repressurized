@@ -17,6 +17,7 @@ import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
@@ -26,16 +27,18 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.FMLClientHandler;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-public class GuiPneumaticHelmet extends GuiPneumaticInventoryItem {
+public class GuiPneumaticArmor extends GuiPneumaticInventoryItem {
 
     private final String registryName;  // for translation purposes
     private GuiAnimatedStat statusStat;
     private final EntityEquipmentSlot equipmentSlot;
 
-    public GuiPneumaticHelmet(ContainerChargingStationItemInventory container, TileEntityChargingStation te) {
+    public GuiPneumaticArmor(ContainerChargingStationItemInventory container, TileEntityChargingStation te) {
         super(container, te);
         registryName = itemStack.getItem().getRegistryName().getResourcePath();
         equipmentSlot = ((ItemArmor) itemStack.getItem()).armorType;
@@ -48,18 +51,29 @@ public class GuiPneumaticHelmet extends GuiPneumaticInventoryItem {
         statusStat = addAnimatedStat("Status", itemStack, 0xFFFFAA00, false);
 
         Set<Item> upgrades = ((IUpgradeAcceptor)itemStack.getItem()).getApplicableUpgrades();
-        boolean leftSided = false;
-        for (Item upgrade : upgrades) {
+        List<Item> upgrades1 = upgrades.stream().sorted(Comparator.comparing(Item::getUnlocalizedName)).collect(Collectors.toList());
+//        boolean leftSided = true;
+
+        for (int i = 0; i < upgrades1.size(); i++) {
+            Item upgrade = upgrades1.get(i);
             if (upgrade instanceof ItemMachineUpgrade) {
-                addUpgradeStat(((ItemMachineUpgrade) upgrade).getUpgradeType(), leftSided);
-                leftSided = !leftSided;
+                addUpgradeStat(((ItemMachineUpgrade) upgrade).getUpgradeType(), i <= upgrades1.size() / 2);
             }
         }
     }
 
     private void addUpgradeStat(EnumUpgrade upgrade, boolean leftSided) {
         ItemStack stack = CraftingRegistrator.getUpgrade(upgrade);
-        addAnimatedStat(stack.getDisplayName(), stack, 0xFF4040FF, leftSided).setText("gui.tab.info.item.pneumatic_helmet." + upgrade.getName() + "Upgrade");
+        String key = getTranslationKey(upgrade, equipmentSlot);
+        if (!I18n.hasKey(key)) {
+            key = getTranslationKey(upgrade, null);
+        }
+        addAnimatedStat(stack.getDisplayName(), stack, 0xFF4040FF, leftSided).setText(key);
+    }
+
+    private String getTranslationKey(EnumUpgrade upgrade, EntityEquipmentSlot equipmentSlot) {
+        String s = equipmentSlot == null ? "generic" : equipmentSlot.toString().toLowerCase();
+        return "gui.tab.info.item.armor." + s + "." + upgrade.getName() + "Upgrade";
     }
 
     @Override
@@ -105,6 +119,6 @@ public class GuiPneumaticHelmet extends GuiPneumaticInventoryItem {
 
     @Override
     protected int getDefaultVolume() {
-        return ((ItemPneumaticArmorBase) itemStack.getItem()).getVolume();
+        return ((ItemPneumaticArmorBase) itemStack.getItem()).getBaseVolume();
     }
 }
