@@ -157,8 +157,8 @@ dependencies {
         transitive = false
     }
     deobfCompile "MCMultiPart2:MCMultiPart:${mcmultipart_version}"
-    deobfCompile "li.cil.oc:OpenComputers:MC1.12.1-${oc_version}:api"
-    deobfCompile "dan200.computercraft:ComputerCraft-SquidDev-CC-ComputerCraft-feature-minecraft-1.12.2:${computercraft_version}"
+    deobfCompile "li.cil.oc:OpenComputers:MC1.12.2-${oc_version}:api"
+    deobfCompile "dan200.computercraft:ComputerCraft:${computercraft_version}"
     deobfCompile "mcp.mobius.waila:Hwyla:${hwyla_version}"
     deobfCompile "mcjty.theoneprobe:TheOneProbe-1.12:${top_version}"
     deobfProvided "CraftTweaker2:CraftTweaker2-API:${crafttweaker_version}"

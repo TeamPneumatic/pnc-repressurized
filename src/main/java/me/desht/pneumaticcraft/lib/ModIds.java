@@ -12,7 +12,7 @@ public class ModIds {
     public static final String FORESTRY = "forestry";
     public static final String OPEN_BLOCKS = "openblocks";
     public static final String COFH_CORE = "cofhcore";
-    public static final String OPEN_COMPUTERS = "opencomputers|core";
+    public static final String OPEN_COMPUTERS = "opencomputers";
     public static final String EIO = "enderio";
     public static final String MCMP = "mcmultipart";
     public static final String TOP = "theoneprobe";
