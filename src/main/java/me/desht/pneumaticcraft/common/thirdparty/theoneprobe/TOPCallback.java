@@ -22,6 +22,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.translation.I18n;
@@ -113,7 +114,7 @@ public class TOPCallback implements Function<ITheOneProbe, Void> {
     public static void handleSemiblock(ProbeMode mode, IProbeInfo probeInfo, ISemiBlock semiBlock) {
         List<String> currenttip = new ArrayList<>();
         if (semiBlock instanceof SemiBlockBasic) {
-            ((SemiBlockBasic) semiBlock).addWailaTooltip(currenttip, null);
+            ((SemiBlockBasic) semiBlock).addWailaTooltip(currenttip, new NBTTagCompound());
         }
         for (String s : currenttip) {
             probeInfo.text(s);

@@ -33,7 +33,11 @@ public class SemiBlockHeatFrame extends SemiBlockBasic<TileEntity> implements IH
     public SemiBlockHeatFrame(Class<TileEntity> tileClass){
         super(tileClass);
     }
-    
+
+    public SemiBlockHeatFrame() {
+        super(TileEntity.class);
+    }
+
     @Override
     public boolean canPlace(EnumFacing facing) {
         return getTileEntity() != null && getTileEntity().hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
@@ -193,6 +197,8 @@ public class SemiBlockHeatFrame extends SemiBlockBasic<TileEntity> implements IH
     @Override
     public void addWailaTooltip(List<String> curInfo, NBTTagCompound tag) {
         super.addWailaTooltip(curInfo, tag);
-        curInfo.add(I18n.format("waila.temperature", tag.getInteger("temp") - 273));
+        // WAILA sync's the temperature via NBT, TOP runs serverside and gets it here
+        int temp = tag.hasKey("temp") ? tag.getInteger("temp") : (int) logic.getTemperature();
+        curInfo.add(I18n.format("waila.temperature", temp - 273));
     }
 }
