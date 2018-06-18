@@ -6,6 +6,13 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
+## 0.6.7-??? (unreleased)
+
+* Fixed inability to place Heat Frames on inventories
+* Fixed possible lockup (endless loop) on startup with drones
+* Fixed spurious "Drone has no UUID!" error messages on the client
+* Fixed occasional crashes when teleporting into areas with client-side (TESR) renderers
+
 ## 0.6.7-210 (10 Jun 2018)
 
 * Added support for Thaumcraft 6.  Thaumcraft Upgrade is now craftable and adds Googgle of Revealing functionality to the Pneumatic Helmet.  Aspects have been added to a few PneumaticCraft items (beyond any Thaumcraft auto-detection).
