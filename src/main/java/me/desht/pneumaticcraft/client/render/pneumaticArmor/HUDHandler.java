@@ -193,11 +193,9 @@ public class HUDHandler implements IKeyListener {
                 handler.reset();
             }
             for (int i = 0; i < renderHandlers.size(); i++) {
-                NetworkHandler.sendToServer(new PacketToggleArmorFeature(
-                        (byte) i,
-                        armorEnabled && GuiKeybindCheckBox.fromKeyBindingName(GuiKeybindCheckBox.UPGRADE_PREFIX + renderHandlers.get(i).getUpgradeName()).checked,
-                        slot)
-                );
+                boolean state = armorEnabled && GuiKeybindCheckBox.fromKeyBindingName(GuiKeybindCheckBox.UPGRADE_PREFIX + renderHandlers.get(i).getUpgradeName()).checked;
+                comHudHandler.setUpgradeRenderEnabled(slot, (byte) i, state);
+                NetworkHandler.sendToServer(new PacketToggleArmorFeature((byte) i, state, slot));
             }
         }
 
