@@ -16,25 +16,29 @@ import me.desht.pneumaticcraft.lib.Textures;
 import me.desht.pneumaticcraft.proxy.CommonProxy;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import net.minecraftforge.common.ISpecialArmor;
 import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.fml.common.Loader;
 import thaumcraft.api.items.IVisDiscountGear;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-public abstract class ItemPneumaticArmorBase extends ItemArmor implements IPressurizable, IChargingStationGUIHolderItem, IUpgradeAcceptor,
-        IVisDiscountGear
+public abstract class ItemPneumaticArmorBase extends ItemArmor
+        implements IPressurizable, IChargingStationGUIHolderItem, IUpgradeAcceptor, ISpecialArmor, IVisDiscountGear
 {
     private static final ArmorMaterial COMPRESSED_IRON_MATERIAL = EnumHelper.addArmorMaterial(
             "compressedIron", "compressedIron",
@@ -49,7 +53,6 @@ public abstract class ItemPneumaticArmorBase extends ItemArmor implements IPress
         setRegistryName(name);
         setUnlocalizedName(name);
 
-//        setMaxDamage(PneumaticValues.PNEUMATIC_ARMOR_DURABILITY_BASE * MAX_DAMAGE_ARRAY[armorType.getIndex()]);
         setCreativeTab(PneumaticCraftRepressurized.tabPneumaticCraft);
     }
 
@@ -103,6 +106,7 @@ public abstract class ItemPneumaticArmorBase extends ItemArmor implements IPress
 
         upgrades.add(CraftingRegistrator.getUpgrade(EnumUpgrade.VOLUME).getItem());
         upgrades.add(CraftingRegistrator.getUpgrade(EnumUpgrade.ITEM_LIFE).getItem());
+        upgrades.add(CraftingRegistrator.getUpgrade(EnumUpgrade.ARMOR).getItem());
         if (Loader.isModLoaded(ModIds.THAUMCRAFT)) {
             upgrades.add(CraftingRegistrator.getUpgrade(EnumUpgrade.THAUMCRAFT).getItem());
         }
@@ -162,4 +166,35 @@ public abstract class ItemPneumaticArmorBase extends ItemArmor implements IPress
         return hasSufficientPressure(stack) && UpgradableItemUtils.getUpgrades(EnumUpgrade.THAUMCRAFT, stack) > 0;
     }
 
+    @Override
+    public ArmorProperties getProperties(EntityLivingBase player, @Nonnull ItemStack armor, DamageSource source, double damage, int slot) {
+        int maxAbsorb = armor.getMaxDamage() + 1 - armor.getItemDamage();
+        float ratio;
+        if (source.isExplosion()) {
+            ratio = 0.18F;  // absorb a lot of explosion damage
+        } else {
+            ratio = ((ItemArmor) armor.getItem()).damageReduceAmount / 30.0F;
+        }
+        ArmorProperties ap = new ArmorProperties(1, ratio, maxAbsorb);
+        int armorUpgrades = Math.min(6, UpgradableItemUtils.getUpgrades(EnumUpgrade.ARMOR, armor));
+        ap.Armor = armorUpgrades * (slot == 2 ? 1.0F : 0.5F);  // slot 2 = chestplate
+        ap.Toughness = Math.min(2, armorUpgrades * 0.5F);
+        return ap;
+    }
+
+    @Override
+    public int getArmorDisplay(EntityPlayer player, @Nonnull ItemStack armor, int slot) {
+        int armorUpgrades = Math.min(6, UpgradableItemUtils.getUpgrades(EnumUpgrade.ARMOR, armor));
+        return Math.min(armorUpgrades, 2);
+    }
+
+    @Override
+    public void damageArmor(EntityLivingBase entity, @Nonnull ItemStack stack, DamageSource source, int damage, int slot) {
+        if (source.isExplosion()) {
+            // compressed iron is very explosion-resistant
+            return;
+        }
+        // TODO return any installed upgrades and some of the cylinders if armor is destroyed
+        stack.damageItem(damage, entity);
+    }
 }

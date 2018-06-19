@@ -18,7 +18,8 @@ public interface IItemRegistry {
         SECURITY("security"),
         MAGNET("magnet"),
         THAUMCRAFT("thaumcraft"), /*Only around when Thaumcraft is */
-        CHARGING("charging");
+        CHARGING("charging"),
+        ARMOR("armor");
 
         private final String name;
 
