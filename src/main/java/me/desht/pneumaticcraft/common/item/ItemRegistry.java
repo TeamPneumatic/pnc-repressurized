@@ -2,8 +2,10 @@ package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.item.IInventoryItem;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
+import me.desht.pneumaticcraft.api.item.IMagnetSuppressor;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
 
 import java.util.*;
@@ -11,8 +13,9 @@ import java.util.*;
 public class ItemRegistry implements IItemRegistry {
 
     private static ItemRegistry INSTANCE = new ItemRegistry();
-    public final List<IInventoryItem> inventoryItems = new ArrayList<IInventoryItem>();
-    private final Map<Item, List<IUpgradeAcceptor>> upgradeToAcceptors = new HashMap<Item, List<IUpgradeAcceptor>>();
+    public final List<IInventoryItem> inventoryItems = new ArrayList<>();
+    private final Map<Item, List<IUpgradeAcceptor>> upgradeToAcceptors = new HashMap<>();
+    private final List<IMagnetSuppressor> magnetSuppressors = new ArrayList<>();
 
     public static ItemRegistry getInstance() {
         return INSTANCE;
@@ -54,4 +57,12 @@ public class ItemRegistry implements IItemRegistry {
         }
     }
 
+    @Override
+    public void registerMagnetSuppressor(IMagnetSuppressor suppressor) {
+        magnetSuppressors.add(suppressor);
+    }
+
+    public boolean shouldSuppressMagnet(Entity e) {
+        return magnetSuppressors.stream().anyMatch(s -> s.shouldSuppressMagnet(e));
+    }
 }

@@ -58,4 +58,11 @@ public interface IItemRegistry {
      * @param tooltip
      */
     void addTooltip(Item upgrade, List<String> tooltip);
+
+    /**
+     * Register a magnet suppressor; an object which can prevent the Magnet Upgrade from pulling in (usually item) entities.
+     *
+     * @param suppressor a suppressor object
+     */
+    void registerMagnetSuppressor(IMagnetSuppressor suppressor);
 }
