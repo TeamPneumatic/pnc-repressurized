@@ -10,6 +10,7 @@ import me.desht.pneumaticcraft.client.render.pneumaticArmor.*;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.hacking.HackableHandler;
 import me.desht.pneumaticcraft.common.item.ItemMachineUpgrade;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmorBase;
+import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketHackingBlockFinish;
 import me.desht.pneumaticcraft.common.network.PacketHackingEntityFinish;
@@ -198,9 +199,9 @@ public class CommonHUDHandler {
         List<EntityItem> itemList = player.getEntityWorld().getEntitiesWithinAABB(EntityItem.class, box, EntitySelectors.IS_ALIVE);
 
         for (EntityItem item : itemList) {
-            // TODO solegnolia
             if (!item.cannotPickup()
                     && item.getPositionVector().squareDistanceTo(player.getPositionVector()) <= magnetRadiusSq
+                    && !ItemRegistry.getInstance().shouldSuppressMagnet(item)
                     && !item.getEntityData().getBoolean(Names.PREVENT_REMOTE_MOVEMENT)) {
                 if (armorPressure[EntityEquipmentSlot.CHEST.getIndex()] < 0.1F) break;
                 item.setPosition(player.posX, player.posY, player.posZ);

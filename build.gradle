@@ -166,6 +166,7 @@ dependencies {
     compile "igwmod:IGW-Mod-1.12.2:${igwmod_version}:universal"  // using universal instead of userdev for now
     compile "net.industrial-craft:industrialcraft-2:2.8.27-ex112:api"
     compile "thaumcraft:Thaumcraft:${thaumcraft_version}"
+    deobfCompile "vazkii.botania:Botania:${botania_version}"
     deobfCompile("appeng:appliedenergistics2:${ae2_version}:api") {
         transitive = false
     }
