@@ -1,5 +1,9 @@
 package me.desht.pneumaticcraft.common.ai;
 
+import java.util.Random;
+
+import javax.annotation.Nullable;
+
 import me.desht.pneumaticcraft.api.drone.IPathNavigator;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -7,6 +11,7 @@ import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.lib.Sounds;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.pathfinding.Path;
@@ -18,9 +23,6 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-
-import javax.annotation.Nullable;
-import java.util.Random;
 
 public class EntityPathNavigateDrone extends PathNavigateFlying implements IPathNavigator {
 
@@ -185,12 +187,36 @@ public class EntityPathNavigateDrone extends PathNavigateFlying implements IPath
 
     @Override
     public boolean moveToXYZ(double x, double y, double z) {
-        return tryMoveToXYZ(x, y, z, pathfindingEntity.getSpeed());
+        boolean success = tryMoveToXYZ(x, y, z, pathfindingEntity.getSpeed());
+        if(success) forceRidingEntityPaths();
+        return success;
     }
 
     @Override
     public boolean moveToEntity(Entity entity) {
-        return tryMoveToEntityLiving(entity, pathfindingEntity.getSpeed());
+        boolean success = tryMoveToEntityLiving(entity, pathfindingEntity.getSpeed());
+        if(success) forceRidingEntityPaths();
+        return success;
+    }
+    
+    /**
+     * Override to prevent {@link net.minecraft.entity.EntityLiving#updateEntityActionState()} to assign a path with a higher speed.
+     */
+    @Override
+    public boolean setPath(Path pathentityIn, double speedIn){
+        return super.setPath(pathentityIn, pathfindingEntity.getSpeed());
+    }
+    
+    /**
+     * Hack to prevent riding entities to override the Drone's path (instead they will assign the Drone's path)
+     */
+    private void forceRidingEntityPaths(){
+        for(Entity ridingEntity : pathfindingEntity.getPassengers()){
+            if(ridingEntity instanceof EntityLiving){
+                EntityLiving ridingLiving = (EntityLiving)ridingEntity;
+                ridingLiving.getNavigator().setPath(pathfindingEntity.getNavigator().getPath(), pathfindingEntity.getSpeed());
+            }
+        }
     }
 
     @Override

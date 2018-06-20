@@ -14,6 +14,7 @@ import me.desht.pneumaticcraft.client.render.pneumaticArmor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.hacking.CapabilityHackingProvider;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.hacking.entity.HackableEnderman;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
+import me.desht.pneumaticcraft.common.ai.EntityAINoAIWhenRidingDrone;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
@@ -38,6 +39,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityGolem;
 import net.minecraft.entity.monster.EntityMob;
@@ -68,6 +70,7 @@ import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.EnderTeleportEvent;
 import net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
@@ -145,6 +148,15 @@ public class EventHandlerPneumaticCraft {
     public void onEntityConstruction(EntityConstructing event) {
         if (event.getEntity() instanceof IDroneBase) {
             MinecraftForge.EVENT_BUS.post(new DroneConstructingEvent((IDroneBase) event.getEntity()));
+        }
+    }
+    
+    @SubscribeEvent
+    public void onEntityJoinWorld(EntityJoinWorldEvent event){
+        if(!event.getWorld().isRemote){
+            if(event.getEntity() instanceof EntityLiving){
+                ((EntityLiving)event.getEntity()).tasks.addTask(Integer.MIN_VALUE, new EntityAINoAIWhenRidingDrone((EntityLiving)event.getEntity()));
+            }
         }
     }
 

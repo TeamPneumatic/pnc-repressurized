@@ -30,6 +30,12 @@ public class DroneMoveHelper extends EntityMoveHelper {
         }
         this.speed = speed;
     }
+    
+    @Override
+    public void read(EntityMoveHelper that)
+    {
+        //NOOP
+    }
 
     @Override
     public void onUpdateMoveHelper() {
