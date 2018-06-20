@@ -346,4 +346,8 @@ public class CommonHUDHandler {
     public boolean isJumpBoostEnabled() {
         return jumpBoostEnabled;
     }
+
+    public float getArmorPressure(EntityEquipmentSlot slot) {
+        return armorPressure[slot.getIndex()];
+    }
 }

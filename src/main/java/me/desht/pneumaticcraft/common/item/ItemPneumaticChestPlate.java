@@ -33,6 +33,7 @@ public class ItemPneumaticChestPlate extends ItemPneumaticArmorBase {
         Set<Item> upgrades = super.getApplicableUpgrades();
         upgrades.add(CraftingRegistrator.getUpgrade(IItemRegistry.EnumUpgrade.MAGNET).getItem());
         upgrades.add(CraftingRegistrator.getUpgrade(IItemRegistry.EnumUpgrade.CHARGING).getItem());
+        upgrades.add(CraftingRegistrator.getUpgrade(IItemRegistry.EnumUpgrade.SECURITY).getItem());
         return upgrades;
     }
 

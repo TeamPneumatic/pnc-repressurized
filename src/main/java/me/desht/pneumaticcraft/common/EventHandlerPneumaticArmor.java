@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common;
 
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticBoots;
+import me.desht.pneumaticcraft.common.item.ItemPneumaticChestPlate;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticLeggings;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
@@ -9,15 +10,19 @@ import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Sounds;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -71,6 +76,50 @@ public class EventHandlerPneumaticArmor {
             }
             NetworkHandler.sendToAllAround(new PacketPlaySound(Sounds.SHORT_HISS, SoundCategory.PLAYERS, player.posX, player.posY, player.posZ, 0.3f, 0.8f, false), player.world);
             CommonHUDHandler.getHandlerForPlayer(player).useAir(stack, EntityEquipmentSlot.FEET, (int) -airNeeded);
+        }
+    }
+
+    @SubscribeEvent
+    public void onLivingAttack(LivingAttackEvent event) {
+        if (event.getEntityLiving() instanceof EntityPlayer) {
+            EntityPlayer player = (EntityPlayer) event.getEntityLiving();
+
+            ItemStack armorStack = player.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
+            if (armorStack.getItem() instanceof ItemPneumaticChestPlate && event.getSource().isFireDamage()) {
+                CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer(player);
+                if (handler.getArmorPressure(EntityEquipmentSlot.CHEST) > 0.1F && handler.getUpgradeCount(EntityEquipmentSlot.CHEST, IItemRegistry.EnumUpgrade.SECURITY) > 0) {
+                    event.setCanceled(true);
+                    player.extinguish();
+                    if (!player.world.isRemote) {
+                        handler.useAir(armorStack, EntityEquipmentSlot.CHEST, -PneumaticValues.PNEUMATIC_ARMOR_FIRE_USAGE);
+                        for (int i = 0; i < 2; i++) {
+                            float sx = player.getRNG().nextFloat() * 1.5F - 0.75F;
+                            float sz = player.getRNG().nextFloat() * 1.5F - 0.75F;
+                            NetworkHandler.sendToAllAround(new PacketSpawnParticle(EnumParticleTypes.EXPLOSION_NORMAL, player.posX + sx, player.posY + 1, player.posZ + sz, sx / 2, -0.5, sz / 2), player.world);
+                        }
+                        if ((player.ticksExisted & 0xf) == 0) {
+                            NetworkHandler.sendToAllAround(new PacketPlaySound(Sounds.LEAKING_GAS_SOUND, SoundCategory.PLAYERS, player.posX, player.posY, player.posZ, 0.5f, 0.7f, false), player.world);
+                            tryExtinguish(player);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void tryExtinguish(EntityPlayer player) {
+        for (int i = -1; i <= 1; i++) {
+            for (int j = -1; j <= 1; j++) {
+                BlockPos pos = player.getPosition().add(i, 0, j);
+                IBlockState state = player.world.getBlockState(pos);
+                if (state.getBlock() == Blocks.FIRE && player.getRNG().nextInt(3) == 0) {
+                    player.world.setBlockToAir(pos);
+                } else if (state.getBlock() == Blocks.LAVA && player.getRNG().nextInt(15) == 0) {
+                    player.world.setBlockState(pos, Blocks.OBSIDIAN.getDefaultState());
+                } else if (state.getBlock() == Blocks.FLOWING_LAVA && player.getRNG().nextInt(15) == 0) {
+                    player.world.setBlockState(pos, Blocks.COBBLESTONE.getDefaultState());
+                }
+            }
         }
     }
 
