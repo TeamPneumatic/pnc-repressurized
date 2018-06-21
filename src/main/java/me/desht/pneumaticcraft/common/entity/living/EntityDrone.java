@@ -58,6 +58,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemDye;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
@@ -75,7 +76,9 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.FakePlayer;
+import net.minecraftforge.common.util.ITeleporter;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.IFluidTank;
@@ -150,6 +153,8 @@ public class EntityDrone extends EntityDroneBase
     private final SortedSet<DebugEntry> debugEntries = new TreeSet<DebugEntry>();
     private final Set<EntityPlayerMP> syncedPlayers = new HashSet<EntityPlayerMP>();
     private boolean heldItemChanged;  // if true, force a check of item attribute modifiers
+    private final Map<BlockPos, IBlockState> displacedLiquids = new HashMap<>();  // liquid blocks displaced by security upgrade
+    private boolean tryRestoreLiquids;
 
     public EntityDrone(World world) {
         super(world);
@@ -289,6 +294,7 @@ public class EntityDrone extends EntityDroneBase
             firstTick = false;
             volume = PneumaticValues.DRONE_VOLUME + getUpgrades(EnumUpgrade.VOLUME) * PneumaticValues.VOLUME_VOLUME_UPGRADE;
             hasLiquidImmunity = getUpgrades(EnumUpgrade.SECURITY) > 0;
+            tryRestoreLiquids = getUpgrades(EnumUpgrade.SECURITY) <= 1;
             if (hasLiquidImmunity) {
                 ((EntityPathNavigateDrone) getPathNavigator()).pathThroughLiquid = true;
             }
@@ -360,12 +366,16 @@ public class EntityDrone extends EntityDroneBase
                 }
             }
         }
-        if (hasLiquidImmunity) {
+        if (hasLiquidImmunity && getHealth() > 0F) {
+            restoreLiquids(true);
+
             for (int x = (int) posX - 1; x <= (int) (posX + width); x++) {
                 for (int y = (int) posY - 1; y <= (int) (posY + height + 1); y++) {
                     for (int z = (int) posZ - 2; z <= (int) (posZ + width); z++) {
                         if (PneumaticCraftUtils.isBlockLiquid(world.getBlockState(new BlockPos(x, y, z)).getBlock())) {
-                            world.setBlockState(new BlockPos(x, y, z), Blocks.AIR.getDefaultState(), 2);
+                            BlockPos pos = new BlockPos(x, y, z);
+                            if (tryRestoreLiquids) displacedLiquids.put(pos, world.getBlockState(pos));
+                            world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
                         }
                     }
                 }
@@ -652,6 +662,35 @@ public class EntityDrone extends EntityDroneBase
         }
     }
 
+    /**
+     * Restore any liquids that may have been displaced by the drone (security upgrade)
+     *
+     * @param distCheck if true, only restore liquids in blocks > 1 block distance away from the drone
+     */
+    private void restoreLiquids(boolean distCheck) {
+        Iterator<Map.Entry<BlockPos, IBlockState>> iter = displacedLiquids.entrySet().iterator();
+        while (iter.hasNext()) {
+            Map.Entry<BlockPos, IBlockState> entry = iter.next();
+            BlockPos pos = entry.getKey();
+            if (!distCheck || pos.distanceSqToCenter(posX, posY, posZ) > 1) {
+                if (world.isAirBlock(pos) || PneumaticCraftUtils.isBlockLiquid(world.getBlockState(pos).getBlock())) {
+                    world.setBlockState(pos, entry.getValue(), 2);
+                }
+                iter.remove();
+            }
+        }
+    }
+
+    @Nullable
+    @Override
+    public Entity changeDimension(int dimensionIn, ITeleporter teleporter) {
+        Entity entity = super.changeDimension(dimensionIn, teleporter);
+        if (entity != null) {
+            restoreLiquids(false);
+        }
+        return entity;
+    }
+
     @Override
     public void onDeath(DamageSource par1DamageSource) {
         for (int i = 0; i < inventory.getSlots(); i++) {
@@ -660,6 +699,7 @@ public class EntityDrone extends EntityDroneBase
                 inventory.setStackInSlot(i, ItemStack.EMPTY);
             }
         }
+        restoreLiquids(false);
         if (!naturallySpawned) {
             ItemStack drone = getDroppedStack();
             if (hasCustomName()) drone.setStackDisplayName(getCustomNameTag());
@@ -756,6 +796,20 @@ public class EntityDrone extends EntityDroneBase
             if (!usedTablet.isEmpty()) usedTablet.writeToNBT(subTag);
             tag.setString("buyingPlayer", buyingPlayer);
         }
+
+        if (!displacedLiquids.isEmpty()) {
+            NBTTagList disp = new NBTTagList();
+            for (Map.Entry<BlockPos, IBlockState> entry : displacedLiquids.entrySet()) {
+                NBTTagCompound p = net.minecraft.nbt.NBTUtil.createPosTag(entry.getKey());
+                NBTTagCompound s = new NBTTagCompound();
+                net.minecraft.nbt.NBTUtil.writeBlockState(s, entry.getValue());
+                NBTTagList l = new NBTTagList();
+                l.appendTag(p);
+                l.appendTag(s);
+                disp.appendTag(l);
+            }
+            tag.setTag("displacedLiquids", disp);
+        }
     }
 
     @Override
@@ -808,6 +862,18 @@ public class EntityDrone extends EntityDroneBase
             buyingPlayer = null;
         }
         offerTimes = tag.getInteger("offerTimes");
+
+        if (tag.hasKey("displacedLiquids")) {
+            NBTTagList disp = tag.getTagList("displacedLiquids", Constants.NBT.TAG_LIST);
+            for (int i = 0; i < disp.tagCount(); i++) {
+                NBTTagList l = (NBTTagList) disp.get(i);
+                NBTTagCompound p = l.getCompoundTagAt(0);
+                NBTTagCompound s = l.getCompoundTagAt(1);
+                BlockPos pos = net.minecraft.nbt.NBTUtil.getPosFromTag(p);
+                IBlockState state = net.minecraft.nbt.NBTUtil.readBlockState(s);
+                displacedLiquids.put(pos, state);
+            }
+        }
     }
     
     private String getOwnerUUID(){
