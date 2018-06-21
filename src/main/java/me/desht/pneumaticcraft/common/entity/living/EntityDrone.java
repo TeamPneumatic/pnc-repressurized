@@ -137,7 +137,7 @@ public class EntityDrone extends EntityDroneBase
 
     private boolean firstTick = true;
     public boolean naturallySpawned = true; //determines if it should drop a drone when it dies.
-    private boolean hasLiquidImmunity;
+//    private boolean hasLiquidImmunity;
     private double speed;
     private int lifeUpgrades;
     private int suffocationCounter = 40; //Drones are invincible for suffocation for this time.
@@ -153,8 +153,10 @@ public class EntityDrone extends EntityDroneBase
     private final SortedSet<DebugEntry> debugEntries = new TreeSet<DebugEntry>();
     private final Set<EntityPlayerMP> syncedPlayers = new HashSet<EntityPlayerMP>();
     private boolean heldItemChanged;  // if true, force a check of item attribute modifiers
+
+    private int securityUpgradeCount; // for liquid immunity: 1 = breathe in water, 2 = temporary air bubble, 3+ = permanent water removal
     private final Map<BlockPos, IBlockState> displacedLiquids = new HashMap<>();  // liquid blocks displaced by security upgrade
-    private boolean tryRestoreLiquids;
+//    private boolean tryRestoreLiquids;
 
     public EntityDrone(World world) {
         super(world);
@@ -293,12 +295,12 @@ public class EntityDrone extends EntityDroneBase
         if (firstTick) {
             firstTick = false;
             volume = PneumaticValues.DRONE_VOLUME + getUpgrades(EnumUpgrade.VOLUME) * PneumaticValues.VOLUME_VOLUME_UPGRADE;
-            hasLiquidImmunity = getUpgrades(EnumUpgrade.SECURITY) > 0;
-            tryRestoreLiquids = getUpgrades(EnumUpgrade.SECURITY) <= 1;
-            if (hasLiquidImmunity) {
+            securityUpgradeCount = getUpgrades(EnumUpgrade.SECURITY);
+//            tryRestoreLiquids = getUpgrades(EnumUpgrade.SECURITY) <= 1;
+            if (securityUpgradeCount > 0) {
                 ((EntityPathNavigateDrone) getPathNavigator()).pathThroughLiquid = true;
             }
-            setPathPriority(PathNodeType.WATER, hasLiquidImmunity ? 0.0f : -1.0f);
+            setPathPriority(PathNodeType.WATER, securityUpgradeCount > 0 ? 0.0f : -1.0f);
             speed = 0.1 + Math.min(10, getUpgrades(EnumUpgrade.SPEED)) * 0.01;
             lifeUpgrades = getUpgrades(EnumUpgrade.ITEM_LIFE);
             if (!world.isRemote) setHasMinigun(getUpgrades(EnumUpgrade.ENTITY_TRACKER) > 0);
@@ -366,7 +368,7 @@ public class EntityDrone extends EntityDroneBase
                 }
             }
         }
-        if (hasLiquidImmunity && getHealth() > 0F) {
+        if (securityUpgradeCount > 1 && getHealth() > 0F) {
             restoreLiquids(true);
 
             for (int x = (int) posX - 1; x <= (int) (posX + width); x++) {
@@ -374,7 +376,7 @@ public class EntityDrone extends EntityDroneBase
                     for (int z = (int) posZ - 2; z <= (int) (posZ + width); z++) {
                         if (PneumaticCraftUtils.isBlockLiquid(world.getBlockState(new BlockPos(x, y, z)).getBlock())) {
                             BlockPos pos = new BlockPos(x, y, z);
-                            if (tryRestoreLiquids) displacedLiquids.put(pos, world.getBlockState(pos));
+                            if (securityUpgradeCount == 2) displacedLiquids.put(pos, world.getBlockState(pos));
                             world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
                         }
                     }
@@ -411,6 +413,11 @@ public class EntityDrone extends EntityDroneBase
                 }
             }
         }
+    }
+
+    @Override
+    public boolean canBreatheUnderwater() {
+        return securityUpgradeCount > 0;
     }
 
     public BlockPos getTargetedBlock() {
@@ -989,7 +996,7 @@ public class EntityDrone extends EntityDroneBase
         if (world.isAirBlock(pos)) return true;
         Block block = world.getBlockState(pos).getBlock();
         if (PneumaticCraftUtils.isBlockLiquid(block)) {
-            return hasLiquidImmunity;
+            return securityUpgradeCount > 0;
         }
         if (block.isPassable(world, pos) && block != Blocks.LADDER) return true;
         if (DroneRegistry.getInstance().pathfindableBlocks.containsKey(block)) {
