@@ -68,6 +68,7 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
     private int curScroll;
     private static final int MAX_LINES = 12;
     private int lastMouseX, lastMouseY;
+    private int lineSpacing = 10;
 
     public GuiAnimatedStat(GuiScreen gui, String title, int xPos, int yPos, int backGroundColor,
                            IGuiAnimatedStat affectingStat, boolean leftSided) {
@@ -212,7 +213,7 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
             Rectangle downRect = getButtonScaledRectangle(2, 44, 20, 20);
             addWidget(new GuiButtonSpecial(-1001, downRect.x, downRect.y, downRect.width, downRect.height, "V"));
              */
-            addWidget(new WidgetVerticalScrollbar(-1000, leftSided ? -16 : 2, 20, (int) ((MAX_LINES * 10 - 20) * textSize)).setStates(textList.size() - MAX_LINES));
+            addWidget(new WidgetVerticalScrollbar(-1000, leftSided ? -16 : 2, 20, (int) ((MAX_LINES * lineSpacing - 20) * textSize)).setStates(textList.size() - MAX_LINES));
         } else {
             Iterator<IGuiWidget> iterator = widgets.iterator();
             while (iterator.hasNext()) {
@@ -247,7 +248,7 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
             int maxWidth = fontRenderer.getStringWidth(title);
             int maxHeight = 12;
             if (textList.size() > 0) {
-                maxHeight += 4 + Math.min(MAX_LINES, textList.size()) * 10;
+                maxHeight += 4 + Math.min(MAX_LINES, textList.size()) * lineSpacing;
             }
             maxHeight = (int) (maxHeight * textSize);
             for (String line : textList) {
@@ -327,9 +328,9 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
             for (int i = curScroll; i < textList.size() && i < curScroll + MAX_LINES; i++) {
 
                 if (textList.get(i).contains("\u00a70") || textList.get(i).contains(TextFormatting.DARK_RED.toString())) {
-                    fontRenderer.drawString(textList.get(i), renderBaseX + (leftSided ? -renderWidth + 2 : 18), renderAffectedY + (i - curScroll) * 10 + 12, 0xFFFFFF);
+                    fontRenderer.drawString(textList.get(i), renderBaseX + (leftSided ? -renderWidth + 2 : 18), renderAffectedY + (i - curScroll) * lineSpacing + 12, 0xFFFFFF);
                 } else {
-                    fontRenderer.drawStringWithShadow(textList.get(i), renderBaseX + (leftSided ? -renderWidth + 2 : 18), renderAffectedY + (i - curScroll) * 10 + 12, 0xFFFFFF);
+                    fontRenderer.drawStringWithShadow(textList.get(i), renderBaseX + (leftSided ? -renderWidth + 2 : 18), renderAffectedY + (i - curScroll) * lineSpacing + 12, 0xFFFFFF);
                 }
             }
             GL11.glPopMatrix();
@@ -538,6 +539,10 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
     @Override
     public void postRender(int mouseX, int mouseY, float partialTick) {
 
+    }
+
+    public void setLineSpacing(int lineSpacing) {
+        this.lineSpacing = lineSpacing;
     }
 
     public void setTexture(String texture) {

@@ -1,10 +1,11 @@
 package me.desht.pneumaticcraft.client.render.pneumaticArmor;
 
-import joptsimple.internal.Strings;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IOptionPage;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
+import me.desht.pneumaticcraft.client.gui.GuiButtonSpecial;
 import me.desht.pneumaticcraft.client.gui.pneumaticHelmet.GuiHelmetMainOptions;
+import me.desht.pneumaticcraft.client.gui.pneumaticHelmet.GuiHelmetMainScreen;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
 import me.desht.pneumaticcraft.common.CommonHUDHandler;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
@@ -14,6 +15,7 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -68,8 +70,10 @@ public class MainHelmetHandler implements IUpgradeRenderHandler {
     @Override
     @SideOnly(Side.CLIENT)
     public void update(EntityPlayer player, int rangeUpgrades) {
+//        List<String> l = Arrays.stream(UpgradeRenderHandlerList.ARMOR_SLOTS).map(slot -> getPressureStr(player, slot)).collect(Collectors.toList());
+//        powerStat.setTitle(TextFormatting.WHITE + "Pressure: " + Strings.join(l, TextFormatting.WHITE + " | "));
         List<String> l = Arrays.stream(UpgradeRenderHandlerList.ARMOR_SLOTS).map(slot -> getPressureStr(player, slot)).collect(Collectors.toList());
-        powerStat.setTitle(TextFormatting.WHITE + "Pressure: " + Strings.join(l, TextFormatting.WHITE + " | "));
+        powerStat.setText(l);
     }
 
     private String getPressureStr(EntityPlayer player, EntityEquipmentSlot slot) {
@@ -86,7 +90,7 @@ public class MainHelmetHandler implements IUpgradeRenderHandler {
         } else {
             colour = TextFormatting.GREEN;
         }
-        return colour.toString() + slot.toString().charAt(0) + " " + String.format("%05.2f", pressure);
+        return colour.toString() + String.format("%5.2f", pressure);
     }
 
     @Override
@@ -105,7 +109,16 @@ public class MainHelmetHandler implements IUpgradeRenderHandler {
         if (powerStat == null) {
             Minecraft minecraft = Minecraft.getMinecraft();
             ScaledResolution sr = new ScaledResolution(minecraft);
-            powerStat = new GuiAnimatedStat(null, "Helmet Pressure: ", "", powerStatX != -1 ? powerStatX : sr.getScaledWidth() - 2, powerStatY, 0x3000AA00, null, powerStatLeftSided);
+            powerStat = new GuiAnimatedStat(null, "", "", powerStatX != -1 ? powerStatX : sr.getScaledWidth() - 2, powerStatY, 0x3000AA00, null, powerStatLeftSided);
+            powerStat.setLineSpacing(15);
+            for (EntityEquipmentSlot slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
+                int i = 3 - slot.getIndex();
+                GuiButtonSpecial pressureButton = new GuiButtonSpecial(-1, 0, 5 + i * 15, 18, 18, "") ;
+                ItemStack stack = GuiHelmetMainScreen.ARMOR_STACKS[3 - i];
+                pressureButton.setVisible(false);
+                pressureButton.setRenderStacks(stack);
+                powerStat.addWidget(pressureButton);
+            }
             powerStat.setMinDimensionsAndReset(0, 0);
             powerStat.openWindow();
         }

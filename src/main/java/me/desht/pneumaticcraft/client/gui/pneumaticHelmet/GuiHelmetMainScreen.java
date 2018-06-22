@@ -30,7 +30,7 @@ import java.util.List;
 public class GuiHelmetMainScreen extends GuiPneumaticScreenBase implements IGuiScreen {
     private static final String TITLE_PREFIX = TextFormatting.AQUA + "" + TextFormatting.UNDERLINE;
 
-    private static final ItemStack[] ARMOR_STACKS = new ItemStack[]{
+    public static final ItemStack[] ARMOR_STACKS = new ItemStack[]{
             new ItemStack(Itemss.PNEUMATIC_BOOTS),
             new ItemStack(Itemss.PNEUMATIC_LEGGINGS),
             new ItemStack(Itemss.PNEUMATIC_CHESTPLATE),
