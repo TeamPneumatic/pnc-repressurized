@@ -57,7 +57,7 @@ public class GuiMoveStat extends GuiScreen {
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
         if (keyCode == Keyboard.KEY_ESCAPE) {
-            FMLCommonHandler.instance().showGuiScreen(new GuiHelmetMainScreen());
+            FMLCommonHandler.instance().showGuiScreen(GuiHelmetMainScreen.getInstance());
         } else {
             super.keyTyped(typedChar, keyCode);
         }

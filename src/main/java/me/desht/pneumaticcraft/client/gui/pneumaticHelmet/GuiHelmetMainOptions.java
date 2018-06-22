@@ -25,7 +25,7 @@ public class GuiHelmetMainOptions implements IOptionPage {
 
     @Override
     public String getPageName() {
-        return "General Armor Options";
+        return "General";
     }
 
     @Override

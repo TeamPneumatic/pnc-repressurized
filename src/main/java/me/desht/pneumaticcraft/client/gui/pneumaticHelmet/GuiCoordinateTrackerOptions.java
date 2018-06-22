@@ -24,7 +24,7 @@ public class GuiCoordinateTrackerOptions implements IOptionPage {
 
     @Override
     public String getPageName() {
-        return "Coordinate Tracker Upgrade";
+        return "Coordinate Tracker";
     }
 
     @Override

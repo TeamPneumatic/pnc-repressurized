@@ -29,7 +29,7 @@ public class GuiSearchUpgradeOptions implements IOptionPage {
 
     @Override
     public String getPageName() {
-        return "Item Search Upgrade";
+        return "Item Searcher";
     }
 
     @Override

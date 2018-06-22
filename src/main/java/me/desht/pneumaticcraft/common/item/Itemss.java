@@ -55,6 +55,10 @@ public class Itemss {
     public static final Item PNEUMATIC_HELMET = null;
     @ObjectHolder("pneumatic_chestplate")
     public static final Item PNEUMATIC_CHESTPLATE = null;
+    @ObjectHolder("pneumatic_leggings")
+    public static final Item PNEUMATIC_LEGGINGS = null;
+    @ObjectHolder("pneumatic_boots")
+    public static final Item PNEUMATIC_BOOTS = null;
     @ObjectHolder("manometer")
     public static final Item MANOMETER = null;
     @ObjectHolder("turbine_rotor")

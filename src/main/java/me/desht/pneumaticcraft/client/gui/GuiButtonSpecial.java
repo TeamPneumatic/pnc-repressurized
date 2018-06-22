@@ -22,6 +22,8 @@ import java.util.List;
 
 public class GuiButtonSpecial extends GuiButton implements IGuiWidget {
 
+    public enum IconPosition { MIDDLE, LEFT, RIGHT };
+
     private ItemStack[] renderedStacks;
     private ResourceLocation resLoc;
     private List<String> tooltipText = new ArrayList<String>();
@@ -29,6 +31,8 @@ public class GuiButtonSpecial extends GuiButton implements IGuiWidget {
     private int invisibleHoverColor;
     private boolean thisVisible = true;
     private IWidgetListener listener;
+
+    private IconPosition iconPosition = IconPosition.MIDDLE;
 
     public GuiButtonSpecial(int buttonID, int startX, int startY, int xSize, int ySize, String buttonText) {
         super(buttonID, startX, startY, xSize, ySize, buttonText);
@@ -40,6 +44,10 @@ public class GuiButtonSpecial extends GuiButton implements IGuiWidget {
 
     public void setInvisibleHoverColor(int color) {
         invisibleHoverColor = color;
+    }
+
+    public void setIconPosition(IconPosition iconPosition) {
+        this.iconPosition = iconPosition;
     }
 
     public GuiButtonSpecial setRenderStacks(ItemStack... renderedStacks) {
@@ -89,8 +97,9 @@ public class GuiButtonSpecial extends GuiButton implements IGuiWidget {
 
         if (visible) {
             if (renderedStacks != null) {
-                int middleX = this.x + width / 2;
-                int startX = middleX - renderedStacks.length * 9 + 1;
+//                int middleX = this.x + width / 2;
+//                int startX = middleX - renderedStacks.length * 9 + 1;
+                int startX = getIconX();
                 GL11.glEnable(GL12.GL_RESCALE_NORMAL);
                 RenderHelper.enableGUIStandardItemLighting();
                 for (int i = 0; i < renderedStacks.length; i++) {
@@ -106,6 +115,14 @@ public class GuiButtonSpecial extends GuiButton implements IGuiWidget {
             if (enabled && !thisVisible && x >= this.x && y >= this.y && x < this.x + width && y < this.y + height) {
                 Gui.drawRect(this.x, this.y, this.x + width, this.y + height, invisibleHoverColor);
             }
+        }
+    }
+
+    private int getIconX() {
+        switch (iconPosition) {
+            case LEFT: return x - 1 - 18 * renderedStacks.length;
+            case RIGHT: return x + width + 1;
+            case MIDDLE: default: return x + width / 2 - renderedStacks.length * 9 + 1;
         }
     }
 

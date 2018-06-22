@@ -3,30 +3,43 @@ package me.desht.pneumaticcraft.client.gui.pneumaticHelmet;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IOptionPage;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
+import me.desht.pneumaticcraft.client.gui.GuiButtonSpecial;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticScreenBase;
 import me.desht.pneumaticcraft.client.gui.widget.GuiKeybindCheckBox;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.MainHelmetHandler;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.UpgradeRenderHandlerList;
 import me.desht.pneumaticcraft.common.CommonHUDHandler;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmorBase;
+import me.desht.pneumaticcraft.common.item.Itemss;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.FMLClientHandler;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class GuiHelmetMainScreen extends GuiPneumaticScreenBase implements IGuiScreen {
+    private static final String TITLE_PREFIX = TextFormatting.AQUA + "" + TextFormatting.UNDERLINE;
 
-    private final List<IOptionPage> upgradePages = new ArrayList<>();
-    private final List<String> upgradePageNames = new ArrayList<>();
-    private static int page;
+    private static final ItemStack[] ARMOR_STACKS = new ItemStack[]{
+            new ItemStack(Itemss.PNEUMATIC_BOOTS),
+            new ItemStack(Itemss.PNEUMATIC_LEGGINGS),
+            new ItemStack(Itemss.PNEUMATIC_CHESTPLATE),
+            new ItemStack(Itemss.PNEUMATIC_HELMET)
+    };
+    //    private final List<IOptionPage> upgradePages = new ArrayList<>();
+//    private final List<String> upgradePageNames = new ArrayList<>();
+    private final List<UpgradeOption> upgradeOptions = new ArrayList<>();
+    private static int pageNumber;
     private boolean inInitPhase = true;
 
     private static GuiHelmetMainScreen instance;//Creating a static instance, as we can use it to handle keybinds when the GUI is closed.
@@ -43,11 +56,11 @@ public class GuiHelmetMainScreen extends GuiPneumaticScreenBase implements IGuiS
         int height = scaledresolution.getScaledHeight();
         instance.setWorldAndResolution(minecraft, width, height);
 
-        for (int i = 1; i < instance.upgradePages.size(); i++) {
-            page = i;
+        for (int i = 1; i < instance.upgradeOptions.size(); i++) {
+            pageNumber = i;
             instance.initGui();
         }
-        page = 0;
+        pageNumber = 0;
         instance.inInitPhase = false;
     }
 
@@ -55,24 +68,25 @@ public class GuiHelmetMainScreen extends GuiPneumaticScreenBase implements IGuiS
     public void initGui() {
         super.initGui();
         buttonList.clear();
-        upgradePages.clear();
-        upgradePageNames.clear();
+        upgradeOptions.clear();
         addPages();
-        for (int i = 0; i < upgradePages.size(); i++) {
-            GuiButton button = new GuiButton(100 + i, 210, 20 + i * 22, 200, 20, upgradePages.get(i).getPageName());
-            if (page == i) button.enabled = false;
+        for (int i = 0; i < upgradeOptions.size(); i++) {
+            GuiButtonSpecial button = new GuiButtonSpecial(100 + i, 210, 20 + i * 22, 120, 20, upgradeOptions.get(i).page.getPageName());
+            button.setRenderStacks(upgradeOptions.get(i).icons);
+            button.setIconPosition(GuiButtonSpecial.IconPosition.RIGHT);
+            if (pageNumber == i) button.enabled = false;
             buttonList.add(button);
         }
-        if (page > upgradePages.size() - 1) {
-            page = upgradePages.size() - 1;
+        if (pageNumber > upgradeOptions.size() - 1) {
+            pageNumber = upgradeOptions.size() - 1;
         }
-        GuiKeybindCheckBox checkBox = new GuiKeybindCheckBox(100, 40, 12, 0xFFFFFFFF,
-                I18n.format("gui.enableModule", I18n.format(GuiKeybindCheckBox.UPGRADE_PREFIX + upgradePageNames.get(page))),
-                GuiKeybindCheckBox.UPGRADE_PREFIX + upgradePageNames.get(page));
-        if (upgradePages.get(page).canBeTurnedOff()) {
+        GuiKeybindCheckBox checkBox = new GuiKeybindCheckBox(100, 40, 25, 0xFFFFFFFF,
+                I18n.format("gui.enableModule", I18n.format(GuiKeybindCheckBox.UPGRADE_PREFIX + upgradeOptions.get(pageNumber).text)),
+                GuiKeybindCheckBox.UPGRADE_PREFIX + upgradeOptions.get(pageNumber).text);
+        if (upgradeOptions.get(pageNumber).page.canBeTurnedOff()) {
             addWidget(checkBox);
         }
-        upgradePages.get(page).initGui(this);
+        upgradeOptions.get(pageNumber).page.initGui(this);
     }
 
     @Override
@@ -91,8 +105,10 @@ public class GuiHelmetMainScreen extends GuiPneumaticScreenBase implements IGuiS
                             || upgradeRenderHandler instanceof MainHelmetHandler) {
                         IOptionPage optionPage = upgradeRenderHandler.getGuiOptionsPage();
                         if (optionPage != null) {
-                            upgradePageNames.add(upgradeRenderHandler.getUpgradeName());
-                            upgradePages.add(optionPage);
+                            List<ItemStack> stacks = new ArrayList<>();
+                            stacks.add(ARMOR_STACKS[upgradeRenderHandler.getEquipmentSlot().getIndex()]);
+                            Arrays.stream(upgradeRenderHandler.getRequiredUpgrades()).map(ItemStack::new).forEach(stacks::add);
+                            upgradeOptions.add(new UpgradeOption(optionPage, upgradeRenderHandler.getUpgradeName(), stacks.toArray(new ItemStack[0])));
                         }
                     }
                 }
@@ -103,11 +119,11 @@ public class GuiHelmetMainScreen extends GuiPneumaticScreenBase implements IGuiS
     @Override
     public void drawScreen(int x, int y, float partialTicks) {
         drawDefaultBackground();
-        IOptionPage optionPage = upgradePages.get(page);
+        IOptionPage optionPage = upgradeOptions.get(pageNumber).page;
         optionPage.drawPreButtons(x, y, partialTicks);
         super.drawScreen(x, y, partialTicks);
         optionPage.drawScreen(x, y, partialTicks);
-        drawCenteredString(fontRenderer, upgradePages.get(page).getPageName(), 100, 25, 0xFFFFFFFF);
+        drawCenteredString(fontRenderer, TITLE_PREFIX + upgradeOptions.get(pageNumber).page.getPageName(), 100, 12, 0xFFFFFFFF);
         if (optionPage.displaySettingsText()) drawCenteredString(fontRenderer, "Settings", 100, optionPage.settingsYposition(), 0xFFFFFFFF);
     }
 
@@ -115,32 +131,32 @@ public class GuiHelmetMainScreen extends GuiPneumaticScreenBase implements IGuiS
     public void keyTyped(char par1, int par2) throws IOException {
         super.keyTyped(par1, par2);
         if (par2 != 1) {
-            for (IOptionPage page : upgradePages) {
-                page.keyTyped(par1, par2);
+            for (UpgradeOption option : upgradeOptions) {
+                option.page.keyTyped(par1, par2);
             }
         }
     }
 
     @Override
     public void actionPerformed(GuiButton button) {
-        if (button.id >= 100 && button.id < 100 + upgradePages.size()) {
-            page = button.id - 100;
+        if (button.id >= 100 && button.id < 100 + upgradeOptions.size()) {
+            pageNumber = button.id - 100;
             initGui();
         } else {
-            upgradePages.get(page).actionPerformed(button);
+            upgradeOptions.get(pageNumber).page.actionPerformed(button);
         }
     }
 
     @Override
     public void handleMouseInput() throws IOException {
         super.handleMouseInput();
-        upgradePages.get(page).handleMouseInput();
+        upgradeOptions.get(pageNumber).page.handleMouseInput();
     }
 
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int par3) throws IOException {
         super.mouseClicked(mouseX, mouseY, par3);
-        upgradePages.get(page).mouseClicked(mouseX, mouseY, par3);
+        upgradeOptions.get(pageNumber).page.mouseClicked(mouseX, mouseY, par3);
     }
 
     @Override
@@ -156,5 +172,17 @@ public class GuiHelmetMainScreen extends GuiPneumaticScreenBase implements IGuiS
     @Override
     public boolean doesGuiPauseGame() {
         return false;
+    }
+
+    private static class UpgradeOption {
+        private final IOptionPage page;
+        private final String text;
+        private final ItemStack[] icons;
+
+        UpgradeOption(IOptionPage page, String text, ItemStack... icons) {
+            this.page = page;
+            this.text = text;
+            this.icons = icons;
+        }
     }
 }
