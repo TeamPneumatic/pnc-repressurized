@@ -143,9 +143,6 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
     public Rectangle getButtonScaledRectangle(int origX, int origY, int width, int height) {
         int scaledX = (int) (origX * textSize);
         int scaledY = (int) (origY * textSize);
-
-        //scaledX = (int)(origX * textSize);
-        //scaledY = (int)(origY * textSize);
         return new Rectangle(scaledX, scaledY, (int) (width * textSize), (int) (height * textSize));
     }
 
@@ -246,10 +243,11 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
         if (isClicked) {
             // calculate the width and height needed for the box to fit the strings.
             int maxWidth = fontRenderer.getStringWidth(title);
-            int maxHeight = 12;
+            int maxHeight = title.isEmpty() ? 2 : 12;
             if (textList.size() > 0) {
                 maxHeight += 4 + Math.min(MAX_LINES, textList.size()) * lineSpacing;
             }
+            maxHeight -= (lineSpacing - fontRenderer.FONT_HEIGHT);
             maxHeight = (int) (maxHeight * textSize);
             for (String line : textList) {
                 if (fontRenderer.getStringWidth(line) > maxWidth) maxWidth = fontRenderer.getStringWidth(line);
@@ -319,24 +317,26 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         if (leftSided) renderWidth *= -1;
         // if done expanding, draw the information
+        int titleYoffset = title.isEmpty() ? 2 : 12;
         if (doneExpanding) {
             GL11.glPushMatrix();
             GL11.glTranslated(renderBaseX + (leftSided ? -renderWidth : 16), renderAffectedY, 0);
             GL11.glScaled(textSize, textSize, textSize);
             GL11.glTranslated(-renderBaseX - (leftSided ? -renderWidth : 16), -renderAffectedY, 0);
-            fontRenderer.drawStringWithShadow(title, renderBaseX + (leftSided ? -renderWidth + 2 : 18), renderAffectedY + 2, 0xFFFF00);
+            if (!title.isEmpty()) {
+                fontRenderer.drawStringWithShadow(title, renderBaseX + (leftSided ? -renderWidth + 2 : 18), renderAffectedY + 2, 0xFFFF00);
+            }
             for (int i = curScroll; i < textList.size() && i < curScroll + MAX_LINES; i++) {
-
                 if (textList.get(i).contains("\u00a70") || textList.get(i).contains(TextFormatting.DARK_RED.toString())) {
-                    fontRenderer.drawString(textList.get(i), renderBaseX + (leftSided ? -renderWidth + 2 : 18), renderAffectedY + (i - curScroll) * lineSpacing + 12, 0xFFFFFF);
+                    fontRenderer.drawString(textList.get(i), renderBaseX + (leftSided ? -renderWidth + 2 : 18), renderAffectedY + (i - curScroll) * lineSpacing + titleYoffset, 0xFFFFFF);
                 } else {
-                    fontRenderer.drawStringWithShadow(textList.get(i), renderBaseX + (leftSided ? -renderWidth + 2 : 18), renderAffectedY + (i - curScroll) * lineSpacing + 12, 0xFFFFFF);
+                    fontRenderer.drawStringWithShadow(textList.get(i), renderBaseX + (leftSided ? -renderWidth + 2 : 18), renderAffectedY + (i - curScroll) * lineSpacing + titleYoffset, 0xFFFFFF);
                 }
             }
             GL11.glPopMatrix();
 
             GL11.glPushMatrix();
-            GL11.glTranslated(renderBaseX, renderAffectedY, 0);
+            GL11.glTranslated(renderBaseX, renderAffectedY + (titleYoffset - 10), 0);
             GL11.glEnable(GL11.GL_TEXTURE_2D);
             for (IGuiWidget widget : widgets)
                 widget.render(mouseX - renderBaseX, mouseY - renderAffectedY, partialTicks);
