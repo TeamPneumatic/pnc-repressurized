@@ -234,7 +234,7 @@ public class HUDHandler implements IKeyListener {
             if (comHudHandler.getTicksSinceEquipped(slot) == comHudHandler.getStartupTime(slot) / (renderHandlers.size() + 2) * (i + 1)) {
                 player.world.playSound(player.posX, player.posY, player.posZ, Sounds.HUD_INIT, SoundCategory.PLAYERS, 0.1F, 0.5F + (float) (i + 1) / (renderHandlers.size() + 2) * 0.5F, true);
                 boolean upgradeEnabled = comHudHandler.isUpgradeRendererInserted(slot, i);
-                addMessage(new ArmorMessage(I18n.format(GuiKeybindCheckBox.UPGRADE_PREFIX + renderHandlers.get(i).getUpgradeName()) + (upgradeEnabled ? " found" : " not installed"), new ArrayList<>(), 50, upgradeEnabled ? 0x7000AA00 : 0x70FF0000));
+                addMessage(new ArmorMessage(I18n.format(GuiKeybindCheckBox.UPGRADE_PREFIX + renderHandlers.get(i).getUpgradeName()) + (upgradeEnabled ? " found" : " not installed"), new ArrayList<>(), 80, upgradeEnabled ? 0x7000AA00 : 0x70FF0000));
             }
         }
 

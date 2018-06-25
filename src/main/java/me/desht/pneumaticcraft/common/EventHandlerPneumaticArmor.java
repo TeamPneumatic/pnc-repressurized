@@ -10,6 +10,8 @@ import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Sounds;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
@@ -21,6 +23,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
@@ -114,10 +117,14 @@ public class EventHandlerPneumaticArmor {
                 IBlockState state = player.world.getBlockState(pos);
                 if (state.getBlock() == Blocks.FIRE && player.getRNG().nextInt(3) == 0) {
                     player.world.setBlockToAir(pos);
-                } else if (state.getBlock() == Blocks.LAVA && player.getRNG().nextInt(15) == 0) {
-                    player.world.setBlockState(pos, Blocks.OBSIDIAN.getDefaultState());
-                } else if (state.getBlock() == Blocks.FLOWING_LAVA && player.getRNG().nextInt(15) == 0) {
-                    player.world.setBlockState(pos, Blocks.COBBLESTONE.getDefaultState());
+                } else if ((state.getBlock() == Blocks.LAVA || state.getBlock() == Blocks.FLOWING_LAVA) && player.getRNG().nextInt(5) == 0) {
+                    for (IProperty prop : state.getPropertyKeys()) {
+                        if (prop.getName().equals("level")) {
+                            PropertyInteger iProp = (PropertyInteger) prop;
+                            int level = state.getValue(iProp);
+                            player.world.setBlockState(pos, level == 0 ? Blocks.OBSIDIAN.getDefaultState() : Blocks.COBBLESTONE.getDefaultState());
+                        }
+                    }
                 }
             }
         }
@@ -174,6 +181,10 @@ public class EventHandlerPneumaticArmor {
                     int rangeUpgrades = Math.min(PneumaticValues.PNEUMATIC_LEGS_MAX_JUMP, handler.getUpgradeCount(EntityEquipmentSlot.LEGS, IItemRegistry.EnumUpgrade.RANGE));
                     if (player.isSneaking()) rangeUpgrades = Math.min(1, rangeUpgrades);
                     player.motionY += rangeUpgrades * 0.15;
+                    float f = player.rotationYaw * 0.017453292F;
+                    float m = player.isSprinting() ? 0.25F * rangeUpgrades : 0.15F * rangeUpgrades;
+                    if (player.motionX != 0) player.motionX -= (double)(MathHelper.sin(f) * m);
+                    if (player.motionZ != 0) player.motionZ += (double)(MathHelper.cos(f) * m);
                     player.fallDistance -= rangeUpgrades * 1.5;
                     handler.addAir(stack, EntityEquipmentSlot.LEGS, -PneumaticValues.PNEUMATIC_ARMOR_JUMP_USAGE * rangeUpgrades);
                 }
