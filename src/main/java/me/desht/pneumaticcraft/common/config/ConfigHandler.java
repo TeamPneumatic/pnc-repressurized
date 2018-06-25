@@ -179,7 +179,7 @@ public class ConfigHandler {
         @Config.Comment("Pneumatic helmet power readout Y")
         public int powerY = 2;
         @Config.Comment("Pneumatic helmet power readout on left?")
-        public boolean powerLeft = true;
+        public boolean powerLeft = false;
         @Config.Comment("Pneumatic helmet message readout X")
         public int messageX = 2;
         @Config.Comment("Pneumatic helmet message readout Y")

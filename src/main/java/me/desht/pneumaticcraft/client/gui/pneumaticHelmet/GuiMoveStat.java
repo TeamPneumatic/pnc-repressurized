@@ -31,21 +31,25 @@ public class GuiMoveStat extends GuiScreen {
 
     @Override
     protected void mouseClickMove(int x, int y, int lastButtonClicked, long timeSinceMouseClick) {
-        movedStat.setBaseX(x);
-        movedStat.setBaseY(y);
+        if (lastButtonClicked == 0 || lastButtonClicked == 1) {
+            movedStat.setBaseX(x);
+            movedStat.setBaseY(y);
+        }
     }
 
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         clicked = true;
+        movedStat.setBaseX(mouseX);
+        movedStat.setBaseY(mouseY);
     }
 
     @Override
     protected void mouseReleased(int mouseX, int mouseY, int mouseButton) {
         if (clicked) {
-            if (mouseButton == 2) {
+            if (mouseButton >= 2) {
                 movedStat.setLeftSided(!movedStat.isLeftSided());
-            } else {
+            } else if (mouseButton == 0 || mouseButton == 1) {
                 movedStat.setBaseX(mouseX);
                 movedStat.setBaseY(mouseY);
             }
