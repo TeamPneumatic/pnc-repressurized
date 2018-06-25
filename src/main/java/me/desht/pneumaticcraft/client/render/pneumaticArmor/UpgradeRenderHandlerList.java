@@ -52,6 +52,7 @@ public class UpgradeRenderHandlerList {
         addUpgradeRenderer(new StepAssistUpgradeHandler());
         addUpgradeRenderer(new RunSpeedUpgradeHandler());
         addUpgradeRenderer(new JumpBoostUpgradeHandler());
+        addUpgradeRenderer(new KickUpgradeRenderHandler());
     }
 
     public void addUpgradeRenderer(IUpgradeRenderHandler handler) {

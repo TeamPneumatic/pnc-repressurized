@@ -172,6 +172,10 @@ public class PneumaticValues {
     public static final int ARMOR_CHARGING_MAX_UPGRADES = 6;
     public static final int ARMOR_REPAIR_MAX_UPGRADES = 5;
     public static final int PNEUMATIC_LEGS_SPEED_USAGE = 1; // every tick the player is moving and on ground
+    public static final int PNEUMATIC_LEGS_MAX_SPEED = 3;
     public static final int PNEUMATIC_ARMOR_JUMP_USAGE = 20;
     public static final int PNEUMATIC_ARMOR_FIRE_USAGE = 50;
+    public static final int PNEUMATIC_KICK_AIR_USAGE = 100;
+    public static final int PNEUMATIC_KICK_MAX_UPGRADES = 4;
+    public static final int PNEUMATIC_LEGS_MAX_JUMP = 6;
 }

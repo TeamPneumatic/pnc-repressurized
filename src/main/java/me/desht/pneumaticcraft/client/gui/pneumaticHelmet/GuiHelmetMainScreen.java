@@ -36,8 +36,6 @@ public class GuiHelmetMainScreen extends GuiPneumaticScreenBase implements IGuiS
             new ItemStack(Itemss.PNEUMATIC_CHESTPLATE),
             new ItemStack(Itemss.PNEUMATIC_HELMET)
     };
-    //    private final List<IOptionPage> upgradePages = new ArrayList<>();
-//    private final List<String> upgradePageNames = new ArrayList<>();
     private final List<UpgradeOption> upgradeOptions = new ArrayList<>();
     private static int pageNumber;
     private boolean inInitPhase = true;
@@ -130,11 +128,12 @@ public class GuiHelmetMainScreen extends GuiPneumaticScreenBase implements IGuiS
     @Override
     public void keyTyped(char par1, int par2) throws IOException {
         super.keyTyped(par1, par2);
-        if (par2 != 1) {
-            for (UpgradeOption option : upgradeOptions) {
-                option.page.keyTyped(par1, par2);
-            }
-        }
+        upgradeOptions.get(pageNumber).page.keyTyped(par1, par2);
+//        if (par2 != 1) {
+//            for (UpgradeOption option : upgradeOptions) {
+//                option.page.keyTyped(par1, par2);
+//            }
+//        }
     }
 
     @Override

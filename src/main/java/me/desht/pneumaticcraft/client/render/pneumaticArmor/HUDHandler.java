@@ -13,6 +13,7 @@ import me.desht.pneumaticcraft.client.render.RenderProgressBar;
 import me.desht.pneumaticcraft.common.CommonHUDHandler;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmorBase;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
+import me.desht.pneumaticcraft.common.network.PacketPneumaticKick;
 import me.desht.pneumaticcraft.common.network.PacketToggleArmorFeature;
 import me.desht.pneumaticcraft.lib.Sounds;
 import net.minecraft.client.Minecraft;
@@ -273,6 +274,8 @@ public class HUDHandler implements IKeyListener {
                 getSpecificRenderer(EntityTrackUpgradeHandler.class).hack();
             } else if (key == KeyHandler.getInstance().keybindDebuggingDrone && DroneDebugUpgradeHandler.enabledForPlayer(PneumaticCraftRepressurized.proxy.getPlayer())) {
                 getSpecificRenderer(EntityTrackUpgradeHandler.class).selectAsDebuggingTarget();
+            } else if (key == KeyHandler.getInstance().keybindKick) {
+                NetworkHandler.sendToServer(new PacketPneumaticKick());
             }
         }
     }

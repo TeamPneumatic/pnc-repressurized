@@ -112,7 +112,7 @@ public class CommonHUDHandler {
                     // use up air in the armor piece
                     float airUsage = UpgradeRenderHandlerList.instance().getAirUsage(player, slot,false);
                     if (airUsage != 0) {
-                        float oldPressure = useAir(armorStack, slot, (int) -airUsage);
+                        float oldPressure = addAir(armorStack, slot, (int) -airUsage);
                         if (oldPressure > 0F && armorPressure[slot.getIndex()] == 0F) {
                             // out of air!
                             NetworkHandler.sendTo(new PacketPlaySound(Sounds.MINIGUN_STOP, SoundCategory.PLAYERS, player.posX, player.posY, player.posZ, 1.0f, 2.0f, false), (EntityPlayerMP) player);
@@ -127,7 +127,7 @@ public class CommonHUDHandler {
         }
     }
 
-    public float useAir(ItemStack armorStack, EntityEquipmentSlot slot, int air) {
+    public float addAir(ItemStack armorStack, EntityEquipmentSlot slot, int air) {
         float oldPressure = armorPressure[slot.getIndex()];
         ((IPressurizable) armorStack.getItem()).addAir(armorStack, air);
         armorPressure[slot.getIndex()] = ((IPressurizable) armorStack.getItem()).getPressure(armorStack);
@@ -176,7 +176,7 @@ public class CommonHUDHandler {
                 float targetAir = armorPressure[EntityEquipmentSlot.CHEST.getIndex()] * p.getVolume(destStack);
                 int amountToMove = Math.min((int)(targetAir - currentAir), airAmount);
                 p.addAir(destStack, amountToMove);
-                useAir(chestplateStack, EntityEquipmentSlot.CHEST, -amountToMove);
+                addAir(chestplateStack, EntityEquipmentSlot.CHEST, -amountToMove);
             }
         }
     }
@@ -189,7 +189,7 @@ public class CommonHUDHandler {
         if (armorStack.getItemDamage() > 0
                 && armorPressure[slot.getIndex()] > 0.1F
                 && ticksSinceEquip[slot.getIndex()] % interval == 0) {
-            useAir(armorStack, slot, -airUsage);
+            addAir(armorStack, slot, -airUsage);
             armorStack.setItemDamage(armorStack.getItemDamage() - 1);
         }
     }
@@ -206,7 +206,7 @@ public class CommonHUDHandler {
                 if (armorPressure[EntityEquipmentSlot.CHEST.getIndex()] < 0.1F) break;
                 item.setPosition(player.posX, player.posY, player.posZ);
                 item.setPickupDelay(0);
-                useAir(armorStack, EntityEquipmentSlot.CHEST, -PneumaticValues.MAGNET_AIR_USAGE);
+                addAir(armorStack, EntityEquipmentSlot.CHEST, -PneumaticValues.MAGNET_AIR_USAGE);
             }
         }
     }

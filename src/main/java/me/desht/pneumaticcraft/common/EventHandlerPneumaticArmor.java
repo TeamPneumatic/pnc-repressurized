@@ -46,7 +46,7 @@ public class EventHandlerPneumaticArmor {
         PNEUMATIC_SPEED_BOOST[2] = (new AttributeModifier(PNEUMATIC_SPEED_ID[2], "Pneumatic speed boost", 0.75, 2)).setSaved(false);
     }
 
-    // track player movement across ticks on the server
+    // track player movement across ticks on the server - very transient, a capapility would be overkill here
     private static final Map<String,Vec3d> moveMap = new HashMap<>();
 
     @SubscribeEvent
@@ -75,7 +75,7 @@ public class EventHandlerPneumaticArmor {
                 NetworkHandler.sendToAllAround(new PacketSpawnParticle(EnumParticleTypes.EXPLOSION_NORMAL, player.posX, player.posY, player.posZ, sx, 0.2, sz), player.world);
             }
             NetworkHandler.sendToAllAround(new PacketPlaySound(Sounds.SHORT_HISS, SoundCategory.PLAYERS, player.posX, player.posY, player.posZ, 0.3f, 0.8f, false), player.world);
-            CommonHUDHandler.getHandlerForPlayer(player).useAir(stack, EntityEquipmentSlot.FEET, (int) -airNeeded);
+            CommonHUDHandler.getHandlerForPlayer(player).addAir(stack, EntityEquipmentSlot.FEET, (int) -airNeeded);
         }
     }
 
@@ -91,7 +91,7 @@ public class EventHandlerPneumaticArmor {
                     event.setCanceled(true);
                     player.extinguish();
                     if (!player.world.isRemote) {
-                        handler.useAir(armorStack, EntityEquipmentSlot.CHEST, -PneumaticValues.PNEUMATIC_ARMOR_FIRE_USAGE);
+                        handler.addAir(armorStack, EntityEquipmentSlot.CHEST, -PneumaticValues.PNEUMATIC_ARMOR_FIRE_USAGE);
                         for (int i = 0; i < 2; i++) {
                             float sx = player.getRNG().nextFloat() * 1.5F - 0.75F;
                             float sz = player.getRNG().nextFloat() * 1.5F - 0.75F;
@@ -128,9 +128,9 @@ public class EventHandlerPneumaticArmor {
         if (event.phase == TickEvent.Phase.START) return;
 
         EntityPlayer player = event.player;
+        CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer(player);
 
         ItemStack stack = player.getItemStackFromSlot(EntityEquipmentSlot.FEET);
-        CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer(player);
         if (stack.getItem() instanceof ItemPneumaticBoots && handler.isArmorReady(EntityEquipmentSlot.FEET)) {
             ItemPneumaticBoots boots = (ItemPneumaticBoots) stack.getItem();
             if (boots.getPressure(stack) > 0.1F && handler.isStepAssistEnabled()) {
@@ -144,17 +144,16 @@ public class EventHandlerPneumaticArmor {
 
         if (!player.world.isRemote && (player.ticksExisted & 0xf) == 0) {
             // only check every 16 ticks, for performance reasons
-
             removeSpeedModifiers(player);
             stack = player.getItemStackFromSlot(EntityEquipmentSlot.LEGS);
             if (stack.getItem() instanceof ItemPneumaticLeggings && handler.isArmorReady(EntityEquipmentSlot.LEGS) && handler.isRunSpeedEnabled()) {
-                int speedUpgrades = Math.min(3, handler.getUpgradeCount(EntityEquipmentSlot.LEGS, IItemRegistry.EnumUpgrade.SPEED));
+                int speedUpgrades = Math.min(PneumaticValues.PNEUMATIC_LEGS_MAX_SPEED, handler.getUpgradeCount(EntityEquipmentSlot.LEGS, IItemRegistry.EnumUpgrade.SPEED));
                 ItemPneumaticLeggings legs = (ItemPneumaticLeggings) stack.getItem();
                 if (legs.getPressure(stack) > 0.0F && speedUpgrades > 0) {
                     IAttributeInstance attr = player.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
                     attr.applyModifier(PNEUMATIC_SPEED_BOOST[speedUpgrades - 1]);
                     if (checkMovement(player) && player.onGround && !player.isInsideOfMaterial(Material.WATER)) {
-                        handler.useAir(stack, EntityEquipmentSlot.LEGS, -PneumaticValues.PNEUMATIC_LEGS_SPEED_USAGE * 16 * speedUpgrades);
+                        handler.addAir(stack, EntityEquipmentSlot.LEGS, -PneumaticValues.PNEUMATIC_LEGS_SPEED_USAGE * 16 * speedUpgrades);
                     }
                 }
             }
@@ -172,11 +171,11 @@ public class EventHandlerPneumaticArmor {
             if (stack.getItem() instanceof ItemPneumaticLeggings && handler.isArmorReady(EntityEquipmentSlot.LEGS) && handler.isJumpBoostEnabled()) {
                 ItemPneumaticLeggings legs = (ItemPneumaticLeggings) stack.getItem();
                 if (legs.getPressure(stack) > 0.1F) {
-                    int rangeUpgrades = Math.min(6, handler.getUpgradeCount(EntityEquipmentSlot.LEGS, IItemRegistry.EnumUpgrade.RANGE));
+                    int rangeUpgrades = Math.min(PneumaticValues.PNEUMATIC_LEGS_MAX_JUMP, handler.getUpgradeCount(EntityEquipmentSlot.LEGS, IItemRegistry.EnumUpgrade.RANGE));
                     if (player.isSneaking()) rangeUpgrades = Math.min(1, rangeUpgrades);
                     player.motionY += rangeUpgrades * 0.15;
                     player.fallDistance -= rangeUpgrades * 1.5;
-                    handler.useAir(stack, EntityEquipmentSlot.LEGS, -PneumaticValues.PNEUMATIC_ARMOR_JUMP_USAGE * rangeUpgrades);
+                    handler.addAir(stack, EntityEquipmentSlot.LEGS, -PneumaticValues.PNEUMATIC_ARMOR_JUMP_USAGE * rangeUpgrades);
                 }
             }
         }
@@ -184,7 +183,7 @@ public class EventHandlerPneumaticArmor {
 
     private void removeSpeedModifiers(EntityPlayer player) {
         IAttributeInstance attr = player.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < PneumaticValues.PNEUMATIC_LEGS_MAX_SPEED; i++) {
             if (attr.getModifier(PNEUMATIC_SPEED_ID[i]) != null) {
                 attr.removeModifier(PNEUMATIC_SPEED_ID[i]);
             }

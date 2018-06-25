@@ -3,6 +3,8 @@ package me.desht.pneumaticcraft.client;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.HUDHandler;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraftforge.client.settings.KeyConflictContext;
+import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
@@ -12,15 +14,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class KeyHandler {
+    private static final String DESCRIPTION_ARMOR_OPTIONS = "pneumaticcraft.armor.options";
     private static final String DESCRIPTION_HELMET_HACK = "pneumaticcraft.helmet.hack";
-    private static final String DESCRIPTION_HELMET_OPTIONS = "pneumaticcraft.helmet.options";
     private static final String DESCRIPTION_HELMET_DEBUGGING_DRONE = "pneumaticcraft.helmet.debugging.drone";
+    private static final String DESCRIPTION_BOOTS_KICK = "pneumaticcraft.boots.kick";
 
     private static KeyHandler INSTANCE = new KeyHandler();
 
     public KeyBinding keybindOpenOptions;
     public KeyBinding keybindHack;
     public KeyBinding keybindDebuggingDrone;
+    public KeyBinding keybindKick;
     private final List<IKeyListener> keyListeners = new ArrayList<>();
     private final List<KeyBinding> keys = new ArrayList<>();
 
@@ -31,9 +35,10 @@ public class KeyHandler {
     private KeyHandler() {
         registerKeyListener(HUDHandler.instance());
 
-        keybindOpenOptions = registerKeyBinding(new KeyBinding(KeyHandler.DESCRIPTION_HELMET_OPTIONS, Keyboard.KEY_U, Names.PNEUMATIC_KEYBINDING_CATEGORY));
-        keybindHack = registerKeyBinding(new KeyBinding(KeyHandler.DESCRIPTION_HELMET_HACK, Keyboard.KEY_H, Names.PNEUMATIC_KEYBINDING_CATEGORY));
-        keybindDebuggingDrone = registerKeyBinding(new KeyBinding(KeyHandler.DESCRIPTION_HELMET_DEBUGGING_DRONE, Keyboard.KEY_Y, Names.PNEUMATIC_KEYBINDING_CATEGORY));
+        keybindOpenOptions = registerKeyBinding(new KeyBinding(KeyHandler.DESCRIPTION_ARMOR_OPTIONS, KeyConflictContext.IN_GAME, KeyModifier.NONE, Keyboard.KEY_U, Names.PNEUMATIC_KEYBINDING_CATEGORY));
+        keybindHack = registerKeyBinding(new KeyBinding(KeyHandler.DESCRIPTION_HELMET_HACK, KeyConflictContext.IN_GAME, KeyModifier.NONE, Keyboard.KEY_H, Names.PNEUMATIC_KEYBINDING_CATEGORY));
+        keybindDebuggingDrone = registerKeyBinding(new KeyBinding(KeyHandler.DESCRIPTION_HELMET_DEBUGGING_DRONE, KeyConflictContext.IN_GAME, KeyModifier.NONE, Keyboard.KEY_Y, Names.PNEUMATIC_KEYBINDING_CATEGORY));
+        keybindKick = registerKeyBinding(new KeyBinding(KeyHandler.DESCRIPTION_BOOTS_KICK, KeyConflictContext.IN_GAME, KeyModifier.CONTROL, Keyboard.KEY_X, Names.PNEUMATIC_KEYBINDING_CATEGORY));
     }
 
     private KeyBinding registerKeyBinding(KeyBinding keyBinding) {

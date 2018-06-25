@@ -111,6 +111,8 @@ public class NetworkHandler {
 
         INSTANCE.registerMessage(PacketMultiHeader.class, PacketMultiHeader.class, discriminant++, Side.SERVER);
         INSTANCE.registerMessage(PacketMultiPart.class, PacketMultiPart.class, discriminant++, Side.SERVER);
+
+        INSTANCE.registerMessage(PacketPneumaticKick.class, PacketPneumaticKick.class, discriminant++, Side.SERVER);
     }
 
     /* public static void INSTANCE.registerMessage(Class<? extends AbstractPacket<? extends IMessage>> clazz){

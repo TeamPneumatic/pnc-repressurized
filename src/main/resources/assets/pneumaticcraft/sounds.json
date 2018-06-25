@@ -123,5 +123,11 @@
     "sounds":[
       "pneumaticcraft:short_hiss"
     ]
+  },
+  "punch": {
+    "category":"hostile",
+    "sounds":[
+      "pneumaticcraft:punch"
+    ]
   }
 }

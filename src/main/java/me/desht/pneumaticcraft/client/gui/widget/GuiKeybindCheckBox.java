@@ -181,7 +181,8 @@ public class GuiKeybindCheckBox extends GuiCheckBox {
         if (keyBinding != null) {
             String s = keyBinding.getKeyModifier() != KeyModifier.NONE ? keyBinding.getKeyModifier() + " + " : "";
             curTooltip.add(I18n.format("gui.keybindBoundKey", s + Keyboard.getKeyName(keyBinding.getKeyCode())));
-        } else if (!isAwaitingKey) {
+        }
+        if (!isAwaitingKey) {
             curTooltip.add("gui.keybindRightClickToSet");
         }
     }

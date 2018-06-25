@@ -6,18 +6,12 @@ import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.MainHelmetHandler;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.FMLCommonHandler;
-import org.lwjgl.input.Keyboard;
 
 public class GuiHelmetMainOptions implements IOptionPage {
 
     private final MainHelmetHandler renderHandler;
-    private GuiButton changeKeybindingButton;
-    private boolean changingKeybinding;
+    private KeybindingButton changeKeybindingButton;
 
     public GuiHelmetMainOptions(MainHelmetHandler renderHandler) {
         this.renderHandler = renderHandler;
@@ -32,7 +26,7 @@ public class GuiHelmetMainOptions implements IOptionPage {
     public void initGui(IGuiScreen gui) {
         gui.getButtonList().add(new GuiButton(10, 30, 128, 150, 20, "Move Pressure Stat Screen..."));
         gui.getButtonList().add(new GuiButton(11, 30, 150, 150, 20, "Move Message Screen..."));
-        changeKeybindingButton = new GuiButton(12, 30, 172, 150, 20, "Change open menu key...");
+        changeKeybindingButton = new KeybindingButton(12, 30, 172, 150, 20, "Change open menu key...", KeyHandler.getInstance().keybindOpenOptions);
         gui.getButtonList().add(changeKeybindingButton);
     }
 
@@ -48,30 +42,14 @@ public class GuiHelmetMainOptions implements IOptionPage {
                 FMLCommonHandler.instance().showGuiScreen(new GuiMoveStat(renderHandler, renderHandler.testMessageStat));
                 break;
             case 12:
-                changingKeybinding = !changingKeybinding;
-                updateKeybindingButtonText();
+                changeKeybindingButton.toggleKeybindMode();
                 break;
-        }
-    }
-
-    private void updateKeybindingButtonText() {
-        if (changingKeybinding) {
-            changeKeybindingButton.displayString = "Press button to set keybind.";
-        } else {
-            changeKeybindingButton.displayString = "Change open menu key...";
         }
     }
 
     @Override
     public void keyTyped(char ch, int key) {
-        if (changingKeybinding) {
-            changingKeybinding = false;
-            updateKeybindingButtonText();
-
-            KeyHandler.getInstance().keybindOpenOptions.setKeyCode(key);
-            KeyBinding.resetKeyBindingArrayAndHash();
-            FMLClientHandler.instance().getClient().player.sendStatusMessage(new TextComponentString(TextFormatting.GREEN + "Bound the opening of this menu to the '" + Keyboard.getKeyName(key) + "' key."), false);
-        }
+        if (changeKeybindingButton != null) changeKeybindingButton.receiveKey(key);
     }
 
     @Override
