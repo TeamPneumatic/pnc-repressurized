@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ltl",
+    "tmt",
+    "ltl"
+  ],
+  "key": {
+    "m": {
+      "item": "pneumaticcraft:charging_module"
+    },
+    "t": {
+      "item": "pneumaticcraft:pressure_tube"
+    },
+    "l": {
+      "item": "minecraft:dye",
+      "data": 4
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:charging_upgrade"
+  }
+}

@@ -2,7 +2,8 @@
   "type": "pneumaticcraft:shaped_pressurizable",
   "pattern": [
     "cec",
-    "chc"
+    "cpc",
+    "ccc"
   ],
   "key": {
     "c": {
@@ -12,11 +13,11 @@
     "e": {
       "item": "pneumaticcraft:printed_circuit_board"
     },
-    "h": {
-      "item": "minecraft:leather_helmet"
+    "p": {
+      "item": "minecraft:leather_chestplate"
     }
   },
   "result": {
-    "item": "pneumaticcraft:pneumatic_helmet"
+    "item": "pneumaticcraft:pneumatic_chestplate"
   }
 }

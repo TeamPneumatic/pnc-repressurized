@@ -2,7 +2,8 @@
   "type": "pneumaticcraft:shaped_pressurizable",
   "pattern": [
     "cec",
-    "chc"
+    "cbc",
+    "i i"
   ],
   "key": {
     "c": {
@@ -12,11 +13,15 @@
     "e": {
       "item": "pneumaticcraft:printed_circuit_board"
     },
-    "h": {
-      "item": "minecraft:leather_helmet"
+    "i": {
+      "type": "forge:ore_dict",
+      "ore": "ingotIronCompressed"
+    },
+    "b": {
+      "item": "minecraft:leather_leggings"
     }
   },
   "result": {
-    "item": "pneumaticcraft:pneumatic_helmet"
+    "item": "pneumaticcraft:pneumatic_leggings"
   }
 }
