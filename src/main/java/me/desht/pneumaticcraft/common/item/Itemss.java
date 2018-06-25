@@ -22,9 +22,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 import net.minecraftforge.registries.IForgeRegistry;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Mod.EventBusSubscriber
 @ObjectHolder(Names.MOD_ID)
@@ -134,7 +132,9 @@ public class Itemss {
 
     public static List<Item> items = new ArrayList<>();
     public static List<ItemBlock> all_itemblocks = new ArrayList<>();
-    public static Map<EnumUpgrade, Item> upgrades = new HashMap<>();
+//    public static Map<EnumUpgrade, Item> upgrades = new HashMap<>();
+
+    public static UpgradeList upgrades = new UpgradeList();
 
     @SubscribeEvent
     public static void registerItems(RegistryEvent.Register<Item> event) {
@@ -199,7 +199,8 @@ public class Itemss {
                 String upgradeName = upgrade.toString().toLowerCase() + "_upgrade";
                 Item upgradeItem = new ItemMachineUpgrade(upgradeName, upgrade.ordinal());
                 registerItem(registry, upgradeItem);
-                upgrades.put(upgrade, upgradeItem);
+//                upgrades.put(upgrade, upgradeItem);
+                upgrades.add(upgradeItem);
             }
         }
     }
@@ -211,6 +212,12 @@ public class Itemss {
             all_itemblocks.add((ItemBlock) item);
         } else {
             items.add(item);
+        }
+    }
+
+    public static class UpgradeList extends ArrayList<Item> {
+        public Item get(EnumUpgrade upgrade) {
+            return get(upgrade.ordinal());
         }
     }
 }

@@ -19,7 +19,8 @@ public interface IItemRegistry {
         MAGNET("magnet"),
         THAUMCRAFT("thaumcraft"), /*Only around when Thaumcraft is */
         CHARGING("charging"),
-        ARMOR("armor");
+        ARMOR("armor"),
+        JET_BOOTS("jetboots");
 
         private final String name;
 

@@ -10,7 +10,7 @@ import net.minecraft.util.math.BlockPos;
 
 public class ModelSentryTurret extends AbstractModelRenderer.BaseModel {
     private final ModelDroneMinigun model = new ModelDroneMinigun();
-    private final TileEntitySentryTurret fakeTurret = new TileEntitySentryTurret();
+    private TileEntitySentryTurret fakeTurret;// = new TileEntitySentryTurret();
 
     public ModelSentryTurret() {
     }
@@ -19,6 +19,9 @@ public class ModelSentryTurret extends AbstractModelRenderer.BaseModel {
         GlStateManager.pushMatrix();
         GlStateManager.translate(0, -13 / 16D, 0);
         if (te == null) {
+            if (fakeTurret == null) {
+                fakeTurret = new TileEntitySentryTurret();
+            }
             model.renderMinigun(fakeTurret.getMinigun(), 1 / 16F, partialTicks, false);
         } else {
             model.renderMinigun(te.getMinigun(), 1 / 16F, partialTicks, false);

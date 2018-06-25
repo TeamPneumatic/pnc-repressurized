@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.item;
 
+import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.lib.ModIds;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.player.EntityPlayer;
@@ -28,7 +29,9 @@ public class ItemPneumaticBoots extends ItemPneumaticArmorBase {
 
     @Override
     public Set<Item> getApplicableUpgrades() {
-        return super.getApplicableUpgrades(); // TODO
+        Set<Item> items = super.getApplicableUpgrades();
+        items.add(Itemss.upgrades.get(IItemRegistry.EnumUpgrade.JET_BOOTS));
+        return items;
     }
 
     @Override

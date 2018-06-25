@@ -137,30 +137,60 @@ public class EventHandlerPneumaticArmor {
         EntityPlayer player = event.player;
         CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer(player);
 
-        ItemStack stack = player.getItemStackFromSlot(EntityEquipmentSlot.FEET);
-        if (stack.getItem() instanceof ItemPneumaticBoots && handler.isArmorReady(EntityEquipmentSlot.FEET)) {
-            ItemPneumaticBoots boots = (ItemPneumaticBoots) stack.getItem();
-            if (boots.getPressure(stack) > 0.1F && handler.isStepAssistEnabled()) {
+        ItemStack bootsStack = player.getItemStackFromSlot(EntityEquipmentSlot.FEET);
+        if (bootsStack.getItem() instanceof ItemPneumaticBoots && handler.isArmorReady(EntityEquipmentSlot.FEET)) {
+            // Step Assist
+            if (handler.getArmorPressure(EntityEquipmentSlot.FEET) > 0.0F && handler.isStepAssistEnabled()) {
                 player.stepHeight = player.isSneaking() ? 0.6001F : 1.25F;
             } else {
                 player.stepHeight = 0.6F;
+            }
+
+            // Jet Boots
+            int jetbootsCount = handler.getUpgradeCount(EntityEquipmentSlot.FEET, IItemRegistry.EnumUpgrade.JET_BOOTS, PneumaticValues.PNEUMATIC_JET_BOOTS_MAX_UPGRADES);
+            int jetbootsAirUsage = 0;
+            if (handler.getArmorPressure(EntityEquipmentSlot.FEET) > 0.0F) {
+                if (handler.isJetBootsActive()) {
+                    // jetboots firing - move upwards
+                    player.motionY = 0.15 * jetbootsCount;
+                    jetbootsAirUsage = PneumaticValues.PNEUMATIC_JET_BOOTS_USAGE * jetbootsCount;
+                } else if (handler.isJetBootsEnabled() && player.fallDistance > 0) {
+                    // jetboots not firing, but enabled - slowly descend
+                    player.motionY = player.isSneaking() ? -0.45 : -0.15 + 0.01 * jetbootsCount;
+                    player.fallDistance = 0;
+                    jetbootsAirUsage = (int) (PneumaticValues.PNEUMATIC_JET_BOOTS_USAGE * (player.isSneaking() ? 0.75F : 0.5F));
+                }
+            }
+            if (jetbootsAirUsage != 0 && !player.world.isRemote) {
+                if ((player.ticksExisted & 0x1) == 1) {
+                    for (int i = 0; i < 3; i++) {
+                        float dx = (player.getRNG().nextFloat() - 0.5f) / 3.0f;
+                        float dz = (player.getRNG().nextFloat() - 0.5f) / 3.0f;
+                        NetworkHandler.sendToAllAround(new PacketSpawnParticle(EnumParticleTypes.SMOKE_NORMAL, player.posX, player.posY, player.posZ, dx, -0.5, dz), player.world);
+                    }
+                }
+                if ((player.ticksExisted % 14) == 1) {
+                    float pitch = player.motionY < 0 ? 0.6F : 0.7F;
+                    NetworkHandler.sendToAllAround(new PacketPlaySound(Sounds.LEAKING_GAS_SOUND, SoundCategory.PLAYERS, player.posX, player.posY, player.posZ, 0.1f, pitch, false), player.world);
+                }
+                handler.addAir(bootsStack, EntityEquipmentSlot.FEET, -jetbootsAirUsage);
             }
         } else {
             player.stepHeight = 0.6F;
         }
 
         if (!player.world.isRemote && (player.ticksExisted & 0xf) == 0) {
-            // only check every 16 ticks, for performance reasons
+            // Speed Boost (only check every 16 ticks, for performance reasons)
             removeSpeedModifiers(player);
-            stack = player.getItemStackFromSlot(EntityEquipmentSlot.LEGS);
-            if (stack.getItem() instanceof ItemPneumaticLeggings && handler.isArmorReady(EntityEquipmentSlot.LEGS) && handler.isRunSpeedEnabled()) {
-                int speedUpgrades = Math.min(PneumaticValues.PNEUMATIC_LEGS_MAX_SPEED, handler.getUpgradeCount(EntityEquipmentSlot.LEGS, IItemRegistry.EnumUpgrade.SPEED));
-                ItemPneumaticLeggings legs = (ItemPneumaticLeggings) stack.getItem();
-                if (legs.getPressure(stack) > 0.0F && speedUpgrades > 0) {
+            bootsStack = player.getItemStackFromSlot(EntityEquipmentSlot.LEGS);
+            if (bootsStack.getItem() instanceof ItemPneumaticLeggings && handler.isArmorReady(EntityEquipmentSlot.LEGS) && handler.isRunSpeedEnabled()) {
+                int speedUpgrades = handler.getUpgradeCount(EntityEquipmentSlot.LEGS, IItemRegistry.EnumUpgrade.SPEED, PneumaticValues.PNEUMATIC_LEGS_MAX_SPEED);
+                ItemPneumaticLeggings legs = (ItemPneumaticLeggings) bootsStack.getItem();
+                if (legs.getPressure(bootsStack) > 0.0F && speedUpgrades > 0) {
                     IAttributeInstance attr = player.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
                     attr.applyModifier(PNEUMATIC_SPEED_BOOST[speedUpgrades - 1]);
                     if (checkMovement(player) && player.onGround && !player.isInsideOfMaterial(Material.WATER)) {
-                        handler.addAir(stack, EntityEquipmentSlot.LEGS, -PneumaticValues.PNEUMATIC_LEGS_SPEED_USAGE * 16 * speedUpgrades);
+                        handler.addAir(bootsStack, EntityEquipmentSlot.LEGS, -PneumaticValues.PNEUMATIC_LEGS_SPEED_USAGE * 16 * speedUpgrades);
                     }
                 }
             }
@@ -175,18 +205,18 @@ public class EventHandlerPneumaticArmor {
             EntityPlayer player = (EntityPlayer) event.getEntityLiving();
             ItemStack stack = player.getItemStackFromSlot(EntityEquipmentSlot.LEGS);
             CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer(player);
-            if (stack.getItem() instanceof ItemPneumaticLeggings && handler.isArmorReady(EntityEquipmentSlot.LEGS) && handler.isJumpBoostEnabled()) {
+            if (!handler.isJetBootsActive() && stack.getItem() instanceof ItemPneumaticLeggings && handler.isArmorReady(EntityEquipmentSlot.LEGS) && handler.isJumpBoostEnabled()) {
                 ItemPneumaticLeggings legs = (ItemPneumaticLeggings) stack.getItem();
                 if (legs.getPressure(stack) > 0.1F) {
-                    int rangeUpgrades = Math.min(PneumaticValues.PNEUMATIC_LEGS_MAX_JUMP, handler.getUpgradeCount(EntityEquipmentSlot.LEGS, IItemRegistry.EnumUpgrade.RANGE));
-                    if (player.isSneaking()) rangeUpgrades = Math.min(1, rangeUpgrades);
+                    int rangeUpgrades = handler.getUpgradeCount(EntityEquipmentSlot.LEGS, IItemRegistry.EnumUpgrade.RANGE,
+                            player.isSneaking() ? 1 : PneumaticValues.PNEUMATIC_LEGS_MAX_JUMP);
                     player.motionY += rangeUpgrades * 0.15;
                     float f = player.rotationYaw * 0.017453292F;
                     float m = player.isSprinting() ? 0.25F * rangeUpgrades : 0.15F * rangeUpgrades;
                     if (player.motionX != 0) player.motionX -= (double)(MathHelper.sin(f) * m);
                     if (player.motionZ != 0) player.motionZ += (double)(MathHelper.cos(f) * m);
                     player.fallDistance -= rangeUpgrades * 1.5;
-                    handler.addAir(stack, EntityEquipmentSlot.LEGS, -PneumaticValues.PNEUMATIC_ARMOR_JUMP_USAGE * rangeUpgrades);
+                    handler.addAir(stack, EntityEquipmentSlot.LEGS, -PneumaticValues.PNEUMATIC_ARMOR_JUMP_USAGE * rangeUpgrades * (player.isSprinting() ? 2 : 1));
                 }
             }
         }

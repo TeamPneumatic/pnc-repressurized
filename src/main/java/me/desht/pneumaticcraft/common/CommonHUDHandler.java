@@ -62,6 +62,8 @@ public class CommonHUDHandler {
     private boolean stepAssistEnabled;
     private boolean runSpeedEnabled;
     private boolean jumpBoostEnabled;
+    private boolean jetBootsEnabled;  // are jet boots switched on?
+    private boolean jetBootsActive;  // are jet boots actually firing (player rising) ?
 
     public CommonHUDHandler() {
         for (EntityEquipmentSlot slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
@@ -103,7 +105,7 @@ public class CommonHUDHandler {
         ItemStack armorStack = player.getItemStackFromSlot(slot);
         if (armorStack.getItem() instanceof ItemPneumaticArmorBase) {
             armorPressure[slot.getIndex()] = ((IPressurizable) armorStack.getItem()).getPressure(armorStack);
-            if (ticksSinceEquip[slot.getIndex()] == 0) {
+            if (ticksSinceEquip[slot.getIndex()] == 1) {
                 checkArmorInventory(player, slot);
             }
             ticksSinceEquip[slot.getIndex()]++;
@@ -265,6 +267,10 @@ public class CommonHUDHandler {
         return upgradeMatrix[slot.getIndex()][upgrade.ordinal()];
     }
 
+    public int getUpgradeCount(EntityEquipmentSlot slot, EnumUpgrade upgrade, int max) {
+        return Math.min(max, upgradeMatrix[slot.getIndex()][upgrade.ordinal()]);
+    }
+
     public boolean isUpgradeRendererInserted(EntityEquipmentSlot slot, int i) {
         return upgradeRenderersInserted[slot.getIndex()][i];
     }
@@ -286,6 +292,8 @@ public class CommonHUDHandler {
             runSpeedEnabled = state;
         } else if (handler instanceof JumpBoostUpgradeHandler) {
             jumpBoostEnabled = state;
+        } else if (handler instanceof JetBootsUpgradeHandler) {
+            jetBootsEnabled = state;
         }
     }
 
@@ -350,5 +358,17 @@ public class CommonHUDHandler {
 
     public float getArmorPressure(EntityEquipmentSlot slot) {
         return armorPressure[slot.getIndex()];
+    }
+
+    public void setJetBootsActive(boolean jetBootsActive) {
+        this.jetBootsActive = jetBootsActive;
+    }
+
+    public boolean isJetBootsActive() {
+        return jetBootsActive;
+    }
+
+    public boolean isJetBootsEnabled() {
+        return jetBootsEnabled;
     }
 }

@@ -53,6 +53,7 @@ public class UpgradeRenderHandlerList {
         addUpgradeRenderer(new RunSpeedUpgradeHandler());
         addUpgradeRenderer(new JumpBoostUpgradeHandler());
         addUpgradeRenderer(new KickUpgradeRenderHandler());
+        addUpgradeRenderer(new JetBootsUpgradeHandler());
     }
 
     public void addUpgradeRenderer(IUpgradeRenderHandler handler) {

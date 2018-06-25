@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.client.gui.IGuiDrone;
 import me.desht.pneumaticcraft.client.model.pressureglass.PressureGlassBakedModel;
 import me.desht.pneumaticcraft.client.render.RenderProgressingLine;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
+import me.desht.pneumaticcraft.common.CommonHUDHandler;
 import me.desht.pneumaticcraft.common.DateEventHandler;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
 import me.desht.pneumaticcraft.common.block.Blockss;
@@ -18,6 +19,8 @@ import me.desht.pneumaticcraft.common.item.ItemPneumaticSubtyped;
 import me.desht.pneumaticcraft.common.item.ItemProgrammingPuzzle;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
+import me.desht.pneumaticcraft.common.network.NetworkHandler;
+import me.desht.pneumaticcraft.common.network.PacketJetBootState;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -38,6 +41,7 @@ import net.minecraft.client.renderer.block.statemap.StateMapperBase;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderBiped;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -355,6 +359,24 @@ public class ClientEventHandler {
             FluidStateMapper stateMapper = new FluidStateMapper(fluidBlock.getFluid());
             ModelLoader.setCustomMeshDefinition(item, stateMapper);
             ModelLoader.setCustomStateMapper((Block) fluidBlock, stateMapper);
+        }
+    }
+
+    @SubscribeEvent
+    public void jetBootsEvent(TickEvent.PlayerTickEvent event) {
+        if (event.phase == TickEvent.Phase.START) {
+            EntityPlayer player = FMLClientHandler.instance().getClientPlayerEntity();
+            if (player == null || player.world == null) return;
+            CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer(player);
+            if (!handler.isJetBootsEnabled()) return;
+            GameSettings settings = FMLClientHandler.instance().getClient().gameSettings;
+            if (handler.isJetBootsActive() && !settings.keyBindJump.isKeyDown()) {
+                NetworkHandler.sendToServer(new PacketJetBootState(false));
+                handler.setJetBootsActive(false);
+            } else if (!handler.isJetBootsActive() && settings.keyBindJump.isKeyDown()) {
+                NetworkHandler.sendToServer(new PacketJetBootState(true));
+                handler.setJetBootsActive(true);
+            }
         }
     }
 }

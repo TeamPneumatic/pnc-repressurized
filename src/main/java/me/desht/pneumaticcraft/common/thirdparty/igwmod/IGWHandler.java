@@ -51,7 +51,7 @@ public class IGWHandler {
         WikiRegistry.registerBlockAndItemPageEntry(Blockss.ASSEMBLY_PLATFORM, "pneumaticcraft:menu/assembly_machines");
         WikiRegistry.registerBlockAndItemPageEntry(Itemss.ASSEMBLY_PROGRAM, "pneumaticcraft:menu/assembly_machines");
 
-        for (Item upgrade : Itemss.upgrades.values()) {
+        for (Item upgrade : Itemss.upgrades) {
             WikiRegistry.registerBlockAndItemPageEntry(upgrade, "pneumaticcraft:menu/machine_upgrades");
         }
 

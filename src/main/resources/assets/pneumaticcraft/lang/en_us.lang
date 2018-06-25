@@ -168,6 +168,7 @@ item.magnet_upgrade.name=Magnet Upgrade
 item.thaumcraft_upgrade.name=Thaumcraft Upgrade
 item.charging_upgrade.name=Charging Upgrade
 item.armor_upgrade.name=Armor Upgrade
+item.jet_boots_upgrade.name=Jet Boots Upgrade
 
 item.assembly_program0.name=Assembly Program: Drill
 item.assembly_program1.name=Assembly Program: Laser
@@ -383,7 +384,8 @@ gui.tab.info.item.armor.chest.chargingUpgrade=§0With one or more Charging Upgra
 gui.tab.info.item.armor.chest.securityUpgrade=§0With a Security Upgrade installed, you will gain protection from fire and lava at a significant air cost: air will be rapidly dumped from the chestplate to extinguish nearby flames and solidify nearby lava.
 gui.tab.info.item.armor.legs.speedUpgrade=§0With one or more Speed Upgrades installed in your leggings, you will be able to run faster.  Up to 3 Speed Upgrades can be installed for progressively faster speeds (and higher air usage).
 gui.tab.info.item.armor.legs.rangeUpgrade=§0With one or more Range Upgrades installed in your leggings, you will be able to jump higher.  Up to 6 Range Upgrades can be installed for progressively higher jumps (and higher air usage).  Holding Sneak while jumping will reduce the jump height to be equivalent to a single Range Upgrade.  Fall protection is included (no need to wear Pneumatic Boots).
-gui.tab.info.item.armor.feet.dispenserUpgrade=§0With a Dispenser Upgrade installed in your boot, you can kick entities in front of you at a modest air cost.  Kicked entities will take moderate damage and heavy knockback. Up to 4 upgrades can be installed; more upgrades will increase damage & knockback, but also increase air usage. \n \nThis works on non-living entities too...
+gui.tab.info.item.armor.feet.dispenserUpgrade=§0With a Dispenser Upgrade installed in your boots, you can kick entities in front of you at a modest air cost.  Kicked entities will take moderate damage and heavy knockback. Up to 4 upgrades can be installed; more upgrades will increase damage & knockback, but also increase air usage. \n \nThis works on non-living entities too...
+gui.tab.info.item.armor.feet.jetbootsUpgrade=§0With one or more Jet Boots Upgrades installed in your boots, you gain limited flying ability for a significant air cost.  When the upgrade is enabled, holding the Jump key (Space by default) will slowly elevate you.  When Jump is not held, you will safely sink to the ground.  Up to 6 upgrades can be installed for a faster climb rate (and - of course - greater air usage).
 gui.tab.info.item.armor.generic.volumeUpgrade=§0Each Volume Upgrade installed increase the armor piece's air storage capacity by 5000mL over the base 12000mL, allowing the piece to operate longer between recharges.
 gui.tab.info.item.armor.generic.itemLifeUpgrade=§0Item Life Upgrades allow this armor piece to be slowly auto-repaired, at a cost of air.  Up to 5 Item Life upgrades can be installed in each armor piece for faster repair (but progressively more inefficient air usage).
 gui.tab.info.item.armor.generic.armorUpgrade=§0Armor Upgrades add a small amount of armor protection to the armor piece.  2 upgrades will bring the armor level up to Diamond Armor level.  A maximum of 6 Armor Upgrades can be installed for excellent protection.
@@ -827,6 +829,7 @@ pneumaticHelmet.upgrade.jumpBoost=Jump Boost
 # Pneumatic Boots upgrades
 pneumaticHelmet.upgrade.kick=Pneumatic Kick
 pneumaticHelmet.upgrade.stepAssist=Step Assist
+pneumaticHelmet.upgrade.jetBoots=Jet Boots
 
 pneumaticHelmet.message.enableSetting=%s Enabled
 pneumaticHelmet.message.disableSetting=%s Disabled
