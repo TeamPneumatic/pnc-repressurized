@@ -15,7 +15,13 @@ public class ContainerChargingStationItemInventory extends ContainerPneumaticBas
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                addSlotToContainer(new SlotInventoryLimiting(chargeableItemHandler, i * 3 + j, 31 + j * 18, 24 + i * 18));
+                addSlotToContainer(new SlotInventoryLimiting(chargeableItemHandler, i * 3 + j, 31 + j * 18, 24 + i * 18){
+                    @Override
+                    public void onSlotChanged() {
+                        // needed to force client sync in some circumstances
+                        te.getChargeableInventory().saveInventory();
+                    }
+                });
             }
         }
 
