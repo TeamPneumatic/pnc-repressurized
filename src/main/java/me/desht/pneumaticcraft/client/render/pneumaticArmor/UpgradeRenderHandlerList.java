@@ -25,7 +25,6 @@ public class UpgradeRenderHandlerList {
     }
 
     private final Map<Class<? extends IUpgradeRenderHandler>, IUpgradeRenderHandler> classMap = new HashMap<>();
-    private final Map<String, IUpgradeRenderHandler> nameMap = new HashMap<>();
 
     // convenience
     public static final EntityEquipmentSlot[] ARMOR_SLOTS = new EntityEquipmentSlot[4];
@@ -59,15 +58,10 @@ public class UpgradeRenderHandlerList {
     public void addUpgradeRenderer(IUpgradeRenderHandler handler) {
         upgradeRenderers.get(handler.getEquipmentSlot().getIndex()).add(handler);
         classMap.put(handler.getClass(), handler);
-        nameMap.put(handler.getUpgradeName(), handler);
     }
 
     public <T extends IUpgradeRenderHandler> T getRenderHandler(Class<T> clazz) {
         return (T) classMap.get(clazz);
-    }
-
-    public IUpgradeRenderHandler getRenderHandlerByName(String name) {
-        return nameMap.get(name);
     }
 
     public List<IUpgradeRenderHandler> getHandlersForSlot(EntityEquipmentSlot slot) {

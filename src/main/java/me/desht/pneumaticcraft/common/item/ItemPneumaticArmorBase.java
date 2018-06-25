@@ -104,6 +104,7 @@ public abstract class ItemPneumaticArmorBase extends ItemArmor
             Collections.addAll(upgrades, handler.getRequiredUpgrades());
         }
 
+        upgrades.add(CraftingRegistrator.getUpgrade(EnumUpgrade.SPEED).getItem());
         upgrades.add(CraftingRegistrator.getUpgrade(EnumUpgrade.VOLUME).getItem());
         upgrades.add(CraftingRegistrator.getUpgrade(EnumUpgrade.ITEM_LIFE).getItem());
         upgrades.add(CraftingRegistrator.getUpgrade(EnumUpgrade.ARMOR).getItem());
