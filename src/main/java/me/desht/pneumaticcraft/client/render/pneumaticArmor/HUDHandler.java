@@ -96,9 +96,7 @@ public class HUDHandler implements IKeyListener {
         if (event.phase == TickEvent.Phase.END) {
             Minecraft mc = FMLClientHandler.instance().getClient();
             if (mc != null && mc.player != null) {
-                for (EntityEquipmentSlot slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
-                    render2D(event.renderTickTime, slot);
-                }
+                render2D(event.renderTickTime);
             }
         }
     }
@@ -109,22 +107,29 @@ public class HUDHandler implements IKeyListener {
             Minecraft mc = FMLClientHandler.instance().getClient();
             EntityPlayer player = event.player;
             if (player == mc.player && player.world.isRemote) {
+                boolean armorEquipped = false;
                 for (EntityEquipmentSlot slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
                     if (player.getItemStackFromSlot(slot).getItem() instanceof ItemPneumaticArmorBase) {
                         update(mc.player, slot);
+                        armorEquipped = true;
                     } else {
                         CommonHUDHandler.getHandlerForPlayer(player).resetTicksSinceEquip(slot);
                     }
+                }
+                if (armorEquipped) {
+                    messageList.forEach(message -> message.getStat().update());
+                    messageList.removeIf(message -> message == null || --message.lifeSpan <= 0);
+                } else {
+                    messageList.clear();
                 }
             }
         }
     }
 
-    private void render2D(float partialTicks, EntityEquipmentSlot slot) {
+    private void render2D(float partialTicks) {
         Minecraft minecraft = FMLClientHandler.instance().getClient();
         EntityPlayer player = minecraft.player;
-        ItemStack armorStack = player.getItemStackFromSlot(slot);
-        if (minecraft.inGameHasFocus && armorStack.getItem() instanceof ItemPneumaticArmorBase) {
+        if (minecraft.inGameHasFocus && ItemPneumaticArmorBase.isPlayerWearingAnyPneumaticArmor(player)) {
             ScaledResolution sr = new ScaledResolution(minecraft);
             GL11.glDepthMask(false);
             GL11.glDisable(GL11.GL_CULL_FACE);
@@ -133,40 +138,44 @@ public class HUDHandler implements IKeyListener {
             GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
             GL11.glColor4d(0, 1, 0, 0.8D);
             CommonHUDHandler comHudHandler = CommonHUDHandler.getHandlerForPlayer(player);
-            if (!comHudHandler.isArmorReady(slot)) {
-                // blockTrackInfo = null;
-                gaveEmptyWarning[slot.getIndex()] = false;
-                gaveNearlyEmptyWarning[slot.getIndex()] = false;
-                int yOffset = (3 - slot.getIndex()) * 21;
-                RenderProgressBar.render(sr.getScaledWidth() / 2, 10 + yOffset, sr.getScaledWidth() - 10, 30 + yOffset, -90F, comHudHandler.getTicksSinceEquipped(slot) * 100 / comHudHandler.getStartupTime(slot));
-            } else {
-                String itemName = armorStack.getDisplayName();
-                float pressure = comHudHandler.armorPressure[slot.getIndex()];
-                if (pressure < 0.05F && !gaveEmptyWarning[slot.getIndex()]) {
-                    addMessage(new ArmorMessage("Your " + itemName + " is out of air!", new ArrayList<>(), 100, 0x70FF0000));
-                    gaveEmptyWarning[slot.getIndex()] = true;
-                }
-                if (pressure > 0.2F && pressure < 0.5F && !gaveNearlyEmptyWarning[slot.getIndex()]) {
-                    addMessage(new ArmorMessage("Your " + itemName + " is almost out of air!", new ArrayList<>(), 60, 0x70FF0000));
-                    gaveNearlyEmptyWarning[slot.getIndex()] = true;
-                }
-                if (GuiKeybindCheckBox.getCoreComponents().checked) {
-                    List<IUpgradeRenderHandler> renderHandlers = UpgradeRenderHandlerList.instance().getHandlersForSlot(slot);
-                    for (int i = 0; i < renderHandlers.size(); i++) {
-                        IUpgradeRenderHandler upgradeRenderHandler = renderHandlers.get(i);
-                        if (comHudHandler.isUpgradeRendererInserted(slot, i)
-                                && GuiKeybindCheckBox.fromKeyBindingName(GuiKeybindCheckBox.UPGRADE_PREFIX + upgradeRenderHandler.getUpgradeName()).checked) {
-                            IGuiAnimatedStat stat = upgradeRenderHandler.getAnimatedStat();
-                            if (stat != null) {
-                                stat.render(-1, -1, partialTicks);
+
+            for (EntityEquipmentSlot slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
+                if (!(player.getItemStackFromSlot(slot).getItem() instanceof ItemPneumaticArmorBase)) continue;
+                if (!comHudHandler.isArmorReady(slot)) {
+                    // blockTrackInfo = null;
+                    gaveEmptyWarning[slot.getIndex()] = false;
+                    gaveNearlyEmptyWarning[slot.getIndex()] = false;
+                    int yOffset = (3 - slot.getIndex()) * 21;
+                    RenderProgressBar.render(sr.getScaledWidth() / 2, 10 + yOffset, sr.getScaledWidth() - 10, 30 + yOffset, -90F, comHudHandler.getTicksSinceEquipped(slot) * 100 / comHudHandler.getStartupTime(slot));
+                } else {
+                    ItemStack armorStack = player.getItemStackFromSlot(slot);
+                    String itemName = armorStack.getDisplayName();
+                    float pressure = comHudHandler.armorPressure[slot.getIndex()];
+                    if (pressure < 0.05F && !gaveEmptyWarning[slot.getIndex()]) {
+                        addMessage(new ArmorMessage("Your " + itemName + " is out of air!", new ArrayList<>(), 100, 0x70FF0000));
+                        gaveEmptyWarning[slot.getIndex()] = true;
+                    }
+                    if (pressure > 0.2F && pressure < 0.5F && !gaveNearlyEmptyWarning[slot.getIndex()]) {
+                        addMessage(new ArmorMessage("Your " + itemName + " is almost out of air!", new ArrayList<>(), 60, 0x70FF0000));
+                        gaveNearlyEmptyWarning[slot.getIndex()] = true;
+                    }
+                    if (GuiKeybindCheckBox.getCoreComponents().checked) {
+                        List<IUpgradeRenderHandler> renderHandlers = UpgradeRenderHandlerList.instance().getHandlersForSlot(slot);
+                        for (int i = 0; i < renderHandlers.size(); i++) {
+                            IUpgradeRenderHandler upgradeRenderHandler = renderHandlers.get(i);
+                            if (comHudHandler.isUpgradeRendererInserted(slot, i) && comHudHandler.isUpgradeRendererEnabled(slot, i)) {
+                                IGuiAnimatedStat stat = upgradeRenderHandler.getAnimatedStat();
+                                if (stat != null) {
+                                    stat.render(-1, -1, partialTicks);
+                                }
+                                upgradeRenderHandler.render2D(partialTicks, pressure > 0F);
                             }
-                            upgradeRenderHandler.render2D(partialTicks, pressure > 0F);
                         }
                     }
                 }
             }
 
-            // render every item in the list.
+            // render every pending message
             for (ArmorMessage message : messageList) {
                 message.renderMessage(minecraft.fontRenderer, partialTicks);
             }
@@ -175,17 +184,17 @@ public class HUDHandler implements IKeyListener {
             GL11.glEnable(GL11.GL_CULL_FACE);
             GL11.glDepthMask(true);
             GL11.glEnable(GL11.GL_TEXTURE_2D);
-            if (comHudHandler.getTicksSinceEquipped(slot) <= comHudHandler.getStartupTime(slot))
-                minecraft.fontRenderer.drawString(CommonHUDHandler.getHandlerForPlayer().getTicksSinceEquipped(slot) * 100 / comHudHandler.getStartupTime(slot) + "%", sr.getScaledWidth() * 3 / 4 - 8, 16 + 21 * (3 - slot.getIndex()), 0x000000);
-        } else if (armorStack.isEmpty()) {
-            messageList.clear();
+
+            // show armor equip percentages
+            for (EntityEquipmentSlot slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
+                if (!(player.getItemStackFromSlot(slot).getItem() instanceof ItemPneumaticArmorBase)) continue;
+                if (comHudHandler.getTicksSinceEquipped(slot) <= comHudHandler.getStartupTime(slot))
+                    minecraft.fontRenderer.drawString(comHudHandler.getTicksSinceEquipped(slot) * 100 / comHudHandler.getStartupTime(slot) + "%", sr.getScaledWidth() * 3 / 4 - 8, 16 + 21 * (3 - slot.getIndex()), 0x000000);
+            }
         }
     }
 
     private void update(EntityPlayer player, EntityEquipmentSlot slot) {
-        for (ArmorMessage message : messageList) {
-            message.getStat().update();
-        }
         CommonHUDHandler comHudHandler = CommonHUDHandler.getHandlerForPlayer(player);
         boolean armorEnabled = GuiKeybindCheckBox.getCoreComponents().checked;
         List<IUpgradeRenderHandler> renderHandlers = UpgradeRenderHandlerList.instance().getHandlersForSlot(slot);
@@ -218,18 +227,9 @@ public class HUDHandler implements IKeyListener {
                     }
                 }
             }
-
-            // clean the message list
-            for (int i = 0; i < messageList.size(); i++) {
-                ArmorMessage message = messageList.get(i);
-                if (message == null || --message.lifeSpan <= 0) {
-                    messageList.remove(i);
-                    i--;
-                }
-            }
         }
 
-        // Display found/not found message for each possible upgrade (actual message display needs helmet equipped)
+        // Display found/not found message for each possible upgrade
         for (int i = 0; i < renderHandlers.size(); i++) {
             if (comHudHandler.getTicksSinceEquipped(slot) == comHudHandler.getStartupTime(slot) / (renderHandlers.size() + 2) * (i + 1)) {
                 player.world.playSound(player.posX, player.posY, player.posZ, Sounds.HUD_INIT, SoundCategory.PLAYERS, 0.1F, 0.5F + (float) (i + 1) / (renderHandlers.size() + 2) * 0.5F, true);

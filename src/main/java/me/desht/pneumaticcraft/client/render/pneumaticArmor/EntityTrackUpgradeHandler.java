@@ -64,7 +64,7 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler {
         double entityTrackRange = ENTITY_TRACKING_RANGE + rangeUpgrades * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE;
         AxisAlignedBB bbBox = getAABBFromRange(player, rangeUpgrades);
         List<EntityLivingBase> mobs = player.world.getEntitiesWithinAABB(EntityLivingBase.class, bbBox);
-        if (mobs.contains(player)) mobs.remove(player);
+        mobs.remove(player);
         for (EntityLivingBase mob : mobs) {
             if (player.getDistance(mob) > entityTrackRange || !PneumaticCraftUtils.isEntityValidForFilter(entityFilter, mob) || MinecraftForge.EVENT_BUS.post(new EntityTrackEvent(mob)))
                 continue;

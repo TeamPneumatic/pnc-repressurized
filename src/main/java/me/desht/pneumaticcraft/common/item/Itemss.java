@@ -199,7 +199,6 @@ public class Itemss {
                 String upgradeName = upgrade.toString().toLowerCase() + "_upgrade";
                 Item upgradeItem = new ItemMachineUpgrade(upgradeName, upgrade.ordinal());
                 registerItem(registry, upgradeItem);
-//                upgrades.put(upgrade, upgradeItem);
                 upgrades.add(upgradeItem);
             }
         }

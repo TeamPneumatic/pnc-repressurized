@@ -70,9 +70,9 @@ public class MainHelmetHandler implements IUpgradeRenderHandler {
     @Override
     @SideOnly(Side.CLIENT)
     public void update(EntityPlayer player, int rangeUpgrades) {
-//        List<String> l = Arrays.stream(UpgradeRenderHandlerList.ARMOR_SLOTS).map(slot -> getPressureStr(player, slot)).collect(Collectors.toList());
-//        powerStat.setTitle(TextFormatting.WHITE + "Pressure: " + Strings.join(l, TextFormatting.WHITE + " | "));
-        List<String> l = Arrays.stream(UpgradeRenderHandlerList.ARMOR_SLOTS).map(slot -> getPressureStr(player, slot)).collect(Collectors.toList());
+        List<String> l = Arrays.stream(UpgradeRenderHandlerList.ARMOR_SLOTS)
+                .map(slot -> getPressureStr(player, slot))
+                .collect(Collectors.toList());
         powerStat.setText(l);
     }
 
@@ -111,6 +111,7 @@ public class MainHelmetHandler implements IUpgradeRenderHandler {
             ScaledResolution sr = new ScaledResolution(minecraft);
             powerStat = new GuiAnimatedStat(null, "", "", powerStatX != -1 ? powerStatX : sr.getScaledWidth() - 2, powerStatY, 0x3000AA00, null, powerStatLeftSided);
             powerStat.setLineSpacing(15);
+            powerStat.setWidgetOffsets(-18, 0);  // ensure armor icons are rendered in the right place
             for (EntityEquipmentSlot slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
                 int i = 3 - slot.getIndex();
                 GuiButtonSpecial pressureButton = new GuiButtonSpecial(-1, 0, 5 + i * 15, 18, 18, "") ;

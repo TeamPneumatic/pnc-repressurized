@@ -16,7 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Some helper methods to manage items which can store upgrades (Pneumatic Helmets, Drones...)
+ * Some helper methods to manage items which can store upgrades (Pneumatic Armor, Drones...)
  */
 public class UpgradableItemUtils {
     /**

@@ -69,6 +69,8 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
     private static final int MAX_LINES = 12;
     private int lastMouseX, lastMouseY;
     private int lineSpacing = 10;
+    private int widgetOffsetLeft = 0;
+    private int widgetOffsetRight = 0;
 
     public GuiAnimatedStat(GuiScreen gui, String title, int xPos, int yPos, int backGroundColor,
                            IGuiAnimatedStat affectingStat, boolean leftSided) {
@@ -137,6 +139,11 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
 
     public void removeWidget(IGuiWidget widget) {
         widgets.remove(widget);
+    }
+
+    public void setWidgetOffsets(int left, int right) {
+        widgetOffsetLeft = left;
+        widgetOffsetRight = right;
     }
 
     @Override
@@ -336,7 +343,7 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
             GL11.glPopMatrix();
 
             GL11.glPushMatrix();
-            GL11.glTranslated(renderBaseX, renderAffectedY + (titleYoffset - 10), 0);
+            GL11.glTranslated(renderBaseX + (leftSided ? widgetOffsetLeft : widgetOffsetRight), renderAffectedY + (titleYoffset - 10), 0);
             GL11.glEnable(GL11.GL_TEXTURE_2D);
             for (IGuiWidget widget : widgets)
                 widget.render(mouseX - renderBaseX, mouseY - renderAffectedY, partialTicks);

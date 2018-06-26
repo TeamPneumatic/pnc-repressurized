@@ -31,10 +31,8 @@ public class RenderSearchItemBlock {
     private int getSearchedItemCount() {
         TileEntity te = world.getTileEntity(pos);
         if (te != null && te.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)) {
-//        if (world.getTileEntity(pos) instanceof IInventory) {
             IItemHandler handler = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
             int itemCount = 0;
-//            IInventory inventory = (IInventory) world.getTileEntity(pos);
             ItemStack searchStack = ItemPneumaticHelmet.getSearchedStack(FMLClientHandler.instance().getClient().player.getItemStackFromSlot(EntityEquipmentSlot.HEAD));
             if (searchStack.isEmpty()) return 0;
             for (int l = 0; l < handler.getSlots(); l++) {
