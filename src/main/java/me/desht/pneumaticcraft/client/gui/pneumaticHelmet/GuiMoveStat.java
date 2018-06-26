@@ -31,7 +31,7 @@ public class GuiMoveStat extends GuiScreen {
 
     @Override
     protected void mouseClickMove(int x, int y, int lastButtonClicked, long timeSinceMouseClick) {
-        if (lastButtonClicked == 0 || lastButtonClicked == 1) {
+        if (clicked) {
             movedStat.setBaseX(x);
             movedStat.setBaseY(y);
         }
@@ -39,17 +39,20 @@ public class GuiMoveStat extends GuiScreen {
 
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-        clicked = true;
-        movedStat.setBaseX(mouseX);
-        movedStat.setBaseY(mouseY);
+        if (mouseButton == 2) {
+            movedStat.setLeftSided(!movedStat.isLeftSided());
+            renderHandler.saveToConfig();
+        } else if (mouseButton < 2) {
+            clicked = true;
+            movedStat.setBaseX(mouseX);
+            movedStat.setBaseY(mouseY);
+        }
     }
 
     @Override
     protected void mouseReleased(int mouseX, int mouseY, int mouseButton) {
         if (clicked) {
-            if (mouseButton >= 2) {
-                movedStat.setLeftSided(!movedStat.isLeftSided());
-            } else if (mouseButton == 0 || mouseButton == 1) {
+            if (mouseButton == 0 || mouseButton == 1) {
                 movedStat.setBaseX(mouseX);
                 movedStat.setBaseY(mouseY);
             }
