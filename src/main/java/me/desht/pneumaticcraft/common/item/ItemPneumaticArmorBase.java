@@ -29,6 +29,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.ISpecialArmor;
 import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.items.ItemHandlerHelper;
 import thaumcraft.api.items.IVisDiscountGear;
 
 import javax.annotation.Nonnull;
@@ -195,7 +196,14 @@ public abstract class ItemPneumaticArmorBase extends ItemArmor
             // compressed iron is very explosion-resistant
             return;
         }
-        // TODO return any installed upgrades and some of the cylinders if armor is destroyed
+        ItemStack copy = stack.copy();
         stack.damageItem(damage, entity);
+        if (stack.isEmpty() && entity instanceof EntityPlayer) {
+            // armor has been destroyed; return the upgrades to the player, at least
+            ItemStack[] upgrades = UpgradableItemUtils.getUpgradeStacks(copy);
+            for (ItemStack upgrade : upgrades) {
+                ItemHandlerHelper.giveItemToPlayer((EntityPlayer) entity, upgrade);
+            }
+        }
     }
 }
