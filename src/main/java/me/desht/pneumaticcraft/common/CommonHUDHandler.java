@@ -4,23 +4,26 @@ import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IHackableBlock;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IHackableEntity;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
+import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IPressurizable;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.*;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.hacking.HackableHandler;
 import me.desht.pneumaticcraft.common.item.ItemMachineUpgrade;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmorBase;
+import me.desht.pneumaticcraft.common.item.ItemPneumaticLeggings;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
-import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketHackingBlockFinish;
-import me.desht.pneumaticcraft.common.network.PacketHackingEntityFinish;
-import me.desht.pneumaticcraft.common.network.PacketPlaySound;
+import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.common.util.WorldAndCoord;
 import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Sounds;
+import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -28,8 +31,10 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EntitySelectors;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -37,9 +42,7 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class CommonHUDHandler {
     private static final CommonHUDHandler clientHandler = new CommonHUDHandler();
@@ -64,6 +67,18 @@ public class CommonHUDHandler {
     private boolean jumpBoostEnabled;
     private boolean jetBootsEnabled;  // are jet boots switched on?
     private boolean jetBootsActive;  // are jet boots actually firing (player rising) ?
+
+    private static final UUID PNEUMATIC_SPEED_ID[] = {
+            UUID.fromString("6ecaf25b-9619-4fd1-ae4c-c2f1521047d7"),
+            UUID.fromString("091a3128-1fa9-4f03-8e30-8848d370caa2"),
+            UUID.fromString("8dd25db8-102e-4960-aeb0-36417d200957")
+    };
+    private static final AttributeModifier PNEUMATIC_SPEED_BOOST[] = new AttributeModifier[PneumaticValues.PNEUMATIC_LEGS_MAX_SPEED];
+    static {
+        for (int i = 0; i < PNEUMATIC_SPEED_BOOST.length; i++) {
+            PNEUMATIC_SPEED_BOOST[i] = (new AttributeModifier(PNEUMATIC_SPEED_ID[i], "Pneumatic speed boost" + i, 0.25 * (i + 1), 2)).setSaved(false);
+        }
+    }
 
     public CommonHUDHandler() {
         for (EntityEquipmentSlot slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
@@ -120,12 +135,25 @@ public class CommonHUDHandler {
                             NetworkHandler.sendTo(new PacketPlaySound(Sounds.MINIGUN_STOP, SoundCategory.PLAYERS, player.posX, player.posY, player.posZ, 1.0f, 2.0f, false), (EntityPlayerMP) player);
                         }
                     }
-                    doArmorActions(player, armorStack, slot);
                 }
             }
-
+            doArmorActions(player, armorStack, slot);
         } else {
+            if (ticksSinceEquip[slot.getIndex()] > 0) {
+                onArmorRemoved(player, armorStack, slot);
+            }
             ticksSinceEquip[slot.getIndex()] = 0;
+        }
+    }
+
+    private void onArmorRemoved(EntityPlayer player, ItemStack armorStack, EntityEquipmentSlot slot) {
+        switch (slot) {
+            case FEET:
+                player.stepHeight = 0.6F;
+                break;
+            case LEGS:
+                resetSpeedAttributes(player);
+                break;
         }
     }
 
@@ -139,23 +167,105 @@ public class CommonHUDHandler {
     private void doArmorActions(EntityPlayer player, ItemStack armorStack, EntityEquipmentSlot slot) {
         switch (slot) {
             case CHEST:
-                if (magnetEnabled && ticksSinceEquip[slot.getIndex()] % PneumaticValues.MAGNET_INTERVAL == 0) {
-                    doMagnet(player, armorStack);
+                handleChestplateMagnet(player, armorStack);
+                handleChestplateCharging(player, armorStack);
+                break;
+            case LEGS:
+                handleLeggingsSpeedBoost(player, armorStack);
+                break;
+            case FEET:
+                if (getArmorPressure(EntityEquipmentSlot.FEET) > 0.0F && isStepAssistEnabled()) {
+                    player.stepHeight = player.isSneaking() ? 0.6001F : 1.25F;
+                } else {
+                    player.stepHeight = 0.6F;
                 }
-                if (chargingEnabled && ticksSinceEquip[slot.getIndex()] % PneumaticValues.ARMOR_CHARGER_INTERVAL == 5) {
-                    doCharging(player, armorStack);
-                }
+                handleJetBoots(player, armorStack);
                 break;
         }
 
-        if (getUpgradeCount(slot, EnumUpgrade.ITEM_LIFE) > 0) {
-            doItemRepair(armorStack, slot);
+        if (!player.world.isRemote && getUpgradeCount(slot, EnumUpgrade.ITEM_LIFE) > 0) {
+            handleItemRepair(armorStack, slot);
         }
     }
 
-    private void doCharging(EntityPlayer player, ItemStack chestplateStack) {
+    // track player movement across ticks on the server - very transient, a capability would be overkill here
+    private static final Map<String,Vec3d> moveMap = new HashMap<>();
+
+    private void handleLeggingsSpeedBoost(EntityPlayer player, ItemStack armorStack) {
+        if (!player.world.isRemote && (player.ticksExisted & 0xf) == 9) {
+            // Speed Boost (only check every 16 ticks, for performance reasons)
+            IAttributeInstance attr = resetSpeedAttributes(player);
+
+            ItemStack legsStack = player.getItemStackFromSlot(EntityEquipmentSlot.LEGS);
+            if (legsStack.getItem() instanceof ItemPneumaticLeggings && isRunSpeedEnabled()) {
+                int speedUpgrades = getUpgradeCount(EntityEquipmentSlot.LEGS, IItemRegistry.EnumUpgrade.SPEED, PneumaticValues.PNEUMATIC_LEGS_MAX_SPEED);
+                ItemPneumaticLeggings legs = (ItemPneumaticLeggings) legsStack.getItem();
+                if (legs.getPressure(legsStack) > 0.0F && speedUpgrades > 0) {
+                    attr.applyModifier(PNEUMATIC_SPEED_BOOST[speedUpgrades - 1]);
+                    Vec3d prev = moveMap.get(player.getName());
+                    boolean moved = prev != null && (Math.abs(player.posX - prev.x) > 0.0001 || Math.abs(player.posZ - prev.z) > 0.0001);
+                    if (moved && player.onGround && !player.isInsideOfMaterial(Material.WATER)) {
+                        addAir(legsStack, EntityEquipmentSlot.LEGS, -PneumaticValues.PNEUMATIC_LEGS_SPEED_USAGE * 16 * speedUpgrades);
+                    }
+                }
+            }
+
+            moveMap.put(player.getName(), new Vec3d(player.posX, player.posY, player.posZ));
+        }
+    }
+
+    private IAttributeInstance resetSpeedAttributes(EntityPlayer player) {
+        IAttributeInstance attr = player.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
+        for (int i = 0; i < PneumaticValues.PNEUMATIC_LEGS_MAX_SPEED; i++) {
+            if (attr.getModifier(PNEUMATIC_SPEED_ID[i]) != null) {
+                attr.removeModifier(PNEUMATIC_SPEED_ID[i]);
+            }
+        }
+        return attr;
+    }
+
+    private void handleJetBoots(EntityPlayer player, ItemStack bootsStack) {
+        int jetbootsCount = getUpgradeCount(EntityEquipmentSlot.FEET, IItemRegistry.EnumUpgrade.JET_BOOTS, PneumaticValues.PNEUMATIC_JET_BOOTS_MAX_UPGRADES);
+        int jetbootsAirUsage = 0;
+        if (getArmorPressure(EntityEquipmentSlot.FEET) > 0.0F) {
+            if (isJetBootsActive()) {
+                // jetboots firing - move in direction of looking
+                Vec3d vec = player.getLookVec().normalize().scale(0.15 * jetbootsCount);
+                player.motionX = vec.x;
+                player.motionY = player.onGround ? 0 : vec.y;
+                player.motionZ = vec.z;
+                jetbootsAirUsage = PneumaticValues.PNEUMATIC_JET_BOOTS_USAGE * jetbootsCount;
+            } else if (isJetBootsEnabled() && player.fallDistance > 0) {
+                // jetboots not firing, but enabled - slowly descend
+                player.motionY = player.isSneaking() ? -0.45 : -0.15 + 0.01 * jetbootsCount;
+                player.fallDistance = 0;
+                jetbootsAirUsage = (int) (PneumaticValues.PNEUMATIC_JET_BOOTS_USAGE * (player.isSneaking() ? 0.75F : 0.5F));
+            }
+        }
+        if (jetbootsAirUsage != 0) {
+            if (!player.world.isRemote) {
+                if ((player.ticksExisted & 0x1) == 1) {
+                    for (int i = 0; i < 3; i++) {
+                        float dx = (player.getRNG().nextFloat() - 0.5f) / 3.0f;
+                        float dz = (player.getRNG().nextFloat() - 0.5f) / 3.0f;
+                        NetworkHandler.sendToAllAround(new PacketSpawnParticle(EnumParticleTypes.SMOKE_NORMAL, player.posX, player.posY, player.posZ, dx, -0.5, dz), player.world);
+                    }
+                }
+                if ((player.ticksExisted % 14) == 1) {
+                    float pitch = player.motionY < 0 ? 0.6F : 0.7F;
+                    NetworkHandler.sendToAllAround(new PacketPlaySound(Sounds.LEAKING_GAS_SOUND, SoundCategory.PLAYERS, player.posX, player.posY, player.posZ, 0.1f, pitch, false), player.world);
+                }
+                addAir(bootsStack, EntityEquipmentSlot.FEET, -jetbootsAirUsage);
+            }
+        }
+    }
+
+    private void handleChestplateCharging(EntityPlayer player, ItemStack chestplateStack) {
+        if (player.world.isRemote || !chargingEnabled || getTicksSinceEquipped(EntityEquipmentSlot.CHEST) % PneumaticValues.ARMOR_CHARGER_INTERVAL != 5)
+            return;
+
         int upgrades = Math.min(getUpgradeCount(EntityEquipmentSlot.CHEST, EnumUpgrade.CHARGING), PneumaticValues.ARMOR_CHARGING_MAX_UPGRADES);
-        int airAmount = upgrades * 50 + 100;
+        int airAmount = upgrades * 100 + 100;
 
         for (EntityEquipmentSlot slot : EntityEquipmentSlot.values()) {
             if (slot == EntityEquipmentSlot.CHEST) continue;
@@ -183,7 +293,7 @@ public class CommonHUDHandler {
         }
     }
 
-    private void doItemRepair(ItemStack armorStack, EntityEquipmentSlot slot) {
+    private void handleItemRepair(ItemStack armorStack, EntityEquipmentSlot slot) {
         int upgrades = Math.min(getUpgradeCount(slot, EnumUpgrade.ITEM_LIFE), PneumaticValues.ARMOR_REPAIR_MAX_UPGRADES);
         int interval = 120 - (20 * upgrades);
         int airUsage = PneumaticValues.PNEUMATIC_ARMOR_REPAIR_USAGE * upgrades;
@@ -196,7 +306,10 @@ public class CommonHUDHandler {
         }
     }
 
-    private void doMagnet(EntityPlayer player, ItemStack armorStack) {
+    private void handleChestplateMagnet(EntityPlayer player, ItemStack chestplateStack) {
+        if (player.world.isRemote || !magnetEnabled || getTicksSinceEquipped(EntityEquipmentSlot.CHEST) % PneumaticValues.MAGNET_INTERVAL != 0)
+            return;
+
         AxisAlignedBB box = new AxisAlignedBB(player.getPosition()).grow(magnetRadius);
         List<EntityItem> itemList = player.getEntityWorld().getEntitiesWithinAABB(EntityItem.class, box, EntitySelectors.IS_ALIVE);
 
@@ -208,7 +321,7 @@ public class CommonHUDHandler {
                 if (armorPressure[EntityEquipmentSlot.CHEST.getIndex()] < 0.1F) break;
                 item.setPosition(player.posX, player.posY, player.posZ);
                 item.setPickupDelay(0);
-                addAir(armorStack, EntityEquipmentSlot.CHEST, -PneumaticValues.MAGNET_AIR_USAGE);
+                addAir(chestplateStack, EntityEquipmentSlot.CHEST, -PneumaticValues.MAGNET_AIR_USAGE);
             }
         }
     }

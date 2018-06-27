@@ -9,13 +9,9 @@ import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Sounds;
-import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -24,34 +20,15 @@ import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
+/**
+ * Events related to Pneumatic Armor.  Note any player-tick events are handled in CommonHUDHandler#tickArmorPiece()
+ */
 public class EventHandlerPneumaticArmor {
-
-    private static final UUID PNEUMATIC_SPEED_ID[] = {
-            UUID.fromString("6ecaf25b-9619-4fd1-ae4c-c2f1521047d7"),
-            UUID.fromString("091a3128-1fa9-4f03-8e30-8848d370caa2"),
-            UUID.fromString("8dd25db8-102e-4960-aeb0-36417d200957")
-    };
-    private static final AttributeModifier PNEUMATIC_SPEED_BOOST[] = new AttributeModifier[3];
-    static {
-        PNEUMATIC_SPEED_BOOST[0] = (new AttributeModifier(PNEUMATIC_SPEED_ID[0], "Pneumatic speed boost", 0.25, 2)).setSaved(false);
-        PNEUMATIC_SPEED_BOOST[1] = (new AttributeModifier(PNEUMATIC_SPEED_ID[1], "Pneumatic speed boost", 0.5, 2)).setSaved(false);
-        PNEUMATIC_SPEED_BOOST[2] = (new AttributeModifier(PNEUMATIC_SPEED_ID[2], "Pneumatic speed boost", 0.75, 2)).setSaved(false);
-    }
-
-    // track player movement across ticks on the server - very transient, a capapility would be overkill here
-    private static final Map<String,Vec3d> moveMap = new HashMap<>();
-
     @SubscribeEvent
     public void onPlayerFall(LivingFallEvent event) {
         if (event.getEntity() instanceof EntityPlayer && event.getDistance() > 3.0F && !event.getEntity().world.isRemote) {
@@ -131,75 +108,6 @@ public class EventHandlerPneumaticArmor {
     }
 
     @SubscribeEvent
-    public void onLivingUpdate(TickEvent.PlayerTickEvent event) {
-        if (event.phase == TickEvent.Phase.START) return;
-
-        EntityPlayer player = event.player;
-        CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer(player);
-
-        ItemStack bootsStack = player.getItemStackFromSlot(EntityEquipmentSlot.FEET);
-        if (bootsStack.getItem() instanceof ItemPneumaticBoots && handler.isArmorReady(EntityEquipmentSlot.FEET)) {
-            // Step Assist
-            if (handler.getArmorPressure(EntityEquipmentSlot.FEET) > 0.0F && handler.isStepAssistEnabled()) {
-                player.stepHeight = player.isSneaking() ? 0.6001F : 1.25F;
-            } else {
-                player.stepHeight = 0.6F;
-            }
-
-            // Jet Boots
-            int jetbootsCount = handler.getUpgradeCount(EntityEquipmentSlot.FEET, IItemRegistry.EnumUpgrade.JET_BOOTS, PneumaticValues.PNEUMATIC_JET_BOOTS_MAX_UPGRADES);
-            int jetbootsAirUsage = 0;
-            if (handler.getArmorPressure(EntityEquipmentSlot.FEET) > 0.0F) {
-                if (handler.isJetBootsActive()) {
-                    // jetboots firing - move upwards
-                    player.motionY = 0.15 * jetbootsCount;
-                    jetbootsAirUsage = PneumaticValues.PNEUMATIC_JET_BOOTS_USAGE * jetbootsCount;
-                } else if (handler.isJetBootsEnabled() && player.fallDistance > 0) {
-                    // jetboots not firing, but enabled - slowly descend
-                    player.motionY = player.isSneaking() ? -0.45 : -0.15 + 0.01 * jetbootsCount;
-                    player.fallDistance = 0;
-                    jetbootsAirUsage = (int) (PneumaticValues.PNEUMATIC_JET_BOOTS_USAGE * (player.isSneaking() ? 0.75F : 0.5F));
-                }
-            }
-            if (jetbootsAirUsage != 0 && !player.world.isRemote) {
-                if ((player.ticksExisted & 0x1) == 1) {
-                    for (int i = 0; i < 3; i++) {
-                        float dx = (player.getRNG().nextFloat() - 0.5f) / 3.0f;
-                        float dz = (player.getRNG().nextFloat() - 0.5f) / 3.0f;
-                        NetworkHandler.sendToAllAround(new PacketSpawnParticle(EnumParticleTypes.SMOKE_NORMAL, player.posX, player.posY, player.posZ, dx, -0.5, dz), player.world);
-                    }
-                }
-                if ((player.ticksExisted % 14) == 1) {
-                    float pitch = player.motionY < 0 ? 0.6F : 0.7F;
-                    NetworkHandler.sendToAllAround(new PacketPlaySound(Sounds.LEAKING_GAS_SOUND, SoundCategory.PLAYERS, player.posX, player.posY, player.posZ, 0.1f, pitch, false), player.world);
-                }
-                handler.addAir(bootsStack, EntityEquipmentSlot.FEET, -jetbootsAirUsage);
-            }
-        } else {
-            player.stepHeight = 0.6F;
-        }
-
-        if (!player.world.isRemote && (player.ticksExisted & 0xf) == 0) {
-            // Speed Boost (only check every 16 ticks, for performance reasons)
-            removeSpeedModifiers(player);
-            bootsStack = player.getItemStackFromSlot(EntityEquipmentSlot.LEGS);
-            if (bootsStack.getItem() instanceof ItemPneumaticLeggings && handler.isArmorReady(EntityEquipmentSlot.LEGS) && handler.isRunSpeedEnabled()) {
-                int speedUpgrades = handler.getUpgradeCount(EntityEquipmentSlot.LEGS, IItemRegistry.EnumUpgrade.SPEED, PneumaticValues.PNEUMATIC_LEGS_MAX_SPEED);
-                ItemPneumaticLeggings legs = (ItemPneumaticLeggings) bootsStack.getItem();
-                if (legs.getPressure(bootsStack) > 0.0F && speedUpgrades > 0) {
-                    IAttributeInstance attr = player.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
-                    attr.applyModifier(PNEUMATIC_SPEED_BOOST[speedUpgrades - 1]);
-                    if (checkMovement(player) && player.onGround && !player.isInsideOfMaterial(Material.WATER)) {
-                        handler.addAir(bootsStack, EntityEquipmentSlot.LEGS, -PneumaticValues.PNEUMATIC_LEGS_SPEED_USAGE * 16 * speedUpgrades);
-                    }
-                }
-            }
-
-            moveMap.put(player.getName(), new Vec3d(player.posX, player.posY, player.posZ));
-        }
-    }
-
-    @SubscribeEvent
     public void onPlayerJump(LivingEvent.LivingJumpEvent event) {
         if (event.getEntityLiving() instanceof EntityPlayer) {
             EntityPlayer player = (EntityPlayer) event.getEntityLiving();
@@ -220,20 +128,5 @@ public class EventHandlerPneumaticArmor {
                 }
             }
         }
-    }
-
-    private void removeSpeedModifiers(EntityPlayer player) {
-        IAttributeInstance attr = player.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
-        for (int i = 0; i < PneumaticValues.PNEUMATIC_LEGS_MAX_SPEED; i++) {
-            if (attr.getModifier(PNEUMATIC_SPEED_ID[i]) != null) {
-                attr.removeModifier(PNEUMATIC_SPEED_ID[i]);
-            }
-        }
-    }
-
-    private boolean checkMovement(EntityPlayer player) {
-        Vec3d prev = moveMap.get(player.getName());
-        if (prev == null) return false;
-        return Math.abs(player.posX - prev.x) > 0.0001 || Math.abs(player.posZ - prev.z) > 0.0001;
     }
 }
