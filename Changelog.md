@@ -6,7 +6,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
-## 0.6.8-??? (unreleased)
+## 0.6.8-219 (27 Jun 2018)
 
 * Change to Drones and Security Upgrades (liquid protection): 1 Security Upgrade will now allow drones to swim through liquids, 2 Security Upgrades will create a temporary 3x3x3 air bubble around drones which are in a liquid, and 3+ Security Upgrades will permanently remove any liquids a drone flies through.  Drones will still never pathfind through lava, though.
 * Fixed Computer Control program piece not getting registered with Open Computers installed
