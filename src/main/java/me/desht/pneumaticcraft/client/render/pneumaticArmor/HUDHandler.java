@@ -4,7 +4,6 @@ import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
-import me.desht.pneumaticcraft.api.item.IPressurizable;
 import me.desht.pneumaticcraft.client.IKeyListener;
 import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.gui.pneumaticHelmet.GuiHelmetMainScreen;
@@ -68,23 +67,18 @@ public class HUDHandler implements IKeyListener {
         GL11.glPushMatrix();
         GL11.glTranslated(-playerX, -playerY, -playerZ);
 
-        for (EntityEquipmentSlot slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
-            ItemStack armorStack = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
-            if (armorStack.getItem() instanceof ItemPneumaticArmorBase) {
-                if (((IPressurizable) armorStack.getItem()).getPressure(armorStack) > 0F) {
-                    CommonHUDHandler comHudHandler = CommonHUDHandler.getHandlerForPlayer(player);
-                    if (comHudHandler.isArmorReady(slot)) {
-
-                        GL11.glDisable(GL11.GL_TEXTURE_2D);
-                        List<IUpgradeRenderHandler> renderHandlers = UpgradeRenderHandlerList.instance().getHandlersForSlot(slot);
-                        for (int i = 0; i < renderHandlers.size(); i++) {
-                            if (comHudHandler.isUpgradeRendererInserted(slot, i) && GuiKeybindCheckBox.fromKeyBindingName(GuiKeybindCheckBox.UPGRADE_PREFIX + renderHandlers.get(i).getUpgradeName()).checked)
-                                renderHandlers.get(i).render3D(event.getPartialTicks());
-                        }
-
-                        GL11.glEnable(GL11.GL_TEXTURE_2D);
-
+        ItemStack helmetStack = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
+        CommonHUDHandler comHudHandler = CommonHUDHandler.getHandlerForPlayer(player);
+        if (helmetStack.getItem() instanceof ItemPneumaticArmorBase && comHudHandler.getArmorPressure(EntityEquipmentSlot.HEAD) > 0F) {
+            for (EntityEquipmentSlot slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
+                if (comHudHandler.isArmorReady(slot)) {
+                    GL11.glDisable(GL11.GL_TEXTURE_2D);
+                    List<IUpgradeRenderHandler> renderHandlers = UpgradeRenderHandlerList.instance().getHandlersForSlot(slot);
+                    for (int i = 0; i < renderHandlers.size(); i++) {
+                        if (comHudHandler.isUpgradeRendererInserted(slot, i) && GuiKeybindCheckBox.fromKeyBindingName(GuiKeybindCheckBox.UPGRADE_PREFIX + renderHandlers.get(i).getUpgradeName()).checked)
+                            renderHandlers.get(i).render3D(event.getPartialTicks());
                     }
+                    GL11.glEnable(GL11.GL_TEXTURE_2D);
                 }
             }
         }
