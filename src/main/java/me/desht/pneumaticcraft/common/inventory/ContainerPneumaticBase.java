@@ -27,7 +27,7 @@ public class ContainerPneumaticBase<Tile extends TileEntityBase> extends Contain
     public Tile te;
     private final List<SyncedField> syncedFields = new ArrayList<>();
     private boolean firstTick = true;
-    private int playerSlotsStart;
+    int playerSlotsStart;
 
     public ContainerPneumaticBase(Tile te) {
         this.te = te;
@@ -101,9 +101,9 @@ public class ContainerPneumaticBase<Tile extends TileEntityBase> extends Contain
     /*
      * This is pretty much lifted from the ContainerPlayer constructor
      * We can't use EntityArmorInvWrapper because the wrapped setStackInSlot() method always sends a "set slot"
-     * packet to the client when the item changes in any way.  Draining pressure in the helmet will cause that packet
-     * to be sent continually, causing a horrible item-equip sound loop to be played (and using unnecessary network
-     * bandwith).
+     * packet to the client when the item changes in any way.  Altering pressure in a pneumatic armor piece will cause
+     * that packet to be sent continually, causing a horrible item-equip sound loop to be played (and using unnecessary
+     * network bandwith).
      */
     protected void addArmorSlots(InventoryPlayer inventoryPlayer, int xBase, int yBase) {
         for (int i = 0; i < 4; ++i) {
