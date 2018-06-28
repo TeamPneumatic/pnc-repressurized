@@ -14,10 +14,7 @@ import me.desht.pneumaticcraft.common.block.tubes.ModuleRegulatorTube;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.fluid.Fluids;
-import me.desht.pneumaticcraft.common.item.ItemMinigun;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticSubtyped;
-import me.desht.pneumaticcraft.common.item.ItemProgrammingPuzzle;
-import me.desht.pneumaticcraft.common.item.Itemss;
+import me.desht.pneumaticcraft.common.item.*;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketJetBootState;
@@ -68,6 +65,9 @@ import java.util.*;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
 public class ClientEventHandler {
+    private static final float MAX_SCREEN_ROLL = 25F;  // max roll in degrees when flying with jetboots
+    private float currentScreenRoll = 0F;
+
     public static float playerRenderPartialTick;
     private final RenderProgressingLine minigunFire = new RenderProgressingLine().setProgress(1);
     private final Map<IModel, Class<? extends TubeModule>> awaitingBaking = new HashMap<IModel, Class<? extends TubeModule>>();
@@ -308,6 +308,34 @@ public class ClientEventHandler {
                         event.getModelRegistry().putObject(entry.getValue(), customModel);
                     }
                 }
+            }
+        }
+    }
+
+
+    @SubscribeEvent
+    public void screenTilt(EntityViewRenderEvent.CameraSetup event) {
+        if (event.getEntity() instanceof EntityPlayer) {
+            EntityPlayer player = (EntityPlayer) event.getEntity();
+            if (player.getItemStackFromSlot(EntityEquipmentSlot.FEET).getItem() instanceof ItemPneumaticArmorBase && !player.onGround) {
+                CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer(player);
+                float targetRoll;
+                float div = 50F;
+                if (handler.isJetBootsActive()) {
+                    float roll = player.rotationYawHead - player.prevRotationYawHead;
+                    if (Math.abs(roll) < 0.0001) {
+                        targetRoll = 0F;
+                    } else {
+                        targetRoll = Math.signum(roll) * MAX_SCREEN_ROLL;
+                        div = Math.abs(400F / roll);
+                    }
+                } else {
+                    targetRoll = 0F;
+                }
+                currentScreenRoll += (targetRoll - currentScreenRoll) / div;
+                event.setRoll(currentScreenRoll);
+            } else {
+                currentScreenRoll = 0F;
             }
         }
     }

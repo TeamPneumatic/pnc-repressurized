@@ -27,13 +27,16 @@ import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntitySelectors;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -67,6 +70,7 @@ public class CommonHUDHandler {
     private boolean jumpBoostEnabled;
     private boolean jetBootsEnabled;  // are jet boots switched on?
     private boolean jetBootsActive;  // are jet boots actually firing (player rising) ?
+    private float flightAccel = 1.0F;  // increases while diving, decreases while climbing
 
     private static final UUID PNEUMATIC_SPEED_ID[] = {
             UUID.fromString("6ecaf25b-9619-4fd1-ae4c-c2f1521047d7"),
@@ -231,19 +235,32 @@ public class CommonHUDHandler {
             if (isJetBootsActive()) {
                 // jetboots firing - move in direction of looking
                 Vec3d vec = player.getLookVec().normalize().scale(0.15 * jetbootsCount);
+                flightAccel += vec.y / -20.0;
+                flightAccel = MathHelper.clamp(flightAccel, 0.8F, 4.0F);
+                vec = vec.scale(flightAccel);
                 player.motionX = vec.x;
                 player.motionY = player.onGround ? 0 : vec.y;
                 player.motionZ = vec.z;
                 jetbootsAirUsage = PneumaticValues.PNEUMATIC_JET_BOOTS_USAGE * jetbootsCount;
             } else if (isJetBootsEnabled() && player.fallDistance > 0) {
                 // jetboots not firing, but enabled - slowly descend
-                player.motionY = player.isSneaking() ? -0.45 : -0.15 + 0.01 * jetbootsCount;
+                player.motionY = player.isSneaking() ? -0.45 : -0.15 + 0.015 * jetbootsCount;
                 player.fallDistance = 0;
                 jetbootsAirUsage = (int) (PneumaticValues.PNEUMATIC_JET_BOOTS_USAGE * (player.isSneaking() ? 0.75F : 0.5F));
+                flightAccel = 1.0F;
+            } else {
+                flightAccel = 1.0F;
             }
         }
         if (jetbootsAirUsage != 0) {
             if (!player.world.isRemote) {
+                if (player.collidedHorizontally) {
+                    double vel = Math.sqrt(player.motionZ * player.motionZ + player.motionX * player.motionX);
+                    if (vel > 2) {
+                        player.playSound(vel > 2.5 ? SoundEvents.ENTITY_GENERIC_BIG_FALL : SoundEvents.ENTITY_GENERIC_SMALL_FALL, 1.0F, 1.0F);
+                        player.attackEntityFrom(DamageSource.FLY_INTO_WALL, (float)vel / 2F);
+                    }
+                }
                 if ((player.ticksExisted & 0x1) == 1) {
                     for (int i = 0; i < 3; i++) {
                         float dx = (player.getRNG().nextFloat() - 0.5f) / 3.0f;
