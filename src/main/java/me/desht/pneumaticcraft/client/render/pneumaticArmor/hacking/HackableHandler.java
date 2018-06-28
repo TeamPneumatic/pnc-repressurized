@@ -16,6 +16,7 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.monster.*;
 import net.minecraft.entity.passive.EntityBat;
 import net.minecraft.entity.passive.EntityCow;
+import net.minecraft.entity.passive.EntityHorse;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -73,6 +74,7 @@ public class HackableHandler {
         manager.addHackable(EntityLiving.class, HackableLivingDisarm.class);
         manager.addHackable(EntityEnderman.class, HackableEnderman.class);
         manager.addHackable(EntityBat.class, HackableBat.class);
+        manager.addHackable(EntityHorse.class, HackableHorse.class);
     }
 
     public static IHackableEntity getHackableForEntity(Entity entity, EntityPlayer player) {

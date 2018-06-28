@@ -36,6 +36,7 @@ public class HackableEnderman implements IHackableEntity {
 
     @Override
     public void onHackFinished(Entity entity, EntityPlayer player) {
+        // enderman teleport suppression is handled in EventHandlerPneumaticCraft#onEnderTeleport
     }
 
     @Override

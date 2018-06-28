@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.client.render.pneumaticArmor.hacking.entity;
 
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IHackableEntity;
-import me.desht.pneumaticcraft.common.util.Reflections;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
@@ -49,20 +48,21 @@ public class HackableLivingDisarm implements IHackableEntity {
     @Override
     public void onHackFinished(Entity entity, EntityPlayer player) {
         if (!entity.world.isRemote && entity instanceof EntityLiving) {
-            Random rand = new Random();
             EntityLiving entityLiving = (EntityLiving) entity;
 
             // access from vertical gets hands, horizontal gets armor - see EntityLivingBase#getCapability
             IItemHandler handsHandler = entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.UP);
             IItemHandler armorHandler = entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.NORTH);
 
-            doDisarm(entityLiving, rand, handsHandler, entityLiving.inventoryHandsDropChances);
-            doDisarm(entityLiving, rand, armorHandler, entityLiving.inventoryArmorDropChances);
+            doDisarm(entityLiving, player.getRNG(), handsHandler, entityLiving.inventoryHandsDropChances);
+            doDisarm(entityLiving, player.getRNG(), armorHandler, entityLiving.inventoryArmorDropChances);
             entityLiving.setCanPickUpLoot(false);
         }
     }
 
     private void doDisarm(EntityLiving entity, Random rand, IItemHandler handler, float[] dropChances) {
+        if (handler == null) return;
+
         for (int i = 0; i < handler.getSlots(); i++) {
             ItemStack stack = handler.getStackInSlot(i);
             boolean flag1 = dropChances[i] > 1.0F;
