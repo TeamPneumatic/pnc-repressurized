@@ -91,12 +91,14 @@ public class GuiKeybindCheckBox extends GuiCheckBox {
                         if ((UPGRADE_PREFIX + upgradeRenderHandler.getUpgradeName()).equals(keyBindingName)) {
                             NetworkHandler.sendToServer(new PacketToggleArmorFeature((byte) i, coreComponents.checked && checked, slot));
                             CommonHUDHandler.getHandlerForPlayer().setUpgradeRenderEnabled(slot, (byte)i, coreComponents.checked && checked);
+                            break;
                         }
                     }
                     if (keyBindingName.equals(UPGRADE_PREFIX + "coreComponents")) {
                         for (int i = 0; i < renderHandlers.size(); i++) {
-                            NetworkHandler.sendToServer(new PacketToggleArmorFeature((byte) i, checked && GuiKeybindCheckBox.fromKeyBindingName(GuiKeybindCheckBox.UPGRADE_PREFIX + renderHandlers.get(i).getUpgradeName()).checked, slot));
-                            CommonHUDHandler.getHandlerForPlayer().setUpgradeRenderEnabled(slot, (byte)i, coreComponents.checked && checked);
+                            boolean state = GuiKeybindCheckBox.fromKeyBindingName(GuiKeybindCheckBox.UPGRADE_PREFIX + renderHandlers.get(i).getUpgradeName()).checked;
+                            NetworkHandler.sendToServer(new PacketToggleArmorFeature((byte) i, coreComponents.checked && state, slot));
+                            CommonHUDHandler.getHandlerForPlayer().setUpgradeRenderEnabled(slot, (byte)i, coreComponents.checked && state);
                         }
                     }
                 }

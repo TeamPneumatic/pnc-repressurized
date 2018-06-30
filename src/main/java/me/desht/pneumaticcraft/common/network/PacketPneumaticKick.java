@@ -31,9 +31,12 @@ public class PacketPneumaticKick extends AbstractPacket<PacketPneumaticKick> {
     @Override
     public void handleServerSide(PacketPneumaticKick message, EntityPlayer player) {
         if (player.getItemStackFromSlot(EntityEquipmentSlot.FEET).getItem() instanceof ItemPneumaticBoots) {
-            int upgrades = CommonHUDHandler.getHandlerForPlayer(player).getUpgradeCount(EntityEquipmentSlot.FEET, IItemRegistry.EnumUpgrade.DISPENSER);
-            if (upgrades > 0) {
-                handleKick(player, Math.min(PneumaticValues.PNEUMATIC_KICK_MAX_UPGRADES, upgrades));
+            CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer(player);
+            if (handler.isArmorEnabled()) {
+                int upgrades = handler.getUpgradeCount(EntityEquipmentSlot.FEET, IItemRegistry.EnumUpgrade.DISPENSER);
+                if (upgrades > 0) {
+                    handleKick(player, Math.min(PneumaticValues.PNEUMATIC_KICK_MAX_UPGRADES, upgrades));
+                }
             }
         }
     }

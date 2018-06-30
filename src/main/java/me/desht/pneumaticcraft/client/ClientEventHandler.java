@@ -400,10 +400,10 @@ public class ClientEventHandler {
             GameSettings settings = FMLClientHandler.instance().getClient().gameSettings;
             if (handler.isJetBootsActive() && !settings.keyBindJump.isKeyDown()) {
                 NetworkHandler.sendToServer(new PacketJetBootState(false));
-                handler.setJetBootsActive(false);
+                handler.setJetBootsActive(false, player);
             } else if (!handler.isJetBootsActive() && settings.keyBindJump.isKeyDown()) {
                 NetworkHandler.sendToServer(new PacketJetBootState(true));
-                handler.setJetBootsActive(true);
+                handler.setJetBootsActive(true, player);
             }
         }
     }

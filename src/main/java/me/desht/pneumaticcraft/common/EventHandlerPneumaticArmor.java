@@ -37,11 +37,12 @@ public class EventHandlerPneumaticArmor {
             if (!(stack.getItem() instanceof ItemPneumaticBoots)) {
                 return;
             }
+            CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer(player);
+            if (!handler.isArmorEnabled()) return;
 
             ItemPneumaticBoots boots = (ItemPneumaticBoots) stack.getItem();
-
             float airNeeded = event.getDistance() * PneumaticValues.PNEUMATIC_ARMOR_FALL_USAGE;
-            float airAvailable = boots.getVolume(stack) * boots.getPressure(stack);
+            float airAvailable = boots.getVolume(stack) * handler.getArmorPressure(EntityEquipmentSlot.FEET);
             if (airAvailable < 1) {
                 return;
             } else if (airAvailable > airNeeded) {
@@ -55,7 +56,7 @@ public class EventHandlerPneumaticArmor {
                 NetworkHandler.sendToAllAround(new PacketSpawnParticle(EnumParticleTypes.EXPLOSION_NORMAL, player.posX, player.posY, player.posZ, sx, 0.2, sz), player.world);
             }
             NetworkHandler.sendToAllAround(new PacketPlaySound(Sounds.SHORT_HISS, SoundCategory.PLAYERS, player.posX, player.posY, player.posZ, 0.3f, 0.8f, false), player.world);
-            CommonHUDHandler.getHandlerForPlayer(player).addAir(stack, EntityEquipmentSlot.FEET, (int) -airNeeded);
+            handler.addAir(stack, EntityEquipmentSlot.FEET, (int) -airNeeded);
         }
     }
 
@@ -67,7 +68,7 @@ public class EventHandlerPneumaticArmor {
             ItemStack armorStack = player.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
             if (armorStack.getItem() instanceof ItemPneumaticChestPlate && event.getSource().isFireDamage()) {
                 CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer(player);
-                if (handler.getArmorPressure(EntityEquipmentSlot.CHEST) > 0.1F && handler.getUpgradeCount(EntityEquipmentSlot.CHEST, IItemRegistry.EnumUpgrade.SECURITY) > 0) {
+                if (handler.isArmorEnabled() && handler.getArmorPressure(EntityEquipmentSlot.CHEST) > 0.1F && handler.getUpgradeCount(EntityEquipmentSlot.CHEST, IItemRegistry.EnumUpgrade.SECURITY) > 0) {
                     event.setCanceled(true);
                     player.extinguish();
                     if (!player.world.isRemote) {
@@ -115,7 +116,7 @@ public class EventHandlerPneumaticArmor {
             CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer(player);
             if (!handler.isJetBootsActive() && stack.getItem() instanceof ItemPneumaticLeggings && handler.isArmorReady(EntityEquipmentSlot.LEGS) && handler.isJumpBoostEnabled()) {
                 ItemPneumaticLeggings legs = (ItemPneumaticLeggings) stack.getItem();
-                if (legs.getPressure(stack) > 0.1F) {
+                if (legs.getPressure(stack) > 0.01F) {
                     int rangeUpgrades = handler.getUpgradeCount(EntityEquipmentSlot.LEGS, IItemRegistry.EnumUpgrade.RANGE,
                             player.isSneaking() ? 1 : PneumaticValues.PNEUMATIC_LEGS_MAX_JUMP);
                     player.motionY += rangeUpgrades * 0.15;

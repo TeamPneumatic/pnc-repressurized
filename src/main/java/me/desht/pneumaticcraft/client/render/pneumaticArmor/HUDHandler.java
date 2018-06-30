@@ -39,6 +39,7 @@ import java.util.List;
 
 @SideOnly(Side.CLIENT)
 public class HUDHandler implements IKeyListener {
+    private static final int PROGRESS_BAR_HEIGHT = 17;
 
     private final List<ArmorMessage> messageList = new ArrayList<>();
     private boolean[] gaveEmptyWarning = new boolean[4];  // per-slot
@@ -106,8 +107,6 @@ public class HUDHandler implements IKeyListener {
                     if (player.getItemStackFromSlot(slot).getItem() instanceof ItemPneumaticArmorBase) {
                         update(mc.player, slot);
                         armorEquipped = true;
-                    } else {
-                        CommonHUDHandler.getHandlerForPlayer(player).resetTicksSinceEquip(slot);
                     }
                 }
                 if (armorEquipped) {
@@ -136,15 +135,18 @@ public class HUDHandler implements IKeyListener {
             for (EntityEquipmentSlot slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
                 if (!(player.getItemStackFromSlot(slot).getItem() instanceof ItemPneumaticArmorBase)) continue;
                 if (!comHudHandler.isArmorReady(slot)) {
-                    // blockTrackInfo = null;
+                    // initialization progress bar(s)
                     gaveEmptyWarning[slot.getIndex()] = false;
                     gaveNearlyEmptyWarning[slot.getIndex()] = false;
-                    int yOffset = (3 - slot.getIndex()) * 21;
-                    RenderProgressBar.render(sr.getScaledWidth() / 2, 10 + yOffset, sr.getScaledWidth() - 10, 30 + yOffset, -90F, comHudHandler.getTicksSinceEquipped(slot) * 100 / comHudHandler.getStartupTime(slot));
+                    if (comHudHandler.isArmorEnabled()) {
+                        int yOffset = 10 + (3 - slot.getIndex()) * PROGRESS_BAR_HEIGHT;
+                        RenderProgressBar.render(sr.getScaledWidth() / 2, yOffset, sr.getScaledWidth() - 10, yOffset + PROGRESS_BAR_HEIGHT - 1, -90F, comHudHandler.getTicksSinceEquipped(slot) * 100 / comHudHandler.getStartupTime(slot));
+                    }
                 } else {
                     ItemStack armorStack = player.getItemStackFromSlot(slot);
                     String itemName = armorStack.getDisplayName();
                     float pressure = comHudHandler.armorPressure[slot.getIndex()];
+                    // low/no pressure warnings
                     if (pressure < 0.05F && !gaveEmptyWarning[slot.getIndex()]) {
                         addMessage(new ArmorMessage("Your " + itemName + " is out of air!", new ArrayList<>(), 100, 0x70FF0000));
                         gaveEmptyWarning[slot.getIndex()] = true;
@@ -153,6 +155,7 @@ public class HUDHandler implements IKeyListener {
                         addMessage(new ArmorMessage("Your " + itemName + " is almost out of air!", new ArrayList<>(), 60, 0x70FF0000));
                         gaveNearlyEmptyWarning[slot.getIndex()] = true;
                     }
+                    // all enabled upgrades do their 2D rendering here
                     if (GuiKeybindCheckBox.getCoreComponents().checked) {
                         List<IUpgradeRenderHandler> renderHandlers = UpgradeRenderHandlerList.instance().getHandlersForSlot(slot);
                         for (int i = 0; i < renderHandlers.size(); i++) {
@@ -179,11 +182,13 @@ public class HUDHandler implements IKeyListener {
             GL11.glDepthMask(true);
             GL11.glEnable(GL11.GL_TEXTURE_2D);
 
-            // show armor equip percentages
-            for (EntityEquipmentSlot slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
-                if (!(player.getItemStackFromSlot(slot).getItem() instanceof ItemPneumaticArmorBase)) continue;
-                if (comHudHandler.getTicksSinceEquipped(slot) <= comHudHandler.getStartupTime(slot))
-                    minecraft.fontRenderer.drawString(comHudHandler.getTicksSinceEquipped(slot) * 100 / comHudHandler.getStartupTime(slot) + "%", sr.getScaledWidth() * 3 / 4 - 8, 16 + 21 * (3 - slot.getIndex()), 0x000000);
+            // show armor initialisation percentages
+            if (comHudHandler.isArmorEnabled()) {
+                for (EntityEquipmentSlot slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
+                    if (player.getItemStackFromSlot(slot).getItem() instanceof ItemPneumaticArmorBase && !comHudHandler.isArmorReady(slot) && comHudHandler.getArmorPressure(slot) > 0F) {
+                        minecraft.fontRenderer.drawString(comHudHandler.getTicksSinceEquipped(slot) * 100 / comHudHandler.getStartupTime(slot) + "%", sr.getScaledWidth() * 3 / 4 - 8, 14 + PROGRESS_BAR_HEIGHT * (3 - slot.getIndex()), 0x000000);
+                    }
+                }
             }
         }
     }
@@ -192,7 +197,7 @@ public class HUDHandler implements IKeyListener {
         CommonHUDHandler comHudHandler = CommonHUDHandler.getHandlerForPlayer(player);
         boolean armorEnabled = GuiKeybindCheckBox.getCoreComponents().checked;
         List<IUpgradeRenderHandler> renderHandlers = UpgradeRenderHandlerList.instance().getHandlersForSlot(slot);
-        if (comHudHandler.getTicksSinceEquipped(slot) == 1) {
+        if (comHudHandler.getTicksSinceEquipped(slot) == 0) {
             for (IUpgradeRenderHandler handler : UpgradeRenderHandlerList.instance().getHandlersForSlot(slot)) {
                 handler.reset();
             }
@@ -268,7 +273,8 @@ public class HUDHandler implements IKeyListener {
                 getSpecificRenderer(EntityTrackUpgradeHandler.class).hack();
             } else if (key == KeyHandler.getInstance().keybindDebuggingDrone && DroneDebugUpgradeHandler.enabledForPlayer(PneumaticCraftRepressurized.proxy.getPlayer())) {
                 getSpecificRenderer(EntityTrackUpgradeHandler.class).selectAsDebuggingTarget();
-            } else if (key == KeyHandler.getInstance().keybindKick) {
+            } else if (key == KeyHandler.getInstance().keybindKick
+                    && CommonHUDHandler.getHandlerForPlayer(mc.player).getUpgradeCount(EntityEquipmentSlot.FEET, IItemRegistry.EnumUpgrade.DISPENSER) > 0) {
                 NetworkHandler.sendToServer(new PacketPneumaticKick());
             }
         }

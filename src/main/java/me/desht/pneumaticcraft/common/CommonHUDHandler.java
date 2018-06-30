@@ -9,6 +9,7 @@ import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IPressurizable;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.*;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.hacking.HackableHandler;
+import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.common.item.ItemMachineUpgrade;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmorBase;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticLeggings;
@@ -40,8 +41,10 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.network.FMLNetworkEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -59,10 +62,12 @@ public class CommonHUDHandler {
     private final int[] ticksSinceEquip = new int[4];
     public float[] armorPressure = new float[4];
     private int upgradeMatrix[][] = new int [4][];
+    private boolean isValid;
 
     private int hackTime;
     private WorldAndCoord hackedBlock;
     private Entity hackedEntity;
+    private boolean armorEnabled;
     private boolean magnetEnabled;
     private boolean chargingEnabled;
     private boolean stepAssistEnabled;
@@ -91,6 +96,7 @@ public class CommonHUDHandler {
             upgradeRenderersEnabled[slot.getIndex()] = new boolean[renderHandlers.size()];
             upgradeMatrix[slot.getIndex()] = new int[EnumUpgrade.values().length];
         }
+        isValid = true;
     }
 
     private static CommonHUDHandler getManagerInstance(EntityPlayer player) {
@@ -113,6 +119,26 @@ public class CommonHUDHandler {
         }
     }
 
+    @SubscribeEvent
+    public static void onPlayerLeave(PlayerEvent.PlayerLoggedOutEvent event) {
+        // called server side when player logs off
+        clearHUDHandlerForPlayer(event.player);
+    }
+
+    @SubscribeEvent
+    public static void onClientDisconnect(FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {
+        // called client side when client disconnects
+        EntityPlayer player = PneumaticCraftRepressurized.proxy.getPlayer();
+        if (player != null) {
+            clearHUDHandlerForPlayer(player);
+        }
+    }
+
+    private static void clearHUDHandlerForPlayer(EntityPlayer player) {
+        CommonHUDHandler h = getManagerInstance(player);
+        h.playerHudHandlers.computeIfPresent(player.getName(), (name, val) -> { val.invalidate(); return null; } );
+    }
+
     private void tick(EntityPlayer player) {
         for (EntityEquipmentSlot slot :UpgradeRenderHandlerList.ARMOR_SLOTS) {
             tickArmorPiece(player, slot);
@@ -122,27 +148,32 @@ public class CommonHUDHandler {
 
     private void tickArmorPiece(EntityPlayer player, EntityEquipmentSlot slot) {
         ItemStack armorStack = player.getItemStackFromSlot(slot);
+        boolean armorActive = false;
         if (armorStack.getItem() instanceof ItemPneumaticArmorBase) {
             armorPressure[slot.getIndex()] = ((IPressurizable) armorStack.getItem()).getPressure(armorStack);
             if (ticksSinceEquip[slot.getIndex()] == 1) {
                 checkArmorInventory(player, slot);
             }
             ticksSinceEquip[slot.getIndex()]++;
-            if (!player.world.isRemote) {
-                if (isArmorReady(slot) && !player.capabilities.isCreativeMode) {
-                    // use up air in the armor piece
-                    float airUsage = UpgradeRenderHandlerList.instance().getAirUsage(player, slot,false);
-                    if (airUsage != 0) {
-                        float oldPressure = addAir(armorStack, slot, (int) -airUsage);
-                        if (oldPressure > 0F && armorPressure[slot.getIndex()] == 0F) {
-                            // out of air!
-                            NetworkHandler.sendTo(new PacketPlaySound(Sounds.MINIGUN_STOP, SoundCategory.PLAYERS, player.posX, player.posY, player.posZ, 1.0f, 2.0f, false), (EntityPlayerMP) player);
+            if (armorEnabled && armorPressure[slot.getIndex()] > 0F) {
+                armorActive = true;
+                if (!player.world.isRemote) {
+                    if (isArmorReady(slot) && !player.capabilities.isCreativeMode) {
+                        // use up air in the armor piece
+                        float airUsage = UpgradeRenderHandlerList.instance().getAirUsage(player, slot, false);
+                        if (airUsage != 0) {
+                            float oldPressure = addAir(armorStack, slot, (int) -airUsage);
+                            if (oldPressure > 0F && armorPressure[slot.getIndex()] == 0F) {
+                                // out of air!
+                                NetworkHandler.sendTo(new PacketPlaySound(Sounds.MINIGUN_STOP, SoundCategory.PLAYERS, player.posX, player.posY, player.posZ, 1.0f, 2.0f, false), (EntityPlayerMP) player);
+                            }
                         }
                     }
                 }
+                doArmorActions(player, armorStack, slot);
             }
-            doArmorActions(player, armorStack, slot);
-        } else {
+        }
+        if (!armorActive) {
             if (ticksSinceEquip[slot.getIndex()] > 0) {
                 onArmorRemoved(player, armorStack, slot);
             }
@@ -150,6 +181,9 @@ public class CommonHUDHandler {
         }
     }
 
+    /*
+     * Called when an armor piece is removed, or otherwise disabled - out of air, armor disabled
+     */
     private void onArmorRemoved(EntityPlayer player, ItemStack armorStack, EntityEquipmentSlot slot) {
         switch (slot) {
             case FEET:
@@ -268,10 +302,6 @@ public class CommonHUDHandler {
                         NetworkHandler.sendToAllAround(new PacketSpawnParticle(EnumParticleTypes.SMOKE_NORMAL, player.posX, player.posY, player.posZ, dx, -0.5, dz), player.world);
                     }
                 }
-                if ((player.ticksExisted % 14) == 1) {
-                    float pitch = player.motionY < 0 ? 0.6F : 0.7F;
-                    NetworkHandler.sendToAllAround(new PacketPlaySound(Sounds.LEAKING_GAS_SOUND, SoundCategory.PLAYERS, player.posX, player.posY, player.posZ, 0.1f, pitch, false), player.world);
-                }
                 addAir(bootsStack, EntityEquipmentSlot.FEET, -jetbootsAirUsage);
             }
         }
@@ -311,7 +341,7 @@ public class CommonHUDHandler {
     }
 
     private void handleItemRepair(ItemStack armorStack, EntityEquipmentSlot slot) {
-        int upgrades = Math.min(getUpgradeCount(slot, EnumUpgrade.ITEM_LIFE), PneumaticValues.ARMOR_REPAIR_MAX_UPGRADES);
+        int upgrades = getUpgradeCount(slot, EnumUpgrade.ITEM_LIFE, PneumaticValues.ARMOR_REPAIR_MAX_UPGRADES);
         int interval = 120 - (20 * upgrades);
         int airUsage = PneumaticValues.PNEUMATIC_ARMOR_REPAIR_USAGE * upgrades;
 
@@ -324,15 +354,16 @@ public class CommonHUDHandler {
     }
 
     private void handleChestplateMagnet(EntityPlayer player, ItemStack chestplateStack) {
-        if (player.world.isRemote || !magnetEnabled || getTicksSinceEquipped(EntityEquipmentSlot.CHEST) % PneumaticValues.MAGNET_INTERVAL != 0)
+        if (player.world.isRemote || !magnetEnabled || (getTicksSinceEquipped(EntityEquipmentSlot.CHEST) & 0x7) != 0)
             return;
 
         AxisAlignedBB box = new AxisAlignedBB(player.getPosition()).grow(magnetRadius);
         List<EntityItem> itemList = player.getEntityWorld().getEntitiesWithinAABB(EntityItem.class, box, EntitySelectors.IS_ALIVE);
 
+        Vec3d playerVec = player.getPositionVector();
         for (EntityItem item : itemList) {
             if (!item.cannotPickup()
-                    && item.getPositionVector().squareDistanceTo(player.getPositionVector()) <= magnetRadiusSq
+                    && item.getPositionVector().squareDistanceTo(playerVec) <= magnetRadiusSq
                     && !ItemRegistry.getInstance().shouldSuppressMagnet(item)
                     && !item.getEntityData().getBoolean(Names.PREVENT_REMOTE_MOVEMENT)) {
                 if (armorPressure[EntityEquipmentSlot.CHEST.getIndex()] < 0.1F) break;
@@ -362,7 +393,7 @@ public class CommonHUDHandler {
                 if (++hackTime >= hackableEntity.getHackTime(hackedEntity, player)) {
                     hackableEntity.onHackFinished(hackedEntity, player);
                     PneumaticCraftRepressurized.proxy.getHackTickHandler().trackEntity(hackedEntity, hackableEntity);
-                    NetworkHandler.sendToAllAround(new PacketHackingEntityFinish(hackedEntity), new NetworkRegistry.TargetPoint(hackedEntity.world.provider.getDimension(), hackedEntity.posX, hackedEntity.posY, hackedEntity.posZ, 64));
+                    NetworkHandler.sendToAllAround(new PacketHackingEntityFinish(hackedEntity), new TargetPoint(hackedEntity.world.provider.getDimension(), hackedEntity.posX, hackedEntity.posY, hackedEntity.posZ, 64));
                     setHackedEntity(null);
                 }
             } else {
@@ -412,6 +443,7 @@ public class CommonHUDHandler {
     public void setUpgradeRenderEnabled(EntityEquipmentSlot slot, byte featureIndex, boolean state) {
         upgradeRenderersEnabled[slot.getIndex()][featureIndex] = state;
         IUpgradeRenderHandler handler = UpgradeRenderHandlerList.instance().getHandlersForSlot(slot).get(featureIndex);
+        // bit of a code smell here, but caching the enablement of various features is important
         if (handler instanceof MagnetUpgradeRenderHandler) {
             magnetEnabled = state;
         } else if (handler instanceof ChargingUpgradeRenderHandler) {
@@ -424,15 +456,13 @@ public class CommonHUDHandler {
             jumpBoostEnabled = state;
         } else if (handler instanceof JetBootsUpgradeHandler) {
             jetBootsEnabled = state;
+        } else if (handler instanceof MainHelmetHandler) {
+            armorEnabled = state;
         }
     }
 
     public int getTicksSinceEquipped(EntityEquipmentSlot slot) {
         return ticksSinceEquip[slot.getIndex()];
-    }
-
-    public void resetTicksSinceEquip(EntityEquipmentSlot slot) {
-        ticksSinceEquip[slot.getIndex()] = 0;
     }
 
     private boolean isModuleEnabled(ItemStack[] helmetStacks, IUpgradeRenderHandler handler) {
@@ -490,8 +520,11 @@ public class CommonHUDHandler {
         return armorPressure[slot.getIndex()];
     }
 
-    public void setJetBootsActive(boolean jetBootsActive) {
+    public void setJetBootsActive(boolean jetBootsActive, EntityPlayer player) {
         this.jetBootsActive = jetBootsActive;
+        if (!player.world.isRemote && jetBootsActive && player.onGround) {
+            NetworkHandler.sendToDimension(new PacketPlayMovingSound(MovingSounds.Sound.JET_BOOTS, player), player.world.provider.getDimension());
+        }
     }
 
     public boolean isJetBootsActive() {
@@ -500,5 +533,17 @@ public class CommonHUDHandler {
 
     public boolean isJetBootsEnabled() {
         return jetBootsEnabled;
+    }
+
+    public boolean isArmorEnabled() {
+        return armorEnabled;
+    }
+
+    public boolean isValid() {
+        return isValid;
+    }
+
+    public void invalidate() {
+        isValid = false;
     }
 }
