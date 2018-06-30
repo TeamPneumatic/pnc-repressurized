@@ -76,6 +76,7 @@ public class CommonHUDHandler {
     private boolean jetBootsEnabled;  // are jet boots switched on?
     private boolean jetBootsActive;  // are jet boots actually firing (player rising) ?
     private float flightAccel = 1.0F;  // increases while diving, decreases while climbing
+    private int prevJetBootsAirUsage;  // so we know when the jet boots are starting up
 
     private static final UUID PNEUMATIC_SPEED_ID[] = {
             UUID.fromString("6ecaf25b-9619-4fd1-ae4c-c2f1521047d7"),
@@ -280,7 +281,7 @@ public class CommonHUDHandler {
                 // jetboots not firing, but enabled - slowly descend
                 player.motionY = player.isSneaking() ? -0.45 : -0.15 + 0.015 * jetbootsCount;
                 player.fallDistance = 0;
-                jetbootsAirUsage = (int) (PneumaticValues.PNEUMATIC_JET_BOOTS_USAGE * (player.isSneaking() ? 0.75F : 0.5F));
+                jetbootsAirUsage = (int) (PneumaticValues.PNEUMATIC_JET_BOOTS_USAGE * (player.isSneaking() ? 0.25F : 0.5F));
                 flightAccel = 1.0F;
             } else {
                 flightAccel = 1.0F;
@@ -288,11 +289,14 @@ public class CommonHUDHandler {
         }
         if (jetbootsAirUsage != 0) {
             if (!player.world.isRemote) {
+                if (prevJetBootsAirUsage == 0) {
+                    NetworkHandler.sendToDimension(new PacketPlayMovingSound(MovingSounds.Sound.JET_BOOTS, player), player.world.provider.getDimension());
+                }
                 if (player.collidedHorizontally) {
                     double vel = Math.sqrt(player.motionZ * player.motionZ + player.motionX * player.motionX);
                     if (vel > 2) {
                         player.playSound(vel > 2.5 ? SoundEvents.ENTITY_GENERIC_BIG_FALL : SoundEvents.ENTITY_GENERIC_SMALL_FALL, 1.0F, 1.0F);
-                        player.attackEntityFrom(DamageSource.FLY_INTO_WALL, (float)vel / 2F);
+                        player.attackEntityFrom(DamageSource.FLY_INTO_WALL, (float) vel);
                     }
                 }
                 if ((player.ticksExisted & 0x1) == 1) {
@@ -305,6 +309,7 @@ public class CommonHUDHandler {
                 addAir(bootsStack, EntityEquipmentSlot.FEET, -jetbootsAirUsage);
             }
         }
+        prevJetBootsAirUsage = jetbootsAirUsage;
     }
 
     private void handleChestplateCharging(EntityPlayer player, ItemStack chestplateStack) {
@@ -522,9 +527,6 @@ public class CommonHUDHandler {
 
     public void setJetBootsActive(boolean jetBootsActive, EntityPlayer player) {
         this.jetBootsActive = jetBootsActive;
-        if (!player.world.isRemote && jetBootsActive && player.onGround) {
-            NetworkHandler.sendToDimension(new PacketPlayMovingSound(MovingSounds.Sound.JET_BOOTS, player), player.world.provider.getDimension());
-        }
     }
 
     public boolean isJetBootsActive() {

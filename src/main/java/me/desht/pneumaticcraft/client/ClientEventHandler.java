@@ -59,6 +59,7 @@ import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.vector.Quaternion;
 
 import java.util.*;
 
@@ -407,4 +408,46 @@ public class ClientEventHandler {
             }
         }
     }
+
+    private boolean jetBootsActive;
+
+    @SubscribeEvent
+    public void playerPreRotateEvent(RenderPlayerEvent.Pre event) {
+        EntityPlayer player = event.getEntityPlayer();
+        CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer(player);
+
+        jetBootsActive = handler.isArmorEnabled() && handler.isJetBootsActive();
+        if (jetBootsActive) {
+            GlStateManager.pushMatrix();
+            GlStateManager.rotate(makeQuaternion(player));
+            player.limbSwingAmount = player.prevLimbSwingAmount = 0F;
+
+        }
+    }
+
+    @SubscribeEvent
+    public void playerPostRotateEvent(RenderPlayerEvent.Post event) {
+        if (jetBootsActive) {
+            GlStateManager.popMatrix();
+        }
+    }
+
+    private static Quaternion makeQuaternion(EntityPlayer player) {
+        Vec3d forward = player.getLookVec().normalize();
+
+        double dot = new Vec3d(0, 1, 0).dotProduct(forward);
+        if (Math.abs(dot + 1) < 0.000001) {
+            return new Quaternion(0F, 1F, 0F, (float)Math.PI);
+        }
+        if (Math.abs (dot - 1) < 0.000001) {
+            return new Quaternion(); //identity
+        }
+
+        Vec3d rotAxis = new Vec3d(0, 1, 0).crossProduct(forward).normalize();
+
+        double a2 = Math.acos(dot) * .5f;
+        float s = (float) Math.sin(a2);
+        return new Quaternion((float) rotAxis.x * s, (float) rotAxis.y * s, (float) rotAxis.z * s, (float) Math.cos(a2));
+    }
 }
+

@@ -24,7 +24,7 @@ public class MovingSoundJetBoots extends MovingSound {
 
     @Override
     public void update() {
-        if (!handler.isValid()) {
+        if (!handler.isValid() || !handler.isArmorEnabled()) {
             // handler gets invalidated if the tracked player disconnects
             donePlaying = true;
             return;
