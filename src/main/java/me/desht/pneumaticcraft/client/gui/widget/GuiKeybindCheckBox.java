@@ -138,7 +138,7 @@ public class GuiKeybindCheckBox extends GuiCheckBox {
         Minecraft mc = FMLClientHandler.instance().getClient();
         if (mc.inGameHasFocus && keyBinding != null && keyBinding.isPressed()) {
             onMouseClicked(0, 0, 0);
-            HUDHandler.instance().addMessage(I18n.format("pneumaticHelmet.message." + (checked ? "enable" : "disable") + "Setting", I18n.format(text)), new ArrayList<>(), 60, 0x7000AA00);
+            HUDHandler.instance().addMessage(I18n.format("pneumaticHelmet.message." + (checked ? "enable" : "disable") + "Setting", I18n.format(keyBindingName)), new ArrayList<>(), 60, 0x7000AA00);
         }
     }
 
