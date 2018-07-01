@@ -45,7 +45,12 @@ public class MovingSoundJetBoots extends MovingSound {
             pitch = 0.6F - ((20 - endTimer) / 50F);
             volume = 0.2F - ((20 - endTimer) / 100F);
         } else {
-            pitch = handler.isJetBootsActive() ? 0.7F : 0.6F;
+            if (handler.isJetBootsActive()) {
+                double vel = Math.sqrt(player.motionX * player.motionX + player.motionY * player.motionY + player.motionZ * player.motionZ);
+                pitch = 0.7F + (float) vel / 20;
+            } else {
+                pitch = 0.6F;
+            }
         }
     }
 }

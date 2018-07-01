@@ -77,6 +77,7 @@ public class CommonHUDHandler {
     private boolean jetBootsActive;  // are jet boots actually firing (player rising) ?
     private float flightAccel = 1.0F;  // increases while diving, decreases while climbing
     private int prevJetBootsAirUsage;  // so we know when the jet boots are starting up
+    private int jetBootsActiveTicks;
 
     private static final UUID PNEUMATIC_SPEED_ID[] = {
             UUID.fromString("6ecaf25b-9619-4fd1-ae4c-c2f1521047d7"),
@@ -266,18 +267,21 @@ public class CommonHUDHandler {
     private void handleJetBoots(EntityPlayer player, ItemStack bootsStack) {
         int jetbootsCount = getUpgradeCount(EntityEquipmentSlot.FEET, IItemRegistry.EnumUpgrade.JET_BOOTS, PneumaticValues.PNEUMATIC_JET_BOOTS_MAX_UPGRADES);
         int jetbootsAirUsage = 0;
+        Vec3d lookVec = new Vec3d(0, 0.5, 0);
         if (getArmorPressure(EntityEquipmentSlot.FEET) > 0.0F) {
             if (isJetBootsActive()) {
                 // jetboots firing - move in direction of looking
-                Vec3d vec = player.getLookVec().normalize().scale(0.15 * jetbootsCount);
-                flightAccel += vec.y / -20.0;
+                lookVec = player.getLookVec().normalize().scale(0.15 * jetbootsCount);
+                flightAccel += lookVec.y / -20.0;
                 flightAccel = MathHelper.clamp(flightAccel, 0.8F, 4.0F);
-                vec = vec.scale(flightAccel);
-                player.motionX = vec.x;
-                player.motionY = player.onGround ? 0 : vec.y;
-                player.motionZ = vec.z;
+                lookVec = lookVec.scale(flightAccel);
+                if (jetBootsActiveTicks < 10) lookVec = lookVec.scale(jetBootsActiveTicks * 0.1);
+                player.motionX = lookVec.x;
+                player.motionY = player.onGround ? 0 : lookVec.y;
+                player.motionZ = lookVec.z;
                 jetbootsAirUsage = PneumaticValues.PNEUMATIC_JET_BOOTS_USAGE * jetbootsCount;
-            } else if (isJetBootsEnabled() && player.fallDistance > 0) {
+                jetBootsActiveTicks++;
+            } else if (isJetBootsEnabled() && !player.onGround) {
                 // jetboots not firing, but enabled - slowly descend
                 player.motionY = player.isSneaking() ? -0.45 : -0.15 + 0.015 * jetbootsCount;
                 player.fallDistance = 0;
@@ -299,12 +303,9 @@ public class CommonHUDHandler {
                         player.attackEntityFrom(DamageSource.FLY_INTO_WALL, (float) vel);
                     }
                 }
-                if ((player.ticksExisted & 0x1) == 1) {
-                    for (int i = 0; i < 3; i++) {
-                        float dx = (player.getRNG().nextFloat() - 0.5f) / 3.0f;
-                        float dz = (player.getRNG().nextFloat() - 0.5f) / 3.0f;
-                        NetworkHandler.sendToAllAround(new PacketSpawnParticle(EnumParticleTypes.SMOKE_NORMAL, player.posX, player.posY, player.posZ, dx, -0.5, dz), player.world);
-                    }
+                Vec3d jetVec = lookVec.scale(-0.5);
+                for (int i = 0; i < (isJetBootsActive() ? 3 : 1); i++) {
+                    NetworkHandler.sendToAllAround(new PacketSpawnParticle(EnumParticleTypes.SMOKE_NORMAL, player.posX, player.posY, player.posZ, jetVec.x, jetVec.y, jetVec.z), player.world);
                 }
                 addAir(bootsStack, EntityEquipmentSlot.FEET, -jetbootsAirUsage);
             }
@@ -526,6 +527,11 @@ public class CommonHUDHandler {
     }
 
     public void setJetBootsActive(boolean jetBootsActive, EntityPlayer player) {
+        if (jetBootsActive != this.jetBootsActive) {
+            NetworkHandler.sendToDimension(new PacketMarkPlayerFlying(player, jetBootsActive), player.world.provider.getDimension());
+        }
+        if (!jetBootsActive) jetBootsActiveTicks = 0;
+
         this.jetBootsActive = jetBootsActive;
     }
 

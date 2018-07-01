@@ -18,6 +18,7 @@ import me.desht.pneumaticcraft.common.item.*;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketJetBootState;
+import me.desht.pneumaticcraft.common.network.PacketMarkPlayerFlying;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -409,25 +410,21 @@ public class ClientEventHandler {
         }
     }
 
-    private boolean jetBootsActive;
-
     @SubscribeEvent
     public void playerPreRotateEvent(RenderPlayerEvent.Pre event) {
         EntityPlayer player = event.getEntityPlayer();
-        CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer(player);
-
-        jetBootsActive = handler.isArmorEnabled() && handler.isJetBootsActive();
-        if (jetBootsActive) {
+        if (PacketMarkPlayerFlying.shouldPlayerBeRotated(player)) {
             GlStateManager.pushMatrix();
+            GlStateManager.translate(event.getX(), event.getY(), event.getZ());
             GlStateManager.rotate(makeQuaternion(player));
+            GlStateManager.translate(-event.getX(), -event.getY(), -event.getZ());
             player.limbSwingAmount = player.prevLimbSwingAmount = 0F;
-
         }
     }
 
     @SubscribeEvent
     public void playerPostRotateEvent(RenderPlayerEvent.Post event) {
-        if (jetBootsActive) {
+        if (PacketMarkPlayerFlying.shouldPlayerBeRotated(event.getEntityPlayer())) {
             GlStateManager.popMatrix();
         }
     }
