@@ -18,7 +18,7 @@ import me.desht.pneumaticcraft.common.item.*;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketJetBootState;
-import me.desht.pneumaticcraft.common.network.PacketMarkPlayerFlying;
+import me.desht.pneumaticcraft.common.network.PacketMarkPlayerJetbootsActive;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -413,7 +413,7 @@ public class ClientEventHandler {
     @SubscribeEvent
     public void playerPreRotateEvent(RenderPlayerEvent.Pre event) {
         EntityPlayer player = event.getEntityPlayer();
-        if (PacketMarkPlayerFlying.shouldPlayerBeRotated(player)) {
+        if (PacketMarkPlayerJetbootsActive.shouldPlayerBeRotated(player)) {
             GlStateManager.pushMatrix();
             GlStateManager.translate(event.getX(), event.getY(), event.getZ());
             GlStateManager.rotate(makeQuaternion(player));
@@ -424,7 +424,7 @@ public class ClientEventHandler {
 
     @SubscribeEvent
     public void playerPostRotateEvent(RenderPlayerEvent.Post event) {
-        if (PacketMarkPlayerFlying.shouldPlayerBeRotated(event.getEntityPlayer())) {
+        if (PacketMarkPlayerJetbootsActive.shouldPlayerBeRotated(event.getEntityPlayer())) {
             GlStateManager.popMatrix();
         }
     }

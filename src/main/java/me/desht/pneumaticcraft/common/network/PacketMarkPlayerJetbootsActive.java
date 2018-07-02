@@ -12,22 +12,22 @@ import java.util.UUID;
  * Sent to inform the client that other players are flying and should have their
  * model rotated accordingly.
  */
-public class PacketMarkPlayerFlying extends AbstractPacket<PacketMarkPlayerFlying> {
+public class PacketMarkPlayerJetbootsActive extends AbstractPacket<PacketMarkPlayerJetbootsActive> {
     private static final Set<UUID> rotatedPlayers = new HashSet<>();
 
     private UUID playerID;
     private boolean flying;
 
-    public PacketMarkPlayerFlying() {
+    public PacketMarkPlayerJetbootsActive() {
     }
 
-    public PacketMarkPlayerFlying(EntityPlayer player, boolean flying) {
+    public PacketMarkPlayerJetbootsActive(EntityPlayer player, boolean flying) {
         this.playerID = player.getUniqueID();
         this.flying = flying;
     }
 
     @Override
-    public void handleClientSide(PacketMarkPlayerFlying message, EntityPlayer player) {
+    public void handleClientSide(PacketMarkPlayerJetbootsActive message, EntityPlayer player) {
         if (message.flying) {
             rotatedPlayers.add(message.playerID);
         } else {
@@ -36,7 +36,7 @@ public class PacketMarkPlayerFlying extends AbstractPacket<PacketMarkPlayerFlyin
     }
 
     @Override
-    public void handleServerSide(PacketMarkPlayerFlying message, EntityPlayer player) {
+    public void handleServerSide(PacketMarkPlayerJetbootsActive message, EntityPlayer player) {
 
     }
 

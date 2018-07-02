@@ -527,8 +527,8 @@ public class CommonHUDHandler {
     }
 
     public void setJetBootsActive(boolean jetBootsActive, EntityPlayer player) {
-        if (jetBootsActive != this.jetBootsActive) {
-            NetworkHandler.sendToDimension(new PacketMarkPlayerFlying(player, jetBootsActive), player.world.provider.getDimension());
+        if (!player.world.isRemote && jetBootsActive != this.jetBootsActive) {
+            NetworkHandler.sendToDimension(new PacketMarkPlayerJetbootsActive(player, jetBootsActive), player.world.provider.getDimension());
         }
         if (!jetBootsActive) jetBootsActiveTicks = 0;
 
