@@ -13,18 +13,12 @@ public class TileEntityAphorismTile extends TileEntityBase {
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound tag) {
         super.writeToNBT(tag);
-        tag.setInteger("textRotation", textRotation);
-        tag.setInteger("border", borderColor);
-        tag.setInteger("background", backgroundColor);
         return tag;
     }
 
     @Override
     public void readFromNBT(NBTTagCompound tag) {
         super.readFromNBT(tag);
-        textRotation = tag.getInteger("textRotation");
-        borderColor = tag.getInteger("border");
-        backgroundColor = tag.getInteger("background");
     }
 
     @Override
@@ -50,7 +44,7 @@ public class TileEntityAphorismTile extends TileEntityBase {
         textRotation = tag.getInteger("textRot");
         borderColor = tag.getInteger("border");
         backgroundColor = tag.getInteger("background");
-        rerenderTileEntity();
+        if (world != null) rerenderTileEntity();
     }
 
     public String[] getTextLines() {
