@@ -9,6 +9,7 @@ import net.minecraft.util.SoundCategory;
 public class MovingSoundJetBoots extends MovingSound {
     private final EntityPlayer player;
     private final CommonHUDHandler handler;
+    private float targetPitch;
     private int endTimer = -1;
 
     public MovingSoundJetBoots(EntityPlayer player) {
@@ -18,6 +19,8 @@ public class MovingSoundJetBoots extends MovingSound {
         this.repeat = true;
         this.repeatDelay = 0;
         this.volume = 0.2F;
+        this.targetPitch = 0.7F;
+        this.pitch = 0.4F;
 
         handler = CommonHUDHandler.getHandlerForPlayer(player);
     }
@@ -42,15 +45,16 @@ public class MovingSoundJetBoots extends MovingSound {
         zPosF = (float) player.posZ;
 
         if (endTimer > 0) {
-            pitch = 0.6F - ((20 - endTimer) / 50F);
+            targetPitch = 0.5F;
             volume = 0.2F - ((20 - endTimer) / 100F);
         } else {
             if (handler.isJetBootsActive()) {
                 double vel = Math.sqrt(player.motionX * player.motionX + player.motionY * player.motionY + player.motionZ * player.motionZ);
-                pitch = 0.7F + (float) vel / 20;
+                targetPitch = 0.7F + (float) vel / 20;
             } else {
-                pitch = 0.6F;
+                targetPitch = 0.6F;
             }
         }
+        pitch += (targetPitch - pitch) / 10F;
     }
 }
