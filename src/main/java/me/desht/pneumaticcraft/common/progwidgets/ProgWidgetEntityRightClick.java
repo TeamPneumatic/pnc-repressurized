@@ -2,7 +2,6 @@ package me.desht.pneumaticcraft.common.progwidgets;
 
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
 import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetAreaShow;
-import me.desht.pneumaticcraft.common.ai.DroneAIBlockInteract;
 import me.desht.pneumaticcraft.common.ai.DroneEntityBase;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.item.ItemPlastic;
@@ -90,7 +89,6 @@ public class ProgWidgetEntityRightClick extends ProgWidget implements IAreaProvi
                 if (!activated && targetedEntity instanceof EntityAgeable && ((EntityAgeable) targetedEntity).processInteract(drone.getFakePlayer(), EnumHand.MAIN_HAND)) {
                     activated = true;
                 }
-                DroneAIBlockInteract.transferToDroneFromFakePlayer(drone);
                 return false;//return activated; <-- will right click as long as it's sucessfully activated.
             }
 

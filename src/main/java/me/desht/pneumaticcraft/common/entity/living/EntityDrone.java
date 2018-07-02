@@ -340,6 +340,10 @@ public class EntityDrone extends EntityDroneBase
             if (world.getTotalWorldTime() % 20 == 0) {
                 updateSyncedPlayers();
             }
+            DroneFakePlayer fp = getFakePlayer();
+            fp.posX = posX;
+            fp.posY = posY;
+            fp.posZ = posZ;
         } else {
             if (digLaser != null) digLaser.update();
             oldLaserExtension = laserExtension;
@@ -1429,6 +1433,65 @@ public class EntityDrone extends EntityDroneBase
             }
 
             return f;
+        }
+
+        @Override
+        public int storeItemStack(ItemStack itemStackIn) {
+            for (int i = 0; i < getInv().getSlots(); i++) {
+                if (canMerge(getStackInSlot(i), itemStackIn)) return i;
+            }
+            return -1;
+        }
+
+        private boolean canMerge(ItemStack stack1, ItemStack stack2) {
+            return !stack1.isEmpty()
+                    && ItemStack.areItemStacksEqual(stack1, stack2)
+                    && stack1.isStackable()
+                    && stack1.getCount() < stack1.getMaxStackSize()
+                    && stack1.getCount() < this.getInventoryStackLimit();
+        }
+
+        @Override
+        public int getSizeInventory() {
+            return getInv().getSlots();
+        }
+
+        @Override
+        public ItemStack decrStackSize(int index, int count) {
+            return getInv().extractItem(index, count, false);
+        }
+
+        @Override
+        public ItemStack removeStackFromSlot(int index) {
+            return getInv().extractItem(index, getInv().getSlotLimit(index), false);
+        }
+
+        @Override
+        public int getFirstEmptyStack() {
+            for (int i = 0; i < getInv().getSlots(); i++) {
+                if (getInv().getStackInSlot(i).isEmpty()) return i;
+            }
+            return -1;
+        }
+
+        @Override
+        public boolean isEmpty() {
+            for (int i = 0; i < getInv().getSlots(); i++) {
+                if (!getInv().getStackInSlot(i).isEmpty()) return false;
+            }
+            return true;
+        }
+
+        @Override
+        public void setInventorySlotContents(int index, ItemStack stack) {
+            getInv().setStackInSlot(index, stack);
+        }
+
+        @Override
+        public void clear() {
+            for (int i = 0; i < getInv().getSlots(); i++) {
+                getInv().setStackInSlot(i, ItemStack.EMPTY);
+            }
         }
     }
 }

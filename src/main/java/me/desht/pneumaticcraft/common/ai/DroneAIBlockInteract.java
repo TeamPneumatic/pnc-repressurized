@@ -47,22 +47,7 @@ public class DroneAIBlockInteract extends DroneAIBlockInteraction {
         if (drone.getFakePlayer().getHeldItemMainhand().getCount() <= 0) {
             drone.getFakePlayer().setHeldItem(EnumHand.MAIN_HAND, ItemStack.EMPTY);
         }
-        transferToDroneFromFakePlayer(drone);
         return result;
-    }
-
-    public static void transferToDroneFromFakePlayer(IDroneBase drone) {
-        for (int j = 1; j < drone.getFakePlayer().inventory.mainInventory.size(); j++) {
-            ItemStack excessStack = drone.getFakePlayer().inventory.mainInventory.get(j);
-            if (!excessStack.isEmpty()) {
-                ItemStack remainder = PneumaticCraftUtils.exportStackToInventory(drone, excessStack, null);
-                if (!remainder.isEmpty()) {
-                    drone.dropItem(remainder);
-                }
-                drone.getFakePlayer().inventory.mainInventory.set(j, ItemStack.EMPTY);
-            }
-        }
-
     }
 
     private boolean rightClick(BlockPos pos) {
