@@ -1,15 +1,15 @@
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.common.tileentity.ICamouflageableTE;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityCompressedIronBlock;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityUVLightBox;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityVortexTube;
+import me.desht.pneumaticcraft.common.tileentity.*;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.color.IBlockColor;
+import net.minecraft.item.EnumDyeColor;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import java.awt.*;
 
 @SideOnly(Side.CLIENT)
 public class BlockColorHandler {
@@ -60,6 +60,34 @@ public class BlockColorHandler {
                 Minecraft.getMinecraft().getBlockColors().registerBlockColorHandler(camoColor, b);
             }
         }
+
+        final IBlockColor aphorismTileColor = (state, worldIn, pos, tintIndex) -> {
+            if (worldIn != null && pos != null) {
+                TileEntity te = worldIn.getTileEntity(pos);
+                if (te instanceof TileEntityAphorismTile) {
+                    int dmg;
+                    switch (tintIndex) {
+                        case 0: // border
+                            dmg = ((TileEntityAphorismTile) te).getBorderColor();
+                            return EnumDyeColor.byDyeDamage(dmg).getColorValue();
+                        case 1: // background
+                            dmg = ((TileEntityAphorismTile) te).getBackgroundColor();
+                            return desaturate(EnumDyeColor.byDyeDamage(dmg).getColorValue());
+                        default:
+                            return 0xFFFFFF;
+                    }
+                }
+            }
+            return 0xFFFFFF;
+        };
+        Minecraft.getMinecraft().getBlockColors().registerBlockColorHandler(aphorismTileColor, Blockss.APHORISM_TILE);
+    }
+
+    private static int desaturate(int c) {
+        float[] hsb = Color.RGBtoHSB((c & 0xFF0000) >> 16, (c & 0xFF00) >> 8, c & 0xFF, null);
+        Color color = Color.getHSBColor(hsb[0], hsb[1] * 0.4f, hsb[2]);
+        if (hsb[2] < 0.7) color = color.brighter();
+        return color.getRGB();
     }
 
 }

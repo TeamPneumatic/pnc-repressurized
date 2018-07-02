@@ -17,7 +17,6 @@ import me.desht.pneumaticcraft.client.render.tileentity.*;
 import me.desht.pneumaticcraft.client.semiblock.ClientSemiBlockManager;
 import me.desht.pneumaticcraft.common.HackTickHandler;
 import me.desht.pneumaticcraft.common.block.BlockColorHandler;
-import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.entity.EntityProgrammableController;
 import me.desht.pneumaticcraft.common.entity.EntityRing;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
@@ -138,7 +137,6 @@ public class ClientProxy extends CommonProxy {
 
         registerModuleRenderers();
 
-        Blockss.setupColorHandlers();
         BlockColorHandler.registerColorHandlers();
         ItemColorHandler.registerColorHandlers();
 

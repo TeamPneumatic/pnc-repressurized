@@ -2,17 +2,12 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
-import me.desht.pneumaticcraft.common.tileentity.ICamouflageableTE;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.registries.IForgeRegistry;
 
 import java.util.ArrayList;
@@ -178,22 +173,5 @@ public class Blockss {
         registry.register(block);
         ThirdPartyManager.instance().onBlockRegistry(block);
         blocks.add(block);
-    }
-
-    @SideOnly(Side.CLIENT)
-    public static void setupColorHandlers() {
-        for (Block b : blocks) {
-            if (b instanceof BlockPneumaticCraftCamo) {
-                Minecraft.getMinecraft().getBlockColors().registerBlockColorHandler((state, worldIn, pos, tintIndex) -> {
-                    if (pos == null || worldIn == null) return 0xffffff;
-                    TileEntity te = worldIn.getTileEntity(pos);
-                    if (te instanceof ICamouflageableTE && ((ICamouflageableTE) te).getCamouflage() != null) {
-                        return Minecraft.getMinecraft().getBlockColors().colorMultiplier(((ICamouflageableTE) te).getCamouflage(), te.getWorld(), pos, tintIndex);
-                    } else {
-                        return 0xffffff;
-                    }
-                });
-            }
-        }
     }
 }

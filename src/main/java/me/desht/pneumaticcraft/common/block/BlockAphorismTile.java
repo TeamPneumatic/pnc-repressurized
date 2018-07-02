@@ -10,6 +10,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumFacing.Axis;
 import net.minecraft.util.EnumHand;
@@ -21,8 +22,12 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.oredict.DyeUtils;
 
 import javax.annotation.Nullable;
+import java.util.OptionalInt;
 
 public class BlockAphorismTile extends BlockPneumaticCraft {
     BlockAphorismTile() {
@@ -47,6 +52,12 @@ public class BlockAphorismTile extends BlockPneumaticCraft {
     @Override
     public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos) {
         return getBoundingBox(blockState, worldIn, pos);
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public BlockRenderLayer getBlockLayer() {
+        return BlockRenderLayer.CUTOUT_MIPPED;
     }
 
     @Override
@@ -94,8 +105,31 @@ public class BlockAphorismTile extends BlockPneumaticCraft {
         if (world.isRemote && player.getHeldItem(hand).isEmpty() && !player.isSneaking()) {
             player.openGui(PneumaticCraftRepressurized.instance, EnumGuiId.APHORISM_TILE.ordinal(), world, pos.getX(), pos.getY(), pos.getZ());
             sendEditorMessage(player);
+        } else if (!world.isRemote && DyeUtils.isDye(player.getHeldItem(hand))) {
+            TileEntity te = world.getTileEntity(pos);
+            if (te instanceof TileEntityAphorismTile) {
+                TileEntityAphorismTile teAT = (TileEntityAphorismTile) te;
+                OptionalInt color = DyeUtils.dyeDamageFromStack(player.getHeldItem(hand));
+                if (color.isPresent()) {
+                    if (clickedBorder(state, hitX, hitY, hitZ)) {
+                        teAT.setBorderColor(color.getAsInt());
+                    } else {
+                        teAT.setBackgroundColor(color.getAsInt());
+                    }
+                    player.getHeldItem(hand).shrink(1);
+                }
+            }
         }
         return true;
+    }
+
+    private boolean clickedBorder(IBlockState state, float hitX, float hitY, float hitZ) {
+        switch (getRotation(state)) {
+            case EAST: case WEST: return hitY < 0.1 || hitY > 0.9 || hitZ < 0.1 || hitZ > 0.9;
+            case NORTH: case SOUTH: return hitY < 0.1 || hitY > 0.9 || hitX < 0.1 || hitX > 0.9;
+            case UP: case DOWN: return hitX < 0.1 || hitX > 0.9 || hitZ < 0.1 || hitZ > 0.9;
+        }
+        return false;
     }
 
     private void sendEditorMessage(EntityPlayer player) {
@@ -123,6 +157,7 @@ public class BlockAphorismTile extends BlockPneumaticCraft {
             if (tile instanceof TileEntityAphorismTile) {
                 TileEntityAphorismTile teAt = (TileEntityAphorismTile) tile;
                 if (++teAt.textRotation > 3) teAt.textRotation = 0;
+                teAt.sendDescriptionPacket();
                 return true;
             } else {
                 return false;

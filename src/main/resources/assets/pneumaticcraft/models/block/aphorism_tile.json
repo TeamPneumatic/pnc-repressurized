@@ -1,19 +1,45 @@
 {
-    "textures": {
-        "all": "pneumaticcraft:blocks/aphorism_tile",
-        "particle" : "pneumaticcraft:blocks/aphorism_tile"
+  "textures": {
+    "all": "pneumaticcraft:blocks/aphorism_tile",
+    "border": "pneumaticcraft:blocks/aphorism_tile_border",
+    "particle" : "pneumaticcraft:blocks/aphorism_tile"
+  },
+  "elements": [
+    {
+      "from": [ 0, 0, 15 ],
+      "to": [ 16, 16, 15.999 ],
+      "faces": {
+        "down":  { "texture": "#border", "cullface": "down", "tintindex": 0 },
+        "up":    { "texture": "#border", "cullface": "up", "tintindex": 0 },
+        "north": { "texture": "#all", "cullface": "north", "tintindex": 1 },
+        "south": { "texture": "#all", "cullface": "south", "tintindex": 1 },
+        "west":  { "texture": "#border", "cullface": "west", "tintindex": 0 },
+        "east":  { "texture": "#border", "cullface": "east", "tintindex": 0 }
+      }
     },
-    "elements": [
-        {   "from": [ 0, 0, 15 ],
-            "to": [ 16, 16, 16 ],
-            "faces": {
-                "down":  { "texture": "#all", "cullface": "down" },
-                "up":    { "texture": "#all", "cullface": "up" },
-                "north": { "texture": "#all", "cullface": "north" },
-                "south": { "texture": "#all", "cullface": "south" },
-                "west":  { "texture": "#all", "cullface": "west" },
-                "east":  { "texture": "#all", "cullface": "east" }
-            }
-        }
-    ]
+    {
+      "from": [ 0, 0, 14.999 ],
+      "to": [ 16, 16, 15 ],
+      "faces": {
+        "down":  { "texture": "#border", "cullface": "down", "tintindex": 0 },
+        "up":    { "texture": "#border", "cullface": "up", "tintindex": 0 },
+        "north": { "texture": "#border", "cullface": "north", "tintindex": 0 },
+        "south": { "texture": "#border", "cullface": "south", "tintindex": 0 },
+        "west":  { "texture": "#border", "cullface": "west", "tintindex": 0 },
+        "east":  { "texture": "#border", "cullface": "east", "tintindex": 0 }
+      }
+    },
+    {
+      "from": [ 0, 0, 15.999 ],
+      "to": [ 16, 16, 16 ],
+      "faces": {
+        "down":  { "texture": "#border", "cullface": "down", "tintindex": 0 },
+        "up":    { "texture": "#border", "cullface": "up", "tintindex": 0 },
+        "north": { "texture": "#border", "cullface": "north", "tintindex": 0 },
+        "south": { "texture": "#border", "cullface": "south", "tintindex": 0 },
+        "west":  { "texture": "#border", "cullface": "west", "tintindex": 0 },
+        "east":  { "texture": "#border", "cullface": "east", "tintindex": 0 }
+      }
+    }
+  ]
 }
