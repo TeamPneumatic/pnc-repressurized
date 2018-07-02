@@ -1,9 +1,5 @@
 package me.desht.pneumaticcraft.common.ai;
 
-import java.util.Random;
-
-import javax.annotation.Nullable;
-
 import me.desht.pneumaticcraft.api.drone.IPathNavigator;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -23,6 +19,9 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+
+import javax.annotation.Nullable;
+import java.util.Random;
 
 public class EntityPathNavigateDrone extends PathNavigateFlying implements IPathNavigator {
 
@@ -68,11 +67,12 @@ public class EntityPathNavigateDrone extends PathNavigateFlying implements IPath
     @Nullable
     @Override
     public Path getPathToPos(BlockPos pos) {
-        //When the destination is not a valid block, we can stop right away
+        // When the destination is not a valid block, we can stop right away
         if (!pathfindingEntity.isBlockValidPathfindBlock(pos))
             return null;
-        
-        if(pathfindingEntity.getDistanceSqToCenter(pos) < 0.3){
+
+        // 0.75 is the squared dist from a block corner to its center (0.5^2 + 0.5^2 + 0.5^2)
+        if(pathfindingEntity.getDistanceSqToCenter(pos) < 0.75){
             return new Path(new PathPoint[]{
                new PathPoint(pos.getX(), pos.getY(), pos.getZ())     
             });
@@ -88,10 +88,9 @@ public class EntityPathNavigateDrone extends PathNavigateFlying implements IPath
         }
         
         pathfindingEntity.setStandby(false);
-        teleportCounter = -1;
         Path path = super.getPathToPos(pos);
         
-        //Only paths that actually end up where we want to are valid, not just halfway.
+        // Only paths that actually end up where we want to are valid, not just halfway.
         if(path != null){
             PathPoint lastPoint = path.getFinalPathPoint();
             if(lastPoint != null && (lastPoint.x != pos.getX() || lastPoint.y != pos.getY() || lastPoint.z != pos.getZ())){
@@ -99,9 +98,12 @@ public class EntityPathNavigateDrone extends PathNavigateFlying implements IPath
             }
         }
         
-        //If no valid flight path, teleport instead.
         if (path == null) {
-            teleportCounter = 0;
+            // No valid flight path: teleport instead, but don't reset the teleport counter if it's already in progress
+            if (teleportCounter == -1) teleportCounter = 0;
+        } else {
+            // Valid path: cancel any teleport in-progress
+            teleportCounter = -1;
         }
 
         return path;

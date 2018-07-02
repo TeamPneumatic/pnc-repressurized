@@ -136,4 +136,9 @@ public class BlockAphorismTile extends BlockPneumaticCraft {
     protected boolean rotateForgeWay() {
         return false;
     }
+
+    @Override
+    public boolean isPassable(IBlockAccess worldIn, BlockPos pos) {
+        return true;
+    }
 }

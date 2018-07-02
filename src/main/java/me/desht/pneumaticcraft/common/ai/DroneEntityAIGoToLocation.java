@@ -35,6 +35,7 @@ public class DroneEntityAIGoToLocation extends EntityAIBase {
     public boolean shouldExecute() {
         validArea.sort(positionSorter);
         for (BlockPos c : validArea) {
+            // 0.75 is the squared dist from a block corner to its center (0.5^2 + 0.5^2 + 0.5^2)
             if (drone.getDronePos().squareDistanceTo(new Vec3d(c.getX() + 0.5, c.getY() + 0.5, c.getZ() + 0.5)) < 0.75)
                 return false;
             if (drone.getPathNavigator().moveToXYZ(c.getX(), c.getY(), c.getZ())) {
