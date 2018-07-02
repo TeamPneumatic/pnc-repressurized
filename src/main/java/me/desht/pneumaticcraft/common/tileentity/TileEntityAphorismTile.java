@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import net.minecraft.nbt.NBTTagCompound;
 
-public class TileEntityAphorismTile extends TileEntityTickableBase {
+public class TileEntityAphorismTile extends TileEntityBase {
     private String[] textLines = new String[]{""};
 
     @DescSynced
