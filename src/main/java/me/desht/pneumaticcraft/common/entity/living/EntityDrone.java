@@ -152,7 +152,7 @@ public class EntityDrone extends EntityDroneBase
     private String buyingPlayer;
     private final SortedSet<DebugEntry> debugEntries = new TreeSet<DebugEntry>();
     private final Set<EntityPlayerMP> syncedPlayers = new HashSet<EntityPlayerMP>();
-    private boolean heldItemChanged;  // if true, force a check of item attribute modifiers
+    private boolean heldItemChanged = true;  // if true, force a check of item attribute modifiers in onUpdate()
 
     private int securityUpgradeCount; // for liquid immunity: 1 = breathe in water, 2 = temporary air bubble, 3+ = permanent water removal
     private final Map<BlockPos, IBlockState> displacedLiquids = new HashMap<>();  // liquid blocks displaced by security upgrade
@@ -344,6 +344,7 @@ public class EntityDrone extends EntityDroneBase
             fp.posX = posX;
             fp.posY = posY;
             fp.posZ = posZ;
+            fp.onUpdate();
         } else {
             if (digLaser != null) digLaser.update();
             oldLaserExtension = laserExtension;
@@ -1044,18 +1045,12 @@ public class EntityDrone extends EntityDroneBase
         private void heldItemChanged() {
             ItemStack newStack = inventory.getStackInSlot(0);
             if (!oldStack.isEmpty()) {
-                for (EntityEquipmentSlot s : EntityEquipmentSlot.values()) {
-                    getFakePlayer().getAttributeMap().removeAttributeModifiers(oldStack.getAttributeModifiers(s));
-                }
+                getFakePlayer().getAttributeMap().removeAttributeModifiers(oldStack.getAttributeModifiers(EntityEquipmentSlot.MAINHAND));
             }
-
             if (!newStack.isEmpty()) {
-                for (EntityEquipmentSlot s : EntityEquipmentSlot.values()) {
-                    getFakePlayer().getAttributeMap().applyAttributeModifiers(newStack.getAttributeModifiers(s));
-                }
+                getFakePlayer().getAttributeMap().applyAttributeModifiers(newStack.getAttributeModifiers(EntityEquipmentSlot.MAINHAND));
             }
-
-            oldStack = newStack;
+            oldStack = newStack.copy();
 
             if (ConfigHandler.client.dronesRenderHeldItem) dataManager.set(HELD_ITEM, newStack);
 
@@ -1105,6 +1100,11 @@ public class EntityDrone extends EntityDroneBase
         @Override
         public void setSneaking(boolean sneaking) {
             this.sneaking = sneaking;
+        }
+
+        @Override
+        public void onUpdate() {
+            ticksSinceLastSwing++;  // without this, drones melee will be hopeless
         }
     }
 

@@ -3,8 +3,16 @@ package me.desht.pneumaticcraft.common.ai;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.item.Itemss;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.EnumCreatureAttribute;
+import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIAttackMelee;
+import net.minecraft.entity.ai.attributes.AttributeMap;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.ai.attributes.IAttributeInstance;
+import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.ItemStack;
 
 public class DroneAIAttackEntity extends EntityAIAttackMelee {
     private final EntityDrone attacker;
@@ -31,6 +39,41 @@ public class DroneAIAttackEntity extends EntityAIAttackMelee {
         }
 
         return super.shouldExecute();
+    }
+
+    @Override
+    public void startExecuting() {
+        super.startExecuting();
+
+        // switch to the carried melee weapon with the highest attack damage
+        if (attacker.getInv().getSlots() > 1) {
+            int bestSlot = 0;
+            double bestDmg = 0;
+            for (int i = 0; i < attacker.getInv().getSlots(); i++) {
+                ItemStack stack = attacker.getInv().getStackInSlot(i);
+                if (!stack.isEmpty()) {
+                    IAttributeInstance damage = new AttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE);
+                    for (AttributeModifier modifier : stack.getAttributeModifiers(EntityEquipmentSlot.MAINHAND).get(SharedMonsterAttributes.ATTACK_DAMAGE.getName())) {
+                        damage.applyModifier(modifier);
+                    }
+                    float f1 = 0F;
+                    if (attacker.getAttackTarget() instanceof EntityLivingBase) {
+                        f1 = EnchantmentHelper.getModifierForCreature(stack, ((EntityLivingBase)attacker.getAttackTarget()).getCreatureAttribute());
+                    } else if (attacker.getAttackTarget() != null) {
+                        f1 = EnchantmentHelper.getModifierForCreature(stack, EnumCreatureAttribute.UNDEFINED);
+                    }
+                    if (damage.getAttributeValue() + f1 > bestDmg) {
+                        bestDmg = damage.getAttributeValue() + f1;
+                        bestSlot = i;
+                    }
+                }
+            }
+            if (bestSlot != 0) {
+                ItemStack copy = attacker.getInv().getStackInSlot(0).copy();
+                attacker.getInv().setStackInSlot(0, attacker.getInv().getStackInSlot(bestSlot));
+                attacker.getInv().setStackInSlot(bestSlot, copy);
+            }
+        }
     }
 
     @Override
