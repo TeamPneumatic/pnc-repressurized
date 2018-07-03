@@ -1168,15 +1168,17 @@ public class EntityDrone extends EntityDroneBase
     }
 
     private void setGoingToOwner(boolean state) {
-        if (state && gotoOwnerAI == null) {
-            gotoOwnerAI = new DroneGoToOwner(this);
-            tasks.addTask(2, gotoOwnerAI);
-            dataManager.set(GOING_TO_OWNER, true);
-            setActiveProgram(new ProgWidgetGoToLocation());
-        } else if (!state && gotoOwnerAI != null) {
-            tasks.removeTask(gotoOwnerAI);
-            gotoOwnerAI = null;
-            dataManager.set(GOING_TO_OWNER, false);
+        if (!world.isRemote) {
+            if (state && gotoOwnerAI == null) {
+                gotoOwnerAI = new DroneGoToOwner(this);
+                tasks.addTask(2, gotoOwnerAI);
+                dataManager.set(GOING_TO_OWNER, true);
+                setActiveProgram(new ProgWidgetGoToLocation());
+            } else if (!state && gotoOwnerAI != null) {
+                tasks.removeTask(gotoOwnerAI);
+                gotoOwnerAI = null;
+                dataManager.set(GOING_TO_OWNER, false);
+            }
         }
     }
 
