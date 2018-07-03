@@ -10,6 +10,7 @@ import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -53,7 +54,7 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<TileEntityChar
     @Override
     protected void drawGuiContainerBackgroundLayer(float opacity, int x, int y) {
         super.drawGuiContainerBackgroundLayer(opacity, x, y);
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
         renderAir();
     }
@@ -106,15 +107,15 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<TileEntityChar
     }
 
     private void renderAir() {
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
-        GL11.glColor4d(1, 1, 1, 1);
+        GlStateManager.disableTexture2D();
+        GlStateManager.color(1, 1, 1, 1);
         GL11.glLineWidth(2.0F);
         int particles = 10;
         for (int i = 0; i < particles; i++) {
             renderAirParticle(te.renderAirProgress % (1F / particles) + (float) i / particles);
         }
 
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GlStateManager.enableTexture2D();
     }
 
     private void renderAirParticle(float particleProgress) {

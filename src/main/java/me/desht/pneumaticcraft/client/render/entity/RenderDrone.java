@@ -3,11 +3,11 @@ package me.desht.pneumaticcraft.client.render.entity;
 import me.desht.pneumaticcraft.client.model.entity.ModelDrone;
 import me.desht.pneumaticcraft.common.entity.living.EntityDroneBase;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
-import org.lwjgl.opengl.GL11;
 
 public class RenderDrone extends RenderLiving<EntityDroneBase> {
     public static final IRenderFactory<EntityDroneBase> REGULAR_FACTORY = manager -> new RenderDrone(manager);
@@ -25,19 +25,19 @@ public class RenderDrone extends RenderLiving<EntityDroneBase> {
     private void renderDrone(EntityDroneBase drone, double x, double y, double z, float yaw, float partialTicks) {
         if (drone.getHealth() <= 0) return;
 
-        GL11.glPushMatrix();
-        GL11.glTranslatef((float) x, (float) y, (float) z);
+        GlStateManager.pushMatrix();
+        GlStateManager.translate((float) x, (float) y, (float) z);
 
-        GL11.glPushMatrix();
-        GL11.glTranslatef(0, 0.76F, 0);
-        GL11.glScalef(0.5F, -0.5F, -0.5F);
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(0, 0.76F, 0);
+        GlStateManager.scale(0.5F, -0.5F, -0.5F);
         bindEntityTexture(drone);
         mainModel.setLivingAnimations(drone, 0, 0, partialTicks);
         mainModel.render(drone, 0, 0, 0, 0, partialTicks, 1 / 16F);
-        GL11.glPopMatrix();
+        GlStateManager.popMatrix();
 
         drone.renderExtras(x, y, z, partialTicks);
-        GL11.glPopMatrix();
+        GlStateManager.popMatrix();
     }
 
     @Override

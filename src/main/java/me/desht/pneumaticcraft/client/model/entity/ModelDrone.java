@@ -7,10 +7,10 @@ import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.entity.living.EntityDroneBase;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.math.AxisAlignedBB;
-import org.lwjgl.opengl.GL11;
 
 public class ModelDrone extends ModelBase {
     //fields
@@ -217,7 +217,7 @@ public class ModelDrone extends ModelBase {
         Base3.render(f5);
         Base4.render(f5);
         Base5.render(f5);
-        GL11.glColor4d(1, 1, 1, 1);
+        GlStateManager.color(1, 1, 1, 1);
         Base.render(f5);
         Prop1Part1.render(f5);
         Prop1Part2.render(f5);
@@ -242,12 +242,12 @@ public class ModelDrone extends ModelBase {
         if (entity instanceof EntityDrone && ((EntityDrone) entity).hasMinigun())
             minigun.render(entity, f, f1, f2, f3, f4, f5);
         if (renderFrame) {
-            GL11.glDisable(GL11.GL_TEXTURE_2D);
+            GlStateManager.disableTexture2D();
             RenderUtils.glColorHex(frameColor);
             double s = 3 / 16D;
             double y = 17 / 16D;
             SemiBlockRendererLogistics.renderFrame(new AxisAlignedBB(-s, y - s, -s, s, y + s, s), 1 / 32D);
-            GL11.glEnable(GL11.GL_TEXTURE_2D);
+            GlStateManager.enableTexture2D();
         }
     }
 

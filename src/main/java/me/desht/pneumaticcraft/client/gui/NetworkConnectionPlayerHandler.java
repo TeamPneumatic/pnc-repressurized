@@ -9,6 +9,7 @@ import me.desht.pneumaticcraft.common.network.PacketUseItem;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
@@ -41,15 +42,15 @@ public class NetworkConnectionPlayerHandler extends NetworkConnectionHandler {
     @Override
     public void render() {
         super.render();
-        GL11.glEnable(GL11.GL_BLEND);
-        // GL11.glDisable(GL11.GL_TEXTURE_2D);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GL11.glColor4f(1, 1, 1, 0.5F);
+        GlStateManager.enableBlend();
+        // GlStateManager.disableTexture2D();
+        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GlStateManager.color(1, 1, 1, 0.5F);
         for (GuiStatBalloon balloon : balloons) {
             balloon.render();
         }
-        // GL11.glEnable(GL11.GL_TEXTURE_2D);
-        GL11.glDisable(GL11.GL_BLEND);
+        // GlStateManager.enableTexture2D();
+        GlStateManager.disableBlend();
     }
 
     @Override

@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.client.render;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraftforge.fml.relauncher.Side;
@@ -19,11 +20,11 @@ public class RenderRing extends RenderProgressingLine {
 
     @SideOnly(Side.CLIENT)
     public void renderInterpolated(RenderProgressingLine lastTickLine, float partialTick, float rotationYaw, float rotationPitch) {
-        GL11.glPushMatrix();
+        GlStateManager.pushMatrix();
         double renderProgress = getInter(progress, lastTickLine.progress, partialTick);
-        GL11.glTranslated((getInter(endX, lastTickLine.endX, partialTick) - startX) * renderProgress, (getInter(endY, lastTickLine.endY, partialTick) - startY) * renderProgress, (getInter(endZ, lastTickLine.endZ, partialTick) - startZ) * renderProgress);
-        GL11.glRotatef(rotationYaw, 0.0F, 1.0F, 0.0F);
-        GL11.glRotatef(rotationPitch, 0.0F, 0.0F, 1.0F);
+        GlStateManager.translate((getInter(endX, lastTickLine.endX, partialTick) - startX) * renderProgress, (getInter(endY, lastTickLine.endY, partialTick) - startY) * renderProgress, (getInter(endZ, lastTickLine.endZ, partialTick) - startZ) * renderProgress);
+        GlStateManager.rotate(rotationYaw, 0.0F, 1.0F, 0.0F);
+        GlStateManager.rotate(rotationPitch, 0.0F, 0.0F, 1.0F);
         BufferBuilder wr = Tessellator.getInstance().getBuffer();
         GL11.glEnable(GL11.GL_LINE_SMOOTH);
         wr.begin(GL11.GL_LINE_LOOP, DefaultVertexFormats.POSITION);
@@ -34,6 +35,6 @@ public class RenderRing extends RenderProgressingLine {
         }
         Tessellator.getInstance().draw();
         GL11.glDisable(GL11.GL_LINE_SMOOTH);
-        GL11.glPopMatrix();
+        GlStateManager.popMatrix();
     }
 }

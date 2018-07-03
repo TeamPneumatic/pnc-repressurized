@@ -6,7 +6,6 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.math.BlockPos;
-
 import org.lwjgl.opengl.GL11;
 
 import java.util.Set;
@@ -31,8 +30,8 @@ public class AreaShowHandler {
     }
 
     private int compileRenderList() {
-        int renderList = GL11.glGenLists(1);
-        GL11.glNewList(renderList, GL11.GL_COMPILE);
+        int renderList = GlStateManager.glGenLists(1);
+        GlStateManager.glNewList(renderList, GL11.GL_COMPILE);
 
         if(disableDepthTest) GlStateManager.disableDepth();
         
@@ -120,17 +119,17 @@ public class AreaShowHandler {
         
         if(disableDepthTest) GlStateManager.enableDepth();
         
-        GL11.glEndList();
+        GlStateManager.glEndList();
         return renderList;
     }
 
     public void render() {
         /*if(disableDepthTest){
             GlStateManager.disableDepth();
-            GL11.glCallList(renderList);
+            GlStateManager.callList(renderList);
             GlStateManager.enableDepth();
         }else{*/
-            GL11.glCallList(renderList);
+            GlStateManager.callList(renderList);
         //}
     }
 }

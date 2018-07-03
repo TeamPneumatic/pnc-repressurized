@@ -21,7 +21,7 @@ public class RenderUtils {
     }
 
     public static void render3DArrow() {
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GlStateManager.disableTexture2D();
         double arrowTipLength = 0.2;
         double arrowTipRadius = 0.25;
         double baseLength = 0.3;
@@ -60,6 +60,6 @@ public class RenderUtils {
         }
         wr.pos(0, baseLength, arrowTipRadius).endVertex();
         Tessellator.getInstance().draw();
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GlStateManager.enableTexture2D();
     }
 }

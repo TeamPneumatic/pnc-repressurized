@@ -53,13 +53,13 @@ public class TileEntityCompressedIronBlock extends TileEntityTickableBase implem
         }
     }
 
-    public static double[] getColorForHeatLevel(int heatLevel) {
+    public static float[] getColorForHeatLevel(int heatLevel) {
         if (heatLevel > 9) {
-            double greenAndBlue = 1 - (heatLevel - 10) / 10D;
-            return new double[]{1, greenAndBlue, greenAndBlue};
+            float greenAndBlue = 1 - (heatLevel - 10) / 10F;
+            return new float[]{1, greenAndBlue, greenAndBlue};
         } else {
-            double redAndGreen = heatLevel / 10D;
-            return new double[]{redAndGreen, redAndGreen, 1};
+            float redAndGreen = heatLevel / 10F;
+            return new float[]{redAndGreen, redAndGreen, 1};
         }
     }
 

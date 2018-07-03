@@ -3,11 +3,11 @@ package me.desht.pneumaticcraft.client.render.pneumaticArmor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
 
 public class RenderOutFrustrumTriangle {
     public static void renderTriangle(Entity entity) {
@@ -52,17 +52,17 @@ public class RenderOutFrustrumTriangle {
         }
 
         BufferBuilder wr = Tessellator.getInstance().getBuffer();
-        GL11.glPushMatrix();
-        GL11.glEnable(GL12.GL_RESCALE_NORMAL);
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
-        // GL11.glEnable(GL11.GL_BLEND);
-        // GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GlStateManager.pushMatrix();
+        GlStateManager.enableRescaleNormal();
+        GlStateManager.disableTexture2D();
+        // GlStateManager.enableBlend();
+        // GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
         GL11.glLineWidth(2.0F);
         GL11.glEnable(GL11.GL_LINE_SMOOTH);
 
-        GL11.glTranslated(triangleX, triangleY, 0);
-        GL11.glRotatef(triangleAngle, 0, 0, 1);
+        GlStateManager.translate(triangleX, triangleY, 0);
+        GlStateManager.rotate(triangleAngle, 0, 0, 1);
         wr.begin(GL11.GL_LINE_LOOP, DefaultVertexFormats.POSITION);
         wr.pos(5, 5, -90F).endVertex();
         wr.pos(15, 5, -90F).endVertex();
@@ -70,8 +70,8 @@ public class RenderOutFrustrumTriangle {
         Tessellator.getInstance().draw();
 
         GL11.glDisable(GL11.GL_LINE_SMOOTH);
-        GL11.glDisable(GL11.GL_BLEND);
-        GL11.glDisable(GL12.GL_RESCALE_NORMAL);
-        GL11.glPopMatrix();
+        GlStateManager.disableBlend();
+        GlStateManager.disableRescaleNormal();
+        GlStateManager.popMatrix();
     }
 }

@@ -11,7 +11,6 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.fml.client.FMLClientHandler;
-import org.lwjgl.opengl.GL11;
 
 public class RenderPressureTubeModule extends TileEntitySpecialRenderer<TileEntityPressureTube> {
 
@@ -59,7 +58,7 @@ public class RenderPressureTubeModule extends TileEntitySpecialRenderer<TileEnti
                 if (module.isFake()) {
                     tile.modules[i] = null;
                     GlStateManager.disableBlend();
-                    GL11.glDisable(GL11.GL_BLEND);
+                    GlStateManager.disableBlend();
                 }
                 if (module.isFake() || module.isUpgraded()) {
                     GlStateManager.color(1, 1, 1, 1);

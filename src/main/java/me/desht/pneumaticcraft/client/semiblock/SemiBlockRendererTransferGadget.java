@@ -1,8 +1,5 @@
 package me.desht.pneumaticcraft.client.semiblock;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockTransferGadget;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockTransferGadget.EnumInputOutput;
 import net.minecraft.block.state.IBlockState;
@@ -12,8 +9,10 @@ import net.minecraft.client.renderer.GlStateManager.Profile;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.math.AxisAlignedBB;
-
 import org.lwjgl.opengl.GL11;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class SemiBlockRendererTransferGadget implements ISemiBlockRenderer<SemiBlockTransferGadget> {
     private final Map<AxisAlignedBB, Integer> models = new HashMap<>();
@@ -23,16 +22,16 @@ public class SemiBlockRendererTransferGadget implements ISemiBlockRenderer<SemiB
         IBlockState state = semiBlock.getBlockState();
         if(state.getBlock().isAir(state, semiBlock.getWorld(), semiBlock.getPos())) return;
         
-        GL11.glPushMatrix();
+        GlStateManager.pushMatrix();
         //Minecraft.getMinecraft().renderEngine.bindTexture(Textures.MODEL_HEAT_FRAME);
         GlStateManager.disableTexture2D();
         GlStateManager.enableBlendProfile(Profile.TRANSPARENT_MODEL);
         
         EnumInputOutput io = semiBlock.getInputOutput();
         if(io == EnumInputOutput.INPUT){
-            GL11.glColor4d(0, 0, 1, 0.5);
+            GlStateManager.color(0, 0, 1, 0.5F);
         }else{
-            GL11.glColor4d(1, 0.3, 0, 0.5);
+            GlStateManager.color(1, 0.3F, 0, 0.5F);
         }
         
         double indent = 1/16D;
@@ -80,9 +79,9 @@ public class SemiBlockRendererTransferGadget implements ISemiBlockRenderer<SemiB
             aabb = bAABB;
         }
         
-       // GL11.glTranslated(aabb.minX, aabb.minY, aabb.minZ);
-        //GL11.glScaled(aabb.maxX - aabb.minX, aabb.maxY - aabb.minY, aabb.maxZ - aabb.minZ);
-        //GL11.glTranslated(0.5, -0.5, 0.5);
+       // GlStateManager.translate(aabb.minX, aabb.minY, aabb.minZ);
+        //GlStateManager.scale(aabb.maxX - aabb.minX, aabb.maxY - aabb.minY, aabb.maxZ - aabb.minZ);
+        //GlStateManager.translate(0.5, -0.5, 0.5);
         //model.render(null, 0, 0, 0, 0, 0, 1 / 16F);
         
         Integer renderList = models.get(aabb);
@@ -90,15 +89,15 @@ public class SemiBlockRendererTransferGadget implements ISemiBlockRenderer<SemiB
             renderList = compileRenderList(aabb);
             models.put(aabb, renderList);
         }
-        GL11.glCallList(renderList);
+        GlStateManager.callList(renderList);
         
-        GL11.glPopMatrix();
-        GL11.glColor4d(1, 1, 1, 1);
+        GlStateManager.popMatrix();
+        GlStateManager.color(1, 1, 1, 1);
     }
     
     private int compileRenderList(AxisAlignedBB aabb) {
-        int renderList = GL11.glGenLists(1);
-        GL11.glNewList(renderList, GL11.GL_COMPILE);
+        int renderList = GlStateManager.glGenLists(1);
+        GlStateManager.glNewList(renderList, GL11.GL_COMPILE);
 
         BufferBuilder wr = Tessellator.getInstance().getBuffer();
         wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
@@ -135,7 +134,7 @@ public class SemiBlockRendererTransferGadget implements ISemiBlockRenderer<SemiB
 
         Tessellator.getInstance().draw();
 
-        GL11.glEndList();
+        GlStateManager.glEndList();
         return renderList;
     }
 }

@@ -5,9 +5,9 @@ import me.desht.pneumaticcraft.common.block.tubes.ModulePressureGauge;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticBase;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.FMLClientHandler;
-import org.lwjgl.opengl.GL11;
 
 public class ModelGauge extends ModelModuleBase {
     private final ModelRenderer shape1;
@@ -47,13 +47,13 @@ public class ModelGauge extends ModelModuleBase {
             critPressure = base.criticalPressure;
             dangerPressure = base.dangerPressure;
         }
-        GL11.glTranslated(0, 1, 0.378);
+        GlStateManager.translate(0, 1, 0.378);
         double widgetScale = 0.007D;
-        GL11.glScaled(widgetScale, widgetScale, widgetScale);
-        GL11.glRotated(180, 0, 1, 0);
-        GL11.glDisable(GL11.GL_LIGHTING);
+        GlStateManager.scale(widgetScale, widgetScale, widgetScale);
+        GlStateManager.rotate(180, 0, 1, 0);
+        GlStateManager.disableLighting();
         GuiUtils.drawPressureGauge(FMLClientHandler.instance().getClient().fontRenderer, -1, critPressure, dangerPressure, -1, pressure, 0, 0, 0);
-        GL11.glEnable(GL11.GL_LIGHTING);
+        GlStateManager.enableLighting();
     }
 
     @Override

@@ -11,7 +11,6 @@ import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.util.List;
@@ -41,7 +40,7 @@ public class WidgetTank extends WidgetBase {
 
     @Override
     public void render(int mouseX, int mouseY, float partialTick) {
-        GL11.glDisable(GL11.GL_LIGHTING);
+        GlStateManager.disableLighting();
         GuiUtils.drawFluid(new Rectangle(x, y, getBounds().width, getBounds().height), getFluid(), getTank());
 
         // drawing a gauge rather than using the widget_tank texture since for some reason it doesn't work
@@ -54,7 +53,7 @@ public class WidgetTank extends WidgetBase {
         }
         GlStateManager.popMatrix();
 
-//        GL11.glColor4d(1, 1, 1, 1);
+//        GlStateManager.color(1, 1, 1, 1);
 //        Minecraft.getMinecraft().getTextureManager().bindTexture(Textures.WIDGET_TANK);
 //        Gui.drawModalRectWithCustomSizedTexture(x, y, 0, 0, 16, 64, 16, 64);
     }

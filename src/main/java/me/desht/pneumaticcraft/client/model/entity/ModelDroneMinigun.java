@@ -13,8 +13,8 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
-import org.lwjgl.opengl.GL11;
 
 public class ModelDroneMinigun extends ModelBase {
     //fields
@@ -105,12 +105,12 @@ public class ModelDroneMinigun extends ModelBase {
 
     public void renderMinigun(Minigun minigun, float size, float partialTick, boolean renderMount) {
         Minecraft.getMinecraft().getTextureManager().bindTexture(Textures.MODEL_DRONE_MINIGUN);
-        GL11.glColor4d(1, 1, 1, 1);
-        GL11.glPushMatrix();
+        GlStateManager.color(1, 1, 1, 1);
+        GlStateManager.pushMatrix();
         if (renderMount) {
-            GL11.glTranslated(0, 5 / 16D, -12 / 16D);
+            GlStateManager.translate(0, 5 / 16D, -12 / 16D);
             mount.render(size);
-            GL11.glTranslated(0, -5 / 16D, 12 / 16D);
+            GlStateManager.translate(0, -5 / 16D, 12 / 16D);
         }
 
         float barrelRotation = 0;
@@ -119,10 +119,10 @@ public class ModelDroneMinigun extends ModelBase {
             double yaw = minigun.oldMinigunYaw + partialTick * (minigun.minigunYaw - minigun.oldMinigunYaw);
             double pitch = minigun.oldMinigunPitch + partialTick * (minigun.minigunPitch - minigun.oldMinigunPitch);
 
-            GL11.glTranslated(0, 23 / 16D, 0);
-            GL11.glRotated(yaw, 0, 1, 0);
-            GL11.glRotated(pitch, 1, 0, 0);
-            GL11.glTranslated(0, -18 / 16D, -12 / 16D);
+            GlStateManager.translate(0, 23 / 16D, 0);
+            GlStateManager.rotate((float)yaw, 0, 1, 0);
+            GlStateManager.rotate((float)pitch, 1, 0, 0);
+            GlStateManager.translate(0, -18 / 16D, -12 / 16D);
         }
         barrel.rotateAngleY = 0;
         barrel.rotateAngleX = 0;
@@ -142,12 +142,12 @@ public class ModelDroneMinigun extends ModelBase {
         support5.render(size);
         magazine.render(size);
         main.render(size);
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GlStateManager.disableTexture2D();
         RenderUtils.glColorHex(minigun != null ? 0xFF000000 | minigun.getAmmoColor() : 0xFF313131);
         magazineColor.render(size);
-        GL11.glColor4d(1, 1, 1, 1);
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
-        GL11.glPopMatrix();
+        GlStateManager.color(1, 1, 1, 1);
+        GlStateManager.enableTexture2D();
+        GlStateManager.popMatrix();
     }
 
     private void setRotation(ModelRenderer model, float x, float y, float z) {

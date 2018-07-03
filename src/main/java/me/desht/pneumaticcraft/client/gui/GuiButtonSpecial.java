@@ -5,12 +5,11 @@ import me.desht.pneumaticcraft.client.gui.widget.IWidgetListener;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -100,13 +99,13 @@ public class GuiButtonSpecial extends GuiButton implements IGuiWidget {
 //                int middleX = this.x + width / 2;
 //                int startX = middleX - renderedStacks.length * 9 + 1;
                 int startX = getIconX();
-                GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+                GlStateManager.enableRescaleNormal();
                 RenderHelper.enableGUIStandardItemLighting();
                 for (int i = 0; i < renderedStacks.length; i++) {
                     itemRenderer.renderItemAndEffectIntoGUI(renderedStacks[i], startX + i * 18, this.y + 2);
                 }
                 RenderHelper.disableStandardItemLighting();
-                GL11.glDisable(GL12.GL_RESCALE_NORMAL);
+                GlStateManager.disableRescaleNormal();
             }
             if (resLoc != null) {
                 mc.getTextureManager().bindTexture(resLoc);

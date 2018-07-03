@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.client.model.block;
 import me.desht.pneumaticcraft.client.render.tileentity.AbstractModelRenderer;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import org.lwjgl.opengl.GL11;
@@ -41,69 +42,69 @@ public class ModelVacuumPump extends AbstractModelRenderer.BaseModel {
 
     public void renderModel(float size, float rotation) {
         rotation++;
-        GL11.glPushMatrix();
-        GL11.glTranslated(0, 0, 3D / 16D);
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(0, 0, 3D / 16D);
         for (int i = 0; i < BLADE_COUNT; i++) {
-            GL11.glPushMatrix();
-            GL11.glRotated(rotation * 2 + (i + 0.5D) / BLADE_COUNT * 360, 0, 1, 0);
-            GL11.glTranslated(0, 0, 1D / 16D);
+            GlStateManager.pushMatrix();
+            GlStateManager.rotate(rotation * 2 + (i + 0.5F) / BLADE_COUNT * 360, 0, 1, 0);
+            GlStateManager.translate(0, 0, 1D / 16D);
             blade.render(size);
-            GL11.glPopMatrix();
+            GlStateManager.popMatrix();
         }
-        GL11.glPopMatrix();
+        GlStateManager.popMatrix();
 
-        GL11.glRotated(180, 0, 1, 0);
+        GlStateManager.rotate(180, 0, 1, 0);
 
-        GL11.glPushMatrix();
-        GL11.glTranslated(0, 0, 3D / 16D);
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(0, 0, 3D / 16D);
         for (int i = 0; i < BLADE_COUNT; i++) {
-            GL11.glPushMatrix();
-            GL11.glRotated(-rotation * 2 + (double) i / (double) BLADE_COUNT * 360, 0, 1, 0);
-            GL11.glTranslated(0, 0, 1D / 16D);
+            GlStateManager.pushMatrix();
+            GlStateManager.rotate(-rotation * 2 + (float) i / (float) BLADE_COUNT * 360, 0, 1, 0);
+            GlStateManager.translate(0, 0, 1D / 16D);
             blade.render(size);
-            GL11.glPopMatrix();
+            GlStateManager.popMatrix();
         }
-        GL11.glPopMatrix();
+        GlStateManager.popMatrix();
 
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
-        GL11.glColor4d(0.5D, 0.5D, 0.5D, 1.0D);
-        GL11.glPushMatrix();
+        GlStateManager.disableTexture2D();
+        GlStateManager.color(0.5F, 0.5F, 0.5F, 1.0F);
+        GlStateManager.pushMatrix();
         for (int i = 0; i < CASE_POINTS; i++) {
-            GL11.glPushMatrix();
-            GL11.glTranslated(0, 0, 3F / 16F);
-            GL11.glRotated((double) i / (double) CASE_POINTS * 275D - 130, 0, 1, 0);
-            GL11.glTranslated(0, 0, 2.5F / 16F);
+            GlStateManager.pushMatrix();
+            GlStateManager.translate(0, 0, 3F / 16F);
+            GlStateManager.rotate((float) i / (float) CASE_POINTS * 275F - 130, 0, 1, 0);
+            GlStateManager.translate(0, 0, 2.5F / 16F);
             turbineCase.render(size);
-            GL11.glPopMatrix();
+            GlStateManager.popMatrix();
         }
-        GL11.glRotated(180, 0, 1, 0);
+        GlStateManager.rotate(180, 0, 1, 0);
         for (int i = 0; i < CASE_POINTS; i++) {
-            GL11.glPushMatrix();
-            GL11.glTranslated(0, 0, 3F / 16F);
-            GL11.glRotated((double) i / (double) CASE_POINTS * 275D - 130, 0, 1, 0);
-            GL11.glTranslated(0, 0, 2.5F / 16F);
+            GlStateManager.pushMatrix();
+            GlStateManager.translate(0, 0, 3F / 16F);
+            GlStateManager.rotate((float) i / (float) CASE_POINTS * 275F - 130, 0, 1, 0);
+            GlStateManager.translate(0, 0, 2.5F / 16F);
             turbineCase.render(size);
-            GL11.glPopMatrix();
+            GlStateManager.popMatrix();
         }
-        GL11.glPopMatrix();
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GL11.glColor4d(1, 1, 1, 0.4D);
+        GlStateManager.popMatrix();
+        GlStateManager.enableBlend();
+        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GlStateManager.color(1, 1, 1, 0.4F);
         top.render(size);
-        GL11.glDisable(GL11.GL_BLEND);
+        GlStateManager.disableBlend();
 
         drawPlusAndMinus();
 
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GlStateManager.enableTexture2D();
     }
 
     private void drawPlusAndMinus() {
         double scale = 0.05D;
-        GL11.glPushMatrix();
-        GL11.glTranslated(0.26D, 13.95D / 16D, 0);
-        GL11.glRotated(90, 1, 0, 0);
-        GL11.glScaled(scale, scale, scale);
-        GL11.glColor4d(0, 1, 0, 1);
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(0.26D, 13.95D / 16D, 0);
+        GlStateManager.rotate(90, 1, 0, 0);
+        GlStateManager.scale(scale, scale, scale);
+        GlStateManager.color(0, 1, 0, 1);
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
         bufferBuilder.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION);
@@ -112,13 +113,13 @@ public class ModelVacuumPump extends AbstractModelRenderer.BaseModel {
         bufferBuilder.pos(0, -1, 0).endVertex();
         bufferBuilder.pos(0, 1, 0).endVertex();
         tessellator.draw();
-        GL11.glTranslated(-0.52D / scale, 0, 0);
-        GL11.glColor4d(1, 0, 0, 1);
+        GlStateManager.translate(-0.52D / scale, 0, 0);
+        GlStateManager.color(1, 0, 0, 1);
         bufferBuilder.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION);
         bufferBuilder.pos(-1, 0, 0).endVertex();
         bufferBuilder.pos(1, 0, 0).endVertex();
         tessellator.draw();
-        GL11.glColor4d(1, 1, 1, 1);
-        GL11.glPopMatrix();
+        GlStateManager.color(1, 1, 1, 1);
+        GlStateManager.popMatrix();
     }
 }

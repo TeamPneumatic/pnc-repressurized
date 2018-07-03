@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.common.item.ItemPneumaticHelmet;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -68,21 +69,21 @@ public class RenderSearchItemBlock {
     }
 
     public static void renderSearch(double x, double y, double z, int itemCount, int totalCount) {
-        GL11.glPushMatrix();
-        GL11.glTranslated(x, y, z);
-        GL11.glColor4d(0, 1, 0, 0.5D);
-        GL11.glRotatef(180.0F - Minecraft.getMinecraft().getRenderManager().playerViewY, 0.0F, 1.0F, 0.0F);
-        GL11.glRotatef(180.0F - Minecraft.getMinecraft().getRenderManager().playerViewX, 1.0F, 0.0F, 0.0F);
-        // GL11.glLineWidth(1.0F);
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(x, y, z);
+        GlStateManager.color(0, 1, 0, 0.5F);
+        GlStateManager.rotate(180.0F - Minecraft.getMinecraft().getRenderManager().playerViewY, 0.0F, 1.0F, 0.0F);
+        GlStateManager.rotate(180.0F - Minecraft.getMinecraft().getRenderManager().playerViewX, 1.0F, 0.0F, 0.0F);
+        // GlStateManager.lineWidth(1.0F);
         double ratio = (double) itemCount / totalCount;
         double diff = (1 - ratio) / 1.5D;
         double size = 1 - diff;
         /*
         for(double i = size; i > 0; i -= 0.06D) {
-            GL11.glPushMatrix();
-            GL11.glScaled(i, i, i);
+            GlStateManager.pushMatrix();
+            GlStateManager.scale(i, i, i);
             renderCircle();
-            GL11.glPopMatrix();
+            GlStateManager.popMatrix();
         }
         */
         BufferBuilder wr = Tessellator.getInstance().getBuffer();
@@ -94,7 +95,7 @@ public class RenderSearchItemBlock {
 
         Tessellator.getInstance().draw();
 
-        GL11.glPopMatrix();
+        GlStateManager.popMatrix();
     }
     /*
         private static void renderCircle(){

@@ -18,7 +18,6 @@ import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
 
 import javax.annotation.Nullable;
 import java.awt.*;
@@ -44,10 +43,10 @@ public class GuiUtils {
 
     public static void drawPressureGauge(FontRenderer fontRenderer, float minPressure, float maxPressure, float dangerPressure, float minWorkingPressure, float currentPressure, int xPos, int yPos, float zLevel, int fgColor) {
         BufferBuilder wr = Tessellator.getInstance().getBuffer();
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GlStateManager.disableTexture2D();
         GL11.glLineWidth(2.0F);
         // Draw the green and red surface in the gauge.
-        GL11.glColor4d(0.7D, 0, 0, 1);
+        GlStateManager.color(0.7F, 0, 0, 1);
         wr.begin(GL11.GL_TRIANGLE_FAN, DefaultVertexFormats.POSITION);
         wr.pos(xPos, yPos, zLevel).endVertex();
         // System.out.println("gauge points: "+ GAUGE_POINTS);
@@ -58,7 +57,7 @@ public class GuiUtils {
         for (int i = 0; i < GAUGE_POINTS; i++) {
             if (i == explodeBoundary && !changedColorGreen) {
                 Tessellator.getInstance().draw();
-                GL11.glColor4d(0, 0.7D, 0, 1);
+                GlStateManager.color(0, 0.7F, 0, 1);
                 wr.begin(GL11.GL_TRIANGLE_FAN, DefaultVertexFormats.POSITION);
                 wr.pos(xPos, yPos, zLevel).endVertex();
                 i--;
@@ -66,7 +65,7 @@ public class GuiUtils {
             }
             if (i == workingBoundary && !changedColorYellow) {
                 Tessellator.getInstance().draw();
-                GL11.glColor4d(0.9D, 0.9D, 0, 1);
+                GlStateManager.color(0.9F, 0.9F, 0, 1);
                 wr.begin(GL11.GL_TRIANGLE_FAN, DefaultVertexFormats.POSITION);
                 wr.pos(xPos, yPos, zLevel).endVertex();
                 i--;
@@ -83,7 +82,7 @@ public class GuiUtils {
         float fgA = (float)(fgColor >> 24 & 255) / 255.0F;
 
         // Draw the black surrounding circle
-        GL11.glColor4d(fgR, fgG, fgB, fgA);
+        GlStateManager.color(fgR, fgG, fgB, fgA);
 
         wr.begin(GL11.GL_LINE_LOOP, DefaultVertexFormats.POSITION);
         for (int i = 0; i < CIRCLE_POINTS; i++) {
@@ -110,7 +109,7 @@ public class GuiUtils {
         Tessellator.getInstance().draw();
 
         // Draw the needle.
-        GL11.glColor4d(fgR, fgG, fgB, fgA);
+        GlStateManager.color(fgR, fgG, fgB, fgA);
         double angleIndicator = GAUGE_POINTS - (int) ((currentPressure - minPressure) / (maxPressure - minPressure) * GAUGE_POINTS);
         angleIndicator = -angleIndicator / CIRCLE_POINTS * 2D * Math.PI - STOP_ANGLE;
         wr.begin(GL11.GL_LINE_LOOP, DefaultVertexFormats.POSITION);
@@ -119,7 +118,7 @@ public class GuiUtils {
         wr.pos(Math.cos(angleIndicator) * PRESSURE_GAUGE_RADIUS * 0.8D + xPos, Math.sin(angleIndicator) * PRESSURE_GAUGE_RADIUS * 0.8D + yPos, zLevel).endVertex();
         Tessellator.getInstance().draw();
 
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GlStateManager.enableTexture2D();
 
         // draw the numbers next to the scaler.
         while (textScalers.size() > 10) {
@@ -131,7 +130,7 @@ public class GuiUtils {
         for (int[] scaler : textScalers) {
             fontRenderer.drawString("" + scaler[0], xPos + scaler[1] - 3, yPos + scaler[2] - 3, fgColor);
         }
-        GL11.glColor4d(1.0, 1.0, 1.0, 1.0);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
     }
 
     public static ResourceLocation getResourceLocation(String texture) {
@@ -145,11 +144,11 @@ public class GuiUtils {
     }
 
     public static void drawItemStack(ItemStack stack, int x, int y) {
-        GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+        GlStateManager.enableRescaleNormal();
         RenderHelper.enableGUIStandardItemLighting();
         itemRenderer.renderItemAndEffectIntoGUI(stack, x, y);
         RenderHelper.disableStandardItemLighting();
-        GL11.glDisable(GL12.GL_RESCALE_NORMAL);
+        GlStateManager.disableRescaleNormal();
     }
 
     private static final int TEX_WIDTH = 16;

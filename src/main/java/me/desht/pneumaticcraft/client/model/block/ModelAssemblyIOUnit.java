@@ -8,7 +8,6 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderEntityItem;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemBlock;
-import org.lwjgl.opengl.GL11;
 
 public class ModelAssemblyIOUnit extends AbstractModelRenderer.BaseModel {
     private final ModelRenderer baseTurn;
@@ -129,34 +128,34 @@ public class ModelAssemblyIOUnit extends AbstractModelRenderer.BaseModel {
 
         GlStateManager.pushMatrix();
 
-        GL11.glRotatef(angles[0], 0, 1, 0);
+        GlStateManager.rotate(angles[0], 0, 1, 0);
         baseTurn.render(size);
         baseTurn2.render(size);
-        GL11.glTranslated(0, 18 / 16F, 0);
-        GL11.glRotatef(angles[1], 1, 0, 0);
-        GL11.glTranslated(0, -18 / 16F, 0);
+        GlStateManager.translate(0, 18 / 16F, 0);
+        GlStateManager.rotate(angles[1], 1, 0, 0);
+        GlStateManager.translate(0, -18 / 16F, 0);
         armBase1.render(size);
         armBase2.render(size);
         supportMiddle.render(size);
-        GL11.glTranslated(0, 18 / 16F, 6 / 16F);
-        GL11.glRotatef(angles[2], 1, 0, 0);
-        GL11.glTranslated(0, -18 / 16F, -6 / 16F);
+        GlStateManager.translate(0, 18 / 16F, 6 / 16F);
+        GlStateManager.rotate(angles[2], 1, 0, 0);
+        GlStateManager.translate(0, -18 / 16F, -6 / 16F);
         armMiddle1.render(size);
         armMiddle2.render(size);
-        GL11.glTranslated(0, 3 / 16F, 6 / 16F);
-        GL11.glRotatef(angles[3], 1, 0, 0);
-        GL11.glTranslated(0, -3 / 16F, -6 / 16F);
+        GlStateManager.translate(0, 3 / 16F, 6 / 16F);
+        GlStateManager.rotate(angles[3], 1, 0, 0);
+        GlStateManager.translate(0, -3 / 16F, -6 / 16F);
         clawBase.render(size);
-        GL11.glTranslated(0, 3 / 16F, 0);
-        GL11.glRotatef(angles[4], 0, 0, 1);
-        GL11.glTranslated(0, -3 / 16F, 0);
+        GlStateManager.translate(0, 3 / 16F, 0);
+        GlStateManager.rotate(angles[4], 0, 0, 1);
+        GlStateManager.translate(0, -3 / 16F, 0);
         clawAxil.render(size);
         clawTurn.render(size);
 
         GlStateManager.pushMatrix();
-        GL11.glTranslated(clawTrans, 0, 0);
+        GlStateManager.translate(clawTrans, 0, 0);
         claw1.render(size);
-        GL11.glTranslated(-2 * clawTrans, 0, 0);
+        GlStateManager.translate(-2 * clawTrans, 0, 0);
         claw2.render(size);
         GlStateManager.popMatrix();
 

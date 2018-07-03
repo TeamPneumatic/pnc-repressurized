@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.client.model.block;
 
 import me.desht.pneumaticcraft.client.render.tileentity.AbstractModelRenderer;
 import net.minecraft.client.model.ModelRenderer;
-import org.lwjgl.opengl.GL11;
+import net.minecraft.client.renderer.GlStateManager;
 
 public class ModelAirCannon extends AbstractModelRenderer.BaseModel {
     private final ModelRenderer baseTurn;
@@ -115,11 +115,11 @@ public class ModelAirCannon extends AbstractModelRenderer.BaseModel {
 //    }
 
     public void renderModel(float size, float rotationAngle, float heightAngle) {
-        GL11.glPushMatrix();
+        GlStateManager.pushMatrix();
 
-        GL11.glTranslated(0.0, 0.0, -0.09375D);
-        GL11.glRotatef(rotationAngle, 0.0F, 1.0F, 0.0F);
-        GL11.glTranslated(0.0, 0.0, 0.09375D);
+        GlStateManager.translate(0.0, 0.0, -0.09375D);
+        GlStateManager.rotate(rotationAngle, 0.0F, 1.0F, 0.0F);
+        GlStateManager.translate(0.0, 0.0, 0.09375D);
         baseTurn.render(size);
         baseFrame1.render(size);
         baseFrame2.render(size);
@@ -128,17 +128,17 @@ public class ModelAirCannon extends AbstractModelRenderer.BaseModel {
         baseFrame5.render(size);
         baseFrame6.render(size);
 
-        GL11.glPushMatrix();
-        GL11.glTranslated(0.0D, 1.0D, -0.09375D);
-        GL11.glRotatef(heightAngle, 1.0F, 0.0F, 0.0F);
-        GL11.glTranslated(0.0D, -1.0D, 0.09375D);
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(0.0D, 1.0D, -0.09375D);
+        GlStateManager.rotate(heightAngle, 1.0F, 0.0F, 0.0F);
+        GlStateManager.translate(0.0D, -1.0D, 0.09375D);
         cannon1.render(size);
         cannon2.render(size);
         cannon3.render(size);
         cannon4.render(size);
         cannon5.render(size);
-        GL11.glPopMatrix();
+        GlStateManager.popMatrix();
 
-        GL11.glPopMatrix();
+        GlStateManager.popMatrix();
     }
 }

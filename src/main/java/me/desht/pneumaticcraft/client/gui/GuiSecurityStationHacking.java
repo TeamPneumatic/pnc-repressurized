@@ -11,6 +11,7 @@ import me.desht.pneumaticcraft.common.network.PacketUseItem;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Slot;
@@ -20,7 +21,6 @@ import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.io.IOException;
@@ -130,7 +130,7 @@ public class GuiSecurityStationHacking extends GuiSecurityStationBase {
     @Override
     protected void drawGuiContainerBackgroundLayer(float opacity, int x, int y) {
         super.drawGuiContainerBackgroundLayer(opacity, x, y);
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
         playerBackgroundBridges.render();
         aiBackgroundBridges.render();

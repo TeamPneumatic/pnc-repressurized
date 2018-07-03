@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.client.render.pneumaticArmor;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.item.ItemPlastic;
-import me.desht.pneumaticcraft.common.util.Reflections;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderEntityItem;
@@ -85,10 +84,10 @@ public class RenderDroneAI {
 //        ItemStack activeProgram = drone.getActiveProgram();
 //        if (!activeProgram.isEmpty() && pos != null) {
 //            entityItem.setItem(activeProgram);
-//            GL11.glColor4d(1, 1, 1, 1);
-//            GL11.glEnable(GL11.GL_TEXTURE_2D);
+//            GlStateManager.color(1, 1, 1, 1);
+//            GlStateManager.enableTexture2D();
 //            renderItem.doRender(entityItem, getInterpolated(pos.getX(), oldPos.getX(), partialTicks) + 0.5, getInterpolated(pos.getY(), oldPos.getY(), partialTicks) + 0.5, getInterpolated(pos.getZ(), oldPos.getZ(), partialTicks) + 0.5, 0, partialTicks * 4);
-//            GL11.glDisable(GL11.GL_LIGHTING);
+//            GlStateManager.disable();
 //        }
     }
 

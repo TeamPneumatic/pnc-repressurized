@@ -26,7 +26,7 @@ public class BlockColorHandler {
                         case 1: heatLevel = ((TileEntityVortexTube) te).getColdHeatLevel(); break;
                     }
                 }
-                double[] color = TileEntityCompressedIronBlock.getColorForHeatLevel(heatLevel);
+                float[] color = TileEntityCompressedIronBlock.getColorForHeatLevel(heatLevel);
                 return 0xFF000000 + ((int) (color[0] * 255) << 16) + ((int) (color[1] * 255) << 8) + (int) (color[2] * 255);
             }
             return 0xFFFFFFFF;

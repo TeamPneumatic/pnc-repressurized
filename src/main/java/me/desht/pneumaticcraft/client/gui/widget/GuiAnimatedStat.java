@@ -10,10 +10,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.RenderItem;
-import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemBlock;
@@ -23,7 +20,6 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
@@ -311,9 +307,9 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
 
         if (leftSided) renderWidth *= -1;
         Gui.drawRect(renderBaseX, renderAffectedY /* + 1 */, renderBaseX + renderWidth /*- 1*/, renderAffectedY + renderHeight, backGroundColor);
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
-        GL11.glLineWidth(3.0F);
-        GL11.glColor4d(0, 0, 0, 1);
+        GlStateManager.disableTexture2D();
+        GlStateManager.glLineWidth(3.0F);
+        GlStateManager.color(0, 0, 0, 1);
         BufferBuilder wr = Tessellator.getInstance().getBuffer();
         wr.begin(GL11.GL_LINE_LOOP, DefaultVertexFormats.POSITION);
         wr.pos(renderBaseX, renderAffectedY, zLevel).endVertex();
@@ -321,15 +317,15 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
         wr.pos(renderBaseX + renderWidth, renderAffectedY + renderHeight, zLevel).endVertex();
         wr.pos(renderBaseX, renderAffectedY + renderHeight, zLevel).endVertex();
         Tessellator.getInstance().draw();
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GlStateManager.enableTexture2D();
         if (leftSided) renderWidth *= -1;
         // if done expanding, draw the information
         int titleYoffset = title.isEmpty() ? 2 : 12;
         if (doneExpanding) {
-            GL11.glPushMatrix();
-            GL11.glTranslated(renderBaseX + (leftSided ? -renderWidth : 16), renderAffectedY, 0);
-            GL11.glScaled(textSize, textSize, textSize);
-            GL11.glTranslated(-renderBaseX - (leftSided ? -renderWidth : 16), -renderAffectedY, 0);
+            GlStateManager.pushMatrix();
+            GlStateManager.translate(renderBaseX + (leftSided ? -renderWidth : 16), renderAffectedY, 0);
+            GlStateManager.scale(textSize, textSize, textSize);
+            GlStateManager.translate(-renderBaseX - (leftSided ? -renderWidth : 16), -renderAffectedY, 0);
             if (!title.isEmpty()) {
                 fontRenderer.drawStringWithShadow(title, renderBaseX + (leftSided ? -renderWidth + 2 : 18), renderAffectedY + 2, 0xFFFF00);
             }
@@ -340,19 +336,19 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
                     fontRenderer.drawStringWithShadow(textList.get(i), renderBaseX + (leftSided ? -renderWidth + 2 : 18), renderAffectedY + (i - curScroll) * lineSpacing + titleYoffset, 0xFFFFFF);
                 }
             }
-            GL11.glPopMatrix();
+            GlStateManager.popMatrix();
 
-            GL11.glPushMatrix();
-            GL11.glTranslated(renderBaseX + (leftSided ? widgetOffsetLeft : widgetOffsetRight), renderAffectedY + (titleYoffset - 10), 0);
-            GL11.glEnable(GL11.GL_TEXTURE_2D);
+            GlStateManager.pushMatrix();
+            GlStateManager.translate(renderBaseX + (leftSided ? widgetOffsetLeft : widgetOffsetRight), renderAffectedY + (titleYoffset - 10), 0);
+            GlStateManager.enableTexture2D();
             for (IGuiWidget widget : widgets)
                 widget.render(mouseX - renderBaseX, mouseY - renderAffectedY, partialTicks);
-            GL11.glPopMatrix();
+            GlStateManager.popMatrix();
         }
         if (renderHeight > 16 && renderWidth > 16) {
-            GL11.glColor4d(1, 1, 1, 1);
-            GL11.glEnable(GL11.GL_BLEND);
-            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+            GlStateManager.color(1, 1, 1, 1);
+            GlStateManager.enableBlend();
+            GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
             if (iStack.isEmpty()) {
                 if (texture.contains(Textures.GUI_LOCATION)) {
                     GuiPneumaticContainerBase.drawTexture(texture, renderBaseX - (leftSided ? 16 : 0), renderAffectedY);
@@ -362,16 +358,16 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
             } else if (gui != null || !(iStack.getItem() instanceof ItemBlock)) {
                 if (itemRenderer == null) itemRenderer = Minecraft.getMinecraft().getRenderItem();
                 itemRenderer.zLevel = 1;
-                GL11.glPushMatrix();
-                GL11.glTranslated(0, 0, -50);
-                GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+                GlStateManager.pushMatrix();
+                GlStateManager.translate(0, 0, -50);
+                GlStateManager.enableRescaleNormal();
                 RenderHelper.enableGUIStandardItemLighting();
                 itemRenderer.renderItemAndEffectIntoGUI(iStack, renderBaseX - (leftSided ? 16 : 0), renderAffectedY);
                 RenderHelper.disableStandardItemLighting();
-                GL11.glDisable(GL12.GL_RESCALE_NORMAL);
-                GL11.glPopMatrix();
+                GlStateManager.disableRescaleNormal();
+                GlStateManager.popMatrix();
             }
-            GL11.glDisable(GL11.GL_BLEND);
+            GlStateManager.disableBlend();
         }
     }
 

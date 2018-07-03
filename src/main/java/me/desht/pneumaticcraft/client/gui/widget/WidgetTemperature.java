@@ -4,8 +4,8 @@ import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.math.MathHelper;
-import org.lwjgl.opengl.GL11;
 
 import java.util.List;
 
@@ -33,9 +33,9 @@ public class WidgetTemperature extends WidgetBase {
 
     @Override
     public void render(int mouseX, int mouseY, float partialTick) {
-        GL11.glDisable(GL11.GL_LIGHTING);
+        GlStateManager.disableLighting();
         Minecraft.getMinecraft().getTextureManager().bindTexture(Textures.WIDGET_TEMPERATURE);
-        GL11.glColor4d(1, 1, 1, 1);
+        GlStateManager.color(1, 1, 1, 1);
         Gui.drawModalRectWithCustomSizedTexture(x + 6, y, 6, 0, 7, 50, 18, 50);
 
         int barLength = ((int) logic.getTemperature() - minTemp) * 48 / maxTemp;

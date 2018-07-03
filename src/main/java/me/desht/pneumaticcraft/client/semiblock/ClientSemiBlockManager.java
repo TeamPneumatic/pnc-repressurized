@@ -1,21 +1,14 @@
 package me.desht.pneumaticcraft.client.semiblock;
 
-import me.desht.pneumaticcraft.common.semiblock.ISemiBlock;
-import me.desht.pneumaticcraft.common.semiblock.SemiBlockCropSupport;
-import me.desht.pneumaticcraft.common.semiblock.SemiBlockHeatFrame;
-import me.desht.pneumaticcraft.common.semiblock.SemiBlockLogistics;
-import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
-import me.desht.pneumaticcraft.common.semiblock.SemiBlockSpawnerAgitator;
-import me.desht.pneumaticcraft.common.semiblock.SemiBlockTransferGadget;
+import me.desht.pneumaticcraft.common.semiblock.*;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-
-import org.lwjgl.opengl.GL11;
 
 import java.util.HashMap;
 import java.util.List;
@@ -45,8 +38,8 @@ public class ClientSemiBlockManager {
         double playerY = player.prevPosY + (player.posY - player.prevPosY) * event.getPartialTicks();
         double playerZ = player.prevPosZ + (player.posZ - player.prevPosZ) * event.getPartialTicks();
 
-        GL11.glPushMatrix();
-        GL11.glTranslated(-playerX, -playerY, -playerZ);
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(-playerX, -playerY, -playerZ);
         RenderHelper.enableStandardItemLighting();
 
         for (Map<BlockPos, List<ISemiBlock>> map : SemiBlockManager.getInstance(player.world).getSemiBlocks().values()) {
@@ -54,16 +47,16 @@ public class ClientSemiBlockManager {
                 for(ISemiBlock semiBlock : semiBlocks){
                     ISemiBlockRenderer renderer = getRenderer(semiBlock);
                     if (renderer != null) {
-                        GL11.glPushMatrix();
-                        GL11.glTranslated(semiBlock.getPos().getX(), semiBlock.getPos().getY(), semiBlock.getPos().getZ());
+                        GlStateManager.pushMatrix();
+                        GlStateManager.translate(semiBlock.getPos().getX(), semiBlock.getPos().getY(), semiBlock.getPos().getZ());
                         renderer.render(semiBlock, event.getPartialTicks());
-                        GL11.glPopMatrix();
+                        GlStateManager.popMatrix();
                     }
                 }
             }
         }
         RenderHelper.disableStandardItemLighting();
-        GL11.glPopMatrix();
+        GlStateManager.popMatrix();
     }
 
     public static ISemiBlockRenderer<?> getRenderer(ISemiBlock semiBlock) {

@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.client.model.block;
 
 import me.desht.pneumaticcraft.client.render.tileentity.AbstractModelRenderer;
 import net.minecraft.client.model.ModelRenderer;
-import org.lwjgl.opengl.GL11;
+import net.minecraft.client.renderer.GlStateManager;
 
 public class ModelAssemblyDrill extends AbstractModelRenderer.BaseModel {
     private final ModelRenderer baseTurn;
@@ -76,29 +76,29 @@ public class ModelAssemblyDrill extends AbstractModelRenderer.BaseModel {
     }
 
     public void renderModel(float size, float[] angles) {
-        GL11.glPushMatrix();
-        GL11.glRotatef(angles[0], 0, 1, 0);
+        GlStateManager.pushMatrix();
+        GlStateManager.rotate(angles[0], 0, 1, 0);
         baseTurn.render(size);
         baseTurn2.render(size);
-        GL11.glTranslated(0, 18 / 16F, 0);
-        GL11.glRotatef(angles[1], 1, 0, 0);
-        GL11.glTranslated(0, -18 / 16F, 0);
+        GlStateManager.translate(0, 18 / 16F, 0);
+        GlStateManager.rotate(angles[1], 1, 0, 0);
+        GlStateManager.translate(0, -18 / 16F, 0);
         armBase1.render(size);
         armBase2.render(size);
         supportMiddle.render(size);
-        GL11.glTranslated(0, 18 / 16F, 6 / 16F);
-        GL11.glRotatef(angles[2], 1, 0, 0);
-        GL11.glTranslated(0, -18 / 16F, -6 / 16F);
+        GlStateManager.translate(0, 18 / 16F, 6 / 16F);
+        GlStateManager.rotate(angles[2], 1, 0, 0);
+        GlStateManager.translate(0, -18 / 16F, -6 / 16F);
         armMiddle1.render(size);
         armMiddle2.render(size);
-        GL11.glTranslated(0, 3 / 16F, 6 / 16F);
-        GL11.glRotatef(angles[3], 1, 0, 0);
-        GL11.glTranslated(0, -3 / 16F, -6 / 16F);
+        GlStateManager.translate(0, 3 / 16F, 6 / 16F);
+        GlStateManager.rotate(angles[3], 1, 0, 0);
+        GlStateManager.translate(0, -3 / 16F, -6 / 16F);
         drillBase.render(size);
-        GL11.glTranslated(0, 3 / 16F, 0);
-        GL11.glRotatef(angles[4], 0, 0, 1);
-        GL11.glTranslated(0, -3 / 16F, 0);
+        GlStateManager.translate(0, 3 / 16F, 0);
+        GlStateManager.rotate(angles[4], 0, 0, 1);
+        GlStateManager.translate(0, -3 / 16F, 0);
         drill.render(size);
-        GL11.glPopMatrix();
+        GlStateManager.popMatrix();
     }
 }

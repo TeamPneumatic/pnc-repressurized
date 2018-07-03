@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.client.render.pneumaticArmor;
 
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.EntityPlayer;
@@ -17,7 +18,7 @@ public class RenderNavigator {
     private final World world;
     private Path path;
     private boolean increaseAlpha;
-    private double alphaValue = 0.2D;
+    private float alphaValue = 0.2F;
 
     public RenderNavigator(World world, BlockPos targetPos) {
         this.targetPos = targetPos;
@@ -36,21 +37,21 @@ public class RenderNavigator {
     public void render(boolean wirePath, boolean xRayEnabled, float partialTicks) {
         if (path == null) return;
 
-        GL11.glDepthMask(false);
-        if (xRayEnabled) GL11.glDisable(GL11.GL_DEPTH_TEST);
-        GL11.glDisable(GL11.GL_CULL_FACE);
-        GL11.glEnable(GL11.GL_BLEND);
+        GlStateManager.depthMask(false);
+        if (xRayEnabled) GlStateManager.disableDepth();
+        GlStateManager.disableCull();
+        GlStateManager.enableBlend();
         GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GlStateManager.disableTexture2D();
         GL11.glLineWidth(5.0F);
 
         boolean noDestinationPath = !tracedToDestination();
 
         BufferBuilder wr = Tessellator.getInstance().getBuffer();
 
-        GL11.glPushMatrix();
-        GL11.glTranslated(0, 0.01D, 0);
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(0, 0.01D, 0);
 
         //Draws just wires
         if (wirePath) {
@@ -59,11 +60,11 @@ public class RenderNavigator {
                 GL11.glLineStipple(4, (short) 0x00FF);
             }
             for (int i = 1; i < path.getCurrentPathLength(); i++) {
-                double red = 1;
+                float red = 1;
                 if (path.getCurrentPathLength() - i < 200) {
-                    red = (path.getCurrentPathLength() - i) * 0.005D;
+                    red = (path.getCurrentPathLength() - i) * 0.005F;
                 }
-                GL11.glColor4d(red, 1 - red, 0, 0.5D);
+                GlStateManager.color(red, 1 - red, 0, 0.5F);
                 PathPoint lastPoint = path.getPathPointFromIndex(i - 1);
                 PathPoint pathPoint = path.getPathPointFromIndex(i);
                 wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
@@ -75,21 +76,21 @@ public class RenderNavigator {
         } else {
             if (noDestinationPath) {
                 if (increaseAlpha) {
-                    alphaValue += 0.005D;
-                    if (alphaValue > 0.3D) increaseAlpha = false;
+                    alphaValue += 0.005F;
+                    if (alphaValue > 0.3F) increaseAlpha = false;
                 } else {
-                    alphaValue -= 0.005D;
-                    if (alphaValue < 0.2D) increaseAlpha = true;
+                    alphaValue -= 0.005F;
+                    if (alphaValue < 0.2F) increaseAlpha = true;
                 }
             } else {
-                if (alphaValue > 0.2D) alphaValue -= 0.005D;
+                if (alphaValue > 0.2F) alphaValue -= 0.005F;
             }
             for (int i = 0; i < path.getCurrentPathLength(); i++) {
-                double red = 1;
+                float red = 1;
                 if (path.getCurrentPathLength() - i < 200) {
-                    red = (path.getCurrentPathLength() - i) * 0.005D;
+                    red = (path.getCurrentPathLength() - i) * 0.005F;
                 }
-                GL11.glColor4d(red, 1 - red, 0, alphaValue);
+                GlStateManager.color(red, 1 - red, 0, alphaValue);
                 PathPoint pathPoint = path.getPathPointFromIndex(i);
                 wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
                 wr.pos(pathPoint.x, pathPoint.y, pathPoint.z).endVertex();
@@ -100,13 +101,13 @@ public class RenderNavigator {
             }
         }
 
-        GL11.glPopMatrix();
-        GL11.glEnable(GL11.GL_CULL_FACE);
-        GL11.glEnable(GL11.GL_DEPTH_TEST);
-        GL11.glDisable(GL11.GL_BLEND);
+        GlStateManager.popMatrix();
+        GlStateManager.enableCull();
+        GlStateManager.enableDepth();
+        GlStateManager.disableBlend();
         GL11.glDisable(GL11.GL_LINE_STIPPLE);
-        GL11.glDepthMask(true);
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GlStateManager.depthMask(true);
+        GlStateManager.enableTexture2D();
     }
 
     public boolean tracedToDestination() {

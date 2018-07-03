@@ -3,11 +3,11 @@ package me.desht.pneumaticcraft.client.gui.widget;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import org.apache.commons.lang3.Validate;
 import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
 
 public class WidgetVerticalScrollbar extends WidgetBase {
     public float currentScroll;
@@ -65,7 +65,7 @@ public class WidgetVerticalScrollbar extends WidgetBase {
 
     @Override
     public void render(int mouseX, int mouseY, float partialTick) {
-        GL11.glColor4d(1, 1, 1, 1);
+        GlStateManager.color(1, 1, 1, 1);
         if (!Mouse.isButtonDown(0)) dragging = false;
         if (!wasClicking && Mouse.isButtonDown(0) && getBounds().contains(mouseX, mouseY)) {
             dragging = true;
@@ -80,9 +80,9 @@ public class WidgetVerticalScrollbar extends WidgetBase {
             Gui.drawModalRectWithCustomSizedTexture(x, y + 1 + i, 12, 1, getBounds().width, 1, 26, 15);
         Gui.drawModalRectWithCustomSizedTexture(x, y + getBounds().height - 1, 12, 14, getBounds().width, 1, 26, 15);
 
-        if (!enabled) GL11.glColor4d(0.6, 0.6, 0.6, 1);
+        if (!enabled) GlStateManager.color(0.6F, 0.6F, 0.6F, 1);
         Gui.drawModalRectWithCustomSizedTexture(x + 1, y + 1 + (int) ((getBounds().height - 17) * currentScroll), 0, 0, 12, 15, 26, 15);
-        GL11.glColor4d(1, 1, 1, 1);
+        GlStateManager.color(1, 1, 1, 1);
     }
 
     public boolean isDragging() {

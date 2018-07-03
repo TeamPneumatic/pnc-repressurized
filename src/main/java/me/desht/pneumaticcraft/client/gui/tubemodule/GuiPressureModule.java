@@ -88,7 +88,7 @@ public class GuiPressureModule extends GuiTubeModule {
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         super.drawScreen(mouseX, mouseY, partialTicks);
 
-        GL11.glDisable(GL11.GL_LIGHTING);
+        GlStateManager.disableLighting();
 
         FMLClientHandler.instance().getClient().getTextureManager().bindTexture(getTexture());
         int scrollbarLowerBoundX = (int) (guiLeft + 16 + (158 - 11) * (module.lowerBound / (module.maxValue + 1)));

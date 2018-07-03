@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.client.model.block;
 
 import me.desht.pneumaticcraft.client.render.tileentity.AbstractModelRenderer;
 import net.minecraft.client.model.ModelRenderer;
-import org.lwjgl.opengl.GL11;
+import net.minecraft.client.renderer.GlStateManager;
 
 public class ModelUniversalSensor extends AbstractModelRenderer.BaseModel {
     private final ModelRenderer dish1;
@@ -55,14 +55,14 @@ public class ModelUniversalSensor extends AbstractModelRenderer.BaseModel {
     }
 
     public void renderModel(float scale, float dishRotation) {
-        GL11.glPushMatrix();
-        GL11.glRotatef(dishRotation, 0, 1, 0);
+        GlStateManager.pushMatrix();
+        GlStateManager.rotate(dishRotation, 0, 1, 0);
         dish1.render(scale);
         dish2.render(scale);
         dish3.render(scale);
         dish4.render(scale);
         dish5.render(scale);
         dish6.render(scale);
-        GL11.glPopMatrix();
+        GlStateManager.popMatrix();
     }
 }

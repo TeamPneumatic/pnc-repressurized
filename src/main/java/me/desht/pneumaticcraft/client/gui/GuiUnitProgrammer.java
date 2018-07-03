@@ -9,6 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextFormatting;
@@ -129,7 +130,7 @@ public class GuiUnitProgrammer extends GuiScreen {
     }
 
     public void render(int x, int y, boolean showFlow, boolean showInfo, boolean translate) {
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
         int origX = x;
         int origY = y;
@@ -155,20 +156,20 @@ public class GuiUnitProgrammer extends GuiScreen {
         GL11.glScissor((guiLeft + startX) * sr.getScaleFactor(), (sr.getScaledHeight() - areaHeight - (guiTop + startY)) * sr.getScaleFactor(), areaWidth * sr.getScaleFactor(), areaHeight * sr.getScaleFactor());
         GL11.glEnable(GL11.GL_SCISSOR_TEST);
 
-        GL11.glPushMatrix();
-        GL11.glTranslated(translatedX, translatedY, 0);
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(translatedX, translatedY, 0);
 
-        GL11.glScaled(scale, scale, 1);
+        GlStateManager.scale(scale, scale, 1);
 
         if (showFlow) showFlow();
 
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GlStateManager.enableTexture2D();
         for (IProgWidget widget : progWidgets) {
-            GL11.glPushMatrix();
-            GL11.glTranslated(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
-            GL11.glScaled(0.5, 0.5, 1);
+            GlStateManager.pushMatrix();
+            GlStateManager.translate(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
+            GlStateManager.scale(0.5, 0.5, 1);
             widget.render();
-            GL11.glPopMatrix();
+            GlStateManager.popMatrix();
         }
 
         for (IProgWidget widget : progWidgets) {
@@ -187,19 +188,19 @@ public class GuiUnitProgrammer extends GuiScreen {
 
         renderAdditionally();
 
-        GL11.glColor4d(1, 1, 1, 1);
+        GlStateManager.color(1, 1, 1, 1);
 
         if (showInfo) {
             for (IProgWidget widget : progWidgets) {
-                GL11.glPushMatrix();
-                GL11.glTranslated(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
-                GL11.glScaled(0.5, 0.5, 1);
+                GlStateManager.pushMatrix();
+                GlStateManager.translate(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
+                GlStateManager.scale(0.5, 0.5, 1);
                 widget.renderExtraInfo();
-                GL11.glPopMatrix();
+                GlStateManager.popMatrix();
             }
         }
 
-        GL11.glPopMatrix();
+        GlStateManager.popMatrix();
 
         GL11.glDisable(GL11.GL_SCISSOR_TEST);
 
@@ -219,20 +220,20 @@ public class GuiUnitProgrammer extends GuiScreen {
     }
 
     protected void drawBorder(IProgWidget widget, int color) {
-        GL11.glPushMatrix();
-        GL11.glTranslated(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
-        GL11.glScaled(0.5, 0.5, 1);
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
+        GlStateManager.scale(0.5, 0.5, 1);
         drawVerticalLine(0, 0, widget.getHeight(), color);
         drawVerticalLine(widget.getWidth(), 0, widget.getHeight(), color);
         drawHorizontalLine(widget.getWidth(), 0, 0, color);
         drawHorizontalLine(widget.getWidth(), 0, widget.getHeight(), color);
-        GL11.glPopMatrix();
+        GlStateManager.popMatrix();
     }
 
     private void showFlow() {
         GL11.glLineWidth(1);
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
-        GL11.glBegin(GL11.GL_LINES);
+        GlStateManager.disableTexture2D();
+        GlStateManager.glBegin(GL11.GL_LINES);
 
         for (IProgWidget widget : progWidgets) {
             if (widget instanceof IJump) {
@@ -248,20 +249,20 @@ public class GuiUnitProgrammer extends GuiScreen {
                                         int y1 = widget.getY() + widget.getHeight() / 4;
                                         int x2 = w.getX() + w.getWidth() / 4;
                                         int y2 = w.getY() + w.getHeight() / 4;
-                                        double midX = (x2 + x1) / 2D;
-                                        double midY = (y2 + y1) / 2D;
-                                        GL11.glVertex3d(guiLeft + x1, guiTop + y1, zLevel);
-                                        GL11.glVertex3d(guiLeft + x2, guiTop + y2, zLevel);
+                                        float midX = (x2 + x1) / 2F;
+                                        float midY = (y2 + y1) / 2F;
+                                        GlStateManager.glVertex3f(guiLeft + x1, guiTop + y1, zLevel);
+                                        GlStateManager.glVertex3f(guiLeft + x2, guiTop + y2, zLevel);
                                         Vec3d arrowVec = new Vec3d(x1 - x2, y1 - y2, 0).normalize();
                                         float arrowAngle = (float) Math.toRadians(30);
                                         float arrowSize = 5;
                                         arrowVec = new Vec3d(arrowVec.x * arrowSize, 0, arrowVec.y * arrowSize);
                                         arrowVec = arrowVec.rotateYaw(arrowAngle);
-                                        GL11.glVertex3d(guiLeft + midX, guiTop + midY, zLevel);
-                                        GL11.glVertex3d(guiLeft + midX + arrowVec.x, guiTop + midY + arrowVec.z, zLevel);
+                                        GlStateManager.glVertex3f(guiLeft + midX, guiTop + midY, zLevel);
+                                        GlStateManager.glVertex3f(guiLeft + midX + (float)arrowVec.x, guiTop + midY + (float)arrowVec.z, zLevel);
                                         arrowVec = arrowVec.rotateYaw(-2 * arrowAngle);
-                                        GL11.glVertex3d(guiLeft + midX, guiTop + midY, zLevel);
-                                        GL11.glVertex3d(guiLeft + midX + arrowVec.x, guiTop + midY + arrowVec.z, zLevel);
+                                        GlStateManager.glVertex3f(guiLeft + midX, guiTop + midY, zLevel);
+                                        GlStateManager.glVertex3f(guiLeft + midX + (float)arrowVec.x, guiTop + midY + (float)arrowVec.z, zLevel);
                                     }
                                 }
                             }
@@ -270,9 +271,9 @@ public class GuiUnitProgrammer extends GuiScreen {
                 }
             }
         }
-        GL11.glEnd();
+        GlStateManager.glEnd();
 
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GlStateManager.enableTexture2D();
     }
 
     public float getScale() {

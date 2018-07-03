@@ -5,7 +5,6 @@ import me.desht.pneumaticcraft.client.render.tileentity.AbstractModelRenderer;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
-import org.lwjgl.opengl.GL11;
 
 public class ModelAssemblyLaser extends AbstractModelRenderer.BaseModel {
     private final ModelRenderer baseTurn;
@@ -81,41 +80,41 @@ public class ModelAssemblyLaser extends AbstractModelRenderer.BaseModel {
     public void renderModel(float size, float[] angles, boolean laserOn) {
         GlStateManager.pushMatrix();
 
-        GL11.glRotatef(angles[0], 0, 1, 0);
+        GlStateManager.rotate(angles[0], 0, 1, 0);
         baseTurn.render(size);
         baseTurn2.render(size);
-        GL11.glTranslated(0, 18 / 16F, 0);
-        GL11.glRotatef(angles[1], 1, 0, 0);
-        GL11.glTranslated(0, -18 / 16F, 0);
+        GlStateManager.translate(0, 18 / 16F, 0);
+        GlStateManager.rotate(angles[1], 1, 0, 0);
+        GlStateManager.translate(0, -18 / 16F, 0);
         armBase1.render(size);
         armBase2.render(size);
         supportMiddle.render(size);
-        GL11.glTranslated(0, 18 / 16F, 6 / 16F);
-        GL11.glRotatef(angles[2], 1, 0, 0);
-        GL11.glTranslated(0, -18 / 16F, -6 / 16F);
+        GlStateManager.translate(0, 18 / 16F, 6 / 16F);
+        GlStateManager.rotate(angles[2], 1, 0, 0);
+        GlStateManager.translate(0, -18 / 16F, -6 / 16F);
         armMiddle1.render(size);
         armMiddle2.render(size);
-        GL11.glTranslated(0, 3 / 16F, 6 / 16F);
-        GL11.glRotatef(angles[3], 1, 0, 0);
-        GL11.glTranslated(0, -3 / 16F, -6 / 16F);
+        GlStateManager.translate(0, 3 / 16F, 6 / 16F);
+        GlStateManager.rotate(angles[3], 1, 0, 0);
+        GlStateManager.translate(0, -3 / 16F, -6 / 16F);
         laserBase.render(size);
         if (laserOn) {
-            GL11.glPushMatrix();
-            GL11.glTranslated(0, 2.75 / 16D, 1 / 16D);
-            GL11.glDisable(GL11.GL_TEXTURE_2D);
-            GL11.glColor4d(1.0D, 0.1D, 0, 1);
+            GlStateManager.pushMatrix();
+            GlStateManager.translate(0, 2.75 / 16D, 1 / 16D);
+            GlStateManager.disableTexture2D();
+            GlStateManager.color(1.0F, 0.1F, 0, 1);
             laser.render(size / 8);
-            GL11.glPopMatrix();
-            GL11.glColor4d(1, 1, 1, 1);
-            GL11.glEnable(GL11.GL_TEXTURE_2D);
+            GlStateManager.popMatrix();
+            GlStateManager.color(1, 1, 1, 1);
+            GlStateManager.enableTexture2D();
         }
         double textSize = 1 / 150D;
-        GL11.glScaled(textSize, textSize, textSize);
-        GL11.glRotated(-90, 1, 0, 0);
-        GL11.glTranslated(0, 0, 18);
-        GL11.glDisable(GL11.GL_LIGHTING);
+        GlStateManager.scale(textSize, textSize, textSize);
+        GlStateManager.rotate(-90, 1, 0, 0);
+        GlStateManager.translate(0, 0, 18);
+        GlStateManager.disableLighting();
         GuiPneumaticContainerBase.drawTexture(Textures.GUI_LASER_DANGER, -8, -65);
-        GL11.glEnable(GL11.GL_LIGHTING);
+        GlStateManager.enableLighting();
 
         GlStateManager.popMatrix();
     }

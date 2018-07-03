@@ -17,6 +17,7 @@ import me.desht.pneumaticcraft.common.network.PacketToggleArmorFeature;
 import me.desht.pneumaticcraft.lib.Sounds;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
@@ -65,25 +66,25 @@ public class HUDHandler implements IKeyListener {
         double playerY = player.prevPosY + (player.posY - player.prevPosY) * event.getPartialTicks();
         double playerZ = player.prevPosZ + (player.posZ - player.prevPosZ) * event.getPartialTicks();
 
-        GL11.glPushMatrix();
-        GL11.glTranslated(-playerX, -playerY, -playerZ);
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(-playerX, -playerY, -playerZ);
 
         ItemStack helmetStack = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
         CommonHUDHandler comHudHandler = CommonHUDHandler.getHandlerForPlayer(player);
         if (helmetStack.getItem() instanceof ItemPneumaticArmorBase && comHudHandler.getArmorPressure(EntityEquipmentSlot.HEAD) > 0F) {
             for (EntityEquipmentSlot slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
                 if (comHudHandler.isArmorReady(slot)) {
-                    GL11.glDisable(GL11.GL_TEXTURE_2D);
+                    GlStateManager.disableTexture2D();
                     List<IUpgradeRenderHandler> renderHandlers = UpgradeRenderHandlerList.instance().getHandlersForSlot(slot);
                     for (int i = 0; i < renderHandlers.size(); i++) {
                         if (comHudHandler.isUpgradeRendererInserted(slot, i) && GuiKeybindCheckBox.fromKeyBindingName(GuiKeybindCheckBox.UPGRADE_PREFIX + renderHandlers.get(i).getUpgradeName()).checked)
                             renderHandlers.get(i).render3D(event.getPartialTicks());
                     }
-                    GL11.glEnable(GL11.GL_TEXTURE_2D);
+                    GlStateManager.enableTexture2D();
                 }
             }
         }
-        GL11.glPopMatrix();
+        GlStateManager.popMatrix();
     }
 
     @SubscribeEvent
@@ -124,12 +125,12 @@ public class HUDHandler implements IKeyListener {
         EntityPlayer player = minecraft.player;
         if (minecraft.inGameHasFocus && ItemPneumaticArmorBase.isPlayerWearingAnyPneumaticArmor(player)) {
             ScaledResolution sr = new ScaledResolution(minecraft);
-            GL11.glDepthMask(false);
-            GL11.glDisable(GL11.GL_CULL_FACE);
-            GL11.glDisable(GL11.GL_TEXTURE_2D);
-            GL11.glPushMatrix();
+            GlStateManager.depthMask(false);
+            GlStateManager.disableCull();
+            GlStateManager.disableTexture2D();
+            GlStateManager.pushMatrix();
             GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
-            GL11.glColor4d(0, 1, 0, 0.8D);
+            GlStateManager.color(0, 1, 0, 0.8F);
             CommonHUDHandler comHudHandler = CommonHUDHandler.getHandlerForPlayer(player);
 
             for (EntityEquipmentSlot slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
@@ -177,10 +178,10 @@ public class HUDHandler implements IKeyListener {
                 message.renderMessage(minecraft.fontRenderer, partialTicks);
             }
 
-            GL11.glPopMatrix();
-            GL11.glEnable(GL11.GL_CULL_FACE);
-            GL11.glDepthMask(true);
-            GL11.glEnable(GL11.GL_TEXTURE_2D);
+            GlStateManager.popMatrix();
+            GlStateManager.enableCull();
+            GlStateManager.depthMask(true);
+            GlStateManager.enableTexture2D();
 
             // show armor initialisation percentages
             if (comHudHandler.isArmorEnabled()) {

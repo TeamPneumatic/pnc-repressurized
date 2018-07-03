@@ -13,6 +13,7 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Items;
@@ -21,7 +22,6 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -90,7 +90,7 @@ public class GuiSecurityStationInventory extends GuiSecurityStationBase {
     @Override
     protected void drawGuiContainerBackgroundLayer(float opacity, int x, int y) {
         super.drawGuiContainerBackgroundLayer(opacity, x, y);
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         nodeHandler.render();
     }
 

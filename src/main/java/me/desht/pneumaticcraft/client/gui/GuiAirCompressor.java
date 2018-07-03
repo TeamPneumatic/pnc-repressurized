@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.common.inventory.ContainerAirCompressor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAirCompressor;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.tileentity.TileEntityFurnace;
@@ -11,7 +12,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.tuple.Pair;
-import org.lwjgl.opengl.GL11;
 
 import java.util.List;
 
@@ -39,7 +39,7 @@ public class GuiAirCompressor extends GuiPneumaticContainerBase<TileEntityAirCom
     protected void drawGuiContainerBackgroundLayer(float opacity, int x, int y) {
         super.drawGuiContainerBackgroundLayer(opacity, x, y);
 
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         bindGuiTexture();
 
         int i1 = te.getBurnTimeRemainingScaled(12);

@@ -15,6 +15,7 @@ import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -29,7 +30,6 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -110,14 +110,14 @@ public class SearchUpgradeHandler implements IUpgradeRenderHandler {
     @Override
     @SideOnly(Side.CLIENT)
     public void render3D(float partialTicks) {
-        GL11.glEnable(GL12.GL_RESCALE_NORMAL);
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
-        GL11.glDepthMask(false);
-        GL11.glDisable(GL11.GL_DEPTH_TEST);
-        GL11.glDisable(GL11.GL_CULL_FACE);
-        GL11.glEnable(GL11.GL_BLEND);
+        GlStateManager.enableRescaleNormal();
+        GlStateManager.enableTexture2D();
+        GlStateManager.depthMask(false);
+        GlStateManager.disableDepth();
+        GlStateManager.disableCull();
+        GlStateManager.enableBlend();
         GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         Minecraft.getMinecraft().getRenderManager().renderEngine.bindTexture(Textures.GLOW_RESOURCE);
         //  mc.func_110434_K().func_110577_a(Textures.GLOW_RESOURCE);
         for (Map.Entry<EntityItem, Integer> entry : searchedItems.entrySet()) {
@@ -131,12 +131,12 @@ public class SearchUpgradeHandler implements IUpgradeRenderHandler {
                 i--;
             }
         }
-        GL11.glEnable(GL11.GL_CULL_FACE);
-        GL11.glEnable(GL11.GL_DEPTH_TEST);
-        GL11.glDisable(GL11.GL_BLEND);
-        GL11.glDepthMask(true);
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
-        GL11.glDisable(GL12.GL_RESCALE_NORMAL);
+        GlStateManager.enableCull();
+        GlStateManager.enableDepth();
+        GlStateManager.disableBlend();
+        GlStateManager.depthMask(true);
+        GlStateManager.enableTexture2D();
+        GlStateManager.disableRescaleNormal();
     }
 
     @Override

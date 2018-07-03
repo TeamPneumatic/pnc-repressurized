@@ -6,9 +6,9 @@ import me.desht.pneumaticcraft.common.inventory.ContainerThermopneumaticProcessi
 import me.desht.pneumaticcraft.common.tileentity.TileEntityThermopneumaticProcessingPlant;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
-import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.util.List;
@@ -56,10 +56,10 @@ public class GuiThermopneumaticProcessingPlant extends
     protected void drawGuiContainerForegroundLayer(int x, int y) {
         fontRenderer.drawString(I18n.format("gui.tab.upgrades"), 91, 83, 4210752);
         String containerName = I18n.format(te.getName() + ".name");
-        GL11.glPushMatrix();
-        GL11.glScaled(0.95, 0.97, 1);
+        GlStateManager.pushMatrix();
+        GlStateManager.scale(0.95, 0.97, 1);
         fontRenderer.drawString(containerName, xSize / 2 - fontRenderer.getStringWidth(containerName) / 2 + 1, 5, 4210752);
-        GL11.glPopMatrix();
+        GlStateManager.popMatrix();
         super.drawGuiContainerForegroundLayer(x, y);
 
     }

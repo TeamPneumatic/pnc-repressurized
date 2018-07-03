@@ -16,6 +16,7 @@ import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.Sounds;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.monster.EntityMob;
@@ -120,15 +121,15 @@ public class RenderTarget {
         double y = entity.prevPosY + (entity.posY - entity.prevPosY) * partialTicks + entity.height / 2D;
         double z = entity.prevPosZ + (entity.posZ - entity.prevPosZ) * partialTicks;
 
-        GL11.glDepthMask(false);
-        GL11.glDisable(GL11.GL_DEPTH_TEST);
-        GL11.glDisable(GL11.GL_CULL_FACE);
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GlStateManager.depthMask(false);
+        GlStateManager.disableDepth();
+        GlStateManager.disableCull();
+        GlStateManager.disableTexture2D();
 
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GlStateManager.enableBlend();
+        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
-        GL11.glPushMatrix();
+        GlStateManager.pushMatrix();
 
         GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
 
@@ -157,25 +158,25 @@ public class RenderTarget {
             alpha = Math.abs(ticksExisted) * 0.005F;
         }
 
-        GL11.glTranslated(x, y, z);
+        GlStateManager.translate(x, y, z);
 
-        GL11.glRotatef(180.0F - Minecraft.getMinecraft().getRenderManager().playerViewY, 0.0F, 1.0F, 0.0F);
-        GL11.glRotatef(180.0F - Minecraft.getMinecraft().getRenderManager().playerViewX, 1.0F, 0.0F, 0.0F);
-        GL11.glColor4d(red, green, blue, alpha);
+        GlStateManager.rotate(180.0F - Minecraft.getMinecraft().getRenderManager().playerViewY, 0.0F, 1.0F, 0.0F);
+        GlStateManager.rotate(180.0F - Minecraft.getMinecraft().getRenderManager().playerViewX, 1.0F, 0.0F, 0.0F);
+        GlStateManager.color(red, green, blue, alpha);
         float renderSize = oldSize + (size - oldSize) * partialTicks;
         circle1.render(renderSize, partialTicks);
         circle2.render(renderSize + 0.2D, partialTicks);
         int targetAcquireProgress = (int) ((ticksExisted - 50) / 0.7F);
         if (ticksExisted <= 120 && ticksExisted > 50) {
-            GL11.glColor4d(0, 1, 0, 0.8D);
+            GlStateManager.color(0, 1, 0, 0.8F);
             RenderProgressBar.render(0D, 0.4D, 1.8D, 0.9D, 0, targetAcquireProgress);
         }
 
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GlStateManager.enableTexture2D();
 
         FontRenderer fontRenderer = Minecraft.getMinecraft().getRenderManager().getFontRenderer();
-        GL11.glScaled(0.02D, 0.02D, 0.02D);
-        GL11.glColor4d(red, green, blue, alpha);
+        GlStateManager.scale(0.02D, 0.02D, 0.02D);
+        GlStateManager.color(red, green, blue, alpha);
         if (ticksExisted > 120) {
             if (justRenderWhenHovering && !isLookingAtTarget) {
                 stat.closeWindow();
@@ -201,11 +202,11 @@ public class RenderTarget {
             fontRenderer.drawString("Lost Target!", 0, 0, 0xFF0000);
         }
 
-        GL11.glPopMatrix();
-        GL11.glEnable(GL11.GL_CULL_FACE);
-        GL11.glEnable(GL11.GL_DEPTH_TEST);
-        GL11.glDisable(GL11.GL_BLEND);
-        GL11.glDepthMask(true);
+        GlStateManager.popMatrix();
+        GlStateManager.enableCull();
+        GlStateManager.enableDepth();
+        GlStateManager.disableBlend();
+        GlStateManager.depthMask(true);
 
         oldSize = size;
     }

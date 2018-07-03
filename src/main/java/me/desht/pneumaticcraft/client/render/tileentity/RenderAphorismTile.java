@@ -6,24 +6,24 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.BBConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraftforge.fml.client.FMLClientHandler;
-import org.lwjgl.opengl.GL11;
 
 public class RenderAphorismTile extends TileEntitySpecialRenderer<TileEntityAphorismTile> {
     @Override
     public void render(TileEntityAphorismTile te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
-        GL11.glPushMatrix();
-        GL11.glTranslatef((float) x + 0.5F, (float) y + 1.5F, (float) z + 0.5F);
-        GL11.glScalef(1.0F, -1F, -1F);
+        GlStateManager.pushMatrix();
+        GlStateManager.translate((float) x + 0.5F, (float) y + 1.5F, (float) z + 0.5F);
+        GlStateManager.scale(1.0F, -1F, -1F);
         PneumaticCraftUtils.rotateMatrixByMetadata(te.getBlockMetadata());
-        GL11.glTranslatef(0, 1, 0.5F - BBConstants.APHORISM_TILE_THICKNESS - 0.01F);
+        GlStateManager.translate(0, 1, 0.5F - BBConstants.APHORISM_TILE_THICKNESS - 0.01F);
         String[] textLines = te.getTextLines();
         int lineWidth = getMaxLineWidth(textLines);  // TODO we don't need to calculate this every single tick
         int lineHeight = 10 * textLines.length;
         float textScale = Math.min(14 / 16F / lineWidth, 14 / 16F / lineHeight);
-        GL11.glScalef(textScale, textScale, textScale);
-        GL11.glRotatef(te.textRotation * 90, 0, 0, 1);
+        GlStateManager.scale(textScale, textScale, textScale);
+        GlStateManager.rotate(te.textRotation * 90, 0, 0, 1);
         int editedLine = -1;
 
         if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiAphorismTile) {
@@ -40,7 +40,7 @@ public class RenderAphorismTile extends TileEntitySpecialRenderer<TileEntityApho
             f.drawString(textLine, -f.getStringWidth(textLine) / 2, -(textLines.length * 10) / 2 + i * 10 + 1, 0xFF000000);
         }
 
-        GL11.glPopMatrix();
+        GlStateManager.popMatrix();
     }
 
     private int getMaxLineWidth(String[] textList) {

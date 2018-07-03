@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.client.ClientTickHandler;
 import me.desht.pneumaticcraft.client.render.RenderProgressingLine;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
 import org.lwjgl.opengl.GL11;
 
@@ -84,15 +85,15 @@ public class NetworkConnectionHandler implements INeedTickUpdate {
         float f1 = (color >> 16 & 255) / 255.0F;
         float f2 = (color >> 8 & 255) / 255.0F;
         float f3 = (color & 255) / 255.0F;
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GL11.glColor4f(f1, f2, f3, f);
+        GlStateManager.enableBlend();
+        GlStateManager.disableTexture2D();
+        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GlStateManager.color(f1, f2, f3, f);
         for (RenderProgressingLine line : lineList) {
             line.render();
         }
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
-        GL11.glDisable(GL11.GL_BLEND);
+        GlStateManager.enableTexture2D();
+        GlStateManager.disableBlend();
     }
 
     @Override

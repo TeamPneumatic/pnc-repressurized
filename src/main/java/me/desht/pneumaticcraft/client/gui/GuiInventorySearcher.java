@@ -92,8 +92,8 @@ public class GuiInventorySearcher extends GuiContainer {
         super.drawScreen(par1, par2, par3);
         renderHoveredToolTip(par1, par2);
         /*
-                GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-                GL11.glDisable(GL11.GL_LIGHTING);*/
+                GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+                GlStateManager.disable();*/
     }
 
     /**

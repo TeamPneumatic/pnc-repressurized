@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderEntity;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -17,7 +18,6 @@ import net.minecraftforge.fml.client.registry.IRenderFactory;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
 
 @SideOnly(Side.CLIENT)
 public class RenderEntityVortex extends RenderEntity {
@@ -37,29 +37,29 @@ public class RenderEntityVortex extends RenderEntity {
 
         int circlePoints = 200;
         double radius = 0.5D;
-        GL11.glPushMatrix();
-        GL11.glEnable(GL12.GL_RESCALE_NORMAL);
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
-        GL11.glColor4d(0.8, 0.8, 0.8D, 0.7D);
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GL11.glTranslatef((float) x, (float) y, (float) z);
-        GL11.glRotatef(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks, 0.0F, 0.0F, 1.0F);
+        GlStateManager.pushMatrix();
+        GlStateManager.enableRescaleNormal();
+        GlStateManager.disableTexture2D();
+        GlStateManager.color(0.8F, 0.8F, 0.8F, 0.7F);
+        GlStateManager.enableBlend();
+        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GlStateManager.translate((float) x, (float) y, (float) z);
+        GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks, 0.0F, 0.0F, 1.0F);
 
-        GL11.glRotatef(entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks, 0.0F, 1.0F, 0.0F);
+        GlStateManager.rotate(entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks, 0.0F, 1.0F, 0.0F);
 
         for (int i = 0; i < circlePoints; i++) {
             float angleRadians = (float) i / (float) circlePoints * 2F * (float) Math.PI;
-            GL11.glPushMatrix();
-            GL11.glTranslated(radius * Math.sin(angleRadians), radius * Math.cos(angleRadians), 0);
+            GlStateManager.pushMatrix();
+            GlStateManager.translate(radius * Math.sin(angleRadians), radius * Math.cos(angleRadians), 0);
             renderGust(entity.getRenderOffsetX());
-            GL11.glPopMatrix();
+            GlStateManager.popMatrix();
         }
 
-        GL11.glDisable(GL12.GL_RESCALE_NORMAL);
-        GL11.glDisable(GL11.GL_BLEND);
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
-        GL11.glPopMatrix();
+        GlStateManager.disableRescaleNormal();
+        GlStateManager.disableBlend();
+        GlStateManager.enableTexture2D();
+        GlStateManager.popMatrix();
 
     }
 
@@ -98,14 +98,14 @@ public class RenderEntityVortex extends RenderEntity {
         float f8 = (5 + b0 * 10) / 16.0F;
         float f9 = (10 + b0 * 10) / 16.0F;
         float f10 = 0.05625F;
-        GL11.glEnable(GL12.GL_RESCALE_NORMAL);
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GlStateManager.enableRescaleNormal();
+        GlStateManager.enableBlend();
+        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
-        GL11.glRotatef(45.0F, 1.0F, 0.0F, 0.0F);
-        GL11.glScalef(f10, f10, f10);
-        GL11.glTranslatef(xOffset, 0.0F, 0.0F);
-        GL11.glNormal3f(f10, 0.0F, 0.0F);
+        GlStateManager.rotate(45.0F, 1.0F, 0.0F, 0.0F);
+        GlStateManager.scale(f10, f10, f10);
+        GlStateManager.translate(xOffset, 0.0F, 0.0F);
+        GlStateManager.glNormal3f(f10, 0.0F, 0.0F);
         BufferBuilder wr = Tessellator.getInstance().getBuffer();
         wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 
@@ -121,7 +121,7 @@ public class RenderEntityVortex extends RenderEntity {
         wr.pos(-7.0D, 2.0D, 2.0D).tex(end, end).endVertex();
         wr.pos(-7.0D, 2.0D, -2.0D).tex(end, start).endVertex();
         Tessellator.getInstance().draw();
-        GL11.glNormal3f(-f10, 0.0F, 0.0F);
+        GlStateManager.glNormal3f(-f10, 0.0F, 0.0F);
 
         wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
         wr.pos(-7.0D, 2.0D, -2.0D).tex(f6, f8).endVertex();

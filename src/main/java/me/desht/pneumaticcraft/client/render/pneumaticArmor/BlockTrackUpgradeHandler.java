@@ -17,6 +17,7 @@ import me.desht.pneumaticcraft.common.recipes.CraftingRegistrator;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -200,18 +201,18 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
 
     @Override
     public void render3D(float partialTicks) {
-        GL11.glDepthMask(false);
-        GL11.glDisable(GL11.GL_DEPTH_TEST);
-        GL11.glDisable(GL11.GL_CULL_FACE);
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GlStateManager.depthMask(false);
+        GlStateManager.disableDepth();
+        GlStateManager.disableCull();
+        GlStateManager.enableBlend();
+        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         for (RenderBlockTarget blockTarget : blockTargets) {
             blockTarget.render(partialTicks);
         }
-        GL11.glEnable(GL11.GL_CULL_FACE);
-        GL11.glEnable(GL11.GL_DEPTH_TEST);
-        GL11.glDisable(GL11.GL_BLEND);
-        GL11.glDepthMask(true);
+        GlStateManager.enableCull();
+        GlStateManager.enableDepth();
+        GlStateManager.disableBlend();
+        GlStateManager.depthMask(true);
     }
 
     @Override

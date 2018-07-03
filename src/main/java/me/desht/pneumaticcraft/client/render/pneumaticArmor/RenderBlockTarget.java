@@ -14,6 +14,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -148,8 +149,8 @@ public class RenderBlockTarget {
         double y = pos.getY() + 0.5D;
         double z = pos.getZ() + 0.5D;
 
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
-        GL11.glPushMatrix();
+        GlStateManager.disableTexture2D();
+        GlStateManager.pushMatrix();
 
         GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
 
@@ -158,41 +159,41 @@ public class RenderBlockTarget {
         float blue = 1.0F;
         float alpha = 0.5F;
 
-        GL11.glTranslated(x, y, z);
+        GlStateManager.translate(x, y, z);
 
         // for some reason the blend function resets... that's why this line is here.
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GlStateManager.enableBlend();
+        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         IBlockState state = world.getBlockState(pos);
         if (!getBlock().isAir(state, world, pos)) arrowRenderer.render(world, pos, partialTicks);
 
         int targetAcquireProgress = (int) ((ticksExisted - 50) / 0.7F);
-        GL11.glRotatef(180.0F - Minecraft.getMinecraft().getRenderManager().playerViewY, 0.0F, 1.0F, 0.0F);
-        GL11.glRotatef(180.0F - Minecraft.getMinecraft().getRenderManager().playerViewX, 1.0F, 0.0F, 0.0F);
+        GlStateManager.rotate(180.0F - Minecraft.getMinecraft().getRenderManager().playerViewY, 0.0F, 1.0F, 0.0F);
+        GlStateManager.rotate(180.0F - Minecraft.getMinecraft().getRenderManager().playerViewX, 1.0F, 0.0F, 0.0F);
         if (ticksExisted <= 120 && ticksExisted > 50) {
-            GL11.glColor4d(0, 1, 0, 0.8D);
+            GlStateManager.color(0, 1, 0, 0.8F);
             RenderProgressBar.render(0D, 0.4D, 1.8D, 0.9D, 0, targetAcquireProgress);
         }
 
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GlStateManager.enableTexture2D();
         if (!getBlock().isAir(state, world, pos)) {
             FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
 
-            GL11.glColor4d(red, green, blue, alpha);
+            GlStateManager.color(red, green, blue, alpha);
             if (ticksExisted > 120) {
-                GL11.glScaled(0.02D, 0.02D, 0.02D);
+                GlStateManager.scale(0.02D, 0.02D, 0.02D);
                 stat.render(-1, -1, partialTicks);
             } else if (ticksExisted > 50) {
-                GL11.glScaled(0.02D, 0.02D, 0.02D);
+                GlStateManager.scale(0.02D, 0.02D, 0.02D);
                 fontRenderer.drawString("Acquiring Target...", 0, 0, 0x7F7F7F);
                 fontRenderer.drawString(targetAcquireProgress + "%", 37, 28, 0x002F00);
             } else if (ticksExisted < -30) {
-                GL11.glScaled(0.03D, 0.03D, 0.03D);
+                GlStateManager.scale(0.03D, 0.03D, 0.03D);
                 stat.render(-1, -1, partialTicks);
                 fontRenderer.drawString("Lost Target!", 0, 0, 0xFF0000);
             }
         }
-        GL11.glPopMatrix();
+        GlStateManager.popMatrix();
     }
 
     public boolean isInitialized() {

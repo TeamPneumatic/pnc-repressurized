@@ -1,19 +1,12 @@
 package me.desht.pneumaticcraft.client.gui;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import javax.annotation.Nonnull;
-
 import me.desht.pneumaticcraft.client.gui.pneumaticHelmet.GuiHelmetMainScreen;
 import me.desht.pneumaticcraft.common.inventory.ContainerSearcher;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.InventoryEffectRenderer;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.Enchantment;
@@ -31,11 +24,16 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
-
 import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
+
+import javax.annotation.Nonnull;
+import java.io.IOException;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @SideOnly(Side.CLIENT)
 public class GuiSearcher extends InventoryEffectRenderer {
@@ -305,8 +303,8 @@ public class GuiSearcher extends InventoryEffectRenderer {
 
         super.drawScreen(par1, par2, par3);
 
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        GL11.glDisable(GL11.GL_LIGHTING);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.disableLighting();
 
         renderHoveredToolTip(par1, par2);
     }
