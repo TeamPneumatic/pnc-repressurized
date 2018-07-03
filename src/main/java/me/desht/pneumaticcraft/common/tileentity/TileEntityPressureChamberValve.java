@@ -31,6 +31,7 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -339,7 +340,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
         itemsInChamber.deserializeNBT(tag.getCompoundTag("itemsInChamber"));
         
         // Read in the accessory valves from NBT
-        NBTTagList tagList2 = tag.getTagList("Valves", 10);
+        NBTTagList tagList2 = tag.getTagList("Valves", Constants.NBT.TAG_COMPOUND);
         nbtValveList.clear();
         for (int i = 0; i < tagList2.tagCount(); ++i) {
             NBTTagCompound tagCompound = tagList2.getCompoundTagAt(i);
@@ -365,9 +366,9 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
         NBTTagList tagList2 = new NBTTagList();
         for (TileEntityPressureChamberValve valve : accessoryValves) {
             NBTTagCompound tagCompound = new NBTTagCompound();
-            tagCompound.setInteger("getPos().getX()", valve.getPos().getX());
-            tagCompound.setInteger("getPos().getY()", valve.getPos().getY());
-            tagCompound.setInteger("getPos().getZ()", valve.getPos().getZ());
+            tagCompound.setInteger("x", valve.getPos().getX());
+            tagCompound.setInteger("y", valve.getPos().getY());
+            tagCompound.setInteger("z", valve.getPos().getZ());
             tagList2.appendTag(tagCompound);
         }
 
