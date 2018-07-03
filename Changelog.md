@@ -6,6 +6,34 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
+## 0.7.0-xxx (unreleased)
+
+* Big new feature: a fully-fledged Pneumatic Armor system!  Added in Pneumatic Chestplate, Leggings & Boots, each with their own upgrades and abilities (read on...)
+* To see all upgrades and abilities for each armor piece, put them in a Charging Station, and open the upgrade inventory from the Charging Station GUI (click the "Inv." button)
+* Charging Upgrades (1-5) in the Chestplate charge all pressurizable armor and items you're carrying from the Chestplate's air tank (the Chestplate has a very large tank by default, and all pieces can be further upgraded with Volume Upgrades)
+* Security Upgrade in the Chestplate gives protection from fire & lava (pressure cost: high)
+* Magnet Upgrade (1-6) in the Chestplate attracts nearby items to the player (pressure cost: very low).  The Magnet respects Immersive Engineering's Conveyor Belts (in fact any item entity with the "PreventRemoteMovement" NBT tag) and Botania's Solegnolia.
+* Speed Upgrades (1-3) in the Leggings give a run speed boost (pressure cost: very low)
+* Range Upgrades (1-6) in the Leggings give a jump boost (pressure cost: low)
+* Dispenser Upgrades (1-4) in the Boots allow you to kick entities for moderate damage and heavy knockback (pressure cost: low)
+* The Pneumatic Boots give step assist for free and fall protection for a modest pressure cost (depending on the height of the fall)
+* Jet Boots Upgrades (1-8) in the Boots allow limited flight (pressure cost: high)
+* Pneumatic Armor has the same armor rating as iron, but +1 Toughness (for comparison, diamond armor has +2 Toughness)
+* Armor Upgrades (1-4) in any armor piece increase its protection and toughness.  2 Armor Upgrades will provide protection equivalent to diamond, 4 upgrades is superior to diamond.
+* Item Life Upgrades (1-6) in any armor piece allow auto-repair at a cost of pressure.  More upgrades cause faster, but less air-efficient, repair.
+* All Pneumatic Helmet functions remain available; just to note that Horses can now be tamed via helmet hacking.
+* All features can be toggled on/off using the familiar Pneumatic Helmet options GUI, and as before, keys can be bound to toggle any feature without opening the GUI.
+* Quality of Life: shift-clicking a Pneumatic armor piece while in the Charging Station GUI will move it to the right place (armor slots -> charging slot, charging slot -> armor slot, player inv slots -> charging slot)
+* Aphorism Tiles are now considered passable by drones, like vanilla signs.  (Note Aphorism Tiles will not be washed away by water, so useful for an underwater base)
+* Performance: Aphorism Tiles are no longer ticking tile entities.
+* Aphorism Tiles can now be recoloured by right-clicking with any dye (oredict-aware).  Tile border and background can be recoloured independently.
+* Drones have been taught how to melee 1.9 style.  They were still fighting 1.7.10 style, which made them hopeless at melee.
+* Also, drones will now auto-equip the best weapon in their inventory when entering combat (only applies with upgraded inventories, of course).
+* Hacked drones will no longer obnoxiously shove their owner around; instead they'll come to the owner and land in front of them.
+* Fix: better behaviour for drones when targeting entities they can't pathfind to (they were getting stuck in a about-to-teleport loop)
+* Fix: server crash if a drone carrying multiple buckets tried to milk a cow.  Now the drone will drop any milk buckets that it has no inventory space for on the ground.
+* Fix: pressure chambers with multiple valves will now be properly reformed when world is reloaded (previously auxiliary valves didn't think they were part of the multiblock, and leaked air)
+
 ## 0.6.8-219 (27 Jun 2018)
 
 * Change to Drones and Security Upgrades (liquid protection): 1 Security Upgrade will now allow drones to swim through liquids, 2 Security Upgrades will create a temporary 3x3x3 air bubble around drones which are in a liquid, and 3+ Security Upgrades will permanently remove any liquids a drone flies through.  Drones will still never pathfind through lava, though.
