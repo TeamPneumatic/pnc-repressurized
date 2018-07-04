@@ -1,13 +1,16 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.common.inventory.ContainerInventorySearcher;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -15,6 +18,7 @@ import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
+import java.util.List;
 import java.util.function.Predicate;
 
 @SideOnly(Side.CLIENT)
@@ -82,6 +86,17 @@ public class GuiInventorySearcher extends GuiContainer {
         fontRenderer.drawString("Inventory", 7, 5, 4210752);
         fontRenderer.drawString("Searcher", 7, 15, 4210752);
         fontRenderer.drawString("Target", 71, 8, 4210752);
+        ItemStack stack = inventory.getStackInSlot(0);
+        if (stack.getItem() instanceof IPositionProvider) {
+            float scale = 0.75F;
+            List<BlockPos> posList = ((IPositionProvider) stack.getItem()).getStoredPositions(stack);
+            BlockPos pos = posList.get(0);
+            GlStateManager.pushMatrix();
+            GlStateManager.scale(scale, scale, scale);
+            GlStateManager.translate(140 * (1 - scale), 28 * (1 - scale), 0);
+            fontRenderer.drawString(String.format("%d, %d, %d", pos.getX(), pos.getY(), pos.getZ()), 105, 28, 0x404080);
+            GlStateManager.popMatrix();
+        }
     }
 
     /**
