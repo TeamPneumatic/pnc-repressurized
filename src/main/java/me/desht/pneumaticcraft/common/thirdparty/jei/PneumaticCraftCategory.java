@@ -179,7 +179,10 @@ public abstract class PneumaticCraftCategory<T extends IRecipeWrapper> implement
     }
 
     static void drawAnimatedPressureGauge(int x, int y, float minPressure, float minWorkingPressure, float dangerPressure, float maxPressure) {
-        GuiUtils.drawPressureGauge(FMLClientHandler.instance().getClient().fontRenderer, minPressure, maxPressure, dangerPressure, minWorkingPressure, minWorkingPressure * ((float) tickTimer.getValue() / tickTimer.getMaxValue()), x, y, 90);
+        float p2 = minWorkingPressure > 0 ?
+            minWorkingPressure * ((float) tickTimer.getValue() / tickTimer.getMaxValue()) :
+            -1 - minWorkingPressure * ((float) tickTimer.getValue() / tickTimer.getMaxValue());
+        GuiUtils.drawPressureGauge(FMLClientHandler.instance().getClient().fontRenderer, minPressure, maxPressure, dangerPressure, minWorkingPressure, p2, x, y, 90);
     }
 
     public abstract ResourceDrawable getGuiTexture();

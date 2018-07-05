@@ -590,7 +590,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
 
     @Override
     public float getMinWorkingPressure() {
-        return isValidRecipeInChamber ? recipePressure : -1;
+        return isValidRecipeInChamber ? recipePressure : -Float.MAX_VALUE;
     }
 
 }

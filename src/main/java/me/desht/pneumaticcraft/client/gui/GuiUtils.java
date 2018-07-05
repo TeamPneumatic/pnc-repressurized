@@ -57,7 +57,11 @@ public class GuiUtils {
         for (int i = 0; i < GAUGE_POINTS; i++) {
             if (i == explodeBoundary && !changedColorGreen) {
                 Tessellator.getInstance().draw();
-                GlStateManager.color(0, 0.7F, 0, 1);
+                if (minWorkingPressure < 0 && minWorkingPressure >= -1) {
+                    GlStateManager.color(0.9F, 0.9F, 0, 1);
+                } else {
+                    GlStateManager.color(0, 0.7F, 0, 1);
+                }
                 wr.begin(GL11.GL_TRIANGLE_FAN, DefaultVertexFormats.POSITION);
                 wr.pos(xPos, yPos, zLevel).endVertex();
                 i--;
@@ -65,7 +69,11 @@ public class GuiUtils {
             }
             if (i == workingBoundary && !changedColorYellow) {
                 Tessellator.getInstance().draw();
-                GlStateManager.color(0.9F, 0.9F, 0, 1);
+                if (minWorkingPressure < 0 && minWorkingPressure >= -1) {
+                    GlStateManager.color(0, 0.7F, 0, 1);
+                } else {
+                    GlStateManager.color(0.9F, 0.9F, 0, 1);
+                }
                 wr.begin(GL11.GL_TRIANGLE_FAN, DefaultVertexFormats.POSITION);
                 wr.pos(xPos, yPos, zLevel).endVertex();
                 i--;

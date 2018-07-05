@@ -216,7 +216,7 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
             TileEntityPneumaticBase pneu = (TileEntityPneumaticBase) te;
             Point gaugeLocation = getGaugeLocation();
             if (gaugeLocation != null)
-                GuiUtils.drawPressureGauge(fontRenderer, -1, pneu.criticalPressure, pneu.dangerPressure, te instanceof IMinWorkingPressure ? ((IMinWorkingPressure) te).getMinWorkingPressure() : -1, pneu.getPressure(), gaugeLocation.x, gaugeLocation.y, zLevel);
+                GuiUtils.drawPressureGauge(fontRenderer, -1, pneu.criticalPressure, pneu.dangerPressure, te instanceof IMinWorkingPressure ? ((IMinWorkingPressure) te).getMinWorkingPressure() : -Float.MAX_VALUE, pneu.getPressure(), gaugeLocation.x, gaugeLocation.y, zLevel);
         }
     }
 
