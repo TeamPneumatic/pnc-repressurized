@@ -6,8 +6,8 @@
   },
   "elements": [
     {
-      "from": [ 0, 0, 15 ],
-      "to": [ 16, 16, 15.999 ],
+      "from": [ 0, 0, 15.001 ],
+      "to": [ 16, 16, 15.998 ],
       "faces": {
         "down":  { "texture": "#border", "cullface": "down", "tintindex": 0 },
         "up":    { "texture": "#border", "cullface": "up", "tintindex": 0 },
