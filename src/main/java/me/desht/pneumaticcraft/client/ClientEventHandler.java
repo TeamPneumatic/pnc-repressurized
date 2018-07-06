@@ -264,15 +264,17 @@ public class ClientEventHandler {
                 GlStateManager.disableLighting();
                 GlStateManager.enableBlend();
                 GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-                RenderUtils.glColorHex(0x40000000 | minigun.getAmmoColor());
-                float yawAngle = player.getPrimaryHand() == EnumHandSide.RIGHT ? -(float)Math.PI / 2f : (float)Math.PI / 2f;
-                Vec3d directionVec = player.getLookVec().normalize();
-                Vec3d vec2 = new Vec3d(directionVec.x, directionVec.y, directionVec.z);
-                vec2 = vec2.rotateYaw(yawAngle);
+                GL11.glEnable(GL11.GL_LINE_STIPPLE);
+                RenderUtils.glColorHex(0x80000000 | minigun.getAmmoColor());
+                float yawAngle = player.getPrimaryHand() == EnumHandSide.RIGHT ? -(float)Math.PI / 4f : (float)Math.PI / 4f;
+                Vec3d directionVec = player.getLookVec();
+                Vec3d vec2 = new Vec3d(directionVec.x, directionVec.y + 1.0, directionVec.z).rotateYaw(yawAngle);
                 minigunFire.startX = vec2.x ;
-                minigunFire.startY = 1.0;
+                minigunFire.startY = vec2.y;
                 minigunFire.startZ = vec2.z;
                 for (int i = 0; i < 5; i++) {
+                    int stipple = 0xFFFF & ~(2 << player.getRNG().nextInt(16));
+                    GL11.glLineStipple(4, (short) stipple);
                     minigunFire.endX = directionVec.x * 20 + player.getRNG().nextDouble() - 0.5;
                     minigunFire.endY = directionVec.y * 20 + player.getEyeHeight() + player.getRNG().nextDouble() - 0.5;
                     minigunFire.endZ = directionVec.z * 20 + player.getRNG().nextDouble() - 0.5;
@@ -281,6 +283,7 @@ public class ClientEventHandler {
                 GlStateManager.color(1, 1, 1, 1);
                 GlStateManager.enableLighting();
                 GlStateManager.enableTexture2D();
+                GL11.glDisable(GL11.GL_LINE_STIPPLE);
                 GlStateManager.disableBlend();
             }
         }

@@ -2,12 +2,16 @@ package me.desht.pneumaticcraft.common.minigun;
 
 import me.desht.pneumaticcraft.api.item.IPressurizable;
 import me.desht.pneumaticcraft.client.render.RenderProgressingLine;
+import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.item.ItemGunAmmo;
+import me.desht.pneumaticcraft.common.network.NetworkHandler;
+import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Sounds;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -28,14 +32,15 @@ import java.util.List;
 import java.util.Random;
 
 public abstract class Minigun {
+    public static final double MAX_GUN_SPEED = 0.4;
+    private static final double RAYTRACE_RANGE = 50;
+    private static final double MAX_GUN_YAW_CHANGE = 10;
+    private static final double MAX_GUN_PITCH_CHANGE = 10;
+
     private final boolean requiresTarget;
-    private final double raytraceRange = 50;
 
     private double minigunSpeed;
     private int minigunTriggerTimeOut;
-    public static final double MAX_GUN_SPEED = 0.4;
-    private static final double MAX_GUN_YAW_CHANGE = 10;
-    private static final double MAX_GUN_PITCH_CHANGE = 10;
     private int minigunSoundCounter = -1;
     private final Random rand = new Random();
     private double minigunRotation, oldMinigunRotation;
@@ -47,12 +52,12 @@ public abstract class Minigun {
 
     private boolean gunAimedAtTarget;
 
-    protected IPressurizable pressurizable;
+    private IPressurizable pressurizable;
     private int airUsage;
     protected ItemStack stack = ItemStack.EMPTY, ammo = ItemStack.EMPTY;
     protected EntityPlayer player;
     protected World world;
-    protected EntityLivingBase attackTarget;
+    private EntityLivingBase attackTarget;
 
     public Minigun(boolean requiresTarget) {
         this.requiresTarget = requiresTarget;
@@ -101,6 +106,16 @@ public abstract class Minigun {
 
     protected int getAmmoColor(@Nonnull ItemStack stack) {
         return stack.isEmpty() ? 0xFF313131 : Minecraft.getMinecraft().getItemColors().colorMultiplier(stack, 1);
+    }
+
+    /**
+     * Get the source for this sound, where the client should play the sound loop at.  Can be an Entity, a
+     * TileEntity, or a BlockPos; anything else will cause an exception to be thrown.
+     *
+     * @return
+     */
+    public Object getSoundSource() {
+        return player;
     }
 
     public double getMinigunSpeed() {
@@ -166,7 +181,7 @@ public abstract class Minigun {
                 if (target != null) {
                     ItemStack potion = ItemGunAmmo.getPotion(ammo);
                     if (!potion.isEmpty()) {
-                        if (rand.nextInt(20) == 0) {
+                        if (rand.nextInt(15) == 0) {
                             List<PotionEffect> effects = PotionUtils.getEffectsFromStack(potion);
                             for (PotionEffect effect : effects) {
                                 target.addPotionEffect(new PotionEffect(effect));
@@ -182,7 +197,7 @@ public abstract class Minigun {
     }
 
     private EntityLivingBase raytraceTarget() {
-        RayTraceResult mop = PneumaticCraftUtils.getMouseOverServer(player, raytraceRange);
+        RayTraceResult mop = PneumaticCraftUtils.getMouseOverServer(player, RAYTRACE_RANGE);
         return mop != null && mop.entityHit instanceof EntityLivingBase ? (EntityLivingBase) mop.entityHit : null;
     }
 
@@ -199,7 +214,7 @@ public abstract class Minigun {
             if (getMinigunTriggerTimeOut() > 0) {
                 setMinigunTriggerTimeOut(getMinigunTriggerTimeOut() - 1);
                 if (getMinigunSpeed() == 0) {
-                    playSound(Sounds.HUD_INIT, 2, 0.9F);
+                    playSound(Sounds.HUD_INIT, 3, 0.9F);
                 }
             }
             if (getMinigunSoundCounter() == 0 && getMinigunTriggerTimeOut() == 0) {
@@ -208,7 +223,11 @@ public abstract class Minigun {
             }
         }
         if (isMinigunActivated()) {
+            double lastSpeed = getMinigunSpeed();
             setMinigunSpeed(Math.min(getMinigunSpeed() + 0.01D, MAX_GUN_SPEED));
+            if (getMinigunSpeed() > lastSpeed && getMinigunSpeed() >= MAX_GUN_SPEED && !world.isRemote) {
+                NetworkHandler.sendToDimension(new PacketPlayMovingSound(MovingSounds.Sound.MINIGUN, getSoundSource()), world.provider.getDimension());
+            }
         } else {
             setMinigunSpeed(Math.max(0, getMinigunSpeed() - 0.003D));
         }
@@ -291,7 +310,6 @@ public abstract class Minigun {
 
         if (!world.isRemote && isMinigunActivated() && getMinigunSpeed() == MAX_GUN_SPEED && (!requiresTarget || gunAimedAtTarget && attackTarget != null)) {
             if (getMinigunSoundCounter() <= 0) {
-                playSound(Sounds.MINIGUN, 0.3F, 1);
                 setMinigunSoundCounter(20);
             }
         }
@@ -301,14 +319,16 @@ public abstract class Minigun {
     @SideOnly(Side.CLIENT)
     public void render(double x, double y, double z, double gunRadius) {
         if (isMinigunActivated() && getMinigunSpeed() == MAX_GUN_SPEED && gunAimedAtTarget && attackTarget != null) {
-            GL11.glPushMatrix();
-            GL11.glScaled(1, 1, 1);
-            GL11.glTranslated(-x, -y, -z);
-            GL11.glDisable(GL11.GL_TEXTURE_2D);
-            //GL11.glDisable(GL11.GL_LIGHTING);
+            GlStateManager.pushMatrix();
+            GlStateManager.scale(1, 1, 1);
+            GlStateManager.translate(-x, -y, -z);
+            GlStateManager.disableTexture2D();
+            GL11.glEnable(GL11.GL_LINE_STIPPLE);
+//            GlStateManager.disableLighting();
             RenderUtils.glColorHex(0xFF000000 | getAmmoColor());
             for (int i = 0; i < 5; i++) {
-
+                int stipple = 0xFFFF & ~(2 << rand.nextInt(16));
+                GL11.glLineStipple(4, (short) stipple);
                 Vec3d vec = new Vec3d(attackTarget.posX - x, attackTarget.posY - y, attackTarget.posZ - z).normalize();
                 minigunFire.startX = x + vec.x * gunRadius;
                 minigunFire.startY = y + vec.y * gunRadius;
@@ -318,10 +338,11 @@ public abstract class Minigun {
                 minigunFire.endZ = attackTarget.posZ + rand.nextDouble() - 0.5;
                 minigunFire.render();
             }
-            GL11.glColor4d(1, 1, 1, 1);
-            // GL11.glEnable(GL11.GL_LIGHTING);
-            GL11.glEnable(GL11.GL_TEXTURE_2D);
-            GL11.glPopMatrix();
+            GlStateManager.color(1, 1, 1, 1);
+            // GlStateManager.enabledLighting();
+            GL11.glDisable(GL11.GL_LINE_STIPPLE);
+            GlStateManager.enableTexture2D();
+            GlStateManager.popMatrix();
         }
     }
 }

@@ -267,6 +267,11 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
         public boolean isSweeping() {
             return sweeping;
         }
+
+        @Override
+        public Object getSoundSource() {
+            return TileEntitySentryTurret.this.getPos();
+        }
     }
 
     private class TargetSorter implements Comparator<Entity> {

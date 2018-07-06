@@ -955,7 +955,7 @@ public class EntityDrone extends EntityDroneBase
 
     public Minigun getMinigun() {
         if (minigun == null) {
-            minigun = new MinigunDrone().setPlayer(getFakePlayer()).setWorld(world).setPressurizable(this, PneumaticValues.DRONE_USAGE_ATTACK);
+            minigun = new MinigunDrone(this).setPlayer(getFakePlayer()).setWorld(world).setPressurizable(this, PneumaticValues.DRONE_USAGE_ATTACK);
         }
         return minigun;
     }
@@ -1381,8 +1381,16 @@ public class EntityDrone extends EntityDroneBase
 
     private class MinigunDrone extends Minigun {
 
-        MinigunDrone() {
+        private EntityDrone drone;
+
+        MinigunDrone(EntityDrone drone) {
             super(true);
+            this.drone = drone;
+        }
+
+        @Override
+        public Object getSoundSource() {
+            return drone;
         }
 
         @Override
