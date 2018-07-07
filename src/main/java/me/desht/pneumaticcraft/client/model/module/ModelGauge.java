@@ -52,7 +52,7 @@ public class ModelGauge extends ModelModuleBase {
         GlStateManager.scale(widgetScale, widgetScale, widgetScale);
         GlStateManager.rotate(180, 0, 1, 0);
         GlStateManager.disableLighting();
-        GuiUtils.drawPressureGauge(FMLClientHandler.instance().getClient().fontRenderer, -1, critPressure, dangerPressure, -1, pressure, 0, 0, 0);
+        GuiUtils.drawPressureGauge(FMLClientHandler.instance().getClient().fontRenderer, -1, critPressure, dangerPressure, -1.001F, pressure, 0, 0, 0);
         GlStateManager.enableLighting();
     }
 
