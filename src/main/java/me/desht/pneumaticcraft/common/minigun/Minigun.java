@@ -10,6 +10,8 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Sounds;
+import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.EntityLivingBase;
@@ -19,10 +21,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
@@ -198,6 +203,14 @@ public abstract class Minigun {
 
     private EntityLivingBase raytraceTarget() {
         RayTraceResult mop = PneumaticCraftUtils.getMouseOverServer(player, RAYTRACE_RANGE);
+        if (mop != null && mop.typeOfHit == RayTraceResult.Type.BLOCK) {
+            BlockPos pos = mop.getBlockPos();
+            double x = pos.getX() + mop.sideHit.getFrontOffsetX();
+            double y = pos.getY() + mop.sideHit.getFrontOffsetY();
+            double z = pos.getZ() + mop.sideHit.getFrontOffsetZ();
+            IBlockState state = world.getBlockState(pos);
+            ((WorldServer)this.world).spawnParticle(EnumParticleTypes.BLOCK_DUST, x, y, z, 25, 0.0D, 0.5D, 0.0D, 0.15, Block.getStateId(state));
+        }
         return mop != null && mop.entityHit instanceof EntityLivingBase ? (EntityLivingBase) mop.entityHit : null;
     }
 

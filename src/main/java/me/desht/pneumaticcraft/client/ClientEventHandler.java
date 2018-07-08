@@ -46,7 +46,6 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBucket;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
@@ -202,13 +201,43 @@ public class ClientEventHandler {
     private static final double GUN_RADIUS = 1.1D;
 
     @SubscribeEvent
-    public void onWorldRender(RenderWorldLastEvent event) {
-        // render our own minigun bullet traces
-        if (Minecraft.getMinecraft().gameSettings.thirdPersonView == 0) {
-            renderMinigunFirstPerson();
-        }
+    public void renderFirstPersonMinigun(RenderGameOverlayEvent.Post event) {
+        if (event.getType() == RenderGameOverlayEvent.ElementType.CROSSHAIRS && Minecraft.getMinecraft().gameSettings.thirdPersonView == 0) {
+            EntityPlayer player = Minecraft.getMinecraft().player;
+            ItemStack stack = player.getHeldItemMainhand();
+            if (stack.getItem() != Itemss.MINIGUN) return;
+            Minigun minigun = ((ItemMinigun) stack.getItem()).getMinigun(stack, player);
+            if (minigun.isMinigunActivated() && minigun.getMinigunSpeed() == Minigun.MAX_GUN_SPEED) {
+                GlStateManager.pushMatrix();
+                GlStateManager.disableTexture2D();
+                GlStateManager.enableBlend();
+                GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+                GL11.glEnable(GL11.GL_LINE_STIPPLE);
+                RenderUtils.glColorHex(0x40000000 | minigun.getAmmoColor());
 
-        // render everyone else's minigun bullet traces
+                int x = event.getResolution().getScaledWidth() / 2;
+				int y = event.getResolution().getScaledHeight() / 2;
+
+				for (int i = 0; i < 5; i++) {
+                    int stipple = 0xFFFF & ~(3 << player.getRNG().nextInt(16));
+                    GL11.glLineStipple(4, (short) stipple);
+                    GlStateManager.glBegin(GL11.GL_LINES);
+                    GL11.glVertex2f(x + player.getRNG().nextInt(12) - 6, y + player.getRNG().nextInt(12) - 6);
+                    GL11.glVertex2f(event.getResolution().getScaledWidth() * 0.665F, event.getResolution().getScaledHeight() * 0.685F);
+                    GlStateManager.glEnd();
+                }
+                GlStateManager.color(1, 1, 1, 1);
+                GL11.glDisable(GL11.GL_LINE_STIPPLE);
+                GlStateManager.disableBlend();
+                GlStateManager.enableTexture2D();
+                GlStateManager.popMatrix();
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onWorldRender(RenderWorldLastEvent event) {
+        // render everyone else's (and ours in 3rd person camera) minigun bullet traces
         EntityPlayer thisPlayer = Minecraft.getMinecraft().player;
         double playerX = thisPlayer.prevPosX + (thisPlayer.posX - thisPlayer.prevPosX) * event.getPartialTicks();
         double playerY = thisPlayer.prevPosY + (thisPlayer.posY - thisPlayer.prevPosY) * event.getPartialTicks();
@@ -228,7 +257,6 @@ public class ClientEventHandler {
                     playerZ = player.prevPosZ + (player.posZ - player.prevPosZ) * event.getPartialTicks();
                     GlStateManager.translate(playerX, playerY + 0.5, playerZ);
                     GlStateManager.disableTexture2D();
-                    GlStateManager.disableLighting();
                     GlStateManager.enableBlend();
                     GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
                     RenderUtils.glColorHex(0x40000000 | minigun.getAmmoColor());
@@ -245,48 +273,12 @@ public class ClientEventHandler {
                         minigunFire.render();
                     }
                     GlStateManager.color(1, 1, 1, 1);
-                    GlStateManager.enableLighting();
                     GlStateManager.enableTexture2D();
                     GlStateManager.popMatrix();
                 }
             }
         }
         GlStateManager.popMatrix();
-    }
-
-    private void renderMinigunFirstPerson() {
-        EntityPlayer player = Minecraft.getMinecraft().player;
-        ItemStack stack = player.getHeldItemMainhand();
-        if (stack.getItem() == Itemss.MINIGUN) {
-            Minigun minigun = ((ItemMinigun) Itemss.MINIGUN).getMinigun(stack, player);
-            if (minigun.isMinigunActivated() && minigun.getMinigunSpeed() == Minigun.MAX_GUN_SPEED) {
-                GlStateManager.disableTexture2D();
-                GlStateManager.disableLighting();
-                GlStateManager.enableBlend();
-                GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-                GL11.glEnable(GL11.GL_LINE_STIPPLE);
-                RenderUtils.glColorHex(0x80000000 | minigun.getAmmoColor());
-                float yawAngle = player.getPrimaryHand() == EnumHandSide.RIGHT ? -(float)Math.PI / 4f : (float)Math.PI / 4f;
-                Vec3d directionVec = player.getLookVec();
-                Vec3d vec2 = new Vec3d(directionVec.x, directionVec.y + 1.0, directionVec.z).rotateYaw(yawAngle);
-                minigunFire.startX = vec2.x ;
-                minigunFire.startY = vec2.y;
-                minigunFire.startZ = vec2.z;
-                for (int i = 0; i < 5; i++) {
-                    int stipple = 0xFFFF & ~(2 << player.getRNG().nextInt(16));
-                    GL11.glLineStipple(4, (short) stipple);
-                    minigunFire.endX = directionVec.x * 20 + player.getRNG().nextDouble() - 0.5;
-                    minigunFire.endY = directionVec.y * 20 + player.getEyeHeight() + player.getRNG().nextDouble() - 0.5;
-                    minigunFire.endZ = directionVec.z * 20 + player.getRNG().nextDouble() - 0.5;
-                    minigunFire.render();
-                }
-                GlStateManager.color(1, 1, 1, 1);
-                GlStateManager.enableLighting();
-                GlStateManager.enableTexture2D();
-                GL11.glDisable(GL11.GL_LINE_STIPPLE);
-                GlStateManager.disableBlend();
-            }
-        }
     }
 
     @SubscribeEvent
@@ -314,6 +306,13 @@ public class ClientEventHandler {
                     }
                 }
             }
+        }
+
+        // minigun model: using TEISR for in-hand transforms
+        ModelResourceLocation mrl = new ModelResourceLocation(Itemss.MINIGUN.getRegistryName(), "inventory");
+        Object object = event.getModelRegistry().getObject(mrl);
+        if (object != null) {
+            event.getModelRegistry().putObject(mrl, new BakedMinigunWrapper((IBakedModel) object));
         }
     }
 

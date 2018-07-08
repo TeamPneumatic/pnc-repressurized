@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.client.*;
 import me.desht.pneumaticcraft.client.gui.pneumaticHelmet.GuiHelmetMainScreen;
 import me.desht.pneumaticcraft.client.model.item.ModelProgrammingPuzzle.LoaderProgrammingPuzzle;
 import me.desht.pneumaticcraft.client.model.pressureglass.PressureGlassModelLoader;
+import me.desht.pneumaticcraft.client.render.RenderItemMinigun;
 import me.desht.pneumaticcraft.client.render.entity.RenderDrone;
 import me.desht.pneumaticcraft.client.render.entity.RenderEntityRing;
 import me.desht.pneumaticcraft.client.render.entity.RenderEntityVortex;
@@ -25,6 +26,7 @@ import me.desht.pneumaticcraft.common.entity.living.EntityLogisticsDrone;
 import me.desht.pneumaticcraft.common.entity.projectile.EntityVortex;
 import me.desht.pneumaticcraft.common.fluid.Fluids;
 import me.desht.pneumaticcraft.common.item.ItemColorHandler;
+import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.tileentity.*;
 import me.desht.pneumaticcraft.common.util.DramaSplash;
@@ -139,6 +141,8 @@ public class ClientProxy extends CommonProxy {
 
         BlockColorHandler.registerColorHandlers();
         ItemColorHandler.registerColorHandlers();
+
+        Itemss.MINIGUN.setTileEntityItemStackRenderer(new RenderItemMinigun());
 
         super.init();
     }
