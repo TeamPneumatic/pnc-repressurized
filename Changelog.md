@@ -6,7 +6,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
-### 0.7.0-xxx (unreleased)
+### 0.7.0-228 (8 Jul 2018)
 
 #### New
 * Big new feature: a fully-fledged Pneumatic Armor suite!  Added in Pneumatic Chestplate, Leggings & Boots, each with their own upgrades and abilities (read on...)
@@ -29,16 +29,19 @@ Changes are in reverse chronological order; newest changes at the top.
 * Aphorism Tiles are now considered passable by drones, like vanilla signs.  (Note Aphorism Tiles will not be washed away by water, so useful for an underwater base)
 * Performance: Aphorism Tiles are no longer ticking tile entities.
 * Aphorism Tiles can now be recoloured by right-clicking with any dye (oredict-aware).  Tile border and background can be recoloured independently.
-* Drones have been taught how to melee 1.9 style.  They were still fighting 1.7.10 style, which made them hopeless at melee.
-* Also, drones will now auto-equip the best weapon in their inventory when entering combat (only applies with upgraded inventories, of course).
+* Drones will now auto-equip the best (highest damage, taking enchantments into account) weapon in their inventory when entering combat (only applies with upgraded inventories, of course).
+* Handheld minigun now has a proper rotating model!
+* Minigun bullets cause a (cosmetic) particle effect on blocks they hit.  No block breaking, though.
 #### Fixes
+* Drones have been taught how to melee 1.9 style.  They were still fighting 1.7.10 style, which made them hopeless at melee.
 * Hacked drones will no longer obnoxiously shove their owner around; instead they'll come to the owner and land in front of them.
 * Fix: better behaviour for drones when targeting entities they can't pathfind to (they were getting stuck in a about-to-teleport loop)
 * Fix: server crash if a drone carrying multiple buckets tried to milk a cow.  Now the drone will drop any milk buckets that it has no inventory space for on the ground.
-* Fix: pressure chambers with multiple valves will now be properly reformed when world is reloaded (previously auxiliary valves didn't think they were part of the multiblock, and leaked air)
+* Fix: Pressure Chambers with multiple valves will now be properly reformed when world is reloaded (previously auxiliary valves didn't think they were part of the multiblock, and leaked air)
+* Fix: right clicking a refinery block with a bucket or other fluid container will now extract the right fluid (previously it always tried to extract from the bottom block in the stack, regardless of which block was clicked)
+* Fix: the Light Condition puzzle piece was miscalculating light levels
 
 ### 0.6.8-219 (27 Jun 2018)
-
 #### Updates
 * Change to Drones and Security Upgrades (liquid protection): 1 Security Upgrade will now allow drones to swim through liquids, 2 Security Upgrades will create a temporary 3x3x3 air bubble around drones which are in a liquid, and 3+ Security Upgrades will permanently remove any liquids a drone flies through.  Drones will still never pathfind through lava, though.
 #### Fixes
