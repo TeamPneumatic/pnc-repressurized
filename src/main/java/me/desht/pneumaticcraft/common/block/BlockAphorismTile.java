@@ -112,11 +112,17 @@ public class BlockAphorismTile extends BlockPneumaticCraft {
                 OptionalInt color = DyeUtils.dyeDamageFromStack(player.getHeldItem(hand));
                 if (color.isPresent()) {
                     if (clickedBorder(state, hitX, hitY, hitZ)) {
-                        teAT.setBorderColor(color.getAsInt());
+                        if (teAT.getBorderColor() != color.getAsInt()) {
+                            teAT.setBorderColor(color.getAsInt());
+                            player.getHeldItem(hand).shrink(1);
+                        }
                     } else {
-                        teAT.setBackgroundColor(color.getAsInt());
+                        if (teAT.getBackgroundColor() != color.getAsInt()) {
+                            teAT.setBackgroundColor(color.getAsInt());
+                            player.getHeldItem(hand).shrink(1);
+                        }
                     }
-                    player.getHeldItem(hand).shrink(1);
+
                 }
             }
         }
