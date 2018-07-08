@@ -3,13 +3,11 @@ package me.desht.pneumaticcraft.common.tileentity;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IAirListener;
+import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.common.block.BlockElevatorBase;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
-import me.desht.pneumaticcraft.common.network.DescSynced;
-import me.desht.pneumaticcraft.common.network.GuiSynced;
-import me.desht.pneumaticcraft.common.network.LazySynced;
-import me.desht.pneumaticcraft.common.network.PacketServerTickTime;
+import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaConstant;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethod;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -18,8 +16,6 @@ import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Sounds;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -30,8 +26,10 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.items.ItemHandlerHelper;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
@@ -46,7 +44,6 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     public float extension;
     @DescSynced
     private float targetExtension;
-    private int soundCounter;
     private boolean isStopped;  //used for sounds
     private TileEntityElevatorBase coreElevator;
     private List<TileEntityElevatorBase> multiElevators; //initialized when multiple elevators are connected in a multiblock manner.
@@ -100,10 +97,8 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
                     targetExtension = extension;
                     sendDescPacket(256D);
                 }
-                soundName = Sounds.ELEVATOR_MOVING;
 
                 float moveBy;
-
                 if (extension < targetExtension - TileEntityConstants.ELEVATOR_SLOW_EXTENSION) {
                     moveBy = TileEntityConstants.ELEVATOR_SPEED_FAST * speedMultiplier;
                 } else {
@@ -116,6 +111,8 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
                 if (isStopped) {
                     soundName = Sounds.ELEVATOR_START;
                     isStopped = false;
+                    NetworkRegistry.TargetPoint tp = new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 32);
+                    NetworkHandler.sendToAllAround(new PacketPlayMovingSound(MovingSounds.Sound.ELEVATOR, getCoreElevator()), tp);
                 }
                 float startingExtension = extension;
 
@@ -131,7 +128,6 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
                 addAir((int) ((oldExtension - extension) * PneumaticValues.USAGE_ELEVATOR * (getSpeedUsageMultiplierFromUpgrades() / speedMultiplier)));// substract the ascended distance from the air reservoir.
             }
             if (extension > targetExtension) {
-                soundName = Sounds.ELEVATOR_MOVING;
                 if (extension > targetExtension + TileEntityConstants.ELEVATOR_SLOW_EXTENSION) {
                     extension -= TileEntityConstants.ELEVATOR_SPEED_FAST * speedMultiplier;
                 } else {
@@ -144,19 +140,18 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
                 if (isStopped) {
                     soundName = Sounds.ELEVATOR_START;
                     isStopped = false;
+                    NetworkRegistry.TargetPoint tp = new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 32);
+                    NetworkHandler.sendToAllAround(new PacketPlayMovingSound(MovingSounds.Sound.ELEVATOR, getCoreElevator()), tp);
                 }
                 //  movePlayerDown();
             }
             if (oldExtension == extension && !isStopped) {
                 soundName = Sounds.ELEVATOR_STOP;
                 isStopped = true;
-                soundCounter = 0;
             }
 
-            if (soundCounter > 0) soundCounter--;
-            if (soundName != null && getWorld().isRemote && soundCounter == 0) {
+            if (soundName != null && getWorld().isRemote) {
                 getWorld().playSound(getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5, soundName, SoundCategory.BLOCKS, 0.5F, 1.0F, true);
-                soundCounter = 10;
             }
 
         } else {
@@ -165,43 +160,6 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
         if (!getWorld().isRemote && oldExtension != extension) {
             sendDescPacket(256);
         }
-    }
-
-    private void movePlayerDown() {
-        if (!getWorld().isRemote) return;
-
-        AxisAlignedBB aabb = new AxisAlignedBB(getPos().getX(), getPos().getY() + 1, getPos().getZ(), getPos().getX() + 1, getPos().getY() + oldExtension + 1.05F, getPos().getZ() + 1);
-        List<Entity> entityList = getWorld().getEntitiesWithinAABBExcludingEntity(null, aabb);
-        for (Entity entity : entityList) {
-            if (entity instanceof EntityPlayer) {
-                //   moveEntityToCenter(entity);
-                double posX = entity.posX;
-                double posZ = entity.posZ;
-                if (posX >= getPos().getX() && posX < getPos().getX() + 1 && posZ >= getPos().getZ() && posZ < getPos().getZ() + 1) {
-                    entity.motionX *= 0.6;
-                    entity.motionZ *= 0.6;
-                    entity.move(MoverType.SELF, 0, extension - oldExtension + 0.001F, 0);
-                }
-            }
-        }
-    }
-
-    private void moveEntities(float moveBy) {
-        AxisAlignedBB aabb = new AxisAlignedBB(getPos().getX(), getPos().getY() + 1, getPos().getZ(), getPos().getX() + 1, getPos().getY() + extension + 1, getPos().getZ() + 1);
-        List<Entity> entityList = getWorld().getEntitiesWithinAABBExcludingEntity(null, aabb);
-        for (Entity entity : entityList) {
-            if (entity instanceof EntityPlayer) {
-
-            } else entity.move(MoverType.SELF, 0, moveBy + 0.05F, 0);
-        }
-    }
-
-    private void moveEntityToCenter(Entity entity) {
-        /*
-         * this is for your own protection. you may hurt yourself if you're not standing right, especially
-         * on multiblock-elevators (entity will be found by multiple bases, causing problems)
-         */
-        entity.setPosition(getPos().getX() + 0.5F, entity.posY, getPos().getZ() + 0.5F);
     }
 
     @Override
@@ -232,7 +190,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
         return redstoneMode == 0;
     }
 
-    public void updateRedstoneInputLevel() {
+    private void updateRedstoneInputLevel() {
         if (multiElevators == null) return;
 
         int maxRedstone = 0;
@@ -374,7 +332,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
         rerenderTileEntity();
     }
 
-    public void updateConnections() {
+    private void updateConnections() {
         List<Pair<EnumFacing, IAirHandler>> connections = getAirHandler(null).getConnectedPneumatics();
         Arrays.fill(sidesConnected, false);
         for (Pair<EnumFacing, IAirHandler> entry : connections) {
@@ -398,10 +356,12 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
         if (te instanceof TileEntityElevatorBase) {
             camoStack = ((TileEntityElevatorBase) te).camoStack;
             sendDescriptionPacket();
-//            for (int i = 0; i < inventory.getSlots(); i++) {
-//                inventory.setStackInSlot(i, ((TileEntityElevatorBase) te).inventory.getStackInSlot(i));
-//                ((TileEntityElevatorBase) te).inventory.setStackInSlot(i, ItemStack.EMPTY);
-//            }
+            for (int i = 0; i < upgradeHandler.getSlots(); i++) {
+                ItemStack stack = ((TileEntityElevatorBase) te).getUpgradesInventory().getStackInSlot(i);
+                ItemStack excess = ItemHandlerHelper.insertItem(upgradeHandler, stack, false);
+                if (!excess.isEmpty()) PneumaticCraftUtils.dropItemOnGround(excess, world, getPos());
+                ((TileEntityElevatorBase) te).getUpgradesInventory().setStackInSlot(i, ItemStack.EMPTY);
+            }
         }
     }
 
@@ -416,7 +376,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
                 boolean registeredThisFloor = false;
                 for (TileEntityElevatorBase base : multiElevators) {
                     for (EnumFacing dir : EnumFacing.HORIZONTALS) {
-                        if (base.world.getBlockState(base.getPos().offset(dir).add(0, i + 2, 0)).getBlock() == Blockss.ELEVATOR_CALLER) {
+                        if (base.world.getBlockState(base.getPos().offset(dir).up(i + 2)).getBlock() == Blockss.ELEVATOR_CALLER) {
                             callerList.add(new BlockPos(base.getPos().getX() + dir.getFrontOffsetX(), base.getPos().getY() + i + 2, base.getPos().getZ() + dir.getFrontOffsetZ()));
                             if (!registeredThisFloor) floorList.add(i);
                             registeredThisFloor = true;
@@ -426,7 +386,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
 
                 i++;
                 for (TileEntityElevatorBase base : multiElevators) {
-                    if (base.world.getBlockState(base.getPos().add(0, i, 0)).getBlock() != Blockss.ELEVATOR_FRAME) {
+                    if (base.world.getBlockState(base.getPos().up(i)).getBlock() != Blockss.ELEVATOR_FRAME) {
                         shouldBreak = true;
                         break;
                     }
@@ -498,6 +458,10 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
                 base.targetExtension = height;
             }
         }
+    }
+
+    public float getTargetExtension() {
+        return targetExtension;
     }
 
     private void sendDescPacketFromAllElevators() {

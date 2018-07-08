@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.client.sound;
 
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorBase;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.MovingSound;
 import net.minecraft.entity.Entity;
@@ -13,7 +14,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class MovingSounds {
     public enum Sound {
         JET_BOOTS,
-        MINIGUN
+        MINIGUN,
+        ELEVATOR
     }
 
     private static MovingSound createMovingSound(Sound s, Object o) {
@@ -31,6 +33,13 @@ public class MovingSounds {
                     return te == null ? null : new MovingSoundMinigun(te);
                 }
                 break;
+            case ELEVATOR:
+                if (o instanceof BlockPos) {
+                    TileEntity te = Minecraft.getMinecraft().world.getTileEntity((BlockPos) o);
+                    if (te instanceof TileEntityElevatorBase) {
+                        return new MovingSoundElevator((TileEntityElevatorBase) te);
+                    }
+                }
         }
         throw new IllegalArgumentException("Invalid moving sound " + s + " for entity " + o);
     }
