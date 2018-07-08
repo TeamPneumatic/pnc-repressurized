@@ -33,7 +33,7 @@ public class MovingSoundJetBoots extends MovingSound {
             return;
         }
 
-        if (!handler.isJetBootsActive() && player.onGround && endTimer == -1) {
+        if (!handler.isJetBootsEnabled() && endTimer == -1 || !handler.isJetBootsActive() && player.onGround && endTimer == -1) {
             endTimer = 20;
         }
         if (endTimer > 0 && --endTimer <= 0) {
