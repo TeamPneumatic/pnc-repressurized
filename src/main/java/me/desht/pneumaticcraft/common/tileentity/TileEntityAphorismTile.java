@@ -42,8 +42,13 @@ public class TileEntityAphorismTile extends TileEntityBase {
             textLines[i] = tag.getString("line" + i);
         }
         textRotation = tag.getInteger("textRot");
-        borderColor = tag.getInteger("border");
-        backgroundColor = tag.getInteger("background");
+        if (tag.hasKey("border")) {
+            borderColor = tag.getInteger("border");
+            backgroundColor = tag.getInteger("background");
+        } else {
+            borderColor = EnumDyeColor.BLUE.getDyeDamage();
+            backgroundColor = EnumDyeColor.WHITE.getDyeDamage();
+        }
         if (world != null) rerenderTileEntity();
     }
 
