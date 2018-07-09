@@ -131,7 +131,7 @@ public class RenderTarget {
 
         GlStateManager.pushMatrix();
 
-        GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
+        GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT);
 
         float red;
         float green;

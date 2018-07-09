@@ -116,7 +116,7 @@ public class SearchUpgradeHandler implements IUpgradeRenderHandler {
         GlStateManager.disableDepth();
         GlStateManager.disableCull();
         GlStateManager.enableBlend();
-        GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
+        GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT);
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         Minecraft.getMinecraft().getRenderManager().renderEngine.bindTexture(Textures.GLOW_RESOURCE);
         //  mc.func_110434_K().func_110577_a(Textures.GLOW_RESOURCE);

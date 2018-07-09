@@ -41,10 +41,10 @@ public class RenderNavigator {
         if (xRayEnabled) GlStateManager.disableDepth();
         GlStateManager.disableCull();
         GlStateManager.enableBlend();
-        GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
+        GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT);
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GlStateManager.disableTexture2D();
-        GL11.glLineWidth(5.0F);
+        GlStateManager.glLineWidth(5.0F);
 
         boolean noDestinationPath = !tracedToDestination();
 

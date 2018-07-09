@@ -9,6 +9,7 @@ import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityLiving;
@@ -46,7 +47,6 @@ import net.minecraftforge.oredict.OreDictionary;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nonnull;
 import java.io.BufferedReader;
@@ -110,17 +110,17 @@ public class PneumaticCraftUtils {
     @SideOnly(Side.CLIENT)
     public static double rotateMatrixByMetadata(int metadata) {
         EnumFacing facing = EnumFacing.getFront(metadata & 7);
-        double metaRotation;
+        float metaRotation;
         switch (facing) {
             case UP:
                 metaRotation = 0;
-                GL11.glRotated(90, 1, 0, 0);
-                GL11.glTranslated(0, -1, -1);
+                GlStateManager.rotate(90, 1, 0, 0);
+                GlStateManager.translate(0, -1, -1);
                 break;
             case DOWN:
                 metaRotation = 0;
-                GL11.glRotated(-90, 1, 0, 0);
-                GL11.glTranslated(0, -1, 1);
+                GlStateManager.rotate(-90, 1, 0, 0);
+                GlStateManager.translate(0, -1, 1);
                 break;
             case NORTH:
                 metaRotation = 0;
@@ -135,7 +135,7 @@ public class PneumaticCraftUtils {
                 metaRotation = 270;
                 break;
         }
-        GL11.glRotated(metaRotation, 0, 1, 0);
+        GlStateManager.rotate(metaRotation, 0, 1, 0);
         return metaRotation;
     }
 

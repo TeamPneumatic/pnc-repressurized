@@ -152,7 +152,7 @@ public class RenderBlockTarget {
         GlStateManager.disableTexture2D();
         GlStateManager.pushMatrix();
 
-        GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
+        GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT);
 
         float red = 0.5F;
         float green = 0.5F;

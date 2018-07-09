@@ -231,7 +231,7 @@ public class GuiUnitProgrammer extends GuiScreen {
     }
 
     private void showFlow() {
-        GL11.glLineWidth(1);
+        GlStateManager.glLineWidth(1);
         GlStateManager.disableTexture2D();
         GlStateManager.glBegin(GL11.GL_LINES);
 

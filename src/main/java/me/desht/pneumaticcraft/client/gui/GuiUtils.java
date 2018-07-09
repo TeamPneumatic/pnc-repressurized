@@ -44,7 +44,7 @@ public class GuiUtils {
     public static void drawPressureGauge(FontRenderer fontRenderer, float minPressure, float maxPressure, float dangerPressure, float minWorkingPressure, float currentPressure, int xPos, int yPos, float zLevel, int fgColor) {
         BufferBuilder wr = Tessellator.getInstance().getBuffer();
         GlStateManager.disableTexture2D();
-        GL11.glLineWidth(2.0F);
+        GlStateManager.glLineWidth(2.0F);
         // Draw the green and red surface in the gauge.
         GlStateManager.color(0.7F, 0, 0, 1);
         wr.begin(GL11.GL_TRIANGLE_FAN, DefaultVertexFormats.POSITION);

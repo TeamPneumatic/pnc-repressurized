@@ -8,6 +8,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
@@ -47,8 +48,8 @@ public abstract class ProgWidget implements IProgWidget {
     @Override
     public void renderExtraInfo() {
         if (getExtraStringInfo() != null) {
-            GL11.glPushMatrix();
-            GL11.glScaled(0.5, 0.5, 0.5);
+            GlStateManager.pushMatrix();
+            GlStateManager.scale(0.5, 0.5, 0.5);
             FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
             String[] splittedInfo = WordUtils.wrap(getExtraStringInfo(), 40).split(System.getProperty("line.separator"));
             for (int i = 0; i < splittedInfo.length; i++) {
@@ -58,8 +59,8 @@ public abstract class ProgWidget implements IProgWidget {
                 Gui.drawRect(startX * 2 - 1, startY * 2 - 1, startX * 2 + stringLength + 1, startY * 2 + fr.FONT_HEIGHT + 1, 0xFFFFFFFF);
                 fr.drawString(splittedInfo[i], startX * 2, startY * 2, 0xFF000000);
             }
-            GL11.glPopMatrix();
-            GL11.glColor4d(1, 1, 1, 1);
+            GlStateManager.popMatrix();
+            GlStateManager.color(1, 1, 1, 1);
         }
     }
 

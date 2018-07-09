@@ -109,7 +109,7 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<TileEntityChar
     private void renderAir() {
         GlStateManager.disableTexture2D();
         GlStateManager.color(1, 1, 1, 1);
-        GL11.glLineWidth(2.0F);
+        GlStateManager.glLineWidth(2.0F);
         int particles = 10;
         for (int i = 0; i < particles; i++) {
             renderAirParticle(te.renderAirProgress % (1F / particles) + (float) i / particles);

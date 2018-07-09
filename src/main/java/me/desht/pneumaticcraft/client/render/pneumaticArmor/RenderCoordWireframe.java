@@ -40,10 +40,10 @@ public class RenderCoordWireframe {
         GlStateManager.disableDepth();
         GlStateManager.disableCull();
         GlStateManager.enableBlend();
-        GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
+        GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT);
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GlStateManager.disableTexture2D();
-        GL11.glLineWidth(1.0F);
+        GlStateManager.glLineWidth(1.0F);
         // GlStateManager.color(0, 1, 1, progress < 0.5F ? progress + 0.5F : 1.5 - progress);
         GlStateManager.color(0, progress < 0.5F ? progress + 0.5F : 1.5F - progress, 1, 1);
         GlStateManager.pushMatrix();

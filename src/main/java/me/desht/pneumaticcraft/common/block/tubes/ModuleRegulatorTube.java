@@ -11,6 +11,7 @@ import me.desht.pneumaticcraft.common.network.PacketDescriptionPacketRequest;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticBase;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Names;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.text.TextFormatting;
@@ -41,21 +42,21 @@ public class ModuleRegulatorTube extends TubeModuleRedstoneReceiving implements 
             hasTicked = true;
         }
 
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GlStateManager.enableBlend();
+        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         if (inLine && !inverted) {
-            GL11.glColor4d(0, 1, 0, 0.3);
+            GlStateManager.color(0, 1, 0, 0.3F);
         } else {
-            GL11.glColor4d(1, 0, 0, 0.3);
+            GlStateManager.color(1, 0, 0, 0.3F);
         }
-        GL11.glPushMatrix();
-        GL11.glTranslated(0, 1, 0.2 + ClientTickHandler.TICKS % 20 * 0.015);
-        GL11.glRotated(90, 1, 0, 0);
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(0, 1, 0.2 + ClientTickHandler.TICKS % 20 * 0.015);
+        GlStateManager.rotate(90, 1, 0, 0);
 
         RenderUtils.render3DArrow();
-        GL11.glColor4d(1, 1, 1, 0.5);  // 0.5 because we're rendering a preview
-        GL11.glPopMatrix();
-        GL11.glDisable(GL11.GL_BLEND);
+        GlStateManager.color(1, 1, 1, 0.5F);  // 0.5 because we're rendering a preview
+        GlStateManager.popMatrix();
+        GlStateManager.disableBlend();
     }
 
     @Override

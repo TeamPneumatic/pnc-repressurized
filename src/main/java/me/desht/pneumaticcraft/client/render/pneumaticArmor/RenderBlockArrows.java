@@ -33,7 +33,7 @@ public class RenderBlockArrows {
 
         if (ticksExisted > 10) ticksExisted = 0;
         float progress = (ticksExisted + partialTicks) / 10F;
-        GL11.glLineWidth(1.0F);
+        GlStateManager.glLineWidth(1.0F);
         GlStateManager.color(1, 1, 1, progress);
         GlStateManager.pushMatrix();
         GlStateManager.translate(-0.5D, -0.5D, -0.5D);
