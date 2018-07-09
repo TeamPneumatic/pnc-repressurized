@@ -135,6 +135,7 @@ public class HUDHandler implements IKeyListener {
 
             for (EntityEquipmentSlot slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
                 if (!(player.getItemStackFromSlot(slot).getItem() instanceof ItemPneumaticArmor)) continue;
+                if (comHudHandler.getArmorPressure(slot) < 0.0001F) continue;
                 if (!comHudHandler.isArmorReady(slot)) {
                     // initialization progress bar(s)
                     gaveEmptyWarning[slot.getIndex()] = false;
