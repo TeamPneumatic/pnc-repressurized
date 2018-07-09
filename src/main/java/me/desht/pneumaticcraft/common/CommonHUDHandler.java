@@ -11,8 +11,7 @@ import me.desht.pneumaticcraft.client.render.pneumaticArmor.*;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.hacking.HackableHandler;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.common.item.ItemMachineUpgrade;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticArmorBase;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticLeggings;
+import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
@@ -151,7 +150,7 @@ public class CommonHUDHandler {
     private void tickArmorPiece(EntityPlayer player, EntityEquipmentSlot slot) {
         ItemStack armorStack = player.getItemStackFromSlot(slot);
         boolean armorActive = false;
-        if (armorStack.getItem() instanceof ItemPneumaticArmorBase) {
+        if (armorStack.getItem() instanceof ItemPneumaticArmor) {
             armorPressure[slot.getIndex()] = ((IPressurizable) armorStack.getItem()).getPressure(armorStack);
             if (ticksSinceEquip[slot.getIndex()] == 1) {
                 checkArmorInventory(player, slot);
@@ -237,9 +236,9 @@ public class CommonHUDHandler {
             IAttributeInstance attr = resetSpeedAttributes(player);
 
             ItemStack legsStack = player.getItemStackFromSlot(EntityEquipmentSlot.LEGS);
-            if (legsStack.getItem() instanceof ItemPneumaticLeggings && isRunSpeedEnabled()) {
+            if (legsStack.getItem() instanceof ItemPneumaticArmor && isRunSpeedEnabled()) {
                 int speedUpgrades = getUpgradeCount(EntityEquipmentSlot.LEGS, IItemRegistry.EnumUpgrade.SPEED, PneumaticValues.PNEUMATIC_LEGS_MAX_SPEED);
-                ItemPneumaticLeggings legs = (ItemPneumaticLeggings) legsStack.getItem();
+                ItemPneumaticArmor legs = (ItemPneumaticArmor) legsStack.getItem();
                 if (legs.getPressure(legsStack) > 0.0F && speedUpgrades > 0) {
                     attr.applyModifier(PNEUMATIC_SPEED_BOOST[speedUpgrades - 1]);
                     Vec3d prev = moveMap.get(player.getName());

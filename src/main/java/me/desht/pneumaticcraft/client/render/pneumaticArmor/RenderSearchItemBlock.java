@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.render.pneumaticArmor;
 
-import me.desht.pneumaticcraft.common.item.ItemPneumaticHelmet;
+import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -34,7 +34,7 @@ public class RenderSearchItemBlock {
         if (te != null && te.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)) {
             IItemHandler handler = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
             int itemCount = 0;
-            ItemStack searchStack = ItemPneumaticHelmet.getSearchedStack(FMLClientHandler.instance().getClient().player.getItemStackFromSlot(EntityEquipmentSlot.HEAD));
+            ItemStack searchStack = ItemPneumaticArmor.getSearchedStack(FMLClientHandler.instance().getClient().player.getItemStackFromSlot(EntityEquipmentSlot.HEAD));
             if (searchStack.isEmpty()) return 0;
             for (int l = 0; l < handler.getSlots(); l++) {
                 if (!handler.getStackInSlot(l).isEmpty()) {

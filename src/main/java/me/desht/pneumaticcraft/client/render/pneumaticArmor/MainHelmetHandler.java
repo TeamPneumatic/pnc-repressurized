@@ -9,7 +9,7 @@ import me.desht.pneumaticcraft.client.gui.pneumaticHelmet.GuiHelmetMainScreen;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
 import me.desht.pneumaticcraft.common.CommonHUDHandler;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticArmorBase;
+import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.entity.player.EntityPlayer;
@@ -77,7 +77,7 @@ public class MainHelmetHandler implements IUpgradeRenderHandler {
     }
 
     private String getPressureStr(EntityPlayer player, EntityEquipmentSlot slot) {
-        if (!(player.getItemStackFromSlot(slot).getItem() instanceof ItemPneumaticArmorBase))
+        if (!(player.getItemStackFromSlot(slot).getItem() instanceof ItemPneumaticArmor))
             return "-";
         float pressure = CommonHUDHandler.getHandlerForPlayer(player).armorPressure[slot.getIndex()];
         TextFormatting colour;

@@ -10,7 +10,7 @@ import me.desht.pneumaticcraft.client.gui.pneumaticHelmet.GuiHelmetMainScreen;
 import me.desht.pneumaticcraft.client.gui.widget.GuiKeybindCheckBox;
 import me.desht.pneumaticcraft.client.render.RenderProgressBar;
 import me.desht.pneumaticcraft.common.CommonHUDHandler;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticArmorBase;
+import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPneumaticKick;
 import me.desht.pneumaticcraft.common.network.PacketToggleArmorFeature;
@@ -71,7 +71,7 @@ public class HUDHandler implements IKeyListener {
 
         ItemStack helmetStack = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
         CommonHUDHandler comHudHandler = CommonHUDHandler.getHandlerForPlayer(player);
-        if (helmetStack.getItem() instanceof ItemPneumaticArmorBase && comHudHandler.getArmorPressure(EntityEquipmentSlot.HEAD) > 0F) {
+        if (helmetStack.getItem() instanceof ItemPneumaticArmor && comHudHandler.getArmorPressure(EntityEquipmentSlot.HEAD) > 0F) {
             for (EntityEquipmentSlot slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
                 if (comHudHandler.isArmorReady(slot)) {
                     GlStateManager.disableTexture2D();
@@ -105,7 +105,7 @@ public class HUDHandler implements IKeyListener {
             if (player == mc.player && player.world.isRemote) {
                 boolean armorEquipped = false;
                 for (EntityEquipmentSlot slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
-                    if (player.getItemStackFromSlot(slot).getItem() instanceof ItemPneumaticArmorBase) {
+                    if (player.getItemStackFromSlot(slot).getItem() instanceof ItemPneumaticArmor) {
                         update(mc.player, slot);
                         armorEquipped = true;
                     }
@@ -123,7 +123,7 @@ public class HUDHandler implements IKeyListener {
     private void render2D(float partialTicks) {
         Minecraft minecraft = FMLClientHandler.instance().getClient();
         EntityPlayer player = minecraft.player;
-        if (minecraft.inGameHasFocus && ItemPneumaticArmorBase.isPlayerWearingAnyPneumaticArmor(player)) {
+        if (minecraft.inGameHasFocus && ItemPneumaticArmor.isPlayerWearingAnyPneumaticArmor(player)) {
             ScaledResolution sr = new ScaledResolution(minecraft);
             GlStateManager.depthMask(false);
             GlStateManager.disableCull();
@@ -134,7 +134,7 @@ public class HUDHandler implements IKeyListener {
             CommonHUDHandler comHudHandler = CommonHUDHandler.getHandlerForPlayer(player);
 
             for (EntityEquipmentSlot slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
-                if (!(player.getItemStackFromSlot(slot).getItem() instanceof ItemPneumaticArmorBase)) continue;
+                if (!(player.getItemStackFromSlot(slot).getItem() instanceof ItemPneumaticArmor)) continue;
                 if (!comHudHandler.isArmorReady(slot)) {
                     // initialization progress bar(s)
                     gaveEmptyWarning[slot.getIndex()] = false;
@@ -186,7 +186,7 @@ public class HUDHandler implements IKeyListener {
             // show armor initialisation percentages
             if (comHudHandler.isArmorEnabled()) {
                 for (EntityEquipmentSlot slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
-                    if (player.getItemStackFromSlot(slot).getItem() instanceof ItemPneumaticArmorBase && !comHudHandler.isArmorReady(slot) && comHudHandler.getArmorPressure(slot) > 0F) {
+                    if (player.getItemStackFromSlot(slot).getItem() instanceof ItemPneumaticArmor && !comHudHandler.isArmorReady(slot) && comHudHandler.getArmorPressure(slot) > 0F) {
                         minecraft.fontRenderer.drawString(comHudHandler.getTicksSinceEquipped(slot) * 100 / comHudHandler.getStartupTime(slot) + "%", sr.getScaledWidth() * 3 / 4 - 8, 14 + PROGRESS_BAR_HEIGHT * (3 - slot.getIndex()), 0x000000);
                     }
                 }
@@ -266,7 +266,7 @@ public class HUDHandler implements IKeyListener {
         Minecraft mc = FMLClientHandler.instance().getClient();
         if (mc.inGameHasFocus) {
             if (key == KeyHandler.getInstance().keybindOpenOptions) {
-                if (ItemPneumaticArmorBase.isPlayerWearingAnyPneumaticArmor(mc.player)) {
+                if (ItemPneumaticArmor.isPlayerWearingAnyPneumaticArmor(mc.player)) {
                     FMLCommonHandler.instance().showGuiScreen(GuiHelmetMainScreen.getInstance());
                 }
             } else if (key == KeyHandler.getInstance().keybindHack && HackUpgradeRenderHandler.enabledForPlayer(mc.player)) {

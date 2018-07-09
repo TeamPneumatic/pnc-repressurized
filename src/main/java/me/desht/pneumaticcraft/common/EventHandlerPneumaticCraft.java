@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.entity.EntityProgrammableController;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.item.ItemAmadronTablet;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticHelmet;
+import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
@@ -250,7 +250,7 @@ public class EventHandlerPneumaticCraft {
         EntityPlayer player = FMLClientHandler.instance().getClient().player;
         if (event.getTarget() == player && (event.getEntityLiving() instanceof EntityGolem || event.getEntityLiving() instanceof EntityMob)) {
             ItemStack helmetStack = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
-            if (helmetStack.getItem() instanceof ItemPneumaticHelmet
+            if (helmetStack.getItem() instanceof ItemPneumaticArmor
                     && ((IPressurizable) helmetStack.getItem()).getPressure(helmetStack) > 0
                     && UpgradableItemUtils.getUpgrades(EnumUpgrade.ENTITY_TRACKER, helmetStack) > 0
                     && GuiKeybindCheckBox.getCoreComponents().checked

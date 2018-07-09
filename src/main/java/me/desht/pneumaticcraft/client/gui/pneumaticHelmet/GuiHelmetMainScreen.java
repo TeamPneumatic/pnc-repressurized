@@ -9,7 +9,7 @@ import me.desht.pneumaticcraft.client.gui.widget.GuiKeybindCheckBox;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.MainHelmetHandler;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.UpgradeRenderHandlerList;
 import me.desht.pneumaticcraft.common.CommonHUDHandler;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticArmorBase;
+import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -99,7 +99,7 @@ public class GuiHelmetMainScreen extends GuiPneumaticScreenBase implements IGuiS
                 if (inInitPhase || CommonHUDHandler.getHandlerForPlayer().isUpgradeRendererInserted(slot, i)) {
                     IUpgradeRenderHandler upgradeRenderHandler = renderHandlers.get(i);
                     if (inInitPhase
-                            || FMLClientHandler.instance().getClient().player.getItemStackFromSlot(slot).getItem() instanceof ItemPneumaticArmorBase
+                            || FMLClientHandler.instance().getClient().player.getItemStackFromSlot(slot).getItem() instanceof ItemPneumaticArmor
                             || upgradeRenderHandler instanceof MainHelmetHandler) {
                         IOptionPage optionPage = upgradeRenderHandler.getGuiOptionsPage();
                         if (optionPage != null) {

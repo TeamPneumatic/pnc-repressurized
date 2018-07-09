@@ -5,7 +5,7 @@ import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IOptionPage;
 import me.desht.pneumaticcraft.client.gui.GuiUtils;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.EntityTrackUpgradeHandler;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticHelmet;
+import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateEntityFilter;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -39,7 +39,7 @@ public class GuiEntityTrackOptions implements IOptionPage {
         textField = new GuiTextField(-1, gui.getFontRenderer(), 35, 60, 140, 10);
         textField.setFocused(true);
         if (PneumaticCraftRepressurized.proxy.getPlayer() != null)
-            textField.setText(ItemPneumaticHelmet.getEntityFilter(PneumaticCraftRepressurized.proxy.getPlayer().getItemStackFromSlot(EntityEquipmentSlot.HEAD)));
+            textField.setText(ItemPneumaticArmor.getEntityFilter(PneumaticCraftRepressurized.proxy.getPlayer().getItemStackFromSlot(EntityEquipmentSlot.HEAD)));
     }
 
     @Override

@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.NBTUtil;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticHelmet;
+import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateSearchStack;
 import net.minecraft.entity.player.EntityPlayer;
@@ -36,7 +36,7 @@ public class InventorySearch implements IInventory {
     @Nonnull
     @Override
     public ItemStack getStackInSlot(int i) {
-        return ItemPneumaticHelmet.getSearchedStack(helmetStack);
+        return ItemPneumaticArmor.getSearchedStack(helmetStack);
     }
 
     @Nonnull

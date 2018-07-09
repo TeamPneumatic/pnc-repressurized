@@ -12,6 +12,7 @@ import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraftforge.event.RegistryEvent;
@@ -151,10 +152,10 @@ public class Itemss {
         registerItem(registry, new ItemPressurizable("air_canister", PneumaticValues.AIR_CANISTER_MAX_AIR, PneumaticValues.AIR_CANISTER_VOLUME));
         registerItem(registry, new ItemVortexCannon());
         registerItem(registry, new ItemPneumatic("pneumatic_cylinder"));
-        registerItem(registry, new ItemPneumaticHelmet());
-        registerItem(registry, new ItemPneumaticChestPlate());
-        registerItem(registry, new ItemPneumaticLeggings());
-        registerItem(registry, new ItemPneumaticBoots());
+        registerItem(registry, new ItemPneumaticArmor("pneumatic_helmet", EntityEquipmentSlot.HEAD));
+        registerItem(registry, new ItemPneumaticArmor("pneumatic_chestplate", EntityEquipmentSlot.CHEST));
+        registerItem(registry, new ItemPneumaticArmor("pneumatic_leggings", EntityEquipmentSlot.LEGS));
+        registerItem(registry, new ItemPneumaticArmor("pneumatic_boots", EntityEquipmentSlot.FEET));
         registerItem(registry, new ItemManometer());
         registerItem(registry, new ItemPneumatic("turbine_rotor"));
         registerItem(registry, new ItemAssemblyProgram());
@@ -184,6 +185,8 @@ public class Itemss {
         registerItem(registry, new ItemCamoApplicator());
 
         registerUpgrades(registry);
+
+        ItemPneumaticArmor.initApplicableUpgrades();
 
         for (Block b : Blockss.blocks) {
             if(!(b instanceof BlockAir)){

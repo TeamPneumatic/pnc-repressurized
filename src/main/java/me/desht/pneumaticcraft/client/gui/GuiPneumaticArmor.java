@@ -9,7 +9,7 @@ import me.desht.pneumaticcraft.client.render.pneumaticArmor.UpgradeRenderHandler
 import me.desht.pneumaticcraft.common.CommonHUDHandler;
 import me.desht.pneumaticcraft.common.inventory.ContainerChargingStationItemInventory;
 import me.desht.pneumaticcraft.common.item.ItemMachineUpgrade;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticArmorBase;
+import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.recipes.CraftingRegistrator;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -119,6 +119,6 @@ public class GuiPneumaticArmor extends GuiPneumaticInventoryItem {
 
     @Override
     protected int getDefaultVolume() {
-        return ((ItemPneumaticArmorBase) itemStack.getItem()).getBaseVolume();
+        return ((ItemPneumaticArmor) itemStack.getItem()).getBaseVolume();
     }
 }

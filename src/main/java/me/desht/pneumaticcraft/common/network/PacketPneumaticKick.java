@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.network;
 import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.common.CommonHUDHandler;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticBoots;
+import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Sounds;
 import net.minecraft.entity.Entity;
@@ -30,7 +30,7 @@ public class PacketPneumaticKick extends AbstractPacket<PacketPneumaticKick> {
 
     @Override
     public void handleServerSide(PacketPneumaticKick message, EntityPlayer player) {
-        if (player.getItemStackFromSlot(EntityEquipmentSlot.FEET).getItem() instanceof ItemPneumaticBoots) {
+        if (player.getItemStackFromSlot(EntityEquipmentSlot.FEET).getItem() instanceof ItemPneumaticArmor) {
             CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer(player);
             if (handler.isArmorEnabled()) {
                 int upgrades = handler.getUpgradeCount(EntityEquipmentSlot.FEET, IItemRegistry.EnumUpgrade.DISPENSER);
