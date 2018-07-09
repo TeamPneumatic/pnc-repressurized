@@ -7,7 +7,6 @@ import me.desht.pneumaticcraft.common.entity.living.EntityHarvestingDrone;
 import me.desht.pneumaticcraft.common.entity.living.EntityLogisticsDrone;
 import me.desht.pneumaticcraft.common.semiblock.*;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
-import me.desht.pneumaticcraft.lib.ModIds;
 import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.Block;
@@ -16,7 +15,6 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
@@ -198,11 +196,13 @@ public class Itemss {
 
     private static void registerUpgrades(IForgeRegistry<Item> registry) {
         for (EnumUpgrade upgrade : EnumUpgrade.values()) {
-            if (upgrade != EnumUpgrade.THAUMCRAFT || Loader.isModLoaded(ModIds.THAUMCRAFT)) {
+            if (upgrade.isDepLoaded()) {
                 String upgradeName = upgrade.toString().toLowerCase() + "_upgrade";
                 Item upgradeItem = new ItemMachineUpgrade(upgradeName, upgrade.ordinal());
                 registerItem(registry, upgradeItem);
                 upgrades.add(upgradeItem);
+            } else {
+                upgrades.add(null);
             }
         }
     }

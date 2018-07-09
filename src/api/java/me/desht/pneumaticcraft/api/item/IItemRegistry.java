@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.api.item;
 
 import net.minecraft.item.Item;
+import net.minecraftforge.fml.common.Loader;
 
 import java.util.List;
 
@@ -17,19 +18,35 @@ public interface IItemRegistry {
         RANGE("range"),
         SECURITY("security"),
         MAGNET("magnet"),
-        THAUMCRAFT("thaumcraft"), /*Only around when Thaumcraft is */
+        THAUMCRAFT("thaumcraft", "thaumcraft"), /*Only around when Thaumcraft is */
         CHARGING("charging"),
         ARMOR("armor"),
         JET_BOOTS("jetboots");
 
         private final String name;
+        private final String depModId;
 
         EnumUpgrade(String name) {
+            this(name, null);
+        }
+
+        EnumUpgrade(String name, String depModId) {
             this.name = name;
+            this.depModId = depModId;
         }
 
         public String getName() {
             return name;
+        }
+
+        /**
+         * Check if this upgrade's dependent mod (if any) is loaded.  If this returns false, then
+         * {@link IItemRegistry#getUpgrade(EnumUpgrade)} will return null.
+         *
+         * @return true if this upgrade's dependent mod is loaded, false otherwise
+         */
+        public boolean isDepLoaded() {
+            return depModId == null || Loader.isModLoaded(depModId);
         }
     }
 
@@ -41,7 +58,8 @@ public interface IItemRegistry {
     void registerInventoryItem(IInventoryItem handler);
 
     /**
-     * Returns the upgrade item that is mapped to the asked type.
+     * Returns the upgrade item that is mapped to the asked type.  Note that if the upgrade in question depends upon
+     * another mod which is not loaded, this will return null.  See {@link EnumUpgrade#isDepLoaded()}
      */
     Item getUpgrade(EnumUpgrade type);
 

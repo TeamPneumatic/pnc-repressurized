@@ -31,7 +31,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.ISpecialArmor;
 import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -164,7 +163,7 @@ public class ItemPneumaticArmor extends ItemArmor
             addApplicableUpgrade(slot, EnumUpgrade.VOLUME);
             addApplicableUpgrade(slot, EnumUpgrade.ITEM_LIFE);
             addApplicableUpgrade(slot, EnumUpgrade.ARMOR);
-            if (Loader.isModLoaded(ModIds.THAUMCRAFT)) {
+            if (EnumUpgrade.THAUMCRAFT.isDepLoaded()) {
                 addApplicableUpgrade(slot, EnumUpgrade.THAUMCRAFT);
             }
         }
