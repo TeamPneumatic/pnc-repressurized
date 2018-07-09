@@ -6,8 +6,12 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
-### 0.7.0-228 (8 Jul 2018)
+### 0.7.1-231 (9 Jul 2018)
+#### Fixes
+* Fixed startup crash under some circumstances (most likely with Thaumcraft not installed) related to new Pneumatic Armor
+* No longer attempts to render armor initialisation progress bar if armor piece has no pressure
 
+### 0.7.0-228 (8 Jul 2018)
 #### New
 * Big new feature: a fully-fledged Pneumatic Armor suite!  Added in Pneumatic Chestplate, Leggings & Boots, each with their own upgrades and abilities (read on...)
 * To see all upgrades and abilities for each armor piece, put them in a Charging Station, and open the upgrade inventory from the Charging Station GUI (click the "Inv." button)
