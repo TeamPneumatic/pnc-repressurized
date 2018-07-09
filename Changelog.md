@@ -6,6 +6,10 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
+### 0.7.2-232 (9 Jul 2018)
+#### Fixes
+* Added back a missing texture for Aphorism Tile
+
 ### 0.7.1-231 (9 Jul 2018)
 #### Fixes
 * Fixed startup crash under some circumstances (most likely with Thaumcraft not installed) related to new Pneumatic Armor

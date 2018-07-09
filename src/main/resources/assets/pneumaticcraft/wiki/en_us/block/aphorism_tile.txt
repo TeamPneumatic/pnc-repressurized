@@ -24,4 +24,4 @@ On these sign-like blocks you can store theoretically infinite amounts of text. 
 • Aphorism Tiles can be edited in-place by right-clicking with an empty hand.
 • Markup can be added by using Alt + 0-9,a-f,l,m,n,o & r (standard Minecraft markup codes)
 • Holding F1 will show some popup help for the editor keybindings
-
+• Aphorism Tiles can be recolored by right-clicking with any dye item (oredict-aware).  The tile border and background can be colored independently by clicking in appropriate area of the tile.

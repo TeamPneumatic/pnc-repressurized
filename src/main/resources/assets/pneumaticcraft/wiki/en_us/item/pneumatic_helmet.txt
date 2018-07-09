@@ -1,5 +1,5 @@
 [image{200, 20,0.9, pneumaticcraft:textures/wiki/pneumatic_helmet.png}]
-What if you mix PneumaticCraft with the HUD from Iron Man? You get a Pneumatic Helmet. With this helmet you can, provided that the correct upgrades are installed, track entities and certain blocks. Although this armor has a connection with Tony Stark's toy, it doesn't mean it's invincible in any way: The armor has the same protection and durability as an iron helmet. To use upgrades installed in the helmet, you'll need to charge the helmet in a [link{block/charging_station}]Charging Station[link{}].
+What if you mix PneumaticCraft with the HUD from Iron Man? You get a Pneumatic Helmet. With this helmet you can, provided that the correct upgrades are installed, track entities and certain blocks. Although this armor has a connection with Tony Stark's toy, it doesn't mean it's invincible in any way: The armor has slightly better protection and durability than an Iron Helmet. To use upgrades installed in the helmet, you'll need to charge the helmet in a [link{block/charging_station}]Charging Station[link{}].
 [crafting{200, 270, key=item/pneumatic_helmet}]
 
 
@@ -26,12 +26,12 @@ Any living creatures within a range of 16 blocks will automatically be tracked. 
 [prefix{l}]Block Tracker[prefix{}]
 Any special block within 30 blocks will be tracked. The Block Tracker tracks the following list of blocks, of which some have special information about them when you aim your crosshair at the block:
 
--Inventories, which show their inventory contents. These contents are sorted alphabetical and stacks are  merged together (1k Cobblestone rather than  16 lines of 64 Cobblestone).
--Mob Spawners, which show the time remaining before another spawn occurs and what mob type the spawner is.
--Silverfish Blocks
--End Portal Frames, which displays if an Ender Eye is inserted or not.
--TNT
--Tripwire Hooks
+• Inventories, which show their inventory contents. These contents are sorted alphabetical and stacks are  merged together (1k Cobblestone rather than  16 lines of 64 Cobblestone).
+• Mob Spawners, which show the time remaining before another spawn occurs and what mob type the spawner is.
+• Silverfish Blocks
+• End Portal Frames, which displays if an Ender Eye is inserted or not.
+• TNT
+• Tripwire Hooks
 
 As some of these blocks are quite common (chests in a player's house, Silverfish Blocks in a Fortress), the HUD automatically will stop displaying the label if a certain amount of blocks of a certain type is reached. You're still able to get information about a tracked block though, by hovering over it with your crosshair. You can also specify which of the blocks you want to track by unchecking them in the configuration GUI.
 
@@ -48,7 +48,7 @@ Note that the visibility of the green glow is dependent on whether you have an E
 [image{200, 1522, 0.9, pneumaticcraft:textures/wiki/coordinate_tracker.png}]
 
 [prefix{l}]Coordinate Tracker Upgrade[prefix{}]
-This upgrade will calculate the shortest path to a given location. It uses Minecraft's pathfinding that is used in entities to accomplish this. This is very useful when you're lost in a cave and want to get out. Just open up the options menu and press �Navigate to surface��. You can also control how much of the path is displayed by switching between X-ray on/off (on means you can see through walls). The color of the lines/tiles are green when you're close to the destination and become more red the further you are from the target.
+This upgrade will calculate the shortest path to a given location. It uses Minecraft's pathfinding that is used in entities to accomplish this. This is very useful when you're lost in a cave and want to get out. Just open up the options menu and press [prefix{o}]Navigate to surface[prefix{}]. You can also control how much of the path is displayed by switching between X-ray on/off (on means you can see through walls). The color of the lines/tiles are green when you're close to the destination and become more red the further you are from the target.
 
 [prefix{l}]Security Upgrade[prefix{}]
 This upgrade allows you to hack [link{block/security_station}]Security Stations[link{}]. It has a second functionality: It allows you to hack your surroundings. If you're familiar with the game Watch Dogs that's exactly what you can expect. Lots of things can be hacked: Levers, Mob Spawners, Tripwires, Dispensers, Creepers, Ghasts, etcetera. This can all be done remotely. As soon as soon as the object is within the Block/Entity Tracker's range you can hack it. A good thing to note is to be able to hack Entities you need an Entity Tracker, and for blocks a Block Tracker.
@@ -64,5 +64,8 @@ Increases the speed at which the Pneumatic Helmet initializes, the block tracker
 [prefix{l}]Range Upgrade[prefix{}]
 Increases the range of the Entity Tracker and Block Tracker with 5 blocks radius per upgrade. For the Entity Tracker there's no limit, for the Block Tracker up to 5 upgrades are accepted. This upgrade increases the air usage of the Block and Entity Tracker.
 
+[prefix{l}]Volume Upgrade[prefix{}]
+Increases the total air storage of the Pneumatic Helmet; with a larger volume, it will take longer to pressurize, but also lose pressure more slowly when in use.
+
 [prefix{l}]Thaumcraft Upgrade[prefix{}]
-This gives the helmet Goggles of Revealing functionality. It gives a 5% vis discount, and reveals Nodes and shows aspects in blocks.
+This gives the helmet Goggles of Revealing functionality. It gives a 5% vis discount, reveals aura nodes and shows aspects in blocks.
