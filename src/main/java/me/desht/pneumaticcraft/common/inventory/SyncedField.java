@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
+import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
@@ -18,6 +19,7 @@ public abstract class SyncedField<T> {
     private T lastValue;
     private int arrayIndex = -1;
     private boolean isLazy;
+    private Class annotation;
 
     public SyncedField(Object te, Field field) {
         this.field = field;
@@ -85,6 +87,14 @@ public abstract class SyncedField<T> {
             Log.error("A problem occured when trying to sync the field of " + te.toString() + ". Field: " + field.toString());
             e.printStackTrace();
         }
+    }
+
+    public void setAnnotation(Class annotation) {
+        this.annotation = annotation;
+    }
+
+    public Class getAnnotation() {
+        return annotation;
     }
 
     public static class SyncedInt extends SyncedField<Integer> {
@@ -266,12 +276,10 @@ public abstract class SyncedField<T> {
         protected boolean equals(FluidStack oldValue, FluidStack newValue) {
             // oldValue will never be null at this point, but newValue could be...
             int newAmount = newValue == null ? 0 : newValue.amount;
-//            if (oldValue.amount == 0 && newAmount != 0 || oldValue.amount != 0 && newAmount == 0) {
-//                // always considered it changed if going from zero to non-zero or vice versa
-//                return false;
-//            }
-            // only consider it changed if by more than 1% of total tank capacity: reduce updates to client
-            return oldValue.isFluidEqual(newValue) && Math.abs(oldValue.amount - newAmount) < updateThreshold;
+            // can sync a lot faster when sync'ing via GUI
+            int threshold = GuiSynced.class.isAssignableFrom(getAnnotation()) ? updateThreshold / 10 : updateThreshold;
+            // only consider changed if by more than a given threshold of total tank capacity: reduce updates to client
+            return oldValue.isFluidEqual(newValue) && Math.abs(oldValue.amount - newAmount) < threshold;
         }
 
         @Override

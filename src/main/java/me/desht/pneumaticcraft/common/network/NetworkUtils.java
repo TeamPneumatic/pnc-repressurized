@@ -38,6 +38,9 @@ public class NetworkUtils {
             }
             examinedClass = examinedClass.getSuperclass();
         }
+        // record how the field was found - later on, SyncedField methods can use this information
+        // e.g. GuiSynced data can be sent much more often than DescSynced data
+        syncedFields.forEach(field -> field.setAnnotation(searchedAnnotation));
         return syncedFields;
     }
 
