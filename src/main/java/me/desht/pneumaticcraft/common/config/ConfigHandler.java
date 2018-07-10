@@ -144,6 +144,8 @@ public class ConfigHandler {
 //        public boolean convertMultipartsTBlock = false;
         @Config.Comment("When set to true, the Kerosene Lamp's fake air blocks won't be registered and therefore removed from the world. Useful if this causes trouble (it shouldn't though)")
         public boolean disableKeroseneLampFakeAirBlock = false;
+        @Config.Comment("The amount by which any liquid tank's contents must change, as a proportion of the tank's total capacity, to trigger an update to clients. Larger values mean fewer updates but less granularity in client-side fluid rendering.")
+        public double liquidTankUpdateThreshold = 0.01;
     }
 
     public static class Recipes {

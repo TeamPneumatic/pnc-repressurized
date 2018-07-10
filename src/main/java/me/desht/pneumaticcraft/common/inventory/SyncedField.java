@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.inventory;
 
+import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
@@ -225,8 +226,18 @@ public abstract class SyncedField<T> {
 
     public static class SyncedFluidTank extends SyncedField<FluidStack> {
 
+        private final int updateThreshold;
+
         public SyncedFluidTank(Object te, Field field) {
             super(te, field);
+            int cap = 1000;  // arbitrary fallback
+            try {
+                FluidTank tank = (FluidTank) field.get(te);
+                cap = tank.getCapacity();
+            } catch (IllegalAccessException ignored) {
+                // should never happen
+            }
+            updateThreshold = (int) (cap * ConfigHandler.advanced.liquidTankUpdateThreshold);
         }
 
         @Override
@@ -253,7 +264,14 @@ public abstract class SyncedField<T> {
 
         @Override
         protected boolean equals(FluidStack oldValue, FluidStack newValue) {
-            return oldValue.isFluidEqual(newValue) && oldValue.amount == newValue.amount;
+            // oldValue will never be null at this point, but newValue could be...
+            int newAmount = newValue == null ? 0 : newValue.amount;
+//            if (oldValue.amount == 0 && newAmount != 0 || oldValue.amount != 0 && newAmount == 0) {
+//                // always considered it changed if going from zero to non-zero or vice versa
+//                return false;
+//            }
+            // only consider it changed if by more than 1% of total tank capacity: reduce updates to client
+            return oldValue.isFluidEqual(newValue) && Math.abs(oldValue.amount - newAmount) < updateThreshold;
         }
 
         @Override
