@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.recipes;
 import me.desht.pneumaticcraft.common.config.AmadronOfferPeriodicConfig;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.inventory.ContainerAmadron;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
@@ -117,7 +118,7 @@ public class AmadronOfferManager {
                     BlockPos pos = new BlockPos(input.getPos().getX(), input.getPos().getY(), input.getPos().getZ());
                     EntityDrone drone = ContainerAmadron.retrieveOrderItems(custom, possiblePickups, input.getWorld(), pos, input.getWorld(), pos);
                     if (drone != null) {
-                        drone.setHandlingOffer(custom.copy(), possiblePickups, null, "Restock");
+                        drone.setHandlingOffer(custom.copy(), possiblePickups, ItemStack.EMPTY, "Restock");
                     }
                 }
                 custom.invert();

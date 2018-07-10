@@ -1291,7 +1291,7 @@ public class EntityDrone extends EntityDroneBase
         return null;
     }
 
-    public void setHandlingOffer(AmadronOffer offer, int times, ItemStack usedTablet, String buyingPlayer) {
+    public void setHandlingOffer(AmadronOffer offer, int times, @Nonnull ItemStack usedTablet, String buyingPlayer) {
         handlingOffer = offer;
         offerTimes = times;
         this.usedTablet = usedTablet.copy();
