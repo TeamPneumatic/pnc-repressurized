@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
 
@@ -9,16 +10,19 @@ import net.minecraftforge.items.ItemStackHandler;
  * Smart enough to only recalculate the signal when the contents have changed.
  */
 public class ComparatorItemStackHandler extends ItemStackHandler {
+    private final TileEntity te;
     private int signalLevel = -1;  // -1 indicates recalc needed
 
-    public ComparatorItemStackHandler(int invSize) {
+    public ComparatorItemStackHandler(TileEntity te, int invSize) {
         super(invSize);
+        this.te = te;
     }
 
     @Override
     protected void onContentsChanged(int slot) {
         super.onContentsChanged(slot);
         signalLevel = -1;
+        te.markDirty();
     }
 
     @Override

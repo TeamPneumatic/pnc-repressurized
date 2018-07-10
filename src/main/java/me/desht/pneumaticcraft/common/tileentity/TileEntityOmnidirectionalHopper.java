@@ -12,6 +12,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EntitySelectors;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.items.IItemHandler;
@@ -26,7 +27,7 @@ public class TileEntityOmnidirectionalHopper extends TileEntityTickableBase impl
     protected EnumFacing inputDir = EnumFacing.UP;
     @DescSynced
     protected EnumFacing outputDir = EnumFacing.UP;
-    private ComparatorItemStackHandler inventory = new ComparatorItemStackHandler(getInvSize());
+    private ComparatorItemStackHandler inventory = new ComparatorItemStackHandler(this, getInvSize());
     private int lastComparatorValue = -1;
     @GuiSynced
     public int redstoneMode;
@@ -82,7 +83,7 @@ public class TileEntityOmnidirectionalHopper extends TileEntityTickableBase impl
 
     protected boolean doExport(int maxItems) {
         EnumFacing dir = getRotation();
-        TileEntity neighbor = IOHelper.getNeighbor(this, dir);
+        TileEntity neighbor = getCachedNeighbor(dir);
         for (int i = 0; i < inventory.getSlots(); i++) {
             ItemStack stack = inventory.getStackInSlot(i);
             if (!stack.isEmpty() && (!leaveMaterial || stack.getCount() > 1)) {
@@ -107,7 +108,7 @@ public class TileEntityOmnidirectionalHopper extends TileEntityTickableBase impl
         boolean success = false;
 
         // Suck from input inventory
-        IItemHandler handler = IOHelper.getInventoryForTE(IOHelper.getNeighbor(this, inputDir), inputDir.getOpposite());
+        IItemHandler handler = IOHelper.getInventoryForTE(getCachedNeighbor(inputDir), inputDir.getOpposite());
         if (handler != null) {
             for (int i = 0; i < maxItems; i++) {
                 LocatedItemStack extracted = IOHelper.extractOneItem(handler, true);
@@ -127,25 +128,23 @@ public class TileEntityOmnidirectionalHopper extends TileEntityTickableBase impl
 
         // Suck in item entities
         for (EntityItem entity : getNeighborItems(this, inputDir)) {
-            if (!entity.isDead) {
-                ItemStack remainder = IOHelper.insert(this, entity.getItem(), null, false);
-                if (remainder.isEmpty()) {
-                    entity.setDead();
-                    success = true;
-                } else if (remainder.getCount() < entity.getItem().getCount()) {
-                    // some but not all were inserted
-                    entity.setItem(remainder);
-                    success = true;
-                }
+            ItemStack remainder = IOHelper.insert(this, entity.getItem(), null, false);
+            if (remainder.isEmpty()) {
+                entity.setDead();
+                success = true;
+            } else if (remainder.getCount() < entity.getItem().getCount()) {
+                // some but not all were inserted
+                entity.setItem(remainder);
+                success = true;
             }
         }
 
         return success;
     }
 
-    static List<EntityItem> getNeighborItems(TileEntity te, EnumFacing inputDir) {
-        AxisAlignedBB box = new AxisAlignedBB(te.getPos().offset(inputDir), te.getPos().offset(inputDir).add(1, 1, 1));
-        return te.getWorld().getEntitiesWithinAABB(EntityItem.class, box);
+    static List<EntityItem> getNeighborItems(TileEntity te, EnumFacing dir) {
+        AxisAlignedBB box = new AxisAlignedBB(te.getPos().offset(dir));
+        return te.getWorld().getEntitiesWithinAABB(EntityItem.class, box, EntitySelectors.IS_ALIVE);
     }
 
     public int getMaxItems() {

@@ -348,6 +348,10 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
         return tileCache;
     }
 
+    public TileEntity getCachedNeighbor(EnumFacing dir) {
+        return getTileCache()[dir.getIndex()].getTileEntity();
+    }
+
     public void onNeighborBlockUpdate() {
         poweredRedstone = PneumaticCraftUtils.getRedstoneLevel(getWorld(), getPos());
         initializeIfHeatExchanger();

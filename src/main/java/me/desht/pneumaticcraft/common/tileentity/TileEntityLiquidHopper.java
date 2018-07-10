@@ -5,7 +5,6 @@ import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
-import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.Block;
 import net.minecraft.entity.item.EntityItem;
@@ -41,6 +40,7 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
             protected void onContentsChanged() {
                 super.onContentsChanged();
                 comparatorValue = -1;
+                markDirty();
             }
         };
         inputWrapper = new WrappedFluidTank(tank, true);
@@ -72,7 +72,7 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
     protected boolean doExport(int maxItems) {
         EnumFacing dir = getRotation();
         if (tank.getFluid() != null) {
-            TileEntity neighbor = IOHelper.getNeighbor(this, dir);
+            TileEntity neighbor = getCachedNeighbor(dir);
             if (neighbor != null && neighbor.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dir.getOpposite())) {
                 IFluidHandler fluidHandler = neighbor.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dir.getOpposite());
                 int amount = Math.min(maxItems * 100, tank.getFluid().amount - (leaveMaterial ? 1000 : 0));
@@ -83,19 +83,17 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
 
         if (getWorld().isAirBlock(getPos().offset(dir))) {
             for (EntityItem entity : getNeighborItems(this, dir)) {
-                if (!entity.isDead) {
-                    NonNullList<ItemStack> returnedItems = NonNullList.create();
-                    if (FluidUtils.tryFluidExtraction(tank, entity.getItem(), returnedItems)) {
-                        if (entity.getItem().getCount() <= 0) entity.setDead();
-                        for (ItemStack stack : returnedItems) {
-                            EntityItem item = new EntityItem(getWorld(), entity.posX, entity.posY, entity.posZ, stack);
-                            item.motionX = entity.motionX;
-                            item.motionY = entity.motionY;
-                            item.motionZ = entity.motionZ;
-                            getWorld().spawnEntity(item);
-                        }
-                        return true;
+                NonNullList<ItemStack> returnedItems = NonNullList.create();
+                if (FluidUtils.tryFluidExtraction(tank, entity.getItem(), returnedItems)) {
+                    if (entity.getItem().getCount() <= 0) entity.setDead();
+                    for (ItemStack stack : returnedItems) {
+                        EntityItem item = new EntityItem(getWorld(), entity.posX, entity.posY, entity.posZ, stack);
+                        item.motionX = entity.motionX;
+                        item.motionY = entity.motionY;
+                        item.motionZ = entity.motionZ;
+                        getWorld().spawnEntity(item);
                     }
+                    return true;
                 }
             }
         }
@@ -118,7 +116,7 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
 
     @Override
     protected boolean doImport(int maxItems) {
-        TileEntity inputInv = IOHelper.getNeighbor(this, inputDir);
+        TileEntity inputInv = getCachedNeighbor(inputDir);
         if (inputInv != null && inputInv.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, inputDir.getOpposite())) {
             IFluidHandler fluidHandler = inputInv.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, inputDir.getOpposite());
             FluidStack fluid = fluidHandler.drain(maxItems * 100, false);
@@ -133,19 +131,17 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
 
         if (getWorld().isAirBlock(getPos().offset(inputDir))) {
             for (EntityItem entity : getNeighborItems(this, inputDir)) {
-                if (!entity.isDead) {
-                    NonNullList<ItemStack> returnedItems = NonNullList.create();
-                    if (FluidUtils.tryFluidInsertion(tank, entity.getItem(), returnedItems)) {
-                        if (entity.getItem().isEmpty()) entity.setDead();
-                        for (ItemStack stack : returnedItems) {
-                            EntityItem item = new EntityItem(getWorld(), entity.posX, entity.posY, entity.posZ, stack);
-                            item.motionX = entity.motionX;
-                            item.motionY = entity.motionY;
-                            item.motionZ = entity.motionZ;
-                            getWorld().spawnEntity(item);
-                        }
-                        return true;
+                NonNullList<ItemStack> returnedItems = NonNullList.create();
+                if (FluidUtils.tryFluidInsertion(tank, entity.getItem(), returnedItems)) {
+                    if (entity.getItem().isEmpty()) entity.setDead();
+                    for (ItemStack stack : returnedItems) {
+                        EntityItem item = new EntityItem(getWorld(), entity.posX, entity.posY, entity.posZ, stack);
+                        item.motionX = entity.motionX;
+                        item.motionY = entity.motionY;
+                        item.motionZ = entity.motionZ;
+                        getWorld().spawnEntity(item);
                     }
+                    return true;
                 }
             }
         }

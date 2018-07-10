@@ -379,7 +379,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
         ItemStack stack = inventory.getStackInSlot(0);
         if (!searchedItem.isEmpty() && (stack.isEmpty() || stack.isItemEqual(searchedItem))) {
             for (EnumFacing dir : EnumFacing.HORIZONTALS) {
-                IItemHandler handler = IOHelper.getInventoryForTE(IOHelper.getNeighbor(this, dir), EnumFacing.UP);
+                IItemHandler handler = IOHelper.getInventoryForTE(getCachedNeighbor(dir), EnumFacing.UP);
                 if (handler != null && !IOHelper.extract(handler, searchedItem, IOHelper.ExtractCount.EXACT, true, false).isEmpty()) {
                     return new EnumFacing[]{dir, null};
                 }
