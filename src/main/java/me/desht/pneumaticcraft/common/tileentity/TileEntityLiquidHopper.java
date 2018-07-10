@@ -16,12 +16,10 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidTank;
-import net.minecraftforge.fluids.FluidUtil;
+import net.minecraftforge.fluids.*;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidTankProperties;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -31,17 +29,22 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
     private int comparatorValue = -1;
 
     @DescSynced
-    private final FluidTank tank = new FluidTank(PneumaticValues.NORMAL_TANK_CAPACITY) {
-        @Override
-        protected void onContentsChanged() {
-            super.onContentsChanged();
-            comparatorValue = -1;
-        }
-    };
+    private final FluidTank tank;
+
+    private final WrappedFluidTank inputWrapper, outputWrapper;
 
     public TileEntityLiquidHopper() {
         super(4);
         addApplicableUpgrade(EnumUpgrade.DISPENSER);
+        tank = new FluidTank(PneumaticValues.NORMAL_TANK_CAPACITY) {
+            @Override
+            protected void onContentsChanged() {
+                super.onContentsChanged();
+                comparatorValue = -1;
+            }
+        };
+        inputWrapper = new WrappedFluidTank(tank, true);
+        outputWrapper = new WrappedFluidTank(tank, false);
     }
 
     @Override
@@ -197,7 +200,13 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
     @Override
     public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
         if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
-            return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(tank);
+            if (facing == inputDir) {
+                return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(inputWrapper);
+            } else if (facing == getRotation()) {
+                return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(outputWrapper);
+            } else {
+                return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(tank);
+            }
         } else {
             return super.getCapability(capability, facing);
         }
@@ -209,8 +218,57 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
         return ImmutableMap.of("Tank", tank);
     }
 
-//    @Override
-//    public int getComparatorValue() {
-//        return getComparatorValueInternal();
-//    }
+    class WrappedFluidTank implements IFluidTank, IFluidHandler {
+        private final FluidTank wrappedTank;
+        private final boolean inbound;
+
+        WrappedFluidTank(FluidTank wrappedTank, boolean inbound) {
+            // inbound == true: fill *only*, inbound == false: drain *only*
+            this.wrappedTank = wrappedTank;
+            this.inbound = inbound;
+        }
+
+        @Nullable
+        @Override
+        public FluidStack getFluid() {
+            return wrappedTank.getFluid();
+        }
+
+        @Override
+        public int getFluidAmount() {
+            return wrappedTank.getFluidAmount();
+        }
+
+        @Override
+        public int getCapacity() {
+            return wrappedTank.getCapacity();
+        }
+
+        @Override
+        public FluidTankInfo getInfo() {
+            return wrappedTank.getInfo();
+        }
+
+        @Override
+        public IFluidTankProperties[] getTankProperties() {
+            return wrappedTank.getTankProperties();
+        }
+
+        @Override
+        public int fill(FluidStack resource, boolean doFill) {
+            return inbound ? wrappedTank.fill(resource, doFill) : 0;
+        }
+
+        @Nullable
+        @Override
+        public FluidStack drain(FluidStack resource, boolean doDrain) {
+            return inbound ? null : tank.drain(resource, doDrain);
+        }
+
+        @Nullable
+        @Override
+        public FluidStack drain(int maxDrain, boolean doDrain) {
+            return inbound ? null : wrappedTank.drain(maxDrain, doDrain);
+        }
+    }
 }
