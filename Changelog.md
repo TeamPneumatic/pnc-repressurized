@@ -6,9 +6,15 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
-### 0.7.2-232 (9 Jul 2018)
+### 0.7.2-234 (11 Jul 2018)
+#### Updates
+* Pneumatic Door now plays a (suitably pneumatic) opening/closing sound effect.
+* Some performance improvement work, particularly around Omni and Liquid Hoppers.  In particular, extracting from the Refinery with Liquid Hoppers caused significant FPS drops.
+* Liquid Hoppers no longer accept input fluids on their output face, and will no longer output fluids from their input face.  (Related to performance improvements mentioned above)
+* Tile Entities with fluid tanks now send far fewer updates to the client (also related to aforementioned performance work).  Previously they sent an update whenever the tank's contents changed, which is overkill for just rendering fluids.  Now updates are only sent when the contents change by more than 1% of the tank's total capacity. Can be adjusted in config - see 'D:liquidTankUpdateThreshold'.
 #### Fixes
 * Added back a missing texture for Aphorism Tile
+* Fixed a server crash caused by a null ItemStack reference in Amadron custom offer handling
 
 ### 0.7.1-231 (9 Jul 2018)
 #### Fixes
