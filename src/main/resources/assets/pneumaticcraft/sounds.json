@@ -129,5 +129,11 @@
     "sounds":[
       "pneumaticcraft:punch"
     ]
+  },
+  "pneumatic_door": {
+    "category":"block",
+    "sounds":[
+      "pneumaticcraft:pneumatic_door"
+    ]
   }
 }

@@ -3,11 +3,10 @@ package me.desht.pneumaticcraft.common.tileentity;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticDoor;
 import me.desht.pneumaticcraft.common.block.Blockss;
-import me.desht.pneumaticcraft.common.network.DescSynced;
-import me.desht.pneumaticcraft.common.network.GuiSynced;
-import me.desht.pneumaticcraft.common.network.LazySynced;
+import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
+import me.desht.pneumaticcraft.lib.Sounds;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -15,6 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 
@@ -51,7 +51,7 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase
         float oldProgress = progress;
         if (!getWorld().isRemote) {
             if (getPressure() >= PneumaticValues.MIN_PRESSURE_PNEUMATIC_DOOR) {
-                if (getWorld().getTotalWorldTime() % 60 == 0) {
+                if ((getWorld().getTotalWorldTime() & 0x3f) == 0) {
                     TileEntity te = getWorld().getTileEntity(getPos().offset(getRotation(), 3));
                     if (te instanceof TileEntityPneumaticDoorBase) {
                         doubleDoor = (TileEntityPneumaticDoorBase) te;
@@ -133,7 +133,10 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase
     public void setOpening(boolean opening) {
         boolean wasOpening = this.opening;
         this.opening = opening;
-        if (this.opening != wasOpening) sendDescriptionPacket();
+        if (this.opening != wasOpening) {
+            NetworkHandler.sendToAllAround(new PacketPlaySound(Sounds.PNEUMATIC_DOOR, SoundCategory.BLOCKS, getPos(), 1.0F, 1.0F, false), getWorld());
+            sendDescriptionPacket();
+        }
     }
 
     public boolean isOpening() {

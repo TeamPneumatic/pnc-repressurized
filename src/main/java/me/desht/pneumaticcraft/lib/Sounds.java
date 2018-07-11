@@ -49,6 +49,8 @@ public class Sounds {
     public static final SoundEvent SHORT_HISS = null;
     @GameRegistry.ObjectHolder("punch")
     public static final SoundEvent PUNCH = null;
+    @GameRegistry.ObjectHolder("pneumatic_door")
+    public static final SoundEvent PNEUMATIC_DOOR = null;
 
     @SubscribeEvent
     public static void registerSounds(RegistryEvent.Register<SoundEvent> event) {
@@ -71,7 +73,8 @@ public class Sounds {
                 buildSound("drone_hurt"),
                 buildSound("drone_death"),
                 buildSound("short_hiss"),
-                buildSound("punch")
+                buildSound("punch"),
+                buildSound("pneumatic_door")
         );
     }
 
