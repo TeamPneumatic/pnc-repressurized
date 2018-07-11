@@ -15,6 +15,7 @@ import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
+import net.minecraftforge.fluids.capability.IFluidTankProperties;
 import net.minecraftforge.items.wrapper.PlayerInvWrapper;
 
 public class FluidUtils {
@@ -88,7 +89,9 @@ public class FluidUtils {
         ItemStack stack = player.getHeldItem(hand);
         IFluidHandlerItem stackHandler = FluidUtil.getFluidHandler(stack);
         if (stackHandler != null && te.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, face)) {
-            int capacity = stackHandler.getTankProperties()[0].getCapacity();
+            IFluidTankProperties[] properties = stackHandler.getTankProperties();
+            if (properties.length == 0) return false;
+            int capacity = properties[0].getCapacity();
             IFluidHandler handler = te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, face);
             PlayerInvWrapper invWrapper = new PlayerInvWrapper(player.inventory);
             FluidActionResult result = isInserting ?
