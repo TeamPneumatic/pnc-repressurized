@@ -1,15 +1,19 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableMap;
+import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
@@ -40,6 +44,7 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
     @GuiSynced
     public int redstoneMode;
     private double internalFuelBuffer;
+    @DescSynced
     @GuiSynced
     public boolean isProducing;
 
@@ -94,6 +99,15 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
                     onFuelBurn(usageRate);
                     addAir((int) (getBaseProduction() * this.getSpeedMultiplierFromUpgrades() * getEfficiency() / 100));
                 }
+            }
+        } else {
+            World world = PneumaticCraftRepressurized.proxy.getClientWorld();
+            if (isProducing && world.rand.nextInt(5) == 0) {
+                float xOff = getWorld().rand.nextFloat() * 0.6F + 0.2F;
+                float zOff = getWorld().rand.nextFloat() * 0.6F + 0.2F;
+                PneumaticCraftRepressurized.proxy.getClientWorld().spawnParticle(EnumParticleTypes.SMOKE_NORMAL,
+                        getPos().getX() + xOff, getPos().getY() + 1.2, getPos().getZ() + zOff,
+                        0, 0, 0);
             }
         }
     }
