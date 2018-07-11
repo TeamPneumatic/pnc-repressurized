@@ -26,8 +26,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
@@ -57,10 +55,10 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     private final Set<String> applicableCustomUpgrades = new HashSet<>();
     private final UpgradeCache upgradeCache = new UpgradeCache(this);
     @DescSynced
-    protected UpgradeHandler upgradeHandler;
-    protected boolean firstRun = true;  // True only the first time updateEntity invokes in a session
-    protected int poweredRedstone; // The redstone strength currently applied to the block.
-    protected List<ILuaMethod> luaMethods = new ArrayList<>();
+    UpgradeHandler upgradeHandler;
+    boolean firstRun = true;  // True only the first time updateEntity invokes in a session
+    int poweredRedstone; // The redstone strength currently applied to the block.
+    List<ILuaMethod> luaMethods = new ArrayList<>();
     private boolean descriptionPacketScheduled;
     private List<SyncedField> descriptionFields;
     private TileEntityCache[] tileCache;
@@ -120,28 +118,14 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
         packet.handleClientSide(packet, PneumaticCraftRepressurized.proxy.getPlayer());
     }
 
-    // server side, TE resync (notifyBlockUpdate)
-    @Nullable
-    @Override
-    public SPacketUpdateTileEntity getUpdatePacket() {
-        return new SPacketUpdateTileEntity(this.pos, getBlockMetadata(), getUpdateTag());
-    }
-
-    // client side, TE resync
-    @Override
-    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
-        super.onDataPacket(net, pkt);
-        PacketDescription packet = new PacketDescription(pkt.getNbtCompound());
-        packet.handleClientSide(packet, PneumaticCraftRepressurized.proxy.getPlayer());
-    }
+    /***********
+       We don't override getUpdatePacket() or onDataPacket() because TE sync'ing is all handled
+       by our custom PacketDescription and the @DescSynced system
+     ***********/
 
     @Override
     public BlockPos getPosition() {
         return getPos();
-    }
-
-    protected double getPacketDistance() {
-        return 64;
     }
 
     @Override
@@ -158,16 +142,17 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     public void sendDescriptionPacket() {
         IBlockState state = world.getBlockState(getPos());
         world.notifyBlockUpdate(getPos(), state, state, 3);
+        sendDescPacket(256);
     }
 
     /**
      * A way to safely mark a block for an update from another thread (like the CC Lua thread).
      */
-    protected void scheduleDescriptionPacket() {
+    void scheduleDescriptionPacket() {
         descriptionPacketScheduled = true;
     }
 
-    public void sendDescPacket(double maxPacketDistance) {
+    void sendDescPacket(double maxPacketDistance) {
         NetworkHandler.sendToAllAround(new PacketDescription(this), new NetworkRegistry.TargetPoint(world.provider.getDimension(), getPos().getX(), getPos().getY(), getPos().getZ(), maxPacketDistance));
     }
 
@@ -175,7 +160,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
      * Even though this class doesn't implement ITickable, we'll keep the base update() logic here; classes
      * which extend non-tickable subclasses might need it (e.g. TileEntityPressureChamberInterface)
      */
-    public void updateImpl() {
+    void updateImpl() {
         if (firstRun && !world.isRemote) {
             //firstRun = false;
             onFirstServerUpdate();
@@ -225,20 +210,24 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     }
 
     /**
-     * Encoded into the description packet. Also is included in the world save.
-     * Used as last resort, using @DescSynced is preferred.
+     * Encoded into the description packet. Also included in saved data written by writeToNBT().
      *
-     * @param tag
+     * Prefer to use @DescSynced - only use this for complex fields not handled by @DescSynced,
+     * or for non-ticking tile entities.
+     *
+     * @param tag NBT tag
      */
     @Override
     public void writeToPacket(NBTTagCompound tag) {
     }
 
     /**
-     * Encoded into the description packet. Also is included in the world save.
-     * Used as last resort, using @DescSynced is preferred.
+     * Encoded into the description packet. Also included in saved data read by readFromNBT().
      *
-     * @param tag
+     * Prefer to use @DescSynced - only use this for complex fields not handled by @DescSynced,
+     * or for non-ticking tile entities.
+     *
+     * @param tag NBT tag
      */
     @Override
     public void readFromPacket(NBTTagCompound tag) {
@@ -316,7 +305,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
         return upgradeCache.getUpgrades(upgrade);
     }
 
-    public int getCustomUpgrades(ItemStack upgradeStack) {
+    protected int getCustomUpgrades(ItemStack upgradeStack) {
         return upgradeCache.getUpgrades(upgradeStack);
     }
 
@@ -348,7 +337,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
         return tileCache;
     }
 
-    public TileEntity getCachedNeighbor(EnumFacing dir) {
+    TileEntity getCachedNeighbor(EnumFacing dir) {
         return getTileCache()[dir.getIndex()].getTileEntity();
     }
 
@@ -376,20 +365,20 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
         }
     }
 
-    protected void initializeHeatExchanger(IHeatExchangerLogic heatExchanger, EnumFacing... connectedSides) {
+    void initializeHeatExchanger(IHeatExchangerLogic heatExchanger, EnumFacing... connectedSides) {
         heatExchanger.initializeAsHull(getWorld(), getPos(), connectedSides);
     }
 
     /**
      * Gets the valid sides for heat exchanging to be allowed. returning an empty array will allow any side.
      *
-     * @return
+     * @return an array of valid sides
      */
     protected EnumFacing[] getConnectedHeatExchangerSides() {
         return new EnumFacing[0];
     }
 
-    public void autoExportLiquid() {
+    void autoExportLiquid() {
         if (hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null)) {
             IFluidHandler handler = getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
             FluidStack toDrain = handler.drain(1000, false);
@@ -419,7 +408,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
      * @param inputSlot input slot
      * @param outputSlot output slot
      */
-    protected void processFluidItem(int inputSlot, int outputSlot) {
+    void processFluidItem(int inputSlot, int outputSlot) {
         if (!hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)
                 || !hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null))
             return;
@@ -555,8 +544,8 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
             return true;
         }
         if (other instanceof TileEntity) {
-            TileEntity tother = (TileEntity) other;
-            return tother.getWorld().equals(getWorld()) && tother.getPos().equals(getPos());
+            TileEntity otherTE = (TileEntity) other;
+            return otherTE.getWorld().equals(getWorld()) && otherTE.getPos().equals(getPos());
         }
 
         return false;

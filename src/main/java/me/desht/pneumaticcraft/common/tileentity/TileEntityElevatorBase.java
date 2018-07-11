@@ -485,11 +485,6 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     }
 
     @Override
-    protected double getPacketDistance() {
-        return 256;
-    }
-
-    @Override
     @SideOnly(Side.CLIENT)
     public double getMaxRenderDistanceSquared() {
         return 65536D;

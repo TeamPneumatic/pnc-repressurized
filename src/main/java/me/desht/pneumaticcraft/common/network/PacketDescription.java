@@ -107,6 +107,10 @@ public class PacketDescription extends LocationIntPacket<PacketDescription> {
     public void handleServerSide(PacketDescription message, EntityPlayer player) {
     }
 
+    /********************
+     * These two methods are only used for initial chunk sending (getUpdateTag() and handleUpdateTag())
+     */
+
     public NBTTagCompound writeNBT(NBTTagCompound compound) {
         compound.setTag("Pos", NBTUtil.createPosTag(pos));
         compound.setInteger("SyncType", type.ordinal());
