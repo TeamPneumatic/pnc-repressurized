@@ -85,7 +85,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
             chargedStacks.add(getChargingItem());
         }
         if (this.getUpgrades(EnumUpgrade.DISPENSER) > 0) {
-            //creating a new word, 'entities padding'.
+            // creating a new word, 'entities padding'.
             List<Entity> entitiesPadding = getWorld().getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(getPos().getX(), getPos().getY(), getPos().getZ(), getPos().getX() + 1, getPos().getY() + 2, getPos().getZ() + 1));
             for (Entity entity : entitiesPadding) {
                 if (entity instanceof IPressurizable) {
@@ -109,37 +109,49 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
                 }
             }
         }
+
         int speedMultiplier = (int) getSpeedMultiplierFromUpgrades();
-        for (int i = 0; i < PneumaticValues.CHARGING_STATION_CHARGE_RATE * speedMultiplier; i++) {
-            boolean charged = false;
-            for (int j = 0; j < chargingItems.size(); j++) {
-                IPressurizable chargingItem = chargingItems.get(j);
-                ItemStack chargedItem = chargedStacks.get(j);
-                if (chargingItem.getPressure(chargedItem) > getPressure() + 0.01F && chargingItem.getPressure(chargedItem) > 0F) {
-                    if (!getWorld().isRemote) {
-                        chargingItem.addAir(chargedItem, -1);
-                        addAir(1);
-                    }
-                    disCharging = true;
-                    renderAirProgress -= ANIMATION_AIR_SPEED;
-                    if (renderAirProgress < 0.0F) {
-                        renderAirProgress += 1F;
-                    }
-                    charged = true;
-                } else if (chargingItem.getPressure(chargedItem) < getPressure() - 0.01F && chargingItem.getPressure(chargedItem) < chargingItem.maxPressure(chargedItem)) {// if there is pressure, and the item isn't fully charged yet..
-                    if (!getWorld().isRemote) {
-                        chargingItem.addAir(chargedItem, 1);
-                        addAir(-1);
-                    }
-                    charging = true;
-                    renderAirProgress += ANIMATION_AIR_SPEED;
-                    if (renderAirProgress > 1.0F) {
-                        renderAirProgress -= 1F;
-                    }
-                    charged = true;
+        int airToTransfer = PneumaticValues.CHARGING_STATION_CHARGE_RATE * speedMultiplier;
+        int airInCharger = (int) (getPressure() * airHandler.getVolume());
+
+        for (int i = 0; i < chargingItems.size() && airInCharger > 0; i++) {
+            IPressurizable chargingItem = chargingItems.get(i);
+            ItemStack chargingStack = chargedStacks.get(i);
+            float itemPressure = chargingItem.getPressure(chargingStack);
+            float itemVolume = chargingItem.getVolume(chargingStack);
+            float delta = Math.abs(getPressure() - itemPressure) / 2.0F;
+
+            int airInItem = (int) (itemPressure * itemVolume);
+
+            if (itemPressure > getPressure() + 0.01F && itemPressure > 0F) {
+                // move air from item to charger
+                int airToMove = Math.min(Math.min(airToTransfer, airInItem), (int) (delta * airHandler.getVolume()));
+                if (!getWorld().isRemote) {
+                    chargingItem.addAir(chargingStack, -airToMove);
+                    addAir(airToMove);
+                    airInCharger += airToMove;
+                }
+                disCharging = true;
+                renderAirProgress -= ANIMATION_AIR_SPEED;
+                if (renderAirProgress < 0.0F) {
+                    renderAirProgress += 1F;
+                }
+            } else if (itemPressure < getPressure() - 0.01F && itemPressure < chargingItem.maxPressure(chargingStack)) {
+                // move air from charger to item
+                int maxAirInItem = (int) (chargingItem.maxPressure(chargingStack) * itemVolume);
+                int airToMove = Math.min(Math.min(airToTransfer, airInCharger), maxAirInItem - airInItem);
+                airToMove = Math.min((int) (delta * itemVolume), airToMove);
+                if (!getWorld().isRemote) {
+                    chargingItem.addAir(chargingStack, airToMove);
+                    addAir(-airToMove);
+                    airInCharger -= airToMove;
+                }
+                charging = true;
+                renderAirProgress += ANIMATION_AIR_SPEED;
+                if (renderAirProgress > 1.0F) {
+                    renderAirProgress -= 1F;
                 }
             }
-            if (!charged) break;
         }
 
         if (!getWorld().isRemote && oldRedstoneStatus != shouldEmitRedstone()) {
