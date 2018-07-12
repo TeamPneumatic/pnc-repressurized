@@ -1,9 +1,9 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
-import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fml.relauncher.Side;
@@ -236,18 +236,16 @@ public abstract class SyncedField<T> {
 
     public static class SyncedFluidTank extends SyncedField<FluidStack> {
 
-        private final int updateThreshold;
+        private int counter = Integer.MAX_VALUE;
+        private final int threshold;
 
         public SyncedFluidTank(Object te, Field field) {
             super(te, field);
-            int cap = 1000;  // arbitrary fallback
-            try {
-                FluidTank tank = (FluidTank) field.get(te);
-                cap = tank.getCapacity();
-            } catch (IllegalAccessException ignored) {
-                // should never happen
+            if (te instanceof FluidTank) {
+                threshold = (int) (((FluidTank) te).getCapacity() * ConfigHandler.advanced.liquidTankUpdateThreshold);
+            } else {
+                threshold = 0;
             }
-            updateThreshold = (int) (cap * ConfigHandler.advanced.liquidTankUpdateThreshold);
         }
 
         @Override
@@ -274,12 +272,27 @@ public abstract class SyncedField<T> {
 
         @Override
         protected boolean equals(FluidStack oldValue, FluidStack newValue) {
-            // oldValue will never be null at this point, but newValue could be...
-            int newAmount = newValue == null ? 0 : newValue.amount;
-            // can sync a lot faster when sync'ing via GUI
-            int threshold = GuiSynced.class.isAssignableFrom(getAnnotation()) ? updateThreshold / 10 : updateThreshold;
-            // only consider changed if by more than a given threshold of total tank capacity: reduce updates to client
-            return oldValue.isFluidEqual(newValue) && Math.abs(oldValue.amount - newAmount) < threshold;
+            if (--counter == 0) {
+                counter = Integer.MAX_VALUE;
+                return false;
+            }
+
+            Fluid f1 = newValue == null ? null : newValue.getFluid();
+            Fluid f2 = oldValue == null ? null : oldValue.getFluid();
+            int a1 = newValue == null ? 0 : newValue.amount;
+            int a2 = oldValue == null ? 0 : oldValue.amount;
+            int delta = Math.abs(a1 - a2);
+
+            if (f1 != f2) {
+                if (f1 != null && f2 != null) {
+                    counter = Math.min(counter, 5);
+                } else {
+                    counter = Math.min(counter, delta >= threshold ? 10 : 40);
+                }
+            } else {
+                counter = delta == 0 ? Integer.MAX_VALUE : Math.min(counter, delta >= threshold ? 10 : 40);
+            }
+            return true;
         }
 
         @Override
