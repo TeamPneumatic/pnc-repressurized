@@ -196,16 +196,16 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
                     if (entity instanceof EntityVillager) {
                         EntityVillager villager = (EntityVillager) entity;
                         if (villager.getProfessionForge() != VillagerHandler.mechanicProfession) {
-                            villager.setProfession(VillagerHandler.mechanicProfession);
-                            NBTTagCompound tag = new NBTTagCompound();
-                            villager.writeEntityToNBT(tag);
-                            if (tag.hasKey("Offers")) { // force a reset of the villager's trade list
-                                tag.removeTag("Offers");
-                                villager.readEntityFromNBT(tag);
-                            }
+                            villager.setDead();
+                            EntityVillager mechanic = new EntityVillager(world);
+                            mechanic.setProfession(VillagerHandler.mechanicProfession);
+                            mechanic.setPosition(villager.posX, villager.posY, villager.posZ);
+                            world.spawnEntity(mechanic);
                         }
                     }
-                    entity.attackEntityFrom(DamageSourcePneumaticCraft.PRESSURE, (int) (getPressure() * 2D));
+                    if (!(entity instanceof EntityVillager) || ((EntityVillager) entity).getProfessionForge() != VillagerHandler.mechanicProfession) {
+                        entity.attackEntityFrom(DamageSourcePneumaticCraft.PRESSURE, (int) (getPressure() * 2D));
+                    }
                 }
             }
         }
