@@ -112,7 +112,11 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
     @Override
     public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         ItemStack heldItem = player.getHeldItem(hand);
-        if (player.isSneaking() || getGuiID() == null || isRotatable() && (heldItem.getItem() == Itemss.MANOMETER || ModInteractionUtils.getInstance().isModdedWrench(heldItem))) {
+        if (player.isSneaking()
+                || getGuiID() == null
+                || isRotatable() && (heldItem.getItem() == Itemss.MANOMETER
+                || ModInteractionUtils.getInstance().isModdedWrench(heldItem))
+                || hand == EnumHand.OFF_HAND && ModInteractionUtils.getInstance().isModdedWrench(player.getHeldItemMainhand())) {
             return false;
         } else {
             if (!world.isRemote) {
@@ -196,8 +200,15 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
 
     @Override
     public boolean rotateBlock(World world, BlockPos pos, EnumFacing axis) {
+        return false;
         // this can get called if our blocks are rotated by some other mod's wrench
-        return rotateBlock(world, null, pos, axis);
+//        if (world.isRemote) {
+//            NetworkHandler.sendToServer(new PacketRotateBlock(pos, axis));
+//            return true;
+//        } else {
+//            return false;
+//        }
+//        return rotateBlock(world, null, pos, axis);
     }
 
     @Override

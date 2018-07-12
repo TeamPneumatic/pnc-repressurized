@@ -175,7 +175,7 @@ public class PneumaticCraftRepressurized {
         ConfigHandler.postInit();
         AmadronOfferManager.getInstance().shufflePeriodicOffers();
         AmadronOfferManager.getInstance().recompileOffers();
-        ModInteractionUtils.setupWrenchItems();
+        ModInteractionUtils.registerThirdPartyWrenches();
 
         for (Block block : Blockss.blocks) {
             if (block instanceof IUpgradeAcceptor) {

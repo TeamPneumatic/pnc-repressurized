@@ -116,6 +116,7 @@ public class NetworkHandler {
         INSTANCE.registerMessage(PacketJetBootState.class, PacketJetBootState.class, discriminant++, Side.SERVER);
         INSTANCE.registerMessage(PacketPlayMovingSound.class, PacketPlayMovingSound.class, discriminant++, Side.CLIENT);
         INSTANCE.registerMessage(PacketMarkPlayerJetbootsActive.class, PacketMarkPlayerJetbootsActive.class, discriminant++, Side.CLIENT);
+        INSTANCE.registerMessage(PacketRotateBlock.class, PacketRotateBlock.class, discriminant++, Side.SERVER);
     }
 
     /* public static void INSTANCE.registerMessage(Class<? extends AbstractPacket<? extends IMessage>> clazz){

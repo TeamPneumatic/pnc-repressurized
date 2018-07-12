@@ -25,6 +25,7 @@ import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
+import me.desht.pneumaticcraft.common.network.PacketRotateBlock;
 import me.desht.pneumaticcraft.common.network.PacketSetMobTarget;
 import me.desht.pneumaticcraft.common.recipes.AmadronOffer;
 import me.desht.pneumaticcraft.common.recipes.AmadronOfferCustom;
@@ -211,13 +212,15 @@ public class EventHandlerPneumaticCraft {
             }
         }
 
-        if (!event.isCanceled() && event instanceof PlayerInteractEvent.RightClickBlock && !event.getWorld().isRemote) {
-            if (ModInteractionUtilImplementation.getInstance().isModdedWrench(heldItem) && interactedBlock instanceof IPneumaticWrenchable) {
-                // when player clicks with a modded wrench, enforce our rotation behaviour and cancel default behaviour
-                // (which is probably to call the "vanilla" rotateBlock(), which doesn't get any player information)
-                ((IPneumaticWrenchable) interactedBlock).rotateBlock(event.getWorld(), event.getEntityPlayer(), event.getPos(), event.getFace());
+        if (!event.isCanceled() && event instanceof PlayerInteractEvent.RightClickBlock) {
+            if (interactedBlock instanceof IPneumaticWrenchable && ModInteractionUtilImplementation.getInstance().isModdedWrench(heldItem)) {
+                // When a player clicks one of our rotatable blocks with a wrench from another mod, cancel that and
+                // send our custom PacketRotateBlock, which ensures our rotateBlock() gets called & includes the
+                // player information, which is needed in several places
+                if (event.getWorld().isRemote) {
+                    NetworkHandler.sendToServer(new PacketRotateBlock(event.getPos(), event.getFace()));
+                }
                 event.setCanceled(true);
-
             }
         }
 
