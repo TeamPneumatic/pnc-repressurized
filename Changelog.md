@@ -6,6 +6,17 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
+### 0.7.3-??? (unreleased)
+#### Updates
+* Reworked 3rd party wrench support: many more wrenches are now supported
+* More performance work with fluid tank sync'ing, reducing the rate at which tanks sync to client
+* Charging Station now performs far better with many Speed Upgrades installed (was causing severe FPS drops)
+#### Fixes
+* Toggling jet boots off while thrusting no longer causes a desync
+* Mechanic Villagers created in the Pressure Chamber now have the right set of trades
+* Wrenching PNC machines with 3rd party wrenches no longer also opens the machine's GUI
+* Wrenching Pressure Tubes with 3rd party wrenches no longer causes a crash, and works as expected
+
 ### 0.7.2-234 (11 Jul 2018)
 #### Updates
 * Pneumatic Door now plays a (suitably pneumatic) opening/closing sound effect.
