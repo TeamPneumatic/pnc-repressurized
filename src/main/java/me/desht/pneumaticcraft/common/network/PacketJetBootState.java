@@ -26,7 +26,8 @@ public class PacketJetBootState extends AbstractPacket<PacketJetBootState> {
     public void handleServerSide(PacketJetBootState message, EntityPlayer player) {
         if (player.getItemStackFromSlot(EntityEquipmentSlot.FEET).getItem() instanceof ItemPneumaticArmor) {
             CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer(player);
-            if (handler.getUpgradeCount(EntityEquipmentSlot.FEET, IItemRegistry.EnumUpgrade.JET_BOOTS) > 0 && handler.isJetBootsEnabled()) {
+            if (handler.getUpgradeCount(EntityEquipmentSlot.FEET, IItemRegistry.EnumUpgrade.JET_BOOTS) > 0
+                    && (!message.state || handler.isJetBootsEnabled())) {
                 handler.setJetBootsActive(message.state, player);
             }
         }

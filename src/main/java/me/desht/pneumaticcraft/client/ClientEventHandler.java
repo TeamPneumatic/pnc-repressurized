@@ -400,12 +400,11 @@ public class ClientEventHandler {
             EntityPlayer player = FMLClientHandler.instance().getClientPlayerEntity();
             if (player == null || player.world == null) return;
             CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer(player);
-            if (!handler.isJetBootsEnabled()) return;
             GameSettings settings = FMLClientHandler.instance().getClient().gameSettings;
-            if (handler.isJetBootsActive() && !settings.keyBindJump.isKeyDown()) {
+            if (handler.isJetBootsActive() && (!handler.isJetBootsEnabled() || !settings.keyBindJump.isKeyDown())) {
                 NetworkHandler.sendToServer(new PacketJetBootState(false));
                 handler.setJetBootsActive(false, player);
-            } else if (!handler.isJetBootsActive() && settings.keyBindJump.isKeyDown()) {
+            } else if (!handler.isJetBootsActive() && handler.isJetBootsEnabled() && settings.keyBindJump.isKeyDown()) {
                 NetworkHandler.sendToServer(new PacketJetBootState(true));
                 handler.setJetBootsActive(true, player);
             }
