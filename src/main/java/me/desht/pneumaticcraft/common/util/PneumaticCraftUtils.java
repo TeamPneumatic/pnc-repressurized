@@ -16,8 +16,8 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityMinecart;
+import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -993,9 +993,9 @@ public class PneumaticCraftUtils {
      * @return a dummy player-sized living entity
      */
     public static EntityLiving createDummyEntity(EntityPlayer player) {
-        EntityZombie zombie = new EntityZombie(player.world);
-        zombie.setPosition(player.posX, player.posY, player.posZ);
-        return zombie;
+        EntityCreeper creeper = new EntityCreeper(player.world);
+        creeper.setPosition(player.posX, player.posY, player.posZ);
+        return creeper;
     }
 
     /**

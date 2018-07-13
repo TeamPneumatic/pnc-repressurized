@@ -29,9 +29,10 @@ public class RenderNavigator {
     public void updatePath() {
         EntityPlayer player = FMLClientHandler.instance().getClient().player;
         path = PneumaticCraftUtils.getPathFinder().findPath(player.world, PneumaticCraftUtils.createDummyEntity(player), targetPos, CoordTrackUpgradeHandler.SEARCH_RANGE);
-        if (!tracedToDestination()) {
-            path = CoordTrackUpgradeHandler.getDronePath(player, targetPos);
-        }
+        // TODO: this just doesn't work anymore
+//        if (!tracedToDestination()) {
+//            path = CoordTrackUpgradeHandler.getDronePath(player, targetPos);
+//        }
     }
 
     public void render(boolean wirePath, boolean xRayEnabled, float partialTicks) {
@@ -57,7 +58,7 @@ public class RenderNavigator {
         if (wirePath) {
             if (noDestinationPath) {
                 GL11.glEnable(GL11.GL_LINE_STIPPLE);
-                GL11.glLineStipple(4, (short) 0x00FF);
+                GL11.glLineStipple(2, (short) 0x00FF);
             }
             for (int i = 1; i < path.getCurrentPathLength(); i++) {
                 float red = 1;
