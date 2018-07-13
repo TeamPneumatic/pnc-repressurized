@@ -200,15 +200,11 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
 
     @Override
     public boolean rotateBlock(World world, BlockPos pos, EnumFacing axis) {
+        // we simply disallow any external block rotation here:
+        // - rotation by the pneumatic wrench is handled by our own rotateBlock() below
+        // - rotation by 3rd party wrenches is capture by an event handler, which sends
+        //   a custom packet, also leading to our own rotateBlock()
         return false;
-        // this can get called if our blocks are rotated by some other mod's wrench
-//        if (world.isRemote) {
-//            NetworkHandler.sendToServer(new PacketRotateBlock(pos, axis));
-//            return true;
-//        } else {
-//            return false;
-//        }
-//        return rotateBlock(world, null, pos, axis);
     }
 
     @Override
@@ -233,8 +229,8 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
                         } while (!canRotateToTopOrBottom() && f.getAxis() == Axis.Y);
                         setRotation(world, pos, f);
                     }
-                    TileEntityBase te = (TileEntityBase) world.getTileEntity(pos);
-                    if (te != null) te.onBlockRotated();
+                    TileEntity te = world.getTileEntity(pos);
+                    if (te instanceof TileEntityBase) ((TileEntityBase) te).onBlockRotated();
                 }
                 return true;
             } else {

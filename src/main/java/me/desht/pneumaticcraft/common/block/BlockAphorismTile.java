@@ -102,7 +102,7 @@ public class BlockAphorismTile extends BlockPneumaticCraft {
 
     @Override
     public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-        if (world.isRemote && player.getHeldItem(hand).isEmpty() && !player.isSneaking()) {
+        if (world.isRemote && hand != EnumHand.OFF_HAND && player.getHeldItem(hand).isEmpty() && !player.isSneaking()) {
             player.openGui(PneumaticCraftRepressurized.instance, EnumGuiId.APHORISM_TILE.ordinal(), world, pos.getX(), pos.getY(), pos.getZ());
             sendEditorMessage(player);
         } else if (!world.isRemote && DyeUtils.isDye(player.getHeldItem(hand))) {
