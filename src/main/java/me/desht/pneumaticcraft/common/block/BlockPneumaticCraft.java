@@ -122,9 +122,9 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
             if (!world.isRemote) {
                 TileEntity te = world.getTileEntity(pos);
                 if (te != null) {
-                    if (FluidUtils.tryFluidInsertion(te, facing, player, hand)) {
+                    if (FluidUtils.tryFluidInsertion(te, null, player, hand)) {
                         return true;
-                    } else if (FluidUtils.tryFluidExtraction(te, facing, player, hand)) {
+                    } else if (FluidUtils.tryFluidExtraction(te, null, player, hand)) {
                         return true;
                     }
                     player.openGui(PneumaticCraftRepressurized.instance, getGuiID().ordinal(), world, pos.getX(), pos.getY(), pos.getZ());
