@@ -1006,6 +1006,7 @@ igwtab.entry.worldgen=Worldgen
 igwtab.entry.base_concepts=Base Concepts
 igwtab.entry.machine_upgrades=Machine Upgrades
 igwtab.entry.generating_pressure=Generating Pressure
+igwtab.entry.heat=Heat
 igwtab.entry.pressure_tubes=Tubes & Modules
 igwtab.entry.pressure_chamber=Pressure Chamber
 igwtab.entry.elevator=Elevator

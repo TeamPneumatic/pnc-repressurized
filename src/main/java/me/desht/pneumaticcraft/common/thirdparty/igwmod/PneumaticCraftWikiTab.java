@@ -12,6 +12,7 @@ public class PneumaticCraftWikiTab extends BaseWikiTab {
     public PneumaticCraftWikiTab() {
         pageEntries.add("base_concepts");
         pageEntries.add("generating_pressure");
+        pageEntries.add("heat");
         pageEntries.add("pressure_tubes");
         pageEntries.add("pressure_chamber");
         pageEntries.add("machine_upgrades");
