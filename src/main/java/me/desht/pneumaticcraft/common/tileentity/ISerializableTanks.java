@@ -57,9 +57,20 @@ public interface ISerializableTanks {
             tag.setTag(SAVED_TANKS, new NBTTagCompound());
         }
         NBTTagCompound subTag = tag.getCompoundTag(SAVED_TANKS);
-        NBTTagCompound tankTag = new NBTTagCompound();
-        tank.writeToNBT(tankTag);
-        subTag.setTag(tagName, tankTag);
+        if (tank.getFluid() != null && tank.getFluid().amount > 0) {
+            NBTTagCompound tankTag = new NBTTagCompound();
+            tank.writeToNBT(tankTag);
+            subTag.setTag(tagName, tankTag);
+        } else {
+            subTag.removeTag(tagName);
+        }
+        // clean up NBT if the tank is empty, for the benefit of item stackability
+        if (subTag.getSize() == 0) {
+            tag.removeTag(SAVED_TANKS);
+            if (tag.getSize() == 0) {
+                stack.setTagCompound(null);
+            }
+        }
     }
 
     /**
