@@ -26,10 +26,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.input.Keyboard;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class GuiKeybindCheckBox extends GuiCheckBox {
     public static final String UPGRADE_PREFIX = "pneumaticHelmet.upgrade.";
@@ -104,13 +101,40 @@ public class GuiKeybindCheckBox extends GuiCheckBox {
                 }
             }
         } else {
-            isAwaitingKey = !isAwaitingKey;
-            if (isAwaitingKey) {
-                oldCheckboxText = text;
-                text = "gui.setKeybind";
+            if (PneumaticCraftRepressurized.proxy.isSneakingInGui()) {
+                clearKeybinding();
             } else {
-                text = oldCheckboxText;
+                isAwaitingKey = !isAwaitingKey;
+                if (isAwaitingKey) {
+                    oldCheckboxText = text;
+                    text = "gui.setKeybind";
+                } else {
+                    text = oldCheckboxText;
+                }
             }
+        }
+    }
+
+    private void clearKeybinding() {
+        KeyBinding[] keyBindings = Minecraft.getMinecraft().gameSettings.keyBindings;
+        Set<Integer> idx = new HashSet<>();
+        for (int i = 0; i < keyBindings.length; i++) {
+            if (keyBindings[i].getKeyDescription().equals(keyBinding.getKeyDescription())) {
+                idx.add(i);
+                break;
+            }
+        }
+        if (!idx.isEmpty()) {
+            List<KeyBinding> l = new ArrayList<>(keyBindings.length);
+            for (int i = 0; i < keyBindings.length; i++) {
+                if (!idx.contains(i)) l.add(keyBindings[i]);
+            }
+            Minecraft.getMinecraft().gameSettings.keyBindings = l.toArray(new KeyBinding[0]);
+            keyBinding = new KeyBinding(keyBindingName, KeyConflictContext.IN_GAME, KeyModifier.NONE, Keyboard.KEY_NONE, Names.PNEUMATIC_KEYBINDING_CATEGORY);
+            ClientRegistry.registerKeyBinding(keyBinding);
+            KeyBinding.resetKeyBindingArrayAndHash();
+            ((ClientProxy) PneumaticCraftRepressurized.proxy).keybindToKeyCodes.put(keyBindingName, Pair.of(Keyboard.KEY_NONE, KeyModifier.NONE));
+            Minecraft.getMinecraft().gameSettings.saveOptions();
         }
     }
 
@@ -186,6 +210,9 @@ public class GuiKeybindCheckBox extends GuiCheckBox {
         }
         if (!isAwaitingKey) {
             curTooltip.add("gui.keybindRightClickToSet");
+            if (keyBinding != null && keyBinding.getKeyCode() != Keyboard.KEY_NONE) {
+                curTooltip.add("gui.keybindShiftRightClickToClear");
+            }
         }
     }
 }

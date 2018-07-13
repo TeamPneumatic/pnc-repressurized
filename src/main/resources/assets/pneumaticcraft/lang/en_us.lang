@@ -620,6 +620,7 @@ gui.tubeModule.simpleConfig.lowerThan=Lower than
 gui.general.bar=Bar
 gui.keybindBoundKey=Bound to: §a%s
 gui.keybindRightClickToSet=§7Right click to bind key
+gui.keybindShiftRightClickToClear=§7Shift + Right click to clear binding
 gui.setKeybind=Press key to bind
 gui.enableModule=Enable %s
 gui.pressureChamber=Pressure Chamber
