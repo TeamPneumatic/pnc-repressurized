@@ -1,35 +1,22 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import com.google.common.base.CaseFormat;
 import igwmod.api.WikiRegistry;
-
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.client.gui.widget.GuiCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.GuiRadioButton;
 import me.desht.pneumaticcraft.client.gui.widget.IGuiWidget;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
-import me.desht.pneumaticcraft.common.capabilities.CapabilityGPSAreaTool;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.inventory.ContainerProgrammer;
+import me.desht.pneumaticcraft.common.item.ItemGPSAreaTool;
+import me.desht.pneumaticcraft.common.item.ItemGPSTool;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
 import me.desht.pneumaticcraft.common.network.PacketProgrammerUpdate;
 import me.desht.pneumaticcraft.common.network.PacketUpdateTextfield;
-import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea;
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetCoordinate;
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetCoordinateOperator;
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetStart;
-import me.desht.pneumaticcraft.common.progwidgets.WidgetRegistrator;
+import me.desht.pneumaticcraft.common.progwidgets.*;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.ModIds;
@@ -52,11 +39,13 @@ import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
-import com.google.common.base.CaseFormat;
+import java.awt.*;
+import java.io.IOException;
+import java.util.*;
+import java.util.List;
 
 @SideOnly(Side.CLIENT)
 public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgrammer> {
@@ -446,14 +435,10 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
                 }
             }
             
-            //create area widgets straight from GPS Area Tools
+            // create area widgets straight from GPS Area Tools
             ItemStack heldItem = mc.player.inventory.getItemStack();
-            ProgWidgetArea areaToolWidget = null;
-            if(heldItem.hasCapability(CapabilityGPSAreaTool.INSTANCE, null)){
-                CapabilityGPSAreaTool cap = heldItem.getCapability(CapabilityGPSAreaTool.INSTANCE, null);
-                areaToolWidget = cap.createWidget();
-            } 
-            
+            ProgWidgetArea areaToolWidget = heldItem.getItem() instanceof ItemGPSAreaTool ? ItemGPSAreaTool.getArea(heldItem) : null;
+
             if (draggingWidget == null && showingWidgetProgress == 0) {
                 IProgWidget widget = programmerUnit.getHoveredWidget(origX, origY);
                 if (widget != null) {
@@ -463,34 +448,51 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
                     dragWidgetStartX = widget.getX();
                     dragWidgetStartY = widget.getY();
                     
-                    if(areaToolWidget != null && widget instanceof ProgWidgetArea){
+                    if (areaToolWidget != null && widget instanceof ProgWidgetArea) {
                         NBTTagCompound tag = new NBTTagCompound();
                         areaToolWidget.writeToNBT(tag);
                         widget.readFromNBT(tag);
-                    }else if(heldItem.getItem() == Itemss.GPS_TOOL && widget instanceof ProgWidgetCoordinate){
-                        ((ProgWidgetCoordinate)widget).loadFromGPSTool(heldItem);
+                    } else if (heldItem.getItem() == Itemss.GPS_TOOL) {
+                        if (widget instanceof ProgWidgetCoordinate) {
+                            ((ProgWidgetCoordinate) widget).loadFromGPSTool(heldItem);
+                        } else if (widget instanceof ProgWidgetArea) {
+                            BlockPos pos = ItemGPSTool.getGPSLocation(heldItem);
+                            String var = ItemGPSTool.getVariable(heldItem);
+                            ((ProgWidgetArea) widget).setP1(pos);
+                            ((ProgWidgetArea) widget).setP2(new BlockPos(0, 0, 0));
+                            ((ProgWidgetArea) widget).setCoord1Variable(var);
+                            ((ProgWidgetArea) widget).setCoord2Variable("");
+                        }
                     }
                 }
             }
-            
-            //Create a new widget from a GPS Area tool when nothing was selected
-            if(draggingWidget == null){
-                if(areaToolWidget != null){
+
+            // Create a new widget from a GPS Area tool when nothing was selected
+            if (draggingWidget == null) {
+                if (areaToolWidget != null) {
                     draggingWidget = areaToolWidget;
-                }else if(heldItem.getItem() == Itemss.GPS_TOOL){
-                    ProgWidgetCoordinate coordWidget =  new ProgWidgetCoordinate();
-                    draggingWidget = coordWidget;
-                    coordWidget.loadFromGPSTool(heldItem);
+                } else if (heldItem.getItem() == Itemss.GPS_TOOL) {
+                    if (PneumaticCraftRepressurized.proxy.isSneakingInGui()) {
+                        BlockPos pos = ItemGPSTool.getGPSLocation(heldItem);
+                        ProgWidgetArea areaWidget = ProgWidgetArea.fromPositions(pos, new BlockPos(0, 0, 0));
+                        String var = ItemGPSTool.getVariable(heldItem);
+                        if (!var.isEmpty()) areaWidget.setCoord1Variable(var);
+                        draggingWidget = areaWidget;
+                    } else {
+                        ProgWidgetCoordinate coordWidget = new ProgWidgetCoordinate();
+                        draggingWidget = coordWidget;
+                        coordWidget.loadFromGPSTool(heldItem);
+                    }
                 }
-                
-                if(draggingWidget != null){
+
+                if (draggingWidget != null) {
                     draggingWidget.setX(Integer.MAX_VALUE);
                     draggingWidget.setY(Integer.MAX_VALUE);
                     te.progWidgets.add(draggingWidget);
                     dragMouseStartX = draggingWidget.getWidth() / 3;
                     dragMouseStartY = draggingWidget.getHeight() / 4;
                     dragWidgetStartX = 0;
-                    dragWidgetStartY = 0;   
+                    dragWidgetStartY = 0;
                 }
             }
         } else if (isMiddleClicking && !wasClicking && showingWidgetProgress == 0) {

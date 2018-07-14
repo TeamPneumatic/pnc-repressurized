@@ -1,9 +1,6 @@
 package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.ByteBuf;
-import me.desht.pneumaticcraft.common.NBTUtil;
-import me.desht.pneumaticcraft.common.capabilities.CapabilityGPSAreaTool;
-import me.desht.pneumaticcraft.common.item.ItemGPSAreaTool;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea;
 import net.minecraft.entity.player.EntityPlayer;
@@ -48,10 +45,8 @@ public class PacketUpdateGPSAreaTool extends AbstractPacket<PacketUpdateGPSAreaT
     @Override
     public void handleServerSide(PacketUpdateGPSAreaTool message, EntityPlayer player) {
         ItemStack stack = player.getHeldItemMainhand();
-        if(stack.getItem() == Itemss.GPS_AREA_TOOL){
-            CapabilityGPSAreaTool cap = ItemGPSAreaTool.getCap(stack);
-            cap.updateAreaFromNBT(message.areaWidgetData);
-            NBTUtil.setBoolean(stack, "dummy", !NBTUtil.getBoolean(stack, "dummy"));
+        if (stack.getItem() == Itemss.GPS_AREA_TOOL){
+            stack.setTagCompound(message.areaWidgetData);
         }
     }
 }

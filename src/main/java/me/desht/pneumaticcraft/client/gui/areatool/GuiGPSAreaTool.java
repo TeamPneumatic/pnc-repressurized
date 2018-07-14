@@ -1,9 +1,8 @@
 package me.desht.pneumaticcraft.client.gui.areatool;
 
 import me.desht.pneumaticcraft.client.gui.GuiGPSTool;
-import me.desht.pneumaticcraft.common.capabilities.CapabilityGPSAreaTool;
 import me.desht.pneumaticcraft.common.item.ItemGPSAreaTool;
-import me.desht.pneumaticcraft.common.item.ItemGPSTool;
+import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
@@ -40,11 +39,9 @@ public class GuiGPSAreaTool extends GuiGPSTool{
     protected void actionPerformed(GuiButton button){
         if(button.id == CHANGE_AREA_BUTTON_ID){
             ItemStack stack = mc.player.getHeldItemMainhand();
-            CapabilityGPSAreaTool cap = ItemGPSAreaTool.getCap(stack);
-            if(cap != null){
-                Runnable returnAction = () -> mc.displayGuiScreen(new GuiGPSAreaTool(stack, index));
-                mc.displayGuiScreen(new GuiProgWidgetAreaTool(cap.getWidget(), returnAction));
-            }
+            ProgWidgetArea area = ItemGPSAreaTool.getArea(stack);
+            Runnable returnAction = () -> mc.displayGuiScreen(new GuiGPSAreaTool(stack, index));
+            mc.displayGuiScreen(new GuiProgWidgetAreaTool(area, returnAction));
         }else{
             super.actionPerformed(button);
         }

@@ -5,9 +5,9 @@ The Coordinate is a piece solely used as parameter for other pieces. This piece 
 
 The Coordinate piece could be compared to the [link{pneumaticcraft:progwidget/area}]Area piece[link{}]. With the Area piece you're supplying two coordinates to make up an area. With this piece you're just supplying one. There are two ways to supply a coordinate:
 
-Constant
-A constant coordinate is... constant. You can select one by selecting a GPS Tool, or typing it in the text boxes manually.
+[prefix{n}]Constant [prefix{}]
+A constant coordinate is... constant. You can select one by selecting a GPS Tool, or typing the X/Y/Z values in the text boxes manually.
 
-Variable
+[prefix{n}]Variable [prefix{}]
 By selecting Variable you can return the value stored in the variable as the coordinate. [link{pneumaticcraft:progwidget/coordinate_operator}]Click here[link{}] to read more about variables.
 Keep in mind that with this you can only supply a coordinate, not modify it!

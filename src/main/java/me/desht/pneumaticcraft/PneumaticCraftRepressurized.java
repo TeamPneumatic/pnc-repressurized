@@ -7,7 +7,6 @@ import me.desht.pneumaticcraft.client.render.pneumaticArmor.UpgradeRenderHandler
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.hacking.HackableHandler;
 import me.desht.pneumaticcraft.common.*;
 import me.desht.pneumaticcraft.common.block.Blockss;
-import me.desht.pneumaticcraft.common.capabilities.CapabilityGPSAreaTool;
 import me.desht.pneumaticcraft.common.commands.PCCommandManager;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.dispenser.BehaviorDispenseDrone;
@@ -126,8 +125,6 @@ public class PneumaticCraftRepressurized {
 
         MinecraftForge.EVENT_BUS.register(new CraftingHandler());
         MinecraftForge.EVENT_BUS.register(new ConfigHandler());
-        
-        CapabilityGPSAreaTool.register();
     }
 
     @EventHandler
