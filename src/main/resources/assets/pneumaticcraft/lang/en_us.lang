@@ -1011,6 +1011,7 @@ igwtab.entry.pressure_tubes=Tubes & Modules
 igwtab.entry.pressure_chamber=Pressure Chamber
 igwtab.entry.elevator=Elevator
 igwtab.entry.pneumatic_door=Pneumatic Door
+igwtab.entry.pneumatic_armor=Pneumatic Armor
 igwtab.entry.printed_circuit_boards=Printed Circuit Boards
 igwtab.entry.assembly_machines=Assembly Machines
 igwtab.entry.ic2integration=IC2 Integration

@@ -1,0 +1,10 @@
+The Pneumatic Leggings accept upgrades geared around movement boosts:
+
+[prefix{l}]Speed Upgrade[prefix{}]
+In addition to reducing the armor's initialization time, Speed Upgrades in the leggings have a more important effect: they increase your run speed, at a very minor air cost.  Up to 3 Speed Upgrades can be installed.
+
+[prefix{l}]Range Upgrade[prefix{}]
+Range Upgrades provide you with increased jumping ability at a minor air cost.  Up to 6 Range Upgrades can be installed.
+
+• The jump boost also includes a good horizontal component, which is increased further if the player sprints.
+• Holding Sneak while jumping will reduce the jump height to the equivalent of a single Range Upgrade.

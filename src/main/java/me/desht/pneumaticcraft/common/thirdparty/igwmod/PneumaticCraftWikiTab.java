@@ -31,7 +31,7 @@ public class PneumaticCraftWikiTab extends BaseWikiTab {
         pageEntries.add("item/logistics_module");
         pageEntries.add("item/logistic_drone");
         skipLine();
-        pageEntries.add("item/pneumatic_helmet");
+        pageEntries.add("pneumatic_armor");
         pageEntries.add("block/programmer");
         pageEntries.add("item/drone");
         pageEntries.add("block/programmable_controller");

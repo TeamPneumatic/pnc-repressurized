@@ -1,0 +1,12 @@
+The Pneumatic Boots provide a couple of useful inbuilt features, along with a couple of very interesting upgrades...
+
+• The boots provide inbuilt fall protection - no upgrade needed - at a modest air cost (the amount of air used is proportional to the fall damage which would have been taken).
+• The boots provide 1-block step assist for free - no air cost.  Note that this is step assist, not auto-jump, and it's a toggleable feature (step assist is not to every player's taste).
+
+[prefix{l}]Dispenser Upgrade[prefix{}]
+By adding one or more Dispenser Upgrades to the boots, you gain the ability to execute a [prefix{o}]pneumatic kick [prefix{}].  This will do moderate damage to entities (and not just living entities!), but also inflict heavy knockback, at a modest air cost.  Up to 4 Dispenser Upgrades can be installed.
+
+[prefix{l}]Jet Boots Upgrade[prefix{}]
+If you've ever wanted to soar through the air without a care in the world (except how much pressure you have left), the Jet Boots upgrade is for you.  You can add up to 8 Jet Boots upgrades for progressively faster flight, and heavier air usage.
+
+The Jet Boots are a [prefix{o}]heavy [prefix{}] user of pressure; it's strongly recommended to add multiple volume upgrades to your boots (and chestplate, with Charging Upgrades). Use of an [link{block/aerial_interface}]Aerial Interface[link{}] is also advised when possible.  You will also need a good charging infrastructure at your base.

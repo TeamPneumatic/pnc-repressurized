@@ -58,14 +58,5 @@ When installed together with the Entity Tracker Upgrade, this will allow you to 
 
 The program that the Drone is running is shown. Like in the Programmer, the screen can be clicked and dragged to translate the program's pieces. Scrolling the mouse will zoom the pieces. A green border around one of the pieces indicates the piece that is currently being executed. When hovering over a piece it will often tell you information about the last time that piece was executed, including why it stopped executing. Additionally when hovering over a piece, it will highlight positions in the world red to indicate the positions that have to do with the information. Click the piece to make that visualization stick.
 
-[prefix{l}]Speed Upgrade[prefix{}]
-Increases the speed at which the Pneumatic Helmet initializes, the block tracker tracks, and the entity tracker tracks. There's no real maximum of speed upgrades, but do keep in mind that the air usage also increases with the speed.
-
 [prefix{l}]Range Upgrade[prefix{}]
 Increases the range of the Entity Tracker and Block Tracker with 5 blocks radius per upgrade. For the Entity Tracker there's no limit, for the Block Tracker up to 5 upgrades are accepted. This upgrade increases the air usage of the Block and Entity Tracker.
-
-[prefix{l}]Volume Upgrade[prefix{}]
-Increases the total air storage of the Pneumatic Helmet; with a larger volume, it will take longer to pressurize, but also lose pressure more slowly when in use.
-
-[prefix{l}]Thaumcraft Upgrade[prefix{}]
-This gives the helmet Goggles of Revealing functionality. It gives a 5% vis discount, reveals aura nodes and shows aspects in blocks.
