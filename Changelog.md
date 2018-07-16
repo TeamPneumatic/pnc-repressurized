@@ -6,7 +6,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
-### 0.7.3-238 (16 Jul 2018)
+### 0.7.3-239 (16 Jul 2018)
 #### Updates
 * Reworked 3rd party wrench support: many more wrenches are now supported
 * More performance work with fluid tank sync'ing, reducing the rate at which tanks sync to client
