@@ -72,7 +72,7 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
         super.update();
         if (!getWorld().isRemote) {
             ticksExisted++;
-            ItemStack stack = getLoadedPCB().copy();
+            ItemStack stack = getLoadedPCB();
             if (getPressure() >= PneumaticValues.MIN_PRESSURE_UV_LIGHTBOX && stack.getItem() == Itemss.EMPTY_PCB && stack.getItemDamage() > 0) {
                 addAir((int) (-PneumaticValues.USAGE_UV_LIGHTBOX * getSpeedUsageMultiplierFromUpgrades()));
                 if (ticksExisted % Math.max(1, (int) (TileEntityConstants.LIGHT_BOX_0_100_TIME / (5 * getSpeedMultiplierFromUpgrades()))) == 0) {
@@ -81,7 +81,7 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
                         updateNeighbours();
                     }
                     stack.setItemDamage(Math.max(0, stack.getItemDamage() - 1));
-                    inventory.setStackInSlot(PCB_SLOT, stack);
+//                    inventory.setStackInSlot(PCB_SLOT, stack);
                 }
             } else if (areLightsOn) {
                 setLightsOn(false);

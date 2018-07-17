@@ -65,14 +65,11 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
     @Override
     public void update() {
         if (!getWorld().isRemote) {
-            ItemStack fuelStack = inventory.getStackInSlot(FUEL_SLOT).copy();
-            if (burnTime < curFuelUsage && TileEntityFurnace.isItemFuel(fuelStack) && redstoneAllows()) {
+            if (redstoneAllows() && burnTime < curFuelUsage && TileEntityFurnace.isItemFuel(inventory.getStackInSlot(FUEL_SLOT))) {
+                ItemStack fuelStack = inventory.getStackInSlot(FUEL_SLOT);
                 burnTime += TileEntityFurnace.getItemBurnTime(fuelStack);
                 maxBurnTime = burnTime;
-
-                ItemStack containerStack  = fuelStack.getItem().getContainerItem(fuelStack);
                 fuelStack.shrink(1);
-                inventory.setStackInSlot(FUEL_SLOT, fuelStack.isEmpty() ? containerStack : fuelStack);
             }
 
             curFuelUsage = (int) (getBaseProduction() * getSpeedUsageMultiplierFromUpgrades() / 10);

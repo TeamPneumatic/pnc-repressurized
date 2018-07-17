@@ -58,7 +58,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
     @GuiSynced
     public float recipePressure;
     @DescSynced
-    private ItemStackHandler itemsInChamber = new ItemStackHandler(100);
+    private ItemStackHandler itemsInChamber = new ItemStackHandler(27);
 
     private final Random rand = new Random();
 

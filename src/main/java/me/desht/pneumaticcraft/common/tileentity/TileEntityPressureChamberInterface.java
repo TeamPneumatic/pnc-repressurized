@@ -143,7 +143,7 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
 
     private void exportToInventory() {
         EnumFacing facing = getRotation();
-        TileEntity te = getWorld().getTileEntity(getPos().offset(facing));
+        TileEntity te = getCachedNeighbor(facing);
         if (te != null) {
             ItemStack stack = inventory.getStackInSlot(0);
             int count = stack.getCount();
@@ -155,6 +155,9 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
     private void importFromChamber(TileEntityPressureChamberValve core) {
         ItemStackHandler chamberStacks = core.getStacksInChamber();
         for (ItemStack chamberStack : new ItemStackHandlerIterable(chamberStacks)) {
+            if (chamberStack.isEmpty()) {
+                continue;
+            }
             ItemStack inputStack = inventory.getStackInSlot(0);
             if ((inputStack.isEmpty() || inputStack.isItemEqual(chamberStack)) && filterHandler.doesItemMatchFilter(chamberStack)) {
                 int maxAllowedItems = Math.abs(core.getAirHandler(null).getAir()) / PneumaticValues.USAGE_CHAMBER_INTERFACE;
