@@ -6,6 +6,14 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
+### 0.7.4-??? (unreleased)
+#### Updates
+* A bit more work (hopefully the last) on smoother fluid tank updates to client
+* Can now install up to 10 Jet Boots upgrades in the Pneumatic Boots.  10 upgrades allows hovering in-place, but watch out for the in-flight air cost...
+* Some tile entity performance improvements, most notably with the (output mode) Pressure Chamber Interface which was wasting a lot of CPU time but also to a lesser degree with the Air Compressor, UV Light Box and Sentry Turret
+#### Fixes
+* Fixed some armor features (magnet, charging) functioning even without the necessary upgrades installed
+
 ### 0.7.3-239 (16 Jul 2018)
 #### Updates
 * Reworked 3rd party wrench support: many more wrenches are now supported
