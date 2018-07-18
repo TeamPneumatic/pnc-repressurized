@@ -59,6 +59,7 @@ public class TileEntityRefinery extends TileEntityTickableBase implements IHeatE
     private int prevRefineryCount = -1;
 
     private final RefineryFluidHandler refineryFluidHandler = new RefineryFluidHandler();
+    private boolean searchForRecipe = true;
 
     public TileEntityRefinery() {
     }
@@ -81,10 +82,13 @@ public class TileEntityRefinery extends TileEntityTickableBase implements IHeatE
 
             if (isMaster()) {
                 List<TileEntityRefinery> refineries = getRefineries();
-                Optional<RefineryRecipe> recipe = RefineryRecipe.getRecipe(inputTank.getFluidAmount() > 0 ? inputTank.getFluid().getFluid() : null, refineries.size());
-
-                if(recipe.isPresent()) {
-                    currentRecipe = recipe.get();
+                if (searchForRecipe) {
+                    Optional<RefineryRecipe> recipe = RefineryRecipe.getRecipe(inputTank.getFluidAmount() > 0 ? inputTank.getFluid().getFluid() : null, refineries.size());
+                    currentRecipe = recipe.orElse(null);
+                    searchForRecipe = false;
+                }
+                boolean didWork = false;
+                if (currentRecipe != null) {
                     if (prevRefineryCount != refineries.size() && refineries.size() > 1) {
                         redistributeFluids(refineries, currentRecipe);
                         prevRefineryCount = refineries.size();
@@ -98,21 +102,20 @@ public class TileEntityRefinery extends TileEntityTickableBase implements IHeatE
 	                        workTimer += progress;
 	                        while (workTimer >= 20 && inputTank.getFluidAmount() >= currentRecipe.input.amount) {
 	                            workTimer -= 20;
-	
+
 	                            refine(refineries, false);
 	                            inputTank.drain(currentRecipe.input.amount, true);
-	                            for (int i = 0; i < 5; i++)
+	                            for (int i = 0; i < progress; i++)
 	                                NetworkHandler.sendToAllAround(new PacketSpawnParticle(EnumParticleTypes.SMOKE_LARGE, getPos().getX() + getWorld().rand.nextDouble(), getPos().getY() + refineries.size(), getPos().getZ() + getWorld().rand.nextDouble(), 0, 0, 0), getWorld());
 	
 	                        }
+	                        didWork = true;
 	                    } else {
 	                        workTimer = 0;
 	                    }
 	                }
-                } else {
-                    currentRecipe = null;
                 }
-                updateComparatorValue(refineries);
+                updateComparatorValue(refineries, didWork);
             }
         }
     }
@@ -173,8 +176,8 @@ public class TileEntityRefinery extends TileEntityTickableBase implements IHeatE
         List<TileEntityRefinery> refineries = new ArrayList<>();
         refineries.add(this);
         TileEntityRefinery refinery = this;
-        while (refinery.getTileCache()[EnumFacing.UP.ordinal()].getTileEntity() instanceof TileEntityRefinery) {
-            refinery = (TileEntityRefinery) refinery.getTileCache()[EnumFacing.UP.ordinal()].getTileEntity();
+        while (refinery.getCachedNeighbor(EnumFacing.UP) instanceof TileEntityRefinery) {
+            refinery = (TileEntityRefinery) refinery.getCachedNeighbor(EnumFacing.UP);
             refineries.add(refinery);
         }
         return refineries;
@@ -209,8 +212,8 @@ public class TileEntityRefinery extends TileEntityTickableBase implements IHeatE
 
     public TileEntityRefinery getMasterRefinery() {
         TileEntityRefinery master = this;
-        while (master.getTileCache()[EnumFacing.DOWN.ordinal()].getTileEntity() instanceof TileEntityRefinery) {
-            master = (TileEntityRefinery) master.getTileCache()[EnumFacing.DOWN.ordinal()].getTileEntity();
+        while (master.getCachedNeighbor(EnumFacing.DOWN) instanceof TileEntityRefinery) {
+            master = (TileEntityRefinery) master.getCachedNeighbor(EnumFacing.DOWN);
         }
         return master;
     }
@@ -297,12 +300,12 @@ public class TileEntityRefinery extends TileEntityTickableBase implements IHeatE
         }
     }
 
-    private void updateComparatorValue(List<TileEntityRefinery> refineries) {
+    private void updateComparatorValue(List<TileEntityRefinery> refineries, boolean didWork) {
         int value;
         if (inputTank.getFluidAmount() < 10 || refineries.size() < 2 || currentRecipe == null || refineries.size() > currentRecipe.outputs.length) {
             value = 0;
         } else {
-            value = refine(refineries, true) ? 15 : 0;
+            value = didWork ? 15 : 0;
         }
         if (value != comparatorValue) {
             comparatorValue = value;
@@ -337,14 +340,27 @@ public class TileEntityRefinery extends TileEntityTickableBase implements IHeatE
     }
 
 
-    private static class OilTank extends FluidTank {
+    private class OilTank extends FluidTank {
+        private Fluid prevFluid;
+
         OilTank(int capacity) {
             super(capacity);
         }
 
         @Override
         public boolean canFillFluidType(FluidStack fluid) {
-            return isInputFluidValid(fluid.getFluid(), 4);
+            return getFluid() != null && getFluid().isFluidEqual(fluid)
+                    || isInputFluidValid(fluid.getFluid(), 4);
+        }
+
+        @Override
+        protected void onContentsChanged() {
+            super.onContentsChanged();
+            Fluid newFluid = getFluid() == null ? null : getFluid().getFluid();
+            if (prevFluid != newFluid) {
+                searchForRecipe = true;
+                prevFluid = newFluid;
+            }
         }
     }
 
@@ -356,11 +372,7 @@ public class TileEntityRefinery extends TileEntityTickableBase implements IHeatE
 
         @Override
         public int fill(FluidStack resource, boolean doFill) {
-            if (isMaster()) {
-                return inputTank.fill(resource, doFill);
-            } else {
-                return getMasterRefinery().inputTank.fill(resource, doFill);
-            }
+            return getMasterRefinery().inputTank.fill(resource, doFill);
         }
 
         @Nullable

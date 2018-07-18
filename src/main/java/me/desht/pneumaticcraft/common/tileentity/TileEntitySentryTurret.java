@@ -55,6 +55,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
     @DescSynced
     private boolean sweeping;
     private final SentryTurretEntitySelector entitySelector = new SentryTurretEntitySelector();
+    private int rangeSq;
 
     public TileEntitySentryTurret() {
         super(4);
@@ -65,10 +66,9 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
     public void update() {
         super.update();
         if (!getWorld().isRemote) {
-            range = 16 + Math.min(16, getUpgrades(EnumUpgrade.RANGE));
             if (getMinigun().getAttackTarget() == null && redstoneAllows()) {
                 getMinigun().setSweeping(true);
-                if (getWorld().getTotalWorldTime() % 20 == 0) {
+                if ((getWorld().getTotalWorldTime() & 0xF) == 0) {
                     List<EntityLivingBase> entities = getWorld().getEntitiesWithinAABB(EntityLivingBase.class, getTargetingBoundingBox(), entitySelector);
                     if (entities.size() > 0) {
                         entities.sort(new TargetSorter());
@@ -85,7 +85,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
                     getMinigun().setAttackTarget(null);
                     targetEntityId = -1;
                 } else {
-                    if (getWorld().getTotalWorldTime() % 5 == 0) {
+                    if ((getWorld().getTotalWorldTime() & 0x7) == 0) {
                         getFakePlayer().setPosition(getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5); //Make sure the knockback has the right direction.
                         boolean usedAmmo = getMinigun().tryFireMinigun(target);
                         if (usedAmmo) {
@@ -225,6 +225,13 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
         return inventory;
     }
 
+    @Override
+    protected void onUpgradesChanged() {
+        super.onUpgradesChanged();
+        range = 16 + Math.min(16, getUpgrades(EnumUpgrade.RANGE));
+        rangeSq = range * range;
+    }
+
     private class MinigunSentryTurret extends Minigun {
 
         MinigunSentryTurret() {
@@ -300,7 +307,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
         }
 
         private boolean inRange(Entity entity) {
-            return PneumaticCraftUtils.distBetween(new BlockPos(getPos().getX(), getPos().getY(), getPos().getZ()), entity.posX, entity.posY, entity.posZ) <= range;
+            return PneumaticCraftUtils.distBetweenSq(new BlockPos(getPos().getX(), getPos().getY(), getPos().getZ()), entity.posX, entity.posY, entity.posZ) <= rangeSq;
         }
 
         private boolean isExcludedBySecurityStations(EntityPlayer player) {
