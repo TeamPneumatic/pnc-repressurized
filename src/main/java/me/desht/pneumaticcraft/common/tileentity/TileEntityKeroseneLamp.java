@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.fluid.Fluids;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.network.LazySynced;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -35,7 +36,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-public class TileEntityKeroseneLamp extends TileEntityTickableBase implements IRedstoneControlled, ISerializableTanks {
+public class TileEntityKeroseneLamp extends TileEntityTickableBase implements IRedstoneControlled, ISerializableTanks, ISmartFluidSync {
     public static final int INVENTORY_SIZE = 2;
 
     private static final int INPUT_SLOT = 0;
@@ -57,17 +58,23 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements IR
     private int checkingX, checkingY, checkingZ;
     @DescSynced
     private EnumFacing sideConnected = EnumFacing.DOWN;
+    @LazySynced
     @DescSynced
-    private final FluidTank tank = new FluidTank(1000) {
+    @GuiSynced
+    private final SmartSyncTank tank = new SmartSyncTank(this, 1000) {
         private FluidStack prevFluid;
         @Override
         protected void onContentsChanged() {
+            super.onContentsChanged();
             if (prevFluid == null && fluid != null || prevFluid != null && fluid == null) {
                 recalculateFuelQuality();
             }
             prevFluid = fluid;
         }
     };
+    @SuppressWarnings("unused")
+    @DescSynced
+    private int fluidAmountScaled;  // sync the lazy tank in a network-friendly way
     @DescSynced
     private float fuelQuality = -1f; // the quality of the liquid currently in the tank; basically, its burn time
 
@@ -290,6 +297,7 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements IR
             managingLights.add(new BlockPos(t.getInteger("x"), t.getInteger("y"), t.getInteger("z")));
         }
         tank.readFromNBT(tag.getCompoundTag("tank"));
+        fluidAmountScaled = tank.getScaledFluidAmount();
         recalculateFuelQuality();
         redstoneMode = tag.getByte("redstoneMode");
         targetRange = tag.getByte("targetRange");
@@ -375,5 +383,10 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements IR
     @Override
     public Map<String, FluidTank> getSerializableTanks() {
         return ImmutableMap.of("Tank", tank);
+    }
+
+    @Override
+    public void updateScaledFluidAmount(int tankIndex, int amount) {
+        fluidAmountScaled = amount;
     }
 }

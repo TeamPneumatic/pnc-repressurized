@@ -9,6 +9,7 @@ import me.desht.pneumaticcraft.common.fluid.Fluids;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.network.LazySynced;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethod;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.player.EntityPlayer;
@@ -32,19 +33,25 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Map;
 
-public class TileEntityPlasticMixer extends TileEntityTickableBase implements IHeatExchanger, IRedstoneControlled, ISerializableTanks {
+public class TileEntityPlasticMixer extends TileEntityTickableBase implements IHeatExchanger, IRedstoneControlled, ISerializableTanks, ISmartFluidSync {
     private static final int BASE_TEMPERATURE = FluidRegistry.WATER.getTemperature();
     public static final int INVENTORY_SIZE = 5;
-    public static final int DYE_PER_DYE = 0xFF * 10;
     public static final int DYE_BUFFER_MAX = 0xFF * 2 * PneumaticValues.NORMAL_TANK_CAPACITY / 1000;
-    public static final String[] DYES = {
+    private static final int DYE_PER_DYE = 0xFF * 10;
+    private static final String[] DYES = {
             "dyeBlack", "dyeRed", "dyeGreen", "dyeBrown", "dyeBlue", "dyePurple", "dyeCyan", "dyeLightGray",
             "dyeGray", "dyePink", "dyeLime", "dyeYellow", "dyeLightBlue", "dyeMagenta", "dyeOrange", "dyeWhite"
     };
     public static final int INV_INPUT = 0, INV_OUTPUT = 1, INV_DYE_RED = 2, INV_DYE_GREEN = 3, INV_DYE_BLUE = 4;
 
+    @LazySynced
     @DescSynced
-    private final FluidTank tank = new PlasticFluidTank(PneumaticValues.NORMAL_TANK_CAPACITY);
+    @GuiSynced
+    private final PlasticFluidTank tank = new PlasticFluidTank(PneumaticValues.NORMAL_TANK_CAPACITY);
+    @SuppressWarnings("unused")
+    @DescSynced
+    private int fluidAmountScaled;
+
     private final ItemStackHandler inventory = new PlasticItemStackHandler();
 
     private int lastTickInventoryStacksize;
@@ -187,6 +194,10 @@ public class TileEntityPlasticMixer extends TileEntityTickableBase implements IH
         redstoneMode = tag.getInteger("redstoneMode");
 
         itemLogic.readFromNBT(tag.getCompoundTag("itemLogic"));
+
+        tank.setFluid(null);
+        tank.readFromNBT(tag.getCompoundTag("fluid"));
+        fluidAmountScaled = tank.getScaledFluidAmount();
     }
 
     @Override
@@ -205,22 +216,11 @@ public class TileEntityPlasticMixer extends TileEntityTickableBase implements IH
         itemLogic.writeToNBT(heatTag);
         tag.setTag("itemLogic", heatTag);
 
-        return tag;
-    }
-
-    @Override
-    public void readFromPacket(NBTTagCompound tag) {
-        super.readFromPacket(tag);
-        tank.setFluid(null);
-        tank.readFromNBT(tag.getCompoundTag("fluid"));
-    }
-
-    @Override
-    public void writeToPacket(NBTTagCompound tag) {
-        super.writeToPacket(tag);
         NBTTagCompound tankTag = new NBTTagCompound();
         tank.writeToNBT(tankTag);
         tag.setTag("fluid", tankTag);
+
+        return tag;
     }
 
     @Nonnull
@@ -229,9 +229,14 @@ public class TileEntityPlasticMixer extends TileEntityTickableBase implements IH
         return ImmutableMap.of("Tank", tank);
     }
 
-    private static class PlasticFluidTank extends FluidTank {
+    @Override
+    public void updateScaledFluidAmount(int tankIndex, int amount) {
+        fluidAmountScaled = amount;
+    }
+
+    private class PlasticFluidTank extends SmartSyncTank {
         PlasticFluidTank(int capacity) {
-            super(capacity);
+            super(TileEntityPlasticMixer.this, capacity);
         }
 
         @Override

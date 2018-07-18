@@ -4,6 +4,8 @@ import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.network.DescSynced;
+import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.network.LazySynced;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.Block;
@@ -24,23 +26,28 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Map;
 
-public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper implements ISerializableTanks {
+public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper implements ISerializableTanks, ISmartFluidSync {
     private int comparatorValue = -1;
 
+    @LazySynced
     @DescSynced
-    private final FluidTank tank;
+    @GuiSynced
+    private final SmartSyncTank tank;
+
+    @SuppressWarnings("unused")
+    @DescSynced
+    private int fluidAmountScaled;
 
     private final WrappedFluidTank inputWrapper, outputWrapper;
 
     public TileEntityLiquidHopper() {
         super(4);
         addApplicableUpgrade(EnumUpgrade.DISPENSER);
-        tank = new FluidTank(PneumaticValues.NORMAL_TANK_CAPACITY) {
+        tank = new SmartSyncTank(this, PneumaticValues.NORMAL_TANK_CAPACITY) {
             @Override
             protected void onContentsChanged() {
                 super.onContentsChanged();
                 comparatorValue = -1;
-                markDirty();
             }
         };
         inputWrapper = new WrappedFluidTank(tank, true);
@@ -60,9 +67,8 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
     @Override
     protected int getComparatorValueInternal() {
         if (comparatorValue < 0) {
+            if (tank.getFluidAmount() == 0) return 0;
             FluidStack fluidStack = tank.getFluid();
-            if (fluidStack == null || fluidStack.amount == 0) return 0;
-
             comparatorValue = (int) (1 + ((float) fluidStack.amount / tank.getCapacity() * 14f));
         }
         return comparatorValue;
@@ -184,6 +190,7 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
     public void readFromNBT(NBTTagCompound tag) {
         super.readFromNBT(tag);
         tank.readFromNBT(tag.getCompoundTag("tank"));
+        fluidAmountScaled = tank.getScaledFluidAmount();
         comparatorValue = -1;
     }
 
@@ -212,6 +219,11 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
     @Override
     public Map<String, FluidTank> getSerializableTanks() {
         return ImmutableMap.of("Tank", tank);
+    }
+
+    @Override
+    public void updateScaledFluidAmount(int tankIndex, int amount) {
+        fluidAmountScaled = amount;
     }
 
     class WrappedFluidTank implements IFluidTank, IFluidHandler {

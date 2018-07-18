@@ -28,23 +28,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class TileEntityRefinery extends TileEntityTickableBase implements IHeatExchanger, IRedstoneControlled, IComparatorSupport, ISerializableTanks {
+public class TileEntityRefinery extends TileEntityTickableBase
+        implements IHeatExchanger, IRedstoneControlled, IComparatorSupport, ISerializableTanks, ISmartFluidSync {
 
     @GuiSynced
     @DescSynced
     @LazySynced
-    private final OilTank inputTank = new OilTank(PneumaticValues.NORMAL_TANK_CAPACITY);
+    private final RefineryInputTank inputTank = new RefineryInputTank(PneumaticValues.NORMAL_TANK_CAPACITY);
     
     @GuiSynced
     @DescSynced
     @LazySynced
-    private final FluidTank outputTank = new FluidTank(PneumaticValues.NORMAL_TANK_CAPACITY);
+    private final SmartSyncTank outputTank = new SmartSyncTank(this, PneumaticValues.NORMAL_TANK_CAPACITY, 2);
     
     @GuiSynced
     private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().getHeatExchangerLogic();
     
+    @SuppressWarnings("unused")
     @DescSynced
-    private int inputTankAmount, outputTankAmount; //amount divided by 100 to decrease network load.
+    private int inputAmountScaled, outputAmountScaled;
     
     @GuiSynced
     private int redstoneMode;
@@ -77,13 +79,11 @@ public class TileEntityRefinery extends TileEntityTickableBase implements IHeatE
     public void update() {
         super.update();
         if (!getWorld().isRemote) {
-            inputTankAmount = inputTank.getFluidAmount() / 100;
-            outputTankAmount = outputTank.getFluidAmount() / 100;
 
             if (isMaster()) {
                 List<TileEntityRefinery> refineries = getRefineries();
                 if (searchForRecipe) {
-                    Optional<RefineryRecipe> recipe = RefineryRecipe.getRecipe(inputTank.getFluidAmount() > 0 ? inputTank.getFluid().getFluid() : null, refineries.size());
+                    Optional<RefineryRecipe> recipe = RefineryRecipe.getRecipe(inputTank.getFluid() != null ? inputTank.getFluid().getFluid() : null, refineries.size());
                     currentRecipe = recipe.orElse(null);
                     searchForRecipe = false;
                 }
@@ -278,7 +278,9 @@ public class TileEntityRefinery extends TileEntityTickableBase implements IHeatE
     public void readFromNBT(NBTTagCompound tag) {
         super.readFromNBT(tag);
         inputTank.readFromNBT(tag.getCompoundTag("oilTank"));
+        inputAmountScaled = inputTank.getScaledFluidAmount();
         outputTank.readFromNBT(tag.getCompoundTag("outputTank"));
+        outputAmountScaled = outputTank.getScaledFluidAmount();
         redstoneMode = tag.getByte("redstoneMode");
     }
 
@@ -339,12 +341,20 @@ public class TileEntityRefinery extends TileEntityTickableBase implements IHeatE
         return ImmutableMap.of("OilTank", inputTank, "OutputTank", outputTank);
     }
 
+    @Override
+    public void updateScaledFluidAmount(int tankIndex, int amount) {
+        if (tankIndex == 1) {
+            inputAmountScaled = amount;
+        } else if (tankIndex == 2) {
+            outputAmountScaled = amount;
+        }
+    }
 
-    private class OilTank extends FluidTank {
+    private class RefineryInputTank extends SmartSyncTank {
         private Fluid prevFluid;
 
-        OilTank(int capacity) {
-            super(capacity);
+        RefineryInputTank(int capacity) {
+            super(TileEntityRefinery.this, capacity, 1);
         }
 
         @Override
