@@ -179,5 +179,5 @@ public class PneumaticValues {
     public static final int PNEUMATIC_KICK_MAX_UPGRADES = 4;
     public static final int PNEUMATIC_LEGS_MAX_JUMP = 6;
     public static final int PNEUMATIC_JET_BOOTS_USAGE = 6;  // every tick the boots are firing, per upgrade
-    public static final int PNEUMATIC_JET_BOOTS_MAX_UPGRADES = 8;
+    public static final int PNEUMATIC_JET_BOOTS_MAX_UPGRADES = 10;
 }
