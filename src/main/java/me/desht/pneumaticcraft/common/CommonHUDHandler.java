@@ -204,6 +204,8 @@ public class CommonHUDHandler {
     }
 
     private void doArmorActions(EntityPlayer player, ItemStack armorStack, EntityEquipmentSlot slot) {
+        if (!isArmorReady(slot)) return;
+
         switch (slot) {
             case CHEST:
                 handleChestplateMagnet(player, armorStack);
@@ -265,6 +267,8 @@ public class CommonHUDHandler {
 
     private void handleJetBoots(EntityPlayer player, ItemStack bootsStack) {
         int jetbootsCount = getUpgradeCount(EntityEquipmentSlot.FEET, IItemRegistry.EnumUpgrade.JET_BOOTS, PneumaticValues.PNEUMATIC_JET_BOOTS_MAX_UPGRADES);
+        if (jetbootsCount == 0) return;
+
         int jetbootsAirUsage = 0;
         Vec3d lookVec = new Vec3d(0, 0.5, 0);
         if (getArmorPressure(EntityEquipmentSlot.FEET) > 0.0F) {
@@ -313,10 +317,12 @@ public class CommonHUDHandler {
     }
 
     private void handleChestplateCharging(EntityPlayer player, ItemStack chestplateStack) {
-        if (player.world.isRemote || !chargingEnabled || getTicksSinceEquipped(EntityEquipmentSlot.CHEST) % PneumaticValues.ARMOR_CHARGER_INTERVAL != 5)
+        if (player.world.isRemote || !chargingEnabled
+                || getUpgradeCount(EntityEquipmentSlot.CHEST, EnumUpgrade.CHARGING) == 0
+                || getTicksSinceEquipped(EntityEquipmentSlot.CHEST) % PneumaticValues.ARMOR_CHARGER_INTERVAL != 5)
             return;
 
-        int upgrades = Math.min(getUpgradeCount(EntityEquipmentSlot.CHEST, EnumUpgrade.CHARGING), PneumaticValues.ARMOR_CHARGING_MAX_UPGRADES);
+        int upgrades = getUpgradeCount(EntityEquipmentSlot.CHEST, EnumUpgrade.CHARGING, PneumaticValues.ARMOR_CHARGING_MAX_UPGRADES);
         int airAmount = upgrades * 100 + 100;
 
         for (EntityEquipmentSlot slot : EntityEquipmentSlot.values()) {
@@ -359,7 +365,8 @@ public class CommonHUDHandler {
     }
 
     private void handleChestplateMagnet(EntityPlayer player, ItemStack chestplateStack) {
-        if (player.world.isRemote || !magnetEnabled || (getTicksSinceEquipped(EntityEquipmentSlot.CHEST) & 0x7) != 0)
+        if (player.world.isRemote || !magnetEnabled || (getTicksSinceEquipped(EntityEquipmentSlot.CHEST) & 0x7) != 0
+                || getUpgradeCount(EntityEquipmentSlot.CHEST, EnumUpgrade.MAGNET) == 0)
             return;
 
         AxisAlignedBB box = new AxisAlignedBB(player.getPosition()).grow(magnetRadius);
