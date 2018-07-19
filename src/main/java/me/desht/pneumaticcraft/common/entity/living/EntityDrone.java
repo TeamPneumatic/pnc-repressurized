@@ -296,12 +296,11 @@ public class EntityDrone extends EntityDroneBase
             firstTick = false;
             volume = PneumaticValues.DRONE_VOLUME + getUpgrades(EnumUpgrade.VOLUME) * PneumaticValues.VOLUME_VOLUME_UPGRADE;
             securityUpgradeCount = getUpgrades(EnumUpgrade.SECURITY);
-//            tryRestoreLiquids = getUpgrades(EnumUpgrade.SECURITY) <= 1;
             if (securityUpgradeCount > 0) {
                 ((EntityPathNavigateDrone) getPathNavigator()).pathThroughLiquid = true;
             }
             setPathPriority(PathNodeType.WATER, securityUpgradeCount > 0 ? 0.0f : -1.0f);
-            speed = 0.1 + Math.min(10, getUpgrades(EnumUpgrade.SPEED)) * 0.01;
+            speed = 0.15 + Math.min(10, getUpgrades(EnumUpgrade.SPEED)) * 0.015;
             lifeUpgrades = getUpgrades(EnumUpgrade.ITEM_LIFE);
             if (!world.isRemote) setHasMinigun(getUpgrades(EnumUpgrade.ENTITY_TRACKER) > 0);
             aiManager.setWidgets(progWidgets);
