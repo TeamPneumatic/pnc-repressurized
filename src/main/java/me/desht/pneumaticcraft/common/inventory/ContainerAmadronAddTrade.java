@@ -8,13 +8,15 @@ import net.minecraftforge.items.ItemStackHandler;
 import javax.annotation.Nonnull;
 
 public class ContainerAmadronAddTrade extends ContainerPneumaticBase {
-//    private final InventoryBasic inv = new InventoryBasic("amadron", true, 2);
+    public static final int INPUT_SLOT = 0;
+    public static final int OUTPUT_SLOT = 1;
+
     private final ItemStackHandler inv = new ItemStackHandler(2);
 
     public ContainerAmadronAddTrade() {
         super(null);
-        addSlotToContainer(new SlotUntouchable(inv, 0, 10, 90));
-        addSlotToContainer(new SlotUntouchable(inv, 1, 99, 90));
+        addSlotToContainer(new SlotUntouchable(inv, INPUT_SLOT, 10, 90));
+        addSlotToContainer(new SlotUntouchable(inv, OUTPUT_SLOT, 99, 90));
     }
 
     public void setStack(int index, @Nonnull ItemStack stack) {
@@ -25,25 +27,22 @@ public class ContainerAmadronAddTrade extends ContainerPneumaticBase {
     public ItemStack getStack(int index) {
         return inv.getStackInSlot(index);
     }
+    @Nonnull
+    public ItemStack getInputStack() {
+        return inv.getStackInSlot(INPUT_SLOT);
+    }
+    @Nonnull
+    public ItemStack getOutputStack() {
+        return inv.getStackInSlot(OUTPUT_SLOT);
+    }
 
     @Override
     public boolean canInteractWith(EntityPlayer player) {
         return player.getHeldItemMainhand().getItem() == Itemss.AMADRON_TABLET;
     }
 
-    /**
-     * args: slotID, itemStack to put in slot
-     */
     @Override
     public void putStackInSlot(int slot, @Nonnull ItemStack stack) {
     }
 
-//    /**
-//     * places itemstacks in first x slots, x being aitemstack.lenght
-//     */
-//    @Override
-//    @SideOnly(Side.CLIENT)
-//    public void putStacksInSlots(ItemStack[] p_75131_1_) {
-//
-//    }
 }

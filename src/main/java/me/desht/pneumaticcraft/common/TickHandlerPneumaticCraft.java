@@ -29,18 +29,21 @@ public class TickHandlerPneumaticCraft {
 
     @SubscribeEvent
     public void tickEnd(TickEvent.WorldTickEvent event) {
-        if (event.phase == TickEvent.Phase.END) {
+        if (event.phase == TickEvent.Phase.END && !event.world.isRemote) {
             World world = event.world;
             checkLightning(world);
             DroneClaimManager.getInstance(world).update();
-            if (!event.world.isRemote && event.world.provider.getDimension() == 0 && event.world.getWorldTime() % (24000 / AmadronOfferPeriodicConfig.timesPerDay) == 1) {
-                AmadronOfferManager.getInstance().shufflePeriodicOffers();
+            if (event.world.provider.getDimension() == 0) {
+                if (event.world.getWorldTime() % (24000 / AmadronOfferPeriodicConfig.timesPerDay) == 1) {
+                    AmadronOfferManager.getInstance().shufflePeriodicOffers();
+                }
+                if (event.world.getTotalWorldTime() % 600 == 0) {
+                    AmadronOfferManager.getInstance().tryRestockCustomOffers();
+                }
             }
-            if (!event.world.isRemote && event.world.getTotalWorldTime() % 100 == 0) {
+            if (event.world.getTotalWorldTime() % 100 == 0) {
                 double tickTime = net.minecraft.util.math.MathHelper.average(FMLCommonHandler.instance().getMinecraftServerInstance().tickTimeArray) * 1.0E-6D;//In case world are going to get their own thread: MinecraftServer.getServer().worldTickTimes.get(event.world.provider.getDimension())
                 NetworkHandler.sendToDimension(new PacketServerTickTime(tickTime), event.world.provider.getDimension());
-                if (event.world.getTotalWorldTime() % 600 == 0)
-                    AmadronOfferManager.getInstance().tryRestockCustomOffers();
             }
         }
     }

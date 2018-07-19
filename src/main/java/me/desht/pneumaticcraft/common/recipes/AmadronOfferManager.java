@@ -19,10 +19,10 @@ import java.util.*;
 public class AmadronOfferManager {
     private static AmadronOfferManager CLIENT_INSTANCE = new AmadronOfferManager();
     private static AmadronOfferManager SERVER_INSTANCE = new AmadronOfferManager();
-    private final LinkedHashSet<AmadronOffer> staticOffers = new LinkedHashSet<AmadronOffer>();
-    private final List<AmadronOffer> periodicOffers = new ArrayList<AmadronOffer>();
-    private final LinkedHashSet<AmadronOffer> selectedPeriodicOffers = new LinkedHashSet<AmadronOffer>();
-    private final LinkedHashSet<AmadronOffer> allOffers = new LinkedHashSet<AmadronOffer>();
+    private final LinkedHashSet<AmadronOffer> staticOffers = new LinkedHashSet<>();
+    private final List<AmadronOffer> periodicOffers = new ArrayList<>();
+    private final LinkedHashSet<AmadronOffer> selectedPeriodicOffers = new LinkedHashSet<>();
+    private final LinkedHashSet<AmadronOffer> allOffers = new LinkedHashSet<>();
 
     public static AmadronOfferManager getInstance() {
         return FMLCommonHandler.instance().getSide() == Side.SERVER ? SERVER_INSTANCE : CLIENT_INSTANCE;

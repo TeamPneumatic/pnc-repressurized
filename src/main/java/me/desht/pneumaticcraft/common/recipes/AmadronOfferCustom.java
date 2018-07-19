@@ -160,7 +160,7 @@ public class AmadronOfferCustom extends AmadronOffer {
                         stacks.add(stack);
                         amount -= stack.getCount();
                     }
-                    DroneRegistry.getInstance().deliverItemsAmazonStyle(provider.getWorld(), provider.getPos(), stacks.toArray(new ItemStack[stacks.size()]));
+                    DroneRegistry.getInstance().deliverItemsAmazonStyle(provider.getWorld(), provider.getPos(), stacks.toArray(new ItemStack[0]));
                 } else {
                     FluidStack deliveringFluid = ((FluidStack) getInput()).copy();
                     deliveringFluid.amount *= stock;

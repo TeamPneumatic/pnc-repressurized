@@ -84,10 +84,10 @@ public class WidgetAmadronOffer extends WidgetBase {
             }
         }
         if (!isInBounds) {
+            curTip.add(I18n.format("gui.amadron.amadronWidget.vendor", offer.getVendor()));
             curTip.add(I18n.format("gui.amadron.amadronWidget.selling", getStringForObject(offer.getOutput())));
             curTip.add(I18n.format("gui.amadron.amadronWidget.buying", getStringForObject(offer.getInput())));
-            curTip.add(I18n.format("gui.amadron.amadronWidget.vendor", offer.getVendor()));
-            curTip.add(I18n.format("gui.amadron.amadronWidget.inBasket", shoppingAmount));
+            curTip.add(I18n.format("gui.amadron.amadronWidget.inBasket", getStringForObject(offer.getOutput(), shoppingAmount)));
             if (offer.getStock() >= 0) curTip.add(I18n.format("gui.amadron.amadronWidget.stock", offer.getStock()));
             if (offer.getVendor().equals(PneumaticCraftRepressurized.proxy.getPlayer().getName())) {
                 curTip.addAll(Arrays.asList(WordUtils.wrap(I18n.format("gui.amadron.amadronWidget.sneakRightClickToRemove"), 40).split(System.getProperty("line.separator"))));
