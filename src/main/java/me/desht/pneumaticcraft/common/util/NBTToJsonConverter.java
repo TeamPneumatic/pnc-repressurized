@@ -12,18 +12,20 @@ public class NBTToJsonConverter {
         this.tag = tag;
     }
 
-    public String convert() {
+    public String convert(boolean pretty) {
         JsonObject json = getObject(tag);
         String jsonString = json.toString();
 
         JsonParser parser = new JsonParser();
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        GsonBuilder builder = new GsonBuilder();
+        if (pretty) builder.setPrettyPrinting();
+        Gson gson = builder.create();
 
         JsonElement el = parser.parse(jsonString);
         return gson.toJson(el); // done
     }
 
-    private JsonObject getObject(NBTTagCompound tag) {
+    public static JsonObject getObject(NBTTagCompound tag) {
         Set<String> keys = tag.getKeySet();
         JsonObject jsonRoot = new JsonObject();
         for (String key : keys) {

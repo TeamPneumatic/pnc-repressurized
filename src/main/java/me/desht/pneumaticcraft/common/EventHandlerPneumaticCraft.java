@@ -17,6 +17,7 @@ import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.ai.EntityAINoAIWhenRidingDrone;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.config.AmadronOfferStaticConfig;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.entity.EntityProgrammableController;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
@@ -91,6 +92,7 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -328,16 +330,26 @@ public class EventHandlerPneumaticCraft {
 
         boolean shouldDeliver = false;
         if (offer instanceof AmadronOfferCustom) {
+            boolean shouldSave = false;
             AmadronOffer realOffer = AmadronOfferManager.getInstance().get(offer);
             if (realOffer != null) {//If we find the non-inverted offer, that means the Drone just has completed trading with a different player.
                 ((AmadronOfferCustom) realOffer).addPayment(drone.getOfferTimes());
                 ((AmadronOfferCustom) realOffer).addStock(-drone.getOfferTimes());
                 realOffer.onTrade(drone.getOfferTimes(), drone.getBuyingPlayer());
                 shouldDeliver = true;
+                shouldSave = true;
             }
             realOffer = AmadronOfferManager.getInstance().get(((AmadronOfferCustom) offer).copy().invert());
             if (realOffer != null) {//If we find the inverted offer, that means the Drone has just restocked.
                 ((AmadronOfferCustom) realOffer).addStock(drone.getOfferTimes());
+                shouldSave = true;
+            }
+            if (shouldSave) {
+                try {
+                    AmadronOfferStaticConfig.INSTANCE.writeToFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         } else {
             shouldDeliver = true;
@@ -347,7 +359,7 @@ public class EventHandlerPneumaticCraft {
             if (offer.getOutput() instanceof ItemStack) {
                 ItemStack offeringItems = (ItemStack) offer.getOutput();
                 int producedItems = offeringItems.getCount() * drone.getOfferTimes();
-                List<ItemStack> stacks = new ArrayList<ItemStack>();
+                List<ItemStack> stacks = new ArrayList<>();
                 while (producedItems > 0) {
                     ItemStack stack = offeringItems.copy();
                     stack.setCount(Math.min(producedItems, stack.getMaxStackSize()));
@@ -357,7 +369,7 @@ public class EventHandlerPneumaticCraft {
                 BlockPos pos = ItemAmadronTablet.getItemProvidingLocation(usedTablet);
                 if (pos != null) {
                     World world = DimensionManager.getWorld(ItemAmadronTablet.getItemProvidingDimension(usedTablet));
-                    DroneRegistry.getInstance().deliverItemsAmazonStyle(world, pos, stacks.toArray(new ItemStack[stacks.size()]));
+                    DroneRegistry.getInstance().deliverItemsAmazonStyle(world, pos, stacks.toArray(new ItemStack[0]));
                 }
             } else {
                 FluidStack offeringFluid = ((FluidStack) offer.getOutput()).copy();

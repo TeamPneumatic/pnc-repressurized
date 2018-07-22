@@ -19,6 +19,12 @@ import java.util.List;
 public class ProgWidgetLiquidFilter extends ProgWidget {
     private Fluid fluid;
 
+    public static ProgWidgetLiquidFilter withFilter(Fluid fluid) {
+        ProgWidgetLiquidFilter f = new ProgWidgetLiquidFilter();
+        f.setFluid(fluid);
+        return f;
+    }
+
     @Override
     public void addErrors(List<String> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);

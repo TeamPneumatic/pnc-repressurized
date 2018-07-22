@@ -37,7 +37,7 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
     }
 
     public GuiPastebin(GuiScreen parentScreen, NBTTagCompound tag) {
-        this(parentScreen, new NBTToJsonConverter(tag).convert());
+        this(parentScreen, new NBTToJsonConverter(tag).convert(true));
     }
 
     @Override

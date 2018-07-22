@@ -17,8 +17,9 @@ import net.minecraftforge.items.IItemHandler;
 import java.util.*;
 
 public class AmadronOfferManager {
-    private static AmadronOfferManager CLIENT_INSTANCE = new AmadronOfferManager();
-    private static AmadronOfferManager SERVER_INSTANCE = new AmadronOfferManager();
+    private static final AmadronOfferManager CLIENT_INSTANCE = new AmadronOfferManager();
+    private static final AmadronOfferManager SERVER_INSTANCE = new AmadronOfferManager();
+
     private final LinkedHashSet<AmadronOffer> staticOffers = new LinkedHashSet<>();
     private final List<AmadronOffer> periodicOffers = new ArrayList<>();
     private final LinkedHashSet<AmadronOffer> selectedPeriodicOffers = new LinkedHashSet<>();

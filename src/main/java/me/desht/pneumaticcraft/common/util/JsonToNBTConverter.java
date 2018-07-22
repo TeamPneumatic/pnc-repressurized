@@ -23,7 +23,7 @@ public class JsonToNBTConverter {
         return getTag((JsonObject) el);
     }
 
-    private NBTTagCompound getTag(JsonObject object) {
+    public static NBTTagCompound getTag(JsonObject object) {
         NBTTagCompound nbt = new NBTTagCompound();
         for (Map.Entry<String, JsonElement> entry : object.entrySet()) {
             JsonObject keyObject = entry.getValue().getAsJsonObject();

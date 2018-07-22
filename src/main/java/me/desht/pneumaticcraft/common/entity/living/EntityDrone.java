@@ -731,6 +731,7 @@ public class EntityDrone extends EntityDroneBase
             }
         }
         if (!world.isRemote) getFakePlayer().interactionManager.cancelDestroyingBlock();
+        setCustomNameTag("");  // keep other mods (like CoFH Core) quiet about death message broadcasts
         super.onDeath(par1DamageSource);
     }
 

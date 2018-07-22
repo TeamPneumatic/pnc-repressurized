@@ -31,6 +31,8 @@ import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
@@ -51,7 +53,13 @@ public class ItemAmadronTablet extends ItemPressurizable implements IAmadronInte
     public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
         if (handIn != EnumHand.MAIN_HAND) return ActionResult.newResult(EnumActionResult.PASS, playerIn.getHeldItem(handIn));
         if (!worldIn.isRemote) {
-            NetworkHandler.sendTo(new PacketSyncAmadronOffers(AmadronOfferManager.getInstance().getAllOffers()), (EntityPlayerMP) playerIn);
+            // If this is a server-side world, but a physical client, then we must be in a single-player world (integrated server).
+            // In that case, we don't need to sync the offers, since the client-side AmadronOfferManager is always used
+            // In fact, sync'ing will cause AmadronOfferManager#allOffers to go out-of-sync with AmadronOfferManager#staticOffers
+            // (Technically we're reaching across logical sides, but it's OK in this case; packet will be sent on dedicated server.
+            if (FMLCommonHandler.instance().getSide() != Side.CLIENT) {
+                NetworkHandler.sendTo(new PacketSyncAmadronOffers(AmadronOfferManager.getInstance().getAllOffers()), (EntityPlayerMP) playerIn);
+            }
             playerIn.openGui(PneumaticCraftRepressurized.instance, EnumGuiId.AMADRON.ordinal(), playerIn.world, (int) playerIn.posX, (int) playerIn.posY, (int) playerIn.posZ);
         }
         return ActionResult.newResult(EnumActionResult.SUCCESS, playerIn.getHeldItemMainhand());

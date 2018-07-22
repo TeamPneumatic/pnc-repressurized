@@ -11,14 +11,18 @@ import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketAmadronTradeRemoved;
+import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.recipes.AmadronOffer;
 import me.desht.pneumaticcraft.common.recipes.AmadronOfferCustom;
 import me.desht.pneumaticcraft.common.recipes.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.Sounds;
 import me.desht.pneumaticcraft.proxy.CommonProxy;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
@@ -40,7 +44,6 @@ public class ContainerAmadron extends ContainerPneumaticBase {
     public List<AmadronOffer> offers = new ArrayList<>(AmadronOfferManager.getInstance().getAllOffers());
 
     private final ItemStackHandler inv = new ItemStackHandler(ROWS * 4);
-//    private final InventoryBasic inv = new InventoryBasic("amadron", true, ROWS * 4);
     @GuiSynced
     private final int[] shoppingItems = new int[8];
     @GuiSynced
@@ -53,6 +56,8 @@ public class ContainerAmadron extends ContainerPneumaticBase {
     public int maxOffers = 0;
     @GuiSynced
     public int currentOffers = 0;
+    @GuiSynced
+    private boolean basketEmpty = true;
 
     public enum EnumProblemState {
         NO_PROBLEMS("noProblems"),
@@ -77,6 +82,7 @@ public class ContainerAmadron extends ContainerPneumaticBase {
 
     public ContainerAmadron(EntityPlayer player) {
         super(null);
+
         for (int y = 0; y < ROWS; y++) {
             for (int x = 0; x < 2; x++) {
                 addSlotToContainer(new SlotUntouchable(inv, y * 4 + x * 2, x * 73 + 12, y * 35 + 70));
@@ -106,9 +112,14 @@ public class ContainerAmadron extends ContainerPneumaticBase {
                     }
                 }
             }
+            basketEmpty = Arrays.stream(shoppingAmounts).noneMatch(shoppingAmount -> shoppingAmount > 0);
             currentOffers = AmadronOfferManager.getInstance().countOffers(player.getGameProfile().getId().toString());
             maxOffers = PneumaticCraftUtils.isPlayerOp(player) ? Integer.MAX_VALUE : AmadronOfferSettings.maxTradesPerPlayer;
         }
+    }
+
+    public boolean isBasketEmpty() {
+        return basketEmpty;
     }
 
     @Override
@@ -149,32 +160,21 @@ public class ContainerAmadron extends ContainerPneumaticBase {
         problemState = EnumProblemState.NO_PROBLEMS;
         int cartSlot = getCartSlot(offerId);
         if (cartSlot >= 0) {
-            if (mouseButton == 2) {
+            if (mouseButton == 2) {  // middle-click
                 shoppingAmounts[cartSlot] = 0;
             } else if (sneaking) {
-                if (mouseButton == 0) shoppingAmounts[cartSlot] /= 2;
-                else {
+                if (mouseButton == 0) { // sneak-left-click
+                    shoppingAmounts[cartSlot] /= 2;
+                } else { // sneak-right-click
                     AmadronOffer offer = offers.get(offerId);
                     if (offer instanceof AmadronOfferCustom) {
-                        AmadronOfferCustom custom = (AmadronOfferCustom) offer;
-                        if (custom.getPlayerId().equals(player.getGameProfile().getId().toString())) {
-                            if (AmadronOfferManager.getInstance().removeStaticOffer(custom)) {
-                                if (AmadronOfferSettings.notifyOfTradeRemoval)
-                                    NetworkHandler.sendToAll(new PacketAmadronTradeRemoved(custom));
-                                custom.returnStock();
-                                try {
-                                    AmadronOfferStaticConfig.INSTANCE.writeToFile();
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                                player.closeScreen();
-                            }
-                        }
+                        removeCustomOffer(player, (AmadronOfferCustom) offer);
+                    } else {
+                        shoppingAmounts[cartSlot] *= 2;
+                        if (shoppingAmounts[cartSlot] == 0) shoppingAmounts[cartSlot] = 1;
                     }
-                    shoppingAmounts[cartSlot] *= 2;
-                    if (shoppingAmounts[cartSlot] == 0) shoppingAmounts[cartSlot] = 1;
                 }
-            } else {
+            } else { // left or right-click
                 if (mouseButton == 0) shoppingAmounts[cartSlot]--;
                 else shoppingAmounts[cartSlot]++;
             }
@@ -183,8 +183,23 @@ public class ContainerAmadron extends ContainerPneumaticBase {
                 shoppingItems[cartSlot] = -1;
             } else {
                 shoppingAmounts[cartSlot] = capShoppingAmount(offerId, shoppingAmounts[cartSlot], player);
-                if (shoppingAmounts[cartSlot] > 0) shoppingItems[cartSlot] = offerId;
-                else shoppingItems[cartSlot] = -1;
+                shoppingItems[cartSlot] = shoppingAmounts[cartSlot] > 0 ? offerId : -1;
+            }
+        }
+        basketEmpty = Arrays.stream(shoppingAmounts).noneMatch(shoppingAmount -> shoppingAmount > 0);
+    }
+
+    private void removeCustomOffer(EntityPlayer player, AmadronOfferCustom offer) {
+        if (offer.getPlayerId().equals(player.getGameProfile().getId().toString())) {
+            if (AmadronOfferManager.getInstance().removeStaticOffer(offer)) {
+                if (AmadronOfferSettings.notifyOfTradeRemoval) NetworkHandler.sendToAll(new PacketAmadronTradeRemoved(offer));
+                offer.returnStock();
+                try {
+                    AmadronOfferStaticConfig.INSTANCE.writeToFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                player.closeScreen();
             }
         }
     }
@@ -193,6 +208,7 @@ public class ContainerAmadron extends ContainerPneumaticBase {
     public void handleGUIButtonPress(int guiID, EntityPlayer player) {
         super.handleGUIButtonPress(guiID, player);
         if (guiID == 1) {
+            boolean placed = false;
             for (int i = 0; i < shoppingItems.length; i++) {
                 if (shoppingItems[i] >= 0) {
                     AmadronOffer offer = offers.get(shoppingItems[i]);
@@ -210,12 +226,18 @@ public class ContainerAmadron extends ContainerPneumaticBase {
                         liquidWorld = DimensionManager.getWorld(ItemAmadronTablet.getLiquidProvidingDimension(player.getHeldItemMainhand()));
                     }
                     EntityDrone drone = retrieveOrderItems(offer, shoppingAmounts[i], itemWorld, itemPos, liquidWorld, liquidPos);
-                    if (drone != null)
+                    if (drone != null) {
                         drone.setHandlingOffer(offer, shoppingAmounts[i], player.getHeldItemMainhand(), player.getName());
+                        placed = true;
+                    }
+                }
+                if (placed && player instanceof EntityPlayerMP) {
+                    NetworkHandler.sendTo(new PacketPlaySound(Sounds.HUD_INIT_COMPLETE, SoundCategory.PLAYERS, player.posX, player.posY, player.posZ, 0.2f, 1.0f, false), (EntityPlayerMP) player);
                 }
             }
             Arrays.fill(shoppingAmounts, 0);
             Arrays.fill(shoppingItems, -1);
+            basketEmpty = true;
         } else if (guiID == 2) {
             player.openGui(PneumaticCraftRepressurized.instance, CommonProxy.EnumGuiId.AMADRON_ADD_TRADE.ordinal(), player.world, 0, 0, 0);
         }

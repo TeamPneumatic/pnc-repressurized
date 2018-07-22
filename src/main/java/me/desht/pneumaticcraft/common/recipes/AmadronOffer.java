@@ -1,6 +1,8 @@
 package me.desht.pneumaticcraft.common.recipes;
 
 import com.google.gson.JsonObject;
+import me.desht.pneumaticcraft.common.util.JsonToNBTConverter;
+import me.desht.pneumaticcraft.common.util.NBTToJsonConverter;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -10,29 +12,26 @@ import net.minecraft.util.text.translation.I18n;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
+import org.apache.commons.lang3.Validate;
 
 public class AmadronOffer {
     protected Object input;
     protected Object output;
 
     public AmadronOffer(Object input, Object output) {
-        if (input == null) throw new NullPointerException("Input item/fluid can't be null!");
-        if (output == null) throw new NullPointerException("Output item/fluid can't be null!");
+        Validate.notNull(input, "Input item/fluid can't be null!");
+        Validate.notNull(output, "Output item/fluid can't be null!");
         if (input instanceof ItemStack) {
-            if (((ItemStack) input).isEmpty())
-                throw new IllegalArgumentException("Input item needs to have a stacksize of > 0!");
+            Validate.isTrue(!((ItemStack) input).isEmpty(), "Input item cannot be empty!");
         } else if (input instanceof FluidStack) {
-            if (((FluidStack) input).amount <= 0)
-                throw new IllegalArgumentException("Input fluid needs to have an amount of > 0!");
+            Validate.isTrue(((FluidStack) input).amount > 0, "Input fluid cannot be empty!");
         } else {
             throw new IllegalArgumentException("Input must be of type ItemStack or FluidStack. Input: " + input);
         }
         if (output instanceof ItemStack) {
-            if (((ItemStack) output).isEmpty())
-                throw new IllegalArgumentException("Output item needs to have a stacksize of > 0!");
+            Validate.isTrue(!((ItemStack) output).isEmpty(), "Output item cannot be empty!");
         } else if (output instanceof FluidStack) {
-            if (((FluidStack) output).amount <= 0)
-                throw new IllegalArgumentException("Output fluid needs to have an amount of > 0!");
+            Validate.isTrue(((FluidStack) output).amount > 0, "Output fluid cannot be empty!");
         } else {
             throw new IllegalArgumentException("Output must be of type ItemStack or FluidStack. Output: " + input);
         }
@@ -49,7 +48,7 @@ public class AmadronOffer {
     }
 
     public String getVendor() {
-        return I18n.translateToLocal("gui.amadron");//Hardcoded for now until inter-player trading is implemented.
+        return I18n.translateToLocal("gui.amadron");
     }
 
     public int getStock() {
@@ -58,7 +57,9 @@ public class AmadronOffer {
 
     public boolean passesQuery(String query) {
         String queryLow = query.toLowerCase();
-        return getObjectName(getInput()).toLowerCase().contains(queryLow) || getObjectName(getOutput()).toLowerCase().contains(queryLow) || getVendor().toLowerCase().contains(queryLow);
+        return getObjectName(getInput()).toLowerCase().contains(queryLow)
+                || getObjectName(getOutput()).toLowerCase().contains(queryLow)
+                || getVendor().toLowerCase().contains(queryLow);
     }
 
     private String getObjectName(Object object) {
@@ -108,10 +109,15 @@ public class AmadronOffer {
 
         JsonObject inputObject = new JsonObject();
         if (input instanceof ItemStack) {
-            ResourceLocation name = ((ItemStack) input).getItem().getRegistryName();
+            ItemStack stack = (ItemStack) input;
+            ResourceLocation name = stack.getItem().getRegistryName();
             inputObject.addProperty("id", name == null ? "" : name.toString());
-            inputObject.addProperty("damage", ((ItemStack) input).getItemDamage());
-            inputObject.addProperty("amount", ((ItemStack) input).getCount());
+            inputObject.addProperty("damage", stack.getItemDamage());
+            inputObject.addProperty("amount", stack.getCount());
+            if (stack.hasTagCompound()) {
+                //noinspection ConstantConditions
+                inputObject.add("nbt", NBTToJsonConverter.getObject(stack.getTagCompound()));
+            }
         } else {
             inputObject.addProperty("id", ((FluidStack) input).getFluid().getName());
             inputObject.addProperty("amount", ((FluidStack) input).amount);
@@ -120,10 +126,15 @@ public class AmadronOffer {
 
         JsonObject outputObject = new JsonObject();
         if (output instanceof ItemStack) {
-            ResourceLocation name = ((ItemStack) output).getItem().getRegistryName();
+            ItemStack stack = (ItemStack) output;
+            ResourceLocation name = stack.getItem().getRegistryName();
             outputObject.addProperty("id",  name == null ? "" : name.toString());
-            outputObject.addProperty("damage", ((ItemStack) output).getItemDamage());
-            outputObject.addProperty("amount", ((ItemStack) output).getCount());
+            outputObject.addProperty("damage", stack.getItemDamage());
+            outputObject.addProperty("amount", stack.getCount());
+            if (stack.hasTagCompound()) {
+                //noinspection ConstantConditions
+                outputObject.add("nbt", NBTToJsonConverter.getObject(stack.getTagCompound()));
+            }
         } else {
             outputObject.addProperty("id", ((FluidStack) output).getFluid().getName());
             outputObject.addProperty("amount", ((FluidStack) output).amount);
@@ -140,6 +151,9 @@ public class AmadronOffer {
             Item item = Item.getByNameOrId(inputObject.get("id").getAsString());
             if (item != null) {
                 input = new ItemStack(item, inputObject.get("amount").getAsInt(), inputObject.get("damage").getAsInt());
+                if (inputObject.has("nbt")) {
+                    ((ItemStack) input).setTagCompound(JsonToNBTConverter.getTag(inputObject.getAsJsonObject("nbt")));
+                }
             } else {
                 Log.error("Invalid Amadron Offer input item. Invalid item name: " + inputObject.get("id").getAsString() + ". Offer will be skipped");
                 return null;
@@ -160,6 +174,9 @@ public class AmadronOffer {
             Item item = Item.getByNameOrId(outputObject.get("id").getAsString());
             if (item != null) {
                 output = new ItemStack(item, outputObject.get("amount").getAsInt(), outputObject.get("damage").getAsInt());
+                if (outputObject.has("nbt")) {
+                    ((ItemStack) output).setTagCompound(JsonToNBTConverter.getTag(outputObject.getAsJsonObject("nbt")));
+                }
             } else {
                 Log.error("Invalid Amadron Offer output item. Invalid item name: " + outputObject.get("id").getAsString() + ". Offer will be skipped");
                 return null;

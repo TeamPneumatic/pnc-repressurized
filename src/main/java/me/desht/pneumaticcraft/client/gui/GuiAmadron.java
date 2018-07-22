@@ -32,7 +32,7 @@ public class GuiAmadron extends GuiPneumaticContainerBase {
     private final List<WidgetAmadronOffer> widgetOffers = new ArrayList<>();
     private boolean needsRefreshing;
     private boolean hadProblem = false;
-    private GuiButtonSpecial addTradeButton;
+    private GuiButtonSpecial orderButton, addTradeButton;
 
     public GuiAmadron(InventoryPlayer playerInventory) {
         super(new ContainerAmadron(playerInventory.player), null, Textures.GUI_AMADRON);
@@ -60,7 +60,8 @@ public class GuiAmadron extends GuiPneumaticContainerBase {
         addWidget(scrollbar);
 
         List<String> tooltip = PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.amadron.button.order.tooltip"), 40);
-        addWidget(new GuiButtonSpecial(1, guiLeft + 6, guiTop + 15, 72, 20, I18n.format("gui.amadron.button.order")).setTooltipText(tooltip));
+        orderButton = new GuiButtonSpecial(1, guiLeft + 6, guiTop + 15, 72, 20, I18n.format("gui.amadron.button.order")).setTooltipText(tooltip);
+        addWidget(orderButton);
         addTradeButton = new GuiButtonSpecial(2, guiLeft + 80, guiTop + 15, 72, 20, I18n.format("gui.amadron.button.addTrade"));
         addWidget(addTradeButton);
 
@@ -82,6 +83,7 @@ public class GuiAmadron extends GuiPneumaticContainerBase {
             problemTab.openWindow();
         }
         hadProblem = container.problemState != EnumProblemState.NO_PROBLEMS;
+        orderButton.enabled = !container.isBasketEmpty();
         addTradeButton.enabled = container.currentOffers < container.maxOffers;
         List<String> tooltip = PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.amadron.button.addTrade.tooltip"), 40);
         tooltip.add((addTradeButton.enabled ? TextFormatting.GRAY : TextFormatting.RED) + I18n.format("gui.amadron.button.addTrade.tooltip.offerCount", container.currentOffers, container.maxOffers == Integer.MAX_VALUE ? "\u221E" : container.maxOffers));
