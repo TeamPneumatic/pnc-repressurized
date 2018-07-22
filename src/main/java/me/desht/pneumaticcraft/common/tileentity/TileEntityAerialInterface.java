@@ -189,9 +189,8 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
             if (facing == null) return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(playerMainInvHandler);
             switch (facing) {
                 case UP:
-                    return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(playerArmorInvHandler);
                 case DOWN:
-                    return super.getCapability(capability, facing);
+                    return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(playerArmorInvHandler);
                 default:
                     return dispenserUpgradeInserted ?
                             CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(playerFoodHandler) :
