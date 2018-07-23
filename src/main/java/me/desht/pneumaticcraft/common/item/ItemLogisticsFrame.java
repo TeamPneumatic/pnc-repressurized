@@ -50,7 +50,7 @@ public class ItemLogisticsFrame extends ItemSemiBlockBase {
                 if (sneaking) {
                     curInfo.add(I18n.format(String.format("gui.%s.filters", key)));
                     SemiBlockRequester requester = new SemiBlockRequester();
-                    requester.onPlaced(PneumaticCraftRepressurized.proxy.getPlayer(), stack, null);
+                    requester.onPlaced(PneumaticCraftRepressurized.proxy.getClientPlayer(), stack, null);
                     ItemStack[] stacks = new ItemStack[requester.getFilters().getSlots()];
                     for (int i = 0; i < stacks.length; i++) {
                         stacks[i] = requester.getFilters().getStackInSlot(i);

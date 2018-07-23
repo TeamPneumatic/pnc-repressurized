@@ -100,7 +100,7 @@ public class RenderTarget {
         isLookingAtTarget = isPlayerLookingAtTarget();
 
         if (hackTime > 0) {
-            IHackableEntity hackableEntity = HackableHandler.getHackableForEntity(entity, PneumaticCraftRepressurized.proxy.getPlayer());
+            IHackableEntity hackableEntity = HackableHandler.getHackableForEntity(entity, PneumaticCraftRepressurized.proxy.getClientPlayer());
             if (hackableEntity != null) {
                 hackTime++;// = Math.min(hackTime + 1, hackableEntity.getHackTime(entity, PneumaticCraft.proxy.getPlayer()));
             } else {
@@ -229,8 +229,8 @@ public class RenderTarget {
 
     public void hack() {
         if (isInitialized() && isPlayerLookingAtTarget()) {
-            IHackableEntity hackable = HackableHandler.getHackableForEntity(entity, PneumaticCraftRepressurized.proxy.getPlayer());
-            if (hackable != null && (hackTime == 0 || hackTime > hackable.getHackTime(entity, PneumaticCraftRepressurized.proxy.getPlayer())))
+            IHackableEntity hackable = HackableHandler.getHackableForEntity(entity, PneumaticCraftRepressurized.proxy.getClientPlayer());
+            if (hackable != null && (hackTime == 0 || hackTime > hackable.getHackTime(entity, PneumaticCraftRepressurized.proxy.getClientPlayer())))
                 NetworkHandler.sendToServer(new PacketHackingEntityStart(entity));
         }
     }

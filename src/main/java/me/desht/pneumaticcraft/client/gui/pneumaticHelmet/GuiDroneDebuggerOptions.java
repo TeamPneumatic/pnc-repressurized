@@ -54,8 +54,8 @@ public class GuiDroneDebuggerOptions extends Gui implements IOptionPage {
         screenWidth = guiScreen.width;
         screenHeight = guiScreen.height;
 
-        if (PneumaticCraftRepressurized.proxy.getPlayer() != null) {
-            ItemStack helmet = PneumaticCraftRepressurized.proxy.getPlayer().getItemStackFromSlot(EntityEquipmentSlot.HEAD);
+        if (PneumaticCraftRepressurized.proxy.getClientPlayer() != null) {
+            ItemStack helmet = PneumaticCraftRepressurized.proxy.getClientPlayer().getItemStackFromSlot(EntityEquipmentSlot.HEAD);
             if (helmet != null) {
                 int entityId = NBTUtil.getInteger(helmet, NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE);
                 Entity entity = PneumaticCraftRepressurized.proxy.getClientWorld().getEntityByID(entityId);

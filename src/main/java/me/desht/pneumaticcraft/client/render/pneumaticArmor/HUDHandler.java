@@ -273,7 +273,7 @@ public class HUDHandler implements IKeyListener {
             } else if (key == KeyHandler.getInstance().keybindHack && HackUpgradeRenderHandler.enabledForPlayer(mc.player)) {
                 getSpecificRenderer(BlockTrackUpgradeHandler.class).hack();
                 getSpecificRenderer(EntityTrackUpgradeHandler.class).hack();
-            } else if (key == KeyHandler.getInstance().keybindDebuggingDrone && DroneDebugUpgradeHandler.enabledForPlayer(PneumaticCraftRepressurized.proxy.getPlayer())) {
+            } else if (key == KeyHandler.getInstance().keybindDebuggingDrone && DroneDebugUpgradeHandler.enabledForPlayer(PneumaticCraftRepressurized.proxy.getClientPlayer())) {
                 getSpecificRenderer(EntityTrackUpgradeHandler.class).selectAsDebuggingTarget();
             } else if (key == KeyHandler.getInstance().keybindKick
                     && CommonHUDHandler.getHandlerForPlayer(mc.player).getUpgradeCount(EntityEquipmentSlot.FEET, IItemRegistry.EnumUpgrade.DISPENSER) > 0) {

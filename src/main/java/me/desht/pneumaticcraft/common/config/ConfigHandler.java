@@ -56,7 +56,7 @@ public class ConfigHandler {
         ConfigManager.sync(Names.MOD_ID, Config.Type.INSTANCE);
     }
 
-    public static void init(File configFile) {
+    public static void onPreInit(File configFile) {
         PneumaticCraftRepressurized.proxy.initConfig();
 
         for(ISubConfig subConfig : subConfigs) {
@@ -76,7 +76,7 @@ public class ConfigHandler {
         }
     }
 
-    public static void postInit() {
+    public static void onPostInit() {
         for(ISubConfig subConfig : subConfigs) {
             try {
                 subConfig.postInit();

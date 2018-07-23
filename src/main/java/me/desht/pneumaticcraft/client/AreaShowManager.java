@@ -1,5 +1,7 @@
 package me.desht.pneumaticcraft.client;
 
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.DroneDebugUpgradeHandler;
@@ -18,11 +20,7 @@ import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.items.wrapper.PlayerArmorInvWrapper;
-
 import org.lwjgl.opengl.GL11;
-
-import gnu.trove.map.TIntObjectMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
 
 import java.util.*;
 
@@ -131,7 +129,7 @@ public class AreaShowManager {
 
     @SubscribeEvent
     public void tickEnd(TickEvent.ClientTickEvent event) {
-        EntityPlayer player = PneumaticCraftRepressurized.proxy.getPlayer();
+        EntityPlayer player = PneumaticCraftRepressurized.proxy.getClientPlayer();
         if (player != null) {
             if (player.world != world) {
                 world = player.world;

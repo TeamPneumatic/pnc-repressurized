@@ -189,7 +189,7 @@ public class ClientEventHandler {
 
     @SubscribeEvent
     public void tickEnd(TickEvent.RenderTickEvent event) {
-        if (event.phase == TickEvent.Phase.END && FMLClientHandler.instance().getClient().inGameHasFocus && PneumaticCraftRepressurized.proxy.getPlayer().world != null && (ModuleRegulatorTube.inverted || !ModuleRegulatorTube.inLine)) {
+        if (event.phase == TickEvent.Phase.END && FMLClientHandler.instance().getClient().inGameHasFocus && PneumaticCraftRepressurized.proxy.getClientPlayer().world != null && (ModuleRegulatorTube.inverted || !ModuleRegulatorTube.inLine)) {
             Minecraft mc = FMLClientHandler.instance().getClient();
             ScaledResolution sr = new ScaledResolution(mc);
             FontRenderer fontRenderer = FMLClientHandler.instance().getClient().fontRenderer;

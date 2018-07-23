@@ -20,7 +20,7 @@ public class BlockTrackEntryHackable implements IBlockTrackEntry {
 
     @Override
     public boolean shouldTrackWithThisEntry(IBlockAccess world, BlockPos pos, IBlockState state, TileEntity te) {
-        return HackUpgradeRenderHandler.enabledForPlayer(PneumaticCraftRepressurized.proxy.getPlayer()) && HackableHandler.getHackableForCoord(world, pos, PneumaticCraftRepressurized.proxy.getPlayer()) != null;
+        return HackUpgradeRenderHandler.enabledForPlayer(PneumaticCraftRepressurized.proxy.getClientPlayer()) && HackableHandler.getHackableForCoord(world, pos, PneumaticCraftRepressurized.proxy.getClientPlayer()) != null;
     }
 
     @Override
@@ -35,19 +35,19 @@ public class BlockTrackEntryHackable implements IBlockTrackEntry {
 
     @Override
     public void addInformation(World world, BlockPos pos, TileEntity te, List<String> infoList) {
-        IHackableBlock hackableBlock = HackableHandler.getHackableForCoord(world, pos, PneumaticCraftRepressurized.proxy.getPlayer());
+        IHackableBlock hackableBlock = HackableHandler.getHackableForCoord(world, pos, PneumaticCraftRepressurized.proxy.getClientPlayer());
         int hackTime = HUDHandler.instance().getSpecificRenderer(BlockTrackUpgradeHandler.class).getTargetForCoord(pos).getHackTime();
         if (hackTime == 0) {
-            hackableBlock.addInfo(world, pos, infoList, PneumaticCraftRepressurized.proxy.getPlayer());
+            hackableBlock.addInfo(world, pos, infoList, PneumaticCraftRepressurized.proxy.getClientPlayer());
         } else {
-            int requiredHackTime = hackableBlock.getHackTime(world, pos, PneumaticCraftRepressurized.proxy.getPlayer());
+            int requiredHackTime = hackableBlock.getHackTime(world, pos, PneumaticCraftRepressurized.proxy.getClientPlayer());
             int percentageComplete = hackTime * 100 / requiredHackTime;
             if (percentageComplete < 100) {
                 infoList.add(I18n.format("pneumaticHelmet.hacking.hacking") + " (" + percentageComplete + "%%)");
             } else if (hackTime < requiredHackTime + 20) {
-                hackableBlock.addPostHackInfo(world, pos, infoList, PneumaticCraftRepressurized.proxy.getPlayer());
+                hackableBlock.addPostHackInfo(world, pos, infoList, PneumaticCraftRepressurized.proxy.getClientPlayer());
             } else {
-                hackableBlock.addInfo(world, pos, infoList, PneumaticCraftRepressurized.proxy.getPlayer());
+                hackableBlock.addInfo(world, pos, infoList, PneumaticCraftRepressurized.proxy.getClientPlayer());
             }
         }
     }

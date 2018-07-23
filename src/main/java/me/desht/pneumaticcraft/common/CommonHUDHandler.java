@@ -129,7 +129,7 @@ public class CommonHUDHandler {
     @SubscribeEvent
     public static void onClientDisconnect(FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {
         // called client side when client disconnects
-        EntityPlayer player = PneumaticCraftRepressurized.proxy.getPlayer();
+        EntityPlayer player = PneumaticCraftRepressurized.proxy.getClientPlayer();
         if (player != null) {
             clearHUDHandlerForPlayer(player);
         }

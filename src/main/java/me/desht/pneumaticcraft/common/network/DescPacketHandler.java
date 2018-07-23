@@ -26,7 +26,7 @@ public class DescPacketHandler extends SimpleChannelInboundHandler<FMLProxyPacke
         PneumaticCraftRepressurized.proxy.addScheduledTask(new Runnable() {
             @Override
             public void run() {
-                packet.handleClientSide(packet, PneumaticCraftRepressurized.proxy.getPlayer());
+                packet.handleClientSide(packet, PneumaticCraftRepressurized.proxy.getClientPlayer());
             }
         }, false);
     }

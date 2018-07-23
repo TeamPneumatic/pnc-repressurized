@@ -124,7 +124,6 @@ public class SemiBlockManager {
     public static void onItemRegistration(RegistryEvent.Register<Item> event) {
         for (ItemSemiBlockBase item : semiBlockToItems.values()) {
             Itemss.registerItem(event.getRegistry(), item);
-            PneumaticCraftRepressurized.proxy.registerSemiBlockRenderer(item);
         }
     }
 
@@ -211,7 +210,7 @@ public class SemiBlockManager {
         if (this == getServerInstance()) {
             getClientOldInstance().onClientTick(event);
         } else {
-            EntityPlayer player = PneumaticCraftRepressurized.proxy.getPlayer();
+            EntityPlayer player = PneumaticCraftRepressurized.proxy.getClientPlayer();
             if (player != null) {
                 for (Iterator<ISemiBlock> iterator = addingBlocks.iterator(); iterator.hasNext(); ) {
                     // on the client, we can't assume the chunk is actually available yet; if we get an empty

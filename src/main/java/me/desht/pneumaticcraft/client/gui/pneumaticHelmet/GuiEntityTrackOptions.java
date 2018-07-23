@@ -38,8 +38,8 @@ public class GuiEntityTrackOptions implements IOptionPage {
         gui.getButtonList().add(new GuiButton(10, 30, 128, 150, 20, "Move Stat Screen..."));
         textField = new GuiTextField(-1, gui.getFontRenderer(), 35, 60, 140, 10);
         textField.setFocused(true);
-        if (PneumaticCraftRepressurized.proxy.getPlayer() != null)
-            textField.setText(ItemPneumaticArmor.getEntityFilter(PneumaticCraftRepressurized.proxy.getPlayer().getItemStackFromSlot(EntityEquipmentSlot.HEAD)));
+        if (PneumaticCraftRepressurized.proxy.getClientPlayer() != null)
+            textField.setText(ItemPneumaticArmor.getEntityFilter(PneumaticCraftRepressurized.proxy.getClientPlayer().getItemStackFromSlot(EntityEquipmentSlot.HEAD)));
     }
 
     @Override

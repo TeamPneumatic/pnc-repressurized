@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.proxy;
 
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.client.*;
 import me.desht.pneumaticcraft.client.gui.pneumaticHelmet.GuiHelmetMainScreen;
@@ -36,7 +35,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.item.Item;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
@@ -46,7 +44,7 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
-import net.minecraftforge.fml.common.registry.EntityRegistry;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.BufferedReader;
@@ -55,9 +53,7 @@ import java.io.FileReader;
 import java.util.HashMap;
 import java.util.Map;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
-
-public class ClientProxy extends CommonProxy {
+public class ClientProxy implements IProxy {
 
     private final HackTickHandler clientHackTickHandler = new HackTickHandler();
     public final Map<String, Pair<Integer,KeyModifier>> keybindToKeyCodes = new HashMap<>();
@@ -93,37 +89,26 @@ public class ClientProxy extends CommonProxy {
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPressureChamberValve.class, new RenderPressureChamber());
 
         MinecraftForge.EVENT_BUS.register(new ClientEventHandler());
-
         MinecraftForge.EVENT_BUS.register(HUDHandler.instance());
         MinecraftForge.EVENT_BUS.register(ClientTickHandler.instance());
         MinecraftForge.EVENT_BUS.register(getHackTickHandler());
         MinecraftForge.EVENT_BUS.register(new ClientSemiBlockManager());
-
         MinecraftForge.EVENT_BUS.register(HUDHandler.instance().getSpecificRenderer(CoordTrackUpgradeHandler.class));
         MinecraftForge.EVENT_BUS.register(AreaShowManager.getInstance());
-
         MinecraftForge.EVENT_BUS.register(KeyHandler.getInstance());
 
         ThirdPartyManager.instance().clientSide();
 
-        /*  if(Config.enableUpdateChecker) {
-              UpdateChecker.instance().start();
-              MinecraftForge.EVENT_BUS.register(UpdateChecker.instance());
-          }*/
-
         EntityTrackHandler.registerDefaultEntries();
-        getAllKeybindsFromOptionsFile();
 
-        // disabled for now, it won't work
-        //        new IGWSupportNotifier();
+        getAllKeybindsFromOptionsFile();
 
         RenderingRegistry.registerEntityRenderingHandler(EntityVortex.class, RenderEntityVortex.FACTORY);
         RenderingRegistry.registerEntityRenderingHandler(EntityDrone.class, RenderDrone.REGULAR_FACTORY);
         RenderingRegistry.registerEntityRenderingHandler(EntityLogisticsDrone.class, RenderDrone.LOGISTICS_FACTORY);
         RenderingRegistry.registerEntityRenderingHandler(EntityHarvestingDrone.class, RenderDrone.HARVESTING_FACTORY);
         RenderingRegistry.registerEntityRenderingHandler(EntityProgrammableController.class, RenderDrone.REGULAR_FACTORY);
-
-        super.preInit();
+        RenderingRegistry.registerEntityRenderingHandler(EntityRing.class, RenderEntityRing.FACTORY);
     }
 
     @Override
@@ -134,22 +119,60 @@ public class ClientProxy extends CommonProxy {
 
         ThirdPartyManager.instance().clientInit();
 
-        RenderingRegistry.registerEntityRenderingHandler(EntityRing.class, RenderEntityRing.FACTORY);
-        EntityRegistry.registerModEntity(RL("ring"), EntityRing.class, Names.MOD_ID + ".ring", 100, PneumaticCraftRepressurized.instance, 80, 1, true);
-
-        registerModuleRenderers();
-
         BlockColorHandler.registerColorHandlers();
         ItemColorHandler.registerColorHandlers();
 
         Itemss.MINIGUN.setTileEntityItemStackRenderer(new RenderItemMinigun());
+    }
 
-        super.init();
+    @Override
+    public void postInit() {
+        EntityTrackHandler.init();
+        GuiHelmetMainScreen.init();
+        DramaSplash.getInstance();
     }
 
     @Override
     public boolean isSneakingInGui() {
         return GameSettings.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindSneak);
+    }
+
+    @Override
+    public void initConfig() {
+        for (EntityEquipmentSlot slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
+            for (IUpgradeRenderHandler renderHandler : UpgradeRenderHandlerList.instance().getHandlersForSlot(slot)) {
+                renderHandler.initConfig();
+            }
+        }
+    }
+
+    @Override
+    public World getClientWorld() {
+        return FMLClientHandler.instance().getClient().world;
+    }
+
+    @Override
+    public EntityPlayer getClientPlayer() {
+        return FMLClientHandler.instance().getClient().player;
+    }
+
+    @Override
+    public int getArmorRenderID(String armorName) {
+        return 0;
+    }
+
+    @Override
+    public HackTickHandler getHackTickHandler() {
+        return clientHackTickHandler;
+    }
+
+    @Override
+    public void addScheduledTask(Runnable runnable, boolean serverSide) {
+        if (serverSide) {
+            FMLCommonHandler.instance().getMinecraftServerInstance().addScheduledTask(runnable);
+        } else {
+            Minecraft.getMinecraft().addScheduledTask(runnable);
+        }
     }
 
     private void getAllKeybindsFromOptionsFile() {
@@ -171,57 +194,4 @@ public class ClientProxy extends CommonProxy {
         }
     }
 
-    @Override
-    public void postInit() {
-        EntityTrackHandler.init();
-        GuiHelmetMainScreen.init();
-        DramaSplash.getInstance();
-    }
-
-    public void registerModuleRenderers() {
-
-    }
-
-    @Override
-    public void initConfig() {
-        for (EntityEquipmentSlot slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
-            for (IUpgradeRenderHandler renderHandler : UpgradeRenderHandlerList.instance().getHandlersForSlot(slot)) {
-                renderHandler.initConfig();
-            }
-        }
-    }
-
-    @Override
-    public World getClientWorld() {
-        return FMLClientHandler.instance().getClient().world;
-    }
-
-    @Override
-    public EntityPlayer getPlayer() {
-        return FMLClientHandler.instance().getClient().player;
-    }
-
-    @Override
-    public int getArmorRenderID(String armorName) {
-        return 0;
-    }
-
-    @Override
-    public HackTickHandler getHackTickHandler() {
-        return clientHackTickHandler;
-    }
-
-    @Override
-    public void registerSemiBlockRenderer(Item semiBlock) {
-        //TODO 1.8 MinecraftForgeClient.registerItemRenderer(semiBlock, new RenderItemSemiBlock(semiBlock.semiBlockId));
-    }
-
-    @Override
-    public void addScheduledTask(Runnable runnable, boolean serverSide) {
-        if (serverSide) {
-            super.addScheduledTask(runnable, serverSide);
-        } else {
-            Minecraft.getMinecraft().addScheduledTask(runnable);
-        }
-    }
 }

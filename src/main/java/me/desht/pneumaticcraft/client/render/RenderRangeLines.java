@@ -89,7 +89,7 @@ public class RenderRangeLines {
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         RenderUtils.glColorHex(color);
-        EntityPlayer player = PneumaticCraftRepressurized.proxy.getPlayer();
+        EntityPlayer player = PneumaticCraftRepressurized.proxy.getClientPlayer();
         if (pos != null) {
             GlStateManager.translate(pos.getX() - player.posX + 0.5, pos.getY() - player.posY + 0.5, pos.getZ() - player.posZ + 0.5);
         }

@@ -22,6 +22,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
 
 import java.util.HashMap;
@@ -34,7 +35,7 @@ public class HackableHandler {
     private static HackableHandler clientInstance, serverInstance;
 
     private static HackableHandler getInstance() {
-        if (PneumaticCraftRepressurized.proxy.getSide() == Side.CLIENT) {
+        if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
             if (clientInstance == null) clientInstance = new HackableHandler();
             return clientInstance;
         } else {
@@ -154,7 +155,7 @@ public class HackableHandler {
     private static boolean isInDisplayCooldown(IHackableEntity hackableBlock, Entity entity) {
         if (entity.world.isRemote) {
             RenderTarget target = HUDHandler.instance().getSpecificRenderer(EntityTrackUpgradeHandler.class).getTargetForEntity(entity);
-            int requiredHackTime = hackableBlock.getHackTime(entity, PneumaticCraftRepressurized.proxy.getPlayer());
+            int requiredHackTime = hackableBlock.getHackTime(entity, PneumaticCraftRepressurized.proxy.getClientPlayer());
             return target != null && target.getHackTime() >= requiredHackTime && target.getHackTime() <= requiredHackTime + 20;
         } else {
             return false;

@@ -1,11 +1,14 @@
 package me.desht.pneumaticcraft;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
+import me.desht.pneumaticcraft.api.hacking.IHacking;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.client.CreativeTabPneumaticCraft;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.UpgradeRenderHandlerList;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.hacking.HackableHandler;
+import me.desht.pneumaticcraft.client.render.pneumaticArmor.hacking.HackingImpl;
 import me.desht.pneumaticcraft.common.*;
+import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.commands.PCCommandManager;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
@@ -24,6 +27,7 @@ import me.desht.pneumaticcraft.common.recipes.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.recipes.CraftingHandler;
 import me.desht.pneumaticcraft.common.recipes.CraftingRegistrator;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockInitializer;
+import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
 import me.desht.pneumaticcraft.common.sensor.SensorHandler;
 import me.desht.pneumaticcraft.common.thirdparty.ModInteractionUtils;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
@@ -35,13 +39,14 @@ import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.ModIds;
 import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.Versions;
-import me.desht.pneumaticcraft.proxy.CommonProxy;
+import me.desht.pneumaticcraft.proxy.IProxy;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDispenser;
 import net.minecraft.command.ServerCommandManager;
 import net.minecraft.item.Item;
 import net.minecraft.world.storage.loot.LootTableList;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fml.common.Loader;
@@ -66,15 +71,14 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 public class PneumaticCraftRepressurized {
     public static final String MODVERSION = "@VERSION@";
 
-    @SidedProxy(clientSide = "me.desht.pneumaticcraft.proxy.ClientProxy", serverSide = "me.desht.pneumaticcraft.proxy.CommonProxy")
-    public static CommonProxy proxy;
+    @SidedProxy(clientSide = "me.desht.pneumaticcraft.proxy.ClientProxy", serverSide = "me.desht.pneumaticcraft.proxy.ServerProxy")
+    public static IProxy proxy;
 
     @Instance(Names.MOD_ID)
     public static PneumaticCraftRepressurized instance;
 
     public static Logger logger;
 
-    public static TickHandlerPneumaticCraft tickHandler;
     public static CreativeTabPneumaticCraft tabPneumaticCraft;
     public static GuiHandler guiHandler;
 
@@ -92,25 +96,22 @@ public class PneumaticCraftRepressurized {
         isJEIInstalled = Loader.isModLoaded(ModIds.JEI);
 
         Reflections.init();
-
         PneumaticRegistry.init(PneumaticCraftAPIHandler.getInstance());
-
         UpgradeRenderHandlerList.init();
-
         HarvestRegistry.getInstance().init();
-
-        ConfigHandler.init(event.getSuggestedConfigurationFile());
+        ConfigHandler.onPreInit(event.getSuggestedConfigurationFile());
 
         guiHandler = new GuiHandler();
         NetworkRegistry.INSTANCE.registerGuiHandler(instance, guiHandler);
+
         tabPneumaticCraft = new CreativeTabPneumaticCraft("tabPneumaticCraft");
+
         Fluids.preInit();
 
         ThirdPartyManager.instance().index();
         ThirdPartyManager.instance().preInit();
 
         WidgetRegistrator.init();
-
         TileEntityRegistrator.init();
         EntityRegistrator.init();
         SemiBlockInitializer.preInit();
@@ -120,13 +121,15 @@ public class PneumaticCraftRepressurized {
         HeatBehaviourManager.getInstance().init();
 
         proxy.preInit();
-        tickHandler = new TickHandlerPneumaticCraft();
-        MinecraftForge.EVENT_BUS.register(tickHandler);
+
+        CapabilityManager.INSTANCE.register(IHacking.class, new HackingImpl.Storage(), HackingImpl::new);
+        AdvancementTriggers.registerTriggers();
+
+        MinecraftForge.EVENT_BUS.register(new TickHandlerPneumaticCraft());
         MinecraftForge.EVENT_BUS.register(new EventHandlerPneumaticCraft());
         MinecraftForge.EVENT_BUS.register(new EventHandlerPneumaticArmor());
         MinecraftForge.EVENT_BUS.register(new EventHandlerUniversalSensor());
         MinecraftForge.EVENT_BUS.register(new DroneSpecialVariableHandler());
-
         MinecraftForge.EVENT_BUS.register(new CraftingHandler());
         MinecraftForge.EVENT_BUS.register(new ConfigHandler());
     }
@@ -153,9 +156,14 @@ public class PneumaticCraftRepressurized {
         }
 
         OreDictionaryHelper.addOreDictEntries();
+
         MinecraftForge.EVENT_BUS.register(Itemss.GPS_AREA_TOOL);
+        MinecraftForge.EVENT_BUS.register(CommonHUDHandler.class);
+        MinecraftForge.EVENT_BUS.register(proxy.getHackTickHandler());
 
         proxy.init();
+
+        SemiBlockManager.registerEventHandler(proxy.getClientWorld() != null);
         ThirdPartyManager.instance().init();
     }
 
@@ -176,7 +184,7 @@ public class PneumaticCraftRepressurized {
 
         ThirdPartyManager.instance().postInit();
         proxy.postInit();
-        ConfigHandler.postInit();
+        ConfigHandler.onPostInit();
         AmadronOfferManager.getInstance().shufflePeriodicOffers();
         AmadronOfferManager.getInstance().recompileOffers();
         ModInteractionUtils.registerThirdPartyWrenches();

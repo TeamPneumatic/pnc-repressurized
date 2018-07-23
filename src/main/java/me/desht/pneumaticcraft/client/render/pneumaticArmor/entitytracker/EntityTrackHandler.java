@@ -111,7 +111,7 @@ public class EntityTrackHandler {
         public void addInfo(Entity entity, List<String> curInfo) {
             curInfo.add("Owner: " + ((EntityDrone) entity).playerName);
             curInfo.add("Routine: " + ((EntityDrone) entity).getLabel());
-            if (DroneDebugUpgradeHandler.enabledForPlayer(PneumaticCraftRepressurized.proxy.getPlayer()) && NBTUtil.getInteger(PneumaticCraftRepressurized.proxy.getPlayer().getItemStackFromSlot(EntityEquipmentSlot.HEAD), NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE) != entity.getEntityId()) {
+            if (DroneDebugUpgradeHandler.enabledForPlayer(PneumaticCraftRepressurized.proxy.getClientPlayer()) && NBTUtil.getInteger(PneumaticCraftRepressurized.proxy.getClientPlayer().getItemStackFromSlot(EntityEquipmentSlot.HEAD), NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE) != entity.getEntityId()) {
                 curInfo.add(TextFormatting.RED + "Press '" + Keyboard.getKeyName(KeyHandler.getInstance().keybindDebuggingDrone.getKeyCode()) + "' to debug");
             }
         }
@@ -289,12 +289,12 @@ public class EntityTrackHandler {
 
         @Override
         public boolean isApplicable(Entity entity) {
-            return HackUpgradeRenderHandler.enabledForPlayer(PneumaticCraftRepressurized.proxy.getPlayer());
+            return HackUpgradeRenderHandler.enabledForPlayer(PneumaticCraftRepressurized.proxy.getClientPlayer());
         }
 
         @Override
         public void addInfo(Entity entity, List<String> curInfo) {
-            IHackableEntity hackable = HackableHandler.getHackableForEntity(entity, PneumaticCraftRepressurized.proxy.getPlayer());
+            IHackableEntity hackable = HackableHandler.getHackableForEntity(entity, PneumaticCraftRepressurized.proxy.getClientPlayer());
             if (hackable != null) {
                 List<RenderTarget> targets = HUDHandler.instance().getSpecificRenderer(EntityTrackUpgradeHandler.class).getTargets();
                 int hackTime = 0;
@@ -306,16 +306,16 @@ public class EntityTrackHandler {
                 }
 
                 if (hackTime == 0) {
-                    hackable.addInfo(entity, curInfo, PneumaticCraftRepressurized.proxy.getPlayer());
+                    hackable.addInfo(entity, curInfo, PneumaticCraftRepressurized.proxy.getClientPlayer());
                 } else {
-                    int requiredHackTime = hackable.getHackTime(entity, PneumaticCraftRepressurized.proxy.getPlayer());
+                    int requiredHackTime = hackable.getHackTime(entity, PneumaticCraftRepressurized.proxy.getClientPlayer());
                     int percentageComplete = hackTime * 100 / requiredHackTime;
                     if (percentageComplete < 100) {
                         curInfo.add("Hacking... (" + percentageComplete + "%%)");
                     } else if (hackTime < requiredHackTime + 20) {
-                        hackable.addPostHackInfo(entity, curInfo, PneumaticCraftRepressurized.proxy.getPlayer());
+                        hackable.addPostHackInfo(entity, curInfo, PneumaticCraftRepressurized.proxy.getClientPlayer());
                     } else {
-                        hackable.addInfo(entity, curInfo, PneumaticCraftRepressurized.proxy.getPlayer());
+                        hackable.addInfo(entity, curInfo, PneumaticCraftRepressurized.proxy.getClientPlayer());
                     }
                 }
             }

@@ -115,7 +115,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     public void handleUpdateTag(NBTTagCompound tag) {
         super.handleUpdateTag(tag);
         PacketDescription packet = new PacketDescription(tag);
-        packet.handleClientSide(packet, PneumaticCraftRepressurized.proxy.getPlayer());
+        packet.handleClientSide(packet, PneumaticCraftRepressurized.proxy.getClientPlayer());
     }
 
     /***********

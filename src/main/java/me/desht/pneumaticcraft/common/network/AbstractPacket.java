@@ -14,7 +14,7 @@ public abstract class AbstractPacket<REQ extends AbstractPacket<REQ>> implements
         if (ctx.side == Side.SERVER) {
             PneumaticCraftRepressurized.proxy.addScheduledTask(() -> message.handleServerSide(message, ctx.getServerHandler().player), true);
         } else {
-            PneumaticCraftRepressurized.proxy.addScheduledTask(() -> message.handleClientSide(message, PneumaticCraftRepressurized.proxy.getPlayer()), false);
+            PneumaticCraftRepressurized.proxy.addScheduledTask(() -> message.handleClientSide(message, PneumaticCraftRepressurized.proxy.getClientPlayer()), false);
         }
         return null;
     }

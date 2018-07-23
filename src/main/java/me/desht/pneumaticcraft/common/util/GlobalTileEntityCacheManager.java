@@ -1,12 +1,5 @@
 package me.desht.pneumaticcraft.common.util;
 
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.WeakHashMap;
-import java.util.stream.Stream;
-
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUniversalSensor;
@@ -14,9 +7,16 @@ import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
+
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.WeakHashMap;
+import java.util.stream.Stream;
 
 /**
  * Helper which allows querying TE's of specific (owned) types, like the universal sensor, Security Station and Charging Station
@@ -28,7 +28,7 @@ public class GlobalTileEntityCacheManager{
     private static final GlobalTileEntityCacheManager SERVER_INSTANCE = new GlobalTileEntityCacheManager();
     
     public static GlobalTileEntityCacheManager getInstance(){
-        return PneumaticCraftRepressurized.proxy.getSide() == Side.CLIENT ? CLIENT_INSTANCE : SERVER_INSTANCE;
+        return FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT ? CLIENT_INSTANCE : SERVER_INSTANCE;
     }
     
     @SubscribeEvent
