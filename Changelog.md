@@ -8,10 +8,21 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ### 0.7.4-??? (unreleased)
 #### Updates
+* Amadron Tablet has seen a lot of attention...
+  * Recoloured GUI background to now match what the item looks like
+  * Moved the lesser-used "Add Trade" button into its own side tab.  I've noticed that this button can cause confusion to player who just want to place a normal order.
+  * Added the ability for admin players to add custom periodic trades via the GUI.  Players need the "pneumaticcraft.amadron.addPeriodicTrade" Forge permission node to do this (which by default means being an op). Note that custom periodic trades can't (yet) be removed via GUI; edit the config/pneumaticcraft/AmadronOffersPeriodic.cfg file to do that.
+  * "Place Order" button now grays out when the basket is empty
+  * Added audible feedback when an order is successfully placed
+  * Trade items with NBT are now supported (e.g. vanilla potions or enchanted books, and many modded items).  Note that drones will always try to match exactly the metadata and NBT you added the trade with.
 * A bit more work (hopefully the last) on smoother fluid tank updates to client
 * Can now install up to 10 Jet Boots upgrades in the Pneumatic Boots.  10 upgrades allows hovering in-place, but watch out for the in-flight air cost...
 * Some tile entity performance improvements, most notably with the (output mode) Pressure Chamber Interface which was wasting a lot of CPU time but also to a lesser degree with the Air Compressor, UV Light Box and Sentry Turret
+* Drones are now 50% faster (this makes up for the fact that they don't travel diagonally anymore)
 #### Fixes
+* Fixed Amadron restocking/payout drones (for player-player trading) spawning twice
+* Fixed custom Amadron fluid trades not working
+* Fixed NPE when trying to extract items from bottom side of Aerial Interface
 * Fixed some armor features (magnet, charging) functioning even without the necessary upgrades installed
 
 ### 0.7.3-239 (16 Jul 2018)
