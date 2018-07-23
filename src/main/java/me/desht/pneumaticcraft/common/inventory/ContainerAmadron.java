@@ -16,6 +16,7 @@ import me.desht.pneumaticcraft.common.recipes.AmadronOffer;
 import me.desht.pneumaticcraft.common.recipes.AmadronOfferCustom;
 import me.desht.pneumaticcraft.common.recipes.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.Sounds;
 import me.desht.pneumaticcraft.proxy.CommonProxy;
 import net.minecraft.entity.player.EntityPlayer;
@@ -32,6 +33,7 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
+import net.minecraftforge.server.permission.PermissionAPI;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -40,6 +42,11 @@ import java.util.*;
 public class ContainerAmadron extends ContainerPneumaticBase {
     public static final int ROWS = 4;
     public static final int OFFERS_PER_PAGE = ROWS * 2;
+
+    // Set client-side when a PacketSyncAmadronOffers is received.  Only controls button visibility, actual control
+    // is done server-side via permissions API.  So make button available unless server tells us no.  Worst that
+    // can happen is button does nothing.
+    public static boolean mayAddPeriodicOffers = true;
 
     public List<AmadronOffer> offers = new ArrayList<>(AmadronOfferManager.getInstance().getAllOffers());
 
@@ -232,14 +239,16 @@ public class ContainerAmadron extends ContainerPneumaticBase {
                     }
                 }
                 if (placed && player instanceof EntityPlayerMP) {
-                    NetworkHandler.sendTo(new PacketPlaySound(Sounds.HUD_INIT_COMPLETE, SoundCategory.PLAYERS, player.posX, player.posY, player.posZ, 0.2f, 1.0f, false), (EntityPlayerMP) player);
+                    NetworkHandler.sendTo(new PacketPlaySound(Sounds.CHIRP, SoundCategory.PLAYERS, player.posX, player.posY, player.posZ, 0.2f, 1.0f, false), (EntityPlayerMP) player);
                 }
             }
             Arrays.fill(shoppingAmounts, 0);
             Arrays.fill(shoppingItems, -1);
             basketEmpty = true;
         } else if (guiID == 2) {
-            player.openGui(PneumaticCraftRepressurized.instance, CommonProxy.EnumGuiId.AMADRON_ADD_TRADE.ordinal(), player.world, 0, 0, 0);
+            player.openGui(PneumaticCraftRepressurized.instance, CommonProxy.EnumGuiId.AMADRON_ADD_PLAYER_TRADE.ordinal(), player.world, 0, 0, 0);
+        } else if (guiID == 3 && PermissionAPI.hasPermission(player, Names.AMADRON_ADD_PERIODIC_TRADE)) {
+            player.openGui(PneumaticCraftRepressurized.instance, CommonProxy.EnumGuiId.AMADRON_ADD_PERIODIC_TRADE.ordinal(), player.world, 0, 0, 0);
         }
     }
 

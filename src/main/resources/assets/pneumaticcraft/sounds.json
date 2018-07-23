@@ -135,5 +135,11 @@
     "sounds":[
       "pneumaticcraft:pneumatic_door"
     ]
+  },
+  "chirp": {
+    "category":"ambient",
+    "sounds":[
+      "pneumaticcraft:chirp"
+    ]
   }
 }

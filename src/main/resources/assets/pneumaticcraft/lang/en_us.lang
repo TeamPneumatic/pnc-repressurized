@@ -1056,16 +1056,18 @@ gui.nei.title.compressedIronExplosion=Explosion Crafting
 
 #Amadron
 drone.amadronDeliveryDrone=Amadron Delivery Drone
+gui.amadron.title=Welcome to Amadron!
 gui.amadron=Amadron
 gui.amadron.addTrade.selling=Selling
 gui.amadron.addTrade.buying=Buying
 gui.amadron.addTrade.itemFluidAmount=Item/Fluid Amount
 gui.amadron.addTrade.problems.noSellingOrPayingBlock=§7No location selected to sell/pay out from. \n§0Either select an item/fluid location with the Amadron Tablet, or select a GPS Tool by clicking on the GPS button.
-gui.amadron.button.order=Order
-gui.amadron.button.order.tooltip=Order the items in the basket. A drone will come to pick up your items, and another to bring your purchased items.
-gui.amadron.button.addTrade=Add trade...
-gui.amadron.button.addTrade.tooltip=Put your own items to be available for purchase to other players.
+gui.amadron.button.order=Place Order
+gui.amadron.button.order.tooltip=Order the items in the basket. A drone will come to retrieve your payment, and another to deliver your purchased items.
+gui.amadron.button.addTrade=§eCustom Player Trade
+gui.amadron.button.addTrade.tooltip=List your own items to be available for purchase to other players.
 gui.amadron.button.addTrade.tooltip.offerCount=%s/%s offers used.
+gui.amadron.button.addPeriodicTrade=§eCustom Periodic Trade \n§rAdd a new periodic trade. Such trades will not appear immediately but will periodically randomly appear in the Amadron offer list along with other default and custom periodic trades. \n \n§7Only admins can add these trades (Forge permission node "pneumaticcraft.amadron.addPeriodicTrade"). Custom periodic trades can't be removed via GUI; edit AmadronOffersPeriodic.cfg to remove trades.
 gui.amadron.button.selectSellingBlock.tooltip=Select the inventory/tank used to sell the item/fluid from. By default the inventory/tank selected by the Amadron Tablet is used.
 gui.amadron.button.selectPaymentBlock.tooltip=Select the inventory/tank used to receive payment of the the requested item/fluid. By default the inventory/tank selected by the Amadron Tablet is used.
 gui.amadron.amadronWidget.vendor=§6Vendor: %s
@@ -1074,6 +1076,7 @@ gui.amadron.amadronWidget.buying=§a  for: %s
 gui.amadron.amadronWidget.inBasket=§7In basket: %s
 gui.amadron.amadronWidget.sneakRightClickToRemove=Sneak-right-click to remove (stock will be returned to the provider location. It is lost when failed).
 gui.amadron.amadronWidget.stock=§9Vendor has %s trades in stock
+gui.tab.amadron.customTrades=Custom Trades
 gui.tab.amadron.disclaimer.title=Disclaimer
 gui.tab.amadron.disclaimer=Amadron cannot accept responsibility for any loss or damage arising from the use of the delivery service. When a partial payment arrives at Amadron it has the right to keep the items that would have been sold to the buyer otherwise.
 message.amadron.playerAddedTrade=§b[Amadron] §6%s§b is now selling §6%s§b for §6%s§b.
@@ -1081,6 +1084,7 @@ message.amadron.playerRemovedTrade=§c[Amadron] §6%s§c is no longer selling §
 message.amadron.duplicateOffer=§c[Amadron] Can't add trade: The same trade has been added already.
 message.amadron.duplicateReversedOffer=§c[Amadron] Can't add trade: You have a trade already with reversed trading items.
 message.amadron.playerBought=§a[Amadron] §6%s§b bought §6%s§b from you in exchange for §6%s§b.
+message.amadron.addedPeriodicOffer=§a[Amadron] §bAdded periodic offer: §6%s§b for §6%s§b.
 
 # Camo Applicator
 message.camo.notEnoughBlocks=§4Out of §c%s !

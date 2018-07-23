@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.ByteBuf;
+import me.desht.pneumaticcraft.common.inventory.ContainerAmadron;
 import me.desht.pneumaticcraft.common.recipes.AmadronOffer;
 import me.desht.pneumaticcraft.common.recipes.AmadronOfferCustom;
 import me.desht.pneumaticcraft.common.recipes.AmadronOfferManager;
@@ -14,13 +15,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class PacketSyncAmadronOffers extends AbstractPacket<PacketSyncAmadronOffers> {
-    private Collection<AmadronOffer> offers = new ArrayList<AmadronOffer>();
+    private Collection<AmadronOffer> offers = new ArrayList<>();
+    boolean mayAddPeriodic;
 
+    @SuppressWarnings("unused")
     public PacketSyncAmadronOffers() {
     }
 
-    public PacketSyncAmadronOffers(Collection<AmadronOffer> offers) {
+    public PacketSyncAmadronOffers(Collection<AmadronOffer> offers, boolean mayAddPeriodic) {
         this.offers = offers;
+        this.mayAddPeriodic = mayAddPeriodic;
     }
 
     @Override
@@ -33,6 +37,7 @@ public class PacketSyncAmadronOffers extends AbstractPacket<PacketSyncAmadronOff
                 offers.add(new AmadronOffer(getFluidOrItemStack(buf), getFluidOrItemStack(buf)));
             }
         }
+        mayAddPeriodic = buf.readBoolean();
     }
 
     public static Object getFluidOrItemStack(ByteBuf buf) {
@@ -54,9 +59,10 @@ public class PacketSyncAmadronOffers extends AbstractPacket<PacketSyncAmadronOff
                 ((AmadronOfferCustom) offer).writeToBuf(buf);
             }
         }
+        buf.writeBoolean(mayAddPeriodic);
     }
 
-    public static void writeFluidOrItemStack(Object object, ByteBuf buf) {
+    static void writeFluidOrItemStack(Object object, ByteBuf buf) {
         if (object instanceof ItemStack) {
             buf.writeByte(0);
             ByteBufUtils.writeItemStack(buf, (ItemStack) object);
@@ -72,6 +78,7 @@ public class PacketSyncAmadronOffers extends AbstractPacket<PacketSyncAmadronOff
     @Override
     public void handleClientSide(PacketSyncAmadronOffers message, EntityPlayer player) {
         AmadronOfferManager.getInstance().setOffers(message.offers);
+        ContainerAmadron.mayAddPeriodicOffers = mayAddPeriodic;
     }
 
     @Override

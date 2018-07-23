@@ -51,6 +51,8 @@ public class Sounds {
     public static final SoundEvent PUNCH = null;
     @GameRegistry.ObjectHolder("pneumatic_door")
     public static final SoundEvent PNEUMATIC_DOOR = null;
+    @GameRegistry.ObjectHolder("chirp")
+    public static final SoundEvent CHIRP = null;
 
     @SubscribeEvent
     public static void registerSounds(RegistryEvent.Register<SoundEvent> event) {
@@ -74,7 +76,8 @@ public class Sounds {
                 buildSound("drone_death"),
                 buildSound("short_hiss"),
                 buildSound("punch"),
-                buildSound("pneumatic_door")
+                buildSound("pneumatic_door"),
+                buildSound("chirp")
         );
     }
 

@@ -52,6 +52,8 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.server.permission.DefaultPermissionLevel;
+import net.minecraftforge.server.permission.PermissionAPI;
 import org.apache.logging.log4j.Logger;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
@@ -136,7 +138,10 @@ public class PneumaticCraftRepressurized {
         CraftingRegistrator.init();
         HackableHandler.addDefaultEntries();
         SensorHandler.getInstance().init();
-        
+
+        PermissionAPI.registerNode(Names.AMADRON_ADD_PERIODIC_TRADE, DefaultPermissionLevel.OP,
+                "Allow player to add a custom periodic offer via the Amadron Tablet");
+
         BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(Itemss.DRONE, new BehaviorDispenseDrone());
         BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(Itemss.LOGISTICS_DRONE, new BehaviorDispenseDrone());
         BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(Itemss.HARVESTING_DRONE, new BehaviorDispenseDrone());

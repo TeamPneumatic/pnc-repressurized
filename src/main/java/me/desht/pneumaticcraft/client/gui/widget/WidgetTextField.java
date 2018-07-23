@@ -6,12 +6,13 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class WidgetTextField extends GuiTextField implements IGuiWidget {
 
     protected IWidgetListener listener;
-    private final List<String> tooltip = new ArrayList<String>();
+    private final List<String> tooltip = new ArrayList<>();
     private boolean passwordBox;
 
     public WidgetTextField(FontRenderer fontRenderer, int x, int y, int width, int height) {
@@ -74,8 +75,7 @@ public class WidgetTextField extends GuiTextField implements IGuiWidget {
 
     public void setTooltip(String... tooltip) {
         this.tooltip.clear();
-        for (String s : tooltip)
-            this.tooltip.add(s);
+        Collections.addAll(this.tooltip, tooltip);
     }
 
     @Override

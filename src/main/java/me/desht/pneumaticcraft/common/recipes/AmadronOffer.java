@@ -15,6 +15,8 @@ import net.minecraftforge.fluids.FluidStack;
 import org.apache.commons.lang3.Validate;
 
 public class AmadronOffer {
+    public enum TradeType { PLAYER, PERIODIC }
+
     protected Object input;
     protected Object output;
 

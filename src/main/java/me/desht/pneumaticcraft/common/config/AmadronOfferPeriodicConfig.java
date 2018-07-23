@@ -8,6 +8,8 @@ import net.minecraft.util.math.MathHelper;
 import java.util.Collection;
 
 public class AmadronOfferPeriodicConfig extends AmadronOfferConfig {
+    public static AmadronOfferPeriodicConfig INSTANCE = new AmadronOfferPeriodicConfig();
+
     public static int timesPerDay = 1;
     public static int offersPer = 20;
 
@@ -18,7 +20,7 @@ public class AmadronOfferPeriodicConfig extends AmadronOfferConfig {
 
     @Override
     protected String getComment() {
-        return "Offers in here are periodic. Every 1 in [timesPerDay] Minecraft days [offersPer] random offers are selected from here.";
+        return "Offers in here are periodic. <timesPerDay> times per Minecraft day, <offersPer> random offers are selected from here.";
     }
 
     @Override

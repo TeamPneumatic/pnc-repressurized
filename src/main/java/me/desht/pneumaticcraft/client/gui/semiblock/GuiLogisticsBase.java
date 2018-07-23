@@ -69,8 +69,8 @@ public class GuiLogisticsBase<Logistics extends SemiBlockLogistics> extends GuiP
     }
 
     @Override
-    protected int getBackgoundTint() {
-        if (!ConfigHandler.client.logisticsGUITint) return super.getBackgoundTint();
+    protected int getBackgroundTint() {
+        if (!ConfigHandler.client.logisticsGUITint) return super.getBackgroundTint();
 
         int c = logistics.getColor();
         // desaturate; this is a background colour...

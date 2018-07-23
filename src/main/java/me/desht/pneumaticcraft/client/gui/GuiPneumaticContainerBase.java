@@ -190,13 +190,13 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
         return true;
     }
 
-    protected int getBackgoundTint() { return 0xFFFFFF; }
+    protected int getBackgroundTint() { return 0xFFFFFF; }
 
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int i, int j) {
         if (shouldDrawBackground()) {
             drawDefaultBackground();
-            RenderUtils.glColorHex(0xFF000000 | getBackgoundTint());
+            RenderUtils.glColorHex(0xFF000000 | getBackgroundTint());
             bindGuiTexture();
             int xStart = (width - xSize) / 2;
             int yStart = (height - ySize) / 2;

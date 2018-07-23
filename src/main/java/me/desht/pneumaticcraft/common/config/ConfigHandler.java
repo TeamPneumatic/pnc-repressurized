@@ -16,7 +16,7 @@ public class ConfigHandler {
     private static ISubConfig[] subConfigs = new ISubConfig[] {
             new AmadronOfferSettings(),
             AmadronOfferStaticConfig.INSTANCE,
-            new AmadronOfferPeriodicConfig(),
+            AmadronOfferPeriodicConfig.INSTANCE,
             new ProgWidgetConfig(),
             HelmetWidgetDefaults.INSTANCE,
             ThirdPartyConfig.INSTANCE

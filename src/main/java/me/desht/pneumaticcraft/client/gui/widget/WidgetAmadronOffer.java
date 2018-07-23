@@ -43,7 +43,7 @@ public class WidgetAmadronOffer extends WidgetBase {
     public void render(int mouseX, int mouseY, float partialTick) {
         if (renderBackground) {
             Minecraft.getMinecraft().getTextureManager().bindTexture(Textures.WIDGET_AMADRON_OFFER);
-            GlStateManager.color(1f, canBuy ? 1f : 0.4f, canBuy ? 1f : 0.4f, 1f);
+            GlStateManager.color(1f, canBuy ? 1f : 0.4f, canBuy ? 1f : 0.4f, canBuy ? 0.75f : 1f);
             Gui.drawModalRectWithCustomSizedTexture(x, y, 0, 0, getBounds().width, getBounds().height, 256, 256);
         }
         for (IGuiWidget widget : widgets) {

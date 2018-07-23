@@ -35,7 +35,7 @@ public class WidgetComboBox extends WidgetTextField {
     }
 
     private List<String> getApplicableElements() {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         for (String element : elements) {
             if (fixedOptions || element.toLowerCase().contains(getText().toLowerCase())) list.add(element);
         }
@@ -55,8 +55,6 @@ public class WidgetComboBox extends WidgetTextField {
                 fontRenderer.drawStringWithShadow(fontRenderer.trimStringToWidth(element, getWidth()), x + 4, y + height + 2 + i * fontRenderer.FONT_HEIGHT, 0xE0E0E0);
                 fontRenderer.drawString("\u25bc", x + width - 6, y + 1, 0xc0c0c0);
             }
-        } else {
-
         }
     }
 

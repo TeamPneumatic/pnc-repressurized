@@ -10,6 +10,7 @@ import me.desht.pneumaticcraft.common.recipes.AmadronOfferCustom;
 import me.desht.pneumaticcraft.common.recipes.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.proxy.CommonProxy.EnumGuiId;
 import net.minecraft.client.resources.I18n;
@@ -35,6 +36,7 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.server.permission.PermissionAPI;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
@@ -58,7 +60,8 @@ public class ItemAmadronTablet extends ItemPressurizable implements IAmadronInte
             // In fact, sync'ing will cause AmadronOfferManager#allOffers to go out-of-sync with AmadronOfferManager#staticOffers
             // (Technically we're reaching across logical sides, but it's OK in this case; packet will be sent on dedicated server.
             if (FMLCommonHandler.instance().getSide() != Side.CLIENT) {
-                NetworkHandler.sendTo(new PacketSyncAmadronOffers(AmadronOfferManager.getInstance().getAllOffers()), (EntityPlayerMP) playerIn);
+                boolean mayAddPeriodic = PermissionAPI.hasPermission(playerIn, Names.AMADRON_ADD_PERIODIC_TRADE);
+                NetworkHandler.sendTo(new PacketSyncAmadronOffers(AmadronOfferManager.getInstance().getAllOffers(), mayAddPeriodic), (EntityPlayerMP) playerIn);
             }
             playerIn.openGui(PneumaticCraftRepressurized.instance, EnumGuiId.AMADRON.ordinal(), playerIn.world, (int) playerIn.posX, (int) playerIn.posY, (int) playerIn.posZ);
         }

@@ -83,6 +83,7 @@ public class NetworkHandler {
         INSTANCE.registerMessage(PacketAmadronOrderUpdate.class, PacketAmadronOrderUpdate.class, discriminant++, Side.SERVER);
         INSTANCE.registerMessage(PacketAmadronTradeAdd.class, PacketAmadronTradeAdd.class, discriminant++, Side.SERVER);
         INSTANCE.registerMessage(PacketAmadronTradeAdd.class, PacketAmadronTradeAdd.class, discriminant++, Side.CLIENT);
+        INSTANCE.registerMessage(PacketAmadronTradeAddPeriodic.class, PacketAmadronTradeAddPeriodic.class, discriminant++, Side.SERVER);
         INSTANCE.registerMessage(PacketAmadronTradeNotifyDeal.class, PacketAmadronTradeNotifyDeal.class, discriminant++, Side.CLIENT);
         INSTANCE.registerMessage(PacketAmadronTradeRemoved.class, PacketAmadronTradeRemoved.class, discriminant++, Side.CLIENT);
         INSTANCE.registerMessage(PacketUpdateLogisticModule.class, PacketUpdateLogisticModule.class, discriminant++, Side.CLIENT);

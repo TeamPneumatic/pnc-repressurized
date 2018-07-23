@@ -12,6 +12,7 @@ import me.desht.pneumaticcraft.common.CommonHUDHandler;
 import me.desht.pneumaticcraft.common.HackTickHandler;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.inventory.*;
+import me.desht.pneumaticcraft.common.recipes.AmadronOffer.TradeType;
 import me.desht.pneumaticcraft.common.semiblock.*;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.tileentity.*;
@@ -27,13 +28,19 @@ import net.minecraftforge.fml.common.network.IGuiHandler;
 import net.minecraftforge.fml.relauncher.Side;
 
 public class CommonProxy implements IGuiHandler {
-//    CommonHUDHandler clientHudHandler;
-//    private CommonHUDHandler serverHudHandler;
-
     public int PneumaticHelmetRenderID = 0;
 
     public enum EnumGuiId {
-        AIR_COMPRESSOR, AIR_CANNON, PRESSURE_CHAMBER, CHARGING_STATION, ELEVATOR, PNEUMATIC_ARMOR, PRESSURE_CHAMBER_INTERFACE, VACUUM_PUMP, PNEUMATIC_DOOR, ASSEMBLY_CONTROLLER, UV_LIGHT_BOX, SECURITY_STATION_INVENTORY, HACKING, UNIVERSAL_SENSOR, PNEUMATIC_GENERATOR, ELECTRIC_COMPRESSOR, PNEUMATIC_ENGINE, KINETIC_COMPRESSOR, AERIAL_INTERFACE, ELECTROSTATIC_COMPRESSOR, APHORISM_TILE, OMNIDIRECTIONAL_HOPPER, PROGRAMMER, DRONE, PRESSURE_MODULE, AIR_GRATE_MODULE, PNEUMATIC_DYNAMO, FLUX_COMPRESSOR, PLASTIC_MIXER, LIQUID_COMPRESSOR, ADVANCED_AIR_COMPRESSOR, LIQUID_HOPPER, ADVANCED_LIQUID_COMPRESSOR, REMOTE, REMOTE_EDITOR, PROGRAMMABLE_CONTROLLER, GAS_LIFT, REFINERY, THERMOPNEUMATIC_PROCESSING_PLANT, LOGISTICS_REQUESTER, LOGISTICS_STORAGE, LOGISTICS_PASSIVE_PROVIDER, AMADRON, AMADRON_ADD_TRADE, CREATIVE_COMPRESSOR, KEROSENE_LAMP, SENTRY_TURRET
+        AIR_COMPRESSOR, AIR_CANNON, PRESSURE_CHAMBER, CHARGING_STATION, ELEVATOR, PNEUMATIC_ARMOR,
+        PRESSURE_CHAMBER_INTERFACE, VACUUM_PUMP, PNEUMATIC_DOOR, ASSEMBLY_CONTROLLER, UV_LIGHT_BOX,
+        SECURITY_STATION_INVENTORY, HACKING, UNIVERSAL_SENSOR, PNEUMATIC_GENERATOR, ELECTRIC_COMPRESSOR,
+        PNEUMATIC_ENGINE, KINETIC_COMPRESSOR, AERIAL_INTERFACE, ELECTROSTATIC_COMPRESSOR, APHORISM_TILE,
+        OMNIDIRECTIONAL_HOPPER, PROGRAMMER, DRONE, PRESSURE_MODULE, AIR_GRATE_MODULE, PNEUMATIC_DYNAMO,
+        FLUX_COMPRESSOR, PLASTIC_MIXER, LIQUID_COMPRESSOR, ADVANCED_AIR_COMPRESSOR, LIQUID_HOPPER,
+        ADVANCED_LIQUID_COMPRESSOR, REMOTE, REMOTE_EDITOR, PROGRAMMABLE_CONTROLLER, GAS_LIFT, REFINERY,
+        THERMOPNEUMATIC_PROCESSING_PLANT, LOGISTICS_REQUESTER, LOGISTICS_STORAGE, LOGISTICS_PASSIVE_PROVIDER,
+        AMADRON, AMADRON_ADD_PLAYER_TRADE, AMADRON_ADD_PERIODIC_TRADE, CREATIVE_COMPRESSOR, KEROSENE_LAMP,
+        SENTRY_TURRET
     }
 
     private final HackTickHandler serverHackTickHandler = new HackTickHandler();
@@ -48,14 +55,6 @@ public class CommonProxy implements IGuiHandler {
     public EntityPlayer getPlayer() {
         return null;
     }
-
-//    public CommonHUDHandler getCommonHudHandler() {
-//        if (getSide() == Side.CLIENT) {
-//            return clientHudHandler;
-//        } else {
-//            return serverHudHandler;
-//        }
-//    }
 
     public Side getSide() {
         return FMLCommonHandler.instance().getEffectiveSide();
@@ -133,7 +132,8 @@ public class CommonProxy implements IGuiHandler {
                 return new ContainerLogistics(player.inventory, SemiBlockManager.getInstance(world).getSemiBlock(SemiBlockLogistics.class, world, pos));
             case AMADRON:
                 return new ContainerAmadron(player);
-            case AMADRON_ADD_TRADE:
+            case AMADRON_ADD_PLAYER_TRADE:
+            case AMADRON_ADD_PERIODIC_TRADE:
                 return new ContainerAmadronAddTrade();
             case CREATIVE_COMPRESSOR:
                 return new ContainerPneumaticBase<>((TileEntityBase) te);
@@ -228,8 +228,10 @@ public class CommonProxy implements IGuiHandler {
                 return new GuiLogisticsProvider(player.inventory, SemiBlockManager.getInstance(world).getSemiBlock(SemiBlockActiveProvider.class,world, pos));
             case AMADRON:
                 return new GuiAmadron(player.inventory);
-            case AMADRON_ADD_TRADE:
-                return new GuiAmadronAddTrade();
+            case AMADRON_ADD_PLAYER_TRADE:
+                return new GuiAmadronAddTrade(TradeType.PLAYER);
+            case AMADRON_ADD_PERIODIC_TRADE:
+                return new GuiAmadronAddTrade(TradeType.PERIODIC);
             case CREATIVE_COMPRESSOR:
                 return new GuiCreativeCompressor((TileEntityCreativeCompressor) te);
             case KEROSENE_LAMP:
