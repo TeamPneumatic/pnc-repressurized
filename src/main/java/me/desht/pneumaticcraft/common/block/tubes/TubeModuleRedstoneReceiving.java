@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.block.tubes;
 
-import me.desht.pneumaticcraft.proxy.CommonProxy.EnumGuiId;
+import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.TextFormatting;
 

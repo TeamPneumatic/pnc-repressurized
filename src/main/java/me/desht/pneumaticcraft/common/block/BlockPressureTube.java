@@ -59,8 +59,6 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
     private AxisAlignedBB[] boundingBoxes = new AxisAlignedBB[6];
     private AxisAlignedBB[] closedBoundingBoxes = new AxisAlignedBB[6];
     private final Tier tier;
-//    private final float dangerPressure, criticalPressure;
-//    private final int volume;
 
     public enum Tier {
         ONE(1, PneumaticValues.DANGER_PRESSURE_PRESSURE_TUBE, PneumaticValues.MAX_PRESSURE_PRESSURE_TUBE, PneumaticValues.VOLUME_PRESSURE_TUBE),
@@ -101,9 +99,6 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
         closedBoundingBoxes[5] = new AxisAlignedBB(BBConstants.PRESSURE_PIPE_MAX_POS, 0.5 - width, 0.5 - width, BBConstants.PRESSURE_PIPE_MAX_POS + height, 0.5 + width, 0.5 + width);
 
         this.tier = tier;
-//        this.dangerPressure = tier.dangerPressure;
-//        this.criticalPressure = tier.criticalPressure;
-//        this.volume = tier.volume;
     }
 
     @Override

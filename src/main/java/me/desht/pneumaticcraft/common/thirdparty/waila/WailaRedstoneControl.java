@@ -3,9 +3,6 @@ package me.desht.pneumaticcraft.common.thirdparty.waila;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 import mcp.mobius.waila.api.IWailaDataProvider;
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
-import me.desht.pneumaticcraft.client.gui.GuiPneumaticContainerBase;
-import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
 import me.desht.pneumaticcraft.common.tileentity.IRedstoneControl;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import net.minecraft.client.resources.I18n;
@@ -38,15 +35,13 @@ public class WailaRedstoneControl implements IWailaDataProvider {
         return currenttip;
     }
 
-    public static void addTipToMachine(List<String> currenttip, IWailaDataAccessor accessor) {
+    private static void addTipToMachine(List<String> currenttip, IWailaDataAccessor accessor) {
         NBTTagCompound tag = accessor.getNBTData();
         //This is used so that we can split values later easier and have them all in the same layout.
         Map<String, String> values = new HashMap<>();
 
         if (tag.hasKey("redstoneMode")) {
             int mode = tag.getInteger("redstoneMode");
-            GuiPneumaticContainerBase gui = (GuiPneumaticContainerBase) PneumaticCraftRepressurized.proxy.getClientGuiElement(((BlockPneumaticCraft) accessor.getBlock()).getGuiID().ordinal(),
-                    accessor.getPlayer(), accessor.getWorld(), accessor.getPosition().getX(), accessor.getPosition().getY(), accessor.getPosition().getZ());
             TileEntity te = accessor.getTileEntity();
             if (te instanceof TileEntityBase) {
                 values.put(((TileEntityBase) te).getRedstoneString(), ((TileEntityBase) te).getRedstoneButtonText(mode));

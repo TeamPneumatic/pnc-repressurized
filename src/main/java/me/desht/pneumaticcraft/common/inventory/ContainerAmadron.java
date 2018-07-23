@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.inventory;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IPressurizable;
 import me.desht.pneumaticcraft.common.DroneRegistry;
+import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
 import me.desht.pneumaticcraft.common.config.AmadronOfferSettings;
 import me.desht.pneumaticcraft.common.config.AmadronOfferStaticConfig;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
@@ -18,7 +19,6 @@ import me.desht.pneumaticcraft.common.recipes.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.Sounds;
-import me.desht.pneumaticcraft.proxy.CommonProxy;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
@@ -246,9 +246,9 @@ public class ContainerAmadron extends ContainerPneumaticBase {
             Arrays.fill(shoppingItems, -1);
             basketEmpty = true;
         } else if (guiID == 2) {
-            player.openGui(PneumaticCraftRepressurized.instance, CommonProxy.EnumGuiId.AMADRON_ADD_PLAYER_TRADE.ordinal(), player.world, 0, 0, 0);
+            player.openGui(PneumaticCraftRepressurized.instance, EnumGuiId.AMADRON_ADD_PLAYER_TRADE.ordinal(), player.world, 0, 0, 0);
         } else if (guiID == 3 && PermissionAPI.hasPermission(player, Names.AMADRON_ADD_PERIODIC_TRADE)) {
-            player.openGui(PneumaticCraftRepressurized.instance, CommonProxy.EnumGuiId.AMADRON_ADD_PERIODIC_TRADE.ordinal(), player.world, 0, 0, 0);
+            player.openGui(PneumaticCraftRepressurized.instance, EnumGuiId.AMADRON_ADD_PERIODIC_TRADE.ordinal(), player.world, 0, 0, 0);
         }
     }
 

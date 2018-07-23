@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.semiblock;
 
-import me.desht.pneumaticcraft.proxy.CommonProxy.EnumGuiId;
+import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 

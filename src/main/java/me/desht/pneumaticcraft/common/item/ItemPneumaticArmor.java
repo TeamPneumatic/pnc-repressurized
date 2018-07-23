@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.api.item.IPressurizable;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.RenderCoordWireframe;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.UpgradeRenderHandlerList;
+import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
 import me.desht.pneumaticcraft.common.NBTUtil;
 import me.desht.pneumaticcraft.common.recipes.CraftingRegistrator;
 import me.desht.pneumaticcraft.common.recipes.factories.OneProbeRecipeFactory;
@@ -14,7 +15,6 @@ import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.ModIds;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
-import me.desht.pneumaticcraft.proxy.CommonProxy;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -218,8 +218,8 @@ public class ItemPneumaticArmor extends ItemArmor
     }
 
     @Override
-    public CommonProxy.EnumGuiId getGuiID() {
-        return CommonProxy.EnumGuiId.PNEUMATIC_ARMOR;
+    public EnumGuiId getGuiID() {
+        return EnumGuiId.PNEUMATIC_ARMOR;
     }
 
     @Override

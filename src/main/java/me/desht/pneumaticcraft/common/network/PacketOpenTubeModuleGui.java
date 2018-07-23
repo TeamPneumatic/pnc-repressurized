@@ -34,7 +34,7 @@ public class PacketOpenTubeModuleGui extends LocationIntPacket<PacketOpenTubeMod
     @Override
     public void handleClientSide(PacketOpenTubeModuleGui message, EntityPlayer player) {
         if (BlockPressureTube.getLookedModule(player.world, message.pos, player) != null) {
-            Object o = PneumaticCraftRepressurized.proxy.getClientGuiElement(message.guiID, player, player.world, message.pos.getX(), message.pos.getY(), message.pos.getZ());
+            Object o = PneumaticCraftRepressurized.guiHandler.getClientGuiElement(message.guiID, player, player.world, message.pos.getX(), message.pos.getY(), message.pos.getZ());
             FMLCommonHandler.instance().showGuiScreen(o);
         }
     }

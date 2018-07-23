@@ -76,6 +76,7 @@ public class PneumaticCraftRepressurized {
 
     public static TickHandlerPneumaticCraft tickHandler;
     public static CreativeTabPneumaticCraft tabPneumaticCraft;
+    public static GuiHandler guiHandler;
 
     public static boolean isJEIInstalled;
 
@@ -100,7 +101,8 @@ public class PneumaticCraftRepressurized {
 
         ConfigHandler.init(event.getSuggestedConfigurationFile());
 
-        NetworkRegistry.INSTANCE.registerGuiHandler(instance, proxy);
+        guiHandler = new GuiHandler();
+        NetworkRegistry.INSTANCE.registerGuiHandler(instance, guiHandler);
         tabPneumaticCraft = new CreativeTabPneumaticCraft("tabPneumaticCraft");
         Fluids.preInit();
 

@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.item;
 
-import me.desht.pneumaticcraft.proxy.CommonProxy.EnumGuiId;
+import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
 
 /**
  * Represents an item which has its own GUI, openable via the "inv." button in the Charging Station GUI

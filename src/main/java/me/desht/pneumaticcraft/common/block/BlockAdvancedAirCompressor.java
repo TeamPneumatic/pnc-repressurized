@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAdvancedAirCompressor;
-import me.desht.pneumaticcraft.proxy.CommonProxy.EnumGuiId;
 import net.minecraft.tileentity.TileEntity;
 
 public class BlockAdvancedAirCompressor extends BlockAirCompressor {
