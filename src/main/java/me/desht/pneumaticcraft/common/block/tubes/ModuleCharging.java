@@ -34,27 +34,37 @@ public class ModuleCharging extends TubeModule {
     @Override
     public void update() {
         super.update();
-        IItemHandler handler = getConnectedInventory();
-        if (handler != null) {
-            for (int i = 0; i < (upgraded ? 10 : 1) * PneumaticValues.CHARGING_STATION_CHARGE_RATE; i++) {
-                boolean charged = false;
+        if (!connectedInventory.getTileEntity().getWorld().isRemote) {
+            IItemHandler handler = getConnectedInventory();
+            if (handler != null) {
+                int airToTransfer = PneumaticValues.CHARGING_STATION_CHARGE_RATE * (upgraded ? 10 : 1);
+                IAirHandler airHandler = pressureTube.getAirHandler(null);
+                int airInTube = (int) airHandler.getPressure() * airHandler.getVolume();
+
                 for (int slot = 0; slot < handler.getSlots(); slot++) {
                     ItemStack chargedItem = handler.getStackInSlot(slot);
                     if (chargedItem.getItem() instanceof IPressurizable) {
                         IPressurizable chargingItem = (IPressurizable) chargedItem.getItem();
-                        IAirHandler airHandler = pressureTube.getAirHandler(null);
+                        float itemPressure = chargingItem.getPressure(chargedItem);
+                        float itemVolume = chargingItem.getVolume(chargedItem);
+                        float delta = Math.abs(airHandler.getPressure() - itemPressure) / 2.0F;
+                        int airInItem = (int) (itemPressure * itemVolume);
                         if (chargingItem.getPressure(chargedItem) > airHandler.getPressure() + 0.01F && chargingItem.getPressure(chargedItem) > 0F) {
-                            chargingItem.addAir(chargedItem, -1);
-                            airHandler.addAir(1);
-                            charged = true;
-                        } else if (chargingItem.getPressure(chargedItem) < airHandler.getPressure() - 0.01F && chargingItem.getPressure(chargedItem) < chargingItem.maxPressure(chargedItem)) {// if there is pressure, and the item isn't fully charged yet..
-                            chargingItem.addAir(chargedItem, 1);
-                            airHandler.addAir(-1);
-                            charged = true;
+                            // move air from item to charger (tube)
+                            int airToMove = Math.min(Math.min(airToTransfer, airInItem), (int) (delta * airHandler.getVolume()));
+                            chargingItem.addAir(chargedItem, -airToMove);
+                            airHandler.addAir(airToMove);
+                            airInTube += airToMove;
+                        } else if (chargingItem.getPressure(chargedItem) < airHandler.getPressure() - 0.01F && chargingItem.getPressure(chargedItem) < chargingItem.maxPressure(chargedItem)) {
+                            // move air from charger (tube) to item
+                            int maxAirInItem = (int) (chargingItem.maxPressure(chargedItem) * itemVolume);
+                            int airToMove = Math.min(Math.min(airToTransfer, airInTube), maxAirInItem - airInItem);
+                            airToMove = Math.min((int) (delta * itemVolume), airToMove);
+                            chargingItem.addAir(chargedItem, airToMove);
+                            airHandler.addAir(-airToMove);
                         }
                     }
                 }
-                if (!charged) break;
             }
         }
     }
