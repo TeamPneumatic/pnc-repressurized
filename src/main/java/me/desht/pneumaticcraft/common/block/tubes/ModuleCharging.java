@@ -34,7 +34,7 @@ public class ModuleCharging extends TubeModule {
     @Override
     public void update() {
         super.update();
-        if (!connectedInventory.getTileEntity().getWorld().isRemote) {
+        if (connectedInventory != null && !connectedInventory.getTileEntity().getWorld().isRemote) {
             IItemHandler handler = getConnectedInventory();
             if (handler != null) {
                 int airToTransfer = PneumaticValues.CHARGING_STATION_CHARGE_RATE * (upgraded ? 10 : 1);
