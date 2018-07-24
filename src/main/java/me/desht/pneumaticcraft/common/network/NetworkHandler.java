@@ -81,9 +81,10 @@ public class NetworkHandler {
         INSTANCE.registerMessage(PacketUpdatePressureBlock.class, PacketUpdatePressureBlock.class, discriminant++, Side.CLIENT);
         INSTANCE.registerMessage(PacketSyncAmadronOffers.class, PacketSyncAmadronOffers.class, discriminant++, Side.CLIENT);
         INSTANCE.registerMessage(PacketAmadronOrderUpdate.class, PacketAmadronOrderUpdate.class, discriminant++, Side.SERVER);
-        INSTANCE.registerMessage(PacketAmadronTradeAdd.class, PacketAmadronTradeAdd.class, discriminant++, Side.SERVER);
-        INSTANCE.registerMessage(PacketAmadronTradeAdd.class, PacketAmadronTradeAdd.class, discriminant++, Side.CLIENT);
+        INSTANCE.registerMessage(PacketAmadronTradeAddCustom.class, PacketAmadronTradeAddCustom.class, discriminant++, Side.SERVER);
+        INSTANCE.registerMessage(PacketAmadronTradeAddCustom.class, PacketAmadronTradeAddCustom.class, discriminant++, Side.CLIENT);
         INSTANCE.registerMessage(PacketAmadronTradeAddPeriodic.class, PacketAmadronTradeAddPeriodic.class, discriminant++, Side.SERVER);
+        INSTANCE.registerMessage(PacketAmadronTradeAddStatic.class, PacketAmadronTradeAddStatic.class, discriminant++, Side.SERVER);
         INSTANCE.registerMessage(PacketAmadronTradeNotifyDeal.class, PacketAmadronTradeNotifyDeal.class, discriminant++, Side.CLIENT);
         INSTANCE.registerMessage(PacketAmadronTradeRemoved.class, PacketAmadronTradeRemoved.class, discriminant++, Side.CLIENT);
         INSTANCE.registerMessage(PacketUpdateLogisticModule.class, PacketUpdateLogisticModule.class, discriminant++, Side.CLIENT);

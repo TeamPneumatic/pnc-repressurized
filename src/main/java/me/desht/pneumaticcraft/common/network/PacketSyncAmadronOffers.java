@@ -16,28 +16,17 @@ import java.util.Collection;
 
 public class PacketSyncAmadronOffers extends AbstractPacket<PacketSyncAmadronOffers> {
     private Collection<AmadronOffer> offers = new ArrayList<>();
-    boolean mayAddPeriodic;
+    private boolean mayAddPeriodic;
+    private boolean mayAddStatic;
 
     @SuppressWarnings("unused")
     public PacketSyncAmadronOffers() {
     }
 
-    public PacketSyncAmadronOffers(Collection<AmadronOffer> offers, boolean mayAddPeriodic) {
+    public PacketSyncAmadronOffers(Collection<AmadronOffer> offers, boolean mayAddPeriodic, boolean mayAddStatic) {
         this.offers = offers;
         this.mayAddPeriodic = mayAddPeriodic;
-    }
-
-    @Override
-    public void fromBytes(ByteBuf buf) {
-        int offerCount = buf.readInt();
-        for (int i = 0; i < offerCount; i++) {
-            if (buf.readBoolean()) {
-                offers.add(AmadronOfferCustom.loadFromBuf(buf));
-            } else {
-                offers.add(new AmadronOffer(getFluidOrItemStack(buf), getFluidOrItemStack(buf)));
-            }
-        }
-        mayAddPeriodic = buf.readBoolean();
+        this.mayAddStatic = mayAddStatic;
     }
 
     public static Object getFluidOrItemStack(ByteBuf buf) {
@@ -48,21 +37,7 @@ public class PacketSyncAmadronOffers extends AbstractPacket<PacketSyncAmadronOff
         }
     }
 
-    @Override
-    public void toBytes(ByteBuf buf) {
-        buf.writeInt(offers.size());
-        for (AmadronOffer offer : offers) {
-            buf.writeBoolean(offer instanceof AmadronOfferCustom);
-            writeFluidOrItemStack(offer.getInput(), buf);
-            writeFluidOrItemStack(offer.getOutput(), buf);
-            if (offer instanceof AmadronOfferCustom) {
-                ((AmadronOfferCustom) offer).writeToBuf(buf);
-            }
-        }
-        buf.writeBoolean(mayAddPeriodic);
-    }
-
-    static void writeFluidOrItemStack(Object object, ByteBuf buf) {
+    public static void writeFluidOrItemStack(Object object, ByteBuf buf) {
         if (object instanceof ItemStack) {
             buf.writeByte(0);
             ByteBufUtils.writeItemStack(buf, (ItemStack) object);
@@ -76,9 +51,35 @@ public class PacketSyncAmadronOffers extends AbstractPacket<PacketSyncAmadronOff
     }
 
     @Override
+    public void fromBytes(ByteBuf buf) {
+        int offerCount = buf.readInt();
+        for (int i = 0; i < offerCount; i++) {
+            if (buf.readBoolean()) {
+                offers.add(AmadronOfferCustom.loadFromBuf(buf));
+            } else {
+                offers.add(new AmadronOffer(getFluidOrItemStack(buf), getFluidOrItemStack(buf)));
+            }
+        }
+        mayAddPeriodic = buf.readBoolean();
+        mayAddStatic = buf.readBoolean();
+    }
+
+    @Override
+    public void toBytes(ByteBuf buf) {
+        buf.writeInt(offers.size());
+        for (AmadronOffer offer : offers) {
+            buf.writeBoolean(offer instanceof AmadronOfferCustom);
+            offer.writeToBuf(buf);
+        }
+        buf.writeBoolean(mayAddPeriodic);
+        buf.writeBoolean(mayAddStatic);
+    }
+
+    @Override
     public void handleClientSide(PacketSyncAmadronOffers message, EntityPlayer player) {
         AmadronOfferManager.getInstance().setOffers(message.offers);
         ContainerAmadron.mayAddPeriodicOffers = mayAddPeriodic;
+        ContainerAmadron.mayAddStaticOffers = mayAddStatic;
     }
 
     @Override

@@ -61,7 +61,8 @@ public class ItemAmadronTablet extends ItemPressurizable implements IAmadronInte
             // (Technically we're reaching across logical sides, but it's OK in this case; packet will be sent on dedicated server.
             if (FMLCommonHandler.instance().getSide() != Side.CLIENT) {
                 boolean mayAddPeriodic = PermissionAPI.hasPermission(playerIn, Names.AMADRON_ADD_PERIODIC_TRADE);
-                NetworkHandler.sendTo(new PacketSyncAmadronOffers(AmadronOfferManager.getInstance().getAllOffers(), mayAddPeriodic), (EntityPlayerMP) playerIn);
+                boolean mayAddStatic = PermissionAPI.hasPermission(playerIn, Names.AMADRON_ADD_PERIODIC_TRADE);
+                NetworkHandler.sendTo(new PacketSyncAmadronOffers(AmadronOfferManager.getInstance().getAllOffers(), mayAddPeriodic, mayAddStatic), (EntityPlayerMP) playerIn);
             }
             playerIn.openGui(PneumaticCraftRepressurized.instance, EnumGuiId.AMADRON.ordinal(), playerIn.world, (int) playerIn.posX, (int) playerIn.posY, (int) playerIn.posZ);
         }

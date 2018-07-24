@@ -228,6 +228,7 @@ public class AmadronOfferCustom extends AmadronOffer {
     }
 
     public void writeToBuf(ByteBuf buf) {
+        super.writeToBuf(buf);
         ByteBufUtils.writeUTF8String(buf, offeringPlayerName);
         ByteBufUtils.writeUTF8String(buf, offeringPlayerId);
         if (providingPosition != null) {

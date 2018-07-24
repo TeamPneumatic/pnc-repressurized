@@ -1,6 +1,8 @@
 package me.desht.pneumaticcraft.common.recipes;
 
 import com.google.gson.JsonObject;
+import io.netty.buffer.ByteBuf;
+import me.desht.pneumaticcraft.common.network.PacketSyncAmadronOffers;
 import me.desht.pneumaticcraft.common.util.JsonToNBTConverter;
 import me.desht.pneumaticcraft.common.util.NBTToJsonConverter;
 import me.desht.pneumaticcraft.lib.Log;
@@ -15,12 +17,18 @@ import net.minecraftforge.fluids.FluidStack;
 import org.apache.commons.lang3.Validate;
 
 public class AmadronOffer {
-    public enum TradeType { PLAYER, PERIODIC }
+    public enum TradeType { PLAYER, PERIODIC, STATIC }
 
     protected Object input;
     protected Object output;
+    // distinguishes base default trades vs. ones added later; only used server-side and only saved to JSON
+    private String addedBy = null;
 
     public AmadronOffer(Object input, Object output) {
+        this(input, output, null);
+    }
+
+    public AmadronOffer(Object input, Object output, String addedBy) {
         Validate.notNull(input, "Input item/fluid can't be null!");
         Validate.notNull(output, "Output item/fluid can't be null!");
         if (input instanceof ItemStack) {
@@ -39,6 +47,7 @@ public class AmadronOffer {
         }
         this.input = input;
         this.output = output;
+        this.addedBy = addedBy;
     }
 
     public Object getInput() {
@@ -55,6 +64,10 @@ public class AmadronOffer {
 
     public int getStock() {
         return -1;
+    }
+
+    public void setAddedBy(String addedBy) {
+        this.addedBy = addedBy;
     }
 
     public boolean passesQuery(String query) {
@@ -106,6 +119,15 @@ public class AmadronOffer {
         return new AmadronOffer(input, output);
     }
 
+    public void writeToBuf(ByteBuf buf) {
+        PacketSyncAmadronOffers.writeFluidOrItemStack(getInput(), buf);
+        PacketSyncAmadronOffers.writeFluidOrItemStack(getOutput(), buf);
+    }
+
+    public static AmadronOffer readFromBuf(ByteBuf buf) {
+        return new AmadronOffer(PacketSyncAmadronOffers.getFluidOrItemStack(buf), PacketSyncAmadronOffers.getFluidOrItemStack(buf));
+    }
+
     public JsonObject toJson() {
         JsonObject object = new JsonObject();
 
@@ -143,6 +165,7 @@ public class AmadronOffer {
         }
         object.add("output", outputObject);
 
+        if (addedBy != null) object.addProperty("addedBy", addedBy);
         return object;
     }
 
@@ -193,7 +216,8 @@ public class AmadronOffer {
             }
         }
 
-        return new AmadronOffer(input, output);
+        String addedBy = object.has("addedBy") ? object.getAsJsonObject("addedBy").getAsString() : null;
+        return new AmadronOffer(input, output, addedBy);
     }
 
     @Override
@@ -210,7 +234,7 @@ public class AmadronOffer {
         } else {
             ItemStack stack = (ItemStack) o;
             ResourceLocation name = stack.getItem().getRegistryName();
-            return (name == null ? 0 : name.hashCode()) + stack.getCount() * 19;
+            return (name == null ? 0 : name.hashCode()) + stack.getCount() * 19 + stack.getMetadata() * 37;
         }
     }
 

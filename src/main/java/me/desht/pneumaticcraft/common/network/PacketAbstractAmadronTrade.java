@@ -20,8 +20,6 @@ public abstract class PacketAbstractAmadronTrade<REQ extends PacketAbstractAmadr
 
     @Override
     public void toBytes(ByteBuf buf) {
-        PacketSyncAmadronOffers.writeFluidOrItemStack(offer.getInput(), buf);
-        PacketSyncAmadronOffers.writeFluidOrItemStack(offer.getOutput(), buf);
         offer.writeToBuf(buf);
     }
 

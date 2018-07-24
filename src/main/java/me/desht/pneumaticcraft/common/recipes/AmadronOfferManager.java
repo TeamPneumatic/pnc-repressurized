@@ -21,7 +21,7 @@ public class AmadronOfferManager {
     private static final AmadronOfferManager SERVER_INSTANCE = new AmadronOfferManager();
 
     private final LinkedHashSet<AmadronOffer> staticOffers = new LinkedHashSet<>();
-    private final List<AmadronOffer> periodicOffers = new ArrayList<>();
+    private final List<AmadronOffer> periodicOffers = new ArrayList<>();  // a list due to random access needs
     private final LinkedHashSet<AmadronOffer> selectedPeriodicOffers = new LinkedHashSet<>();
     private final LinkedHashSet<AmadronOffer> allOffers = new LinkedHashSet<>();
 

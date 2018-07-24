@@ -10,17 +10,18 @@ import net.minecraft.util.text.TextComponentTranslation;
 
 import java.io.IOException;
 
-public class PacketAmadronTradeAdd extends PacketAbstractAmadronTrade<PacketAmadronTradeAdd> {
+public class PacketAmadronTradeAddCustom extends PacketAbstractAmadronTrade<PacketAmadronTradeAddCustom> {
 
-    public PacketAmadronTradeAdd() {
+    @SuppressWarnings("unused")
+    public PacketAmadronTradeAddCustom() {
     }
 
-    public PacketAmadronTradeAdd(AmadronOfferCustom offer) {
+    public PacketAmadronTradeAddCustom(AmadronOfferCustom offer) {
         super(offer);
     }
 
     @Override
-    public void handleClientSide(PacketAmadronTradeAdd message, EntityPlayer player) {
+    public void handleClientSide(PacketAmadronTradeAddCustom message, EntityPlayer player) {
         if (AmadronOfferSettings.notifyOfTradeAddition)
             player.sendStatusMessage(new TextComponentTranslation("message.amadron.playerAddedTrade",
                     message.getOffer().getVendor(),
@@ -29,7 +30,7 @@ public class PacketAmadronTradeAdd extends PacketAbstractAmadronTrade<PacketAmad
     }
 
     @Override
-    public void handleServerSide(PacketAmadronTradeAdd message, EntityPlayer player) {
+    public void handleServerSide(PacketAmadronTradeAddCustom message, EntityPlayer player) {
         AmadronOfferCustom offer = message.getOffer();
         offer.updatePlayerId();
         if (AmadronOfferManager.getInstance().hasOffer(offer.copy().invert())) {

@@ -47,6 +47,7 @@ public class ContainerAmadron extends ContainerPneumaticBase {
     // is done server-side via permissions API.  So make button available unless server tells us no.  Worst that
     // can happen is button does nothing.
     public static boolean mayAddPeriodicOffers = true;
+    public static boolean mayAddStaticOffers = true;
 
     public List<AmadronOffer> offers = new ArrayList<>(AmadronOfferManager.getInstance().getAllOffers());
 
@@ -249,6 +250,8 @@ public class ContainerAmadron extends ContainerPneumaticBase {
             player.openGui(PneumaticCraftRepressurized.instance, EnumGuiId.AMADRON_ADD_PLAYER_TRADE.ordinal(), player.world, 0, 0, 0);
         } else if (guiID == 3 && PermissionAPI.hasPermission(player, Names.AMADRON_ADD_PERIODIC_TRADE)) {
             player.openGui(PneumaticCraftRepressurized.instance, EnumGuiId.AMADRON_ADD_PERIODIC_TRADE.ordinal(), player.world, 0, 0, 0);
+        } else if (guiID == 4 && PermissionAPI.hasPermission(player, Names.AMADRON_ADD_STATIC_TRADE)) {
+            player.openGui(PneumaticCraftRepressurized.instance, EnumGuiId.AMADRON_ADD_STATIC_TRADE.ordinal(), player.world, 0, 0, 0);
         }
     }
 

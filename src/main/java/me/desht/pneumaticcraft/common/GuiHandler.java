@@ -30,8 +30,8 @@ public class GuiHandler implements IGuiHandler {
         FLUX_COMPRESSOR, PLASTIC_MIXER, LIQUID_COMPRESSOR, ADVANCED_AIR_COMPRESSOR, LIQUID_HOPPER,
         ADVANCED_LIQUID_COMPRESSOR, REMOTE, REMOTE_EDITOR, PROGRAMMABLE_CONTROLLER, GAS_LIFT, REFINERY,
         THERMOPNEUMATIC_PROCESSING_PLANT, LOGISTICS_REQUESTER, LOGISTICS_STORAGE, LOGISTICS_PASSIVE_PROVIDER,
-        AMADRON, AMADRON_ADD_PLAYER_TRADE, AMADRON_ADD_PERIODIC_TRADE, CREATIVE_COMPRESSOR, KEROSENE_LAMP,
-        SENTRY_TURRET
+        AMADRON, AMADRON_ADD_PLAYER_TRADE, AMADRON_ADD_PERIODIC_TRADE, AMADRON_ADD_STATIC_TRADE,
+        CREATIVE_COMPRESSOR, KEROSENE_LAMP, SENTRY_TURRET
     }
 
 
@@ -107,6 +107,7 @@ public class GuiHandler implements IGuiHandler {
                 return new ContainerAmadron(player);
             case AMADRON_ADD_PLAYER_TRADE:
             case AMADRON_ADD_PERIODIC_TRADE:
+            case AMADRON_ADD_STATIC_TRADE:
                 return new ContainerAmadronAddTrade();
             case CREATIVE_COMPRESSOR:
                 return new ContainerPneumaticBase<>((TileEntityBase) te);
@@ -206,6 +207,8 @@ public class GuiHandler implements IGuiHandler {
                 return new GuiAmadronAddTrade(TradeType.PLAYER);
             case AMADRON_ADD_PERIODIC_TRADE:
                 return new GuiAmadronAddTrade(TradeType.PERIODIC);
+            case AMADRON_ADD_STATIC_TRADE:
+                return new GuiAmadronAddTrade(TradeType.STATIC);
             case CREATIVE_COMPRESSOR:
                 return new GuiCreativeCompressor((TileEntityCreativeCompressor) te);
             case KEROSENE_LAMP:

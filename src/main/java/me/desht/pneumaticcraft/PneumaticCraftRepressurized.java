@@ -146,6 +146,8 @@ public class PneumaticCraftRepressurized {
 
         PermissionAPI.registerNode(Names.AMADRON_ADD_PERIODIC_TRADE, DefaultPermissionLevel.OP,
                 "Allow player to add a custom periodic offer via the Amadron Tablet");
+        PermissionAPI.registerNode(Names.AMADRON_ADD_STATIC_TRADE, DefaultPermissionLevel.OP,
+                "Allow player to add a custom static offer via the Amadron Tablet");
 
         BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(Itemss.DRONE, new BehaviorDispenseDrone());
         BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(Itemss.LOGISTICS_DRONE, new BehaviorDispenseDrone());

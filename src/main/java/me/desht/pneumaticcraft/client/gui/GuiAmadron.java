@@ -29,7 +29,8 @@ public class GuiAmadron extends GuiPneumaticContainerBase {
     private final List<WidgetAmadronOffer> widgetOffers = new ArrayList<>();
     private boolean needsRefreshing;
     private boolean hadProblem = false;
-    private GuiButtonSpecial orderButton, addTradeButton, addPeriodicButton;
+    private GuiButtonSpecial orderButton;
+    private GuiButtonSpecial addTradeButton;
 
     public GuiAmadron(InventoryPlayer playerInventory) {
         super(new ContainerAmadron(playerInventory.player), null, Textures.GUI_AMADRON);
@@ -69,10 +70,17 @@ public class GuiAmadron extends GuiPneumaticContainerBase {
         addTradeButton = new GuiButtonSpecial(2, 16, 16, 20, 20, "")
                 .setRenderStacks(new ItemStack(Items.GOLD_INGOT));
         customTrades.addWidget(addTradeButton);
+        int startX = 40;
         if (ContainerAmadron.mayAddPeriodicOffers) {
-            addPeriodicButton = new GuiButtonSpecial(3, 40, 16, 20, 20, "")
+            GuiButtonSpecial addPeriodicButton = new GuiButtonSpecial(3, 40, 16, 20, 20, "")
                     .setRenderStacks(new ItemStack(Items.CLOCK)).setTooltipText(PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.amadron.button.addPeriodicTrade"), 40));
             customTrades.addWidget(addPeriodicButton);
+            startX += 24;
+        }
+        if (ContainerAmadron.mayAddStaticOffers) {
+            GuiButtonSpecial addStaticButton = new GuiButtonSpecial(4, startX, 16, 20, 20, "")
+                    .setRenderStacks(new ItemStack(Items.EMERALD)).setTooltipText(PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.amadron.button.addStaticTrade"), 40));
+            customTrades.addWidget(addStaticButton);
         }
 
         needsRefreshing = true;

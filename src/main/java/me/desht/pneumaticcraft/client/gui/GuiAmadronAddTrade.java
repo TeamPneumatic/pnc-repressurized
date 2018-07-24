@@ -11,8 +11,9 @@ import me.desht.pneumaticcraft.common.item.ItemAmadronTablet;
 import me.desht.pneumaticcraft.common.item.ItemGPSTool;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketAmadronTradeAdd;
+import me.desht.pneumaticcraft.common.network.PacketAmadronTradeAddCustom;
 import me.desht.pneumaticcraft.common.network.PacketAmadronTradeAddPeriodic;
+import me.desht.pneumaticcraft.common.network.PacketAmadronTradeAddStatic;
 import me.desht.pneumaticcraft.common.recipes.AmadronOffer;
 import me.desht.pneumaticcraft.common.recipes.AmadronOffer.TradeType;
 import me.desht.pneumaticcraft.common.recipes.AmadronOfferCustom;
@@ -191,10 +192,13 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase {
                 pos = getPosition(ContainerAmadronAddTrade.OUTPUT_SLOT);
                 dimensionId = getDimension(ContainerAmadronAddTrade.OUTPUT_SLOT);
                 trade.setReturningPosition(pos, dimensionId);
-                NetworkHandler.sendToServer(new PacketAmadronTradeAdd(trade.invert()));
+                NetworkHandler.sendToServer(new PacketAmadronTradeAddCustom(trade.invert()));
             } else if (tradeType == TradeType.PERIODIC) {
                 AmadronOffer trade = new AmadronOffer(input, output);
                 NetworkHandler.sendToServer(new PacketAmadronTradeAddPeriodic(trade));
+            } else if (tradeType == TradeType.STATIC) {
+                AmadronOffer trade = new AmadronOffer(input, output);
+                NetworkHandler.sendToServer(new PacketAmadronTradeAddStatic(trade));
             }
             player.closeScreen();
         }
@@ -258,17 +262,18 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase {
     public void updateScreen() {
         super.updateScreen();
         ContainerAmadronAddTrade container = (ContainerAmadronAddTrade) inventorySlots;
+        boolean posOK = tradeType != TradeType.PLAYER
+                || (getPosition(ContainerAmadronAddTrade.INPUT_SLOT) != null && getPosition(ContainerAmadronAddTrade.OUTPUT_SLOT) != null);
         addButton.enabled = inputNumber.getValue() > 0
                 && outputNumber.getValue() > 0
                 && (inputFluid.getFluid() != null || !container.getInputStack().isEmpty())
                 && (outputFluid.getFluid() != null || !container.getOutputStack().isEmpty())
-                && getPosition(ContainerAmadronAddTrade.INPUT_SLOT) != null
-                && getPosition(ContainerAmadronAddTrade.OUTPUT_SLOT) != null;
+                && posOK;
     }
 
     @Override
     protected void addProblems(List curInfo) {
-        if (getPosition(ContainerAmadronAddTrade.INPUT_SLOT) == null || getPosition(ContainerAmadronAddTrade.OUTPUT_SLOT) == null) {
+        if (tradeType == TradeType.PLAYER && (getPosition(ContainerAmadronAddTrade.INPUT_SLOT) == null || getPosition(ContainerAmadronAddTrade.OUTPUT_SLOT) == null)) {
             curInfo.add("gui.amadron.addTrade.problems.noSellingOrPayingBlock");
         }
         super.addProblems(curInfo);

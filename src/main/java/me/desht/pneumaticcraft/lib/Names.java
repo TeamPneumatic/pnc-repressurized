@@ -25,4 +25,5 @@ public class Names {
 
     // Permission nodes
     public static final String AMADRON_ADD_PERIODIC_TRADE = MOD_ID + ".amadron.addPeriodicTrade";
+    public static final String AMADRON_ADD_STATIC_TRADE = MOD_ID + ".amadron.addStaticTrade";
 }
