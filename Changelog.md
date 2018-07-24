@@ -6,7 +6,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
-### 0.7.4-??? (unreleased)
+### 0.7.4-244 (25 Jul 2018)
 #### Updates
 * Amadron Tablet has seen a lot of attention...
   * Recoloured GUI background to now match what the item looks like
