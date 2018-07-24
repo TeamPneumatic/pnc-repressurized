@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.api.heat.HeatBehaviour;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.api.tileentity.IHeatRegistry;
+import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.heat.behaviour.HeatBehaviourManager;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.block.Block;
@@ -18,12 +19,12 @@ import net.minecraftforge.fluids.FluidRegistry;
 import java.util.*;
 
 public class HeatExchangerManager implements IHeatRegistry {
-    /**
-     * Used for blocks like lava and ice.
-     */
-    private final Map<Block, IHeatExchanger> specialBlockExchangers = new HashMap<Block, IHeatExchanger>();
-    private final IHeatExchangerLogic AIR_EXCHANGER = new HeatExchangerLogicConstant(295, 100);
-    public static final double FLUID_RESISTANCE = 10;
+    public static final double DEFAULT_FLUID_RESISTANCE = 10;
+
+    // Used to add thermal properties to vanilla blocks or non-tile-entity modded blocks
+    private final Map<Block, IHeatExchanger> specialBlockExchangers = new HashMap<>();
+
+    private static final IHeatExchangerLogic AIR_EXCHANGER = new HeatExchangerLogicConstant(295, 100);
 
     private static HeatExchangerManager INSTANCE = new HeatExchangerManager();
 
@@ -37,11 +38,12 @@ public class HeatExchangerManager implements IHeatRegistry {
         registerBlockExchanger(Blocks.SNOW, 268, 1000);
         registerBlockExchanger(Blocks.TORCH, 1700, 100000);
         registerBlockExchanger(Blocks.FIRE, 1700, 1000);
+        registerBlockExchanger(Blocks.MAGMA, 1700, 500);
 
         Map<String, Fluid> fluids = FluidRegistry.getRegisteredFluids();
         for (Fluid fluid : fluids.values()) {
             if (fluid.getBlock() != null) {
-                registerBlockExchanger(fluid.getBlock(), fluid.getTemperature(), FLUID_RESISTANCE);
+                registerBlockExchanger(fluid.getBlock(), fluid.getTemperature(), ConfigHandler.general.fluidThermalResistance);
             }
         }
         registerBlockExchanger(Blocks.FLOWING_WATER, FluidRegistry.WATER.getTemperature(), 500);

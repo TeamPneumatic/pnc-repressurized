@@ -25,6 +25,7 @@ public class HeatBehaviourManager {
         registerBehaviour(HeatBehaviourWaterSolidify.class);
         registerBehaviour(HeatBehaviourFireTransition.class);
         registerBehaviour(HeatBehaviourHeatFrame.class);
+        registerBehaviour(HeatBehaviourMagmaTransition.class);
     }
 
     public void registerBehaviour(Class<? extends HeatBehaviour> behaviour) {

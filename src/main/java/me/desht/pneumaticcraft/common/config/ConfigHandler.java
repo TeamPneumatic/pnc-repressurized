@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.config;
 
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
+import me.desht.pneumaticcraft.common.heat.HeatExchangerManager;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
@@ -110,7 +111,11 @@ public class ConfigHandler {
         @Config.Comment("Enable/disable explosion crafting (iron->compressed iron).  If you disable this, you'll need another way to get compressed iron initially")
         public boolean explosionCrafting = true;
         @Config.Comment("Oil worldgen blacklist: add dimension IDs to this list if you don't want oil worldgen to happen there.")
+        @Config.RequiresMcRestart
         public int[] oilWorldGenBlacklist = new int[] { 1, -1 };
+        @Config.Comment("Thermal resistance of non-vanilla fluids, which is how fast heat moves between them and adjacent heat-handling blocks like the refinery.  Lower values mean faster heat movement.")
+        @Config.RequiresWorldRestart
+        public double fluidThermalResistance = HeatExchangerManager.DEFAULT_FLUID_RESISTANCE;
     }
 
     public static class MachineProperties {
@@ -158,6 +163,7 @@ public class ConfigHandler {
 //        @Config.Comment("Pneumatic Pump")
 //        public boolean enablePneumaticPumpRecipe = true;
         @Config.Comment("8 Block of Coal --> 1 Diamond (Pressure Chamber)")
+        @Config.RequiresMcRestart
         public boolean enableCoalToDiamondsRecipe = true;
     }
 
