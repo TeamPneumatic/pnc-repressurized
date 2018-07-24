@@ -5,6 +5,8 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Items;
+import net.minecraft.item.ItemLingeringPotion;
+import net.minecraft.item.ItemSplashPotion;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.NonNullList;
@@ -46,7 +48,12 @@ public class ItemGunAmmo extends ItemPneumatic {
         ItemStack potion = getPotion(stack);
         if (!potion.isEmpty()) {
             potion.getItem().addInformation(potion, world, infoList, extraInfo);
-            if (infoList.size() > 2) infoList.set(2, I18n.format("gui.tooltip.gunAmmo") + " " + infoList.get(2));
+            if (infoList.size() > 3) infoList.set(3, I18n.format("gui.tooltip.gunAmmo") + " " + infoList.get(3));
+            if (potion.getItem() instanceof ItemSplashPotion) {
+                infoList.set(3, infoList.get(3) + " - " + I18n.format("gui.tooltip.gunAmmo.splash"));
+            } else if (potion.getItem() instanceof ItemLingeringPotion) {
+                infoList.set(3, infoList.get(3) + " - " + I18n.format("gui.tooltip.gunAmmo.lingering"));
+            }
         }
         super.addInformation(stack, world, infoList, extraInfo);
     }

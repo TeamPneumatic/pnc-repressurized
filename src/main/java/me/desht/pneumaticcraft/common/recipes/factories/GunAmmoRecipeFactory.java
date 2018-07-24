@@ -3,8 +3,8 @@ package me.desht.pneumaticcraft.common.recipes.factories;
 import com.google.gson.JsonObject;
 import me.desht.pneumaticcraft.common.item.ItemGunAmmo;
 import me.desht.pneumaticcraft.common.item.Itemss;
-import net.minecraft.init.Items;
 import net.minecraft.inventory.InventoryCrafting;
+import net.minecraft.item.ItemPotion;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
@@ -36,7 +36,7 @@ public class GunAmmoRecipeFactory implements IRecipeFactory {
                 ItemStack stack = invCrafting.getStackInSlot(i);
                 if (!stack.isEmpty()) {
                     itemCount++;
-                    if (stack.getItem() == Items.POTIONITEM) foundPotion = true;
+                    if (stack.getItem() instanceof ItemPotion) foundPotion = true;
                     if (stack.getItem() == Itemss.GUN_AMMO) foundAmmo = true;
                 }
             }
@@ -50,7 +50,7 @@ public class GunAmmoRecipeFactory implements IRecipeFactory {
             for (int i = 0; i < invCrafting.getSizeInventory(); i++) {
                 ItemStack stack = invCrafting.getStackInSlot(i);
                 if (!stack.isEmpty()) {
-                    if (stack.getItem() == Items.POTIONITEM) {
+                    if (stack.getItem() instanceof ItemPotion) {
                         potion = stack;
                     } else {
                         ammo = stack;

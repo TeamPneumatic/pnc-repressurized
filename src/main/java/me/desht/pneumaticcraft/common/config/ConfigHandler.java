@@ -116,6 +116,8 @@ public class ConfigHandler {
         @Config.Comment("Thermal resistance of non-vanilla fluids, which is how fast heat moves between them and adjacent heat-handling blocks like the refinery.  Lower values mean faster heat movement.")
         @Config.RequiresWorldRestart
         public double fluidThermalResistance = HeatExchangerManager.DEFAULT_FLUID_RESISTANCE;
+        @Config.Comment("Chance per shot (1 in X) of potion-tipped ammo proc'ing the potion effect")
+        public int minigunPotionProcChance = 15;
     }
 
     public static class MachineProperties {

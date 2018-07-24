@@ -1,0 +1,13 @@
+Gun Ammo is used by the [link{item/minigun}]Minigun [link{}].
+
+One ammo cartridge holds 1000 minigun rounds.  Ammo is steadily consumed while the minigun is firing, and ammo levels can be seen in the ammo item's tooltip, as well as its durability bar.
+
+If you have multiple ammo cartridges in your inventory, the cartridge used is chosen as follows:
+
+• Your hotbar is scanned from left to right
+• The rest of your inventory is scanned from left to right, starting at the top row
+
+[prefix{l}]Potions [prefix{}]
+You can craft ammo with any potion, and that ammo no longer does physical damage, but has a chance to apply the potion effect to your target.  The default chance is 1 in 15 (but remember the minigun fires pretty quickly), and this can be adjusted in the mod config - see I:minigunPotionProcChance
+
+Splash and lingering potions can also be used; they have the expected area effect, but be aware that ammo is consumed 3 times as quickly when tipped with splash potions, and 6 times as quickly with lingering potions.

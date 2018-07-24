@@ -1,0 +1,14 @@
+{
+  "type": "pneumaticcraft:gun_ammo",
+  "ingredients": [
+    {
+      "item": "pneumaticcraft:gun_ammo"
+    },
+    {
+      "item": "minecraft:potion"
+    }
+  ],
+  "result": {
+    "item": "pneumaticcraft:gun_ammo"
+  }
+}
