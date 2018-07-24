@@ -139,7 +139,7 @@ public class TileEntityDroneInterface extends TileEntity implements ITickable, I
             @Override
             public Object[] call(Object[] args) throws Exception {
                 if (args.length == 0) {
-                    List<String> actions = new ArrayList<String>();
+                    List<String> actions = new ArrayList<>();
                     for (IProgWidget widget : WidgetRegistrator.registeredWidgets) {
                         if (widget.canBeRunByComputers(new EntityDrone(getWorld()), getWidget())) {
                             actions.add(widget.getWidgetString());
@@ -243,7 +243,7 @@ public class TileEntityDroneInterface extends TileEntity implements ITickable, I
             @Override
             public Object[] call(Object[] args) throws Exception {
                 if (args.length == 0) {
-                    Set<BlockPos> area = new HashSet<BlockPos>();
+                    Set<BlockPos> area = new HashSet<>();
                     getWidget().getArea(area);
                     NetworkHandler.sendToDimension(new PacketShowArea(getPos(), area), getWorld().provider.getDimension());
                     return null;
@@ -779,6 +779,30 @@ public class TileEntityDroneInterface extends TileEntity implements ITickable, I
                 } else {
                     throw new IllegalArgumentException("setRequiresTool takes 1 argument (boolean requires tool true/false!");
                 }
+            }
+        });
+
+        luaMethods.add(new LuaMethod("getDroneName") {
+            @Override
+            public Object[] call(Object[] args) throws Exception {
+                if (drone == null) throw new IllegalStateException("There's no connected Drone!");
+                return new Object[]{ drone.getName() };
+            }
+        });
+
+        luaMethods.add(new LuaMethod("getOwnerName") {
+            @Override
+            public Object[] call(Object[] args) throws Exception {
+                if (drone == null) throw new IllegalStateException("There's no connected Drone!");
+                return new Object[]{ drone.getPlayerName() };
+            }
+        });
+
+        luaMethods.add(new LuaMethod("getOwnerID") {
+            @Override
+            public Object[] call(Object[] args) throws Exception {
+                if (drone == null) throw new IllegalStateException("There's no connected Drone!");
+                return new Object[]{ drone.getOwnerUUID() };
             }
         });
     }

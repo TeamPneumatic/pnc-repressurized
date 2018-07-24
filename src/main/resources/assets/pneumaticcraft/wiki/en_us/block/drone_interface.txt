@@ -16,7 +16,7 @@ Stops the ComputerCraft piece in the Drone, and allows the Drone's program to pr
 [prefix{l}]getAllActions() [prefix{}] 
 Returns a table of all the current selectable actions (like 'dig' or 'place').
 
-[prefix{l}]setBlockOrder(<closest/highToLow/lowToHigh>) [prefix{}] 
+[prefix{l}]setBlockOrder(<"closest"/"highToLow"/"lowToHigh">) [prefix{}]
 Sets the place/dig order of the Drone.
 
 [prefix{l}]getAreaTypes() [prefix{}] 
@@ -127,10 +127,10 @@ Sets the[link{pneumaticcraft:progwidget/coordinate_operator}] variable[link{}] o
 [prefix{l}]getVariable(<variable name>) [prefix{}]
 Returns the value of the variable from this Drone (x, y and z). It is possible to get global (#) and special variables ($) as well.
 
-[prefix{l}]setSignText(<line1>, <line2>, ..., <lineN>)
+[prefix{l}]setSignText(<line1>, <line2>, ..., <lineN>) [prefix{}]
 Sets the text that's going to be set to Signs using the Edit Sign command.
 
-[prefix{l}]setRequiresTool(<true/false>)
+[prefix{l}]setRequiresTool(<true/false>) [prefix{}]
 This configures whether or not the Drone should use a tool when executing the Dig or Harvest piece.
 
 [prefix{l}]setAction(<action>) [prefix{}] 

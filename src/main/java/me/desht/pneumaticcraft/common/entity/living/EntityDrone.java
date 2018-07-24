@@ -892,8 +892,12 @@ public class EntityDrone extends EntityDroneBase
             }
         }
     }
-    
-    private String getOwnerUUID(){
+
+    public String getPlayerName() {
+        return playerName;
+    }
+
+    public String getOwnerUUID(){
         if(playerUUID == null){
             Log.warning(String.format("Drone with owner '%s' has no UUID! Substituting the Drone's UUID (%s).", playerName, getUniqueID().toString()));
             playerUUID = getUniqueID().toString();
