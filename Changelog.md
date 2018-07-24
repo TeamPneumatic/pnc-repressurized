@@ -11,7 +11,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Amadron Tablet has seen a lot of attention...
   * Recoloured GUI background to now match what the item looks like
   * Moved the lesser-used "Add Trade" button into its own "Custom Trades" side tab. This button often appeared to get confused with the "Place Order" button beside it, which is what most players more often want to do.
-  * Also in "Custom Trades", added a button admin players to add custom periodic trades via the GUI.  Players need the "pneumaticcraft.amadron.addPeriodicTrade" Forge permission node to do this (which by default means being an op). Note that custom periodic trades can't (yet) be removed via GUI; edit the "config/pneumaticcraft/AmadronOffersPeriodic.cfg" file to do that.
+  * Also in "Custom Trades", added 2 buttons which admin players can use to add custom periodic & static trades via the GUI.  Players need the "pneumaticcraft.amadron.addPeriodicTrade" and/or "pneumaticcraft.amadron.addStaticTrade" Forge permission nodes to do this (which by default means being an op). Note that custom periodic trades can't (yet) be removed via GUI; edit the "config/pneumaticcraft/AmadronOffersPeriodic.cfg" & "config/pneumaticcraft/AmadronOffersStatic.cfg" files to do that.
   * Also added a button for admin players to add custom static trades via the GUI, with the same restrictions as for custom periodic trades (permission node "pneumaticcraft.amadron.addStaticTrade", file "config/pneumaticcraft/AmadronOffersStatic.cfg").
   * "Place Order" button is now greyed out when the basket is empty
   * Added audible feedback when an order is successfully placed
@@ -21,11 +21,17 @@ Changes are in reverse chronological order; newest changes at the top.
 * Some tile entity performance improvements, most notably with the (output mode) Pressure Chamber Interface which was wasting a lot of CPU time but also to a lesser degree with the Air Compressor, UV Light Box and Sentry Turret
 * Drones are now 50% faster (this makes up for the fact that they don't travel diagonally anymore)
 * Performance improvements with the Charging Module (similar to Charging Station improvements in 0.7.3 release)
+* Minigun ammo can now also be crafted with splash & lingering potions to get the corresponding splash/linger effect. But be warned, splash ammo get used up 3 times as fast, and lingering ammo 6 times as fast.
+* Minigun ammo potion proc chance is now configurable - see I:minigunPotionProcChance in config)
+* Added 3 methods to the Drone Interface computer peripheral: getDroneName(), getOwnerName(), getOwnerID()
+* Magma blocks are now treated as heat sources
+* Made the thermal resistance of non-vanilla fluids configurable - see D:fluidThermalResistance.  Default is 10; higher values make heat move from fluids to adjacent heat handlers more slowly.
 #### Fixes
 * Fixed Amadron restocking/payout drones (for player-player trading) spawning twice
 * Fixed custom Amadron fluid trades not working
 * Fixed NPE when trying to extract items from bottom side of Aerial Interface
 * Fixed some armor features (magnet, charging) functioning even without the necessary upgrades installed
+* Fixed Minigun Ammo not being craftable
 
 ### 0.7.3-239 (16 Jul 2018)
 #### Updates
