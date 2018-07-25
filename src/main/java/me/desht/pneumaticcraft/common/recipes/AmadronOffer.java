@@ -216,7 +216,7 @@ public class AmadronOffer {
             }
         }
 
-        String addedBy = object.has("addedBy") ? object.getAsJsonObject("addedBy").getAsString() : null;
+        String addedBy = object.has("addedBy") ? object.get("addedBy").getAsString() : null;
         return new AmadronOffer(input, output, addedBy);
     }
 
