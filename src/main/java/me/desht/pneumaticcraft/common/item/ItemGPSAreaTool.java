@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.item;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.client.gui.areatool.GuiGPSAreaTool;
+import me.desht.pneumaticcraft.common.NBTUtil;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea;
 import me.desht.pneumaticcraft.common.remote.GlobalVariableManager;
 import net.minecraft.client.resources.I18n;
@@ -146,6 +147,7 @@ public class ItemGPSAreaTool extends ItemPneumatic implements IPositionProvider 
         } else if (index == 1) {
             area.setP2(pos);
         }
+        NBTUtil.initNBTTagCompound(gpsTool);
         area.writeToNBT(gpsTool.getTagCompound());
     }
 
@@ -156,6 +158,7 @@ public class ItemGPSAreaTool extends ItemPneumatic implements IPositionProvider 
         } else if (index == 1) {
             area.setCoord2Variable(variable);
         }
+        NBTUtil.initNBTTagCompound(gpsTool);
         area.writeToNBT(gpsTool.getTagCompound());
     }
 
