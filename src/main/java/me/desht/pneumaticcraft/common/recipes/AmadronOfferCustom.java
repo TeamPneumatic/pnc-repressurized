@@ -255,7 +255,7 @@ public class AmadronOfferCustom extends AmadronOffer {
     }
 
     public static AmadronOfferCustom loadFromBuf(ByteBuf buf) {
-        AmadronOfferCustom offer = new AmadronOfferCustom(PacketSyncAmadronOffers.getFluidOrItemStack(buf), PacketSyncAmadronOffers.getFluidOrItemStack(buf), ByteBufUtils.readUTF8String(buf), ByteBufUtils.readUTF8String(buf));
+        AmadronOfferCustom offer = new AmadronOfferCustom(PacketSyncAmadronOffers.readFluidOrItemStack(buf), PacketSyncAmadronOffers.readFluidOrItemStack(buf), ByteBufUtils.readUTF8String(buf), ByteBufUtils.readUTF8String(buf));
         if (buf.readBoolean()) {
             offer.setProvidingPosition(new BlockPos(buf.readInt(), buf.readInt(), buf.readInt()), buf.readInt());
         }

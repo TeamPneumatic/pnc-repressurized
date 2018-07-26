@@ -125,7 +125,7 @@ public class AmadronOffer {
     }
 
     public static AmadronOffer readFromBuf(ByteBuf buf) {
-        return new AmadronOffer(PacketSyncAmadronOffers.getFluidOrItemStack(buf), PacketSyncAmadronOffers.getFluidOrItemStack(buf));
+        return new AmadronOffer(PacketSyncAmadronOffers.readFluidOrItemStack(buf), PacketSyncAmadronOffers.readFluidOrItemStack(buf));
     }
 
     public JsonObject toJson() {

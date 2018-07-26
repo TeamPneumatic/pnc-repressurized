@@ -49,12 +49,12 @@ public class PacketAmadronTradeAddPeriodic extends AbstractPacket<PacketAmadronT
 
     @Override
     public void fromBytes(ByteBuf buf) {
-        trade.writeToBuf(buf);
+        trade = AmadronOffer.readFromBuf(buf);
     }
 
     @Override
     public void toBytes(ByteBuf buf) {
-        trade = AmadronOffer.readFromBuf(buf);
+        trade.writeToBuf(buf);
     }
 
 }

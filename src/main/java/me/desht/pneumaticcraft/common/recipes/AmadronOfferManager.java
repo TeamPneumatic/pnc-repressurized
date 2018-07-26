@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.recipes;
 
 import me.desht.pneumaticcraft.common.config.AmadronOfferPeriodicConfig;
+import me.desht.pneumaticcraft.common.config.AmadronOfferStaticConfig;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.inventory.ContainerAmadron;
 import net.minecraft.item.ItemStack;
@@ -14,6 +15,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
+import java.io.IOException;
 import java.util.*;
 
 public class AmadronOfferManager {
@@ -35,6 +37,10 @@ public class AmadronOfferManager {
 
     public Collection<AmadronOffer> getPeriodicOffers() {
         return periodicOffers;
+    }
+
+    public LinkedHashSet<AmadronOffer> getSelectedPeriodicOffers() {
+        return selectedPeriodicOffers;
     }
 
     public Collection<AmadronOffer> getAllOffers() {
@@ -75,19 +81,25 @@ public class AmadronOfferManager {
     }
 
     /**
-     * Called client-side to update the client about the available offers.
+     * Call client-side to sync up the offer list.  It is important that the offer references in allOffers point to
+     * the same objects in staticOffers after syncing, otherwise custom offer stock levels etc. will not be properly
+     * serialized in single-player instance.  While custom offers may seem pointless in a single-player world, this
+     * also applies to 'open to lan' worlds.
      */
     @SideOnly(Side.CLIENT)
-    public void setOffers(Collection<AmadronOffer> newOffers) {
-        allOffers.clear();
-        allOffers.addAll(newOffers);
+    public void syncOffers(Collection<AmadronOffer> newStaticOffers, Collection<AmadronOffer> newSelectedPeriodicOffers) {
+        staticOffers.clear();
+        staticOffers.addAll(newStaticOffers);
+        selectedPeriodicOffers.clear();
+        selectedPeriodicOffers.addAll(newSelectedPeriodicOffers);
+        recompileOffers();
     }
 
     /**
      * Gets the offer that equals() a copy.
      *
-     * @param offer
-     * @return
+     * @param offer the wanted offer
+     * @return the actual offer that is in the offer manager
      */
     public AmadronOffer get(AmadronOffer offer) {
         for (AmadronOffer o : allOffers) {
@@ -147,5 +159,21 @@ public class AmadronOfferManager {
             selectedPeriodicOffers.add(periodicOffers.get(rand.nextInt(periodicOffers.size())));
         }
         allOffers.addAll(selectedPeriodicOffers);
+    }
+
+    /**
+     * Called when the server is stopping to ensure everything is serialized
+     */
+    public void saveAll() {
+        try {
+            AmadronOfferStaticConfig.INSTANCE.writeToFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            AmadronOfferPeriodicConfig.INSTANCE.writeToFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

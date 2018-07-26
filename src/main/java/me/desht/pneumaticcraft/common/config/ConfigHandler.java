@@ -155,8 +155,6 @@ public class ConfigHandler {
         @Config.RangeDouble(min = 0.0001, max = 1)
         @Config.RequiresWorldRestart
         public double liquidTankUpdateThreshold = 0.01;
-        @Config.Comment("Sync Amadron offers to client when the Amadron Tablet is used.  Always leave this true unless debugging in a dev environment!")
-        public boolean amadronSyncEnabled = true;
     }
 
     public static class Recipes {

@@ -176,9 +176,13 @@ public class PneumaticCraftRepressurized {
     }
 
     @EventHandler
-    public void postInit(FMLPostInitializationEvent event) {
+    public void onServerStop(FMLServerStoppingEvent event) {
+        AmadronOfferManager.getInstance().saveAll();
+    }
 
-        //Add these later so we include other mod's storage recipes.
+    @EventHandler
+    public void postInit(FMLPostInitializationEvent event) {
+        // Add these later so we include other mods' storage recipes.
 //         CraftingRegistrator.addPressureChamberStorageBlockRecipes();
         CraftingRegistrator.addAssemblyCombinedRecipes();
         HeatExchangerManager.getInstance().init();

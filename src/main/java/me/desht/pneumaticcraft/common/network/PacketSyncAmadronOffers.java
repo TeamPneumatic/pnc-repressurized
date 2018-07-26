@@ -5,17 +5,21 @@ import me.desht.pneumaticcraft.common.inventory.ContainerAmadron;
 import me.desht.pneumaticcraft.common.recipes.AmadronOffer;
 import me.desht.pneumaticcraft.common.recipes.AmadronOfferCustom;
 import me.desht.pneumaticcraft.common.recipes.AmadronOfferManager;
+import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraftforge.server.permission.PermissionAPI;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 public class PacketSyncAmadronOffers extends AbstractPacket<PacketSyncAmadronOffers> {
-    private Collection<AmadronOffer> offers = new ArrayList<>();
+    private Collection<AmadronOffer> staticOffers = new ArrayList<>();
+    private Collection<AmadronOffer> selectedPeriodicOffers = new ArrayList<>();
     private boolean mayAddPeriodic;
     private boolean mayAddStatic;
 
@@ -23,13 +27,14 @@ public class PacketSyncAmadronOffers extends AbstractPacket<PacketSyncAmadronOff
     public PacketSyncAmadronOffers() {
     }
 
-    public PacketSyncAmadronOffers(Collection<AmadronOffer> offers, boolean mayAddPeriodic, boolean mayAddStatic) {
-        this.offers = offers;
-        this.mayAddPeriodic = mayAddPeriodic;
-        this.mayAddStatic = mayAddStatic;
+    public PacketSyncAmadronOffers(EntityPlayer playerIn) {
+        this.staticOffers = AmadronOfferManager.getInstance().getStaticOffers();
+        this.selectedPeriodicOffers = AmadronOfferManager.getInstance().getSelectedPeriodicOffers();
+        this.mayAddPeriodic = PermissionAPI.hasPermission(playerIn, Names.AMADRON_ADD_PERIODIC_TRADE);;
+        this.mayAddStatic = PermissionAPI.hasPermission(playerIn, Names.AMADRON_ADD_STATIC_TRADE);
     }
 
-    public static Object getFluidOrItemStack(ByteBuf buf) {
+    public static Object readFluidOrItemStack(ByteBuf buf) {
         if (buf.readByte() == 0) {
             return ByteBufUtils.readItemStack(buf);
         } else {
@@ -52,22 +57,34 @@ public class PacketSyncAmadronOffers extends AbstractPacket<PacketSyncAmadronOff
 
     @Override
     public void fromBytes(ByteBuf buf) {
-        int offerCount = buf.readInt();
-        for (int i = 0; i < offerCount; i++) {
-            if (buf.readBoolean()) {
-                offers.add(AmadronOfferCustom.loadFromBuf(buf));
-            } else {
-                offers.add(new AmadronOffer(getFluidOrItemStack(buf), getFluidOrItemStack(buf)));
-            }
-        }
+        staticOffers = readOffers(buf);
+        selectedPeriodicOffers = readOffers(buf);
         mayAddPeriodic = buf.readBoolean();
         mayAddStatic = buf.readBoolean();
     }
 
+    private Collection<AmadronOffer> readOffers(ByteBuf buf) {
+        int offerCount = buf.readInt();
+        List<AmadronOffer> offers = new ArrayList<>();
+        for (int i = 0; i < offerCount; i++) {
+            if (buf.readBoolean()) {
+                offers.add(AmadronOfferCustom.loadFromBuf(buf));
+            } else {
+                offers.add(new AmadronOffer(readFluidOrItemStack(buf), readFluidOrItemStack(buf)));
+            }
+        }
+        return offers;
+    }
+
     @Override
     public void toBytes(ByteBuf buf) {
-        buf.writeInt(offers.size());
-        for (AmadronOffer offer : offers) {
+        buf.writeInt(staticOffers.size());
+        for (AmadronOffer offer : staticOffers) {
+            buf.writeBoolean(offer instanceof AmadronOfferCustom);
+            offer.writeToBuf(buf);
+        }
+        buf.writeInt(selectedPeriodicOffers.size());
+        for (AmadronOffer offer : selectedPeriodicOffers) {
             buf.writeBoolean(offer instanceof AmadronOfferCustom);
             offer.writeToBuf(buf);
         }
@@ -77,7 +94,7 @@ public class PacketSyncAmadronOffers extends AbstractPacket<PacketSyncAmadronOff
 
     @Override
     public void handleClientSide(PacketSyncAmadronOffers message, EntityPlayer player) {
-        AmadronOfferManager.getInstance().setOffers(message.offers);
+        AmadronOfferManager.getInstance().syncOffers(staticOffers, selectedPeriodicOffers);
         ContainerAmadron.mayAddPeriodicOffers = mayAddPeriodic;
         ContainerAmadron.mayAddStaticOffers = mayAddStatic;
     }
