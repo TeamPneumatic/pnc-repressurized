@@ -6,6 +6,12 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
+### 0.7.5-248 (26 Jul 2018)
+#### Fixes
+* Fixed NPE when using a newly-crafted GPS Area Tool
+* Fixed Amadron offers not syncing properly in 'Open to LAN' worlds
+* Fixed client kick when trying to add periodic Amadron offers on dedicated server
+
 ### 0.7.4-244 (25 Jul 2018)
 #### Updates
 * Amadron Tablet has seen a lot of attention...
