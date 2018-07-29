@@ -157,17 +157,20 @@ public class SemiBlockManager {
         try {
             if (!event.getWorld().isRemote) {
                 if (event.getData().hasKey("SemiBlocks")) {
-                    Map<BlockPos, List<ISemiBlock>> map = getOrCreateMap(event.getChunk());
-                    map.clear();
-                    NBTTagList tagList = event.getData().getTagList("SemiBlocks", 10);
-                    for (int i = 0; i < tagList.tagCount(); i++) {
-                        NBTTagCompound t = tagList.getCompoundTagAt(i);
-                        ISemiBlock semiBlock = getSemiBlockForKey(t.getString("type"));
-                        if (semiBlock != null) {
-                            semiBlock.readFromNBT(t);
-                            addSemiBlock(event.getWorld(), NBTUtil.getPos(t), semiBlock, event.getChunk());
+                    //Posting on the queue because of suspicion of mods off-thread loading chunks https://github.com/TeamPneumatic/pnc-repressurized/issues/234
+                    PneumaticCraftRepressurized.proxy.addScheduledTask(() -> {
+                        Map<BlockPos, List<ISemiBlock>> map = getOrCreateMap(event.getChunk());
+                        map.clear();
+                        NBTTagList tagList = event.getData().getTagList("SemiBlocks", 10);
+                        for (int i = 0; i < tagList.tagCount(); i++) {
+                            NBTTagCompound t = tagList.getCompoundTagAt(i);
+                            ISemiBlock semiBlock = getSemiBlockForKey(t.getString("type"));
+                            if (semiBlock != null) {
+                                semiBlock.readFromNBT(t);
+                                addSemiBlock(event.getWorld(), NBTUtil.getPos(t), semiBlock, event.getChunk());
+                            }
                         }
-                    }
+                    }, true);                    
                 }
             }
         } catch (Throwable e) {
