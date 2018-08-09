@@ -37,6 +37,7 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefinery;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
+import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -81,10 +82,7 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.furnace.FurnaceFuelBurnTimeEvent;
 import net.minecraftforge.event.world.ExplosionEvent;
 import net.minecraftforge.event.world.WorldEvent;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.IFluidBlock;
+import net.minecraftforge.fluids.*;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -108,7 +106,7 @@ public class EventHandlerPneumaticCraft {
     @SubscribeEvent
     public void handleFuelEvent(FurnaceFuelBurnTimeEvent event) {
         FluidStack fluidStack = FluidUtil.getFluidContained(event.getItemStack());
-        if (fluidStack != null) {
+        if (fluidStack != null && FluidRegistry.getModId(fluidStack).equals(Names.MOD_ID)) {
             int value = PneumaticCraftAPIHandler.getInstance().liquidFuels.getOrDefault(fluidStack.getFluid().getName(), -1);
             event.setBurnTime(value > 0 ? (int)(value * ConfigHandler.general.fuelBucketEfficiencyMultiplier) : -1);
         }
