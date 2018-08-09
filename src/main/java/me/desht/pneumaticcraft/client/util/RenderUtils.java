@@ -8,6 +8,15 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import org.lwjgl.opengl.GL11;
 
 public class RenderUtils {
+    public static void glColorHex(int color, float brightness) {
+        float alpha = (color >> 24 & 255) / 255F;
+        float div = 255F / brightness;
+        float red = (color >> 16 & 255) / div;
+        float green = (color >> 8 & 255) / div;
+        float blue = (color & 255) / div;
+        GlStateManager.color(red, green, blue, alpha);
+    }
+
     public static void glColorHex(int color) {
         float alpha = (color >> 24 & 255) / 255F;
         float red = (color >> 16 & 255) / 255F;

@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.client.semiblock;
 
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockLogistics;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -12,14 +13,17 @@ import org.lwjgl.opengl.GL11;
 public class SemiBlockRendererLogistics implements ISemiBlockRenderer<SemiBlockLogistics> {
 
     private static final double FRAME_WIDTH = 1 / 32D;
+    private float lightMul = -1F;
 
     @Override
     public void render(SemiBlockLogistics semiBlock, float partialTick) {
         int alpha = semiBlock.getAlpha();
         if (alpha == 0) return;
+        if ((semiBlock.getWorld().getTotalWorldTime() & 0xf) == 0) lightMul = -1;  // recalculate light level every 16 ticks
         GlStateManager.disableTexture2D();
         if (alpha < 255) GlStateManager.enableBlend();
-        RenderUtils.glColorHex((alpha << 24 | 0x00FFFFFF) & semiBlock.getColor());
+        if (lightMul < 0) lightMul = getLightMultiplier(semiBlock);
+        RenderUtils.glColorHex((alpha << 24 | 0x00FFFFFF) & semiBlock.getColor(), lightMul);
         AxisAlignedBB aabb = semiBlock.getWorld() != null ?
             semiBlock.getBlockState().getSelectedBoundingBox(semiBlock.getWorld(), semiBlock.getPos()) :
             new AxisAlignedBB(0 + FRAME_WIDTH, 0 + FRAME_WIDTH, 0 + FRAME_WIDTH, 1 - FRAME_WIDTH, 1 - FRAME_WIDTH, 1 - FRAME_WIDTH);
@@ -31,6 +35,10 @@ public class SemiBlockRendererLogistics implements ISemiBlockRenderer<SemiBlockL
         GlStateManager.enableTexture2D();
         GlStateManager.disableBlend();
         GlStateManager.color(1, 1, 1, 1);
+    }
+
+    private float getLightMultiplier(SemiBlockLogistics semiBlock) {
+        return Math.max(0.05F, Minecraft.getMinecraft().world.getLight(semiBlock.getPos()) / 15F);
     }
 
     public static void renderFrame(AxisAlignedBB aabb, double fw) {
