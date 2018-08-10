@@ -288,12 +288,7 @@ public abstract class SyncedField<T> {
 
         @Override
         protected ItemStackHandler retrieveValue(Field field, Object te) throws Exception {
-            ItemStackHandler handler = (ItemStackHandler) field.get(te);
-            ItemStackHandler result = new ItemStackHandler(handler.getSlots());
-            for (int i = 0; i < handler.getSlots(); i++) {
-                result.setStackInSlot(i, handler.getStackInSlot(i));
-            }
-            return result;
+            return (ItemStackHandler) field.get(te);
         }
 
         @Override
