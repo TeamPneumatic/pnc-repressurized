@@ -43,7 +43,7 @@ public abstract class SyncedField<T> {
                 return !isLazy;
             }
         } catch (Throwable e) {
-            Log.error("A problem occured when trying to sync the field of " + te.toString() + ". Field: " + field.toString());
+            Log.error("A problem occurred when trying to sync the field of " + te.toString() + ". Field: " + field.toString());
             e.printStackTrace();
         }
         return false;
@@ -82,7 +82,7 @@ public abstract class SyncedField<T> {
                 injectValue(field, te, value);
             }
         } catch (Exception e) {
-            Log.error("A problem occured when trying to sync the field of " + te.toString() + ". Field: " + field.toString());
+            Log.error("A problem occurred when trying to sync the field of " + te.toString() + ". Field: " + field.toString());
             e.printStackTrace();
         }
     }
@@ -314,7 +314,8 @@ public abstract class SyncedField<T> {
         protected ItemStackHandler copyWhenNecessary(ItemStackHandler oldValue) {
             ItemStackHandler result = new ItemStackHandler(oldValue.getSlots());
             for (int i = 0; i < oldValue.getSlots(); i++) {
-                result.setStackInSlot(i, oldValue.getStackInSlot(i));
+                ItemStack stack = oldValue.getStackInSlot(i);
+                result.setStackInSlot(i, stack.isEmpty() ? ItemStack.EMPTY : stack.copy());
             }
             return result;
         }
