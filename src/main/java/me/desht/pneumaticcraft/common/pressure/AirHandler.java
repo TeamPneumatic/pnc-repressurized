@@ -241,7 +241,7 @@ public class AirHandler implements IAirHandler {
      */
     @Override
     public void addAir(int amount) {
-        air += amount;
+        air = Math.max(air + amount, -volume);  // floor at -1 bar otherwise negative air is reported
     }
 
     @Override
