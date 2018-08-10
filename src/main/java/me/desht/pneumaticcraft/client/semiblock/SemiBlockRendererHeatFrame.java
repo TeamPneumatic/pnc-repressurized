@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.client.semiblock;
 
 import me.desht.pneumaticcraft.client.model.semiblocks.ModelHeatFrame;
+import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockHeatFrame;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityCompressedIronBlock;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -20,7 +20,7 @@ public class SemiBlockRendererHeatFrame implements ISemiBlockRenderer<SemiBlockH
         GlStateManager.pushMatrix();
         Minecraft.getMinecraft().renderEngine.bindTexture(Textures.MODEL_HEAT_FRAME);
         int heatLevel = semiBlock.getHeatLevel();
-        float[] color = TileEntityCompressedIronBlock.getColorForHeatLevel(heatLevel);
+        float[] color = HeatUtil.getColorForHeatLevel(heatLevel);
         if (lightMul < 0) lightMul = getLightMultiplier(semiBlock);
         GlStateManager.color(color[0] * lightMul, color[1] * lightMul, color[2] * lightMul, 1);
 

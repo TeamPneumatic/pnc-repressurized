@@ -3,10 +3,10 @@ package me.desht.pneumaticcraft.common.semiblock;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
+import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.recipes.HeatFrameCoolingRecipe;
 import me.desht.pneumaticcraft.common.recipes.PneumaticRecipeRegistry;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityCompressedIronBlock;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
@@ -51,7 +51,7 @@ public class SemiBlockHeatFrame extends SemiBlockBasic<TileEntity> implements IH
     public void update() {
         super.update();
         if (!getWorld().isRemote) {
-            heatLevel = TileEntityCompressedIronBlock.getHeatLevelForTemperature(logic.getTemperature());
+            heatLevel = HeatUtil.getHeatLevelForTemperature(logic.getTemperature());
             if (logic.getTemperature() > 374) {
                 if (cookingProgress < 100) {
                     int progress = Math.max(0, ((int) logic.getTemperature() - 343) / 30);

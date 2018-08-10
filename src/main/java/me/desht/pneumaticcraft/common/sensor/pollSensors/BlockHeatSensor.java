@@ -5,8 +5,8 @@ import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.api.universalSensor.IBlockAndCoordinatePollSensor;
+import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.item.Itemss;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityCompressedIronBlock;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.Item;
@@ -68,7 +68,7 @@ public class BlockHeatSensor implements IBlockAndCoordinatePollSensor {
         }
         return NumberUtils.isCreatable(textBoxText) ?
                 temperature - 273 > NumberUtils.toInt(textBoxText) ? 15 : 0 :
-                TileEntityCompressedIronBlock.getComparatorOutput((int) temperature);
+                HeatUtil.getComparatorOutput((int) temperature);
     }
 
     @Override

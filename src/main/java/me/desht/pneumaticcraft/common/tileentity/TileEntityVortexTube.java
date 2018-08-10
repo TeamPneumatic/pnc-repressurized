@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
+import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -106,8 +107,8 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
             }
             visualize = visualizationTimer > 0;
             if (visualize) visualizationTimer--;
-            coldHeatLevel = TileEntityCompressedIronBlock.getHeatLevelForTemperature(coldHeatExchanger.getTemperature());
-            hotHeatLevel = TileEntityCompressedIronBlock.getHeatLevelForTemperature(hotHeatExchanger.getTemperature());
+            coldHeatLevel = HeatUtil.getHeatLevelForTemperature(coldHeatExchanger.getTemperature());
+            hotHeatLevel = HeatUtil.getHeatLevelForTemperature(hotHeatExchanger.getTemperature());
         }
     }
 

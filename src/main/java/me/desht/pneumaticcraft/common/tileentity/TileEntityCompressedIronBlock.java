@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
+import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import net.minecraft.util.EnumFacing;
 
@@ -12,8 +13,6 @@ public class TileEntityCompressedIronBlock extends TileEntityTickableBase implem
     @DescSynced
     private int heatLevel = 10;
     private int oldComparatorOutput = 0;
-    private static final int MIN_HEAT_LEVEL_TEMPERATURE = -200 + 273;
-    private static final int MAX_HEAT_LEVEL_TEMPERATURE = 200 + 273;
 
     public TileEntityCompressedIronBlock() {
         heatExchanger.setThermalResistance(0.01);
@@ -33,33 +32,13 @@ public class TileEntityCompressedIronBlock extends TileEntityTickableBase implem
         super.update();
 
         if (!getWorld().isRemote) {
-            heatLevel = getHeatLevelForTemperature(heatExchanger.getTemperature());
+            heatLevel = HeatUtil.getHeatLevelForTemperature(heatExchanger.getTemperature());
 
-            int comparatorOutput = getComparatorOutput((int) heatExchanger.getTemperature());
+            int comparatorOutput = HeatUtil.getComparatorOutput((int) heatExchanger.getTemperature());
             if (oldComparatorOutput != comparatorOutput) {
                 oldComparatorOutput = comparatorOutput;
                 updateNeighbours();
             }
-        }
-    }
-
-    public static int getHeatLevelForTemperature(double temperature) {
-        if (temperature < MIN_HEAT_LEVEL_TEMPERATURE) {
-            return 0;
-        } else if (temperature > MAX_HEAT_LEVEL_TEMPERATURE) {
-            return 19;
-        } else {
-            return (int) ((temperature - MIN_HEAT_LEVEL_TEMPERATURE) * 20 / (MAX_HEAT_LEVEL_TEMPERATURE - MIN_HEAT_LEVEL_TEMPERATURE));
-        }
-    }
-
-    public static float[] getColorForHeatLevel(int heatLevel) {
-        if (heatLevel > 9) {
-            float greenAndBlue = 1 - (heatLevel - 10) / 10F;
-            return new float[]{1, greenAndBlue, greenAndBlue / 1.5F};
-        } else {
-            float redAndGreen = heatLevel / 10F;
-            return new float[]{redAndGreen / 1.5F, redAndGreen, 1};
         }
     }
 
@@ -68,20 +47,9 @@ public class TileEntityCompressedIronBlock extends TileEntityTickableBase implem
         return true;
     }
 
-    public static int getComparatorOutput(int temperature) {
-        temperature = temperature - 200;
-        if (temperature < MIN_HEAT_LEVEL_TEMPERATURE) {
-            return 0;
-        } else if (temperature > MAX_HEAT_LEVEL_TEMPERATURE) {
-            return 15;
-        } else {
-            return (temperature - MIN_HEAT_LEVEL_TEMPERATURE) * 16 / (MAX_HEAT_LEVEL_TEMPERATURE - MIN_HEAT_LEVEL_TEMPERATURE);
-        }
-    }
-
     @Override
     public int getComparatorValue() {
-        return getComparatorOutput((int) heatExchanger.getTemperature());
+        return HeatUtil.getComparatorOutput((int) heatExchanger.getTemperature());
     }
 
 }

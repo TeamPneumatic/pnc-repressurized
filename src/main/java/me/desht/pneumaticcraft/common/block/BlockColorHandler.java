@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.tileentity.*;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -26,7 +27,7 @@ public class BlockColorHandler {
                         case 1: heatLevel = ((TileEntityVortexTube) te).getColdHeatLevel(); break;
                     }
                 }
-                float[] color = TileEntityCompressedIronBlock.getColorForHeatLevel(heatLevel);
+                float[] color = HeatUtil.getColorForHeatLevel(heatLevel);
                 return 0xFF000000 + ((int) (color[0] * 255) << 16) + ((int) (color[1] * 255) << 8) + (int) (color[2] * 255);
             }
             return 0xFFFFFFFF;
