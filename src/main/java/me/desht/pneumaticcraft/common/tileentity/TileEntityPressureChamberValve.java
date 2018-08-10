@@ -338,7 +338,15 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
         isValidRecipeInChamber = tag.getBoolean("validRecipe");
         recipePressure = tag.getFloat("recipePressure");
         itemsInChamber.deserializeNBT(tag.getCompoundTag("itemsInChamber"));
-        
+        if (itemsInChamber.getSlots() > 27) {
+            // in case we read in a larger item handler from previous save (used to be 100 items)
+            ItemStackHandler newHandler = new ItemStackHandler(27);
+            for (int i = 0; i < 27; i++) {
+                newHandler.setStackInSlot(i, itemsInChamber.getStackInSlot(i));
+            }
+            itemsInChamber = newHandler;
+        }
+
         // Read in the accessory valves from NBT
         NBTTagList tagList2 = tag.getTagList("Valves", Constants.NBT.TAG_COMPOUND);
         nbtValveList.clear();
