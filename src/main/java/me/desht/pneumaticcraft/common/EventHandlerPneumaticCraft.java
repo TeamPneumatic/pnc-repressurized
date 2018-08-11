@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common;
 
+import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.block.IPneumaticWrenchable;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.EntityTrackEvent;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.InventoryTrackEvent;
@@ -32,6 +33,7 @@ import me.desht.pneumaticcraft.common.recipes.AmadronOffer;
 import me.desht.pneumaticcraft.common.recipes.AmadronOfferCustom;
 import me.desht.pneumaticcraft.common.recipes.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.remote.GlobalVariableManager;
+import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
 import me.desht.pneumaticcraft.common.thirdparty.ModInteractionUtilImplementation;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefinery;
@@ -154,10 +156,14 @@ public class EventHandlerPneumaticCraft {
     }
     
     @SubscribeEvent
-    public void onEntityJoinWorld(EntityJoinWorldEvent event){
-        if(!event.getWorld().isRemote){
-            if(event.getEntity() instanceof EntityLiving){
-                ((EntityLiving)event.getEntity()).tasks.addTask(Integer.MIN_VALUE, new EntityAINoAIWhenRidingDrone((EntityLiving)event.getEntity()));
+    public void onEntityJoinWorld(EntityJoinWorldEvent event) {
+        if (!event.getWorld().isRemote) {
+            if (event.getEntity() instanceof EntityLiving) {
+                ((EntityLiving) event.getEntity()).tasks.addTask(Integer.MIN_VALUE, new EntityAINoAIWhenRidingDrone((EntityLiving) event.getEntity()));
+            }
+        } else {
+            if (event.getEntity() instanceof EntityPlayer && event.getEntity().getEntityId() == PneumaticCraftRepressurized.proxy.getClientPlayer().getEntityId()) {
+                SemiBlockManager.getInstance(event.getWorld()).clearAll();
             }
         }
     }

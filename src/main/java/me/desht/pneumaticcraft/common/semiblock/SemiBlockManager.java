@@ -502,4 +502,7 @@ public class SemiBlockManager {
         return semiBlocks;
     }
 
+    public void clearAll() {
+        semiBlocks.clear();
+    }
 }
