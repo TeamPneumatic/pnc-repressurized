@@ -25,7 +25,7 @@ public abstract class JEISpecialCraftingCategory<T extends IRecipeWrapper> exten
 
     @Override
     public ResourceDrawable getGuiTexture() {
-        return new ResourceDrawable(Textures.GUI_NEI_MISC_RECIPES, 40, 79, 0, 0, 82, 18) {
+        return new ResourceDrawable(Textures.GUI_NEI_MISC_RECIPES, 40, 0, 0, 0, 82, 18) {
             @Override
             public int getWidth() {
                 return 160;
@@ -37,11 +37,11 @@ public abstract class JEISpecialCraftingCategory<T extends IRecipeWrapper> exten
     public void drawExtras(Minecraft minecraft) {
         if (text != null) {
             for (int i = 0; i < text.size(); i++) {
-                Minecraft.getMinecraft().fontRenderer.drawString(text.get(i), 5, 20 + i * 10, 0xFF000000);
+                Minecraft.getMinecraft().fontRenderer.drawString(text.get(i), 5, 24 + i * 10, 0xFF000000);
             }
         }
 
-        drawProgressBar(63, 80, 82, 0, 38, 18, StartDirection.LEFT);
+        drawProgressBar(63, 0, 82, 0, 38, 18, StartDirection.LEFT);
     }
 
     protected abstract List<MultipleInputOutputRecipeWrapper> getAllRecipes();

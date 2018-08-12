@@ -29,8 +29,8 @@ public class JEICompressedIronCategory extends JEISpecialCraftingCategory<JEICom
     protected List<MultipleInputOutputRecipeWrapper> getAllRecipes() {
         List<MultipleInputOutputRecipeWrapper> recipes = new ArrayList<>();
         MultipleInputOutputRecipeWrapper recipe = new CompressedIronExplosionWrapper();
-        recipe.addIngredient(new PositionedStack(new ItemStack(Items.IRON_INGOT), 41, 80));
-        recipe.addOutput(new PositionedStack(new ItemStack(Itemss.INGOT_IRON_COMPRESSED), 105, 80));
+        recipe.addIngredient(new PositionedStack(new ItemStack(Items.IRON_INGOT), 41, 0));
+        recipe.addOutput(new PositionedStack(new ItemStack(Itemss.INGOT_IRON_COMPRESSED), 105, 0));
         recipes.add(recipe);
         return recipes;
     }
@@ -57,7 +57,7 @@ public class JEICompressedIronCategory extends JEISpecialCraftingCategory<JEICom
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             GlStateManager.disableDepth();
             GlStateManager.enableAlpha();
-            icon.draw(Minecraft.getMinecraft(), 73, 80);
+            icon.draw(Minecraft.getMinecraft(), 73, 0);
             GlStateManager.enableDepth();
             GlStateManager.disableAlpha();
         }

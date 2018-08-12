@@ -31,9 +31,11 @@ public class JEIUVLightBoxCategory extends JEISpecialCraftingCategory<UVLightBox
     protected List<MultipleInputOutputRecipeWrapper> getAllRecipes() {
         List<MultipleInputOutputRecipeWrapper> recipes = new ArrayList<>();
         MultipleInputOutputRecipeWrapper recipe = new UVLightBoxRecipeWrapper();
-        recipe.addIngredient(new PositionedStack(new ItemStack(Itemss.EMPTY_PCB, 1, Itemss.EMPTY_PCB.getMaxDamage()), 41, 80));
-        recipe.addIngredient(new PositionedStack(new ItemStack(Blockss.UV_LIGHT_BOX), 73, 80));
-        recipe.addOutput(new PositionedStack(new ItemStack(Itemss.EMPTY_PCB), 105, 80));
+        ItemStack emptyPCB = new ItemStack(Itemss.EMPTY_PCB);
+        emptyPCB.setItemDamage(emptyPCB.getMaxDamage());
+        recipe.addIngredient(new PositionedStack(emptyPCB, 41, 0));
+        recipe.addIngredient(new PositionedStack(new ItemStack(Blockss.UV_LIGHT_BOX), 73, -2));
+        recipe.addOutput(new PositionedStack(new ItemStack(Itemss.EMPTY_PCB), 105, 0));
         recipes.add(recipe);
         return recipes;
     }
