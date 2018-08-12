@@ -227,7 +227,7 @@ public abstract class Minigun {
 
     private RayTraceResult raytraceTarget() {
         RayTraceResult mop = PneumaticCraftUtils.getMouseOverServer(player, RAYTRACE_RANGE);
-        if (mop != null && mop.typeOfHit == RayTraceResult.Type.BLOCK) {
+        if (mop != null && mop.typeOfHit == RayTraceResult.Type.BLOCK && this.world instanceof WorldServer) {
             BlockPos pos = mop.getBlockPos();
             double x = pos.getX() + mop.sideHit.getFrontOffsetX();
             double y = pos.getY() + mop.sideHit.getFrontOffsetY();
