@@ -78,6 +78,7 @@ import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.EnderTeleportEvent;
+import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -409,6 +410,19 @@ public class EventHandlerPneumaticCraft {
                     default:
                         break;
                 }
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onEquipmentChanged(LivingEquipmentChangeEvent event) {
+        if (event.getEntityLiving() instanceof EntityPlayer && event.getSlot() == EntityEquipmentSlot.MAINHAND) {
+            if (event.getTo().getItem() == Itemss.MINIGUN) {
+                NBTUtil.initNBTTagCompound(event.getTo());
+                event.getTo().getTagCompound().setInteger("owningPlayerId", event.getEntityLiving().getEntityId());
+            } else if (event.getFrom().getItem() == Itemss.MINIGUN) {
+                NBTUtil.initNBTTagCompound(event.getFrom());
+                event.getFrom().getTagCompound().removeTag("owningPlayerId");
             }
         }
     }
