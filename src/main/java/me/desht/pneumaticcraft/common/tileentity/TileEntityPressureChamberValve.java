@@ -294,11 +294,10 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
     private boolean canBeCompressed(PressureChamberRecipe recipe) {
         for (Object in : recipe.input) {
             if (in != null) {
-                int amount = getFilteredChamberContents(in)
-                                   .mapToInt(stack -> stack.getCount())
-                                   .sum();
-
-                if (amount < PneumaticRecipeRegistry.getItemAmount(in)) return false;
+                int amount = getFilteredChamberContents(in).mapToInt(ItemStack::getCount).sum();
+                if (amount < PneumaticRecipeRegistry.getItemAmount(in)) {
+                    return false;
+                }
             }
         }
         return true;
@@ -421,15 +420,15 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
                 valve.setMultiBlockCoords(0, 0, 0, 0);
                 if (valve != this) {
                     valve.accessoryValves.clear();
-                    valve.sendDescriptionPacket();
+                    if (!getWorld().isRemote) valve.sendDescriptionPacket();
                 }
             }
             accessoryValves.clear();
         }
-        sendDescriptionPacket();
+        if (!getWorld().isRemote) sendDescriptionPacket();
     }
 
-    public void setMultiBlockCoords(int size, int baseX, int baseY, int baseZ) {
+    private void setMultiBlockCoords(int size, int baseX, int baseY, int baseZ) {
         multiBlockSize = size;
         multiBlockX = baseX;
         multiBlockY = baseY;
@@ -535,7 +534,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
         // put the list of all the valves in the structure in all the valve TE's.
         for (TileEntityPressureChamberValve valve : valveList) {
             valve.accessoryValves = new ArrayList<>(valveList);
-            valve.sendDescriptionPacket();
+            if (!world.isRemote) valve.sendDescriptionPacket();
         }
 
         // set the multi-block coords in the valve TE
@@ -557,7 +556,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
         
         teValve.captureEntityItemsInChamber();
 
-        teValve.sendDescriptionPacket();
+        if (!world.isRemote) teValve.sendDescriptionPacket();
         return true;
     }
     
