@@ -6,7 +6,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
-### 0.7.6-??? (unreleased)
+### 0.7.6-254 (13 Aug 2018)
 #### Fixes
 * Fixed items in pressure chamber not always syncing to client properly.
 * Fixed air amount showing negative in vacuum pump info tab: minimum is now floored at 0mL.
@@ -14,6 +14,11 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed pressure chamber valve sync errors in the log which may occur when loading a save from versions of PNC:R earlier than 0.7.2 (size of internal pressure chamber item buffer changed)
 * Fixed problem where burn time of lava buckets in furnaces was badly nerfed; this was a change that should only have affected buckets containing PNC:R's own fuels.
 * Fixed (hopefully) ConcurrentModificationException crash, possibly when changing dimensions (leaving the End?). This was not one that we could reproduce ourselves, but some extra protection code has been added to be safe. Might be related to some other mod causing chunks to be loaded on a different thread.
+* Fixed rendering of minigun when held by other players
+* Fixed ClassCastException being thrown (log spam) when firing minigun
+* Fixed sync packets wrongly being sent from client-side pressure chamber valve code (log spam)
+* Fixed (hopefully) semiblocks rendering leaking across dimensions (semiblocks are logistics frames, heat frames, crop supports, spawner agitators & transfer gadgets)
+* Fixed visual issue with some JEI recipes (explosion crafting, UV light box, PCB etching) seen in newer JEI release
 
 ### 0.7.5-248 (26 Jul 2018)
 #### Fixes
