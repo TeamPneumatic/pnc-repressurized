@@ -94,9 +94,9 @@ public class PacketSyncAmadronOffers extends AbstractPacket<PacketSyncAmadronOff
 
     @Override
     public void handleClientSide(PacketSyncAmadronOffers message, EntityPlayer player) {
-        AmadronOfferManager.getInstance().syncOffers(staticOffers, selectedPeriodicOffers);
-        ContainerAmadron.mayAddPeriodicOffers = mayAddPeriodic;
-        ContainerAmadron.mayAddStaticOffers = mayAddStatic;
+        AmadronOfferManager.getInstance().syncOffers(message.staticOffers, message.selectedPeriodicOffers);
+        ContainerAmadron.mayAddPeriodicOffers = message.mayAddPeriodic;
+        ContainerAmadron.mayAddStaticOffers = message.mayAddStatic;
     }
 
     @Override

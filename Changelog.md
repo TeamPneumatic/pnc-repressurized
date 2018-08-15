@@ -6,6 +6,10 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
+### 0.7.7-255 (16 Aug 2018)
+#### Fixes
+* Fixed stupid bug I added in 0.7.4 which caused Amadron offers to sometimes go out of sync on client & server, breaking the whole Amadron system.
+
 ### 0.7.6-254 (13 Aug 2018)
 #### Fixes
 * Fixed items in pressure chamber not always syncing to client properly.
