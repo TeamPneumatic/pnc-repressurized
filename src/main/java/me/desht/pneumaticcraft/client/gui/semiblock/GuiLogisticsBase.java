@@ -26,9 +26,7 @@ import org.apache.commons.lang3.text.WordUtils;
 import org.lwjgl.input.Mouse;
 
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class GuiLogisticsBase<Logistics extends SemiBlockLogistics> extends GuiPneumaticContainerBase {
     protected final Logistics logistics;
@@ -72,11 +70,7 @@ public class GuiLogisticsBase<Logistics extends SemiBlockLogistics> extends GuiP
         addInfoTab(I18n.format("gui.tab.info." + SemiBlockManager.getKeyForSemiBlock(logistics)));
 
         GuiAnimatedStat filterTab = addAnimatedStat("gui.logistic_frame.filter_settings", new ItemStack(Blocks.WEB), 0xFF106010, false);
-        List<String> padding = new ArrayList<>();
-        for (int i = 0; i < (logistics.supportsBlacklisting() ? 6 : 4); i++) {
-            padding.add("                           ");
-        }
-        filterTab.setTextWithoutCuttingString(padding);
+        filterTab.addPadding(logistics.supportsBlacklisting() ? 6 : 4, 26);
         fuzzyMeta = new GuiCheckBox(10, 5, 20, 0xFFFFFFFF, I18n.format("gui.logistic_frame.fuzzyMeta"));
         filterTab.addWidget(fuzzyMeta);
         fuzzyNBT = new GuiCheckBox(11, 5, 36, 0xFFFFFFFF, I18n.format("gui.logistic_frame.fuzzyNBT"));

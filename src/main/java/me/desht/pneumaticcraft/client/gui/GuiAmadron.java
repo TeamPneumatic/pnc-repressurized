@@ -49,11 +49,7 @@ public class GuiAmadron extends GuiPneumaticContainerBase {
         addAnimatedStat("gui.tab.info.ghostSlotInteraction.title", new ItemStack(Blocks.HOPPER), 0xFF00AAFF, true).setText("gui.tab.info.ghostSlotInteraction");
         addAnimatedStat("gui.tab.amadron.disclaimer.title", new ItemStack(Items.WRITABLE_BOOK), 0xFF0000FF, true).setText("gui.tab.amadron.disclaimer");
         GuiAnimatedStat customTrades = addAnimatedStat("gui.tab.amadron.customTrades", new ItemStack(Items.DIAMOND), 0xFFD07000, false);
-        List<String> text = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
-            text.add("                      ");
-        }
-        customTrades.setTextWithoutCuttingString(text);
+        customTrades.addPadding(3, 21);
         searchBar = new WidgetTextField(mc.fontRenderer, guiLeft + 79, guiTop + 40, 73, mc.fontRenderer.FONT_HEIGHT);
         addWidget(searchBar);
         searchBar.setFocused(true);

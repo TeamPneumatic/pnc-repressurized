@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
+import com.google.common.base.Strings;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticContainerBase;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -26,6 +27,8 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * IMPORTANT: WHEN CHANGING THE PACKAGE OF THIS CLASS, ALSO EDIT GUIANIMATEDSTATSUPPLIER.JAVA!!
@@ -38,8 +41,8 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
     private ItemStack iStack = ItemStack.EMPTY;
     private String texture = "";
     private final GuiScreen gui;
-    private final List<String> textList = new ArrayList<String>();
-    private final List<IGuiWidget> widgets = new ArrayList<IGuiWidget>();
+    private final List<String> textList = new ArrayList<>();
+    private final List<IGuiWidget> widgets = new ArrayList<>();
     private int baseX;
     private int baseY;
     private int affectedY;
@@ -198,11 +201,22 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
         onTextChange();
     }
 
+    /**
+     * Pad the stat tab with some spacing to allow for widget placement.
+     *
+     * @param nRows rows of spacing
+     * @param nCols columns of spacing
+     */
+    public void addPadding(int nRows, int nCols) {
+        String s = Strings.repeat(" ", nCols);
+        setTextWithoutCuttingString(IntStream.range(0, nRows).mapToObj(i -> s).collect(Collectors.toList()));
+    }
+
     public void setBackGroundColor(int backGroundColor) {
         this.backGroundColor = backGroundColor;
     }
 
-    public void onTextChange() {
+    private void onTextChange() {
         if (textList.size() > MAX_LINES) {
             for (IGuiWidget widget : widgets) {
                 if (widget.getID() == -1000) return;

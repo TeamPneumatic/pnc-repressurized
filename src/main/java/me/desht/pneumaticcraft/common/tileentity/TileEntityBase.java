@@ -210,6 +210,11 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     }
 
     public void onBlockRotated() {
+        if (this instanceof ISideConfigurable) {
+            for (SideConfigurator sc : ((ISideConfigurable) this).getSideConfigurators()) {
+                sc.setupFacingMatrix();
+            }
+        }
     }
 
     public void rerenderTileEntity() {
@@ -230,6 +235,13 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
      */
     @Override
     public void writeToPacket(NBTTagCompound tag) {
+        if (this instanceof ISideConfigurable) {
+            NBTTagCompound sides = new NBTTagCompound();
+            for (SideConfigurator sc : ((ISideConfigurable) this).getSideConfigurators()) {
+                sides.setTag(sc.getID(), sc.serializeNBT());
+            }
+            tag.setTag("SideConfigurator", sides);
+        }
     }
 
     /**
@@ -242,6 +254,12 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
      */
     @Override
     public void readFromPacket(NBTTagCompound tag) {
+        if (this instanceof ISideConfigurable) {
+            NBTTagCompound sides = tag.getCompoundTag("SideConfigurator");
+            for (SideConfigurator sc : ((ISideConfigurable) this).getSideConfigurators()) {
+                sc.deserializeNBT(sides.getCompoundTag(sc.getID()));
+            }
+        }
     }
 
     @Override
@@ -603,7 +621,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
                 drops.add(getPrimaryInventory().getStackInSlot(i));
             }
         }
-        // TODO consider preserving upgrades in the dropped block
+
         if (!preserveUpgradesOnBreak) {
             IItemHandler upgrades = getUpgradesInventory();
             if (upgrades != null) {

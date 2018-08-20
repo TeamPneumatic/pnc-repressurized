@@ -73,6 +73,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
     public static final PropertyBool[] CONNECTION_PROPERTIES = new PropertyBool[]{DOWN, UP, NORTH, SOUTH, WEST, EAST};
 
     private static final String NBT_UPGRADE_INVENTORY = "UpgradeInventory";
+    private static final String NBT_SIDECONFIG = "SideConfiguration";
 
     private AxisAlignedBB bounds = FULL_BLOCK_AABB;
 
@@ -117,8 +118,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
         ItemStack heldItem = player.getHeldItem(hand);
         if (player.isSneaking()
                 || getGuiID() == null
-                || isRotatable() && (heldItem.getItem() == Itemss.MANOMETER
-                || ModInteractionUtils.getInstance().isModdedWrench(heldItem))
+                || isRotatable() && (heldItem.getItem() == Itemss.MANOMETER || ModInteractionUtils.getInstance().isModdedWrench(heldItem))
                 || hand == EnumHand.OFF_HAND && ModInteractionUtils.getInstance().isModdedWrench(player.getHeldItemMainhand())) {
             return false;
         } else {
@@ -139,17 +139,36 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
     }
 
     @Override
-    public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase entity, ItemStack stack) {
+    public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand) {
+        IBlockState state = super.getStateForPlacement(world, pos, facing, hitX, hitY, hitZ, meta, placer, hand);
         if (isRotatable()) {
-            EnumFacing rotation = PneumaticCraftUtils.getDirectionFacing(entity, canRotateToTopOrBottom());
-            setRotation(world, pos, rotation, state);
+            EnumFacing f = PneumaticCraftUtils.getDirectionFacing(placer, canRotateToTopOrBottom());
+            return state.withProperty(ROTATION, reversePlacementRotation() ? f.getOpposite() : f);
+        } else {
+            return state;
         }
+    }
+
+    /**
+     * Bit of a kludge for historical reasons; some blocks face the wrong way by default.
+     * @return whether or not the block should be rotated 180 degrees on placement
+     */
+    protected boolean reversePlacementRotation() {
+        return false;
+    }
+
+    @Override
+    public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase entity, ItemStack stack) {
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof ISerializableTanks && stack.hasTagCompound() && stack.getTagCompound().hasKey(ISerializableTanks.SAVED_TANKS, Constants.NBT.TAG_COMPOUND)) {
             ((ISerializableTanks) te).deserializeTanks(stack.getTagCompound().getCompoundTag(ISerializableTanks.SAVED_TANKS));
         }
         if (te instanceof TileEntityBase && stack.hasTagCompound() && stack.getTagCompound().hasKey(NBT_UPGRADE_INVENTORY)) {
             ((TileEntityBase) te).getUpgradesInventory().deserializeNBT(stack.getTagCompound().getCompoundTag(NBT_UPGRADE_INVENTORY));
+        }
+        if (te instanceof ISideConfigurable && stack.hasTagCompound() && stack.getTagCompound().hasKey(NBT_SIDECONFIG)) {
+            NBTTagCompound tag = stack.getTagCompound().getCompoundTag(NBT_SIDECONFIG);
+            SideConfigurator.readFromNBT(tag, ((ISideConfigurable) te));
         }
     }
 
@@ -422,25 +441,30 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
 
     @Override
     public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
+        super.getDrops(drops, world, pos, state, fortune);
         TileEntity te = world.getTileEntity(pos);
-
-        ItemStack customDrop = ItemStack.EMPTY;
-
-        if (te instanceof ISerializableTanks) {
-            customDrop = ((ISerializableTanks) te).getDroppedStack(this);
-        }
-        if (te instanceof TileEntityBase && ((TileEntityBase) te).preserveUpgradesOnBreak) {
-            if (customDrop.isEmpty()) {
-                customDrop = new ItemStack(Item.getItemFromBlock(this));
-                NBTUtil.initNBTTagCompound(customDrop);
+        if (te != null && drops.size() > 0) {
+            ItemStack teStack = drops.get(0);
+            if (te instanceof ISerializableTanks) {
+                ((ISerializableTanks) te).serializeTanks(teStack);
             }
-            customDrop.getTagCompound().setTag(NBT_UPGRADE_INVENTORY, ((TileEntityBase) te).getUpgradesInventory().serializeNBT());
-        }
-
-        if (customDrop.isEmpty()) {
-            super.getDrops(drops, world, pos, state, fortune);
-        } else {
-            drops.add(customDrop);
+            if (te instanceof TileEntityBase && ((TileEntityBase) te).preserveUpgradesOnBreak) {
+                TileEntityBase.UpgradeHandler handler = ((TileEntityBase) te).getUpgradesInventory();
+                for (int i = 0; i < handler.getSlots(); i++) {
+                    if (!handler.getStackInSlot(i).isEmpty()) {
+                        NBTUtil.initNBTTagCompound(teStack);
+                        teStack.getTagCompound().setTag(NBT_UPGRADE_INVENTORY, ((TileEntityBase) te).getUpgradesInventory().serializeNBT());
+                        break;
+                    }
+                }
+            }
+            if (te instanceof ISideConfigurable) {
+                NBTTagCompound tag = SideConfigurator.writeToNBT((ISideConfigurable) te);
+                if (!tag.hasNoTags()) {
+                    NBTUtil.initNBTTagCompound(teStack);
+                    teStack.getTagCompound().setTag(NBT_SIDECONFIG, SideConfigurator.writeToNBT((ISideConfigurable) te));
+                }
+            }
         }
     }
 

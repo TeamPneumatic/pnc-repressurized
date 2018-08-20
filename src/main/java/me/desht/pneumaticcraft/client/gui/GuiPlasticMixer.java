@@ -18,7 +18,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @SideOnly(Side.CLIENT)
@@ -39,11 +38,7 @@ public class GuiPlasticMixer extends GuiPneumaticContainerBase<TileEntityPlastic
         addWidget(new WidgetTank(3, guiLeft + 152, guiTop + 14, te.getTank()));
 
         GuiAnimatedStat stat = addAnimatedStat("gui.tab.plasticMixer.plasticSelection", new ItemStack(Itemss.PLASTIC, 1, 1), 0xFF005500, false);
-        List<String> text = new ArrayList<>();
-        for (int i = 0; i < 12; i++) {
-            text.add("                      ");
-        }
-        stat.setTextWithoutCuttingString(text);
+        stat.addPadding(12, 21);
 
         buttons = new GuiButtonSpecial[16];
         for (int x = 0; x < 4; x++) {

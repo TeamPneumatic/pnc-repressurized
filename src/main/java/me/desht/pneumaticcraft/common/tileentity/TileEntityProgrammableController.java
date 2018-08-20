@@ -10,11 +10,13 @@ import me.desht.pneumaticcraft.common.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.entity.EntityProgrammableController;
+import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
+import me.desht.pneumaticcraft.common.tileentity.SideConfigurator.RelativeFace;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.fakeplayer.DroneFakePlayer;
 import me.desht.pneumaticcraft.common.util.fakeplayer.DroneItemHandler;
@@ -45,13 +47,14 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nullable;
 import java.util.*;
 
-public class TileEntityProgrammableController extends TileEntityPneumaticBase implements IMinWorkingPressure, IDroneBase {
+public class TileEntityProgrammableController extends TileEntityPneumaticBase implements IMinWorkingPressure, IDroneBase, ISideConfigurable {
     private static final int INVENTORY_SIZE = 1;
     private static final String FALLBACK_NAME = "[ProgController]";
     private static final UUID FALLBACK_UUID = UUID.nameUUIDFromBytes(FALLBACK_NAME.getBytes());
@@ -65,6 +68,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
     private List<IProgWidget> progWidgets = new ArrayList<>();
     private final int[] redstoneLevels = new int[6];
     private int dispenserUpgrades;
+    private final SideConfigurator<IItemHandler> itemHandlerSideConfigurator;
 
     @DescSynced
     private double targetX, targetY, targetZ;
@@ -89,17 +93,31 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
 
     private UUID ownerID;
     private String ownerName;
+    private boolean updateNeighbours;
 
     public TileEntityProgrammableController() {
         super(5, 7, 5000, 4);
         inventory = new ProgrammableItemStackHandler();
         addApplicableUpgrade(EnumUpgrade.SPEED, EnumUpgrade.DISPENSER);
         MinecraftForge.EVENT_BUS.post(new DroneConstructingEvent(this));
+
+        itemHandlerSideConfigurator = new SideConfigurator<>("items", this, 5);
+        itemHandlerSideConfigurator.registerHandler("droneInv", new ItemStack(Itemss.DRONE),
+                CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, droneInventory,
+                RelativeFace.TOP, RelativeFace.FRONT, RelativeFace.BACK, RelativeFace.LEFT, RelativeFace.RIGHT);
+        itemHandlerSideConfigurator.registerHandler("programmableInv", new ItemStack(Itemss.NETWORK_COMPONENT, 1, 1),
+                CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, inventory,
+                RelativeFace.BOTTOM);
     }
 
     @Override
     public void update() {
         super.update();
+
+        if (!getWorld().isRemote && updateNeighbours) {
+            updateNeighbours();
+            updateNeighbours = false;
+        }
 
         double speed = getSpeed();
         if (PneumaticCraftUtils.distBetweenSq(getPos(), targetX, targetY, targetZ) <= speed * speed) {
@@ -174,6 +192,9 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
 
     @Override
     public void handleGUIButtonPress(int buttonID, EntityPlayer player) {
+        if (itemHandlerSideConfigurator.handleButtonPress(buttonID)) {
+            updateNeighbours = true;
+        }
     }
 
     @Override
@@ -184,6 +205,16 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
     public void setOwner(EntityPlayer ownerID) {
         this.ownerID = ownerID.getUniqueID();
         this.ownerName = ownerID.getName();
+    }
+
+    @Override
+    public List<SideConfigurator> getSideConfigurators() {
+        return Collections.singletonList(itemHandlerSideConfigurator);
+    }
+
+    @Override
+    public EnumFacing getFront() {
+        return getRotation();
     }
 
     private class ProgrammableItemStackHandler extends FilteredItemStackHandler {
@@ -267,6 +298,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
         }
 
         droneInventory = tmpHandler;
+        itemHandlerSideConfigurator.updateHandler("droneInv", droneInventory);
     }
 
     @Override
@@ -279,6 +311,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
         droneInventory.deserializeNBT(tag.getCompoundTag("droneItems"));
         ownerID = tag.hasKey("ownerID") ? UUID.fromString(tag.getString("ownerID")) : FALLBACK_UUID;
         ownerName = tag.hasKey("ownerName") ? tag.getString("ownerName") : FALLBACK_NAME;
+        itemHandlerSideConfigurator.updateHandler("droneInv", droneInventory);
 
         if (getDroneSlots() != droneInventory.getSlots()) {
             Log.warning("drone inventory size mismatch: dispenser upgrades = " + getDroneSlots() + ", saved inv size = " + droneInventory.getSlots());
@@ -312,7 +345,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
         if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
             return true;
         } else if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-            return fakePlayer != null || facing == EnumFacing.DOWN;
+            return itemHandlerSideConfigurator.getHandler(facing) != null;
         } else {
             return super.hasCapability(capability, facing);
         }
@@ -324,7 +357,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
         if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
             return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(tank);
         } else if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-            return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(facing == EnumFacing.DOWN ? inventory : droneInventory);
+            return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(itemHandlerSideConfigurator.getHandler(facing));
         } else {
             return super.getCapability(capability, facing);
         }
@@ -333,6 +366,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
     @Override
     protected void onFirstServerUpdate() {
         super.onFirstServerUpdate();
+        SideConfigurator.validateBlockRotation(this);
         calculateUpgrades();
         inventory.onContentsChanged(0);  // force initial read of any installed drone/network api
         curX = targetX = getPos().getX() + 0.5;

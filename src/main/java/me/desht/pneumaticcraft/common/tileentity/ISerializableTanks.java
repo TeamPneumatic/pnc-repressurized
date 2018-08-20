@@ -1,7 +1,5 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
-import net.minecraft.block.Block;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.Constants;
@@ -25,18 +23,15 @@ public interface ISerializableTanks {
     @Nonnull
     Map<String,FluidTank> getSerializableTanks();
 
-    @Nonnull
-    default ItemStack getDroppedStack(Block b) {
-        ItemStack stack = new ItemStack(Item.getItemFromBlock(b));
-        for (Map.Entry<String,FluidTank> entry : getSerializableTanks().entrySet()) {
-            serializeTank(entry.getValue(), stack, entry.getKey());
-        }
-        return stack;
-    }
-
     default void deserializeTanks(NBTTagCompound tag) {
         for (Map.Entry<String,FluidTank> entry : getSerializableTanks().entrySet()) {
             entry.getValue().readFromNBT(tag.getCompoundTag(entry.getKey()));
+        }
+    }
+
+    default void serializeTanks(ItemStack customDrop) {
+        for (Map.Entry<String,FluidTank> entry : getSerializableTanks().entrySet()) {
+            serializeTank(entry.getValue(), customDrop, entry.getKey());
         }
     }
 
@@ -48,7 +43,7 @@ public interface ISerializableTanks {
      * @param stack the itemstack to save to
      * @param tagName name of the tag in the itemstack's NBT to store the tank data
      */
-    static void serializeTank(FluidTank tank, ItemStack stack, String tagName) {
+     static void serializeTank(FluidTank tank, ItemStack stack, String tagName) {
         if (!stack.hasTagCompound()) {
             stack.setTagCompound(new NBTTagCompound());
         }

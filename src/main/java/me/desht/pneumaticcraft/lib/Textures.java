@@ -170,6 +170,7 @@ public class Textures {
     public static final String BLOCK_ELECTROSTATIC_COMPRESSOR = ICON_LOCATION + "electrostatic_compressor";
     public static final String BLOCK_APHORISM_TILE = ICON_LOCATION + "aphorism_tile";
     public static final String BLOCK_ELEVATOR_CALLER = ICON_LOCATION + "elevator_caller";
+
     public static final String BLOCK_CHARGE_PAD = ICON_LOCATION + "charge_pad";
     public static final String BLOCK_PROGRAMMABLE_CONTROLLER = ICON_LOCATION + "programmable_controller";
 
@@ -228,9 +229,9 @@ public class Textures {
     public static final String GUI_AIR_CANNON_LOCATION = GUI_LOCATION + "gui_air_cannon.png";
     public static final String GUI_PROBLEMS_TEXTURE = GUI_LOCATION + "gui_problem.png";
     public static final String GUI_NO_PROBLEMS_TEXTURE = GUI_LOCATION + "gui_no_problem.png";
-    public static final ResourceLocation GUI_X_BUTTON = new ResourceLocation(GUI_LOCATION + "gui_x_button.png");
     public static final String GUI_INFO_LOCATION = GUI_LOCATION + "gui_info.png";
     public static final String GUI_UPGRADES_LOCATION = GUI_LOCATION + "gui_upgrade.png";
+    public static final ResourceLocation GUI_X_BUTTON = new ResourceLocation(GUI_LOCATION + "gui_x_button.png");
     public static final ResourceLocation GUI_PASTEBIN_ICON_LOCATION = new ResourceLocation(GUI_LOCATION + "gui_pastebin_icon.png");
     public static final ResourceLocation GUI_UNDO_ICON_LOCATION = new ResourceLocation(GUI_LOCATION + "gui_undo_icon.png");
     public static final ResourceLocation GUI_REDO_ICON_LOCATION = new ResourceLocation(GUI_LOCATION + "gui_redo.png");

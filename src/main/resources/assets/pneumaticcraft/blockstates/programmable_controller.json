@@ -1,10 +1,43 @@
 {
-	"variants":{
-		"normal":{
-			"model": "pneumaticcraft:programmable_controller"
-		},
-		"inventory": [{
-		  "model": "pneumaticcraft:programmable_controller"
-        }]
-	}
+  "forge_marker": 1,
+  "defaults": {
+    "model": "pneumaticcraft:programmable_controller",
+    "textures": {
+      "particle": "pneumaticcraft:blocks/programmable_controller",
+      "north": "pneumaticcraft:blocks/programmable_controller",
+      "south": "pneumaticcraft:blocks/back_panel",
+      "up": "pneumaticcraft:blocks/top_panel",
+      "down": "pneumaticcraft:blocks/top_panel",
+      "east": "pneumaticcraft:blocks/side_panel",
+      "west": "pneumaticcraft:blocks/side_panel"
+    }
+  },
+  "variants":{
+    "normal": [{}],
+    "inventory": [{
+      "transform" : "forge:default-item"
+    }],
+    "facing": {
+      "up": {"transform": {"rotation" : {"x" : 90}}},
+      "down": {"transform": {"rotation" : {"x" : -90}}},
+      "east": {
+        "transform": {
+          "rotation": {"y" : 270}
+        }
+      },
+      "north": {
+        "transform": { }
+      },
+      "west": {
+        "transform": {
+          "rotation": {"y": 90}
+        }
+      },
+      "south": {
+        "transform": {
+          "rotation": {"y" : 180}
+        }
+      }
+    }
+  }
 }

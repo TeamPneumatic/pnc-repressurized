@@ -14,7 +14,7 @@ public class NBTUtil {
      * @param itemStack The {@link ItemStack} which holds the {@link NBTTagCompound}.
      */
     public static void initNBTTagCompound(ItemStack itemStack) {
-        if (itemStack.getTagCompound() == null) {
+        if (!itemStack.hasTagCompound()) {
             itemStack.setTagCompound(new NBTTagCompound());
         }
     }

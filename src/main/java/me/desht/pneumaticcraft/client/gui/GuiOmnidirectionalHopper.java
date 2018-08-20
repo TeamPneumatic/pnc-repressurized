@@ -33,10 +33,7 @@ public class GuiOmnidirectionalHopper extends GuiPneumaticContainerBase<TileEnti
         statusStat = addAnimatedStat("gui.tab.hopperStatus", new ItemStack(Blockss.OMNIDIRECTIONAL_HOPPER), 0xFFFFAA00, false);
 
         GuiAnimatedStat optionStat = addAnimatedStat("gui.tab.gasLift.mode", new ItemStack(Blocks.LEVER), 0xFFFFCC00, false);
-        List<String> text = new ArrayList<String>();
-        for (int i = 0; i < 4; i++)
-            text.add("               ");
-        optionStat.setTextWithoutCuttingString(text);
+        optionStat.addPadding(4, 14);
 
         GuiButtonSpecial button = new GuiButtonSpecial(1, 5, 20, 20, 20, "");
         button.setRenderStacks(new ItemStack(Items.BUCKET));

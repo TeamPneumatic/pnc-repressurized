@@ -37,7 +37,6 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<TileEntityAeri
     private GuiButtonSpecial xpButton;
 
     public GuiAerialInterface(InventoryPlayer player, TileEntityAerialInterface te) {
-
         super(new ContainerEnergy(player, te), te, Textures.GUI_4UPGRADE_SLOTS);
     }
 
@@ -66,10 +65,7 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<TileEntityAeri
         if (te.getUpgrades(EnumUpgrade.DISPENSER) > 0) {
             GuiAnimatedStat optionStat = addAnimatedStat("gui.tab.aerialInterface.feedMode",
                     new ItemStack(Items.BEEF), 0xFFFFCC00, false);
-            List<String> text = new ArrayList<String>();
-            for (int i = 0; i < 4; i++)
-                text.add("                 ");
-            optionStat.setTextWithoutCuttingString(text);
+            optionStat.addPadding(4, 16);
 
             GuiButtonSpecial button = new GuiButtonSpecial(1, 5, 20, 20, 20, "");
             button.setRenderStacks(new ItemStack(Items.BEEF));

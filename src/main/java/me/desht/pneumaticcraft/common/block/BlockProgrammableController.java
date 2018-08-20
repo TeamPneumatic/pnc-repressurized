@@ -29,6 +29,16 @@ public class BlockProgrammableController extends BlockPneumaticCraft {
         return EnumGuiId.PROGRAMMABLE_CONTROLLER;
     }
 
+    @Override
+    public boolean isRotatable() {
+        return true;
+    }
+
+    @Override
+    protected boolean reversePlacementRotation() {
+        return true;
+    }
+
     /**
      * Returns true if the block is emitting indirect/weak redstone power on the
      * specified side. If isBlockNormalCube returns true, standard redstone
@@ -53,10 +63,10 @@ public class BlockProgrammableController extends BlockPneumaticCraft {
 
     @Override
     public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase entity, ItemStack stack) {
-        super.onBlockPlacedBy(world, pos, state, entity, stack);
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof TileEntityProgrammableController && entity instanceof EntityPlayer) {
             ((TileEntityProgrammableController) te).setOwner((EntityPlayer) entity);
         }
+        super.onBlockPlacedBy(world, pos, state, entity, stack);
     }
 }

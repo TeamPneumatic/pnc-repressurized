@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.client.gui;
 
-import com.google.common.base.Strings;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
@@ -11,6 +10,7 @@ import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
 import me.desht.pneumaticcraft.common.tileentity.*;
+import me.desht.pneumaticcraft.common.tileentity.SideConfigurator.RelativeFace;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.ModIds;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -154,6 +154,9 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
                 if (upgradeText.size() > 0)
                     addAnimatedStat("gui.tab.upgrades", Textures.GUI_UPGRADES_LOCATION, 0xFF6060FF, true).setText(upgradeText);
             }
+            if (te instanceof ISideConfigurable) {
+                addSideConfiguratorTabs();
+            }
         }
         hasInit = true;
     }
@@ -163,11 +166,7 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
         List<String> curInfo = new ArrayList<>();
         curInfo.add(I18n.format(te.getRedstoneTabTitle()));
         int width = getWidestRedstoneLabel();
-        String padding = Strings.repeat(" ", width / fontRenderer.getStringWidth(" "));
-        for (int i = 0; i < 3; i++) {
-            curInfo.add(padding);
-        }
-        redstoneTab.setTextWithoutCuttingString(curInfo);
+        redstoneTab.addPadding(4, width / fontRenderer.getStringWidth(" "));
         Rectangle buttonRect = redstoneTab.getButtonScaledRectangle(-width - 12, 24, width + 10, 20);
         redstoneButton = new GuiButtonSpecial(0, buttonRect.x, buttonRect.y, buttonRect.width, buttonRect.height, "-");
         redstoneTab.addWidget(redstoneButton);
@@ -180,6 +179,27 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
             max = Math.max(max, w);
         }
         return max;
+    }
+
+    private void addSideConfiguratorTabs() {
+        for (SideConfigurator sc : ((ISideConfigurable) te).getSideConfigurators()) {
+            GuiAnimatedStat stat = addAnimatedStat(sc.getTranslationKey(), new ItemStack(Blockss.OMNIDIRECTIONAL_HOPPER), 0xFF90C0E0, false);
+            stat.addPadding(7, 16);
+
+            int yTop = 15, xLeft = 25;
+            stat.addWidget(makeSideConfButton(sc, RelativeFace.TOP, xLeft + 22, yTop));
+            stat.addWidget(makeSideConfButton(sc, RelativeFace.LEFT, xLeft, yTop + 22));
+            stat.addWidget(makeSideConfButton(sc, RelativeFace.FRONT, xLeft + 22, yTop + 22));
+            stat.addWidget(makeSideConfButton(sc, RelativeFace.RIGHT, xLeft + 44, yTop + 22));
+            stat.addWidget(makeSideConfButton(sc, RelativeFace.BOTTOM, xLeft + 22, yTop + 44));
+            stat.addWidget(makeSideConfButton(sc, RelativeFace.BACK, xLeft + 44, yTop + 44));
+        }
+    }
+
+    private GuiButtonSpecial makeSideConfButton(SideConfigurator sc, RelativeFace relativeFace, int x, int y) {
+        GuiButtonSpecial button = new GuiButtonSpecial(sc.getButtonId(relativeFace), x, y, 20, 20, "");
+        sc.setupButton(button);
+        return button;
     }
 
     protected void addInfoTab(String info) {
@@ -415,14 +435,16 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
     public void actionPerformed(IGuiWidget widget) {
         if (widget instanceof IGuiAnimatedStat) {
             boolean leftSided = ((IGuiAnimatedStat) widget).isLeftSided();
-            for (IGuiWidget w : widgets) {
-                if (w instanceof IGuiAnimatedStat) {
-                    IGuiAnimatedStat stat = (IGuiAnimatedStat) w;
-                    if (widget != stat && stat.isLeftSided() == leftSided) {//when the stat is on the same side, close it.
-                        stat.closeWindow();
-                    }
-                }
-            }
+            widgets.stream()
+                    .filter(w -> w instanceof IGuiAnimatedStat)
+                    .map(w -> (IGuiAnimatedStat) w)
+                    .filter(stat -> widget != stat && stat.isLeftSided() == leftSided) // when the stat is on the same side, close it.
+                    .forEach(IGuiAnimatedStat::closeWindow);
+        } else if (te instanceof ISideConfigurable && widget instanceof GuiButtonSpecial) {
+            ((ISideConfigurable) te).getSideConfigurators().stream()
+                    .filter(sc -> sc.handleButtonPress(widget.getID()))
+                    .findFirst()
+                    .ifPresent(sc -> sc.setupButton((GuiButtonSpecial) widget));
         }
         sendPacketToServer(widget.getID());
     }
@@ -434,9 +456,7 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
     @Override
     public void handleMouseInput() throws IOException {
         super.handleMouseInput();
-        for (IGuiWidget widget : widgets) {
-            widget.handleMouseInput();
-        }
+        widgets.forEach(IGuiWidget::handleMouseInput);
     }
 
     @Override
@@ -508,10 +528,6 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
         int i = scaledresolution.getScaledWidth();
         int j = scaledresolution.getScaledHeight();
         setWorldAndResolution(Minecraft.getMinecraft(), i, j);
-        for (IGuiWidget widget : widgets) {
-            if (widget instanceof GuiAnimatedStat) {
-                widget.update();
-            }
-        }
+        widgets.stream().filter(widget -> widget instanceof GuiAnimatedStat).forEach(IGuiWidget::update);
     }
 }

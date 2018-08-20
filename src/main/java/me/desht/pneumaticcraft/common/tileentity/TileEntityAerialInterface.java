@@ -4,12 +4,16 @@ import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.tileentity.SideConfigurator.RelativeFace;
 import me.desht.pneumaticcraft.common.util.EnchantmentUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -27,15 +31,19 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.wrapper.InvWrapper;
 import net.minecraftforge.items.wrapper.PlayerArmorInvWrapper;
 import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
+import net.minecraftforge.items.wrapper.PlayerOffhandInvWrapper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
+import java.util.Collections;
 import java.util.List;
 
-public class TileEntityAerialInterface extends TileEntityPneumaticBase implements IMinWorkingPressure, IRedstoneControl, IComparatorSupport {
+public class TileEntityAerialInterface extends TileEntityPneumaticBase
+        implements IMinWorkingPressure, IRedstoneControl, IComparatorSupport, ISideConfigurable {
     @GuiSynced
     @DescSynced
     public String playerName = "";
@@ -56,8 +64,12 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
     public boolean isConnectedToPlayer = false;
     private boolean dispenserUpgradeInserted;
 
+    private final SideConfigurator<IItemHandler> itemHandlerSideConfigurator;
+
     private final PlayerMainInvHandler playerMainInvHandler;
     private final PlayerArmorInvHandler playerArmorInvHandler;
+    private final PlayerOffhandInvHandler playerOffhandInvHandler;
+    private final PlayerEnderInvHandler playerEnderInvHandler;
     private final PlayerExperienceHandler playerExperienceHandler;
     private final PlayerFoodHandler playerFoodHandler;
     private WeakReference<EntityPlayer> playerRef = new WeakReference<>(null);
@@ -68,8 +80,22 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
 
         playerMainInvHandler = new PlayerMainInvHandler();
         playerArmorInvHandler = new PlayerArmorInvHandler();
+        playerOffhandInvHandler = new PlayerOffhandInvHandler();
+        playerEnderInvHandler = new PlayerEnderInvHandler();
         playerExperienceHandler = new PlayerExperienceHandler();
         playerFoodHandler = new PlayerFoodHandler();
+
+        itemHandlerSideConfigurator = new SideConfigurator<>("items", this, 5);
+        itemHandlerSideConfigurator.registerHandler("mainInv", new ItemStack(Blocks.CHEST),
+                CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, playerMainInvHandler,
+                RelativeFace.FRONT, RelativeFace.BACK, RelativeFace.LEFT, RelativeFace.RIGHT);
+        itemHandlerSideConfigurator.registerHandler("armorInv", new ItemStack(Itemss.PNEUMATIC_CHESTPLATE),
+                CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, playerArmorInvHandler,
+                RelativeFace.TOP, RelativeFace.BOTTOM);
+        itemHandlerSideConfigurator.registerHandler("offhandInv", new ItemStack(Items.SHIELD),
+                CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, playerOffhandInvHandler);
+        itemHandlerSideConfigurator.registerHandler("enderInv", new ItemStack(Blocks.ENDER_CHEST),
+                CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, playerEnderInvHandler);
 
         initRF();
     }
@@ -104,6 +130,12 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
         if (old != dispenserUpgradeInserted) {
             updateNeighbours = true;
         }
+    }
+
+    @Override
+    protected void onFirstServerUpdate() {
+        super.onFirstServerUpdate();
+        SideConfigurator.validateBlockRotation(this);
     }
 
     @Override
@@ -157,6 +189,8 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
             } else {
                 curXpFluid = null;
             }
+        } else if (itemHandlerSideConfigurator.handleButtonPress(buttonID)) {
+            updateNeighbours = true;
         }
     }
 
@@ -178,7 +212,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
         return ((isConnectedToPlayer &&
                 (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && dispenserUpgradeInserted && curXpFluid != null)
-                || capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY))
+                || capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) && itemHandlerSideConfigurator.getHandler(facing) != null)
                 || capability == CapabilityEnergy.ENERGY
                 || super.hasCapability(capability, facing);
 
@@ -188,22 +222,18 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
     @Override
     public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
         if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-            if (facing == null) return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(playerMainInvHandler);
-            switch (facing) {
-                case UP:
-                case DOWN:
-                    return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(playerArmorInvHandler);
-                default:
-                    return dispenserUpgradeInserted ?
-                            CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(playerFoodHandler) :
-                            CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(playerMainInvHandler);
+            if (dispenserUpgradeInserted) {
+                return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(playerFoodHandler);
+            } else {
+                return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(itemHandlerSideConfigurator.getHandler(facing));
             }
         } else if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && dispenserUpgradeInserted && curXpFluid != null) {
             return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(playerExperienceHandler);
         } else if (capability == CapabilityEnergy.ENERGY) {
             return CapabilityEnergy.ENERGY.cast(energyRF);
+        } else {
+            return super.getCapability(capability, facing);
         }
-        return super.getCapability(capability, facing);
     }
 
     @Override
@@ -309,6 +339,16 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
         return REDSTONE_LABELS;
     }
 
+    @Override
+    public List<SideConfigurator> getSideConfigurators() {
+        return Collections.singletonList(itemHandlerSideConfigurator);
+    }
+
+    @Override
+    public EnumFacing getFront() {
+        return getRotation();
+    }
+
     private abstract class PlayerInvHandler implements IItemHandler {
         /**
          * Get an item handler for the current player, which must be non-null.
@@ -346,14 +386,30 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
     }
 
     private class PlayerMainInvHandler extends PlayerInvHandler {
+        @Override
         protected IItemHandler getInvWrapper() {
             return new PlayerMainInvWrapper(getPlayer().inventory);
         }
     }
 
     private class PlayerArmorInvHandler extends PlayerInvHandler {
+        @Override
         protected IItemHandler getInvWrapper() {
             return new PlayerArmorInvWrapper(getPlayer().inventory);
+        }
+    }
+
+    private class PlayerOffhandInvHandler extends PlayerInvHandler {
+        @Override
+        protected IItemHandler getInvWrapper() {
+            return new PlayerOffhandInvWrapper(getPlayer().inventory);
+        }
+    }
+
+    private class PlayerEnderInvHandler extends PlayerInvHandler {
+        @Override
+        protected IItemHandler getInvWrapper() {
+            return new InvWrapper(getPlayer().getInventoryEnderChest());
         }
     }
 

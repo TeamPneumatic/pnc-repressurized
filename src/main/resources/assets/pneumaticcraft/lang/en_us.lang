@@ -965,6 +965,16 @@ gui.config.category.recipes=Recipes
 gui.config.category.client=Clientside Options
 gui.config.category.helmet=Pneumatic Helmet (Clientside)
 
+# Side Configurator tabs
+gui.sideConfigurator.unconnected=§oUnconnected
+gui.sideConfigurator.title.items=Side Configuration: Items
+gui.sideConfigurator.items.mainInv=Main Inventory
+gui.sideConfigurator.items.armorInv=Armor Slots
+gui.sideConfigurator.items.offhandInv=Offhand Slot
+gui.sideConfigurator.items.enderInv=Ender Inventory
+gui.sideConfigurator.items.droneInv=Drone Inventory
+gui.sideConfigurator.items.programmableInv=Programmable Slot
+
 # Waila
 hud.msg.state=State
 hud.msg.active=Active
