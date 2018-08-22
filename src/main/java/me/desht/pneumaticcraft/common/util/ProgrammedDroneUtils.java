@@ -131,7 +131,10 @@ public class ProgrammedDroneUtils {
         // Program the drone
         DroneProgramBuilder builder = new DroneProgramBuilder();
         builder.add(new ProgWidgetStart());
-        builder.add(new ProgWidgetLiquidImport(), ProgWidgetArea.fromPosition(pos), ProgWidgetLiquidFilter.withFilter(queriedFluid.getFluid()));
+        ProgWidgetLiquidImport liquidImport = new ProgWidgetLiquidImport();
+        liquidImport.setUseCount(true);
+        liquidImport.setCount(queriedFluid.amount);
+        builder.add(liquidImport, ProgWidgetArea.fromPosition(pos), ProgWidgetLiquidFilter.withFilter(queriedFluid.getFluid()));
         builder.add(new ProgWidgetGoToLocation(), ProgWidgetArea.fromPosition(drone.getPosition()));
         builder.add(new ProgWidgetSuicide());
         drone.progWidgets.addAll(builder.build());
