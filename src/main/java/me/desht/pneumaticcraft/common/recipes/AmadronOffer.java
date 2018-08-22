@@ -228,6 +228,11 @@ public class AmadronOffer {
         return code;
     }
 
+    @Override
+    public String toString() {
+        return String.format("[in = %s, out = %s]", input, output);
+    }
+
     private int getObjectHashCode(Object o) {
         if (o instanceof FluidStack) {
             return o.hashCode();

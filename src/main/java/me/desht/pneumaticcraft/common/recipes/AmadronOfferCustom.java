@@ -313,6 +313,11 @@ public class AmadronOfferCustom extends AmadronOffer {
     }
 
     @Override
+    public String toString() {
+        return super.toString() + " - " + offeringPlayerName;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (o instanceof AmadronOfferCustom) {
             AmadronOfferCustom offer = (AmadronOfferCustom) o;

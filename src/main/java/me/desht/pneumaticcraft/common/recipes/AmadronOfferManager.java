@@ -152,13 +152,13 @@ public class AmadronOfferManager {
 
     public void shufflePeriodicOffers() {
         Random rand = new Random();
-        allOffers.removeAll(selectedPeriodicOffers);
         selectedPeriodicOffers.clear();
         int toBeSelected = Math.min(AmadronOfferPeriodicConfig.offersPer, periodicOffers.size());
         while (selectedPeriodicOffers.size() < toBeSelected) {
             selectedPeriodicOffers.add(periodicOffers.get(rand.nextInt(periodicOffers.size())));
         }
-        allOffers.addAll(selectedPeriodicOffers);
+
+        recompileOffers();
     }
 
     /**

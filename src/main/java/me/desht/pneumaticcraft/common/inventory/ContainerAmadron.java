@@ -49,15 +49,16 @@ public class ContainerAmadron extends ContainerPneumaticBase {
     public static boolean mayAddPeriodicOffers = true;
     public static boolean mayAddStaticOffers = true;
 
-    public List<AmadronOffer> offers = new ArrayList<>(AmadronOfferManager.getInstance().getAllOffers());
+    public final List<AmadronOffer> offers = new ArrayList<>(AmadronOfferManager.getInstance().getAllOffers());
 
-    private final ItemStackHandler inv = new ItemStackHandler(ROWS * 4);
+    private final ItemStackHandler inv = new ItemStackHandler(OFFERS_PER_PAGE * 2);
+
     @GuiSynced
-    private final int[] shoppingItems = new int[8];
+    private final int[] shoppingItems = new int[OFFERS_PER_PAGE];
     @GuiSynced
-    private final int[] shoppingAmounts = new int[8];
+    private final int[] shoppingAmounts = new int[OFFERS_PER_PAGE];
     @GuiSynced
-    public boolean[] buyableOffers = new boolean[offers.size()];
+    public final boolean[] buyableOffers = new boolean[offers.size()];
     @GuiSynced
     public EnumProblemState problemState = EnumProblemState.NO_PROBLEMS;
     @GuiSynced
