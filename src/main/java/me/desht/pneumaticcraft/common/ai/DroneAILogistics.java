@@ -15,14 +15,11 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 
 import javax.annotation.Nonnull;
-
 import java.util.HashSet;
-import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -59,7 +56,7 @@ public class DroneAILogistics extends EntityAIBase {
         AxisAlignedBB aabb = new AxisAlignedBB(new BlockPos(minX, minY, minZ), new BlockPos(maxX, maxY, maxZ));
         Stream<ISemiBlock> semiBlocksInArea = SemiBlockManager.getInstance(drone.world()).getSemiBlocksInArea(drone.world(), aabb);
         Stream<SemiBlockLogistics> logisticFrames = StreamUtils.ofType(SemiBlockLogistics.class, semiBlocksInArea);
-        logisticFrames.filter(frame -> area.contains(frame.getPos())).forEach(frame -> manager.addLogisticFrame(frame));
+        logisticFrames.filter(frame -> area.contains(frame.getPos())).forEach(manager::addLogisticFrame);
         
         curTask = null;
         return doLogistics();
@@ -142,7 +139,7 @@ public class DroneAILogistics extends EntityAIBase {
         private final FluidStack fluid;
         private final Set<BlockPos> area;
 
-        FakeWidgetLogistics(BlockPos pos, ItemStack stack) {
+        FakeWidgetLogistics(BlockPos pos, @Nonnull ItemStack stack) {
             this.stack = stack;
             this.fluid = null;
             area = new HashSet<>();
@@ -181,7 +178,7 @@ public class DroneAILogistics extends EntityAIBase {
         }
 
         @Override
-        public boolean isItemValidForFilters(ItemStack item) {
+        public boolean isItemValidForFilters(@Nonnull ItemStack item) {
             return !item.isEmpty() && item.isItemEqual(stack);
         }
 

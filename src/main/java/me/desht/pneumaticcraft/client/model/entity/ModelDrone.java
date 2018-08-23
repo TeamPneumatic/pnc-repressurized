@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.client.model.entity;
 
-import me.desht.pneumaticcraft.client.semiblock.SemiBlockRendererLogistics;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.entity.EntityProgrammableController;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
@@ -246,7 +245,7 @@ public class ModelDrone extends ModelBase {
             RenderUtils.glColorHex(frameColor);
             double s = 3 / 16D;
             double y = 17 / 16D;
-            SemiBlockRendererLogistics.renderFrame(new AxisAlignedBB(-s, y - s, -s, s, y + s, s), 1 / 32D);
+            RenderUtils.renderFrame(new AxisAlignedBB(-s, y - s, -s, s, y + s, s), 1 / 32D);
             GlStateManager.enableTexture2D();
         }
     }
