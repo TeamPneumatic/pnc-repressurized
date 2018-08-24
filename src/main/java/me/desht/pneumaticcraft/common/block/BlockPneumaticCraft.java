@@ -11,6 +11,7 @@ import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.api.tileentity.IPneumaticMachine;
 import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
+import me.desht.pneumaticcraft.common.NBTUtil;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.thirdparty.ModInteractionUtils;
@@ -70,6 +71,8 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
     public static final PropertyBool SOUTH = PropertyBool.create("south");
     public static final PropertyBool WEST = PropertyBool.create("west");
     public static final PropertyBool[] CONNECTION_PROPERTIES = new PropertyBool[]{DOWN, UP, NORTH, SOUTH, WEST, EAST};
+
+    private static final String NBT_UPGRADE_INVENTORY = "UpgradeInventory";
 
     private AxisAlignedBB bounds = FULL_BLOCK_AABB;
 
@@ -145,6 +148,9 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
         if (te instanceof ISerializableTanks && stack.hasTagCompound() && stack.getTagCompound().hasKey(ISerializableTanks.SAVED_TANKS, Constants.NBT.TAG_COMPOUND)) {
             ((ISerializableTanks) te).deserializeTanks(stack.getTagCompound().getCompoundTag(ISerializableTanks.SAVED_TANKS));
         }
+        if (te instanceof TileEntityBase && stack.hasTagCompound() && stack.getTagCompound().hasKey(NBT_UPGRADE_INVENTORY)) {
+            ((TileEntityBase) te).getUpgradesInventory().deserializeNBT(stack.getTagCompound().getCompoundTag(NBT_UPGRADE_INVENTORY));
+        }
     }
 
     protected void setRotation(World world, BlockPos pos, EnumFacing rotation) {
@@ -210,6 +216,10 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
     @Override
     public boolean rotateBlock(World world, EntityPlayer player, BlockPos pos, EnumFacing side) {
         if (player != null && player.isSneaking()) {
+            TileEntity te = world.getTileEntity(pos);
+            if (te instanceof TileEntityBase) {
+                ((TileEntityBase) te).preserveUpgradesOnBreak = true;
+            }
             if (!player.capabilities.isCreativeMode) dropBlockAsItem(world, pos, world.getBlockState(pos), 0);
             world.setBlockToAir(pos);
             return true;
@@ -412,17 +422,25 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
 
     @Override
     public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
-        boolean hasCustomDrops = false;
-
         TileEntity te = world.getTileEntity(pos);
 
+        ItemStack customDrop = ItemStack.EMPTY;
+
         if (te instanceof ISerializableTanks) {
-            hasCustomDrops = true;
-            drops.add(((ISerializableTanks) te).getDroppedStack(this));
+            customDrop = ((ISerializableTanks) te).getDroppedStack(this);
+        }
+        if (te instanceof TileEntityBase && ((TileEntityBase) te).preserveUpgradesOnBreak) {
+            if (customDrop.isEmpty()) {
+                customDrop = new ItemStack(Item.getItemFromBlock(this));
+                NBTUtil.initNBTTagCompound(customDrop);
+            }
+            customDrop.getTagCompound().setTag(NBT_UPGRADE_INVENTORY, ((TileEntityBase) te).getUpgradesInventory().serializeNBT());
         }
 
-        if (!hasCustomDrops) {
+        if (customDrop.isEmpty()) {
             super.getDrops(drops, world, pos, state, fortune);
+        } else {
+            drops.add(customDrop);
         }
     }
 

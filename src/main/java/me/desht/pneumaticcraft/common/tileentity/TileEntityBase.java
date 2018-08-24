@@ -63,6 +63,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     private List<SyncedField> descriptionFields;
     private TileEntityCache[] tileCache;
     private IBlockState cachedBlockState;
+    public boolean preserveUpgradesOnBreak = false; // set to true if shift-wrenched to keep upgrades in the block
 
     public TileEntityBase() {
         this(0);
@@ -590,11 +591,13 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
             }
         }
         // TODO consider preserving upgrades in the dropped block
-        IItemHandler upgrades = getUpgradesInventory();
-        if (upgrades != null) {
-            for (int i = 0; i < upgrades.getSlots(); i++) {
-                if (!upgrades.getStackInSlot(i).isEmpty()) {
-                    drops.add(upgrades.getStackInSlot(i));
+        if (!preserveUpgradesOnBreak) {
+            IItemHandler upgrades = getUpgradesInventory();
+            if (upgrades != null) {
+                for (int i = 0; i < upgrades.getSlots(); i++) {
+                    if (!upgrades.getStackInSlot(i).isEmpty()) {
+                        drops.add(upgrades.getStackInSlot(i));
+                    }
                 }
             }
         }
