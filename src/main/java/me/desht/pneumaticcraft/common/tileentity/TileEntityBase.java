@@ -345,6 +345,9 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     public void onNeighborBlockUpdate() {
         poweredRedstone = PneumaticCraftUtils.getRedstoneLevel(getWorld(), getPos());
         initializeIfHeatExchanger();
+        for (TileEntityCache cache : getTileCache()) {
+            cache.update();
+        }
     }
 
     public boolean redstoneAllows() {
