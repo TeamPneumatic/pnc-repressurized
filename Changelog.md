@@ -6,6 +6,18 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
+### 0.7.8-??? (unreleased)
+#### Updates
+* Breaking any PneumaticCraft block by shift-clicking with any wrench will now keep any installed upgrades in the dropped block. Breaking the block with a pickaxe drops the upgrades, as before.
+* Info tab on the GUI for all Logistics frames (shown by right-clicking with Logistics Configurator) has better descriptions for each frame type.
+* Added client-side config setting (B:semiBlockLighting) to control if block lighting should be used on semiblocks like the logistics frames and heat frame. True by default, but can be set to false if lighting is glitchy.
+#### Fixes
+* Hopefully fix item loss issues with Programmable Controller (needs more testing!)
+* Fix problem with Programmable Controllers and tools like the Draconic Staff of Power which drop items at the player's location (fake player's location was wrong, causing items to be dropped in odd places)
+* Fix occasional caching problem where neighbouring tile entities were not detected by PneumaticCraft blocks
+* Fix greedy Amadron drones stealing all the fluid from your tank instead of the advertised amount.
+* Fix intermittent Amadron tablet desync (caused when a periodic offer which happened to match a static offer was shuffled out)
+
 ### 0.7.7-255 (16 Aug 2018)
 #### Fixes
 * Fixed stupid bug I added in 0.7.4 which caused Amadron offers to sometimes go out of sync on client & server, breaking the whole Amadron system.
