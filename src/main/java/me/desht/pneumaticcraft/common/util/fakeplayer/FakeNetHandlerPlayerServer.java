@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.common.util;
+package me.desht.pneumaticcraft.common.util.fakeplayer;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;

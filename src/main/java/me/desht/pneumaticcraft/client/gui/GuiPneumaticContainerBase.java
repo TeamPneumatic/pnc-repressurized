@@ -159,7 +159,7 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
                 if (!translatedUpgrades.equals(upgrades)) upgradeText.add(upgrades);
 
                 if (upgradeText.size() > 0)
-                    addAnimatedStat("gui.tab.upgrades", Textures.GUI_UPGRADES_LOCATION, 0xFF0000FF, true).setText(upgradeText);
+                    addAnimatedStat("gui.tab.upgrades", Textures.GUI_UPGRADES_LOCATION, 0xFF6060FF, true).setText(upgradeText);
             }
         }
         hasInit = true;

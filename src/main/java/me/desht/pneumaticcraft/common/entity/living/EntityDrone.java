@@ -4,6 +4,7 @@ import com.mojang.authlib.GameProfile;
 import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.api.block.IPneumaticWrenchable;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IHackableEntity;
+import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.api.drone.IPathNavigator;
 import me.desht.pneumaticcraft.api.drone.IPathfindHandler;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
@@ -31,8 +32,11 @@ import me.desht.pneumaticcraft.common.recipes.AmadronOfferCustom;
 import me.desht.pneumaticcraft.common.tileentity.PneumaticEnergyStorage;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPlasticMixer;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
-import me.desht.pneumaticcraft.common.util.FakeNetHandlerPlayerServer;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.fakeplayer.DroneFakePlayer;
+import me.desht.pneumaticcraft.common.util.fakeplayer.DroneItemHandler;
+import me.desht.pneumaticcraft.common.util.fakeplayer.FakeNetHandlerPlayerServer;
+import me.desht.pneumaticcraft.common.util.fakeplayer.InventoryFakePlayer;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -47,11 +51,9 @@ import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.EntityAITasks;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.passive.EntityFlying;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
@@ -77,7 +79,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.ITeleporter;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.fluids.FluidTank;
@@ -96,8 +97,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
-public class EntityDrone extends EntityDroneBase
-        implements IManoMeasurable, IPneumaticWrenchable, IEntityAdditionalSpawnData, IHackableEntity, IDroneBase, EntityFlying {
+public class EntityDrone extends EntityDroneBase implements
+        IManoMeasurable, IPneumaticWrenchable, IEntityAdditionalSpawnData,
+        IHackableEntity, IDroneBase, EntityFlying {
 
     private static final HashMap<String, Integer> colorMap = new HashMap<>();
 
@@ -107,7 +109,7 @@ public class EntityDrone extends EntityDroneBase
         colorMap.put("jadedcat", 0xa020f0);
     }
 
-    private ItemHandlerDrone inventory = new ItemHandlerDrone(1);
+    private EntityDroneItemHandler inventory = new EntityDroneItemHandler(1, this);
     private final FluidTank tank = new FluidTank(Integer.MAX_VALUE);
     private ItemStackHandler upgradeInventory = new ItemStackHandler(9) {
         @Override
@@ -137,7 +139,6 @@ public class EntityDrone extends EntityDroneBase
 
     private boolean firstTick = true;
     public boolean naturallySpawned = true; //determines if it should drop a drone when it dies.
-//    private boolean hasLiquidImmunity;
     private double speed;
     private int lifeUpgrades;
     private int suffocationCounter = 40; //Drones are invincible for suffocation for this time.
@@ -156,7 +157,6 @@ public class EntityDrone extends EntityDroneBase
 
     private int securityUpgradeCount; // for liquid immunity: 1 = breathe in water, 2 = temporary air bubble, 3+ = permanent water removal
     private final Map<BlockPos, IBlockState> displacedLiquids = new HashMap<>();  // liquid blocks displaced by security upgrade
-//    private boolean tryRestoreLiquids;
 
     public EntityDrone(World world) {
         super(world);
@@ -185,12 +185,14 @@ public class EntityDrone extends EntityDroneBase
     }
 
     private void initializeFakePlayer() {
-        fakePlayer = new DroneFakePlayer(
-                (WorldServer) world,
-                new GameProfile(UUID.fromString(getOwnerUUID()), playerName),
-                this);
+        fakePlayer = new DroneFakePlayer((WorldServer) world, new GameProfile(UUID.fromString(getOwnerUUID()), playerName), this);
         fakePlayer.connection = new FakeNetHandlerPlayerServer(FMLCommonHandler.instance().getMinecraftServerInstance(), fakePlayer);
-        fakePlayer.inventory = new InventoryFakePlayer(fakePlayer);
+        fakePlayer.inventory = new InventoryFakePlayer(fakePlayer) {
+            @Override
+            public IItemHandlerModifiable getUnderlyingItemHandler() {
+                return EntityDrone.this.inventory;
+            }
+        };
     }
 
     private static final DataParameter<Boolean> ACCELERATING = EntityDataManager.createKey(EntityDrone.class, DataSerializers.BOOLEAN);
@@ -308,9 +310,7 @@ public class EntityDrone extends EntityDroneBase
         }
         boolean enabled = !disabledByHacking && getPressure(null) > 0.01F;
         if (!world.isRemote) {
-            if (heldItemChanged) {
-                inventory.heldItemChanged();
-            }
+            inventory.updateHeldItem();
             setAccelerating(!standby && enabled);
             if (isAccelerating()) {
                 fallDistance = 0;
@@ -848,8 +848,8 @@ public class EntityDrone extends EntityDroneBase
 
         // we can't just deserialize the saved inv directly into the inventory, since that
         // also affects its size, meaning any added dispenser upgrades wouldn't work
-        inventory = new ItemHandlerDrone(1 + getUpgrades(EnumUpgrade.DISPENSER));
-        ItemHandlerDrone tmpInv = new ItemHandlerDrone(1);
+        inventory = new EntityDroneItemHandler(1 + getUpgrades(EnumUpgrade.DISPENSER), this);
+        ItemStackHandler tmpInv = new ItemStackHandler();
         tmpInv.deserializeNBT(tag.getCompoundTag("Inventory"));
         for (int i = 0; i < tmpInv.getSlots() && i < inventory.getSlots(); i++) {
             inventory.setStackInSlot(i, tmpInv.getStackInSlot(i).copy());
@@ -862,16 +862,8 @@ public class EntityDrone extends EntityDroneBase
 
         if (tag.hasKey("amadronOffer")) {
             NBTTagCompound subTag = tag.getCompoundTag("amadronOffer");
-            if (subTag.getBoolean("isCustom")) {
-                handlingOffer = AmadronOffer.loadFromNBT(subTag);
-            } else {
-                handlingOffer = AmadronOfferCustom.loadFromNBT(subTag);
-            }
-            if (subTag.hasKey("id")) {
-                usedTablet = new ItemStack(subTag);
-            } else {
-                usedTablet = ItemStack.EMPTY;
-            }
+            handlingOffer = subTag.getBoolean("isCustom") ? AmadronOfferCustom.loadFromNBT(subTag) : AmadronOffer.loadFromNBT(subTag);
+            usedTablet = subTag.hasKey("id") ? new ItemStack(subTag) : ItemStack.EMPTY;
             buyingPlayer = subTag.getString("buyingPlayer");
         } else {
             handlingOffer = null;
@@ -1024,92 +1016,6 @@ public class EntityDrone extends EntityDroneBase
     @Override
     public void sendWireframeToClient(BlockPos pos) {
         NetworkHandler.sendToAllAround(new PacketShowWireframe(this, pos), world);
-    }
-
-    private class ItemHandlerDrone extends ItemStackHandler {
-        ItemStack oldStack = ItemStack.EMPTY;
-
-        ItemHandlerDrone(int size) {
-            super(size);
-        }
-
-        @Override
-        protected void onContentsChanged(int slot) {
-            super.onContentsChanged(slot);
-
-            if (slot == 0) {
-                // We can't call getFakePlayer() here since we might be still in entity initialization,
-                // i.e. the chunk is still being loaded.  Initializing a player at this stage
-                // can cause an endless loop (player constructor tries to find a random spawn point,
-                // which can lead to more chunk creation)
-                heldItemChanged = true;
-            }
-        }
-
-        private void heldItemChanged() {
-            ItemStack newStack = inventory.getStackInSlot(0);
-            if (!oldStack.isEmpty()) {
-                getFakePlayer().getAttributeMap().removeAttributeModifiers(oldStack.getAttributeModifiers(EntityEquipmentSlot.MAINHAND));
-            }
-            if (!newStack.isEmpty()) {
-                getFakePlayer().getAttributeMap().applyAttributeModifiers(newStack.getAttributeModifiers(EntityEquipmentSlot.MAINHAND));
-            }
-            oldStack = newStack.copy();
-
-            if (ConfigHandler.client.dronesRenderHeldItem) dataManager.set(HELD_ITEM, newStack);
-
-            heldItemChanged = false;
-        }
-    }
-
-    public static class DroneFakePlayer extends FakePlayer {
-        private final IDroneBase drone;
-        private boolean sneaking;
-
-        public DroneFakePlayer(WorldServer world, GameProfile name, IDroneBase drone) {
-            super(world, name);
-            this.drone = drone;
-        }
-
-        @Override
-        public void addExperience(int amount) {
-            Vec3d pos = drone.getDronePos();
-            EntityXPOrb orb = new EntityXPOrb(drone.world(), pos.x, pos.y, pos.z, amount);
-            drone.world().spawnEntity(orb);
-        }
-
-        @Nonnull
-        @Override
-        public ItemStack getItemStackFromSlot(@Nonnull EntityEquipmentSlot slotIn) {
-            switch (slotIn) {
-                case MAINHAND:
-                    return drone.getInv().getStackInSlot(0);
-                default:
-                    return ItemStack.EMPTY;
-            }
-        }
-
-        @Override
-        public void setItemStackToSlot(EntityEquipmentSlot slotIn, ItemStack stack) {
-            if (slotIn == EntityEquipmentSlot.MAINHAND) {
-                drone.getInv().setStackInSlot(0, stack);
-            }
-        }
-
-        @Override
-        public boolean isSneaking() {
-            return sneaking;
-        }
-
-        @Override
-        public void setSneaking(boolean sneaking) {
-            this.sneaking = sneaking;
-        }
-
-        @Override
-        public void onUpdate() {
-            ticksSinceLastSwing++;  // without this, drones melee will be hopeless
-        }
     }
 
     /**
@@ -1384,7 +1290,6 @@ public class EntityDrone extends EntityDroneBase
     }
 
     private class MinigunDrone extends Minigun {
-
         private EntityDrone drone;
 
         MinigunDrone(EntityDrone drone) {
@@ -1421,91 +1326,19 @@ public class EntityDrone extends EntityDroneBase
         public void playSound(SoundEvent soundName, float volume, float pitch) {
             NetworkHandler.sendToAllAround(new PacketPlaySound(soundName, SoundCategory.NEUTRAL, posX, posY, posZ, volume, pitch, true), world);
         }
-
     }
 
-    // Drone's fake player needs a custom inventory
-    // This is so EntityPlayer#getDigSpeed() gets the right tool speed (i.e. the tool in the drone's inv. slot 0)
-    // Overriding DroneFakePlayer#getItemStackFromSlot() is also necessary, but not sufficient on its own
-    private class InventoryFakePlayer extends InventoryPlayer {
-        InventoryFakePlayer(EntityPlayer fakePlayer) {
-            super(fakePlayer);
-        }
-
-        @Nonnull
-        @Override
-        public ItemStack getStackInSlot(int index) {
-            return getInv().getStackInSlot(index);
+    private class EntityDroneItemHandler extends DroneItemHandler {
+        public EntityDroneItemHandler(int size, IDrone holder) {
+            super(size, holder);
         }
 
         @Override
-        public float getDestroySpeed(IBlockState state) {
-            float f = 1.0f;
+        public void updateHeldItem() {
+            if (heldItemChanged && ConfigHandler.client.dronesRenderHeldItem)
+                dataManager.set(HELD_ITEM, getStackInSlot(0));
 
-            if (!getInv().getStackInSlot(0).isEmpty()) {
-                f *= getInv().getStackInSlot(0).getDestroySpeed(state);
-            }
-
-            return f;
-        }
-
-        @Override
-        public int storeItemStack(ItemStack itemStackIn) {
-            for (int i = 0; i < getInv().getSlots(); i++) {
-                if (canMerge(getStackInSlot(i), itemStackIn)) return i;
-            }
-            return -1;
-        }
-
-        private boolean canMerge(ItemStack stack1, ItemStack stack2) {
-            return !stack1.isEmpty()
-                    && ItemStack.areItemStacksEqual(stack1, stack2)
-                    && stack1.isStackable()
-                    && stack1.getCount() < stack1.getMaxStackSize()
-                    && stack1.getCount() < this.getInventoryStackLimit();
-        }
-
-        @Override
-        public int getSizeInventory() {
-            return getInv().getSlots();
-        }
-
-        @Override
-        public ItemStack decrStackSize(int index, int count) {
-            return getInv().extractItem(index, count, false);
-        }
-
-        @Override
-        public ItemStack removeStackFromSlot(int index) {
-            return getInv().extractItem(index, getInv().getSlotLimit(index), false);
-        }
-
-        @Override
-        public int getFirstEmptyStack() {
-            for (int i = 0; i < getInv().getSlots(); i++) {
-                if (getInv().getStackInSlot(i).isEmpty()) return i;
-            }
-            return -1;
-        }
-
-        @Override
-        public boolean isEmpty() {
-            for (int i = 0; i < getInv().getSlots(); i++) {
-                if (!getInv().getStackInSlot(i).isEmpty()) return false;
-            }
-            return true;
-        }
-
-        @Override
-        public void setInventorySlotContents(int index, ItemStack stack) {
-            getInv().setStackInSlot(index, stack);
-        }
-
-        @Override
-        public void clear() {
-            for (int i = 0; i < getInv().getSlots(); i++) {
-                getInv().setStackInSlot(i, ItemStack.EMPTY);
-            }
+            super.updateHeldItem();
         }
     }
 }

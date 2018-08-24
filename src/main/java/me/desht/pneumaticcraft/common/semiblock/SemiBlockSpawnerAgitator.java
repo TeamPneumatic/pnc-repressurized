@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.common.semiblock;
 
 import com.mojang.authlib.GameProfile;
-import me.desht.pneumaticcraft.common.util.FakeNetHandlerPlayerServer;
 import me.desht.pneumaticcraft.common.util.Reflections;
+import me.desht.pneumaticcraft.common.util.fakeplayer.FakeNetHandlerPlayerServer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;

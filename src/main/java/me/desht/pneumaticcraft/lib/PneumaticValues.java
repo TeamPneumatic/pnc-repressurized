@@ -76,6 +76,7 @@ public class PneumaticValues {
     public static final int USAGE_PNEUMATIC_WRENCH = 50;//mL per usage.
     public static final int USAGE_LOGISTICS_CONFIGURATOR = 50;//mL per usage.
     public static final int USAGE_CAMO_APPLICATOR = 50;//mL per usage.
+    public static final int USAGE_PROGRAMMABLE_CONTROLLER = 10;//mL per tick when not idling
 
     public static final int PRODUCTION_COMPRESSOR = 10; // mL per tick
     public static final int PRODUCTION_ADVANCED_COMPRESSOR = 50; // mL per tick

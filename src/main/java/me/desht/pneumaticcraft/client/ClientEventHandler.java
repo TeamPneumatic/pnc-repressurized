@@ -95,11 +95,11 @@ public class ClientEventHandler {
                 GuiScreen curScreen = Minecraft.getMinecraft().currentScreen;
                 if (curScreen instanceof IGuiDrone) {
                     if (!((IGuiDrone) curScreen).getDrone().isProgramApplicable(widget)) {
-                        prefix = TextFormatting.RED + "";
+                        prefix = TextFormatting.RED + TextFormatting.ITALIC.toString() + "";
                         hasInvalidPrograms = true;
                     }
                 }
-                addedEntries.add(prefix + "- " + entry.getValue() + "x " + I18n.format("programmingPuzzle." + entry.getKey() + ".name"));
+                addedEntries.add(prefix + "\u2022 " + entry.getValue() + "x " + I18n.format("programmingPuzzle." + entry.getKey() + ".name"));
             }
             if (hasInvalidPrograms) {
                 event.getToolTip().add(TextFormatting.RED + I18n.format("gui.tooltip.programmable.invalidPieces"));
