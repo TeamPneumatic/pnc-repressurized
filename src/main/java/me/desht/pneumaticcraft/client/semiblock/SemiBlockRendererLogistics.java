@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.client.semiblock;
 
 import me.desht.pneumaticcraft.client.util.RenderUtils;
+import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockLogistics;
 import net.minecraft.client.Minecraft;
@@ -30,7 +31,7 @@ public class SemiBlockRendererLogistics implements ISemiBlockRenderer<SemiBlockL
     }
 
     private float getLightMultiplier(ISemiBlock semiBlock) {
-        return Math.max(1, Minecraft.getMinecraft().world.getLight(semiBlock.getPos())) / 15F;
+        return ConfigHandler.client.semiBlockLighting ? Math.max(1, Minecraft.getMinecraft().world.getLight(semiBlock.getPos())) / 15F : 1F;
     }
 
 }

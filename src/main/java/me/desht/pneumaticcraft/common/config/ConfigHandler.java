@@ -183,6 +183,8 @@ public class ConfigHandler {
         public boolean logisticsGUITint = true;
         @Config.Comment("Drones render their held item (the item in slot 0 of their inventory) ?")
         public boolean dronesRenderHeldItem = true;
+        @Config.Comment("Use block lighting for semiblocks (logistics frames, heat frames...). May cause occasional lighting issues - semiblocks appearing unlit - disable this if that's a problem.")
+        public boolean semiBlockLighting = true;
     }
 
     public static class HelmetOptions {

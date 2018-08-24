@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.client.semiblock;
 
 import me.desht.pneumaticcraft.client.model.semiblocks.ModelHeatFrame;
+import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockHeatFrame;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -17,7 +18,6 @@ public class SemiBlockRendererHeatFrame implements ISemiBlockRenderer<SemiBlockH
 
     @Override
     public void render(SemiBlockHeatFrame semiBlock, float partialTick) {
-//        GlStateManager.pushMatrix();
         Minecraft.getMinecraft().renderEngine.bindTexture(Textures.MODEL_HEAT_FRAME);
         int heatLevel = semiBlock.getHeatLevel();
         float[] color = HeatUtil.getColorForHeatLevel(heatLevel);
@@ -29,14 +29,18 @@ public class SemiBlockRendererHeatFrame implements ISemiBlockRenderer<SemiBlockH
         GlStateManager.scale(aabb.maxX - aabb.minX, aabb.maxY - aabb.minY, aabb.maxZ - aabb.minZ);
         GlStateManager.translate(0.5, -0.5, 0.5);
         model.render(null, 0, 0, 0, 0, 0, 1 / 16F);
-//        GlStateManager.popMatrix();
         GlStateManager.color(1, 1, 1, 1);
     }
 
     private float getLightMultiplier(SemiBlockHeatFrame semiBlock) {
+        if (!ConfigHandler.client.semiBlockLighting) return 1.0F;
+
         float lightMul = Math.max(0.05F, Minecraft.getMinecraft().world.getLight(semiBlock.getPos()) / 15F);
-        if (semiBlock.getHeatLevel() > 15) lightMul = Math.min(6.0F, lightMul + (semiBlock.getHeatLevel() - 15) / 3F);
-        else if (semiBlock.getHeatLevel() > 11) lightMul = lightMul + 0.07F * (semiBlock.getHeatLevel() - 11);
+        if (semiBlock.getHeatLevel() > 15) {
+            lightMul = Math.min(6.0F, lightMul + (semiBlock.getHeatLevel() - 15) / 3F);
+        } else if (semiBlock.getHeatLevel() > 11) {
+            lightMul = lightMul + 0.07F * (semiBlock.getHeatLevel() - 11);
+        }
         return lightMul;
     }
 }
