@@ -12,11 +12,12 @@ Changes are in reverse chronological order; newest changes at the top.
 * Info tab on the GUI for all Logistics frames (shown by right-clicking with Logistics Configurator) has better descriptions for each frame type.
 * Added client-side config setting (B:semiBlockLighting) to control if block lighting should be used on semiblocks like the logistics frames and heat frame. True by default, but can be set to false if lighting is glitchy.
 #### Fixes
-* Hopefully fix item loss issues with Programmable Controller (needs more testing!)
+* Hopefully fix item loss issues with Programmable Controller (this needs more testing before release!)
 * Fix problem with Programmable Controllers and tools like the Draconic Staff of Power which drop items at the player's location (fake player's location was wrong, causing items to be dropped in odd places)
 * Fix occasional caching problem where neighbouring tile entities were not detected by PneumaticCraft blocks
 * Fix greedy Amadron drones stealing all the fluid from your tank instead of the advertised amount.
 * Fix intermittent Amadron tablet desync (caused when a periodic offer which happened to match a static offer was shuffled out)
+* Drones now once more render their targeting laser while digging blocks like they did in 1.7.10 (actually they always did, but with an alpha value of 0...)
 
 ### 0.7.7-255 (16 Aug 2018)
 #### Fixes

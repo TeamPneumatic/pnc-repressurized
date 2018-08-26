@@ -19,7 +19,7 @@ public abstract class EntityDroneBase extends EntityCreature {
     @SideOnly(Side.CLIENT)
     protected RenderLaser digLaser;
     @SideOnly(Side.CLIENT)
-    protected RenderDroneHeldItem renderDroneHeldItem;
+    RenderDroneHeldItem renderDroneHeldItem;
 
     public EntityDroneBase(World world) {
         super(world);
@@ -29,9 +29,7 @@ public abstract class EntityDroneBase extends EntityCreature {
         BlockPos diggingPos = getDugBlock();
         if (diggingPos != null) {
             if (digLaser == null) {
-                int color = 0xFF0000;
-
-                digLaser = new RenderLaser(color);
+                digLaser = new RenderLaser(0xFF000000 | getLaserColor());
             }
             digLaser.render(partialTicks, 0, getLaserOffsetY(), 0, diggingPos.getX() + 0.5 - posX, diggingPos.getY() + 0.45 - posY, diggingPos.getZ() + 0.5 - posZ);
         }

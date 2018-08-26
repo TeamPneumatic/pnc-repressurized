@@ -107,6 +107,7 @@ public class EntityDrone extends EntityDroneBase implements
         colorMap.put("aureylian", 0xff69b4);
         colorMap.put("loneztar", 0x00a0a0);
         colorMap.put("jadedcat", 0xa020f0);
+        colorMap.put("desht", 0xff6000);
     }
 
     private EntityDroneItemHandler inventory = new EntityDroneItemHandler(1, this);
@@ -607,6 +608,8 @@ public class EntityDrone extends EntityDroneBase implements
     @Override
     @SideOnly(Side.CLIENT)
     public void renderExtras(double transX, double transY, double transZ, float partialTicks) {
+        super.renderExtras(transX, transY, transZ, partialTicks);
+
         if (targetLine != null && oldTargetLine != null) {
             GlStateManager.pushMatrix();
             GlStateManager.scale(1, -1, 1);
