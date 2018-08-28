@@ -18,6 +18,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fix greedy Amadron drones stealing all the fluid from your tank instead of the advertised amount.
 * Fix intermittent Amadron tablet desync (caused when a periodic offer which happened to match a static offer was shuffled out)
 * Drones now once more render their targeting laser while digging blocks like they did in 1.7.10 (actually they always did, but with an alpha value of 0...)
+* GUI redstone control tab: the redstone button no longer sometime renders excessively wide
 
 ### 0.7.7-255 (16 Aug 2018)
 #### Fixes
