@@ -159,14 +159,14 @@ public class GuiSecurityStationInventory extends GuiSecurityStationBase {
     }
 
     private List<String> getStatusText() {
-        List<String> text = new ArrayList<String>();
+        List<String> text = new ArrayList<>();
         text.add(TextFormatting.GRAY + "Protection");
         if (te.getRebootTime() > 0) {
             text.add(TextFormatting.DARK_RED + "No protection because of rebooting!");
         } else if (te.isHacked()) {
             text.add(TextFormatting.DARK_RED + "Hacked by:");
             for (GameProfile hacker : te.hackedUsers) {
-                text.add(TextFormatting.DARK_RED + "-" + hacker.getName());
+                text.add(TextFormatting.DARK_RED + "\u2022 " + hacker.getName());
             }
         } else {
             text.add(TextFormatting.BLACK + "System secure");
@@ -181,11 +181,11 @@ public class GuiSecurityStationInventory extends GuiSecurityStationBase {
     }
 
     private List<String> getAccessText() {
-        List<String> textList = new ArrayList<String>();
+        List<String> textList = new ArrayList<>();
         textList.add("                                      ");
         textList.add("");
         for (GameProfile user : te.sharedUsers) {
-            textList.add(TextFormatting.BLACK + "-" + user.getName());
+            textList.add(TextFormatting.WHITE + "\u2022 " + user.getName());
         }
         return textList;
     }
@@ -201,7 +201,6 @@ public class GuiSecurityStationInventory extends GuiSecurityStationBase {
      * Fired when a control is clicked. This is the equivalent of
      * ActionListener.actionPerformed(ActionEvent e).
      */
-
     @Override
     protected void actionPerformed(GuiButton button) {
         if (button.id == 2) {
@@ -225,9 +224,9 @@ public class GuiSecurityStationInventory extends GuiSecurityStationBase {
                 accessStat.removeWidget(button);
             }
         }
-        removeUserButtons = new ArrayList<GuiButtonSpecial>();
+        removeUserButtons = new ArrayList<>();
         for (int i = 0; i < te.sharedUsers.size(); i++) {
-            Rectangle rect = accessStat.getButtonScaledRectangle(20, 32 + i * 10, fontRenderer.getStringWidth("-" + te.sharedUsers.get(i).getName()), 8);
+            Rectangle rect = accessStat.getButtonScaledRectangle(24, 30 + i * 10, fontRenderer.getStringWidth(te.sharedUsers.get(i).getName()), 8);
             GuiButtonSpecial button = getInvisibleButtonFromRectangle(4 + i, rect);
             button.setInvisibleHoverColor(0x44FF0000);
             button.setVisible(false);
