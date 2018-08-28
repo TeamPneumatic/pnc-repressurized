@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
+import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.block.Blockss;
@@ -297,9 +298,14 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
         }
     }
 
+    private static final List<String> REDSTONE_LABELS = ImmutableList.of(
+            "gui.tab.redstoneBehaviour.button.never",
+            "gui.tab.redstoneBehaviour.aerialInterface.button.playerConnected"
+    );
+
     @Override
-    public String getRedstoneButtonText(int mode) {
-        return mode == 0 ? "gui.tab.redstoneBehaviour.button.never" : "gui.tab.redstoneBehaviour.aerialInterface.button.playerConnected";
+    protected List<String> getRedstoneButtonLabels() {
+        return REDSTONE_LABELS;
     }
 
     private abstract class PlayerInvHandler implements IItemHandler {

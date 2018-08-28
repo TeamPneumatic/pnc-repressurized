@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
+import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticDoor;
 import me.desht.pneumaticcraft.common.block.Blockss;
@@ -22,6 +23,13 @@ import java.util.List;
 
 public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase
         implements IRedstoneControl, IMinWorkingPressure, ICamouflageableTE {
+
+    private static final List<String> REDSTONE_LABELS = ImmutableList.of(
+            "gui.tab.redstoneBehaviour.pneumaticDoor.button.playerNearby",
+            "gui.tab.redstoneBehaviour.pneumaticDoor.button.playerNearbyAndLooking",
+            "gui.tab.redstoneBehaviour.pneumaticDoor.button.woodenDoor"
+    );
+
     public static final int INVENTORY_SIZE = 1;
 
     private TileEntityPneumaticDoor door;
@@ -236,20 +244,13 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase
     }
 
     @Override
-    public String getRedstoneString() {
+    public String getRedstoneTabTitle() {
         return "gui.tab.redstoneBehaviour.pneumaticDoor.openWhen";
     }
 
+
     @Override
-    public String getRedstoneButtonText(int mode) {
-        switch (mode) {
-            case 0:
-                return "gui.tab.redstoneBehaviour.pneumaticDoor.button.playerNearby";
-            case 1:
-                return "gui.tab.redstoneBehaviour.pneumaticDoor.button.playerNearbyAndLooking";
-            case 2:
-                return "gui.tab.redstoneBehaviour.pneumaticDoor.button.woodenDoor";
-        }
-        return "<ERROR>";
+    protected List<String> getRedstoneButtonLabels() {
+        return REDSTONE_LABELS;
     }
 }

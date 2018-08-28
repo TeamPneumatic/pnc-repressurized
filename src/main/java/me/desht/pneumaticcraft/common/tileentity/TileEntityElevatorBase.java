@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
+import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IAirListener;
@@ -36,6 +37,12 @@ import java.util.*;
 
 public class TileEntityElevatorBase extends TileEntityPneumaticBase
         implements IGUITextFieldSensitive, IRedstoneControlled, IMinWorkingPressure, IAirListener, ICamouflageableTE {
+
+    private static final List<String> REDSTONE_LABELS = ImmutableList.of(
+            "gui.tab.redstoneBehaviour.elevator.button.redstone",
+            "gui.tab.redstoneBehaviour.elevator.button.elevatorCallers"
+    );
+
     @DescSynced
     public boolean[] sidesConnected = new boolean[6];
     public float oldExtension;
@@ -188,6 +195,11 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
 
     private boolean isControlledByRedstone() {
         return redstoneMode == 0;
+    }
+
+    @Override
+    public boolean redstoneAllows() {
+        return true;
     }
 
     private void updateRedstoneInputLevel() {
@@ -645,13 +657,12 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     }
 
     @Override
-    public String getRedstoneString() {
+    public String getRedstoneTabTitle() {
         return "gui.tab.redstoneBehaviour.elevator.controlBy";
     }
 
     @Override
-    public String getRedstoneButtonText(int mode) {
-        return mode == 0 ? "gui.tab.redstoneBehaviour.elevator.button.redstone" : "gui.tab.redstoneBehaviour.elevator.button.elevatorCallers";
+    protected List<String> getRedstoneButtonLabels() {
+        return REDSTONE_LABELS;
     }
-
 }

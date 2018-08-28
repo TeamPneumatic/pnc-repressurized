@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
+import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -8,7 +9,14 @@ import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 
+import java.util.List;
+
 public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase implements IRedstoneControl {
+
+    private static final List<String> REDSTONE_LABELS = ImmutableList.of(
+            "gui.tab.redstoneBehaviour.button.never",
+            "gui.tab.redstoneBehaviour.electrostaticCompressor.button.struckByLightning"
+    );
 
     private boolean lastRedstoneState;
     @GuiSynced
@@ -99,7 +107,7 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase i
     }
 
     @Override
-    public String getRedstoneButtonText(int mode) {
-        return mode == 0 ? "gui.tab.redstoneBehaviour.button.never" : "gui.tab.redstoneBehaviour.electrostaticCompressor.button.struckByLightning";
+    protected List<String> getRedstoneButtonLabels() {
+        return REDSTONE_LABELS;
     }
 }

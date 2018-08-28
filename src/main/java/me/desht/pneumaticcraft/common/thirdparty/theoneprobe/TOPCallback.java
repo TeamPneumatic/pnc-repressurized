@@ -124,7 +124,7 @@ public class TOPCallback implements Function<ITheOneProbe, Void> {
     public static void handleRedstoneMode(ProbeMode mode, IProbeInfo probeInfo, TileEntityBase te) {
         if (te instanceof IRedstoneControl) {
             int redstoneMode = ((IRedstoneControl) te).getRedstoneMode();
-            probeInfo.text(TextFormatting.GRAY + I18n.translateToLocalFormatted(te.getRedstoneString()) + ": " + TextFormatting.RED + I18n.translateToLocalFormatted(te.getRedstoneButtonText(redstoneMode)));
+            probeInfo.text(TextFormatting.GRAY + I18n.translateToLocalFormatted(te.getRedstoneTabTitle()) + ": " + TextFormatting.RED + I18n.translateToLocalFormatted(te.getRedstoneButtonText(redstoneMode)));
         }
     }
 

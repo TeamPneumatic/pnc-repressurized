@@ -44,7 +44,7 @@ public class WailaRedstoneControl implements IWailaDataProvider {
             int mode = tag.getInteger("redstoneMode");
             TileEntity te = accessor.getTileEntity();
             if (te instanceof TileEntityBase) {
-                values.put(((TileEntityBase) te).getRedstoneString(), ((TileEntityBase) te).getRedstoneButtonText(mode));
+                values.put(((TileEntityBase) te).getRedstoneTabTitle(), ((TileEntityBase) te).getRedstoneButtonText(mode));
             }
         }
 

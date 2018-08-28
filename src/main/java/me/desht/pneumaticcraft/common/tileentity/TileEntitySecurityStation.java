@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
+import com.google.common.collect.ImmutableList;
 import com.mojang.authlib.GameProfile;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
@@ -30,6 +31,13 @@ import java.util.UUID;
 
 public class TileEntitySecurityStation extends TileEntityTickableBase implements IGUITextFieldSensitive,
         IRangeLineShower, IRedstoneControl {
+
+    private static final List<String> REDSTONE_LABELS = ImmutableList.of(
+            "gui.tab.redstoneBehaviour.button.never",
+            "gui.tab.redstoneBehaviour.securityStation.button.hacked",
+            "gui.tab.redstoneBehaviour.securityStation.button.doneRebooting"
+    );
+
     private SecurityStationHandler inventory;
     private static final int INVENTORY_SIZE = 35;
 
@@ -420,16 +428,8 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
     }
 
     @Override
-    public String getRedstoneButtonText(int mode) {
-        switch (mode) {
-            case 0:
-                return "gui.tab.redstoneBehaviour.button.never";
-            case 1:
-                return "gui.tab.redstoneBehaviour.securityStation.button.hacked";
-            case 2:
-                return "gui.tab.redstoneBehaviour.securityStation.button.doneRebooting";
-        }
-        return "<ERROR>";
+    protected List<String> getRedstoneButtonLabels() {
+        return REDSTONE_LABELS;
     }
 
     private class SecurityStationHandler extends ItemStackHandler {

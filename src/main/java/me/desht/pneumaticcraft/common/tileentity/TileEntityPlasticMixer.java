@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
@@ -31,9 +32,16 @@ import net.minecraftforge.oredict.OreDictionary;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.List;
 import java.util.Map;
 
 public class TileEntityPlasticMixer extends TileEntityTickableBase implements IHeatExchanger, IRedstoneControlled, ISerializableTanks, ISmartFluidSync {
+    private static final List<String> REDSTONE_LABELS = ImmutableList.of(
+            "gui.tab.redstoneBehaviour.button.anySignal",
+            "gui.tab.redstoneBehaviour.button.highSignal",
+            "gui.tab.redstoneBehaviour.button.lowSignal",
+            "gui.tab.redstoneBehaviour.plasticMixer.button.selectOnSignal"
+    );
     private static final int BASE_TEMPERATURE = FluidRegistry.WATER.getTemperature();
     public static final int INVENTORY_SIZE = 5;
     public static final int DYE_BUFFER_MAX = 0xFF * 2 * PneumaticValues.NORMAL_TANK_CAPACITY / 1000;
@@ -347,7 +355,7 @@ public class TileEntityPlasticMixer extends TileEntityTickableBase implements IH
     }
 
     @Override
-    public String getRedstoneButtonText(int mode) {
-        return mode == 3 ? "gui.tab.redstoneBehaviour.plasticMixer.button.selectOnSignal" : super.getRedstoneButtonText(mode);
+    protected List<String> getRedstoneButtonLabels() {
+        return REDSTONE_LABELS;
     }
 }

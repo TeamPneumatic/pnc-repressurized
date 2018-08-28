@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import com.google.common.base.Strings;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
@@ -132,15 +133,7 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
                 }
             }
             if (shouldAddRedstoneTab() && te instanceof IRedstoneControl) {
-                redstoneTab = addAnimatedStat("gui.tab.redstoneBehaviour", new ItemStack(Items.REDSTONE), 0xFFCC0000, true);
-                List<String> curInfo = new ArrayList<>();
-                curInfo.add(I18n.format(te.getRedstoneString()));
-                for (int i = 0; i < 3; i++)
-                    curInfo.add("                                      "); // create some space for the button
-                redstoneTab.setTextWithoutCuttingString(curInfo);
-                Rectangle buttonRect = redstoneTab.getButtonScaledRectangle(-170, 24, 168, 20);
-                redstoneButton = new GuiButtonSpecial(0, buttonRect.x, buttonRect.y, buttonRect.width, buttonRect.height, "-");
-                redstoneTab.addWidget(redstoneButton);
+                addRedstoneTab();
             }
             if (te instanceof IHeatExchanger) {
                 addAnimatedStat("gui.tab.info.heat.title", new ItemStack(Items.BLAZE_POWDER), 0xFFFF5500, false).setText("gui.tab.info.heat");
@@ -163,6 +156,30 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
             }
         }
         hasInit = true;
+    }
+
+    private void addRedstoneTab() {
+        redstoneTab = addAnimatedStat("gui.tab.redstoneBehaviour", new ItemStack(Items.REDSTONE), 0xFFCC0000, true);
+        List<String> curInfo = new ArrayList<>();
+        curInfo.add(I18n.format(te.getRedstoneTabTitle()));
+        int width = getWidestRedstoneLabel();
+        String padding = Strings.repeat(" ", width / fontRenderer.getStringWidth(" "));
+        for (int i = 0; i < 3; i++) {
+            curInfo.add(padding);
+        }
+        redstoneTab.setTextWithoutCuttingString(curInfo);
+        Rectangle buttonRect = redstoneTab.getButtonScaledRectangle(-width - 12, 24, width + 10, 20);
+        redstoneButton = new GuiButtonSpecial(0, buttonRect.x, buttonRect.y, buttonRect.width, buttonRect.height, "-");
+        redstoneTab.addWidget(redstoneButton);
+    }
+
+    private int getWidestRedstoneLabel() {
+        int max = 0;
+        for (int i = 0; i < te.getRedstoneModeCount(); i++) {
+            int w = fontRenderer.getStringWidth(I18n.format(te.getRedstoneButtonText(i)));
+            max = Math.max(max, w);
+        }
+        return max;
     }
 
     protected void addInfoTab(String info) {

@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.lua.LuaException;
@@ -51,6 +52,12 @@ import java.util.*;
 
 @Optional.InterfaceList({@Optional.Interface(iface = "dan200.computercraft.api.peripheral.IPeripheral", modid = ModIds.COMPUTERCRAFT)})
 public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, IDescSynced, IUpgradeAcceptor, IPeripheral {
+    private static final List<String> REDSTONE_LABELS = ImmutableList.of(
+            "gui.tab.redstoneBehaviour.button.anySignal",
+            "gui.tab.redstoneBehaviour.button.highSignal",
+            "gui.tab.redstoneBehaviour.button.lowSignal"
+    );
+
     private final Set<Item> applicableUpgrades = new HashSet<>();
     private final Set<String> applicableCustomUpgrades = new HashSet<>();
     private final UpgradeCache upgradeCache = new UpgradeCache(this);
@@ -619,19 +626,23 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     public void onTileEntityCreated() {
     }
 
-    public String getRedstoneButtonText(int mode) {
-        switch (mode) {
-            case 0:
-                return "gui.tab.redstoneBehaviour.button.anySignal";
-            case 1:
-                return "gui.tab.redstoneBehaviour.button.highSignal";
-            case 2:
-                return "gui.tab.redstoneBehaviour.button.lowSignal";
+    public final String getRedstoneButtonText(int mode) {
+        try {
+            return getRedstoneButtonLabels().get(mode);
+        } catch (ArrayIndexOutOfBoundsException e) {
+            return "<ERROR>";
         }
-        return "<ERROR>";
     }
 
-    public String getRedstoneString() {
+    protected List<String> getRedstoneButtonLabels() {
+        return REDSTONE_LABELS;
+    }
+
+    public int getRedstoneModeCount() {
+        return getRedstoneButtonLabels().size();
+    }
+
+    public String getRedstoneTabTitle() {
         return this instanceof IRedstoneControlled ? "gui.tab.redstoneBehaviour.enableOn" : "gui.tab.redstoneBehaviour.emitRedstoneWhen";
     }
 

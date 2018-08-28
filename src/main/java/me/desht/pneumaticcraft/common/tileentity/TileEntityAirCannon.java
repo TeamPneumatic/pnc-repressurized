@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
+import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.common.block.Blockss;
@@ -42,6 +43,13 @@ import java.util.*;
 import java.util.Map.Entry;
 
 public class TileEntityAirCannon extends TileEntityPneumaticBase implements IMinWorkingPressure, IRedstoneControl {
+
+    private static final List<String> REDSTONE_LABELS = ImmutableList.of(
+            "gui.tab.redstoneBehaviour.airCannon.button.highSignalAndAngle",
+            "gui.tab.redstoneBehaviour.button.highSignal",
+            "gui.tab.redstoneBehaviour.airCannon.button.highAndSpace"
+    );
+
     private AirCannonStackHandler inventory;
     private final Random rand = new Random();
     @DescSynced
@@ -714,23 +722,13 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements IMin
     public int getRedstoneMode() {
         return redstoneMode;
     }
-
     @Override
-    public String getRedstoneButtonText(int mode) {
-        switch (mode) {
-            case 0:
-                return "gui.tab.redstoneBehaviour.airCannon.button.highSignalAndAngle";
-            case 1:
-                return "gui.tab.redstoneBehaviour.button.highSignal";
-            case 2:
-                return "gui.tab.redstoneBehaviour.airCannon.button.highAndSpace";
-            default:
-                return "<ERROR>";
-        }
+    protected List<String> getRedstoneButtonLabels() {
+        return REDSTONE_LABELS;
     }
 
     @Override
-    public String getRedstoneString() {
+    public String getRedstoneTabTitle() {
         return "gui.tab.redstoneBehaviour.airCannon.fireUpon";
     }
 }

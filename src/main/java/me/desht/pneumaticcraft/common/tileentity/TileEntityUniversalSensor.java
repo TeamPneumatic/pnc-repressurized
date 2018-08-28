@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
+import com.google.common.collect.ImmutableList;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
@@ -44,6 +45,11 @@ import java.util.*;
 
 public class TileEntityUniversalSensor extends TileEntityPneumaticBase implements IRangeLineShower,
         IGUITextFieldSensitive, IMinWorkingPressure, IRedstoneControl {
+
+    private static final List<String> REDSTONE_LABELS = ImmutableList.of(
+            "gui.tab.redstoneBehaviour.universalSensor.button.inverted",
+            "gui.tab.redstoneBehaviour.universalSensor.button.normal"
+    );
 
     public static final int INVENTORY_SIZE = 4;
 
@@ -540,13 +546,13 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
     }
 
     @Override
-    public String getRedstoneString() {
+    public String getRedstoneTabTitle() {
         return "gui.tab.redstoneBehaviour.universalSensor.redstoneEmission";
     }
 
     @Override
-    public String getRedstoneButtonText(int mode) {
-        return invertedRedstone ? "gui.tab.redstoneBehaviour.universalSensor.button.inverted" : "gui.tab.redstoneBehaviour.universalSensor.button.normal";
+    protected List<String> getRedstoneButtonLabels() {
+        return REDSTONE_LABELS;
     }
     
     @Override

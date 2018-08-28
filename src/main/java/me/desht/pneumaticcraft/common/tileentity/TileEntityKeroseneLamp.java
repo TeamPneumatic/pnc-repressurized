@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.block.Blockss;
@@ -31,12 +32,17 @@ import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class TileEntityKeroseneLamp extends TileEntityTickableBase implements IRedstoneControlled, ISerializableTanks, ISmartFluidSync {
+
+    private static final List<String> REDSTONE_LABELS = ImmutableList.of(
+            "gui.tab.redstoneBehaviour.button.anySignal",
+            "gui.tab.redstoneBehaviour.button.highSignal",
+            "gui.tab.redstoneBehaviour.button.lowSignal",
+            "gui.tab.redstoneBehaviour.keroseneLamp.button.interpolate"
+    );
+
     public static final int INVENTORY_SIZE = 2;
 
     private static final int INPUT_SLOT = 0;
@@ -374,9 +380,8 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements IR
     }
 
     @Override
-    public String getRedstoneButtonText(int mode) {
-        if (mode == 3) return "gui.tab.redstoneBehaviour.keroseneLamp.button.interpolate";
-        return super.getRedstoneButtonText(mode);
+    protected List<String> getRedstoneButtonLabels() {
+        return REDSTONE_LABELS;
     }
 
     @Nonnull

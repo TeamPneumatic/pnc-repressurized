@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
+import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IPressurizable;
@@ -34,6 +35,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TileEntityChargingStation extends TileEntityPneumaticBase implements IRedstoneControl, ICamouflageableTE {
+    private static final List<String> REDSTONE_LABELS = ImmutableList.of(
+            "gui.tab.redstoneBehaviour.button.never",
+            "gui.tab.redstoneBehaviour.chargingStation.button.doneDischarging",
+            "gui.tab.redstoneBehaviour.chargingStation.button.charging",
+            "gui.tab.redstoneBehaviour.chargingStation.button.discharging"
+    );
+
     @DescSynced
     private ChargingStationHandler inventory;
     private ChargeableItemHandler chargeableInventory;
@@ -280,19 +288,8 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     }
 
     @Override
-    public String getRedstoneButtonText(int mode) {
-        switch (mode) {
-            case 0:
-                return "gui.tab.redstoneBehaviour.button.never";
-            case 1:
-                return "gui.tab.redstoneBehaviour.chargingStation.button.doneDischarging";
-            case 2:
-                return "gui.tab.redstoneBehaviour.chargingStation.button.charging";
-            case 3:
-                return "gui.tab.redstoneBehaviour.chargingStation.button.discharging";
-
-        }
-        return "<ERROR>";
+    protected List<String> getRedstoneButtonLabels() {
+        return REDSTONE_LABELS;
     }
 
     @Override

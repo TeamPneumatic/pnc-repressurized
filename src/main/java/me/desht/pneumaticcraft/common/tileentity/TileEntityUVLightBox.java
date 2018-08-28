@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
+import com.google.common.collect.ImmutableList;
 import elucent.albedo.lighting.ILightProvider;
 import elucent.albedo.lighting.Light;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
@@ -24,6 +25,15 @@ import java.util.List;
 
 @Optional.Interface(iface = "elucent.albedo.lighting.ILightProvider", modid = "albedo")
 public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMinWorkingPressure, IRedstoneControl, ILightProvider {
+
+    private static final List<String> REDSTONE_LABELS = ImmutableList.of(
+            "gui.tab.redstoneBehaviour.button.never",
+            "gui.tab.redstoneBehaviour.uvLightBox.button.chance.70",
+            "gui.tab.redstoneBehaviour.uvLightBox.button.chance.80",
+            "gui.tab.redstoneBehaviour.uvLightBox.button.chance.90",
+            "gui.tab.redstoneBehaviour.uvLightBox.button.chance.100"
+    );
+
     public static final int INVENTORY_SIZE = 1;
     public static final int PCB_SLOT = 0;
 
@@ -81,7 +91,6 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
                         updateNeighbours();
                     }
                     stack.setItemDamage(Math.max(0, stack.getItemDamage() - 1));
-//                    inventory.setStackInSlot(PCB_SLOT, stack);
                 }
             } else if (areLightsOn) {
                 setLightsOn(false);
@@ -184,12 +193,8 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
     }
 
     @Override
-    public String getRedstoneButtonText(int mode) {
-        if (mode == 0) {
-            return "gui.tab.redstoneBehaviour.button.never";
-        } else {
-            return "gui.tab.redstoneBehaviour.uvLightBox.button.chance." + (10 * mode + 60);
-        }
+    protected List<String> getRedstoneButtonLabels() {
+        return REDSTONE_LABELS;
     }
 
     @Override

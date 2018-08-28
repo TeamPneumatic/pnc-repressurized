@@ -524,7 +524,7 @@ gui.tab.upgrades.tile.sentry_turret=§7• Range Upgrade (max = 16) \n§0Increas
 gui.tab.redstoneBehaviour=Redstone Behaviour
 gui.tab.redstoneBehaviour.enableOn=Enable on
 gui.tab.redstoneBehaviour.emitRedstoneWhen=Emit Redstone When
-gui.tab.redstoneBehaviour.button.anySignal=Any Signal
+gui.tab.redstoneBehaviour.button.anySignal=Always
 gui.tab.redstoneBehaviour.button.highSignal=High Signal
 gui.tab.redstoneBehaviour.button.lowSignal=Low Signal
 gui.tab.redstoneBehaviour.button.never=Never
