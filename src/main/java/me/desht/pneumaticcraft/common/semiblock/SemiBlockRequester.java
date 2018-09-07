@@ -75,8 +75,8 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
         int totalRequestingAmount = getTotalRequestedAmount(stack);
         if (totalRequestingAmount > 0) {
             IItemHandler inv = IOHelper.getInventoryForTE(getTileEntity());
-            int count = 0;
             if (inv != null) {
+                int count = 0;
                 for (int i = 0; i < inv.getSlots(); i++) {
                     ItemStack s = inv.getStackInSlot(i);
                     if (!s.isEmpty() && isItemEqual(s, stack)) {
