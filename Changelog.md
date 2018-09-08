@@ -6,6 +6,11 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
+### 0.7.10-??? (unreleased)
+#### Fixes
+* Removing a drone or Network API from the programmable controller now resets its digging position, avoiding a phantom digging laser being shown.
+* Fixed item loss bug with logistics drones and logistics modules when requesting a specific number of items from a Requester Frame with some (but not all) non-vanilla inventories.
+
 ### 0.7.9-259 (28 Aug 2018)
 #### Updates
 * Breaking any PneumaticCraft block by shift-clicking with any wrench will now keep any installed upgrades in the dropped block. Breaking the block with a pickaxe drops the upgrades, as before.
