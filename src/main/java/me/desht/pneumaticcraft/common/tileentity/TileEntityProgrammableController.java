@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
-import com.google.common.collect.Sets;
+import com.google.common.collect.ImmutableSet;
 import com.mojang.authlib.GameProfile;
 import me.desht.pneumaticcraft.api.drone.DroneConstructingEvent;
 import me.desht.pneumaticcraft.api.drone.IPathNavigator;
@@ -48,7 +48,6 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
@@ -77,7 +76,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
     @DescSynced
     private int speedUpgrades;
 
-    public static final Set<String> BLACKLISTED_WIDGETS = Sets.newHashSet(
+    public static final Set<String> BLACKLISTED_WIDGETS = ImmutableSet.of(
             "computerCraft",
             "entityAttack",
             "droneConditionEntity",
@@ -142,7 +141,6 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
         }
     }
 
-
     @Override
     public void onDescUpdate() {
         super.onDescUpdate();
@@ -176,7 +174,6 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
 
     @Override
     public void handleGUIButtonPress(int buttonID, EntityPlayer player) {
-
     }
 
     @Override
@@ -202,6 +199,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
                 progWidgets = TileEntityProgrammer.getProgWidgets(stack);
             } else {
                 progWidgets.clear();
+                setDugBlock(null);
                 targetX = getPos().getX() + 0.5;
                 targetY = getPos().getY() + 0.6;
                 targetZ = getPos().getZ() + 0.5;
@@ -583,45 +581,9 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
 
     @Override
     public void addDebugEntry(String message) {
-
     }
 
     @Override
     public void addDebugEntry(String message, BlockPos pos) {
-
-    }
-
-    private static class DummyInventory implements IItemHandlerModifiable {
-        @Override
-        public void setStackInSlot(int slot, @Nonnull ItemStack stack) {
-        }
-
-        @Override
-        public int getSlots() {
-            return 0;
-        }
-
-        @Nonnull
-        @Override
-        public ItemStack getStackInSlot(int slot) {
-            return ItemStack.EMPTY;
-        }
-
-        @Nonnull
-        @Override
-        public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-            return stack;
-        }
-
-        @Nonnull
-        @Override
-        public ItemStack extractItem(int slot, int amount, boolean simulate) {
-            return ItemStack.EMPTY;
-        }
-
-        @Override
-        public int getSlotLimit(int slot) {
-            return 0;
-        }
     }
 }
