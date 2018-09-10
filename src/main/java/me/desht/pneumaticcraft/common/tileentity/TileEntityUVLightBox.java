@@ -236,7 +236,7 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
     public Light provideLight() {
         if (light == null && areLightsOn) {
             int radius = Math.max(8, 4 + getUpgrades(EnumUpgrade.SPEED));
-            light = new Light(pos().getX(), pos.getY(), pos().getZ(), 0.2f, 0.0f, 1.0f, 1.0f, radius);
+            light = Light.builder().pos(pos()).color(0.2f, 0.0f, 1.0f).radius(radius).build();
         } else if (!areLightsOn) {
             light = null;
         }

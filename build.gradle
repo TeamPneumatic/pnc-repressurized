@@ -39,8 +39,8 @@ repositories {
         url = "http://maven.tterrag.com/"
     }
     maven {
-        name 'BlameJared - Crafttweaker'
-        url 'http://maven.blamejared.com/'
+        name = 'BlameJared - Crafttweaker'
+        url = 'http://maven.blamejared.com/'
     }
     maven {
         name = "K-4u Mod maven"
@@ -53,6 +53,9 @@ repositories {
     maven {
         name = "Curseforge"
         url = "https://minecraft.curseforge.com/api/maven/"
+    }
+    maven { // Albedo Lights
+        url = 'https://repo.elytradev.com/'
     }
 }
 
@@ -171,6 +174,7 @@ dependencies {
     deobfCompile("appeng:appliedenergistics2:${ae2_version}:api") {
         transitive = false
     }
+    deobfCompile "elucent:albedo:${albedo_version}"
 }
 
 processResources {
