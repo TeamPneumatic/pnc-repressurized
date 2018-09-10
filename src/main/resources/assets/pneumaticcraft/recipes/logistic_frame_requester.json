@@ -12,6 +12,7 @@
     }
   },
   "result": {
-    "item": "pneumaticcraft:logistic_frame_requester"
+    "item": "pneumaticcraft:logistic_frame_requester",
+    "count": 4
   }
 }

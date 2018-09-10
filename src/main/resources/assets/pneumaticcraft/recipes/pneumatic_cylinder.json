@@ -19,6 +19,7 @@
     }
   },
   "result": {
-    "item": "pneumaticcraft:pneumatic_cylinder"
+    "item": "pneumaticcraft:pneumatic_cylinder",
+    "count": 2
   }
 }
