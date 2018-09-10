@@ -220,13 +220,17 @@ public class GuiUnitProgrammer extends GuiScreen {
     }
 
     protected void drawBorder(IProgWidget widget, int color) {
+        drawBorder(widget, color, 0);
+    }
+
+    protected void drawBorder(IProgWidget widget, int color, int inset) {
         GlStateManager.pushMatrix();
         GlStateManager.translate(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
         GlStateManager.scale(0.5, 0.5, 1);
-        drawVerticalLine(0, 0, widget.getHeight(), color);
-        drawVerticalLine(widget.getWidth(), 0, widget.getHeight(), color);
-        drawHorizontalLine(widget.getWidth(), 0, 0, color);
-        drawHorizontalLine(widget.getWidth(), 0, widget.getHeight(), color);
+        drawVerticalLine(inset, inset, widget.getHeight() - inset, color);
+        drawVerticalLine(widget.getWidth() - inset, inset, widget.getHeight() - inset, color);
+        drawHorizontalLine(widget.getWidth() - inset, inset, inset, color);
+        drawHorizontalLine(widget.getWidth() - inset, inset, widget.getHeight() - inset, color);
         GlStateManager.popMatrix();
     }
 

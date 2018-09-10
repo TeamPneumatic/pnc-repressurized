@@ -354,7 +354,7 @@ public class EntityDrone extends EntityDroneBase implements
                 laserExtension = Math.max(0, laserExtension - LASER_EXTEND_SPEED);
             }
 
-            if (isAccelerating()) {
+            if (isAccelerating() && rand.nextBoolean()) {
                 int x = (int) Math.floor(posX);
                 int y = (int) Math.floor(posY - 1);
                 int z = (int) Math.floor(posZ);

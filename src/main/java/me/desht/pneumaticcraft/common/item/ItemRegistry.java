@@ -50,7 +50,7 @@ public class ItemRegistry implements IItemRegistry {
         if (acceptors != null) {
             List<String> tempList = new ArrayList<String>(acceptors.size());
             for (IUpgradeAcceptor acceptor : acceptors) {
-                tempList.add("-" + I18n.format(acceptor.getName()));
+                tempList.add("\u2022 " + I18n.format(acceptor.getName()));
             }
             Collections.sort(tempList);
             tooltip.addAll(tempList);

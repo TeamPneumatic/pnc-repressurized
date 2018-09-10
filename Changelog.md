@@ -9,6 +9,7 @@ Changes are in reverse chronological order; newest changes at the top.
 ### 0.8.0-??? (unreleased)
 #### New
 * Logistics frames now support fuzzy item meta and NBT matching, as well as whitelist/blacklist for filters. This can all be configured with a new side tab on the right of the logistics GUI. Default is whitelist, match meta, ignore NBT, as before.
+* Shulkers can be now be hacked with the Pneumatic Helmet (with Entity & Security Upgrades).  Disabled Shulker missile attack and (usually) forces them open.
 #### Updates
 * Speed Upgrades are now slightly less expensive to use in machines in terms of fuel usage and heat generation.  Default multiplier is now 1.65, down from 1.8.  Note that this is exponential: usage is multiplier_value^num_speed_upgrades.
 * The multipliers for Speed Upgrades are now configurable, in the "machine_properties" section of the config: D:speedUpgradeSpeedMultiplier and D:speedUpgradeUsageMultiplier.

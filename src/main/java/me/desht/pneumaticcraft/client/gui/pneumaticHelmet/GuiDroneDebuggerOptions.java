@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.gui.pneumaticHelmet;
 
+import com.google.common.collect.Sets;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IOptionPage;
@@ -9,6 +10,7 @@ import me.desht.pneumaticcraft.client.render.pneumaticArmor.DroneDebugUpgradeHan
 import me.desht.pneumaticcraft.common.NBTUtil;
 import me.desht.pneumaticcraft.common.entity.living.DebugEntry;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
+import me.desht.pneumaticcraft.common.progwidgets.IAreaProvider;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetStart;
 import me.desht.pneumaticcraft.lib.NBTKeys;
@@ -25,10 +27,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.input.Keyboard;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class GuiDroneDebuggerOptions extends Gui implements IOptionPage {
     private final DroneDebugUpgradeHandler upgradeHandler;
@@ -39,8 +38,15 @@ public class GuiDroneDebuggerOptions extends Gui implements IOptionPage {
     private IProgWidget areaShowingWidget;
     private int screenWidth, screenHeight;
 
+    // index of the widget whose area is being shown; static so it persists beyond this short-lived object
+    private static int areaShowWidgetId = -1;
+
     public GuiDroneDebuggerOptions(DroneDebugUpgradeHandler upgradeHandler) {
         this.upgradeHandler = upgradeHandler;
+    }
+
+    public static void clearAreaShowWidgetId() {
+        areaShowWidgetId = -1;
     }
 
     @Override
@@ -56,7 +62,7 @@ public class GuiDroneDebuggerOptions extends Gui implements IOptionPage {
 
         if (PneumaticCraftRepressurized.proxy.getClientPlayer() != null) {
             ItemStack helmet = PneumaticCraftRepressurized.proxy.getClientPlayer().getItemStackFromSlot(EntityEquipmentSlot.HEAD);
-            if (helmet != null) {
+            if (!helmet.isEmpty()) {
                 int entityId = NBTUtil.getInteger(helmet, NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE);
                 Entity entity = PneumaticCraftRepressurized.proxy.getClientWorld().getEntityByID(entityId);
                 if (entity instanceof EntityDrone) {
@@ -69,7 +75,13 @@ public class GuiDroneDebuggerOptions extends Gui implements IOptionPage {
         programmingStartX = spacing;
         programmingWidth = guiScreen.width - spacing * 2;
         programmingHeight = guiScreen.height - spacing - PROGRAMMING_START_Y;
-        programmerUnit = new DebugInfoProgrammerUnit(selectedDrone != null ? selectedDrone.getProgWidgets() : new ArrayList<IProgWidget>(), gui.getFontRenderer(), 0, 0, guiScreen.width, guiScreen.height, 100, programmingStartX, PROGRAMMING_START_Y, programmingWidth, programmingHeight, 0, 0, 0);
+        programmerUnit = new DebugInfoProgrammerUnit(selectedDrone != null ? selectedDrone.getProgWidgets() : new ArrayList<>(),
+                gui.getFontRenderer(),
+                0, 0, guiScreen.width, guiScreen.height,
+                100,
+                programmingStartX, PROGRAMMING_START_Y,
+                programmingWidth, programmingHeight,
+                0, 0, 0);
         if (selectedDrone != null) {
             for (IProgWidget widget : selectedDrone.getProgWidgets()) {
                 if (widget instanceof ProgWidgetStart) {
@@ -126,6 +138,20 @@ public class GuiDroneDebuggerOptions extends Gui implements IOptionPage {
     public void mouseClicked(int x, int y, int button) {
         if (button == 0) {
             areaShowingWidget = programmerUnit.getHoveredWidget(x, y);
+        } else if (button == 1) {
+            IProgWidget widget = programmerUnit.getHoveredWidget(x, y);
+            if (widget instanceof IAreaProvider) {
+                upgradeHandler.getShownArea().clear();
+                int widgetId = selectedDrone.getProgWidgets().indexOf(widget);
+                if (areaShowWidgetId != widgetId) {
+                    Set<BlockPos> area = Sets.newHashSet();
+                    ((IAreaProvider) widget).getArea(area);
+                    upgradeHandler.getShownArea().addAll(area);
+                    areaShowWidgetId = widgetId;
+                } else {
+                    clearAreaShowWidgetId();
+                }
+            }
         }
     }
 
@@ -136,16 +162,16 @@ public class GuiDroneDebuggerOptions extends Gui implements IOptionPage {
 
     private class DebugInfoProgrammerUnit extends GuiUnitProgrammer {
 
-        public DebugInfoProgrammerUnit(List<IProgWidget> progWidgets, FontRenderer fontRenderer, int guiLeft,
-                                       int guiTop, int width, int height, int xSize, int startX, int startY, int areaWidth, int areaHeight,
-                                       int translatedX, int translatedY, int lastZoom) {
+        DebugInfoProgrammerUnit(List<IProgWidget> progWidgets, FontRenderer fontRenderer, int guiLeft,
+                                int guiTop, int width, int height, int xSize, int startX, int startY, int areaWidth, int areaHeight,
+                                int translatedX, int translatedY, int lastZoom) {
             super(progWidgets, fontRenderer, guiLeft, guiTop, width, height, xSize, startX, startY, areaWidth, areaHeight, translatedX, translatedY, lastZoom);
         }
 
         @Override
         protected void addAdditionalInfoToTooltip(IProgWidget widget, List<String> tooltip) {
             int widgetId = selectedDrone.getProgWidgets().indexOf(widget);
-            Map<String, Integer> messageTimesMap = new LinkedHashMap<String, Integer>();
+            Map<String, Integer> messageTimesMap = new LinkedHashMap<>();
             boolean hasCoords = false;
             for (DebugEntry entry : selectedDrone.getDebugEntries()) {
                 if (entry.getProgWidgetId() == widgetId) {
@@ -165,13 +191,23 @@ public class GuiDroneDebuggerOptions extends Gui implements IOptionPage {
                 if (widget != areaShowingWidget)
                     tooltip.add(TextFormatting.GREEN + I18n.format("gui.progWidget.debug.clickToShow"));
             }
-
+            if (widget instanceof IAreaProvider) {
+                if (widgetId == areaShowWidgetId) {
+                    tooltip.add(TextFormatting.GREEN + "Right-Click: " + I18n.format("gui.programmer.button.stopShowingArea"));
+                } else {
+                    tooltip.add(TextFormatting.GREEN + "Right-Click: " + I18n.format("gui.programmer.button.showArea"));
+                }
+            }
         }
 
         @Override
         protected void renderAdditionally() {
-            IProgWidget widget = selectedDrone != null ? selectedDrone.getActiveWidget() : null;
-            if (widget != null) drawBorder(widget, 0xFF00FF00);
+            if (selectedDrone != null) {
+                drawBorder(selectedDrone.getActiveWidget(), 0xFF00FF00);
+                if (areaShowWidgetId >= 0) {
+                    drawBorder(selectedDrone.getProgWidgets().get(areaShowWidgetId), 0xA040FFA0, 2);
+                }
+            }
         }
     }
 

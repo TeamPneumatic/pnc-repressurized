@@ -17,10 +17,15 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class DroneDebugUpgradeHandler implements IUpgradeRenderHandler {
-    private final Set<BlockPos> shownPositions = new HashSet<BlockPos>();
+    private final Set<BlockPos> shownPositions = new HashSet<>();
+    private final Set<BlockPos> shownArea = new HashSet<>();
 
     public Set<BlockPos> getShowingPositions() {
         return shownPositions;
+    }
+
+    public Set<BlockPos> getShownArea() {
+        return shownArea;
     }
 
     @Override

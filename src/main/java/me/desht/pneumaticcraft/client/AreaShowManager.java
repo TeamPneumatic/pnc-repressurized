@@ -11,6 +11,7 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -19,7 +20,6 @@ import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.items.wrapper.PlayerArmorInvWrapper;
 import org.lwjgl.opengl.GL11;
 
 import java.util.*;
@@ -69,7 +69,7 @@ public class AreaShowManager {
                         if (posList.get(i) != null && renderColor != 0) {
                             Set<BlockPos> positionsForColor = colorsToPositions.get(renderColor);
                             if(positionsForColor == null){
-                                positionsForColor = new HashSet<BlockPos>();
+                                positionsForColor = new HashSet<>();
                                 colorsToPositions.put(renderColor, positionsForColor);
                             }
                             positionsForColor.add(posList.get(i));
@@ -93,13 +93,16 @@ public class AreaShowManager {
         }
         if (curItem.getItem() != Itemss.CAMO_APPLICATOR) CamoTECache.clearCache();
 
-        PlayerArmorInvWrapper armor = new PlayerArmorInvWrapper(player.inventory);
-        ItemStack helmet = armor.getStackInSlot(3);
+//        player.getItemStackFromSlot(EntityEquipmentSlot.HEAD)
+//        PlayerArmorInvWrapper armor = new PlayerArmorInvWrapper(player.inventory);
+        ItemStack helmet = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
         if (helmet.getItem() == Itemss.PNEUMATIC_HELMET) {
             if (droneDebugger == null)
                 droneDebugger = HUDHandler.instance().getSpecificRenderer(DroneDebugUpgradeHandler.class);
             Set<BlockPos> set = droneDebugger.getShowingPositions();
             new AreaShowHandler(set, 0x90FF0000, true).render();
+            Set<BlockPos> areaSet = droneDebugger.getShownArea();
+            new AreaShowHandler(areaSet, 0x4040FFA0, true).render();
         }
 
         GlStateManager.enableTexture2D();

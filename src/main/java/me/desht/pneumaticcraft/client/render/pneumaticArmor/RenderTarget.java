@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.client.render.pneumaticArmor;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IEntityTrackEntry;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IHackableEntity;
+import me.desht.pneumaticcraft.client.gui.pneumaticHelmet.GuiDroneDebuggerOptions;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
 import me.desht.pneumaticcraft.client.render.RenderProgressBar;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.entitytracker.EntityTrackHandler;
@@ -237,6 +238,7 @@ public class RenderTarget {
 
     public void selectAsDebuggingTarget() {
         if (isInitialized() && isPlayerLookingAtTarget() && entity instanceof EntityDrone) {
+            GuiDroneDebuggerOptions.clearAreaShowWidgetId();
             NetworkHandler.sendToServer(new PacketUpdateDebuggingDrone(entity.getEntityId()));
         }
     }
