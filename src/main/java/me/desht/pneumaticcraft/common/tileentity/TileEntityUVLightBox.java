@@ -6,21 +6,24 @@ import elucent.albedo.lighting.Light;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.item.ItemEmptyPCB;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import me.desht.pneumaticcraft.lib.TileEntityConstants;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.EnumSkyBlock;
+import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.Optional;
+import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemStackHandler;
 import org.apache.commons.lang3.tuple.Pair;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 
 @Optional.Interface(iface = "elucent.albedo.lighting.ILightProvider", modid = "albedo")
@@ -48,12 +51,8 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
     @GuiSynced
     public int redstoneMode;
     @DescSynced
-    public ItemStackHandler inventory = new ItemStackHandler(INVENTORY_SIZE){
-        @Override
-        public int getSlotLimit(int slot) {
-            return 1; //Only process one item at a time.
-        }
-    };
+    public final LightBoxItemHandlerInternal inventory = new LightBoxItemHandlerInternal();
+    public final LightBoxItemHandlerExternal inventoryExt = new LightBoxItemHandlerExternal(inventory);
     public int ticksExisted;
     private boolean oldRedstoneStatus;
 
@@ -83,9 +82,9 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
         if (!getWorld().isRemote) {
             ticksExisted++;
             ItemStack stack = getLoadedPCB();
-            if (getPressure() >= PneumaticValues.MIN_PRESSURE_UV_LIGHTBOX && stack.getItem() == Itemss.EMPTY_PCB && stack.getItemDamage() > 0) {
+            if (getPressure() >= PneumaticValues.MIN_PRESSURE_UV_LIGHTBOX && stack.getItem() instanceof ItemEmptyPCB && stack.getItemDamage() > 0) {
                 addAir((int) (-PneumaticValues.USAGE_UV_LIGHTBOX * getSpeedUsageMultiplierFromUpgrades()));
-                if (ticksExisted % Math.max(1, (int) (TileEntityConstants.LIGHT_BOX_0_100_TIME / (5 * getSpeedMultiplierFromUpgrades()))) == 0) {
+                if (ticksExisted % ticksPerProgress(stack.getItemDamage()) == 0) {
                     if (!areLightsOn) {
                         setLightsOn(true);
                         updateNeighbours();
@@ -101,6 +100,22 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
                 updateNeighbours();
             }
         }
+    }
+
+    private int ticksPerProgress(int damage) {
+        int ticks;
+        if (damage > 80) {
+            ticks = 20;
+        } else if (damage > 60) {
+            ticks = 40;
+        } else if (damage > 40) {
+            ticks = 80;
+        } else if (damage > 20) {
+            ticks = 160;
+        } else {
+            ticks = 300;
+        }
+        return Math.max(1, (int) (ticks / getSpeedMultiplierFromUpgrades()));
     }
 
     @Override
@@ -187,6 +202,16 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
         return inventory;
     }
 
+    @Nullable
+    @Override
+    public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
+        // return the wrapped item handler when accessed via capability
+        if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+            return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(inventoryExt);
+        }
+        return super.getCapability(capability, facing);
+    }
+
     @Override
     public int getRedstoneMode() {
         return redstoneMode;
@@ -216,5 +241,66 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
             light = null;
         }
         return (Light) light;
+    }
+
+    private class LightBoxItemHandlerInternal extends FilteredItemStackHandler {
+        LightBoxItemHandlerInternal() {
+            super(INVENTORY_SIZE);
+        }
+
+        @Override
+        public int getSlotLimit(int slot) {
+            return 1; // Only process one item at a time.
+        }
+
+        @Override
+        public boolean test(Integer integer, ItemStack itemStack) {
+            return itemStack.isEmpty() || itemStack.getItem() instanceof ItemEmptyPCB;
+        }
+    }
+
+    private class LightBoxItemHandlerExternal implements IItemHandlerModifiable {
+        private final LightBoxItemHandlerInternal wrapped;
+
+        LightBoxItemHandlerExternal(LightBoxItemHandlerInternal wrapped) {
+            this.wrapped = wrapped;
+        }
+
+        @Override
+        public int getSlots() {
+            return wrapped.getSlots();
+        }
+
+        @Nonnull
+        @Override
+        public ItemStack getStackInSlot(int slot) {
+            return wrapped.getStackInSlot(slot);
+        }
+
+        @Nonnull
+        @Override
+        public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
+            return wrapped.insertItem(slot, stack, simulate);
+        }
+
+        @Nonnull
+        @Override
+        public ItemStack extractItem(int slot, int amount, boolean simulate) {
+            if (redstoneMode != 0 && !shouldEmitRedstone()) {
+                return ItemStack.EMPTY;
+            } else {
+                return wrapped.extractItem(slot, amount, simulate);
+            }
+        }
+
+        @Override
+        public int getSlotLimit(int slot) {
+            return wrapped.getSlotLimit(slot);
+        }
+
+        @Override
+        public void setStackInSlot(int slot, @Nonnull ItemStack stack) {
+            wrapped.setStackInSlot(slot, stack);
+        }
     }
 }

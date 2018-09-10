@@ -10,7 +10,14 @@ Changes are in reverse chronological order; newest changes at the top.
 #### New
 * Logistics frames now support fuzzy item meta and NBT matching, as well as whitelist/blacklist for filters. This can all be configured with a new side tab on the right of the logistics GUI. Default is whitelist, match meta, ignore NBT, as before.
 #### Updates
-*
+* Speed Upgrades are now slightly less expensive to use in machines in terms of fuel usage and heat generation.  Default multiplier is now 1.65, down from 1.8.  Note that this is exponential: usage is multiplier_value^num_speed_upgrades.
+* The multipliers for Speed Upgrades are now configurable, in the "machine_properties" section of the config: D:speedUpgradeSpeedMultiplier and D:speedUpgradeUsageMultiplier.
+* Several crafting recipes now produce more output:
+  * All logistics frames: 4 frames instead of 1
+  * Pneumatic Cylinder: 2 cylinders instead of 1
+  * All programming puzzle pieces: 8 pieces instead of 4
+* UV Light Box progress rate is now dependent on the exposure level of the PCB it's processing: much faster at low levels, a little slower at high levels.  The overall time it takes to fully expose a PCB (10 minutes with no speed upgrades) is unchanged, but this makes for a more interesting tradeoff of processing speed vs. etching failure chance (previously there was no good reason not to expose a PCB to 100%).
+* When UV Light Box is set to emit a redstone signal at a given exposure level, automated (piped) extraction is only possible when the exposure level is high enough to emit a signal.  This makes for easier automation, but note that vanilla hoppers won't work here due to redstone signal emission; use an Omnidirectional Hopper or some other item transport system.
 #### Fixes
 * Removing a drone or Network API from the programmable controller now resets its digging position, preventing a phantom digging laser being shown.
 * Fixed item loss bug with logistics drones and logistics modules when requesting a specific number of items from a Requester Frame with some (but not all) non-vanilla inventories.
