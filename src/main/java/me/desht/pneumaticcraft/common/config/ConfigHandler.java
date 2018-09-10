@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.config;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerManager;
 import me.desht.pneumaticcraft.lib.Names;
+import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
@@ -142,6 +143,12 @@ public class ConfigHandler {
         public boolean keroseneLampCanUseAnyFuel = true;
         @Config.Comment("Kerosene Lamp fuel efficiency: higher values mean fuel will last longer in the lamp")
         public float keroseneLampFuelEfficiency = 1.0f;
+        @Config.Comment("Speed multiplier per speed upgrade: speed mult = speedUpgradeSpeedMultiplier ^ num_of_speed_upgrades")
+        @Config.RangeDouble(min = 1.0, max = 2.0)
+        public double speedUpgradeSpeedMultiplier = PneumaticValues.DEF_SPEED_UPGRADE_MULTIPLIER;
+        @Config.Comment("Fuel usage / heat gen multiplier per speed upgrade: usage mult = speedUpgradeUsageMultiplier ^ num_of_speed_upgrades")
+        @Config.RangeDouble(min = 1.0, max = 2.0)
+        public double speedUpgradeUsageMultiplier = PneumaticValues.DEF_SPEED_UPGRADE_USAGE_MULTIPLIER;
     }
 
     public static class Advanced {

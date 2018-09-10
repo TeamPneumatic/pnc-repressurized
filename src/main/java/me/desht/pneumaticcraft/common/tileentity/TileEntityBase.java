@@ -12,6 +12,7 @@ import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
+import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.inventory.SyncedField;
 import me.desht.pneumaticcraft.common.item.ItemMachineUpgrade;
 import me.desht.pneumaticcraft.common.item.Itemss;
@@ -71,6 +72,8 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     private TileEntityCache[] tileCache;
     private IBlockState cachedBlockState;
     public boolean preserveUpgradesOnBreak = false; // set to true if shift-wrenched to keep upgrades in the block
+    private float actualSpeedMult = PneumaticValues.DEF_SPEED_UPGRADE_MULTIPLIER;
+    private float actualUsageMult = PneumaticValues.DEF_SPEED_UPGRADE_USAGE_MULTIPLIER;
 
     public TileEntityBase() {
         this(0);
@@ -318,11 +321,11 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     }
 
     public float getSpeedMultiplierFromUpgrades() {
-        return (float) Math.pow(PneumaticValues.SPEED_UPGRADE_MULTIPLIER, Math.min(10, getUpgrades(IItemRegistry.EnumUpgrade.SPEED)));
+        return actualSpeedMult;
     }
 
     public float getSpeedUsageMultiplierFromUpgrades() {
-        return (float) Math.pow(PneumaticValues.SPEED_UPGRADE_USAGE_MULTIPLIER, Math.min(10, getUpgrades(IItemRegistry.EnumUpgrade.SPEED)));
+        return actualUsageMult;
     }
 
     @Override
@@ -648,9 +651,13 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
 
     /**
      * Called when a machine's upgrades have changed in any way.  This is also called from readNBT() when saved upgrades
-     * are deserialized, so it is not guaranteed that the world field is non-null - beware.
+     * are deserialized, so it is not guaranteed that the world field is non-null - beware.  If you override this,
+     * remember to call the super method!
      */
-    protected void onUpgradesChanged() {}
+    protected void onUpgradesChanged() {
+        actualSpeedMult = (float) Math.pow(ConfigHandler.machineProperties.speedUpgradeSpeedMultiplier, Math.min(10, getUpgrades(IItemRegistry.EnumUpgrade.SPEED)));
+        actualUsageMult = (float) Math.pow(ConfigHandler.machineProperties.speedUpgradeUsageMultiplier, Math.min(10, getUpgrades(IItemRegistry.EnumUpgrade.SPEED)));
+    }
 
     public UpgradeCache getUpgradeCache() {
         return upgradeCache;

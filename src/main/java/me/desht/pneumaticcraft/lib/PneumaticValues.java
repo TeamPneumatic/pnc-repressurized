@@ -151,8 +151,8 @@ public class PneumaticValues {
     public static final int DRONE_USAGE_INV = 10;//per stack
     public static final int DRONE_USAGE_ATTACK = 200;//per hit
 
-    public static final float SPEED_UPGRADE_MULTIPLIER = 1.5F;
-    public static final float SPEED_UPGRADE_USAGE_MULTIPLIER = 1.8F;
+    public static final float DEF_SPEED_UPGRADE_MULTIPLIER = 1.5F;
+    public static final float DEF_SPEED_UPGRADE_USAGE_MULTIPLIER = 1.65F;
 
     public static final int RANGE_UPGRADE_HELMET_RANGE_INCREASE = 5;
     public static final double PLASTIC_MIX_RATIO = 0.2;

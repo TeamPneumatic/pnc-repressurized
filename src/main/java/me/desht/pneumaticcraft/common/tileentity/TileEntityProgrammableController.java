@@ -230,6 +230,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
 
     @Override
     protected void onUpgradesChanged() {
+        super.onUpgradesChanged();
         if (getWorld() != null && !getWorld().isRemote) {
             calculateUpgrades();
         }

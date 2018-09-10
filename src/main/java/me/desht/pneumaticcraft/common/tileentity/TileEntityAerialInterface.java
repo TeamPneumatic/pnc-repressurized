@@ -98,6 +98,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase implement
 
     @Override
     protected void onUpgradesChanged() {
+        super.onUpgradesChanged();
         boolean old = dispenserUpgradeInserted;
         dispenserUpgradeInserted = getUpgrades(EnumUpgrade.DISPENSER) > 0;
         if (old != dispenserUpgradeInserted) {
