@@ -11,5 +11,9 @@
         "drone_upgrade": "me.desht.pneumaticcraft.common.recipes.factories.DroneUpgradeRecipeFactory",
         "gun_ammo": "me.desht.pneumaticcraft.common.recipes.factories.GunAmmoRecipeFactory",
         "one_probe": "me.desht.pneumaticcraft.common.recipes.factories.OneProbeRecipeFactory"
+	},
+	"conditions": {
+		"pneumatic_generator_enabled" : "me.desht.pneumaticcraft.common.recipes.factories.conditions.PneumaticGeneratorCondition",
+		"electric_compressor_enabled" : "me.desht.pneumaticcraft.common.recipes.factories.conditions.ElectricCompressorCondition"
 	}
 }

@@ -1,14 +1,18 @@
 {
   "type": "minecraft:crafting_shaped",
   "conditions": [
-	{
-		"type": "forge:mod_loaded",
-  		"modid": "ic2"
-	}
+    {
+      "type": "forge:mod_loaded",
+      "modid": "ic2"
+    },
+    {
+      "type": "pneumaticcraft:electric_compressor_enabled",
+      "value": "true"
+    }
   ],
   "pattern": [
-    "acp", 
-    "frt", 
+    "acp",
+    "frt",
     "agp"
   ],
   "key": {

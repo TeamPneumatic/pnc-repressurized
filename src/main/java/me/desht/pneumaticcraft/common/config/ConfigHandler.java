@@ -41,7 +41,7 @@ public class ConfigHandler {
 
     @Config.Name("recipes")
     @Config.LangKey("gui.config.category.recipes")
-    @Config.Comment("Enable/disable certain recipes (note: better done with CraftTweaker if you have it)")
+    @Config.Comment("Enable/disable certain recipes (note: vanilla recipes can be also managed via CraftTweaker)")
     public static Recipes recipes = new Recipes();
 
     @Config.Name("client")
@@ -165,9 +165,11 @@ public class ConfigHandler {
     }
 
     public static class Recipes {
-        @Config.Comment("Electric Compressor (currently ignored, defined in JSON)")
+        @Config.Comment("Electric Compressor for IC2")
+        @Config.RequiresMcRestart
         public boolean enableElectricCompressorRecipe = true;
-        @Config.Comment("Pneumatic Generator (currently ignored, defined in JSON)")
+        @Config.Comment("Pneumatic Generator for IC2")
+        @Config.RequiresMcRestart
         public boolean enablePneumaticGeneratorRecipe = true;
 //        @Config.Comment("Pneumatic Pump")
 //        public boolean enablePneumaticPumpRecipe = true;
