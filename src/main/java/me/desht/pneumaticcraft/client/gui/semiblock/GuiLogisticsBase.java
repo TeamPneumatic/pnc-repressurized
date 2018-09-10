@@ -3,10 +3,7 @@ package me.desht.pneumaticcraft.client.gui.semiblock;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticContainerBase;
 import me.desht.pneumaticcraft.client.gui.GuiSearcher;
-import me.desht.pneumaticcraft.client.gui.widget.GuiCheckBox;
-import me.desht.pneumaticcraft.client.gui.widget.IGuiWidget;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetFluidStack;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
+import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.inventory.ContainerLogistics;
 import me.desht.pneumaticcraft.common.inventory.SlotPhantom;
@@ -19,15 +16,19 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Slot;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
 import org.apache.commons.lang3.text.WordUtils;
 import org.lwjgl.input.Mouse;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class GuiLogisticsBase<Logistics extends SemiBlockLogistics> extends GuiPneumaticContainerBase {
     protected final Logistics logistics;
@@ -35,6 +36,9 @@ public class GuiLogisticsBase<Logistics extends SemiBlockLogistics> extends GuiP
     private GuiLogisticsLiquidFilter fluidSearchGui;
     private int editingSlot; //either fluid or item search.
     private GuiCheckBox invisible;
+    private GuiCheckBox fuzzyMeta;
+    private GuiCheckBox fuzzyNBT;
+    private GuiCheckBox whitelist;
 
     public GuiLogisticsBase(InventoryPlayer invPlayer, Logistics requester) {
         super(new ContainerLogistics(invPlayer, requester), null, Textures.GUI_LOGISTICS_REQUESTER);
@@ -66,6 +70,21 @@ public class GuiLogisticsBase<Logistics extends SemiBlockLogistics> extends GuiP
             addWidget(new WidgetFluidStack(i, guiLeft + i * 18 + 8, guiTop + 101, logistics.getTankFilter(i)));
         }
         addInfoTab(I18n.format("gui.tab.info." + SemiBlockManager.getKeyForSemiBlock(logistics)));
+
+        GuiAnimatedStat filterTab = addAnimatedStat("gui.logistic_frame.filter_settings", new ItemStack(Blocks.WEB), 0xFF106010, false);
+        List<String> padding = new ArrayList<>();
+        for (int i = 0; i < (logistics.supportsBlacklisting() ? 6 : 4); i++) {
+            padding.add("                           ");
+        }
+        filterTab.setTextWithoutCuttingString(padding);
+        fuzzyMeta = new GuiCheckBox(10, 5, 20, 0xFFFFFFFF, I18n.format("gui.logistic_frame.fuzzyMeta"));
+        filterTab.addWidget(fuzzyMeta);
+        fuzzyNBT = new GuiCheckBox(11, 5, 36, 0xFFFFFFFF, I18n.format("gui.logistic_frame.fuzzyNBT"));
+        filterTab.addWidget(fuzzyNBT);
+        if (logistics.supportsBlacklisting()) {
+            whitelist = new GuiCheckBox(12, 5, 52, 0xFFFFFFFF, I18n.format("gui.logistic_frame.whitelist"));
+            filterTab.addWidget(whitelist);
+        }
     }
 
     @Override
@@ -89,6 +108,10 @@ public class GuiLogisticsBase<Logistics extends SemiBlockLogistics> extends GuiP
     public void updateScreen() {
         super.updateScreen();
         invisible.checked = logistics.isInvisible();
+        fuzzyMeta.checked = logistics.isFuzzyMeta();
+        fuzzyNBT.checked = logistics.isFuzzyNBT();
+        if (logistics.supportsBlacklisting())
+            whitelist.checked = logistics.isWhitelist();
     }
 
     @Override

@@ -9,6 +9,8 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import static me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
+
 public interface ISemiBlock {
 
     World getWorld();
@@ -46,4 +48,6 @@ public interface ISemiBlock {
     }
 
     PacketDescription getDescriptionPacket();
+
+    EnumGuiId getGuiID();
 }

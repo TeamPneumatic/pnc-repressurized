@@ -6,12 +6,20 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
-### 0.7.10-??? (unreleased)
+### 0.8.0-??? (unreleased)
+#### New
+* Logistics frames now support fuzzy item meta and NBT matching, as well as whitelist/blacklist for filters. This can all be configured with a new side tab on the right of the logistics GUI. Default is whitelist, match meta, ignore NBT, as before.
+#### Updates
+*
 #### Fixes
-* Removing a drone or Network API from the programmable controller now resets its digging position, avoiding a phantom digging laser being shown.
+* Removing a drone or Network API from the programmable controller now resets its digging position, preventing a phantom digging laser being shown.
 * Fixed item loss bug with logistics drones and logistics modules when requesting a specific number of items from a Requester Frame with some (but not all) non-vanilla inventories.
+* Logistics Frames can now once more be configured when in item form by right clicking (this is an old 1.7.10 feature that stopped working in the port to 1.12.2).
+* Logistics Frames item tooltips now once more show their filter settings when shift is held (again, old 1.7.10 feature).
+* WAILA/TOP info now shows detailed Logistics Frame filter information when player sneaks.
+* Logistics Requester Frame now correctly requests fluids.
 
-### 0.7.9-259 (28 Aug 2018)
+### 0.7.8-259 (28 Aug 2018)
 #### Updates
 * Breaking any PneumaticCraft block by shift-clicking with any wrench will now keep any installed upgrades in the dropped block. Breaking the block with a pickaxe drops the upgrades, as before.
 * Info tab on the GUI for all Logistics frames (shown by right-clicking with Logistics Configurator) has better descriptions for each frame type.
@@ -23,7 +31,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fix greedy Amadron drones stealing all the fluid from your tank instead of the advertised amount.
 * Fix intermittent Amadron tablet desync (caused when a periodic offer which happened to match a static offer was shuffled out)
 * Drones now once more render their targeting laser while digging blocks like they did in 1.7.10 (actually they always did, but with an alpha value of 0...)
-* GUI redstone control tab: the redstone button no longer sometime renders excessively wide
+* GUI redstone control tab: the redstone button no longer sometimes renders excessively wide.
 
 ### 0.7.7-255 (16 Aug 2018)
 #### Fixes

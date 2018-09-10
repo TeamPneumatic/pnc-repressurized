@@ -38,6 +38,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.apache.commons.lang3.Validate;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -73,20 +75,22 @@ public class SemiBlockManager {
     }
 
     static void registerSemiBlock(String key, Class<? extends ISemiBlock> semiBlock) {
-        // called in preInit
-        if (registeredTypes.containsKey(key)) {
-            throw new IllegalArgumentException("Duplicate registration key: " + key);
-        }
-        registeredTypes.put(key, semiBlock);
-
-        // create & stash the item objects for registration when the registry event is received
-        // in onItemRegistration() below
-        ItemSemiBlockBase item = new ItemSemiBlockBase(key);
-        registerSemiBlockToItemMapping(semiBlock, item);
+        registerSemiBlock(key, semiBlock, ItemSemiBlockBase.class);
     }
 
-    static void registerSemiBlockToItemMapping(Class<? extends ISemiBlock> semiBlock, Item item) {
-        semiBlockToItems.put(semiBlock, (ItemSemiBlockBase) item);
+    static void registerSemiBlock(String key, Class<? extends ISemiBlock> semiBlock, Class<? extends ItemSemiBlockBase> itemClass) {
+        // called in preInit phase
+        Validate.isTrue(!registeredTypes.containsKey(key), "Duplicate registration key: " + key);
+        registeredTypes.put(key, semiBlock);
+
+        // stash the item objects for registration when the registry event is received in onItemRegistration()
+        try {
+            Constructor<? extends ItemSemiBlockBase> ctor = itemClass.getDeclaredConstructor(String.class);
+            semiBlockToItems.put(semiBlock, itemClass.cast(ctor.newInstance(key)));
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
+            Log.error("Failed to register semiblock " + key + " of class " + semiBlock.getCanonicalName());
+            e.printStackTrace();
+        }
     }
 
     static ItemSemiBlockBase getItemForSemiBlock(ISemiBlock semiBlock) {
@@ -312,10 +316,20 @@ public class SemiBlockManager {
                 boolean success = interact(event, curItem, event.getPos());
                 
                 //If the block can't be placed in the pos, then try to place it next to the block.
-                if(!success && event.getFace() != null)
+                if (!success && event.getFace() != null)
                     success = interact(event, curItem, event.getPos().offset(event.getFace()));
-                
-                if(success) event.setCanceled(true);
+
+                // Still can't be placed? If it has a GUI, open it.
+                if (!success) {
+                    ISemiBlock block = ((ISemiBlockItem) curItem.getItem()).getSemiBlock(event.getWorld(), null, curItem);
+                    if (block.getGuiID() != null) {
+                        event.getEntityPlayer().openGui(PneumaticCraftRepressurized.instance, block.getGuiID().ordinal(), event.getWorld(),
+                                event.getPos().getX(), event.getPos().getY(), event.getPos().getZ());
+                        success = true;
+                    }
+                }
+                if (success) event.setCanceled(true);
+
             }
         } else if (event.getWorld().isRemote && curItem.getItem() instanceof ISemiBlockItem) {
             event.setCancellationResult(EnumActionResult.SUCCESS);

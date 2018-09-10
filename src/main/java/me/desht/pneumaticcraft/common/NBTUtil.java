@@ -372,4 +372,20 @@ public class NBTUtil {
     public static BlockPos getPos(NBTTagCompound tag) {
         return new BlockPos(tag.getInteger("x"), tag.getInteger("y"), tag.getInteger("z"));
     }
+
+    public static boolean fromTag(NBTTagCompound tag, String name, boolean def) {
+        return tag.hasKey(name) ? tag.getBoolean(name) : def;
+    }
+
+    public static int fromTag(NBTTagCompound tag, String name, int def) {
+        return tag.hasKey(name) ? tag.getInteger(name) : def;
+    }
+
+    public static String fromTag(NBTTagCompound tag, String name, String def) {
+        return tag.hasKey(name) ? tag.getString(name) : def;
+    }
+
+    public static float fromTag(NBTTagCompound tag, String name, float def) {
+        return tag.hasKey(name) ? tag.getFloat(name) : def;
+    }
 }

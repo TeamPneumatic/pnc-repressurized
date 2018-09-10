@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.common.thirdparty.waila;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 import mcp.mobius.waila.api.IWailaDataProvider;
-import me.desht.pneumaticcraft.common.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockBasic;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -16,8 +15,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 
 import java.util.List;
-
-import crafttweaker.mc1120.data.NBTConverter;
 
 public class WailaSemiBlockHandler implements IWailaDataProvider {
     @Override
@@ -37,7 +34,7 @@ public class WailaSemiBlockHandler implements IWailaDataProvider {
         List<SemiBlockBasic> semiBlocks = SemiBlockManager.getInstance(accessor.getWorld()).getSemiBlocksAsList(SemiBlockBasic.class, accessor.getWorld(), accessor.getPosition());
         NBTTagList tagList = accessor.getNBTData().getTagList("semiBlocks", Constants.NBT.TAG_COMPOUND);
         for(int i = 0; i < semiBlocks.size(); i++){
-            semiBlocks.get(i).addWailaTooltip(currenttip, tagList.getCompoundTagAt(i));
+            semiBlocks.get(i).addWailaTooltip(currenttip, tagList.getCompoundTagAt(i), accessor.getPlayer().isSneaking());
         }
         return currenttip;
     }

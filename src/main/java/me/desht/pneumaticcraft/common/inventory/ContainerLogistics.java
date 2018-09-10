@@ -36,23 +36,14 @@ public class ContainerLogistics extends ContainerPneumaticBase {
                 }
             }
 
-            // Add the player's inventory slots to the container
-            for (int inventoryRowIndex = 0; inventoryRowIndex < 3; ++inventoryRowIndex) {
-                for (int inventoryColumnIndex = 0; inventoryColumnIndex < 9; ++inventoryColumnIndex) {
-                    addSlotToContainer(new Slot(inventoryPlayer, inventoryColumnIndex + inventoryRowIndex * 9 + 9, 8 + inventoryColumnIndex * 18, 134 + inventoryRowIndex * 18));
-                }
-            }
-
-            // Add the player's action bar slots to the container
-            for (int actionBarSlotIndex = 0; actionBarSlotIndex < 9; ++actionBarSlotIndex) {
-                addSlotToContainer(new Slot(inventoryPlayer, actionBarSlotIndex, 8 + actionBarSlotIndex * 18, 192));
-            }
+            addPlayerSlots(inventoryPlayer, 134);
         }
     }
 
     public static SemiBlockLogistics getLogistics(EntityPlayer player, ItemStack itemRequester) {
         if (itemRequester.getItem() instanceof ItemLogisticsFrame) {
             SemiBlockLogistics logistics = (SemiBlockLogistics) SemiBlockManager.getSemiBlockForKey(((ItemLogisticsFrame) itemRequester.getItem()).semiBlockId);
+            if (logistics == null) return null;
             logistics.initialize(player.world, new BlockPos(0, 0, 0));
             logistics.onPlaced(player, itemRequester, null);
             return logistics;
@@ -66,25 +57,11 @@ public class ContainerLogistics extends ContainerPneumaticBase {
      */
     @Override
     public void onContainerClosed(EntityPlayer player) {
-        if (itemContainer && logistics != null) {
+        if (itemContainer && logistics != null && player.getHeldItemMainhand().getItem() instanceof ItemLogisticsFrame) {
             NonNullList<ItemStack> drops = NonNullList.create();
             logistics.addDrops(drops);
             NBTTagCompound settingTag = drops.get(0).getTagCompound();
-            if (player.getHeldItemMainhand().hasTagCompound()) {
-                NBTTagCompound itemTag = player.getHeldItemMainhand().getTagCompound();
-                if (settingTag != null) {
-                    itemTag.setTag("filters", settingTag.getTagList("filters", 10));
-                    itemTag.setTag("fluidFilters", settingTag.getTagList("fluidFilters", 10));
-                    itemTag.setBoolean("invisible", settingTag.getBoolean("invisible"));
-                } else {
-                    itemTag.removeTag("filters");
-                    itemTag.removeTag("fluidFilters");
-                    itemTag.removeTag("invisible");
-
-                }
-            } else {
-                player.getHeldItemMainhand().setTagCompound(settingTag);
-            }
+            player.getHeldItemMainhand().setTagCompound(settingTag != null ? settingTag.copy() : null);
         }
     }
 
@@ -105,7 +82,8 @@ public class ContainerLogistics extends ContainerPneumaticBase {
     @Override
     public ItemStack transferStackInSlot(EntityPlayer par1EntityPlayer, int slotIndex) {
         Slot srcSlot = inventorySlots.get(slotIndex);
-        if (slotIndex >= 27 && srcSlot != null && srcSlot.getHasStack()) {
+        if (slotIndex >= playerSlotsStart && srcSlot != null && srcSlot.getHasStack()) {
+            // shift-click from player inventory into filter
             ItemStack stackInSlot = srcSlot.getStack();
             for (int i = 0; i < 27; i++) {
                 Slot slot = inventorySlots.get(i);

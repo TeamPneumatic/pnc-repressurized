@@ -18,6 +18,8 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
+import static me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
+
 public abstract class SemiBlockBasic<TTileEntity extends TileEntity> implements ISemiBlock, IDescSynced, IGUIButtonSensitive {
     private final Class<TTileEntity> tileClass;
     protected World world;
@@ -174,7 +176,11 @@ public abstract class SemiBlockBasic<TTileEntity extends TileEntity> implements 
         return false;
     }
 
-    public void addWailaTooltip(List<String> curInfo, NBTTagCompound tag) {
+    public EnumGuiId getGuiID() {
+        return null;
+    }
+
+    public void addWailaTooltip(List<String> curInfo, NBTTagCompound tag, boolean extended) {
         curInfo.add(TextFormatting.YELLOW + "[" + I18n.translateToLocalFormatted(SemiBlockManager.getItemForSemiBlock(this).getUnlocalizedName() + ".name") + "]");
     }
 

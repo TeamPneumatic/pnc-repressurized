@@ -139,7 +139,6 @@ public class PneumaticCraftRepressurized {
         NetworkHandler.init();
 
         Fluids.init();
-        SemiBlockInitializer.init();
         CraftingRegistrator.init();
         HackableHandler.addDefaultEntries();
         SensorHandler.getInstance().init();

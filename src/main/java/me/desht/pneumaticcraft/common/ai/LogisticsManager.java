@@ -22,7 +22,7 @@ import java.util.PriorityQueue;
 
 public class LogisticsManager {
 
-    private final List<SemiBlockLogistics>[] logistics = new List[4];
+    private final List<SemiBlockLogistics>[] logistics = new List[4];  // 4 priority levels
 
     public LogisticsManager() {
         for (int i = 0; i < logistics.length; i++) {
@@ -43,7 +43,7 @@ public class LogisticsManager {
     public PriorityQueue<LogisticsTask> getTasks(Object holdingStack) {
         ItemStack item = holdingStack instanceof ItemStack ? (ItemStack) holdingStack : null;
         FluidStack fluid = holdingStack instanceof FluidStack ? (FluidStack) holdingStack : null;
-        PriorityQueue<LogisticsTask> tasks = new PriorityQueue<LogisticsTask>();
+        PriorityQueue<LogisticsTask> tasks = new PriorityQueue<>();
         for (int priority = logistics.length - 1; priority >= 0; priority--) {
             for (SemiBlockLogistics requester : logistics[priority]) {
                 for (int i = 0; i < priority; i++) {
@@ -75,9 +75,6 @@ public class LogisticsManager {
         }
         return tasks;
     }
-
-    //curAI = new DroneAILiquidImport(drone, new FakeWidgetLogistics(provider.getPos(), providingStack));
-    // transportingFluid = new FluidStackWrapper(providingStack);
 
     private void tryProvide(SemiBlockLogistics provider, SemiBlockLogistics requester, PriorityQueue<LogisticsTask> tasks) {
         IItemHandler providingInventory = IOHelper.getInventoryForTE(provider.getTileEntity());
@@ -115,7 +112,7 @@ public class LogisticsManager {
         }
     }
 
-    public static int getRequestedAmount(SemiBlockLogistics requester, ItemStack providingStack) {
+    private static int getRequestedAmount(SemiBlockLogistics requester, ItemStack providingStack) {
         TileEntity te = requester.getTileEntity();
         if (te == null) return 0;
 
@@ -134,7 +131,7 @@ public class LogisticsManager {
         return providingStack.getCount();
     }
 
-    public static int getRequestedAmount(SemiBlockLogistics requester, FluidStack providingStack) {
+    private static int getRequestedAmount(SemiBlockLogistics requester, FluidStack providingStack) {
         int requestedAmount = requester instanceof ISpecificRequester ? ((ISpecificRequester) requester).amountRequested(providingStack) : providingStack.amount;
         if (requestedAmount == 0) return 0;
         providingStack = providingStack.copy();
@@ -165,7 +162,7 @@ public class LogisticsManager {
         public final ItemStack transportingItem;
         public final FluidStackWrapper transportingFluid;
 
-        LogisticsTask(SemiBlockLogistics provider, SemiBlockLogistics requester, ItemStack transportingItem) {
+        LogisticsTask(SemiBlockLogistics provider, SemiBlockLogistics requester, @Nonnull ItemStack transportingItem) {
             this.provider = provider;
             this.requester = requester;
             this.transportingItem = transportingItem;

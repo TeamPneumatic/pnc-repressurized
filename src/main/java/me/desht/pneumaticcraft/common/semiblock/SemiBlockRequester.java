@@ -79,7 +79,7 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
                 int count = 0;
                 for (int i = 0; i < inv.getSlots(); i++) {
                     ItemStack s = inv.getStackInSlot(i);
-                    if (!s.isEmpty() && isItemEqual(s, stack)) {
+                    if (!s.isEmpty() && tryMatch(s, stack)) {
                         count += s.getCount();
                     }
                 }
@@ -94,7 +94,7 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
         int requesting = 0;
         for (int i = 0; i < getFilters().getSlots(); i++) {
             ItemStack requestingStack = getFilters().getStackInSlot(i);
-            if (!requestingStack.isEmpty() && isItemEqual(stack, requestingStack)) {
+            if (!requestingStack.isEmpty() && tryMatch(stack, requestingStack)) {
                 requesting += requestingStack.getCount();
             }
         }
@@ -119,7 +119,7 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
                     if (count > 0) break;
                 }
             }
-            if (count == 0) return 0;
+//            if (count == 0) return 0;
             count += getIncomingFluid(stack.getFluid());
             return Math.max(0, Math.min(stack.amount, totalRequestingAmount - count));
         }
@@ -150,6 +150,16 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
     @Override
     public boolean canFilterStack() {
         return true;
+    }
+
+    @Override
+    public boolean supportsBlacklisting() {
+        return false;
+    }
+
+    @Override
+    protected boolean shouldSaveNBT() {
+        return aeMode || super.shouldSaveNBT();
     }
 
     /*

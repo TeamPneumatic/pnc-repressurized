@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.semiblock;
 
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
-import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
+import me.desht.pneumaticcraft.common.NBTUtil;
 import me.desht.pneumaticcraft.common.item.ItemLogisticsFrame;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.DescSynced;
@@ -34,6 +34,12 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class SemiBlockLogistics extends SemiBlockBasic<TileEntity> {
+    private static final String NBT_INVISIBLE = "invisible";
+    private static final String NBT_FUZZY_META = "fuzzyMeta";
+    private static final String NBT_FUZZY_NBT = "fuzzyNBT";
+    private static final String NBT_WHITELIST = "whitelist";
+    private static final String NBT_FILTERS = "filters";
+    private static final String NBT_FLUID_FILTERS = "fluidFilters";
     private final Map<ItemStack, Integer> incomingStacks = new HashMap<>();
     private final Map<FluidStackWrapper, Integer> incomingFluid = new HashMap<>();
     private final ItemStackHandler filters = new ItemStackHandler(27);
@@ -42,6 +48,12 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic<TileEntity> {
     @DescSynced
     @GuiSynced
     private boolean invisible;
+    @GuiSynced
+    private boolean fuzzyMeta = false;  // TODO: remove in 1.13
+    @GuiSynced
+    private boolean fuzzyNBT = true;
+    @GuiSynced
+    private boolean whitelist = true;
     private int alpha = 255;
 
     public SemiBlockLogistics() {
@@ -64,10 +76,6 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic<TileEntity> {
 
     public boolean shouldProvideTo(int level) {
         return true;
-    }
-
-    public void setInvisible(boolean invisible) {
-        this.invisible = invisible;
     }
 
     public boolean isInvisible() {
@@ -148,7 +156,7 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic<TileEntity> {
     public int getIncomingItems(ItemStack stack) {
         int count = 0;
         for (ItemStack s : incomingStacks.keySet()) {
-            if (isItemEqual(s, stack)) {
+            if (tryMatch(s, stack)) {
                 count += s.getCount();
             }
         }
@@ -158,7 +166,7 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic<TileEntity> {
     @Override
     public void writeToNBT(NBTTagCompound tag) {
         super.writeToNBT(tag);
-        tag.setTag("filters", filters.serializeNBT());
+        tag.setTag(NBT_FILTERS, filters.serializeNBT());
 
         NBTTagList tagList = new NBTTagList();
         for (int i = 0; i < fluidFilters.length; i++) {
@@ -170,22 +178,28 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic<TileEntity> {
                 tagList.appendTag(t);
             }
         }
-        tag.setTag("fluidFilters", tagList);
+        tag.setTag(NBT_FLUID_FILTERS, tagList);
 
-        tag.setBoolean("invisible", invisible);
+        tag.setBoolean(NBT_INVISIBLE, invisible);
+        tag.setBoolean(NBT_FUZZY_META, fuzzyMeta);
+        tag.setBoolean(NBT_FUZZY_NBT, fuzzyNBT);
+        tag.setBoolean(NBT_WHITELIST, whitelist);
     }
 
     @Override
     public void readFromNBT(NBTTagCompound tag) {
         super.readFromNBT(tag);
-        filters.deserializeNBT(tag.getCompoundTag("filters"));
+        filters.deserializeNBT(tag.getCompoundTag(NBT_FILTERS));
 
-        NBTTagList tagList = tag.getTagList("fluidFilters", 10);
+        NBTTagList tagList = tag.getTagList(NBT_FLUID_FILTERS, 10);
         for (int i = 0; i < tagList.tagCount(); i++) {
             fluidFilters[tagList.getCompoundTagAt(i).getInteger("index")].readFromNBT(tagList.getCompoundTagAt(i));
         }
 
-        invisible = tag.getBoolean("invisible");
+        invisible = NBTUtil.fromTag(tag, NBT_INVISIBLE, false);
+        fuzzyMeta = NBTUtil.fromTag(tag, NBT_FUZZY_META, false);
+        fuzzyNBT = NBTUtil.fromTag(tag, NBT_FUZZY_NBT, true);
+        whitelist = NBTUtil.fromTag(tag, NBT_WHITELIST, true);
     }
 
     public void setFilter(int filterIndex, FluidStack stack) {
@@ -200,28 +214,28 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic<TileEntity> {
         return filters;
     }
 
+    /**
+     * Check if any settings are non-default and thus need to be saved as NBT on the logistics item
+     *
+     * @return true if NBT should be saved
+     */
+    protected boolean shouldSaveNBT() {
+        for (int i = 0; i < filters.getSlots(); i++) {
+            if (!filters.getStackInSlot(i).isEmpty()) return true;
+        }
+
+        for (FluidTank fluidFilter : fluidFilters) {
+            if (fluidFilter.getFluidAmount() > 0) return true;
+        }
+
+        return invisible || fuzzyMeta || !fuzzyNBT || !whitelist;
+    }
+
     @Override
     public void addDrops(NonNullList<ItemStack> drops) {
         super.addDrops(drops);
 
-        boolean shouldAddTag = false;
-        for (int i = 0; i < filters.getSlots(); i++) {
-            if (!filters.getStackInSlot(i).isEmpty()) { //Only set a tag when there are requests.
-                shouldAddTag = true;
-                break;
-            }
-        }
-
-        for (FluidTank fluidFilter : fluidFilters) {
-            if (fluidFilter.getFluidAmount() > 0) {
-                shouldAddTag = true;
-                break;
-            }
-        }
-
-        if (invisible) shouldAddTag = true;
-
-        if (shouldAddTag) {
+        if (shouldSaveNBT()) {
             ItemStack drop = drops.get(0);
             NBTTagCompound tag = new NBTTagCompound();
             writeToNBT(tag);
@@ -246,31 +260,37 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic<TileEntity> {
         return true;
     }
 
-    public EnumGuiId getGuiID() {
-        return null;
-    }
-
     public boolean canFilterStack() {
         return false;
     }
 
-    protected boolean isItemEqual(ItemStack s1, ItemStack s2) {
-        return s1.isItemEqual(s2);
+    boolean tryMatch(ItemStack s1, ItemStack s2) {
+        boolean matched;
+        if (!fuzzyMeta && !fuzzyNBT) {
+            matched = ItemStack.areItemStacksEqual(s1, s2);
+        } else if (fuzzyMeta && !fuzzyNBT) {
+            matched = !s1.isEmpty() && s1.getItem() == s2.getItem() && ItemStack.areItemStackTagsEqual(s1, s2);
+        } else if (!fuzzyMeta) {
+            matched = s1.isItemEqual(s2);
+        } else {
+            matched = !s1.isEmpty() && s1.getItem() == s2.getItem();
+        }
+        return matched == whitelist;
     }
 
-    protected boolean passesFilter(ItemStack stack) {
+    boolean passesFilter(ItemStack stack) {
         boolean hasStack = false;
         for (int i = 0; i < filters.getSlots(); i++) {
             ItemStack s = filters.getStackInSlot(i);
             if (!s.isEmpty()) {
-                if (isItemEqual(s, stack)) return true;
+                if (tryMatch(s, stack)) return true;
                 hasStack = true;
             }
         }
         return !hasStack;
     }
 
-    protected boolean passesFilter(Fluid fluid) {
+    boolean passesFilter(Fluid fluid) {
         boolean hasFilter = false;
         for (FluidTank filter : fluidFilters) {
             if (filter.getFluidAmount() > 0) {
@@ -285,22 +305,44 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic<TileEntity> {
     public void handleGUIButtonPress(int guiID, EntityPlayer player) {
         if (guiID == 9) {
             invisible = !invisible;
+        } else if (guiID == 10) {
+            fuzzyMeta = !fuzzyMeta;
+        } else if (guiID == 11) {
+            fuzzyNBT = !fuzzyNBT;
+        } else if (guiID == 12 && supportsBlacklisting()) {
+            whitelist = !whitelist;
         }
     }
 
     @Override
-    public void addWailaTooltip(List<String> curInfo, NBTTagCompound tag) {
-        super.addWailaTooltip(curInfo, tag);
-        // readFromNBT(tag);
-        NonNullList<ItemStack> drops = NonNullList.create();
-        addDrops(drops);
-        drops.get(0).setTagCompound(tag);
-        ItemLogisticsFrame.addTooltip(drops.get(0), PneumaticCraftRepressurized.proxy.getClientWorld(), curInfo, true);
+    public void addWailaTooltip(List<String> curInfo, NBTTagCompound tag, boolean extended) {
+        super.addWailaTooltip(curInfo, tag, extended);
+        if (extended) {
+            NonNullList<ItemStack> drops = NonNullList.create();
+            addDrops(drops);
+            ItemLogisticsFrame.addTooltip(drops.get(0), PneumaticCraftRepressurized.proxy.getClientWorld(), curInfo, true);
+        }
     }
 
     @Override
     public void addWailaInfoToTag(NBTTagCompound tag) {
         writeToNBT(tag);
+    }
+
+    public boolean isFuzzyMeta() {
+        return fuzzyMeta;
+    }
+
+    public boolean isFuzzyNBT() {
+        return fuzzyNBT;
+    }
+
+    public boolean isWhitelist() {
+        return whitelist;
+    }
+
+    public boolean supportsBlacklisting() {
+        return true;
     }
 
     public static class FluidStackWrapper {

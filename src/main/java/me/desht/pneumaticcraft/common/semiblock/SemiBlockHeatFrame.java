@@ -195,8 +195,8 @@ public class SemiBlockHeatFrame extends SemiBlockBasic<TileEntity> implements IH
     }
 
     @Override
-    public void addWailaTooltip(List<String> curInfo, NBTTagCompound tag) {
-        super.addWailaTooltip(curInfo, tag);
+    public void addWailaTooltip(List<String> curInfo, NBTTagCompound tag, boolean extended) {
+        super.addWailaTooltip(curInfo, tag, extended);
         // WAILA sync's the temperature via NBT, TOP runs serverside and gets it here
         int temp = tag.hasKey("temp") ? tag.getInteger("temp") : (int) logic.getTemperature();
         curInfo.add(I18n.format("waila.temperature", temp - 273));

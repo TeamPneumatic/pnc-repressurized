@@ -36,9 +36,9 @@ import java.util.List;
 import java.util.function.Function;
 
 public class TOPCallback implements Function<ITheOneProbe, Void> {
-    public static ITheOneProbe probe;
+    private static ITheOneProbe probe;
 
-    public static int elementPressure;
+    static int elementPressure;
 
     @Override
     public Void apply(ITheOneProbe theOneProbe) {
@@ -59,9 +59,7 @@ public class TOPCallback implements Function<ITheOneProbe, Void> {
                     ITOPInfoProvider provider = (ITOPInfoProvider) blockState.getBlock();
                     provider.addProbeInfo(mode, probeInfo, player, world, blockState, data);
                 }
-                SemiBlockManager.getInstance(world).getSemiBlocks(world, data.getPos()).forEach(semiBlock ->{
-                    handleSemiblock(mode, probeInfo, semiBlock);
-                });
+                SemiBlockManager.getInstance(world).getSemiBlocks(world, data.getPos()).forEach(semiBlock -> handleSemiblock(mode, probeInfo, semiBlock));
             }
         });
 
@@ -111,10 +109,10 @@ public class TOPCallback implements Function<ITheOneProbe, Void> {
         }
     }
 
-    public static void handleSemiblock(ProbeMode mode, IProbeInfo probeInfo, ISemiBlock semiBlock) {
+    private static void handleSemiblock(ProbeMode mode, IProbeInfo probeInfo, ISemiBlock semiBlock) {
         List<String> currenttip = new ArrayList<>();
         if (semiBlock instanceof SemiBlockBasic) {
-            ((SemiBlockBasic) semiBlock).addWailaTooltip(currenttip, new NBTTagCompound());
+            ((SemiBlockBasic) semiBlock).addWailaTooltip(currenttip, new NBTTagCompound(), mode == ProbeMode.EXTENDED);
         }
         for (String s : currenttip) {
             probeInfo.text(s);
