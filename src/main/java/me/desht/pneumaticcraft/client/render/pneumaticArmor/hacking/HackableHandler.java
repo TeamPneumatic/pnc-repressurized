@@ -76,6 +76,7 @@ public class HackableHandler {
         manager.addHackable(EntityEnderman.class, HackableEnderman.class);
         manager.addHackable(EntityBat.class, HackableBat.class);
         manager.addHackable(EntityHorse.class, HackableHorse.class);
+        manager.addHackable(EntityShulker.class, HackableShulker.class);
     }
 
     public static IHackableEntity getHackableForEntity(Entity entity, EntityPlayer player) {
