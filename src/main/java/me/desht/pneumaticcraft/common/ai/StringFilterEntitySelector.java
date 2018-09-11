@@ -5,18 +5,17 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.entity.Entity;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class StringFilterEntitySelector implements Predicate<Entity> {
 
-    private List<String> filter = new ArrayList<String>();
+    private List<String> filter = new ArrayList<>();
 
     @Override
     public boolean apply(Entity entity) {
-        List<String> filte = getFilter();
-        for (String filt : filte) {
-            if (PneumaticCraftUtils.isEntityValidForFilter(filt, entity)) return true;
+        for (String f : getFilter()) {
+            if (PneumaticCraftUtils.isEntityValidForFilter(f, entity)) return true;
         }
         return false;
     }
@@ -26,7 +25,7 @@ public class StringFilterEntitySelector implements Predicate<Entity> {
     }
 
     public StringFilterEntitySelector setFilter(String filter) {
-        this.filter = Arrays.asList(filter);
+        this.filter = Collections.singletonList(filter);
         return this;
     }
 

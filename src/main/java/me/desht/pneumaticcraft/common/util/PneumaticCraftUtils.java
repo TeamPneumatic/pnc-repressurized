@@ -61,6 +61,7 @@ import java.util.stream.Stream;
 public class PneumaticCraftUtils {
     private static Random rand = new Random();
     private static final List<Item> inventoryItemBlacklist = new ArrayList<Item>();
+    private static String lastEntityFilterError = "";
 
     /**
      * Returns the ForgeDirection of the facing of the entity given.
@@ -587,20 +588,35 @@ public class PneumaticCraftUtils {
 
     public static boolean isEntityValidForFilter(String filter, Entity entity) {
         try {
+            lastEntityFilterError = "";
             return isEntityValidForFilterUnsafe(filter, entity);
         } catch (IllegalArgumentException e) {
+            lastEntityFilterError = e.getMessage();
         }
         return false;
     }
 
-    public static boolean isEntityValidForFilterUnsafe(String filter, Entity entity) throws IllegalArgumentException {
-        if (filter == null) return true;
-        if (StringUtils.countMatches(filter, "(") != StringUtils.countMatches(filter, ")"))
+    private static boolean isEntityValidForFilterUnsafe(String filter, Entity entity) throws IllegalArgumentException {
+        if (filter == null || filter.isEmpty()) {
+            return true;
+        }
+        return Arrays.stream(filter.split(";")).anyMatch(element -> isElementValidForFilter(element.trim(), entity));
+    }
+
+    private static boolean isElementValidForFilter(String element, Entity entity) throws  IllegalArgumentException {
+        if (StringUtils.countMatches(element, "(") != StringUtils.countMatches(element, ")")) {
             throw new IllegalArgumentException("Not an equal amount of opening and closing braces");
-        String[] splits = filter.split("[(),]");
-        for (int i = 0; i < splits.length; i++)
+        }
+
+        String[] splits = element.split("[(),]");
+        for (int i = 0; i < splits.length; i++) {
             splits[i] = splits[i].trim();
-        if (!isEntityValidForName(splits[0], entity)) return false;
+        }
+
+        if (!isEntityValidForName(splits[0], entity)) {
+            return false;
+        }
+
         for (int i = 1; i < splits.length; i++) {
             String[] modifier = splits[i].split("=");
             if (modifier.length == 2) {

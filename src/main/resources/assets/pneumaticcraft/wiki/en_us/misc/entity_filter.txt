@@ -14,3 +14,6 @@ Creeper --> allows Creepers only
 MineMaarten --> allows MineMaarten only
 c* --> allows any entity starting with the letter 'c' only (like Creepers, or Cows).
 *pig* --> allows any entity that includes 'pig' in the name only (like a Pig or Zombie Pigman).
+
+You can specify a sequence of filters with the ";" (semicolon) separator - this is a "match any" function.
+e.g. "creeper;zombie" will match both Creepers and Zombies.
