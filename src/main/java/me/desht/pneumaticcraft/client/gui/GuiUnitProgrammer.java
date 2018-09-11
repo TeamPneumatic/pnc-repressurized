@@ -295,9 +295,11 @@ public class GuiUnitProgrammer extends GuiScreen {
     }
 
     public void gotoPiece(IProgWidget widget) {
-        scaleScroll.currentScroll = 0;
-        lastZoom = 0;
-        translatedX = -widget.getX() * 2 + areaWidth / 2 - guiLeft;
-        translatedY = -widget.getY() * 2 + areaHeight / 2 - guiTop;
+        if (widget != null) {
+            scaleScroll.currentScroll = 0;
+            lastZoom = 0;
+            translatedX = -widget.getX() * 2 + areaWidth / 2 - guiLeft;
+            translatedY = -widget.getY() * 2 + areaHeight / 2 - guiTop;
+        }
     }
 }

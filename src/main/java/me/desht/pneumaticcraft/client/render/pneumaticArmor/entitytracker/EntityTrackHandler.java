@@ -111,8 +111,14 @@ public class EntityTrackHandler {
         public void addInfo(Entity entity, List<String> curInfo) {
             curInfo.add("Owner: " + ((EntityDrone) entity).playerName);
             curInfo.add("Routine: " + ((EntityDrone) entity).getLabel());
-            if (DroneDebugUpgradeHandler.enabledForPlayer(PneumaticCraftRepressurized.proxy.getClientPlayer()) && NBTUtil.getInteger(PneumaticCraftRepressurized.proxy.getClientPlayer().getItemStackFromSlot(EntityEquipmentSlot.HEAD), NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE) != entity.getEntityId()) {
-                curInfo.add(TextFormatting.RED + "Press '" + Keyboard.getKeyName(KeyHandler.getInstance().keybindDebuggingDrone.getKeyCode()) + "' to debug");
+            EntityPlayer player = PneumaticCraftRepressurized.proxy.getClientPlayer();
+            if (DroneDebugUpgradeHandler.enabledForPlayer(player)) {
+                if (NBTUtil.getInteger(player.getItemStackFromSlot(EntityEquipmentSlot.HEAD), NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE) == entity.getEntityId()) {
+                    curInfo.add(TextFormatting.GOLD + "Debugging this drone");
+                    curInfo.add(TextFormatting.GOLD + "Press [" + Keyboard.getKeyName(KeyHandler.getInstance().keybindOpenOptions.getKeyCode()) + "] for debugger");
+                } else {
+                    curInfo.add(TextFormatting.GOLD + "Press [" + Keyboard.getKeyName(KeyHandler.getInstance().keybindDebuggingDrone.getKeyCode()) + "] to debug");
+                }
             }
         }
     }

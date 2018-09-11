@@ -766,6 +766,9 @@ gui.progWidget.condition.evaluatedFalse=Condition was evaluated false.
 gui.progWidget.jump.nowhereToJump=Nowhere to jump. Going back to Start.
 gui.progWidget.debug.hasPositions=This contains positions that can be showed.
 gui.progWidget.debug.clickToShow=Click to show the positions permanently.
+gui.progWidget.debug.showStart=Show Start Widget
+gui.progWidget.debug.showActive=Show Active Widget
+gui.progWidget.debug.followActive=Follow Active Widget
 gui.progWidget.harvest.debug.missingHoe=No damageable hoe found.
 gui.progWidget.dig.debug.missingDiggingTool=No damageable digging tool found.
 

@@ -246,7 +246,7 @@ public class GuiUtils {
             x = (screen.width - boxWidth) / 2;
             y = (screen.height - boxHeight) / 2;
         }
-        GlStateManager.translate(0, 0, 300);
+        GlStateManager.translate(0, 0, 400);
         Gui.drawRect(x - 4, y - 4, x + boxWidth + 8, y + boxHeight + 8, 0xC0000000);
         Gui.drawRect(x - 4, y - 4, x + boxWidth + 8, y - 3, 0xFF808080);
         Gui.drawRect(x - 4, y + boxHeight + 8, x + boxWidth + 8, y + boxHeight + 9, 0xFF808080);

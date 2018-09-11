@@ -126,6 +126,13 @@ public class GuiHelmetMainScreen extends GuiPneumaticScreenBase implements IGuiS
     }
 
     @Override
+    public void updateScreen() {
+        super.updateScreen();
+        IOptionPage optionPage = upgradeOptions.get(pageNumber).page;
+        optionPage.updateScreen();
+    }
+
+    @Override
     public void keyTyped(char par1, int par2) throws IOException {
         super.keyTyped(par1, par2);
         upgradeOptions.get(pageNumber).page.keyTyped(par1, par2);

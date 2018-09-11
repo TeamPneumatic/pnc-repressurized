@@ -240,6 +240,7 @@ public class RenderTarget {
         if (isInitialized() && isPlayerLookingAtTarget() && entity instanceof EntityDrone) {
             GuiDroneDebuggerOptions.clearAreaShowWidgetId();
             NetworkHandler.sendToServer(new PacketUpdateDebuggingDrone(entity.getEntityId()));
+            Minecraft.getMinecraft().player.playSound(Sounds.HUD_ENTITY_LOCK, 1.0f, 2.0f);
         }
     }
 

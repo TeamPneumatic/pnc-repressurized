@@ -694,12 +694,13 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
                 updateVisibleProgWidgets();
                 return;
             case 5:
-                for (IProgWidget widget : te.progWidgets) {
-                    if (widget instanceof ProgWidgetStart) {
-                        programmerUnit.gotoPiece(widget);
-                        break;
-                    }
-                }
+                programmerUnit.gotoPiece(findWidget(te.progWidgets, ProgWidgetStart.class));
+//                for (IProgWidget widget : te.progWidgets) {
+//                    if (widget instanceof ProgWidgetStart) {
+//                        programmerUnit.gotoPiece(widget);
+//                        break;
+//                    }
+//                }
                 return;
             case 6:
                 if (te.progWidgets.size() > 0) {
@@ -1012,6 +1013,13 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         if (widget.getID() == filterField.getID()) {
             filterSpawnWidgets();
         }
+    }
+
+    public static IProgWidget findWidget(List<IProgWidget> widgets, Class<? extends IProgWidget> cls) {
+        for (IProgWidget w : widgets) {
+            if (cls.isAssignableFrom(w.getClass())) return w;
+        }
+        return null;
     }
 
     private class FilterTextField extends WidgetTextField {

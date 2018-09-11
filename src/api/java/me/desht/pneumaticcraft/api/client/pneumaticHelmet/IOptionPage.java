@@ -31,10 +31,17 @@ public interface IOptionPage {
      */
     void actionPerformed(GuiButton button);
 
+    /**
+     * Called immediately before {@link GuiScreen#drawScreen(int, int, float)}
+     *
+     * @param x
+     * @param y
+     * @param partialTicks
+     */
     void drawPreButtons(int x, int y, float partialTicks);
 
     /**
-     * Same as {@link GuiScreen#drawScreen(int, int, float)}
+     * Called immediately after {@link GuiScreen#drawScreen(int, int, float)}
      * Here you can render additional things like text.
      *
      * @param x
@@ -44,7 +51,7 @@ public interface IOptionPage {
     void drawScreen(int x, int y, float partialTicks);
 
     /**
-     * Same as GuiScreen#keyTyped(char, int).
+     * Called immediately after GuiScreen#keyTyped(char, int).
      *
      * @param ch
      * @param key
@@ -60,4 +67,9 @@ public interface IOptionPage {
     boolean displaySettingsText();
 
     default int settingsYposition() { return 115; }
+
+    /**
+     * Called immediately after {@link GuiScreen#updateScreen()}
+     */
+    default void updateScreen() { }
 }

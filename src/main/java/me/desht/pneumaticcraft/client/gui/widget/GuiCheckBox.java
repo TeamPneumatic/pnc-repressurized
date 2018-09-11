@@ -74,7 +74,7 @@ public class GuiCheckBox extends Gui implements IGuiWidget {
     public void onMouseClicked(int mouseX, int mouseY, int button) {
         if (enabled) {
             checked = !checked;
-            listener.actionPerformed(this);
+            if (listener != null) listener.actionPerformed(this);
         }
     }
 
