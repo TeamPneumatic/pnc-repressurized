@@ -58,12 +58,12 @@ public class TileEntityAphorismTile extends TileEntityBase {
 
     public void setTextLines(String[] textLines) {
         this.textLines = textLines;
-        sendDescriptionPacket();
+        if (!world.isRemote) sendDescriptionPacket();
     }
 
     public void setBorderColor(int color) {
         this.borderColor = color;
-        sendDescriptionPacket();
+        if (!world.isRemote) sendDescriptionPacket();
     }
 
     public int getBorderColor() {
@@ -76,6 +76,6 @@ public class TileEntityAphorismTile extends TileEntityBase {
 
     public void setBackgroundColor(int color) {
         this.backgroundColor = color;
-        sendDescriptionPacket();
+        if (!world.isRemote) sendDescriptionPacket();
     }
 }
