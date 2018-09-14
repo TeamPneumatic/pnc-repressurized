@@ -14,6 +14,13 @@ Changes are in reverse chronological order; newest changes at the top.
   * In the debug screen, any widget which has an area can be right-clicked to show the area in-world.  Right-click again to stop showing the area.
   * Added "Show Start" and "Show Active" buttons to jump the debug display to the Start widget or currently executing widget, respectively.
   * Added "Follow Active" checkbox, which when selected, will continuously jump the debug display to the currently executing widget.
+* Aerial Interface and Programmable Controller now have a GUI tab to configure which sides of the block should be connected to which inventory:
+  * Default for Aerial Interface is top & bottom -> armor slots, sides -> player main inventory, as before.
+  * Default for Programmable Controller is bottom -> programmable slot, other faces -> fake drone inventory, as before.
+  * Aerial Interface now also supports interfacing with player's offhand slot and (vanilla) Ender inventory.
+  * Additionally, any face of the two blocks can be disconnected from any inventory.
+  * Both blocks are now rotatable (this is required for side configuration to work properly).  Default rotation for any pre-existing blocks is North - you can rotate the blocks as normal with a wrench.
+  * Both blocks have had a bit of a re-texture to make it clear where the front is.
 #### Updates
 * Speed Upgrades are now slightly less expensive to use in machines in terms of fuel usage and heat generation.  Default multiplier is now 1.65, down from 1.8.  Note that this is exponential: usage is multiplier_value^num_speed_upgrades.
 * The multipliers for Speed Upgrades are now configurable, in the "machine_properties" section of the config: D:speedUpgradeSpeedMultiplier and D:speedUpgradeUsageMultiplier.
