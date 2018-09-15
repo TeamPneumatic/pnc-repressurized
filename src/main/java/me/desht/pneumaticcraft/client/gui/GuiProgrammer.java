@@ -458,7 +458,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
                         } else if (widget instanceof ProgWidgetArea) {
                             BlockPos pos = ItemGPSTool.getGPSLocation(heldItem);
                             String var = ItemGPSTool.getVariable(heldItem);
-                            ((ProgWidgetArea) widget).setP1(pos);
+                            if (pos != null) ((ProgWidgetArea) widget).setP1(pos);
                             ((ProgWidgetArea) widget).setP2(new BlockPos(0, 0, 0));
                             ((ProgWidgetArea) widget).setCoord1Variable(var);
                             ((ProgWidgetArea) widget).setCoord2Variable("");
