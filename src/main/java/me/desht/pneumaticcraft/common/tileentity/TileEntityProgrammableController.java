@@ -59,7 +59,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
     private static final String FALLBACK_NAME = "[ProgController]";
     private static final UUID FALLBACK_UUID = UUID.nameUUIDFromBytes(FALLBACK_NAME.getBytes());
 
-    private ProgrammableItemStackHandler inventory;
+    private final ProgrammableItemStackHandler inventory;
     private EntityProgrammableController drone;
     private final FluidTank tank = new FluidTank(16000);
     private DroneAIManager aiManager;

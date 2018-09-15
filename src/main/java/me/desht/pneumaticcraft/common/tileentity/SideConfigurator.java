@@ -58,13 +58,13 @@ public class SideConfigurator<T> implements INBTSerializable<NBTTagCompound> {
 
     int registerHandler(String id, ItemStack textureStack, Capability<T> cap, T handler, RelativeFace... defaultRelativeFaces) {
         entries.add(new ConnectionEntry<>(id, textureStack, cap, handler));
-        idxMap.put(id, entries.size());
+        idxMap.put(id, entries.size() - 1);
         return setDefaultSides(defaultRelativeFaces);
     }
 
     int registerHandler(String id, ResourceLocation texture, Capability<T> cap, T handler, RelativeFace... defaultRelativeFaces) {
         entries.add(new ConnectionEntry<>(id, texture, cap, handler));
-        idxMap.put(id, entries.size());
+        idxMap.put(id, entries.size() - 1);
         return setDefaultSides(defaultRelativeFaces);
     }
 
