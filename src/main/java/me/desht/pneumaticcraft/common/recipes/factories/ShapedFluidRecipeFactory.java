@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.recipes.factories;
 
 import com.google.gson.JsonObject;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
@@ -15,6 +14,7 @@ import net.minecraftforge.common.crafting.JsonContext;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
+import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
@@ -47,7 +47,7 @@ public class ShapedFluidRecipeFactory implements IRecipeFactory {
             for (int i = 0; i < ret.size(); i++) {
                 ItemStack stack = inv.getStackInSlot(i);
                 IFluidHandlerItem handler = stack.getCount() > 1 ?
-                        FluidUtil.getFluidHandler(PneumaticCraftUtils.singleItem(stack)) :
+                        FluidUtil.getFluidHandler(ItemHandlerHelper.copyStackWithSize(stack, 1)) :
                         FluidUtil.getFluidHandler(stack);
 
                 if (handler == null) {

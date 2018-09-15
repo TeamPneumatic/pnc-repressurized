@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.recipes.factories;
 
 import com.google.gson.JsonObject;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.JsonUtils;
@@ -12,6 +11,7 @@ import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
+import net.minecraftforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nonnull;
 
@@ -39,7 +39,7 @@ public class FluidIngredientFactory implements IIngredientFactory {
                 return false;
             }
             IFluidHandlerItem handler = input.getCount() > 1 ?
-                    FluidUtil.getFluidHandler(PneumaticCraftUtils.singleItem(input)) :
+                    FluidUtil.getFluidHandler(ItemHandlerHelper.copyStackWithSize(input, 1)) :
                     FluidUtil.getFluidHandler(input);
 
             if (handler == null) {

@@ -1070,14 +1070,4 @@ public class PneumaticCraftUtils {
     public static ResourceLocation RL(String path) {
         return new ResourceLocation(Names.MOD_ID, path);
     }
-
-    public static ItemStack singleItem(ItemStack stack) {
-        if (stack.isEmpty()) {
-            return ItemStack.EMPTY;
-        } else {
-            ItemStack ret = stack.copy();
-            ret.setCount(1);
-            return ret;
-        }
-    }
 }
