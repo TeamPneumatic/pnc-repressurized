@@ -26,7 +26,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.pathfinding.PathFinder;
 import net.minecraft.pathfinding.WalkNodeProcessor;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.*;
@@ -52,23 +51,21 @@ import javax.annotation.Nonnull;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.*;
 import java.util.regex.PatternSyntaxException;
 import java.util.stream.Stream;
 
 public class PneumaticCraftUtils {
-    private static Random rand = new Random();
-    private static final List<Item> inventoryItemBlacklist = new ArrayList<Item>();
+    private static final List<Item> inventoryItemBlacklist = new ArrayList<>();
     private static String lastEntityFilterError = "";
 
     /**
      * Returns the ForgeDirection of the facing of the entity given.
      *
-     * @param entity
+     * @param entity the entity
      * @param includeUpAndDown false when UP/DOWN should not be included.
-     * @return
+     * @return the entity's facing direction
      */
     public static EnumFacing getDirectionFacing(EntityLivingBase entity, boolean includeUpAndDown) {
         double yaw = entity.rotationYaw;
@@ -83,7 +80,6 @@ public class PneumaticCraftUtils {
         else if (yaw < 135) return EnumFacing.WEST;
         else if (yaw < 225) return EnumFacing.NORTH;
         else if (yaw < 315) return EnumFacing.EAST;
-
         else return EnumFacing.SOUTH;
     }
 
@@ -140,21 +136,21 @@ public class PneumaticCraftUtils {
         return metaRotation;
     }
 
-    public static double[] sin;
-    public static double[] cos;
-    public static double[] tan;
-    public static final int circlePoints = 500;
+    public static final double[] sin;
+    public static final double[] cos;
+    public static final double[] tan;
+    public static final int CIRCLE_POINTS = 500;
 
     /*
-     * Initializes the sin,cos and tan variables, so that they can't be used without having to calculate them every time (render tick).
+     * Initializes the sin,cos and tan variables, so that they can be used without having to calculate them every time (render tick).
      */
     static {
-        sin = new double[circlePoints];
-        cos = new double[circlePoints];
-        tan = new double[circlePoints];
+        sin = new double[CIRCLE_POINTS];
+        cos = new double[CIRCLE_POINTS];
+        tan = new double[CIRCLE_POINTS];
 
-        for (int i = 0; i < circlePoints; i++) {
-            double angle = 2 * Math.PI * i / circlePoints;
+        for (int i = 0; i < CIRCLE_POINTS; i++) {
+            double angle = 2 * Math.PI * i / CIRCLE_POINTS;
             sin[i] = Math.sin(angle);
             cos[i] = Math.cos(angle);
             tan[i] = Math.tan(angle);
@@ -206,9 +202,9 @@ public class PneumaticCraftUtils {
     /**
      * Takes in the amount of ticks, and converts it into a time notation. 40 ticks will become "2s", while 2400 will result in "2m".
      *
-     * @param ticks
+     * @param ticks number of ticks
      * @param fraction When true, 30 ticks will show as '1.5s' instead of '1s'.
-     * @return
+     * @return a formatted time
      */
     public static String convertTicksToMinutesAndSeconds(int ticks, boolean fraction) {
         String part = ticks % 20 * 5 + "";
@@ -224,8 +220,8 @@ public class PneumaticCraftUtils {
     /**
      * Takes in any integer, and converts it into a string with a additional postfix if needed. 2300 will convert into 2k for instance.
      *
-     * @param amount
-     * @return
+     * @param amount an integer quantity
+     * @return a formatted string representation
      */
     public static String convertAmountToString(int amount) {
         if (amount < 1000) {
@@ -238,9 +234,9 @@ public class PneumaticCraftUtils {
     /**
      * Rounds numbers down at the given decimal. 1.234 with decimal 1 will result in a string holding "1.2"
      *
-     * @param value
-     * @param decimals
-     * @return
+     * @param value a double-precison quantity
+     * @param decimals number of digits to the right of the decimal point
+     * @return a formatted string representation
      */
     public static String roundNumberTo(double value, int decimals) {
         double ret = roundNumberToDouble(value, decimals);
@@ -258,9 +254,9 @@ public class PneumaticCraftUtils {
     /**
      * Rounds numbers down at the given decimal. 1.234 with decimal 1 will result in a string holding "1.2"
      *
-     * @param value
-     * @param decimals
-     * @return
+     * @param value a floating point quantity
+     * @param decimals number of digits to the right of the decimal point
+     * @return a formatted string representation
      */
     public static String roundNumberTo(float value, int decimals) {
         return "" + Math.round(value * Math.pow(10, decimals)) / Math.pow(10, decimals);
@@ -275,20 +271,6 @@ public class PneumaticCraftUtils {
 
     public static boolean areFloatsEqual(float f1, float f2, float maxDifference) {
         return Math.abs(f1 - f2) < maxDifference;
-    }
-
-    /**
-     * Returns a part of a string, dependant on the progress. When progress is 20, and maxProgress is 100, 1/5th of the string will be returned.
-     * Used to nicely display HUD messages.
-     *
-     * @param string
-     * @param progress
-     * @param maxProgress
-     * @return
-     */
-    public static String getPartOfString(String string, int progress, int maxProgress) {
-        if (progress > maxProgress) return string;
-        return string.substring(0, string.length() * progress / maxProgress);
     }
 
     /**
@@ -330,8 +312,8 @@ public class PneumaticCraftUtils {
     /**
      * Sorts the stacks given alphabetically, combines them (so 2x64 will become 1x128), and adds the strings into the given string list.
      *
-     * @param textList
-     * @param originalStacks
+     * @param textList string list to add information to
+     * @param originalStacks array of item stacks to sort & combine
      */
     public static void sortCombineItemStacksAndToString(List<String> textList, ItemStack[] originalStacks) {
         ItemStack[] stacks = new ItemStack[originalStacks.length];
@@ -354,7 +336,7 @@ public class PneumaticCraftUtils {
                         textList.add("\u2022 " + PneumaticCraftUtils.convertAmountToString(itemCount) + " x " + oldItemStack.getDisplayName());
                     if (oldInventoryItems != null) {
                         int oldSize = textList.size();
-                        sortCombineItemStacksAndToString(textList, oldInventoryItems.toArray(new ItemStack[oldInventoryItems.size()]));
+                        sortCombineItemStacksAndToString(textList, oldInventoryItems.toArray(new ItemStack[0]));
                         for (int i = oldSize; i < textList.size(); i++) {
                             textList.set(i, ">> " + textList.get(i));
                         }
@@ -371,7 +353,7 @@ public class PneumaticCraftUtils {
             textList.add("\u2022 " + PneumaticCraftUtils.convertAmountToString(itemCount) + " x " + oldItemStack.getDisplayName());
             if (oldInventoryItems != null) {
                 int oldSize = textList.size();
-                sortCombineItemStacksAndToString(textList, oldInventoryItems.toArray(new ItemStack[oldInventoryItems.size()]));
+                sortCombineItemStacksAndToString(textList, oldInventoryItems.toArray(new ItemStack[0]));
                 for (int i = oldSize; i < textList.size(); i++) {
                     textList.set(i, ">> " + textList.get(i));
                 }
@@ -417,19 +399,6 @@ public class PneumaticCraftUtils {
     }
 
     /**
-     * Returns the redstone level for the given face at the given position.  Use this to check redstone signal level
-     * on a specific face of a block.
-     *
-     * @param world the world
-     * @param pos the position
-     * @param face the face to check
-     * @return the redstone level
-     */
-    public static int getRedstoneLevel(World world, BlockPos pos, EnumFacing face) {
-        return world.getRedstonePower(pos, face);
-    }
-
-    /**
      * Retrieve a web page from the given URL.
      *
      * @param urlString the URL
@@ -438,91 +407,15 @@ public class PneumaticCraftUtils {
      */
     public static String getPage(final String urlString) throws IOException {
         StringBuilder all = new StringBuilder();
-        BufferedReader in = null;
-        try {
-            URL myUrl = new URL(urlString);
-            in = new BufferedReader(new InputStreamReader(myUrl.openStream()));
+        URL myUrl = new URL(urlString);
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(myUrl.openStream()))) {
             String line;
             while ((line = in.readLine()) != null) {
                 all.append(line).append(System.getProperty("line.separator"));
             }
-        } finally {
-            if (in != null) {
-                in.close();
-            }
         }
 
         return all.toString();
-    }
-
-//    /**
-//     * This will return true if the given item ID is the same as the item id that can be retrieved from IC2's item key.
-//     * @param id
-//     * @param ic2ItemKey
-//     * @return
-//     */
-    /* TODO IC2 dep  @Optional.Method(modid = ModIds.INDUSTRIALCRAFT)
-       public static boolean isIC2Item(Item id, String ic2ItemKey){
-           ItemStack ic2Item = IC2Items.getItem(ic2ItemKey);
-           return ic2Item != null && ic2Item.getItem() == id;
-       }*/
-
-//    /**
-//     * Returns true if the given item ID is a IC2 upgrade.
-//     *
-//     * @param id
-//     * @return
-//     */
-    /* @Optional.Method(modid = ModIds.INDUSTRIALCRAFT)
-     public static boolean isIC2Upgrade(Item id){
-         return isIC2Item(id, "overclockerUpgrade") || isIC2Item(id, "transformerUpgrade") || isIC2Item(id, "energyStorageUpgrade");
-     }*/
-
-    public enum EnumBuildcraftModule {
-        BUILDERS, CORE, ENERGY, FACTORY, SILICON, TRANSPORT
-    }
-
-    public static ItemStack getBuildcraftItemStack(EnumBuildcraftModule module, String itemName) {
-
-        try {
-            Class buildcraftItems = Class.forName(getItemClassForModule(module));
-
-            Object ret = buildcraftItems.getField(itemName).get(null);
-
-            if (ret instanceof Item) {
-                return new ItemStack((Item) ret);
-            } else if (ret instanceof Block) {
-                return new ItemStack((Block) ret);
-            } else {
-                return null;
-            }
-        } catch (Exception e) {
-            Log.warning("Tried to retrieve a Buildcraft item which failed. Tried to retrieve: " + itemName + ", from module " + getItemClassForModule(module));
-
-            return null;
-        }
-    }
-
-    private static String getItemClassForModule(EnumBuildcraftModule module) {
-        switch (module) {
-            case BUILDERS:
-                return "buildcraft.BuildCraftBuilders";
-            case CORE:
-                return "buildcraft.BuildCraftCore";
-            case ENERGY:
-                return "buildcraft.BuildCraftEnergy";
-            case FACTORY:
-                return "buildcraft.BuildCraftFactory";
-            case SILICON:
-                return "buildcraft.BuildCraftSilicon";
-            case TRANSPORT:
-                return "buildcraft.BuildCraftTransport";
-        }
-        return "";
-    }
-
-    public static boolean isRenderIDCamo(EnumBlockRenderType type) {
-        return false;//TODO 1.8 remove PneumaticCraftAPIHandler.getInstance().concealableRenderIds.contains(renderID);
     }
 
     public static int getProtectingSecurityStations(World world, BlockPos pos, EntityPlayer player, boolean showRangeLines, boolean placementRange) {
@@ -662,7 +555,7 @@ public class PneumaticCraftUtils {
             return true;
         } else if (filter.startsWith("@")) {//entity type selection
             filter = filter.substring(1); //cut off the '@'.
-            Class typeClass = null;
+            Class<? extends Entity> typeClass = null;
             if (filter.equals("mob")) {
                 typeClass = EntityMob.class;
             } else if (filter.equals("animal")) {
@@ -693,19 +586,6 @@ public class PneumaticCraftUtils {
         }
     }
 
-    public static Method getDeclaredMethodIncludingSupertype(Class clazz, String methodName, Class... methodParms) {
-        while (!clazz.equals(Object.class)) {
-            try {
-                Method method = clazz.getDeclaredMethod(methodName, methodParms);
-                return method;
-            } catch (Exception e) {
-
-            }
-            clazz = clazz.getSuperclass();
-        }
-        return null;
-    }
-
     @Nonnull
     public static ItemStack exportStackToInventory(ICapabilityProvider provider, ItemStack stack, EnumFacing side) {
         if (provider.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, side)) {
@@ -714,62 +594,6 @@ public class PneumaticCraftUtils {
         }
         return stack;
     }
-
-//    /**
-//     * Transfers the given stack to the given inventory. The returned stack is the leftover if there is any.
-//     *
-//     * @param inv
-//     * @param stack
-//     * @return
-//     */
-//    public static ItemStack exportStackToInventory(IInventory inv, ItemStack stack, EnumFacing side) {
-//        return TileEntityHopper.putStackInInventoryAllSlots(inv, stack, side);
-//    }
-//
-//    public static ItemStack exportStackToInventory(TileEntity te, ItemStack stack, EnumFacing side) {
-//        if (te instanceof IInventory) {
-//            return TileEntityHopper.putStackInInventoryAllSlots((IInventory) te, stack, side);
-//        } else {
-//            stack = ModInteractionUtils.getInstance().exportStackToTEPipe(te, stack, side);
-//            stack = ModInteractionUtils.getInstance().exportStackToBCPipe(te, stack, side);
-//            return stack;
-//        }
-//    }
-//
-//    public static boolean isOutputInventory(TileEntity te) {
-//        return te instanceof IInventory || ModInteractionUtils.getInstance().isBCPipe(te) || ModInteractionUtils.getInstance().isTEPipe(te);
-//    }
-//
-//    /**
-//     * Returns a set of integers of slots that are accessible for the given sides.
-//     *
-//     * @param inventory
-//     * @param accessibleSides a boolean[6], representing for each of the sides if it is accessible or not.
-//     * @return
-//     */
-//    public static Set<Integer> getAccessibleSlotsForInventoryAndSides(IInventory inventory, boolean[] accessibleSides) {
-//        Set<Integer> slots = new HashSet<Integer>();
-//        if (inventory instanceof ISidedInventory) {
-//            for (int i = 0; i < accessibleSides.length; i++) {
-//                if (accessibleSides[i]) {
-//                    int[] accessibleSlots = ((ISidedInventory) inventory).getSlotsForFace(EnumFacing.getFront(i));
-//                    for (int accessibleSlot : accessibleSlots) {
-//                        slots.add(accessibleSlot);
-//                    }
-//                }
-//            }
-//        } else {
-//            for (boolean bool : accessibleSides) {
-//                if (bool) {
-//                    for (int i = 0; i < inventory.getSizeInventory(); i++) {
-//                        slots.add(i);
-//                    }
-//                    break;
-//                }
-//            }
-//        }
-//        return slots;
-//    }
 
     public static double distBetween(double x1, double y1, double z1, double x2, double y2, double z2) {
         return Math.sqrt(distBetweenSq(x1, y1, z1, x2, y2, z2));
@@ -813,7 +637,7 @@ public class PneumaticCraftUtils {
 
     public static boolean areStacksEqual(@Nonnull ItemStack stack1, @Nonnull ItemStack stack2, boolean checkMeta, boolean checkNBT, boolean checkOreDict, boolean checkModSimilarity) {
         if (stack1.isEmpty() && stack2.isEmpty()) return true;
-        if (stack1.isEmpty() && !stack2.isEmpty() || !stack1.isEmpty() && stack2.isEmpty()) return false;
+        if (stack1.isEmpty() || stack2.isEmpty()) return false;
 
         if (checkModSimilarity) {
             String mod1 = stack1.getItem().getRegistryName().getResourceDomain();
@@ -882,9 +706,9 @@ public class PneumaticCraftUtils {
     }
 
     public static void dropItemOnGround(ItemStack stack, World world, double x, double y, double z) {
-        float dX = rand.nextFloat() * 0.8F + 0.1F;
-        float dY = rand.nextFloat() * 0.8F + 0.1F;
-        float dZ = rand.nextFloat() * 0.8F + 0.1F;
+        float dX = world.rand.nextFloat() * 0.8F + 0.1F;
+        float dY = world.rand.nextFloat() * 0.8F + 0.1F;
+        float dZ = world.rand.nextFloat() * 0.8F + 0.1F;
 
         EntityItem entityItem = new EntityItem(world, x + dX, y + dY, z + dZ, new ItemStack(stack.getItem(), stack.getCount(), stack.getItemDamage()));
 
@@ -893,9 +717,9 @@ public class PneumaticCraftUtils {
         }
 
         float factor = 0.05F;
-        entityItem.motionX = rand.nextGaussian() * factor;
-        entityItem.motionY = rand.nextGaussian() * factor + 0.2F;
-        entityItem.motionZ = rand.nextGaussian() * factor;
+        entityItem.motionX = world.rand.nextGaussian() * factor;
+        entityItem.motionY = world.rand.nextGaussian() * factor + 0.2F;
+        entityItem.motionZ = world.rand.nextGaussian() * factor;
         world.spawnEntity(entityItem);
         stack.setCount(0);
     }
