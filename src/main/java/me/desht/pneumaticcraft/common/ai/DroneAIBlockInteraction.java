@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
-import me.desht.pneumaticcraft.api.item.IPressurizable;
+import me.desht.pneumaticcraft.common.CommonHUDHandler;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
@@ -12,7 +12,6 @@ import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetDigAndPlace;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetPlace;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.ThreadedSorter;
-import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -232,10 +231,16 @@ public abstract class DroneAIBlockInteraction<Widget extends ProgWidgetAreaItemB
      */
     protected void indicateToListeningPlayers(BlockPos pos) {
         for (EntityPlayer player : drone.world().playerEntities) {
-            ItemStack helmet = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
-            if (helmet.getItem() == Itemss.PNEUMATIC_HELMET && UpgradableItemUtils.getUpgrades(EnumUpgrade.ENTITY_TRACKER, helmet) > 0
-                    && ((IPressurizable) Itemss.PNEUMATIC_HELMET).getPressure(helmet) > 0) {
-                NetworkHandler.sendTo(new PacketSpawnParticle(EnumParticleTypes.REDSTONE, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 0, 0, 0), (EntityPlayerMP) player);
+            if (player.getDistanceSq(pos) < 1024) {
+                ItemStack helmet = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
+                if (helmet.getItem() == Itemss.PNEUMATIC_HELMET) {
+                    CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer(player);
+                    if (handler.isArmorReady(EntityEquipmentSlot.HEAD) && handler.isEntityTrackerEnabled()
+                            && handler.getUpgradeCount(EntityEquipmentSlot.HEAD, EnumUpgrade.ENTITY_TRACKER) > 0
+                            && handler.getUpgradeCount(EntityEquipmentSlot.HEAD, EnumUpgrade.DISPENSER) > 0) {
+                        NetworkHandler.sendTo(new PacketSpawnParticle(EnumParticleTypes.REDSTONE, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 0, 0, 0), (EntityPlayerMP) player);
+                    }
+                }
             }
         }
     }

@@ -52,7 +52,6 @@ public class GuiPneumaticArmor extends GuiPneumaticInventoryItem {
 
         Set<Item> upgrades = ((IUpgradeAcceptor)itemStack.getItem()).getApplicableUpgrades();
         List<Item> upgrades1 = upgrades.stream().sorted(Comparator.comparing(Item::getUnlocalizedName)).collect(Collectors.toList());
-//        boolean leftSided = true;
 
         for (int i = 0; i < upgrades1.size(); i++) {
             Item upgrade = upgrades1.get(i);

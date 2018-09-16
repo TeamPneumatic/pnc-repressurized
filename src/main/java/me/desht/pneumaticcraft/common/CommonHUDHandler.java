@@ -72,6 +72,7 @@ public class CommonHUDHandler {
     private boolean stepAssistEnabled;
     private boolean runSpeedEnabled;
     private boolean jumpBoostEnabled;
+    private boolean entityTrackerEnabled;
     private boolean jetBootsEnabled;  // are jet boots switched on?
     private boolean jetBootsActive;  // are jet boots actually firing (player rising) ?
     private float flightAccel = 1.0F;  // increases while diving, decreases while climbing
@@ -455,7 +456,7 @@ public class CommonHUDHandler {
     public void setUpgradeRenderEnabled(EntityEquipmentSlot slot, byte featureIndex, boolean state) {
         upgradeRenderersEnabled[slot.getIndex()][featureIndex] = state;
         IUpgradeRenderHandler handler = UpgradeRenderHandlerList.instance().getHandlersForSlot(slot).get(featureIndex);
-        // bit of a code smell here, but caching the enablement of various features is important
+        // bit of a code smell here, but caching the enablement of various features is important for performance
         if (handler instanceof MagnetUpgradeRenderHandler) {
             magnetEnabled = state;
         } else if (handler instanceof ChargingUpgradeRenderHandler) {
@@ -470,6 +471,8 @@ public class CommonHUDHandler {
             jetBootsEnabled = state;
         } else if (handler instanceof MainHelmetHandler) {
             armorEnabled = state;
+        } else if (handler instanceof EntityTrackUpgradeHandler) {
+            entityTrackerEnabled = state;
         }
     }
 
@@ -551,6 +554,10 @@ public class CommonHUDHandler {
 
     public boolean isArmorEnabled() {
         return armorEnabled;
+    }
+
+    public boolean isEntityTrackerEnabled() {
+        return entityTrackerEnabled;
     }
 
     public boolean isValid() {
