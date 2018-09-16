@@ -14,6 +14,7 @@ import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
+import org.apache.commons.lang3.StringUtils;
 
 import java.awt.*;
 import java.util.*;
@@ -70,7 +71,7 @@ public class GuiLiquidCompressor extends GuiPneumaticContainerBase<TileEntityLiq
                 value = value + " ";
             }
             Fluid fluid = FluidRegistry.getFluid(map.getKey());
-            fuels.add(value + "| " + fluid.getLocalizedName(new FluidStack(fluid, 1)));
+            fuels.add(value + "| " + StringUtils.abbreviate(fluid.getLocalizedName(new FluidStack(fluid, 1)), 25));
         }
         return fuels;
     }

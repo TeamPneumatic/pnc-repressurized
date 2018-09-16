@@ -109,7 +109,7 @@ public class ConfigHandler {
         public float fuelBucketEfficiencyMultiplier = 0.05f;
         @Config.Comment("Maximum number of blocks in the area defined in an Area Programming Puzzle Piece")
         public int maxProgrammingArea = 250000;
-        @Config.Comment("Enable/disable explosion crafting (iron->compressed iron).  If you disable this, you'll need another way to get compressed iron initially")
+        @Config.Comment("Enable/disable explosion crafting (iron->compressed iron).  If you disable this, you'll need another way to get compressed iron initially.")
         public boolean explosionCrafting = true;
         @Config.Comment("Oil worldgen blacklist: add dimension IDs to this list if you don't want oil worldgen to happen there.")
         @Config.RequiresMcRestart
@@ -119,6 +119,8 @@ public class ConfigHandler {
         public double fluidThermalResistance = HeatExchangerManager.DEFAULT_FLUID_RESISTANCE;
         @Config.Comment("Chance per shot (1 in X) of potion-tipped ammo proc'ing the potion effect")
         public int minigunPotionProcChance = 15;
+        @Config.Comment("Fluids as hot or hotter than this temperature (Kelvin) will be auto-registered as Liquid Compressor fuels, the quality being dependent on fluid temperature.")
+        public int minimumFluidFuelTemperature = 373; // 100C
     }
 
     public static class MachineProperties {
