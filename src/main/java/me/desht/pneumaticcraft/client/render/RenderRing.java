@@ -30,7 +30,7 @@ public class RenderRing extends RenderProgressingLine {
         wr.begin(GL11.GL_LINE_LOOP, DefaultVertexFormats.POSITION);
         RenderUtils.glColorHex(color);
         double size = 5 / 16D;
-        for (int i = 0; i < PneumaticCraftUtils.circlePoints; i++) {
+        for (int i = 0; i < PneumaticCraftUtils.CIRCLE_POINTS; i++) {
             wr.pos(0, PneumaticCraftUtils.sin[i] * size, PneumaticCraftUtils.cos[i] * size).endVertex();
         }
         Tessellator.getInstance().draw();

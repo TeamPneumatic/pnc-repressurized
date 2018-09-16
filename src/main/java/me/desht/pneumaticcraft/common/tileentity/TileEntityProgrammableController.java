@@ -108,6 +108,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
         itemHandlerSideConfigurator.registerHandler("programmableInv", new ItemStack(Itemss.NETWORK_COMPONENT, 1, 1),
                 CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, inventory,
                 RelativeFace.BOTTOM);
+        itemHandlerSideConfigurator.setNullFaceHandler("droneInv");
     }
 
     @Override

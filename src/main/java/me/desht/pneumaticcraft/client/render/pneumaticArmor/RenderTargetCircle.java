@@ -48,7 +48,7 @@ public class RenderTargetCircle {
         GlStateManager.rotate((float) renderRotationAngle, 0, 0, 1);
         for (int j = 0; j < 2; j++) {
             wr.begin(GL11.GL_TRIANGLE_STRIP, DefaultVertexFormats.POSITION);
-            for (int i = 0; i < PneumaticCraftUtils.circlePoints / 4; i++) {
+            for (int i = 0; i < PneumaticCraftUtils.CIRCLE_POINTS / 4; i++) {
                 wr.pos(PneumaticCraftUtils.cos[i] * size, PneumaticCraftUtils.sin[i] * size, 0).endVertex();
                 wr.pos(PneumaticCraftUtils.cos[i] * (size + 0.1D), PneumaticCraftUtils.sin[i] * (size + 0.1D), 0).endVertex();
             }
@@ -57,10 +57,10 @@ public class RenderTargetCircle {
             if (renderAsTagged) {
                 GlStateManager.color(1, 0, 0, 1);
                 wr.begin(GL11.GL_LINE_LOOP, DefaultVertexFormats.POSITION);
-                for (int i = 0; i < PneumaticCraftUtils.circlePoints / 4; i++) {
+                for (int i = 0; i < PneumaticCraftUtils.CIRCLE_POINTS / 4; i++) {
                     wr.pos(PneumaticCraftUtils.cos[i] * size, PneumaticCraftUtils.sin[i] * size, 0).endVertex();
                 }
-                for (int i = PneumaticCraftUtils.circlePoints / 4 - 1; i >= 0; i--) {
+                for (int i = PneumaticCraftUtils.CIRCLE_POINTS / 4 - 1; i >= 0; i--) {
                     wr.pos(PneumaticCraftUtils.cos[i] * (size + 0.1D), PneumaticCraftUtils.sin[i] * (size + 0.1D), 0).endVertex();
                 }
                 Tessellator.getInstance().draw();

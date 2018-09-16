@@ -27,10 +27,11 @@ import java.util.*;
  */
 public class SideConfigurator<T> implements INBTSerializable<NBTTagCompound> {
     private final List<ConnectionEntry<T>> entries = new ArrayList<>();
-    private final String titleKey;
+    private final String id;
     private final ISideConfigurable sideConfigurable;
     private final int baseButtonID;
     private final Map<String, Integer> idxMap = new HashMap<>();
+    private T nullFaceHandler = null;
 
     // each value here is an index into the 'entries' list
     private final byte[] faces = new byte[RelativeFace.values().length];
@@ -43,12 +44,12 @@ public class SideConfigurator<T> implements INBTSerializable<NBTTagCompound> {
     /**
      * Constructor
      *
-     * @param titleKey a unique string for this configurator's title (I18n: gui.sideConfigurator.title.&lt;titleKey&gt;)
+     * @param id a unique string for this configurator's title (I18n: gui.sideConfigurator.title.&lt;titleKey&gt;)
      * @param sideConfigurable the owning object
      * @param baseButtonID id of the first GUI button; there are six in total, one for each side of the block
      */
-    SideConfigurator(String titleKey, ISideConfigurable sideConfigurable, int baseButtonID) {
-        this.titleKey = titleKey;
+    SideConfigurator(String id, ISideConfigurable sideConfigurable, int baseButtonID) {
+        this.id = id;
         this.sideConfigurable = sideConfigurable;
         this.baseButtonID = baseButtonID;
         entries.add(null);  // null represents "unconnected"
@@ -78,14 +79,19 @@ public class SideConfigurator<T> implements INBTSerializable<NBTTagCompound> {
         return idx;
     }
 
-    public boolean shouldSaveNBT() {
+    void setNullFaceHandler(String id) {
+        nullFaceHandler = entries.get(idxMap.get(id)).handler;
+    }
+
+    private boolean shouldSaveNBT() {
         return !Arrays.equals(faces, defaultFaces);
     }
 
-    public void updateHandler(String id, T handler) {
+    void updateHandler(String id, T handler) {
         int idx = idxMap.get(id);
         ConnectionEntry e = entries.get(idx);
         entries.set(idx, new ConnectionEntry<T>(e.id, e.texture, e.cap, handler));
+        setNullFaceHandler(id);
     }
 
     public int getBaseButtonID() {
@@ -127,15 +133,16 @@ public class SideConfigurator<T> implements INBTSerializable<NBTTagCompound> {
     }
 
     public String getID() {
-        return titleKey;
+        return id;
     }
 
     public String getTranslationKey() {
-        return "gui.sideConfigurator.title." + titleKey;
+        return "gui.sideConfigurator.title." + id;
     }
 
 
     T getHandler(EnumFacing facing) {
+        if (facing == null) return nullFaceHandler;
         ConnectionEntry<T> c = entries.get(faces[getRelativeFace(facing).ordinal()]);
         return c == null ? null : c.handler;
     }
@@ -190,7 +197,7 @@ public class SideConfigurator<T> implements INBTSerializable<NBTTagCompound> {
 
     private String getFaceKey(RelativeFace relativeFace) {
         ConnectionEntry<T> c = entries.get(faces[relativeFace.ordinal()]);
-        return c == null ? "gui.sideConfigurator.unconnected" : "gui.sideConfigurator." + titleKey + "." + c.id;
+        return c == null ? "gui.sideConfigurator.unconnected" : "gui.sideConfigurator." + id + "." + c.id;
     }
 
     @Override
@@ -217,7 +224,7 @@ public class SideConfigurator<T> implements INBTSerializable<NBTTagCompound> {
         for (SideConfigurator sc : sideConfigurable.getSideConfigurators()) {
             if (sc.shouldSaveNBT()) {
                 NBTTagCompound subtag = sc.serializeNBT();
-                tag.setTag(sc.titleKey, subtag);
+                tag.setTag(sc.id, subtag);
             }
         }
         return tag;
@@ -225,8 +232,8 @@ public class SideConfigurator<T> implements INBTSerializable<NBTTagCompound> {
 
     public static void readFromNBT(NBTTagCompound tag, ISideConfigurable sideConfigurable) {
         for (SideConfigurator sc : sideConfigurable.getSideConfigurators()) {
-            if (tag.hasKey(sc.titleKey)) {
-                NBTTagCompound subtag = tag.getCompoundTag(sc.titleKey);
+            if (tag.hasKey(sc.id)) {
+                NBTTagCompound subtag = tag.getCompoundTag(sc.id);
                 sc.deserializeNBT(subtag);
             }
         }

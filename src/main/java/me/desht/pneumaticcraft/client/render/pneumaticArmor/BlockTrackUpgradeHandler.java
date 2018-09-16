@@ -99,7 +99,7 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
                     TileEntity te = chunkCache.getTileEntity(pos);
                     if (MinecraftForge.EVENT_BUS.post(new BlockTrackEvent(player.world, pos, te))) continue;
                     if (searchHandler != null && te != null && te.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)) {
-                        searchHandler.checkInventoryForItems(te);
+                        searchHandler.checkInventoryForItems(te, null);
                     }
                     List<IBlockTrackEntry> entries = BlockTrackEntryList.instance.getEntriesForCoordinate(chunkCache, pos, te);
                     if (entries.isEmpty()) continue;

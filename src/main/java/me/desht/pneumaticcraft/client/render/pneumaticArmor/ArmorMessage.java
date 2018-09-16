@@ -14,7 +14,7 @@ import java.util.List;
 @SideOnly(Side.CLIENT)
 public class ArmorMessage {
     private final GuiAnimatedStat stat;
-    public int lifeSpan;
+    int lifeSpan;
 
     public ArmorMessage(String title, List<String> message, int duration, int backColor) {
         lifeSpan = duration;
@@ -26,7 +26,7 @@ public class ArmorMessage {
         player.world.playSound(player.posX, player.posY, player.posZ, Sounds.SCIFI, SoundCategory.PLAYERS, 0.1F, 1.0F, true);
     }
 
-    public void setDependingMessage(GuiAnimatedStat dependingStat) {
+    void setDependingMessage(GuiAnimatedStat dependingStat) {
         stat.setParentStat(dependingStat);
         stat.setBaseY(2);
     }
@@ -35,7 +35,7 @@ public class ArmorMessage {
         return stat;
     }
 
-    public void renderMessage(FontRenderer fontRenderer, float partialTicks) {
+    void renderMessage(FontRenderer fontRenderer, float partialTicks) {
         if (lifeSpan > 10) {
             stat.openWindow();
         } else {

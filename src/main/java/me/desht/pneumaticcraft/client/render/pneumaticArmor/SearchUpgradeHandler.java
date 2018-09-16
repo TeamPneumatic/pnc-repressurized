@@ -22,6 +22,7 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.relauncher.Side;
@@ -162,10 +163,10 @@ public class SearchUpgradeHandler implements IUpgradeRenderHandler {
      *
      * @param te TileEntity the tile entity, which is already known to support the item handler capability
      */
-    public void checkInventoryForItems(TileEntity te) {
+    public void checkInventoryForItems(TileEntity te, EnumFacing face) {
         try {
             ItemStack searchStack = ItemPneumaticArmor.getSearchedStack(FMLClientHandler.instance().getClient().player.getItemStackFromSlot(EntityEquipmentSlot.HEAD));
-            IItemHandler handler = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+            IItemHandler handler = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, face);
             assert handler != null;
             boolean hasFoundItem = false;
             if (!searchStack.isEmpty()) {
