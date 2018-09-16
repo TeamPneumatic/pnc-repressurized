@@ -31,13 +31,16 @@ Changes are in reverse chronological order; newest changes at the top.
 * UV Light Box progress rate is now dependent on the exposure level of the PCB it's processing: much faster at low levels, a little slower at high levels.  The overall time it takes to fully expose a PCB (10 minutes with no speed upgrades) is unchanged, but this makes for a more interesting tradeoff of processing speed vs. etching failure chance (previously there was no good reason not to expose a PCB to 100%).
 * When UV Light Box is set to emit a redstone signal at a given exposure level, automated (piped) extraction is only possible when the exposure level is high enough to emit a signal.  This makes for easier automation, but note that vanilla hoppers won't work here due to redstone signal emission; use an Omnidirectional Hopper or some other item transport system.
 * Entity Selector strings (as used in Sentry Turret, Drone Programs, (advanced) Air Grate Module can now be a sequence of filters, separated by ";".  If any element of the sequence matches, the filter matches.  e.g. "@mob;shulker" will match any mob or a shulker (shulkers, although hostile, are considered by Minecraft to be golems rather than mobs).
+* The minimum temperature for fluids to be considered as fuels for Liquid Compressors has been raised to 373K (100C) and is now configurable (see I:minimumFluidFuelTemperature)
+* When using a Pneumatic Helmet with Entity Tracker installed, drones no longer automatically show redstone particles where they're working; you now also need to have the Entity Tracker enabled, and have a Dispenser Upgrade installed (which is also required for drone debugging).  You also need to be within 32 blocks of the drone.
 #### Fixes
 * Removing a drone or Network API from the programmable controller now resets its digging position, preventing a phantom digging laser being shown.
 * Fixed item loss bug with logistics drones and logistics modules when requesting a specific number of items from a Requester Frame with some (but not all) non-vanilla inventories.
 * Logistics Frames can now once more be configured when in item form by right clicking (this is an old 1.7.10 feature that stopped working in the port to 1.12.2).
-* Logistics Frames item tooltips now once more show their filter settings when shift is held (again, old 1.7.10 feature).
+* Logistics Frame item tooltips now once more show their filter settings when shift is held (again, old 1.7.10 feature).
 * WAILA/TOP info now shows detailed Logistics Frame filter information when player sneaks.
 * Logistics Requester Frame now correctly requests fluids.
+* Fixed log spam for Aphorism tile (was wrongly sending sync packets from client side)
 
 ### 0.7.8-259 (28 Aug 2018)
 #### Updates
