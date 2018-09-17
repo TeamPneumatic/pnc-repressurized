@@ -125,7 +125,7 @@ public abstract class PneumaticCraftCategory<T extends IRecipeWrapper> implement
         }
 
         void setUsedPressure(int x, int y, float pressure) {
-            usePressure = true;
+            usePressure = pressure > 0; //true;
             this.pressure = pressure;
             gaugeX = x;
             gaugeY = y;
