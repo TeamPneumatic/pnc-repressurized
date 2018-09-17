@@ -95,9 +95,11 @@ public class ConfigHandler {
     public static class General {
         @Config.Comment("Chance per chunk in percentage to generate an Oil Lake. Set to 0 for no spawns")
         @Config.RangeDouble(min = 0d, max = 100d)
+        @Config.RequiresMcRestart
         public double oilGenerationChance = 15d;
-        @Config.Comment("Loss percentage (on average) of Compressed Iron ingots/blocks when exposed to an explosion")
+        @Config.Comment("Loss percentage (on average) of Compressed Iron ingots/blocks when exposed to an explosion. Note: this can also be controlled via CraftTweaker.")
         @Config.RangeInt(min = 0, max = 100)
+        @Config.RequiresMcRestart
         public int configCompressedIngotLossRate = 20;
         @Config.Comment("Enables the dungeon loot generation of the Nuke Virus and Stop! Worm (not useful in single-player worlds)")
         public boolean enableDungeonLoot = true;
@@ -120,6 +122,7 @@ public class ConfigHandler {
         @Config.Comment("Chance per shot (1 in X) of potion-tipped ammo proc'ing the potion effect")
         public int minigunPotionProcChance = 15;
         @Config.Comment("Fluids as hot or hotter than this temperature (Kelvin) will be auto-registered as Liquid Compressor fuels, the quality being dependent on fluid temperature.")
+        @Config.RequiresMcRestart
         public int minimumFluidFuelTemperature = 373; // 100C
     }
 

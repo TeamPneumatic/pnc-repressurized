@@ -99,6 +99,20 @@ public class PneumaticRecipeRegistry implements IPneumaticRecipeRegistry {
     }
 
     @Override
+    public void registerExplosionCraftingRecipe(ItemStack input, ItemStack output, int lossRate) {
+        ExplosionCraftingRecipe.recipes.add(new ExplosionCraftingRecipe(input, output, lossRate));
+    }
+
+    @Override
+    public void registerExplosionCraftingRecipe(String oreDictKey, ItemStack output, int lossRate) {
+        ExplosionCraftingRecipe.recipes.add(new ExplosionCraftingRecipe(oreDictKey, output, lossRate));
+    }
+
+    private static String makeKey(ItemStack stack) {
+        return stack.getItem().getRegistryName() + ":" + stack.getMetadata();
+    }
+
+    @Override
     public void registerDefaultStaticAmadronOffer(Object input, Object output) {
         AmadronOffer offer = new AmadronOffer(input, output);
         AmadronOfferManager.getInstance().addStaticOffer(offer);

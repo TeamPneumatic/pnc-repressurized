@@ -21,6 +21,11 @@ Changes are in reverse chronological order; newest changes at the top.
   * Additionally, any face of the two blocks can be disconnected from any inventory.
   * Both blocks are now rotatable (this is required for side configuration to work properly).  Default rotation for any pre-existing blocks is North - you can rotate the blocks as normal with a wrench.
   * Both blocks have had a bit of a re-texture to make it clear where the front is.
+* Explosion crafting (i.e. converting iron to compressed iron via an explosion) is now manageable with CraftTweaker:
+  * Arbitrary mappings of input item (or oredict entry) to output item can now be added or removed, but the mapping is always 1:1, with a configurable (average) loss rate.
+  * API docs will eventually be on https://crafttweaker.readthedocs.io/en/latest/#Mods/PneumaticCraft_Repressurized/PneumaticCraft_Repressurized/ but in the meantime see https://github.com/TeamPneumatic/pnc-repressurized/issues/108
+  * The config setting I:configCompressedIngotLossRate still exists, but applies *only* to the default compressed iron ingot & block recipes added by the mod.  For general loss rate configuration, use CraftTweaker.
+  * JEI display for explosion crafting has changed slightly due to the possibilty of multiple possible recipes for one output; the description text is now a tooltip shown by hovering over the little explosion icon.
 #### Updates
 * Speed Upgrades are now slightly less expensive to use in machines in terms of fuel usage and heat generation.  Default multiplier is now 1.65, down from 1.8.  Note that this is exponential: usage is multiplier_value^num_speed_upgrades.
 * The multipliers for Speed Upgrades are now configurable, in the "machine_properties" section of the config: D:speedUpgradeSpeedMultiplier and D:speedUpgradeUsageMultiplier.

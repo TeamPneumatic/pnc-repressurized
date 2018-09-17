@@ -41,11 +41,18 @@ public class CraftingRegistrator {
         addThermopneumaticProcessingPlantRecipes();
         registerAmadronOffers();
         addCoolingRecipes();
+        addExplosionCraftingRecipes();
     }
 
-  
     public static ItemStack getUpgrade(EnumUpgrade upgrade) {
         return new ItemStack(Itemss.upgrades.get(upgrade), 1);
+    }
+
+    private static void addExplosionCraftingRecipes() {
+        IPneumaticRecipeRegistry registry = PneumaticRegistry.getInstance().getRecipeRegistry();
+
+        registry.registerExplosionCraftingRecipe("ingotIron", new ItemStack(Itemss.INGOT_IRON_COMPRESSED), ConfigHandler.general.configCompressedIngotLossRate);
+        registry.registerExplosionCraftingRecipe("blockIron", new ItemStack(Blockss.COMPRESSED_IRON), ConfigHandler.general.configCompressedIngotLossRate);
     }
 
     private static void addPressureChamberRecipes() {

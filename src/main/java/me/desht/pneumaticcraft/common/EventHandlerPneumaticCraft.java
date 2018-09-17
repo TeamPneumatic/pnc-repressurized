@@ -32,6 +32,7 @@ import me.desht.pneumaticcraft.common.network.PacketSetMobTarget;
 import me.desht.pneumaticcraft.common.recipes.AmadronOffer;
 import me.desht.pneumaticcraft.common.recipes.AmadronOfferCustom;
 import me.desht.pneumaticcraft.common.recipes.AmadronOfferManager;
+import me.desht.pneumaticcraft.common.recipes.ExplosionCraftingRecipe;
 import me.desht.pneumaticcraft.common.remote.GlobalVariableManager;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
 import me.desht.pneumaticcraft.common.thirdparty.ModInteractionUtilImplementation;
@@ -97,7 +98,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
@@ -116,7 +116,7 @@ public class EventHandlerPneumaticCraft {
     }
 
     @SubscribeEvent
-    public void handleIronExplosions(ExplosionEvent.Detonate event) {
+    public void explosionCraftingEvent(ExplosionEvent.Detonate event) {
         if (!ConfigHandler.general.explosionCrafting) {
             return;
         }
@@ -124,27 +124,26 @@ public class EventHandlerPneumaticCraft {
         Iterator<Entity> iterator = event.getAffectedEntities().iterator();
         while (iterator.hasNext()) {
             Entity entity = iterator.next();
-            if (entity instanceof EntityItem) {
+            if (entity instanceof EntityItem && !entity.isDead) {
                 ItemStack stack = ((EntityItem) entity).getItem();
-                if (!stack.isEmpty() && !entity.isDead && (PneumaticCraftUtils.isSameOreDictStack(stack, IRON_INGOT) || PneumaticCraftUtils.isSameOreDictStack(stack, IRON_BLOCK))) {
-                    Random rand = new Random();
-                    int lossRate = ConfigHandler.general.configCompressedIngotLossRate;
-                    if (stack.getCount() >= 3 || rand.nextDouble() >= lossRate / 100D) {
-                        Item newItem = PneumaticCraftUtils.isSameOreDictStack(stack, IRON_INGOT) ? Itemss.INGOT_IRON_COMPRESSED : Item.getItemFromBlock(Blockss.COMPRESSED_IRON);
-                        ItemStack newStack = new ItemStack(newItem, stack.getCount(), stack.getItemDamage());
-                        if (stack.getCount() >= 3) {
-                            newStack.setCount((int) (stack.getCount() * (rand.nextDouble() * Math.min(lossRate * 0.02D, 0.2D) + (Math.max(0.9D, 1D - lossRate * 0.01D) - lossRate * 0.01D))));
-                        }
-                        ((EntityItem) entity).setItem(newStack);
+                if (!stack.isEmpty()) {
+                    ItemStack result = ExplosionCraftingRecipe.tryToCraft(stack);
+                    if (!result.isEmpty()) {
+                        ((EntityItem) entity).setItem(result);
                         iterator.remove();
-                        if (!event.getWorld().isRemote) {
-                            Vec3d exp = event.getExplosion().getPosition();
-                            for (EntityPlayer player : event.getWorld().getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(exp.x - 32, exp.y - 32, exp.z - 32, exp.x + 32, exp.y + 32, exp.z + 32))) {
-                                AdvancementTriggers.EXPLODE_IRON.trigger((EntityPlayerMP) player);
-                            }
-                        }
+                        checkForAdvancement(event, result);
                     }
                 }
+            }
+        }
+    }
+
+    private void checkForAdvancement(ExplosionEvent.Detonate event, ItemStack result) {
+        if (!event.getWorld().isRemote
+                && (result.getItem() == Itemss.INGOT_IRON_COMPRESSED || result.getItem() == Item.getItemFromBlock(Blockss.COMPRESSED_IRON))) {
+            Vec3d exp = event.getExplosion().getPosition();
+            for (EntityPlayer player : event.getWorld().getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(exp.x - 32, exp.y - 32, exp.z - 32, exp.x + 32, exp.y + 32, exp.z + 32))) {
+                AdvancementTriggers.EXPLODE_IRON.trigger((EntityPlayerMP) player);
             }
         }
     }

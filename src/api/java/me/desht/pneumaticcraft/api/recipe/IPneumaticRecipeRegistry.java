@@ -58,6 +58,26 @@ public interface IPneumaticRecipeRegistry {
     void registerPressureChamberRecipe(IPressureChamberRecipe recipe);
 
     /**
+     * Add an explosion crafting recipe. Any explosion will convert the input item into the output item, with the given
+     * (average) loss rate.
+     *
+     * @param input the input item stack
+     * @param output the resulting item stack
+     * @param lossRate percentage of input items lost, on average
+     */
+    void registerExplosionCraftingRecipe(ItemStack input, ItemStack output, int lossRate);
+
+    /**
+     * Add an explosion crafting recipe. Any explosion will convert the input item into the output item, with the given
+     * (average) loss rate.
+     *
+     * @param oreDictKey ore dictionary key for the input item
+     * @param output the resulting item stack
+     * @param lossRate percentage of input items lost, on average
+     */
+    void registerExplosionCraftingRecipe(String oreDictKey, ItemStack output, int lossRate);
+
+    /**
      * Adds an Amadron offer. Both the input and output can either be ItemStack or FluidStack. An exception will be thrown if this is not the case.
      * This is a default offer, meaning it will be put in a clean config load. After that the user can change it at will to remove this added recipe.
      * It's a static offer, meaning if it exists in the instance, it will be there forever (like the Emerald --> PCB Blueprint offer).

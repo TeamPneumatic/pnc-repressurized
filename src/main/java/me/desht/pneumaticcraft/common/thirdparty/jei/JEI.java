@@ -38,7 +38,7 @@ public class JEI implements IModPlugin {
         registry.addRecipes(AssemblyRecipe.drillLaserRecipes, ModCategoryUid.ASSEMBLY_CONTROLLER);
         registry.addRecipes(new JEIAmadronTradeCategory(jeiHelpers).getAllRecipes(), ModCategoryUid.AMADRON_TRADE);
         if (ConfigHandler.general.explosionCrafting) {
-            registry.addRecipes(new JEICompressedIronCategory(jeiHelpers).getAllRecipes(), ModCategoryUid.COMPRESSED_IRON_EXPLOSION);
+            registry.addRecipes(new JEIExplosionCraftingCategory(jeiHelpers).getAllRecipes(), ModCategoryUid.EXPLOSION_CRAFTING);
         }
 
         registry.handleRecipes(PressureChamberRecipe.class,
@@ -79,7 +79,7 @@ public class JEI implements IModPlugin {
                 new JEIPlasticMixerCategory(helpers)
         );
         if (ConfigHandler.general.explosionCrafting) {
-            registry.addRecipeCategories(new JEICompressedIronCategory(helpers));
+            registry.addRecipeCategories(new JEIExplosionCraftingCategory(helpers));
         }
     }
 }
