@@ -18,6 +18,7 @@ import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.EnumDifficulty;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
@@ -37,13 +38,17 @@ public class EventHandlerPneumaticArmor {
             }
             CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer(player);
             if (!handler.isArmorEnabled()) return;
+            if (event.getEntity().world.getDifficulty() == EnumDifficulty.HARD && handler.isJetBootsActive()) {
+                event.setDamageMultiplier(0.2F);
+                return;  // thrusting into the ground hurts at hard difficulty!
+            }
 
             ItemPneumaticArmor boots = (ItemPneumaticArmor) stack.getItem();
             float airNeeded = event.getDistance() * PneumaticValues.PNEUMATIC_ARMOR_FALL_USAGE;
             float airAvailable = boots.getVolume(stack) * handler.getArmorPressure(EntityEquipmentSlot.FEET);
             if (airAvailable < 1) {
                 return;
-            } else if (airAvailable > airNeeded) {
+            } else if (airAvailable >= airNeeded) {
                 event.setCanceled(true);
             } else {
                 event.setDamageMultiplier(1.0F - (airAvailable / airNeeded));

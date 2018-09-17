@@ -38,6 +38,7 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.EnumDifficulty;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
@@ -302,6 +303,11 @@ public class CommonHUDHandler {
                 }
                 if (player.collidedHorizontally) {
                     double vel = Math.sqrt(player.motionZ * player.motionZ + player.motionX * player.motionX);
+                    if (player.world.getDifficulty() == EnumDifficulty.HARD) {
+                        vel *= 2;
+                    } else if (player.world.getDifficulty() == EnumDifficulty.NORMAL) {
+                        vel *= 1.5;
+                    }
                     if (vel > 2) {
                         player.playSound(vel > 2.5 ? SoundEvents.ENTITY_GENERIC_BIG_FALL : SoundEvents.ENTITY_GENERIC_SMALL_FALL, 1.0F, 1.0F);
                         player.attackEntityFrom(DamageSource.FLY_INTO_WALL, (float) vel);

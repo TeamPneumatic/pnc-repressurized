@@ -38,6 +38,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Entity Selector strings (as used in Sentry Turret, Drone Programs, (advanced) Air Grate Module can now be a sequence of filters, separated by ";".  If any element of the sequence matches, the filter matches.  e.g. "@mob;shulker" will match any mob or a shulker (shulkers, although hostile, are considered by Minecraft to be golems rather than mobs).
 * The minimum temperature for fluids to be considered as fuels for Liquid Compressors has been raised to 373K (100C) and is now configurable (see I:minimumFluidFuelTemperature)
 * When using a Pneumatic Helmet with Entity Tracker installed, drones no longer automatically show redstone particles where they're working; you now also need to have the Entity Tracker enabled, and have a Dispenser Upgrade installed (which is also required for drone debugging).  You also need to be within 32 blocks of the drone.
+* Jet Boots flight is now a little more hazardous at Hard difficulty level; you will take more damage from horizontal collisions, and your boots won't absorb all the fall damage if you hit the ground while thrusting.
 #### Fixes
 * Removing a drone or Network API from the programmable controller now resets its digging position, preventing a phantom digging laser being shown.
 * Fixed item loss bug with logistics drones and logistics modules when requesting a specific number of items from a Requester Frame with some (but not all) non-vanilla inventories.
