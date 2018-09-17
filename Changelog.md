@@ -6,7 +6,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
-### 0.8.0-??? (unreleased)
+### 0.8.0-267 (17 Sep 2018)
 #### New
 * Logistics frames now support fuzzy item meta and NBT matching, as well as whitelist/blacklist for filters. This can all be configured with a new side tab on the right of the logistics GUI. Default is whitelist, match meta, ignore NBT, as before.
 * Shulkers can be now be hacked (Pneumatic Helmet with Entity Tracker & Security Upgrades).  Disables Shulker missile attack and (usually) forces them open.
