@@ -41,8 +41,8 @@ public class JEIExplosionCraftingCategory extends JEISpecialCraftingCategory<JEI
                 inputList = OreDictionary.getOres(ecr.getOreDictKey());
             }
             if (!inputList.isEmpty()) {
-                recipe.addIngredient(new PositionedStack(inputList, 41, 0));
-                recipe.addOutput(new PositionedStack(ecr.getOutput(), 105, 0));
+                recipe.addIngredient(new PositionedStack(inputList, 41, 1));
+                recipe.addOutput(new PositionedStack(ecr.getOutput(), 105, 1));
                 recipes.add(recipe);
             } else {
                 Log.warning("could not determine JEI input for explosion crafting recipe " + ecr.getOutput());
