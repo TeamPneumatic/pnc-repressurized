@@ -12,4 +12,5 @@ public class ModCategoryUid {
     static final String REFINERY = Names.MOD_ID + ".refinery";
     static final String THERMO_PNEUMATIC = Names.MOD_ID + ".thermo_pneumatic";
     static final String UV_LIGHT_BOX = Names.MOD_ID + ".uv_light_box";
+    static final String HEAT_FRAME_COOLING = ".heat_frame_cooling";
 }

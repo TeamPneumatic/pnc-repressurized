@@ -50,6 +50,6 @@ public class WidgetTemperature extends WidgetBase {
 
     @Override
     public void addTooltip(int mouseX, int mouseY, List<String> curTip, boolean shift) {
-        curTip.add("Temperature: " + ((int) logic.getTemperature() - 273) + "C");
+        curTip.add("Temperature: " + ((int) logic.getTemperature() - 273) + "\u00b0C");
     }
 }

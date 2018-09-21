@@ -1,16 +1,13 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
 import me.desht.pneumaticcraft.common.recipes.PressureChamberRecipe;
-import me.desht.pneumaticcraft.common.util.OreDictionaryHelper;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.IJeiHelpers;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.oredict.OreDictionary;
-
 import org.apache.commons.lang3.tuple.Pair;
 
 public class JEIPressureChamberRecipeCategory extends PneumaticCraftCategory<JEIPressureChamberRecipeCategory.ChamberRecipeWrapper> {
@@ -33,7 +30,7 @@ public class JEIPressureChamberRecipeCategory extends PneumaticCraftCategory<JEI
         return new ResourceDrawable(Textures.GUI_NEI_PRESSURE_CHAMBER_LOCATION, 0, 0, 5, 11, 166, 130);
     }
 
-    public static class ChamberRecipeWrapper extends PneumaticCraftCategory.MultipleInputOutputRecipeWrapper {
+    static class ChamberRecipeWrapper extends PneumaticCraftCategory.MultipleInputOutputRecipeWrapper {
         float recipePressure;
 
         ChamberRecipeWrapper(PressureChamberRecipe recipe) {
@@ -61,11 +58,7 @@ public class JEIPressureChamberRecipeCategory extends PneumaticCraftCategory<JEI
                 this.addOutput(stack);
             }
             this.recipePressure = recipe.pressure;
-        }
-
-        @Override
-        public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
-            drawAnimatedPressureGauge(120, 27, -1, recipePressure, PneumaticValues.DANGER_PRESSURE_PRESSURE_CHAMBER, PneumaticValues.MAX_PRESSURE_PRESSURE_CHAMBER);
+            setUsedPressure(120, 27, this.recipePressure, PneumaticValues.DANGER_PRESSURE_TIER_ONE, PneumaticValues.MAX_PRESSURE_TIER_ONE);
         }
     }
 }

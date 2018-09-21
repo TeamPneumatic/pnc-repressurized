@@ -14,6 +14,7 @@ import mezz.jei.api.gui.*;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.gui.elements.DrawableResource;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
@@ -49,7 +50,9 @@ public abstract class PneumaticCraftCategory<T extends IRecipeWrapper> implement
         private final List<WidgetTank> outputLiquids = new ArrayList<>();
         private final List<IGuiWidget> tooltipWidgets = new ArrayList<>();
         private float pressure;
-        private boolean usePressure;
+        private float maxPressure;
+        private float dangerPressure;
+        private boolean drawPressureGauge;
         private int gaugeX, gaugeY;
         private WidgetTemperature tempWidget;
         private IHeatExchangerLogic heatExchanger;
@@ -124,11 +127,13 @@ public abstract class PneumaticCraftCategory<T extends IRecipeWrapper> implement
             tooltipWidgets.add(widget);
         }
 
-        void setUsedPressure(int x, int y, float pressure) {
-            usePressure = pressure > 0; //true;
+        void setUsedPressure(int x, int y, float pressure, float maxPressure, float dangerPressure) {
+            this.drawPressureGauge = true;
             this.pressure = pressure;
-            gaugeX = x;
-            gaugeY = y;
+            this.maxPressure = maxPressure;
+            this.dangerPressure = dangerPressure;
+            this.gaugeX = x;
+            this.gaugeY = y;
         }
 
         void setUsedTemperature(int x, int y, double temperature) {
@@ -141,7 +146,7 @@ public abstract class PneumaticCraftCategory<T extends IRecipeWrapper> implement
             for (IGuiWidget widget : tooltipWidgets) {
                 widget.render(0, 0, 0);
             }
-            if (usePressure) {
+            if (drawPressureGauge) {
                 drawAnimatedPressureGauge(gaugeX, gaugeY, -1, pressure, 5, 7);
             }
             if (tempWidget != null) {
@@ -168,6 +173,12 @@ public abstract class PneumaticCraftCategory<T extends IRecipeWrapper> implement
                 }
             }
 
+            if (drawPressureGauge
+                    && mouseX >= gaugeX - GuiUtils.PRESSURE_GAUGE_RADIUS && mouseX <= gaugeX + GuiUtils.PRESSURE_GAUGE_RADIUS
+                    && mouseY >= gaugeY - GuiUtils.PRESSURE_GAUGE_RADIUS && mouseY <= gaugeY + GuiUtils.PRESSURE_GAUGE_RADIUS) {
+                currenttip.add(this.pressure + " bar");
+            }
+
             return currenttip;
         }
 
@@ -178,10 +189,8 @@ public abstract class PneumaticCraftCategory<T extends IRecipeWrapper> implement
 
     }
 
-    static void drawAnimatedPressureGauge(int x, int y, float minPressure, float minWorkingPressure, float dangerPressure, float maxPressure) {
-        float p2 = minWorkingPressure > 0 ?
-            minWorkingPressure * ((float) tickTimer.getValue() / tickTimer.getMaxValue()) :
-            -1 - minWorkingPressure * ((float) tickTimer.getValue() / tickTimer.getMaxValue());
+    private static void drawAnimatedPressureGauge(int x, int y, float minPressure, float minWorkingPressure, float dangerPressure, float maxPressure) {
+        float p2 = minWorkingPressure * ((float) tickTimer.getValue() / tickTimer.getMaxValue());
         GuiUtils.drawPressureGauge(FMLClientHandler.instance().getClient().fontRenderer, minPressure, maxPressure, dangerPressure, minWorkingPressure, p2, x, y, 90);
     }
 
@@ -216,14 +225,16 @@ public abstract class PneumaticCraftCategory<T extends IRecipeWrapper> implement
 
             for (int i = 0; i < ingredients.getInputs(FluidStack.class).size(); i++) {
                 WidgetTank tank = recipe.inputLiquids.get(i);
-                IDrawable tankOverlay = new ResourceDrawable(Textures.WIDGET_TANK, 0, 0, 0, 0, tank.getBounds().width, tank.getBounds().height, tank.getBounds().width, tank.getBounds().height);
+//                IDrawable tankOverlay = new ResourceDrawable(Textures.WIDGET_TANK, 0, 0, 0, 0, tank.getBounds().width, tank.getBounds().height, tank.getBounds().width, tank.getBounds().height);
+                IDrawable tankOverlay = new DrawableResource(Textures.WIDGET_TANK, 0, 0, tank.getBounds().width, tank.getBounds().height, 0, 0, 0, 0, tank.getBounds().width, tank.getBounds().height);
                 recipeLayout.getFluidStacks().init(i, true, tank.x, tank.y, tank.getBounds().width, tank.getBounds().height, tank.getTank().getCapacity(), true, tankOverlay);
                 recipeLayout.getFluidStacks().set(i, tank.getFluid());
             }
 
             for (int i = 0; i < ingredients.getOutputs(FluidStack.class).size(); i++) {
                 WidgetTank tank = recipe.outputLiquids.get(i);
-                IDrawable tankOverlay = new ResourceDrawable(Textures.WIDGET_TANK, 0, 0, 0, 0, tank.getBounds().width, tank.getBounds().height, tank.getBounds().width, tank.getBounds().height);
+//                IDrawable tankOverlay = new ResourceDrawable(Textures.WIDGET_TANK, 0, 0, 0, 0, tank.getBounds().width, tank.getBounds().height, tank.getBounds().width, tank.getBounds().height);
+                IDrawable tankOverlay = new DrawableResource(Textures.WIDGET_TANK, 0, 0, tank.getBounds().width, tank.getBounds().height, 0, 0, 0, 0, tank.getBounds().width, tank.getBounds().height);
                 recipeLayout.getFluidStacks().init(recipe.inputLiquids.size() + i, false, tank.x, tank.y, tank.getBounds().width, tank.getBounds().height, tank.getTank().getCapacity(), true, tankOverlay);
                 recipeLayout.getFluidStacks().set(recipe.inputLiquids.size() + i, tank.getFluid());
             }

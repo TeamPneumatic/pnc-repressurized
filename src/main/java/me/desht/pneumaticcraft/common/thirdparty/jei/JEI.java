@@ -37,6 +37,7 @@ public class JEI implements IModPlugin {
         registry.addRecipes(AssemblyRecipe.laserRecipes, ModCategoryUid.ASSEMBLY_CONTROLLER);
         registry.addRecipes(AssemblyRecipe.drillLaserRecipes, ModCategoryUid.ASSEMBLY_CONTROLLER);
         registry.addRecipes(new JEIAmadronTradeCategory(jeiHelpers).getAllRecipes(), ModCategoryUid.AMADRON_TRADE);
+        registry.addRecipes(new JEIHeatFrameCoolingCategory(jeiHelpers).getAllRecipes(), ModCategoryUid.HEAT_FRAME_COOLING);
         if (ConfigHandler.general.explosionCrafting) {
             registry.addRecipes(new JEIExplosionCraftingCategory(jeiHelpers).getAllRecipes(), ModCategoryUid.EXPLOSION_CRAFTING);
         }
@@ -61,6 +62,7 @@ public class JEI implements IModPlugin {
         registry.addRecipeCatalyst(new ItemStack(Blockss.REFINERY), ModCategoryUid.REFINERY);
         registry.addRecipeCatalyst(new ItemStack(Blockss.THERMOPNEUMATIC_PROCESSING_PLANT), ModCategoryUid.THERMO_PNEUMATIC);
         registry.addRecipeCatalyst(new ItemStack(Blockss.UV_LIGHT_BOX), ModCategoryUid.UV_LIGHT_BOX);
+        registry.addRecipeCatalyst(new ItemStack(Itemss.HEAT_FRAME), ModCategoryUid.HEAT_FRAME_COOLING);
 
         registry.addAdvancedGuiHandlers(new GuiTabHandler());
     }
@@ -76,7 +78,8 @@ public class JEI implements IModPlugin {
                 new JEIEtchingAcidCategory(helpers),
                 new JEIUVLightBoxCategory(helpers),
                 new JEIAmadronTradeCategory(helpers),
-                new JEIPlasticMixerCategory(helpers)
+                new JEIPlasticMixerCategory(helpers),
+                new JEIHeatFrameCoolingCategory(helpers)
         );
         if (ConfigHandler.general.explosionCrafting) {
             registry.addRecipeCategories(new JEIExplosionCraftingCategory(helpers));

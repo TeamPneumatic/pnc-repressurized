@@ -6,6 +6,13 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
+### 0.8.1-??? (unreleased)
+#### Updates
+* Some JEI tweaks:
+  * Added support for Heat Frame Cooling recipes (by default just lava bucket->obsidian and water bucket->ice, but recipes can be added with CraftTweaker).
+  * Recipes which show a pressure gauge (Pressure Chamber, Thermopneumatic Processing Plant) now show a tooltip with the exact pressure required.
+  * Thermopneumatic Processing Plant recipes (lubricant & plastic by default) which don't care about pressure no longer show the pressure gauge at all.
+
 ### 0.8.0-267 (17 Sep 2018)
 #### New
 * Logistics frames now support fuzzy item meta and NBT matching, as well as whitelist/blacklist for filters. This can all be configured with a new side tab on the right of the logistics GUI. Default is whitelist, match meta, ignore NBT, as before.

@@ -980,13 +980,13 @@ hud.msg.state=State
 hud.msg.active=Active
 hud.msg.inactive=Inactive
 
-waila.temperature=§7Temperature: §f%sC
-waila.temperature.north=§7North Temperature: §f%sC
-waila.temperature.south=§7South Temperature: §f%sC
-waila.temperature.west=§7West Temperature: §f%sC
-waila.temperature.east=§7East Temperature: §f%sC
-waila.temperature.up=§7Top Temperature: §f%sC
-waila.temperature.down=§7Bottom Temperature: §f%sC
+waila.temperature=§7Temperature: §f%s°C
+waila.temperature.north=§7North Temperature: §f%s°C
+waila.temperature.south=§7South Temperature: §f%s°C
+waila.temperature.west=§7West Temperature: §f%s°C
+waila.temperature.east=§7East Temperature: §f%s°C
+waila.temperature.up=§7Top Temperature: §f%s°C
+waila.temperature.down=§7Bottom Temperature: §f%s°C
 waila.logisticsModule.transporting=§9Transporting
 waila.logisticsModule.notEnoughAir=§6Not enough pressure to transport the items/fluids over that distance.
 waila.logisticsModule.powered=§2Online
@@ -1075,7 +1075,9 @@ achievement.dw9x9.desc=Build a 9x9 house made out of Cobblestone, the perfect si
 gui.nei.recipe.etchingAcid=Create a pool of Etching Acid (one bucket is enough). Throw in an Empty PCB which has been exposed in a UV Light Box. This process will take 5 minutes.
 gui.nei.recipe.uvLightBox=Create a UV Light Box, provide pressure, and insert an Empty PCB. This process takes about 10 minutes (without any Speed Upgrades).
 gui.nei.recipe.explosionCrafting=Throw some of the input material on the ground, and set off an explosion next to it. \n \n§eAverage material loss rate: %d%%
+gui.nei.recipe.heatFrameCooling=Put the input material in an inventory with a Heat Frame attached, and reduce the temperature of the Heat Frame to below 0°C.
 gui.nei.title.explosionCrafting=Explosion Crafting
+gui.nei.title.heatFrameCooling=Heat Frame Cooling
 
 #Amadron
 drone.amadronDeliveryDrone=Amadron Delivery Drone
