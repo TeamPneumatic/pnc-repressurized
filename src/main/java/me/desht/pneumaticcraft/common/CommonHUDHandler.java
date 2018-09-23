@@ -16,6 +16,7 @@ import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.common.util.WorldAndCoord;
+import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Sounds;
@@ -426,10 +427,12 @@ public class CommonHUDHandler {
         ItemStack armorStack = player.getItemStackFromSlot(slot);
 
         ItemStack[] upgradeStacks = UpgradableItemUtils.getUpgradeStacks(armorStack);
+        Log.info("ISSUE254: upgrade stacks in " + slot + " = " + Arrays.toString(upgradeStacks));
         Arrays.fill(upgradeRenderersInserted[slot.getIndex()], false);
         for (int i = 0; i < upgradeRenderersInserted[slot.getIndex()].length; i++) {
             upgradeRenderersInserted[slot.getIndex()][i] = isModuleEnabled(upgradeStacks, UpgradeRenderHandlerList.instance().getHandlersForSlot(slot).get(i));
         }
+        Log.info("ISSUE254: inserted in " + slot + " = " + Arrays.toString(upgradeRenderersInserted[slot.getIndex()]));
 
         Arrays.fill(upgradeMatrix[slot.getIndex()], 0);
         for (ItemStack stack : upgradeStacks) {
@@ -437,6 +440,7 @@ public class CommonHUDHandler {
                 upgradeMatrix[slot.getIndex()][((ItemMachineUpgrade) stack.getItem()).getUpgradeType().ordinal()] += stack.getCount();
             }
         }
+        Log.info("ISSUE254: upgrade matrix for " + slot + " = " + Arrays.toString(upgradeMatrix[slot.getIndex()]));
 
         magnetRadius = PneumaticValues.MAGNET_BASE_RANGE
                 + Math.min(getUpgradeCount(EntityEquipmentSlot.CHEST, EnumUpgrade.MAGNET), PneumaticValues.MAGNET_MAX_UPGRADES);

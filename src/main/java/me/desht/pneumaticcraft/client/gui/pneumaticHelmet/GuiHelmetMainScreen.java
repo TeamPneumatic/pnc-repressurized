@@ -11,6 +11,7 @@ import me.desht.pneumaticcraft.client.render.pneumaticArmor.UpgradeRenderHandler
 import me.desht.pneumaticcraft.common.CommonHUDHandler;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.item.Itemss;
+import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
@@ -96,17 +97,20 @@ public class GuiHelmetMainScreen extends GuiPneumaticScreenBase implements IGuiS
         for (EntityEquipmentSlot slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
             List<IUpgradeRenderHandler> renderHandlers = UpgradeRenderHandlerList.instance().getHandlersForSlot(slot);
             for (int i = 0; i < renderHandlers.size(); i++) {
+                if (!inInitPhase) Log.info(String.format("ISSUE254: render handler inserted for %s/%d = %b", slot.toString(), i, CommonHUDHandler.getHandlerForPlayer().isUpgradeRendererInserted(slot, i)));
                 if (inInitPhase || CommonHUDHandler.getHandlerForPlayer().isUpgradeRendererInserted(slot, i)) {
                     IUpgradeRenderHandler upgradeRenderHandler = renderHandlers.get(i);
                     if (inInitPhase
                             || FMLClientHandler.instance().getClient().player.getItemStackFromSlot(slot).getItem() instanceof ItemPneumaticArmor
                             || upgradeRenderHandler instanceof MainHelmetHandler) {
+                        Log.info("ISSUE254: about to create options page " + pageNumber + " for " + upgradeRenderHandler.getUpgradeName() + ", slot = " + slot);
                         IOptionPage optionPage = upgradeRenderHandler.getGuiOptionsPage();
                         if (optionPage != null) {
                             List<ItemStack> stacks = new ArrayList<>();
                             stacks.add(ARMOR_STACKS[upgradeRenderHandler.getEquipmentSlot().getIndex()]);
                             Arrays.stream(upgradeRenderHandler.getRequiredUpgrades()).map(ItemStack::new).forEach(stacks::add);
                             upgradeOptions.add(new UpgradeOption(optionPage, upgradeRenderHandler.getUpgradeName(), stacks.toArray(new ItemStack[0])));
+                            Log.info("ISSUE254: options page added for " + upgradeRenderHandler.getUpgradeName());
                         }
                     }
                 }
