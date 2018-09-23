@@ -1,16 +1,16 @@
 package me.desht.pneumaticcraft.common.recipes;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-
 import me.desht.pneumaticcraft.api.recipe.IPressureChamberRecipe;
+import me.desht.pneumaticcraft.api.recipe.ItemIngredient;
 import me.desht.pneumaticcraft.common.util.ItemStackHandlerIterable;
-import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.init.Enchantments;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
-import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
 
 import java.util.ArrayList;
@@ -25,8 +25,8 @@ public class PressureChamberVacuumEnchantHandler implements IPressureChamberReci
     }
 
     @Override
-    public boolean isValidRecipe(ItemStackHandler inputStacks) {
-        return !getDisenchantableItem(inputStacks).isEmpty() && !getBook(inputStacks).isEmpty();
+    public boolean isValidRecipe(ItemStackHandler chamberHandler) {
+        return !getDisenchantableItem(chamberHandler).isEmpty() && !getBook(chamberHandler).isEmpty();
 
     }
     
@@ -47,9 +47,9 @@ public class PressureChamberVacuumEnchantHandler implements IPressureChamberReci
     }
 
     @Override
-    public NonNullList<ItemStack> craftRecipe(ItemStackHandler inputStacks) {
-        ItemStack enchantedStack = getDisenchantableItem(inputStacks);
-        getBook(inputStacks).shrink(1);
+    public NonNullList<ItemStack> craftRecipe(ItemStackHandler chamberHandler) {
+        ItemStack enchantedStack = getDisenchantableItem(chamberHandler);
+        getBook(chamberHandler).shrink(1);
         
         // take a random enchantment off the enchanted item...
         Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(enchantedStack);
@@ -64,5 +64,24 @@ public class PressureChamberVacuumEnchantHandler implements IPressureChamberReci
         EnchantmentHelper.setEnchantments(ImmutableMap.of(strippedEnchantment, level), enchantedBook);
 
         return NonNullList.from(ItemStack.EMPTY, enchantedBook);
+    }
+
+    @Override
+    public List<ItemIngredient> getInput() {
+        ItemStack stack = new ItemStack(Items.DIAMOND_PICKAXE);
+        stack.addEnchantment(Enchantments.FORTUNE, 1);
+        ItemIngredient pick = new ItemIngredient(stack).setTooltip("gui.nei.tooltip.vacuumEnchantItem");
+        ItemIngredient book = new ItemIngredient(Items.BOOK, 1, 0);
+        return ImmutableList.of(pick, book);
+    }
+
+    @Override
+    public NonNullList<ItemStack> getResult() {
+        ItemStack pick = new ItemStack(Items.DIAMOND_PICKAXE);
+        IPressureChamberRecipe.setTooltipKey(pick, "gui.nei.tooltip.vacuumEnchantItemOut");
+        ItemStack book = new ItemStack(Items.ENCHANTED_BOOK);
+        book.addEnchantment(Enchantments.FORTUNE, 1);
+        IPressureChamberRecipe.setTooltipKey(book, "gui.nei.tooltip.vacuumEnchantBookOut");
+        return NonNullList.from(ItemStack.EMPTY, pick, book);
     }
 }

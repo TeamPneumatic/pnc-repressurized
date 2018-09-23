@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.thirdparty.igwmod;
 import igwmod.TextureSupplier;
 import igwmod.api.IRecipeIntegrator;
 import igwmod.gui.*;
-import me.desht.pneumaticcraft.common.recipes.PneumaticRecipeRegistry;
+import me.desht.pneumaticcraft.api.recipe.IPressureChamberRecipe;
 import me.desht.pneumaticcraft.common.recipes.PressureChamberRecipe;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.resources.I18n;
@@ -46,10 +46,9 @@ public class IntegratorPressureChamber implements IRecipeIntegrator {
         } else if (arguments[2].equals("villagers")) {
             handleVillagers(x, y, locatedTextures);
         } else {
-
-            PressureChamberRecipe foundRecipe = null;
-            for (PressureChamberRecipe recipe : PressureChamberRecipe.chamberRecipes) {
-                for (ItemStack output : recipe.output) {
+            IPressureChamberRecipe foundRecipe = null;
+            for (IPressureChamberRecipe recipe : PressureChamberRecipe.recipes) {
+                for (ItemStack output : recipe.getResult()) {
                     if (IGWHandler.getNameFromStack(output).equals(arguments[2])) {
                         foundRecipe = recipe;
                         break;
@@ -59,15 +58,15 @@ public class IntegratorPressureChamber implements IRecipeIntegrator {
             if (foundRecipe == null) throw new IllegalArgumentException("No recipe found for the key " + arguments[2]);
 
             locatedStrings.add(new LocatedString(I18n.format("igwmod.pressureChamber.requiredPressure") + ":", x + 180, y + 10, 0xFF000000, false));
-            locatedStrings.add(new LocatedString(foundRecipe.pressure + " bar", x + 215, y + 20, 0xFF000000, false));
+            locatedStrings.add(new LocatedString(foundRecipe.getCraftingPressure() + " bar", x + 215, y + 20, 0xFF000000, false));
 
-            for (int i = 0; i < foundRecipe.input.length; i++) {
-                LocatedStack stack = new LocatedStack(PneumaticRecipeRegistry.getSingleStack(foundRecipe.input[i]), (int) ((x + 36 + i % 3 * 34) * GuiWiki.TEXT_SCALE), (int) ((y + 102 - i / 3 * 34) * GuiWiki.TEXT_SCALE));
+            for (int i = 0; i < foundRecipe.getInput().size(); i++) {
+                LocatedStack stack = new LocatedStack(foundRecipe.getInput().get(i).getSingleStack(), (int) ((x + 36 + i % 3 * 34) * GuiWiki.TEXT_SCALE), (int) ((y + 102 - i / 3 * 34) * GuiWiki.TEXT_SCALE));
                 locatedStacks.add(stack);
             }
 
-            for (int i = 0; i < foundRecipe.output.size(); i++) {
-                LocatedStack stack = new LocatedStack(foundRecipe.output.get(i), (int) ((x + 180 + i % 3 * 36) * GuiWiki.TEXT_SCALE), (int) ((y + 60 + i / 3 * 36) * GuiWiki.TEXT_SCALE));
+            for (int i = 0; i < foundRecipe.getResult().size(); i++) {
+                LocatedStack stack = new LocatedStack(foundRecipe.getResult().get(i), (int) ((x + 180 + i % 3 * 36) * GuiWiki.TEXT_SCALE), (int) ((y + 60 + i / 3 * 36) * GuiWiki.TEXT_SCALE));
                 locatedStacks.add(stack);
             }
         }

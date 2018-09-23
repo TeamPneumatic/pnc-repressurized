@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.thirdparty.crafttweaker.handlers;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.item.IIngredient;
 import crafttweaker.api.item.IItemStack;
+import me.desht.pneumaticcraft.api.recipe.IPressureChamberRecipe;
 import me.desht.pneumaticcraft.common.recipes.PressureChamberRecipe;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.CraftTweaker;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.util.Helper;
@@ -23,31 +24,31 @@ public class PressureChamber {
 	
 	@ZenMethod
 	public static void addRecipe(IIngredient[] input, double pressure, IItemStack[] output) {
-		CraftTweaker.ADDITIONS.add(new Add(new PressureChamberRecipe(Helper.toInput(input), (float)pressure, Helper.toStacks(output))));
+		CraftTweaker.ADDITIONS.add(new Add(new PressureChamberRecipe.SimpleRecipe(Helper.toItemIngredients(input), (float)pressure, Helper.toStacks(output))));
 	}
     
     @ZenMethod
     public static void removeRecipe(IIngredient[] output)
     {
-    	CraftTweaker.REMOVALS.add(new Remove(PressureChamberRecipe.chamberRecipes, output));
+    	CraftTweaker.REMOVALS.add(new Remove(PressureChamberRecipe.recipes, output));
     }
     
     @ZenMethod
     public static void removeAllRecipes() {
-        CraftTweaker.REMOVALS.add(new RemoveAllRecipes<PressureChamberRecipe>(PressureChamber.name, PressureChamberRecipe.chamberRecipes));
+        CraftTweaker.REMOVALS.add(new RemoveAllRecipes<>(PressureChamber.name, PressureChamberRecipe.recipes));
     }   
     
-    private static class Add extends ListAddition<PressureChamberRecipe> {
-        public Add(PressureChamberRecipe recipe) {
-            super(PressureChamber.name, PressureChamberRecipe.chamberRecipes, recipe);
+    private static class Add extends ListAddition<IPressureChamberRecipe> {
+        public Add(IPressureChamberRecipe recipe) {
+            super(PressureChamber.name, PressureChamberRecipe.recipes, recipe);
         }
     }
     
-    private static class Remove extends ListRemoval<PressureChamberRecipe> {
+    private static class Remove extends ListRemoval<IPressureChamberRecipe> {
     	private final IIngredient[] output;
     	
-        public Remove(List<PressureChamberRecipe> recipes, IIngredient[] output) {
-            super(PressureChamber.name, PressureChamberRecipe.chamberRecipes, recipes);
+        public Remove(List<IPressureChamberRecipe> recipes, IIngredient[] output) {
+            super(PressureChamber.name, PressureChamberRecipe.recipes, recipes);
             this.output = output;
         }
         
@@ -59,9 +60,8 @@ public class PressureChamber {
         }
         
         private void addRecipes() {
-            for (PressureChamberRecipe r : recipes) {
-            	
-            	if(Stream.of(output).allMatch(o -> r.output.stream().anyMatch(ro -> Helper.matches(o, Helper.toIItemStack(ro))))) {
+            for (IPressureChamberRecipe r : recipes) {
+            	if(Stream.of(output).allMatch(o -> r.getResult().stream().anyMatch(ro -> Helper.matches(o, Helper.toIItemStack(ro))))) {
             		entries.add(r);
             	}
             }

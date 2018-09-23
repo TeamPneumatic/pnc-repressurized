@@ -1,19 +1,21 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
+import com.google.common.math.IntMath;
 import me.desht.pneumaticcraft.api.recipe.IPressureChamberRecipe;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IAirListener;
 import me.desht.pneumaticcraft.common.DamageSourcePneumaticCraft;
-import me.desht.pneumaticcraft.common.NBTUtil;
 import me.desht.pneumaticcraft.common.VillagerHandler;
 import me.desht.pneumaticcraft.common.block.BlockPressureChamberValve;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.block.IBlockPressureChamber;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
-import me.desht.pneumaticcraft.common.recipes.PneumaticRecipeRegistry;
+import me.desht.pneumaticcraft.common.network.NetworkHandler;
+import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.recipes.PressureChamberRecipe;
 import me.desht.pneumaticcraft.common.util.ItemStackHandlerIterable;
+import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.Block;
@@ -21,6 +23,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.passive.EntityVillager;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -28,6 +31,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -40,8 +44,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
-import java.util.stream.Stream;
 
 public class TileEntityPressureChamberValve extends TileEntityPneumaticBase implements IMinWorkingPressure, IAirListener {
     @DescSynced
@@ -58,12 +60,21 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
     @GuiSynced
     public float recipePressure;
     @DescSynced
-    private ItemStackHandler itemsInChamber = new ItemStackHandler(27);
+    private ItemStackHandler itemsInChamber = new ItemStackHandler(27) {
+        @Override
+        protected void onContentsChanged(int slot) {
+            recipeRecalcNeeded = true;
+        }
+    };
 
-    private final Random rand = new Random();
+    // list of recipes which can be made from the current chamber contents, not considering the current pressure
+    private final List<IPressureChamberRecipe> applicableRecipes = new ArrayList<>();
+    private boolean recipeRecalcNeeded = true;
+
+    private long lastSoundTick;  // to avoid excessive spamming of the pop sound
 
     public TileEntityPressureChamberValve() {
-        super(PneumaticValues.DANGER_PRESSURE_PRESSURE_CHAMBER, PneumaticValues.MAX_PRESSURE_PRESSURE_CHAMBER, PneumaticValues.VOLUME_PRESSURE_CHAMBER, 4);
+        super(PneumaticValues.DANGER_PRESSURE_PRESSURE_CHAMBER, PneumaticValues.MAX_PRESSURE_PRESSURE_CHAMBER, PneumaticValues.VOLUME_PRESSURE_CHAMBER_PER_EMPTY, 4);
         accessoryValves = new ArrayList<>();
         nbtValveList = new ArrayList<>();
     }
@@ -128,7 +139,8 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
                     accessoryValves.add((TileEntityPressureChamberValve) te);
                 }
             }
-            if (accessoryValves.isEmpty()) {//Hacky solution for an unexplainable bug.
+            if (accessoryValves.isEmpty()) {
+                //Hacky solution for an unexplainable bug.
                 invalidateMultiBlock();
                 checkIfProperlyFormed(getWorld(), getPos());
             }
@@ -136,56 +148,45 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
                 getWorld().markBlockRangeForRenderUpdate(getPos().getX(), getPos().getY(), getPos().getZ(), getPos().getX(), getPos().getY(), getPos().getZ());
             }
         }
+
         if (!getWorld().isRemote) {
             checkForAirLeak();
-
         }
+
         super.update();
 
-        /*
-         * FIXME pressure chamber particle effects not updating properly
-         * if(!getWorld().isRemote){ pressureUpdateTimer++;
-         * System.out.println("timer: " + pressureUpdateTimer);
-         * if(pressureUpdateTimer > 60){ pressureUpdateTimer = 0;
-         * updatePressuresToClient(); } }
-         */
-
         if (multiBlockSize != 0 && !getWorld().isRemote) {
-            isValidRecipeInChamber = false;
-            isSufficientPressureInChamber = false;
-            recipePressure = Float.MAX_VALUE;
-
-            // simple recipes
-            //TODO: Express 'simple' recipes in terms of the generic IPressureChamberRecipe.
-            for (PressureChamberRecipe recipe : PressureChamberRecipe.chamberRecipes) {
-                boolean isValidRecipeInChamberFlag = canBeCompressed(recipe);
-                boolean isSufficientPressureInChamberFlag = recipe.pressure <= getPressure() && recipe.pressure > 0F || recipe.pressure >= getPressure() && recipe.pressure < 0F;
-                if (isValidRecipeInChamberFlag) {
-                    isValidRecipeInChamber = true;
-                    if (Math.abs(recipe.pressure) < Math.abs(recipePressure)) {
-                        recipePressure = recipe.pressure;
+            if (recipeRecalcNeeded) {
+                isValidRecipeInChamber = false;
+                isSufficientPressureInChamber = false;
+                recipePressure = Float.MAX_VALUE;
+                applicableRecipes.clear();
+                for (IPressureChamberRecipe recipe : PressureChamberRecipe.recipes) {
+                    if (recipe.isValidRecipe(itemsInChamber)) {
+                        applicableRecipes.add(recipe);
                     }
                 }
-                if (isSufficientPressureInChamberFlag) isSufficientPressureInChamber = true;
-                if (isValidRecipeInChamberFlag && isSufficientPressureInChamberFlag) {
-                    clearStacksInChamber(recipe.input);
-                    giveOutput(recipe.output);
-                }
+                isValidRecipeInChamber = !applicableRecipes.isEmpty();
+                recipeRecalcNeeded = false;
             }
 
-            // special recipes
-            for (IPressureChamberRecipe recipe : PressureChamberRecipe.specialRecipes) {
-                boolean isValidRecipeInChamberFlag = recipe.isValidRecipe(itemsInChamber);
-                boolean isSufficientPressureInChamberFlag = recipe.getCraftingPressure() <= getPressure() && recipe.getCraftingPressure() > 0F || recipe.getCraftingPressure() >= getPressure() && recipe.getCraftingPressure() < 0F;
-                if (isValidRecipeInChamberFlag) {
-                    isValidRecipeInChamber = true;
-                    if (Math.abs(recipe.getCraftingPressure()) < Math.abs(recipePressure)) {
-                        recipePressure = recipe.getCraftingPressure();
-                    }
+            for (IPressureChamberRecipe recipe : applicableRecipes) {
+                boolean pressureOK = recipe.getCraftingPressure() <= getPressure() && recipe.getCraftingPressure() > 0F
+                        || recipe.getCraftingPressure() >= getPressure() && recipe.getCraftingPressure() < 0F;
+                if (Math.abs(recipe.getCraftingPressure()) < Math.abs(recipePressure)) {
+                    recipePressure = recipe.getCraftingPressure();
                 }
-                if (isSufficientPressureInChamberFlag) isSufficientPressureInChamber = true;
-                if (isValidRecipeInChamberFlag && isSufficientPressureInChamberFlag) {
+                if (pressureOK) {
+                    isSufficientPressureInChamber = true;
                     giveOutput(recipe.craftRecipe(itemsInChamber));
+                    if (getWorld().getTotalWorldTime() - lastSoundTick > 5) {
+                        NetworkHandler.sendToAllAround(new PacketPlaySound(SoundEvents.ENTITY_CHICKEN_EGG, SoundCategory.BLOCKS, getPos(), 0.5f, 0.8f + getWorld().rand.nextFloat() * 0.4f, false), getWorld());
+                        lastSoundTick = getWorld().getTotalWorldTime();
+                    }
+                    // Craft at most one recipe each tick; this is because crafting changes the contents of the
+                    // chamber, possibly invalidating other applicable recipes.  Modifying the chamber's contents
+                    // automatically triggers a rescan for applicable recipes on the next tick.
+                    break;
                 }
             }
 
@@ -214,15 +215,14 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
         if (getWorld().isRemote && getPressure() > 0.2D) {
             int particles = (int) Math.pow(multiBlockSize - 2, 3);
             for (int i = 0; i < particles; i++) {
-                if (rand.nextInt(Math.max(1, 8 - (int) (getPressure() * 1.5D))) == 0) {
-                    double posX = multiBlockX + 1D + rand.nextDouble() * (multiBlockSize - 2D);
-                    double posY = multiBlockY + 1.5D + rand.nextDouble() * (multiBlockSize - 2.5D);
-                    double posZ = multiBlockZ + 1D + rand.nextDouble() * (multiBlockSize - 2D);
+                if (getWorld().rand.nextInt(Math.max(1, 8 - (int) (getPressure() * 1.5D))) == 0) {
+                    double posX = multiBlockX + 1D + getWorld().rand.nextDouble() * (multiBlockSize - 2D);
+                    double posY = multiBlockY + 1.5D + getWorld().rand.nextDouble() * (multiBlockSize - 2.5D);
+                    double posZ = multiBlockZ + 1D + getWorld().rand.nextDouble() * (multiBlockSize - 2D);
                     getWorld().spawnParticle(EnumParticleTypes.EXPLOSION_NORMAL, posX, posY, posZ, 0D, 0D, 0D);
                 }
             }
         }
-
     }
 
     private void checkForAirLeak() {
@@ -284,43 +284,12 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
             if (!connected[i]) getAirHandler(null).airLeak(EnumFacing.getFront(i));
         }
     }
-    
-    private Stream<ItemStack> getFilteredChamberContents(Object item){
-        return new ItemStackHandlerIterable(itemsInChamber)
-                    .stream()
-                    .filter(stack -> !stack.isEmpty() && PneumaticRecipeRegistry.isItemEqual(item, stack));
-    }
 
-    private boolean canBeCompressed(PressureChamberRecipe recipe) {
-        for (Object in : recipe.input) {
-            if (in != null) {
-                int amount = getFilteredChamberContents(in).mapToInt(ItemStack::getCount).sum();
-                if (amount < PneumaticRecipeRegistry.getItemAmount(in)) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-    
-    private void clearStacksInChamber(Object... stacks){
-        for(Object stack : stacks){
-            int amountLeft = PneumaticRecipeRegistry.getItemAmount(stack);
-            for(int i = 0; i < itemsInChamber.getSlots(); i++){
-                ItemStack itemInChamber = itemsInChamber.getStackInSlot(i);
-                if(PneumaticRecipeRegistry.isItemEqual(stack, itemInChamber)){
-                    amountLeft -= itemsInChamber.extractItem(i, amountLeft, false).getCount();
-                }
-                if(amountLeft <= 0) break;
-            }
-        }
-    }
-    
     private void giveOutput(NonNullList<ItemStack> stacks){
-        for(ItemStack stack : stacks){            
+        for (ItemStack stack : stacks){
             stack = stack.copy();
             stack = ItemHandlerHelper.insertItem(itemsInChamber, stack, false);
-            if(!stack.isEmpty()) dropItemOnGround(stack); //As a last resort, actually drop an item in the chamber.
+            if (!stack.isEmpty()) dropItemOnGround(stack); //As a last resort, actually drop an item in the chamber.
         }
     }
 
@@ -433,17 +402,10 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
         multiBlockX = baseX;
         multiBlockY = baseY;
         multiBlockZ = baseZ;
-        getAirHandler(null).setDefaultVolume(PneumaticValues.VOLUME_PRESSURE_CHAMBER + (multiBlockSize > 0 ? (int) Math.pow(multiBlockSize - 2, 3) * PneumaticValues.VOLUME_PRESSURE_CHAMBER_PER_EMPTY : 0));
-//        IBlockState state = getWorld().getBlockState(getPos());
-//        if (state.getBlock() == Blockss.PRESSURE_CHAMBER_VALVE)
-//            getWorld().setBlockState(getPos(), state.withProperty(BlockPressureChamberValve.FORMED, multiBlockSize > 0), 2);
-
+        getAirHandler(null).setDefaultVolume(getDefaultVolume());
     }
 
     public static boolean checkIfProperlyFormed(World world, BlockPos pos) {
-        // ArrayList<int[]> blockList = getAccessoryTiles(new
-        // ArrayList<int[]>(), world, x,y,z);
-
         for (int i = 3; i < 6; i++) {
             if (checkForShiftedCubeOfSize(i, world, pos.getX(), pos.getY(), pos.getZ())) {
                 return true;
@@ -540,8 +502,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
         // set the multi-block coords in the valve TE
         teValve.setMultiBlockCoords(size, baseX, baseY, baseZ);
 
-        // set the redirections of right clicking and breaking a wall block to
-        // the valve.
+        // set the redirections of right clicking and breaking a wall block to the valve.
         for (int x = 0; x < size; x++) {
             for (int y = 0; y < size; y++) {
                 for (int z = 0; z < size; z++) {
@@ -600,4 +561,9 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
         return isValidRecipeInChamber ? recipePressure : -Float.MAX_VALUE;
     }
 
+    @Override
+    public int getDefaultVolume() {
+        int vol = super.getDefaultVolume();
+        return multiBlockSize > 3 ? vol * IntMath.pow(multiBlockSize - 2, 3) : vol;
+    }
 }

@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.ByteBuf;
-import me.desht.pneumaticcraft.common.util.Reflections;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
@@ -20,24 +19,26 @@ import net.minecraftforge.fml.common.network.ByteBufUtils;
 public class PacketPlaySound extends LocationDoublePacket<PacketPlaySound> {
     private SoundEvent soundEvent;
     private SoundCategory category;
-    private float volume, pitch;
-    private boolean bool;
+    private float volume;
+    private float pitch;
+    private boolean distanceDelay;
     private ResourceLocation soundName;
 
     public PacketPlaySound() {
     }
 
-    public PacketPlaySound(SoundEvent soundEvent, SoundCategory category, double x, double y, double z, float volume, float pitch, boolean bool) {
+    public PacketPlaySound(SoundEvent soundEvent, SoundCategory category, double x, double y, double z, float volume, float pitch, boolean distanceDelay) {
         super(x, y, z);
         this.soundEvent = soundEvent;
         this.soundName = soundEvent.soundName;
         this.category = category;
         this.volume = volume;
         this.pitch = pitch;
+        this.distanceDelay = distanceDelay;
     }
 
-    public PacketPlaySound(SoundEvent soundEvent, SoundCategory category, BlockPos pos, float volume, float pitch, boolean bool) {
-        this(soundEvent, category, pos.getX(), pos.getY(), pos.getZ(), volume, pitch, bool);
+    public PacketPlaySound(SoundEvent soundEvent, SoundCategory category, BlockPos pos, float volume, float pitch, boolean distanceDelay) {
+        this(soundEvent, category, pos.getX(), pos.getY(), pos.getZ(), volume, pitch, distanceDelay);
     }
 
     @Override
@@ -47,7 +48,7 @@ public class PacketPlaySound extends LocationDoublePacket<PacketPlaySound> {
         buffer.writeInt(category.ordinal());
         buffer.writeFloat(volume);
         buffer.writeFloat(pitch);
-        buffer.writeBoolean(bool);
+        buffer.writeBoolean(distanceDelay);
     }
 
     @Override
@@ -57,12 +58,12 @@ public class PacketPlaySound extends LocationDoublePacket<PacketPlaySound> {
         category = SoundCategory.values()[buffer.readInt()];
         volume = buffer.readFloat();
         pitch = buffer.readFloat();
-        bool = buffer.readBoolean();
+        distanceDelay = buffer.readBoolean();
     }
 
     @Override
     public void handleClientSide(PacketPlaySound message, EntityPlayer player) {
-        player.world.playSound(message.x, message.y, message.z, message.soundEvent, message.category, message.volume, message.pitch, message.bool);
+        player.world.playSound(message.x, message.y, message.z, message.soundEvent, message.category, message.volume, message.pitch, message.distanceDelay);
     }
 
     @Override

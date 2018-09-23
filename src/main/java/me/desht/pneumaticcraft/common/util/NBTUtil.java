@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.common;
+package me.desht.pneumaticcraft.common.util;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;

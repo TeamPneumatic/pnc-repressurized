@@ -8,6 +8,7 @@ import java.util.List;
 public class PositionedStack {
     private final List<ItemStack> stacks;
     private final int x, y;
+    private String tooltipKey;
 
     public PositionedStack(ItemStack stack, int x, int y) {
         this(Collections.singletonList(stack), x, y);
@@ -17,6 +18,15 @@ public class PositionedStack {
         this.stacks = stacks;
         this.x = x;
         this.y = y;
+    }
+
+    public PositionedStack setTooltipKey(String tooltipKey) {
+        this.tooltipKey = tooltipKey;
+        return this;
+    }
+
+    public String getTooltipKey() {
+        return tooltipKey;
     }
 
     public List<ItemStack> getStacks() {

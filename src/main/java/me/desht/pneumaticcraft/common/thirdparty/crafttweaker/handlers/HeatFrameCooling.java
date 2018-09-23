@@ -4,6 +4,7 @@ import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.item.IIngredient;
 import crafttweaker.api.item.IItemStack;
 import crafttweaker.api.oredict.IOreDictEntry;
+import me.desht.pneumaticcraft.api.recipe.ItemIngredient;
 import me.desht.pneumaticcraft.common.recipes.HeatFrameCoolingRecipe;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.CraftTweaker;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.util.Helper;
@@ -20,14 +21,13 @@ public class HeatFrameCooling {
 	
 	@ZenMethod
 	public static void addRecipe(IOreDictEntry input, IItemStack output) {
-		CraftTweaker.ADDITIONS.add(new Add(new HeatFrameCoolingRecipe(Helper.toPair(input), Helper.toStack(output))));
-	
+		CraftTweaker.ADDITIONS.add(new Add(new HeatFrameCoolingRecipe(Helper.toItemIngredient(input), Helper.toStack(output))));
 	}
 	
     @ZenMethod
     public static void addRecipe(IItemStack input, IItemStack output)
     {
-    	CraftTweaker.ADDITIONS.add(new Add(new HeatFrameCoolingRecipe(Helper.toStack(input), Helper.toStack(output))));
+    	CraftTweaker.ADDITIONS.add(new Add(new HeatFrameCoolingRecipe(new ItemIngredient(Helper.toStack(input)), Helper.toStack(output))));
     }
     
     @ZenMethod

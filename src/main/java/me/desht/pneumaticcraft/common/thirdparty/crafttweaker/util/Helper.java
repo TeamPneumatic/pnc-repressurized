@@ -7,6 +7,7 @@ import crafttweaker.api.liquid.ILiquidStack;
 import crafttweaker.api.oredict.IOreDictEntry;
 import crafttweaker.mc1120.item.MCItemStack;
 import crafttweaker.mc1120.liquid.MCLiquidStack;
+import me.desht.pneumaticcraft.api.recipe.ItemIngredient;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
@@ -26,7 +27,21 @@ public class Helper {
 	public static Pair<String, Integer> toPair(IOreDictEntry entry) {
 		return Pair.of(entry.getName(), entry.getAmount());
 	}
-	
+
+	public static ItemIngredient toItemIngredient(IOreDictEntry entry) { return new ItemIngredient(entry.getName(), entry.getAmount()); }
+
+	public static ItemIngredient[] toItemIngredients(IIngredient[] input) {
+	    List<ItemIngredient> res = new ArrayList<>();
+        for (IIngredient anInput : input) {
+            if (anInput instanceof IOreDictEntry) {
+                res.add(toItemIngredient((IOreDictEntry) anInput));
+            } else if (anInput instanceof IItemStack) {
+                res.add(new ItemIngredient(toStack((IItemStack) anInput)));
+            }
+        }
+        return res.toArray(new ItemIngredient[0]);
+    }
+
 	@SuppressWarnings("unchecked")
 	public static Object[] toInput(IIngredient[] input) {
 		@SuppressWarnings("rawtypes")
@@ -40,7 +55,7 @@ public class Helper {
 			}
 		}
 		
-		return inputs.toArray(new Object[inputs.size()]);
+		return inputs.toArray(new Object[0]);
 	}
 	
     public static void logError(String message) {
@@ -64,16 +79,16 @@ public class Helper {
             return ItemStack.EMPTY;
         } else {
             Object internal = iStack.getInternal();
-            if(!(internal instanceof ItemStack)) {
+            if (!(internal instanceof ItemStack)) {
                 logError("Not a valid item stack: " + iStack);
+                return ItemStack.EMPTY;
             }
-            
             return (ItemStack) internal;
         }
     }
     
     public static IItemStack[] toStacks(IIngredient[] iIngredient) {
-    	return Stream.of(iIngredient).map(i -> i.getItems()).flatMap(List::stream).toArray(IItemStack[]::new);
+    	return Stream.of(iIngredient).map(IIngredient::getItems).flatMap(List::stream).toArray(IItemStack[]::new);
     }
     
     public static ItemStack[] toStacks(IItemStack[] iStack) {

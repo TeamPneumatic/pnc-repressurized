@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.recipes;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.recipe.IPneumaticRecipeRegistry;
+import me.desht.pneumaticcraft.api.recipe.ItemIngredient;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.fluid.Fluids;
@@ -23,7 +24,7 @@ import net.minecraft.village.MerchantRecipe;
 import net.minecraft.village.MerchantRecipeList;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import org.apache.commons.lang3.tuple.ImmutablePair;
+import net.minecraftforge.items.ItemHandlerHelper;
 
 import java.util.List;
 
@@ -31,10 +32,14 @@ public class CraftingRegistrator {
     @GameRegistry.ObjectHolder("theoneprobe:probe")
     public static final Item ONE_PROBE = null;
 
+    private static ItemStack emptyPCB;
+
     public static void init() {
         // All crafting recipes are now defined in JSON
+        emptyPCB = new ItemStack(Itemss.EMPTY_PCB);
+        emptyPCB.setItemDamage(emptyPCB.getMaxDamage());
 
-        GameRegistry.addSmelting(Itemss.FAILED_PCB, new ItemStack(Itemss.EMPTY_PCB, 1, Itemss.EMPTY_PCB.getMaxDamage()), 0);
+        GameRegistry.addSmelting(Itemss.FAILED_PCB, emptyPCB, 0);
 
         addPressureChamberRecipes();
         addAssemblyRecipes();
@@ -60,35 +65,64 @@ public class CraftingRegistrator {
 
         // diamond
         if (ConfigHandler.recipes.enableCoalToDiamondsRecipe) {
-            registry.registerPressureChamberRecipe(new ItemStack[]{new ItemStack(Blocks.COAL_BLOCK, 8, 0)},
+            registry.registerPressureChamberRecipe(
+                    new ItemIngredient[]{new ItemIngredient("blockCoal", 8)},
                     4.0F,
                     new ItemStack[]{new ItemStack(Items.DIAMOND, 1, 0)});
         }
 
         // compressed iron
-        registry.registerPressureChamberRecipe(new Object[]{new ImmutablePair<>("ingotIron", 1)}, 2F,
+        registry.registerPressureChamberRecipe(
+                new ItemIngredient[]{new ItemIngredient("ingotIron", 1)},
+                2F,
                 new ItemStack[]{new ItemStack(Itemss.INGOT_IRON_COMPRESSED, 1, 0)});
-        registry.registerPressureChamberRecipe(new Object[]{new ImmutablePair<>("blockIron", 1)}, 2F,
+        registry.registerPressureChamberRecipe(
+                new ItemIngredient[]{new ItemIngredient("blockIron", 1)},
+                2F,
                 new ItemStack[]{new ItemStack(Blockss.COMPRESSED_IRON, 1, 0)});
 
         // turbine blade
-        registry.registerPressureChamberRecipe(new Object[]{new ImmutablePair<>("dustRedstone", 2), new ImmutablePair<>("ingotGold", 1)},
+        registry.registerPressureChamberRecipe(
+                new ItemIngredient[]{
+                        new ItemIngredient("dustRedstone", 2),
+                        new ItemIngredient("ingotGold", 1)},
                 1F,
                 new ItemStack[]{new ItemStack(Itemss.TURBINE_BLADE, 1, 0)});
+
         // Empty PCB
-        registry.registerPressureChamberRecipe(new Object[]{new ItemStack(Itemss.PLASTIC, 1, ItemPlastic.GREEN), new ImmutablePair<>(Names.INGOT_IRON_COMPRESSED, 1)},
+        registry.registerPressureChamberRecipe(
+                new ItemIngredient[]{
+                        new ItemIngredient(Itemss.PLASTIC, 1, ItemPlastic.GREEN),
+                        new ItemIngredient(Names.INGOT_IRON_COMPRESSED, 1)},
                 1.5F,
-                new ItemStack[]{new ItemStack(Itemss.EMPTY_PCB, 1, Itemss.EMPTY_PCB.getMaxDamage())});
+                new ItemStack[]{emptyPCB});
+
         // Etching Acid Bucket
-        registry.registerPressureChamberRecipe(new ItemStack[]{new ItemStack(Itemss.PLASTIC, 2, ItemPlastic.GREEN), new ItemStack(Items.ROTTEN_FLESH, 2, 0), new ItemStack(Items.GUNPOWDER, 2, 0), new ItemStack(Items.SPIDER_EYE, 2, 0), new ItemStack(Items.WATER_BUCKET)},
+        registry.registerPressureChamberRecipe(
+                new ItemIngredient[]{
+                        new ItemIngredient(Itemss.PLASTIC, 2, ItemPlastic.GREEN),
+                        new ItemIngredient(Items.ROTTEN_FLESH, 2, 0),
+                        new ItemIngredient(Items.GUNPOWDER, 2, 0),
+                        new ItemIngredient(Items.SPIDER_EYE, 2, 0),
+                        new ItemIngredient(Items.WATER_BUCKET, 1, 0)},
                 1.0F,
                 new ItemStack[]{Fluids.getBucketStack(Fluids.ETCHING_ACID)});
+
         // Transistor
-        registry.registerPressureChamberRecipe(new Object[]{new ItemStack(Itemss.PLASTIC, 1, ItemPlastic.BLACK), new ImmutablePair<>("ingotIronCompressed", 1), new ImmutablePair<>("dustRedstone", 1)},
+        registry.registerPressureChamberRecipe(
+                new ItemIngredient[]{
+                new ItemIngredient(Itemss.PLASTIC, 1, ItemPlastic.BLACK),
+                        new ItemIngredient("ingotIronCompressed", 1),
+                        new ItemIngredient("dustRedstone", 1)},
                 1.0F,
                 new ItemStack[]{new ItemStack(Itemss.TRANSISTOR)});
+
         // Capacitor
-        registry.registerPressureChamberRecipe(new Object[]{new ItemStack(Itemss.PLASTIC, 1, ItemPlastic.CYAN), new ImmutablePair<>("ingotIronCompressed", 1), new ImmutablePair<>("dustRedstone", 1)},
+        registry.registerPressureChamberRecipe(
+                new ItemIngredient[]{
+                        new ItemIngredient(Itemss.PLASTIC, 1, ItemPlastic.CYAN),
+                        new ItemIngredient("ingotIronCompressed", 1),
+                        new ItemIngredient("dustRedstone", 1)},
                 1.0F,
                 new ItemStack[]{new ItemStack(Itemss.CAPACITOR)});
 
@@ -100,7 +134,7 @@ public class CraftingRegistrator {
     }
 
     private static void addAssemblyRecipes() {
-        AssemblyRecipe.addLaserRecipe(new ItemStack(Itemss.EMPTY_PCB, 1, Itemss.EMPTY_PCB.getMaxDamage()), Itemss.UNASSEMBLED_PCB);
+        AssemblyRecipe.addLaserRecipe(emptyPCB, Itemss.UNASSEMBLED_PCB);
         AssemblyRecipe.addLaserRecipe(new ItemStack(Blockss.PRESSURE_CHAMBER_VALVE, 20, 0), new ItemStack(Blockss.ADVANCED_PRESSURE_TUBE, 8, 0));
         AssemblyRecipe.addLaserRecipe(Blocks.QUARTZ_BLOCK, new ItemStack(Blockss.APHORISM_TILE, 4, 0));
 
@@ -144,13 +178,23 @@ public class CraftingRegistrator {
                     }
                 }
                 if (valid) {
-                    ItemStack inputStack = ref.copy();
-                    inputStack.setCount(9);
-                    PressureChamberRecipe.chamberRecipes.add(new PressureChamberRecipe(new ItemStack[]{inputStack}, 1.0F, new ItemStack[]{shaped.getRecipeOutput()}, false));
+                    IPneumaticRecipeRegistry registry = PneumaticRegistry.getInstance().getRecipeRegistry();
+                    ItemStack inputStack = ItemHandlerHelper.copyStackWithSize(ref, 9);
+                    registry.registerPressureChamberRecipe(
+                            new ItemIngredient[]{new ItemIngredient(inputStack)},
+                            1.0F, new ItemStack[]{shaped.getRecipeOutput()});
+                    ItemStack inputStack2 = ItemHandlerHelper.copyStackWithSize(shaped.getRecipeOutput(), 1);
+                    registry.registerPressureChamberRecipe(
+                            new ItemIngredient[]{new ItemIngredient(inputStack2)},
+                            -0.5F, new ItemStack[]{inputStack});
 
-                    ItemStack inputStack2 = shaped.getRecipeOutput().copy();
-                    inputStack2.setCount(1);
-                    PressureChamberRecipe.chamberRecipes.add(new PressureChamberRecipe(new ItemStack[]{inputStack2}, -0.5F, new ItemStack[]{inputStack}, false));
+//                    ItemStack inputStack = ref.copy();
+//                    inputStack.setCount(9);
+//                    PressureChamberRecipe.chamberRecipes.add(new PressureChamberRecipe(new ItemStack[]{inputStack}, 1.0F, new ItemStack[]{shaped.getRecipeOutput()}, false));
+
+//                    ItemStack inputStack2 = shaped.getRecipeOutput().copy();
+//                    inputStack2.setCount(1);
+//                    PressureChamberRecipe.chamberRecipes.add(new PressureChamberRecipe(new ItemStack[]{inputStack2}, -0.5F, new ItemStack[]{inputStack}, false));
 
                 }
             }
@@ -199,7 +243,7 @@ public class CraftingRegistrator {
 
     private static void addCoolingRecipes() {
         PneumaticRecipeRegistry registry = PneumaticRecipeRegistry.getInstance();
-        registry.registerHeatFrameCoolRecipe(new ItemStack(Items.WATER_BUCKET), new ItemStack(Blocks.ICE));
-        registry.registerHeatFrameCoolRecipe(new ItemStack(Items.LAVA_BUCKET), new ItemStack(Blocks.OBSIDIAN));
+        registry.registerHeatFrameCoolRecipe(new ItemIngredient(new ItemStack(Items.WATER_BUCKET)), new ItemStack(Blocks.ICE));
+        registry.registerHeatFrameCoolRecipe(new ItemIngredient(new ItemStack(Items.LAVA_BUCKET)), new ItemStack(Blocks.OBSIDIAN));
     }
 }

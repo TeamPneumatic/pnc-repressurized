@@ -3,13 +3,12 @@ package me.desht.pneumaticcraft.common.recipes;
 import me.desht.pneumaticcraft.api.recipe.IPneumaticRecipeRegistry;
 import me.desht.pneumaticcraft.api.recipe.IPressureChamberRecipe;
 import me.desht.pneumaticcraft.api.recipe.IThermopneumaticProcessingPlantRecipe;
-import me.desht.pneumaticcraft.common.util.OreDictionaryHelper;
+import me.desht.pneumaticcraft.api.recipe.ItemIngredient;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.oredict.OreDictionary;
-import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nonnull;
 
@@ -23,67 +22,41 @@ public class PneumaticRecipeRegistry implements IPneumaticRecipeRegistry {
 
     @Override
     public void registerThermopneumaticProcessingPlantRecipe(IThermopneumaticProcessingPlantRecipe recipe) {
-        if (recipe == null) throw new NullPointerException("Recipe can't be null!");
+        Validate.notNull(recipe);
         BasicThermopneumaticProcessingPlantRecipe.recipes.add(recipe);
     }
 
     @Override
     public void registerThermopneumaticProcessingPlantRecipe(FluidStack requiredFluid, @Nonnull ItemStack requiredItem, FluidStack output, double requiredTemperature, float requiredPressure) {
-        if (output == null) throw new NullPointerException("Output can't be null!");
+        Validate.notNull(output);
         registerThermopneumaticProcessingPlantRecipe(new BasicThermopneumaticProcessingPlantRecipe(requiredFluid, requiredItem, output, requiredTemperature, requiredPressure));
     }
 
     @Override
     public void addAssemblyDrillRecipe(Object input, Object output) {
-        if (output == null) throw new NullPointerException("Output can't be null!");
-        if (input == null) throw new NullPointerException("Input can't be null!");
+        Validate.notNull(input);
+        Validate.notNull(output);
         AssemblyRecipe.drillRecipes.add(new AssemblyRecipe(getStackFromObject(input), getStackFromObject(output)));
     }
 
     @Override
     public void addAssemblyLaserRecipe(Object input, Object output) {
-        if (output == null) throw new NullPointerException("Output can't be null!");
-        if (input == null) throw new NullPointerException("Input can't be null!");
+        Validate.notNull(input);
+        Validate.notNull(output);
         AssemblyRecipe.laserRecipes.add(new AssemblyRecipe(getStackFromObject(input), getStackFromObject(output)));
     }
 
     @Override
-    public void registerPressureChamberRecipe(Object[] input, float pressureRequired, ItemStack[] output) {
-        if (output == null) throw new NullPointerException("Output can't be null!");
-        if (input == null) throw new NullPointerException("Input can't be null!");
-        PressureChamberRecipe.chamberRecipes.add(new PressureChamberRecipe(input, pressureRequired, output));
-    }
-
-    public static boolean isItemEqual(Object o, @Nonnull ItemStack stack) {
-
-        if (o instanceof ItemStack) {
-            return OreDictionary.itemMatches((ItemStack) o, stack, false);
-        } else {
-            String oreDict = (String) ((Pair) o).getKey();
-            return OreDictionaryHelper.isItemEqual(oreDict, stack);
-        }
-    }
-
-    public static int getItemAmount(Object o) {
-        return o instanceof ItemStack ? ((ItemStack) o).getCount() : (Integer) ((Pair) o).getValue();
-    }
-
-    public static ItemStack getSingleStack(Object o) {
-        if (o instanceof ItemStack) {
-            return (ItemStack) o;
-        } else {
-            Pair<String, Integer> pair = (Pair) o;
-            ItemStack s = OreDictionary.getOres(pair.getKey()).get(0);
-            s = s.copy();
-            s.setCount(pair.getValue());
-            return s;
-        }
+    public void registerPressureChamberRecipe(ItemIngredient[] input, float pressureRequired, ItemStack[] output) {
+        Validate.notNull(input);
+        Validate.notNull(output);
+        PressureChamberRecipe.recipes.add(new PressureChamberRecipe.SimpleRecipe(input, pressureRequired, output));
     }
 
     @Override
     public void registerPressureChamberRecipe(IPressureChamberRecipe recipe) {
-        if (recipe == null) throw new NullPointerException("Recipe can't be null!");
-        PressureChamberRecipe.specialRecipes.add(recipe);
+        Validate.notNull(recipe);
+        PressureChamberRecipe.recipes.add(recipe);
     }
 
     private static ItemStack getStackFromObject(Object object) {
@@ -125,7 +98,7 @@ public class PneumaticRecipeRegistry implements IPneumaticRecipeRegistry {
     }
 
     @Override
-    public void registerHeatFrameCoolRecipe(Object input, ItemStack output) {
+    public void registerHeatFrameCoolRecipe(ItemIngredient input, ItemStack output) {
     	HeatFrameCoolingRecipe.recipes.add(new HeatFrameCoolingRecipe(input, output));
     }
 

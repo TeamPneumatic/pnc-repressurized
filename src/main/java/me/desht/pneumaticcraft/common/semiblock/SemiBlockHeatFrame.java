@@ -6,7 +6,6 @@ import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.recipes.HeatFrameCoolingRecipe;
-import me.desht.pneumaticcraft.common.recipes.PneumaticRecipeRegistry;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
@@ -121,9 +120,10 @@ public class SemiBlockHeatFrame extends SemiBlockBasic<TileEntity> implements IH
         ItemStack stack = handler.getStackInSlot(slot);
         if (!stack.isEmpty()) {
             for (HeatFrameCoolingRecipe recipe : HeatFrameCoolingRecipe.recipes) {
-                if (PneumaticRecipeRegistry.isItemEqual(recipe.input, stack)) {
-                    int amount = PneumaticRecipeRegistry.getItemAmount(recipe.input);
-                    if (stack.getCount() >= amount) {
+//                if (PneumaticRecipeRegistry.isItemEqual(recipe.input, stack)) {
+                if (recipe.input.isItemEqual(stack)) {
+//                    int amount = PneumaticRecipeRegistry.getItemAmount(recipe.input);
+                    if (stack.getCount() >= recipe.input.getItemAmount()) {
                         ItemStack containerItem = stack.getItem().getContainerItem(stack);
                         boolean canStoreContainerItem = false;
                         boolean canStoreOutput = false;

@@ -1078,6 +1078,13 @@ gui.nei.recipe.explosionCrafting=Throw some of the input material on the ground,
 gui.nei.recipe.heatFrameCooling=Put the input material in an inventory with a Heat Frame attached, and reduce the temperature of the Heat Frame to below 0°C.
 gui.nei.title.explosionCrafting=Explosion Crafting
 gui.nei.title.heatFrameCooling=Heat Frame Cooling
+gui.nei.tooltip.pressureEnchantItem=§aAny enchantable item
+gui.nei.tooltip.pressureEnchantBook=§aAny enchanted book with a compatible enchantment
+gui.nei.tooltip.pressureEnchantItemOut=§aThe input item with one enchantment from the book added to it
+gui.nei.tooltip.pressureEnchantBookOut=§aThe input book with one enchantment removed (and added to the input item)
+gui.nei.tooltip.vacuumEnchantItem=§aAny enchanted item
+gui.nei.tooltip.vacuumEnchantItemOut=§aThe input item with one enchantment removed (and added to the book)
+gui.nei.tooltip.vacuumEnchantBookOut=§aThe input book with one enchantment from the item added to it
 
 #Amadron
 drone.amadronDeliveryDrone=Amadron Delivery Drone

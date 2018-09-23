@@ -1,21 +1,24 @@
 package me.desht.pneumaticcraft.common.recipes;
 
+import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.recipe.IPressureChamberRecipe;
+import me.desht.pneumaticcraft.api.recipe.ItemIngredient;
 import me.desht.pneumaticcraft.common.util.ItemStackHandlerIterable;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.init.Enchantments;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.items.ItemStackHandler;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 public class PressureChamberPressureEnchantHandler implements IPressureChamberRecipe {
+
+    private static final NonNullList<ItemStack> EMPTYLIST = NonNullList.create();
 
     @Override
     public float getCraftingPressure() {
@@ -23,10 +26,10 @@ public class PressureChamberPressureEnchantHandler implements IPressureChamberRe
     }
 
     @Override
-    public boolean isValidRecipe(ItemStackHandler inputStacks) {
-        return getRecipeIngredients(inputStacks) != null;
+    public boolean isValidRecipe(ItemStackHandler chamberHandler) {
+        return getRecipeIngredients(chamberHandler) != null;
     }
-    
+
     private ItemStack[] getRecipeIngredients(ItemStackHandler inputStacks) {
         List<ItemStack> enchantedBooks = new ItemStackHandlerIterable(inputStacks)
                                                     .stream()
@@ -51,8 +54,8 @@ public class PressureChamberPressureEnchantHandler implements IPressureChamberRe
     }
 
     @Override
-    public NonNullList<ItemStack> craftRecipe(ItemStackHandler inputStacks) {
-        ItemStack[] recipeIngredients = getRecipeIngredients(inputStacks);
+    public NonNullList<ItemStack> craftRecipe(ItemStackHandler chamberHandler) {
+        ItemStack[] recipeIngredients = getRecipeIngredients(chamberHandler);
         ItemStack enchantedTool = recipeIngredients[0];
         ItemStack enchantedBook = recipeIngredients[1];
         
@@ -61,5 +64,26 @@ public class PressureChamberPressureEnchantHandler implements IPressureChamberRe
         
         enchantedBook.shrink(1);
         return NonNullList.from(ItemStack.EMPTY, new ItemStack(Items.BOOK));
+    }
+
+    @Override
+    public List<ItemIngredient> getInput() {
+        ItemIngredient pick = new ItemIngredient(Items.DIAMOND_PICKAXE, 1, 0).setTooltip("gui.nei.tooltip.pressureEnchantItem");
+
+        ItemStack enchBook = new ItemStack(Items.ENCHANTED_BOOK, 1, 0);
+        enchBook.addEnchantment(Enchantments.FORTUNE, 1);
+        ItemIngredient book = new ItemIngredient(enchBook).setTooltip("gui.nei.tooltip.pressureEnchantBook");
+
+        return ImmutableList.of(pick, book);
+    }
+
+    @Override
+    public NonNullList<ItemStack> getResult() {
+        ItemStack pick = new ItemStack(Items.DIAMOND_PICKAXE, 1, 0);
+        pick.addEnchantment(Enchantments.FORTUNE, 1);
+        IPressureChamberRecipe.setTooltipKey(pick, "gui.nei.tooltip.pressureEnchantItemOut");
+        ItemStack book = new ItemStack(Items.BOOK);
+        IPressureChamberRecipe.setTooltipKey(book, "gui.nei.tooltip.pressureEnchantBookOut");
+        return NonNullList.from(ItemStack.EMPTY, pick, book);
     }
 }

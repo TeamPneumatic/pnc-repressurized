@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
+import me.desht.pneumaticcraft.api.recipe.IPressureChamberRecipe;
 import me.desht.pneumaticcraft.client.gui.GuiAssemblyController;
 import me.desht.pneumaticcraft.client.gui.GuiPressureChamber;
 import me.desht.pneumaticcraft.client.gui.GuiRefinery;
@@ -28,7 +29,7 @@ public class JEI implements IModPlugin {
         IJeiHelpers jeiHelpers = registry.getJeiHelpers();
 
         registry.addRecipes(BasicThermopneumaticProcessingPlantRecipe.recipes, ModCategoryUid.THERMO_PNEUMATIC);
-        registry.addRecipes(PressureChamberRecipe.chamberRecipes, ModCategoryUid.PRESSURE_CHAMBER);
+        registry.addRecipes(PressureChamberRecipe.recipes, ModCategoryUid.PRESSURE_CHAMBER);
         registry.addRecipes(new JEIPlasticMixerCategory(jeiHelpers).getAllRecipes(), ModCategoryUid.PLASTIC_MIXER);
         registry.addRecipes(new JEIRefineryCategory(jeiHelpers).getAllRecipes(), ModCategoryUid.REFINERY);
         registry.addRecipes(new JEIEtchingAcidCategory(jeiHelpers).getAllRecipes(), ModCategoryUid.ETCHING_ACID);
@@ -42,7 +43,7 @@ public class JEI implements IModPlugin {
             registry.addRecipes(new JEIExplosionCraftingCategory(jeiHelpers).getAllRecipes(), ModCategoryUid.EXPLOSION_CRAFTING);
         }
 
-        registry.handleRecipes(PressureChamberRecipe.class,
+        registry.handleRecipes(IPressureChamberRecipe.class,
                 JEIPressureChamberRecipeCategory.ChamberRecipeWrapper::new, ModCategoryUid.PRESSURE_CHAMBER);
         registry.handleRecipes(BasicThermopneumaticProcessingPlantRecipe.class,
                 JEIThermopneumaticProcessingPlantCategory.ThermopneumaticRecipeWrapper::new, ModCategoryUid.THERMO_PNEUMATIC);

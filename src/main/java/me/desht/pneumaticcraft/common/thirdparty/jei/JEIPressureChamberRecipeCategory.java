@@ -1,14 +1,12 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
-import me.desht.pneumaticcraft.common.recipes.PressureChamberRecipe;
+import me.desht.pneumaticcraft.api.recipe.IPressureChamberRecipe;
+import me.desht.pneumaticcraft.api.recipe.ItemIngredient;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.IJeiHelpers;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
-import net.minecraftforge.oredict.OreDictionary;
-import org.apache.commons.lang3.tuple.Pair;
 
 public class JEIPressureChamberRecipeCategory extends PneumaticCraftCategory<JEIPressureChamberRecipeCategory.ChamberRecipeWrapper> {
     JEIPressureChamberRecipeCategory(IJeiHelpers jeiHelpers) {
@@ -31,34 +29,22 @@ public class JEIPressureChamberRecipeCategory extends PneumaticCraftCategory<JEI
     }
 
     static class ChamberRecipeWrapper extends PneumaticCraftCategory.MultipleInputOutputRecipeWrapper {
-        float recipePressure;
-
-        ChamberRecipeWrapper(PressureChamberRecipe recipe) {
-            for (int i = 0; i < recipe.input.length; i++) {
-                PositionedStack stack;
+        ChamberRecipeWrapper(IPressureChamberRecipe recipe) {
+            for (int i = 0; i < recipe.getInput().size(); i++) {
                 int posX = 19 + i % 3 * 17;
                 int posY = 93 - i / 3 * 17;
-
-                if (recipe.input[i] instanceof Pair) {
-                    NonNullList<ItemStack> oreInputs = NonNullList.create();
-                    Pair<String, Integer> oreDictEntry = (Pair<String, Integer>) recipe.input[i];
-                    for (ItemStack s : OreDictionary.getOres(oreDictEntry.getKey())) {
-                        s = s.copy();
-                        s.setCount(oreDictEntry.getValue());
-                        oreInputs.add(s);
-                    }
-                    stack = new PositionedStack(oreInputs, posX, posY);
-                } else {
-                    stack = new PositionedStack((ItemStack) recipe.input[i], posX, posY);
-                }
-                this.addIngredient(stack);
+                ItemIngredient ingredient = recipe.getInput().get(i);
+                PositionedStack pStack = new PositionedStack(ingredient.getStacks(), posX, posY)
+                        .setTooltipKey(ingredient.getTooltipKey());
+                this.addIngredient(pStack);
             }
-            for (int i = 0; i < recipe.output.size(); i++) {
-                PositionedStack stack = new PositionedStack(recipe.output.get(i), 101 + i % 3 * 18, 59 + i / 3 * 18);
-                this.addOutput(stack);
+            for (int i = 0; i < recipe.getResult().size(); i++) {
+                ItemStack stack = recipe.getResult().get(i);
+                PositionedStack pStack = new PositionedStack(stack, 101 + i % 3 * 18, 59 + i / 3 * 18)
+                        .setTooltipKey(IPressureChamberRecipe.getTooltipKey(stack));
+                this.addOutput(pStack);
             }
-            this.recipePressure = recipe.pressure;
-            setUsedPressure(120, 27, this.recipePressure, PneumaticValues.DANGER_PRESSURE_TIER_ONE, PneumaticValues.MAX_PRESSURE_TIER_ONE);
+            setUsedPressure(120, 27, recipe.getCraftingPressure(), PneumaticValues.DANGER_PRESSURE_TIER_ONE, PneumaticValues.MAX_PRESSURE_TIER_ONE);
         }
     }
 }

@@ -57,7 +57,7 @@ public interface IThermopneumaticProcessingPlantRecipe {
     void useRecipeItems(FluidStack inputFluid, ItemStack inputItem);
 
     /**
-     * @param inputTank
+     * @param inputFluid
      * @param inputItem
      * @return temperature in degrees Kelvin.
      */

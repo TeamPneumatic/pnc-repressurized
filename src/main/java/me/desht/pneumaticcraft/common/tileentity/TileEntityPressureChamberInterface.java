@@ -231,7 +231,7 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
         } else if (!redstoneAllows()) {
             textList.add("gui.tab.problems.redstoneDisallows");
         } else if (!enoughAir) {
-            textList.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a7Not enough pressure in the Pressure Chamber to move the items."));
+            textList.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a70Not enough pressure in the Pressure Chamber to move the items."));
             textList.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a70Apply more pressure to the Pressure Chamber. The required pressure is dependent on the amount of items being transported."));
         }
         return textList;

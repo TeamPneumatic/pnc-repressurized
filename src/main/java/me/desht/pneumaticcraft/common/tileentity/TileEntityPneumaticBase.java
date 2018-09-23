@@ -16,7 +16,7 @@ public class TileEntityPneumaticBase extends TileEntityTickableBase implements I
     @GuiSynced
     final IAirHandler airHandler;
     public final float dangerPressure, criticalPressure;
-    public final int defaultVolume;
+    private final int defaultVolume;
 
     public TileEntityPneumaticBase(float dangerPressure, float criticalPressure, int volume, int upgradeSlots) {
         super(upgradeSlots);
@@ -139,4 +139,7 @@ public class TileEntityPneumaticBase extends TileEntityTickableBase implements I
         return true;
     }
 
+    public int getDefaultVolume() {
+        return defaultVolume;
+    }
 }

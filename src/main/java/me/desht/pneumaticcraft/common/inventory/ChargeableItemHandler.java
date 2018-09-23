@@ -1,9 +1,9 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
-import me.desht.pneumaticcraft.common.NBTUtil;
 import me.desht.pneumaticcraft.common.tileentity.FilteredItemStackHandler;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
+import me.desht.pneumaticcraft.common.util.NBTUtil;
 import net.minecraft.item.ItemStack;
 
 public class ChargeableItemHandler extends FilteredItemStackHandler {

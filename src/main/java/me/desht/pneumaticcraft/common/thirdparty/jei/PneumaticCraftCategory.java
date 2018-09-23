@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.client.gui.GuiUtils;
 import me.desht.pneumaticcraft.client.gui.widget.IGuiWidget;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.IGuiHelper;
@@ -16,6 +17,7 @@ import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.gui.elements.DrawableResource;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.client.FMLClientHandler;
@@ -213,6 +215,15 @@ public abstract class PneumaticCraftCategory<T extends IRecipeWrapper> implement
         if (recipeWrapper instanceof PneumaticCraftCategory.MultipleInputOutputRecipeWrapper) {
             MultipleInputOutputRecipeWrapper recipe = (MultipleInputOutputRecipeWrapper) recipeWrapper;
 
+            recipeLayout.getItemStacks().addTooltipCallback((slotIndex, input, ingredient, tooltip) -> {
+                String key = slotIndex < recipe.input.size() ?
+                        recipe.input.get(slotIndex).getTooltipKey() :
+                        recipe.output.get(slotIndex - recipe.input.size()).getTooltipKey();
+                if (key != null) {
+                    tooltip.addAll(PneumaticCraftUtils.convertStringIntoList(I18n.format(key)));
+                }
+            });
+
             for (int i = 0; i < ingredients.getInputs(ItemStack.class).size(); i++) {
                 recipeLayout.getItemStacks().init(i, true, recipe.input.get(i).getX() - 1, recipe.input.get(i).getY() - 1);
                 recipeLayout.getItemStacks().set(i, recipe.input.get(i).getStacks());
@@ -225,7 +236,6 @@ public abstract class PneumaticCraftCategory<T extends IRecipeWrapper> implement
 
             for (int i = 0; i < ingredients.getInputs(FluidStack.class).size(); i++) {
                 WidgetTank tank = recipe.inputLiquids.get(i);
-//                IDrawable tankOverlay = new ResourceDrawable(Textures.WIDGET_TANK, 0, 0, 0, 0, tank.getBounds().width, tank.getBounds().height, tank.getBounds().width, tank.getBounds().height);
                 IDrawable tankOverlay = new DrawableResource(Textures.WIDGET_TANK, 0, 0, tank.getBounds().width, tank.getBounds().height, 0, 0, 0, 0, tank.getBounds().width, tank.getBounds().height);
                 recipeLayout.getFluidStacks().init(i, true, tank.x, tank.y, tank.getBounds().width, tank.getBounds().height, tank.getTank().getCapacity(), true, tankOverlay);
                 recipeLayout.getFluidStacks().set(i, tank.getFluid());
@@ -233,7 +243,6 @@ public abstract class PneumaticCraftCategory<T extends IRecipeWrapper> implement
 
             for (int i = 0; i < ingredients.getOutputs(FluidStack.class).size(); i++) {
                 WidgetTank tank = recipe.outputLiquids.get(i);
-//                IDrawable tankOverlay = new ResourceDrawable(Textures.WIDGET_TANK, 0, 0, 0, 0, tank.getBounds().width, tank.getBounds().height, tank.getBounds().width, tank.getBounds().height);
                 IDrawable tankOverlay = new DrawableResource(Textures.WIDGET_TANK, 0, 0, tank.getBounds().width, tank.getBounds().height, 0, 0, 0, 0, tank.getBounds().width, tank.getBounds().height);
                 recipeLayout.getFluidStacks().init(recipe.inputLiquids.size() + i, false, tank.x, tank.y, tank.getBounds().width, tank.getBounds().height, tank.getTank().getCapacity(), true, tankOverlay);
                 recipeLayout.getFluidStacks().set(recipe.inputLiquids.size() + i, tank.getFluid());

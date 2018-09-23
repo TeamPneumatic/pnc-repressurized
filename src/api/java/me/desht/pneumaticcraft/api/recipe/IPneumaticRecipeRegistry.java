@@ -48,7 +48,7 @@ public interface IPneumaticRecipeRegistry {
      * @param pressureRequired negative pressures for negative pressure needs.
      * @param output
      */
-    void registerPressureChamberRecipe(Object[] input, float pressureRequired, ItemStack[] output);
+    void registerPressureChamberRecipe(ItemIngredient[] input, float pressureRequired, ItemStack[] output);
 
     /**
      * Allows for registry of a recipe which allows for all your custom needs.
@@ -104,7 +104,7 @@ public interface IPneumaticRecipeRegistry {
      * @param input either of type ItemStack or Pair&lt;String,Integer&gt;, where the String is the Oredict entry and Integer is the amount (stack size)
      * @param output the returned item
      */
-    void registerHeatFrameCoolRecipe(Object input, ItemStack output);
+    void registerHeatFrameCoolRecipe(ItemIngredient input, ItemStack output);
     
     /**
      * Adds a recipe to the Refinery. Multiple recipes for the same input can be defined, the most suitable recipe depending on the size of the Refinery is used.

@@ -385,8 +385,8 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
         pressureStatText.add("\u00a77Current Air:");
         pressureStatText.add("\u00a70" + (airHandler.getAir() + airHandler.getVolume()) + " mL.");
         pressureStatText.add("\u00a77Volume:");
-        pressureStatText.add("\u00a70" + pneumaticTile.defaultVolume + " mL.");
-        int volumeLeft = airHandler.getVolume() - pneumaticTile.defaultVolume;
+        pressureStatText.add("\u00a70" + pneumaticTile.getDefaultVolume() + " mL.");
+        int volumeLeft = airHandler.getVolume() - pneumaticTile.getDefaultVolume();
         if (volumeLeft > 0) {
             pressureStatText.add("\u00a70" + volumeLeft + " mL. (Volume Upgrades)");
             pressureStatText.add("\u00a70--------+");

@@ -1,44 +1,79 @@
 package me.desht.pneumaticcraft.common.recipes;
 
 import me.desht.pneumaticcraft.api.recipe.IPressureChamberRecipe;
+import me.desht.pneumaticcraft.api.recipe.ItemIngredient;
+import me.desht.pneumaticcraft.common.util.ItemStackHandlerIterable;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
+import net.minecraftforge.items.ItemStackHandler;
 
-import org.apache.commons.lang3.tuple.Pair;
-
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class PressureChamberRecipe {
-    // standard recipes: list of inputs, list of outputs and required pressure
-    public static List<PressureChamberRecipe> chamberRecipes = new ArrayList<>();
-    // custom recipe, using
-    public static List<IPressureChamberRecipe> specialRecipes = new ArrayList<>();
+    public static final List<IPressureChamberRecipe> recipes = new ArrayList<>();
 
-    public final Object[] input;
-    public final NonNullList<ItemStack> output;
-    public final float pressure;
+    public static class SimpleRecipe implements IPressureChamberRecipe {
+        private final float pressureRequired;
+        private final List<ItemIngredient> input;
+        private final NonNullList<ItemStack> output;
 
-    public PressureChamberRecipe(ItemStack[] input, float pressureRequired, ItemStack[] output, boolean outputAsBlock) {
-        this.input = input;
-        this.output = NonNullList.from(ItemStack.EMPTY, output);
-        pressure = pressureRequired;
-    }
-
-    public PressureChamberRecipe(Object[] input, float pressureRequired, ItemStack[] output) {
-        for (Object o : input) {
-            if (!(o instanceof ItemStack) && !(o instanceof Pair))
-                throw new IllegalArgumentException("Input objects need to be of type ItemStack or (Apache's) Pair<String, Integer>. Violating object: " + o);
-            if (o instanceof Pair) {
-                Pair pair = (Pair) o;
-                if (!(pair.getKey() instanceof String))
-                    throw new IllegalArgumentException("Pair key needs to be a String (ore dict entry)");
-                if (!(pair.getValue() instanceof Integer))
-                    throw new IllegalArgumentException("Value key needs to be an Integer (amount)");
-            }
+        public SimpleRecipe(ItemIngredient[] input, float pressureRequired, ItemStack[] output) {
+            this.input = Arrays.asList(input);
+            this.output = NonNullList.from(ItemStack.EMPTY, output);
+            this.pressureRequired = pressureRequired;
         }
-        this.input = input;
-        this.output = NonNullList.from(ItemStack.EMPTY, output);
-        pressure = pressureRequired;
+
+        @Override
+        public float getCraftingPressure() {
+            return pressureRequired;
+        }
+
+        @Override
+        public boolean isValidRecipe(@Nonnull ItemStackHandler chamberHandler) {
+            for (ItemIngredient ingredient : input) {
+                int amount = getFilteredChamberContents(chamberHandler, ingredient).mapToInt(ItemStack::getCount).sum();
+                if (amount < ingredient.getItemAmount()) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private Stream<ItemStack> getFilteredChamberContents(ItemStackHandler itemsInChamber, ItemIngredient ingredient) {
+            return new ItemStackHandlerIterable(itemsInChamber).stream()
+                    .filter(stack -> !stack.isEmpty() && ingredient.isItemEqual(stack));
+        }
+
+        @Override
+        public List<ItemIngredient> getInput() {
+            return input;
+        }
+
+        @Override
+        public NonNullList<ItemStack> getResult() {
+            return output;
+        }
+
+        @Nonnull
+        @Override
+        public NonNullList<ItemStack> craftRecipe(@Nonnull ItemStackHandler chamberHandler) {
+            // remove the recipe's input items from the chamber
+            for (ItemIngredient ingredient : input) {
+                int amountLeft = ingredient.getItemAmount();
+                for (int i = 0; i < chamberHandler.getSlots(); i++) {
+                    ItemStack itemInChamber = chamberHandler.getStackInSlot(i);
+                    if (ingredient.isItemEqual(itemInChamber)) {
+                        amountLeft -= chamberHandler.extractItem(i, amountLeft, false).getCount();
+                        if (amountLeft <= 0) break;
+                    }
+                }
+            }
+
+            return output;
+        }
     }
 }
