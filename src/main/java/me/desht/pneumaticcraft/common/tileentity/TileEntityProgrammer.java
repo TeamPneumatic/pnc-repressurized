@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.client.AreaShowManager;
+import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.item.ItemProgrammingPuzzle;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
@@ -304,7 +305,10 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
                 inventory.setStackInSlot(PROGRAM_SLOT, stack);
             }
             writeProgWidgetsToNBT(stack.getTagCompound());
-            NetworkHandler.sendTo(new PacketPlaySound(Sounds.HUD_INIT_COMPLETE, SoundCategory.NEUTRAL, getPos(), 1.0f, 1.0f, false), (EntityPlayerMP) player);
+            if (player != null) {
+                NetworkHandler.sendTo(new PacketPlaySound(Sounds.HUD_INIT_COMPLETE, SoundCategory.NEUTRAL, getPos(), 1.0f, 1.0f, false), (EntityPlayerMP) player);
+                AdvancementTriggers.PROGRAM_DRONE.trigger((EntityPlayerMP) player);
+            }
         }
     }
 

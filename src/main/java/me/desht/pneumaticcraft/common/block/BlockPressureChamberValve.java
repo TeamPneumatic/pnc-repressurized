@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
+import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberValve;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
@@ -9,6 +10,7 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -36,7 +38,9 @@ public class BlockPressureChamberValve extends BlockPneumaticCraft implements IB
     @Override
     public void onBlockPlacedBy(World par1World, BlockPos pos, IBlockState state, EntityLivingBase par5EntityLiving, ItemStack iStack) {
         super.onBlockPlacedBy(par1World, pos, state, par5EntityLiving, iStack);
-        TileEntityPressureChamberValve.checkIfProperlyFormed(par1World, pos);
+        if (TileEntityPressureChamberValve.checkIfProperlyFormed(par1World, pos) && par5EntityLiving instanceof EntityPlayerMP) {
+            AdvancementTriggers.PRESSURE_CHAMBER.trigger((EntityPlayerMP) par5EntityLiving);
+        }
     }
 
     @Override

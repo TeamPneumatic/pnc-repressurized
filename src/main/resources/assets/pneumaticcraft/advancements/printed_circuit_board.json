@@ -1,0 +1,29 @@
+{
+  "display": {
+    "icon": {
+      "item": "pneumaticcraft:printed_circuit_board"
+    },
+    "title": {
+      "translate": "achievement.printedCircuitBoard"
+    },
+    "description": {
+      "translate": "achievement.printedCircuitBoard.desc"
+    }
+  },
+  "parent": "pneumaticcraft:unassembled_pcb",
+  "criteria": {
+    "air_compressor": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:printed_circuit_board"
+          }
+        ]
+      }
+    }
+  },
+  "rewards": {
+    "experience": 20
+  }
+}

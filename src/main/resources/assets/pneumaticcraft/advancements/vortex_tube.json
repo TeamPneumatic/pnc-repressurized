@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "item": "pneumaticcraft:vortex_tube"
+    },
+    "title": {
+      "translate": "achievement.vortexTube"
+    },
+    "description": {
+      "translate": "achievement.vortexTube.desc"
+    }
+  },
+  "parent": "pneumaticcraft:refinery",
+  "criteria": {
+    "air_compressor": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:vortex_tube"
+          }
+        ]
+      }
+    }
+  }
+}

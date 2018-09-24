@@ -416,13 +416,26 @@ public class EventHandlerPneumaticCraft {
 
     @SubscribeEvent
     public void onEquipmentChanged(LivingEquipmentChangeEvent event) {
-        if (event.getEntityLiving() instanceof EntityPlayer && event.getSlot() == EntityEquipmentSlot.MAINHAND) {
-            if (event.getTo().getItem() == Itemss.MINIGUN) {
-                NBTUtil.initNBTTagCompound(event.getTo());
-                event.getTo().getTagCompound().setInteger("owningPlayerId", event.getEntityLiving().getEntityId());
-            } else if (event.getFrom().getItem() == Itemss.MINIGUN) {
-                NBTUtil.initNBTTagCompound(event.getFrom());
-                event.getFrom().getTagCompound().removeTag("owningPlayerId");
+        if (event.getEntityLiving() instanceof EntityPlayerMP) {
+            if (event.getSlot() == EntityEquipmentSlot.MAINHAND) {
+                // tag the minigun with the player's entity ID - it's sync'd to clients
+                // so other clients will know who's wielding it, and render appropriately
+                // See RenderItemMinigun#renderByItem()
+                if (event.getTo().getItem() == Itemss.MINIGUN) {
+                    NBTUtil.initNBTTagCompound(event.getTo());
+                    event.getTo().getTagCompound().setInteger("owningPlayerId", event.getEntityLiving().getEntityId());
+                } else if (event.getFrom().getItem() == Itemss.MINIGUN) {
+                    NBTUtil.initNBTTagCompound(event.getFrom());
+                    event.getFrom().getTagCompound().removeTag("owningPlayerId");
+                }
+            } else if (event.getSlot().getSlotType() == EntityEquipmentSlot.Type.ARMOR) {
+                EntityPlayerMP player = (EntityPlayerMP) event.getEntityLiving();
+                for (ItemStack stack : player.getArmorInventoryList()) {
+                    if (!(stack.getItem() instanceof ItemPneumaticArmor)) {
+                        return;
+                    }
+                }
+                AdvancementTriggers.PNEUMATIC_ARMOR.trigger(player);
             }
         }
     }

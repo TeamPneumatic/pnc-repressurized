@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "item": "pneumaticcraft:pressure_tube"
+    },
+    "title": {
+      "translate": "achievement.pressureTube"
+    },
+    "description": {
+      "translate": "achievement.pressureTube.desc"
+    }
+  },
+  "parent": "pneumaticcraft:root",
+  "criteria": {
+    "pressure_tube": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:pressure_tube"
+          }
+        ]
+      }
+    }
+  }
+}

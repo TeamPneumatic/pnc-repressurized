@@ -28,8 +28,10 @@ public class ItemPressurizable extends ItemPneumatic implements IPressurizable {
     @SideOnly(Side.CLIENT)
     public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> par3List) {
         if (isInCreativeTab(tab)) {
-            par3List.add(new ItemStack(this, 1, 0));
-            par3List.add(new ItemStack(this, 1, getMaxDamage()));
+            ItemStack stack = new ItemStack(this, 1, 0);
+            ItemStack stack2 = new ItemStack(this, 1, stack.getMaxDamage());
+            par3List.add(stack);
+            par3List.add(stack2);
         }
     }
 
@@ -38,8 +40,6 @@ public class ItemPressurizable extends ItemPneumatic implements IPressurizable {
         return (float) (iStack.getMaxDamage() - iStack.getItemDamage()) / (float) volume;
     }
 
-    // the information displayed as tooltip info. (saved coordinates in this
-    // case)
     @Override
     public void addInformation(ItemStack stack, World worldIn, List<String> infoList, ITooltipFlag par4) {
         infoList.add("Pressure: " + Math.round(getPressure(stack) * 10D) / 10D + " bar");
@@ -58,7 +58,7 @@ public class ItemPressurizable extends ItemPneumatic implements IPressurizable {
 
     @Override
     public int getVolume(ItemStack itemStack) {
-        // note: no volume ugprade support by default
+        // note: no volume upgrade support by default
         return volume;
     }
 

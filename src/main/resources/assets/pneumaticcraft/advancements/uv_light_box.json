@@ -10,7 +10,7 @@
       "translate": "achievement.uvLightBox.desc"
     }
   },
-  "parent": "pneumaticcraft:plastic",
+  "parent": "pneumaticcraft:pcb_blueprint",
   "criteria": {
     "uv_light_box": {
       "trigger": "minecraft:inventory_changed",

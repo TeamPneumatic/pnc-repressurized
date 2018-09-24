@@ -1,23 +1,23 @@
 {
   "display": {
     "icon": {
-      "item": "pneumaticcraft:plastic"
+      "item": "pneumaticcraft:logistics_configurator"
     },
     "title": {
-      "translate": "achievement.plastic"
+      "translate": "achievement.logisticsConfigurator"
     },
     "description": {
-      "translate": "achievement.plastic.desc"
+      "translate": "achievement.logisticsConfigurator.desc"
     }
   },
-  "parent": "pneumaticcraft:tp_plant",
+  "parent": "pneumaticcraft:logistics_frame",
   "criteria": {
-    "plastic": {
+    "taken": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "item": "pneumaticcraft:plastic"
+            "item": "pneumaticcraft:logistics_configurator"
           }
         ]
       }

@@ -1,0 +1,22 @@
+{
+  "display": {
+    "icon": {
+      "item": "pneumaticcraft:logistic_drone"
+    },
+    "title": {
+      "translate": "achievement.logisticsDrone"
+    },
+    "description": {
+      "translate": "achievement.logisticsDrone.desc"
+    }
+  },
+  "parent": "pneumaticcraft:logistics_configurator",
+  "criteria": {
+    "deployed": {
+      "trigger": "pneumaticcraft:logistics_drone_deployed"
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "item": "pneumaticcraft:drone"
+    },
+    "title": {
+      "translate": "achievement.programDrone"
+    },
+    "description": {
+      "translate": "achievement.programDrone.desc"
+    },
+    "frame": "challenge"
+  },
+  "parent": "pneumaticcraft:programming_puzzle",
+  "criteria": {
+    "programmed": {
+      "trigger": "pneumaticcraft:program_drone"
+    }
+  },
+  "rewards": {
+    "experience": 40
+  }
+}

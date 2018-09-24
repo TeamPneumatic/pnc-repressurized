@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.api.item.IPressurizable;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
+import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.inventory.ChargeableItemHandler;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
@@ -16,6 +17,7 @@ import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -49,6 +51,9 @@ public class ItemDrone extends ItemPneumatic implements IPressurizable, IChargin
 
         if (!world.isRemote) {
             ItemStack iStack = player.getHeldItemMainhand();
+            if (iStack.getItem().getRegistryName().getResourcePath().equals("logistic_drone")) {
+                AdvancementTriggers.LOGISTICS_DRONE_DEPLOYED.trigger((EntityPlayerMP) player);
+            }
             BlockPos placePos = pos.offset(facing);
             spawnDrone(player, world, pos, facing, placePos, iStack);
             iStack.shrink(1);

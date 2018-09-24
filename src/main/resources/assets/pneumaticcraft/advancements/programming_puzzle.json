@@ -1,0 +1,27 @@
+{
+  "display": {
+    "icon": {
+      "item": "pneumaticcraft:network_component",
+      "data": 1
+    },
+    "title": {
+      "translate": "achievement.programmingPuzzle"
+    },
+    "description": {
+      "translate": "achievement.programmingPuzzle.desc"
+    }
+  },
+  "parent": "pneumaticcraft:programmer",
+  "criteria": {
+    "air_compressor": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:programming_puzzle"
+          }
+        ]
+      }
+    }
+  }
+}

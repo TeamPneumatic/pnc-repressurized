@@ -1,0 +1,22 @@
+{
+  "display": {
+    "icon": {
+      "item": "pneumaticcraft:pneumatic_helmet"
+    },
+    "title": {
+      "translate": "achievement.pneumaticArmor"
+    },
+    "description": {
+      "translate": "achievement.pneumaticArmor.desc"
+    }
+  },
+  "parent": "pneumaticcraft:printed_circuit_board",
+  "criteria": {
+    "equipped": {
+      "trigger": "pneumaticcraft:pneumatic_armor"
+    }
+  },
+  "rewards": {
+    "experience": 20
+  }
+}

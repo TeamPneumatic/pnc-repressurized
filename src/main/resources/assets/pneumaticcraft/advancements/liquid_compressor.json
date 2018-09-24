@@ -1,23 +1,23 @@
 {
   "display": {
     "icon": {
-      "item": "pneumaticcraft:plastic"
+      "item": "pneumaticcraft:liquid_compressor"
     },
     "title": {
-      "translate": "achievement.plastic"
+      "translate": "achievement.liquidCompressor"
     },
     "description": {
-      "translate": "achievement.plastic.desc"
+      "translate": "achievement.liquidCompressor.desc"
     }
   },
-  "parent": "pneumaticcraft:tp_plant",
+  "parent": "pneumaticcraft:refinery",
   "criteria": {
-    "plastic": {
+    "air_compressor": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "item": "pneumaticcraft:plastic"
+            "item": "pneumaticcraft:liquid_compressor"
           }
         ]
       }

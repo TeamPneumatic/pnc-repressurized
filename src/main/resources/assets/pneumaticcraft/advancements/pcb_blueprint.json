@@ -1,0 +1,29 @@
+{
+  "display": {
+    "icon": {
+      "item": "pneumaticcraft:pcb_blueprint"
+    },
+    "title": {
+      "translate": "achievement.pcbBlueprint"
+    },
+    "description": {
+      "translate": "achievement.pcbBlueprint.desc"
+    }
+  },
+  "parent": "pneumaticcraft:amadron_tablet",
+  "criteria": {
+    "air_compressor": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:pcb_blueprint"
+          }
+        ]
+      }
+    }
+  },
+  "rewards": {
+    "experience": 20
+  }
+}

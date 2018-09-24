@@ -1,29 +1,28 @@
 {
   "display": {
     "icon": {
-      "item": "pneumaticcraft:air_compressor"
+      "item": "pneumaticcraft:pneumatic_wrench",
+      "durability": 0
     },
     "title": {
-      "translate": "achievement.airCompressor"
+      "translate": "achievement.pneumaticWrench"
     },
     "description": {
-      "translate": "achievement.airCompressor.desc"
+      "translate": "achievement.pneumaticWrench.desc"
     }
   },
   "parent": "pneumaticcraft:pressure_tube",
   "criteria": {
-    "taken": {
+    "pressure_tube": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "item": "pneumaticcraft:air_compressor"
+            "item": "pneumaticcraft:pneumatic_wrench",
+            "durability": 0
           }
         ]
       }
     }
-  },
-  "rewards": {
-    "experience": 10
   }
 }

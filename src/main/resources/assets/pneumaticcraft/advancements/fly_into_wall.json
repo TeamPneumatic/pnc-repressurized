@@ -1,0 +1,19 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:brick_block"
+    },
+    "title": {
+      "translate": "achievement.flyIntoWall"
+    },
+    "description": {
+      "translate": "achievement.flyIntoWall.desc"
+    }
+  },
+  "parent": "pneumaticcraft:flight",
+  "criteria": {
+    "equipped": {
+      "trigger": "pneumaticcraft:fly_into_wall"
+    }
+  }
+}

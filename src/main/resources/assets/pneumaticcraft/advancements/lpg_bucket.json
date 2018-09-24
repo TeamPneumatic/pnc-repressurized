@@ -2,27 +2,30 @@
   "display": {
     "icon": {
       "item": "forge:bucketfilled",
-      "nbt": "{FluidName:\"etchacid\",Amount:1000}"
+      "nbt": "{FluidName:\"lpg\",Amount:1000}"
     },
     "title": {
-      "translate": "achievement.etchacidBucket"
+      "translate": "achievement.lpgBucket"
     },
     "description": {
-      "translate": "achievement.etchacidBucket.desc"
+      "translate": "achievement.lpgBucket.desc"
     }
   },
-  "parent": "pneumaticcraft:pressure_chamber",
+  "parent": "pneumaticcraft:vortex_tube",
   "criteria": {
-    "taken": {
+    "lpg_bucket": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
             "item": "forge:bucketfilled",
-            "nbt": "{FluidName:\"etchacid\",Amount:1000}"
+            "nbt": "{FluidName:\"lpg\",Amount:1000}"
           }
         ]
       }
     }
+  },
+  "rewards": {
+    "experience": 20
   }
 }

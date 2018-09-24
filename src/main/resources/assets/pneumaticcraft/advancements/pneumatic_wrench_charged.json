@@ -1,0 +1,34 @@
+{
+  "display": {
+    "icon": {
+      "item": "pneumaticcraft:pneumatic_wrench",
+      "durability": 30000
+    },
+    "title": {
+      "translate": "achievement.pneumaticWrenchCharged"
+    },
+    "description": {
+      "translate": "achievement.pneumaticWrenchCharged.desc"
+    }
+  },
+  "parent": "pneumaticcraft:pneumatic_wrench",
+  "criteria": {
+    "pressure_tube": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:pneumatic_wrench",
+            "durability": {
+              "min": 1,
+              "max": 30000
+            }
+          }
+        ]
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

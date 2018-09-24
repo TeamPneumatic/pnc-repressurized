@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "item": "pneumaticcraft:amadron_tablet"
+    },
+    "title": {
+      "translate": "achievement.amadronTablet"
+    },
+    "description": {
+      "translate": "achievement.amadronTablet.desc"
+    }
+  },
+  "parent": "pneumaticcraft:plastic",
+  "criteria": {
+    "taken": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:amadron_tablet"
+          }
+        ]
+      }
+    }
+  }
+}

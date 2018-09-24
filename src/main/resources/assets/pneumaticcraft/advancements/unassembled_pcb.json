@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "item": "pneumaticcraft:unassembled_pcb"
+    },
+    "title": {
+      "translate": "achievement.unassembledPCB"
+    },
+    "description": {
+      "translate": "achievement.unassembledPCB.desc"
+    }
+  },
+  "parent": "pneumaticcraft:empty_pcb",
+  "criteria": {
+    "air_compressor": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:unassembled_pcb"
+          }
+        ]
+      }
+    }
+  }
+}

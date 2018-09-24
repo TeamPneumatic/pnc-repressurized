@@ -1,23 +1,23 @@
 {
   "display": {
     "icon": {
-      "item": "pneumaticcraft:air_compressor"
+      "item": "pneumaticcraft:programmable_controller"
     },
     "title": {
-      "translate": "achievement.airCompressor"
+      "translate": "achievement.programmableController"
     },
     "description": {
-      "translate": "achievement.airCompressor.desc"
+      "translate": "achievement.programmableController.desc"
     }
   },
-  "parent": "pneumaticcraft:pressure_tube",
+  "parent": "pneumaticcraft:advanced_pressure_tube",
   "criteria": {
     "taken": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "item": "pneumaticcraft:air_compressor"
+            "item": "pneumaticcraft:programmable_controller"
           }
         ]
       }

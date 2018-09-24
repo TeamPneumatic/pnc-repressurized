@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "item": "pneumaticcraft:thermopneumatic_processing_plant"
+    },
+    "title": {
+      "translate": "achievement.tpPlant"
+    },
+    "description": {
+      "translate": "achievement.tpPlant.desc"
+    }
+  },
+  "parent": "pneumaticcraft:lpg_bucket",
+  "criteria": {
+    "refinery": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:thermopneumatic_processing_plant"
+          }
+        ]
+      }
+    }
+  }
+}

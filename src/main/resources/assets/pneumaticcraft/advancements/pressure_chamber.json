@@ -1,0 +1,22 @@
+{
+  "display": {
+    "icon": {
+      "item": "pneumaticcraft:pressure_chamber_wall"
+    },
+    "title": {
+      "translate": "achievement.pressureChamber"
+    },
+    "description": {
+      "translate": "achievement.pressureChamber.desc"
+    }
+  },
+  "parent": "pneumaticcraft:root",
+  "criteria": {
+    "assembled": {
+      "trigger": "pneumaticcraft:pressure_chamber"
+    }
+  },
+  "rewards": {
+    "experience": 20
+  }
+}

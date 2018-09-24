@@ -10,6 +10,7 @@ import me.desht.pneumaticcraft.api.item.IPressurizable;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.*;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.hacking.HackableHandler;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
+import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.item.ItemMachineUpgrade;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
@@ -301,6 +302,7 @@ public class CommonHUDHandler {
             if (!player.world.isRemote) {
                 if (prevJetBootsAirUsage == 0) {
                     NetworkHandler.sendToDimension(new PacketPlayMovingSound(MovingSounds.Sound.JET_BOOTS, player), player.world.provider.getDimension());
+                    AdvancementTriggers.FLIGHT.trigger((EntityPlayerMP) player);
                 }
                 if (player.collidedHorizontally) {
                     double vel = Math.sqrt(player.motionZ * player.motionZ + player.motionX * player.motionX);
@@ -312,6 +314,7 @@ public class CommonHUDHandler {
                     if (vel > 2) {
                         player.playSound(vel > 2.5 ? SoundEvents.ENTITY_GENERIC_BIG_FALL : SoundEvents.ENTITY_GENERIC_SMALL_FALL, 1.0F, 1.0F);
                         player.attackEntityFrom(DamageSource.FLY_INTO_WALL, (float) vel);
+                        AdvancementTriggers.FLY_INTO_WALL.trigger((EntityPlayerMP) player);
                     }
                 }
                 Vec3d jetVec = lookVec.scale(-0.5);
@@ -403,6 +406,7 @@ public class CommonHUDHandler {
                     PneumaticCraftRepressurized.proxy.getHackTickHandler().trackBlock(hackedBlock, hackableBlock);
                     NetworkHandler.sendToAllAround(new PacketHackingBlockFinish(hackedBlock), player.world);
                     setHackedBlock(null);
+                    AdvancementTriggers.BLOCK_HACK.trigger((EntityPlayerMP) player);  // safe to cast, this is server-side
                 }
             } else {
                 setHackedBlock(null);
@@ -415,6 +419,7 @@ public class CommonHUDHandler {
                     PneumaticCraftRepressurized.proxy.getHackTickHandler().trackEntity(hackedEntity, hackableEntity);
                     NetworkHandler.sendToAllAround(new PacketHackingEntityFinish(hackedEntity), new TargetPoint(hackedEntity.world.provider.getDimension(), hackedEntity.posX, hackedEntity.posY, hackedEntity.posZ, 64));
                     setHackedEntity(null);
+                    AdvancementTriggers.ENTITY_HACK.trigger((EntityPlayerMP) player);  // safe to cast, this is server-side
                 }
             } else {
                 setHackedEntity(null);

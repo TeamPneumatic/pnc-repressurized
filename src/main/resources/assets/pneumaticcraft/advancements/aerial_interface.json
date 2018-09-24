@@ -1,23 +1,23 @@
 {
   "display": {
     "icon": {
-      "item": "pneumaticcraft:plastic"
+      "item": "pneumaticcraft:aerial_interface"
     },
     "title": {
-      "translate": "achievement.plastic"
+      "translate": "achievement.aerialInterface"
     },
     "description": {
-      "translate": "achievement.plastic.desc"
+      "translate": "achievement.aerialInterface.desc"
     }
   },
-  "parent": "pneumaticcraft:tp_plant",
+  "parent": "pneumaticcraft:advanced_pressure_tube",
   "criteria": {
-    "plastic": {
+    "taken": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "item": "pneumaticcraft:plastic"
+            "item": "pneumaticcraft:aerial_interface"
           }
         ]
       }

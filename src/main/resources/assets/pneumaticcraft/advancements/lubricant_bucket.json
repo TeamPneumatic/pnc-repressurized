@@ -2,24 +2,24 @@
   "display": {
     "icon": {
       "item": "forge:bucketfilled",
-      "nbt": "{FluidName:\"etchacid\",Amount:1000}"
+      "nbt": "{FluidName:\"lubricant\",Amount:1000}"
     },
     "title": {
-      "translate": "achievement.etchacidBucket"
+      "translate": "achievement.lubricantBucket"
     },
     "description": {
-      "translate": "achievement.etchacidBucket.desc"
+      "translate": "achievement.lubricantBucket.desc"
     }
   },
-  "parent": "pneumaticcraft:pressure_chamber",
+  "parent": "pneumaticcraft:tp_plant",
   "criteria": {
-    "taken": {
+    "lpg_bucket": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
             "item": "forge:bucketfilled",
-            "nbt": "{FluidName:\"etchacid\",Amount:1000}"
+            "nbt": "{FluidName:\"lubricant\",Amount:1000}"
           }
         ]
       }

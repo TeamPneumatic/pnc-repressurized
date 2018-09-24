@@ -1,23 +1,23 @@
 {
   "display": {
     "icon": {
-      "item": "pneumaticcraft:plastic"
+      "item": "pneumaticcraft:flux_compressor"
     },
     "title": {
-      "translate": "achievement.plastic"
+      "translate": "achievement.fluxCompressor"
     },
     "description": {
-      "translate": "achievement.plastic.desc"
+      "translate": "achievement.fluxCompressor.desc"
     }
   },
-  "parent": "pneumaticcraft:tp_plant",
+  "parent": "pneumaticcraft:advanced_pressure_tube",
   "criteria": {
-    "plastic": {
+    "taken": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "item": "pneumaticcraft:plastic"
+            "item": "pneumaticcraft:flux_compressor"
           }
         ]
       }

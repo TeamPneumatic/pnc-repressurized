@@ -66,11 +66,14 @@ public class ItemEmptyPCB extends ItemNonDespawning {
             if (etchProgress < 100) {
                 if (entityItem.ticksExisted % (TileEntityConstants.PCB_ETCH_TIME / 5) == 0) {
                     stack.getTagCompound().setInteger("etchProgress", etchProgress + 1);
+                }
+                if (rand.nextInt(15) == 0) {
                     World world = entityItem.getEntityWorld();
-                    double x = entityItem.posX + world.rand.nextDouble() * 0.5 - 0.25;
-                    double y = entityItem.posY + world.rand.nextDouble() * 0.5;
-                    double z = entityItem.posZ + world.rand.nextDouble() * 0.5 - 0.25;
-                    world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, x, y, z, 0.0, 0.05, 0.0);
+                    double x = entityItem.posX + world.rand.nextDouble() * 0.3 - 0.15;
+                    double y = entityItem.posY - 0.15;
+                    double z = entityItem.posZ + world.rand.nextDouble() * 0.3 - 0.15;
+                    world.spawnParticle(EnumParticleTypes.WATER_WAKE,
+                            x, y, z, 0.0, 0.05, 0.0);
                 }
             } else if(!entityItem.world.isRemote){
                 int successCount = 0;
