@@ -31,7 +31,7 @@ public class ItemLogisticsFrame extends ItemSemiBlockBase {
         ItemStack stack = player.getHeldItem(handIn);
         if (handIn != EnumHand.MAIN_HAND) return ActionResult.newResult(EnumActionResult.PASS, stack);
         if (!world.isRemote) {
-            player.openGui(PneumaticCraftRepressurized.instance, ((SemiBlockLogistics) getSemiBlock(world, null, stack)).getGuiID().ordinal(), world, 0, 0, 0);
+            player.openGui(PneumaticCraftRepressurized.instance, getSemiBlock(world, null, stack).getGuiID().ordinal(), world, 0, 0, 0);
         }
         return ActionResult.newResult(EnumActionResult.SUCCESS, stack);
     }

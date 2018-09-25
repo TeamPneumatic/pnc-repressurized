@@ -28,7 +28,7 @@ import java.util.List;
 
 public class DroneAIBlockInteract extends DroneAIBlockInteraction {
 
-    private final List<BlockPos> visitedPositions = new ArrayList<BlockPos>();
+    private final List<BlockPos> visitedPositions = new ArrayList<>();
 
     public DroneAIBlockInteract(IDroneBase drone, ProgWidgetAreaItemBase widget) {
         super(drone, widget);

@@ -16,7 +16,7 @@ public class InventoryPneumaticInventoryItem extends InventoryBasic {
     // the title of the backpack
     protected String inventoryTitle;
     // the original ItemStack to compare with the player inventory
-    private ItemStack armorStack;
+    private final ItemStack armorStack;
     private final TileEntityChargingStation te;
 
     // if class is reading from NBT tag

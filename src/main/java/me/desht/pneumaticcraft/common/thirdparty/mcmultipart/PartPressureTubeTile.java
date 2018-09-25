@@ -5,10 +5,10 @@ import mcmultipart.api.multipart.IMultipartTile;
 import net.minecraft.tileentity.TileEntity;
 
 public class PartPressureTubeTile implements IMultipartTile {
-    private TileEntity tile;
+    private final TileEntity tile;
     private IPartInfo info;
 
-    public PartPressureTubeTile(TileEntity tile) {
+    PartPressureTubeTile(TileEntity tile) {
         this.tile = tile;
     }
 

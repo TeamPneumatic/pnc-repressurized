@@ -13,9 +13,9 @@ import net.minecraft.world.World;
 import java.util.*;
 
 public class HeatExchangerLogic implements IHeatExchangerLogic {
-    private final Set<IHeatExchangerLogic> hullExchangers = new HashSet<IHeatExchangerLogic>();
-    private final Set<IHeatExchangerLogic> connectedExchangers = new HashSet<IHeatExchangerLogic>();
-    private List<HeatBehaviour> behaviours = new ArrayList<HeatBehaviour>();
+    private final Set<IHeatExchangerLogic> hullExchangers = new HashSet<>();
+    private final Set<IHeatExchangerLogic> connectedExchangers = new HashSet<>();
+    private List<HeatBehaviour> behaviours = new ArrayList<>();
     private List<HeatBehaviour> newBehaviours;//Required to prevent a CME
     @GuiSynced
     private double temperature = 295;//degrees Kelvin, 20 degrees by default.
@@ -30,7 +30,7 @@ public class HeatExchangerLogic implements IHeatExchangerLogic {
             removeConnectedExchanger(logic);
         }
         hullExchangers.clear();
-        newBehaviours = new ArrayList<HeatBehaviour>();
+        newBehaviours = new ArrayList<>();
         for (EnumFacing d : EnumFacing.VALUES) {
             if (isSideValid(validSides, d)) {
                 HeatBehaviourManager.getInstance().addHeatBehaviours(world, pos.offset(d), this, newBehaviours);

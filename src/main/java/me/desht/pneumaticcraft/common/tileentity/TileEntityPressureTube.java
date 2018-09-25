@@ -28,9 +28,9 @@ import java.util.List;
 
 public class TileEntityPressureTube extends TileEntityPneumaticBase implements IAirListener, IManoMeasurable, IMultipartTE, ICamouflageableTE {
     @DescSynced
-    public boolean[] sidesConnected = new boolean[6];
+    public final boolean[] sidesConnected = new boolean[6];
     @DescSynced
-    public boolean[] sidesClosed = new boolean[6];
+    public final boolean[] sidesClosed = new boolean[6];
     public TubeModule[] modules = new TubeModule[6];
     @DescSynced
     private ItemStack camoStack = ItemStack.EMPTY;
@@ -205,7 +205,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     }
 
     private void updateConnections() {
-        sidesConnected = new boolean[6];
+//        sidesConnected = new boolean[6];
 
         List<Pair<EnumFacing, IAirHandler>> connections = getAirHandler(null).getConnectedPneumatics();
         Arrays.fill(sidesConnected, false);

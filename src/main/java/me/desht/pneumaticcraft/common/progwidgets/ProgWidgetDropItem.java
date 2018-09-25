@@ -64,7 +64,7 @@ public class ProgWidgetDropItem extends ProgWidgetInventoryBase implements IItem
     public EntityAIBase getWidgetAI(IDroneBase drone, IProgWidget widget) {
         return new DroneAIImExBase(drone, (ProgWidgetAreaItemBase) widget) {
 
-            private final Set<BlockPos> visitedPositions = new HashSet<BlockPos>();
+            private final Set<BlockPos> visitedPositions = new HashSet<>();
 
             @Override
             public boolean shouldExecute() {

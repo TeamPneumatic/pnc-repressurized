@@ -10,7 +10,7 @@ import java.util.Set;
 public class HelmetWidgetDefaults extends JsonConfig {
     private final Set<String> keyBinds = Sets.newHashSet();
 
-    public static HelmetWidgetDefaults INSTANCE = new HelmetWidgetDefaults();
+    public static final HelmetWidgetDefaults INSTANCE = new HelmetWidgetDefaults();
 
     private HelmetWidgetDefaults() {
         super(true);

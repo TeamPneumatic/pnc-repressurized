@@ -63,7 +63,7 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
     private Object stackWatcher;
     private Object craftingWatcher;
     private boolean needToCheckForInterface = true;
-    private final Map<TileEntity, Integer> providingInventories = new HashMap<TileEntity, Integer>();
+    private final Map<TileEntity, Integer> providingInventories = new HashMap<>();
 
     @Override
     public int getColor() {
@@ -450,7 +450,7 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
 
     @Optional.Method(modid = ModIds.AE2)
     public List<IAEItemStack> getProvidingItems(){
-        List<IAEItemStack> stacks = new ArrayList<IAEItemStack>();
+        List<IAEItemStack> stacks = new ArrayList<>();
         for(TileEntity te : providingInventories.keySet()) {
             IItemHandler inv = IOHelper.getInventoryForTE(te);
             if(inv != null) {
@@ -477,7 +477,7 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
         if(channel == AEApi.instance().storage().getStorageChannel( IItemStorageChannel.class )) {
             return Arrays.asList((IMEInventoryHandler)this);
         } else {
-            return new ArrayList<IMEInventoryHandler>();
+            return new ArrayList<>();
         }
     }
 

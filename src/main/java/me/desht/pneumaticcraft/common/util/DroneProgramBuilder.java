@@ -1,12 +1,12 @@
 package me.desht.pneumaticcraft.common.util;
 
+import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 
 /**
  * Class to build simple (no jumping) Drone programs, without needing to worry about the X/Y locations of widgets
@@ -15,7 +15,7 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
  */
 public class DroneProgramBuilder{
 
-    private List<DroneInstruction> instructions = new ArrayList<>();
+    private final List<DroneInstruction> instructions = new ArrayList<>();
     
     public void add(IProgWidget mainInstruction, IProgWidget... whitelist){
         instructions.add(new DroneInstruction(mainInstruction, Arrays.asList(whitelist)));
@@ -53,15 +53,15 @@ public class DroneProgramBuilder{
     }
     
     private class DroneInstruction{
-        public final IProgWidget mainInstruction;
-        public final List<IProgWidget> whitelist;
+        final IProgWidget mainInstruction;
+        final List<IProgWidget> whitelist;
         
-        public DroneInstruction(IProgWidget mainInstruction, List<IProgWidget> whitelist){
+        DroneInstruction(IProgWidget mainInstruction, List<IProgWidget> whitelist){
             this.mainInstruction = mainInstruction;
             this.whitelist = whitelist;
         }
         
-        public void addToWidgets(List<IProgWidget> widgets){
+        void addToWidgets(List<IProgWidget> widgets){
             widgets.add(mainInstruction);
             widgets.addAll(whitelist);
         }

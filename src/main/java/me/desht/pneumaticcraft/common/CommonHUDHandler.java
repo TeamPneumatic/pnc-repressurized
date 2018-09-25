@@ -62,8 +62,8 @@ public class CommonHUDHandler {
     private final boolean[][] upgradeRenderersInserted = new boolean[4][];
     private final boolean[][] upgradeRenderersEnabled = new boolean[4][];
     private final int[] ticksSinceEquip = new int[4];
-    public float[] armorPressure = new float[4];
-    private int upgradeMatrix[][] = new int [4][];
+    public final float[] armorPressure = new float[4];
+    private final int[][] upgradeMatrix = new int [4][];
     private boolean isValid;
 
     private int hackTime;

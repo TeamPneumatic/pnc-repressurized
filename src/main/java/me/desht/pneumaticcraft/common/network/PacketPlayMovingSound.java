@@ -9,7 +9,7 @@ import net.minecraft.util.math.BlockPos;
 
 public class PacketPlayMovingSound extends AbstractPacket<PacketPlayMovingSound> {
 
-    enum SourceType { ENTITY, STATIC_POS;}
+    enum SourceType { ENTITY, STATIC_POS }
 
     private MovingSounds.Sound sound;
     private int entityId;

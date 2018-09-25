@@ -112,7 +112,7 @@ public class EntityDrone extends EntityDroneBase implements
 
     private EntityDroneItemHandler inventory = new EntityDroneItemHandler(1, this);
     private final FluidTank tank = new FluidTank(Integer.MAX_VALUE);
-    private ItemStackHandler upgradeInventory = new ItemStackHandler(9) {
+    private final ItemStackHandler upgradeInventory = new ItemStackHandler(9) {
         @Override
         protected void onContentsChanged(int slot) {
             super.onContentsChanged(slot);
@@ -1293,7 +1293,7 @@ public class EntityDrone extends EntityDroneBase implements
     }
 
     private class MinigunDrone extends Minigun {
-        private EntityDrone drone;
+        private final EntityDrone drone;
 
         MinigunDrone(EntityDrone drone) {
             super(true);

@@ -38,7 +38,7 @@ public class EntityInRangeSensor extends EntityPollSensor {
 
     @Override
     public List<String> getDescription() {
-        List<String> text = new ArrayList<String>();
+        List<String> text = new ArrayList<>();
         text.add(TextFormatting.BLACK + "Emits a redstone level for every entity within range. You can select a specific entity by filling in its name in the textbox. For instance for Creepers type 'Creeper', or for Player1 type 'Player1'. You can also select an entity type. If you want to detect mobs, you can type '@mob'. All selectable entity types are @mob, @animal, @living, @player, @item, @minecart.");
         return text;
     }

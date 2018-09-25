@@ -271,7 +271,7 @@ public abstract class Minigun {
 
         setMinigunRotation(getMinigunRotation() + getMinigunSpeed());
 
-        double targetYaw = 0;
+        double targetYaw;
         double targetPitch = 0;
         if (attackTarget != null) {
             double deltaX = posX - attackTarget.posX;

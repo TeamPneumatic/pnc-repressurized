@@ -39,7 +39,7 @@ public class WorldDayLightSensor implements IPollSensorSetting {
 
     @Override
     public List<String> getDescription() {
-        List<String> text = new ArrayList<String>();
+        List<String> text = new ArrayList<>();
         text.add(TextFormatting.BLACK + "A straight copy of the Daylight Sensor.");
         return text;
     }
@@ -54,7 +54,7 @@ public class WorldDayLightSensor implements IPollSensorSetting {
         return updatePower(world, pos);
     }
 
-    public int updatePower(World worldIn, BlockPos pos) {
+    private int updatePower(World worldIn, BlockPos pos) {
         if (worldIn.provider.hasSkyLight()) {
             int i = worldIn.getLightFor(EnumSkyBlock.SKY, pos) - worldIn.getSkylightSubtracted();
             float f = worldIn.getCelestialAngleRadians(1.0F);

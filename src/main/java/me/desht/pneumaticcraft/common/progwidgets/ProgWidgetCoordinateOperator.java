@@ -20,7 +20,7 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
     public enum EnumOperator {
         PLUS_MINUS("plus_minus"), MULIPLY_DIVIDE("multiply_divide"), MAX_MIN("max_min");
 
-        public ResourceLocation texture;
+        public final ResourceLocation texture;
         private final String name;
 
         EnumOperator(String name) {

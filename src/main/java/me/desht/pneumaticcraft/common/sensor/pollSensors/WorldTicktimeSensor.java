@@ -40,7 +40,7 @@ public class WorldTicktimeSensor implements IPollSensorSetting {
 
     @Override
     public List<String> getDescription() {
-        List<String> text = new ArrayList<String>();
+        List<String> text = new ArrayList<>();
         text.add(TextFormatting.BLACK + "Emits a redstone level dependant on the time used by the server to update the world this Universal Sensor is in. This time is calculated in the same way as Forge's /tps command. With the textbox you can select a resolution as follows:");
         text.add(TextFormatting.RED + "Strength = Ticktime(mS) * TextboxValue");
         text.add(TextFormatting.GREEN + "Example:  Ticktime = 20mS ; Textbox text = '0.5'");

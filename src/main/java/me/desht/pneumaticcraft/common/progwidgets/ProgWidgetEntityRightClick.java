@@ -71,7 +71,7 @@ public class ProgWidgetEntityRightClick extends ProgWidget implements IAreaProvi
     @Override
     public EntityAIBase getWidgetAI(IDroneBase drone, IProgWidget widget) {
         return new DroneEntityBase<IProgWidget, EntityLivingBase>(drone, widget) {
-            private final List<Entity> visitedEntities = new ArrayList<Entity>();
+            private final List<Entity> visitedEntities = new ArrayList<>();
 
             @Override
             protected boolean isEntityValid(Entity entity) {

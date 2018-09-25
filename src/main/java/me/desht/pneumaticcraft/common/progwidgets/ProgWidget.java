@@ -71,7 +71,7 @@ public abstract class ProgWidget implements IProgWidget {
     @Override
     public void addWarnings(List<String> curInfo, List<IProgWidget> widgets) {
         if (this instanceof IVariableWidget) {
-            Set<String> variables = new HashSet<String>();
+            Set<String> variables = new HashSet<>();
             ((IVariableWidget) this).addVariables(variables);
             for (String variable : variables) {
                 if (!variable.equals("") && !variable.startsWith("#") && !variable.startsWith("$") && !isVariableSetAnywhere(widgets, variable)) {
@@ -85,7 +85,7 @@ public abstract class ProgWidget implements IProgWidget {
         if (variable.equals("")) return true;
         for (IProgWidget widget : widgets) {
             if (widget instanceof IVariableSetWidget) {
-                Set<String> variables = new HashSet<String>();
+                Set<String> variables = new HashSet<>();
                 ((IVariableSetWidget) widget).addVariables(variables);
                 if (variables.contains(variable)) return true;
             }
@@ -164,7 +164,7 @@ public abstract class ProgWidget implements IProgWidget {
         int textureSize = getTextureSize();
         double u = (double) width / textureSize;
         double v = (double) height / textureSize;
-        return new ImmutablePair<Double, Double>(u, v);
+        return new ImmutablePair<>(u, v);
     }
 
     @Override

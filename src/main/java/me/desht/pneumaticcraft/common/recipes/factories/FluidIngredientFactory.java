@@ -26,9 +26,9 @@ public class FluidIngredientFactory implements IIngredientFactory {
     }
 
     public static class FluidIngredient extends Ingredient {
-        private FluidStack fluid;
+        private final FluidStack fluid;
 
-        public FluidIngredient(String fluidName) {
+        FluidIngredient(String fluidName) {
             super(FluidUtil.getFilledBucket(new FluidStack(FluidRegistry.getFluid(fluidName), Fluid.BUCKET_VOLUME)));
             fluid = FluidRegistry.getFluidStack(fluidName, Fluid.BUCKET_VOLUME);
         }
@@ -50,7 +50,6 @@ public class FluidIngredientFactory implements IIngredientFactory {
 
         @Override
         public boolean isSimple() {
-
             return false;
         }
     }

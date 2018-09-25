@@ -12,16 +12,15 @@ public class DamageSourcePneumaticCraft extends DamageSource {
     public static final DamageSourcePneumaticCraft SECURITY_STATION = (DamageSourcePneumaticCraft) new DamageSourcePneumaticCraft("securityStation").setDamageBypassesArmor();
     public static final DamageSourcePneumaticCraft FREEZING = (DamageSourcePneumaticCraft) new DamageSourcePneumaticCraft("freezing", 2);
 
-    private int deathMessages = 0;
+    private final int deathMessages;
 
-    public DamageSourcePneumaticCraft(String damageType, int messages) {
-        this(damageType);
+    private DamageSourcePneumaticCraft(String damageType, int messages) {
+        super(damageType);
         deathMessages = messages;
     }
 
-    public DamageSourcePneumaticCraft(String damageType) {
-        super(damageType);
-        deathMessages = 1;
+    DamageSourcePneumaticCraft(String damageType) {
+        this(damageType, 1);
     }
 
     @Override
@@ -44,12 +43,10 @@ public class DamageSourcePneumaticCraft extends DamageSource {
      */
     @Override
     public ITextComponent getDeathMessage(EntityLivingBase par1EntityLivingBase) {
-        String messageMeta = "";
         int messageNumber = par1EntityLivingBase.getRNG().nextInt(deathMessages) + 1;
-        messageMeta = messageNumber + "";
 
         EntityLivingBase entitylivingbase1 = par1EntityLivingBase.getAttackingEntity();
-        String s = "death.attack." + damageType + messageMeta;
+        String s = "death.attack." + damageType + messageNumber;
         String s1 = s + ".player";
         return entitylivingbase1 != null && I18n.hasKey(s1) ?
                 new TextComponentTranslation(s1, par1EntityLivingBase.getDisplayName(), entitylivingbase1.getDisplayName()) :

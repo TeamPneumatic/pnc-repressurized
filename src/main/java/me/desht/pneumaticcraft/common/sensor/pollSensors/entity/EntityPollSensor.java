@@ -14,11 +14,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public abstract class EntityPollSensor implements IPollSensorSetting {
+abstract class EntityPollSensor implements IPollSensorSetting {
 
     @Override
     public Set<Item> getRequiredUpgrades() {
-        Set<Item> upgrades = new HashSet<Item>();
+        Set<Item> upgrades = new HashSet<>();
         upgrades.add(Itemss.upgrades.get(EnumUpgrade.ENTITY_TRACKER));
         return upgrades;
     }
@@ -34,8 +34,8 @@ public abstract class EntityPollSensor implements IPollSensorSetting {
         return getRedstoneValue(world.getEntitiesWithinAABB(getEntityTracked(), aabb), textBoxText);
     }
 
-    public abstract Class getEntityTracked();
+    protected abstract Class getEntityTracked();
 
-    public abstract int getRedstoneValue(List<Entity> entities, String textBoxText);
+    protected abstract int getRedstoneValue(List<Entity> entities, String textBoxText);
 
 }

@@ -58,7 +58,7 @@ public class DroneAIAttackEntity extends EntityAIAttackMelee {
                     }
                     float f1 = 0F;
                     if (attacker.getAttackTarget() instanceof EntityLivingBase) {
-                        f1 = EnchantmentHelper.getModifierForCreature(stack, ((EntityLivingBase)attacker.getAttackTarget()).getCreatureAttribute());
+                        f1 = EnchantmentHelper.getModifierForCreature(stack, attacker.getAttackTarget().getCreatureAttribute());
                     } else if (attacker.getAttackTarget() != null) {
                         f1 = EnchantmentHelper.getModifierForCreature(stack, EnumCreatureAttribute.UNDEFINED);
                     }

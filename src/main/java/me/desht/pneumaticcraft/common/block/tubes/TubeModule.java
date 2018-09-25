@@ -24,7 +24,7 @@ import java.util.List;
 public abstract class TubeModule implements ISidedPart {
     protected IPneumaticPosProvider pressureTube;
     protected EnumFacing dir = EnumFacing.UP;
-    public AxisAlignedBB[] boundingBoxes = new AxisAlignedBB[6];
+    public final AxisAlignedBB[] boundingBoxes = new AxisAlignedBB[6];
     protected boolean upgraded;
     public float lowerBound = 7.5F, higherBound = 0, maxValue = 30;
     private boolean fake;
@@ -82,7 +82,7 @@ public abstract class TubeModule implements ISidedPart {
      * @return
      */
     public List<ItemStack> getDrops() {
-        List<ItemStack> drops = new ArrayList<ItemStack>();
+        List<ItemStack> drops = new ArrayList<>();
         if (shouldDrop) {
             drops.add(new ItemStack(ModuleRegistrator.getModuleItem(getType())));
             if (upgraded) drops.add(new ItemStack(Itemss.ADVANCED_PCB));

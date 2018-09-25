@@ -1,13 +1,10 @@
 package me.desht.pneumaticcraft.common.progwidgets.area;
 
-import java.util.function.Consumer;
-
-import me.desht.pneumaticcraft.common.config.ConfigHandler;
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea.EnumAreaType;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+
+import java.util.function.Consumer;
 
 public class AreaTypeLine extends AreaType{
 

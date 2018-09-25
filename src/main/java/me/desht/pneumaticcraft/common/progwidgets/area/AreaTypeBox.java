@@ -1,13 +1,12 @@
 package me.desht.pneumaticcraft.common.progwidgets.area;
 
-import java.util.List;
-import java.util.function.Consumer;
-
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea.EnumAreaType;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.BlockPos;
+
+import java.util.List;
+import java.util.function.Consumer;
 
 public class AreaTypeBox extends AreaType{
 
@@ -20,7 +19,7 @@ public class AreaTypeBox extends AreaType{
         
         private final String name;
         
-        private EnumBoxType(String name){
+        EnumBoxType(String name){
             this.name = "gui.progWidget.area.type.box.boxType." + name;
         }
         

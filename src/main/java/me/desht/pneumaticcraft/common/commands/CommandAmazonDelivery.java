@@ -63,12 +63,12 @@ public class CommandAmazonDelivery extends CommandBase {
         TileEntity te = sender.getEntityWorld().getTileEntity(new BlockPos(Integer.parseInt(args[curArg]), Integer.parseInt(args[curArg + 1]), Integer.parseInt(args[curArg + 2])));
         IItemHandler inv = IOHelper.getInventoryForTE(te);
         if (inv != null) {
-            List<ItemStack> deliveredStacks = new ArrayList<ItemStack>();
+            List<ItemStack> deliveredStacks = new ArrayList<>();
             for (int i = 0; i < inv.getSlots() && deliveredStacks.size() < 65; i++) {
                 if (!inv.getStackInSlot(i).isEmpty()) deliveredStacks.add(inv.getStackInSlot(i));
             }
             if (deliveredStacks.size() > 0) {
-                PneumaticRegistry.getInstance().getDroneRegistry().deliverItemsAmazonStyle(sender.getEntityWorld(), new BlockPos(x, y, z), deliveredStacks.toArray(new ItemStack[deliveredStacks.size()]));
+                PneumaticRegistry.getInstance().getDroneRegistry().deliverItemsAmazonStyle(sender.getEntityWorld(), new BlockPos(x, y, z), deliveredStacks.toArray(new ItemStack[0]));
                 sender.sendMessage(new TextComponentString("command.deliverAmazon.success"));
             } else {
                 sender.sendMessage(new TextComponentString("command.deliverAmazon.noItems"));

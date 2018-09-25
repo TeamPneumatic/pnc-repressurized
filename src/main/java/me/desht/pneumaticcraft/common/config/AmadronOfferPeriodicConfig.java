@@ -8,7 +8,7 @@ import net.minecraft.util.math.MathHelper;
 import java.util.Collection;
 
 public class AmadronOfferPeriodicConfig extends AmadronOfferConfig {
-    public static AmadronOfferPeriodicConfig INSTANCE = new AmadronOfferPeriodicConfig();
+    public static final AmadronOfferPeriodicConfig INSTANCE = new AmadronOfferPeriodicConfig();
 
     public static int timesPerDay = 1;
     public static int offersPer = 20;

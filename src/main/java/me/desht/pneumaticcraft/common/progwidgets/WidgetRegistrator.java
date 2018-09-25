@@ -10,8 +10,8 @@ import java.util.*;
 
 public class WidgetRegistrator {
 
-    public static List<IProgWidget> registeredWidgets = new ArrayList<>();
-    private static Map<String, IProgWidget> allRegisteredWidgets = new LinkedHashMap<>();
+    public static final List<IProgWidget> registeredWidgets = new ArrayList<>();
+    private static final Map<String, IProgWidget> allRegisteredWidgets = new LinkedHashMap<>();
 
     public static void init() {
         register(new ProgWidgetComment());

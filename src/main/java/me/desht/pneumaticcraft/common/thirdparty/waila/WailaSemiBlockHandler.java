@@ -52,7 +52,7 @@ public class WailaSemiBlockHandler implements IWailaDataProvider {
         tag.setTag("semiBlocks", tagList);
         for(SemiBlockBasic<?> semiBlock : semiBlocks){
             NBTTagCompound subTag = new NBTTagCompound();
-            ((SemiBlockBasic<?>) semiBlock).addWailaInfoToTag(subTag);
+            semiBlock.addWailaInfoToTag(subTag);
             tagList.appendTag(subTag);
         }
         return tag;

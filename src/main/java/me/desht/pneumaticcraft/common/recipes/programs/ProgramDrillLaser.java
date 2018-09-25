@@ -31,7 +31,7 @@ public class ProgramDrillLaser extends AssemblyProgram {
         } else if (!ioUnitExport.isIdle()) {
             useAir = ioUnitExport.pickupItem(null);
         } else {
-            List<AssemblyRecipe> recipes = new ArrayList<AssemblyRecipe>();
+            List<AssemblyRecipe> recipes = new ArrayList<>();
             recipes.addAll(getRecipeList());
             recipes.addAll(new ProgramDrill().getRecipeList());
             recipes.addAll(new ProgramLaser().getRecipeList());

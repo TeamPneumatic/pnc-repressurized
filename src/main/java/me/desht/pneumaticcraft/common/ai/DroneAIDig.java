@@ -1,10 +1,7 @@
 package me.desht.pneumaticcraft.common.ai;
 
-import javax.annotation.Nonnull;
-
 import me.desht.pneumaticcraft.common.progwidgets.IToolUser;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetDig;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -16,6 +13,8 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+
+import javax.annotation.Nonnull;
 
 public class DroneAIDig extends DroneAIBlockInteraction<ProgWidgetAreaItemBase> {
 

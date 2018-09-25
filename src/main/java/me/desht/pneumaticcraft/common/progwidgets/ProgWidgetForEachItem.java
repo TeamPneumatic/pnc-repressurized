@@ -99,7 +99,7 @@ public class ProgWidgetForEachItem extends ProgWidget implements IJumpBackWidget
     public List<String> getPossibleJumpLocations() {
         IProgWidget widget = getConnectedParameters()[getParameters().length - 1];
         ProgWidgetString textWidget = widget != null ? (ProgWidgetString) widget : null;
-        List<String> locations = new ArrayList<String>();
+        List<String> locations = new ArrayList<>();
         if (textWidget != null) locations.add(textWidget.string);
         return locations;
     }

@@ -1,12 +1,12 @@
 package me.desht.pneumaticcraft.common.harvesting;
 
-import java.util.function.Predicate;
-
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+
+import java.util.function.Predicate;
 
 public class HarvestHandlerCropLike extends HarvestHandlerAbstractCrop{
 
@@ -29,7 +29,7 @@ public class HarvestHandlerCropLike extends HarvestHandlerAbstractCrop{
     
     @Override
     protected boolean isMaxAge(IBlockState state){
-        return state.getValue(ageProperty).intValue() == maxAge;
+        return state.getValue(ageProperty) == maxAge;
     }
     
     @Override

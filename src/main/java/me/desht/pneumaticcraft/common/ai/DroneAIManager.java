@@ -29,19 +29,19 @@ public class DroneAIManager implements IVariableProvider {
     /**
      * A list of EntityAITaskEntrys in EntityAITasks.
      */
-    public List<EntityAITaskEntry> taskEntries = new ArrayList<EntityAITaskEntry>();
+    private final List<EntityAITaskEntry> taskEntries = new ArrayList<>();
 
     /**
      * A list of EntityAITaskEntrys that are currently being executed.
      */
-    private final List<EntityAITaskEntry> executingTaskEntries = new ArrayList<EntityAITaskEntry>();
+    private final List<EntityAITaskEntry> executingTaskEntries = new ArrayList<>();
 
     /**
      * Instance of Profiler.
      */
     private final Profiler theProfiler;
     private int tickCount;
-    public static final int TICK_RATE = 3;
+    static final int TICK_RATE = 3;
 
     private final IDroneBase drone;
     private List<IProgWidget> progWidgets;
@@ -52,9 +52,9 @@ public class DroneAIManager implements IVariableProvider {
     private boolean wasAIOveridden;
     private String currentLabel = "Main";//Holds the name of the last label that was jumped to.
 
-    private Map<String, BlockPos> coordinateVariables = new HashMap<String, BlockPos>();
-    private Map<String, ItemStack> itemVariables = new HashMap<String, ItemStack>();
-    private final Stack<IProgWidget> jumpBackWidgets = new Stack<IProgWidget>();//Used to jump back to a for each widget.
+    private Map<String, BlockPos> coordinateVariables = new HashMap<>();
+    private Map<String, ItemStack> itemVariables = new HashMap<>();
+    private final Stack<IProgWidget> jumpBackWidgets = new Stack<>();//Used to jump back to a for each widget.
 
     private static final int MAX_JUMP_STACK_SIZE = 100;
 
@@ -223,7 +223,7 @@ public class DroneAIManager implements IVariableProvider {
             boolean first = widget instanceof ProgWidgetStart;
             targetAI = widget.getWidgetTargetAI(drone, widget);
             ai = widget.getWidgetAI(drone, widget);
-            Set<IProgWidget> visitedWidgets = new HashSet<IProgWidget>();//Prevent endless loops
+            Set<IProgWidget> visitedWidgets = new HashSet<>();//Prevent endless loops
             while (!visitedWidgets.contains(widget) && targetAI == null && ai == null) {
                 visitedWidgets.add(widget);
                 IProgWidget oldWidget = widget;
@@ -332,7 +332,7 @@ public class DroneAIManager implements IVariableProvider {
         if (!drone.isAIOverriden()) {
             if (wasAIOveridden && curWidgetTargetAI != null) drone.getTargetAI().addTask(2, curWidgetTargetAI);
             wasAIOveridden = false;
-            ArrayList<EntityAITaskEntry> arraylist = new ArrayList<EntityAITaskEntry>();
+            ArrayList<EntityAITaskEntry> arraylist = new ArrayList<>();
             Iterator<EntityAITaskEntry> iterator;
             EntityAITaskEntry entityaitaskentry;
 
@@ -466,11 +466,11 @@ public class DroneAIManager implements IVariableProvider {
         /**
          * The EntityAIBase object.
          */
-        public EntityAIBase action;
+        public final EntityAIBase action;
         /**
          * Priority of the EntityAIBase
          */
-        public int priority;
+        public final int priority;
 
         public EntityAITaskEntry(int par2, EntityAIBase par3EntityAIBase) {
             priority = par2;

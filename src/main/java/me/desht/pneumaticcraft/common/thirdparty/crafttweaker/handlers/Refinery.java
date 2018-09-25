@@ -36,7 +36,7 @@ public static final String name = "PneumaticCraft Refinery";
 	
 	@ZenMethod
 	public static void removeAllRecipes() {
-		CraftTweaker.REMOVALS.add(new RemoveAllRecipes<RefineryRecipe>(Refinery.name, RefineryRecipe.recipes));
+		CraftTweaker.REMOVALS.add(new RemoveAllRecipes<>(Refinery.name, RefineryRecipe.recipes));
 	}
 	
     private static class Add extends ListAddition<RefineryRecipe> {

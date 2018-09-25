@@ -38,7 +38,7 @@ public class WorldGlobalVariableSensor implements IPollSensorSetting {
 
     @Override
     public List<String> getDescription() {
-        List<String> text = new ArrayList<String>();
+        List<String> text = new ArrayList<>();
         text.add(TextFormatting.BLACK + "Emits a redstone signal when the global variable specified its X position is not equal to 0");
         return text;
     }

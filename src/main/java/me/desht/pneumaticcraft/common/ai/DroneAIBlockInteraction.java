@@ -89,7 +89,7 @@ public abstract class DroneAIBlockInteraction<Widget extends ProgWidgetAreaItemB
                 curPos = null;
                 lastSuccessfulY = curY;
                 if (sorter == null || sorter.isDone())
-                    sorter = new ThreadedSorter<BlockPos>(area, new ChunkPositionSorter(drone));
+                    sorter = new ThreadedSorter<>(area, new ChunkPositionSorter(drone));
                 return true;
             } else {
                 return false;

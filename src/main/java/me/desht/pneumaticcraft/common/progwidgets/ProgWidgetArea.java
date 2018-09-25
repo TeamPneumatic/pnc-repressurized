@@ -1,18 +1,6 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-
+import com.google.common.base.Predicate;
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
 import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetArea;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
@@ -21,11 +9,8 @@ import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.item.ItemPlastic;
 import me.desht.pneumaticcraft.common.progwidgets.area.*;
 import me.desht.pneumaticcraft.common.progwidgets.area.AreaType.AreaTypeWidget;
-import me.desht.pneumaticcraft.common.remote.GlobalVariableManager;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.advancements.critereon.NBTPredicate;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
@@ -34,12 +19,14 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import com.google.common.base.Predicate;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariableWidget {
     public int x1, y1, z1, x2, y2, z2;
@@ -59,14 +46,14 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     private static final Map<EnumAreaType, String> oldFormatToAreaTypes = new HashMap<>();
     
     static{
-        register(AreaTypeBox.ID, AreaTypeBox.class, () -> new AreaTypeBox(), EnumAreaType.FILL, EnumAreaType.WALL, EnumAreaType.FRAME);
-        register(AreaTypeSphere.ID, AreaTypeSphere.class, () -> new AreaTypeSphere(), EnumAreaType.SPHERE);
-        register(AreaTypeLine.ID, AreaTypeLine.class, () -> new AreaTypeLine(), EnumAreaType.LINE);
-        register(AreaTypeWall.ID, AreaTypeWall.class, () -> new AreaTypeWall(), EnumAreaType.X_WALL, EnumAreaType.Y_WALL, EnumAreaType.Z_WALL);
-        register(AreaTypeCylinder.ID, AreaTypeCylinder.class, () -> new AreaTypeCylinder(), EnumAreaType.X_CYLINDER, EnumAreaType.Y_CYLINDER, EnumAreaType.Z_CYLINDER);
-        register(AreaTypePyramid.ID, AreaTypePyramid.class, () -> new AreaTypePyramid(), EnumAreaType.X_PYRAMID, EnumAreaType.Y_PYRAMID, EnumAreaType.Z_PYRAMID);
-        register(AreaTypeGrid.ID, AreaTypeGrid.class, () -> new AreaTypeGrid(), EnumAreaType.GRID);
-        register(AreaTypeRandom.ID, AreaTypeRandom.class, () -> new AreaTypeRandom(), EnumAreaType.RANDOM);
+        register(AreaTypeBox.ID, AreaTypeBox.class, AreaTypeBox::new, EnumAreaType.FILL, EnumAreaType.WALL, EnumAreaType.FRAME);
+        register(AreaTypeSphere.ID, AreaTypeSphere.class, AreaTypeSphere::new, EnumAreaType.SPHERE);
+        register(AreaTypeLine.ID, AreaTypeLine.class, AreaTypeLine::new, EnumAreaType.LINE);
+        register(AreaTypeWall.ID, AreaTypeWall.class, AreaTypeWall::new, EnumAreaType.X_WALL, EnumAreaType.Y_WALL, EnumAreaType.Z_WALL);
+        register(AreaTypeCylinder.ID, AreaTypeCylinder.class, AreaTypeCylinder::new, EnumAreaType.X_CYLINDER, EnumAreaType.Y_CYLINDER, EnumAreaType.Z_CYLINDER);
+        register(AreaTypePyramid.ID, AreaTypePyramid.class, AreaTypePyramid::new, EnumAreaType.X_PYRAMID, EnumAreaType.Y_PYRAMID, EnumAreaType.Z_PYRAMID);
+        register(AreaTypeGrid.ID, AreaTypeGrid.class, AreaTypeGrid::new, EnumAreaType.GRID);
+        register(AreaTypeRandom.ID, AreaTypeRandom.class, AreaTypeRandom::new, EnumAreaType.RANDOM);
         if(oldFormatToAreaTypes.size() != EnumAreaType.values().length) throw new IllegalStateException("Not all old formats are handled!");
     }
     
@@ -311,10 +298,11 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         };
         BlockPos p1 = areaPoints[0];
         BlockPos p2 = areaPoints[1] != null ? areaPoints[1] : p1;
-        
-        try{
+
+        try {
             areaType.addArea(addFunc, p1, p2, minX, minY, minZ, maxX, maxY, maxZ);
-        }catch(AreaTooBigException ex){}
+        } catch (AreaTooBigException ignored) {
+        }
     } 
 
     private AxisAlignedBB getAABB() {
@@ -343,7 +331,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
 
     public List<Entity> getEntitiesWithinArea(World world, Predicate<? super Entity> predicate) {
         AxisAlignedBB aabb = getAABB();
-        return aabb != null ? world.getEntitiesInAABBexcluding(null, aabb, predicate) : new ArrayList<Entity>();
+        return aabb != null ? world.getEntitiesInAABBexcluding(null, aabb, predicate) : new ArrayList<>();
     }
 
     @Override

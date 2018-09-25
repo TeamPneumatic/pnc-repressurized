@@ -9,7 +9,7 @@ import java.util.Set;
 public class TextVariableParser {
     private final String orig;
     private final DroneAIManager variableHolder;
-    private final Set<String> relevantVariables = new HashSet<String>();
+    private final Set<String> relevantVariables = new HashSet<>();
 
     public TextVariableParser(String str) {
         this(str, null);

@@ -18,7 +18,7 @@ import java.util.Map;
 
 public class DroneRegistry implements IDroneRegistry {
     private static final DroneRegistry INSTANCE = new DroneRegistry();
-    public final Map<Block, IPathfindHandler> pathfindableBlocks = new HashMap<Block, IPathfindHandler>();
+    public final Map<Block, IPathfindHandler> pathfindableBlocks = new HashMap<>();
 
     public static DroneRegistry getInstance() {
         return INSTANCE;

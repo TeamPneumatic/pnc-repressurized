@@ -51,7 +51,7 @@ public class ProgWidgetDroneConditionEntity extends ProgWidgetDroneEvaluation im
 
     @Override
     public List<Entity> getValidEntities(World world) {
-        return new ArrayList<Entity>();
+        return new ArrayList<>();
     }
 
     @Override

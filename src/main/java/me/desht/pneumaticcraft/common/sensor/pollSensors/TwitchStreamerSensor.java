@@ -40,7 +40,7 @@ public class TwitchStreamerSensor implements IPollSensorSetting {
 
     @Override
     public List<String> getDescription() {
-        List<String> info = new ArrayList<String>();
+        List<String> info = new ArrayList<>();
         info.add(TextFormatting.BLACK + "Emits a redstone signal when the name of the streamer typed in is streaming at this moment.");
         return info;
     }

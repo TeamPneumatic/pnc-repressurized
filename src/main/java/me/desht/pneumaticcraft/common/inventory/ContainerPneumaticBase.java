@@ -24,7 +24,7 @@ import java.util.List;
 
 public class ContainerPneumaticBase<Tile extends TileEntityBase> extends Container implements IGUIButtonSensitive {
 
-    public Tile te;
+    public final Tile te;
     private final List<SyncedField> syncedFields = new ArrayList<>();
     private boolean firstTick = true;
     int playerSlotsStart;

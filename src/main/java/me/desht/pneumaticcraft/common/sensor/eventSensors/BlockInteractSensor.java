@@ -38,7 +38,7 @@ public class BlockInteractSensor implements IBlockAndCoordinateEventSensor {
 
     @Override
     public List<String> getDescription() {
-        List<String> text = new ArrayList<String>();
+        List<String> text = new ArrayList<>();
         text.add(TextFormatting.BLACK + "Emits a redstone pulse when a player right clicks the block at the coordinate(s) selected by the GPS Tool(s) (within range).");
         return text;
     }

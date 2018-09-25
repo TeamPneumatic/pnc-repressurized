@@ -98,7 +98,7 @@ public class PastebinHandler extends Thread {
     public boolean loginInternal(String userName, String password) {
         HttpPost httppost = new HttpPost("http://pastebin.com/api/api_login.php");
 
-        List<NameValuePair> params = new ArrayList<NameValuePair>(3);
+        List<NameValuePair> params = new ArrayList<>(3);
         params.add(new BasicNameValuePair("api_dev_key", DEV_KEY));
         params.add(new BasicNameValuePair("api_user_name", userName));
         params.add(new BasicNameValuePair("api_user_password", password));
@@ -125,7 +125,7 @@ public class PastebinHandler extends Thread {
     public String putInternal(String contents) {
         HttpPost httppost = new HttpPost("http://pastebin.com/api/api_post.php");
 
-        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        List<NameValuePair> params = new ArrayList<>();
         params.add(new BasicNameValuePair("api_dev_key", DEV_KEY));
         params.add(new BasicNameValuePair("api_paste_code", contents));
         params.add(new BasicNameValuePair("api_option", "paste"));

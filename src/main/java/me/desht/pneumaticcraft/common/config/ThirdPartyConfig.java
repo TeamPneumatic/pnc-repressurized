@@ -12,7 +12,7 @@ import java.util.Set;
 public class ThirdPartyConfig extends JsonConfig {
     private static final Map<String, Boolean> MODS = Maps.newHashMap();
 
-    public static ThirdPartyConfig INSTANCE = new ThirdPartyConfig();
+    public static final ThirdPartyConfig INSTANCE = new ThirdPartyConfig();
 
     private ThirdPartyConfig() {
         super(true);

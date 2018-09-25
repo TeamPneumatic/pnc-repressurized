@@ -1,19 +1,17 @@
 package me.desht.pneumaticcraft.common.harvesting;
 
-import java.util.List;
-import java.util.function.Predicate;
-
 import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.api.harvesting.IHarvestHandler;
-import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+
+import java.util.List;
+import java.util.function.Predicate;
 
 public abstract class HarvestHandlerAbstractCrop implements IHarvestHandler{
 

@@ -19,7 +19,7 @@ public class PacketShowArea extends LocationIntPacket<PacketShowArea> {
     }
 
     public PacketShowArea(BlockPos pos, Set<BlockPos> area) {
-        this(pos, area.toArray(new BlockPos[area.size()]));
+        this(pos, area.toArray(new BlockPos[0]));
     }
 
     @Override

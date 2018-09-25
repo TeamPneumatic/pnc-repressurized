@@ -74,7 +74,7 @@ public class TileEntityPlasticMixer extends TileEntityTickableBase implements IH
     @GuiSynced
     public boolean lockSelection;
     @GuiSynced
-    public int[] dyeBuffers = new int[3];
+    public final int[] dyeBuffers = new int[3];
 
     public TileEntityPlasticMixer() {
         super(4);

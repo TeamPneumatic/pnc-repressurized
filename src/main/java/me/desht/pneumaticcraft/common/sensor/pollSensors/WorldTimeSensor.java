@@ -37,7 +37,7 @@ public class WorldTimeSensor implements IPollSensorSetting {
 
     @Override
     public List<String> getDescription() {
-        List<String> text = new ArrayList<String>();
+        List<String> text = new ArrayList<>();
         text.add(TextFormatting.BLACK + "Emits a redstone signal of which the strength is proportional to the time of the world.");
         text.add(TextFormatting.RED + "strength = time / 1500");
         text.add(TextFormatting.GREEN + "Example: If the time is 6000, the redstone strength will be 4.");

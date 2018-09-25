@@ -37,7 +37,7 @@ public class WorldWeatherForecaster implements IPollSensorSetting {
 
     @Override
     public List<String> getDescription() {
-        List<String> text = new ArrayList<String>();
+        List<String> text = new ArrayList<>();
         text.add(TextFormatting.BLACK + "Emits a redstone signal of which the strength gets higher how closer the rain gets. The strenght increases by one for every minute.");
         text.add(TextFormatting.RED + "strength = 15 - time till rain (min)");
         text.add(TextFormatting.GREEN + "Example: If it will rain in 10 minutes, the strength is 5.");

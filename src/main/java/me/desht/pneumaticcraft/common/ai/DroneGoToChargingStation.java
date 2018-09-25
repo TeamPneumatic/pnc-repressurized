@@ -7,7 +7,6 @@ import me.desht.pneumaticcraft.common.util.GlobalTileEntityCacheManager;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.ArrayList;
@@ -30,7 +29,7 @@ public class DroneGoToChargingStation extends EntityAIBase {
      */
     @Override
     public boolean shouldExecute() {
-        List<TileEntityChargingStation> validChargingStations = new ArrayList<TileEntityChargingStation>();
+        List<TileEntityChargingStation> validChargingStations = new ArrayList<>();
         if (drone.getPressure(null) < PneumaticValues.DRONE_LOW_PRESSURE) {
             for (TileEntityChargingStation station : GlobalTileEntityCacheManager.getInstance().chargingStations) {
                 if (station.getWorld() == drone.world) {

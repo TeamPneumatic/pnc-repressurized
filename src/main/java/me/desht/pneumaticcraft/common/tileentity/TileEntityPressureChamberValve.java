@@ -471,7 +471,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
         if (!validValveFound) return false;
 
         TileEntityPressureChamberValve teValve = null;
-        List<TileEntityPressureChamberValve> valveList = new ArrayList<TileEntityPressureChamberValve>();
+        List<TileEntityPressureChamberValve> valveList = new ArrayList<>();
         for (int x = 0; x < size; x++) {
             for (int y = 0; y < size; y++) {
                 for (int z = 0; z < size; z++) {

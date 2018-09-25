@@ -10,7 +10,7 @@ import java.util.Optional;
 public class RefineryRecipe {
 
 	public static final int MAX_OUTPUTS = 4;
-	public static List<RefineryRecipe> recipes = new ArrayList<>();
+	public static final List<RefineryRecipe> recipes = new ArrayList<>();
 	
 	public final FluidStack input;
 	public final FluidStack[] outputs;

@@ -130,9 +130,7 @@ public class Itemss {
     public static final Item CAMO_APPLICATOR = null;
 
     public static List<Item> items = new ArrayList<>();
-    public static List<ItemBlock> all_itemblocks = new ArrayList<>();
-//    public static Map<EnumUpgrade, Item> upgrades = new HashMap<>();
-
+    private static List<ItemBlock> all_itemblocks = new ArrayList<>();
     public static UpgradeList upgrades = new UpgradeList();
 
     @SubscribeEvent

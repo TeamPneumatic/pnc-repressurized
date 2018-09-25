@@ -56,8 +56,8 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
     public static final PropertyEnum<ConnectionType> WEST = PropertyEnum.create("west", ConnectionType.class);
     public static final PropertyEnum<ConnectionType>[] CONNECTION_PROPERTIES_3 = new PropertyEnum[]{DOWN, UP, NORTH, SOUTH, WEST, EAST};
 
-    private AxisAlignedBB[] boundingBoxes = new AxisAlignedBB[6];
-    private AxisAlignedBB[] closedBoundingBoxes = new AxisAlignedBB[6];
+    private final AxisAlignedBB[] boundingBoxes = new AxisAlignedBB[6];
+    private final AxisAlignedBB[] closedBoundingBoxes = new AxisAlignedBB[6];
     private final Tier tier;
 
     public enum Tier {
@@ -448,8 +448,8 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
      * Stores information about the subpart of a pressure tube that is being looked at or interacted with.
      */
     private static class TubeHitInfo {
-        static TubeHitInfo NO_HIT = new TubeHitInfo(null, null);
-        static TubeHitInfo CENTER = new TubeHitInfo(null, PartType.TUBE);
+        static final TubeHitInfo NO_HIT = new TubeHitInfo(null, null);
+        static final TubeHitInfo CENTER = new TubeHitInfo(null, PartType.TUBE);
 
         enum PartType { TUBE, MODULE }
         final EnumFacing dir;
@@ -478,5 +478,5 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
         public String getName() {
             return name;
         }
-    };
+    }
 }

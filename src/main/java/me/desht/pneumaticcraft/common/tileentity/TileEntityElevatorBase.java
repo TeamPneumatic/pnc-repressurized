@@ -44,7 +44,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     );
 
     @DescSynced
-    public boolean[] sidesConnected = new boolean[6];
+    public final boolean[] sidesConnected = new boolean[6];
     public float oldExtension;
     @DescSynced
     @LazySynced

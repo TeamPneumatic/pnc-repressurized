@@ -80,7 +80,7 @@ public class ItemManometer extends ItemPressurizable {
         if (!player.world.isRemote) {
             if (entity instanceof IManoMeasurable) {
                 if (((IPressurizable) iStack.getItem()).getPressure(iStack) > 0F) {
-                    List<String> curInfo = new ArrayList<String>();
+                    List<String> curInfo = new ArrayList<>();
                     ((IManoMeasurable) entity).printManometerMessage(player, curInfo);
                     if (curInfo.size() > 0) {
                         ((IPressurizable) iStack.getItem()).addAir(iStack, -30);

@@ -66,7 +66,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     UpgradeHandler upgradeHandler;
     boolean firstRun = true;  // True only the first time updateEntity invokes in a session
     int poweredRedstone; // The redstone strength currently applied to the block.
-    List<ILuaMethod> luaMethods = new ArrayList<>();
+    final List<ILuaMethod> luaMethods = new ArrayList<>();
     private boolean descriptionPacketScheduled;
     private List<SyncedField> descriptionFields;
     private TileEntityCache[] tileCache;

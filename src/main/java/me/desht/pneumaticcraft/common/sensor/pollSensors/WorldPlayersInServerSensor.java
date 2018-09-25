@@ -39,7 +39,7 @@ public class WorldPlayersInServerSensor implements IPollSensorSetting {
 
     @Override
     public List<String> getDescription() {
-        List<String> text = new ArrayList<String>();
+        List<String> text = new ArrayList<>();
         text.add(TextFormatting.BLACK + "Emits a redstone level for every player logged into the server.");
         text.add(TextFormatting.BLACK + "When you fill in a specific player name, the Universal Sensor will emit a redstone signal of 15 if the player is online and 0 otherwise.");
         return text;

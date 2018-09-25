@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Random;
 
 public class ExplosionCraftingRecipe {
-    public static List<ExplosionCraftingRecipe> recipes = new ArrayList<>();
+    public static final List<ExplosionCraftingRecipe> recipes = new ArrayList<>();
 
     private final ItemStack input;
     private final String oreDictKey;

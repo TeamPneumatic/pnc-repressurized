@@ -42,7 +42,7 @@ public class BlockComparatorSensor implements IBlockAndCoordinatePollSensor {
 
     @Override
     public List<String> getDescription() {
-        List<String> text = new ArrayList<String>();
+        List<String> text = new ArrayList<>();
         text.add(TextFormatting.BLACK + "This sensor setting simulates the Redstone Comparator at the location(s) stored in the GPS Tool(s). This means that for example the redstone signal is proportional to the contents of inventories stored at the GPS Tool's coordinate. If the comparator output would be side dependant, the highest signal will be emitted. Also in case of multiple positions, the positions with the highest comparator value will be emitted.");
         return text;
     }

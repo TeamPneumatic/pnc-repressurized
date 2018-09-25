@@ -58,8 +58,8 @@ public class SensorHandler implements ISensorRegistry {
         return sensors.get(buttonPath);
     }
 
-    public List<ISensorSetting> getSensorsFromPath(String buttonPath) {
-        List<ISensorSetting> matchingSensors = new ArrayList<ISensorSetting>();
+    private List<ISensorSetting> getSensorsFromPath(String buttonPath) {
+        List<ISensorSetting> matchingSensors = new ArrayList<>();
         for (Map.Entry<String, ISensorSetting> entry : sensors.entrySet()) {
             if (entry.getKey().startsWith(buttonPath)) {
                 matchingSensors.add(entry.getValue());
@@ -83,10 +83,10 @@ public class SensorHandler implements ISensorRegistry {
     }
 
     /**
-     * The last part of the path
+     * Get a sensor by its basename
      *
-     * @param name
-     * @return
+     * @param name the last part of the sensor path
+     * @return the sensor settings
      */
     public ISensorSetting getSensorForName(String name) {
         String[] sensorNames = getSensorNames();
@@ -97,10 +97,10 @@ public class SensorHandler implements ISensorRegistry {
     }
 
     public List<String> getUpgradeInfo() {
-        List<String> text = new ArrayList<String>();
+        List<String> text = new ArrayList<>();
         text.add(TextFormatting.GRAY + "The following combinations of upgrades are used in sensors to work:");
 
-        Set<Set<Item>> upgrades = new HashSet<Set<Item>>();
+        Set<Set<Item>> upgrades = new HashSet<>();
         for (ISensorSetting sensor : sensors.values()) {
             upgrades.add(sensor.getRequiredUpgrades());
         }
@@ -140,7 +140,7 @@ public class SensorHandler implements ISensorRegistry {
 
             }
         }
-        String[] directoryArray = directories.toArray(new String[directories.size()]);
+        String[] directoryArray = directories.toArray(new String[0]);
         Arrays.sort(directoryArray);
         return directoryArray;
     }
@@ -182,7 +182,7 @@ public class SensorHandler implements ISensorRegistry {
     private class BlockAndCoordinateEventSensor implements IEventSensorSetting {
         private final IBlockAndCoordinateEventSensor coordinateSensor;
 
-        public BlockAndCoordinateEventSensor(IBlockAndCoordinateEventSensor sensor) {
+        BlockAndCoordinateEventSensor(IBlockAndCoordinateEventSensor sensor) {
             coordinateSensor = sensor;
         }
 
@@ -226,7 +226,7 @@ public class SensorHandler implements ISensorRegistry {
 
         @Override
         public Set<Item> getRequiredUpgrades() {
-            Set<Item> upgrades = new HashSet<Item>(coordinateSensor.getRequiredUpgrades());
+            Set<Item> upgrades = new HashSet<>(coordinateSensor.getRequiredUpgrades());
             upgrades.add(Itemss.GPS_TOOL);
             return upgrades;
         }
@@ -235,7 +235,7 @@ public class SensorHandler implements ISensorRegistry {
     private class BlockAndCoordinatePollSensor implements IPollSensorSetting {
         private final IBlockAndCoordinatePollSensor coordinateSensor;
 
-        public BlockAndCoordinatePollSensor(IBlockAndCoordinatePollSensor sensor) {
+        BlockAndCoordinatePollSensor(IBlockAndCoordinatePollSensor sensor) {
             coordinateSensor = sensor;
         }
 
@@ -286,7 +286,7 @@ public class SensorHandler implements ISensorRegistry {
 
         @Override
         public Set<Item> getRequiredUpgrades() {
-            Set<Item> upgrades = new HashSet<Item>(coordinateSensor.getRequiredUpgrades());
+            Set<Item> upgrades = new HashSet<>(coordinateSensor.getRequiredUpgrades());
             upgrades.add(Itemss.GPS_TOOL);
             return upgrades;
         }

@@ -12,8 +12,8 @@ import java.util.Map;
 
 public class RemoteLayout {
 
-    private final List<ActionWidget> actionWidgets = new ArrayList<ActionWidget>();
-    private static final Map<String, Class<? extends ActionWidget>> registeredWidgets = new HashMap<String, Class<? extends ActionWidget>>();
+    private final List<ActionWidget> actionWidgets = new ArrayList<>();
+    private static final Map<String, Class<? extends ActionWidget>> registeredWidgets = new HashMap<>();
 
     static {
         registerWidget(ActionWidgetCheckBox.class);
@@ -72,7 +72,7 @@ public class RemoteLayout {
     }
 
     public List<IGuiWidget> getWidgets(boolean filterDisabledWidgets) {
-        List<IGuiWidget> widgets = new ArrayList<IGuiWidget>();
+        List<IGuiWidget> widgets = new ArrayList<>();
         for (ActionWidget actionWidget : actionWidgets) {
             if (!filterDisabledWidgets || actionWidget.isEnabled()) {
                 widgets.add(actionWidget.getWidget());

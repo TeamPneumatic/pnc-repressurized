@@ -43,7 +43,7 @@ public class BlockMetadataSensor implements IBlockAndCoordinatePollSensor {
 
     @Override
     public List<String> getDescription() {
-        List<String> text = new ArrayList<String>();
+        List<String> text = new ArrayList<>();
         text.add(TextFormatting.BLACK + "Emits a redstone of which the strength is the metadata of the block at the location stored in the GPS Tool. In case of multiple locations, the location with the highest light value is used. Metadata is a variable that is used in many blocks to store a certain state. Some examples in which metadata is used, and therefore this sensor setting can be used for, are plant growth, block facing (e.g. Pistons), lever states, and difference in wool.");
         return text;
     }

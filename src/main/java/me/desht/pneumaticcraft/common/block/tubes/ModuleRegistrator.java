@@ -16,8 +16,8 @@ import java.util.HashMap;
 
 @Mod.EventBusSubscriber
 public class ModuleRegistrator {
-    public static final HashMap<String, Class<? extends TubeModule>> modules = new HashMap<String, Class<? extends TubeModule>>();
-    public static final HashMap<String, Item> moduleItems = new HashMap<String, Item>();
+    public static final HashMap<String, Class<? extends TubeModule>> modules = new HashMap<>();
+    public static final HashMap<String, Item> moduleItems = new HashMap<>();
     @SideOnly(Side.CLIENT)
     public static HashMap<Class<? extends TubeModule>, IBakedModel> models;
 

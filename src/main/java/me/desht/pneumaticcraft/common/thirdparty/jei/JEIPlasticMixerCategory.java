@@ -63,7 +63,7 @@ public class JEIPlasticMixerCategory extends PneumaticCraftCategory<PlasticMixer
     }
 
     List<MultipleInputOutputRecipeWrapper> getAllRecipes() {
-        List<MultipleInputOutputRecipeWrapper> recipes = new ArrayList<MultipleInputOutputRecipeWrapper>();
+        List<MultipleInputOutputRecipeWrapper> recipes = new ArrayList<>();
         for (int i = 0; i < 16; i++)
             recipes.add(new PlasticMixerRecipeWrapper(new ItemStack(Itemss.PLASTIC, 1, i), new FluidStack(Fluids.PLASTIC, 1000)));
         for (int i = 0; i < 16; i++)

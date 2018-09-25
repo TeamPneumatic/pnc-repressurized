@@ -1,20 +1,14 @@
 package me.desht.pneumaticcraft.common.ai;
 
-import java.util.Set;
-
-import javax.annotation.Nullable;
-
+import com.google.common.collect.Sets;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.pathfinding.NodeProcessor;
-import net.minecraft.pathfinding.Path;
-import net.minecraft.pathfinding.PathFinder;
-import net.minecraft.pathfinding.PathHeap;
-import net.minecraft.pathfinding.PathPoint;
+import net.minecraft.pathfinding.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
-import com.google.common.collect.Sets;
+import javax.annotation.Nullable;
+import java.util.Set;
 
 /**
  * A complete copy of the super class PathFinder, just to remove the constraint of path points
@@ -25,7 +19,7 @@ public class PathfinderDrone extends PathFinder
 {
     /** The path being generated */
     private final PathHeap path = new PathHeap();
-    private final Set<PathPoint> closedSet = Sets.<PathPoint>newHashSet();
+    private final Set<PathPoint> closedSet = Sets.newHashSet();
     /** Selection of path points to add to the path */
     private final PathPoint[] pathOptions = new PathPoint[32];
     private final NodeProcessor nodeProcessor;
@@ -132,8 +126,7 @@ public class PathfinderDrone extends PathFinder
         }
         else
         {
-            Path path = this.createPath(pathFrom, pathpoint);
-            return path;
+            return this.createPath(pathFrom, pathpoint);
         }
     }
 

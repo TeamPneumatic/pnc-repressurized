@@ -174,7 +174,7 @@ public class ItemAmadronTablet extends ItemPressurizable implements IAmadronInte
     }
 
     public static Map<AmadronOffer, Integer> getShoppingCart(ItemStack tablet) {
-        Map<AmadronOffer, Integer> offers = new HashMap<AmadronOffer, Integer>();
+        Map<AmadronOffer, Integer> offers = new HashMap<>();
 
         if (tablet.hasTagCompound() && tablet.getTagCompound().hasKey("shoppingCart")) {
             NBTTagList list = tablet.getTagCompound().getTagList("shoppingCart", 10);

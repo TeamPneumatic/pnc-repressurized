@@ -155,7 +155,7 @@ public class NetworkHandler {
 
     public static void sendToServer(IMessage message) {
         if (message instanceof ILargePayload) {
-            getSplitMessages(message).forEach(m -> INSTANCE.sendToServer(m));
+            getSplitMessages(message).forEach(INSTANCE::sendToServer);
         } else {
             INSTANCE.sendToServer(message);
         }

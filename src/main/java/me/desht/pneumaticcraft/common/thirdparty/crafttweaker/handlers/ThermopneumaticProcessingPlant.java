@@ -41,7 +41,7 @@ public class ThermopneumaticProcessingPlant {
 
 	@ZenMethod
 	public static void removeAllRecipes() {
-		CraftTweaker.REMOVALS.add(new RemoveAllRecipes<IThermopneumaticProcessingPlantRecipe>(name, BasicThermopneumaticProcessingPlantRecipe.recipes));
+		CraftTweaker.REMOVALS.add(new RemoveAllRecipes<>(name, BasicThermopneumaticProcessingPlantRecipe.recipes));
 	}
 	
     private static class Add extends ListAddition<IThermopneumaticProcessingPlantRecipe> {

@@ -556,20 +556,28 @@ public class PneumaticCraftUtils {
         } else if (filter.startsWith("@")) {//entity type selection
             filter = filter.substring(1); //cut off the '@'.
             Class<? extends Entity> typeClass = null;
-            if (filter.equals("mob")) {
-                typeClass = EntityMob.class;
-            } else if (filter.equals("animal")) {
-                typeClass = EntityAnimal.class;
-            } else if (filter.equals("living")) {
-                typeClass = EntityLivingBase.class;
-            } else if (filter.equals("player")) {
-                typeClass = EntityPlayer.class;
-            } else if (filter.equals("item")) {
-                typeClass = EntityItem.class;
-            } else if (filter.equals("minecart")) {
-                typeClass = EntityMinecart.class;
-            } else if (filter.equals("drone")) {
-                typeClass = EntityDrone.class;
+            switch (filter) {
+                case "mob":
+                    typeClass = EntityMob.class;
+                    break;
+                case "animal":
+                    typeClass = EntityAnimal.class;
+                    break;
+                case "living":
+                    typeClass = EntityLivingBase.class;
+                    break;
+                case "player":
+                    typeClass = EntityPlayer.class;
+                    break;
+                case "item":
+                    typeClass = EntityItem.class;
+                    break;
+                case "minecart":
+                    typeClass = EntityMinecart.class;
+                    break;
+                case "drone":
+                    typeClass = EntityDrone.class;
+                    break;
             }
             if (typeClass != null) {
                 return typeClass.isAssignableFrom(entity.getClass());

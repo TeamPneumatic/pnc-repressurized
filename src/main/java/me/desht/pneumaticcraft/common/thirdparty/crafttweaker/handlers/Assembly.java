@@ -44,7 +44,7 @@ public class Assembly {
 
     @ZenMethod
     public static void removeAllDrillRecipes() {
-        CraftTweaker.REMOVALS.add(new RemoveAllRecipes<AssemblyRecipe>(nameDrill, AssemblyRecipe.drillRecipes));
+        CraftTweaker.REMOVALS.add(new RemoveAllRecipes<>(nameDrill, AssemblyRecipe.drillRecipes));
     }
 
     @ZenMethod
@@ -54,7 +54,7 @@ public class Assembly {
     
     @ZenMethod
     public static void removeAllLaserRecipes() {
-        CraftTweaker.REMOVALS.add(new RemoveAllRecipes<AssemblyRecipe>(nameLaser, AssemblyRecipe.laserRecipes));
+        CraftTweaker.REMOVALS.add(new RemoveAllRecipes<>(nameLaser, AssemblyRecipe.laserRecipes));
     }
 
     @ZenMethod
@@ -64,7 +64,7 @@ public class Assembly {
     
     @ZenMethod
     public static void removeAllDrillLaserRecipes() {
-        CraftTweaker.REMOVALS.add(new RemoveAllRecipes<AssemblyRecipe>(nameDrillLaser, AssemblyRecipe.drillLaserRecipes));
+        CraftTweaker.REMOVALS.add(new RemoveAllRecipes<>(nameDrillLaser, AssemblyRecipe.drillLaserRecipes));
     }
     
     @ZenMethod

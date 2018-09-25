@@ -36,9 +36,9 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
         IRenamingWidget, ICraftingWidget, IMaxActions, IBlockRightClicker, ILiquidExport, ISignEditWidget, IToolUser {
     private EnumOrder order = EnumOrder.CLOSEST;
     private boolean[] sides = new boolean[6];
-    private final Set<BlockPos> area = new HashSet<BlockPos>();
-    private final List<ProgWidgetItemFilter> itemWhitelist = new ArrayList<ProgWidgetItemFilter>();
-    private final List<ProgWidgetItemFilter> itemBlacklist = new ArrayList<ProgWidgetItemFilter>();
+    private final Set<BlockPos> area = new HashSet<>();
+    private final List<ProgWidgetItemFilter> itemWhitelist = new ArrayList<>();
+    private final List<ProgWidgetItemFilter> itemBlacklist = new ArrayList<>();
     private StringFilterEntitySelector whitelistFilter, blacklistFilter;
 
     private int emittingRedstone;
@@ -49,8 +49,8 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
     private int maxActions;
     private boolean isAndFunction;
     private Operator operator;
-    private final List<ProgWidgetLiquidFilter> liquidBlacklist = new ArrayList<ProgWidgetLiquidFilter>();
-    private final List<ProgWidgetLiquidFilter> liquidWhitelist = new ArrayList<ProgWidgetLiquidFilter>();
+    private final List<ProgWidgetLiquidFilter> liquidBlacklist = new ArrayList<>();
+    private final List<ProgWidgetLiquidFilter> liquidWhitelist = new ArrayList<>();
     private String renamingName;
     private ItemStack[] craftingGrid = new ItemStack[9];
     private boolean sneaking;
@@ -79,7 +79,7 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
     }
 
     public Set<BlockPos> getInterfaceArea() {
-        Set<BlockPos> area = new HashSet<BlockPos>();
+        Set<BlockPos> area = new HashSet<>();
         getArea(area, (ProgWidgetArea) getConnectedParameters()[0], (ProgWidgetArea) getConnectedParameters()[1]);
         return area;
     }
@@ -144,7 +144,7 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
         helperWidget.y2 = y2;
         helperWidget.z2 = z2;
         helperWidget.type = ProgWidgetArea.convertFromLegacyFormat(type, 0);
-        Set<BlockPos> a = new HashSet<BlockPos>();
+        Set<BlockPos> a = new HashSet<>();
         helperWidget.getArea(a);
         return a;
     }

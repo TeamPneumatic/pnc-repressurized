@@ -26,7 +26,7 @@ public class HeatExchangerManager implements IHeatRegistry {
 
     private static final IHeatExchangerLogic AIR_EXCHANGER = new HeatExchangerLogicConstant(295, 100);
 
-    private static HeatExchangerManager INSTANCE = new HeatExchangerManager();
+    private static final HeatExchangerManager INSTANCE = new HeatExchangerManager();
 
     public static HeatExchangerManager getInstance() {
         return INSTANCE;

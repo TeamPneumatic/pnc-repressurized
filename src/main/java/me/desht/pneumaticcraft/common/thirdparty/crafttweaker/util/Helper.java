@@ -46,14 +46,14 @@ public class Helper {
 	public static Object[] toInput(IIngredient[] input) {
 		@SuppressWarnings("rawtypes")
 		List inputs = new ArrayList();
-		
-		for(int i = 0; i < input.length; i++) {
-			if(input[i] instanceof IOreDictEntry) {
-				inputs.add(toPair((IOreDictEntry)input[i]));
-			} else if(input[i] instanceof IItemStack) {
-				inputs.add(toStack((IItemStack)input[i]));
-			}
-		}
+
+        for (IIngredient anInput : input) {
+            if (anInput instanceof IOreDictEntry) {
+                inputs.add(toPair((IOreDictEntry) anInput));
+            } else if (anInput instanceof IItemStack) {
+                inputs.add(toStack((IItemStack) anInput));
+            }
+        }
 		
 		return inputs.toArray(new Object[0]);
 	}
@@ -128,9 +128,9 @@ public class Helper {
             List<ItemStack> ores = OreDictionary.getOres((String) object);
             
             if(!ores.isEmpty()) {
-                return "<ore:" + (String) object + ">";
+                return "<ore:" + object + ">";
             } else {
-                return "\"" + (String) object + "\"";
+                return "\"" + object + "\"";
             }
         } else if(object instanceof List) {
             return getListDescription((List) object);
@@ -149,7 +149,7 @@ public class Helper {
         Object internalObject = stack.getInternal();
         
         if(internalObject instanceof ItemStack) {
-            return getStackDescription((ItemStack) internalObject);
+            return getStackDescription(internalObject);
         } else if(internalObject instanceof FluidStack) {
             return getStackDescription((FluidStack) internalObject);
         } else if(internalObject instanceof IOreDictEntry) {
@@ -220,7 +220,7 @@ public class Helper {
             return false;
         }
         
-        return Stream.of(itemStack).allMatch(i -> ingredient.matches(i));
+        return Stream.of(itemStack).allMatch(ingredient::matches);
     }
     
     public static boolean matches(IIngredient ingredient, ILiquidStack liquidStack) {

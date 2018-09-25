@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.thirdparty.ic2;
 
-import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticContainerBase;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
@@ -29,7 +28,7 @@ public class GuiPneumaticGenerator extends GuiPneumaticContainerBase<TileEntityP
         super.initGui();
         outputStat = addAnimatedStat("Output", IC2.glassFibreCable, 0xFF555555, false);
         addWidget(new WidgetTemperature(0, guiLeft + 87, guiTop + 20, 273, 675,
-                ((IHeatExchanger) te).getHeatExchangerLogic(null), 325, 625));
+                te.getHeatExchangerLogic(null), 325, 625));
     }
 
     @Override

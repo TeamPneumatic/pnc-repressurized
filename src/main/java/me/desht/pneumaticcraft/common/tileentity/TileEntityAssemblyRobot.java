@@ -12,15 +12,15 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase implements IAssemblyMachine, IResettable {
-    public float[] oldAngles = new float[5];
+    public final float[] oldAngles = new float[5];
     @DescSynced
     @LazySynced
-    public float[] angles = new float[5];
+    public final float[] angles = new float[5];
     @DescSynced
-    public float[] targetAngles = new float[5];
-    public EnumFacing[] targetDirection = new EnumFacing[]{null, null};
+    final float[] targetAngles = new float[5];
+    EnumFacing[] targetDirection = new EnumFacing[]{null, null};
     @DescSynced
-    public boolean slowMode; //used for the drill when drilling, the slowmode moves the arm 10x as slow as normal.
+    boolean slowMode; //used for the drill when drilling, the slowmode moves the arm 10x as slow as normal.
     @DescSynced
     protected float speed = 1.0F;
 

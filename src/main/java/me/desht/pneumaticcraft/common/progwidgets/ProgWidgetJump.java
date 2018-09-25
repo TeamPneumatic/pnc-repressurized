@@ -6,7 +6,7 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -61,7 +61,7 @@ public class ProgWidgetJump extends ProgWidget implements IJump {
 
     public static IProgWidget jumpToLabel(IDroneBase drone, List<IProgWidget> allWidgets, String label) {
         drone.getAIManager().setLabel(label);
-        List<IProgWidget> possibleJumpLocations = new ArrayList<IProgWidget>();
+        List<IProgWidget> possibleJumpLocations = new ArrayList<>();
         for (IProgWidget widget : allWidgets) {
             if (widget instanceof ILabel) {
                 String labelLabel = ((ILabel) widget).getLabel();
@@ -118,7 +118,7 @@ public class ProgWidgetJump extends ProgWidget implements IJump {
     public List<String> getPossibleJumpLocations() {
         ProgWidgetString jumpedLabel = (ProgWidgetString) getConnectedParameters()[0];
         if (jumpedLabel != null) {
-            return Arrays.asList(jumpedLabel.string);
+            return Collections.singletonList(jumpedLabel.string);
         }
         return null;
     }

@@ -44,7 +44,7 @@ public class PacketMultiHeader extends AbstractPacket<PacketMultiHeader> {
         try {
             ClassLoader cl = Thread.currentThread().getContextClassLoader();
             if (cl == null) cl = PacketMultiHeader.class.getClassLoader(); // fallback
-            Class<? extends AbstractPacket> clazz = (Class<? extends AbstractPacket>) cl.loadClass(className.toString());
+            Class<? extends AbstractPacket> clazz = (Class<? extends AbstractPacket>) cl.loadClass(className);
             payloadBuffers.put(player.getUniqueID(), new PayloadBuffer(clazz, length));
         } catch (ClassNotFoundException e) {
             e.printStackTrace();

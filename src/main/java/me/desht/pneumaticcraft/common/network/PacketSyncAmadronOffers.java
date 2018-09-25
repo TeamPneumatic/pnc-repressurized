@@ -30,7 +30,7 @@ public class PacketSyncAmadronOffers extends AbstractPacket<PacketSyncAmadronOff
     public PacketSyncAmadronOffers(EntityPlayer playerIn) {
         this.staticOffers = AmadronOfferManager.getInstance().getStaticOffers();
         this.selectedPeriodicOffers = AmadronOfferManager.getInstance().getSelectedPeriodicOffers();
-        this.mayAddPeriodic = PermissionAPI.hasPermission(playerIn, Names.AMADRON_ADD_PERIODIC_TRADE);;
+        this.mayAddPeriodic = PermissionAPI.hasPermission(playerIn, Names.AMADRON_ADD_PERIODIC_TRADE);
         this.mayAddStatic = PermissionAPI.hasPermission(playerIn, Names.AMADRON_ADD_STATIC_TRADE);
     }
 

@@ -236,7 +236,7 @@ public class CraftingRegistrator {
                         }
                     }
                 }
-            } catch (Throwable e) {
+            } catch (Throwable ignored) {
             }
         }
     }

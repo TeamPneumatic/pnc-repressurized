@@ -8,7 +8,6 @@ import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.ai.StringFilterEntitySelector;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.item.ItemPlastic;
-import me.desht.pneumaticcraft.common.progwidgets.area.AreaType;
 import me.desht.pneumaticcraft.common.progwidgets.area.AreaTypeBox;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.gui.GuiScreen;
@@ -97,7 +96,7 @@ public class ProgWidgetEntityAttack extends ProgWidget implements IAreaProvider,
         }
         widget = blacklistWidget;
         while (widget != null) {
-            Set<BlockPos> blacklistedArea = new HashSet<BlockPos>();
+            Set<BlockPos> blacklistedArea = new HashSet<>();
             widget.getArea(blacklistedArea, new AreaTypeBox());
             area.removeAll(blacklistedArea);
             widget = (ProgWidgetArea) widget.getConnectedParameters()[0];

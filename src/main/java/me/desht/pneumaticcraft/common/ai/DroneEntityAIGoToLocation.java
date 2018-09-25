@@ -22,9 +22,9 @@ public class DroneEntityAIGoToLocation extends EntityAIBase {
         this.drone = drone;
         setMutexBits(63);//binary 111111, so it won't run along with other AI tasks.
         this.gotoWidget = gotoWidget;
-        Set<BlockPos> set = new HashSet<BlockPos>();
+        Set<BlockPos> set = new HashSet<>();
         ((IAreaProvider) gotoWidget).getArea(set);
-        validArea = new ArrayList<BlockPos>(set);
+        validArea = new ArrayList<>(set);
         positionSorter = new ChunkPositionSorter(drone);
     }
 

@@ -36,18 +36,15 @@ import java.util.List;
 import java.util.function.Function;
 
 public class TOPCallback implements Function<ITheOneProbe, Void> {
-    private static ITheOneProbe probe;
-
     static int elementPressure;
 
     @Override
     public Void apply(ITheOneProbe theOneProbe) {
-        probe = theOneProbe;
         PneumaticCraftRepressurized.logger.info("Enabled support for The One Probe");
 
-        elementPressure = probe.registerElementFactory(ElementPressure::new);
+        elementPressure = theOneProbe.registerElementFactory(ElementPressure::new);
 
-        probe.registerProvider(new IProbeInfoProvider() {
+        theOneProbe.registerProvider(new IProbeInfoProvider() {
             @Override
             public String getID() {
                 return Names.MOD_ID + ":default";
@@ -63,7 +60,7 @@ public class TOPCallback implements Function<ITheOneProbe, Void> {
             }
         });
 
-        probe.registerEntityProvider(new IProbeInfoEntityProvider() {
+        theOneProbe.registerEntityProvider(new IProbeInfoEntityProvider() {
             @Override
             public String getID() {
                 return Names.MOD_ID + ":entity";

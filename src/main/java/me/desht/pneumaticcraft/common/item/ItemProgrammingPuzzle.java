@@ -73,7 +73,7 @@ public class ItemProgrammingPuzzle extends ItemPneumaticSubtyped {
     }
 
     private static List<IProgWidget> getWidgetsForColor(int color) {
-        List<IProgWidget> widgets = new ArrayList<IProgWidget>();
+        List<IProgWidget> widgets = new ArrayList<>();
         for (IProgWidget widget : WidgetRegistrator.registeredWidgets) {
             if (widget.getCraftingColorIndex() == color) {
                 widgets.add(widget);

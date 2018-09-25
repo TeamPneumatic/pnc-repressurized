@@ -34,15 +34,14 @@ import javax.annotation.Nonnull;
 import java.util.*;
 
 public class TileEntityProgrammer extends TileEntityTickableBase implements IGUITextFieldSensitive {
+    private static final int PROGRAM_SLOT = 0;
     private static final int INVENTORY_SIZE = 1;
 
-    public final List<IProgWidget> progWidgets = new ArrayList<IProgWidget>();
+    public final List<IProgWidget> progWidgets = new ArrayList<>();
     @GuiSynced
     public int redstoneMode;
 
-    private ProgrammerItemHandler inventory = new ProgrammerItemHandler();
-
-    public static final int PROGRAM_SLOT = 0;
+    private final ProgrammerItemHandler inventory = new ProgrammerItemHandler();
 
     //Client side variables that are used to prevent resetting.
     public int translatedX, translatedY, zoomState;
@@ -111,7 +110,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     }
 
     public static List<IProgWidget> getWidgetsFromNBT(NBTTagCompound tag) {
-        List<IProgWidget> progWidgets = new ArrayList<IProgWidget>();
+        List<IProgWidget> progWidgets = new ArrayList<>();
         getWidgetsFromNBT(tag, progWidgets);
         return progWidgets;
     }
@@ -339,7 +338,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
 
     public List<ItemStack> getReturnedPuzzleStacks() {
         ItemStack stackInSlot = inventory.getStackInSlot(PROGRAM_SLOT);
-        List<ItemStack> stacks = new ArrayList<ItemStack>();
+        List<ItemStack> stacks = new ArrayList<>();
         if (!stackInSlot.isEmpty() && ((IProgrammable) stackInSlot.getItem()).usesPieces(stackInSlot)) {
             Map<Integer, Integer> tePieces = getPuzzleSummary(progWidgets);
             Map<Integer, Integer> dronePieces = getPuzzleSummary(getProgWidgets(stackInSlot));
@@ -426,7 +425,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
      * @return
      */
     public Set<String> getAllVariables() {
-        Set<String> variables = new HashSet<String>();
+        Set<String> variables = new HashSet<>();
         for (IProgWidget widget : progWidgets) {
             if (widget instanceof IVariableWidget) ((IVariableWidget) widget).addVariables(variables);
         }
@@ -453,7 +452,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     public boolean previewArea(int widgetX, int widgetY) {
         for (IProgWidget w : progWidgets) {
             if (w.getX() == widgetX && w.getY() == widgetY && w instanceof IAreaProvider) {
-                Set<BlockPos> area = new HashSet<BlockPos>();
+                Set<BlockPos> area = new HashSet<>();
                 ((IAreaProvider) w).getArea(area);
                 AreaShowManager.getInstance().showArea(area, 0x9000FF00, this);
             }

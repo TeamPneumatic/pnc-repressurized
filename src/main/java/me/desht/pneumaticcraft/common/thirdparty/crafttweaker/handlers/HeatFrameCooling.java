@@ -38,7 +38,7 @@ public class HeatFrameCooling {
     
     @ZenMethod
     public static void removeAllRecipes() {
-        CraftTweaker.REMOVALS.add(new RemoveAllRecipes<HeatFrameCoolingRecipe>(HeatFrameCooling.name, HeatFrameCoolingRecipe.recipes));
+        CraftTweaker.REMOVALS.add(new RemoveAllRecipes<>(HeatFrameCooling.name, HeatFrameCoolingRecipe.recipes));
     }   
 
     private static class Add extends ListAddition<HeatFrameCoolingRecipe> {

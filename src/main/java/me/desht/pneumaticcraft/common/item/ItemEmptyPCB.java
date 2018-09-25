@@ -17,11 +17,8 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
-import java.util.Random;
 
 public class ItemEmptyPCB extends ItemNonDespawning {
-    private static Random rand = new Random();
-
     public ItemEmptyPCB() {
         super("empty_pcb");
         setMaxDamage(100);
@@ -67,31 +64,31 @@ public class ItemEmptyPCB extends ItemNonDespawning {
                 if (entityItem.ticksExisted % (TileEntityConstants.PCB_ETCH_TIME / 5) == 0) {
                     stack.getTagCompound().setInteger("etchProgress", etchProgress + 1);
                 }
-                if (rand.nextInt(15) == 0) {
-                    World world = entityItem.getEntityWorld();
+                World world = entityItem.getEntityWorld();
+                if (world.rand.nextInt(15) == 0) {
                     double x = entityItem.posX + world.rand.nextDouble() * 0.3 - 0.15;
                     double y = entityItem.posY - 0.15;
                     double z = entityItem.posZ + world.rand.nextDouble() * 0.3 - 0.15;
                     world.spawnParticle(EnumParticleTypes.WATER_WAKE,
                             x, y, z, 0.0, 0.05, 0.0);
                 }
-            } else if(!entityItem.world.isRemote){
+            } else if (!entityItem.world.isRemote) {
                 int successCount = 0;
                 int failedCount = 0;
-                for(int i = 0; i < stack.getCount(); i++){
-                    if(rand.nextInt(100) >= stack.getItemDamage()){
+                for (int i = 0; i < stack.getCount(); i++) {
+                    if (entityItem.world.rand.nextInt(100) >= stack.getItemDamage()) {
                         successCount++;
-                    }else{
+                    } else {
                         failedCount++;
                     }
                 }
-                
-                ItemStack successStack = new ItemStack(successCount == 0 ? Itemss.FAILED_PCB : Itemss.UNASSEMBLED_PCB, 
-                                                       successCount == 0 ? failedCount : successCount);
+
+                ItemStack successStack = new ItemStack(successCount == 0 ? Itemss.FAILED_PCB : Itemss.UNASSEMBLED_PCB,
+                        successCount == 0 ? failedCount : successCount);
                 entityItem.setItem(successStack);
-                
-                //Only when we have failed items and the existing item entity wasn't reused already for the failed items.
-                if(successCount > 0 && failedCount > 0){
+
+                // Only when we have failed items and the existing item entity wasn't reused already for the failed items.
+                if (successCount > 0 && failedCount > 0) {
                     ItemStack failedStack = new ItemStack(Itemss.FAILED_PCB, failedCount);
                     entityItem.world.spawnEntity(new EntityItem(entityItem.world, entityItem.posX, entityItem.posY, entityItem.posZ, failedStack));
                 }

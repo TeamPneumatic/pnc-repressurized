@@ -38,7 +38,7 @@ public abstract class ProgWidgetDigAndPlace extends ProgWidgetAreaItemBase imple
     @Override
     @SideOnly(Side.CLIENT)
     public GuiScreen getOptionWindow(GuiProgrammer guiProgrammer) {
-        return new GuiProgWidgetDigAndPlace<ProgWidgetDigAndPlace>(this, guiProgrammer);
+        return new GuiProgWidgetDigAndPlace<>(this, guiProgrammer);
     }
 
     @Override

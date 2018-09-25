@@ -41,7 +41,7 @@ public class BlockPresenceSensor implements IBlockAndCoordinatePollSensor {
 
     @Override
     public List<String> getDescription() {
-        List<String> text = new ArrayList<String>();
+        List<String> text = new ArrayList<>();
         text.add(TextFormatting.BLACK + "Emits a redstone signal if there's a block (no air) at the location stored in the GPS Tool. In case of multiple locations, if any of the locations contains a block a redstone signal will be emitted.");
         return text;
     }

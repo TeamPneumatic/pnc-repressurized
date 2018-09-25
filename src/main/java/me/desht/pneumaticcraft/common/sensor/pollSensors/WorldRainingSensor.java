@@ -27,7 +27,7 @@ public class WorldRainingSensor implements IPollSensorSetting {
 
     @Override
     public Set<Item> getRequiredUpgrades() {
-        Set<Item> upgrades = new HashSet<Item>();
+        Set<Item> upgrades = new HashSet<>();
         upgrades.add(Itemss.upgrades.get(EnumUpgrade.DISPENSER));
         return upgrades;
     }
@@ -39,7 +39,7 @@ public class WorldRainingSensor implements IPollSensorSetting {
 
     @Override
     public List<String> getDescription() {
-        List<String> text = new ArrayList<String>();
+        List<String> text = new ArrayList<>();
         text.add(TextFormatting.BLACK + "Emits a redstone signal if it's raining in the world.");
         return text;
     }

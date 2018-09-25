@@ -20,9 +20,9 @@ import java.util.Set;
 public class GlobalVariableManager extends WorldSavedData {
 
     public static final String DATA_KEY = "PneumaticCraftGlobalVariables";
-    private static GlobalVariableManager CLIENT_INSTANCE = new GlobalVariableManager(DATA_KEY);
-    private final Map<String, BlockPos> globalVars = new HashMap<String, BlockPos>();
-    private final Map<String, ItemStack> globalItemVars = new HashMap<String, ItemStack>();
+    private static final GlobalVariableManager CLIENT_INSTANCE = new GlobalVariableManager(DATA_KEY);
+    private final Map<String, BlockPos> globalVars = new HashMap<>();
+    private final Map<String, ItemStack> globalItemVars = new HashMap<>();
     public static World overworld;
 
     public static GlobalVariableManager getInstance() {
@@ -143,10 +143,10 @@ public class GlobalVariableManager extends WorldSavedData {
     }
 
     public String[] getAllActiveVariableNames() {
-        Set<String> varNames = new HashSet<String>();
+        Set<String> varNames = new HashSet<>();
         varNames.addAll(globalVars.keySet());
         varNames.addAll(globalItemVars.keySet());
-        return varNames.toArray(new String[varNames.size()]);
+        return varNames.toArray(new String[0]);
     }
 
 }

@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class HeatBehaviourManager {
     private static final HeatBehaviourManager INSTANCE = new HeatBehaviourManager();
-    private final Map<String, HeatBehaviour> behaviours = new HashMap<String, HeatBehaviour>();
+    private final Map<String, HeatBehaviour> behaviours = new HashMap<>();
 
     public static HeatBehaviourManager getInstance() {
         return INSTANCE;

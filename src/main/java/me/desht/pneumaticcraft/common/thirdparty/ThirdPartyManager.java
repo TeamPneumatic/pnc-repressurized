@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 
 public class ThirdPartyManager implements IGuiHandler {
 
-    private static ThirdPartyManager INSTANCE = new ThirdPartyManager();
+    private static final ThirdPartyManager INSTANCE = new ThirdPartyManager();
     private final List<IThirdParty> thirdPartyMods = new ArrayList<>();
     public static boolean computerCraftLoaded;
 

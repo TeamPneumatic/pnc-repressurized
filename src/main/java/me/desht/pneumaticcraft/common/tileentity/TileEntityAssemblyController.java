@@ -29,19 +29,20 @@ import java.util.Arrays;
 import java.util.List;
 
 public class TileEntityAssemblyController extends TileEntityPneumaticBase implements IAssemblyMachine, IMinWorkingPressure {
+    private static final int PROGRAM_INVENTORY_INDEX = 0;
+    private static final int INVENTORY_SIZE = 1;
+
     private final AssemblyControllerHandler inventory = new AssemblyControllerHandler();
     @DescSynced
-    public boolean[] sidesConnected = new boolean[6];
-    public AssemblyProgram curProgram;
-    private static final int INVENTORY_SIZE = 1;
+    public final boolean[] sidesConnected = new boolean[6];
+    private AssemblyProgram curProgram;
     @GuiSynced
-    public boolean foundAllMachines;
+    private boolean foundAllMachines;
     @GuiSynced
     private boolean foundDuplicateMachine;
     private boolean goingToHomePosition;
     @DescSynced
     public String displayedText = "";
-    public static final int PROGRAM_INVENTORY_INDEX = 0;
     @DescSynced
     public boolean hasProblem;
 
@@ -231,7 +232,7 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
     }
 
     public List<IAssemblyMachine> getMachines() {
-        List<IAssemblyMachine> machineList = new ArrayList<IAssemblyMachine>();
+        List<IAssemblyMachine> machineList = new ArrayList<>();
         getMachines(machineList, getPos());
         return machineList;
     }

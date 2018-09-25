@@ -42,7 +42,7 @@ public class BlockRedstoneSensor implements IBlockAndCoordinatePollSensor {
 
     @Override
     public List<String> getDescription() {
-        List<String> text = new ArrayList<String>();
+        List<String> text = new ArrayList<>();
         text.add(TextFormatting.BLACK + "This sensor could be used as a wireless redstone device, as it emits the same redstone signal as being applied at the GPS Tool's saved location. In case of multiple locations, the location with the highest redstone value is emitted.");
         return text;
     }

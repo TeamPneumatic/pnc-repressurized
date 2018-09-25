@@ -9,7 +9,7 @@ import me.desht.pneumaticcraft.common.progwidgets.WidgetRegistrator;
 import java.util.*;
 
 public class ProgWidgetConfig extends JsonConfig {
-    public static final Set<String> blacklistedPieces = new HashSet<String>();
+    public static final Set<String> blacklistedPieces = new HashSet<>();
 
     public ProgWidgetConfig() {
         super(true);
@@ -24,7 +24,7 @@ public class ProgWidgetConfig extends JsonConfig {
     protected void writeToJson(JsonObject json) {
         json.addProperty("description", "In the 'blacklist' tag you can put the programming puzzle names that need to blacklisted from this instance. When they were used in existing programs already they will be deleted. A list of all programming puzzle names can be seen in 'allWidgets'.");
         JsonArray array = new JsonArray();
-        List<String> names = new ArrayList<String>(WidgetRegistrator.getAllWidgetNames());
+        List<String> names = new ArrayList<>(WidgetRegistrator.getAllWidgetNames());
         Collections.sort(names);
         for (String name : names) {
             array.add(new JsonPrimitive(name));

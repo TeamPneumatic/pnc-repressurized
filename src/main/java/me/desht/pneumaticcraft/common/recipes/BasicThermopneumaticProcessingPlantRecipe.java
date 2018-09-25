@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BasicThermopneumaticProcessingPlantRecipe implements IThermopneumaticProcessingPlantRecipe {
-	public static List<IThermopneumaticProcessingPlantRecipe> recipes = new ArrayList<>();
+	public static final List<IThermopneumaticProcessingPlantRecipe> recipes = new ArrayList<>();
 	
     private final FluidStack inputLiquid, outputLiquid;
     private final ItemStack inputItem;
@@ -38,7 +38,7 @@ public class BasicThermopneumaticProcessingPlantRecipe implements IThermopneumat
             if (inputItem.isEmpty()) return false;
             if (!inputItem.isItemEqual(this.inputItem) && !PneumaticCraftUtils.isSameOreDictStack(inputItem, this.inputItem))
                 return false;
-            if (inputItem.getCount() < this.inputItem.getCount()) return false;
+            return inputItem.getCount() >= this.inputItem.getCount();
         }
         return true;
     }

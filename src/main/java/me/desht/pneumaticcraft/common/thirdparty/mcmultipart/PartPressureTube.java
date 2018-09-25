@@ -18,9 +18,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PartPressureTube implements IMultipart {
-    private BlockPressureTube block;
+    private final BlockPressureTube block;
 
-    public PartPressureTube(BlockPressureTube block) {
+    PartPressureTube(BlockPressureTube block) {
         this.block = block;
     }
 

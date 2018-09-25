@@ -83,7 +83,7 @@ public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implem
         IProgWidget widget2 = getConnectedParameters()[getParameters().length * 2 - 1];
         ProgWidgetString textWidget = widget != null ? (ProgWidgetString) widget : null;
         ProgWidgetString textWidget2 = widget2 != null ? (ProgWidgetString) widget2 : null;
-        List<String> locations = new ArrayList<String>();
+        List<String> locations = new ArrayList<>();
         if (textWidget != null) locations.add(textWidget.string);
         if (textWidget2 != null) locations.add(textWidget2.string);
         return locations;

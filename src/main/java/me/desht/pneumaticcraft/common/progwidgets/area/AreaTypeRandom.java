@@ -1,19 +1,14 @@
 package me.desht.pneumaticcraft.common.progwidgets.area;
 
+import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea.EnumAreaType;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Consumer;
-
-import com.google.common.collect.Sets;
-
-import me.desht.pneumaticcraft.common.config.ConfigHandler;
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea.EnumAreaType;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 
 public class AreaTypeRandom extends AreaType{
 
@@ -32,10 +27,10 @@ public class AreaTypeRandom extends AreaType{
             BlockPos.getAllInBox(minX, minY, minZ, maxX, maxY, maxZ).forEach(areaAdder);
         }else{
             Set<BlockPos> filledArea = new HashSet<>(size);
-            BlockPos.getAllInBox(minX, minY, minZ, maxX, maxY, maxZ).forEach(p -> filledArea.add(p));
+            BlockPos.getAllInBox(minX, minY, minZ, maxX, maxY, maxZ).forEach(filledArea::add);
             
             Random rand = new Random();
-            Set<Integer> randomIndexes = new HashSet<Integer>();
+            Set<Integer> randomIndexes = new HashSet<>();
             while (randomIndexes.size() < pickedAmount) {
                 randomIndexes.add(rand.nextInt(filledArea.size()));
             }

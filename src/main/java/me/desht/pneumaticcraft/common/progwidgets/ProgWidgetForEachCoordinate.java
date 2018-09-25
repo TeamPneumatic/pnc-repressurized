@@ -22,7 +22,7 @@ import java.util.Set;
 public class ProgWidgetForEachCoordinate extends ProgWidgetAreaItemBase implements IJumpBackWidget, IJump,
         IVariableSetWidget {
     private String elementVariable = "";
-    private final Set<BlockPos> traversedPositions = new HashSet<BlockPos>();
+    private final Set<BlockPos> traversedPositions = new HashSet<>();
     private DroneAIForEachCoordinate ai;
 
     @Override
@@ -96,7 +96,7 @@ public class ProgWidgetForEachCoordinate extends ProgWidgetAreaItemBase implemen
     public List<String> getPossibleJumpLocations() {
         IProgWidget widget = getConnectedParameters()[getParameters().length - 1];
         ProgWidgetString textWidget = widget != null ? (ProgWidgetString) widget : null;
-        List<String> locations = new ArrayList<String>();
+        List<String> locations = new ArrayList<>();
         if (textWidget != null) locations.add(textWidget.string);
         return locations;
     }

@@ -6,7 +6,7 @@ import me.desht.pneumaticcraft.common.recipes.AmadronOfferManager;
 import java.util.Collection;
 
 public class AmadronOfferStaticConfig extends AmadronOfferConfig {
-    public static AmadronOfferStaticConfig INSTANCE = new AmadronOfferStaticConfig();
+    public static final AmadronOfferStaticConfig INSTANCE = new AmadronOfferStaticConfig();
 
     @Override
     public String getConfigFilename() {

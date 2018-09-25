@@ -1,18 +1,13 @@
 package me.desht.pneumaticcraft.common.progwidgets.area;
 
-import java.util.List;
-import java.util.function.Consumer;
-
-import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea.EnumAreaType;
-import me.desht.pneumaticcraft.common.progwidgets.area.AreaType.AreaTypeWidget;
-import me.desht.pneumaticcraft.common.progwidgets.area.AreaType.AreaTypeWidgetEnum;
-import me.desht.pneumaticcraft.common.progwidgets.area.AreaType.EnumAxis;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+
+import java.util.List;
+import java.util.function.Consumer;
 
 public class AreaTypePyramid extends AreaType{
 
@@ -26,7 +21,7 @@ public class AreaTypePyramid extends AreaType{
         
         private final String name;
         
-        private EnumAreaTypePyramid(String name){
+        EnumAreaTypePyramid(String name){
             this.name = "gui.progWidget.area.type.pyramid.pyramidType." + name;
         }
         

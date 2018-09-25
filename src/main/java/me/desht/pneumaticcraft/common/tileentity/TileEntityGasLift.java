@@ -60,7 +60,7 @@ public class TileEntityGasLift extends TileEntityPneumaticBase implements IMinWo
     @GuiSynced
     public Status status = Status.IDLE;
     @DescSynced
-    public boolean[] sidesConnected = new boolean[6];
+    public final boolean[] sidesConnected = new boolean[6];
     private int workTimer;
     private int ticker;
     private List<BlockPos> pumpingLake;

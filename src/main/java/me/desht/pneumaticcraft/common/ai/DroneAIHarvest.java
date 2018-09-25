@@ -1,18 +1,17 @@
 package me.desht.pneumaticcraft.common.ai;
 
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-
 import me.desht.pneumaticcraft.api.harvesting.IHarvestHandler;
 import me.desht.pneumaticcraft.common.harvesting.HarvestRegistry;
 import me.desht.pneumaticcraft.common.progwidgets.IToolUser;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetHarvest;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
+
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class DroneAIHarvest extends DroneAIBlockInteraction<ProgWidgetAreaItemBase> {
 

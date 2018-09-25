@@ -26,7 +26,7 @@ public class PlayerAttackSensor extends PlayerEventSensor {
 
     @Override
     public List<String> getDescription() {
-        List<String> text = new ArrayList<String>();
+        List<String> text = new ArrayList<>();
         text.add(TextFormatting.BLACK + "Emits a redstone pulse when a player attacks an entity within range of the sensor.");
         return text;
     }

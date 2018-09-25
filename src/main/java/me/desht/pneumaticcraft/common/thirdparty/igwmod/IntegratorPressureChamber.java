@@ -41,34 +41,39 @@ public class IntegratorPressureChamber implements IRecipeIntegrator {
 
         //Look up the recipe
 
-        if (arguments[2].equals("disenchanting")) {
-            handleDisenchanting(x, y, locatedStacks);
-        } else if (arguments[2].equals("villagers")) {
-            handleVillagers(x, y, locatedTextures);
-        } else {
-            IPressureChamberRecipe foundRecipe = null;
-            for (IPressureChamberRecipe recipe : PressureChamberRecipe.recipes) {
-                for (ItemStack output : recipe.getResult()) {
-                    if (IGWHandler.getNameFromStack(output).equals(arguments[2])) {
-                        foundRecipe = recipe;
-                        break;
+        switch (arguments[2]) {
+            case "disenchanting":
+                handleDisenchanting(x, y, locatedStacks);
+                break;
+            case "villagers":
+                handleVillagers(x, y, locatedTextures);
+                break;
+            default:
+                IPressureChamberRecipe foundRecipe = null;
+                for (IPressureChamberRecipe recipe : PressureChamberRecipe.recipes) {
+                    for (ItemStack output : recipe.getResult()) {
+                        if (IGWHandler.getNameFromStack(output).equals(arguments[2])) {
+                            foundRecipe = recipe;
+                            break;
+                        }
                     }
                 }
-            }
-            if (foundRecipe == null) throw new IllegalArgumentException("No recipe found for the key " + arguments[2]);
+                if (foundRecipe == null)
+                    throw new IllegalArgumentException("No recipe found for the key " + arguments[2]);
 
-            locatedStrings.add(new LocatedString(I18n.format("igwmod.pressureChamber.requiredPressure") + ":", x + 180, y + 10, 0xFF000000, false));
-            locatedStrings.add(new LocatedString(foundRecipe.getCraftingPressure() + " bar", x + 215, y + 20, 0xFF000000, false));
+                locatedStrings.add(new LocatedString(I18n.format("igwmod.pressureChamber.requiredPressure") + ":", x + 180, y + 10, 0xFF000000, false));
+                locatedStrings.add(new LocatedString(foundRecipe.getCraftingPressure() + " bar", x + 215, y + 20, 0xFF000000, false));
 
-            for (int i = 0; i < foundRecipe.getInput().size(); i++) {
-                LocatedStack stack = new LocatedStack(foundRecipe.getInput().get(i).getSingleStack(), (int) ((x + 36 + i % 3 * 34) * GuiWiki.TEXT_SCALE), (int) ((y + 102 - i / 3 * 34) * GuiWiki.TEXT_SCALE));
-                locatedStacks.add(stack);
-            }
+                for (int i = 0; i < foundRecipe.getInput().size(); i++) {
+                    LocatedStack stack = new LocatedStack(foundRecipe.getInput().get(i).getSingleStack(), (int) ((x + 36 + i % 3 * 34) * GuiWiki.TEXT_SCALE), (int) ((y + 102 - i / 3 * 34) * GuiWiki.TEXT_SCALE));
+                    locatedStacks.add(stack);
+                }
 
-            for (int i = 0; i < foundRecipe.getResult().size(); i++) {
-                LocatedStack stack = new LocatedStack(foundRecipe.getResult().get(i), (int) ((x + 180 + i % 3 * 36) * GuiWiki.TEXT_SCALE), (int) ((y + 60 + i / 3 * 36) * GuiWiki.TEXT_SCALE));
-                locatedStacks.add(stack);
-            }
+                for (int i = 0; i < foundRecipe.getResult().size(); i++) {
+                    LocatedStack stack = new LocatedStack(foundRecipe.getResult().get(i), (int) ((x + 180 + i % 3 * 36) * GuiWiki.TEXT_SCALE), (int) ((y + 60 + i / 3 * 36) * GuiWiki.TEXT_SCALE));
+                    locatedStacks.add(stack);
+                }
+                break;
         }
     }
 
@@ -83,8 +88,8 @@ public class IntegratorPressureChamber implements IRecipeIntegrator {
 
     private void handleDisenchanting(int x, int y, List<LocatedStack> locatedStacks) {
 
-        List<ItemStack> input = new ArrayList<ItemStack>();
-        List<ItemStack> output = new ArrayList<ItemStack>();
+        List<ItemStack> input = new ArrayList<>();
+        List<ItemStack> output = new ArrayList<>();
 
         ItemStack enchantedItem = new ItemStack(Items.DIAMOND_SWORD);
         EnchantmentHelper.addRandomEnchantment(new Random(), enchantedItem, 30, true);

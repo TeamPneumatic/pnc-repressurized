@@ -24,7 +24,7 @@ public class FakeNetHandlerPlayerServer extends NetHandlerPlayServer {
         }
 
         @Override
-        public void channelActive(ChannelHandlerContext p_channelActive_1_) throws Exception {
+        public void channelActive(ChannelHandlerContext p_channelActive_1_) {
 
         }
 
@@ -53,8 +53,9 @@ public class FakeNetHandlerPlayerServer extends NetHandlerPlayServer {
 
         }
 
+        @SafeVarargs
         @Override
-        public void sendPacket(Packet<?> packetIn, GenericFutureListener<? extends Future<? super Void>> listener, GenericFutureListener<? extends Future<? super Void>>... listeners) {
+        public final void sendPacket(Packet<?> packetIn, GenericFutureListener<? extends Future<? super Void>> listener, GenericFutureListener<? extends Future<? super Void>>... listeners) {
 
         }
 

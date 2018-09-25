@@ -691,7 +691,7 @@ public class TileEntityDroneInterface extends TileEntity implements ITickable, I
             public Object[] call(Object[] args) throws Exception {
                 if (args.length == 1) {
                     if (drone == null) throw new IllegalStateException("There's no connected Drone!");
-                    return new Object[]{new Double(drone.getUpgrades(EnumUpgrade.values()[((Double) args[0]).intValue()]))};
+                    return new Object[]{(double) drone.getUpgrades(EnumUpgrade.values()[((Double) args[0]).intValue()])};
                 } else {
                     throw new IllegalArgumentException("getUpgrades takes one argument (upgrade index)!");
                 }

@@ -54,7 +54,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
     public static final int INVENTORY_SIZE = 4;
 
     @DescSynced
-    public boolean[] sidesConnected = new boolean[6];
+    public final boolean[] sidesConnected = new boolean[6];
 
     @GuiSynced
     private String sensorSetting = "";
@@ -197,7 +197,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
 
     public void onEvent(Event event) {
         ISensorSetting sensor = SensorHandler.getInstance().getSensorFromPath(sensorSetting);
-        if (sensor != null && sensor instanceof IEventSensorSetting && getPressure() > PneumaticValues.MIN_PRESSURE_UNIVERSAL_SENSOR) {
+        if (sensor instanceof IEventSensorSetting && getPressure() > PneumaticValues.MIN_PRESSURE_UNIVERSAL_SENSOR) {
             int newRedstoneStrength = ((IEventSensorSetting) sensor).emitRedstoneOnEvent(event, this, getRange(), sensorGuiText);
             if (newRedstoneStrength != 0) eventTimer = ((IEventSensorSetting) sensor).getRedstonePulseLength();
             if (invertedRedstone) newRedstoneStrength = 15 - newRedstoneStrength;
@@ -568,7 +568,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
     }
 
     private class UniversalSensorUpgradeHandler extends UpgradeHandler {
-        private TileEntityUniversalSensor te;
+        private final TileEntityUniversalSensor te;
 
         UniversalSensorUpgradeHandler(TileEntityUniversalSensor te) {
             super(INVENTORY_SIZE);

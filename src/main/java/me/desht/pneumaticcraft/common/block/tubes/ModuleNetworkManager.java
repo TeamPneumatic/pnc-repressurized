@@ -11,9 +11,7 @@ import java.util.Set;
 import java.util.Stack;
 
 public class ModuleNetworkManager {
-    private static ModuleNetworkManager INSTANCE = new ModuleNetworkManager();
-
-    // private final List<Set<TubeModule>> connectedModules = new ArrayList<Set<TubeModule>>(); Not cached due to the performance being ok
+    private static final ModuleNetworkManager INSTANCE = new ModuleNetworkManager();
 
     public static ModuleNetworkManager getInstance() {
         return INSTANCE;

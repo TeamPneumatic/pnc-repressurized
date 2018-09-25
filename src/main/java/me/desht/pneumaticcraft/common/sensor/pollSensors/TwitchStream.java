@@ -10,14 +10,13 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TwitchStream extends Thread {
-    private static Map<String, TwitchStream> trackedTwitchers = new HashMap<String, TwitchStream>();
+class TwitchStream extends Thread {
+    private static final Map<String, TwitchStream> trackedTwitchers = new HashMap<>();
 
-    public String channel;
-    public boolean keptAlive = true;
+    private final String channel;
+    private boolean keptAlive = true;
 
     private URL url;
-    private BufferedReader reader;
 
     private boolean online = false;
 
@@ -41,10 +40,10 @@ public class TwitchStream extends Thread {
 
     }
 
-    public void refresh() {
+    private void refresh() {
         try {
             url = new URL("https://api.twitch.tv/kraken/streams/" + channel);
-            reader = new BufferedReader(new InputStreamReader(url.openStream()));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
 
             // while((s = reader.readLine()) != null) {
             //   Log.info(s);
@@ -69,7 +68,7 @@ public class TwitchStream extends Thread {
         return url;
     }
 
-    public static boolean isOnline(String name) {
+    static boolean isOnline(String name) {
         TwitchStream stream = trackedTwitchers.get(name);
         if (stream == null) {
             stream = new TwitchStream(name);

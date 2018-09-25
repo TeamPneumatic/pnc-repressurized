@@ -12,7 +12,7 @@ import java.util.*;
 
 public class ItemRegistry implements IItemRegistry {
 
-    private static ItemRegistry INSTANCE = new ItemRegistry();
+    private static final ItemRegistry INSTANCE = new ItemRegistry();
     public final List<IInventoryItem> inventoryItems = new ArrayList<>();
     private final Map<Item, List<IUpgradeAcceptor>> upgradeToAcceptors = new HashMap<>();
     private final List<IMagnetSuppressor> magnetSuppressors = new ArrayList<>();
@@ -48,7 +48,7 @@ public class ItemRegistry implements IItemRegistry {
     public void addTooltip(Item upgrade, List<String> tooltip) {
         List<IUpgradeAcceptor> acceptors = upgradeToAcceptors.get(upgrade);
         if (acceptors != null) {
-            List<String> tempList = new ArrayList<String>(acceptors.size());
+            List<String> tempList = new ArrayList<>(acceptors.size());
             for (IUpgradeAcceptor acceptor : acceptors) {
                 tempList.add("\u2022 " + I18n.format(acceptor.getName()));
             }

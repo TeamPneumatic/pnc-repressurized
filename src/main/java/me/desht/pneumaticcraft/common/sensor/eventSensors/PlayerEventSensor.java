@@ -12,7 +12,7 @@ import net.minecraftforge.fml.common.eventhandler.Event;
 import java.util.HashSet;
 import java.util.Set;
 
-public abstract class PlayerEventSensor implements IEventSensorSetting {
+abstract class PlayerEventSensor implements IEventSensorSetting {
 
     @Override
     public String getSensorPath() {
@@ -21,7 +21,7 @@ public abstract class PlayerEventSensor implements IEventSensorSetting {
 
     @Override
     public Set<Item> getRequiredUpgrades() {
-        Set<Item> upgrades = new HashSet<Item>();
+        Set<Item> upgrades = new HashSet<>();
         upgrades.add(Itemss.upgrades.get(EnumUpgrade.ENTITY_TRACKER));
         return upgrades;
     }
@@ -37,7 +37,7 @@ public abstract class PlayerEventSensor implements IEventSensorSetting {
         return 0;
     }
 
-    public abstract int emitRedstoneOnEvent(PlayerEvent event, TileEntity sensor, int range);
+    protected abstract int emitRedstoneOnEvent(PlayerEvent event, TileEntity sensor, int range);
 
     @Override
     public int getRedstonePulseLength() {

@@ -8,7 +8,6 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAITarget;
 
-import java.util.Collections;
 import java.util.List;
 
 public class DroneAINearestAttackableTarget extends EntityAITarget {
@@ -42,7 +41,7 @@ public class DroneAINearestAttackableTarget extends EntityAITarget {
     public boolean shouldExecute() {
         if (drone.hasMinigun() && drone.getAmmo() == null) return false;
         List<Entity> list = ((IEntityProvider) widget).getValidEntities(drone.world);
-        Collections.sort(list, theNearestAttackableTargetSorter);
+        list.sort(theNearestAttackableTargetSorter);
         for (Entity entity : list) {
             if (entity != taskOwner && entity instanceof EntityLivingBase) {
                 targetEntity = (EntityLivingBase) entity;

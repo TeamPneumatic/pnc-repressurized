@@ -47,7 +47,7 @@ public class IOHelper {
          * Extract up to the number of items specified but not more.
          */
         UP_TO
-    };
+    }
 
     public static class LocatedItemStack {
         public final ItemStack stack;

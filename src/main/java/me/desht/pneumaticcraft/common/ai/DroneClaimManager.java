@@ -12,8 +12,8 @@ import java.util.Map;
  */
 public class DroneClaimManager {
 
-    private static Map<Integer, DroneClaimManager> claimManagers = new HashMap<Integer, DroneClaimManager>();
-    private final Map<BlockPos, Integer> currentPositions = new HashMap<BlockPos, Integer>();
+    private static Map<Integer, DroneClaimManager> claimManagers = new HashMap<>();
+    private final Map<BlockPos, Integer> currentPositions = new HashMap<>();
     private static final int TIMEOUT = DroneAIManager.TICK_RATE + 1;
 
     public static DroneClaimManager getInstance(World world) {

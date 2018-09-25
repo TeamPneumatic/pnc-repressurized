@@ -27,7 +27,7 @@ public abstract class LuaMethod implements ILuaMethod {
     }
 
     protected LinkedHashMap<Integer, String> getStringTable(List<String> list) {
-        LinkedHashMap<Integer, String> table = new LinkedHashMap<Integer, String>();
+        LinkedHashMap<Integer, String> table = new LinkedHashMap<>();
         for (int i = 0; i < list.size(); i++) {
             table.put(i + 1, list.get(i));
         }

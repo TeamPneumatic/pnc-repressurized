@@ -1,15 +1,11 @@
 package me.desht.pneumaticcraft.common.network;
 
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.Validate;
-
 import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.common.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
+
+import java.util.stream.Collectors;
 
 public class PacketRemoveSemiBlock extends LocationIntPacket<PacketRemoveSemiBlock> {
 
@@ -41,7 +37,7 @@ public class PacketRemoveSemiBlock extends LocationIntPacket<PacketRemoveSemiBlo
         manager.getSemiBlocks(player.world, message.pos)
               .filter(s -> s.getIndex() == message.index)
               .collect(Collectors.toList()) //To list is necessary, because the indeces will get updated through the removal iterations.
-              .forEach(s -> manager.removeSemiBlock(s));
+              .forEach(manager::removeSemiBlock);
     }
 
     @Override

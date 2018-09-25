@@ -229,7 +229,7 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
         if (blacklistPredicate != null) {
             entities.removeIf(blacklistPredicate::apply);
         }
-        return new ArrayList<Entity>(entities);
+        return new ArrayList<>(entities);
     }
 
     @Override

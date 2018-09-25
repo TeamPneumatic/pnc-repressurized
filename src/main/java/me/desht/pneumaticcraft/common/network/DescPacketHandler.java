@@ -23,12 +23,7 @@ public class DescPacketHandler extends SimpleChannelInboundHandler<FMLProxyPacke
     protected void channelRead0(ChannelHandlerContext ctx, FMLProxyPacket msg) throws Exception {
         final PacketDescription packet = new PacketDescription();
         packet.fromBytes(msg.payload());
-        PneumaticCraftRepressurized.proxy.addScheduledTask(new Runnable() {
-            @Override
-            public void run() {
-                packet.handleClientSide(packet, PneumaticCraftRepressurized.proxy.getClientPlayer());
-            }
-        }, false);
+        PneumaticCraftRepressurized.proxy.addScheduledTask(() -> packet.handleClientSide(packet, PneumaticCraftRepressurized.proxy.getClientPlayer()), false);
     }
 
     public static FMLProxyPacket getPacket(PacketDescription packet) {

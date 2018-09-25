@@ -24,16 +24,16 @@ import java.util.List;
 public class TileEntityOmnidirectionalHopper extends TileEntityTickableBase implements IRedstoneControlled, IComparatorSupport {
     public static final int INVENTORY_SIZE = 5;
     @DescSynced
-    protected EnumFacing inputDir = EnumFacing.UP;
+    EnumFacing inputDir = EnumFacing.UP;
     @DescSynced
-    protected EnumFacing outputDir = EnumFacing.UP;
-    private ComparatorItemStackHandler inventory = new ComparatorItemStackHandler(this, getInvSize());
+    private EnumFacing outputDir = EnumFacing.UP;
+    private final ComparatorItemStackHandler inventory = new ComparatorItemStackHandler(this, getInvSize());
     private int lastComparatorValue = -1;
     @GuiSynced
     public int redstoneMode;
     private int cooldown;
     @GuiSynced
-    protected boolean leaveMaterial;//leave items/liquids (used as filter)
+    boolean leaveMaterial;//leave items/liquids (used as filter)
 
     public TileEntityOmnidirectionalHopper() {
         this(4);

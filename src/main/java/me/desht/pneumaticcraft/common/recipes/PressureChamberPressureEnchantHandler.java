@@ -60,7 +60,7 @@ public class PressureChamberPressureEnchantHandler implements IPressureChamberRe
         ItemStack enchantedBook = recipeIngredients[1];
         
         Map<Enchantment, Integer> bookMap = EnchantmentHelper.getEnchantments(enchantedBook);
-        bookMap.forEach((enchant, lvl) -> enchantedTool.addEnchantment(enchant, lvl));
+        bookMap.forEach(enchantedTool::addEnchantment);
         
         enchantedBook.shrink(1);
         return NonNullList.from(ItemStack.EMPTY, new ItemStack(Items.BOOK));
