@@ -40,6 +40,8 @@ public class PacketUpdatePressureModule extends PacketUpdateTubeModule<PacketUpd
         } else if (message.fieldId == 2) {
             module.advancedConfig = message.value > 0.5F;
         }
-        module.sendDescriptionPacket();
+        if (!player.world.isRemote) {
+            module.sendDescriptionPacket();
+        }
     }
 }
