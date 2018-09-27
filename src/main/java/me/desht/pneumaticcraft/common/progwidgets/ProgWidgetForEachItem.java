@@ -78,7 +78,7 @@ public class ProgWidgetForEachItem extends ProgWidget implements IJumpBackWidget
     public IProgWidget getOutputWidget(IDroneBase drone, List<IProgWidget> allWidgets) {
         List<String> locations = getPossibleJumpLocations();
         ItemStack filter = getFilterForIndex(curIndex++);
-        if (locations.size() > 0 && filter != null && (curIndex == 1 || aiManager.getStack(elementVariable) != null)) {
+        if (locations.size() > 0 && filter != null && (curIndex == 1 || !aiManager.getStack(elementVariable).isEmpty())) {
             aiManager.setItem(elementVariable, filter);
             return ProgWidgetJump.jumpToLabel(drone, allWidgets, locations.get(0));
         }
