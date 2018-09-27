@@ -154,27 +154,23 @@ minecraft {
 }
 
 dependencies {
-    deobfCompile "cofh:RedstoneFlux:1.12-${redstone_flux_version}:universal"
-    deobfCompile "mezz.jei:jei_${mc_version}:${jei_version}"
-    deobfCompile("cofh:CoFHCore:1.12.2-${cofhcore_version}:deobf") {
-        transitive = false
-    }
-    deobfCompile "MCMultiPart2:MCMultiPart:${mcmultipart_version}"
-    deobfCompile "li.cil.oc:OpenComputers:MC1.12.2-${oc_version}:api"
-    deobfCompile "dan200.computercraft:ComputerCraft:${computercraft_version}"
-    deobfCompile "mcp.mobius.waila:Hwyla:${hwyla_version}"
-    deobfCompile "mcjty.theoneprobe:TheOneProbe-1.12:${top_version}"
-    deobfProvided "CraftTweaker2:CraftTweaker2-API:${crafttweaker_version}"
-    deobfProvided "CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-${crafttweaker_version}"
-    compile "igwmod:IGW-Mod-1.12.2:${igwmod_version}:universal"  // using universal instead of userdev for now
-    compile "net.industrial-craft:industrialcraft-2:2.8.27-ex112:api"
-    compile "thaumcraft:Thaumcraft:${thaumcraft_version}"
-    compile "team.chisel.ctm:CTM:${ctm_version}:api"
-    deobfCompile "vazkii.botania:Botania:${botania_version}"
-    deobfCompile("appeng:appliedenergistics2:${ae2_version}:api") {
-        transitive = false
-    }
-    deobfCompile "elucent:albedo:${albedo_version}"
+    compileOnly "cofh:RedstoneFlux:1.12-${redstone_flux_version}:universal"
+    compileOnly "mezz.jei:jei_${mc_version}:${jei_version}"
+    compileOnly "cofh:CoFHCore:1.12.2-${cofhcore_version}:deobf"
+    compileOnly "MCMultiPart2:MCMultiPart:${mcmultipart_version}"
+    compileOnly "li.cil.oc:OpenComputers:MC1.12.2-${oc_version}:api"
+    compileOnly "dan200.computercraft:ComputerCraft:${computercraft_version}"
+    compileOnly "mcp.mobius.waila:Hwyla:${hwyla_version}"
+    compileOnly "mcjty.theoneprobe:TheOneProbe-1.12:${top_version}"
+    compileOnly "CraftTweaker2:CraftTweaker2-API:${crafttweaker_version}"
+    compileOnly "CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-${crafttweaker_version}"
+    compileOnly "igwmod:IGW-Mod-1.12.2:${igwmod_version}:universal"  // using universal instead of userdev for now
+    compileOnly "net.industrial-craft:industrialcraft-2:2.8.27-ex112:api"
+    compileOnly "thaumcraft:Thaumcraft:${thaumcraft_version}"
+    compileOnly "team.chisel.ctm:CTM:${ctm_version}:api"
+    compileOnly "vazkii.botania:Botania:${botania_version}"
+    compileOnly("appeng:appliedenergistics2:${ae2_version}:api")
+    compileOnly "elucent:albedo:${albedo_version}"
 }
 
 processResources {
