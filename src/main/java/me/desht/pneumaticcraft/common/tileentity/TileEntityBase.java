@@ -530,7 +530,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
 
     @Override
     public String getType() {
-        return getBlockType().getUnlocalizedName().substring(5);
+        return getBlockType().getTranslationKey().substring(5);
     }
 
     @Override

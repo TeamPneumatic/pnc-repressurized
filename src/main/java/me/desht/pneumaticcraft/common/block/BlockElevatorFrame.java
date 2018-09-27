@@ -135,7 +135,7 @@ public class BlockElevatorFrame extends BlockPneumaticCraftModeled {
     }
 
     @Override
-    public void onEntityCollidedWithBlock(World world, BlockPos pos, IBlockState state, Entity entity) {
+    public void onEntityCollision(World world, BlockPos pos, IBlockState state, Entity entity) {
         TileEntityElevatorBase te = getElevatorTE(world, pos);
         if (te != null && te.oldExtension != te.extension) {
             entity.setPosition(entity.posX, te.getPos().getY() + 1 + te.extension, entity.posZ);

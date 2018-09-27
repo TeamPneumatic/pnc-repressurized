@@ -87,9 +87,9 @@ public class TileEntityPneumaticGenerator extends TileEntityPneumaticBase implem
             case 0:
                 return true;
             case 1:
-                return getWorld().isBlockIndirectlyGettingPowered(getPos()) > 0;
+                return getWorld().getRedstonePowerFromNeighbors(getPos()) > 0;
             case 2:
-                return getWorld().isBlockIndirectlyGettingPowered(getPos()) == 0;
+                return getWorld().getRedstonePowerFromNeighbors(getPos()) == 0;
         }
         return false;
     }
@@ -109,7 +109,7 @@ public class TileEntityPneumaticGenerator extends TileEntityPneumaticBase implem
 
     @Override
     public String getName() {
-        return IC2.PNEUMATIC_GENERATOR.getUnlocalizedName();
+        return IC2.PNEUMATIC_GENERATOR.getTranslationKey();
     }
 
     @Override

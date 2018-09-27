@@ -72,7 +72,7 @@ public class TileEntityRefinery extends TileEntityTickableBase
 
     @Override
     public String getName() {
-        return Blockss.REFINERY.getUnlocalizedName();
+        return Blockss.REFINERY.getTranslationKey();
     }
 
     @Override

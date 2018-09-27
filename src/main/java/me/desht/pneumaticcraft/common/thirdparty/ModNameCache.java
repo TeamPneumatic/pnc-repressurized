@@ -22,7 +22,7 @@ public class ModNameCache {
     }
 
     public static String getModName(ItemStack stack) {
-        return getModName(stack.getItem().getRegistryName().getResourceDomain());
+        return getModName(stack.getItem().getRegistryName().getNamespace());
     }
 
     public static String getModName(String modId) {

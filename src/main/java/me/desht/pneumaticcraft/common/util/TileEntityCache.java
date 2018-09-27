@@ -29,7 +29,7 @@ public class TileEntityCache {
     public static TileEntityCache[] getDefaultCache(World world, BlockPos pos) {
         TileEntityCache[] cache = new TileEntityCache[6];
         for (int i = 0; i < 6; i++) {
-            EnumFacing d = EnumFacing.getFront(i);
+            EnumFacing d = EnumFacing.byIndex(i);
             cache[i] = new TileEntityCache(world, pos.offset(d));
         }
         return cache;

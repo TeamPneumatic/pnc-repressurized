@@ -108,7 +108,7 @@ public class SensorHandler implements ISensorRegistry {
         for (Set<Item> requiredStacks : upgrades) {
             StringBuilder upgradeTitle = new StringBuilder();
             for (Item stack : requiredStacks) {
-                upgradeTitle.append(I18n.format(stack.getUnlocalizedName() + ".name")).append(" + ");
+                upgradeTitle.append(I18n.format(stack.getTranslationKey() + ".name")).append(" + ");
             }
             upgradeTitle = new StringBuilder(TextFormatting.BLACK + "-" + upgradeTitle.substring(0, upgradeTitle.length() - 3)
                     .replace("Machine Upgrade: ", ""));
@@ -148,11 +148,11 @@ public class SensorHandler implements ISensorRegistry {
     private String getUpgradePrefix(ISensorSetting sensor) {
         List<Item> upgrades = new ArrayList<>(sensor.getRequiredUpgrades());
 
-        upgrades.sort(Comparator.comparing(Item::getUnlocalizedName));
+        upgrades.sort(Comparator.comparing(Item::getTranslationKey));
 
         StringBuilder ret = new StringBuilder();
         for (int i = 0; i < upgrades.size(); i++) {
-            ret.append(upgrades.get(i).getUnlocalizedName()).append(i < upgrades.size() - 1 ? "_" : "/");
+            ret.append(upgrades.get(i).getTranslationKey()).append(i < upgrades.size() - 1 ? "_" : "/");
         }
 
         return ret.toString();

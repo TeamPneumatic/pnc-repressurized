@@ -113,9 +113,9 @@ public class TileEntityElectricCompressor extends TileEntityPneumaticBase implem
             case 0:
                 return true;
             case 1:
-                return getWorld().isBlockIndirectlyGettingPowered(getPos()) > 0;
+                return getWorld().getRedstonePowerFromNeighbors(getPos()) > 0;
             case 2:
-                return getWorld().isBlockIndirectlyGettingPowered(getPos()) == 0;
+                return getWorld().getRedstonePowerFromNeighbors(getPos()) == 0;
         }
         return false;
     }
@@ -135,7 +135,7 @@ public class TileEntityElectricCompressor extends TileEntityPneumaticBase implem
 
     @Override
     public String getName() {
-        return IC2.ELECTRIC_COMPRESSOR.getUnlocalizedName();
+        return IC2.ELECTRIC_COMPRESSOR.getTranslationKey();
     }
 
     @Override

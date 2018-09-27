@@ -106,7 +106,7 @@ public class PneumaticCraftUtils {
      */
     @SideOnly(Side.CLIENT)
     public static double rotateMatrixByMetadata(int metadata) {
-        EnumFacing facing = EnumFacing.getFront(metadata & 7);
+        EnumFacing facing = EnumFacing.byIndex(metadata & 7);
         float metaRotation;
         switch (facing) {
             case UP:
@@ -395,7 +395,7 @@ public class PneumaticCraftUtils {
      * @return the redstone level
      */
     public static int getRedstoneLevel(World world, BlockPos pos) {
-        return world != null ? world.isBlockIndirectlyGettingPowered(pos) : 0;
+        return world != null ? world.getRedstonePowerFromNeighbors(pos) : 0;
     }
 
     /**
@@ -467,7 +467,7 @@ public class PneumaticCraftUtils {
             entityVec = new Vec3d(entity.posX, entity.posY + entity.getEyeHeight() - (entity.isSneaking() ? 0.08 : 0), entity.posZ);
         }
         Vec3d entityLookVec = entity.getLook(1.0F);
-        Vec3d maxDistVec = entityVec.addVector(entityLookVec.x * maxDistance, entityLookVec.y * maxDistance, entityLookVec.z * maxDistance);
+        Vec3d maxDistVec = entityVec.add(entityLookVec.x * maxDistance, entityLookVec.y * maxDistance, entityLookVec.z * maxDistance);
         return new ImmutablePair<>(entityVec, maxDistVec);
     }
 
@@ -648,8 +648,8 @@ public class PneumaticCraftUtils {
         if (stack1.isEmpty() || stack2.isEmpty()) return false;
 
         if (checkModSimilarity) {
-            String mod1 = stack1.getItem().getRegistryName().getResourceDomain();
-            String mod2 = stack2.getItem().getRegistryName().getResourceDomain();
+            String mod1 = stack1.getItem().getRegistryName().getNamespace();
+            String mod2 = stack2.getItem().getRegistryName().getNamespace();
             return mod1.equals(mod2);
         }
         if (checkOreDict) {

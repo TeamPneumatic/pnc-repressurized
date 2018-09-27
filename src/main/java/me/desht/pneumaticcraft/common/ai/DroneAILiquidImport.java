@@ -38,8 +38,8 @@ public class DroneAILiquidImport extends DroneAIImExBase {
             TileEntity te = drone.world().getTileEntity(pos);
             if (te != null) {
                 for (int i = 0; i < 6; i++) {
-                    if (((ISidedWidget) widget).getSides()[i] && te.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, EnumFacing.getFront(i))) {
-                        IFluidHandler handler = te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, EnumFacing.getFront(i));
+                    if (((ISidedWidget) widget).getSides()[i] && te.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, EnumFacing.byIndex(i))) {
+                        IFluidHandler handler = te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, EnumFacing.byIndex(i));
                         FluidStack importedFluid = handler.drain(Integer.MAX_VALUE, false);
                         if (importedFluid != null && ((ILiquidFiltered) widget).isFluidValid(importedFluid.getFluid())) {
                             int filledAmount = drone.getTank().fill(importedFluid, false);

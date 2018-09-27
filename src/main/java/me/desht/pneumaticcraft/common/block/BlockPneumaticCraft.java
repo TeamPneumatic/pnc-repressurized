@@ -79,7 +79,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
 
     protected BlockPneumaticCraft(Material material, String registryName) {
         super(material);
-        setUnlocalizedName(registryName);
+        setTranslationKey(registryName);
         setRegistryName(registryName);
         setCreativeTab(PneumaticCraftRepressurized.tabPneumaticCraft);
         setHardness(3.0F);
@@ -217,7 +217,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
     @Override
     public IBlockState getStateFromMeta(int meta) {
         if (isRotatable()) {
-            return super.getStateFromMeta(meta).withProperty(ROTATION, EnumFacing.getFront(meta));
+            return super.getStateFromMeta(meta).withProperty(ROTATION, EnumFacing.byIndex(meta));
         } else {
             return super.getStateFromMeta(meta);
         }
@@ -254,7 +254,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
                     } else {
                         EnumFacing f = getRotation(world, pos);
                         do {
-                            f = EnumFacing.getFront(f.ordinal() + 1);
+                            f = EnumFacing.byIndex(f.ordinal() + 1);
                         } while (!canRotateToTopOrBottom() && f.getAxis() == Axis.Y);
                         setRotation(world, pos, f);
                     }
@@ -341,7 +341,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
             }
         }
 
-        String info = "gui.tab.info." + stack.getUnlocalizedName();
+        String info = "gui.tab.info." + stack.getTranslationKey();
         String translatedInfo = I18n.format(info);
         if (!translatedInfo.equals(info)) {
             if (PneumaticCraftRepressurized.proxy.isSneakingInGui()) {
@@ -381,7 +381,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
 
     @Override
     public String getName() {
-        return getUnlocalizedName() + ".name";
+        return getTranslationKey() + ".name";
     }
 
     @Override
@@ -460,7 +460,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
             }
             if (te instanceof ISideConfigurable) {
                 NBTTagCompound tag = SideConfigurator.writeToNBT((ISideConfigurable) te);
-                if (!tag.hasNoTags()) {
+                if (!tag.isEmpty()) {
                     NBTUtil.initNBTTagCompound(teStack);
                     teStack.getTagCompound().setTag(NBT_SIDECONFIG, SideConfigurator.writeToNBT((ISideConfigurable) te));
                 }

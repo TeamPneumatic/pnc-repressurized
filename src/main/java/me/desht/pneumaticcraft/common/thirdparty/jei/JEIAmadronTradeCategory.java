@@ -26,7 +26,7 @@ public class JEIAmadronTradeCategory extends PneumaticCraftCategory<JEIAmadronTr
 
     @Override
     public String getTitle() {
-        return I18n.format(Itemss.AMADRON_TABLET.getUnlocalizedName() + ".name");
+        return I18n.format(Itemss.AMADRON_TABLET.getTranslationKey() + ".name");
     }
 
     @Override

@@ -70,7 +70,7 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase implements
 
     @Override
     public String getName() {
-        return Blockss.FLUX_COMPRESSOR.getUnlocalizedName();
+        return Blockss.FLUX_COMPRESSOR.getTranslationKey();
     }
 
     @Override

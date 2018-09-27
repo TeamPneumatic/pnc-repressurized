@@ -24,7 +24,7 @@ public class JEIEtchingAcidCategory extends JEISpecialCraftingCategory<EtchingAc
 
     @Override
     public String getTitle() {
-        return I18n.format(Fluids.getBlock(Fluids.ETCHING_ACID).getUnlocalizedName() + ".name");
+        return I18n.format(Fluids.getBlock(Fluids.ETCHING_ACID).getTranslationKey() + ".name");
     }
 
     @Override

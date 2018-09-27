@@ -28,7 +28,7 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
             texture = new ResourceLocation(Textures.PROG_WIDGET_LOCATION + "coordinate_operation_" + name + ".png");
         }
 
-        public String getUnlocalizedName() {
+        public String getTranslationKey() {
             return "gui.progWidget.coordinateOperator." + name;
         }
     }

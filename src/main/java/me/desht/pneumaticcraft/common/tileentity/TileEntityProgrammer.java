@@ -435,7 +435,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
 
     @Override
     public String getName() {
-        return Blockss.PROGRAMMER.getUnlocalizedName();
+        return Blockss.PROGRAMMER.getTranslationKey();
     }
 
     @Override

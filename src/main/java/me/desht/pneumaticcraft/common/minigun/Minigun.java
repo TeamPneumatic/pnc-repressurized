@@ -229,9 +229,9 @@ public abstract class Minigun {
         RayTraceResult mop = PneumaticCraftUtils.getMouseOverServer(player, RAYTRACE_RANGE);
         if (mop != null && mop.typeOfHit == RayTraceResult.Type.BLOCK && this.world instanceof WorldServer) {
             BlockPos pos = mop.getBlockPos();
-            double x = pos.getX() + mop.sideHit.getFrontOffsetX();
-            double y = pos.getY() + mop.sideHit.getFrontOffsetY();
-            double z = pos.getZ() + mop.sideHit.getFrontOffsetZ();
+            double x = pos.getX() + mop.sideHit.getXOffset();
+            double y = pos.getY() + mop.sideHit.getYOffset();
+            double z = pos.getZ() + mop.sideHit.getZOffset();
             IBlockState state = world.getBlockState(pos);
             ((WorldServer)this.world).spawnParticle(EnumParticleTypes.BLOCK_DUST, x, y, z, 25, 0.0D, 0.5D, 0.0D, 0.15, Block.getStateId(state));
         }

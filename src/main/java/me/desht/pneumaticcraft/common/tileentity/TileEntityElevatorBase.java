@@ -389,7 +389,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
                 for (TileEntityElevatorBase base : multiElevators) {
                     for (EnumFacing dir : EnumFacing.HORIZONTALS) {
                         if (base.world.getBlockState(base.getPos().offset(dir).up(i + 2)).getBlock() == Blockss.ELEVATOR_CALLER) {
-                            callerList.add(new BlockPos(base.getPos().getX() + dir.getFrontOffsetX(), base.getPos().getY() + i + 2, base.getPos().getZ() + dir.getFrontOffsetZ()));
+                            callerList.add(new BlockPos(base.getPos().getX() + dir.getXOffset(), base.getPos().getY() + i + 2, base.getPos().getZ() + dir.getZOffset()));
                             if (!registeredThisFloor) floorList.add(i);
                             registeredThisFloor = true;
                         }
@@ -488,7 +488,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
 
     @Override
     public String getName() {
-        return Blockss.ELEVATOR_BASE.getUnlocalizedName();
+        return Blockss.ELEVATOR_BASE.getTranslationKey();
     }
 
     @Override

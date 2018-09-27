@@ -98,7 +98,7 @@ public class Fluids {
             for (final IFluidBlock fluidBlock : MOD_FLUID_BLOCKS) {
                 final Block block = (Block) fluidBlock;
                 block.setRegistryName(RL("fluid." + fluidBlock.getFluid().getName()));
-                block.setUnlocalizedName(fluidBlock.getFluid().getName());
+                block.setTranslationKey(fluidBlock.getFluid().getName());
                 block.setCreativeTab(PneumaticCraftRepressurized.tabPneumaticCraft);
                 registry.register(block);
                 fluidToBlockMap.put(fluidBlock.getFluid().getName(), block);

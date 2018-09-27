@@ -176,7 +176,7 @@ public class ClientProxy implements IProxy {
     }
 
     private void getAllKeybindsFromOptionsFile() {
-        File optionsFile = new File(FMLClientHandler.instance().getClient().mcDataDir, "options.txt");
+        File optionsFile = new File(FMLClientHandler.instance().getClient().gameDir, "options.txt");
         if (optionsFile.exists()) {
             try (BufferedReader bufferedreader = new BufferedReader(new FileReader(optionsFile))) {
                 String s = "";

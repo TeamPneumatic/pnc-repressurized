@@ -75,7 +75,7 @@ public class ProgWidgetEmitRedstone extends ProgWidget implements IRedstoneEmiss
             StringBuilder tipBuilder = new StringBuilder();
             for (int i = 0; i < 6; i++) {
                 if (accessingSides[i]) {
-                    switch (EnumFacing.getFront(i)) {
+                    switch (EnumFacing.byIndex(i)) {
                         case UP:
                             tipBuilder.append("top, ");
                             break;
@@ -106,7 +106,7 @@ public class ProgWidgetEmitRedstone extends ProgWidget implements IRedstoneEmiss
     public void writeToNBT(NBTTagCompound tag) {
         super.writeToNBT(tag);
         for (int i = 0; i < 6; i++) {
-            tag.setBoolean(EnumFacing.getFront(i).name(), accessingSides[i]);
+            tag.setBoolean(EnumFacing.byIndex(i).name(), accessingSides[i]);
         }
     }
 
@@ -114,7 +114,7 @@ public class ProgWidgetEmitRedstone extends ProgWidget implements IRedstoneEmiss
     public void readFromNBT(NBTTagCompound tag) {
         super.readFromNBT(tag);
         for (int i = 0; i < 6; i++) {
-            accessingSides[i] = tag.getBoolean(EnumFacing.getFront(i).name());
+            accessingSides[i] = tag.getBoolean(EnumFacing.byIndex(i).name());
         }
     }
 
@@ -184,7 +184,7 @@ public class ProgWidgetEmitRedstone extends ProgWidget implements IRedstoneEmiss
             boolean[] sides = ((ISidedWidget) widget).getSides();
             for (int i = 0; i < 6; i++) {
                 if (sides[i]) {
-                    drone.setEmittingRedstone(EnumFacing.getFront(i), ((IRedstoneEmissionWidget) widget).getEmittingRedstone());
+                    drone.setEmittingRedstone(EnumFacing.byIndex(i), ((IRedstoneEmissionWidget) widget).getEmittingRedstone());
                 }
             }
             return false;

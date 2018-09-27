@@ -217,9 +217,9 @@ public class BlockPneumaticDoor extends BlockPneumaticCraftModeled {
 
     @Override
     public void neighborChanged(IBlockState state, World world, BlockPos pos, Block block, BlockPos fromPos) {
-        boolean powered = world.isBlockIndirectlyGettingPowered(pos) > 0;
+        boolean powered = world.getRedstonePowerFromNeighbors(pos) > 0;
         if (!powered) {
-            powered = world.isBlockIndirectlyGettingPowered(pos.offset(isTopDoor(state) ? EnumFacing.DOWN : EnumFacing.UP)) > 0;
+            powered = world.getRedstonePowerFromNeighbors(pos.offset(isTopDoor(state) ? EnumFacing.DOWN : EnumFacing.UP)) > 0;
         }
         TileEntityPneumaticDoorBase doorBase = getDoorBase(world, pos);
         if (!world.isRemote && doorBase != null && doorBase.getPressure() >= PneumaticValues.MIN_PRESSURE_PNEUMATIC_DOOR) {

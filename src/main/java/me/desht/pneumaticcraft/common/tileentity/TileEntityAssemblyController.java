@@ -282,7 +282,7 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
     @Override
     public String getName() {
 
-        return Blockss.ASSEMBLY_CONTROLLER.getUnlocalizedName();
+        return Blockss.ASSEMBLY_CONTROLLER.getTranslationKey();
     }
 
     @Override

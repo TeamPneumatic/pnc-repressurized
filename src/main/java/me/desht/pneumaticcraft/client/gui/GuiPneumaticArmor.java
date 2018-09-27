@@ -40,7 +40,7 @@ public class GuiPneumaticArmor extends GuiPneumaticInventoryItem {
 
     public GuiPneumaticArmor(ContainerChargingStationItemInventory container, TileEntityChargingStation te) {
         super(container, te);
-        registryName = itemStack.getItem().getRegistryName().getResourcePath();
+        registryName = itemStack.getItem().getRegistryName().getPath();
         equipmentSlot = ((ItemArmor) itemStack.getItem()).armorType;
     }
 
@@ -51,7 +51,7 @@ public class GuiPneumaticArmor extends GuiPneumaticInventoryItem {
         statusStat = addAnimatedStat("Status", itemStack, 0xFFFFAA00, false);
 
         Set<Item> upgrades = ((IUpgradeAcceptor)itemStack.getItem()).getApplicableUpgrades();
-        List<Item> upgrades1 = upgrades.stream().sorted(Comparator.comparing(Item::getUnlocalizedName)).collect(Collectors.toList());
+        List<Item> upgrades1 = upgrades.stream().sorted(Comparator.comparing(Item::getTranslationKey)).collect(Collectors.toList());
 
         for (int i = 0; i < upgrades1.size(); i++) {
             Item upgrade = upgrades1.get(i);

@@ -27,7 +27,7 @@ public class BlockLiquidHopper extends BlockOmnidirectionalHopper implements ICu
 
     @Override
     @SideOnly(Side.CLIENT)
-    public BlockRenderLayer getBlockLayer() {
+    public BlockRenderLayer getRenderLayer() {
         return BlockRenderLayer.CUTOUT_MIPPED;
     }
 

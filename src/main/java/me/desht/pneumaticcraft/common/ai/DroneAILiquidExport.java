@@ -36,8 +36,8 @@ public class DroneAILiquidExport extends DroneAIImExBase {
                 FluidStack exportedFluid = drone.getTank().drain(Integer.MAX_VALUE, false);
                 if (exportedFluid != null && ((ILiquidFiltered) widget).isFluidValid(exportedFluid.getFluid())) {
                     for (int i = 0; i < 6; i++) {
-                        if (((ISidedWidget) widget).getSides()[i] && te.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, EnumFacing.getFront(i))) {
-                            IFluidHandler tank = te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, EnumFacing.getFront(i));
+                        if (((ISidedWidget) widget).getSides()[i] && te.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, EnumFacing.byIndex(i))) {
+                            IFluidHandler tank = te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, EnumFacing.byIndex(i));
                             int filledAmount = tank.fill(exportedFluid, false);
                             if (filledAmount > 0) {
                                 if (((ICountWidget) widget).useCount()) {

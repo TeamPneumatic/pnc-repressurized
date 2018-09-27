@@ -87,7 +87,7 @@ public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase imp
             StringBuilder tip = new StringBuilder();
             for (int i = 0; i < 6; i++) {
                 if (accessingSides[i]) {
-                    switch (EnumFacing.getFront(i)) {
+                    switch (EnumFacing.byIndex(i)) {
                         case UP:
                             tip.append("top, ");
                             break;
@@ -117,7 +117,7 @@ public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase imp
     public void writeToNBT(NBTTagCompound tag) {
         super.writeToNBT(tag);
         for (int i = 0; i < 6; i++) {
-            tag.setBoolean(EnumFacing.getFront(i).name(), accessingSides[i]);
+            tag.setBoolean(EnumFacing.byIndex(i).name(), accessingSides[i]);
         }
         tag.setBoolean("useCount", useCount);
         tag.setInteger("count", count);
@@ -127,7 +127,7 @@ public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase imp
     public void readFromNBT(NBTTagCompound tag) {
         super.readFromNBT(tag);
         for (int i = 0; i < 6; i++) {
-            accessingSides[i] = tag.getBoolean(EnumFacing.getFront(i).name());
+            accessingSides[i] = tag.getBoolean(EnumFacing.byIndex(i).name());
         }
         useCount = tag.getBoolean("useCount");
         count = tag.getInteger("count");

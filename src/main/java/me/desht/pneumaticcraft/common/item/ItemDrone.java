@@ -51,7 +51,7 @@ public class ItemDrone extends ItemPneumatic implements IPressurizable, IChargin
 
         if (!world.isRemote) {
             ItemStack iStack = player.getHeldItemMainhand();
-            if (iStack.getItem().getRegistryName().getResourcePath().equals("logistic_drone")) {
+            if (iStack.getItem().getRegistryName().getPath().equals("logistic_drone")) {
                 AdvancementTriggers.LOGISTICS_DRONE_DEPLOYED.trigger((EntityPlayerMP) player);
             }
             BlockPos placePos = pos.offset(facing);
@@ -183,7 +183,7 @@ public class ItemDrone extends ItemPneumatic implements IPressurizable, IChargin
 
     @Override
     public String getName() {
-        return getUnlocalizedName() + ".name";
+        return getTranslationKey() + ".name";
     }
 
 }

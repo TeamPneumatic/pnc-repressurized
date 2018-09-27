@@ -57,7 +57,7 @@ public class DroneAIBlockInteract extends DroneAIBlockInteraction {
         ItemStack stack = player.getHeldItemMainhand();
 
         player.setPosition(pos.getX() + 0.5, pos.getY() + 0.5 - player.eyeHeight, pos.getZ() + 0.5);
-        player.rotationPitch = faceDir.getFrontOffsetY() * -90;
+        player.rotationPitch = faceDir.getYOffset() * -90;
         player.rotationYaw = PneumaticCraftUtils.getYawFromFacing(faceDir);
 
         float hitX = (float)(player.posX - pos.getX());

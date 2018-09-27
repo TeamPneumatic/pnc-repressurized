@@ -103,7 +103,7 @@ public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implement
 
     @Override
     public String getName() {
-        return Blockss.PNEUMATIC_DYNAMO.getUnlocalizedName();
+        return Blockss.PNEUMATIC_DYNAMO.getTranslationKey();
     }
 
     @Override

@@ -211,7 +211,7 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase
 
     @Override
     public String getName() {
-        return Blockss.PNEUMATIC_DOOR_BASE.getUnlocalizedName();
+        return Blockss.PNEUMATIC_DOOR_BASE.getTranslationKey();
     }
 
     @Override

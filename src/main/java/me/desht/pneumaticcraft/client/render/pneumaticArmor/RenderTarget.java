@@ -222,7 +222,7 @@ public class RenderTarget {
         World world = FMLClientHandler.instance().getClient().world;
         Vec3d vec3 = player.getLook(1.0F).normalize();
         Vec3d vec31 = new Vec3d(entity.posX - player.posX, entity.getEntityBoundingBox().minY + entity.height / 2.0F - (player.posY + player.getEyeHeight()), entity.posZ - player.posZ);
-        double d0 = vec31.lengthVector();
+        double d0 = vec31.length();
         vec31 = vec31.normalize();
         double d1 = vec3.dotProduct(vec31);
         return d1 > 1.0D - 0.050D / d0;

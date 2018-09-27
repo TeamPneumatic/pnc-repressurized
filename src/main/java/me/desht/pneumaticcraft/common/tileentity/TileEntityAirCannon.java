@@ -198,9 +198,9 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements IMin
                 Map<BlockPos, EnumFacing> positions = new HashMap<>();
                 double range = 0.2;
                 for (EnumFacing d : EnumFacing.VALUES) {
-                    double posX = item.posX + d.getFrontOffsetX() * range;
-                    double posY = item.posY + d.getFrontOffsetY() * range;
-                    double posZ = item.posZ + d.getFrontOffsetZ() * range;
+                    double posX = item.posX + d.getXOffset() * range;
+                    double posY = item.posY + d.getYOffset() * range;
+                    double posZ = item.posZ + d.getZOffset() * range;
                     positions   .put(new BlockPos((int) Math.floor(posX), (int) Math.floor(posY), (int) Math.floor(posZ)), d.getOpposite());
                 }
                 for (Entry<BlockPos, EnumFacing> entry : positions.entrySet()) {
@@ -369,7 +369,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements IMin
 
     @Override
     public String getName() {
-        return Blockss.AIR_CANNON.getUnlocalizedName();
+        return Blockss.AIR_CANNON.getTranslationKey();
     }
 
     @Override
@@ -396,7 +396,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements IMin
 
         if (tag.hasKey("inventoryX")) {
             lastInsertingInventory = new BlockPos(tag.getInteger("inventoryX"), tag.getInteger("inventoryY"), tag.getInteger("inventoryZ"));
-            lastInsertingInventorySide = EnumFacing.getFront(tag.getByte("inventorySide"));
+            lastInsertingInventorySide = EnumFacing.byIndex(tag.getByte("inventorySide"));
         } else {
             lastInsertingInventory = null;
             lastInsertingInventorySide = null;

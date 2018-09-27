@@ -155,7 +155,7 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
 
     @Override
     public String getName() {
-        return Blockss.LIQUID_COMPRESSOR.getUnlocalizedName();
+        return Blockss.LIQUID_COMPRESSOR.getTranslationKey();
     }
 
     @Override

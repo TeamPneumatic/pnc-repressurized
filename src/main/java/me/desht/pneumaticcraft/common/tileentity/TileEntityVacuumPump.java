@@ -148,7 +148,7 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements IRe
 
     @Override
     public String getName() {
-        return Blockss.VACUUM_PUMP.getUnlocalizedName();
+        return Blockss.VACUUM_PUMP.getTranslationKey();
     }
 
     @Override

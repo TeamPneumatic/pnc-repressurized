@@ -234,7 +234,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
 
     @Override
     public String getName() {
-        return Blockss.CHARGING_STATION.getUnlocalizedName();
+        return Blockss.CHARGING_STATION.getTranslationKey();
     }
 
     @Override

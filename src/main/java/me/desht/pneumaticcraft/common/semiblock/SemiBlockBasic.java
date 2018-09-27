@@ -181,7 +181,7 @@ public abstract class SemiBlockBasic<TTileEntity extends TileEntity> implements 
     }
 
     public void addWailaTooltip(List<String> curInfo, NBTTagCompound tag, boolean extended) {
-        curInfo.add(TextFormatting.YELLOW + "[" + I18n.translateToLocalFormatted(SemiBlockManager.getItemForSemiBlock(this).getUnlocalizedName() + ".name") + "]");
+        curInfo.add(TextFormatting.YELLOW + "[" + I18n.translateToLocalFormatted(SemiBlockManager.getItemForSemiBlock(this).getTranslationKey() + ".name") + "]");
     }
 
     public void addWailaInfoToTag(NBTTagCompound tag) {

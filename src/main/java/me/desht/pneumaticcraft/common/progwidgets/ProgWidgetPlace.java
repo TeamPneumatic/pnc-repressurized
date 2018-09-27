@@ -38,7 +38,7 @@ public class ProgWidgetPlace extends ProgWidgetDigAndPlace implements ISidedWidg
     public static EnumFacing getDirForSides(boolean[] sides) {
         for (int i = 0; i < sides.length; i++) {
             if (sides[i]) {
-                return EnumFacing.getFront(i);
+                return EnumFacing.byIndex(i);
             }
         }
         Log.error("[ProgWidgetPlace] Sides boolean array empty!");
@@ -87,7 +87,7 @@ public class ProgWidgetPlace extends ProgWidgetDigAndPlace implements ISidedWidg
     @Override
     public void readFromNBT(NBTTagCompound tag) {
         super.readFromNBT(tag);
-        placeDir = EnumFacing.getFront(tag.getInteger("dir"));
+        placeDir = EnumFacing.byIndex(tag.getInteger("dir"));
     }
 
     @Override

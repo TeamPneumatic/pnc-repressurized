@@ -169,7 +169,7 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
 
     @Override
     public String getName() {
-        return Blockss.UV_LIGHT_BOX.getUnlocalizedName();
+        return Blockss.UV_LIGHT_BOX.getTranslationKey();
     }
 
     @Override

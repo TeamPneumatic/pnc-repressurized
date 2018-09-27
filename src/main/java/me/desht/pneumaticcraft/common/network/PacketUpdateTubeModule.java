@@ -28,7 +28,7 @@ public abstract class PacketUpdateTubeModule<REQ extends PacketUpdateTubeModule<
     @Override
     public void fromBytes(ByteBuf buffer) {
         super.fromBytes(buffer);
-        moduleSide = EnumFacing.getFront(buffer.readByte());
+        moduleSide = EnumFacing.byIndex(buffer.readByte());
     }
 
     @Override

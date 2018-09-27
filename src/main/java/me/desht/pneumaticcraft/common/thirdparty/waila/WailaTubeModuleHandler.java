@@ -39,7 +39,7 @@ public class WailaTubeModuleHandler implements IWailaDataProvider {
             NBTTagList moduleList = tubeTag.getTagList("modules", 10);
             for (int i = 0; i < moduleList.tagCount(); i++) {
                 NBTTagCompound moduleTag = moduleList.getCompoundTagAt(i);
-                if (face == EnumFacing.getFront(moduleTag.getInteger("side"))) {
+                if (face == EnumFacing.byIndex(moduleTag.getInteger("side"))) {
                     if (tube != null && tube.modules[face.ordinal()] != null) {
                         TubeModule module = tube.modules[face.ordinal()];
                         module.readFromNBT(moduleTag);

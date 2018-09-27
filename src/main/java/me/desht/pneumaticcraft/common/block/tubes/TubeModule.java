@@ -100,7 +100,7 @@ public abstract class TubeModule implements ISidedPart {
     }
 
     public void readFromNBT(NBTTagCompound nbt) {
-        dir = EnumFacing.getFront(nbt.getInteger("dir"));
+        dir = EnumFacing.byIndex(nbt.getInteger("dir"));
         upgraded = nbt.getBoolean("upgraded");
         lowerBound = nbt.getFloat("lowerBound");
         higherBound = nbt.getFloat("higherBound");
@@ -122,7 +122,7 @@ public abstract class TubeModule implements ISidedPart {
 
      @Optional.Method(modid = ModIds.FMP)
      public void readDesc(MCDataInput data){
-         dir = EnumFacing.getFront(data.readInt());
+         dir = EnumFacing.byIndex(data.readInt());
      }*/
 
     public void update() {

@@ -160,7 +160,7 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
 
     @Override
     public String getName() {
-        return Blockss.AIR_COMPRESSOR.getUnlocalizedName();
+        return Blockss.AIR_COMPRESSOR.getTranslationKey();
     }
 
     @Override

@@ -57,6 +57,6 @@ public class TileEntityCreativeCompressor extends TileEntityPneumaticBase {
 
     @Override
     public String getName() {
-        return Blockss.CREATIVE_COMPRESSOR.getUnlocalizedName();
+        return Blockss.CREATIVE_COMPRESSOR.getTranslationKey();
     }
 }

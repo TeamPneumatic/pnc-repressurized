@@ -273,7 +273,7 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
 
     @Override
     public String getName() {
-        return Blockss.PRESSURE_CHAMBER_INTERFACE.getUnlocalizedName();
+        return Blockss.PRESSURE_CHAMBER_INTERFACE.getTranslationKey();
     }
 
     @Override
@@ -352,7 +352,7 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
                     return filterEmpty;
                 case CREATIVE_TAB:
                     try {
-                        int itemCreativeTabIndex = itemStack.getItem().getCreativeTab() != null ? itemStack.getItem().getCreativeTab().getTabIndex() : -1;
+                        int itemCreativeTabIndex = itemStack.getItem().getCreativeTab() != null ? itemStack.getItem().getCreativeTab().getIndex() : -1;
                         if (itemCreativeTabIndex == creativeTabID) {
                             return true;
                         }

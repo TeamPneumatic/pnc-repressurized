@@ -49,6 +49,6 @@ public class TileEntityAdvancedAirCompressor extends TileEntityAirCompressor imp
 
     @Override
     public String getName() {
-        return Blockss.ADVANCED_AIR_COMPRESSOR.getUnlocalizedName();
+        return Blockss.ADVANCED_AIR_COMPRESSOR.getTranslationKey();
     }
 }

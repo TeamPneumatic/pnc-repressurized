@@ -21,8 +21,8 @@ public enum PressureGlassModelLoader implements ICustomModelLoader {
     @Override
     public boolean accepts(ResourceLocation modelLocation) {
         // custom baked model for the block model, but the item model will use the normal JSON model
-        return modelLocation.getResourceDomain().equals(Names.MOD_ID)
-                && "pressure_chamber_glass".equals(modelLocation.getResourcePath())
+        return modelLocation.getNamespace().equals(Names.MOD_ID)
+                && "pressure_chamber_glass".equals(modelLocation.getPath())
                 && modelLocation instanceof ModelResourceLocation
                 && !((ModelResourceLocation) modelLocation).getVariant().equals("inventory");
     }

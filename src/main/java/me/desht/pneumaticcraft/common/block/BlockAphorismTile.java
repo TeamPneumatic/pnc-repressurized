@@ -40,12 +40,12 @@ public class BlockAphorismTile extends BlockPneumaticCraft {
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
         EnumFacing dir = state.getValue(ROTATION);
         return new AxisAlignedBB(
-                dir.getFrontOffsetX() <= 0 ? 0 : 1F - BBConstants.APHORISM_TILE_THICKNESS,
-                dir.getFrontOffsetY() <= 0 ? 0 : 1F - BBConstants.APHORISM_TILE_THICKNESS,
-                dir.getFrontOffsetZ() <= 0 ? 0 : 1F - BBConstants.APHORISM_TILE_THICKNESS,
-                dir.getFrontOffsetX() >= 0 ? 1 : BBConstants.APHORISM_TILE_THICKNESS,
-                dir.getFrontOffsetY() >= 0 ? 1 : BBConstants.APHORISM_TILE_THICKNESS,
-                dir.getFrontOffsetZ() >= 0 ? 1 : BBConstants.APHORISM_TILE_THICKNESS);
+                dir.getXOffset() <= 0 ? 0 : 1F - BBConstants.APHORISM_TILE_THICKNESS,
+                dir.getYOffset() <= 0 ? 0 : 1F - BBConstants.APHORISM_TILE_THICKNESS,
+                dir.getZOffset() <= 0 ? 0 : 1F - BBConstants.APHORISM_TILE_THICKNESS,
+                dir.getXOffset() >= 0 ? 1 : BBConstants.APHORISM_TILE_THICKNESS,
+                dir.getYOffset() >= 0 ? 1 : BBConstants.APHORISM_TILE_THICKNESS,
+                dir.getZOffset() >= 0 ? 1 : BBConstants.APHORISM_TILE_THICKNESS);
     }
 
     @Nullable
@@ -56,7 +56,7 @@ public class BlockAphorismTile extends BlockPneumaticCraft {
 
     @Override
     @SideOnly(Side.CLIENT)
-    public BlockRenderLayer getBlockLayer() {
+    public BlockRenderLayer getRenderLayer() {
         return BlockRenderLayer.CUTOUT_MIPPED;
     }
 
@@ -88,7 +88,7 @@ public class BlockAphorismTile extends BlockPneumaticCraft {
                 TileEntityAphorismTile teAT = (TileEntityAphorismTile) te;
                 float yaw = entityLiving.rotationYaw; if (yaw < 0) yaw += 360;
                 teAT.textRotation = (((int) yaw + 45) / 90 + 2) % 4;
-                if (rotation.getFrontOffsetY() > 0 && (teAT.textRotation == 1 || teAT.textRotation == 3)) {
+                if (rotation.getYOffset() > 0 && (teAT.textRotation == 1 || teAT.textRotation == 3)) {
                     // fudge - reverse rotation if placing above, and player is facing on east/west axis
                     teAT.textRotation = 4 - teAT.textRotation;
                 }

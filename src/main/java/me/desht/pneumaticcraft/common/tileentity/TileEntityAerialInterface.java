@@ -238,7 +238,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
 
     @Override
     public String getName() {
-        return Blockss.AERIAL_INTERFACE.getUnlocalizedName();
+        return Blockss.AERIAL_INTERFACE.getTranslationKey();
     }
 
     @Override
@@ -345,7 +345,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
     }
 
     @Override
-    public EnumFacing getFront() {
+    public EnumFacing byIndex() {
         return getRotation();
     }
 

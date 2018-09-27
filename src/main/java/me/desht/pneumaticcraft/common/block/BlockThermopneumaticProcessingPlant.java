@@ -38,7 +38,7 @@ public class BlockThermopneumaticProcessingPlant extends BlockPneumaticCraftMode
     }
 
     @Override
-    public BlockRenderLayer getBlockLayer() {
+    public BlockRenderLayer getRenderLayer() {
         return BlockRenderLayer.CUTOUT_MIPPED;
     }
 }

@@ -40,5 +40,5 @@ public interface ISideConfigurable {
      *
      * @return the TE facing direction
      */
-    EnumFacing getFront();
+    EnumFacing byIndex();
 }

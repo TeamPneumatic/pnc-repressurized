@@ -31,8 +31,8 @@ public class ItemProgrammingPuzzle extends ItemPneumaticSubtyped {
     }
 
     @Override
-    public String getUnlocalizedName(ItemStack stack) {
-        return super.getUnlocalizedName(stack) + "." + EnumDyeColor.byDyeDamage(MathHelper.clamp(stack.getItemDamage(), 0, 15));
+    public String getTranslationKey(ItemStack stack) {
+        return super.getTranslationKey(stack) + "." + EnumDyeColor.byDyeDamage(MathHelper.clamp(stack.getItemDamage(), 0, 15));
     }
 
     @Override
@@ -55,7 +55,7 @@ public class ItemProgrammingPuzzle extends ItemPneumaticSubtyped {
 
 //    @Override
 //    public void registerItemVariants() {
-//        ResourceLocation resLoc = new ResourceLocation(Names.MOD_ID, getUnlocalizedName().substring(5));
+//        ResourceLocation resLoc = new ResourceLocation(Names.MOD_ID, getTranslationKey().substring(5));
 //        ModelBakery.registerItemVariants(this, resLoc);
 //        for (int i = 0; i < 16; i++)
 //            Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(this, i, new ModelResourceLocation(resLoc, "inventory"));

@@ -88,6 +88,6 @@ public class IGWHandler {
                 return "item/bucket";
             }
         }
-        return stack.getUnlocalizedName().replace("tile.", "block/").replace("item.", "item/");
+        return stack.getTranslationKey().replace("tile.", "block/").replace("item.", "item/");
     }
 }

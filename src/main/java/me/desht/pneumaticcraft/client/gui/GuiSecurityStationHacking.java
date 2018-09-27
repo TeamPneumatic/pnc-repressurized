@@ -58,8 +58,8 @@ public class GuiSecurityStationHacking extends GuiSecurityStationBase {
         statusStat = addAnimatedStat("Security Status", new ItemStack(Blockss.SECURITY_STATION), 0xFFFFAA00, false);
         addAnimatedStat("gui.tab.info", Textures.GUI_INFO_LOCATION, 0xFF8888FF, true).setText("gui.tab.info.tile.security_station.hacking");
         addAnimatedStat("gui.tab.upgrades", Textures.GUI_UPGRADES_LOCATION, 0xFF0000FF, true).setText("gui.tab.upgrades.tile.security_station.hacking");
-        addAnimatedStat(Itemss.NUKE_VIRUS.getUnlocalizedName() + ".name", new ItemStack(Itemss.NUKE_VIRUS), 0xFF18c9e8, false).setText("gui.tab.info.tile.security_station.nukeVirus");
-        addAnimatedStat(Itemss.STOP_WORM.getUnlocalizedName() + ".name", new ItemStack(Itemss.STOP_WORM), 0xFFc13232, false).setText("gui.tab.info.tile.security_station.stopWorm");
+        addAnimatedStat(Itemss.NUKE_VIRUS.getTranslationKey() + ".name", new ItemStack(Itemss.NUKE_VIRUS), 0xFF18c9e8, false).setText("gui.tab.info.tile.security_station.nukeVirus");
+        addAnimatedStat(Itemss.STOP_WORM.getTranslationKey() + ".name", new ItemStack(Itemss.STOP_WORM), 0xFFc13232, false).setText("gui.tab.info.tile.security_station.stopWorm");
 
         if (playerBackgroundBridges == null) {
             playerBackgroundBridges = new NetworkConnectionBackground(this, te, xStart + 21, yStart + 26, 31, 0xAA4444FF);

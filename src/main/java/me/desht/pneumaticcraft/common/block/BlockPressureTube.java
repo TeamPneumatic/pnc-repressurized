@@ -142,7 +142,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
     }
 
     @Override
-    public BlockRenderLayer getBlockLayer() {
+    public BlockRenderLayer getRenderLayer() {
         return BlockRenderLayer.CUTOUT;
     }
 
@@ -256,7 +256,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
                 setBlockBounds(tube.sidesClosed[i] ? closedBoundingBoxes[i] : boundingBoxes[i]);
                 rtr = super.collisionRayTrace(state, world, pos, origin, direction);
                 if (isCloserMOP(origin, bestRTR, rtr)) {
-                    rtr.hitInfo = new TubeHitInfo(EnumFacing.getFront(i), TubeHitInfo.PartType.TUBE);  // tube connection arm
+                    rtr.hitInfo = new TubeHitInfo(EnumFacing.byIndex(i), TubeHitInfo.PartType.TUBE);  // tube connection arm
                     bestRTR = rtr;
                     bestAABB = getBoundingBox(state, world, pos);
                 }

@@ -104,7 +104,7 @@ public class TileEntityPlasticMixer extends TileEntityTickableBase implements IH
 
     @Override
     public String getName() {
-        return Blockss.PLASTIC_MIXER.getUnlocalizedName();
+        return Blockss.PLASTIC_MIXER.getTranslationKey();
     }
 
     @Override

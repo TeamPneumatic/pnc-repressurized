@@ -39,7 +39,7 @@ public class BlockTrackEntryEndPortalFrame implements IBlockTrackEntry {
 
     @Override
     public String getEntryName() {
-        return Blocks.END_PORTAL_FRAME.getUnlocalizedName() + ".name";
+        return Blocks.END_PORTAL_FRAME.getTranslationKey() + ".name";
     }
 
 }

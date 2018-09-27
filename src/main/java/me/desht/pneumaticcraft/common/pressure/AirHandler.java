@@ -298,9 +298,9 @@ public class AirHandler implements IAirHandler {
     @Override
     public void airLeak(EnumFacing side) {
         if (getWorld().isRemote || Math.abs(getPressure()) < 0.01F) return;
-        double motionX = side.getFrontOffsetX();
-        double motionY = side.getFrontOffsetY();
-        double motionZ = side.getFrontOffsetZ();
+        double motionX = side.getXOffset();
+        double motionY = side.getYOffset();
+        double motionZ = side.getZOffset();
         if (soundCounter <= 0) {
             soundCounter = 20;
             NetworkHandler.sendToAllAround(new PacketPlaySound(Sounds.LEAKING_GAS_SOUND, SoundCategory.BLOCKS, getPos().getX(), getPos().getY(), getPos().getZ(), 0.1F, 1.0F, true), getWorld());

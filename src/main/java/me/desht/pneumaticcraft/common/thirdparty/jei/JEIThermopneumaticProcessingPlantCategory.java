@@ -21,7 +21,7 @@ public class JEIThermopneumaticProcessingPlantCategory extends PneumaticCraftCat
 
     @Override
     public String getTitle() {
-        return I18n.format(Blockss.THERMOPNEUMATIC_PROCESSING_PLANT.getUnlocalizedName() + ".name");
+        return I18n.format(Blockss.THERMOPNEUMATIC_PROCESSING_PLANT.getTranslationKey() + ".name");
     }
 
     @Override

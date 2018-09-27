@@ -213,7 +213,7 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
 
     @Override
     public String getName() {
-        return Blockss.SECURITY_STATION.getUnlocalizedName();
+        return Blockss.SECURITY_STATION.getTranslationKey();
     }
 
     @Override

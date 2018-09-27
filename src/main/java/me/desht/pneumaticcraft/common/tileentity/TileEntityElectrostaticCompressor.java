@@ -85,7 +85,7 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase i
 
     @Override
     public String getName() {
-        return Blockss.ELECTROSTATIC_COMPRESSOR.getUnlocalizedName();
+        return Blockss.ELECTROSTATIC_COMPRESSOR.getTranslationKey();
     }
 
     @Override

@@ -8,7 +8,7 @@ public class BlockFluidPneumaticCraft extends BlockFluidClassic {
 
     public BlockFluidPneumaticCraft(Fluid fluid, Material material) {
         super(fluid, material);
-        setUnlocalizedName(fluid.getName());
+        setTranslationKey(fluid.getName());
         // block registry names will be when blocks are registered in event handlers in Fluids
     }
 

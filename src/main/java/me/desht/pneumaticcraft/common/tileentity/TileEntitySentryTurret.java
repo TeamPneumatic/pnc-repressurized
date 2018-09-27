@@ -190,7 +190,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
      */
     @Override
     public String getName() {
-        return Blockss.SENTRY_TURRET.getUnlocalizedName();
+        return Blockss.SENTRY_TURRET.getTranslationKey();
     }
 
     private class TurretItemStackHandler extends FilteredItemStackHandler {

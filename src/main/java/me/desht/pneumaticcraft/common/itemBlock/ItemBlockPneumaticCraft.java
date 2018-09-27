@@ -21,7 +21,7 @@ public class ItemBlockPneumaticCraft extends ItemBlock {
             this.block = (BlockPneumaticCraft) block;
         } else {
             if (!(block instanceof BlockAir) && !(block instanceof BlockFluidBase)) {
-                Log.warning("Block " + block.getUnlocalizedName() + " does not extend BlockPneumaticCraft! No tooltip displayed");
+                Log.warning("Block " + block.getTranslationKey() + " does not extend BlockPneumaticCraft! No tooltip displayed");
             }
         }
     }
@@ -43,7 +43,7 @@ public class ItemBlockPneumaticCraft extends ItemBlock {
 //    }
 
 //    protected String getModelLocation(ItemStack stack) {
-//        return stack.getUnlocalizedName().substring(5);
+//        return stack.getTranslationKey().substring(5);
 //    }
 
 }

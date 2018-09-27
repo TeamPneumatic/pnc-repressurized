@@ -41,7 +41,7 @@ public class ProgWidgetItemInventoryCondition extends ProgWidgetCondition {
                 Set<IItemHandler> handlers = new HashSet<>();
                 for (int sideIdx = 0; sideIdx < sides.length; sideIdx++) {
                     if (sides[sideIdx]) {
-                        IItemHandler handler = IOHelper.getInventoryForTE(te, EnumFacing.getFront(sideIdx));
+                        IItemHandler handler = IOHelper.getInventoryForTE(te, EnumFacing.byIndex(sideIdx));
                         if (handler != null) handlers.add(handler);
                     }
                 }

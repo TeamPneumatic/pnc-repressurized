@@ -227,7 +227,7 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
 
     @Override
     public String getName() {
-        return Blockss.THERMOPNEUMATIC_PROCESSING_PLANT.getUnlocalizedName();
+        return Blockss.THERMOPNEUMATIC_PROCESSING_PLANT.getTranslationKey();
     }
 
     @Nonnull

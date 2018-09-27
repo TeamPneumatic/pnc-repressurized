@@ -16,14 +16,14 @@ public class BlockFluidEtchingAcid extends BlockFluidPneumaticCraft {
     public BlockFluidEtchingAcid(Fluid fluid) {
         super(fluid, new MaterialLiquid(MapColor.EMERALD) {
             @Override
-            public EnumPushReaction getMobilityFlag() {
+            public EnumPushReaction getPushReaction() {
                 return EnumPushReaction.DESTROY;
             }
         });
     }
 
     @Override
-    public void onEntityCollidedWithBlock(World world, BlockPos pos, IBlockState state, Entity entity) {
+    public void onEntityCollision(World world, BlockPos pos, IBlockState state, Entity entity) {
         if (entity instanceof EntityLivingBase && entity.ticksExisted % 10 == 0) {
             entity.attackEntityFrom(DamageSourcePneumaticCraft.ETCHING_ACID, 1);
         }

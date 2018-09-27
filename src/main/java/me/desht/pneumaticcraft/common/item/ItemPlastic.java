@@ -106,8 +106,8 @@ public class ItemPlastic extends ItemPneumaticSubtyped {
     }
 
     @Override
-    public String getUnlocalizedName(ItemStack stack) {
-        return super.getUnlocalizedName(stack) + "." + EnumDyeColor.byDyeDamage(MathHelper.clamp(stack.getItemDamage(), 0, 15));
+    public String getTranslationKey(ItemStack stack) {
+        return super.getTranslationKey(stack) + "." + EnumDyeColor.byDyeDamage(MathHelper.clamp(stack.getItemDamage(), 0, 15));
     }
 
     @Override

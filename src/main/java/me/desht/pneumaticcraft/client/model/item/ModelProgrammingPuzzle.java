@@ -121,7 +121,7 @@ public class ModelProgrammingPuzzle implements IModel {
 
         @Override
         public boolean accepts(ResourceLocation modelLocation) {
-            return modelLocation.getResourceDomain().equals(Names.MOD_ID) && modelLocation.getResourcePath().contains("programming_puzzle");
+            return modelLocation.getNamespace().equals(Names.MOD_ID) && modelLocation.getPath().contains("programming_puzzle");
         }
 
         @Override

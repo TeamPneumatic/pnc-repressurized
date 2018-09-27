@@ -308,7 +308,7 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements IR
         redstoneMode = tag.getByte("redstoneMode");
         targetRange = tag.getByte("targetRange");
         range = tag.getByte("range");
-        sideConnected = EnumFacing.getFront(tag.getByte("sideConnected"));
+        sideConnected = EnumFacing.byIndex(tag.getByte("sideConnected"));
         inventory.deserializeNBT(tag.getCompoundTag("Items"));
     }
 
@@ -372,7 +372,7 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements IR
      */
     @Override
     public String getName() {
-        return Blockss.KEROSENE_LAMP.getUnlocalizedName();
+        return Blockss.KEROSENE_LAMP.getTranslationKey();
     }
 
     public float getFuelQuality() {

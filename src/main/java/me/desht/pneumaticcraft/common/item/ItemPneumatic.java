@@ -20,7 +20,7 @@ public class ItemPneumatic extends Item {
         super();
         setCreativeTab(PneumaticCraftRepressurized.tabPneumaticCraft);
         setRegistryName(registryName);
-        setUnlocalizedName(registryName);
+        setTranslationKey(registryName);
     }
 
     @Override
@@ -31,7 +31,7 @@ public class ItemPneumatic extends Item {
     }
 
     public static void addTooltip(ItemStack stack, World world, List<String> curInfo) {
-        String info = "gui.tooltip." + stack.getUnlocalizedName();//getItem().getUnlocalizedName();
+        String info = "gui.tooltip." + stack.getTranslationKey();//getItem().getTranslationKey();
         String translatedInfo = I18n.format(info);
         if (!translatedInfo.equals(info)) {
             if (PneumaticCraftRepressurized.proxy.isSneakingInGui()) {

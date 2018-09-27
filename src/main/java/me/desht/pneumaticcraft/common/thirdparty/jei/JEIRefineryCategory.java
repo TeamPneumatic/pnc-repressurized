@@ -23,7 +23,7 @@ public class JEIRefineryCategory extends PneumaticCraftCategory<RefineryRecipeWr
 
     @Override
     public String getTitle() {
-        return I18n.format(Blockss.REFINERY.getUnlocalizedName() + ".name");
+        return I18n.format(Blockss.REFINERY.getTranslationKey() + ".name");
     }
 
     @Override

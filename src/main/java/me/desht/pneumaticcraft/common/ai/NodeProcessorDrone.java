@@ -24,7 +24,7 @@ public class NodeProcessorDrone extends FlyingNodeProcessor {
         int i = 0;
         
         for(EnumFacing dir : EnumFacing.VALUES){
-            PathPoint point = openPoint(currentPoint.x + dir.getFrontOffsetX(), currentPoint.y + dir.getFrontOffsetY(), currentPoint.z + dir.getFrontOffsetZ());
+            PathPoint point = openPoint(currentPoint.x + dir.getXOffset(), currentPoint.y + dir.getYOffset(), currentPoint.z + dir.getZOffset());
             if(point != null && !point.visited && point.distanceTo(targetPoint) < maxDistance){
                 pathOptions[i++] = point;
             }

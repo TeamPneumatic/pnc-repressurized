@@ -12,7 +12,7 @@ public class CreativeTabPneumaticCraft extends CreativeTabs {
     }
 
     @Override
-    public ItemStack getTabIconItem() {
+    public ItemStack createIcon() {
         return new ItemStack(Item.getItemFromBlock(Blockss.AIR_CANNON));
     }
 

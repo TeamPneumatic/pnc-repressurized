@@ -24,7 +24,7 @@ public class JEIUVLightBoxCategory extends JEISpecialCraftingCategory<UVLightBox
 
     @Override
     public String getTitle() {
-        return I18n.format(Blockss.UV_LIGHT_BOX.getUnlocalizedName() + ".name");
+        return I18n.format(Blockss.UV_LIGHT_BOX.getTranslationKey() + ".name");
     }
 
     @Override

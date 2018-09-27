@@ -284,7 +284,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
                 ItemStack currentStack = inventory.getStackInSlot(0);
                 int startSize = currentStack.getCount();
                 for (int i = 0; i < 6; i++) {
-                    ItemStack excess = PneumaticCraftUtils.exportStackToInventory(te, currentStack, EnumFacing.getFront(i));
+                    ItemStack excess = PneumaticCraftUtils.exportStackToInventory(te, currentStack, EnumFacing.byIndex(i));
                     inventory.setStackInSlot(0, excess);
                     if (excess.isEmpty()) break;
                 }

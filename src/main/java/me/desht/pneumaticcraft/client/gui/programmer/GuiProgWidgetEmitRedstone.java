@@ -18,7 +18,7 @@ public class GuiProgWidgetEmitRedstone extends GuiProgWidgetOptionBase<ProgWidge
         super.initGui();
 
         for (int i = 0; i < 6; i++) {
-            String sideName = PneumaticCraftUtils.getOrientationName(EnumFacing.getFront(i));
+            String sideName = PneumaticCraftUtils.getOrientationName(EnumFacing.byIndex(i));
             GuiCheckBox checkBox = new GuiCheckBox(i, guiLeft + 4, guiTop + 30 + i * 12, 0xFF404040, sideName);
             checkBox.checked = widget.getSides()[i];
             addWidget(checkBox);

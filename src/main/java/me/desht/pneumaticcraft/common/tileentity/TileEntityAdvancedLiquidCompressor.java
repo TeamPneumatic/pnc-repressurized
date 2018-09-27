@@ -40,6 +40,6 @@ public class TileEntityAdvancedLiquidCompressor extends TileEntityLiquidCompress
 
     @Override
     public String getName() {
-        return Blockss.ADVANCED_LIQUID_COMPRESSOR.getUnlocalizedName();
+        return Blockss.ADVANCED_LIQUID_COMPRESSOR.getTranslationKey();
     }
 }

@@ -30,8 +30,8 @@ public class ItemNetworkComponents extends ItemPneumaticSubtyped implements IPro
     }
 
     @Override
-    public String getUnlocalizedName(ItemStack is) {
-        return super.getUnlocalizedName(is) + is.getItemDamage();
+    public String getTranslationKey(ItemStack is) {
+        return super.getTranslationKey(is) + is.getItemDamage();
     }
 
     @Override

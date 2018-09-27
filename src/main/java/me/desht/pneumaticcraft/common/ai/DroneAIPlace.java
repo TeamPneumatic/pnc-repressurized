@@ -74,8 +74,8 @@ public class DroneAIPlace extends DroneAIBlockInteraction {
                         if (drone.world().mayPlace(block, pos, false, side, drone instanceof EntityDrone ? (EntityDrone) drone : null)) {
                             int newMeta = itemBlock.getMetadata(droneStack.getMetadata());
                             setFakePlayerAccordingToDir();
-                            IBlockState iblockstate1 = block.getStateForPlacement(drone.world(), pos, side, side.getFrontOffsetX(), side.getFrontOffsetY(), side.getFrontOffsetZ(), newMeta, drone.getFakePlayer(), EnumHand.MAIN_HAND);
-                            if (itemBlock.placeBlockAt(droneStack, drone.getFakePlayer(), drone.world(), pos, side, side.getFrontOffsetX(), side.getFrontOffsetY(), side.getFrontOffsetZ(), iblockstate1)) {
+                            IBlockState iblockstate1 = block.getStateForPlacement(drone.world(), pos, side, side.getXOffset(), side.getYOffset(), side.getZOffset(), newMeta, drone.getFakePlayer(), EnumHand.MAIN_HAND);
+                            if (itemBlock.placeBlockAt(droneStack, drone.getFakePlayer(), drone.world(), pos, side, side.getXOffset(), side.getYOffset(), side.getZOffset(), iblockstate1)) {
                                 drone.addAir(null, -PneumaticValues.DRONE_USAGE_PLACE);
                                 SoundType soundType = block.getSoundType(iblockstate1, drone.world(), pos, drone.getFakePlayer());
                                 drone.world().playSound(pos.getX() + 0.5F, pos.getY() + 0.5F, pos.getZ() + 0.5F, soundType.getPlaceSound(), SoundCategory.BLOCKS, (soundType.getVolume() + 1.0F) / 2.0F, soundType.getPitch() * 0.8F, false);

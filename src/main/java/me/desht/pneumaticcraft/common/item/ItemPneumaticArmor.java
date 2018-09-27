@@ -72,7 +72,7 @@ public class ItemPneumaticArmor extends ItemArmor
         super(COMPRESSED_IRON_MATERIAL, PneumaticCraftRepressurized.proxy.getArmorRenderID(Textures.ARMOR_PNEUMATIC), equipmentSlotIn);
 
         setRegistryName(name);
-        setUnlocalizedName(name);
+        setTranslationKey(name);
         setCreativeTab(PneumaticCraftRepressurized.tabPneumaticCraft);
     }
 
@@ -224,7 +224,7 @@ public class ItemPneumaticArmor extends ItemArmor
 
     @Override
     public String getName() {
-        return getUnlocalizedName() + ".name";
+        return getTranslationKey() + ".name";
     }
 
     @Override

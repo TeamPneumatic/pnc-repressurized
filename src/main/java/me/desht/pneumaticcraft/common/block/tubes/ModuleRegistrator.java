@@ -39,7 +39,7 @@ public class ModuleRegistrator {
             modules.put(module.getType(), moduleClass);
             ModInteractionUtils.getInstance().registerModulePart(module.getType());
             Item moduleItem = ModInteractionUtils.getInstance().getModuleItem(module.getType());
-            moduleItem.setUnlocalizedName(module.getType());
+            moduleItem.setTranslationKey(module.getType());
             Itemss.registerItem(registry, moduleItem);
             moduleItems.put(module.getType(), moduleItem);
         } catch (InstantiationException e) {

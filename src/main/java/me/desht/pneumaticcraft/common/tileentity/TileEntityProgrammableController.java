@@ -214,7 +214,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
     }
 
     @Override
-    public EnumFacing getFront() {
+    public EnumFacing byIndex() {
         return getRotation();
     }
 
@@ -257,7 +257,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
 
     @Override
     public String getName() {
-        return Blockss.PROGRAMMABLE_CONTROLLER.getUnlocalizedName();
+        return Blockss.PROGRAMMABLE_CONTROLLER.getTranslationKey();
     }
 
     @Override

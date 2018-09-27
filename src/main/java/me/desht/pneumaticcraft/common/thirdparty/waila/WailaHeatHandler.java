@@ -43,7 +43,7 @@ public class WailaHeatHandler implements IWailaDataProvider {
             NBTTagList tagList = tag.getTagList("heat", 10);
             for (int i = 0; i < tagList.tagCount(); i++) {
                 NBTTagCompound heatTag = tagList.getCompoundTagAt(i);
-                String dir = EnumFacing.getFront(heatTag.getByte("side")).toString().toLowerCase();
+                String dir = EnumFacing.byIndex(heatTag.getByte("side")).toString().toLowerCase();
                 currenttip.add(I18n.format("waila.temperature." + dir, heatTag.getInteger("temp") - 273));
             }
         } else {

@@ -187,7 +187,7 @@ public class SemiBlockManager {
         if (event.phase == TickEvent.Phase.START) return;
 
         for (ISemiBlock semiBlock : addingBlocks) {
-            Chunk chunk = semiBlock.getWorld().getChunkFromBlockCoords(semiBlock.getPos());
+            Chunk chunk = semiBlock.getWorld().getChunk(semiBlock.getPos());
             addPendingBlock(chunk, semiBlock);
             chunk.markDirty();
 
@@ -224,7 +224,7 @@ public class SemiBlockManager {
                     // chunk for the given blockpos, don't add the semiblock but leave it in the pending list
                     // and try again next tick
                     ISemiBlock semiBlock = iterator.next();
-                    Chunk chunk = semiBlock.getWorld().getChunkFromBlockCoords(semiBlock.getPos());
+                    Chunk chunk = semiBlock.getWorld().getChunk(semiBlock.getPos());
                     if (!chunk.isEmpty()) {
                         addPendingBlock(chunk, semiBlock);
                         iterator.remove();
@@ -411,7 +411,7 @@ public class SemiBlockManager {
         //Notify other semi blocks in the same pos
         World world = semiBlock.getWorld();
         BlockPos pos = semiBlock.getPos();
-        Chunk chunk = world.getChunkFromBlockCoords(pos);
+        Chunk chunk = world.getChunk(pos);
         List<ISemiBlock> currentBlocks = getOrCreateMap(chunk).get(pos);
         currentBlocks.forEach(s -> s.onSemiBlockRemovedFromThisPos(semiBlock));
         for (EntityPlayer player : syncList.get(chunk)) {
@@ -421,7 +421,7 @@ public class SemiBlockManager {
     }
 
     public void addSemiBlock(World world, BlockPos pos, ISemiBlock semiBlock) {
-        addSemiBlock(world, pos, semiBlock, world.getChunkFromBlockCoords(pos));
+        addSemiBlock(world, pos, semiBlock, world.getChunk(pos));
     }
 
     /**
@@ -460,7 +460,7 @@ public class SemiBlockManager {
 
     public Stream<ISemiBlock> getSemiBlocks(World world, BlockPos pos) {
         Stream<ISemiBlock> stream = null;
-        Chunk chunk = world.getChunkFromBlockCoords(pos);
+        Chunk chunk = world.getChunk(pos);
         Map<BlockPos, List<ISemiBlock>> map = semiBlocks.get(chunk);
         if (map != null) {
             List<ISemiBlock> semiblocks = map.get(pos);
@@ -493,7 +493,7 @@ public class SemiBlockManager {
         //Get the relevant chunks.
         for (int x = minX; x < maxX + 16; x += 16) {
             for (int z = minZ; z < maxZ + 16; z += 16) {
-                Chunk chunk = world.getChunkFromBlockCoords(new BlockPos(x, 0, z));
+                Chunk chunk = world.getChunk(new BlockPos(x, 0, z));
                 applicableChunks.add(chunk);
             }
         }

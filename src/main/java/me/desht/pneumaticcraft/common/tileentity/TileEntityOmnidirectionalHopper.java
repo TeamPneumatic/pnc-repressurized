@@ -191,8 +191,8 @@ public class TileEntityOmnidirectionalHopper extends TileEntityTickableBase impl
     @Override
     public void readFromNBT(NBTTagCompound tag) {
         super.readFromNBT(tag);
-        inputDir = EnumFacing.getFront(tag.getInteger("inputDir"));
-        outputDir = EnumFacing.getFront(tag.getInteger("outputDir"));
+        inputDir = EnumFacing.byIndex(tag.getInteger("inputDir"));
+        outputDir = EnumFacing.byIndex(tag.getInteger("outputDir"));
         redstoneMode = tag.getInteger("redstoneMode");
         leaveMaterial = tag.getBoolean("leaveMaterial");
         inventory.deserializeNBT(tag.getCompoundTag("Items"));
@@ -203,7 +203,7 @@ public class TileEntityOmnidirectionalHopper extends TileEntityTickableBase impl
      */
     @Override
     public String getName() {
-        return Blockss.OMNIDIRECTIONAL_HOPPER.getUnlocalizedName();
+        return Blockss.OMNIDIRECTIONAL_HOPPER.getTranslationKey();
     }
 
     @Override

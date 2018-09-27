@@ -86,7 +86,7 @@ public class BlockUVLightBox extends BlockPneumaticCraftModeled {
     }
 
     @Override
-    public BlockRenderLayer getBlockLayer() {
+    public BlockRenderLayer getRenderLayer() {
         return BlockRenderLayer.CUTOUT_MIPPED;
     }
 

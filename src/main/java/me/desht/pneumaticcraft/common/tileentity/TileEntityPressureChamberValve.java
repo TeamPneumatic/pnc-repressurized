@@ -281,7 +281,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
             }
         }
         for (int i = 0; i < 6; i++) {
-            if (!connected[i]) getAirHandler(null).airLeak(EnumFacing.getFront(i));
+            if (!connected[i]) getAirHandler(null).airLeak(EnumFacing.byIndex(i));
         }
     }
 
@@ -553,7 +553,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
 
     @Override
     public String getName() {
-        return Blockss.PRESSURE_CHAMBER_VALVE.getUnlocalizedName();
+        return Blockss.PRESSURE_CHAMBER_VALVE.getTranslationKey();
     }
 
     @Override

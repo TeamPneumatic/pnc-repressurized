@@ -74,9 +74,9 @@ public class HeatExchangerManager implements IHeatRegistry {
         if (block == null)
             throw new IllegalArgumentException("block is null when trying to register a heat exchanger!");
         if (block instanceof IHeatExchanger)
-            Log.warning("The block " + block.getUnlocalizedName() + " is implementing IHeatExchanger. Therefore you don't need to register it as such");
+            Log.warning("The block " + block.getTranslationKey() + " is implementing IHeatExchanger. Therefore you don't need to register it as such");
         if (specialBlockExchangers.containsKey(block)) {
-            Log.error("The block " + block.getUnlocalizedName() + " was registered as heat exchanger already! It won't be added!");
+            Log.error("The block " + block.getTranslationKey() + " was registered as heat exchanger already! It won't be added!");
         } else {
             specialBlockExchangers.put(block, heatExchanger);
         }

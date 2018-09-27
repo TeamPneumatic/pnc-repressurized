@@ -30,7 +30,7 @@ public class JEIPlasticMixerCategory extends PneumaticCraftCategory<PlasticMixer
 
     @Override
     public String getTitle() {
-        return I18n.format(Blockss.PLASTIC_MIXER.getUnlocalizedName() + ".name");
+        return I18n.format(Blockss.PLASTIC_MIXER.getTranslationKey() + ".name");
     }
 
     @Override

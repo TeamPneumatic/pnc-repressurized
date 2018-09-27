@@ -148,7 +148,7 @@ public abstract class DroneAIBlockInteraction<Widget extends ProgWidgetAreaItemB
                                     }
                                 } else {
                                     for (EnumFacing dir : EnumFacing.VALUES) {
-                                        if (drone.getPathNavigator().moveToXYZ(curPos.getX() + dir.getFrontOffsetX(), curPos.getY() + dir.getFrontOffsetY() + 0.5, curPos.getZ() + dir.getFrontOffsetZ())) {
+                                        if (drone.getPathNavigator().moveToXYZ(curPos.getX() + dir.getXOffset(), curPos.getY() + dir.getYOffset() + 0.5, curPos.getZ() + dir.getZOffset())) {
                                             searching = false;
                                             totalActions++;
                                             if (respectClaims())

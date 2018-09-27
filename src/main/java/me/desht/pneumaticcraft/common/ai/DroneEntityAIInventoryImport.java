@@ -34,7 +34,7 @@ public class DroneEntityAIInventoryImport extends DroneAIImExBase {
             if (!sides[d]) {
                 continue;
             }
-            IItemHandler inv = IOHelper.getInventoryForTE(te, EnumFacing.getFront(d));
+            IItemHandler inv = IOHelper.getInventoryForTE(te, EnumFacing.byIndex(d));
             if (inv == null) {
                 continue;
             }

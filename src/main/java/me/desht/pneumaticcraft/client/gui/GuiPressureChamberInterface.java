@@ -91,7 +91,7 @@ public class GuiPressureChamberInterface extends GuiPneumaticContainerBase<TileE
             case CREATIVE_TAB:
                 filterButton.displayString = "Creative Tab";
                 fontRenderer.drawString("Tab Name:", 106, 45, 4210752);
-                String tabName = I18n.format(CreativeTabs.CREATIVE_TAB_ARRAY[te.creativeTabID].getTranslatedTabLabel());
+                String tabName = I18n.format(CreativeTabs.CREATIVE_TAB_ARRAY[te.creativeTabID].getTabLabel());
                 if (fontRenderer.getStringWidth(tabName) > 75) {
                     while (fontRenderer.getStringWidth(tabName) > 75) {
                         tabName = tabName.substring(0, tabName.length() - 2);

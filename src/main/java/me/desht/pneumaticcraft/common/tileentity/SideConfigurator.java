@@ -172,7 +172,7 @@ public class SideConfigurator<T> implements INBTSerializable<NBTTagCompound> {
         } else if (facing == EnumFacing.DOWN) {
             return RelativeFace.BOTTOM;
         } else {
-            return facingMatrix[sideConfigurable.getFront().getHorizontalIndex()][facing.getHorizontalIndex()];
+            return facingMatrix[sideConfigurable.byIndex().getHorizontalIndex()][facing.getHorizontalIndex()];
         }
     }
 

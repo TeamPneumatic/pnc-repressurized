@@ -346,7 +346,7 @@ public class TileEntityGasLift extends TileEntityPneumaticBase implements IMinWo
      */
     @Override
     public String getName() {
-        return Blockss.GAS_LIFT.getUnlocalizedName();
+        return Blockss.GAS_LIFT.getTranslationKey();
     }
 
     @Nonnull

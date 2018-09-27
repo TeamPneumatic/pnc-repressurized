@@ -61,7 +61,7 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
 
     @Override
     public String getName() {
-        return Blockss.LIQUID_HOPPER.getUnlocalizedName();
+        return Blockss.LIQUID_HOPPER.getTranslationKey();
     }
 
     @Override

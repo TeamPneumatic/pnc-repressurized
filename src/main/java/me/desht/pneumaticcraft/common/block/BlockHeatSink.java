@@ -41,12 +41,12 @@ public class BlockHeatSink extends BlockPneumaticCraftModeled {
 
         EnumFacing dir = getRotation(source, pos);
         return new AxisAlignedBB(
-                dir.getFrontOffsetX() <= 0 ? 0 : 1F - BBConstants.HEAT_SINK_THICKNESS,
-                dir.getFrontOffsetY() <= 0 ? 0 : 1F - BBConstants.HEAT_SINK_THICKNESS,
-                dir.getFrontOffsetZ() <= 0 ? 0 : 1F - BBConstants.HEAT_SINK_THICKNESS,
-                dir.getFrontOffsetX() >= 0 ? 1 : BBConstants.HEAT_SINK_THICKNESS,
-                dir.getFrontOffsetY() >= 0 ? 1 : BBConstants.HEAT_SINK_THICKNESS,
-                dir.getFrontOffsetZ() >= 0 ? 1 : BBConstants.HEAT_SINK_THICKNESS
+                dir.getXOffset() <= 0 ? 0 : 1F - BBConstants.HEAT_SINK_THICKNESS,
+                dir.getYOffset() <= 0 ? 0 : 1F - BBConstants.HEAT_SINK_THICKNESS,
+                dir.getZOffset() <= 0 ? 0 : 1F - BBConstants.HEAT_SINK_THICKNESS,
+                dir.getXOffset() >= 0 ? 1 : BBConstants.HEAT_SINK_THICKNESS,
+                dir.getYOffset() >= 0 ? 1 : BBConstants.HEAT_SINK_THICKNESS,
+                dir.getZOffset() >= 0 ? 1 : BBConstants.HEAT_SINK_THICKNESS
         );
     }
 
@@ -70,7 +70,7 @@ public class BlockHeatSink extends BlockPneumaticCraftModeled {
     }
 
     @Override
-    public void onEntityCollidedWithBlock(World world, BlockPos pos, IBlockState state, Entity entity) {
+    public void onEntityCollision(World world, BlockPos pos, IBlockState state, Entity entity) {
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof TileEntityHeatSink && entity instanceof EntityLivingBase) {
             IHeatExchangerLogic heat = ((TileEntityHeatSink) te).getHeatExchangerLogic(null);

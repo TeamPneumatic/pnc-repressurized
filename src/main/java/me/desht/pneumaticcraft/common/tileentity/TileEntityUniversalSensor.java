@@ -347,7 +347,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
 
     @Override
     public String getName() {
-        return Blockss.UNIVERSAL_SENSOR.getUnlocalizedName();
+        return Blockss.UNIVERSAL_SENSOR.getTranslationKey();
     }
 
     @Override

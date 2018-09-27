@@ -30,7 +30,7 @@ public class JEIAssemblyControllerCategory extends PneumaticCraftCategory<JEIAss
 
     @Override
     public String getTitle() {
-        return I18n.format(Blockss.ASSEMBLY_CONTROLLER.getUnlocalizedName() + ".name");
+        return I18n.format(Blockss.ASSEMBLY_CONTROLLER.getTranslationKey() + ".name");
     }
 
     @Override
