@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.common;
+package me.desht.pneumaticcraft.common.event;
 
 import net.minecraft.entity.item.EntityFireworkRocket;
 import net.minecraft.init.Items;

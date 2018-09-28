@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.client.gui;
 
-import me.desht.pneumaticcraft.common.TickHandlerPneumaticCraft;
 import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.event.TickHandlerPneumaticCraft;
 import me.desht.pneumaticcraft.common.inventory.Container4UpgradeSlots;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElectrostaticCompressor;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;

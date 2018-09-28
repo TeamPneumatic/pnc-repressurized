@@ -1,12 +1,13 @@
 package me.desht.pneumaticcraft.api.heat;
 
+import me.desht.pneumaticcraft.api.tileentity.IHeatRegistry;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 /**
- * DO NOT IMPLEMENT THIS CLASS YOURSELF! Use PneumaticRegistry.getInstance().getHeatRegistry().getHeatExchangerLogic() !
+ * DO NOT IMPLEMENT THIS CLASS YOURSELF! Use {@link IHeatRegistry#getHeatExchangerLogic()}.
  *
  * @author MineMaarten
  *         www.minemaarten.com
@@ -35,10 +36,15 @@ public interface IHeatExchangerLogic {
     /**
      * When called, this will connect these two heat exchangers. You should only call this on one of the two heat exchangers.
      *
-     * @param exchanger
+     * @param exchanger the other heat exchanger
      */
     void addConnectedExchanger(IHeatExchangerLogic exchanger);
 
+    /**
+     * Disconnect a connected heat exchanger.
+     *
+     * @param exchanger the other heat exchanger
+     */
     void removeConnectedExchanger(IHeatExchangerLogic exchanger);
 
     /**
@@ -51,22 +57,37 @@ public interface IHeatExchangerLogic {
     double getTemperature();
 
     /**
-     * The higher the thermal resistance, the slower the heat disperses.
+     * The higher the thermal resistance, the slower the heat disperses. The effective resistance is the sum of this
+     * resistance plus the neighbour's resistance; if both exchangers have a resistance of 1, heat will equalize in
+     * a single tick under normal circumstances.
      *
-     * @param thermalResistance By default it's 1.
+     * @param thermalResistance the thermal resistance, higher resistance means slower heat transfer
      */
     void setThermalResistance(double thermalResistance);
 
+    /**
+     * Get this heat exchanger's thermal resistance.  See {@link #setThermalResistance(double)} for more information
+     * on thermal resistance.
+     *
+     * @return the thermal resistance, higher resistance means slower heat transfer
+     */
     double getThermalResistance();
 
     /**
-     * The higher the capacity, the more heat can be 'stored'. This means that an object with a high capacity can heat up an object with a lower
-     * capacity without losing any significant amount of temperature.
+     * Set this heat exchanger's thermal capacity.
+     * <p>
+     * The higher the capacity, the more heat can be 'stored'. This means that an object with a high capacity can heat
+     * up an object with a lower capacity without losing any significant amount of temperature.
      *
-     * @param capacity
+     * @param capacity the thermal capacity
      */
     void setThermalCapacity(double capacity);
 
+    /**
+     * Get this heat exchanger's thermal capacity.  See {@link #setThermalCapacity(double)} for more information.
+     *
+     * @return the thermal capacity.
+     */
     double getThermalCapacity();
 
     void writeToNBT(NBTTagCompound tag);
@@ -74,9 +95,9 @@ public interface IHeatExchangerLogic {
     void readFromNBT(NBTTagCompound tag);
 
     /**
-     * Adds heat (= deltaT * Thermal Capacity) to this exchanger. negative values will remove heat.
+     * Adds heat (= deltaT * Thermal Capacity) to this exchanger. Negative values will remove heat.
      *
-     * @param amount
+     * @param amount the heat amount
      */
     void addHeat(double amount);
 

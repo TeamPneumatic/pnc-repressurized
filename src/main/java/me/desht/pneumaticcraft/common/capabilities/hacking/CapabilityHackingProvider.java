@@ -1,18 +1,18 @@
-package me.desht.pneumaticcraft.client.render.pneumaticArmor.hacking;
+package me.desht.pneumaticcraft.common.capabilities.hacking;
 
 import me.desht.pneumaticcraft.api.hacking.IHacking;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import static me.desht.pneumaticcraft.api.hacking.CapabilityHacking.HACKING_CAPABILITY;
+
+@SuppressWarnings("ConstantConditions")
 public class CapabilityHackingProvider implements ICapabilitySerializable<NBTBase> {
-    @CapabilityInject(IHacking.class)
-    public static final Capability<IHacking> HACKING_CAPABILITY = null;
 
     private final IHacking instance = HACKING_CAPABILITY.getDefaultInstance();
 

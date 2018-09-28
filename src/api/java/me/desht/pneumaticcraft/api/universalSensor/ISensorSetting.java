@@ -19,7 +19,8 @@ public interface ISensorSetting {
     String getSensorPath();
 
     /**
-     * Should return the required items in the upgrade slots of a Universal Sensor. This will automatically include a GPS Tool for sensors that require a location.
+     * Should return the required items in the upgrade slots of a Universal Sensor. This will automatically include a
+     * GPS Tool for sensors that require a location.
      *
      * @return
      */

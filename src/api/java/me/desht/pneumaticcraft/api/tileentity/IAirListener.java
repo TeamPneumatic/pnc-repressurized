@@ -7,7 +7,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 /**
- * Optionally implement this by your TileEntity to gain more control about the pneumatics.
+ * Optionally implement this in your TileEntity to gain extra control over pneumatic behaviour.
  * This will be called by any IAirHandler that is validated through 'validate' with the implementing object as parameter.
  */
 public interface IAirListener extends IPneumaticMachine {

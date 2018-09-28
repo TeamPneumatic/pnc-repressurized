@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.proxy;
 
-import me.desht.pneumaticcraft.common.HackTickHandler;
+import me.desht.pneumaticcraft.common.event.HackTickHandler;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 

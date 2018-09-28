@@ -1,5 +1,10 @@
 package me.desht.pneumaticcraft.api.universalSensor;
 
+import me.desht.pneumaticcraft.api.PneumaticRegistry;
+
+/**
+ * Get an instance of this with {@link PneumaticRegistry.IPneumaticCraftInterface#getSensorRegistry()}.
+ */
 public interface ISensorRegistry {
     /**
      * Registry for IPollSensorSetting, EntityPollSensor and IEventSensorSetting, and any other instance of ISensorSetting.

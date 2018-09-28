@@ -1,10 +1,10 @@
-package me.desht.pneumaticcraft.common;
+package me.desht.pneumaticcraft.common.event;
 
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IHackableBlock;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IHackableEntity;
+import me.desht.pneumaticcraft.api.hacking.CapabilityHacking;
 import me.desht.pneumaticcraft.api.hacking.IHacking;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.PneumaticHelmetRegistry;
-import me.desht.pneumaticcraft.client.render.pneumaticArmor.hacking.CapabilityHackingProvider;
 import me.desht.pneumaticcraft.common.util.WorldAndCoord;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
@@ -50,8 +50,8 @@ public class HackTickHandler {
         if (event.phase == TickEvent.Phase.END) {
             try {
                 for (Entity entity : event.world.loadedEntityList) {
-                    if (entity.hasCapability(CapabilityHackingProvider.HACKING_CAPABILITY, null)) {
-                        IHacking hack = entity.getCapability(CapabilityHackingProvider.HACKING_CAPABILITY, null);
+                    if (entity.hasCapability(CapabilityHacking.HACKING_CAPABILITY, null)) {
+                        IHacking hack = entity.getCapability(CapabilityHacking.HACKING_CAPABILITY, null);
                         if (!hack.getCurrentHacks().isEmpty()) {
                             hack.update(entity);
                         }
@@ -68,8 +68,8 @@ public class HackTickHandler {
     }
 
     public void trackEntity(Entity entity, IHackableEntity iHackable) {
-        if (iHackable.getId() != null && entity.hasCapability(CapabilityHackingProvider.HACKING_CAPABILITY, null)) {
-            IHacking hack = entity.getCapability(CapabilityHackingProvider.HACKING_CAPABILITY, null);
+        if (iHackable.getId() != null && entity.hasCapability(CapabilityHacking.HACKING_CAPABILITY, null)) {
+            IHacking hack = entity.getCapability(CapabilityHacking.HACKING_CAPABILITY, null);
             hack.addHackable(iHackable);
         }
     }

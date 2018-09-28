@@ -5,38 +5,40 @@ import net.minecraft.entity.Entity;
 import java.util.List;
 
 /**
- * Implement this class and register it by adding it to the entityTrackEntries class.
- * There needs to be a parameterless constructor. For every entity that's applicable for this definition, an instance is created.
+ * Implement this class and register it with {@link IPneumaticHelmetRegistry#registerEntityTrackEntry(Class)}.
+ * Your implementation must provide a no-parameter constructor. For every entity that's applicable for this definition,
+ * an instance is created.
  */
 public interface IEntityTrackEntry {
     /**
      * Return true if you want to add a tooltip for the given entity.
      *
-     * @param entity
-     * @return
+     * @param entity the candidate entity
+     * @return true if this tracker is applicable to the given entity
      */
     boolean isApplicable(Entity entity);
 
     /**
      * Add info to the tab. This is only called when isApplicable returned true.
      *
-     * @param entity
-     * @param curInfo
+     * @param entity the tracked entity
+     * @param curInfo list of String to append information to
      */
     void addInfo(Entity entity, List<String> curInfo);
 
     /**
-     * Update is called every (client) tick, and can be used to update something like a timer (used for the Creeper countdown).
+     * Update is called every (client) tick, and can be used to update something like a timer (e.g. used for the Creeper
+     * explosion countdown).
      *
-     * @param entity
+     * @param entity the tracked entity
      */
     void update(Entity entity);
 
     /**
      * Called every render tick, this method can be used to render additional info. Used for Drone AI visualisation.
      *
-     * @param entity
-     * @param partialTicks
+     * @param entity the tracked entity
+     * @param partialTicks partial ticks since last full ticks
      */
     void render(Entity entity, float partialTicks);
 

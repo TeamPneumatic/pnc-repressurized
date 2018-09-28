@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.common;
+package me.desht.pneumaticcraft.common.event;
 
 import me.desht.pneumaticcraft.common.ai.DroneClaimManager;
 import me.desht.pneumaticcraft.common.block.Blockss;

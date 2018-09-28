@@ -1,23 +1,24 @@
 package me.desht.pneumaticcraft.api.harvesting;
 
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-
+import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
+import java.util.function.BiConsumer;
+import java.util.function.Predicate;
+
 /**
- * Registry for registering harvest handlers. Note that any subclass of {@link net.minecraft.block.BlockCrops} is supported automatically.
+ * Registry for registering harvest handlers. Note that any subclass of {@link net.minecraft.block.BlockCrops} is
+ * supported automatically. Get an instance of this with {@link PneumaticRegistry.IPneumaticCraftInterface#getHarvestRegistry()}.
  * @author MineMaarten
  *
  */
 public interface IHarvestRegistry{
     /**
      * Registers a generic harvest handler.
-     * @param harvestHandler
+     * @param harvestHandler the harvest handler to register
      */
     public void registerHarvestHandler(IHarvestHandler harvestHandler);
     

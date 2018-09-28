@@ -60,14 +60,15 @@ public abstract class HeatBehaviour<Tile extends TileEntity> {
     /**
      * Unique id for this behaviour. Used in NBT saving. I recommend prefixing it with your modid.
      *
-     * @return
+     * @return a unique ID
      */
     public abstract String getId();
 
     /**
-     * Return true when this heat behaviour is applicable for this coordinate. World access methods can be used here (getWorld(), getX(), getY(), getZ(), getBlock(), getTileEntity()).
+     * Return true when this heat behaviour is applicable for this coordinate. World access methods can be used here
+     * (getWorld(), getPos(), getBlock(), getTileEntity()).
      *
-     * @return
+     * @return true if this behaviour is applicable here
      */
     public abstract boolean isApplicable();
 

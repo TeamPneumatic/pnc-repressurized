@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.common;
+package me.desht.pneumaticcraft.common.event;
 
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUniversalSensor;
 import me.desht.pneumaticcraft.common.util.GlobalTileEntityCacheManager;

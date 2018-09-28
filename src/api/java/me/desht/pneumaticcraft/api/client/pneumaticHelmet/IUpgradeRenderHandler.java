@@ -13,15 +13,16 @@ import net.minecraft.item.Item;
 public interface IUpgradeRenderHandler {
 
     /**
-     * Return here a unique ID for the upgrade. This is displayed in the formatting [upgradeName] + " " + "found"/"not found"  on
-     * initialization of the helmet.
+     * Return here a unique ID for the upgrade. This is displayed in the formatting [upgradeName] + " " + "found"/
+     * "not found" on initialization of the helmet.
      *
-     * @return
+     * @return a unique ID
      */
     String getUpgradeName();
 
     /**
-     * Being called from PneumaticCraft's config handler, you can use this method to read settings like stat positions
+     * This is called from PneumaticCraft's config handler in the pre-init phase. You can use this method to read
+     * settings such as stat positions.
      */
     void initConfig();
 
@@ -33,49 +34,51 @@ public interface IUpgradeRenderHandler {
     void saveToConfig();
 
     /**
-     * This method will be called every client tick, and should be used to update logic like the tracking and velocities of stuff.
+     * This method will be called every client tick, and should be used to update logic like the tracking and velocities
+     * of stuff.  This is only called for the pneumatic helmet, not for other armor pieces.
      *
-     * @param player
-     * @param rangeUpgrades amount of range upgrades installed in the helmet.
+     * @param player the player wearing the pneumatic helmet
+     * @param rangeUpgrades number of range upgrades installed in the armor piece
      */
     void update(EntityPlayer player, int rangeUpgrades);
 
     /**
-     * Called in the 3D render stage (renderWorldLastEvent)
+     * Called in the 3D render stage (called from {@link net.minecraftforge.client.event.RenderWorldLastEvent})
      *
-     * @param partialTicks
+     * @param partialTicks partial ticks since last world tick
      */
     void render3D(float partialTicks);
 
     /**
-     * Called in the 2D render stage (Render Tick Handler)
+     * Called in the 2D render stage (called from {@link net.minecraftforge.fml.common.gameevent.TickEvent.RenderTickEvent})
      *
-     * @param partialTicks
-     * @param helmetEnabled is true when isEnabled() returned true earlier. Can be used to close AnimatedStats for instance.
+     * @param partialTicks partial ticks since last world tick
+     * @param helmetEnabled true when isEnabled() returned true earlier. Can be used to close AnimatedStats for instance.
      *                      However this is already handled if you return an AnimatedStat in getAnimatedStat().
      */
     void render2D(float partialTicks, boolean helmetEnabled);
 
     /**
-     * You can return a GuiAnimatedStat here, that the HUDHandler will pick up and render. It also automatically opens and closes
-     * the stat when needed. The GuiMoveStat uses this method to retrieve the to be moved stat.
+     * You can return a {@link IGuiAnimatedStat} here, that the HUD Handler will pick up and render. It also
+     * automatically opens and closes the stat as necessary. The GuiMoveStat uses this method to retrieve the to be
+     * moved stat.
      *
-     * @return null if no stat used.
+     * @return the animated stat, or null if no stat used.
      */
     IGuiAnimatedStat getAnimatedStat();
 
     /**
      * Should return the upgrades that are required to be in the helmet to enable this module.
      *
-     * @return
+     * @return an array of required items; these do not need be registered PneumaticCraft upgrades
      */
     Item[] getRequiredUpgrades();
 
     /**
      * Returns the usage in mL/tick when this upgrade handler is enabled.
      *
-     * @param rangeUpgrades amount of range upgrades installed in the helmet.
-     * @param player
+     * @param rangeUpgrades number of range upgrades installed in the armor piece
+     * @param player the player wearing the armor
      * @return usage in mL/tick
      */
     float getEnergyUsage(int rangeUpgrades, EntityPlayer player);
@@ -91,14 +94,16 @@ public interface IUpgradeRenderHandler {
      * When you do so, it will automatically get picked up by the options handler, and it will be added to the
      * options GUI when this upgrade returns true when calling isEnabled(). Returning null is valid.
      *
-     * @return
+     * @return an options page
      */
     IOptionPage getGuiOptionsPage();
 
     /**
-     * Get the minimum helmet pressure for this renderer to operate; the helmet pressure must be <i>greater</i>
+     * Get the minimum helmet pressure for this renderer to operate; the armor piece pressure must be <i>greater</i>
      * than this.  Most components require any pressure >0.0 bar.  Return any negative value for the component to
      * always render.
+     *
+     * @return the minimum required pressure
      */
     default float getMinimumPressure() {
         return 0.0f;
@@ -106,6 +111,8 @@ public interface IUpgradeRenderHandler {
 
     /**
      * Get the armor slot that this upgrade handler is attached to.
+     *
+     * @return the armor slot
      */
     EntityEquipmentSlot getEquipmentSlot();
 }

@@ -102,7 +102,6 @@ public class TileEntityRefinery extends TileEntityTickableBase
 	                        workTimer += progress;
 	                        while (workTimer >= 20 && inputTank.getFluidAmount() >= currentRecipe.input.amount) {
 	                            workTimer -= 20;
-
 	                            refine(refineries, false);
 	                            inputTank.drain(currentRecipe.input.amount, true);
 	                            for (int i = 0; i < progress; i++)

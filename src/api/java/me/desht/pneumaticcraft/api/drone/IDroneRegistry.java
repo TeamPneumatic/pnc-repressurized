@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.api.drone;
 
+import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.item.ItemStack;
@@ -7,6 +8,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 
+/**
+ * Retrieve an instance of this via {@link PneumaticRegistry.IPneumaticCraftInterface#getDroneRegistry()}.
+ */
 public interface IDroneRegistry {
     /**
      * Normally drones will pathfind through any block that doesn't have any collisions (Block#getBlocksMovement returns true).

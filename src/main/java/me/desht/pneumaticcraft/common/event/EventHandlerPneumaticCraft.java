@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.common;
+package me.desht.pneumaticcraft.common.event;
 
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.block.IPneumaticWrenchable;
@@ -12,12 +12,14 @@ import me.desht.pneumaticcraft.api.item.IPressurizable;
 import me.desht.pneumaticcraft.client.gui.widget.GuiKeybindCheckBox;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.EntityTrackUpgradeHandler;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.HUDHandler;
-import me.desht.pneumaticcraft.client.render.pneumaticArmor.hacking.CapabilityHackingProvider;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.hacking.entity.HackableEnderman;
+import me.desht.pneumaticcraft.common.DroneRegistry;
+import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.ai.EntityAINoAIWhenRidingDrone;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.capabilities.hacking.CapabilityHackingProvider;
 import me.desht.pneumaticcraft.common.config.AmadronOfferStaticConfig;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.entity.EntityProgrammableController;

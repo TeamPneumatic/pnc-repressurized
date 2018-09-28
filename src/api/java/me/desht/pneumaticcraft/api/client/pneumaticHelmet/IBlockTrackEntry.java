@@ -8,6 +8,11 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
+/**
+ * Implement this class and register it with {@link IPneumaticHelmetRegistry#registerBlockTrackEntry(IBlockTrackEntry)}.
+ * Your implementation must provide a no-parameter constructor. For every entity that's applicable for this definition,
+ * an instance is created.
+ */
 public interface IBlockTrackEntry {
     /**
      * This method should return true if the coordinate checked is one that

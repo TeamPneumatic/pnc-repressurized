@@ -16,7 +16,8 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fml.common.Loader;
 
 /**
- * This class can be used to register and access various things to and from the mod.
+ * This class can be used to register and access various things to and from the mod.  All access is via
+ * {@link PneumaticRegistry#getInstance()}
  */
 public final class PneumaticRegistry {
     private static IPneumaticCraftInterface instance;
@@ -40,6 +41,9 @@ public final class PneumaticRegistry {
         else throw new IllegalStateException("Only pneumaticcraft is allowed to call this method!");
     }
 
+    /**
+     * Retrieve an instance of this via {@link PneumaticRegistry#getInstance()}
+     */
     public interface IPneumaticCraftInterface {
 
         IPneumaticRecipeRegistry getRecipeRegistry();
@@ -60,34 +64,28 @@ public final class PneumaticRegistry {
         
         IHarvestRegistry getHarvestRegistry();
 
-        /*
-         * ---------------- Power Generation -----------
-         */
-
         /**
          * Adds a burnable liquid to the Liquid Compressor's available burnable fuels.  This also allows a bucket
-         * of that liquid to be used in furnaces, the burn time being half the mLPerBucket value.
+         * of that liquid to be used in furnaces, the burn time being half the mLPerBucket value.  Note that this
+         * can also be manipulated via CraftTweaker.
          *
-         * @param fluid the fluid
+         * @param fluid the fluid to register
          * @param mLPerBucket the amount of mL generated for 1000mB of the fuel. As comparison, one piece of coal
          *                    generates 16000mL in an Air Compressor.
          */
         void registerFuel(Fluid fluid, int mLPerBucket);
 
-        /*
-         * --------------- Misc -------------------
-         */
-
         /**
-         * Returns the number of Security Stations that disallow interaction with the given coordinate for the given player.
-         * Usually you'd disallow interaction when this returns > 0.
+         * Returns the number of Security Stations that disallow interaction with the given coordinate for the given
+         * player. Usually you'd disallow interaction when this returns > 0.
          *
-         * @param world
-         * @param pos
-         * @param player
-         * @param showRangeLines When true, any Security Station that prevents interaction will show the line grid (server --> client update is handled internally).
-         * @return The amount of Security Stations that disallow interaction for the given player.
-         * This method throws an IllegalArgumentException when tried to be called from the client side!
+         * @param world the player's world
+         * @param pos the position to check
+         * @param player the player to check
+         * @param showRangeLines when true, any Security Station that prevents interaction will show the line grid
+         *                       (server --> client update is handled internally).
+         * @return the number of Security Stations that disallow interaction for the given player.
+         * @throws IllegalArgumentException when called from the client side
          */
         int getProtectingSecurityStations(World world, BlockPos pos, EntityPlayer player, boolean showRangeLines);
 
@@ -96,15 +94,16 @@ public final class PneumaticRegistry {
          * This is used in the Aerial Interface to pump XP in/out of the player.
          *
          * @param fluid registered name of the fluid (may have been registered by another mod)
-         * @param liquidToPointRatio The amount of liquid (in mB) used to get one XP point; use a value of 0 or less to unregister this fluid
+         * @param liquidToPointRatio the amount of liquid (in mB) used to get one XP point; use a value of 0 or less to
+         *                          unregister this fluid
          */
         void registerXPLiquid(Fluid fluid, int liquidToPointRatio);
 
         /**
-         * Register this fluid as a raw input to the refinery. This methods is deprecated.
-         * You should use {@link IPneumaticRecipeRegistry#registerRefineryRecipe(net.minecraftforge.fluids.FluidStack, net.minecraftforge.fluids.FluidStack...)} instead.
+         * Register this fluid as a raw input to the refinery.
          *
          * @param fluid the fluid to register
+         * @deprecated use {@link IPneumaticRecipeRegistry#registerRefineryRecipe(net.minecraftforge.fluids.FluidStack, net.minecraftforge.fluids.FluidStack...)}
          */
         @Deprecated
         void registerRefineryInput(Fluid fluid);

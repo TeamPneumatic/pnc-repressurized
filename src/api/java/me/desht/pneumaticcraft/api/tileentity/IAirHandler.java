@@ -13,41 +13,41 @@ import java.util.List;
 
 /**
  * A way for you to access about everything you need from a pneumatic machine.
- * DO NOT IMPLEMENT THIS YOURSELF! Use AirHandlerSupplier to get an instance for your TileEntity,
- * and implement IPneumaticMachine instead.
+ * DO NOT IMPLEMENT THIS YOURSELF! Use {@link IAirHandlerSupplier} to get an instance for your TileEntity,
+ * and implement {@link IPneumaticMachine} instead.
  */
 
 public interface IAirHandler extends IManoMeasurable, IUpgradeAcceptor {
 
     /**
-     * -----------Needs to be forwarded by the implementing TileEntity's update() method.
+     * Must be forwarded by the implementing TileEntity's update() method.
      * Updates the pneumatic machine's logic like air dispersion and checking if it needs to explode.
      */
     void update();
 
     /**
-     * -----------Needs to be forwarded by the implementing TileEntity.
+     * Must be forwarded by the implementing TileEntity.
      *
      * @param tag
      */
     void readFromNBT(NBTTagCompound tag);
 
     /**
-     * -----------Needs to be forwarded by the implementing TileEntity.
+     * Must be forwarded by the implementing TileEntity.
      *
      * @param tag
      */
     void writeToNBT(NBTTagCompound tag);
 
     /**
-     * -----------Needs to be forwarded by the implementing TileEntity with itself as parameter.
+     * Must be forwarded by the implementing TileEntity with itself as parameter.
      *
      * @param parent TileEntity that is referencing this air handler.
      */
     void validate(TileEntity parent);
 
     /**
-     * -----------Needs to be forwarded from the implementing _Block_! Forward the Block's "onNeighborChange" method to this handler.
+     * Must be forwarded from the implementing _Block_! Forward the Block's "onNeighborChange" method to this handler.
      */
     void onNeighborChange();
 
@@ -83,28 +83,34 @@ public interface IAirHandler extends IManoMeasurable, IUpgradeAcceptor {
     int getVolume();
 
     /**
-     * Returns the actual pressure at which this TE will explode.
+     * Returns the actual pressure at which this TE will explode. This is a random value between the danger and critical
+     * pressure, and should generally not be reported to players!
      *
-     * @return
+     * @return the explosion pressure for the TE
      */
     float getMaxPressure();
     
     /**
      * Returns the minimal pressure this machine could explode at.
-     * @return
+     * @return the danger pressure
      */
     float getDangerPressure();
     
     /**
      * Returns the maximum pressure this machine could explode at.
-     * @return
+     * @return the critical pressure
      */
     float getCriticalPressure();
 
+    /**
+     * Get the current pressure for the machine.
+     *
+     * @return the current pressure
+     */
     float getPressure();
 
     /**
-     * Returns the amount of air (that has a relation to the pressure: air = pressure * volume)
+     * Returns the amount of air in the machine.  Note: amount of air = pressure * volume.
      *
      * @return the air in this air handler
      */

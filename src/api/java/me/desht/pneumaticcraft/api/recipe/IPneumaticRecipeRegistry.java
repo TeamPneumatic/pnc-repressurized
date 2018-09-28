@@ -1,10 +1,12 @@
 package me.desht.pneumaticcraft.api.recipe;
 
+import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
 /**
- * Interface accessed via PneumaticRegistry.getInstance().getRecipeRegistry(), used to register recipes to PneumaticCraft.
+ * Get an instance of this via {@link PneumaticRegistry.IPneumaticCraftInterface#getRecipeRegistry()}.  Note that all
+ * recipe types may also be manipulated via CraftTweaker.
  *
  * @author MineMaarten
  */

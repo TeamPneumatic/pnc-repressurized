@@ -7,7 +7,7 @@ import net.minecraft.entity.Entity;
  */
 public interface IMagnetSuppressor {
     /**
-     * Check if there is magnet-suppressor near the given entity (which is usually, but not necessarily, an
+     * Check if there is a magnet-suppressor near the given entity (which is usually, but not necessarily, an
      * EntityItem).
      *
      * @param e the entity to check

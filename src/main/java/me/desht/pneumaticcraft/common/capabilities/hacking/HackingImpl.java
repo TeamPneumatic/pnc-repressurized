@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.client.render.pneumaticArmor.hacking;
+package me.desht.pneumaticcraft.common.capabilities.hacking;
 
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IHackableEntity;
 import me.desht.pneumaticcraft.api.hacking.IHacking;

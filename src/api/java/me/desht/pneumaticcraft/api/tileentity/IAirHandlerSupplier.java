@@ -1,5 +1,10 @@
 package me.desht.pneumaticcraft.api.tileentity;
 
+import me.desht.pneumaticcraft.api.PneumaticRegistry;
+
+/**
+ * Get an instance of this with {@link PneumaticRegistry.IPneumaticCraftInterface#getAirHandlerSupplier()}.
+ */
 public interface IAirHandlerSupplier {
     IAirHandler createTierOneAirHandler(int volume);
 
