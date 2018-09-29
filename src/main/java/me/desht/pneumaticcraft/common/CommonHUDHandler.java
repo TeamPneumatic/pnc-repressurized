@@ -318,9 +318,10 @@ public class CommonHUDHandler {
                     }
                 }
                 Vec3d jetVec = lookVec.scale(-0.5);
-                for (int i = 0; i < (isJetBootsActive() ? 3 : 1); i++) {
-                    NetworkHandler.sendToAllAround(new PacketSpawnParticle(EnumParticleTypes.SMOKE_NORMAL, player.posX, player.posY, player.posZ, jetVec.x, jetVec.y, jetVec.z), player.world);
-                }
+                NetworkHandler.sendToAllAround(
+                        new PacketSpawnParticle(EnumParticleTypes.SMOKE_NORMAL, player.posX, player.posY, player.posZ,
+                                jetVec.x, jetVec.y * 0.75, jetVec.z, isJetBootsActive() ? 3 : 1, 0, 0, 0),
+                        player.world);
                 addAir(bootsStack, EntityEquipmentSlot.FEET, -jetbootsAirUsage);
             }
         }

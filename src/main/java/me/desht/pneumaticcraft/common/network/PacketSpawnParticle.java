@@ -16,6 +16,8 @@ public class PacketSpawnParticle extends LocationDoublePacket<PacketSpawnParticl
 
     private double dx, dy, dz;
     private int particleId;
+    private int numParticles;
+    private double rx, ry, rz;
 
     public PacketSpawnParticle() {
     }
@@ -26,6 +28,20 @@ public class PacketSpawnParticle extends LocationDoublePacket<PacketSpawnParticl
         this.dx = dx;
         this.dy = dy;
         this.dz = dz;
+        this.numParticles = 1;
+        this.rx = this.ry = this.rz = 0d;
+    }
+
+    public PacketSpawnParticle(EnumParticleTypes particle, double x, double y, double z, double dx, double dy, double dz, int numParticles, double rx, double ry, double rz) {
+        super(x, y, z);
+        particleId = particle.ordinal();
+        this.dx = dx;
+        this.dy = dy;
+        this.dz = dz;
+        this.numParticles = numParticles;
+        this.rx = rx;
+        this.ry = ry;
+        this.rz = rz;
     }
 
     @Override
@@ -35,6 +51,12 @@ public class PacketSpawnParticle extends LocationDoublePacket<PacketSpawnParticl
         buffer.writeDouble(dx);
         buffer.writeDouble(dy);
         buffer.writeDouble(dz);
+        buffer.writeInt(numParticles);
+        if (numParticles > 1) {
+            buffer.writeDouble(rx);
+            buffer.writeDouble(ry);
+            buffer.writeDouble(rz);
+        }
     }
 
     @Override
@@ -44,11 +66,22 @@ public class PacketSpawnParticle extends LocationDoublePacket<PacketSpawnParticl
         dx = buffer.readDouble();
         dy = buffer.readDouble();
         dz = buffer.readDouble();
+        numParticles = buffer.readInt();
+        if (numParticles > 1) {
+            rx = buffer.readDouble();
+            ry = buffer.readDouble();
+            rz = buffer.readDouble();
+        }
     }
 
     @Override
     public void handleClientSide(PacketSpawnParticle message, EntityPlayer player) {
-        player.world.spawnParticle(EnumParticleTypes.values()[message.particleId], message.x, message.y, message.z, message.dx, message.dy, message.dz);
+        for (int i = 0; i < numParticles; i++) {
+            double x = message.x + (numParticles == 1 ? 0 : player.world.rand.nextDouble() * rx);
+            double y = message.y + (numParticles == 1 ? 0 :  player.world.rand.nextDouble() * ry);
+            double z = message.z + (numParticles == 1 ? 0 : player.world.rand.nextDouble() * rz);
+            player.world.spawnParticle(EnumParticleTypes.values()[message.particleId], x, y, z, message.dx, message.dy, message.dz);
+        }
     }
 
     @Override

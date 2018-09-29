@@ -595,9 +595,11 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
 
     @Override
     public void overload(String msgKey, Object... params) {
-        for (int i = 0; i < 10; i++) {
-            NetworkHandler.sendToAllAround(new PacketSpawnParticle(EnumParticleTypes.SMOKE_LARGE, getPos().getX() + getWorld().rand.nextDouble(), getPos().getY() + 1, getPos().getZ() + getWorld().rand.nextDouble(), 0, 0, 0), getWorld());
-        }
+        NetworkHandler.sendToAllAround(
+                new PacketSpawnParticle(EnumParticleTypes.SMOKE_LARGE,
+                        getPos().getX() - 0.5, getPos().getY() + 1, getPos().getZ() - 0.5,
+                        0, 0, 0, 10, 1, 1, 1),
+                getWorld());
     }
 
     @Override

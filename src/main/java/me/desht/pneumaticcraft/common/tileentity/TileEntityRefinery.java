@@ -47,7 +47,7 @@ public class TileEntityRefinery extends TileEntityTickableBase
     @SuppressWarnings("unused")
     @DescSynced
     private int inputAmountScaled, outputAmountScaled;
-    
+
     @GuiSynced
     private int redstoneMode;
 
@@ -78,44 +78,44 @@ public class TileEntityRefinery extends TileEntityTickableBase
     @Override
     public void update() {
         super.update();
-        if (!getWorld().isRemote) {
 
-            if (isMaster()) {
-                List<TileEntityRefinery> refineries = getRefineries();
-                if (searchForRecipe) {
-                    Optional<RefineryRecipe> recipe = RefineryRecipe.getRecipe(inputTank.getFluid() != null ? inputTank.getFluid().getFluid() : null, refineries.size());
-                    currentRecipe = recipe.orElse(null);
-                    searchForRecipe = false;
-                }
-                boolean didWork = false;
-                if (currentRecipe != null) {
-                    if (prevRefineryCount != refineries.size() && refineries.size() > 1) {
-                        redistributeFluids(refineries, currentRecipe);
-                        prevRefineryCount = refineries.size();
-                    }
-
-                	if (redstoneAllows() && inputTank.getFluidAmount() >= currentRecipe.input.amount) {
-	                    if (refineries.size() > 1 && refine(refineries, true)) {
-	                        int progress = Math.max(0, ((int) heatExchanger.getTemperature() - 343) / 30);
-	                        progress = Math.min(5, progress);
-	                        heatExchanger.addHeat(-progress);
-	                        workTimer += progress;
-	                        while (workTimer >= 20 && inputTank.getFluidAmount() >= currentRecipe.input.amount) {
-	                            workTimer -= 20;
-	                            refine(refineries, false);
-	                            inputTank.drain(currentRecipe.input.amount, true);
-	                            for (int i = 0; i < progress; i++)
-	                                NetworkHandler.sendToAllAround(new PacketSpawnParticle(EnumParticleTypes.SMOKE_LARGE, getPos().getX() + getWorld().rand.nextDouble(), getPos().getY() + refineries.size(), getPos().getZ() + getWorld().rand.nextDouble(), 0, 0, 0), getWorld());
-	
-	                        }
-	                        didWork = true;
-	                    } else {
-	                        workTimer = 0;
-	                    }
-	                }
-                }
-                updateComparatorValue(refineries, didWork);
+        if (!getWorld().isRemote && isMaster()) {
+            List<TileEntityRefinery> refineries = getRefineries();
+            if (searchForRecipe) {
+                Optional<RefineryRecipe> recipe = RefineryRecipe.getRecipe(inputTank.getFluid() != null ?
+                        inputTank.getFluid().getFluid() : null, refineries.size());
+                currentRecipe = recipe.orElse(null);
+                searchForRecipe = false;
             }
+            boolean didWork = false;
+            if (currentRecipe != null) {
+                if (prevRefineryCount != refineries.size() && refineries.size() > 1) {
+                    redistributeFluids(refineries, currentRecipe);
+                    prevRefineryCount = refineries.size();
+                }
+
+                if (heatExchanger.getTemperature() >= 373 && redstoneAllows() && inputTank.getFluidAmount() >= currentRecipe.input.amount) {
+                    if (refineries.size() > 1 && refine(refineries, true)) {
+                        int progress = Math.max(0, ((int) heatExchanger.getTemperature() - 343) / 30);
+                        progress = Math.min(5, progress);
+                        heatExchanger.addHeat(-progress);
+                        workTimer += progress;
+                        while (workTimer >= 20 && inputTank.getFluidAmount() >= currentRecipe.input.amount) {
+                            workTimer -= 20;
+                            refine(refineries, false);
+                            inputTank.drain(currentRecipe.input.amount, true);
+                            NetworkHandler.sendToAllAround(new PacketSpawnParticle(EnumParticleTypes.SMOKE_LARGE,
+                                            getPos().getX(), getPos().getY() + refineries.size(), getPos().getZ(),
+                                            0, 0, 0, Math.max(2, progress), 1d, 1d, 1d),
+                                    getWorld());
+                        }
+                        didWork = true;
+                    } else {
+                        workTimer = 0;
+                    }
+                }
+            }
+            updateComparatorValue(refineries, didWork);
         }
     }
 
@@ -196,12 +196,12 @@ public class TileEntityRefinery extends TileEntityTickableBase
         		blocked = false;
         		return true;
         	}
-        	
+
             if (outputs[i].amount != refinery.outputTank.fill(outputs[i], !simulate)) {
             	blocked = true;
             	return false;
             }
-            
+
             i++;
         }
 
@@ -223,13 +223,12 @@ public class TileEntityRefinery extends TileEntityTickableBase
 
     @Override
     public boolean redstoneAllows() {
-        if (getWorld().isRemote) onNeighborBlockUpdate();
+//        if (getWorld().isRemote) onNeighborBlockUpdate();
         boolean isPoweredByRedstone = poweredRedstone > 0;
 
         TileEntityRefinery refinery = this;
-        while (poweredRedstone == 0 && refinery.getTileCache()[EnumFacing.UP.ordinal()].getTileEntity() instanceof TileEntityRefinery) {
-            refinery = (TileEntityRefinery) refinery.getTileCache()[EnumFacing.UP.ordinal()].getTileEntity();
-            refinery.onNeighborBlockUpdate();
+        while (refinery.poweredRedstone == 0 && refinery.getCachedNeighbor(EnumFacing.UP) instanceof TileEntityRefinery) {
+            refinery = (TileEntityRefinery) refinery.getCachedNeighbor(EnumFacing.UP);
             isPoweredByRedstone = refinery.poweredRedstone > 0;
         }
 
