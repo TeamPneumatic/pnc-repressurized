@@ -8,7 +8,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ### 0.8.1-??? (unreleased)
 #### Updates
-* The Advancement tree has been radically enlarged.  Many more advancements are now provided, and some give XP rewards.
+* The Advancement tree has been greatly enhancement.  Many more advancements are now available, and some give XP rewards.
 * Significant performance improvement for the Refinery: now uses far less CPU when idle, and significantly less when processing.
 * Significant performance improvement for the Pressure Chamber, which was unnecessarily recalculating recipes every tick (when it only needed to recalculate when chamber contents changed).
 * JEI now shows Heat Frame Cooling recipes (by default water bucket -> ice & lava bucket -> obsidian, but modifiable with CraftTweaker).
@@ -25,6 +25,7 @@ Changes are in reverse chronological order; newest changes at the top.
 #### Fixes
 * Pressure Chamber GUI: "Pressure" side tab now shows correct Volume information for the chamber.
 * Fixed visual bug where Pressure Tubes would appear to disconnect after a Tube Module GUI was closed.
+* Fixed not being able to manually insert oil into a Refinery by right-clicking with a fluid container in hand.
 
 ### 0.8.0-267 (17 Sep 2018)
 #### New

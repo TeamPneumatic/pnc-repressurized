@@ -31,9 +31,9 @@ public class BlockRefinery extends BlockPneumaticCraftModeled {
     public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float par7, float par8, float par9) {
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof TileEntityRefinery) {
-            // normally, activating the block should open the master TE's gui
-            // but if we activate with a fluid tank in hand (which can accept the fluid), then try to
-            // extract from the actual refinery block that was activated
+            // normally, activating the block should open the master TE's gui, but if we
+            // activate with a fluid tank in hand (which can transfer the fluid either way),
+            // then try to insert/extract on the actual refinery block that was activated
             TileEntityRefinery master = ((TileEntityRefinery) te).getMasterRefinery();
             BlockPos actualPos = master.getPos();
             IFluidHandler handler = FluidUtil.getFluidHandler(player.getHeldItem(hand));
@@ -42,7 +42,10 @@ public class BlockRefinery extends BlockPneumaticCraftModeled {
                 if (srcHandler != null) {
                     FluidStack f = FluidUtil.tryFluidTransfer(handler, srcHandler, srcHandler.getTankProperties()[0].getCapacity(), false);
                     if (f == null || f.amount == 0) {
-                        return false;
+                        f = FluidUtil.tryFluidTransfer(srcHandler, handler, handler.getTankProperties()[0].getCapacity(), false);
+                        if (f == null || f.amount == 0) {
+                            return false;
+                        }
                     } else {
                         actualPos = pos;
                     }
