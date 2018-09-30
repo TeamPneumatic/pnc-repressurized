@@ -13,7 +13,9 @@ import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
@@ -38,6 +40,9 @@ import java.util.List;
 @Optional.Interface (iface = "team.chisel.ctm.api.IFacade", modid = "ctm-api")
 public abstract class BlockPneumaticCraftCamo extends BlockPneumaticCraftModeled implements IFacade {
     public static final PropertyObject<IBlockState> CAMO_STATE = new PropertyObject<>("camo_state", IBlockState.class);
+    public static final PropertyObject<IBlockAccess> BLOCK_ACCESS = new PropertyObject<>("block_access", IBlockAccess.class);
+    public static final PropertyObject<BlockPos> BLOCK_POS = new PropertyObject<>("pos", BlockPos.class);
+    static final IUnlistedProperty[] EXTENDED_PROPS = new IUnlistedProperty[] { CAMO_STATE, BLOCK_ACCESS, BLOCK_POS };
 
     protected BlockPneumaticCraftCamo(Material par2Material, String registryName) {
         super(par2Material, registryName);
@@ -55,9 +60,8 @@ public abstract class BlockPneumaticCraftCamo extends BlockPneumaticCraftModeled
 
     @Override
     protected BlockStateContainer createBlockState() {
-        return isRotatable() ?
-                new ExtendedBlockState(this, new IProperty[] { ROTATION } , new IUnlistedProperty[] { CAMO_STATE }) :
-                new ExtendedBlockState(this, new IProperty[] { } , new IUnlistedProperty[] { CAMO_STATE });
+        IProperty[] props = isRotatable() ? new IProperty[] { ROTATION } : new IProperty[] { };
+        return new ExtendedBlockState(this, props, EXTENDED_PROPS);
     }
 
     @Override
@@ -66,15 +70,29 @@ public abstract class BlockPneumaticCraftCamo extends BlockPneumaticCraftModeled
         if (te instanceof ICamouflageableTE) {
             IBlockState camoState = ((ICamouflageableTE) te).getCamouflage();
             if (camoState != null) {
-                return ((IExtendedBlockState) state).withProperty(CAMO_STATE, camoState);
+                return ((IExtendedBlockState) state)
+                        .withProperty(BLOCK_ACCESS, world)
+                        .withProperty(BLOCK_POS, pos)
+                        .withProperty(CAMO_STATE, camoState);
             }
         }
         return state;
     }
 
     @Override
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.CUTOUT_MIPPED;
+    public void harvestBlock(World world, EntityPlayer player, BlockPos pos, IBlockState state, TileEntity te, ItemStack stack) {
+        if (te instanceof ICamouflageableTE && !player.isCreative()) {
+            // if the block is camo'd, break off the camo, but don't break the block itself
+            IBlockState camoState = ((ICamouflageableTE) te).getCamouflage();
+            if (camoState != null) {
+                ItemStack camoStack = ICamouflageableTE.getStackForState(camoState);
+                EntityItem entity = new EntityItem(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, camoStack);
+                world.spawnEntity(entity);
+                ((ICamouflageableTE) te).setCamouflage(null);
+            }
+            return;
+        }
+        super.harvestBlock(world, player, pos, state, te, stack);
     }
 
     @Override

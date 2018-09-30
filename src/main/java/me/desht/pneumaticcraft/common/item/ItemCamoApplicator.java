@@ -90,6 +90,12 @@ public class ItemCamoApplicator extends ItemPressurizable {
 
                 // return any existing camouflage on the block/TE
                 IBlockState existingCamo = ((ICamouflageableTE) te).getCamouflage();
+
+                if (existingCamo == camoState) {
+                    NetworkHandler.sendToAllAround(new PacketPlaySound(SoundEvents.BLOCK_COMPARATOR_CLICK, SoundCategory.PLAYERS, pos, 1.0F, 2.0F, false), world);
+                    return EnumActionResult.SUCCESS;
+                }
+
                 if (existingCamo != null && !player.capabilities.isCreativeMode) {
                     ItemStack camoStack = ICamouflageableTE.getStackForState(existingCamo);
                     EntityItem entity = new EntityItem(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, camoStack);

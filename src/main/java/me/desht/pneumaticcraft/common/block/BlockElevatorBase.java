@@ -15,7 +15,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.property.ExtendedBlockState;
-import net.minecraftforge.common.property.IUnlistedProperty;
 
 public class BlockElevatorBase extends BlockPneumaticCraftCamo {
 
@@ -36,7 +35,7 @@ public class BlockElevatorBase extends BlockPneumaticCraftCamo {
     protected BlockStateContainer createBlockState() {
         return new ExtendedBlockState(this,
                 new IProperty[] { BlockPneumaticCraft.NORTH, BlockPneumaticCraft.SOUTH, BlockPneumaticCraft.WEST, BlockPneumaticCraft.EAST },
-                new IUnlistedProperty[] { CAMO_STATE });
+                EXTENDED_PROPS);
     }
 
     @Override

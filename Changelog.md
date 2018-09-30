@@ -8,10 +8,23 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ### 0.8.1-??? (unreleased)
 #### Updates
+* The Advancement tree has been radically enlarged.  Many more advancements are now provided, and some give XP rewards.
+* Significant performance improvement for the Refinery: now uses far less CPU when idle, and significantly less when processing.
+* Significant performance improvement for the Pressure Chamber, which was unnecessarily recalculating recipes every tick (when it only needed to recalculate when chamber contents changed).
+* JEI now shows Heat Frame Cooling recipes (by default water bucket -> ice & lava bucket -> obsidian, but modifiable with CraftTweaker).
+* JEI now shows Pressure Chamber enchanting & disenchanting recipes.
+* Pressure Chamber now plays a quiet "pop" sound when crafting occurs (not more than once per 5 ticks, and you need to be pretty close to hear it).
+* Camouflaging updates:
+  * Connected textures are now supported!  With thanks to Botania; I figured out how to do this by looking at the Abstruse Platform code.
+  * Breaking a camouflaged block now breaks off the camouflage without breaking the underlying block.
+  * Applying the same camouflage to a block twice now just plays a click and does nothing (previously it reapplied the camo block, unnecessarily using pressure from the Camo Applicator).
 * Some JEI tweaks:
   * Added support for Heat Frame Cooling recipes (by default just lava bucket->obsidian and water bucket->ice, but recipes can be added with CraftTweaker).
   * Recipes which show a pressure gauge (Pressure Chamber, Thermopneumatic Processing Plant) now show a tooltip with the exact pressure required.
   * Thermopneumatic Processing Plant recipes (lubricant & plastic by default) which don't care about pressure no longer show the pressure gauge at all.
+#### Fixes
+* Pressure Chamber GUI: "Pressure" side tab now shows correct Volume information for the chamber.
+* Fixed visual bug where Pressure Tubes would appear to disconnect after a Tube Module GUI was closed.
 
 ### 0.8.0-267 (17 Sep 2018)
 #### New

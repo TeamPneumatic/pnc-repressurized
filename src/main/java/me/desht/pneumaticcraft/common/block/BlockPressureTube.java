@@ -29,7 +29,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.property.ExtendedBlockState;
-import net.minecraftforge.common.property.IUnlistedProperty;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.tuple.Pair;
@@ -115,7 +114,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
     protected BlockStateContainer createBlockState() {
         return new ExtendedBlockState(this,
                 Arrays.copyOf(BlockPressureTube.CONNECTION_PROPERTIES_3, BlockPressureTube.CONNECTION_PROPERTIES_3.length),
-                new IUnlistedProperty[] { CAMO_STATE });
+                EXTENDED_PROPS);
     }
 
     @Override
