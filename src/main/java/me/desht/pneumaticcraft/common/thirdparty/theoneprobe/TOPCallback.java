@@ -127,10 +127,10 @@ public class TOPCallback implements Function<ITheOneProbe, Void> {
         if (face != null) {
             TubeModule module = te.modules[face.ordinal()];
             if (module != null) {
-                IProbeInfo vert = probeInfo.vertical(new LayoutStyle().borderColor(0xFF4040FF).spacing(3));
                 List<String> currenttip = new ArrayList<>();
                 module.addInfo(currenttip);
-                for (String s : currenttip) vert.text(s);
+                IProbeInfo vert = probeInfo.vertical(new LayoutStyle().borderColor(0xFF4040FF).spacing(3));
+                currenttip.forEach(vert::text);
             }
         }
     }

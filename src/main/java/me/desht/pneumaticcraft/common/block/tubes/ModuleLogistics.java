@@ -15,7 +15,7 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemDye;
+import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -264,6 +264,8 @@ public class ModuleLogistics extends TubeModule {
             status = "waila.logisticsModule.noPower";
         }
         curInfo.add(I18n.format("hud.msg.state") + ": " + I18n.format(status));
-        curInfo.add(I18n.format("waila.logisticsModule.channel") + " " + TextFormatting.YELLOW + I18n.format("item.fireworksCharge." + ItemDye.DYE_COLORS[colorChannel]));
+        curInfo.add(I18n.format("waila.logisticsModule.channel") + " "
+                + TextFormatting.YELLOW
+                + I18n.format("item.fireworksCharge." + EnumDyeColor.byDyeDamage(colorChannel).getTranslationKey()));
     }
 }
