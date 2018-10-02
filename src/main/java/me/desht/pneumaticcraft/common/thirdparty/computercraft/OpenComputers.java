@@ -14,6 +14,8 @@ import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+
 public class OpenComputers implements IThirdParty {
     @GameRegistry.ObjectHolder("pneumaticcraft:drone_interface")
     public static final Block DRONE_INTERFACE = null;
@@ -26,7 +28,7 @@ public class OpenComputers implements IThirdParty {
     @Override
     public void preInit() {
         MinecraftForge.EVENT_BUS.register(this);
-        GameRegistry.registerTileEntity(TileEntityDroneInterface.class, "droneInterface");
+        GameRegistry.registerTileEntity(TileEntityDroneInterface.class, RL("droneInterface"));
     }
 
     @Override
