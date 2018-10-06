@@ -35,10 +35,11 @@ public class DroneInteractRFExport implements ICustomBlockInteract {
             TileEntity te = drone.world().getTileEntity(pos);
             if (te == null) return false;
             for (EnumFacing face : EnumFacing.VALUES) {
-                if (te.hasCapability(CapabilityEnergy.ENERGY, face)) {
+                if (interactHandler.isSideAccessible(face) && te.hasCapability(CapabilityEnergy.ENERGY, face)) {
                     IEnergyStorage teStorage = te.getCapability(CapabilityEnergy.ENERGY, face);
-                    int transferredEnergy = droneStorage.extractEnergy(
-                            teStorage.receiveEnergy(interactHandler.useCount() ? interactHandler.getRemainingCount() : Integer.MAX_VALUE, true), true);
+                    int receivedEnergy = teStorage.receiveEnergy(interactHandler.useCount() ?
+                            interactHandler.getRemainingCount() : Integer.MAX_VALUE, true);
+                    int transferredEnergy = droneStorage.extractEnergy(receivedEnergy, true);
                     if (transferredEnergy > 0) {
                         if (!simulate) {
                             interactHandler.decreaseCount(transferredEnergy);
