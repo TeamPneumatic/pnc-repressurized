@@ -7,7 +7,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 /**
- * DO NOT IMPLEMENT THIS CLASS YOURSELF! Use {@link IHeatRegistry#getHeatExchangerLogic()}.
+ * DO NOT IMPLEMENT THIS CLASS YOURSELF! Create an instance via {@link IHeatRegistry#getHeatExchangerLogic()}
+ * and store it as a field in your tile entity.
  *
  * @author MineMaarten
  *         www.minemaarten.com

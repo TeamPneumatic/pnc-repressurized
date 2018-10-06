@@ -7,10 +7,12 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 /**
- * Extend this class, and register it via {@link me.desht.pneumaticcraft.api.tileentity.IHeatRegistry#registerHeatBehaviour(Class heatBehaviour)}
- * This can be used to add heat dependent logic to non-TE's or blocks you don't have access to. PneumaticCraft uses this
- * to power Furnaces with heat, and to turn Lava into Obsidian when heat is drained. This only works for ticking heat
- * logic, not for static heat sources like lava blocks.
+ * Extend this class, and register it via
+ * {@link me.desht.pneumaticcraft.api.tileentity.IHeatRegistry#registerHeatBehaviour(Class heatBehaviour)}
+ * <p>
+ * This can be used to add heat dependent logic to non-TE's or blocks you don't have access to. For example,
+ * PneumaticCraft uses this to power Furnaces with heat, and to turn Lava into Obsidian when heat is drained.
+ * This only works for ticking heat logic, not for static heat sources like lava blocks.
  */
 public abstract class HeatBehaviour<Tile extends TileEntity> {
 

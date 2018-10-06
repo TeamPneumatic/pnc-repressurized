@@ -3,7 +3,10 @@ package me.desht.pneumaticcraft.api.item;
 import net.minecraft.item.ItemStack;
 
 /**
- * Any item implementing this interface will be able to (dis)charge in a Charging Station.
+ * Implement this interface on items which support the concept of pressure. Any item implementing this interface will
+ * be able to (dis)charge in a Charging Station.
+ * <p>
+ * Don't use this for tile entities - see instead {@link me.desht.pneumaticcraft.api.tileentity.IPneumaticMachine}
  */
 public interface IPressurizable {
     /**

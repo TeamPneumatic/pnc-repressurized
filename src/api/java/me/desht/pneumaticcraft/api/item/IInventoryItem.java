@@ -12,8 +12,8 @@ import java.util.List;
 public interface IInventoryItem {
 
     /**
-     * @parm stack: Item that potentially has an inventory.
-     * @parm curStacks: List of all currently added stacks for this item. Add more stacks in here in your implementation when found the right item.
+     * @param stack Item that potentially has an inventory.
+     * @param curStacks List of all currently added stacks for this item. Add more stacks in here in your implementation when found the right item.
      */
     void getStacksInItem(ItemStack stack, List<ItemStack> curStacks);
 }
