@@ -47,11 +47,13 @@ public interface IPressureChamberRecipe {
     }
 
     /**
-     * This method will be called when the recipe should output its items (after isValidRecipe returns true).
-     * the items used need to be removed from the inputStacks ItemStackHandler. The output stacks need to be returned (as theoretically the ItemStackHandler can fill up)
+     * This method will be called when the recipe should output its items (after isValidRecipe returns true).  The
+     * implementation is responsible for removing the items that have been used from the {@code chamberHandler}. Output
+     * items will be automatically placed into the {@code chamberHandler} but this implementation should also return
+     * the list of crafted items, in case they do not all fit in the pressure chamber.
      *
-     * @param chamberHandler  Items in the pressure chamber.  This can be modified to remove recipe input items.
-     * @return outputStacks The recipe result; these do not have to be copies, the Pressure Chamber will make sure they will be copied.
+     * @param chamberHandler  items in the pressure chamber; should be modified to remove recipe input items.
+     * @return the resulting items; these do not have to be copies - the Pressure Chamber itself will make sure they are copied
      */
     @Nonnull NonNullList<ItemStack> craftRecipe(@Nonnull ItemStackHandler chamberHandler);
 
