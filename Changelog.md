@@ -6,7 +6,11 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
-### 0.8.1-272 (6 Oct 2018)
+### 0.8.2-??? (unreleased)
+#### Updates
+#### Fixes
+
+### 0.8.1-274 (8 Oct 2018)
 #### Updates
 * The Advancement tree has been greatly expanded.  Many many more advancements are now available, and some give XP rewards.
 * Significant performance improvement for the Refinery: now uses far less CPU when idle, and significantly less when processing.
