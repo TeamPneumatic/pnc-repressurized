@@ -5,7 +5,6 @@ import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
-import me.desht.pneumaticcraft.common.util.ItemStackHandlerIterable;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Sounds;
@@ -154,7 +153,8 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
 
     private void importFromChamber(TileEntityPressureChamberValve core) {
         ItemStackHandler chamberStacks = core.getStacksInChamber();
-        for (ItemStack chamberStack : new ItemStackHandlerIterable(chamberStacks)) {
+        for (int i = 0; i < chamberStacks.getSlots(); i++) {
+            ItemStack chamberStack = chamberStacks.getStackInSlot(i);
             if (chamberStack.isEmpty()) {
                 continue;
             }
@@ -174,7 +174,7 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
                         core.addAir((core.getAirHandler(null).getAir() > 0 ? -1 : 1) * transferredItems * PneumaticValues.USAGE_CHAMBER_INTERFACE);
                         toTransferStack.setCount(transferredItems);
                         inventory.insertItem(0, toTransferStack, false);
-                        chamberStack.shrink(transferredItems);
+                        chamberStacks.extractItem(i, transferredItems, false);
                     }
                 }
             }

@@ -8,7 +8,9 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ### 0.8.2-??? (unreleased)
 #### Updates
+* Client-side rendering performance improvement when highlighting camouflageable blocks (while holding the Camouflage Applicator)
 #### Fixes
+* Fixed an item dupe in the pressure chamber under some fairly specific circumstances (related to performance improvements in 0.8.1)
 
 ### 0.8.1-274 (8 Oct 2018)
 #### Updates
