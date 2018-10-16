@@ -4,7 +4,6 @@ import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.fluid.Fluids;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
-import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.ModIds;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.Fluid;
@@ -40,17 +39,8 @@ public class EnderIO implements IThirdParty {
 
     @Override
     public void postInit() {
-        registerEnderIOFuel("hootch", 60 * 6000);
-        registerEnderIOFuel("rocket_fuel", 160 * 7000);
-        registerEnderIOFuel("fire_water", 80 * 15000);
-    }
-
-    private void registerEnderIOFuel(String fluidName, int value) {
-        Fluid fluid = FluidRegistry.getFluid(fluidName);
-        if (fluid == null) {
-            Log.warning("Couldn't find EnderIO fuel fluid '" + fluidName + "'.  Has it been registered as a fuel?");
-        } else {
-            PneumaticRegistry.getInstance().registerFuel(fluid, value);
-        }
+        IThirdParty.registerFuel("hootch", "EnderIO", 60 * 6000);
+        IThirdParty.registerFuel("rocket_fuel", "EnderIO",160 * 7000);
+        IThirdParty.registerFuel("fire_water", "EnderIO",80 * 15000);
     }
 }

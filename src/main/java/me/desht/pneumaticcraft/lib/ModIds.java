@@ -20,4 +20,5 @@ public class ModIds {
     public static final String CRAFTTWEAKER = "crafttweaker";
     public static final String IMMERSIVEENGINEERING = "immersiveengineering";
     public static final String BOTANIA = "botania";
+    public static final String IMMERSIVE_PETROLEUM = "immersivepetroleum";
 }
