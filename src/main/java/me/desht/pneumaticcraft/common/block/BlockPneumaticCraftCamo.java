@@ -89,8 +89,8 @@ public abstract class BlockPneumaticCraftCamo extends BlockPneumaticCraftModeled
                 EntityItem entity = new EntityItem(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, camoStack);
                 world.spawnEntity(entity);
                 ((ICamouflageableTE) te).setCamouflage(null);
+                return;
             }
-            return;
         }
         super.harvestBlock(world, player, pos, state, te, stack);
     }
