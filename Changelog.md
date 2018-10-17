@@ -9,8 +9,10 @@ Changes are in reverse chronological order; newest changes at the top.
 ### 0.8.2-??? (unreleased)
 #### Updates
 * Client-side rendering performance improvement when highlighting camouflageable blocks (while holding the Camouflage Applicator)
+* Immersive Petroleum Gasoline is now usable as a fuel in Liquid Compressors; quality is equivalent to PneumaticCraft Gasoline
 #### Fixes
 * Fixed an item dupe in the pressure chamber under some fairly specific circumstances (related to performance improvements in 0.8.1)
+* Fixed camouflageable blocks not being breakable with a pick (only a wrench) - related to camouflage updates in 0.8.1
 
 ### 0.8.1-274 (8 Oct 2018)
 #### Updates
