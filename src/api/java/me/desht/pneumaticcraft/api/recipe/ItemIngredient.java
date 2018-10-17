@@ -41,7 +41,11 @@ public class ItemIngredient {
     }
 
     public NonNullList<ItemStack> getStacks() {
-        return oredictKey != null ? OreDictionary.getOres(oredictKey) : NonNullList.from(ItemStack.EMPTY, stack);
+        NonNullList<ItemStack> res = oredictKey != null ? OreDictionary.getOres(oredictKey) : NonNullList.from(ItemStack.EMPTY, stack);
+        if (oredictKey != null) {
+            res.forEach(stack -> stack.setCount(amount));
+        }
+        return res;
     }
 
     public int getItemAmount() {
