@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.api.item.IPressurizable;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.api.tileentity.IPneumaticMachine;
+import me.desht.pneumaticcraft.common.block.BlockPressureTube;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerManager;
 import me.desht.pneumaticcraft.common.item.ItemCamoApplicator;
@@ -123,15 +124,13 @@ public class TOPCallback implements Function<ITheOneProbe, Void> {
         }
     }
 
-    public static void handlePressureTube(ProbeMode mode, IProbeInfo probeInfo, TileEntityPressureTube te, EnumFacing face) {
-        if (face != null) {
-            TubeModule module = te.modules[face.ordinal()];
-            if (module != null) {
-                List<String> currenttip = new ArrayList<>();
-                module.addInfo(currenttip);
-                IProbeInfo vert = probeInfo.vertical(new LayoutStyle().borderColor(0xFF4040FF).spacing(3));
-                currenttip.forEach(vert::text);
-            }
+    public static void handlePressureTube(ProbeMode mode, IProbeInfo probeInfo, TileEntityPressureTube te, EnumFacing face, EntityPlayer player) {
+        TubeModule module = BlockPressureTube.getLookedModule(te.getWorld(), te.getPos(), player);//te.modules[face.ordinal()];
+        if (module != null) {
+            List<String> currenttip = new ArrayList<>();
+            module.addInfo(currenttip);
+            IProbeInfo vert = probeInfo.vertical(new LayoutStyle().borderColor(0xFF4040FF).spacing(3));
+            currenttip.forEach(vert::text);
         }
     }
 

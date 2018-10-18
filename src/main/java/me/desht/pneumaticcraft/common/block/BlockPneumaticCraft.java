@@ -490,7 +490,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
             TOPCallback.handleRedstoneMode(mode, probeInfo, (TileEntityBase) te);
         }
         if (te instanceof TileEntityPressureTube) {
-            TOPCallback.handlePressureTube(mode, probeInfo, (TileEntityPressureTube) te, data.getSideHit());
+            TOPCallback.handlePressureTube(mode, probeInfo, (TileEntityPressureTube) te, data.getSideHit(), player);
         }
     }
 }

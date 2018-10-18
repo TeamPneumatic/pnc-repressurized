@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.thirdparty.waila;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 import mcp.mobius.waila.api.IWailaDataProvider;
+import me.desht.pneumaticcraft.common.block.BlockPressureTube;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -35,16 +36,16 @@ public class WailaTubeModuleHandler implements IWailaDataProvider {
     }
 
     private static void addModuleInfo(List<String> currenttip, TileEntityPressureTube tube, NBTTagCompound tubeTag, EnumFacing face) {
-        if (face != null) {
-            NBTTagList moduleList = tubeTag.getTagList("modules", 10);
-            for (int i = 0; i < moduleList.tagCount(); i++) {
-                NBTTagCompound moduleTag = moduleList.getCompoundTagAt(i);
-                if (face == EnumFacing.byIndex(moduleTag.getInteger("side"))) {
-                    if (tube != null && tube.modules[face.ordinal()] != null) {
-                        TubeModule module = tube.modules[face.ordinal()];
-                        module.readFromNBT(moduleTag);
-                        module.addInfo(currenttip);
-                    }
+        NBTTagList moduleList = tubeTag.getTagList("modules", 10);
+        int side = tubeTag.getInteger("lookedSide");
+        for (int i = 0; i < moduleList.tagCount(); i++) {
+            NBTTagCompound moduleTag = moduleList.getCompoundTagAt(i);
+            if (side == moduleTag.getInteger("side")) {
+                TubeModule module = tube.modules[side];
+                if (module != null) {
+                    module.readFromNBT(moduleTag);
+                    module.addInfo(currenttip);
+                    break;
                 }
             }
         }
@@ -58,7 +59,11 @@ public class WailaTubeModuleHandler implements IWailaDataProvider {
     @Override
     public NBTTagCompound getNBTData(EntityPlayerMP player, TileEntity te, NBTTagCompound tag, World world, BlockPos pos) {
         if (te instanceof TileEntityPressureTube) {
+            TubeModule module = BlockPressureTube.getLookedModule(world, pos, player);
             ((TileEntityPressureTube) te).writeModulesToNBT(tag);
+            if (module != null) {
+                tag.setInteger("lookedSide", module.getDirection().getIndex());
+            }
         }
         return tag;
     }
