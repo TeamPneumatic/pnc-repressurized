@@ -19,12 +19,14 @@ public class RenderPressureChamber extends TileEntitySpecialRenderer<TileEntityP
     @Override
     public void render(TileEntityPressureChamberValve te, double x, double y, double z, float partialTicks, int destroyStage, float alpha){
 
+        if (te.multiBlockSize == 0 || !te.hasGlass) return;
+
         List<ItemStack> stacks = new ItemStackHandlerIterable(te.getStacksInChamber())
                                         .stream()
                                         .filter(stack -> !stack.isEmpty())
                                         .collect(Collectors.toList());
         
-        if(!stacks.isEmpty()){
+        if (!stacks.isEmpty()){
             x += te.multiBlockX - te.getPos().getX() + te.multiBlockSize / 2D;
             y += te.multiBlockY - te.getPos().getY() + 1.1; //Set to '+ 1' for normal y value.
             z += te.multiBlockZ - te.getPos().getZ() + te.multiBlockSize / 2D;
