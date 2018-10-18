@@ -9,6 +9,6 @@ With one or more Magnet Upgrades installed, nearby items will be attracted to yo
 The Magnet Upgrade respects Botania's Solegnolia flower, and will also not attempt to pull items from Immersive Engineering conveyor belts.
 
 [prefix{l}]Charging Upgrade[prefix{}]
-With one or more Charging Upgrades installed, the chestplate gains the ability to pressurize any other pneumatic item in your inventory, both worn and carried.  The chestplate will only charge items up to its own pressure level.  Adding extra Charging Upgrades (up to 6) increase the charging rate.
+With one or more Charging Upgrades installed, the chestplate gains the ability to pressurize any other pneumatic item in your inventory, both worn and carried.  The chestplate will only charge items up to its own pressure level.  Adding extra Charging Upgrades (up to 6) increases the charging rate.
 
 This works exceptionally well if many Volume Upgrades are also installed in the chestplate; until an Aerial Interface is available, this is the best way of keeping the armor running for extended periods.
