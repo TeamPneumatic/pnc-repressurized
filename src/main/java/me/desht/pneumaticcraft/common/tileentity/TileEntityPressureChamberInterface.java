@@ -29,6 +29,7 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
     public static final int MAX_PROGRESS = 40;
     public static final int INVENTORY_SIZE = 1;
     private static final int FILTER_SIZE = 9;
+    private static final int MIN_SOUND_INTERVAL = 500;  // ticks - the sound effect is ~2.5s long
 
     @DescSynced
     private final PressureChamberInterfaceHandler inventory = new PressureChamberInterfaceHandler();
@@ -50,6 +51,7 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
     public String itemNameFilter = "";
     private boolean isOpeningI; // used to determine sounds.
     private boolean isOpeningO; // used to determine sounds.
+    private int soundTimer;
     @DescSynced
     private boolean shouldOpenInput, shouldOpenOutput;
     @GuiSynced
@@ -135,8 +137,9 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
             isOpeningO = false;
         }
 
-        if (getWorld().isRemote && (wasOpeningI != isOpeningI || wasOpeningO != isOpeningO)) {
-            getWorld().playSound(getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5, Sounds.INTERFACE_DOOR, SoundCategory.BLOCKS, 0.1F, 1.0F, true);
+        if (getWorld().isRemote && soundTimer++ >= MIN_SOUND_INTERVAL && (wasOpeningI != isOpeningI || wasOpeningO != isOpeningO)) {
+            getWorld().playSound(getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5, Sounds.INTERFACE_DOOR, SoundCategory.BLOCKS, 0.5F, 1.0F, true);
+            soundTimer = 0;
         }
     }
 
@@ -183,7 +186,7 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
 
     private void outputInChamber() {
         // place items from the interface block into the pressure chamber
-        // all items in the interface will be moved at once, but the pressure chamber must have enough presure to do so
+        // all items in the interface will be moved at once, but the pressure chamber must have enough pressure to do so
         TileEntityPressureChamberValve valve = getCore();
         if (valve != null) {
             ItemStack inputStack = inventory.getStackInSlot(0);
