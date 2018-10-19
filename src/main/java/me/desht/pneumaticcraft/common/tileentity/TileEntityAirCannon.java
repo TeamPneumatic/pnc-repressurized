@@ -2,9 +2,9 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.common.block.Blockss;
-import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaConstant;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethod;
@@ -32,6 +32,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraftforge.items.IItemHandler;
@@ -42,7 +43,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.util.*;
 import java.util.Map.Entry;
 
-public class TileEntityAirCannon extends TileEntityPneumaticBase implements IMinWorkingPressure, IRedstoneControl {
+public class TileEntityAirCannon extends TileEntityPneumaticBase
+        implements IMinWorkingPressure, IRedstoneControl, IGUIButtonSensitive {
 
     private static final List<String> REDSTONE_LABELS = ImmutableList.of(
             "gui.tab.redstoneBehaviour.airCannon.button.highSignalAndAngle",
@@ -50,7 +52,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements IMin
             "gui.tab.redstoneBehaviour.airCannon.button.highAndSpace"
     );
 
-    private AirCannonStackHandler inventory;
+    private final AirCannonStackHandler inventory = new AirCannonStackHandler();
     private final Random rand = new Random();
     @DescSynced
     @LazySynced
@@ -58,10 +60,12 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements IMin
     @DescSynced
     @LazySynced
     public float heightAngle;
+    @GuiSynced
+    public int forceMult = 100; // percentage force multiplier
     @DescSynced
-    public float targetRotationAngle;
+    private float targetRotationAngle;
     @DescSynced
-    public float targetHeightAngle;
+    private float targetHeightAngle;
     @GuiSynced
     public boolean doneTurning = false;
     @GuiSynced
@@ -83,53 +87,72 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements IMin
     private EnumFacing lastInsertingInventorySide;
     @GuiSynced
     public boolean insertingInventoryHasSpace = true;
+    private boolean gpsSlotChanged = true;
 
     private static final int INVENTORY_SIZE = 2;
-    public static final int CANNON_SLOT = 0;
-    public static final int GPS_SLOT = 1;
+    private static final int CANNON_SLOT = 0;
+    private static final int GPS_SLOT = 1;
 
     public TileEntityAirCannon() {
         super(PneumaticValues.DANGER_PRESSURE_AIR_CANNON, PneumaticValues.MAX_PRESSURE_AIR_CANNON, PneumaticValues.VOLUME_AIR_CANNON, 4);
-        inventory = new AirCannonStackHandler();
         addApplicableUpgrade(EnumUpgrade.RANGE, EnumUpgrade.SPEED, EnumUpgrade.DISPENSER, EnumUpgrade.ENTITY_TRACKER, EnumUpgrade.BLOCK_TRACKER, EnumUpgrade.ITEM_LIFE);
     }
 
     @Override
     public void update() {
-        // GPS Tool read
-        ItemStack gpsStack = inventory.getStackInSlot(GPS_SLOT);
-        if (gpsStack.getItem() == Itemss.GPS_TOOL && !externalControl) {
-            NBTTagCompound gpsTag = gpsStack.getTagCompound();
-            if (gpsTag != null) {
-                int destinationX = gpsTag.getInteger("x");
-                int destinationY = gpsTag.getInteger("y");
-                int destinationZ = gpsTag.getInteger("z");
-                if (destinationX != gpsX || destinationY != gpsY || destinationZ != gpsZ) {
-                    gpsX = destinationX;
-                    gpsY = destinationY;
-                    gpsZ = destinationZ;
-                    updateDestination();
-                }
-            }
+        boolean destUpdateNeeded = false;
+
+        if (gpsSlotChanged) {
+            destUpdateNeeded = checkGPSSlot();
+            gpsSlotChanged = false;
         }
 
         int curRangeUpgrades = Math.min(8, getUpgrades(EnumUpgrade.RANGE));
         if (curRangeUpgrades != oldRangeUpgrades) {
             oldRangeUpgrades = curRangeUpgrades;
-            if (!externalControl) updateDestination();
+            if (!externalControl) destUpdateNeeded = true;
         }
 
-        if (getWorld().getTotalWorldTime() % 40 == 0) {
-            boolean isDispenserUpgradeInserted = getUpgrades(EnumUpgrade.DISPENSER) > 0;
-            boolean isEntityTrackerUpgradeInserted = getUpgrades(EnumUpgrade.ENTITY_TRACKER) > 0;
-            if (dispenserUpgradeInserted != isDispenserUpgradeInserted || entityUpgradeInserted != isEntityTrackerUpgradeInserted) {
-                dispenserUpgradeInserted = isDispenserUpgradeInserted;
-                entityUpgradeInserted = isEntityTrackerUpgradeInserted;
-                updateDestination();
+        boolean isDispenserUpgradeInserted = getUpgrades(EnumUpgrade.DISPENSER) > 0;
+        boolean isEntityTrackerUpgradeInserted = getUpgrades(EnumUpgrade.ENTITY_TRACKER) > 0;
+        if (dispenserUpgradeInserted != isDispenserUpgradeInserted || entityUpgradeInserted != isEntityTrackerUpgradeInserted) {
+            dispenserUpgradeInserted = isDispenserUpgradeInserted;
+            entityUpgradeInserted = isEntityTrackerUpgradeInserted;
+            destUpdateNeeded = true;
+        }
+
+        if (destUpdateNeeded) updateDestination();
+        updateRotationAngles();
+        updateTrackedItems();
+
+        super.update();
+
+        if (!getWorld().isRemote) {
+            List<Pair<EnumFacing, IAirHandler>> teList = getAirHandler(null).getConnectedPneumatics();
+            if (teList.size() == 0) getAirHandler(null).airLeak(getRotation());
+        }
+    }
+
+    private boolean checkGPSSlot() {
+        ItemStack gpsStack = inventory.getStackInSlot(GPS_SLOT);
+        if (gpsStack.getItem() instanceof IPositionProvider && !externalControl) {
+            List<BlockPos> posList = ((IPositionProvider) gpsStack.getItem()).getStoredPositions(gpsStack);
+            if (posList != null && !posList.isEmpty()) {
+                int destinationX = posList.get(0).getX();
+                int destinationY = posList.get(0).getY();
+                int destinationZ = posList.get(0).getZ();
+                if (destinationX != gpsX || destinationY != gpsY || destinationZ != gpsZ) {
+                    gpsX = destinationX;
+                    gpsY = destinationY;
+                    gpsZ = destinationZ;
+                    return true;
+                }
             }
         }
+        return false;
+    }
 
-        // update angles
+    private void updateRotationAngles() {
         doneTurning = true;
         float speedMultiplier = getSpeedMultiplierFromUpgrades();
         if (rotationAngle < targetRotationAngle) {
@@ -167,15 +190,6 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements IMin
             }
             if (heightAngle < targetHeightAngle) heightAngle = targetHeightAngle;
             doneTurning = false;
-        }
-
-        updateTrackedItems();
-
-        super.update();
-
-        if (!getWorld().isRemote) {
-            List<Pair<EnumFacing, IAirHandler>> teList = getAirHandler(null).getConnectedPneumatics();
-            if (teList.size() == 0) getAirHandler(null).airLeak(getRotation());
         }
     }
 
@@ -232,7 +246,6 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements IMin
         double payloadFrictionX = 0.98D;
         double payloadGravity = 0.04D;
         if (getUpgrades(EnumUpgrade.ENTITY_TRACKER) > 0) {
-            payloadFrictionY = 0.98D;
             payloadFrictionX = 0.91D;
             payloadGravity = 0.08D;
         } else if (getUpgrades(EnumUpgrade.DISPENSER) > 0 && !inventory.getStackInSlot(CANNON_SLOT).isEmpty()) {
@@ -245,10 +258,9 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements IMin
                 payloadGravity = 0.05D;
             } else if (item == Items.MINECART || item == Items.CHEST_MINECART || item == Items.HOPPER_MINECART || item == Items.TNT_MINECART || item == Items.FURNACE_MINECART) {
                 payloadFrictionY = 0.95D;
+            } else if (item == Items.FIREWORK_CHARGE) {
+                payloadGravity = 0;
             }
-            // else if(itemID == Item.fireballCharge.itemID){
-            // payloadGravity = 0.0D;
-            // }
 
             // family items (throwable) which only differ in gravity.
             if (item == Items.POTIONITEM) {
@@ -302,9 +314,9 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements IMin
         // simulate the trajectory for angles from 45 to 90 degrees,
         // returning the angle which lands the projectile closest to the target distance
 //        for (double i = Math.PI * 0.25D; i < Math.PI * 0.50D; i += 0.001D) {
-        for (double i = Math.PI * 0.1D; i < Math.PI * 0.5D; i += 0.001D) {
-            double motionX = Math.cos(i) * force;// calculate the x component of the vector
-            double motionY = Math.sin(i) * force;// calculate the y component of the vector
+        for (double i = Math.PI * 0.01D; i < Math.PI * 0.5D; i += 0.01D) {
+            double motionX = MathHelper.cos((float) i) * force;// calculate the x component of the vector
+            double motionY = MathHelper.sin((float) i) * force;// calculate the y component of the vector
             double posX = 0;
             double posY = 0;
             while (posY > deltaY || motionY > 0) { // simulate movement, until we reach the y-level required
@@ -334,17 +346,16 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements IMin
     // the needed, and outputs the X, Y and Z velocities.
     private double[] getVelocityVector(float angleX, float angleZ, float force) {
         double[] velocities = new double[3];
-        velocities[0] = Math.sin((double) angleZ / 180 * Math.PI);
-        velocities[1] = Math.cos((double) angleX / 180 * Math.PI);
-        velocities[2] = Math.cos((double) angleZ / 180 * Math.PI) * -1;
+        velocities[0] = MathHelper.sin(angleZ / 180f * (float) Math.PI);
+        velocities[1] = MathHelper.cos(angleX / 180f * (float) Math.PI);
+        velocities[2] = MathHelper.cos(angleZ / 180f * (float) Math.PI) * -1;
+        velocities[0] *= MathHelper.sin(angleX / 180f * (float) Math.PI);
+        velocities[2] *= MathHelper.sin(angleX / 180f * (float) Math.PI);
 
-        velocities[0] *= Math.sin((double) angleX / 180 * Math.PI);
-        velocities[2] *= Math.sin((double) angleX / 180 * Math.PI);
         // calculate the total velocity vector, in relation.
         double vectorTotal = velocities[0] * velocities[0] + velocities[1] * velocities[1] + velocities[2] * velocities[2];
-        vectorTotal = force / vectorTotal; // calculate the relation between the
-        // forces to be shot, and the
-        // calculated vector (the scale).
+        // calculate the relation between the forces to be shot, and the calculated vector (the scale).
+        vectorTotal = force / vectorTotal;
         for (int i = 0; i < 3; i++) {
             velocities[i] *= vectorTotal; // scale up the velocities
             // System.out.println("velocities " + i + " = " + velocities[i]);
@@ -364,7 +375,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements IMin
     }
 
     public float getForce() {
-        return 0.5F + oldRangeUpgrades / 2f;
+        return ((0.5F + oldRangeUpgrades / 2f) * forceMult) / 100;
     }
 
     @Override
@@ -384,8 +395,8 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements IMin
         gpsZ = tag.getInteger("gpsZ");
         redstoneMode = tag.getByte("redstoneMode");
         coordWithinReach = tag.getBoolean("targetWithinReach");
-        inventory = new AirCannonStackHandler();
         inventory.deserializeNBT(tag.getCompoundTag("Items"));
+        forceMult = tag.getInteger("forceMult");
 
         trackedItemIds = new HashSet<>();
         NBTTagList tagList = tag.getTagList("trackedItems", Constants.NBT.TAG_COMPOUND);
@@ -416,6 +427,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements IMin
         tag.setByte("redstoneMode", (byte) redstoneMode);
         tag.setBoolean("targetWithinReach", coordWithinReach);
         tag.setTag("Items", inventory.serializeNBT());
+        tag.setInteger("forceMult", forceMult);
 
         NBTTagList tagList = new NBTTagList();
         for (EntityItem entity : trackedItems) {
@@ -437,23 +449,52 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements IMin
         return tag;
     }
 
-    private static class AirCannonStackHandler extends FilteredItemStackHandler {
+    private class AirCannonStackHandler extends FilteredItemStackHandler {
         AirCannonStackHandler() {
             super(INVENTORY_SIZE);
         }
 
         @Override
         public boolean test(Integer slot, ItemStack itemStack) {
-            return !(slot == GPS_SLOT && !itemStack.isEmpty() && itemStack.getItem() != Itemss.GPS_TOOL);
+            if (slot == GPS_SLOT) {
+                return itemStack.isEmpty() || itemStack.getItem() instanceof IPositionProvider;
+            } else {
+                return true;
+            }
+//            return !(slot == GPS_SLOT && !itemStack.isEmpty() && itemStack.getItem() != Itemss.GPS_TOOL);
+        }
+
+        @Override
+        protected void onContentsChanged(int slot) {
+            super.onContentsChanged(slot);
+            if (slot == GPS_SLOT) {
+                gpsSlotChanged = true;
+            }
         }
     }
 
     @Override
     public void handleGUIButtonPress(int buttonID, EntityPlayer player) {
-        if (buttonID == 0) {
-            if (++redstoneMode > 2) redstoneMode = 0;
-            if (redstoneMode == 2 && getUpgrades(EnumUpgrade.BLOCK_TRACKER) == 0) redstoneMode = 0;
+        int oldForceMult = forceMult;
+        switch (buttonID) {
+            case 0:
+                if (++redstoneMode > 2) redstoneMode = 0;
+                if (redstoneMode == 2 && getUpgrades(EnumUpgrade.BLOCK_TRACKER) == 0) redstoneMode = 0;
+                break;
+            case 1:
+                forceMult = Math.max(forceMult - 10, 0);
+                break;
+            case 2:
+                forceMult = Math.max(forceMult - 1, 0);
+                break;
+            case 3:
+                forceMult = Math.min(forceMult + 1, 100);
+                break;
+            case 4:
+                forceMult = Math.min(forceMult + 10, 100);
+                break;
         }
+        if (forceMult != oldForceMult) updateDestination();
     }
 
     @Override
@@ -488,8 +529,9 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements IMin
     private synchronized boolean fire() {
         Entity itemShot = getCloseEntityIfUpgraded();
         if (getPressure() >= PneumaticValues.MIN_PRESSURE_AIR_CANNON && (itemShot != null || !inventory.getStackInSlot(CANNON_SLOT).isEmpty())) {
-            double[] velocity = getVelocityVector(heightAngle, rotationAngle, getForce());
-            addAir((int) (-500 * getForce()));
+            float force = getForce();
+            double[] velocity = getVelocityVector(heightAngle, rotationAngle, force);
+            addAir((int) (-500 * force));
             boolean shootingInventory = false;
             if (itemShot == null) {
                 shootingInventory = true;
@@ -522,17 +564,17 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements IMin
             itemShot.setPosition(getPos().getX() + 0.5D, getPos().getY() + 1.8D, getPos().getZ() + 0.5D);
             NetworkHandler.sendToAllAround(new PacketSetEntityMotion(itemShot, velocity[0], velocity[1], velocity[2]),
                     new TargetPoint(getWorld().provider.getDimension(), getPos().getX(), getPos().getY(), getPos().getZ(), 64));
-
             if (itemShot instanceof EntityFireball) {
-                velocity[0] *= 0.05D;
-                velocity[1] *= 0.05D;
-                velocity[2] *= 0.05D;
+                // fireballs behave a little differently...
+                EntityFireball fireball = (EntityFireball) itemShot;
+                fireball.accelerationX = velocity[0] * 0.05;
+                fireball.accelerationY = velocity[1] * 0.05;
+                fireball.accelerationZ = velocity[2] * 0.05;
+            } else {
+                itemShot.motionX = velocity[0];
+                itemShot.motionY = velocity[1];
+                itemShot.motionZ = velocity[2];
             }
-
-            itemShot.motionX = velocity[0];
-            itemShot.motionY = velocity[1];
-            itemShot.motionZ = velocity[2];
-
             itemShot.onGround = false;
             itemShot.collided = false;
             itemShot.collidedHorizontally = false;
@@ -732,4 +774,5 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements IMin
     public String getRedstoneTabTitle() {
         return "gui.tab.redstoneBehaviour.airCannon.fireUpon";
     }
+
 }

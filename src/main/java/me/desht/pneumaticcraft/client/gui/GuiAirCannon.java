@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.inventory.ContainerAirCannon;
+import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAirCannon;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -21,38 +22,45 @@ import java.util.List;
 @SideOnly(Side.CLIENT)
 public class GuiAirCannon extends GuiPneumaticContainerBase<TileEntityAirCannon> {
     private GuiAnimatedStat statusStat;
+    private GuiAnimatedStat strengthTab;
     private int gpsX;
     private int gpsY;
     private int gpsZ;
 
     public GuiAirCannon(InventoryPlayer player, TileEntityAirCannon te) {
-
         super(new ContainerAirCannon(player, te), te, Textures.GUI_AIR_CANNON_LOCATION);
+
         gpsX = te.gpsX;
         gpsY = te.gpsY;
         gpsZ = te.gpsZ;
-
     }
 
     @Override
     public void initGui() {
         super.initGui();
+
         statusStat = this.addAnimatedStat("Cannon Status", new ItemStack(Blockss.AIR_CANNON), 0xFFFFAA00, false);
+
+        strengthTab = this.addAnimatedStat("Force", new ItemStack(Itemss.AIR_CANISTER), 0xFF2080FF, false);
+        strengthTab.addPadding(3, 22);
+        strengthTab.addWidget(new GuiButtonSpecial(1, 16, 16, 20, 20, "--"));
+        strengthTab.addWidget(new GuiButtonSpecial(2, 38, 16, 20, 20, "-"));
+        strengthTab.addWidget(new GuiButtonSpecial(3, 60, 16, 20, 20, "+"));
+        strengthTab.addWidget(new GuiButtonSpecial(4, 82, 16, 20, 20, "++"));
     }
 
     @Override
     protected void drawGuiContainerForegroundLayer(int x, int y) {
-
         super.drawGuiContainerForegroundLayer(x, y);
         fontRenderer.drawString("GPS", 50, 20, 4210752);
         fontRenderer.drawString("Upgr.", 13, 19, 4210752);
-
     }
 
     @Override
     public void updateScreen() {
         super.updateScreen();
         statusStat.setText(getStatusText());
+        strengthTab.setTitle("Force: "+ te.forceMult + "%%");
 
         if (gpsX != te.gpsX || gpsY != te.gpsY || gpsZ != te.gpsZ) {
             gpsX = te.gpsX;
@@ -110,10 +118,18 @@ public class GuiAirCannon extends GuiPneumaticContainerBase<TileEntityAirCannon>
             textList.add("\u00a77The last shot inventory does not have space for the items in the Cannon.");
         }
 
-        if (textList.size() == 0) {
-            textList.add("\u00a77No problems");
-            textList.add("\u00a70Apply a redstone");
-            textList.add("\u00a70signal to fire.");
+//        if (textList.size() == 0) {
+//            textList.add("\u00a77No problems");
+//            textList.add("\u00a70Apply a redstone");
+//            textList.add("\u00a70signal to fire.");
+//        }
+    }
+
+    @Override
+    protected void addInformation(List<String> curInfo) {
+        super.addInformation(curInfo);
+        if (curInfo.isEmpty()) {
+            curInfo.add("\u00a70Apply a redstone signal to fire.");
         }
     }
 }
