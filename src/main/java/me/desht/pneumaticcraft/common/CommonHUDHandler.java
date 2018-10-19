@@ -118,7 +118,7 @@ public class CommonHUDHandler {
 
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        if (event.phase == TickEvent.Phase.END) {
+        if (event.phase == TickEvent.Phase.START) {
             getHandlerForPlayer(event.player).tick(event.player);
         }
     }
@@ -155,7 +155,7 @@ public class CommonHUDHandler {
         boolean armorActive = false;
         if (armorStack.getItem() instanceof ItemPneumaticArmor) {
             armorPressure[slot.getIndex()] = ((IPressurizable) armorStack.getItem()).getPressure(armorStack);
-            if (ticksSinceEquip[slot.getIndex()] == 1) {
+            if (ticksSinceEquip[slot.getIndex()] == 0) {
                 checkArmorInventory(player, slot);
             }
             ticksSinceEquip[slot.getIndex()]++;
