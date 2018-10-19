@@ -17,6 +17,7 @@ import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.common.util.WorldAndCoord;
+import me.desht.pneumaticcraft.lib.EnumCustomParticleType;
 import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Sounds;
@@ -34,7 +35,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntitySelectors;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
@@ -318,8 +318,8 @@ public class CommonHUDHandler {
                 }
                 Vec3d jetVec = lookVec.scale(-0.5);
                 NetworkHandler.sendToAllAround(
-                        new PacketSpawnParticle(EnumParticleTypes.SMOKE_NORMAL, player.posX, player.posY, player.posZ,
-                                jetVec.x, jetVec.y * 0.75, jetVec.z, isJetBootsActive() ? 3 : 1, 0, 0, 0),
+                        new PacketSpawnParticle(EnumCustomParticleType.AIR_PARTICLE_DENSE, player.posX, player.posY, player.posZ,
+                                jetVec.x, jetVec.y * 0.75, jetVec.z, isJetBootsActive() ? 8 : 1, 0, 0, 0),
                         player.world);
                 addAir(bootsStack, EntityEquipmentSlot.FEET, -jetbootsAirUsage);
             }

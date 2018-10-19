@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.proxy;
 
 import me.desht.pneumaticcraft.common.event.HackTickHandler;
+import me.desht.pneumaticcraft.lib.EnumCustomParticleType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -52,5 +53,9 @@ public class ServerProxy implements IProxy {
     @Override
     public void addScheduledTask(Runnable runnable, boolean serverSide) {
         FMLCommonHandler.instance().getMinecraftServerInstance().addScheduledTask(runnable);
+    }
+
+    @Override
+    public void playCustomParticle(EnumCustomParticleType enumCustomParticleType, World w, double x, double y, double z, double dx, double dy, double dz) {
     }
 }

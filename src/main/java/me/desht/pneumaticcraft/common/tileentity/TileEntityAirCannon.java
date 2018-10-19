@@ -10,6 +10,7 @@ import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaConstant;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethod;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.EnumCustomParticleType;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Sounds;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
@@ -28,7 +29,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -201,7 +201,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements IMin
                     double posX = item.posX + d.getXOffset() * range;
                     double posY = item.posY + d.getYOffset() * range;
                     double posZ = item.posZ + d.getZOffset() * range;
-                    positions   .put(new BlockPos((int) Math.floor(posX), (int) Math.floor(posY), (int) Math.floor(posZ)), d.getOpposite());
+                    positions.put(new BlockPos((int) Math.floor(posX), (int) Math.floor(posY), (int) Math.floor(posZ)), d.getOpposite());
                 }
                 for (Entry<BlockPos, EnumFacing> entry : positions.entrySet()) {
                     BlockPos pos = entry.getKey();
@@ -499,6 +499,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements IMin
                     if (getUpgrades(EnumUpgrade.BLOCK_TRACKER) > 0) {
                         trackedItems.add((EntityItem) itemShot);
                     }
+                    ((EntityItem) itemShot).setPickupDelay(20);
                 } else {
                     inventory.extractItem(CANNON_SLOT, 1, false);
                 }
@@ -544,7 +545,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase implements IMin
                 double velX = velocity[0] * 0.4D + (rand.nextGaussian() - 0.5D) * 0.05D;
                 double velY = velocity[1] * 0.4D + (rand.nextGaussian() - 0.5D) * 0.05D;
                 double velZ = velocity[2] * 0.4D + (rand.nextGaussian() - 0.5D) * 0.05D;
-                NetworkHandler.sendToAllAround(new PacketSpawnParticle(EnumParticleTypes.SMOKE_LARGE, getPos().getX() + 0.5D, getPos().getY() + 0.7D, getPos().getZ() + 0.5D, velX, velY, velZ), getWorld());
+                NetworkHandler.sendToAllAround(new PacketSpawnParticle(EnumCustomParticleType.AIR_PARTICLE_DENSE, getPos().getX() + 0.5D, getPos().getY() + 0.7D, getPos().getZ() + 0.5D, velX, velY, velZ), getWorld());
             }
             NetworkHandler.sendToAllAround(new PacketPlaySound(Sounds.CANNON_SOUND, SoundCategory.BLOCKS, getPos().getX(), getPos().getY(), getPos().getZ(), 1.0F, rand.nextFloat() / 4F + 0.75F, true), getWorld());
             return true;

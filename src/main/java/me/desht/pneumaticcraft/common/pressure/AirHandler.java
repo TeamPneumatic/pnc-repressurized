@@ -15,6 +15,7 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityTickableBase;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.TileEntityCache;
+import me.desht.pneumaticcraft.lib.EnumCustomParticleType;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Sounds;
@@ -23,7 +24,6 @@ import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
@@ -308,20 +308,14 @@ public class AirHandler implements IAirHandler {
 
         if (getPressure() < 0) {
             double speed = getPressure() * 0.1F - 0.1F;
-            NetworkHandler.sendToAllAround(new PacketSpawnParticle(EnumParticleTypes.SMOKE_NORMAL, getPos().getX() + 0.5D + motionX / 2D, getPos().getY() + 0.5D + motionY / 2D, getPos().getZ() + 0.5D + motionZ / 2D, motionX * speed, motionY * speed, motionZ * speed), getWorld());
-
+            NetworkHandler.sendToAllAround(new PacketSpawnParticle(EnumCustomParticleType.AIR_PARTICLE_DENSE, getPos().getX() + 0.5D + motionX / 2D, getPos().getY() + 0.5D + motionY / 2D, getPos().getZ() + 0.5D + motionZ / 2D, motionX * speed, motionY * speed, motionZ * speed), getWorld());
             int dispersedAmount = -(int) (getPressure() * PneumaticValues.AIR_LEAK_FACTOR) + 20;
             if (getAir() > dispersedAmount) dispersedAmount = -getAir();
             onAirDispersion(side, dispersedAmount);
             addAir(dispersedAmount);
         } else {
             double speed = getPressure() * 0.1F + 0.1F;
-            // if(DateEventHandler.isEvent()) {
-            //DateEventHandler.spawnFirework(getWorld(), getPos().getX() + 0.5D + motionX / 2D, getPos().getY() + 0.5D + motionY / 2D, getPos().getZ() + 0.5D + motionZ / 2D);
-            // } else {
-            NetworkHandler.sendToAllAround(new PacketSpawnParticle(EnumParticleTypes.SMOKE_NORMAL, getPos().getX() + 0.5D + motionX / 2D, getPos().getY() + 0.5D + motionY / 2D, getPos().getZ() + 0.5D + motionZ / 2D, motionX * speed, motionY * speed, motionZ * speed), getWorld());
-            // }
-
+            NetworkHandler.sendToAllAround(new PacketSpawnParticle(EnumCustomParticleType.AIR_PARTICLE_DENSE, getPos().getX() + 0.5D + motionX / 2D, getPos().getY() + 0.5D + motionY / 2D, getPos().getZ() + 0.5D + motionZ / 2D, motionX * speed, motionY * speed, motionZ * speed), getWorld());
             int dispersedAmount = (int) (getPressure() * PneumaticValues.AIR_LEAK_FACTOR) + 20;
             if (dispersedAmount > getAir()) dispersedAmount = getAir();
             onAirDispersion(side, -dispersedAmount);

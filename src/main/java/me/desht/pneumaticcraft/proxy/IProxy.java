@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.proxy;
 
 import me.desht.pneumaticcraft.common.event.HackTickHandler;
+import me.desht.pneumaticcraft.lib.EnumCustomParticleType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 
@@ -24,4 +25,6 @@ public interface IProxy {
     void addScheduledTask(Runnable runnable, boolean serverSide);
 
     void initConfig();
+
+    void playCustomParticle(EnumCustomParticleType enumCustomParticleType, World w, double x, double y, double z, double dx, double dy, double dz);
 }

@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.math.IntMath;
+import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.recipe.IPressureChamberRecipe;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IAirListener;
@@ -12,6 +13,7 @@ import me.desht.pneumaticcraft.common.recipes.PressureChamberRecipe;
 import me.desht.pneumaticcraft.common.util.ItemStackHandlerIterable;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.EnumCustomParticleType;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
@@ -71,6 +73,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
     private boolean recipeRecalcNeeded = true;
 
     private long lastSoundTick;  // to avoid excessive spamming of the pop sound
+    private int nParticles;  // client-side: the number of particles to create each tick (dependent on chamber size & pressure)
 
     public TileEntityPressureChamberValve() {
         super(PneumaticValues.DANGER_PRESSURE_PRESSURE_CHAMBER, PneumaticValues.MAX_PRESSURE_PRESSURE_CHAMBER, PneumaticValues.VOLUME_PRESSURE_CHAMBER_PER_EMPTY, 4);
@@ -83,8 +86,6 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
         return true;
     }
 
-    // pneumatic methods-------------------------------------------------------
-    // used in the air dispersion methods.
     @Override
     public boolean isConnectedTo(EnumFacing side) {
         switch (getRotation()) {
@@ -119,7 +120,6 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
         return Integer.MAX_VALUE;
     }
 
-    // main update method
     @Override
     public void update() {
         if (readNBT && !getWorld().isRemote) {
@@ -147,44 +147,10 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
                 recipeRecalcNeeded = false;
             }
 
-            for (IPressureChamberRecipe recipe : applicableRecipes) {
-                boolean pressureOK = recipe.getCraftingPressure() <= getPressure() && recipe.getCraftingPressure() > 0F
-                        || recipe.getCraftingPressure() >= getPressure() && recipe.getCraftingPressure() < 0F;
-                if (Math.abs(recipe.getCraftingPressure()) < Math.abs(recipePressure)) {
-                    recipePressure = recipe.getCraftingPressure();
-                }
-                if (pressureOK) {
-                    isSufficientPressureInChamber = true;
-                    giveOutput(recipe.craftRecipe(itemsInChamber));
-                    if (getWorld().getTotalWorldTime() - lastSoundTick > 5) {
-                        NetworkHandler.sendToAllAround(new PacketPlaySound(SoundEvents.ENTITY_CHICKEN_EGG, SoundCategory.BLOCKS, getPos(), 0.5f, 0.8f + getWorld().rand.nextFloat() * 0.4f, false), getWorld());
-                        lastSoundTick = getWorld().getTotalWorldTime();
-                    }
-                    // Craft at most one recipe each tick; this is because crafting changes the contents of the
-                    // chamber, possibly invalidating other applicable recipes.  Modifying the chamber's contents
-                    // automatically triggers a rescan for applicable recipes on the next tick.
-                    break;
-                }
-            }
+            processApplicableRecipes();
 
             if (getPressure() > PneumaticValues.MAX_PRESSURE_LIVING_ENTITY) {
-                AxisAlignedBB bbBox = new AxisAlignedBB(multiBlockX + 1, multiBlockY + 1, multiBlockZ + 1, multiBlockX + multiBlockSize - 1, multiBlockY + multiBlockSize - 1, multiBlockZ + multiBlockSize - 1);
-                List<EntityLivingBase> entities = getWorld().getEntitiesWithinAABB(EntityLivingBase.class, bbBox);
-                for (EntityLivingBase entity : entities) {
-                    if (entity instanceof EntityVillager) {
-                        EntityVillager villager = (EntityVillager) entity;
-                        if (villager.getProfessionForge() != VillagerHandler.mechanicProfession) {
-                            villager.setDead();
-                            EntityVillager mechanic = new EntityVillager(world);
-                            mechanic.setProfession(VillagerHandler.mechanicProfession);
-                            mechanic.setPosition(villager.posX, villager.posY, villager.posZ);
-                            world.spawnEntity(mechanic);
-                        }
-                    }
-                    if (!(entity instanceof EntityVillager) || ((EntityVillager) entity).getProfessionForge() != VillagerHandler.mechanicProfession) {
-                        entity.attackEntityFrom(DamageSourcePneumaticCraft.PRESSURE, (int) (getPressure() * 2D));
-                    }
-                }
+                handleEntitiesInChamber();
             }
         }
 
@@ -192,13 +158,12 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
 
         // particles
         if (getWorld().isRemote && hasGlass && isPrimaryValve() && roundedPressure > 0.2D) {
-            int particles = (int) Math.pow(multiBlockSize - 2, 3);
-            for (int i = 0; i < particles; i++) {
-                if (getWorld().rand.nextInt(Math.max(1, 8 - (int) (getPressure() * 1.5D))) == 0) {
+            if (PneumaticCraftRepressurized.proxy.getClientPlayer().getDistanceSq(getPos()) < 256) {
+                for (int i = 0; i < nParticles; i++) {
                     double posX = multiBlockX + 1D + getWorld().rand.nextDouble() * (multiBlockSize - 2D);
                     double posY = multiBlockY + 1.5D + getWorld().rand.nextDouble() * (multiBlockSize - 2.5D);
                     double posZ = multiBlockZ + 1D + getWorld().rand.nextDouble() * (multiBlockSize - 2D);
-                    getWorld().spawnParticle(EnumParticleTypes.EXPLOSION_NORMAL, posX, posY, posZ, 0D, 0D, 0D);
+                    PneumaticCraftRepressurized.proxy.playCustomParticle(EnumCustomParticleType.AIR_PARTICLE, world, posX, posY, posZ, 0, 0, 0);
                 }
             }
         }
@@ -229,21 +194,6 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
         }
     }
 
-    private boolean checkForGlass() {
-        MutableBlockPos mPos = new MutableBlockPos();
-        for (int x = 0; x < multiBlockSize; x++) {
-            for (int y = 0; y < multiBlockSize; y++) {
-                for (int z = 0; z < multiBlockSize; z++) {
-                    mPos = mPos.setPos(multiBlockX + x, multiBlockY + y, multiBlockZ + z);
-                    if (world.getBlockState(mPos).getBlock() instanceof BlockPressureChamberGlass) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
     private void checkForAirLeak() {
         boolean[] connected = new boolean[]{ true, true, true, true, true, true };
 
@@ -267,14 +217,8 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
 
         // retrieve the valve that is controlling the (potential) chamber
         TileEntityPressureChamberValve primaryValve = accessoryValves.isEmpty() ? null : accessoryValves.get(accessoryValves.size() - 1);
-//        for (TileEntityPressureChamberValve valve : accessoryValves) {
-//            if (valve.isPrimaryValve()) {
-//                primaryValve = valve;
-//                break;
-//            }
-//        }
-        // if we found one, we can scratch one side (the side facing into the chamber) to be leaking air
         if (primaryValve != null) {
+            // we can scratch one side (the side facing into the chamber) to be leaking air
             switch (getRotation()) {
                 case UP: case DOWN:
                     if (primaryValve.multiBlockY == getPos().getY()) {
@@ -304,6 +248,63 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
         }
     }
 
+    private void processApplicableRecipes() {
+        for (IPressureChamberRecipe recipe : applicableRecipes) {
+            boolean pressureOK = recipe.getCraftingPressure() <= getPressure() && recipe.getCraftingPressure() > 0F
+                    || recipe.getCraftingPressure() >= getPressure() && recipe.getCraftingPressure() < 0F;
+            if (Math.abs(recipe.getCraftingPressure()) < Math.abs(recipePressure)) {
+                recipePressure = recipe.getCraftingPressure();
+            }
+            if (pressureOK) {
+                isSufficientPressureInChamber = true;
+                giveOutput(recipe.craftRecipe(itemsInChamber));
+                if (getWorld().getTotalWorldTime() - lastSoundTick > 5) {
+                    NetworkHandler.sendToAllAround(new PacketPlaySound(SoundEvents.ENTITY_CHICKEN_EGG, SoundCategory.BLOCKS, getPos(), 0.5f, 0.8f + getWorld().rand.nextFloat() * 0.4f, false), getWorld());
+                    lastSoundTick = getWorld().getTotalWorldTime();
+                }
+                // Craft at most one recipe each tick; this is because crafting changes the contents of the
+                // chamber, possibly invalidating other applicable recipes.  Modifying the chamber's contents
+                // automatically triggers a rescan for applicable recipes on the next tick.
+                break;
+            }
+        }
+    }
+
+    private void handleEntitiesInChamber() {
+        AxisAlignedBB bbBox = new AxisAlignedBB(multiBlockX + 1, multiBlockY + 1, multiBlockZ + 1, multiBlockX + multiBlockSize - 1, multiBlockY + multiBlockSize - 1, multiBlockZ + multiBlockSize - 1);
+        List<EntityLivingBase> entities = getWorld().getEntitiesWithinAABB(EntityLivingBase.class, bbBox);
+        for (EntityLivingBase entity : entities) {
+            if (entity instanceof EntityVillager) {
+                EntityVillager villager = (EntityVillager) entity;
+                if (villager.getProfessionForge() != VillagerHandler.mechanicProfession) {
+                    villager.setDead();
+                    EntityVillager mechanic = new EntityVillager(world);
+                    mechanic.setProfession(VillagerHandler.mechanicProfession);
+                    mechanic.setPosition(villager.posX, villager.posY, villager.posZ);
+                    world.spawnEntity(mechanic);
+                }
+            }
+            if (!(entity instanceof EntityVillager) || ((EntityVillager) entity).getProfessionForge() != VillagerHandler.mechanicProfession) {
+                entity.attackEntityFrom(DamageSourcePneumaticCraft.PRESSURE, (int) (getPressure() * 2D));
+            }
+        }
+    }
+
+    private boolean checkForGlass() {
+        MutableBlockPos mPos = new MutableBlockPos();
+        for (int x = 0; x < multiBlockSize; x++) {
+            for (int y = 0; y < multiBlockSize; y++) {
+                for (int z = 0; z < multiBlockSize; z++) {
+                    mPos = mPos.setPos(multiBlockX + x, multiBlockY + y, multiBlockZ + z);
+                    if (world.getBlockState(mPos).getBlock() instanceof BlockPressureChamberGlass) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     private void giveOutput(NonNullList<ItemStack> stacks){
         for (ItemStack stack : stacks){
             stack = stack.copy();
@@ -316,7 +317,6 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
         return itemsInChamber;
     }
 
-    // NBT methods-----------------------------------------------
     @Override
     public void readFromNBT(NBTTagCompound tag) {
         super.readFromNBT(tag);
@@ -424,6 +424,13 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
         getAirHandler(null).setDefaultVolume(getDefaultVolume());
     }
 
+    @Override
+    public void onDescUpdate() {
+        super.onDescUpdate();
+        nParticles = IntMath.pow(multiBlockSize - 2, 3);
+        nParticles = Math.max(1, (int)(nParticles / (6 - roundedPressure)));
+    }
+
     public static boolean checkIfProperlyFormed(World world, BlockPos pos) {
         for (int i = 3; i < 6; i++) {
             if (checkForShiftedCubeOfSize(i, world, pos.getX(), pos.getY(), pos.getZ())) {
@@ -463,7 +470,6 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
                 for (int z = 0; z < size; z++) {
                     mPos = mPos.setPos(x + baseX, y + baseY, z + baseZ);
                     IBlockState state = world.getBlockState(mPos);
-//                    Block block = world.getBlockState(mPos).getBlock();
                     if (x != 0 && x != size - 1 && y != 0 && y != size - 1 && z != 0 && z != size - 1) {
                         if (!world.isAirBlock(mPos)) return false;
                     } else if (!(state.getBlock() instanceof IBlockPressureChamber)) {
@@ -524,7 +530,8 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
                     if (te != null) {
                         double dx = x == 0 ? -0.1 : 0.1;
                         double dz = z == 0 ? -0.1 : 0.1;
-                        NetworkHandler.sendToAllAround(new PacketSpawnParticle(EnumParticleTypes.EXPLOSION_NORMAL,
+                        NetworkHandler.sendToAllAround(
+                                new PacketSpawnParticle(EnumParticleTypes.EXPLOSION_NORMAL,
                                         te.getPos().getX() + 0.5, te.getPos().getY() + 0.5, te.getPos().getZ() + 0.5,
                                         dx, 0.3, dz, 5, 0, 0, 0),
                                 world);
@@ -560,13 +567,6 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
             else item.setItem(stack);
         }
     }
-
-//    public boolean isCoordWithinChamber(World world, BlockPos pos) {
-//        int x = pos.getX();
-//        int y = pos.getY();
-//        int z = pos.getZ();
-//        return x > multiBlockX && x < multiBlockX + multiBlockSize - 1 && y > multiBlockY && y < multiBlockY + multiBlockSize - 1 && z > multiBlockZ && z < multiBlockZ + multiBlockSize - 1;
-//    }
 
     @Override
     public AxisAlignedBB getRenderBoundingBox(){

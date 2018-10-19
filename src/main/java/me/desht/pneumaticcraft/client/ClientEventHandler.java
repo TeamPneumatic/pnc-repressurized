@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.client.gui.IGuiDrone;
 import me.desht.pneumaticcraft.client.model.pressureglass.PressureGlassBakedModel;
+import me.desht.pneumaticcraft.client.particle.AirParticle;
 import me.desht.pneumaticcraft.client.render.RenderProgressingLine;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.CommonHUDHandler;
@@ -288,6 +289,9 @@ public class ClientEventHandler {
             ResourceLocation loc = new ResourceLocation(Textures.PRESSURE_GLASS_LOCATION + "window_" + (i + 1));
             PressureGlassBakedModel.SPRITES[i] = event.getMap().registerSprite(loc);
         }
+
+        // air particles
+        event.getMap().registerSprite(AirParticle.AIR_PARTICLE_TEXTURE);
     }
 
     @SubscribeEvent

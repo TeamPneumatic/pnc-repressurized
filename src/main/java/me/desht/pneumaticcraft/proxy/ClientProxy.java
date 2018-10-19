@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.client.*;
 import me.desht.pneumaticcraft.client.gui.pneumaticHelmet.GuiHelmetMainScreen;
 import me.desht.pneumaticcraft.client.model.item.ModelProgrammingPuzzle.LoaderProgrammingPuzzle;
 import me.desht.pneumaticcraft.client.model.pressureglass.PressureGlassModelLoader;
+import me.desht.pneumaticcraft.client.particle.CustomParticleFactory;
 import me.desht.pneumaticcraft.client.render.RenderItemMinigun;
 import me.desht.pneumaticcraft.client.render.entity.RenderDrone;
 import me.desht.pneumaticcraft.client.render.entity.RenderEntityRing;
@@ -29,6 +30,7 @@ import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.tileentity.*;
 import me.desht.pneumaticcraft.common.util.DramaSplash;
+import me.desht.pneumaticcraft.lib.EnumCustomParticleType;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.client.Minecraft;
@@ -144,6 +146,11 @@ public class ClientProxy implements IProxy {
                 renderHandler.initConfig();
             }
         }
+    }
+
+    @Override
+    public void playCustomParticle(EnumCustomParticleType particleType, World w, double x, double y, double z, double dx, double dy, double dz) {
+        Minecraft.getMinecraft().effectRenderer.addEffect(CustomParticleFactory.createParticle(particleType, w, x, y, z, dx, dy, dz));
     }
 
     @Override

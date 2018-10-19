@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
+import me.desht.pneumaticcraft.lib.EnumCustomParticleType;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Sounds;
 import net.minecraft.block.properties.IProperty;
@@ -15,7 +16,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -54,10 +54,10 @@ public class EventHandlerPneumaticArmor {
             } else {
                 event.setDamageMultiplier(1.0F - (airAvailable / airNeeded));
             }
-            for (int i = 0; i < event.getDistance() / 3; i++) {
-                float sx = player.getRNG().nextFloat() * 2F - 1F;
-                float sz = player.getRNG().nextFloat() * 2F - 1F;
-                NetworkHandler.sendToAllAround(new PacketSpawnParticle(EnumParticleTypes.EXPLOSION_NORMAL, player.posX, player.posY, player.posZ, sx, 0.2, sz), player.world);
+            for (int i = 0; i < event.getDistance() / 2; i++) {
+                float sx = player.getRNG().nextFloat() * 0.6F - 0.3F;
+                float sz = player.getRNG().nextFloat() * 0.6F - 0.3F;
+                NetworkHandler.sendToAllAround(new PacketSpawnParticle(EnumCustomParticleType.AIR_PARTICLE_DENSE, player.posX, player.posY, player.posZ, sx, 0.1, sz), player.world);
             }
             NetworkHandler.sendToAllAround(new PacketPlaySound(Sounds.SHORT_HISS, SoundCategory.PLAYERS, player.posX, player.posY, player.posZ, 0.3f, 0.8f, false), player.world);
             handler.addAir(stack, EntityEquipmentSlot.FEET, (int) -airNeeded);
@@ -80,7 +80,7 @@ public class EventHandlerPneumaticArmor {
                         for (int i = 0; i < 2; i++) {
                             float sx = player.getRNG().nextFloat() * 1.5F - 0.75F;
                             float sz = player.getRNG().nextFloat() * 1.5F - 0.75F;
-                            NetworkHandler.sendToAllAround(new PacketSpawnParticle(EnumParticleTypes.EXPLOSION_NORMAL, player.posX + sx, player.posY + 1, player.posZ + sz, sx / 2, -0.5, sz / 2), player.world);
+                            NetworkHandler.sendToAllAround(new PacketSpawnParticle(EnumCustomParticleType.AIR_PARTICLE_DENSE, player.posX + sx, player.posY + 1, player.posZ + sz, sx / 4, -0.2, sz / 4), player.world);
                         }
                         if ((player.ticksExisted & 0xf) == 0) {
                             NetworkHandler.sendToAllAround(new PacketPlaySound(Sounds.LEAKING_GAS_SOUND, SoundCategory.PLAYERS, player.posX, player.posY, player.posZ, 0.5f, 0.7f, false), player.world);

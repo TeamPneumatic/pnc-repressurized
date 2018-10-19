@@ -1,6 +1,8 @@
 package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.ByteBuf;
+import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
+import me.desht.pneumaticcraft.lib.EnumCustomParticleType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumParticleTypes;
 
@@ -33,11 +35,25 @@ public class PacketSpawnParticle extends LocationDoublePacket<PacketSpawnParticl
     }
 
     public PacketSpawnParticle(EnumParticleTypes particle, double x, double y, double z, double dx, double dy, double dz, int numParticles, double rx, double ry, double rz) {
+        this(particle, x, y, z, dx, dy, dz);
+        this.numParticles = numParticles;
+        this.rx = rx;
+        this.ry = ry;
+        this.rz = rz;
+    }
+
+    public PacketSpawnParticle(EnumCustomParticleType particle, double x, double y, double z, double dx, double dy, double dz) {
         super(x, y, z);
-        particleId = particle.ordinal();
+        particleId = EnumParticleTypes.values().length + particle.ordinal();
         this.dx = dx;
         this.dy = dy;
         this.dz = dz;
+        this.numParticles = 1;
+        this.rx = this.ry = this.rz = 0d;
+    }
+
+    public PacketSpawnParticle(EnumCustomParticleType particle, double x, double y, double z, double dx, double dy, double dz, int numParticles, double rx, double ry, double rz) {
+        this(particle, x, y, z, dx, dy, dz);
         this.numParticles = numParticles;
         this.rx = rx;
         this.ry = ry;
@@ -80,7 +96,12 @@ public class PacketSpawnParticle extends LocationDoublePacket<PacketSpawnParticl
             double x = message.x + (numParticles == 1 ? 0 : player.world.rand.nextDouble() * rx);
             double y = message.y + (numParticles == 1 ? 0 :  player.world.rand.nextDouble() * ry);
             double z = message.z + (numParticles == 1 ? 0 : player.world.rand.nextDouble() * rz);
-            player.world.spawnParticle(EnumParticleTypes.values()[message.particleId], x, y, z, message.dx, message.dy, message.dz);
+            if (particleId >= EnumParticleTypes.values().length) {
+                EnumCustomParticleType particle = EnumCustomParticleType.values()[message.particleId - EnumParticleTypes.values().length];
+                PneumaticCraftRepressurized.proxy.playCustomParticle(particle, player.world, x, y, z, message.dx, message.dy, message.dz);
+            } else {
+                player.world.spawnParticle(EnumParticleTypes.values()[message.particleId], x, y, z, message.dx, message.dy, message.dz);
+            }
         }
     }
 
