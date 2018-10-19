@@ -7,12 +7,22 @@ Changes are in reverse chronological order; newest changes at the top.
 ## Minecraft 1.12.2
 
 ### 0.8.2-??? (unreleased)
+#### New
+* New particle effects for air rendering (air leaks, pressure chamber, jet boots...)
 #### Updates
-* Client-side rendering performance improvement when highlighting camouflageable blocks (while holding the Camouflage Applicator)
-* Immersive Petroleum Gasoline is now usable as a fuel in Liquid Compressors; quality is equivalent to PneumaticCraft Gasoline
+* Client-side rendering performance improvement when highlighting camouflageable blocks (while holding the Camouflage Applicator).
+* Immersive Petroleum Gasoline is now usable as a fuel in Liquid Compressors; quality is equivalent to PneumaticCraft Gasoline.
+* Some more Pressure Chamber work:
+  * Client-side rendering (particles and items in chamber) are skipped if the chamber multiblock has no glass blocks.
+  * A particle effect is played when the multiblock forms.
+  * Air particle density in the chamber responds better to changes in chamber pressure (better syncing to clients).
+  * Pressure Chamber Interface door open/close sound is now a bit louder, but also no longer repeatedly plays over itself.
+* Immersive Petroleum Gasoline is now accepted as a fuel in the liquid compressors by default; it's equivalent in quality to PneumaticCraft's Fuel.
 #### Fixes
-* Fixed an item dupe in the pressure chamber under some fairly specific circumstances (related to performance improvements in 0.8.1)
-* Fixed camouflageable blocks not being breakable with a pick (only a wrench) - related to camouflage updates in 0.8.1
+* Fixed an item dupe in the Pressure Chamber under some fairly specific circumstances (related to performance improvements in 0.8.1).
+* Fixed camouflageable blocks not being breakable with a pick (only a wrench) - related to camouflage updates in 0.8.1.
+* Targeting Pressure Tube modules now works correctly for TOP & WAILA information display.
+* Fixed some JEI Pressure Chamber recipes not showing the correct number of ingredients for some recipes (items added by Oredict key).
 
 ### 0.8.1-274 (8 Oct 2018)
 #### Updates
