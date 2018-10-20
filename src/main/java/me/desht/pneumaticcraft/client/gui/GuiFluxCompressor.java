@@ -74,8 +74,13 @@ public class GuiFluxCompressor extends GuiPneumaticContainerBase<TileEntityFluxC
         if (te.getInfoEnergyPerTick() > te.getInfoEnergyStored()) {
             textList.add("gui.tab.problems.fluxCompressor.noRF");
         }
+    }
+
+    @Override
+    protected void addWarnings(List<String> curInfo) {
+        super.addWarnings(curInfo);
         if (te.getEfficiency() < 100) {
-            textList.add(I18n.format("gui.tab.problems.advancedAirCompressor.efficiency", te.getEfficiency() + "%%"));
+            curInfo.add(I18n.format("gui.tab.problems.advancedAirCompressor.efficiency", te.getEfficiency() + "%%"));
         }
     }
 }

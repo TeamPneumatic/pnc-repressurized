@@ -28,8 +28,8 @@ public class GuiAdvancedLiquidCompressor extends GuiLiquidCompressor {
     }
 
     @Override
-    public void addProblems(List<String> curInfo) {
-        super.addProblems(curInfo);
+    public void addWarnings(List<String> curInfo) {
+        super.addWarnings(curInfo);
         if (te.getEfficiency() < 100) {
             curInfo.add(I18n.format("gui.tab.problems.advancedAirCompressor.efficiency", te.getEfficiency() + "%%"));
         }

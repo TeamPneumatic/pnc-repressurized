@@ -68,7 +68,13 @@ public class GuiKeroseneLamp extends GuiPneumaticContainerBase<TileEntityKerosen
             curInfo.add("gui.tab.problems.keroseneLamp.noFuel");
         } else if (te.getFuelQuality() == 0) {
             curInfo.add("gui.tab.problems.keroseneLamp.badFuel");
-        } else if (te.getTank().getFluidAmount() < 30) {
+        }
+    }
+
+    @Override
+    protected void addWarnings(List<String> curInfo) {
+        super.addWarnings(curInfo);
+        if (te.getTank().getFluidAmount() < 30 && te.getTank().getFluidAmount() > 0) {
             curInfo.add("gui.tab.problems.keroseneLamp.lowFuel");
         }
     }

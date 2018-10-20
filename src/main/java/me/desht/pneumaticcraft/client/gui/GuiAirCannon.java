@@ -117,12 +117,6 @@ public class GuiAirCannon extends GuiPneumaticContainerBase<TileEntityAirCannon>
         } else if (te.getRedstoneMode() == 2 && !te.insertingInventoryHasSpace) {
             textList.add("\u00a77The last shot inventory does not have space for the items in the Cannon.");
         }
-
-//        if (textList.size() == 0) {
-//            textList.add("\u00a77No problems");
-//            textList.add("\u00a70Apply a redstone");
-//            textList.add("\u00a70signal to fire.");
-//        }
     }
 
     @Override

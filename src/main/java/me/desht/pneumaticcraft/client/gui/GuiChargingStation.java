@@ -85,23 +85,31 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<TileEntityChar
     protected void addProblems(List<String> textList) {
         super.addProblems(textList);
         ItemStack chargeStack  = te.getPrimaryInventory().getStackInSlot(TileEntityChargingStation.CHARGE_INVENTORY_INDEX);
-        if (chargeStack.isEmpty()) {
-            textList.add("\u00a77No items to (dis)charge");
-            textList.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a70Put a pneumatic item in the charge slot.", GuiConstants.MAX_CHAR_PER_LINE_LEFT));
-        } else if (!(chargeStack.getItem() instanceof IPressurizable)) {
+        if (!chargeStack.isEmpty() && !(chargeStack.getItem() instanceof IPressurizable)) {
             textList.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a77The inserted item can't be (dis)charged", GuiConstants.MAX_CHAR_PER_LINE_LEFT));
             textList.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a70Put a pneumatic item in the charge slot.", GuiConstants.MAX_CHAR_PER_LINE_LEFT));
-        } else {
+        }
+    }
+
+    @Override
+    protected void addWarnings(List<String> curInfo) {
+        super.addWarnings(curInfo);
+        ItemStack chargeStack  = te.getPrimaryInventory().getStackInSlot(TileEntityChargingStation.CHARGE_INVENTORY_INDEX);
+        if (chargeStack.isEmpty()) {
+            curInfo.add("\u00a7fNo items to (dis)charge");
+            curInfo.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a70Put a pneumatic item in the charge slot.", GuiConstants.MAX_CHAR_PER_LINE_LEFT));
+        } else if (chargeStack.getItem() instanceof IPressurizable) {
+            String name = chargeStack.getDisplayName();
             IPressurizable chargeItem = (IPressurizable) chargeStack.getItem();
             if (chargeItem.getPressure(chargeStack) > te.getPressure() + 0.01F && chargeItem.getPressure(chargeStack) <= 0) {
-                textList.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a77The inserted item can't be discharged", GuiConstants.MAX_CHAR_PER_LINE_LEFT));
-                textList.add("\u00a70The item is empty.");
+                curInfo.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a7fThe " + name + " can't be discharged", GuiConstants.MAX_CHAR_PER_LINE_LEFT));
+                curInfo.add("\u00a70The item is empty.");
             } else if (chargeItem.getPressure(chargeStack) < te.getPressure() - 0.01F && chargeItem.getPressure(chargeStack) >= chargeItem.maxPressure(chargeStack)) {
-                textList.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a77The inserted item can't be charged", GuiConstants.MAX_CHAR_PER_LINE_LEFT));
-                textList.add("\u00a70The item is full.");
+                curInfo.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a7fThe " + name + " can't be charged", GuiConstants.MAX_CHAR_PER_LINE_LEFT));
+                curInfo.add("\u00a70The item is full.");
             } else if (!te.charging && !te.disCharging) {
-                textList.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a77The inserted item can't be (dis)charged", GuiConstants.MAX_CHAR_PER_LINE_LEFT));
-                textList.add("\u00a70The pressures have equalized.");
+                curInfo.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a7fThe " + name + " can't be (dis)charged", GuiConstants.MAX_CHAR_PER_LINE_LEFT));
+                curInfo.add("\u00a70The pressures have equalized.");
             }
         }
     }

@@ -322,22 +322,6 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
         }
 
         renderHoveredToolTip(x, y);
-
-        /* TODO boolean shift = PneumaticCraft.proxy.isSneakingInGui();
-         for(IGuiWidget widget : widgets) {
-             if(widget.getBounds().contains(x, y)) widget.addTooltip(tooltip, shift);
-         }
-         if(!tooltip.isEmpty()) {
-             List<String> localizedTooltip = new ArrayList<String>();
-             for(String line : tooltip) {
-                 String localizedLine = I18n.format(line);
-                 String[] lines = WordUtils.wrap(localizedLine, 50).split(System.getProperty("line.separator"));
-                 for(String locLine : lines) {
-                     localizedTooltip.add(locLine);
-                 }
-             }
-             drawHoveringText(localizedTooltip, x, y, fontRenderer);
-         }*/
     }
 
     @Override
@@ -355,16 +339,26 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
         if (problemTab != null) {
             List<String> problemText = new ArrayList<>();
             addProblems(problemText);
-            if (problemText.isEmpty()) {
-                problemTab.setTexture(Textures.GUI_NO_PROBLEMS_TEXTURE);
-                problemTab.setTitle("gui.tab.problems.noProblems");
-                problemTab.setBackGroundColor(0xFFA0ffA0);
-            } else {
+            int nProbs = problemText.size();
+            addWarnings(problemText);
+            int nWarnings = problemText.size() - nProbs;
+            addInformation(problemText);
+            int nInfo = problemText.size() - nWarnings;
+
+            if (nProbs > 0) {
                 problemTab.setTexture(Textures.GUI_PROBLEMS_TEXTURE);
                 problemTab.setTitle("gui.tab.problems");
                 problemTab.setBackGroundColor(0xFFFF0000);
+            } else if (nWarnings > 0) {
+                problemTab.setTexture(Textures.GUI_WARNING_TEXTURE);
+                problemTab.setTitle("gui.tab.problems.warning");
+                problemTab.setBackGroundColor(0xFFC0C000);
+            } else {
+                problemTab.setTexture(Textures.GUI_NO_PROBLEMS_TEXTURE);
+                problemTab.setTitle("gui.tab.problems.noProblems");
+                problemTab.setBackGroundColor(0xFFA0FFA0);
             }
-            addInformation(problemText);
+            if (problemText.isEmpty()) problemText.add("");
             problemTab.setText(problemText);
         }
         if (redstoneTab != null) {
@@ -394,16 +388,12 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
         }
     }
 
+    /**
+     * Use this to add problem information; situations that prevent the machine from operating.
+     *
+     * @param curInfo string list to append to
+     */
     protected void addProblems(List<String> curInfo) {
-        if (te instanceof IRedstoneControlled && !te.redstoneAllows()) {
-            IRedstoneControlled redstoneControlled = (IRedstoneControlled) te;
-            curInfo.add("gui.tab.problems.redstoneDisallows");
-            if (redstoneControlled.getRedstoneMode() == 1) {
-                curInfo.add("gui.tab.problems.provideRedstone");
-            } else {
-                curInfo.add("gui.tab.problems.removeRedstone");
-            }
-        }
         if (te instanceof IMinWorkingPressure) {
             IMinWorkingPressure minWork = (IMinWorkingPressure) te;
             if (((TileEntityPneumaticBase) te).getPressure() < minWork.getMinWorkingPressure()) {
@@ -416,10 +406,26 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
     /**
      * Use this to add informational messages to the problems tab, which don't actually count as problems.
      *
-     * @param curInfo string list to add to, which may already contain some problem text
+     * @param curInfo string list to append to, which may already contain some problem text
      */
     protected void addInformation(List<String> curInfo) {
-        curInfo.add("");
+    }
+
+    /**
+     * Use this to add warning messages; the machine will run but with potential problems.
+     *
+     * @param curInfo string list to append to, which may already contain some problem text
+     */
+    protected void addWarnings(List<String> curInfo) {
+        if (te instanceof IRedstoneControlled && !te.redstoneAllows()) {
+            IRedstoneControlled redstoneControlled = (IRedstoneControlled) te;
+            curInfo.add("gui.tab.problems.redstoneDisallows");
+            if (redstoneControlled.getRedstoneMode() == 1) {
+                curInfo.add("gui.tab.problems.provideRedstone");
+            } else {
+                curInfo.add("gui.tab.problems.removeRedstone");
+            }
+        }
     }
 
     @Override

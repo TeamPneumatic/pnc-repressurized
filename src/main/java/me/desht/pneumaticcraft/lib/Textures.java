@@ -228,6 +228,7 @@ public class Textures {
     public static final String GUI_ADVANCED_AIR_COMPRESSOR_LOCATION = GUI_LOCATION + "gui_advanced_air_compressor.png";
     public static final String GUI_AIR_CANNON_LOCATION = GUI_LOCATION + "gui_air_cannon.png";
     public static final String GUI_PROBLEMS_TEXTURE = GUI_LOCATION + "gui_problem.png";
+    public static final String GUI_WARNING_TEXTURE = GUI_LOCATION + "gui_warning.png";
     public static final String GUI_NO_PROBLEMS_TEXTURE = GUI_LOCATION + "gui_no_problem.png";
     public static final String GUI_INFO_LOCATION = GUI_LOCATION + "gui_info.png";
     public static final String GUI_UPGRADES_LOCATION = GUI_LOCATION + "gui_upgrade.png";

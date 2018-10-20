@@ -154,6 +154,8 @@ public class ConfigHandler {
         @Config.Comment("Fuel usage / heat gen multiplier per speed upgrade: usage mult = speedUpgradeUsageMultiplier ^ num_of_speed_upgrades")
         @Config.RangeDouble(min = 1.0, max = 2.0)
         public final double speedUpgradeUsageMultiplier = PneumaticValues.DEF_SPEED_UPGRADE_USAGE_MULTIPLIER;
+        @Config.Comment("Base chance (1/x) per tick of a lightning strike on/around the Electrostatic Generator")
+        public final int electrostaticLightningChance = 100000;
     }
 
     public static class Advanced {
