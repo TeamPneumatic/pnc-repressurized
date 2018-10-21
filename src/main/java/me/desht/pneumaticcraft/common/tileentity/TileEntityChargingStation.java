@@ -118,11 +118,10 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
             }
         }
 
-        int speedMultiplier = (int) getSpeedMultiplierFromUpgrades();
-        int airToTransfer = PneumaticValues.CHARGING_STATION_CHARGE_RATE * speedMultiplier;
-        int airInCharger = (int) (getPressure() * airHandler.getVolume());
+        int airToTransfer = (int) (PneumaticValues.CHARGING_STATION_CHARGE_RATE * getSpeedMultiplierFromUpgrades());
+//        int airInCharger = airHandler.getAir(); //int) (getPressure() * airHandler.getVolume());
 
-        for (int i = 0; i < chargingItems.size() && airInCharger > 0; i++) {
+        for (int i = 0; i < chargingItems.size() && airHandler.getAir() > 0; i++) {
             IPressurizable chargingItem = chargingItems.get(i);
             ItemStack chargingStack = chargedStacks.get(i);
             float itemPressure = chargingItem.getPressure(chargingStack);
@@ -137,7 +136,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
                 if (!getWorld().isRemote) {
                     chargingItem.addAir(chargingStack, -airToMove);
                     addAir(airToMove);
-                    airInCharger += airToMove;
+//                    airInCharger += airToMove;
                 }
                 disCharging = true;
                 renderAirProgress -= ANIMATION_AIR_SPEED;
@@ -147,12 +146,12 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
             } else if (itemPressure < getPressure() - 0.01F && itemPressure < chargingItem.maxPressure(chargingStack)) {
                 // move air from charger to item
                 int maxAirInItem = (int) (chargingItem.maxPressure(chargingStack) * itemVolume);
-                int airToMove = Math.min(Math.min(airToTransfer, airInCharger), maxAirInItem - airInItem);
+                int airToMove = Math.min(Math.min(airToTransfer, airHandler.getAir()), maxAirInItem - airInItem);
                 airToMove = Math.min((int) (delta * itemVolume), airToMove);
                 if (!getWorld().isRemote) {
                     chargingItem.addAir(chargingStack, airToMove);
                     addAir(-airToMove);
-                    airInCharger -= airToMove;
+//                    airInCharger -= airToMove;
                 }
                 charging = true;
                 renderAirProgress += ANIMATION_AIR_SPEED;
