@@ -84,7 +84,7 @@ public class CraftingRegistrator {
         // turbine blade
         registry.registerPressureChamberRecipe(
                 new ItemIngredient[]{
-                        new ItemIngredient("dustRedstone", 2),
+                        new ItemIngredient(new ItemStack(Items.REDSTONE, 2)),
                         new ItemIngredient("ingotGold", 1)},
                 1F,
                 new ItemStack[]{new ItemStack(Itemss.TURBINE_BLADE, 1, 0)});
