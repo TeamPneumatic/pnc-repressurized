@@ -23,7 +23,6 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemStackHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -432,9 +431,9 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
         return REDSTONE_LABELS;
     }
 
-    private class SecurityStationHandler extends ItemStackHandler {
+    private class SecurityStationHandler extends BaseItemStackHandler {
         private SecurityStationHandler() {
-            super(INVENTORY_SIZE);
+            super(TileEntitySecurityStation.this, INVENTORY_SIZE);
         }
 
         @Override

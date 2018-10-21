@@ -17,7 +17,7 @@ public class TileEntityAssemblyPlatform extends TileEntityTickableBase implement
     public float clawProgress;
     public float oldClawProgress;
     @DescSynced
-    private final ItemStackHandler inventory = new ItemStackHandler(1);
+    private final ItemStackHandler inventory = new BaseItemStackHandler(this,1);
     private float speed = 1.0F;
     boolean hasDrilledStack;
     boolean hasLaseredStack;

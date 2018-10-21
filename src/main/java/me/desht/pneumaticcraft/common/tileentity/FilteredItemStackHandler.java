@@ -1,14 +1,14 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.items.ItemStackHandler;
+import net.minecraft.tileentity.TileEntity;
 
 import javax.annotation.Nonnull;
 import java.util.function.BiPredicate;
 
-public abstract class FilteredItemStackHandler extends ItemStackHandler implements BiPredicate<Integer,ItemStack> {
-    public FilteredItemStackHandler(int size) {
-        super(size);
+public abstract class FilteredItemStackHandler extends BaseItemStackHandler implements BiPredicate<Integer,ItemStack> {
+    public FilteredItemStackHandler(TileEntity te, int size) {
+        super(te, size);
     }
 
     @Override

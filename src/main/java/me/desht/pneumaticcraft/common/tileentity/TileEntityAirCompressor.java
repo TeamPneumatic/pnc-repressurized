@@ -41,9 +41,9 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
     @GuiSynced
     public int curFuelUsage;
 
-    private static class AirCompressorHandler extends FilteredItemStackHandler {
+    private class AirCompressorHandler extends FilteredItemStackHandler {
         AirCompressorHandler() {
-            super(INVENTORY_SIZE);
+            super(TileEntityAirCompressor.this, INVENTORY_SIZE);
         }
 
         @Override

@@ -52,7 +52,7 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
     public int redstoneMode;
     @DescSynced
     public final LightBoxItemHandlerInternal inventory = new LightBoxItemHandlerInternal();
-    public final LightBoxItemHandlerExternal inventoryExt = new LightBoxItemHandlerExternal(inventory);
+    private final LightBoxItemHandlerExternal inventoryExt = new LightBoxItemHandlerExternal(inventory);
     public int ticksExisted;
     private boolean oldRedstoneStatus;
 
@@ -245,7 +245,7 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
 
     private class LightBoxItemHandlerInternal extends FilteredItemStackHandler {
         LightBoxItemHandlerInternal() {
-            super(INVENTORY_SIZE);
+            super(TileEntityUVLightBox.this, INVENTORY_SIZE);
         }
 
         @Override

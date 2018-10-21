@@ -24,7 +24,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
     public float clawProgress;
     public float oldClawProgress;
     @DescSynced
-    private ItemStackHandler inventory = new ItemStackHandler(INVENTORY_SIZE);
+    private ItemStackHandler inventory = new BaseItemStackHandler(this, INVENTORY_SIZE);
     private List<AssemblyRecipe> recipeList;
     private ItemStack searchedItemStack = ItemStack.EMPTY;
     private byte state = 0;

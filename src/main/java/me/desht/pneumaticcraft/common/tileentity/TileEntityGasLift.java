@@ -46,7 +46,7 @@ public class TileEntityGasLift extends TileEntityPneumaticBase implements IMinWo
 
     @GuiSynced
     private final FluidTank tank = new FluidTank(PneumaticValues.NORMAL_TANK_CAPACITY);
-    private final ItemStackHandler inventory = new FilteredItemStackHandler(INVENTORY_SIZE) {
+    private final ItemStackHandler inventory = new FilteredItemStackHandler(this, INVENTORY_SIZE) {
         @Override
         public boolean test(Integer integer, ItemStack itemStack) {
             return itemStack.isEmpty()

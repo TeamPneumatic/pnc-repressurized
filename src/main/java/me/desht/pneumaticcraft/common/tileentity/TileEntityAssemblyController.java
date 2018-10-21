@@ -32,7 +32,12 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
     private static final int PROGRAM_INVENTORY_INDEX = 0;
     private static final int INVENTORY_SIZE = 1;
 
-    private final AssemblyControllerHandler inventory = new AssemblyControllerHandler();
+    private final FilteredItemStackHandler inventory = new FilteredItemStackHandler(this, INVENTORY_SIZE) {
+        @Override
+        public boolean test(Integer integer, ItemStack itemStack) {
+            return itemStack.isEmpty() || itemStack.getItem() == Itemss.ASSEMBLY_PROGRAM;
+        }
+    };
     @DescSynced
     public final boolean[] sidesConnected = new boolean[6];
     private AssemblyProgram curProgram;
@@ -46,17 +51,6 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
     @DescSynced
     public boolean hasProblem;
 
-    private static class AssemblyControllerHandler extends FilteredItemStackHandler {
-        AssemblyControllerHandler() {
-            super(INVENTORY_SIZE);
-        }
-
-        @Override
-        public boolean test(Integer integer, ItemStack itemStack) {
-            return itemStack.isEmpty() || itemStack.getItem() == Itemss.ASSEMBLY_PROGRAM;
-        }
-    }
-
     @Override
     public IItemHandlerModifiable getPrimaryInventory() {
         return inventory;
@@ -69,9 +63,6 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
 
     @Override
     public void update() {
-
-//        if (!getWorld().isRemote && firstRun) updateConnections();
-
         ItemStack programStack = inventory.getStackInSlot(PROGRAM_INVENTORY_INDEX);
 
         // curProgram must be available on the client, or we can't show program-problems in the GUI

@@ -30,6 +30,7 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.NonNullList;
@@ -97,7 +98,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
 
     public TileEntityProgrammableController() {
         super(5, 7, 5000, 4);
-        inventory = new ProgrammableItemStackHandler();
+        inventory = new ProgrammableItemStackHandler(this);
         addApplicableUpgrade(EnumUpgrade.SPEED, EnumUpgrade.DISPENSER);
         MinecraftForge.EVENT_BUS.post(new DroneConstructingEvent(this));
 
@@ -219,8 +220,8 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
     }
 
     private class ProgrammableItemStackHandler extends FilteredItemStackHandler {
-        ProgrammableItemStackHandler() {
-            super(INVENTORY_SIZE);
+        ProgrammableItemStackHandler(TileEntity te) {
+            super(te, INVENTORY_SIZE);
         }
 
         @Override

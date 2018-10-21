@@ -253,9 +253,9 @@ public class TileEntityPlasticMixer extends TileEntityTickableBase implements IH
         }
     }
 
-    private static class PlasticItemStackHandler extends FilteredItemStackHandler {
+    private class PlasticItemStackHandler extends FilteredItemStackHandler {
         PlasticItemStackHandler() {
-            super(INVENTORY_SIZE);
+            super(TileEntityPlasticMixer.this, INVENTORY_SIZE);
         }
 
         @Override

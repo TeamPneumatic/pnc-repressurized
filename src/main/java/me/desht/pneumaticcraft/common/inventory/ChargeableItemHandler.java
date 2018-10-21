@@ -12,13 +12,11 @@ public class ChargeableItemHandler extends FilteredItemStackHandler {
     public static final String NBT_UPGRADE_TAG = "UpgradeInventory";
 
     private final ItemStack chargingItem;
-    private final TileEntityChargingStation te;
 
     public ChargeableItemHandler(TileEntityChargingStation te) {
-        super(INVENTORY_SIZE);
+        super(te, INVENTORY_SIZE);
 
         this.chargingItem = te.getChargingItem();
-        this.te = te;
 
         if (!hasInventory()) {
             createInventory();
@@ -30,7 +28,6 @@ public class ChargeableItemHandler extends FilteredItemStackHandler {
     protected void onContentsChanged(int slot) {
         super.onContentsChanged(slot);
         saveInventory();
-        te.markDirty();
     }
 
     private boolean hasInventory() {

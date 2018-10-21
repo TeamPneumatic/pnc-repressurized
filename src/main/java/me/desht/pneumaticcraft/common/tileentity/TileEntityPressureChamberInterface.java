@@ -371,9 +371,9 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
         }
     }
 
-    private class PressureChamberInterfaceHandler extends ItemStackHandler {
+    private class PressureChamberInterfaceHandler extends BaseItemStackHandler {
         PressureChamberInterfaceHandler() {
-            super(INVENTORY_SIZE);
+            super(TileEntityPressureChamberInterface.this, INVENTORY_SIZE);
         }
 
         @Override

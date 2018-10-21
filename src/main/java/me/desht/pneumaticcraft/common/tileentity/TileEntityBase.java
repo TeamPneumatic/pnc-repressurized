@@ -683,7 +683,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
 
     public class UpgradeHandler extends FilteredItemStackHandler {
         UpgradeHandler(int upgradeSize) {
-            super(upgradeSize);
+            super(TileEntityBase.this, upgradeSize);
         }
 
         @Override

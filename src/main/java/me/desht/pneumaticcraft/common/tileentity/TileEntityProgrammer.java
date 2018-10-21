@@ -497,7 +497,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
 
     private class ProgrammerItemHandler extends FilteredItemStackHandler {
         ProgrammerItemHandler() {
-            super(INVENTORY_SIZE);
+            super(TileEntityProgrammer.this, INVENTORY_SIZE);
         }
 
         @Override

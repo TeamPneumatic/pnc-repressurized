@@ -323,11 +323,8 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     }
 
     private class ChargingStationHandler extends FilteredItemStackHandler {
-        private final TileEntityChargingStation te;
-
         ChargingStationHandler() {
-            super(INVENTORY_SIZE);
-            this.te = TileEntityChargingStation.this;
+            super(TileEntityChargingStation.this, INVENTORY_SIZE);
         }
         
         @Override
@@ -342,27 +339,26 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
 
         @Override
         protected void onContentsChanged(int slot) {
-            if (te.getWorld().isRemote || slot != CHARGE_INVENTORY_INDEX) return;
+            TileEntityChargingStation teCS = (TileEntityChargingStation) te;
+            if (teCS.getWorld().isRemote || slot != CHARGE_INVENTORY_INDEX) return;
 
-            te.markDirty();
-
-            if (te.chargeableInventory != null) {
-                te.chargeableInventory.saveInventory();
-                te.setChargeableInventory(null);
+            if (teCS.chargeableInventory != null) {
+                teCS.chargeableInventory.saveInventory();
+                teCS.setChargeableInventory(null);
             }
 
             ItemStack stack = getStackInSlot(slot);
             if (stack.getItem() instanceof IChargingStationGUIHolderItem) {
-                te.chargeableInventory = new ChargeableItemHandler(te);
-                te.invWrapper = new CombinedInvWrapper(te.inventory, te.chargeableInventory);
+                teCS.chargeableInventory = new ChargeableItemHandler(teCS);
+                teCS.invWrapper = new CombinedInvWrapper(teCS.inventory, teCS.chargeableInventory);
             }
-            List<EntityPlayer> players = te.getWorld().playerEntities;
+            List<EntityPlayer> players = teCS.getWorld().playerEntities;
             for(EntityPlayer player : players) {
                 if (player.openContainer instanceof ContainerChargingStationItemInventory && ((ContainerChargingStationItemInventory) player.openContainer).te == te) {
                     if (stack.getItem() instanceof IChargingStationGUIHolderItem) {
                         // player.openGui(PneumaticCraft.instance, CommonProxy.GUI_ID_PNEUMATIC_ARMOR, getWorld(), getPos().getX(), getPos().getY(), getPos().getZ());
                     } else {
-                        player.openGui(PneumaticCraftRepressurized.instance, EnumGuiId.CHARGING_STATION.ordinal(), te.getWorld(), te.getPos().getX(), te.getPos().getY(), te.getPos().getZ());
+                        player.openGui(PneumaticCraftRepressurized.instance, EnumGuiId.CHARGING_STATION.ordinal(), teCS.getWorld(), teCS.getPos().getX(), teCS.getPos().getY(), teCS.getPos().getZ());
                     }
                 }
             }

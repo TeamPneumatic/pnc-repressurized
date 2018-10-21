@@ -17,6 +17,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -38,7 +39,7 @@ import java.util.List;
 public class TileEntitySentryTurret extends TileEntityTickableBase implements IRedstoneControlled, IGUITextFieldSensitive {
 
     public static final int INVENTORY_SIZE = 4;
-    private final ItemStackHandler inventory = new TurretItemStackHandler();
+    private final ItemStackHandler inventory = new TurretItemStackHandler(this);
     @GuiSynced
     private String entityFilter = "";
     @GuiSynced
@@ -194,8 +195,8 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
     }
 
     private class TurretItemStackHandler extends FilteredItemStackHandler {
-        TurretItemStackHandler() {
-            super(INVENTORY_SIZE);
+        TurretItemStackHandler(TileEntity te) {
+            super(te, INVENTORY_SIZE);
         }
 
         @Override

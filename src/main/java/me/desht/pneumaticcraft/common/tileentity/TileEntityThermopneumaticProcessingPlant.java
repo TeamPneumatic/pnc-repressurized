@@ -62,16 +62,11 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
     @DescSynced
     private int inputAmountScaled, outputAmountScaled;
 
-    private final ItemStackHandler handler = new ItemStackHandler(INVENTORY_SIZE) {
+    private final ItemStackHandler handler = new FilteredItemStackHandler(this, INVENTORY_SIZE) {
         @Override
-        protected void onContentsChanged(int slot) {
-            markDirty();
-        }
-        
-        @Override
-        public ItemStack insertItem(int slot, ItemStack stack, boolean simulate){
-            if (stack.isEmpty() || BasicThermopneumaticProcessingPlantRecipe.recipes.stream().noneMatch(r -> r.isValidInput(stack))) return stack;
-            return super.insertItem(slot, stack, simulate);
+        public boolean test(Integer integer, ItemStack itemStack) {
+            return itemStack.isEmpty()
+                    || BasicThermopneumaticProcessingPlantRecipe.recipes.stream().anyMatch(r -> r.isValidInput(itemStack));
         }
     };
     private final ThermopneumaticFluidHandler fluidHandler = new ThermopneumaticFluidHandler();

@@ -52,7 +52,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
             "gui.tab.redstoneBehaviour.airCannon.button.highAndSpace"
     );
 
-    private final AirCannonStackHandler inventory = new AirCannonStackHandler();
+    private final AirCannonStackHandler inventory = new AirCannonStackHandler(this);
     private final Random rand = new Random();
     @DescSynced
     @LazySynced
@@ -450,8 +450,8 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     }
 
     private class AirCannonStackHandler extends FilteredItemStackHandler {
-        AirCannonStackHandler() {
-            super(INVENTORY_SIZE);
+        AirCannonStackHandler(TileEntity te) {
+            super(te, INVENTORY_SIZE);
         }
 
         @Override
@@ -461,7 +461,6 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
             } else {
                 return true;
             }
-//            return !(slot == GPS_SLOT && !itemStack.isEmpty() && itemStack.getItem() != Itemss.GPS_TOOL);
         }
 
         @Override
