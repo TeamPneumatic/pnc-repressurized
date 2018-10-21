@@ -8,21 +8,34 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ### 0.8.2-??? (unreleased)
 #### New
+* Electrostatic Compressor has been heavily reworked:
+  * No longer triggered by lightning entities. This was much too open to abuse via any other mod which can spawn a lightning entity (e.g. Psi)
+  * Instead, each compressor now has a chance to cause a fake lightning entity with a 6-block circular radius of itself
+  * Iron bars grid are still important - the fake lightning bolt must strike a connected grid to be effective
+  * Strike chance is very low in clear weather, better in the rain, and much better in a thunderstorm
+  * Strike chance can be slightly improved by adding a lightning rod: a vertical column of iron bars up to 8 blocks directly above the compressor
+  * Multiple compressors can be connected to the same grid: generated pressure will be shared, as before.
+* Added buttons to Air Cannon GUI allowing the force to be throttled between 0% and 100%.  Allows finer control over the cannon's range than just adding Range Upgrades.  The Air Cannon will now also aim lower if it can.
 * New particle effects for air rendering (air leaks, pressure chamber, jet boots...)
 #### Updates
 * Client-side rendering performance improvement when highlighting camouflageable blocks (while holding the Camouflage Applicator).
 * Immersive Petroleum Gasoline is now usable as a fuel in Liquid Compressors; quality is equivalent to PneumaticCraft Gasoline.
 * Some more Pressure Chamber work:
   * Client-side rendering (particles and items in chamber) are skipped if the chamber multiblock has no glass blocks.
+  * Particle rendering is skipped if the player is more than 16 blocks away from the chamber (specifically: the chamber's primary valve).
   * A particle effect is played when the multiblock forms.
-  * Air particle density in the chamber responds better to changes in chamber pressure (better syncing to clients).
+  * Air particle density in the chamber now responds better to changes in chamber pressure (better syncing to clients).
   * Pressure Chamber Interface door open/close sound is now a bit louder, but also no longer repeatedly plays over itself.
 * Immersive Petroleum Gasoline is now accepted as a fuel in the liquid compressors by default; it's equivalent in quality to PneumaticCraft's Fuel.
+* Sneak-wrenching a pneumatic machine now preserves any stored air in the dropped block (breaking the machine with a pick still loses stored air).
+* Air leak sound pitch is now somewhat dependent on the pressure of the leak (higher pressure = higher-pitched leak sound)
 #### Fixes
 * Fixed an item dupe in the Pressure Chamber under some fairly specific circumstances (related to performance improvements in 0.8.1).
 * Fixed camouflageable blocks not being breakable with a pick (only a wrench) - related to camouflage updates in 0.8.1.
 * Targeting Pressure Tube modules now works correctly for TOP & WAILA information display.
-* Fixed some JEI Pressure Chamber recipes not showing the correct number of ingredients for some recipes (items added by Oredict key).
+* Fixed some JEI Pressure Chamber recipes not showing the correct number of ingredients for some recipes (those items added by oredict key).
+* Fixed an arithmetic rounding error causing Speed Upgrades to be less effective than they should have been in the Charging Station.
+* Fixed problem with the Pneumatic Armor GUI causing a client crash when opened.  I couldn't reproduce this myself, but I've had confirmation that my fix appears to have succeeded...
 
 ### 0.8.1-274 (8 Oct 2018)
 #### Updates
