@@ -116,7 +116,7 @@ public class AirHandler implements IAirHandler {
 
     private void doSecurityAirChecks() {
         if (getPressure() >= dangerPressure - 0.1) {
-            airLeak(EnumFacing.DOWN);
+            airLeak(EnumFacing.UP);
         }
 
         // Remove any remaining air
@@ -303,8 +303,8 @@ public class AirHandler implements IAirHandler {
         double motionY = side.getYOffset();
         double motionZ = side.getZOffset();
         if (soundCounter <= 0) {
-            soundCounter = 20;
-            float pitch = MathHelper.clamp(1.0f + ((getPressure() - 3) / 10), 0.8f, 1.5f);
+            float pitch = MathHelper.clamp(1.0f + ((getPressure() - 3) / 10), 0.8f, 1.2f);
+            soundCounter = (int) (20 / pitch);
             NetworkHandler.sendToAllAround(new PacketPlaySound(Sounds.LEAKING_GAS_SOUND, SoundCategory.BLOCKS, getPos().getX(), getPos().getY(), getPos().getZ(), 0.1F, pitch, true), getWorld());
         }
 
