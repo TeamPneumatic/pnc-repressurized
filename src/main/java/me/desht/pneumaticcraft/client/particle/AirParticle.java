@@ -45,8 +45,8 @@ public class AirParticle extends Particle {
         }
 
         // fades out and gets bigger as it gets older
-        multipleParticleScaleBy(1.02f);
-        particleAlpha *= 0.98;
+        multipleParticleScaleBy(1.04f);
+        particleAlpha *= 0.975;
 
         if (world.rand.nextInt(5) == 0) {
             motionX += world.rand.nextDouble() * 0.1 - 0.05;
