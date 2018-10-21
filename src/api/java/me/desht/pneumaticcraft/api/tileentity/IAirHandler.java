@@ -165,17 +165,20 @@ public interface IAirHandler extends IManoMeasurable, IUpgradeAcceptor {
     void setAirListener(IAirListener airListener);
 
     /**
-     * Creates an air connection with another handler. Can be used to connect up pneumatic machines that aren't neighboring, like AE2's P2P tunnels.
-     * This is a custom method that isn't necessary 99% of the cases. Only when you want to connect two IAirHandler's that aren't adjacent to eachother in the world you should need this.
+     * Creates an air connection with another handler. Can be used to connect up pneumatic machines that aren't
+     * neighboring, like AE2's P2P tunnels.  This is a custom method that isn't necessary 99% of the cases. Only when
+     * you want to connect two IAirHandler's that aren't adjacent to each other in the world you should need this.  An
+     * example is the auxiliary valves in a pressure chamber multiblock.
      *
-     * @param otherHandler
+     * @param otherHandler the other air handler object
      */
     void createConnection(@Nonnull IAirHandler otherHandler);
 
     /**
-     * Remove a connection created with createConnection. You need to call this when one of the hosts of this IAirHandlers is invalidated.
+     * Remove a connection created with createConnection. You need to call this when one of the hosts of this
+     * IAirHandlers is invalidated.
      *
-     * @param otherHandler
+     * @param otherHandler the other air handler object
      */
     void removeConnection(@Nonnull IAirHandler otherHandler);
 

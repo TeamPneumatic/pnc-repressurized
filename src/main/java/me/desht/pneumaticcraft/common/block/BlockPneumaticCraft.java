@@ -8,6 +8,7 @@ import mcjty.theoneprobe.api.ProbeMode;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.block.IPneumaticWrenchable;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.api.tileentity.IPneumaticMachine;
 import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
@@ -19,7 +20,6 @@ import me.desht.pneumaticcraft.common.thirdparty.theoneprobe.TOPCallback;
 import me.desht.pneumaticcraft.common.thirdparty.waila.IInfoForwarder;
 import me.desht.pneumaticcraft.common.tileentity.*;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
-import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.ModIds;
 import net.minecraft.block.Block;
@@ -74,6 +74,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
 
     private static final String NBT_UPGRADE_INVENTORY = "UpgradeInventory";
     private static final String NBT_SIDECONFIG = "SideConfiguration";
+    private static final String NBT_AIR_AMOUNT = "AirAmount";
 
     private AxisAlignedBB bounds = FULL_BLOCK_AABB;
 
@@ -169,6 +170,10 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
         if (te instanceof ISideConfigurable && stack.hasTagCompound() && stack.getTagCompound().hasKey(NBT_SIDECONFIG)) {
             NBTTagCompound tag = stack.getTagCompound().getCompoundTag(NBT_SIDECONFIG);
             SideConfigurator.readFromNBT(tag, ((ISideConfigurable) te));
+        }
+        if (te instanceof IPneumaticMachine && stack.hasTagCompound() && stack.getTagCompound().hasKey(NBT_AIR_AMOUNT)) {
+            int air = stack.getTagCompound().getInteger(NBT_AIR_AMOUNT);
+            ((IPneumaticMachine) te).getAirHandler(null).addAir(air);
         }
     }
 
@@ -321,15 +326,24 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
     @SideOnly(Side.CLIENT)
     @Override
     public void addInformation(ItemStack stack, World world, List<String> curInfo, ITooltipFlag flag) {
-        if (stack.hasTagCompound() && stack.getTagCompound().hasKey(ISerializableTanks.SAVED_TANKS, Constants.NBT.TAG_COMPOUND)) {
-            NBTTagCompound tag = stack.getTagCompound().getCompoundTag(ISerializableTanks.SAVED_TANKS);
-            for (String s : tag.getKeySet()) {
-                NBTTagCompound tankTag = tag.getCompoundTag(s);
-                FluidTank tank = new FluidTank(tankTag.getInteger("Amount"));
-                tank.readFromNBT(tankTag);
-                FluidStack fluidStack = tank.getFluid();
-                if (fluidStack != null && fluidStack.amount > 0) {
-                    curInfo.add(fluidStack.getFluid().getLocalizedName(fluidStack) + ": " + fluidStack.amount + "mB");
+        if (stack.hasTagCompound()) {
+            if (stack.getTagCompound().hasKey(ISerializableTanks.SAVED_TANKS, Constants.NBT.TAG_COMPOUND)) {
+                NBTTagCompound tag = stack.getTagCompound().getCompoundTag(ISerializableTanks.SAVED_TANKS);
+                for (String s : tag.getKeySet()) {
+                    NBTTagCompound tankTag = tag.getCompoundTag(s);
+                    FluidTank tank = new FluidTank(tankTag.getInteger("Amount"));
+                    tank.readFromNBT(tankTag);
+                    FluidStack fluidStack = tank.getFluid();
+                    if (fluidStack != null && fluidStack.amount > 0) {
+                        curInfo.add(fluidStack.getFluid().getLocalizedName(fluidStack) + ": " + fluidStack.amount + "mB");
+                    }
+                }
+            }
+            if (stack.getTagCompound().hasKey(NBT_AIR_AMOUNT, Constants.NBT.TAG_INT)) {
+                int air = stack.getTagCompound().getInteger(NBT_AIR_AMOUNT);
+                TileEntity te = createTileEntity(world, getDefaultState());
+                if (te instanceof IPneumaticMachine) {
+                    curInfo.add("Stored air: " + (air + ((IPneumaticMachine) te).getAirHandler(null).getVolume()) + "mL");
                 }
             }
         }
@@ -445,6 +459,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
         TileEntity te = world.getTileEntity(pos);
         if (te != null && drops.size() > 0) {
             ItemStack teStack = drops.get(0);
+            teStack.setTagCompound(new NBTTagCompound());
             if (te instanceof ISerializableTanks) {
                 ((ISerializableTanks) te).serializeTanks(teStack);
             }
@@ -452,18 +467,25 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
                 TileEntityBase.UpgradeHandler handler = ((TileEntityBase) te).getUpgradesInventory();
                 for (int i = 0; i < handler.getSlots(); i++) {
                     if (!handler.getStackInSlot(i).isEmpty()) {
-                        NBTUtil.initNBTTagCompound(teStack);
                         teStack.getTagCompound().setTag(NBT_UPGRADE_INVENTORY, ((TileEntityBase) te).getUpgradesInventory().serializeNBT());
                         break;
+                    }
+                }
+                if (te instanceof IPneumaticMachine) {
+                    IAirHandler airHandler = ((IPneumaticMachine) te).getAirHandler(null);
+                    if (airHandler != null) {
+                        teStack.getTagCompound().setInteger(NBT_AIR_AMOUNT, airHandler.getAir());
                     }
                 }
             }
             if (te instanceof ISideConfigurable) {
                 NBTTagCompound tag = SideConfigurator.writeToNBT((ISideConfigurable) te);
                 if (!tag.isEmpty()) {
-                    NBTUtil.initNBTTagCompound(teStack);
                     teStack.getTagCompound().setTag(NBT_SIDECONFIG, SideConfigurator.writeToNBT((ISideConfigurable) te));
                 }
+            }
+            if (teStack.hasTagCompound() && teStack.getTagCompound().isEmpty()) {
+                teStack.setTagCompound(null);
             }
         }
     }

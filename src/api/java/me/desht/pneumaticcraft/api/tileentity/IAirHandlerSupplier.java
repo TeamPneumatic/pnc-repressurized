@@ -13,17 +13,18 @@ public interface IAirHandlerSupplier {
     /**
      * Returns a new instance of an IAirHandler. This handler handles everything pressurized air related: Air dispersion,
      * blowing up when the pressure gets too high, providing a method for releasing air into the atmosphere...
-     * PROVIDED THAT THE FOLLOWING METHODS ARE FORWARDED TO THIS INSTANCE:
-     * {@link net.minecraft.util.ITickable#update()},
-     * {@link net.minecraft.tileentity.TileEntity#writeToNBT(net.minecraft.nbt.NBTTagCompound)}
-     * {@link net.minecraft.tileentity.TileEntity#readFromNBT(net.minecraft.nbt.NBTTagCompound)}
-     * {@link net.minecraft.tileentity.TileEntity#validate()}
+     * <strong>provided that the following methods are forwarded to the IAirHandler object:</strong>
+     * <ul>
+     * <li>{@link net.minecraft.util.ITickable#update()}</li>
+     * <li>{@link net.minecraft.tileentity.TileEntity#writeToNBT(net.minecraft.nbt.NBTTagCompound)}</li>
+     * <li>{@link net.minecraft.tileentity.TileEntity#readFromNBT(net.minecraft.nbt.NBTTagCompound)}</li>
+     * <li>{@link net.minecraft.tileentity.TileEntity#validate()}</li>
+     * </ul>
      *
-     * @param dangerPressure   minimal pressure on which this machine can explode (the yellow to red transition)
-     * @param criticalPressure the absolute maximum pressure the machine can take 7 bar in tier 1 machines.
-     * @param volume           Volume of the machine's internal storage. These vary from 1000mL for small machines to 10,000mL for the big ones.
-     *                         The higher the volume the slower the machine will charge/discharge.
-     * @return the air handler
+     * @param dangerPressure   minimum pressure at which this machine can explode (the yellow to red transition)
+     * @param criticalPressure the absolute maximum pressure the machine can take; 7 bar in tier 1 machines, 25 bar in tier 2 machines
+     * @param volume           volume of the machine's internal storage; the pressure (in bar) is the actual amount of air in the machine divided by its volume
+     * @return the air handler object
      */
     IAirHandler createAirHandler(float dangerPressure, float criticalPressure, int volume);
 }
