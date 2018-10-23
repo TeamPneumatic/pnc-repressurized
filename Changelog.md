@@ -10,8 +10,8 @@ Changes are in reverse chronological order; newest changes at the top.
 #### New
 * Electrostatic Compressor has been heavily reworked:
   * No longer triggered by lightning entities. This was much too open to abuse via any other mod which can spawn a lightning entity (e.g. Psi)
-  * Instead, each compressor now has a chance to cause a fake lightning entity with a 6-block circular radius of itself
-  * Iron bars grid are still important - the fake lightning bolt must strike a connected grid to be effective
+  * Instead, each compressor now has a chance to cause a fake lightning entity random with a 6-block circular radius of itself
+  * Iron bars grid are still important - the fake lightning bolt must strike a connected grid to be effective. Although the bars must be connected, they may be up to 5 blocks above or 5 blocks below the compressor.
   * Strike chance is very low in clear weather, better in the rain, and much better in a thunderstorm
   * Strike chance can be slightly improved by adding a lightning rod: a vertical column of iron bars up to 8 blocks directly above the compressor
   * Multiple compressors can be connected to the same grid: generated pressure will be shared, as before.
