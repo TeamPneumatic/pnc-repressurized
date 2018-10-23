@@ -309,7 +309,7 @@ public class TileEntityRefinery extends TileEntityTickableBase
         }
         if (value != comparatorValue) {
             comparatorValue = value;
-            updateNeighbours();
+            getWorld().updateComparatorOutputLevel(getPos(), getBlockType());
         }
     }
 

@@ -75,6 +75,26 @@ public interface IHeatExchangerLogic {
     double getThermalResistance();
 
     /**
+     * Get the amount of heat extracted on this side so far. This will always be 0 for non-transitioning heat
+     * behaviours. The primary reason for this method is to track heat extraction separately from individual heat
+     * behaviour objects to stop exploits involving repeatedly breaking and replacing blocks/fluids to avoid
+     * transitions occurring.
+     *
+     * @param side the side
+     * @return the amount of heat extracted
+     */
+    double getHeatExtracted(EnumFacing side);
+
+    /**
+     * Set the amout of heat extracted on this side; called when a transition occurs to update the heat level.
+     * See {@link #getHeatExtracted(EnumFacing)} for more info.
+     *
+     * @param side the side
+     * @param heat the amount of heat
+     */
+    void setHeatExtracted(EnumFacing side, double heat);
+
+    /**
      * Set this heat exchanger's thermal capacity.
      * <p>
      * The higher the capacity, the more heat can be 'stored'. This means that an object with a high capacity can heat
@@ -101,5 +121,4 @@ public interface IHeatExchangerLogic {
      * @param amount the heat amount
      */
     void addHeat(double amount);
-
 }

@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.heat.behaviour;
 import me.desht.pneumaticcraft.api.heat.HeatBehaviour;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.lib.Log;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -57,13 +58,13 @@ public class HeatBehaviourManager {
         }
     }
 
-    public void addHeatBehaviours(World world, BlockPos pos, IHeatExchangerLogic logic, List<HeatBehaviour> list) {
+    public void addHeatBehaviours(World world, BlockPos pos, EnumFacing direction, IHeatExchangerLogic logic, List<HeatBehaviour> list) {
         for (HeatBehaviour behaviour : behaviours.values()) {
-            behaviour.initialize(logic, world, pos);
+            behaviour.initialize(logic, world, pos, direction);
             if (behaviour.isApplicable()) {
                 try {
                     behaviour = behaviour.getClass().newInstance();
-                    behaviour.initialize(logic, world, pos);
+                    behaviour.initialize(logic, world, pos, direction);
                     list.add(behaviour);
                 } catch (Exception e) {
                     e.printStackTrace();

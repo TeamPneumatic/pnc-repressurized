@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.api.heat;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -21,18 +22,20 @@ public abstract class HeatBehaviour<Tile extends TileEntity> {
     private BlockPos pos;
     private Tile cachedTE;
     private IBlockState blockState;
+    private EnumFacing direction;  // direction of this behaviour from the tile entity's PoV
 
     /**
      * Called by the connected IHeatExchangerLogic.
-     *
      * @param connectedHeatLogic
      * @param world
      * @param pos
+     * @param direction direction of this behaviour from the tile entity's PoV
      */
-    public void initialize(IHeatExchangerLogic connectedHeatLogic, World world, BlockPos pos) {
+    public void initialize(IHeatExchangerLogic connectedHeatLogic, World world, BlockPos pos, EnumFacing direction) {
         this.connectedHeatLogic = connectedHeatLogic;
         this.world = world;
         this.pos = pos;
+        this.direction = direction;
         cachedTE = null;
         blockState = null;
     }
@@ -47,6 +50,20 @@ public abstract class HeatBehaviour<Tile extends TileEntity> {
 
     public BlockPos getPos() {
         return pos;
+    }
+
+    public EnumFacing getDirection() {
+        return direction;
+    }
+
+    /**
+     * Get the amount of heat extracted from this behaviour (since the last transition).  This is always 0.0 for
+     * non-transitioning heat behaviours.
+     *
+     * @return the amount of heat extracted
+     */
+    public double getHeatExtracted() {
+        return 0.0;
     }
 
     public Tile getTileEntity() {

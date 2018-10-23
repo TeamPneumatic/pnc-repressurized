@@ -16,12 +16,15 @@ public class HeatExchangerLogic implements IHeatExchangerLogic {
     private final Set<IHeatExchangerLogic> hullExchangers = new HashSet<>();
     private final Set<IHeatExchangerLogic> connectedExchangers = new HashSet<>();
     private List<HeatBehaviour> behaviours = new ArrayList<>();
-    private List<HeatBehaviour> newBehaviours;//Required to prevent a CME
+    private List<HeatBehaviour> newBehaviours; //Required to prevent a CME
     @GuiSynced
-    private double temperature = 295;//degrees Kelvin, 20 degrees by default.
+    private double temperature = 295; //degrees Kelvin, 20 degrees by default.
     private double thermalResistance = 1;
     private double thermalCapacity = 1;
     private static boolean isAddingOrRemovingLogic;
+    // remember how much heat has been extracted on each side, to stop exploits involving repeatedly removing
+    // and replacing blocks/fluids to avoid a transition
+    private final double[] heatExtracted = new double[6];
 
     @Override
     public void initializeAsHull(World world, BlockPos pos, EnumFacing... validSides) {
@@ -31,16 +34,26 @@ public class HeatExchangerLogic implements IHeatExchangerLogic {
         }
         hullExchangers.clear();
         newBehaviours = new ArrayList<>();
-        for (EnumFacing d : EnumFacing.VALUES) {
-            if (isSideValid(validSides, d)) {
-                HeatBehaviourManager.getInstance().addHeatBehaviours(world, pos.offset(d), this, newBehaviours);
-                IHeatExchangerLogic logic = HeatExchangerManager.getInstance().getLogic(world, pos.offset(d), d.getOpposite());
+        for (EnumFacing dir : EnumFacing.VALUES) {
+            if (isSideValid(validSides, dir)) {
+                HeatBehaviourManager.getInstance().addHeatBehaviours(world, pos.offset(dir), dir, this, newBehaviours);
+                IHeatExchangerLogic logic = HeatExchangerManager.getInstance().getLogic(world, pos.offset(dir), dir.getOpposite());
                 if (logic != null) {
                     hullExchangers.add(logic);
                     addConnectedExchanger(logic);
                 }
             }
         }
+    }
+
+    @Override
+    public double getHeatExtracted(EnumFacing side) {
+        return heatExtracted[side.getIndex()];
+    }
+
+    @Override
+    public void setHeatExtracted(EnumFacing side, double heat) {
+        heatExtracted[side.getIndex()] = heat;
     }
 
     private boolean isSideValid(EnumFacing[] validSides, EnumFacing side) {
@@ -135,7 +148,7 @@ public class HeatExchangerLogic implements IHeatExchangerLogic {
             temperature = 295;
             return;
         }
-        if (newBehaviours != null) {
+            if (newBehaviours != null) {
             List<HeatBehaviour> oldBehaviours = behaviours;
             behaviours = newBehaviours;
             newBehaviours = null;
@@ -151,9 +164,11 @@ public class HeatExchangerLogic implements IHeatExchangerLogic {
         Iterator<HeatBehaviour> iterator = behaviours.iterator();
         while (iterator.hasNext()) {
             HeatBehaviour behaviour = iterator.next();
-            if (behaviour.getWorld() != null) {//upon loading from NBT the world is null. gets initialized once 'initializeAsHull' is invoked.
+            // upon loading from NBT the world is null. gets initialized once 'initializeAsHull' is invoked.
+            if (behaviour.getWorld() != null) {
                 if (behaviour.isApplicable()) {
                     behaviour.update();
+                    setHeatExtracted(behaviour.getDirection(), behaviour.getHeatExtracted());
                 } else {
                     iterator.remove();
                 }
@@ -168,7 +183,7 @@ public class HeatExchangerLogic implements IHeatExchangerLogic {
         exchange(logic, logic2, 1);
     }
 
-    public static void exchange(IHeatExchangerLogic logic, IHeatExchangerLogic logic2, double dispersionDivider) {
+    private static void exchange(IHeatExchangerLogic logic, IHeatExchangerLogic logic2, double dispersionDivider) {
         if (logic.getThermalCapacity() < 0.1D) {
             logic.setTemperature(295);
             return;

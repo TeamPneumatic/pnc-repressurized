@@ -57,6 +57,15 @@ public class HeatExchangerLogicConstant implements IHeatExchangerLogic {
     }
 
     @Override
+    public double getHeatExtracted(EnumFacing side) {
+        return 0;
+    }
+
+    @Override
+    public void setHeatExtracted(EnumFacing side, double heat) {
+    }
+
+    @Override
     public void writeToNBT(NBTTagCompound tag) {
     }
 
