@@ -30,7 +30,7 @@ public interface ICustomBlockInteract {
      * <p>
      * For every position in the specified area, the drone will visit every block (ordered from closest to furthest). It
      * will call this method with {@code simulate} = true. If this method returns true, the drone will navigate to this
-     * location, and call this method again with {@code simulate} = false It will keep doing this until this method
+     * location, and call this method again with {@code simulate} = false. It will keep doing this until this method
      * returns false.
      * <p>
      * In the puzzle piece GUI, players can specify a 'use count' and fill in the maximum count they want

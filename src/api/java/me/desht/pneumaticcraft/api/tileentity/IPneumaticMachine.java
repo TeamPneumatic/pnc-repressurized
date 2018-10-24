@@ -10,21 +10,20 @@ import net.minecraft.world.IBlockAccess;
  */
 public interface IPneumaticMachine {
     /**
-     * In your TileEntity class which is implementing this interface you should keep a reference of an IAirHandler.
-     * You can create one by calling {@link IAirHandlerSupplier#createAirHandler(float, float, int)}.
-     * Do this when your TileEntity is initialized, i.e. getPos().getX(),getPos().getY(),getPos().getZ() and getWorld() have a value.
-     * Return that reference from this method.
+     * In your TileEntity class which is implementing this interface you should keep a reference of an IAirHandler,
+     * which you can get by calling {@link IAirHandlerSupplier#createAirHandler(float, float, int)}.  You can do this
+     * in the TileEntity constructor.
      * <p>
-     * <strong>IMPORTANT</strong>: Your tile entity must implement {@link ITickable}, and you need to forward {@link ITickable#update()},
+     * <strong>IMPORTANT</strong>: Your tile entity must implement {@link ITickable}, and you must override {@link ITickable#update()},
      * {@link net.minecraft.tileentity.TileEntity#writeToNBT(net.minecraft.nbt.NBTTagCompound)} ,
      * {@link net.minecraft.tileentity.TileEntity#readFromNBT(net.minecraft.nbt.NBTTagCompound)} and
      * {@link net.minecraft.tileentity.TileEntity#validate()} (with the implementing TileEntity as additional parameter)
-     * to the IAirHandler.
+     * to also call the corresponding IAirHandler methods.
      * <p>
-     * Apart from that you'll need to forward {@link net.minecraft.block.Block#onNeighborChange(IBlockAccess, BlockPos, BlockPos)}
-     * from the implementing block to the IAirHandler.
+     * In addition, you must override {@link net.minecraft.block.Block#onNeighborChange(IBlockAccess, BlockPos, BlockPos)}
+     * in the tile entity's block to call {@link IAirHandler#onNeighborChange()}.
      *
-     * @return a valid IAirHandler when connectable on this side. If not, return null.
+     * @return a valid IAirHandler when connectable on this side, null otherwise
      */
     IAirHandler getAirHandler(EnumFacing side);
 }
