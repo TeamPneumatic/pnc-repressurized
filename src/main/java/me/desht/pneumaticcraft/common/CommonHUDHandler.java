@@ -4,7 +4,6 @@ import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IHackableBlock;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IHackableEntity;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
-import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IPressurizable;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.*;
@@ -81,17 +80,7 @@ public class CommonHUDHandler {
     private int prevJetBootsAirUsage;  // so we know when the jet boots are starting up
     private int jetBootsActiveTicks;
 
-    private static final UUID PNEUMATIC_SPEED_ID[] = {
-            UUID.fromString("6ecaf25b-9619-4fd1-ae4c-c2f1521047d7"),
-            UUID.fromString("091a3128-1fa9-4f03-8e30-8848d370caa2"),
-            UUID.fromString("8dd25db8-102e-4960-aeb0-36417d200957")
-    };
-    private static final AttributeModifier PNEUMATIC_SPEED_BOOST[] = new AttributeModifier[PneumaticValues.PNEUMATIC_LEGS_MAX_SPEED];
-    static {
-        for (int i = 0; i < PNEUMATIC_SPEED_BOOST.length; i++) {
-            PNEUMATIC_SPEED_BOOST[i] = (new AttributeModifier(PNEUMATIC_SPEED_ID[i], "Pneumatic speed boost" + i, 0.25 * (i + 1), 2)).setSaved(false);
-        }
-    }
+    private static final UUID PNEUMATIC_SPEED_ID = UUID.fromString("6ecaf25b-9619-4fd1-ae4c-c2f1521047d7");
 
     public CommonHUDHandler() {
         for (EntityEquipmentSlot slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
@@ -144,7 +133,7 @@ public class CommonHUDHandler {
     }
 
     private void tick(EntityPlayer player) {
-        for (EntityEquipmentSlot slot :UpgradeRenderHandlerList.ARMOR_SLOTS) {
+        for (EntityEquipmentSlot slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
             tickArmorPiece(player, slot);
         }
         if (!player.world.isRemote) handleHacking(player);
@@ -156,7 +145,7 @@ public class CommonHUDHandler {
         if (armorStack.getItem() instanceof ItemPneumaticArmor) {
             armorPressure[slot.getIndex()] = ((IPressurizable) armorStack.getItem()).getPressure(armorStack);
             if (ticksSinceEquip[slot.getIndex()] == 0) {
-                checkArmorInventory(player, slot);
+                initArmorInventory(player, slot);
             }
             ticksSinceEquip[slot.getIndex()]++;
             if (armorEnabled && armorPressure[slot.getIndex()] > 0F) {
@@ -194,7 +183,11 @@ public class CommonHUDHandler {
                 player.stepHeight = 0.6F;
                 break;
             case LEGS:
-                resetSpeedAttributes(player);
+                IAttributeInstance attr = player.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
+                AttributeModifier modifier = attr.getModifier(PNEUMATIC_SPEED_ID);
+                if (modifier != null) {
+                    attr.removeModifier(modifier);
+                }
                 break;
         }
     }
@@ -236,40 +229,33 @@ public class CommonHUDHandler {
     private static final Map<String,Vec3d> moveMap = new HashMap<>();
 
     private void handleLeggingsSpeedBoost(EntityPlayer player, ItemStack armorStack) {
-        if (!player.world.isRemote && (player.ticksExisted & 0xf) == 9) {
-            // Speed Boost (only check every 16 ticks, for performance reasons)
-            IAttributeInstance attr = resetSpeedAttributes(player);
-
+        if (!player.world.isRemote) {
             ItemStack legsStack = player.getItemStackFromSlot(EntityEquipmentSlot.LEGS);
-            if (legsStack.getItem() instanceof ItemPneumaticArmor && isRunSpeedEnabled()) {
-                int speedUpgrades = getUpgradeCount(EntityEquipmentSlot.LEGS, IItemRegistry.EnumUpgrade.SPEED, PneumaticValues.PNEUMATIC_LEGS_MAX_SPEED);
-                ItemPneumaticArmor legs = (ItemPneumaticArmor) legsStack.getItem();
-                if (legs.getPressure(legsStack) > 0.0F && speedUpgrades > 0) {
-                    attr.applyModifier(PNEUMATIC_SPEED_BOOST[speedUpgrades - 1]);
-                    Vec3d prev = moveMap.get(player.getName());
-                    boolean moved = prev != null && (Math.abs(player.posX - prev.x) > 0.0001 || Math.abs(player.posZ - prev.z) > 0.0001);
-                    if (moved && player.onGround && !player.isInsideOfMaterial(Material.WATER)) {
-                        addAir(legsStack, EntityEquipmentSlot.LEGS, -PneumaticValues.PNEUMATIC_LEGS_SPEED_USAGE * 16 * speedUpgrades);
+            if (legsStack.getItem() instanceof ItemPneumaticArmor) {
+                int speedUpgrades = getUpgradeCount(EntityEquipmentSlot.LEGS, EnumUpgrade.SPEED, PneumaticValues.PNEUMATIC_LEGS_MAX_SPEED);
+                if (getArmorPressure(EntityEquipmentSlot.LEGS) > 0.0F && speedUpgrades > 0) {
+                    double speedBoost = isRunSpeedEnabled() ? PneumaticValues.PNEUMATIC_LEGS_BOOST_PER_UPGRADE * speedUpgrades : 0.0;
+                    IAttributeInstance attr = player.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
+                    AttributeModifier modifier = attr.getModifier(PNEUMATIC_SPEED_ID);
+                    if (modifier == null || modifier.getAmount() != speedBoost) {
+                        if (modifier != null) attr.removeModifier(modifier);
+                        attr.applyModifier(new AttributeModifier(PNEUMATIC_SPEED_ID, SharedMonsterAttributes.MOVEMENT_SPEED.getName(), speedBoost, 1));
+                    }
+                    if (isRunSpeedEnabled()) {
+                        Vec3d prev = moveMap.get(player.getName());
+                        boolean moved = prev != null && (Math.abs(player.posX - prev.x) > 0.0001 || Math.abs(player.posZ - prev.z) > 0.0001);
+                        if (moved && player.onGround && !player.isInsideOfMaterial(Material.WATER)) {
+                            addAir(legsStack, EntityEquipmentSlot.LEGS, -PneumaticValues.PNEUMATIC_LEGS_SPEED_USAGE * speedUpgrades);
+                        }
                     }
                 }
-            }
-
-            moveMap.put(player.getName(), new Vec3d(player.posX, player.posY, player.posZ));
-        }
-    }
-
-    private IAttributeInstance resetSpeedAttributes(EntityPlayer player) {
-        IAttributeInstance attr = player.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
-        for (int i = 0; i < PneumaticValues.PNEUMATIC_LEGS_MAX_SPEED; i++) {
-            if (attr.getModifier(PNEUMATIC_SPEED_ID[i]) != null) {
-                attr.removeModifier(PNEUMATIC_SPEED_ID[i]);
+                moveMap.put(player.getName(), new Vec3d(player.posX, player.posY, player.posZ));
             }
         }
-        return attr;
     }
 
     private void handleJetBoots(EntityPlayer player, ItemStack bootsStack) {
-        int jetbootsCount = getUpgradeCount(EntityEquipmentSlot.FEET, IItemRegistry.EnumUpgrade.JET_BOOTS, PneumaticValues.PNEUMATIC_JET_BOOTS_MAX_UPGRADES);
+        int jetbootsCount = getUpgradeCount(EntityEquipmentSlot.FEET, EnumUpgrade.JET_BOOTS, PneumaticValues.PNEUMATIC_JET_BOOTS_MAX_UPGRADES);
         if (jetbootsCount == 0) return;
 
         int jetbootsAirUsage = 0;
@@ -288,7 +274,7 @@ public class CommonHUDHandler {
                 jetbootsAirUsage = PneumaticValues.PNEUMATIC_JET_BOOTS_USAGE * jetbootsCount;
                 jetBootsActiveTicks++;
             } else if (isJetBootsEnabled() && !player.onGround) {
-                // jetboots not firing, but enabled - slowly descend
+                // jetboots not firing, but enabled - slowly descend (or hover)
                 player.motionY = player.isSneaking() ? -0.45 : -0.15 + 0.015 * jetbootsCount;
                 player.fallDistance = 0;
                 jetbootsAirUsage = (int) (PneumaticValues.PNEUMATIC_JET_BOOTS_USAGE * (player.isSneaking() ? 0.25F : 0.5F));
@@ -427,17 +413,22 @@ public class CommonHUDHandler {
         }
     }
 
-    public void checkArmorInventory(EntityPlayer player, EntityEquipmentSlot slot) {
+    /**
+     * Scan the armor piece in the given slot, and record all installed upgrades for fast access later on.  Upgrades
+     * can't be changed without removing and re-equipping the piece, so we can cache quite a lot of useful info.
+     *
+     * @param player player wearing the armor piece
+     * @param slot the equipment slot
+     */
+    public void initArmorInventory(EntityPlayer player, EntityEquipmentSlot slot) {
         // armorStack has already been validated as a pneumatic armor piece at this point
         ItemStack armorStack = player.getItemStackFromSlot(slot);
 
         ItemStack[] upgradeStacks = UpgradableItemUtils.getUpgradeStacks(armorStack);
-//        Log.info("ISSUE254: upgrade stacks in " + slot + " = " + Arrays.toString(upgradeStacks));
         Arrays.fill(upgradeRenderersInserted[slot.getIndex()], false);
         for (int i = 0; i < upgradeRenderersInserted[slot.getIndex()].length; i++) {
             upgradeRenderersInserted[slot.getIndex()][i] = isModuleEnabled(upgradeStacks, UpgradeRenderHandlerList.instance().getHandlersForSlot(slot).get(i));
         }
-//        Log.info("ISSUE254: inserted in " + slot + " = " + Arrays.toString(upgradeRenderersInserted[slot.getIndex()]));
 
         Arrays.fill(upgradeMatrix[slot.getIndex()], 0);
         for (ItemStack stack : upgradeStacks) {
@@ -445,7 +436,6 @@ public class CommonHUDHandler {
                 upgradeMatrix[slot.getIndex()][((ItemMachineUpgrade) stack.getItem()).getUpgradeType().ordinal()] += stack.getCount();
             }
         }
-//        Log.info("ISSUE254: upgrade matrix for " + slot + " = " + Arrays.toString(upgradeMatrix[slot.getIndex()]));
 
         magnetRadius = PneumaticValues.MAGNET_BASE_RANGE
                 + Math.min(getUpgradeCount(EntityEquipmentSlot.CHEST, EnumUpgrade.MAGNET), PneumaticValues.MAGNET_MAX_UPGRADES);

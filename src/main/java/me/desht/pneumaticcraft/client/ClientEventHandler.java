@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.client;
 
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
+import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.client.gui.IGuiDrone;
 import me.desht.pneumaticcraft.client.model.pressureglass.PressureGlassBakedModel;
@@ -24,6 +25,7 @@ import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Names;
+import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -43,6 +45,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.MobEffects;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBucket;
@@ -450,6 +453,28 @@ public class ClientEventHandler {
         double a2 = Math.acos(dot) * .5f;
         float s = (float) Math.sin(a2);
         return new Quaternion((float) rotAxis.x * s, (float) rotAxis.y * s, (float) rotAxis.z * s, (float) Math.cos(a2));
+    }
+
+    @SubscribeEvent
+    public void adjustFOVEvent(FOVUpdateEvent event) {
+        if (ConfigHandler.client.leggingsFOVfactor <= 0f) return;
+
+        EntityPlayer player = event.getEntity();
+        float newFOV = event.getFov();
+
+        if (player.getItemStackFromSlot(EntityEquipmentSlot.LEGS).getItem() instanceof ItemPneumaticArmor) {
+            CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer(player);
+            if (handler.isRunSpeedEnabled() && handler.getArmorPressure(EntityEquipmentSlot.LEGS) > 0f
+                    && handler.getUpgradeCount(EntityEquipmentSlot.LEGS, IItemRegistry.EnumUpgrade.SPEED) > 0) {
+                float boost = handler.getUpgradeCount(EntityEquipmentSlot.LEGS, IItemRegistry.EnumUpgrade.SPEED, PneumaticValues.PNEUMATIC_LEGS_MAX_SPEED)
+                        * PneumaticValues.PNEUMATIC_LEGS_BOOST_PER_UPGRADE * (float)ConfigHandler.client.leggingsFOVfactor;
+                newFOV = (event.getFov() - (boost / 2f));
+                if (newFOV < 1f && player.getActivePotionEffect(MobEffects.SLOWNESS) == null) {
+                    newFOV = 1f;
+                }
+            }
+        }
+        event.setNewfov(newFOV);
     }
 }
 

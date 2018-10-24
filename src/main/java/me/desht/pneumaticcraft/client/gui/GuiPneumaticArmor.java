@@ -78,7 +78,7 @@ public class GuiPneumaticArmor extends GuiPneumaticInventoryItem {
     @Override
     public void updateScreen() {
         super.updateScreen();
-        CommonHUDHandler.getHandlerForPlayer().checkArmorInventory(Minecraft.getMinecraft().player, equipmentSlot);
+        CommonHUDHandler.getHandlerForPlayer().initArmorInventory(Minecraft.getMinecraft().player, equipmentSlot);
         statusStat.setText(getStatusText());
     }
 
