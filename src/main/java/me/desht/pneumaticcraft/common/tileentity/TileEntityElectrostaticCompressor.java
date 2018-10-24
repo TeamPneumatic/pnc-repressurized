@@ -37,7 +37,7 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase i
             "gui.tab.redstoneBehaviour.electrostaticCompressor.button.struckByLightning"
     );
     private static final int MAX_ELECTROSTATIC_GRID_SIZE = 250;
-    private static final int MAX_BARS_ABOVE = 8;
+    private static final int MAX_BARS_ABOVE = 10;
 
     private boolean lastRedstoneState;
     @GuiSynced
@@ -55,12 +55,12 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase i
         if ((getWorld().getTotalWorldTime() & 0x1f) == 0) {  // every 32 ticks
             int max = PneumaticValues.PRODUCTION_ELECTROSTATIC_COMPRESSOR / PneumaticValues.MAX_REDIRECTION_PER_IRON_BAR;
             for (ironBarsBeneath = 0; ironBarsBeneath < max; ironBarsBeneath++) {
-                if (getWorld().getBlockState(getPos().offset(EnumFacing.DOWN, ironBarsBeneath + 1)).getBlock() != Blocks.IRON_BARS) {
+                if (!isValidGridBlock(getWorld().getBlockState(getPos().down(ironBarsBeneath + 1)).getBlock())) {
                     break;
                 }
             }
             for (ironBarsAbove = 0; ironBarsAbove < MAX_BARS_ABOVE; ironBarsAbove++) {
-                if (getWorld().getBlockState(getPos().offset(EnumFacing.UP, ironBarsAbove + 1)).getBlock() != Blocks.IRON_BARS) {
+                if (!isValidGridBlock(getWorld().getBlockState(getPos().up(ironBarsAbove + 1)).getBlock())) {
                     break;
                 }
             }
@@ -199,10 +199,14 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase i
             if (d == dir) continue;
             BlockPos newPos = pos.offset(d);
             Block block = world.getBlockState(newPos).getBlock();
-            if ((block == Blocks.IRON_BARS || block == Blockss.ELECTROSTATIC_COMPRESSOR || block == CHISELED_BARS)
+            if ((isValidGridBlock(block) || block == Blockss.ELECTROSTATIC_COMPRESSOR)
                     && set.size() < MAX_ELECTROSTATIC_GRID_SIZE && set.add(newPos)) {
                 getElectrostaticGrid(set, world, newPos, d.getOpposite());
             }
         }
+    }
+
+    private static boolean isValidGridBlock(Block block) {
+        return block == Blocks.IRON_BARS || block == CHISELED_BARS;
     }
 }

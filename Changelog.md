@@ -20,8 +20,8 @@ Changes are in reverse chronological order; newest changes at the top.
 * New fancier particle effects for air rendering (air leaks, pressure chamber, jet boots...)
 * Heat mechanics update: it is no longer possible to repeatedly break and replace a heat source block to stop it converting to stone/obsidian. That has always been considered an exploit. Using heat source blocks (lava/magma/pyrotheum...) is still a valid approach, but you will need to supply new materials to replaced the cooled ones.
 #### Updates
+* The maximum number of Speed Upgrades in the Pneumatic Leggings has been raised from 3 to 4, for a 2x speed boost over default.
 * Client-side rendering performance improvement when highlighting camouflageable blocks (while holding the Camouflage Applicator).
-* Immersive Petroleum Gasoline is now usable as a fuel in Liquid Compressors; quality is equivalent to PneumaticCraft Gasoline.
 * Some more Pressure Chamber work:
   * Client-side rendering (particles and items in chamber) is skipped if the chamber multiblock has no glass blocks.
   * Particle rendering is skipped if the player is more than 16 blocks away from the chamber (specifically: the chamber's primary valve).

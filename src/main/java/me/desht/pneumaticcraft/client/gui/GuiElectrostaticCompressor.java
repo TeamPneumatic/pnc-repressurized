@@ -67,15 +67,15 @@ public class GuiElectrostaticCompressor extends GuiPneumaticContainerBase<TileEn
         ticksExisted++;
 
         List<String> info = new ArrayList<>();
-        info.add(TextFormatting.GRAY + "Energy production:");
+        info.add(TextFormatting.WHITE + "Energy production:");
         info.add(TextFormatting.BLACK + PneumaticCraftUtils.roundNumberTo(PneumaticValues.PRODUCTION_ELECTROSTATIC_COMPRESSOR / connectedCompressors, 1) + " mL/lightning strike");
         info.add(TextFormatting.BLACK + "(" + connectedCompressors + " connected compressors)");
-        info.add(TextFormatting.GRAY + "Maximum air redirection:");
+        info.add(TextFormatting.WHITE + "Maximum air redirection:");
         info.add(TextFormatting.BLACK + PneumaticCraftUtils.roundNumberTo(PneumaticValues.MAX_REDIRECTION_PER_IRON_BAR * te.ironBarsBeneath, 1) + " mL/lightning strike");
-        info.add(TextFormatting.GRAY + "Lightning rod length (iron bars above):");
+        info.add(TextFormatting.WHITE + "Lightning rod length (iron bars above):");
         info.add(TextFormatting.BLACK + "" + te.ironBarsAbove);
         String t = PneumaticCraftUtils.convertTicksToMinutesAndSeconds(te.getStrikeChance(), false);
-        info.add(TextFormatting.GRAY + "Average strike time: ");
+        info.add(TextFormatting.WHITE + "Average strike time: ");
         info.add(TextFormatting.BLACK + "" + t + " (with optimal-sized grid)");
 
         electrostaticStat.setText(info);

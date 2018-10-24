@@ -21,7 +21,7 @@ Note that in the image above, only the central compressor has a sufficiently lar
 
  When you connect up more Electrostatic Compressors, the air from a strike is shared equally amongst them. To prevent an Electrostatic Compressor from blowing up when the pressure gets too high after a strike, you can connect up Iron Bars on the bottom side of the machine. This way the energy can be redirected to the ground instead of going in the machine. This redirecting only happens when the dangerous pressure of the Electrostatic Compressor has been reached, not sooner. Each Iron Bar directly below the compressor will dissipate 10,000mL of excess air. It therefore follows that with e.g. 10 compressors on a shared grid, only 2 Iron Bars are needed below each compressor. (You could also add Security Upgrades to the compressor, but that's more expensive and less effective).
 
- To improve the chance of a lightning strike, you can also add up to 8 Iron Bars directly above the compressor to act as a lightning rod. Each bar will slightly improve the strike chance.
+ To improve the chance of a lightning strike, you can also add up to 10 Iron Bars directly above the compressor to act as a lightning rod. Each bar will slightly improve the strike chance.
 
 Note: unlike in previous versions of PneumaticCraft, natural lightning bolts do not add air to the compressor (this was highly abusable using other mods to create lightning). Instead the compressor has a small chance to create a "fake" bolt, which adds the air. This chance is very small in clear weather, but improves when raining, and improves greatly in a thunderstorm.
 
