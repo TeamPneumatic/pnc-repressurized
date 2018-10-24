@@ -55,7 +55,7 @@ public class GuiElectrostaticCompressor extends GuiPneumaticContainerBase<TileEn
         if (ticksExisted % 20 == 0) {
             Set<BlockPos> positions = new HashSet<>();
             positions.add(te.getPos());
-            te.getElectrostaticGrid(positions, te.getWorld(), te.getPos());
+            te.getElectrostaticGrid(positions, te.getWorld(), te.getPos(), null);
             connectedCompressors = 0;
             for (BlockPos coord : positions) {
                 if (te.getWorld().getBlockState(coord).getBlock() == Blockss.ELECTROSTATIC_COMPRESSOR) {

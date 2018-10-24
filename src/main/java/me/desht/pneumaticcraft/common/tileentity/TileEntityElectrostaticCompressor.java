@@ -19,6 +19,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import java.util.HashSet;
 import java.util.List;
@@ -27,6 +28,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase implements IRedstoneControl {
+
+    @GameRegistry.ObjectHolder("chisel:ironpane")
+    private static final Block CHISELED_BARS = null;
 
     private static final List<String> REDSTONE_LABELS = ImmutableList.of(
             "gui.tab.redstoneBehaviour.button.never",
@@ -95,7 +99,7 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase i
                 IBlockState state = getWorld().getBlockState(hitPos);
                 if (state.getBlock() instanceof BlockElectrostaticCompressor || state.getBlock() == Blocks.IRON_BARS) {
                     Set<BlockPos> posSet = new HashSet<>();
-                    getElectrostaticGrid(posSet, getWorld(), hitPos);
+                    getElectrostaticGrid(posSet, getWorld(), hitPos, null);
                     List<TileEntityElectrostaticCompressor> compressors = posSet.stream()
                             .filter(pos -> world.getBlockState(pos).getBlock() == Blockss.ELECTROSTATIC_COMPRESSOR)
                             .map(pos -> world.getTileEntity(pos))
@@ -190,13 +194,14 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase i
      * @param world
      * @param pos
      */
-    public void getElectrostaticGrid(Set<BlockPos> set, World world, BlockPos pos) {
+    public void getElectrostaticGrid(Set<BlockPos> set, World world, BlockPos pos, EnumFacing dir) {
         for (EnumFacing d : EnumFacing.VALUES) {
+            if (d == dir) continue;
             BlockPos newPos = pos.offset(d);
             Block block = world.getBlockState(newPos).getBlock();
-            if ((block == Blocks.IRON_BARS || block == Blockss.ELECTROSTATIC_COMPRESSOR)
+            if ((block == Blocks.IRON_BARS || block == Blockss.ELECTROSTATIC_COMPRESSOR || block == CHISELED_BARS)
                     && set.size() < MAX_ELECTROSTATIC_GRID_SIZE && set.add(newPos)) {
-                getElectrostaticGrid(set, world, newPos);
+                getElectrostaticGrid(set, world, newPos, d.getOpposite());
             }
         }
     }
