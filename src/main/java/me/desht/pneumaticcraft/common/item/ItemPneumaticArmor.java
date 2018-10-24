@@ -149,7 +149,7 @@ public class ItemPneumaticArmor extends ItemArmor
         return false;
     }
 
-    public static void initApplicableUpgrades() {
+    static void initApplicableUpgrades() {
         for (int i = 0; i < 4; i++) {
             applicableUpgrades.add(new HashSet<>());
         }
@@ -169,6 +169,7 @@ public class ItemPneumaticArmor extends ItemArmor
         }
         addApplicableUpgrade(EntityEquipmentSlot.HEAD, EnumUpgrade.RANGE);
         addApplicableUpgrade(EntityEquipmentSlot.HEAD, EnumUpgrade.SECURITY);
+        addApplicableUpgrade(EntityEquipmentSlot.HEAD, EnumUpgrade.NIGHT_VISION);
         addApplicableUpgrade(EntityEquipmentSlot.CHEST, EnumUpgrade.CHARGING);
         addApplicableUpgrade(EntityEquipmentSlot.CHEST, EnumUpgrade.SECURITY);
         addApplicableUpgrade(EntityEquipmentSlot.CHEST, EnumUpgrade.MAGNET);
@@ -293,7 +294,7 @@ public class ItemPneumaticArmor extends ItemArmor
 
     /*------- Thaumcraft -------- */
 
-    boolean hasThaumcraftUpgradeAndPressure(ItemStack stack) {
+    private boolean hasThaumcraftUpgradeAndPressure(ItemStack stack) {
         return getPressure(stack) > 0F && UpgradableItemUtils.getUpgrades(EnumUpgrade.THAUMCRAFT, stack) > 0;
     }
 

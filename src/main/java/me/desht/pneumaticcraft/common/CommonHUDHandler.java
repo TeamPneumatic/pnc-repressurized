@@ -32,6 +32,8 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntitySelectors;
 import net.minecraft.util.SoundCategory;
@@ -74,15 +76,21 @@ public class CommonHUDHandler {
     private boolean runSpeedEnabled;
     private boolean jumpBoostEnabled;
     private boolean entityTrackerEnabled;
+    private boolean nightVisionEnabled;
     private boolean jetBootsEnabled;  // are jet boots switched on?
     private boolean jetBootsActive;  // are jet boots actually firing (player rising) ?
     private float flightAccel = 1.0F;  // increases while diving, decreases while climbing
     private int prevJetBootsAirUsage;  // so we know when the jet boots are starting up
     private int jetBootsActiveTicks;
+    private boolean wasNightVisionEnabled;
+
+    private final Potion nightVisionPotion;
 
     private static final UUID PNEUMATIC_SPEED_ID = UUID.fromString("6ecaf25b-9619-4fd1-ae4c-c2f1521047d7");
 
     public CommonHUDHandler() {
+        nightVisionPotion = Potion.getPotionFromResourceLocation("night_vision");
+
         for (EntityEquipmentSlot slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
             List<IUpgradeRenderHandler> renderHandlers = UpgradeRenderHandlerList.instance().getHandlersForSlot(slot);
             upgradeRenderersInserted[slot.getIndex()] = new boolean[renderHandlers.size()];
@@ -179,6 +187,9 @@ public class CommonHUDHandler {
      */
     private void onArmorRemoved(EntityPlayer player, ItemStack armorStack, EntityEquipmentSlot slot) {
         switch (slot) {
+            case HEAD:
+                if (nightVisionEnabled) player.removeActivePotionEffect(nightVisionPotion);
+                break;
             case FEET:
                 player.stepHeight = 0.6F;
                 break;
@@ -203,6 +214,9 @@ public class CommonHUDHandler {
         if (!isArmorReady(slot)) return;
 
         switch (slot) {
+            case HEAD:
+                handleNightVision(player, armorStack);
+                break;
             case CHEST:
                 handleChestplateMagnet(player, armorStack);
                 handleChestplateCharging(player, armorStack);
@@ -225,32 +239,48 @@ public class CommonHUDHandler {
         }
     }
 
+    private void handleNightVision(EntityPlayer player, ItemStack armorStack) {
+        // checking every 8 ticks should be enough
+        if (!player.world.isRemote && player.world.getTotalWorldTime() % 0x7 == 0) {
+            boolean shouldEnable = getArmorPressure(EntityEquipmentSlot.HEAD) > 0.0f
+                    && getUpgradeCount(EntityEquipmentSlot.HEAD, EnumUpgrade.NIGHT_VISION) > 0
+                    && nightVisionEnabled;
+            if (shouldEnable) {
+                ItemStack helmetStack = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
+                player.addPotionEffect(new PotionEffect(nightVisionPotion, 500, 0, false, false));
+                addAir(helmetStack, EntityEquipmentSlot.HEAD, -PneumaticValues.PNEUMATIC_NIGHT_VISION_USAGE * 8);
+            } else if (!shouldEnable && wasNightVisionEnabled) {
+                player.removePotionEffect(nightVisionPotion);
+            }
+            wasNightVisionEnabled = shouldEnable;
+        }
+    }
+
     // track player movement across ticks on the server - very transient, a capability would be overkill here
     private static final Map<String,Vec3d> moveMap = new HashMap<>();
 
     private void handleLeggingsSpeedBoost(EntityPlayer player, ItemStack armorStack) {
         if (!player.world.isRemote) {
+            // we know it's pneumatic leggings at this point
             ItemStack legsStack = player.getItemStackFromSlot(EntityEquipmentSlot.LEGS);
-            if (legsStack.getItem() instanceof ItemPneumaticArmor) {
-                int speedUpgrades = getUpgradeCount(EntityEquipmentSlot.LEGS, EnumUpgrade.SPEED, PneumaticValues.PNEUMATIC_LEGS_MAX_SPEED);
-                if (getArmorPressure(EntityEquipmentSlot.LEGS) > 0.0F && speedUpgrades > 0) {
-                    double speedBoost = isRunSpeedEnabled() ? PneumaticValues.PNEUMATIC_LEGS_BOOST_PER_UPGRADE * speedUpgrades : 0.0;
-                    IAttributeInstance attr = player.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
-                    AttributeModifier modifier = attr.getModifier(PNEUMATIC_SPEED_ID);
-                    if (modifier == null || modifier.getAmount() != speedBoost) {
-                        if (modifier != null) attr.removeModifier(modifier);
-                        attr.applyModifier(new AttributeModifier(PNEUMATIC_SPEED_ID, SharedMonsterAttributes.MOVEMENT_SPEED.getName(), speedBoost, 1));
-                    }
-                    if (isRunSpeedEnabled()) {
-                        Vec3d prev = moveMap.get(player.getName());
-                        boolean moved = prev != null && (Math.abs(player.posX - prev.x) > 0.0001 || Math.abs(player.posZ - prev.z) > 0.0001);
-                        if (moved && player.onGround && !player.isInsideOfMaterial(Material.WATER)) {
-                            addAir(legsStack, EntityEquipmentSlot.LEGS, -PneumaticValues.PNEUMATIC_LEGS_SPEED_USAGE * speedUpgrades);
-                        }
+            int speedUpgrades = getUpgradeCount(EntityEquipmentSlot.LEGS, EnumUpgrade.SPEED, PneumaticValues.PNEUMATIC_LEGS_MAX_SPEED);
+            if (getArmorPressure(EntityEquipmentSlot.LEGS) > 0.0F && speedUpgrades > 0) {
+                double speedBoost = isRunSpeedEnabled() ? PneumaticValues.PNEUMATIC_LEGS_BOOST_PER_UPGRADE * speedUpgrades : 0.0;
+                IAttributeInstance attr = player.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
+                AttributeModifier modifier = attr.getModifier(PNEUMATIC_SPEED_ID);
+                if (modifier == null || modifier.getAmount() != speedBoost) {
+                    if (modifier != null) attr.removeModifier(modifier);
+                    attr.applyModifier(new AttributeModifier(PNEUMATIC_SPEED_ID, SharedMonsterAttributes.MOVEMENT_SPEED.getName(), speedBoost, 1));
+                }
+                if (isRunSpeedEnabled()) {
+                    Vec3d prev = moveMap.get(player.getName());
+                    boolean moved = prev != null && (Math.abs(player.posX - prev.x) > 0.0001 || Math.abs(player.posZ - prev.z) > 0.0001);
+                    if (moved && player.onGround && !player.isInsideOfMaterial(Material.WATER)) {
+                        addAir(legsStack, EntityEquipmentSlot.LEGS, -PneumaticValues.PNEUMATIC_LEGS_SPEED_USAGE * speedUpgrades);
                     }
                 }
-                moveMap.put(player.getName(), new Vec3d(player.posX, player.posY, player.posZ));
             }
+            moveMap.put(player.getName(), new Vec3d(player.posX, player.posY, player.posZ));
         }
     }
 
@@ -478,6 +508,8 @@ public class CommonHUDHandler {
             armorEnabled = state;
         } else if (handler instanceof EntityTrackUpgradeHandler) {
             entityTrackerEnabled = state;
+        } else if (handler instanceof NightVisionUpgradeHandler) {
+            nightVisionEnabled = state;
         }
     }
 

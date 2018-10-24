@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "lnl",
+    "gng",
+    "lnl"
+  ],
+  "key": {
+    "g": {
+      "type": "minecraft:item",
+      "item": "pneumaticcraft:pressure_chamber_glass"
+    },
+    "n": {
+      "type": "minecraft:item_nbt",
+      "item": "minecraft:potion",
+      "nbt": "{Potion:\"minecraft:long_night_vision\"}"
+    },
+    "l": {
+      "item": "minecraft:dye",
+      "data": 4
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:night_vision_upgrade"
+  }
+}

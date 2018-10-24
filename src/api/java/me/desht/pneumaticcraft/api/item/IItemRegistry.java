@@ -21,7 +21,8 @@ public interface IItemRegistry {
         THAUMCRAFT("thaumcraft", "thaumcraft"), /*Only around when Thaumcraft is */
         CHARGING("charging"),
         ARMOR("armor"),
-        JET_BOOTS("jetboots");
+        JET_BOOTS("jetboots"),
+        NIGHT_VISION("night_vision");
 
         private final String name;
         private final String depModId;
