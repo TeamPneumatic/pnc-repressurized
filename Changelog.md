@@ -8,8 +8,9 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ### 0.8.2-??? (unreleased)
 #### New
+* Added a Night Vision Upgrade for the Pneumatic Helmet. No prizes for guessing what that does.
 * Electrostatic Compressor has been heavily reworked:
-  * No longer triggered by lightning entities. This was much too open to abuse via any other mod which can spawn a lightning entity (e.g. Psi)
+  * No longer triggered by real lightning strikes. This was much too open to abuse via any other mod which can spawn a lightning entity (e.g. Psi)
   * Instead, each compressor now has a chance to cause a fake lightning entity random with a 6-block circular radius of itself
   * Iron bars grid are still important - the fake lightning bolt must strike a connected grid to be effective. Although the bars must be connected, they may be up to 5 blocks above or 5 blocks below the compressor.
   * Strike chance is very low in clear weather, better in the rain, and much better in a thunderstorm
@@ -39,6 +40,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed some JEI Pressure Chamber recipes not showing the correct number of ingredients for some recipes (those items added by oredict key).
 * Fixed an arithmetic rounding error causing Speed Upgrades to be less effective than they should have been in the Charging Station.
 * Fixed problem with the Pneumatic Armor GUI causing a client crash when opened.  I couldn't reproduce this myself, but I've had confirmation that my fix appears to have succeeded...
+* Fixed cosmetic issue where Pneumatic Armor feature enable/disable message were shown even when the corresponding upgrade(s) weren't installed (the actual features were not enabled, though)
 
 ### 0.8.1-274 (8 Oct 2018)
 #### Updates
