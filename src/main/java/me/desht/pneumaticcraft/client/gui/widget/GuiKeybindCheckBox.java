@@ -81,13 +81,15 @@ public class GuiKeybindCheckBox extends GuiCheckBox {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                CommonHUDHandler hudHandler = CommonHUDHandler.getHandlerForPlayer();
                 for (EntityEquipmentSlot slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
                     List<IUpgradeRenderHandler> renderHandlers = UpgradeRenderHandlerList.instance().getHandlersForSlot(slot);
                     for (int i = 0; i < renderHandlers.size(); i++) {
                         IUpgradeRenderHandler upgradeRenderHandler = renderHandlers.get(i);
-                        if ((UPGRADE_PREFIX + upgradeRenderHandler.getUpgradeName()).equals(keyBindingName)) {
+                        if ((UPGRADE_PREFIX + upgradeRenderHandler.getUpgradeName()).equals(keyBindingName) && hudHandler.isUpgradeRendererInserted(slot, i)) {
                             NetworkHandler.sendToServer(new PacketToggleArmorFeature((byte) i, coreComponents.checked && checked, slot));
-                            CommonHUDHandler.getHandlerForPlayer().setUpgradeRenderEnabled(slot, (byte)i, coreComponents.checked && checked);
+                            hudHandler.setUpgradeRenderEnabled(slot, (byte)i, coreComponents.checked && checked);
+                            HUDHandler.instance().addMessage(I18n.format("pneumaticHelmet.message." + (checked ? "enable" : "disable") + "Setting", I18n.format(keyBindingName)), new ArrayList<>(), 60, 0x7000AA00);
                             break;
                         }
                     }
@@ -95,7 +97,7 @@ public class GuiKeybindCheckBox extends GuiCheckBox {
                         for (int i = 0; i < renderHandlers.size(); i++) {
                             boolean state = GuiKeybindCheckBox.fromKeyBindingName(GuiKeybindCheckBox.UPGRADE_PREFIX + renderHandlers.get(i).getUpgradeName()).checked;
                             NetworkHandler.sendToServer(new PacketToggleArmorFeature((byte) i, coreComponents.checked && state, slot));
-                            CommonHUDHandler.getHandlerForPlayer().setUpgradeRenderEnabled(slot, (byte)i, coreComponents.checked && state);
+                            hudHandler.setUpgradeRenderEnabled(slot, (byte)i, coreComponents.checked && state);
                         }
                     }
                 }
@@ -162,7 +164,6 @@ public class GuiKeybindCheckBox extends GuiCheckBox {
         Minecraft mc = FMLClientHandler.instance().getClient();
         if (mc.inGameHasFocus && keyBinding != null && keyBinding.isPressed()) {
             onMouseClicked(0, 0, 0);
-            HUDHandler.instance().addMessage(I18n.format("pneumaticHelmet.message." + (checked ? "enable" : "disable") + "Setting", I18n.format(keyBindingName)), new ArrayList<>(), 60, 0x7000AA00);
         }
     }
 
