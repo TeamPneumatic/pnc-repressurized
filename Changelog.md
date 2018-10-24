@@ -15,20 +15,23 @@ Changes are in reverse chronological order; newest changes at the top.
   * Strike chance is very low in clear weather, better in the rain, and much better in a thunderstorm
   * Strike chance can be slightly improved by adding a lightning rod: a vertical column of iron bars up to 8 blocks directly above the compressor
   * Multiple compressors can be connected to the same grid: generated pressure will be shared, as before.
+  * Chiseled Iron Bars are now also recognised as valid iron bars
 * Added buttons to Air Cannon GUI allowing the force to be throttled between 0% and 100%.  Allows finer control over the cannon's range than just adding Range Upgrades.  The Air Cannon will now also aim lower if it can.
-* New particle effects for air rendering (air leaks, pressure chamber, jet boots...)
+* New fancier particle effects for air rendering (air leaks, pressure chamber, jet boots...)
+* Heat mechanics update: it is no longer possible to repeatedly break and replace a heat source block to stop it converting to stone/obsidian. That has always been considered an exploit. Using heat source blocks (lava/magma/pyrotheum...) is still a valid approach, but you will need to supply new materials to replaced the cooled ones.
 #### Updates
 * Client-side rendering performance improvement when highlighting camouflageable blocks (while holding the Camouflage Applicator).
 * Immersive Petroleum Gasoline is now usable as a fuel in Liquid Compressors; quality is equivalent to PneumaticCraft Gasoline.
 * Some more Pressure Chamber work:
-  * Client-side rendering (particles and items in chamber) are skipped if the chamber multiblock has no glass blocks.
+  * Client-side rendering (particles and items in chamber) is skipped if the chamber multiblock has no glass blocks.
   * Particle rendering is skipped if the player is more than 16 blocks away from the chamber (specifically: the chamber's primary valve).
-  * A particle effect is played when the multiblock forms.
+  * A particle effect is played when the multiblock initially forms.
   * Air particle density in the chamber now responds better to changes in chamber pressure (better syncing to clients).
   * Pressure Chamber Interface door open/close sound is now a bit louder, but also no longer repeatedly plays over itself.
 * Immersive Petroleum Gasoline is now accepted as a fuel in the liquid compressors by default; it's equivalent in quality to PneumaticCraft's Fuel.
 * Sneak-wrenching a pneumatic machine now preserves any stored air in the dropped block (breaking the machine with a pick still loses stored air).
 * Air leak sound pitch is now somewhat dependent on the pressure of the leak (higher pressure = higher-pitched leak sound)
+* FoV change (zoom out) when Pneumatic Leggings speed boost is active has been removed. Added a clientside config setting D:leggingsFOVfactor if you prefer to keep the FoV adjustment (or would like a smaller adjustment) - 1.0 (default) for no adjustment, 0.0 for maximum adjustment.
 #### Fixes
 * Fixed an item dupe in the Pressure Chamber under some fairly specific circumstances (related to performance improvements in 0.8.1).
 * Fixed camouflageable blocks not being breakable with a pick (only a wrench) - related to camouflage updates in 0.8.1.
