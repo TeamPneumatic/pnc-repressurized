@@ -34,6 +34,7 @@ public class TileEntityOmnidirectionalHopper extends TileEntityTickableBase impl
     private int cooldown;
     @GuiSynced
     boolean leaveMaterial;//leave items/liquids (used as filter)
+    private int importSlot = 0;
 
     public TileEntityOmnidirectionalHopper() {
         this(4);
@@ -110,17 +111,23 @@ public class TileEntityOmnidirectionalHopper extends TileEntityTickableBase impl
         // Suck from input inventory
         IItemHandler handler = IOHelper.getInventoryForTE(getCachedNeighbor(inputDir), inputDir.getOpposite());
         if (handler != null) {
+            if (importSlot >= handler.getSlots()) importSlot = 0;  // in case the inv size changed on us
             for (int i = 0; i < maxItems; i++) {
-                LocatedItemStack extracted = IOHelper.extractOneItem(handler, true);
+                LocatedItemStack extracted = IOHelper.extractOneItem(handler, importSlot, true);
                 if (!extracted.stack.isEmpty()) {
                     ItemStack excess = ItemHandlerHelper.insertItem(inventory, extracted.stack, false);
                     if (excess.isEmpty()) {
+                        // successful import & insertion; look in this slot again next time
                         handler.extractItem(extracted.slot, 1, false);
+                        importSlot = extracted.slot;
                         success = true;
                     } else {
+                        // couldn't insert this item; try the next slot in the input inv next time
+                        if (++importSlot >= handler.getSlots()) importSlot = 0;
                         break;
                     }
                 } else {
+                    // nothing to import; input inv is empty
                     break;
                 }
             }
