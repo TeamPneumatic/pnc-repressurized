@@ -9,6 +9,7 @@ Changes are in reverse chronological order; newest changes at the top.
 ### 0.8.2-??? (unreleased)
 #### New
 * Added a Night Vision Upgrade for the Pneumatic Helmet. No prizes for guessing what that does.
+* Added armor GUI controls for Pneumatic Leggings speed and jump upgrades, to allow the boost magnitude to be throttled back (0-100%). Useful if you want to e.g. reduce your jump height without needing to find a Charging Station to swap out upgrades from your armor.
 * Electrostatic Compressor has been heavily reworked:
   * No longer triggered by real lightning strikes. This was much too open to abuse via any other mod which can spawn a lightning entity (e.g. Psi)
   * Instead, each compressor now has a chance to cause a fake lightning entity random with a 6-block circular radius of itself

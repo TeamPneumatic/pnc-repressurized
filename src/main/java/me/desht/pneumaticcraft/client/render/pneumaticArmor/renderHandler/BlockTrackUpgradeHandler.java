@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.client.render.pneumaticArmor;
+package me.desht.pneumaticcraft.client.render.pneumaticArmor.renderHandler;
 
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.BlockTrackEvent;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IBlockTrackEntry;
@@ -7,6 +7,9 @@ import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.client.gui.pneumaticHelmet.GuiBlockTrackOptions;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
+import me.desht.pneumaticcraft.client.render.pneumaticArmor.ArmorMessage;
+import me.desht.pneumaticcraft.client.render.pneumaticArmor.HUDHandler;
+import me.desht.pneumaticcraft.client.render.pneumaticArmor.RenderBlockTarget;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.blockTracker.BlockTrackEntryList;
 import me.desht.pneumaticcraft.common.CommonHUDHandler;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;

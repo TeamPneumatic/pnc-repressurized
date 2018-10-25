@@ -8,7 +8,7 @@ import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
 import me.desht.pneumaticcraft.client.gui.GuiUnitProgrammer;
 import me.desht.pneumaticcraft.client.gui.widget.GuiCheckBox;
-import me.desht.pneumaticcraft.client.render.pneumaticArmor.DroneDebugUpgradeHandler;
+import me.desht.pneumaticcraft.client.render.pneumaticArmor.renderHandler.DroneDebugUpgradeHandler;
 import me.desht.pneumaticcraft.common.entity.living.DebugEntry;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.progwidgets.IAreaProvider;

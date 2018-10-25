@@ -29,6 +29,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ISpecialArmor;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.Optional;
@@ -268,6 +269,15 @@ public class ItemPneumaticArmor extends ItemArmor
     }
 
     /* ----------- Pneumatic Helmet helpers ---------- */
+
+
+    public static int getIntData(ItemStack stack, String key, int def) {
+        if (stack.getItem() instanceof ItemPneumaticArmor && stack.hasTagCompound() && stack.getTagCompound().hasKey(key, Constants.NBT.TAG_INT)) {
+            return stack.getTagCompound().getInteger(key);
+        } else {
+            return def;
+        }
+    }
 
     @Nonnull
     public static ItemStack getSearchedStack(ItemStack helmetStack) {

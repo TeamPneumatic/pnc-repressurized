@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.render.pneumaticArmor;
 
+import me.desht.pneumaticcraft.client.render.pneumaticArmor.renderHandler.CoordTrackUpgradeHandler;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;

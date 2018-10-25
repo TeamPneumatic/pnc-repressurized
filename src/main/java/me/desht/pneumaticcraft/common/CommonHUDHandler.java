@@ -6,8 +6,9 @@ import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IHackableEntity;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IPressurizable;
-import me.desht.pneumaticcraft.client.render.pneumaticArmor.*;
+import me.desht.pneumaticcraft.client.render.pneumaticArmor.UpgradeRenderHandlerList;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.hacking.HackableHandler;
+import me.desht.pneumaticcraft.client.render.pneumaticArmor.renderHandler.*;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.item.ItemMachineUpgrade;
@@ -32,6 +33,8 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
@@ -87,6 +90,7 @@ public class CommonHUDHandler {
     private final Potion nightVisionPotion;
 
     private static final UUID PNEUMATIC_SPEED_ID = UUID.fromString("6ecaf25b-9619-4fd1-ae4c-c2f1521047d7");
+    private float speedBoostMult;
 
     public CommonHUDHandler() {
         nightVisionPotion = Potion.getPotionFromResourceLocation("night_vision");
@@ -241,7 +245,7 @@ public class CommonHUDHandler {
 
     private void handleNightVision(EntityPlayer player, ItemStack armorStack) {
         // checking every 8 ticks should be enough
-        if (!player.world.isRemote && player.world.getTotalWorldTime() % 0x7 == 0) {
+        if (!player.world.isRemote && (getTicksSinceEquipped(EntityEquipmentSlot.HEAD) & 0x7) == 0) {
             boolean shouldEnable = getArmorPressure(EntityEquipmentSlot.HEAD) > 0.0f
                     && getUpgradeCount(EntityEquipmentSlot.HEAD, EnumUpgrade.NIGHT_VISION) > 0
                     && nightVisionEnabled;
@@ -260,12 +264,13 @@ public class CommonHUDHandler {
     private static final Map<String,Vec3d> moveMap = new HashMap<>();
 
     private void handleLeggingsSpeedBoost(EntityPlayer player, ItemStack armorStack) {
-        if (!player.world.isRemote) {
+        // check every 8 ticks
+        if (!player.world.isRemote && (getTicksSinceEquipped(EntityEquipmentSlot.LEGS) & 0x7) == 0) {
             // we know it's pneumatic leggings at this point
             ItemStack legsStack = player.getItemStackFromSlot(EntityEquipmentSlot.LEGS);
             int speedUpgrades = getUpgradeCount(EntityEquipmentSlot.LEGS, EnumUpgrade.SPEED, PneumaticValues.PNEUMATIC_LEGS_MAX_SPEED);
             if (getArmorPressure(EntityEquipmentSlot.LEGS) > 0.0F && speedUpgrades > 0) {
-                double speedBoost = isRunSpeedEnabled() ? PneumaticValues.PNEUMATIC_LEGS_BOOST_PER_UPGRADE * speedUpgrades : 0.0;
+                double speedBoost = isRunSpeedEnabled() ? PneumaticValues.PNEUMATIC_LEGS_BOOST_PER_UPGRADE * speedUpgrades * speedBoostMult : 0.0;
                 IAttributeInstance attr = player.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
                 AttributeModifier modifier = attr.getModifier(PNEUMATIC_SPEED_ID);
                 if (modifier == null || modifier.getAmount() != speedBoost) {
@@ -276,7 +281,8 @@ public class CommonHUDHandler {
                     Vec3d prev = moveMap.get(player.getName());
                     boolean moved = prev != null && (Math.abs(player.posX - prev.x) > 0.0001 || Math.abs(player.posZ - prev.z) > 0.0001);
                     if (moved && player.onGround && !player.isInsideOfMaterial(Material.WATER)) {
-                        addAir(legsStack, EntityEquipmentSlot.LEGS, -PneumaticValues.PNEUMATIC_LEGS_SPEED_USAGE * speedUpgrades);
+                        int airUsage = (int) Math.ceil(8 * PneumaticValues.PNEUMATIC_LEGS_SPEED_USAGE * speedUpgrades * speedBoostMult + 0.5f);
+                        addAir(legsStack, EntityEquipmentSlot.LEGS, -airUsage);
                     }
                 }
             }
@@ -444,6 +450,8 @@ public class CommonHUDHandler {
     }
 
     /**
+     * Called on the first tick after the armor piece is equipped.
+     *
      * Scan the armor piece in the given slot, and record all installed upgrades for fast access later on.  Upgrades
      * can't be changed without removing and re-equipping the piece, so we can cache quite a lot of useful info.
      *
@@ -454,12 +462,14 @@ public class CommonHUDHandler {
         // armorStack has already been validated as a pneumatic armor piece at this point
         ItemStack armorStack = player.getItemStackFromSlot(slot);
 
+        // record which upgrades / render-handlers are inserted
         ItemStack[] upgradeStacks = UpgradableItemUtils.getUpgradeStacks(armorStack);
         Arrays.fill(upgradeRenderersInserted[slot.getIndex()], false);
         for (int i = 0; i < upgradeRenderersInserted[slot.getIndex()].length; i++) {
             upgradeRenderersInserted[slot.getIndex()][i] = isModuleEnabled(upgradeStacks, UpgradeRenderHandlerList.instance().getHandlersForSlot(slot).get(i));
         }
 
+        // record the number of upgrades of every type
         Arrays.fill(upgradeMatrix[slot.getIndex()], 0);
         for (ItemStack stack : upgradeStacks) {
             if (stack.getItem() instanceof ItemMachineUpgrade) {
@@ -467,9 +477,17 @@ public class CommonHUDHandler {
             }
         }
 
-        magnetRadius = PneumaticValues.MAGNET_BASE_RANGE
-                + Math.min(getUpgradeCount(EntityEquipmentSlot.CHEST, EnumUpgrade.MAGNET), PneumaticValues.MAGNET_MAX_UPGRADES);
-        magnetRadiusSq = magnetRadius * magnetRadius;
+        // some slot-specific setup
+        switch (slot) {
+            case CHEST:
+                magnetRadius = PneumaticValues.MAGNET_BASE_RANGE
+                        + Math.min(getUpgradeCount(EntityEquipmentSlot.CHEST, EnumUpgrade.MAGNET), PneumaticValues.MAGNET_MAX_UPGRADES);
+                magnetRadiusSq = magnetRadius * magnetRadius;
+                break;
+            case LEGS:
+                speedBoostMult = ItemPneumaticArmor.getIntData(armorStack, "speedBoost", 100) / 100f;
+                break;
+        }
     }
 
     public int getUpgradeCount(EntityEquipmentSlot slot, EnumUpgrade upgrade) {
@@ -603,5 +621,21 @@ public class CommonHUDHandler {
 
     public void invalidate() {
         isValid = false;
+    }
+
+    /**
+     * Called server-side when a custom NBT field in an armor item has been updated.  Used to
+     * cache data (e.g. legs speed boost %) for performance reasons.
+     *
+     * @param slot the armor slot
+     * @param key the data key
+     * @param dataTag the data item, to be interpreted depending on the key
+     */
+    public void onDataFieldUpdated(EntityEquipmentSlot slot, String key, NBTBase dataTag) {
+        switch (key) {
+            case "speedBoost":
+                speedBoostMult = MathHelper.clamp(((NBTTagInt) dataTag).getInt() / 100f, 0.0f, 1.0f);
+                break;
+        }
     }
 }

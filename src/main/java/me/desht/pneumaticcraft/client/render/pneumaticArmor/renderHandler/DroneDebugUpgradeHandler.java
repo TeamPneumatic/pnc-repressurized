@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.client.render.pneumaticArmor;
+package me.desht.pneumaticcraft.client.render.pneumaticArmor.renderHandler;
 
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IOptionPage;

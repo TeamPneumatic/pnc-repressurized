@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.client.render.pneumaticArmor;
+package me.desht.pneumaticcraft.client.render.pneumaticArmor.renderHandler;
 
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IOptionPage;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.gui.pneumaticHelmet.GuiSearchUpgradeOptions;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
+import me.desht.pneumaticcraft.client.render.pneumaticArmor.RenderSearchItemBlock;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.item.Itemss;

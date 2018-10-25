@@ -1,10 +1,12 @@
-package me.desht.pneumaticcraft.client.render.pneumaticArmor;
+package me.desht.pneumaticcraft.client.render.pneumaticArmor.renderHandler;
 
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IOptionPage;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.client.gui.pneumaticHelmet.GuiCoordinateTrackerOptions;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
+import me.desht.pneumaticcraft.client.render.pneumaticArmor.RenderCoordWireframe;
+import me.desht.pneumaticcraft.client.render.pneumaticArmor.RenderNavigator;
 import me.desht.pneumaticcraft.common.ai.EntityPathNavigateDrone;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;

@@ -115,4 +115,59 @@ public interface IUpgradeRenderHandler {
      * @return the armor slot
      */
     EntityEquipmentSlot getEquipmentSlot();
+
+    /**
+     * Convenience class for simple toggleable armor features with no additional settings.
+     */
+    abstract class SimpleToggleableRenderHandler implements IUpgradeRenderHandler {
+        @Override
+        public void initConfig() {
+
+        }
+
+        @Override
+        public void saveToConfig() {
+
+        }
+
+        @Override
+        public void update(EntityPlayer player, int rangeUpgrades) {
+
+        }
+
+        @Override
+        public void render3D(float partialTicks) {
+
+        }
+
+        @Override
+        public void render2D(float partialTicks, boolean helmetEnabled) {
+
+        }
+
+        @Override
+        public IGuiAnimatedStat getAnimatedStat() {
+            return null;
+        }
+
+        @Override
+        public float getEnergyUsage(int rangeUpgrades, EntityPlayer player) {
+            return 0;
+        }
+
+        @Override
+        public void reset() {
+
+        }
+
+        @Override
+        public IOptionPage getGuiOptionsPage() {
+            return new IOptionPage.SimpleToggleableOptions(this);
+        }
+
+        @Override
+        public float getMinimumPressure() {
+            return 0;
+        }
+    }
 }

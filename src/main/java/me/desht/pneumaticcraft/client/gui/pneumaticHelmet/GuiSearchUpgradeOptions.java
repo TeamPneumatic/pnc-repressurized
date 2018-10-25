@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.client.gui.pneumaticHelmet;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IOptionPage;
 import me.desht.pneumaticcraft.client.gui.GuiSearcher;
-import me.desht.pneumaticcraft.client.render.pneumaticArmor.SearchUpgradeHandler;
+import me.desht.pneumaticcraft.client.render.pneumaticArmor.renderHandler.SearchUpgradeHandler;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateSearchStack;

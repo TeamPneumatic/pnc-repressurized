@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.api.client.pneumaticHelmet;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.resources.I18n;
 
 /**
  * The Option Page is the page you see when you press 'F' (by default) with a Pneumatic Helmet equipped. You can
@@ -97,4 +98,62 @@ public interface IOptionPage {
      * Called immediately after {@link GuiScreen#updateScreen()}
      */
     default void updateScreen() { }
+
+    class SimpleToggleableOptions implements IOptionPage {
+        private final String name;
+
+        public SimpleToggleableOptions(IUpgradeRenderHandler handler) {
+            this.name = I18n.format("pneumaticHelmet.upgrade." + handler.getUpgradeName());
+        }
+
+        @Override
+        public String getPageName() {
+            return name;
+        }
+
+        @Override
+        public void initGui(IGuiScreen gui) {
+
+        }
+
+        @Override
+        public void actionPerformed(GuiButton button) {
+
+        }
+
+        @Override
+        public void drawPreButtons(int x, int y, float partialTicks) {
+
+        }
+
+        @Override
+        public void drawScreen(int x, int y, float partialTicks) {
+
+        }
+
+        @Override
+        public void keyTyped(char ch, int key) {
+
+        }
+
+        @Override
+        public void mouseClicked(int x, int y, int button) {
+
+        }
+
+        @Override
+        public void handleMouseInput() {
+
+        }
+
+        @Override
+        public boolean canBeTurnedOff() {
+            return true;
+        }
+
+        @Override
+        public boolean displaySettingsText() {
+            return false;
+        }
+    }
 }

@@ -4,7 +4,7 @@ import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IOptionPage;
 import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
-import me.desht.pneumaticcraft.client.render.pneumaticArmor.MainHelmetHandler;
+import me.desht.pneumaticcraft.client.render.pneumaticArmor.renderHandler.MainHelmetHandler;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 

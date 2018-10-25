@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.client.render.pneumaticArmor;
 
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
+import me.desht.pneumaticcraft.client.render.pneumaticArmor.renderHandler.*;
 import me.desht.pneumaticcraft.common.CommonHUDHandler;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;

@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.client.render.pneumaticArmor;
 
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
+import me.desht.pneumaticcraft.client.render.pneumaticArmor.renderHandler.MainHelmetHandler;
 import me.desht.pneumaticcraft.lib.Sounds;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.entity.player.EntityPlayer;

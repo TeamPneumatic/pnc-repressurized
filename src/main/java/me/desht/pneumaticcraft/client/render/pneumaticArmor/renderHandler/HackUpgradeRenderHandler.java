@@ -1,19 +1,21 @@
-package me.desht.pneumaticcraft.client.render.pneumaticArmor;
+package me.desht.pneumaticcraft.client.render.pneumaticArmor.renderHandler;
 
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IOptionPage;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
-import me.desht.pneumaticcraft.api.item.IItemRegistry;
-import me.desht.pneumaticcraft.client.gui.pneumaticHelmet.SimpleToggleableOptions;
+import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.common.item.Itemss;
+import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 
-public class ChargingUpgradeRenderHandler implements IUpgradeRenderHandler {
+public class HackUpgradeRenderHandler implements IUpgradeRenderHandler {
+
     @Override
     public String getUpgradeName() {
-        return "charging";
+        return "hackingUpgrade";
     }
 
     @Override
@@ -48,7 +50,19 @@ public class ChargingUpgradeRenderHandler implements IUpgradeRenderHandler {
 
     @Override
     public Item[] getRequiredUpgrades() {
-        return new Item[] {Itemss.upgrades.get(IItemRegistry.EnumUpgrade.CHARGING)};
+        return new Item[]{Itemss.upgrades.get(EnumUpgrade.SECURITY)};
+    }
+
+    private static boolean enabledForStacks(ItemStack[] upgradeStacks) {
+        for (ItemStack stack : upgradeStacks) {
+            if (stack != null && stack.getItem() == Itemss.upgrades.get(EnumUpgrade.SECURITY)) return true;
+        }
+        return false;
+    }
+
+    public static boolean enabledForPlayer(EntityPlayer player) {
+        ItemStack helmet = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
+        return !helmet.isEmpty() && enabledForStacks(UpgradableItemUtils.getUpgradeStacks(helmet));
     }
 
     @Override
@@ -63,11 +77,11 @@ public class ChargingUpgradeRenderHandler implements IUpgradeRenderHandler {
 
     @Override
     public IOptionPage getGuiOptionsPage() {
-        return new SimpleToggleableOptions(this);
+        return null;
     }
 
     @Override
     public EntityEquipmentSlot getEquipmentSlot() {
-        return EntityEquipmentSlot.CHEST;
+        return EntityEquipmentSlot.HEAD;
     }
 }

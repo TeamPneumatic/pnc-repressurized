@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.client.render.pneumaticArmor;
+package me.desht.pneumaticcraft.client.render.pneumaticArmor.renderHandler;
 
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IOptionPage;
@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.client.gui.GuiButtonSpecial;
 import me.desht.pneumaticcraft.client.gui.pneumaticHelmet.GuiHelmetMainOptions;
 import me.desht.pneumaticcraft.client.gui.pneumaticHelmet.GuiHelmetMainScreen;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
+import me.desht.pneumaticcraft.client.render.pneumaticArmor.UpgradeRenderHandlerList;
 import me.desht.pneumaticcraft.common.CommonHUDHandler;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;

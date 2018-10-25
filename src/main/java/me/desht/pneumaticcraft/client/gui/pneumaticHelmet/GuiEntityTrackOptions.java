@@ -4,10 +4,10 @@ import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IOptionPage;
 import me.desht.pneumaticcraft.client.gui.GuiUtils;
-import me.desht.pneumaticcraft.client.render.pneumaticArmor.EntityTrackUpgradeHandler;
+import me.desht.pneumaticcraft.client.render.pneumaticArmor.renderHandler.EntityTrackUpgradeHandler;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketUpdateEntityFilter;
+import me.desht.pneumaticcraft.common.network.PacketUpdateArmorExtraData;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -15,6 +15,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import org.lwjgl.input.Keyboard;
@@ -69,7 +70,10 @@ public class GuiEntityTrackOptions implements IOptionPage {
     public void keyTyped(char ch, int key) {
         if (textField != null && textField.isFocused() && key != 1) {
             textField.textboxKeyTyped(ch, key);
-            NetworkHandler.sendToServer(new PacketUpdateEntityFilter(textField.getText()));
+            NBTTagCompound tag = new NBTTagCompound();
+            tag.setString("entityFilter", textField.getText());
+            NetworkHandler.sendToServer(new PacketUpdateArmorExtraData(EntityEquipmentSlot.HEAD, tag));
+//            NetworkHandler.sendToServer(new PacketUpdateEntityFilter(textField.getText()));
         }
     }
 

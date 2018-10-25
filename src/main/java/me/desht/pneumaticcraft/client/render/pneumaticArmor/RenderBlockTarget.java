@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
 import me.desht.pneumaticcraft.client.render.RenderProgressBar;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.blockTracker.BlockTrackEntryList;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.hacking.HackableHandler;
+import me.desht.pneumaticcraft.client.render.pneumaticArmor.renderHandler.BlockTrackUpgradeHandler;
 import me.desht.pneumaticcraft.common.CommonHUDHandler;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketDescriptionPacketRequest;

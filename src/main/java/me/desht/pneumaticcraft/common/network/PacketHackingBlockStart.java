@@ -1,9 +1,9 @@
 package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.ByteBuf;
-import me.desht.pneumaticcraft.client.render.pneumaticArmor.BlockTrackUpgradeHandler;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.RenderBlockTarget;
+import me.desht.pneumaticcraft.client.render.pneumaticArmor.renderHandler.BlockTrackUpgradeHandler;
 import me.desht.pneumaticcraft.common.CommonHUDHandler;
 import me.desht.pneumaticcraft.common.util.WorldAndCoord;
 import net.minecraft.entity.player.EntityPlayer;
