@@ -39,6 +39,7 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntitySelectors;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
@@ -85,6 +86,7 @@ public class CommonHUDHandler {
     private boolean jumpBoostEnabled;
     private boolean entityTrackerEnabled;
     private boolean nightVisionEnabled;
+    private boolean scubaEnabled;
     private boolean jetBootsEnabled;  // are jet boots switched on?
     private boolean jetBootsActive;  // are jet boots actually firing (player rising) ?
     private float flightAccel = 1.0F;  // increases while diving, decreases while climbing
@@ -224,6 +226,7 @@ public class CommonHUDHandler {
         switch (slot) {
             case HEAD:
                 handleNightVision(player, armorStack);
+                handleScuba(player, armorStack);
                 break;
             case CHEST:
                 handleChestplateMagnet(player, armorStack);
@@ -261,6 +264,28 @@ public class CommonHUDHandler {
                 player.removePotionEffect(getNightVisionPotion());
             }
             wasNightVisionEnabled = shouldEnable;
+        }
+    }
+
+    private void handleScuba(EntityPlayer player, ItemStack armorStack) {
+        // checking every 16 ticks
+        if (!player.world.isRemote
+                && scubaEnabled
+                && getArmorPressure(EntityEquipmentSlot.HEAD) > 0.1f
+                && player.getAir() < 200) {
+
+            ItemStack helmetStack = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
+
+            int vol = ((ItemPneumaticArmor) helmetStack.getItem()).getBaseVolume() + PneumaticValues.VOLUME_VOLUME_UPGRADE * getUpgradeCount(EntityEquipmentSlot.HEAD, EnumUpgrade.VOLUME);
+            float airInHelmet = getArmorPressure(EntityEquipmentSlot.HEAD) * vol;
+            int playerAir = (int) Math.min(300 - player.getAir(), airInHelmet / PneumaticValues.PNEUMATIC_HELMET_SCUBA_MULTIPLIER);
+            player.setAir(player.getAir() + playerAir);
+
+            int airUsed = playerAir * PneumaticValues.PNEUMATIC_HELMET_SCUBA_MULTIPLIER;
+            addAir(helmetStack, EntityEquipmentSlot.HEAD, -airUsed);
+            NetworkHandler.sendTo(new PacketPlaySound(Sounds.SCUBA, SoundCategory.PLAYERS, player.getPosition(), 1.5f, 1.0f, false), (EntityPlayerMP) player);
+            Vec3d eyes = player.getPositionEyes(1.0f).add(player.getLookVec().scale(0.5));
+            NetworkHandler.sendToAllAround(new PacketSpawnParticle(EnumParticleTypes.WATER_BUBBLE, eyes.x - 0.5, eyes.y, eyes.z -0.5, 0.0, 0.2, 0.0, 10, 1.0, 1.0, 1.0), player.world);
         }
     }
 
@@ -315,7 +340,8 @@ public class CommonHUDHandler {
                 jetBootsActiveTicks++;
             } else if (isJetBootsEnabled() && !player.onGround) {
                 // jetboots not firing, but enabled - slowly descend (or hover)
-                player.motionY = player.isSneaking() ? -0.45 : -0.15 + 0.015 * jetbootsCount;
+                if (jetbootsCount > 6 && !player.isSneaking()) player.motionY = 0;
+                else player.motionY = player.isSneaking() ? -0.45 : -0.15 + 0.015 * jetbootsCount;
                 player.fallDistance = 0;
                 jetbootsAirUsage = (int) (PneumaticValues.PNEUMATIC_JET_BOOTS_USAGE * (player.isSneaking() ? 0.25F : 0.5F));
                 flightAccel = 1.0F;
@@ -532,6 +558,8 @@ public class CommonHUDHandler {
             entityTrackerEnabled = state;
         } else if (handler instanceof NightVisionUpgradeHandler) {
             nightVisionEnabled = state;
+        } else if (handler instanceof ScubaUpgradeHandler) {
+            scubaEnabled = state;
         }
     }
 
@@ -617,6 +645,10 @@ public class CommonHUDHandler {
 
     public boolean isEntityTrackerEnabled() {
         return entityTrackerEnabled;
+    }
+
+    public boolean isScubaEnabled() {
+        return scubaEnabled;
     }
 
     public boolean isValid() {

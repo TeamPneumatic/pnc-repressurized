@@ -28,6 +28,7 @@ import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -68,6 +69,7 @@ import org.lwjgl.util.vector.Quaternion;
 import java.util.*;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static net.minecraft.inventory.EntityEquipmentSlot.LEGS;
 
 public class ClientEventHandler {
     private static final float MAX_SCREEN_ROLL = 25F;  // max roll in degrees when flying with jetboots
@@ -462,19 +464,29 @@ public class ClientEventHandler {
         EntityPlayer player = event.getEntity();
         float newFOV = event.getFov();
 
-        if (player.getItemStackFromSlot(EntityEquipmentSlot.LEGS).getItem() instanceof ItemPneumaticArmor) {
-            CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer(player);
-            if (handler.isRunSpeedEnabled() && handler.getArmorPressure(EntityEquipmentSlot.LEGS) > 0f
-                    && handler.getUpgradeCount(EntityEquipmentSlot.LEGS, IItemRegistry.EnumUpgrade.SPEED) > 0) {
-                float boost = handler.getUpgradeCount(EntityEquipmentSlot.LEGS, IItemRegistry.EnumUpgrade.SPEED, PneumaticValues.PNEUMATIC_LEGS_MAX_SPEED)
-                        * PneumaticValues.PNEUMATIC_LEGS_BOOST_PER_UPGRADE * (float)ConfigHandler.client.leggingsFOVfactor;
-                newFOV = (event.getFov() - (boost / 2f));
-                if (newFOV < 1f && player.getActivePotionEffect(MobEffects.SLOWNESS) == null) {
-                    newFOV = 1f;
-                }
+        CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer(player);
+        if (handler.isArmorReady(LEGS) && handler.isRunSpeedEnabled() && handler.getArmorPressure(LEGS) > 0f
+                && handler.getUpgradeCount(LEGS, IItemRegistry.EnumUpgrade.SPEED) > 0) {
+            float boost = handler.getUpgradeCount(LEGS, IItemRegistry.EnumUpgrade.SPEED, PneumaticValues.PNEUMATIC_LEGS_MAX_SPEED)
+                    * PneumaticValues.PNEUMATIC_LEGS_BOOST_PER_UPGRADE * (float)ConfigHandler.client.leggingsFOVfactor;
+            newFOV = (event.getFov() - (boost / 2f));
+            if (newFOV < 1f && player.getActivePotionEffect(MobEffects.SLOWNESS) == null) {
+                newFOV = 1f;
             }
         }
         event.setNewfov(newFOV);
+    }
+
+    @SubscribeEvent
+    public void fogDensityEvent(EntityViewRenderEvent.FogDensity event) {
+        if (event.getState().getMaterial() == Material.WATER && event.getEntity() instanceof EntityPlayer) {
+            EntityPlayer player = (EntityPlayer) event.getEntity();
+            CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer(player);
+            if (handler.isArmorReady(EntityEquipmentSlot.HEAD) && handler.isScubaEnabled()) {
+                event.setDensity(0.02f);
+                event.setCanceled(true);
+            }
+        }
     }
 }
 

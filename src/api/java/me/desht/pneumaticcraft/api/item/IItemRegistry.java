@@ -22,7 +22,8 @@ public interface IItemRegistry {
         CHARGING("charging"),
         ARMOR("armor"),
         JET_BOOTS("jetboots"),
-        NIGHT_VISION("night_vision");
+        NIGHT_VISION("night_vision"),
+        SCUBA("scuba");
 
         private final String name;
         private final String depModId;

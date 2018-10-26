@@ -53,6 +53,8 @@ public class Sounds {
     public static final SoundEvent PNEUMATIC_DOOR = null;
     @GameRegistry.ObjectHolder("chirp")
     public static final SoundEvent CHIRP = null;
+    @GameRegistry.ObjectHolder("scuba")
+    public static final SoundEvent SCUBA = null;
 
     @SubscribeEvent
     public static void registerSounds(RegistryEvent.Register<SoundEvent> event) {
@@ -77,7 +79,8 @@ public class Sounds {
                 buildSound("short_hiss"),
                 buildSound("punch"),
                 buildSound("pneumatic_door"),
-                buildSound("chirp")
+                buildSound("chirp"),
+                buildSound("scuba")
         );
     }
 

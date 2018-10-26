@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ltl",
+    "prp",
+    "ltl"
+  ],
+  "key": {
+    "r": {
+      "item": "pneumaticcraft:regulator_upgrade"
+    },
+    "t": {
+      "item": "pneumaticcraft:pressure_tube"
+    },
+    "p": {
+      "item": "pneumaticcraft:plastic",
+      "data": 0
+    },
+    "l" : {
+      "item": "minecraft:dye",
+      "data": 4
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:scuba_upgrade"
+  }
+}

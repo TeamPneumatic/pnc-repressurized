@@ -170,6 +170,7 @@ item.charging_upgrade.name=Charging Upgrade
 item.armor_upgrade.name=Armor Upgrade
 item.jet_boots_upgrade.name=Jet Boots Upgrade
 item.night_vision_upgrade.name=Night Vision Upgrade
+item.scuba_upgrade.name=SCUBA Upgrade
 
 item.assembly_program0.name=Assembly Program: Drill
 item.assembly_program1.name=Assembly Program: Laser
@@ -381,6 +382,7 @@ gui.tab.info.item.armor.head.securityUpgrade=§0With one or more Security Upgrad
 gui.tab.info.item.armor.head.dispenserUpgrade=§0When used in conjunction with the Entity Tracker upgrade, the Dispenser Upgrade allows debugging & monitoring of active drones; target a drone and use the drone-debug hotkey (default: Y), then open the helmet options GUI (default: U). \n \nA redstone particle effect will also be displayed in any blocks that nearby (within 32 blocks) drones are interested in.
 gui.tab.info.item.armor.head.thaumcraftUpgrade=§0With a Thaumcraft Upgrade installed, you gain the benefits of Goggles of Revealing: nodes are revealed, you get a 5%% Vis discount, and essentia levels of various containers are displayed on-screen.
 gui.tab.info.item.armor.head.night_visionUpgrade=§0As its name suggests, the Night Vision upgrade allows you to see clearly in the dark, for a minor air cost. A single upgrade is sufficient.
+gui.tab.info.item.armor.head.scubaUpgrade=§0This upgrade allows you to breathe underwater, using air stored in your helmet. Note that this is less efficient in terms of air usage than an Aerial Interface, but also more... self-contained.
 gui.tab.info.item.armor.chest.magnetUpgrade=§0With a Magnet Upgrade installed, your chestplate can automatically pull nearby items toward you for a small air cost.  You can install up to 6 Magnet Upgrades to extend the magnet's range.
 gui.tab.info.item.armor.chest.chargingUpgrade=§0With one or more Charging Upgrades installed, your chestplate can automatically charge all other pressurizable items in your inventory, either worn or carried (note: will only charge items with a lower pressure than the chestplate).  Up to 6 Charging Upgrades can be installed to increase the charging rate.
 gui.tab.info.item.armor.chest.securityUpgrade=§0With a Security Upgrade installed, you will gain protection from fire and lava at a significant air cost: air will be rapidly dumped from the chestplate to extinguish nearby flames and solidify nearby lava.
@@ -849,6 +851,7 @@ pneumaticHelmet.upgrade.jumpBoost=Jump Boost
 pneumaticHelmet.upgrade.kick=Pneumatic Kick
 pneumaticHelmet.upgrade.stepAssist=Step Assist
 pneumaticHelmet.upgrade.jetBoots=Jet Boots
+pneumaticHelmet.upgrade.scuba=SCUBA
 
 pneumaticHelmet.message.enableSetting=%s Enabled
 pneumaticHelmet.message.disableSetting=%s Disabled

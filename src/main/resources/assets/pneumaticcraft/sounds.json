@@ -141,5 +141,11 @@
     "sounds":[
       "pneumaticcraft:chirp"
     ]
+  },
+  "scuba": {
+    "category":"ambient",
+    "sounds":[
+      "pneumaticcraft:scuba"
+    ]
   }
 }

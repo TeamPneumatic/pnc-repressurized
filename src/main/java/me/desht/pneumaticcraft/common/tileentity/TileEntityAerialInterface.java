@@ -153,7 +153,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
                     EntityPlayer player = getPlayer();
                     if (player != null && player.getAir() <= 280) {
                         player.setAir(player.getAir() + 16);
-                        addAir(-3200);
+                        addAir(-80);
                     }
                 }
             }
