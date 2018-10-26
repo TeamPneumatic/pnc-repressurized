@@ -117,22 +117,24 @@ public class EventHandlerPneumaticArmor {
         if (event.getEntityLiving() instanceof EntityPlayer) {
             EntityPlayer player = (EntityPlayer) event.getEntityLiving();
             ItemStack stack = player.getItemStackFromSlot(EntityEquipmentSlot.LEGS);
+            if (!(stack.getItem() instanceof ItemPneumaticArmor)) {
+                return;
+            }
             CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer(player);
-            if (!handler.isJetBootsActive() && stack.getItem() instanceof ItemPneumaticArmor && handler.isArmorReady(EntityEquipmentSlot.LEGS) && handler.isJumpBoostEnabled()) {
-                ItemPneumaticArmor legs = (ItemPneumaticArmor) stack.getItem();
-                if (legs.getPressure(stack) > 0.01F) {
-                    float power = ItemPneumaticArmor.getIntData(stack, "jumpBoost", 100) / 100.0f;
-                    int rangeUpgrades = handler.getUpgradeCount(EntityEquipmentSlot.LEGS, IItemRegistry.EnumUpgrade.RANGE,
-                            player.isSneaking() ? 1 : PneumaticValues.PNEUMATIC_LEGS_MAX_JUMP);
-                    player.motionY += rangeUpgrades * 0.15 * power;
-                    float f = player.rotationYaw * 0.017453292F;
-                    float m = player.isSprinting() ? 0.25F * rangeUpgrades : 0.15F * rangeUpgrades;
-                    if (player.motionX != 0) player.motionX -= (double)(MathHelper.sin(f) * m);
-                    if (player.motionZ != 0) player.motionZ += (double)(MathHelper.cos(f) * m);
-                    player.fallDistance -= rangeUpgrades * 1.5;
-                    int airUsed = PneumaticValues.PNEUMATIC_ARMOR_JUMP_USAGE * rangeUpgrades * (player.isSprinting() ? 2 : 1);
-                    handler.addAir(stack, EntityEquipmentSlot.LEGS, -Math.round(airUsed * power + 0.5f));
-                }
+            if (!handler.isJetBootsActive() && handler.isArmorReady(EntityEquipmentSlot.LEGS)
+                    && handler.isJumpBoostEnabled() && handler.getArmorPressure(EntityEquipmentSlot.LEGS) > 0.01F) {
+                float power = ItemPneumaticArmor.getIntData(stack, "jumpBoost", 100) / 100.0f;
+                int rangeUpgrades = handler.getUpgradeCount(EntityEquipmentSlot.LEGS, IItemRegistry.EnumUpgrade.RANGE,
+                        player.isSneaking() ? 1 : PneumaticValues.PNEUMATIC_LEGS_MAX_JUMP);
+                float actualBoost = Math.max(1.0f, rangeUpgrades * power);
+                player.motionY += actualBoost * 0.15f;
+                float rotRad = player.rotationYaw * 0.017453292f;  // deg2rad
+                float scale = player.isSprinting() ? 0.25f * actualBoost : 0.15f * actualBoost;
+                if (player.motionX != 0) player.motionX -= (double)(MathHelper.sin(rotRad) * scale);
+                if (player.motionZ != 0) player.motionZ += (double)(MathHelper.cos(rotRad) * scale);
+                player.fallDistance -= actualBoost * 1.5;
+                int airUsed = (int) Math.ceil(PneumaticValues.PNEUMATIC_ARMOR_JUMP_USAGE * actualBoost * (player.isSprinting() ? 2 : 1));
+                handler.addAir(stack, EntityEquipmentSlot.LEGS, -airUsed);
             }
         }
     }

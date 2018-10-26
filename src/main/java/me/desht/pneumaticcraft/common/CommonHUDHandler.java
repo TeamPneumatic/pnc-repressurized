@@ -59,6 +59,9 @@ public class CommonHUDHandler {
     private static final CommonHUDHandler clientHandler = new CommonHUDHandler();
     private static final CommonHUDHandler serverHandler = new CommonHUDHandler();
 
+    private static final UUID PNEUMATIC_SPEED_ID = UUID.fromString("6ecaf25b-9619-4fd1-ae4c-c2f1521047d7");
+    private static Potion nightVisionPotion;
+
     private final HashMap<String, CommonHUDHandler> playerHudHandlers = new HashMap<>();
     private int magnetRadius;
     private int magnetRadiusSq;
@@ -67,11 +70,13 @@ public class CommonHUDHandler {
     private final int[] ticksSinceEquip = new int[4];
     public final float[] armorPressure = new float[4];
     private final int[][] upgradeMatrix = new int [4][];
-    private boolean isValid;
+
+    private boolean isValid; // true if the handler is valid; gets invalidated if player disconnects
 
     private int hackTime;
     private WorldAndCoord hackedBlock;
     private Entity hackedEntity;
+
     private boolean armorEnabled;
     private boolean magnetEnabled;
     private boolean chargingEnabled;
@@ -86,15 +91,9 @@ public class CommonHUDHandler {
     private int prevJetBootsAirUsage;  // so we know when the jet boots are starting up
     private int jetBootsActiveTicks;
     private boolean wasNightVisionEnabled;
-
-    private final Potion nightVisionPotion;
-
-    private static final UUID PNEUMATIC_SPEED_ID = UUID.fromString("6ecaf25b-9619-4fd1-ae4c-c2f1521047d7");
     private float speedBoostMult;
 
     public CommonHUDHandler() {
-        nightVisionPotion = Potion.getPotionFromResourceLocation("night_vision");
-
         for (EntityEquipmentSlot slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
             List<IUpgradeRenderHandler> renderHandlers = UpgradeRenderHandlerList.instance().getHandlersForSlot(slot);
             upgradeRenderersInserted[slot.getIndex()] = new boolean[renderHandlers.size()];
@@ -142,6 +141,11 @@ public class CommonHUDHandler {
     private static void clearHUDHandlerForPlayer(EntityPlayer player) {
         CommonHUDHandler h = getManagerInstance(player);
         h.playerHudHandlers.computeIfPresent(player.getName(), (name, val) -> { val.invalidate(); return null; } );
+    }
+
+    private static Potion getNightVisionPotion() {
+        if (nightVisionPotion == null) nightVisionPotion = Potion.getPotionFromResourceLocation("night_vision");
+        return nightVisionPotion;
     }
 
     private void tick(EntityPlayer player) {
@@ -192,7 +196,7 @@ public class CommonHUDHandler {
     private void onArmorRemoved(EntityPlayer player, ItemStack armorStack, EntityEquipmentSlot slot) {
         switch (slot) {
             case HEAD:
-                if (nightVisionEnabled) player.removeActivePotionEffect(nightVisionPotion);
+                if (nightVisionEnabled) player.removeActivePotionEffect(getNightVisionPotion());
                 break;
             case FEET:
                 player.stepHeight = 0.6F;
@@ -251,10 +255,10 @@ public class CommonHUDHandler {
                     && nightVisionEnabled;
             if (shouldEnable) {
                 ItemStack helmetStack = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
-                player.addPotionEffect(new PotionEffect(nightVisionPotion, 500, 0, false, false));
+                player.addPotionEffect(new PotionEffect(getNightVisionPotion(), 500, 0, false, false));
                 addAir(helmetStack, EntityEquipmentSlot.HEAD, -PneumaticValues.PNEUMATIC_NIGHT_VISION_USAGE * 8);
             } else if (!shouldEnable && wasNightVisionEnabled) {
-                player.removePotionEffect(nightVisionPotion);
+                player.removePotionEffect(getNightVisionPotion());
             }
             wasNightVisionEnabled = shouldEnable;
         }
