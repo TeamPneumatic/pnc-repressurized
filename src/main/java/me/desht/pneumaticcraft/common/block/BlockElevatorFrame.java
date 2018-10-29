@@ -138,21 +138,24 @@ public class BlockElevatorFrame extends BlockPneumaticCraftModeled {
     public void onEntityCollision(World world, BlockPos pos, IBlockState state, Entity entity) {
         TileEntityElevatorBase te = getElevatorTE(world, pos);
         if (te != null && te.oldExtension != te.extension) {
-            AxisAlignedBB box = entity.getEntityBoundingBox();
-            int x = te.getPos().getX();
-            int z = te.getPos().getZ();
-            if (box.minX < x - 0.1) {
-                entity.addVelocity(0.02, 0, 0);
-            } else if (box.maxX > x + 1.1) {
-                entity.addVelocity(-0.02, 0, 0);
-            } else if (box.minZ < z - 0.1) {
-                entity.addVelocity(0, 0, 0.02);
-            } else if (box.maxZ > z + 1.1) {
-                entity.addVelocity(0, 0, -0.02);
+            if (Math.abs(entity.posY - (te.getPos().getY() + te.extension)) < 2.5) {
+                AxisAlignedBB box = entity.getEntityBoundingBox();
+                int x = te.getPos().getX();
+                int z = te.getPos().getZ();
+                // nudge the entity onto the platform if they're hanging over by too much
+                if (box.minX < x - 0.1) {
+                    entity.addVelocity(0.02, 0, 0);
+                } else if (box.maxX > x + 1.1) {
+                    entity.addVelocity(-0.02, 0, 0);
+                } else if (box.minZ < z - 0.1) {
+                    entity.addVelocity(0, 0, 0.02);
+                } else if (box.maxZ > z + 1.1) {
+                    entity.addVelocity(0, 0, -0.02);
+                }
+                entity.setPosition(entity.posX, te.getPos().getY() + 1 + te.extension, entity.posZ);
             }
-            entity.setPosition(entity.posX, te.getPos().getY() + 1 + te.extension, entity.posZ);
+            entity.fallDistance = 0;
         }
-        entity.fallDistance = 0;
     }
 
     static TileEntityElevatorBase getElevatorTE(IBlockAccess world, BlockPos pos) {
