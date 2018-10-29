@@ -1,4 +1,4 @@
-The Electrostatic Compressor is a tier two air [link{pneumaticcraft:menu/generating_pressure}]compressor [link{}], which uses lightning to create it's air. When it is struck by lightning it will instantly produce 200,000mL of air. Seems like a lot, but how often do you see a Charged Creeper sneaking around? You have to have it get struck.
+The Electrostatic Compressor is a tier two air [link{pneumaticcraft:menu/generating_pressure}]compressor [link{}], which uses lightning to create its air. When it is struck by lightning it will instantly produce 200,000mL of air. Seems like a lot, but how often do you see a Charged Creeper sneaking around? You have to have it get struck.
 
 
 

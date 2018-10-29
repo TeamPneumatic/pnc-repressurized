@@ -1,14 +1,16 @@
 [image{200,20,0.572,pneumaticcraft:textures/wiki/oil.png}]
-In PneumaticCraft there is only one thing that's being generated, and that's Oil. It is spawned similarly to how Water lakes are spawned. The difference is that Oil lakes are far more likely to spawn deep underground than they are to spawn on the surface. Because of this, assistence from tools like a [link{item/seismic_sensor}]Seismic Sensor[link{}] is highly recommended.
+In PneumaticCraft there is only one thing that's being generated, and that's Oil. It is spawned similarly to how Water lakes are spawned. The difference is that Oil lakes are far more likely to spawn deep underground than they are to spawn on the surface. Because of this, assistance from tools like a [link{item/seismic_sensor}]Seismic Sensor[link{}] is highly recommended.
 
-Oil has two purposes: to be refined into high-quality fuels, and to create Plastic. Plastic is used in a lot of recipes in PneumaticCraft.
+Once you've found some Oil, you'll need to extract it from the ground and transport it. The recommended PneumaticCraft way to extract oil is with a [link{block/gas_lift}]Gas Lift[link{}], although fluid pumps from other mods can also be used. If you're pumping far from your base, one early game solution for transport is a simple [link{block/liquid_hopper}]Liquid Hopper[link{}], which can hold up to 16,000mB of fluid and keeps its contents when broken.  (Even the Gas Lift can be used for this purpose since it also keeps its fluid contents).
+
+Oil has two purposes: to be refined into high-quality fuels, and for making Plastic. Plastic is used in a lot of recipes in PneumaticCraft.
 
 [prefix{l}]Creating Plastic[prefix{}]
-To create plastic, the first step is to refine the Oil in a [link{block/refinery}]Refinery [link{}].
+To create plastic, the first step is to refine the Oil in a [link{block/refinery}]Refinery [link{}] and provide the Refinery with some [link{heat}]heat[link{}].
 
-One of the products is LPG. This liquid combined with Coal processed in a [link{block/thermopneumatic_processing_plant}]Thermopneumatic Processing Plant[link{}] will yield Plastic.
+One of the products is LPG. This liquid combined with Coal processed in a [link{block/thermopneumatic_processing_plant}]Thermopneumatic Processing Plant[link{}] and some heat will yield liquid Plastic.
 
-Liquid Plastic can then by mixed with dyes in a [link{block/plastic_mixer}]Plastic Mixer[link{}] and solidified into colored plastic sheets.
+Liquid Plastic can then be mixed with dyes in a [link{block/plastic_mixer}]Plastic Mixer[link{}] and solidified into colored plastic sheets. Note that if you're [prefix{o}]solidifying [prefix{}] Plastic, you don't need to provide the Plastic Mixer with any heat.
 
 This may sound quite expensive, but the default recipes for all the above machines are actually fairly cheap.
 

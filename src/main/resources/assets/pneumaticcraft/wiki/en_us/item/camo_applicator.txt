@@ -5,6 +5,8 @@ The Camouflage Applicator can be used to camouflage certain PneumaticCraft block
 • Pneumatic Elevator Base
 • Charging Station
 
-Sneak-right-click any solid block to copy its appearance to the Applicator tool, or sneak-right-click with no block targeted to clear the copied block. Then, right-click a camouflageable block (see above) to apply or remove camouflage. You'll need an actual block in your inventory to apply it as camouflage (but you get it back when you remove the camouflage).
+Sneak+right-click any solid block to copy its appearance to the Applicator tool, or sneak+right-click with no block targeted to clear the copied block. Then, right-click any camouflageable block (see above) to apply or remove camouflage. You'll need an actual block in your inventory to apply it as camouflage, which gets used (but you get it back when you remove the camouflage).
 
-[crafting{200, 180, key=item/camo_applicator}]
+You can also uncamouflage a camouflaged block by breaking it with a pick or other suitable tool; the camouflage will be broken off instead.
+
+[crafting{200, 230, key=item/camo_applicator}]
