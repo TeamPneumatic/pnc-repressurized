@@ -201,6 +201,14 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
         onTextChange();
     }
 
+    @Override
+    public void appendText(List<String> text) {
+        for (String line : text) {
+            textList.addAll(PneumaticCraftUtils.convertStringIntoList(I18n.format(line), (int) (GuiConstants.MAX_CHAR_PER_LINE_LEFT / textScale)));
+        }
+        onTextChange();
+    }
+
     /**
      * Pad the stat tab with some spacing to allow for widget placement.
      *

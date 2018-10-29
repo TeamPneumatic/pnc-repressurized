@@ -65,8 +65,8 @@ public interface IGuiAnimatedStat {
 
     /**
      * Sets the line to a single line. Upon rendering,
-     * TextFormattings will be respected. When you call this method, Too long lines will be divided into multiple shorter ones
-     * to fit in the GUI.
+     * TextFormattings will be respected. When you call this method, Too-long lines will be divided into multiple
+     * shorter ones to fit in the GUI.
      *
      * @param text
      * @return this, so you can chain calls.
@@ -74,12 +74,19 @@ public interface IGuiAnimatedStat {
     IGuiAnimatedStat setText(String text);
 
     /**
-     * Sets the main text of this stat. Every line should be stored in a seperate list element. Upon rendering,
+     * Sets the main text of this stat. Every line should be stored in a separate list element. Upon rendering,
      * TextFormattings will be respected. This version of the text setting doesn't handle too long lines.
      *
      * @param text
      */
     void setTextWithoutCuttingString(List<String> text);
+
+    /**
+     * Appends some more text to the existing text in this stat.  This method does not attempt to split overlong lines.
+     *
+     * @param text
+     */
+    void appendText(List<String> text);
 
     /**
      * Sets the title of this stat. It will automatically get the yellow color assigned.

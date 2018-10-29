@@ -37,6 +37,7 @@ import javax.annotation.Nonnull;
 import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -126,11 +127,7 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
         }
         if (te != null) {
             if (shouldAddInfoTab()) {
-                String info = "gui.tab.info." + te.getName();
-                String translatedInfo = I18n.format(info);
-                if (!translatedInfo.equals(info)) {
-                    addInfoTab(translatedInfo);
-                }
+                addInfoTab("gui.tab.info." + te.getName());
             }
             if (shouldAddRedstoneTab() && te instanceof IRedstoneControl) {
                 addRedstoneTab();
@@ -203,8 +200,11 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
     }
 
     protected void addInfoTab(String info) {
-        if (!Loader.isModLoaded(ModIds.IGWMOD)) info += " \\n \\n" + I18n.format("gui.tab.info.assistIGW");
-        addAnimatedStat("gui.tab.info", Textures.GUI_INFO_LOCATION, 0xFF8888FF, true).setText(info);
+        IGuiAnimatedStat stat = addAnimatedStat("gui.tab.info", Textures.GUI_INFO_LOCATION, 0xFF8888FF, true);
+        stat.setText(info);
+        if (!Loader.isModLoaded(ModIds.IGWMOD)) {
+            stat.appendText(Arrays.asList("", "gui.tab.info.assistIGW"));
+        }
     }
 
     protected boolean shouldAddRedstoneTab() {
