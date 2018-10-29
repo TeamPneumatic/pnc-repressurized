@@ -148,7 +148,7 @@ public class HeatExchangerLogic implements IHeatExchangerLogic {
             temperature = 295;
             return;
         }
-            if (newBehaviours != null) {
+        if (newBehaviours != null) {
             List<HeatBehaviour> oldBehaviours = behaviours;
             behaviours = newBehaviours;
             newBehaviours = null;

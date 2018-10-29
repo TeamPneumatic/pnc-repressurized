@@ -19,7 +19,7 @@ import net.minecraftforge.fluids.FluidRegistry;
 import java.util.*;
 
 public class HeatExchangerManager implements IHeatRegistry {
-    public static final double DEFAULT_FLUID_RESISTANCE = 10;
+    public static final double DEFAULT_FLUID_RESISTANCE = 500;
 
     // Used to add thermal properties to vanilla blocks or non-tile-entity modded blocks
     private final Map<Block, IHeatExchanger> specialBlockExchangers = new HashMap<>();
