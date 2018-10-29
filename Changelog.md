@@ -8,6 +8,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ### 0.8.2-??? (unreleased)
 #### New
+* Added a SCUBA Upgrade for the Pneumatic Helmet for underwater breathing and better underwater vision. It's an alternative to using the Aerial Interface, which still works; the Aerial Interface is more efficient in terms of air usage, but doesn't provide the clear vision.
 * Added a Night Vision Upgrade for the Pneumatic Helmet. No prizes for guessing what that does.
 * Added armor GUI controls for Pneumatic Leggings speed and jump upgrades, to allow the boost magnitude to be throttled back (0-100%). Useful if you want to e.g. reduce your jump height without needing to find a Charging Station to swap out upgrades from your armor.
 * Electrostatic Compressor has been heavily reworked:
@@ -22,6 +23,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * New fancier particle effects for air rendering (air leaks, pressure chamber, jet boots...)
 * Heat mechanics update: it is no longer possible to repeatedly break and replace a heat source block to stop it converting to stone/obsidian. That has always been considered an exploit. Using heat source blocks (lava/magma/pyrotheum...) is still a valid approach, but you will need to supply new materials to replaced the cooled ones.
 #### Updates
+* Default thermal resistance for all fluids is now 500.  Previously this only applied to flowing Lava and Water (all other fluids including static lava and water had a resistance of only 10).  This means that Lava (and fluids such as Blazing Pyrotheum) is now a more effective heat source for blocks like the Refinery since they won't solidify almost immediately. This may not work for existing worlds; in this case, you can set D:fluidThermalResistance=500.0 in pneumaticcraft.cfg.
 * The maximum number of Speed Upgrades in the Pneumatic Leggings has been raised from 3 to 4, for a 2x speed boost over default.
 * Client-side rendering performance improvement when highlighting camouflageable blocks (while holding the Camouflage Applicator).
 * Some more Pressure Chamber work:
@@ -34,7 +36,13 @@ Changes are in reverse chronological order; newest changes at the top.
 * Sneak-wrenching a pneumatic machine now preserves any stored air in the dropped block (breaking the machine with a pick still loses stored air).
 * Air leak sound pitch is now somewhat dependent on the pressure of the leak (higher pressure = higher-pitched leak sound)
 * FoV change (zoom out) when Pneumatic Leggings speed boost is active has been removed. Added a clientside config setting D:leggingsFOVfactor if you prefer to keep the FoV adjustment (or would like a smaller adjustment) - 1.0 (default) for no adjustment, 0.0 for maximum adjustment.
+* When Elevators are moving, Elevator Frames now "nudge" the player toward the centre of the block if they're hanging off by more than a little. Still possible to force-walk off the elevator platform if you're so inclined, though.
+* Elevators now only "grab" entities within their frames if the entity is with 2.5 blocks vertically of the moving platform (previous behaviour was to grab regardless of height which can be a little... startling)
+* Elevator Frames now only cancel fall damage if it's onto a moving elevator platform.
+* Some IGW pages have had extra or clearer information added.
 #### Fixes
+* Fixed some configurable values (e.g. blocks per elevator base) not being adjustable from the default.
+* Fixed a deadlock issue with the Omnidirectional Hopper.  Under certain circumstances (all slots in the hopper partially full) it could fail to find suitable items in the input inventory.
 * Fixed an item dupe in the Pressure Chamber under some fairly specific circumstances (related to performance improvements in 0.8.1).
 * Fixed camouflageable blocks not being breakable with a pick (only a wrench) - related to camouflage updates in 0.8.1.
 * Targeting Pressure Tube modules now works correctly for TOP & WAILA information display.
@@ -42,6 +50,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed an arithmetic rounding error causing Speed Upgrades to be less effective than they should have been in the Charging Station.
 * Fixed problem with the Pneumatic Armor GUI causing a client crash when opened.  I couldn't reproduce this myself, but I've had confirmation that my fix appears to have succeeded...
 * Fixed cosmetic issue where Pneumatic Armor feature enable/disable message were shown even when the corresponding upgrade(s) weren't installed (the actual features were not enabled, though)
+* Fixed a few cosmetic "Format Error" strings in GUI info tabs.
 
 ### 0.8.1-274 (8 Oct 2018)
 #### Updates
