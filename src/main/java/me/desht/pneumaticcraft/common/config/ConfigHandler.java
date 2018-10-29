@@ -100,37 +100,37 @@ public class ConfigHandler {
         @Config.Comment("Loss percentage (on average) of Compressed Iron ingots/blocks when exposed to an explosion. Note: this can also be controlled via CraftTweaker.")
         @Config.RangeInt(min = 0, max = 100)
         @Config.RequiresMcRestart
-        public final int configCompressedIngotLossRate = 20;
+        public int configCompressedIngotLossRate = 20;
         @Config.Comment("Enables the dungeon loot generation of the Nuke Virus and Stop! Worm (not useful in single-player worlds)")
-        public final boolean enableDungeonLoot = true;
+        public boolean enableDungeonLoot = true;
         @Config.Comment("Damage of the Miniguns. This applies to the Sentry Gun, Handheld Minigun, and Drone-based minigun")
-        public final float configMinigunDamage = 4f;
+        public float configMinigunDamage = 4f;
         @Config.Comment("Enable Drone Suffocation Damage")
-        public final boolean enableDroneSuffocationDamage = true;
+        public boolean enableDroneSuffocationDamage = true;
         @Config.Comment("Efficiency of fuel buckets as furnace fuel (default 0.05 means 1 bucket of LPG smelts 450 items in a vanilla furnace")
-        public final float fuelBucketEfficiencyMultiplier = 0.05f;
+        public float fuelBucketEfficiencyMultiplier = 0.05f;
         @Config.Comment("Maximum number of blocks in the area defined in an Area Programming Puzzle Piece")
-        public final int maxProgrammingArea = 250000;
+        public int maxProgrammingArea = 250000;
         @Config.Comment("Enable/disable explosion crafting (iron->compressed iron).  If you disable this, you'll need another way to get compressed iron initially.")
-        public final boolean explosionCrafting = true;
+        public boolean explosionCrafting = true;
         @Config.Comment("Oil worldgen blacklist: add dimension IDs to this list if you don't want oil worldgen to happen there.")
         @Config.RequiresMcRestart
-        public final int[] oilWorldGenBlacklist = new int[] { 1, -1 };
+        public int[] oilWorldGenBlacklist = new int[] { 1, -1 };
         @Config.Comment("Thermal resistance of non-vanilla fluids, which is how fast heat moves between them and adjacent heat-handling blocks like the refinery.  Lower values mean faster heat movement.")
         @Config.RequiresWorldRestart
-        public final double fluidThermalResistance = HeatExchangerManager.DEFAULT_FLUID_RESISTANCE;
+        public double fluidThermalResistance = HeatExchangerManager.DEFAULT_FLUID_RESISTANCE;
         @Config.Comment("Chance per shot (1 in X) of potion-tipped ammo proc'ing the potion effect")
-        public final int minigunPotionProcChance = 15;
+        public int minigunPotionProcChance = 15;
         @Config.Comment("Fluids as hot or hotter than this temperature (Kelvin) will be auto-registered as Liquid Compressor fuels, the quality being dependent on fluid temperature.")
         @Config.RequiresMcRestart
-        public final int minimumFluidFuelTemperature = 373; // 100C
+        public int minimumFluidFuelTemperature = 373; // 100C
     }
 
     public static class MachineProperties {
         @Config.Comment("Changing this value will alter the pressurized air usage of the Pneumatic Generator. The output, EU, will stay the same.")
-        public final int pneumaticGeneratorEfficiency = 40;
+        public int pneumaticGeneratorEfficiency = 40;
         @Config.Comment("Changing this value will alter the pressurized air production of the Electric Compressor. The input, EU, will stay the same")
-        public final int electricCompressorEfficiency = 40;
+        public int electricCompressorEfficiency = 40;
 //        @Config.Comment("Changing this value will alter the pressurized air usage of the Pneumatic Engine. The output, MJ, will stay the same")
 //        public int pneumaticEngineEfficiency = 40;
 //        @Config.Comment("Changing this value will alter the pressurized air production of the Kinetic Compressor. The input, MJ, will stay the same")
@@ -138,55 +138,55 @@ public class ConfigHandler {
 //        @Config.Comment("Changing this value will alter the hydraulic bar production of the Pneumatic Pump. The input, air, will stay the same")
 //        public int pneumaticPumpEfficiency = 40;
         @Config.Comment("Changing this value will alter the pressurized air production of the Flux Compressor. The input, RF, will stay the same")
-        public final int fluxCompressorEfficiency = 40;
+        public int fluxCompressorEfficiency = 40;
         @Config.Comment("Changing this value will alter the pressurized air usage of the Pneumatic Dynamo. The output, RF, will stay the same")
-        public final int pneumaticDynamoEfficiency = 40;
+        public int pneumaticDynamoEfficiency = 40;
         @Config.Comment("The max height of an elevator per stacked Elevator Base.")
         @Config.RangeInt(min = 1, max = 256)
-        public final int elevatorBaseBlocksPerBase = 4;
+        public int elevatorBaseBlocksPerBase = 4;
         @Config.Comment("Can the Kerosene Lamp burn any kind of fuel?  If false, only Kerosene can be burnt")
-        public final boolean keroseneLampCanUseAnyFuel = true;
+        public boolean keroseneLampCanUseAnyFuel = true;
         @Config.Comment("Kerosene Lamp fuel efficiency: higher values mean fuel will last longer in the lamp")
-        public final float keroseneLampFuelEfficiency = 1.0f;
+        public float keroseneLampFuelEfficiency = 1.0f;
         @Config.Comment("Speed multiplier per speed upgrade: speed mult = speedUpgradeSpeedMultiplier ^ num_of_speed_upgrades")
         @Config.RangeDouble(min = 1.0, max = 2.0)
-        public final double speedUpgradeSpeedMultiplier = PneumaticValues.DEF_SPEED_UPGRADE_MULTIPLIER;
+        public double speedUpgradeSpeedMultiplier = PneumaticValues.DEF_SPEED_UPGRADE_MULTIPLIER;
         @Config.Comment("Fuel usage / heat gen multiplier per speed upgrade: usage mult = speedUpgradeUsageMultiplier ^ num_of_speed_upgrades")
         @Config.RangeDouble(min = 1.0, max = 2.0)
-        public final double speedUpgradeUsageMultiplier = PneumaticValues.DEF_SPEED_UPGRADE_USAGE_MULTIPLIER;
+        public double speedUpgradeUsageMultiplier = PneumaticValues.DEF_SPEED_UPGRADE_USAGE_MULTIPLIER;
         @Config.Comment("Base chance (1/x) per tick of a lightning strike on/around the Electrostatic Generator")
-        public final int electrostaticLightningChance = 100000;
+        public int electrostaticLightningChance = 100000;
     }
 
     public static class Advanced {
         @Config.Comment("When set to true, Drones will not execute any program. This is useful to set to true when due to a bug Drones are lagging your server or crashing it. Please report the bug if you encounter it.")
-        public final boolean stopDroneAI = false;
+        public boolean stopDroneAI = false;
 //        @Config.Comment("ONLY SET TO TRUE WHEN YOU KNOW WHAT YOU'RE DOING. When set to true, this will convert any Pressure Tube in the world that was a FMP to its block variant. Handy when you're about to remove FMP from the instance. This will remove any other parts from the block like covers. Exception are tube modules.")
 //        public boolean convertMultipartsTBlock = false;
         @Config.Comment("When set to true, the Kerosene Lamp's fake air blocks won't be registered and therefore removed from the world. Useful if this causes trouble (it shouldn't though)")
-        public final boolean disableKeroseneLampFakeAirBlock = false;
+        public boolean disableKeroseneLampFakeAirBlock = false;
         @Config.Comment("The amount by which any liquid tank's contents must change, as a proportion of the tank's total capacity, to trigger an update to clients. Larger values mean fewer updates but less granularity in client-side fluid rendering.")
         @Config.RangeDouble(min = 0.0001, max = 1)
         @Config.RequiresWorldRestart
-        public final double liquidTankUpdateThreshold = 0.01;
+        public double liquidTankUpdateThreshold = 0.01;
     }
 
     public static class Recipes {
         @Config.Comment("Electric Compressor for IC2")
         @Config.RequiresMcRestart
-        public final boolean enableElectricCompressorRecipe = true;
+        public boolean enableElectricCompressorRecipe = true;
         @Config.Comment("Pneumatic Generator for IC2")
         @Config.RequiresMcRestart
-        public final boolean enablePneumaticGeneratorRecipe = true;
+        public boolean enablePneumaticGeneratorRecipe = true;
 //        @Config.Comment("Pneumatic Pump")
 //        public boolean enablePneumaticPumpRecipe = true;
         @Config.Comment("8 Block of Coal --> 1 Diamond (Pressure Chamber)")
         @Config.RequiresMcRestart
-        public final boolean enableCoalToDiamondsRecipe = true;
+        public boolean enableCoalToDiamondsRecipe = true;
     }
 
     public static class ClientOptions {
-        @Config.Comment("Enable Aphorism Tile Drama!")
+        @Config.Comment("Enable Aphorism Tile Drama!  http://mc-drama.herokuapp.com/")
         public boolean aphorismDrama = true;
         @Config.Comment("When true, the Pneumatic Helmet will be a model. Warning: this model looks far too good to be in MC (currently ignored)")
         public boolean useHelmetModel = false;
@@ -194,11 +194,11 @@ public class ConfigHandler {
         @Config.RangeInt(min = 0, max = 2)
         public int programmerDifficulty = 0;
         @Config.Comment("Show tank fluids with the The One Probe.  Note that TOP also has support for showing tanks, which may or may not be enabled.")
-        public final boolean topShowsFluids = true;
+        public boolean topShowsFluids = true;
         @Config.Comment("Tint Logistics configuration GUI backgrounds according to the colour of the logistics frame you are configuring")
         public boolean logisticsGUITint = true;
         @Config.Comment("Drones render their held item (the item in slot 0 of their inventory) ?")
-        public final boolean dronesRenderHeldItem = true;
+        public boolean dronesRenderHeldItem = true;
         @Config.Comment("Use block lighting for semiblocks (logistics frames, heat frames...). May cause occasional lighting issues - semiblocks appearing unlit - disable this if that's a problem.")
         public boolean semiBlockLighting = true;
         @Config.Comment("Intensity of the FOV modification when using Pneumatic Leggings speed boost: 1.0 for no FOV modification, lower values zoom out more")

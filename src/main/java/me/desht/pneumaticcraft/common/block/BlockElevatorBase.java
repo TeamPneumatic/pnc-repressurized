@@ -92,33 +92,4 @@ public class BlockElevatorBase extends BlockPneumaticCraftCamo {
         }
         super.breakBlock(world, pos, state);
     }
-
-//    @Override
-//    protected void dropInventory(World world, BlockPos pos) {
-//        TileEntity tileEntity = world.getTileEntity(pos);
-//        if (!(tileEntity instanceof TileEntityElevatorBase) || !tileEntity.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)) return;
-//
-//        Random rand = new Random();
-//        IItemHandler inventory = tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
-//        for (int i = getInventoryDropStartSlot(inventory); i < getInventoryDropEndSlot(inventory); i++) {
-//            ItemStack itemStack = inventory.extractItem(i, 64, false);
-//            if (itemStack.getCount() > 0) {
-//                float dX = rand.nextFloat() * 0.8F + 0.1F;
-//                float dY = rand.nextFloat() * 0.8F + 0.1F;
-//                float dZ = rand.nextFloat() * 0.8F + 0.1F;
-//
-//                EntityItem entityItem = new EntityItem(world, pos.getX() + dX, pos.getY() + dY, pos.getZ() + dZ, new ItemStack(itemStack.getItem(), itemStack.getCount(), itemStack.getItemDamage()));
-//
-//                if (itemStack.hasTagCompound()) {
-//                    entityItem.getItem().setTagCompound(itemStack.getTagCompound().copy());
-//                }
-//
-//                float factor = 0.05F;
-//                entityItem.motionX = rand.nextGaussian() * factor;
-//                entityItem.motionY = rand.nextGaussian() * factor + 0.2F;
-//                entityItem.motionZ = rand.nextGaussian() * factor;
-//                world.spawnEntity(entityItem);
-//            }
-//        }
-//    }
 }
