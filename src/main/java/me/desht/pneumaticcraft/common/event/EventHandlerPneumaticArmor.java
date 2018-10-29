@@ -2,7 +2,9 @@ package me.desht.pneumaticcraft.common.event;
 
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.common.CommonHUDHandler;
+import me.desht.pneumaticcraft.common.item.ItemMinigun;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
+import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
@@ -12,10 +14,12 @@ import me.desht.pneumaticcraft.lib.Sounds;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.monster.EntityGuardian;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EntityDamageSource;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -86,6 +90,18 @@ public class EventHandlerPneumaticArmor {
                             NetworkHandler.sendToAllAround(new PacketPlaySound(Sounds.LEAKING_GAS_SOUND, SoundCategory.PLAYERS, player.posX, player.posY, player.posZ, 0.5f, 0.7f, false), player.world);
                             tryExtinguish(player);
                         }
+                    }
+                }
+            } else if (event.getSource() instanceof EntityDamageSource
+                    && ((EntityDamageSource) event.getSource()).getIsThornsDamage()
+                    && event.getSource().getTrueSource() instanceof EntityGuardian) {
+                // not actually armor-related, but it's the right event...
+                // don't take thorns damage from Guardians when attacking with minigun
+                ItemStack stack = player.getHeldItemMainhand();
+                if (stack.getItem() instanceof ItemMinigun) {
+                    Minigun minigun = ((ItemMinigun) stack.getItem()).getMinigun(stack, player);
+                    if (minigun != null && minigun.getMinigunSpeed() >= Minigun.MAX_GUN_SPEED) {
+                        event.setCanceled(true);
                     }
                 }
             }

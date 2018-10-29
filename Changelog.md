@@ -8,7 +8,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ### 0.8.2-??? (unreleased)
 #### New
-* Added a SCUBA Upgrade for the Pneumatic Helmet for underwater breathing and better underwater vision. It's an alternative to using the Aerial Interface, which still works; the Aerial Interface is more efficient in terms of air usage, but doesn't provide the clear vision.
+* Added a SCUBA Upgrade for the Pneumatic Helmet for underwater breathing and better underwater vision. It's an alternative to using the Aerial Interface, which still works; the Aerial Interface is more efficient in terms of air usage, but doesn't provide the clear vision (best option is of course to use both!)
 * Added a Night Vision Upgrade for the Pneumatic Helmet. No prizes for guessing what that does.
 * Added armor GUI controls for Pneumatic Leggings speed and jump upgrades, to allow the boost magnitude to be throttled back (0-100%). Useful if you want to e.g. reduce your jump height without needing to find a Charging Station to swap out upgrades from your armor.
 * Electrostatic Compressor has been heavily reworked:
@@ -26,6 +26,9 @@ Changes are in reverse chronological order; newest changes at the top.
 * Default thermal resistance for all fluids is now 500.  Previously this only applied to flowing Lava and Water (all other fluids including static lava and water had a resistance of only 10).  This means that Lava (and fluids such as Blazing Pyrotheum) is now a more effective heat source for blocks like the Refinery since they won't solidify almost immediately. This may not work for existing worlds; in this case, you can set D:fluidThermalResistance=500.0 in pneumaticcraft.cfg.
 * The maximum number of Speed Upgrades in the Pneumatic Leggings has been raised from 3 to 4, for a 2x speed boost over default.
 * Client-side rendering performance improvement when highlighting camouflageable blocks (while holding the Camouflage Applicator).
+* To hover in-place with the Jet Boots, only 7 Jet Boots Upgrades are now required, instead of 10.
+* Aerial Interface now uses much less air to keep a player's air topped up.
+* Players will no longer take thorns damage when attacking (Elder) Guardians with the Minigun.
 * Some more Pressure Chamber work:
   * Client-side rendering (particles and items in chamber) is skipped if the chamber multiblock has no glass blocks.
   * Particle rendering is skipped if the player is more than 16 blocks away from the chamber (specifically: the chamber's primary valve).
