@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.client.sound;
 
 import me.desht.pneumaticcraft.common.CommonHUDHandler;
 import me.desht.pneumaticcraft.lib.Sounds;
+import net.minecraft.block.material.Material;
 import net.minecraft.client.audio.MovingSound;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.SoundCategory;
@@ -13,12 +14,12 @@ public class MovingSoundJetBoots extends MovingSound {
     private int endTimer = -1;
 
     public MovingSoundJetBoots(EntityPlayer player) {
-        super(Sounds.LEAKING_GAS_SOUND, SoundCategory.NEUTRAL);
+        super(Sounds.LEAKING_GAS_LOW, SoundCategory.NEUTRAL);
 
         this.player = player;
         this.repeat = true;
         this.repeatDelay = 0;
-        this.volume = 0.2F;
+        this.volume = 0.5F;
         this.targetPitch = 0.7F;
         this.pitch = 0.4F;
 
@@ -46,15 +47,21 @@ public class MovingSoundJetBoots extends MovingSound {
 
         if (endTimer > 0) {
             targetPitch = 0.5F;
-            volume = 0.2F - ((20 - endTimer) / 100F);
+            volume = 0.5F - ((20 - endTimer) / 50F);
         } else {
             if (handler.isJetBootsActive()) {
                 double vel = Math.sqrt(player.motionX * player.motionX + player.motionY * player.motionY + player.motionZ * player.motionZ);
-                targetPitch = 0.7F + (float) vel / 20;
+                targetPitch = 0.7F + (float) vel / 15;
+                volume = 0.5F + (float) vel / 15;
             } else {
-                targetPitch = 0.6F;
+                targetPitch = 0.5F;
+                volume = 0.4F;
             }
         }
         pitch += (targetPitch - pitch) / 10F;
+        if (player.isInsideOfMaterial(Material.WATER)) {
+            pitch *= 0.75f;
+            volume *= 0.5f;
+        }
     }
 }

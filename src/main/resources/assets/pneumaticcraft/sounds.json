@@ -147,5 +147,11 @@
     "sounds":[
       "pneumaticcraft:scuba"
     ]
+  },
+  "leaking_gas_low": {
+    "category":"ambient",
+    "sounds":[
+      "pneumaticcraft:leaking_gas_low"
+    ]
   }
 }
