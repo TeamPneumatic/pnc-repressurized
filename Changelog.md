@@ -6,7 +6,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
-### 0.8.2-??? (unreleased)
+### 0.8.2-288 (30 Oct 2018)
 #### New
 * Added a SCUBA Upgrade for the Pneumatic Helmet for underwater breathing and better underwater vision. It's an alternative to using the Aerial Interface, which still works; the Aerial Interface is more efficient in terms of air usage, but doesn't provide the clear vision (best option is of course to use both!)
 * Added a Night Vision Upgrade for the Pneumatic Helmet. No prizes for guessing what that does.
@@ -43,6 +43,8 @@ Changes are in reverse chronological order; newest changes at the top.
 * Elevators now only "grab" entities within their frames if the entity is with 2.5 blocks vertically of the moving platform (previous behaviour was to grab regardless of height which can be a little... startling)
 * Elevator Frames now only cancel fall damage if it's onto a moving elevator platform.
 * Some IGW pages have had extra or clearer information added.
+* Charging Module is lighter on server CPU now (CPU usage was quite heavy when charging a player's Pneumatic Armor via an Aerial Interface).
+* Redid sound effect for Jet Boots a bit (lower-pitched, also modified to be lower & quieter when underwater)
 #### Fixes
 * Fixed some configurable values (e.g. blocks per elevator base) not being adjustable from the default.
 * Fixed a deadlock issue with the Omnidirectional Hopper.  Under certain circumstances (all slots in the hopper partially full) it could fail to find suitable items in the input inventory.
