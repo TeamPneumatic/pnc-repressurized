@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.client.gui.pneumaticHelmet;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IOptionPage;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
+import me.desht.pneumaticcraft.common.CommonHUDHandler;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateArmorExtraData;
@@ -57,7 +58,9 @@ public abstract class GuiSliderOptions extends IOptionPage.SimpleToggleableOptio
             // avoid sending a stream of update packets if player is dragging slider
             NBTTagCompound tag = new NBTTagCompound();
             tag.setInteger(getTagName(), pendingVal);
-            NetworkHandler.sendToServer(new PacketUpdateArmorExtraData(EntityEquipmentSlot.LEGS, tag));
+            NetworkHandler.sendToServer(new PacketUpdateArmorExtraData(getSlot(), tag));
+            // also update the clientside handler
+            CommonHUDHandler.getHandlerForPlayer().onDataFieldUpdated(getSlot(), getTagName(), tag.getTag(getTagName()));
             pendingVal = null;
         }
     }

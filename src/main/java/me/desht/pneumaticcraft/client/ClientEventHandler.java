@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.client;
 
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
-import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.client.gui.IGuiDrone;
 import me.desht.pneumaticcraft.client.model.pressureglass.PressureGlassBakedModel;
@@ -12,7 +11,6 @@ import me.desht.pneumaticcraft.common.CommonHUDHandler;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleRegulatorTube;
-import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.event.DateEventHandler;
 import me.desht.pneumaticcraft.common.fluid.Fluids;
@@ -25,7 +23,6 @@ import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Names;
-import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -46,7 +43,6 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.MobEffects;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBucket;
@@ -56,7 +52,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.*;
-import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fluids.*;
@@ -69,7 +64,6 @@ import org.lwjgl.util.vector.Quaternion;
 import java.util.*;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
-import static net.minecraft.inventory.EntityEquipmentSlot.LEGS;
 
 public class ClientEventHandler {
     private static final float MAX_SCREEN_ROLL = 25F;  // max roll in degrees when flying with jetboots
@@ -77,7 +71,6 @@ public class ClientEventHandler {
 
     public static float playerRenderPartialTick;
     private final RenderProgressingLine minigunFire = new RenderProgressingLine().setProgress(1);
-    private final Map<IModel, Class<? extends TubeModule>> awaitingBaking = new HashMap<IModel, Class<? extends TubeModule>>();
 
     @SubscribeEvent
     public void onItemTooltip(ItemTooltipEvent event) {
@@ -149,7 +142,7 @@ public class ClientEventHandler {
     }
 
     private static Map<String, Integer> getPuzzleSummary(List<IProgWidget> widgets) {
-        Map<String, Integer> map = new HashMap<String, Integer>();
+        Map<String, Integer> map = new HashMap<>();
         for (IProgWidget widget : widgets) {
             if (!map.containsKey(widget.getWidgetString())) {
                 map.put(widget.getWidgetString(), 1);
@@ -301,7 +294,7 @@ public class ClientEventHandler {
 
     @SubscribeEvent
     public void onModelBaking(ModelBakeEvent event) {
-        // set up camo models for camouflagable blocks
+        // set up camo models for camouflageable blocks
         for (Block block : Blockss.blocks) {
             if (block instanceof BlockPneumaticCraftCamo) {
                 Map<IBlockState,ModelResourceLocation> map
@@ -459,29 +452,18 @@ public class ClientEventHandler {
 
     @SubscribeEvent
     public void adjustFOVEvent(FOVUpdateEvent event) {
-        if (ConfigHandler.client.leggingsFOVfactor <= 0f) return;
-
-        EntityPlayer player = event.getEntity();
-        float newFOV = event.getFov();
-
-        CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer(player);
-        if (handler.isArmorReady(LEGS) && handler.isRunSpeedEnabled() && handler.getArmorPressure(LEGS) > 0f
-                && handler.getUpgradeCount(LEGS, IItemRegistry.EnumUpgrade.SPEED) > 0) {
-            float boost = handler.getUpgradeCount(LEGS, IItemRegistry.EnumUpgrade.SPEED, PneumaticValues.PNEUMATIC_LEGS_MAX_SPEED)
-                    * PneumaticValues.PNEUMATIC_LEGS_BOOST_PER_UPGRADE * (float)ConfigHandler.client.leggingsFOVfactor;
-            newFOV = (event.getFov() - (boost / 2f));
-            if (newFOV < 1f && player.getActivePotionEffect(MobEffects.SLOWNESS) == null) {
-                newFOV = 1f;
-            }
+        CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer();
+        double boost = handler.getSpeedBoostFromLegs();
+        if (boost > 0 && ConfigHandler.client.leggingsFOVfactor > 0) {
+            event.setNewfov(event.getFov() + (float) (boost * 2.0 * ConfigHandler.client.leggingsFOVfactor));
         }
-        event.setNewfov(newFOV);
     }
 
     @SubscribeEvent
     public void fogDensityEvent(EntityViewRenderEvent.FogDensity event) {
         if (event.getState().getMaterial() == Material.WATER && event.getEntity() instanceof EntityPlayer) {
             EntityPlayer player = (EntityPlayer) event.getEntity();
-            CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer(player);
+            CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer();
             if (handler.isArmorReady(EntityEquipmentSlot.HEAD) && handler.isScubaEnabled()) {
                 event.setDensity(0.02f);
                 event.setCanceled(true);

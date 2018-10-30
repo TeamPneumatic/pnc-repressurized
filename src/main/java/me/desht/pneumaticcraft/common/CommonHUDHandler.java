@@ -25,7 +25,6 @@ import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -59,8 +58,12 @@ import java.util.*;
 public class CommonHUDHandler {
     private static final CommonHUDHandler clientHandler = new CommonHUDHandler();
     private static final CommonHUDHandler serverHandler = new CommonHUDHandler();
+    private static final UUID OLD_SPEED_IDS[] = {
+            UUID.fromString("6ecaf25b-9619-4fd1-ae4c-c2f1521047d7"),
+            UUID.fromString("091a3128-1fa9-4f03-8e30-8848d370caa2"),
+            UUID.fromString("8dd25db8-102e-4960-aeb0-36417d200957")
+    };
 
-    private static final UUID PNEUMATIC_SPEED_ID = UUID.fromString("6ecaf25b-9619-4fd1-ae4c-c2f1521047d7");
     private static Potion nightVisionPotion;
 
     private final HashMap<String, CommonHUDHandler> playerHudHandlers = new HashMap<>();
@@ -203,13 +206,6 @@ public class CommonHUDHandler {
             case FEET:
                 player.stepHeight = 0.6F;
                 break;
-            case LEGS:
-                IAttributeInstance attr = player.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
-                AttributeModifier modifier = attr.getModifier(PNEUMATIC_SPEED_ID);
-                if (modifier != null) {
-                    attr.removeModifier(modifier);
-                }
-                break;
         }
     }
 
@@ -293,29 +289,31 @@ public class CommonHUDHandler {
     private static final Map<String,Vec3d> moveMap = new HashMap<>();
 
     private void handleLeggingsSpeedBoost(EntityPlayer player, ItemStack armorStack) {
-        // check every 8 ticks
-        if (!player.world.isRemote && (getTicksSinceEquipped(EntityEquipmentSlot.LEGS) & 0x7) == 0) {
-            // we know it's pneumatic leggings at this point
-            ItemStack legsStack = player.getItemStackFromSlot(EntityEquipmentSlot.LEGS);
-            int speedUpgrades = getUpgradeCount(EntityEquipmentSlot.LEGS, EnumUpgrade.SPEED, PneumaticValues.PNEUMATIC_LEGS_MAX_SPEED);
-            if (getArmorPressure(EntityEquipmentSlot.LEGS) > 0.0F && speedUpgrades > 0) {
-                double speedBoost = isRunSpeedEnabled() ? PneumaticValues.PNEUMATIC_LEGS_BOOST_PER_UPGRADE * speedUpgrades * speedBoostMult : 0.0;
-                IAttributeInstance attr = player.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
-                AttributeModifier modifier = attr.getModifier(PNEUMATIC_SPEED_ID);
-                if (modifier == null || modifier.getAmount() != speedBoost) {
-                    if (modifier != null) attr.removeModifier(modifier);
-                    attr.applyModifier(new AttributeModifier(PNEUMATIC_SPEED_ID, SharedMonsterAttributes.MOVEMENT_SPEED.getName(), speedBoost, 1));
-                }
-                if (isRunSpeedEnabled()) {
-                    Vec3d prev = moveMap.get(player.getName());
-                    boolean moved = prev != null && (Math.abs(player.posX - prev.x) > 0.0001 || Math.abs(player.posZ - prev.z) > 0.0001);
-                    if (moved && player.onGround && !player.isInsideOfMaterial(Material.WATER)) {
-                        int airUsage = (int) Math.ceil(8 * PneumaticValues.PNEUMATIC_LEGS_SPEED_USAGE * speedUpgrades * speedBoostMult + 0.5f);
-                        addAir(legsStack, EntityEquipmentSlot.LEGS, -airUsage);
-                    }
-                }
+        double speedBoost = getSpeedBoostFromLegs();
+        if (player.world.isRemote) {
+            // doing this client-side only appears to be effective
+            if (player.onGround && player.moveForward > 0 && !player.isInsideOfMaterial(Material.WATER)) {
+                player.moveRelative(0, 0, 1, (float) speedBoost);
+            }
+        }
+        if (!player.world.isRemote && speedBoost > 0) {
+            Vec3d prev = moveMap.get(player.getName());
+            boolean moved = prev != null && (Math.abs(player.posX - prev.x) > 0.0001 || Math.abs(player.posZ - prev.z) > 0.0001);
+            if (moved && player.onGround && !player.isInsideOfMaterial(Material.WATER)) {
+                int airUsage = (int) Math.ceil(PneumaticValues.PNEUMATIC_LEGS_SPEED_USAGE * speedBoost * 4);
+                ItemStack legsStack = player.getItemStackFromSlot(EntityEquipmentSlot.LEGS);
+                addAir(legsStack, EntityEquipmentSlot.LEGS, -airUsage);
             }
             moveMap.put(player.getName(), new Vec3d(player.posX, player.posY, player.posZ));
+        }
+    }
+
+    public double getSpeedBoostFromLegs() {
+        int speedUpgrades = getUpgradeCount(EntityEquipmentSlot.LEGS, EnumUpgrade.SPEED, PneumaticValues.PNEUMATIC_LEGS_MAX_SPEED);
+        if (isArmorReady(EntityEquipmentSlot.LEGS) && speedUpgrades > 0 && isRunSpeedEnabled() && getArmorPressure(EntityEquipmentSlot.LEGS) > 0.0F) {
+            return PneumaticValues.PNEUMATIC_LEGS_BOOST_PER_UPGRADE * speedUpgrades * speedBoostMult;
+        } else {
+            return 0.0;
         }
     }
 
@@ -516,6 +514,14 @@ public class CommonHUDHandler {
                 break;
             case LEGS:
                 speedBoostMult = ItemPneumaticArmor.getIntData(armorStack, "speedBoost", 100) / 100f;
+                // remove any old speed modifiers which might have been on the player
+                // we don't use attribute modifiers anymore
+                for (UUID uuid : OLD_SPEED_IDS) {
+                    AttributeModifier mod = player.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getModifier(uuid);
+                    if (mod != null) {
+                        player.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).removeModifier(mod);
+                    }
+                }
                 break;
         }
     }
@@ -659,8 +665,12 @@ public class CommonHUDHandler {
         isValid = false;
     }
 
+    public float getSpeedBoostMult() {
+        return speedBoostMult;
+    }
+
     /**
-     * Called server-side when a custom NBT field in an armor item has been updated.  Used to
+     * Called when a custom NBT field in an armor item has been updated.  Used to
      * cache data (e.g. legs speed boost %) for performance reasons.
      *
      * @param slot the armor slot

@@ -201,9 +201,9 @@ public class ConfigHandler {
         public boolean dronesRenderHeldItem = true;
         @Config.Comment("Use block lighting for semiblocks (logistics frames, heat frames...). May cause occasional lighting issues - semiblocks appearing unlit - disable this if that's a problem.")
         public boolean semiBlockLighting = true;
-        @Config.Comment("Intensity of the FOV modification when using Pneumatic Leggings speed boost: 1.0 for no FOV modification, lower values zoom out more")
+        @Config.Comment("Intensity of the FOV modification when using Pneumatic Leggings speed boost: 0.0 for no FOV modification, higher values zoom out more.  Note: non-zero values may cause FOV clashes with other mods.")
         @Config.RangeDouble(min = 0.0, max = 1.0)
-        public double leggingsFOVfactor = 1.0;
+        public double leggingsFOVfactor = 0.0;
     }
 
     public static class HelmetOptions {
