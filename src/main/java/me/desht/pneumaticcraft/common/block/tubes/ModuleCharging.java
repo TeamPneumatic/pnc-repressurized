@@ -35,12 +35,13 @@ public class ModuleCharging extends TubeModule {
     public void update() {
         super.update();
         if (pressureTube.world().isRemote) return;
+        if ((pressureTube.world().getTotalWorldTime() & 0x7) != 0) return;
 
         IItemHandler handler = getConnectedInventory();
         if (handler != null) {
-            int airToTransfer = PneumaticValues.CHARGING_STATION_CHARGE_RATE * (upgraded ? 10 : 1);
+            int airToTransfer = 8 * PneumaticValues.CHARGING_STATION_CHARGE_RATE * (upgraded ? 10 : 1);
             IAirHandler airHandler = pressureTube.getAirHandler(null);
-            int airInTube = (int) airHandler.getPressure() * airHandler.getVolume();
+            int airInTube = (int) (airHandler.getPressure() * airHandler.getVolume());
 
             for (int slot = 0; slot < handler.getSlots(); slot++) {
                 ItemStack chargedItem = handler.getStackInSlot(slot);
