@@ -2,17 +2,21 @@
   "type": "minecraft:crafting_shaped",
   "pattern": [
     "ltl",
-    "prp",
-    "ltl"
+    "yry",
+    "lbl"
   ],
   "key": {
     "r": {
-      "item": "pneumaticcraft:regulator_upgrade"
+      "item": "pneumaticcraft:regulator_tube_module"
     },
     "t": {
       "item": "pneumaticcraft:pressure_tube"
     },
-    "p": {
+    "y": {
+      "item": "pneumaticcraft:plastic",
+      "data": 11
+    },
+    "b": {
       "item": "pneumaticcraft:plastic",
       "data": 0
     },
