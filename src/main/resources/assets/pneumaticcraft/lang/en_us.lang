@@ -355,8 +355,12 @@ gui.tab.info.tile.aerial_interface=§0By using an advanced technology which comp
 gui.tab.info.tile.air_cannon=§0This machine can be used to transport items through the air. To be able to use it you'll have to make a GPS Tool. Once made, right click with it on the block you want the items to travel to, and insert the GPS Tool in the GPS slot.
 gui.tab.info.aerialInterface.liquidXp.info.title=Interfacing XP
 gui.tab.info.aerialInterface.liquidXp.info=§0With a Dispenser Upgrade installed in the Aerial Interface, you can pump liquid XP into or out of the Interface, directly filling or draining the player's stored experience. You can select which type of liquid XP to use with the above button; clicking it cycles through the available types, as well as the (default) disabled setting. \n \nAvailable XP types:
-gui.tab.info.aerialInterface.interfacingRF.info.title=Interfacing RF
-gui.tab.info.aerialInterface.interfacingRF.info=The Aerial Interface is able to accept Forge Energy (compatible with RF). The energy stored in its internal buffer (100,000FE) is used to charge any chargeable item in the player's inventory (and armor slots).
+gui.tab.info.aerialInterface.interfacingRF.info.title=Interfacing Energy
+gui.tab.info.aerialInterface.interfacingRF.info=The Aerial Interface is able to accept Forge Energy (compatible with RF). The energy stored in its internal buffer (100,000 RF) is used to charge any chargeable item in the player's inventory (and armor slots). \nNote: Energy is interfaced regardless of whether a Dispenser Upgrade is inserted.
+gui.tab.info.aerialInterface.interfacingFood=Interfacing Food & XP
+gui.tab.info.aerialInterface.interfacingItems=Interfacing Items
+gui.tab.info.aerialInterface.insertDispenser=Insert a Dispenser Upgrade to switch to interfacing food and experience.
+gui.tab.info.aerialInterface.removeDispenser=Remove any Dispenser Upgrades to switch to interfacing items.
 
 gui.tab.info.tile.pressure_tube=§0This block is used to transport air. It can be camouflaged and Tube Modules can be placed on it to provide additional functionality.
 gui.tab.info.tile.advanced_pressure_tube=§0This block is used to transport air. It is the high tier version of the Pressure Tube. It can be camouflaged and Tube Modules can be placed on it to provide additional functionality.

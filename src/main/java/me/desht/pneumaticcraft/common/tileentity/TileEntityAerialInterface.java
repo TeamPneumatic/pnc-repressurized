@@ -12,6 +12,7 @@ import me.desht.pneumaticcraft.common.util.EnchantmentUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemFood;
@@ -39,6 +40,7 @@ import net.minecraftforge.items.wrapper.PlayerOffhandInvWrapper;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -73,6 +75,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
     private final PlayerExperienceHandler playerExperienceHandler;
     private final PlayerFoodHandler playerFoodHandler;
     private WeakReference<EntityPlayer> playerRef = new WeakReference<>(null);
+    private final List<Integer> chargeableSlots = new ArrayList<>();
 
     public TileEntityAerialInterface() {
         super(PneumaticValues.DANGER_PRESSURE_AERIAL_INTERFACE, PneumaticValues.MAX_PRESSURE_AERIAL_INTERFACE, PneumaticValues.VOLUME_AERIAL_INTERFACE, 4);
@@ -111,6 +114,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
         }
         if (old != isConnectedToPlayer) {
             updateNeighbours = true;
+            scanForChargeableItems();
         }
     }
 
@@ -157,8 +161,11 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
                     }
                 }
             }
-            if ((getWorld().getTotalWorldTime() & 0xf) == 0 && !getWorld().isRemote && !playerUUID.isEmpty()) {
+            if ((getWorld().getTotalWorldTime() & 0xf) == 0 && !playerUUID.isEmpty()) {
                 setPlayer(PneumaticCraftUtils.getPlayerFromId(playerUUID));
+            }
+            if ((getWorld().getTotalWorldTime() & 0x3f) == 0) {
+                scanForChargeableItems();
             }
         }
 
@@ -314,15 +321,28 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
         }
     }
 
+    private void scanForChargeableItems() {
+        chargeableSlots.clear();
+        if (isConnectedToPlayer) {
+            InventoryPlayer inv = playerRef.get().inventory;
+            for (int i = 0; i < inv.getSizeInventory(); i++) {
+                if (inv.getStackInSlot(i).hasCapability(CapabilityEnergy.ENERGY, null)) {
+                    chargeableSlots.add(i);
+                }
+            }
+        }
+    }
+
     private void chargeInv(IItemHandler inv) {
-        for (int i = 0; i < inv.getSlots(); i++) {
-            ItemStack stack = inv.getStackInSlot(i);
+        for (int slot : chargeableSlots) {
+            ItemStack stack = inv.getStackInSlot(slot);
             if (stack.hasCapability(CapabilityEnergy.ENERGY, null)) {
                 IEnergyStorage receivingStorage = stack.getCapability(CapabilityEnergy.ENERGY, null);
                 int energyLeft = energyRF.getEnergyStored();
                 if (energyLeft > 0) {
-                    energyRF.extractEnergy(receivingStorage.receiveEnergy(Math.max(energyLeft, RF_PER_TICK), false), false);
-                } else {
+                    energyRF.extractEnergy(receivingStorage.receiveEnergy(Math.min(energyLeft, RF_PER_TICK), false), false);
+                }
+                if (energyRF.getEnergyStored() == 0) {
                     break;
                 }
             }

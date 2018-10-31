@@ -136,22 +136,9 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
                 addAnimatedStat("gui.tab.info.heat.title", new ItemStack(Items.BLAZE_POWDER), 0xFFFF5500, false).setText("gui.tab.info.heat");
             }
             if (shouldAddUpgradeTab()) {
-                String upgrades = "gui.tab.upgrades." + te.getName();
-                String translatedUpgrades = I18n.format(upgrades);
-                List<String> upgradeText = new ArrayList<String>();
-                if (te instanceof TileEntityPneumaticBase) {
-                    upgradeText.add("gui.tab.upgrades.volume");
-                    upgradeText.add("gui.tab.upgrades.security");
-                }
-                if (te instanceof IHeatExchanger) {
-                    upgradeText.add("gui.tab.upgrades.volumeCapacity");
-                }
-                if (!translatedUpgrades.equals(upgrades)) upgradeText.add(upgrades);
-
-                if (upgradeText.size() > 0)
-                    addAnimatedStat("gui.tab.upgrades", Textures.GUI_UPGRADES_LOCATION, 0xFF6060FF, true).setText(upgradeText);
+                addUpgradeTab();
             }
-            if (te instanceof ISideConfigurable) {
+            if (shouldAddSideConfigTabs()) {
                 addSideConfiguratorTabs();
             }
         }
@@ -163,10 +150,28 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
         List<String> curInfo = new ArrayList<>();
         curInfo.add(I18n.format(te.getRedstoneTabTitle()));
         int width = getWidestRedstoneLabel();
-        redstoneTab.addPadding(4, width / fontRenderer.getStringWidth(" "));
+        redstoneTab.addPadding(curInfo,4, width / fontRenderer.getStringWidth(" "));
+//        redstoneTab.setTextWithoutCuttingString(curInfo);
         Rectangle buttonRect = redstoneTab.getButtonScaledRectangle(-width - 12, 24, width + 10, 20);
         redstoneButton = new GuiButtonSpecial(0, buttonRect.x, buttonRect.y, buttonRect.width, buttonRect.height, "-");
         redstoneTab.addWidget(redstoneButton);
+    }
+
+    private void addUpgradeTab() {
+        String upgrades = "gui.tab.upgrades." + te.getName();
+        String translatedUpgrades = I18n.format(upgrades);
+        List<String> upgradeText = new ArrayList<String>();
+        if (te instanceof TileEntityPneumaticBase) {
+            upgradeText.add("gui.tab.upgrades.volume");
+            upgradeText.add("gui.tab.upgrades.security");
+        }
+        if (te instanceof IHeatExchanger) {
+            upgradeText.add("gui.tab.upgrades.volumeCapacity");
+        }
+        if (!translatedUpgrades.equals(upgrades)) upgradeText.add(upgrades);
+
+        if (upgradeText.size() > 0)
+            addAnimatedStat("gui.tab.upgrades", Textures.GUI_UPGRADES_LOCATION, 0xFF6060FF, true).setText(upgradeText);
     }
 
     private int getWidestRedstoneLabel() {
@@ -226,6 +231,8 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
     protected boolean shouldAddProblemTab() {
         return true;
     }
+
+    protected boolean shouldAddSideConfigTabs() { return te instanceof ISideConfigurable; }
 
     protected int getBackgroundTint() { return 0xFFFFFF; }
 

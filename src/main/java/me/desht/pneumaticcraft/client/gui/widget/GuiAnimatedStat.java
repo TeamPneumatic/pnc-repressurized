@@ -220,6 +220,22 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
         setTextWithoutCuttingString(IntStream.range(0, nRows).mapToObj(i -> s).collect(Collectors.toList()));
     }
 
+    /**
+     * Pad the stat tab with some spacing to allow for widget placement.
+     *
+     * @param text existing text to insert into the padding
+     * @param nRows rows of spacing
+     * @param nCols columns of spacing
+     */
+    public void addPadding(List<String> text, int nRows, int nCols) {
+        String s = Strings.repeat(" ", nCols);
+        List<String> l = IntStream.range(0, nRows).mapToObj(i -> s).collect(Collectors.toList());
+        for (int i = 0; i < text.size() && i < nRows; i++) {
+            l.set(i, text.get(i));
+        }
+        setTextWithoutCuttingString(l);
+    }
+
     public void setBackGroundColor(int backGroundColor) {
         this.backGroundColor = backGroundColor;
     }

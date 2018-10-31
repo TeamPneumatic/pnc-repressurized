@@ -14,6 +14,7 @@ import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
@@ -44,16 +45,6 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<TileEntityAeri
     public void initGui() {
         super.initGui();
 
-        if (PneumaticCraftAPIHandler.getInstance().liquidXPs.size() > 0) {
-            GuiAnimatedStat xpStat = addAnimatedStat("gui.tab.info.aerialInterface.liquidXp.info.title",
-                    new ItemStack(Items.EXPERIENCE_BOTTLE), 0xFF55FF55, false);
-            xpStat.setText(getLiquidXPText());
-            xpButton = new GuiButtonSpecial(4, 20, 15, 20, 20, "");
-            xpButton.setListener(this);
-            setupXPButton();
-            xpStat.addWidget(xpButton);
-        }
-
         addAnimatedStat("gui.tab.info.aerialInterface.interfacingRF.info.title",
                 Textures.GUI_BUILDCRAFT_ENERGY, 0xFFc02222, false).setText("gui.tab.info.aerialInterface.interfacingRF.info");
 
@@ -63,6 +54,21 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<TileEntityAeri
         }
 
         if (te.getUpgrades(EnumUpgrade.DISPENSER) > 0) {
+            addAnimatedStat("gui.tab.info.aerialInterface.interfacingFood", new ItemStack(Items.BREAD), 0xFFA0A0A0, false)
+                    .setText("gui.tab.info.aerialInterface.removeDispenser");
+
+            // Experience Tab
+            if (PneumaticCraftAPIHandler.getInstance().liquidXPs.size() > 0) {
+                GuiAnimatedStat xpStat = addAnimatedStat("gui.tab.info.aerialInterface.liquidXp.info.title",
+                        new ItemStack(Items.EXPERIENCE_BOTTLE), 0xFF55FF55, false);
+                xpStat.setText(getLiquidXPText());
+                xpButton = new GuiButtonSpecial(4, 20, 15, 20, 20, "");
+                xpButton.setListener(this);
+                setupXPButton();
+                xpStat.addWidget(xpButton);
+            }
+
+            // Feeding Tab
             GuiAnimatedStat optionStat = addAnimatedStat("gui.tab.aerialInterface.feedMode",
                     new ItemStack(Items.BEEF), 0xFFFFCC00, false);
             optionStat.addPadding(4, 16);
@@ -85,9 +91,16 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<TileEntityAeri
             optionStat.addWidget(button);
             modeButtons[2] = button;
         } else {
+            addAnimatedStat("gui.tab.info.aerialInterface.interfacingItems", new ItemStack(Blocks.CHEST), 0xFFA0A0A0, false)
+                    .setText("gui.tab.info.aerialInterface.insertDispenser");
             for (int i = 0; i < modeButtons.length; i++)
                 modeButtons[i] = null;
         }
+    }
+
+    @Override
+    protected boolean shouldAddSideConfigTabs() {
+        return te.getUpgrades(EnumUpgrade.DISPENSER) == 0;
     }
 
     @Override
@@ -133,7 +146,7 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<TileEntityAeri
     }
 
     private List<String> getLiquidXPText() {
-        List<String> liquidXpText = new ArrayList<String>();
+        List<String> liquidXpText = new ArrayList<>();
         liquidXpText.add("");
         liquidXpText.add("");
         liquidXpText.add("");
