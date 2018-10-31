@@ -24,6 +24,12 @@ public abstract class InventoryFakePlayer extends InventoryPlayer {
     @Nonnull
     @Override
     public ItemStack getStackInSlot(int index) {
+        if (index >= getUnderlyingItemHandler().getSlots() && index < super.getSizeInventory()) {
+            // bit of a kludge here: the InventoryPlayer sub-inventories are still their usual size, so if any
+            // other mod (e.g. Quark) uses that to get an index for getStackInSlot(), we need to account for that.
+            // https://github.com/TeamPneumatic/pnc-repressurized/issues/265
+            return ItemStack.EMPTY;
+        }
         return getUnderlyingItemHandler().getStackInSlot(index);
     }
 
