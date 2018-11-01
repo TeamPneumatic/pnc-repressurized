@@ -4,15 +4,12 @@ import java.awt.*;
 import java.util.List;
 
 /**
- * This interface doesn't have to be implemented. In PneumaticCraft there already is one class which implements this interface
- * which is used many times in PneumaticCraft (GUI stats, Pneumatic Helmet 2D and 3D stats). You can get an instance of this
- * class as well. Information about this you can find in GuiAnimatedStatSupplier.java. Implementing your own version of
- * animated stats can be implemented as well via this interface, and they will interact with the PneumaticCraft GuiAnimatedStats
- * if you implement it correctly.
+ * This interface doesn't have to be implemented. In PneumaticCraft there already is a class which implements this interface
+ * which is used many times in PneumaticCraft (GUI side tabs, Pneumatic Helmet 2D and 3D stats). You can get an instance of this
+ * class via the various {@link IClientRegistry} getAnimatedStat() methods. Implementing your own version of animated
+ * stats is also possible, and they will interact with the PneumaticCraft GuiAnimatedStats if you implement it correctly.
  */
-
 public interface IGuiAnimatedStat {
-
     /**
      * When you call this method with a set of coordinates representing the button location and dimensions, you'll get
      * these parameters back scaled to the GuiAnimatedStat's scale.
@@ -54,9 +51,9 @@ public interface IGuiAnimatedStat {
     void setLeftSided(boolean leftSided);
 
     /**
-     * Sets the main text of this stat. Every line should be stored in a seperate list element. Upon rendering,
-     * TextFormattings will be respected. When you call this method, Too long lines will be divided into multiple shorter ones
-     * to fit in the GUI.
+     * Sets the main text of this stat. Every line should be stored in a separate list element. Upon rendering,
+     * TextFormattings will be respected. When you call this method, Overlong lines will be divided into multiple
+     * shorter ones to fit in the GUI.
      *
      * @param text
      * @return this, so you can chain calls.
@@ -82,7 +79,7 @@ public interface IGuiAnimatedStat {
     void setTextWithoutCuttingString(List<String> text);
 
     /**
-     * Appends some more text to the existing text in this stat.  This method does not attempt to split overlong lines.
+     * Appends some more text to the existing text in this stat.  This method will split overlong lines.
      *
      * @param text
      */
@@ -119,6 +116,39 @@ public interface IGuiAnimatedStat {
      * @param stat
      */
     void setParentStat(IGuiAnimatedStat stat);
+
+    /**
+     * Pad the stat tab with some spacing to allow for widget placement.
+     *
+     * @param nRows rows of spacing
+     * @param nCols columns of spacing
+     */
+    void addPadding(int nRows, int nCols);
+
+    /**
+     * Pad the stat tab with some spacing to allow for widget placement.
+     *
+     * @param text existing text to insert into the padding
+     * @param nRows rows of spacing
+     * @param nCols columns of spacing
+     */
+    void addPadding(List<String> text, int nRows, int nCols);
+
+    /**
+     * Change the background color of this stat.
+     *
+     * @param backGroundColor color, in ARGB format
+     */
+    void setBackGroundColor(int backGroundColor);
+
+    /**
+     * Should this stat be drawn with a beveled edge, or a plain edge?  Default behaviour is a beveled edge
+     * for GUI side tabs, plain edge for HUD stats.  The color of the plain edge is a darkened version of the stat's
+     * background color.
+     *
+     * @param bevel
+     */
+    void setBeveled(boolean bevel);
 
     /**
      * Sets the x location of this stat.

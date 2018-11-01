@@ -36,6 +36,7 @@ import java.util.stream.IntStream;
 
 public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetListener {
     private static final int ANIMATED_STAT_SPEED = 20;
+    private static final int WIDGET_SCROLLBAR_ID = -1000;
 
     private IGuiAnimatedStat affectingStat;
     private ItemStack iStack = ItemStack.EMPTY;
@@ -57,6 +58,7 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
     private int minWidth = 17;
     private int minHeight = 17;
     private int backGroundColor;
+    private Color bgColorHi, bgColorLo;
     private String title;
     private boolean leftSided; // this boolean determines if the stat is going to expand to the left or right.
     private boolean doneExpanding;
@@ -70,6 +72,7 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
     private int lineSpacing = 10;
     private int widgetOffsetLeft = 0;
     private int widgetOffsetRight = 0;
+    private boolean bevel = false;
 
     public GuiAnimatedStat(GuiScreen gui, String title, int xPos, int yPos, int backGroundColor,
                            IGuiAnimatedStat affectingStat, boolean leftSided) {
@@ -80,6 +83,7 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
         width = minWidth;
         height = minHeight;
         this.backGroundColor = backGroundColor;
+        calculateColorHighlights(this.backGroundColor);
         setTitle(title);
         texture = "";
         this.leftSided = leftSided;
@@ -158,7 +162,7 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
         textScale = scale;
 
         for (IGuiWidget widget : widgets) {
-            if (widget.getID() == -1000) {
+            if (widget.getID() == WIDGET_SCROLLBAR_ID) {
                 widgets.remove(widget);
                 break;
             }
@@ -209,24 +213,13 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
         onTextChange();
     }
 
-    /**
-     * Pad the stat tab with some spacing to allow for widget placement.
-     *
-     * @param nRows rows of spacing
-     * @param nCols columns of spacing
-     */
+    @Override
     public void addPadding(int nRows, int nCols) {
         String s = Strings.repeat(" ", nCols);
         setTextWithoutCuttingString(IntStream.range(0, nRows).mapToObj(i -> s).collect(Collectors.toList()));
     }
 
-    /**
-     * Pad the stat tab with some spacing to allow for widget placement.
-     *
-     * @param text existing text to insert into the padding
-     * @param nRows rows of spacing
-     * @param nCols columns of spacing
-     */
+    @Override
     public void addPadding(List<String> text, int nRows, int nCols) {
         String s = Strings.repeat(" ", nCols);
         List<String> l = IntStream.range(0, nRows).mapToObj(i -> s).collect(Collectors.toList());
@@ -236,27 +229,47 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
         setTextWithoutCuttingString(l);
     }
 
+    @Override
     public void setBackGroundColor(int backGroundColor) {
-        this.backGroundColor = backGroundColor;
+        if (backGroundColor != this.backGroundColor) {
+            this.backGroundColor = backGroundColor;
+            calculateColorHighlights(backGroundColor);
+        }
+    }
+
+    private void calculateColorHighlights(int color) {
+        float fgR = (float) (color >> 16 & 255) / 255.0F;
+        float fgG = (float) (color >> 8 & 255) / 255.0F;
+        float fgB = (float) (color & 255) / 255.0F;
+        float fgA = (float) (color >> 24 & 255) / 255.0F;
+        if (bevel) {
+            bgColorHi = new Color(fgR, fgG, fgB, fgA).brighter();
+            bgColorLo = new Color(fgR, fgG, fgB, fgA).darker();
+        } else {
+            bgColorHi = new Color(fgR, fgG, fgB, fgA).darker().darker();
+            bgColorLo = bgColorHi;
+        }
+    }
+
+    @Override
+    public void setBeveled(boolean bevel) {
+        this.bevel = bevel;
+        calculateColorHighlights(backGroundColor);
     }
 
     private void onTextChange() {
+        // add/remove a scrollbar, as necessary
         if (textList.size() > MAX_LINES) {
             for (IGuiWidget widget : widgets) {
-                if (widget.getID() == -1000) return;
+                if (widget.getID() == WIDGET_SCROLLBAR_ID) return;
             }
             curScroll = 0;
-            /*Rectangle upRect = getButtonScaledRectangle(2, 24, 20, 20);
-            addWidget(new GuiButtonSpecial(-1000, upRect.x, upRect.y, upRect.width, upRect.height, "^"));
-            Rectangle downRect = getButtonScaledRectangle(2, 44, 20, 20);
-            addWidget(new GuiButtonSpecial(-1001, downRect.x, downRect.y, downRect.width, downRect.height, "V"));
-             */
-            addWidget(new WidgetVerticalScrollbar(-1000, leftSided ? -16 : 2, 20, (int) ((MAX_LINES * lineSpacing - 20) * textSize)).setStates(textList.size() - MAX_LINES));
+            addWidget(new WidgetVerticalScrollbar(WIDGET_SCROLLBAR_ID, leftSided ? -16 : 2, 20, (int) ((MAX_LINES * lineSpacing - 20) * textSize)).setStates(textList.size() - MAX_LINES));
         } else {
             Iterator<IGuiWidget> iterator = widgets.iterator();
             while (iterator.hasNext()) {
                 IGuiWidget widget = iterator.next();
-                if (widget.getID() == -1000) {
+                if (widget.getID() == WIDGET_SCROLLBAR_ID) {
                     iterator.remove();
                     curScroll = 0;
                 }
@@ -312,8 +325,9 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
 
             if (doneExpanding) {
                 for (IGuiWidget widget : widgets) {
-                    if (widget.getID() == -1000) {
+                    if (widget.getID() == WIDGET_SCROLLBAR_ID) {
                         curScroll = ((WidgetVerticalScrollbar) widget).getState();
+                        break;
                     }
                 }
             }
@@ -344,19 +358,24 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
         int renderHeight = (int) (oldHeight + (height - oldHeight) * partialTicks);
 
         if (leftSided) renderWidth *= -1;
-        Gui.drawRect(renderBaseX, renderAffectedY /* + 1 */, renderBaseX + renderWidth /*- 1*/, renderAffectedY + renderHeight, backGroundColor);
+        Gui.drawRect(renderBaseX, renderAffectedY, renderBaseX + renderWidth, renderAffectedY + renderHeight, backGroundColor);
         GlStateManager.disableTexture2D();
         GlStateManager.glLineWidth(3.0F);
         GlStateManager.color(0, 0, 0, 1);
         BufferBuilder wr = Tessellator.getInstance().getBuffer();
-        wr.begin(GL11.GL_LINE_LOOP, DefaultVertexFormats.POSITION);
-        wr.pos(renderBaseX, renderAffectedY, zLevel).endVertex();
-        wr.pos(renderBaseX + renderWidth, renderAffectedY, zLevel).endVertex();
-        wr.pos(renderBaseX + renderWidth, renderAffectedY + renderHeight, zLevel).endVertex();
-        wr.pos(renderBaseX, renderAffectedY + renderHeight, zLevel).endVertex();
+        wr.begin(GL11.GL_LINE_LOOP, DefaultVertexFormats.POSITION_COLOR);
+        float[] c1 = leftSided ? bgColorLo.getComponents(null) : bgColorHi.getComponents(null);
+        float[] c2 = bgColorHi.getComponents(null);
+        float[] c3 = leftSided ? bgColorHi.getComponents(null) : bgColorLo.getComponents(null);
+        float[] c4 = bgColorLo.getComponents(null);
+        wr.pos(renderBaseX, renderAffectedY, zLevel).color(c1[0], c1[1], c1[2], c1[3]).endVertex();
+        wr.pos(renderBaseX + renderWidth, renderAffectedY, zLevel).color(c2[0], c2[1], c2[2], c2[3]).endVertex();
+        wr.pos(renderBaseX + renderWidth, renderAffectedY + renderHeight, zLevel).color(c3[0], c3[1], c3[2],c3[3]).endVertex();
+        wr.pos(renderBaseX, renderAffectedY + renderHeight, zLevel).color(c4[0], c4[1], c4[2], c4[3]).endVertex();
         Tessellator.getInstance().draw();
         GlStateManager.enableTexture2D();
         if (leftSided) renderWidth *= -1;
+
         // if done expanding, draw the information
         int titleYoffset = title.isEmpty() ? 2 : 12;
         if (doneExpanding) {
@@ -567,7 +586,7 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
     public boolean handleMouseWheel(int mouseWheel) {
         for (IGuiWidget widget : widgets) {
             widget.handleMouseInput();
-            if (widget.getID() == -1000) {
+            if (widget.getID() == WIDGET_SCROLLBAR_ID) {
                 int wheel = -mouseWheel;
                 wheel = MathHelper.clamp(wheel, -1, 1);
                 ((WidgetVerticalScrollbar) widget).currentScroll += (float) wheel / (textList.size() - MAX_LINES);

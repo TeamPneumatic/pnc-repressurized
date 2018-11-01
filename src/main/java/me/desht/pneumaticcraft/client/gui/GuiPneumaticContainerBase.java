@@ -68,7 +68,8 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
 
-        GuiAnimatedStat stat = new GuiAnimatedStat(this, title, icon, xStart + (leftSided ? 0 : xSize), leftSided && lastLeftStat != null || !leftSided && lastRightStat != null ? 3 : yStart + 5, color, leftSided ? lastLeftStat : lastRightStat, leftSided);
+        GuiAnimatedStat stat = new GuiAnimatedStat(this, title, icon, xStart + (leftSided ? 0 : xSize + 1), leftSided && lastLeftStat != null || !leftSided && lastRightStat != null ? 3 : yStart + 5, color, leftSided ? lastLeftStat : lastRightStat, leftSided);
+        stat.setBeveled(true);
         addWidget(stat);
         if (leftSided) {
             lastLeftStat = stat;
@@ -82,7 +83,8 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
 
-        GuiAnimatedStat stat = new GuiAnimatedStat(this, title, icon, xStart + (leftSided ? 0 : xSize), leftSided && lastLeftStat != null || !leftSided && lastRightStat != null ? 3 : yStart + 5, color, leftSided ? lastLeftStat : lastRightStat, leftSided);
+        GuiAnimatedStat stat = new GuiAnimatedStat(this, title, icon, xStart + (leftSided ? 0 : xSize + 1), leftSided && lastLeftStat != null || !leftSided && lastRightStat != null ? 3 : yStart + 5, color, leftSided ? lastLeftStat : lastRightStat, leftSided);
+        stat.setBeveled(true);
         addWidget(stat);
         if (leftSided) {
             lastLeftStat = stat;
@@ -151,7 +153,6 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
         curInfo.add(I18n.format(te.getRedstoneTabTitle()));
         int width = getWidestRedstoneLabel();
         redstoneTab.addPadding(curInfo,4, width / fontRenderer.getStringWidth(" "));
-//        redstoneTab.setTextWithoutCuttingString(curInfo);
         Rectangle buttonRect = redstoneTab.getButtonScaledRectangle(-width - 12, 24, width + 10, 20);
         redstoneButton = new GuiButtonSpecial(0, buttonRect.x, buttonRect.y, buttonRect.width, buttonRect.height, "-");
         redstoneTab.addWidget(redstoneButton);
