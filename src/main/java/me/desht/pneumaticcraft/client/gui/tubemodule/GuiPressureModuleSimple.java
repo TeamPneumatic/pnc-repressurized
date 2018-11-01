@@ -80,7 +80,7 @@ public class GuiPressureModuleSimple extends GuiTubeModule {
                 break;
             case 1:
                 //Toggle
-                float temp = module.lowerBound; 
+                float temp = module.higherBound;
                 module.higherBound = module.lowerBound;
                 module.lowerBound = temp;
                 
