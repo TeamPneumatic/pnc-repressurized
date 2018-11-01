@@ -4,7 +4,6 @@ import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
 import me.desht.pneumaticcraft.client.gui.widget.GuiCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.IGuiWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetDig;
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetHarvest;
 import net.minecraft.client.resources.I18n;
 
 public class GuiProgWidgetDig extends GuiProgWidgetDigAndPlace<ProgWidgetDig>{

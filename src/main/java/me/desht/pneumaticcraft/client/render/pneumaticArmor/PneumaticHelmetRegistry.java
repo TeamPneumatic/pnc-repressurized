@@ -14,9 +14,9 @@ import java.util.*;
 public class PneumaticHelmetRegistry implements IPneumaticHelmetRegistry {
 
     private static final PneumaticHelmetRegistry INSTANCE = new PneumaticHelmetRegistry();
-    public final List<Class<? extends IEntityTrackEntry>> entityTrackEntries = new ArrayList<Class<? extends IEntityTrackEntry>>();
-    public final Map<Class<? extends Entity>, Class<? extends IHackableEntity>> hackableEntities = new HashMap<Class<? extends Entity>, Class<? extends IHackableEntity>>();
-    public final Map<Block, Class<? extends IHackableBlock>> hackableBlocks = new HashMap<Block, Class<? extends IHackableBlock>>();
+    public final List<Class<? extends IEntityTrackEntry>> entityTrackEntries = new ArrayList<>();
+    public final Map<Class<? extends Entity>, Class<? extends IHackableEntity>> hackableEntities = new HashMap<>();
+    public final Map<Block, Class<? extends IHackableBlock>> hackableBlocks = new HashMap<>();
     public final Map<String, Class<? extends IHackableEntity>> stringToEntityHackables = new HashMap<>();
     public final Map<String, Class<? extends IHackableBlock>> stringToBlockHackables = new HashMap<>();
 

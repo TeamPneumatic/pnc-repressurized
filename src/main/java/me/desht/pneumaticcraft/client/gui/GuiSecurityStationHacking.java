@@ -138,7 +138,7 @@ public class GuiSecurityStationHacking extends GuiSecurityStationBase {
         aiBridges.render();
 
         if (x >= guiLeft + 155 && x <= guiLeft + 171 && y >= guiTop + 30 && y <= guiTop + 50) {
-            List<String> text = new ArrayList<String>();
+            List<String> text = new ArrayList<>();
             text.add("Nuke Virus");
             if (hasNukeViruses()) {
                 text.add(TextFormatting.GRAY + "Middle-click a hackable node to use.");
@@ -148,7 +148,7 @@ public class GuiSecurityStationHacking extends GuiSecurityStationBase {
             drawHoveringString(text, x, y, fontRenderer);
         }
         if (x >= guiLeft + 155 && x <= guiLeft + 171 && y >= guiTop + 55 && y <= guiTop + 75) {
-            List<String> text = new ArrayList<String>();
+            List<String> text = new ArrayList<>();
             text.add("STOP! Worm");
             if (stopWorms > 0) {
                 if (aiBridges.isTracing()) {
@@ -173,7 +173,7 @@ public class GuiSecurityStationHacking extends GuiSecurityStationBase {
     }
 
     private List<String> getStatusText() {
-        List<String> text = new ArrayList<String>();
+        List<String> text = new ArrayList<>();
         text.add(TextFormatting.GRAY + "Security Level");
         text.add(TextFormatting.BLACK + "Level " + te.getSecurityLevel());
         text.add(TextFormatting.GRAY + "Security Range");

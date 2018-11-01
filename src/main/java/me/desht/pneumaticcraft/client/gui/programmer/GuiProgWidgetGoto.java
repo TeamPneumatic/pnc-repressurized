@@ -19,7 +19,7 @@ public class GuiProgWidgetGoto extends GuiProgWidgetAreaShow {
     public void initGui() {
         super.initGui();
 
-        List<GuiRadioButton> radioButtons = new ArrayList<GuiRadioButton>();
+        List<GuiRadioButton> radioButtons = new ArrayList<>();
         GuiRadioButton radioButton = new GuiRadioButton(0, guiLeft + 4, guiTop + 44, 0xFF404040, "Done when arrived");
         radioButton.checked = !((ProgWidgetGoToLocation) widget).doneWhenDeparting;
         addWidget(radioButton);

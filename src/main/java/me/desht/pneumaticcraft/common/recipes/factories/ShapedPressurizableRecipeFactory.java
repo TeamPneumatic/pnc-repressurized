@@ -27,8 +27,8 @@ public class ShapedPressurizableRecipeFactory implements IRecipeFactory {
         ShapedOreRecipe recipe = ShapedOreRecipe.factory(context, json);
 
         ShapedPrimer primer = new ShapedPrimer();
-        primer.width = recipe.getWidth();
-        primer.height = recipe.getHeight();
+        primer.width = recipe.getRecipeWidth();
+        primer.height = recipe.getRecipeHeight();
         primer.mirrored = JsonUtils.getBoolean(json, "mirrored", true);
         primer.input = recipe.getIngredients();
 
@@ -50,7 +50,7 @@ public class ShapedPressurizableRecipeFactory implements IRecipeFactory {
             for (int i = 0; i < var1.getSizeInventory(); ++i) {
                 ItemStack stack = var1.getStackInSlot(i);
                 if (stack.getItem() instanceof IPressurizable) {
-                    totalAir += stack.getItem().getMaxDamage() - stack.getItem().getDamage(stack);
+                    totalAir += stack.getMaxDamage() - stack.getItemDamage();
                 }
             }
 

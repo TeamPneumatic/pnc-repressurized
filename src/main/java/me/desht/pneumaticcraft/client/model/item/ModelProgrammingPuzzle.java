@@ -94,8 +94,8 @@ public class ModelProgrammingPuzzle implements IModel {
         transform = transform.compose(new TRSRTransformation(new Vector3f(0, 0, 0), null, new Vector3f(scale, scale, 1), null));
         transform = transform.compose(new TRSRTransformation(new Vector3f(transX, transY, 0), null, new Vector3f(1, 1, 1), null));
 
-        builder.add(ItemTextureQuadConverter.genQuad(format, transform, 0, 0, 16 * maxUV.getLeft().floatValue(), 16 * maxUV.getRight().floatValue(), NORTH_Z_BASE, widgetSprite, EnumFacing.NORTH, 0xffffffff));
-        builder.add(ItemTextureQuadConverter.genQuad(format, transform, 0, 0, 16 * maxUV.getLeft().floatValue(), 16 * maxUV.getRight().floatValue(), SOUTH_Z_BASE, widgetSprite, EnumFacing.SOUTH, 0xffffffff));
+        builder.add(ItemTextureQuadConverter.genQuad(format, transform, 0, 0, 16 * maxUV.getLeft().floatValue(), 16 * maxUV.getRight().floatValue(), NORTH_Z_BASE, widgetSprite, EnumFacing.NORTH, 0xffffffff, -1));
+        builder.add(ItemTextureQuadConverter.genQuad(format, transform, 0, 0, 16 * maxUV.getLeft().floatValue(), 16 * maxUV.getRight().floatValue(), SOUTH_Z_BASE, widgetSprite, EnumFacing.SOUTH, 0xffffffff, -1));
 
         return new BakedProgrammingPuzzle(this, builder.build(), widgetSprite, format, Maps.immutableEnumMap(transformMap), Maps.newHashMap());
     }

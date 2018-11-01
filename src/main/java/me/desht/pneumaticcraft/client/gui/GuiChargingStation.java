@@ -69,7 +69,7 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<TileEntityChar
     protected Point getGaugeLocation() {
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
-        return new Point(xStart + xSize * 3 / 4 + 10, yStart + ySize * 1 / 4 + 4);
+        return new Point(xStart + xSize * 3 / 4 + 10, yStart + ySize / 4 + 4);
     }
 
     @Override

@@ -13,7 +13,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 
 @SideOnly(Side.CLIENT)
 public class GuiCoordinateTrackerOptions implements IOptionPage {
@@ -51,20 +51,20 @@ public class GuiCoordinateTrackerOptions implements IOptionPage {
                 mc.displayGuiScreen(null);
                 mc.setIngameFocus();
                 coordHandler.isListeningToCoordTrackerSetting = true;
-                HUDHandler.instance().addMessage(new ArmorMessage("Changing Coordinate Tracker coordinate...", Arrays.asList("Right-click the desired coordinate"), 90, 0x7000AA00));
+                HUDHandler.instance().addMessage(new ArmorMessage("Changing Coordinate Tracker coordinate...", Collections.singletonList("Right-click the desired coordinate"), 90, 0x7000AA00));
                 break;
             case 11:
                 mc.displayGuiScreen(null);
                 mc.setIngameFocus();
                 switch (coordHandler.navigateToSurface(mc.player)) {
                     case EASY_PATH:
-                        HUDHandler.instance().addMessage(new ArmorMessage(I18n.format("pneumaticHelmet.message.coordinateTracker.routeFound"), new ArrayList<String>(), 90, 0x7000AA00));
+                        HUDHandler.instance().addMessage(new ArmorMessage(I18n.format("pneumaticHelmet.message.coordinateTracker.routeFound"), new ArrayList<>(), 90, 0x7000AA00));
                         break;
                     case DRONE_PATH:
-                        HUDHandler.instance().addMessage(new ArmorMessage(I18n.format("pneumaticHelmet.message.coordinateTracker.harderRouteFound"), new ArrayList<String>(), 90, 0x7044AA00));
+                        HUDHandler.instance().addMessage(new ArmorMessage(I18n.format("pneumaticHelmet.message.coordinateTracker.harderRouteFound"), new ArrayList<>(), 90, 0x7044AA00));
                         break;
                     case NO_PATH:
-                        HUDHandler.instance().addMessage(new ArmorMessage(I18n.format("pneumaticHelmet.message.coordinateTracker.noRouteFound"), new ArrayList<String>(), 90, 0x70FF0000));
+                        HUDHandler.instance().addMessage(new ArmorMessage(I18n.format("pneumaticHelmet.message.coordinateTracker.noRouteFound"), new ArrayList<>(), 90, 0x70FF0000));
                         break;
                 }
 

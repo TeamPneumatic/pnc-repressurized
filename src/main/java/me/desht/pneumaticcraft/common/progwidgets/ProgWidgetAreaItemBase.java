@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
-import com.google.common.base.Predicate;
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
 import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetAreaShow;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
@@ -19,6 +18,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IAreaProvider, IEntityProvider,
         IItemFiltering, IVariableWidget {
@@ -213,7 +213,7 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
     }
 
     public static List<Entity> getEntitiesInArea(ProgWidgetArea whitelistWidget, ProgWidgetArea blacklistWidget, World world,
-                                                 Predicate<? super Entity> whitelistPredicate, Predicate<? super Entity> blacklistPredicate) {
+                                                 java.util.function.Predicate<? super Entity> whitelistPredicate, Predicate<? super Entity> blacklistPredicate) {
         if (whitelistWidget == null) return new ArrayList<>();
         Set<Entity> entities = new HashSet<>();
         ProgWidgetArea widget = whitelistWidget;
@@ -227,7 +227,7 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
             widget = (ProgWidgetArea) widget.getConnectedParameters()[0];
         }
         if (blacklistPredicate != null) {
-            entities.removeIf(blacklistPredicate::apply);
+            entities.removeIf(blacklistPredicate::test);
         }
         return new ArrayList<>(entities);
     }

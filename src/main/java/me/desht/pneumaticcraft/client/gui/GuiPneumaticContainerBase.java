@@ -161,7 +161,7 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
     private void addUpgradeTab() {
         String upgrades = "gui.tab.upgrades." + te.getName();
         String translatedUpgrades = I18n.format(upgrades);
-        List<String> upgradeText = new ArrayList<String>();
+        List<String> upgradeText = new ArrayList<>();
         if (te instanceof TileEntityPneumaticBase) {
             upgradeText.add("gui.tab.upgrades.volume");
             upgradeText.add("gui.tab.upgrades.security");
@@ -279,7 +279,7 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
     protected Point getGaugeLocation() {
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
-        return new Point(xStart + xSize * 3 / 4, yStart + ySize * 1 / 4 + 4);
+        return new Point(xStart + xSize * 3 / 4, yStart + ySize / 4 + 4);
     }
 
     @Override

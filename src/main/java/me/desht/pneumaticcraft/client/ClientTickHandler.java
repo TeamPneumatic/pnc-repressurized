@@ -17,7 +17,7 @@ public class ClientTickHandler {
     private static final ClientTickHandler INSTANCE = new ClientTickHandler();
     public static int TICKS;
 
-    private final List<WeakReference<INeedTickUpdate>> updatedObjects = new ArrayList<WeakReference<INeedTickUpdate>>();//using weak references so we don't create a memory leak of unused GuiAnimatedStats.
+    private final List<WeakReference<INeedTickUpdate>> updatedObjects = new ArrayList<>();//using weak references so we don't create a memory leak of unused GuiAnimatedStats.
 
     public static ClientTickHandler instance() {
         return INSTANCE;
@@ -29,7 +29,7 @@ public class ClientTickHandler {
      * @param stat
      */
     public void registerUpdatedObject(INeedTickUpdate stat) {
-        updatedObjects.add(new WeakReference<INeedTickUpdate>(stat));
+        updatedObjects.add(new WeakReference<>(stat));
     }
 
     /**

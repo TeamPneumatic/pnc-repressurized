@@ -10,13 +10,14 @@ import org.apache.commons.lang3.Validate;
 import org.lwjgl.input.Mouse;
 
 public class WidgetVerticalScrollbar extends WidgetBase {
+    private static final ResourceLocation SCROLL_TEXTURE = new ResourceLocation(Textures.GUI_LOCATION + "widget/vertical_scrollbar.png");
+    
     public float currentScroll;
     private int states;
     private boolean listening;
     private boolean dragging;
     private boolean wasClicking;
     private boolean enabled = true;
-    private static ResourceLocation scrollTexture = new ResourceLocation(Textures.GUI_LOCATION + "widget/vertical_scrollbar.png");
 
     public WidgetVerticalScrollbar(int x, int y, int height) {
         this(-1, x, y, height);
@@ -74,7 +75,7 @@ public class WidgetVerticalScrollbar extends WidgetBase {
         wasClicking = Mouse.isButtonDown(0);
         if (dragging) currentScroll = (float) (mouseY - 7 - getBounds().y) / (getBounds().height - 17);
         currentScroll = MathHelper.clamp(currentScroll, 0, 1);
-        Minecraft.getMinecraft().getTextureManager().bindTexture(scrollTexture);
+        Minecraft.getMinecraft().getTextureManager().bindTexture(SCROLL_TEXTURE);
         Gui.drawModalRectWithCustomSizedTexture(x, y, 12, 0, getBounds().width, 1, 26, 15);
         for (int i = 0; i < getBounds().height - 2; i++)
             Gui.drawModalRectWithCustomSizedTexture(x, y + 1 + i, 12, 1, getBounds().width, 1, 26, 15);

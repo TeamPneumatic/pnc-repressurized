@@ -128,7 +128,7 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
                         addBlockTarget(new RenderBlockTarget(player.world, player, pos, te, this));
                         for (IBlockTrackEntry entry : entries) {
                             if (countBlockTrackersOfType(entry) == entry.spamThreshold() + 1) {
-                                HUDHandler.instance().addMessage(new ArmorMessage(I18n.format("blockTracker.message.stopSpam", I18n.format(entry.getEntryName())), new ArrayList<String>(), 60, 0x7700AA00));
+                                HUDHandler.instance().addMessage(new ArmorMessage(I18n.format("blockTracker.message.stopSpam", I18n.format(entry.getEntryName())), new ArrayList<>(), 60, 0x7700AA00));
                             }
                         }
                     }
@@ -155,7 +155,7 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
             }
         }
 
-        List<String> textList = new ArrayList<String>();
+        List<String> textList = new ArrayList<>();
         RenderBlockTarget focusedTarget = null;
         for (RenderBlockTarget blockTarget : blockTargets) {
             if (blockTarget.isInitialized() && blockTarget.isPlayerLooking()) {

@@ -35,8 +35,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 public class HackableHandler {
-    private final Map<Entity, IHackableEntity> trackedHackableEntities = new HashMap<Entity, IHackableEntity>();
-    private final Map<WorldAndCoord, IHackableBlock> trackedHackableBlocks = new HashMap<WorldAndCoord, IHackableBlock>();
+    private final Map<Entity, IHackableEntity> trackedHackableEntities = new HashMap<>();
+    private final Map<WorldAndCoord, IHackableBlock> trackedHackableBlocks = new HashMap<>();
     private static HackableHandler clientInstance, serverInstance;
 
     private static HackableHandler getInstance() {

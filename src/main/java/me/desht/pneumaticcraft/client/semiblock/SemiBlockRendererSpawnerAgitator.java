@@ -21,7 +21,7 @@ public class SemiBlockRendererSpawnerAgitator implements ISemiBlockRenderer<Semi
 
         AxisAlignedBB aabb;
         if (semiBlock.getWorld() != null) {
-            aabb = semiBlock.getBlockState().getBlock().getSelectedBoundingBox(semiBlock.getBlockState(), semiBlock.getWorld(), semiBlock.getPos());
+            aabb = semiBlock.getBlockState().getSelectedBoundingBox(semiBlock.getWorld(), semiBlock.getPos());
             BlockPos p = semiBlock.getPos();
             aabb = new AxisAlignedBB(aabb.minX - p.getX(), aabb.minY - p.getY(), aabb.minZ - p.getZ(), aabb.maxX - p.getX(), aabb.maxY - p.getY(), aabb.maxZ - p.getZ());
         } else {

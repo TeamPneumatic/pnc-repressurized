@@ -165,7 +165,7 @@ public class TintedOBJModel implements IModel
     public static class Parser
     {
         private static final Pattern WHITE_SPACE = Pattern.compile("\\s+");
-        private static Set<String> unknownObjectCommands = new HashSet<String>();
+        private static Set<String> unknownObjectCommands = new HashSet<>();
         public MaterialLibrary materialLibrary = new MaterialLibrary();
         private IResourceManager manager;
         private InputStreamReader objStream;
@@ -361,9 +361,9 @@ public class TintedOBJModel implements IModel
     public static class MaterialLibrary
     {
         private static final Pattern WHITE_SPACE = Pattern.compile("\\s+");
-        private Set<String> unknownMaterialCommands = new HashSet<String>();
-        private Map<String, Material> materials = new HashMap<String, Material>();
-        private Map<String, Group> groups = new HashMap<String, Group>();
+        private Set<String> unknownMaterialCommands = new HashSet<>();
+        private Map<String, Material> materials = new HashMap<>();
+        private Map<String, Group> groups = new HashMap<>();
         private InputStreamReader mtlStream;
         private BufferedReader mtlReader;
 
@@ -380,7 +380,7 @@ public class TintedOBJModel implements IModel
 
         public MaterialLibrary makeLibWithReplacements(ImmutableMap<String, String> replacements)
         {
-            Map<String, Material> mats = new HashMap<String, Material>();
+            Map<String, Material> mats = new HashMap<>();
             for (Map.Entry<String, Material> e : this.materials.entrySet())
             {
                 // key for the material name, with # added if missing
@@ -1050,7 +1050,7 @@ public class TintedOBJModel implements IModel
         public static final String ALL = "OBJModel.Group.All.Key";
         public static final String ALL_EXCEPT = "OBJModel.Group.All.Except.Key";
         private String name = DEFAULT_NAME;
-        private LinkedHashSet<Face> faces = new LinkedHashSet<Face>();
+        private LinkedHashSet<Face> faces = new LinkedHashSet<>();
         public float[] minUVBounds = new float[] {0.0f, 0.0f};
         public float[] maxUVBounds = new float[] {1.0f, 1.0f};
         private int tintIndex = -1;
@@ -1061,12 +1061,12 @@ public class TintedOBJModel implements IModel
         public Group(String name, @Nullable LinkedHashSet<Face> faces)
         {
             this.name = name != null ? name : DEFAULT_NAME;
-            this.faces = faces == null ? new LinkedHashSet<Face>() : faces;
+            this.faces = faces == null ? new LinkedHashSet<>() : faces;
         }
 
         public LinkedHashSet<Face> applyTransform(Optional<TRSRTransformation> transform)
         {
-            LinkedHashSet<Face> faceSet = new LinkedHashSet<Face>();
+            LinkedHashSet<Face> faceSet = new LinkedHashSet<>();
             for (Face f : this.faces)
             {
                 f.setTintIndex(getTintIndex());
@@ -1331,7 +1331,7 @@ public class TintedOBJModel implements IModel
         private ImmutableList<BakedQuad> buildQuads(IModelState modelState) {
             List<BakedQuad> quads = Lists.newArrayList();
             Collections.synchronizedSet(new LinkedHashSet<BakedQuad>());
-            Set<Face> faces = Collections.synchronizedSet(new LinkedHashSet<Face>());
+            Set<Face> faces = Collections.synchronizedSet(new LinkedHashSet<>());
             Optional<TRSRTransformation> transform = Optional.empty();
             for (Group g : this.model.getMatLib().getGroups().values()) {
 //                g.minUVBounds = this.model.getMatLib().minUVBounds;

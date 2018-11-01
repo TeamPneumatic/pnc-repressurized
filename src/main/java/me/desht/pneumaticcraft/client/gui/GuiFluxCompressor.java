@@ -51,7 +51,7 @@ public class GuiFluxCompressor extends GuiPneumaticContainerBase<TileEntityFluxC
     }
 
     private List<String> getOutputStat() {
-        List<String> textList = new ArrayList<String>();
+        List<String> textList = new ArrayList<>();
         textList.add(TextFormatting.GRAY + "Maximum RF usage:");
         textList.add(TextFormatting.BLACK.toString() + te.getInfoEnergyPerTick() + " RF/tick");
         textList.add(TextFormatting.GRAY + "Maximum input rate:");

@@ -37,7 +37,7 @@ public class ShapelessPressurizableRecipeFactory implements IRecipeFactory {
             for (int i = 0; i < inv.getSizeInventory(); ++i) {
                 ItemStack stack = inv.getStackInSlot(i);
                 if (stack.getItem() instanceof IPressurizable) {
-                    totalAir += stack.getItem().getMaxDamage() - stack.getItem().getDamage(stack);
+                    totalAir += stack.getMaxDamage() - stack.getItemDamage();
                 }
             }
             if (newOutput.getItem() instanceof ItemPressurizable) {

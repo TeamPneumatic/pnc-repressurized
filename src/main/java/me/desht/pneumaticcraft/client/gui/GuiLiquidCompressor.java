@@ -59,11 +59,11 @@ public class GuiLiquidCompressor extends GuiPneumaticContainerBase<TileEntityLiq
     protected Point getGaugeLocation() {
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
-        return new Point(xStart + xSize * 3 / 4 + 5, yStart + ySize * 1 / 4 + 4);
+        return new Point(xStart + xSize * 3 / 4 + 5, yStart + ySize / 4 + 4);
     }
 
     private List<String> getAllFuels() {
-        List<String> fuels = new ArrayList<String>();
+        List<String> fuels = new ArrayList<>();
         fuels.add("L/Bucket | Fluid");
         for (Map.Entry<String, Integer> map : sortByValue(PneumaticCraftAPIHandler.getInstance().liquidFuels).entrySet()) {
             String value = map.getValue() / 1000 + "";

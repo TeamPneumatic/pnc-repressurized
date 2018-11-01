@@ -28,8 +28,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class AreaShowManager {
-    private static AreaShowManager INSTANCE = new AreaShowManager();
-    private final Map<BlockPos, AreaShowHandler> showHandlers = new HashMap<BlockPos, AreaShowHandler>();
+    private static final AreaShowManager INSTANCE = new AreaShowManager();
+    private final Map<BlockPos, AreaShowHandler> showHandlers = new HashMap<>();
     private World world;
     private DroneDebugUpgradeHandler droneDebugger;
 

@@ -19,7 +19,7 @@ public class GuiProgWidgetPlace<Widget extends ProgWidgetPlace> extends GuiProgW
     @Override
     public void initGui() {
         super.initGui();
-        List<GuiRadioButton> radioButtons = new ArrayList<GuiRadioButton>();
+        List<GuiRadioButton> radioButtons = new ArrayList<>();
         for (int i = 0; i < 6; i++) {
             GuiRadioButton radioButton = new GuiRadioButton(i + 10, guiLeft + 4, guiTop + 80 + i * 12, 0xFF404040, PneumaticCraftUtils.getOrientationName(EnumFacing.byIndex(i)));
             radioButton.checked = widget.placeDir.ordinal() == i;

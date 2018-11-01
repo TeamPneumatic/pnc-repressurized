@@ -17,11 +17,11 @@ import java.util.List;
 import static org.apache.commons.lang3.tuple.Pair.of;
 
 public class BakedMinigunWrapper implements IBakedModel {
-    public static EmptyMinigunModel EMPTY_MODEL = new EmptyMinigunModel();
+    private static final EmptyMinigunModel EMPTY_MODEL = new EmptyMinigunModel();
 
     private final IBakedModel original;
 
-    public BakedMinigunWrapper(IBakedModel original) {
+    BakedMinigunWrapper(IBakedModel original) {
         this.original = original;
     }
 

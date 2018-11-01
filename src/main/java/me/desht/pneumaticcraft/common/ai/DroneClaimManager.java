@@ -12,7 +12,7 @@ import java.util.Map;
  */
 public class DroneClaimManager {
 
-    private static Map<Integer, DroneClaimManager> claimManagers = new HashMap<>();
+    private static final Map<Integer, DroneClaimManager> claimManagers = new HashMap<>();
     private final Map<BlockPos, Integer> currentPositions = new HashMap<>();
     private static final int TIMEOUT = DroneAIManager.TICK_RATE + 1;
 

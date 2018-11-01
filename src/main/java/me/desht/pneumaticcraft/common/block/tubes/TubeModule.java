@@ -22,11 +22,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class TubeModule implements ISidedPart {
+    public static final float MAX_VALUE = 30;
+
     protected IPneumaticPosProvider pressureTube;
     protected EnumFacing dir = EnumFacing.UP;
     public final AxisAlignedBB[] boundingBoxes = new AxisAlignedBB[6];
     protected boolean upgraded;
-    public float lowerBound = 7.5F, higherBound = 0, maxValue = 30;
+    public float lowerBound = 7.5F, higherBound = 0;
     private boolean fake;
     public boolean advancedConfig;
     public boolean shouldDrop;

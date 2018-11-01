@@ -45,7 +45,7 @@ public class GuiAssemblyController extends GuiPneumaticContainerBase<TileEntityA
     }
 
     private List<String> getStatusText() {
-        List<String> text = new ArrayList<String>();
+        List<String> text = new ArrayList<>();
 
         List<IAssemblyMachine> machineList = te.getMachines();
         boolean platformFound = false;

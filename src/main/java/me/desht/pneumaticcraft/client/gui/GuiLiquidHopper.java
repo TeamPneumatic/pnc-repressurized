@@ -61,7 +61,7 @@ public class GuiLiquidHopper extends GuiPneumaticContainerBase<TileEntityLiquidH
     }
 
     private List<String> getStatus() {
-        List<String> textList = new ArrayList<String>();
+        List<String> textList = new ArrayList<>();
         int itemsPer = te.getMaxItems();
         if (itemsPer > 1) {
             textList.add(I18n.format("gui.tab.hopperStatus.liquidTransferPerTick", itemsPer * 100));

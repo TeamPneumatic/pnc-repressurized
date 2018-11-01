@@ -37,7 +37,7 @@ public class GuiLogisticsRequester extends GuiLogisticsBase<SemiBlockRequester> 
                      item = Itemss.LOGISTICS_FRAME_REQUESTER;
                  }
                  GuiAnimatedStat stat = addAnimatedStat("gui.tab.info.logisticsRequester.aeIntegration.title", new ItemStack(item, 1, 16), 0xFF00AAFF, false);
-                 List<String> text = new ArrayList<String>();
+                 List<String> text = new ArrayList<>();
                  for(int i = 0; i < 2; i++)
                      text.add("");
                  text.add("gui.tab.info.logisticsRequester.aeIntegration");

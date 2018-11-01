@@ -13,7 +13,7 @@ public class ContainerSearcher extends Container {
     /**
      * the list of items in this container
      */
-    public NonNullList<ItemStack> itemList = NonNullList.create();
+    public final NonNullList<ItemStack> itemList = NonNullList.create();
     private GuiSearcher gui;
 
     public void init(GuiSearcher gui) {

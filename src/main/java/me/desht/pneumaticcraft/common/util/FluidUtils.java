@@ -95,8 +95,8 @@ public class FluidUtils {
             IFluidHandler handler = te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, face);
             PlayerInvWrapper invWrapper = new PlayerInvWrapper(player.inventory);
             FluidActionResult result = isInserting ?
-                    FluidUtil.tryEmptyContainerAndStow(player.getHeldItem(hand), handler, invWrapper, capacity, player) :
-                    FluidUtil.tryFillContainerAndStow(player.getHeldItem(hand), handler, invWrapper, capacity, player);
+                    FluidUtil.tryEmptyContainerAndStow(player.getHeldItem(hand), handler, invWrapper, capacity, player, true) :
+                    FluidUtil.tryFillContainerAndStow(player.getHeldItem(hand), handler, invWrapper, capacity, player, true);
             if (result.isSuccess()) {
                 player.setHeldItem(hand, result.getResult());
                 return true;

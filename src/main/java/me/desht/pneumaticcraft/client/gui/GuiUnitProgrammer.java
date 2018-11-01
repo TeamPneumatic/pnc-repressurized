@@ -91,7 +91,7 @@ public class GuiUnitProgrammer extends GuiScreen {
                 }
             }
 
-            List<String> warnings = new ArrayList<String>();
+            List<String> warnings = new ArrayList<>();
             widget.addWarnings(warnings, progWidgets);
             if (warnings.size() > 0) {
                 tooltip.add(TextFormatting.YELLOW + I18n.format("gui.programmer.warnings"));
@@ -173,12 +173,12 @@ public class GuiUnitProgrammer extends GuiScreen {
         }
 
         for (IProgWidget widget : progWidgets) {
-            List<String> errors = new ArrayList<String>();
+            List<String> errors = new ArrayList<>();
             widget.addErrors(errors, progWidgets);
             if (errors.size() > 0) {
                 drawBorder(widget, 0xFFFF0000);
             } else {
-                List<String> warnings = new ArrayList<String>();
+                List<String> warnings = new ArrayList<>();
                 widget.addWarnings(warnings, progWidgets);
                 if (warnings.size() > 0) {
                     drawBorder(widget, 0xFFFFFF00);
@@ -248,7 +248,7 @@ public class GuiUnitProgrammer extends GuiScreen {
                             for (IProgWidget w : progWidgets) {
                                 if (w instanceof ILabel) {
                                     String label = ((ILabel) w).getLabel();
-                                    if (label != null && jumpLocation.equals(label)) {
+                                    if (jumpLocation.equals(label)) {
                                         int x1 = widget.getX() + widget.getWidth() / 4;
                                         int y1 = widget.getY() + widget.getHeight() / 4;
                                         int x2 = w.getX() + w.getWidth() / 4;

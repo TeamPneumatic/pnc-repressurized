@@ -122,7 +122,7 @@ public class GuiAmadron extends GuiPneumaticContainerBase {
         int invSize = ContainerAmadron.ROWS * 2;
         container.clearStacks();
         List<AmadronOffer> offers = container.offers;
-        List<AmadronOffer> visibleOffers = new ArrayList<AmadronOffer>();
+        List<AmadronOffer> visibleOffers = new ArrayList<>();
         int skippedOffers = 0;
         int applicableOffers = 0;
         for (AmadronOffer offer : offers) {

@@ -145,7 +145,7 @@ public class SearchUpgradeHandler implements IUpgradeRenderHandler {
     @SideOnly(Side.CLIENT)
     public void render2D(float partialTicks, boolean helmetEnabled) {
         ItemStack searchStack = ItemPneumaticArmor.getSearchedStack(FMLClientHandler.instance().getClient().player.getItemStackFromSlot(EntityEquipmentSlot.HEAD));
-        List<String> textList = new ArrayList<String>();
+        List<String> textList = new ArrayList<>();
         if (searchStack.isEmpty()) {
             textList.add("press '" + Keyboard.getKeyName(KeyHandler.getInstance().keybindOpenOptions.getKeyCode()) + "' to configure");
         } else {

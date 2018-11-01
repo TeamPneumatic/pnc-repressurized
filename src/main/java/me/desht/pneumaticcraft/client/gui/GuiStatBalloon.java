@@ -7,8 +7,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class GuiStatBalloon {
-    public int x;
-    public int y;
+    public final int x, y;
     int slotNumber;
     public String text = "";
 

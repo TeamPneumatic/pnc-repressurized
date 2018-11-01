@@ -12,7 +12,7 @@ public class WidgetBase implements IGuiWidget {
     private final int width;
     private final int height;
     protected IWidgetListener listener;
-    private final List<String> tooltipText = new ArrayList<String>();
+    private final List<String> tooltipText = new ArrayList<>();
 
     public WidgetBase(int id, int x, int y, int width, int height) {
 

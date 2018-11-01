@@ -46,19 +46,19 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase {
         buttonList.add(decButton);
         buttonList.add(incButton);
         checkBoxUseDamage = new GuiCheckBox(0, guiLeft + 4, guiTop + 72, 0xFF404040, "Use metadata / damage values");
-        checkBoxUseDamage.setTooltip(Arrays.asList(new String[]{"Check to handle differently damaged tools", "or different colors of Wool as different."}));
+        checkBoxUseDamage.setTooltip(Arrays.asList("Check to handle differently damaged tools", "or different colors of Wool as different."));
         checkBoxUseDamage.checked = widg.useMetadata;
         addWidget(checkBoxUseDamage);
         checkBoxUseNBT = new GuiCheckBox(2, guiLeft + 4, guiTop + 108, 0xFF404040, "Use NBT");
-        checkBoxUseNBT.setTooltip(Arrays.asList(new String[]{"Check to handle items like Enchanted Books", "or Firework as different."}));
+        checkBoxUseNBT.setTooltip(Arrays.asList("Check to handle items like Enchanted Books", "or Firework as different."));
         checkBoxUseNBT.checked = widg.useNBT;
         addWidget(checkBoxUseNBT);
         checkBoxUseOreDict = new GuiCheckBox(3, guiLeft + 4, guiTop + 120, 0xFF404040, "Use Ore Dictionary");
-        checkBoxUseOreDict.setTooltip(Arrays.asList(new String[]{"Check to handle items registered in the", "Ore Dictionary (like Wood) as the same."}));
+        checkBoxUseOreDict.setTooltip(Arrays.asList("Check to handle items registered in the", "Ore Dictionary (like Wood) as the same."));
         checkBoxUseOreDict.checked = widg.useOreDict;
         addWidget(checkBoxUseOreDict);
         checkBoxUseModSimilarity = new GuiCheckBox(4, guiLeft + 4, guiTop + 132, 0xFF404040, "Use Mod similarity");
-        checkBoxUseModSimilarity.setTooltip(Arrays.asList(new String[]{"Check to handle items from the", "same mod as the same."}));
+        checkBoxUseModSimilarity.setTooltip(Arrays.asList("Check to handle items from the", "same mod as the same."));
         checkBoxUseModSimilarity.checked = widg.useModSimilarity;
         addWidget(checkBoxUseModSimilarity);
 

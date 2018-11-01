@@ -14,16 +14,16 @@ import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @SideOnly(Side.CLIENT)
 public class GuiRadioButton extends Gui implements IGuiWidget {
     public boolean checked, enabled = true;
-    public int x, y, color;
+    public final int x, y, color;
     private final int id;
-    public String text;
-    public FontRenderer fontRenderer = FMLClientHandler.instance().getClient().fontRenderer;
+    public final String text;
+    private final FontRenderer fontRenderer = FMLClientHandler.instance().getClient().fontRenderer;
     private List<String> tooltip = new ArrayList<>();
     public List<GuiRadioButton> otherChoices;
     private IWidgetListener listener;
@@ -102,7 +102,7 @@ public class GuiRadioButton extends Gui implements IGuiWidget {
     }
 
     public void setTooltip(String tooltip) {
-        setTooltip(Arrays.asList(new String[]{tooltip}));
+        setTooltip(Collections.singletonList(tooltip));
     }
 
     public void setTooltip(List<String> tooltip) {

@@ -64,7 +64,7 @@ public class GuiProgWidgetLiquidFilter extends GuiProgWidgetOptionBase<ProgWidge
 
     private void addValidFluids() {
 
-        List<Fluid> fluids = new ArrayList<Fluid>();
+        List<Fluid> fluids = new ArrayList<>();
 
         for (Fluid fluid : FluidRegistry.getRegisteredFluids().values()) {
             if (fluid.getLocalizedName(new FluidStack(fluid, 1)).toLowerCase().contains(searchField.getText())) {

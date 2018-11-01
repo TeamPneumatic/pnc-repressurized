@@ -6,26 +6,26 @@ import net.minecraft.entity.Entity;
 
 public class ModelHeatFrame extends ModelBase {
     //fields
-    ModelRenderer Bottom3;
-    ModelRenderer Bottom4;
-    ModelRenderer Bottom5;
-    ModelRenderer Bottom6;
-    ModelRenderer Bottom7;
-    ModelRenderer Bottom8;
-    ModelRenderer Bottom2;
-    ModelRenderer Bottom1;
-    ModelRenderer Shape1;
-    ModelRenderer Shape2;
-    ModelRenderer Shape3;
-    ModelRenderer Shape4;
-    ModelRenderer Top6;
-    ModelRenderer Top3;
-    ModelRenderer Top4;
-    ModelRenderer Top8;
-    ModelRenderer Top1;
-    ModelRenderer Top5;
-    ModelRenderer Top2;
-    ModelRenderer Top7;
+    final ModelRenderer Bottom3;
+    final ModelRenderer Bottom4;
+    final ModelRenderer Bottom5;
+    final ModelRenderer Bottom6;
+    final ModelRenderer Bottom7;
+    final ModelRenderer Bottom8;
+    final ModelRenderer Bottom2;
+    final ModelRenderer Bottom1;
+    final ModelRenderer Shape1;
+    final ModelRenderer Shape2;
+    final ModelRenderer Shape3;
+    final ModelRenderer Shape4;
+    final ModelRenderer Top6;
+    final ModelRenderer Top3;
+    final ModelRenderer Top4;
+    final ModelRenderer Top8;
+    final ModelRenderer Top1;
+    final ModelRenderer Top5;
+    final ModelRenderer Top2;
+    final ModelRenderer Top7;
 
     public ModelHeatFrame() {
         textureWidth = 64;

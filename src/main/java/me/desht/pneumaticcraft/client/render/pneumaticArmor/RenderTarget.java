@@ -40,7 +40,7 @@ import java.util.List;
 
 public class RenderTarget {
 
-    public Entity entity;
+    public final Entity entity;
     private final RenderTargetCircle circle1;
     private final RenderTargetCircle circle2;
     public int ticksExisted = 0;
@@ -49,7 +49,7 @@ public class RenderTarget {
     private final GuiAnimatedStat stat;
     private boolean didMakeLockSound;
     public boolean isLookingAtTarget;
-    private List<String> textList = new ArrayList<String>();
+    private List<String> textList = new ArrayList<>();
     private final List<IEntityTrackEntry> trackEntries;
     private int hackTime;
 
@@ -184,7 +184,7 @@ public class RenderTarget {
             } else {
                 stat.openWindow();
             }
-            textList = new ArrayList<String>();
+            textList = new ArrayList<>();
             for (IEntityTrackEntry tracker : trackEntries) {
                 tracker.addInfo(entity, textList);
             }

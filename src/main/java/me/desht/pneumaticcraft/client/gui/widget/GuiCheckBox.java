@@ -1,13 +1,12 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
-import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
-import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
@@ -22,7 +21,6 @@ public class GuiCheckBox extends Gui implements IGuiWidget {
     public int x, y, color;
     private final int id;
     public String text;
-    public FontRenderer fontRenderer = FMLClientHandler.instance().getClient().fontRenderer;
     private List<String> tooltip = new ArrayList<>();
     private IWidgetListener listener;
 
@@ -62,12 +60,12 @@ public class GuiCheckBox extends Gui implements IGuiWidget {
             GlStateManager.enableTexture2D();
             GlStateManager.color(0.25f, 0.25f, 0.25f, 1);
         }
-        fontRenderer.drawString(I18n.format(text), x + 1 + CHECKBOX_WIDTH, y + CHECKBOX_HEIGHT / 2 - fontRenderer.FONT_HEIGHT / 2, enabled ? color : 0xFF888888);
+        Minecraft.getMinecraft().fontRenderer.drawString(I18n.format(text), x + 1 + CHECKBOX_WIDTH, y + CHECKBOX_HEIGHT / 2 - Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT / 2, enabled ? color : 0xFF888888);
     }
 
     @Override
     public Rectangle getBounds() {
-        return new Rectangle(x, y, CHECKBOX_WIDTH + fontRenderer.getStringWidth(I18n.format(text)), CHECKBOX_HEIGHT);
+        return new Rectangle(x, y, CHECKBOX_WIDTH + Minecraft.getMinecraft().fontRenderer.getStringWidth(I18n.format(text)), CHECKBOX_HEIGHT);
     }
 
     @Override

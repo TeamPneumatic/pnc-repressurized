@@ -61,7 +61,7 @@ public class CamoModel implements IBakedModel {
             // No camo
             return originalModel.getQuads(state, side, rand);
         } else if (camoState != null && camoState.getBlock().canRenderInLayer(camoState, layer)) {
-            IBlockState actual = camoState.getBlock().getActualState(camoState, new FakeBlockAccess(blockAccess), pos);
+            IBlockState actual = camoState.getActualState(new FakeBlockAccess(blockAccess), pos);
 
             // Steal camo's model
             IBakedModel model = Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelShapes().getModelForState(actual);

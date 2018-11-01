@@ -19,12 +19,12 @@ public class KeyHandler {
     private static final String DESCRIPTION_HELMET_DEBUGGING_DRONE = "pneumaticcraft.helmet.debugging.drone";
     private static final String DESCRIPTION_BOOTS_KICK = "pneumaticcraft.boots.kick";
 
-    private static KeyHandler INSTANCE = new KeyHandler();
+    private static final KeyHandler INSTANCE = new KeyHandler();
 
-    public KeyBinding keybindOpenOptions;
-    public KeyBinding keybindHack;
-    public KeyBinding keybindDebuggingDrone;
-    public KeyBinding keybindKick;
+    public final KeyBinding keybindOpenOptions;
+    public final KeyBinding keybindHack;
+    public final KeyBinding keybindDebuggingDrone;
+    public final KeyBinding keybindKick;
     private final List<IKeyListener> keyListeners = new ArrayList<>();
     private final List<KeyBinding> keys = new ArrayList<>();
 

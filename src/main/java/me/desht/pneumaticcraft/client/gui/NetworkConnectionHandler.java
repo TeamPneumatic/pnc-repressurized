@@ -18,7 +18,7 @@ public class NetworkConnectionHandler implements INeedTickUpdate {
     protected int baseY;
     protected final int nodeSpacing;
     protected final int color;
-    protected final List<RenderProgressingLine> lineList = new ArrayList<RenderProgressingLine>();
+    protected final List<RenderProgressingLine> lineList = new ArrayList<>();
     protected final boolean[] slotHacked = new boolean[35];
     public final boolean[] slotFortified = new boolean[35];
     private final float baseBridgeSpeed;

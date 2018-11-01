@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
-import com.google.common.base.Predicate;
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
 import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetArea;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
@@ -25,6 +24,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -331,7 +331,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
 
     public List<Entity> getEntitiesWithinArea(World world, Predicate<? super Entity> predicate) {
         AxisAlignedBB aabb = getAABB();
-        return aabb != null ? world.getEntitiesInAABBexcluding(null, aabb, predicate) : new ArrayList<>();
+        return aabb != null ? world.getEntitiesInAABBexcluding(null, aabb, predicate::test) : new ArrayList<>();
     }
 
     @Override

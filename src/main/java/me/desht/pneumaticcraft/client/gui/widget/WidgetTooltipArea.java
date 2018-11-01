@@ -4,8 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class WidgetTooltipArea extends WidgetBase {
-
-    public String[] tooltip;
+    public final String[] tooltip;
 
     public WidgetTooltipArea(int x, int y, int width, int height, String... tooltip) {
         super(0, x, y, width, height);

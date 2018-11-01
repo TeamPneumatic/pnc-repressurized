@@ -41,7 +41,7 @@ public class RenderBlockTarget {
     public final GuiAnimatedStat stat;
     private final EntityPlayer player;
     private boolean playerIsLooking;
-    public List<String> textList = new ArrayList<String>();
+    public List<String> textList = new ArrayList<>();
     private int hackTime;
     private final BlockTrackUpgradeHandler blockTracker;
     private TileEntity te;

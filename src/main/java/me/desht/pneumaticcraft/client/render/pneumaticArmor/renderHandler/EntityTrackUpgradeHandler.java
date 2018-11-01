@@ -20,7 +20,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
@@ -82,9 +81,9 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler {
             if (!inList) {
                 //player.world.playSoundAtEntity(player, Sounds.CANNON_SOUND, 1.0F, 1.0F);
                 targets.add(new RenderTarget(mob));
-                if (mob instanceof EntityMob && !isEntityWithinPlayerFOV(player, mob)) {
-                    //       HUDHandler.instance().addMessage(new ArmorMessage("A mob is sneaking up on you!", new ArrayList<String>(), 60, 0x70FF0000));
-                }
+//                if (mob instanceof EntityMob && !isEntityWithinPlayerFOV(player, mob)) {
+//                    HUDHandler.instance().addMessage(new ArmorMessage("A mob is sneaking up on you!", new ArrayList<String>(), 60, 0x70FF0000));
+//                }
             }
         }
         for (int j = 0; j < targets.size(); j++) {
@@ -106,7 +105,7 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler {
         } else {
             shouldStopSpamOnEntityTracking = false;
         }
-        List<String> text = new ArrayList<String>();
+        List<String> text = new ArrayList<>();
         for (RenderTarget target : targets) {
             boolean wasNegative = target.ticksExisted < 0;
             target.ticksExisted += CommonHUDHandler.getHandlerForPlayer(player).getSpeedFromUpgrades();
@@ -139,7 +138,7 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler {
 
     public void warnIfNecessary(Entity entity) {
         if (!targetingEntities.containsKey(entity)) {
-            HUDHandler.instance().addMessage(new ArmorMessage("A mob is targeting you!", new ArrayList<String>(), 60, 0x70FF0000));
+            HUDHandler.instance().addMessage(new ArmorMessage("A mob is targeting you!", new ArrayList<>(), 60, 0x70FF0000));
         }
         targetingEntities.put(entity, -1);
     }

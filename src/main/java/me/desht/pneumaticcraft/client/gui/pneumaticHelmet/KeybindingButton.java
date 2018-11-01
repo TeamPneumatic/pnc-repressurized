@@ -9,7 +9,7 @@ import net.minecraftforge.fml.client.FMLClientHandler;
 
 class KeybindingButton extends GuiButtonSpecial {
     private final KeyBinding keyBinding;
-    private String origButtonText;
+    private final String origButtonText;
     private boolean bindingMode = false;
 
     KeybindingButton(int buttonID, int startX, int startY, int xSize, int ySize, String buttonText, KeyBinding keyBinding) {

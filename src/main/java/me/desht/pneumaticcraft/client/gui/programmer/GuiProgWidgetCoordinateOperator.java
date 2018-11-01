@@ -24,7 +24,7 @@ public class GuiProgWidgetCoordinateOperator extends GuiProgWidgetAreaShow<ProgW
     public void initGui() {
         super.initGui();
 
-        List<GuiRadioButton> radioButtons = new ArrayList<GuiRadioButton>();
+        List<GuiRadioButton> radioButtons = new ArrayList<>();
         for (int i = 0; i < EnumOperator.values().length; i++) {
             GuiRadioButton radioButton = new GuiRadioButton(i, guiLeft + 7, guiTop + 42 + 12 * i, 0xFF404040, I18n.format(EnumOperator.values()[i].getTranslationKey()));
             radioButtons.add(radioButton);

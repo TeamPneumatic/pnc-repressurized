@@ -8,9 +8,9 @@ import java.util.List;
 
 public class AssemblyRecipe {
 
-    public static List<AssemblyRecipe> drillRecipes = new ArrayList<>();
-    public static List<AssemblyRecipe> laserRecipes = new ArrayList<>();
-    public static List<AssemblyRecipe> drillLaserRecipes = new ArrayList<>();
+    public static final List<AssemblyRecipe> drillRecipes = new ArrayList<>();
+    public static final List<AssemblyRecipe> laserRecipes = new ArrayList<>();
+    public static final List<AssemblyRecipe> drillLaserRecipes = new ArrayList<>();
 
     private final ItemStack input;
     private final ItemStack output;

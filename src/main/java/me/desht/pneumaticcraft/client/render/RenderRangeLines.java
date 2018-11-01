@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.client.render;
 
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
@@ -10,14 +11,12 @@ import org.lwjgl.opengl.GL11;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 
 public class RenderRangeLines {
     private final List<RenderProgressingLine> rangeLines = new ArrayList<>();
     private int rangeLinesTimer = 0;
-    private static Random rand = new Random();
     private final int color;
-    private BlockPos pos;
+    private final BlockPos pos;
 
     public RenderRangeLines(int color) {
         this(color, null);
@@ -63,7 +62,7 @@ public class RenderRangeLines {
         if (rangeLinesTimer > 0) {
             rangeLinesTimer--;
             for (RenderProgressingLine line : rangeLines) {
-                if (line.getProgress() > 0.005F || rand.nextInt(15) == 0) {
+                if (line.getProgress() > 0.005F || Minecraft.getMinecraft().world.rand.nextInt(15) == 0) {
                     line.incProgress(0.025F);
                 }
             }
@@ -74,7 +73,7 @@ public class RenderRangeLines {
                 if (line.getProgress() > 0.005F) {
                     line.incProgress(0.025F);
                 }
-                if (rand.nextInt(10) == 0) {
+                if (Minecraft.getMinecraft().world.rand.nextInt(10) == 0) {
                     iterator.remove();
                 }
             }

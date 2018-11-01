@@ -1,13 +1,11 @@
 package me.desht.pneumaticcraft.client.gui.areatool;
 
-import java.io.IOException;
-import java.util.function.Consumer;
-
-import net.minecraft.client.gui.GuiScreen;
 import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetArea;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateGPSAreaTool;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea;
+
+import java.io.IOException;
 
 public class GuiProgWidgetAreaTool extends GuiProgWidgetArea{
     private final Runnable returnAction;

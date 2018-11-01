@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EntityTrackHandler {
-    private static List<IEntityTrackEntry> trackEntries = new ArrayList<IEntityTrackEntry>();
+    private static final List<IEntityTrackEntry> trackEntries = new ArrayList<>();
 
     public static void registerDefaultEntries() {
         IPneumaticHelmetRegistry manager = PneumaticRegistry.getInstance().getHelmetRegistry();

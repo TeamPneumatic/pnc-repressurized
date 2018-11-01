@@ -12,8 +12,8 @@ import net.minecraft.util.ResourceLocation;
 import java.io.IOException;
 
 public class GuiProgWidgetOptionBase<Widget extends IProgWidget> extends GuiPneumaticScreenBase {
-    protected Widget widget;
-    protected GuiProgrammer guiProgrammer;
+    protected final Widget widget;
+    protected final GuiProgrammer guiProgrammer;
 
     public GuiProgWidgetOptionBase(Widget widget, GuiProgrammer guiProgrammer) {
         this.widget = widget;

@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NetworkConnectionPlayerHandler extends NetworkConnectionHandler {
-    private final List<GuiStatBalloon> balloons = new ArrayList<GuiStatBalloon>();
+    private final List<GuiStatBalloon> balloons = new ArrayList<>();
     public boolean hackedSuccessfully;
 
     public NetworkConnectionPlayerHandler(GuiSecurityStationBase gui, TileEntitySecurityStation station, int baseX,

@@ -36,8 +36,8 @@ public class GuiVacuumPump extends GuiPneumaticContainerBase<TileEntityVacuumPum
 
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
-        GuiUtils.drawPressureGauge(fontRenderer, -1, PneumaticValues.MAX_PRESSURE_VACUUM_PUMP, PneumaticValues.DANGER_PRESSURE_VACUUM_PUMP, PneumaticValues.MIN_PRESSURE_VACUUM_PUMP, te.getAirHandler(te.getInputSide()).getPressure(), xStart + xSize * 1 / 5, yStart + ySize * 1 / 5 + 4, zLevel);
-        GuiUtils.drawPressureGauge(fontRenderer, -1, PneumaticValues.MAX_PRESSURE_VACUUM_PUMP, PneumaticValues.DANGER_PRESSURE_VACUUM_PUMP, -1, te.getAirHandler(te.getVacuumSide()).getPressure(), xStart + xSize * 4 / 5, yStart + ySize * 1 / 5 + 4, zLevel);
+        GuiUtils.drawPressureGauge(fontRenderer, -1, PneumaticValues.MAX_PRESSURE_VACUUM_PUMP, PneumaticValues.DANGER_PRESSURE_VACUUM_PUMP, PneumaticValues.MIN_PRESSURE_VACUUM_PUMP, te.getAirHandler(te.getInputSide()).getPressure(), xStart + xSize / 5, yStart + ySize / 5 + 4, zLevel);
+        GuiUtils.drawPressureGauge(fontRenderer, -1, PneumaticValues.MAX_PRESSURE_VACUUM_PUMP, PneumaticValues.DANGER_PRESSURE_VACUUM_PUMP, -1, te.getAirHandler(te.getVacuumSide()).getPressure(), xStart + xSize * 4 / 5, yStart + ySize / 5 + 4, zLevel);
     }
 
     @Override

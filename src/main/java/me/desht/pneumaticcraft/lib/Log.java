@@ -5,7 +5,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 
 public class Log {
-    private static Logger logger = PneumaticCraftRepressurized.logger;
+    private static final Logger logger = PneumaticCraftRepressurized.logger;
 
     public static void info(String message) {
         logger.log(Level.INFO, message);

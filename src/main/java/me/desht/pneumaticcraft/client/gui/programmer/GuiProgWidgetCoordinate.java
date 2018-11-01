@@ -37,7 +37,7 @@ public class GuiProgWidgetCoordinate extends GuiProgWidgetAreaShow<ProgWidgetCoo
             widget.setCoordinate(pos);
         }
 
-        List<GuiRadioButton> radioButtons = new ArrayList<GuiRadioButton>();
+        List<GuiRadioButton> radioButtons = new ArrayList<>();
         GuiRadioButton radioButton = new GuiRadioButton(0, guiLeft + 7, guiTop + 51, 0xFF404040, I18n.format("gui.progWidget.coordinate.constant"));
         if (!widget.isUsingVariable()) radioButton.checked = true;
         radioButtons.add(radioButton);

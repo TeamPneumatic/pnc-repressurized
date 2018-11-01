@@ -26,7 +26,7 @@ import java.util.List;
 public class GuiRemoteEditor extends GuiRemote {
     private GuiInventorySearcher invSearchGui;
     private GuiPastebin pastebinGui;
-    private final List<ActionWidget> visibleSpawnWidgets = new ArrayList<ActionWidget>();
+    private final List<ActionWidget> visibleSpawnWidgets = new ArrayList<>();
     private boolean wasClicking;
     private ActionWidget draggingWidget;
     private int dragMouseStartX, dragMouseStartY;

@@ -91,8 +91,8 @@ public class GuiPressureModule extends GuiTubeModule {
         GlStateManager.disableLighting();
 
         FMLClientHandler.instance().getClient().getTextureManager().bindTexture(getTexture());
-        int scrollbarLowerBoundX = (int) (guiLeft + 16 + (158 - 11) * (module.lowerBound / (module.maxValue + 1)));
-        int scrollbarHigherBoundX = (int) (guiLeft + 16 + (158 - 11) * (module.higherBound / (module.maxValue + 1)));
+        int scrollbarLowerBoundX = (int) (guiLeft + 16 + (158 - 11) * (module.lowerBound / (TubeModule.MAX_VALUE + 1)));
+        int scrollbarHigherBoundX = (int) (guiLeft + 16 + (158 - 11) * (module.higherBound / (TubeModule.MAX_VALUE + 1)));
 
         drawTexturedModalRect(scrollbarLowerBoundX, guiTop + 73, 183, 0, 15, 12);
         drawTexturedModalRect(scrollbarHigherBoundX, guiTop + 59, 183, 0, 15, 12);
@@ -168,12 +168,12 @@ public class GuiPressureModule extends GuiTubeModule {
         }
 
         if (lowerBoundArea.contains(mouseX, mouseY)) {
-            module.lowerBound = (float) (mouseX - 6 - (guiLeft + 11)) / (158 - 11) * module.maxValue;
-            module.lowerBound = Math.min(Math.max(-1, module.lowerBound), module.maxValue);
+            module.lowerBound = (float) (mouseX - 6 - (guiLeft + 11)) / (158 - 11) * TubeModule.MAX_VALUE;
+            module.lowerBound = Math.min(Math.max(-1, module.lowerBound), TubeModule.MAX_VALUE);
             grabLower = true;
         } else if (higherBoundArea.contains(mouseX, mouseY)) {
-            module.higherBound = (float) (mouseX - 6 - (guiLeft + 11)) / (158 - 11) * module.maxValue;
-            module.higherBound = Math.min(Math.max(-1, module.higherBound), module.maxValue);
+            module.higherBound = (float) (mouseX - 6 - (guiLeft + 11)) / (158 - 11) * TubeModule.MAX_VALUE;
+            module.higherBound = Math.min(Math.max(-1, module.higherBound), TubeModule.MAX_VALUE);
             grabHigher = true;
         }
     }
@@ -183,12 +183,12 @@ public class GuiPressureModule extends GuiTubeModule {
             switch (fieldId) {
                 case 0:
                     module.lowerBound = Float.parseFloat(lowerBoundField.getText());
-                    module.lowerBound = Math.max(-1, Math.min(module.lowerBound, module.maxValue));
+                    module.lowerBound = Math.max(-1, Math.min(module.lowerBound, TubeModule.MAX_VALUE));
                     NetworkHandler.sendToServer(new PacketUpdatePressureModule(module, 0, module.lowerBound));
                     break;
                 case 1:
                     module.higherBound = Float.parseFloat(higherBoundField.getText());
-                    module.higherBound = Math.max(-1, Math.min(module.higherBound, module.maxValue));
+                    module.higherBound = Math.max(-1, Math.min(module.higherBound, TubeModule.MAX_VALUE));
                     NetworkHandler.sendToServer(new PacketUpdatePressureModule(module, 1, module.higherBound));
                     break;
                 default:
@@ -202,11 +202,11 @@ public class GuiPressureModule extends GuiTubeModule {
     @Override
     protected void mouseClickMove(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick) {
         if (grabLower) {
-            module.lowerBound = (float) (mouseX - 6 - (guiLeft + 11)) / (158 - 11) * module.maxValue;
-            module.lowerBound = Math.min(Math.max(-1, module.lowerBound), module.maxValue);
+            module.lowerBound = (float) (mouseX - 6 - (guiLeft + 11)) / (158 - 11) * TubeModule.MAX_VALUE;
+            module.lowerBound = Math.min(Math.max(-1, module.lowerBound), TubeModule.MAX_VALUE);
         } else if (grabHigher) {
-            module.higherBound = (float) (mouseX - 6 - (guiLeft + 11)) / (158 - 11) * module.maxValue;
-            module.higherBound = Math.min(Math.max(-1, module.higherBound), module.maxValue);
+            module.higherBound = (float) (mouseX - 6 - (guiLeft + 11)) / (158 - 11) * TubeModule.MAX_VALUE;
+            module.higherBound = Math.min(Math.max(-1, module.higherBound), TubeModule.MAX_VALUE);
         } else {
             super.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
         }

@@ -107,7 +107,7 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<TileEntityUniv
     protected Point getGaugeLocation() {
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
-        return new Point(xStart + 34, yStart + ySize * 1 / 4);
+        return new Point(xStart + 34, yStart + ySize / 4);
     }
 
     @Override
@@ -195,7 +195,7 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<TileEntityUniv
     }
 
     private List<String> getUpgradeText() {
-        List<String> upgradeInfo = new ArrayList<String>();
+        List<String> upgradeInfo = new ArrayList<>();
         upgradeInfo.add("gui.tab.upgrades.volume");
         upgradeInfo.add("gui.tab.upgrades.security");
         upgradeInfo.addAll(SensorHandler.getInstance().getUpgradeInfo());
@@ -203,7 +203,7 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<TileEntityUniv
     }
 
     private List<String> getSensorInfo() {
-        List<String> text = new ArrayList<String>();
+        List<String> text = new ArrayList<>();
         ISensorSetting sensor = SensorHandler.getInstance().getSensorFromPath(te.getSensorSetting());
         if (sensor != null) {
             String[] folders = te.getSensorSetting().split("/");

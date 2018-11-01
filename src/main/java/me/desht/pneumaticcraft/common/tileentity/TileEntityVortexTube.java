@@ -20,7 +20,7 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
     private int visualizationTimer = 60;
 
     @DescSynced
-    public boolean[] sidesConnected = new boolean[6];
+    public final boolean[] sidesConnected = new boolean[6];
     @DescSynced
     private boolean visualize;
     @DescSynced

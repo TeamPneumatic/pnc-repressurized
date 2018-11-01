@@ -56,7 +56,7 @@ public class GuiGPSTool extends GuiPneumaticScreenBase {
         }
 
         for (int i = 0; i < 3; i++) {
-            buttonList.add(new GuiButton(0 + i * 4, xMiddle - 49 - TEXTFIELD_WIDTH / 2, yMiddle - 32 + i * 22, 22, 20, "-10"));
+            buttonList.add(new GuiButton(    i * 4, xMiddle - 49 - TEXTFIELD_WIDTH / 2, yMiddle - 32 + i * 22, 22, 20, "-10"));
             buttonList.add(new GuiButton(1 + i * 4, xMiddle - 25 - TEXTFIELD_WIDTH / 2, yMiddle - 32 + i * 22, 22, 20, "-1"));
             buttonList.add(new GuiButton(2 + i * 4, xMiddle + 3 + TEXTFIELD_WIDTH / 2, yMiddle - 32 + i * 22, 22, 20, "+1"));
             buttonList.add(new GuiButton(3 + i * 4, xMiddle + 27 + TEXTFIELD_WIDTH / 2, yMiddle - 32 + i * 22, 22, 20, "+10"));

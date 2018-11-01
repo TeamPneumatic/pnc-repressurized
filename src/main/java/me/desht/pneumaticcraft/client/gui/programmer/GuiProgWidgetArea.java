@@ -1,20 +1,11 @@
 package me.desht.pneumaticcraft.client.gui.programmer;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
+import com.google.common.collect.Lists;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.client.gui.GuiButtonSpecial;
 import me.desht.pneumaticcraft.client.gui.GuiInventorySearcher;
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
-import me.desht.pneumaticcraft.client.gui.widget.GuiRadioButton;
-import me.desht.pneumaticcraft.client.gui.widget.IGuiWidget;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetComboBox;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetTextFieldNumber;
+import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.item.ItemGPSTool;
 import me.desht.pneumaticcraft.common.item.Itemss;
@@ -31,11 +22,14 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.FMLClientHandler;
-
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
-import com.google.common.collect.Lists;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
     private GuiInventorySearcher invSearchGui;
@@ -43,9 +37,9 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
     private WidgetComboBox variableField1;
     private WidgetComboBox variableField2;
 
-    private List<AreaType> allAreaTypes = ProgWidgetArea.getAllAreaTypes();
-    private List<Pair<AreaTypeWidget,IGuiWidget>> areaTypeValueWidgets = new ArrayList<>();
-    private List<IGuiWidget> areaTypeStaticWidgets = new ArrayList<>();
+    private final List<AreaType> allAreaTypes = ProgWidgetArea.getAllAreaTypes();
+    private final List<Pair<AreaTypeWidget,IGuiWidget>> areaTypeValueWidgets = new ArrayList<>();
+    private final List<IGuiWidget> areaTypeStaticWidgets = new ArrayList<>();
 
     public GuiProgWidgetArea(ProgWidgetArea widget, GuiProgrammer guiProgrammer) {
         super(widget, guiProgrammer);
@@ -138,7 +132,7 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
         saveWidgets();
         
         areaTypeValueWidgets.forEach(p -> removeWidget(p.getRight()));
-        areaTypeStaticWidgets.forEach(w -> removeWidget(w));
+        areaTypeStaticWidgets.forEach(this::removeWidget);
         
         areaTypeValueWidgets.clear();
         areaTypeStaticWidgets.clear();
@@ -158,7 +152,7 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
                 WidgetTextFieldNumber intField = new WidgetTextFieldNumber(fontRenderer, x, curY, 40, fontRenderer.FONT_HEIGHT + 1);
                 intField.setValue(intWidget.readAction.get());
                 addWidget(intField);
-                areaTypeValueWidgets.add(new ImmutablePair<AreaType.AreaTypeWidget, IGuiWidget>(widget, intField));
+                areaTypeValueWidgets.add(new ImmutablePair<>(widget, intField));
                 
                 curY += fontRenderer.FONT_HEIGHT + 20;
             }else if(widget instanceof AreaTypeWidgetEnum<?>){
@@ -167,7 +161,7 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
                 enumCbb.setElements(getEnumNames(enumWidget.enumClass));
                 enumCbb.setText(enumWidget.readAction.get().toString());
                 addWidget(enumCbb);
-                areaTypeValueWidgets.add(new ImmutablePair<AreaType.AreaTypeWidget, IGuiWidget>(widget, enumCbb));
+                areaTypeValueWidgets.add(new ImmutablePair<>(widget, enumCbb));
                 
                 curY += fontRenderer.FONT_HEIGHT + 20;
             }else{
@@ -197,7 +191,7 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
     
     private List<String> getEnumNames(Class<?> enumClass){
         Object[] enumValues = enumClass.getEnumConstants();
-        List<String> enumNames = new ArrayList<String>();
+        List<String> enumNames = new ArrayList<>();
         for(Object enumValue : enumValues){
             enumNames.add(enumValue.toString());
         }

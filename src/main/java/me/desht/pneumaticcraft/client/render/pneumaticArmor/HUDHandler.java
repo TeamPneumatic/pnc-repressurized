@@ -47,8 +47,8 @@ public class HUDHandler implements IKeyListener {
     private static final int PROGRESS_BAR_HEIGHT = 17;
 
     private final List<ArmorMessage> messageList = new ArrayList<>();
-    private boolean[] gaveEmptyWarning = new boolean[4];  // per-slot
-    private boolean[] gaveNearlyEmptyWarning = new boolean[4];  // per-slot
+    private final boolean[] gaveEmptyWarning = new boolean[4];  // per-slot
+    private final boolean[] gaveNearlyEmptyWarning = new boolean[4];  // per-slot
 
     private static final HUDHandler INSTANCE = new HUDHandler();
 

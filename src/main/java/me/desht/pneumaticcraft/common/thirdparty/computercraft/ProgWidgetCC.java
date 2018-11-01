@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.thirdparty.computercraft;
 
-import com.google.common.base.Predicate;
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.ai.StringFilterEntitySelector;
@@ -30,6 +29,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 
 public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdered, ISidedWidget, IGotoWidget,
         IEntityProvider, ITextWidget, ICondition, ICountWidget, IItemDropper, ILiquidFiltered, IRedstoneEmissionWidget,

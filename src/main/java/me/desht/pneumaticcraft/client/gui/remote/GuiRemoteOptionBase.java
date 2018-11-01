@@ -15,8 +15,8 @@ import net.minecraft.util.ResourceLocation;
 import java.io.IOException;
 
 public class GuiRemoteOptionBase<Widget extends ActionWidget> extends GuiPneumaticScreenBase {
-    protected Widget widget;
-    protected GuiRemoteEditor guiRemote;
+    protected final Widget widget;
+    protected final GuiRemoteEditor guiRemote;
     private WidgetTextField labelField, tooltipField;
     private WidgetComboBox enableField;
     private WidgetTextFieldNumber xValueField, yValueField, zValueField;

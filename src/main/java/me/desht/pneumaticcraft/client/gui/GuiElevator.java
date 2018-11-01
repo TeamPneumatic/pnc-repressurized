@@ -69,7 +69,7 @@ public class GuiElevator extends GuiPneumaticContainerBase<TileEntityElevatorBas
     }
 
     private List<String> getFloorNameStat() {
-        List<String> textList = new ArrayList<String>();
+        List<String> textList = new ArrayList<>();
         for (int i = 0; i < 3; i++)
             textList.add("");
         textList.add("\u00a77         Floor " + (currentEditedFloor + 1) + "                   ");
@@ -79,7 +79,7 @@ public class GuiElevator extends GuiPneumaticContainerBase<TileEntityElevatorBas
     }
 
     private List<String> getStatusText() {
-        List<String> text = new ArrayList<String>();
+        List<String> text = new ArrayList<>();
 
         text.add("\u00a77Current Extension:");
         text.add("\u00a70" + PneumaticCraftUtils.roundNumberTo(te.extension, 1) + " meter");

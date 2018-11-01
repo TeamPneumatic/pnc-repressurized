@@ -21,11 +21,11 @@ import java.util.List;
 
 public class GuiButtonSpecial extends GuiButton implements IGuiWidget {
 
-    public enum IconPosition { MIDDLE, LEFT, RIGHT };
+    public enum IconPosition { MIDDLE, LEFT, RIGHT }
 
     private ItemStack[] renderedStacks;
     private ResourceLocation resLoc;
-    private List<String> tooltipText = new ArrayList<String>();
+    private List<String> tooltipText = new ArrayList<>();
     private final RenderItem itemRenderer = Minecraft.getMinecraft().getRenderItem();
     private int invisibleHoverColor;
     private boolean thisVisible = true;

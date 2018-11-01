@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.render.pneumaticArmor;
 
-import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -14,16 +14,8 @@ public class RenderBlockArrows {
     public int ticksExisted;
 
     public void render(World world, BlockPos pos, float partialTicks) {
-        // if(true) return;
-        Block block = world.getBlockState(pos).getBlock();
-//        block.setBlockBoundsBasedOnState(world, pos);
-//        double minX = block.getBlockBoundsMinX();
-//        double minY = block.getBlockBoundsMinY();
-//        double minZ = block.getBlockBoundsMinZ();
-//        double maxX = block.getBlockBoundsMaxX();
-//        double maxY = block.getBlockBoundsMaxY();
-//        double maxZ = block.getBlockBoundsMaxZ();
-        AxisAlignedBB aabb = block.getBoundingBox(world.getBlockState(pos), world, pos);
+        IBlockState state = world.getBlockState(pos);
+        AxisAlignedBB aabb = state.getBoundingBox(world, pos);
         double minX = aabb.minX;
         double minY = aabb.minY;
         double minZ = aabb.minZ;

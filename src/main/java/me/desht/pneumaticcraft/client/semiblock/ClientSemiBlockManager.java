@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ClientSemiBlockManager {
-    private static final Map<Class<? extends ISemiBlock>, ISemiBlockRenderer<?>> renderers = new HashMap<Class<? extends ISemiBlock>, ISemiBlockRenderer<?>>();
+    private static final Map<Class<? extends ISemiBlock>, ISemiBlockRenderer<?>> renderers = new HashMap<>();
 
     static {
         registerRenderer(SemiBlockLogistics.class, new SemiBlockRendererLogistics());

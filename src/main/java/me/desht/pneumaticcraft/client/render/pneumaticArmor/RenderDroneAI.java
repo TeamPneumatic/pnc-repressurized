@@ -21,7 +21,7 @@ public class RenderDroneAI {
     private final EntityDrone drone;
     private final RenderEntityItem renderItem;
     private final EntityItem entityItem;
-    private final List<Pair<RenderCoordWireframe, Integer>> blackListWireframes = new ArrayList<Pair<RenderCoordWireframe, Integer>>();
+    private final List<Pair<RenderCoordWireframe, Integer>> blackListWireframes = new ArrayList<>();
     private float progress = 0;
     private BlockPos oldPos, pos;
 

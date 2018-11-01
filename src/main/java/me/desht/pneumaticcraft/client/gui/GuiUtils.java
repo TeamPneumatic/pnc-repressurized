@@ -27,7 +27,7 @@ import java.util.List;
 
 @SideOnly(Side.CLIENT)
 public class GuiUtils {
-    private static HashMap<String, ResourceLocation> resourceMap = new HashMap<String, ResourceLocation>();
+    private static final HashMap<String, ResourceLocation> resourceMap = new HashMap<>();
     // This method is used to draw a pressure gauge in various GUI's.
     private static final int CIRCLE_POINTS = 500;
     public static final double PRESSURE_GAUGE_RADIUS = 20D;
@@ -35,7 +35,7 @@ public class GuiUtils {
     // degrees
     private static final double STOP_ANGLE = -60D / 180D * Math.PI;
     private static final int GAUGE_POINTS = (int) ((START_ANGLE - STOP_ANGLE) / (2D * Math.PI) * CIRCLE_POINTS);
-    private static RenderItem itemRenderer = Minecraft.getMinecraft().getRenderItem();
+    private static final RenderItem itemRenderer = Minecraft.getMinecraft().getRenderItem();
 
     public static void drawPressureGauge(FontRenderer fontRenderer, float minPressure, float maxPressure, float dangerPressure, float minWorkingPressure, float currentPressure, int xPos, int yPos, float zLevel) {
         drawPressureGauge(fontRenderer, minPressure, maxPressure, dangerPressure, minWorkingPressure, currentPressure, xPos, yPos, zLevel, 0xFF000000);
@@ -101,7 +101,7 @@ public class GuiUtils {
 
         // Draw the scale
         int currentScale = (int) maxPressure;
-        List<int[]> textScalers = new ArrayList<int[]>();
+        List<int[]> textScalers = new ArrayList<>();
         wr.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION);
         for (int i = 0; i <= GAUGE_POINTS; i++) {
             double angle = (double) -i / (double) CIRCLE_POINTS * 2D * Math.PI - STOP_ANGLE;

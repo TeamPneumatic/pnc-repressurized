@@ -11,12 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BlockTrackEntryList {
-    public NonNullList<IBlockTrackEntry> trackList = NonNullList.create();
+    public final NonNullList<IBlockTrackEntry> trackList = NonNullList.create();
 
-    public static BlockTrackEntryList instance = new BlockTrackEntryList();
+    public static final BlockTrackEntryList instance = new BlockTrackEntryList();
 
     // initialize default Block Track Entries.
-    public BlockTrackEntryList() {
+    private BlockTrackEntryList() {
         trackList.add(new BlockTrackEntryHackable());
         trackList.add(new BlockTrackEntryInventory());
         trackList.add(new BlockTrackEntryEndPortalFrame());
@@ -26,7 +26,7 @@ public class BlockTrackEntryList {
     }
 
     public List<IBlockTrackEntry> getEntriesForCoordinate(IBlockAccess blockAccess, BlockPos pos, TileEntity te) {
-        List<IBlockTrackEntry> blockTrackers = new ArrayList<IBlockTrackEntry>();
+        List<IBlockTrackEntry> blockTrackers = new ArrayList<>();
         for (IBlockTrackEntry entry : trackList) {
             if (GuiKeybindCheckBox.fromKeyBindingName(entry.getEntryName()).checked && entry.shouldTrackWithThisEntry(blockAccess, pos, blockAccess.getBlockState(pos), te))
                 blockTrackers.add(entry);

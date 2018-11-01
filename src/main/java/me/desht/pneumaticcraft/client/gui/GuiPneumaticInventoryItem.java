@@ -23,7 +23,7 @@ import java.util.List;
 @SideOnly(Side.CLIENT)
 public abstract class GuiPneumaticInventoryItem extends GuiPneumaticContainerBase<TileEntityChargingStation> {
 
-    protected ItemStack itemStack;
+    protected final ItemStack itemStack;
     private GuiButton guiBackButton;
 
     public GuiPneumaticInventoryItem(ContainerChargingStationItemInventory container, TileEntityChargingStation te) {
@@ -104,7 +104,7 @@ public abstract class GuiPneumaticInventoryItem extends GuiPneumaticContainerBas
         int yStart = (height - ySize) / 2;
         GuiUtils.drawPressureGauge(fontRenderer, 0, 10, 10, 0,
                 ((IPressurizable) itemStack.getItem()).getPressure(te.getPrimaryInventory().getStackInSlot(TileEntityChargingStation.CHARGE_INVENTORY_INDEX)),
-                xStart + xSize * 3 / 4 + 8, yStart + ySize * 1 / 4 + 4, zLevel);
+                xStart + xSize * 3 / 4 + 8, yStart + ySize / 4 + 4, zLevel);
     }
 
     @Override
