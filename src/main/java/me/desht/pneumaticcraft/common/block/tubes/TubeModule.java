@@ -207,4 +207,8 @@ public abstract class TubeModule implements ISidedPart {
     @SideOnly(Side.CLIENT)
     public void doExtraRendering() {
     }
+
+    public AxisAlignedBB getRenderBoundingBox() {
+        return null;
+    }
 }

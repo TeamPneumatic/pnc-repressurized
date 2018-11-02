@@ -35,6 +35,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     @DescSynced
     private ItemStack camoStack = ItemStack.EMPTY;
     private IBlockState camoState;
+    private AxisAlignedBB renderBoundingBox = null;
 
     private Object part;
 
@@ -108,8 +109,19 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
             module.readFromNBT(moduleTag);
             setModule(module, EnumFacing.byIndex(moduleTag.getInteger("side")));
         }
+        updateRenderBoundingBox();
         if (hasWorld() && getWorld().isRemote) {
             rerenderTileEntity();
+        }
+    }
+
+    private void updateRenderBoundingBox() {
+        renderBoundingBox = new AxisAlignedBB(getPos().getX(), getPos().getY(), getPos().getZ(), getPos().getX() + 1, getPos().getY() + 1, getPos().getZ() + 1);
+
+        for (int i = 0; i < 6; i++) {
+            if (modules[i] != null && modules[i].getRenderBoundingBox() != null) {
+                renderBoundingBox = renderBoundingBox.union(modules[i].getRenderBoundingBox());
+            }
         }
     }
 
@@ -242,7 +254,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     @Override
     @SideOnly(Side.CLIENT)
     public AxisAlignedBB getRenderBoundingBox() {
-        return new AxisAlignedBB(getPos().getX(), getPos().getY(), getPos().getZ(), getPos().getX() + 1, getPos().getY() + 1, getPos().getZ() + 1);
+        return renderBoundingBox != null ? renderBoundingBox : new AxisAlignedBB(getPos());
     }
 
     @Override

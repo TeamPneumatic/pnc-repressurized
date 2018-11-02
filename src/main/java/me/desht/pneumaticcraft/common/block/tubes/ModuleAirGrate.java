@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.block.tubes;
 
+import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.client.model.module.ModelAirGrate;
 import me.desht.pneumaticcraft.client.model.module.ModelModuleBase;
 import me.desht.pneumaticcraft.client.render.RenderRangeLines;
@@ -7,6 +8,7 @@ import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
 import me.desht.pneumaticcraft.common.ai.StringFilterEntitySelector;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityHeatSink;
 import me.desht.pneumaticcraft.common.util.IOHelper;
+import me.desht.pneumaticcraft.lib.EnumCustomParticleType;
 import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.Entity;
@@ -33,10 +35,10 @@ public class ModuleAirGrate extends TubeModule {
     private boolean vacuum;
     public String entityFilter = "";
     private final Set<TileEntityHeatSink> heatSinks = new HashSet<>();
-    private final RenderRangeLines rangeLineRenderer = new RenderRangeLines(0x55FF0000);
+    private final RenderRangeLines rangeLineRenderer = new RenderRangeLines(0x5500FF00);
+    private boolean resetRendering = true;
 
     public ModuleAirGrate() {
-        rangeLineRenderer.resetRendering(1);
     }
 
     private int getRange() {
@@ -66,18 +68,26 @@ public class ModuleAirGrate extends TubeModule {
             coolHeatSinks(world, pos, grateRange);
 
         } else {
+            if (resetRendering) {
+                rangeLineRenderer.resetRendering(grateRange);
+                resetRendering = false;
+            }
             rangeLineRenderer.update();
         }
 
         pushEntities(world, pos, tileVec);
     }
 
+    private AxisAlignedBB getAffectedAABB() {
+        return new AxisAlignedBB(pressureTube.pos()).grow(grateRange);
+    }
+
     private void pushEntities(World world, BlockPos pos, Vec3d tileVec) {
-        AxisAlignedBB bbBox = new AxisAlignedBB(pos.add(-grateRange, -grateRange, -grateRange), pos.add(grateRange + 1, grateRange + 1, grateRange + 1));
+        AxisAlignedBB bbBox = getAffectedAABB();
         List<Entity> entities = world.getEntitiesWithinAABB(Entity.class, bbBox, new StringFilterEntitySelector().setFilter(entityFilter));
         double d0 = grateRange + 0.5D;
         for (Entity entity : entities) {
-            if (!entity.world.isRemote && entity.getDistanceSq(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D) < 0.6D && entity instanceof EntityItem && !entity.isDead) {
+            if (!entity.world.isRemote && entity instanceof EntityItem && entity.getDistanceSq(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D) < 0.6D && !entity.isDead) {
                 ItemStack leftover = ((EntityItem) entity).getItem();
                 for (EnumFacing dir : EnumFacing.VALUES) {
                     TileEntity inv = pressureTube.world().getTileEntity(pos.offset(dir));
@@ -91,11 +101,11 @@ public class ModuleAirGrate extends TubeModule {
                 }
             } else {
                 if (!(entity instanceof EntityPlayer) || !((EntityPlayer) entity).capabilities.isCreativeMode) {
-                    Vec3d entityVec = new Vec3d(entity.posX, entity.posY, entity.posZ);
+                    Vec3d entityVec = new Vec3d(entity.posX, entity.posY + entity.getEyeHeight(), entity.posZ);
                     RayTraceResult trace = world.rayTraceBlocks(entityVec, tileVec);
                     if (trace != null && trace.getBlockPos().equals(pos)) {
                         double d1 = (entity.posX - pos.getX() - 0.5D) / d0;
-                        double d2 = (entity.posY - pos.getY() - 0.5D) / d0;
+                        double d2 = (entity.posY + entity.getEyeHeight() - pos.getY() - 0.5D) / d0;
                         double d3 = (entity.posZ - pos.getZ() - 0.5D) / d0;
                         double d4 = Math.sqrt(d1 * d1 + d2 * d2 + d3 * d3);
                         double d5 = 1.0D - d4;
@@ -106,6 +116,11 @@ public class ModuleAirGrate extends TubeModule {
                             entity.motionX -= d1 / d4 * d5 * 0.1D;
                             entity.motionY -= d2 / d4 * d5 * 0.1D;
                             entity.motionZ -= d3 / d4 * d5 * 0.1D;
+                            if (world.isRemote && world.rand.nextDouble() * 0.85 > d4) {
+                                Vec3d vec = new Vec3d(pos.getX() + 0.5 + d1, pos.getY() + 0.5 + d2, pos.getZ() + 0.5 + d3);
+                                PneumaticCraftRepressurized.proxy.playCustomParticle(EnumCustomParticleType.AIR_PARTICLE_DENSE, world,
+                                        pos.getX() + 0.5 + d1, pos.getY() + 0.5 + d2, pos.getZ() + 0.5 + d3, d1, d2, d3);
+                            }
                         }
                     }
                 }
@@ -184,5 +199,10 @@ public class ModuleAirGrate extends TubeModule {
     @Override
     public void doExtraRendering() {
         rangeLineRenderer.render();
+    }
+
+    @Override
+    public AxisAlignedBB getRenderBoundingBox() {
+        return getAffectedAABB();
     }
 }

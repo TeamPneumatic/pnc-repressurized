@@ -11,6 +11,10 @@ Changes are in reverse chronological order; newest changes at the top.
 * GUI side tabs now have a more visually appealing beveled border instead of a hard black border.  If you prefer the old appearance, set the 'B:guiBevel' clientside option to false in pneumaticcraft.cfg.
 * Aerial Interface has a new informational GUI side tab making it clear whether it's currently interfacing items or food/xp.
 * Aerial Interface RF charging is now significantly more efficient on server CPU.  Note however that it may take a couple of seconds to start charging items that have been newly added to your inventory, or have been moved in your inventory.
+* Air Grate Module improvements:
+  * Now works on entity eye position, not feet position.  If you can see it, it can see you...
+  * Range display box now accurately shows the range.  It will appear for ~6 seconds when the module's range changes due to a pressure change.
+  * The Module now plays occasional air particles towards entities that it's affecting.
 #### Fixes
 * Fixed server crash in conjunction with Quark when a Drone breaks a tool/weapon (Quark auto item restock wasn't agreeing with the Drone's fakeplayer inventory).
 * Fixed some text information being ommitted from GUI Redstone side tabs.

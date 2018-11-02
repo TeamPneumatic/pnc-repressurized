@@ -28,7 +28,7 @@ public class RenderRangeLines {
     }
 
     public void resetRendering(double range) {
-        rangeLinesTimer = 200;
+        rangeLinesTimer = 120;
 
         rangeLines.clear();
         double renderRange = range + 0.5D;
@@ -73,7 +73,7 @@ public class RenderRangeLines {
                 if (line.getProgress() > 0.005F) {
                     line.incProgress(0.025F);
                 }
-                if (Minecraft.getMinecraft().world.rand.nextInt(10) == 0) {
+                if (Minecraft.getMinecraft().world.rand.nextInt(8) == 0) {
                     iterator.remove();
                 }
             }
