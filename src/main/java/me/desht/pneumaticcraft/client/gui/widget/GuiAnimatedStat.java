@@ -428,6 +428,7 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
                 RenderHelper.disableStandardItemLighting();
                 GlStateManager.disableRescaleNormal();
                 GlStateManager.popMatrix();
+                GlStateManager.enableAlpha();
             }
             GlStateManager.disableBlend();
         }
