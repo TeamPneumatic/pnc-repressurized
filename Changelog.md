@@ -16,6 +16,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed some text information being ommitted from GUI Redstone side tabs.
 * Fixed greater-than/less-than threshold not being toggleable in Pressure Gauge GUI (with Advanced PCB installed).
 * Fixed problem with Aerial Interface sometimes showing the same XP fluid types more than once in the XP GUI side tab.
+* Fixed visual artifacts when rendering Forge Energy bars in GUI's (Aerial Interface, Flux Compressor...)
 
 ### 0.8.2-288 (30 Oct 2018)
 #### New

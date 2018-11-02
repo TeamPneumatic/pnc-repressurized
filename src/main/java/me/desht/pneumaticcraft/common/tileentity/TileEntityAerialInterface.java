@@ -46,6 +46,10 @@ import java.util.List;
 
 public class TileEntityAerialInterface extends TileEntityPneumaticBase
         implements IMinWorkingPressure, IRedstoneControl, IComparatorSupport, ISideConfigurable {
+
+    private static final int ENERGY_CAPACITY = 100000;
+    private static final int RF_PER_TICK = 1000;
+
     @GuiSynced
     @DescSynced
     public String playerName = "";
@@ -68,23 +72,21 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
 
     private final SideConfigurator<IItemHandler> itemHandlerSideConfigurator;
 
-    private final PlayerMainInvHandler playerMainInvHandler;
-    private final PlayerArmorInvHandler playerArmorInvHandler;
-    private final PlayerOffhandInvHandler playerOffhandInvHandler;
-    private final PlayerEnderInvHandler playerEnderInvHandler;
     private final PlayerExperienceHandler playerExperienceHandler;
     private final PlayerFoodHandler playerFoodHandler;
     private WeakReference<EntityPlayer> playerRef = new WeakReference<>(null);
+
+    private final PneumaticEnergyStorage energyStorage;
     private final List<Integer> chargeableSlots = new ArrayList<>();
 
     public TileEntityAerialInterface() {
         super(PneumaticValues.DANGER_PRESSURE_AERIAL_INTERFACE, PneumaticValues.MAX_PRESSURE_AERIAL_INTERFACE, PneumaticValues.VOLUME_AERIAL_INTERFACE, 4);
         addApplicableUpgrade(EnumUpgrade.DISPENSER);
 
-        playerMainInvHandler = new PlayerMainInvHandler();
-        playerArmorInvHandler = new PlayerArmorInvHandler();
-        playerOffhandInvHandler = new PlayerOffhandInvHandler();
-        playerEnderInvHandler = new PlayerEnderInvHandler();
+        PlayerMainInvHandler playerMainInvHandler = new PlayerMainInvHandler();
+        PlayerArmorInvHandler playerArmorInvHandler = new PlayerArmorInvHandler();
+        PlayerOffhandInvHandler playerOffhandInvHandler = new PlayerOffhandInvHandler();
+        PlayerEnderInvHandler playerEnderInvHandler = new PlayerEnderInvHandler();
         playerExperienceHandler = new PlayerExperienceHandler();
         playerFoodHandler = new PlayerFoodHandler();
 
@@ -100,7 +102,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
         itemHandlerSideConfigurator.registerHandler("enderInv", new ItemStack(Blocks.ENDER_CHEST),
                 CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, playerEnderInvHandler);
 
-        initRF();
+        energyStorage = new PneumaticEnergyStorage(ENERGY_CAPACITY);
     }
 
     public void setPlayer(EntityPlayer player) {
@@ -150,22 +152,24 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
         }
         if (!getWorld().isRemote) {
             if (getPressure() > PneumaticValues.MIN_PRESSURE_AERIAL_INTERFACE && isConnectedToPlayer) {
-                if (energyRF != null) tickRF();
                 addAir(-PneumaticValues.USAGE_AERIAL_INTERFACE);
-                // bitwise check much faster than mod (%)
+
+                if ((getWorld().getTotalWorldTime() & 0x3f) == 0) {
+                    scanForChargeableItems();
+                }
+                supplyEnergyToPlayer();
+
+                // check every 16 ticks
                 if ((getWorld().getTotalWorldTime() & 0xf) == 0) {
                     EntityPlayer player = getPlayer();
                     if (player != null && player.getAir() <= 280) {
                         player.setAir(player.getAir() + 16);
-                        addAir(-80);
+                        addAir(-80);  // 5 pneumatic air per player air
                     }
                 }
             }
             if ((getWorld().getTotalWorldTime() & 0xf) == 0 && !playerUUID.isEmpty()) {
                 setPlayer(PneumaticCraftUtils.getPlayerFromId(playerUUID));
-            }
-            if ((getWorld().getTotalWorldTime() & 0x3f) == 0) {
-                scanForChargeableItems();
             }
         }
 
@@ -237,7 +241,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
         } else if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && dispenserUpgradeInserted && curXpFluid != null) {
             return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(playerExperienceHandler);
         } else if (capability == CapabilityEnergy.ENERGY) {
-            return CapabilityEnergy.ENERGY.cast(energyRF);
+            return CapabilityEnergy.ENERGY.cast(energyStorage);
         } else {
             return super.getCapability(capability, facing);
         }
@@ -254,14 +258,10 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
         redstoneMode = tag.getInteger("redstoneMode");
         feedMode = tag.getInteger("feedMode");
         setPlayer(tag.getString("playerName"), tag.getString("playerUUID"));
-        if (tag.hasKey("curXpFluid")) {
-            curXpFluid = FluidRegistry.getFluid(tag.getString("curXpFluid"));
-        } else {
-            curXpFluid = null;
-        }
-        curXPFluidIndex = curXpFluid == null ? -1 : PneumaticCraftAPIHandler.getInstance().availableLiquidXPs.indexOf(curXpFluid);
-        if (energyRF != null) readRF(tag);
+        curXpFluid = tag.hasKey("curXpFluid") ? FluidRegistry.getFluid(tag.getString("curXpFluid")) : null;
+        energyStorage.readFromNBT(tag);
 
+        curXPFluidIndex = curXpFluid == null ? -1 : PneumaticCraftAPIHandler.getInstance().availableLiquidXPs.indexOf(curXpFluid);
         dispenserUpgradeInserted = getUpgrades(EnumUpgrade.DISPENSER) > 0;
     }
 
@@ -274,7 +274,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
         tag.setString("playerName", playerName);
         tag.setString("playerUUID", playerUUID);
         if (curXpFluid != null) tag.setString("curXpFluid", curXpFluid.getName());
-        if (energyRF != null) saveRF(tag);
+        energyStorage.writeToNBT(tag);
         return tag;
     }
 
@@ -293,34 +293,6 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
         return shouldEmitRedstone() ? 15 : 0;
     }
 
-    /**
-     * RF integration
-     */
-
-    private PneumaticEnergyStorage energyRF;
-    private static final int RF_PER_TICK = 1000;
-
-    private void initRF() {
-        energyRF = new PneumaticEnergyStorage(100000);
-    }
-
-    private void saveRF(NBTTagCompound tag) {
-        energyRF.writeToNBT(tag);
-    }
-
-    private void readRF(NBTTagCompound tag) {
-        energyRF.readFromNBT(tag);
-    }
-
-    private void tickRF() {
-        if (energyRF.getEnergyStored() > 0) {
-            chargeInv(playerMainInvHandler);
-        }
-        if (energyRF.getEnergyStored() > 0) {
-            chargeInv(playerArmorInvHandler);
-        }
-    }
-
     private void scanForChargeableItems() {
         chargeableSlots.clear();
         if (isConnectedToPlayer) {
@@ -333,16 +305,19 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
         }
     }
 
-    private void chargeInv(IItemHandler inv) {
+    private void supplyEnergyToPlayer() {
+        if (!isConnectedToPlayer) return;
+
+        InventoryPlayer inv = playerRef.get().inventory;
         for (int slot : chargeableSlots) {
             ItemStack stack = inv.getStackInSlot(slot);
             if (stack.hasCapability(CapabilityEnergy.ENERGY, null)) {
                 IEnergyStorage receivingStorage = stack.getCapability(CapabilityEnergy.ENERGY, null);
-                int energyLeft = energyRF.getEnergyStored();
+                int energyLeft = energyStorage.getEnergyStored();
                 if (energyLeft > 0) {
-                    energyRF.extractEnergy(receivingStorage.receiveEnergy(Math.min(energyLeft, RF_PER_TICK), false), false);
+                    energyStorage.extractEnergy(receivingStorage.receiveEnergy(Math.min(energyLeft, RF_PER_TICK), false), false);
                 }
-                if (energyRF.getEnergyStored() == 0) {
+                if (energyStorage.getEnergyStored() == 0) {
                     break;
                 }
             }

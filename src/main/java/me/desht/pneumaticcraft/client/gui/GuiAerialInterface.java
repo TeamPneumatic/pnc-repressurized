@@ -46,7 +46,7 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<TileEntityAeri
         super.initGui();
 
         addAnimatedStat("gui.tab.info.aerialInterface.interfacingRF.info.title",
-                Textures.GUI_BUILDCRAFT_ENERGY, 0xFFc02222, false).setText("gui.tab.info.aerialInterface.interfacingRF.info");
+                Textures.GUI_BUILDCRAFT_ENERGY, 0xFFa02222, false).setText("gui.tab.info.aerialInterface.interfacingRF.info");
 
         if (te.hasCapability(CapabilityEnergy.ENERGY, null)) {
             IEnergyStorage storage = te.getCapability(CapabilityEnergy.ENERGY, null);
