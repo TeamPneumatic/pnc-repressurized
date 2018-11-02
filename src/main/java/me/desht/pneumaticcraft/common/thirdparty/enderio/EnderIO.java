@@ -1,13 +1,11 @@
 package me.desht.pneumaticcraft.common.thirdparty.enderio;
 
-import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.fluid.Fluids;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
 import me.desht.pneumaticcraft.lib.ModIds;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
 
 public class EnderIO implements IThirdParty {
@@ -30,11 +28,6 @@ public class EnderIO implements IThirdParty {
         tag.setInteger("powerPerCycle", powerPerCycle);
         tag.setInteger("totalBurnTime", burnTime);
         FMLInterModComms.sendMessage(ModIds.EIO, "fluidFuel:add", tag);
-    }
-
-    @Override
-    public void init() {
-        PneumaticRegistry.getInstance().registerXPLiquid(FluidRegistry.getFluid("xpjuice"), 20);
     }
 
     @Override
