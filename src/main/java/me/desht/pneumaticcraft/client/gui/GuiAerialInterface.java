@@ -54,9 +54,6 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<TileEntityAeri
         }
 
         if (te.getUpgrades(EnumUpgrade.DISPENSER) > 0) {
-            addAnimatedStat("gui.tab.info.aerialInterface.interfacingFood", new ItemStack(Items.BREAD), 0xFFA0A0A0, false)
-                    .setText("gui.tab.info.aerialInterface.removeDispenser");
-
             // Experience Tab
             if (PneumaticCraftAPIHandler.getInstance().liquidXPs.size() > 0) {
                 GuiAnimatedStat xpStat = addAnimatedStat("gui.tab.info.aerialInterface.liquidXp.info.title",
@@ -90,6 +87,10 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<TileEntityAeri
             button.setTooltipText(Arrays.asList(WordUtils.wrap(I18n.format("gui.tab.aerialInterface.feedMode.utilizeFullHealthElsePossible"), 40).split(System.getProperty("line.separator"))));
             optionStat.addWidget(button);
             modeButtons[2] = button;
+
+            addAnimatedStat("gui.tab.info.aerialInterface.interfacingFood", new ItemStack(Items.BREAD), 0xFFA0A0A0, false)
+                    .setText("gui.tab.info.aerialInterface.removeDispenser");
+
         } else {
             addAnimatedStat("gui.tab.info.aerialInterface.interfacingItems", new ItemStack(Blocks.CHEST), 0xFFA0A0A0, false)
                     .setText("gui.tab.info.aerialInterface.insertDispenser");
