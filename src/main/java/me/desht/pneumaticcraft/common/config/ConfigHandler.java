@@ -204,6 +204,8 @@ public class ConfigHandler {
         @Config.Comment("Intensity of the FOV modification when using Pneumatic Leggings speed boost: 0.0 for no FOV modification, higher values zoom out more.  Note: non-zero values may cause FOV clashes with other mods.")
         @Config.RangeDouble(min = 0.0, max = 1.0)
         public double leggingsFOVfactor = 0.0;
+        @Config.Comment("Should GUI side tabs be shown with a beveled edge?  Setting to false uses a plain black edge, as in earlier versions of the mod")
+        public boolean guiBevel = true;
     }
 
     public static class HelmetOptions {

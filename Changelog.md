@@ -6,6 +6,17 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
+### 0.8.3-??? (unreleased)
+#### Updates
+* GUI side tabs now have a more visually appealing beveled border instead of a hard black border.  If you prefer the old appearance, set the 'B:guiBevel' clientside option to false in pneumaticcraft.cfg.
+* Aerial Interface has a new informational GUI side tab making it clear whether it's currently interfacing items or food/xp.
+* Aerial Interface RF charging is now significantly more efficient on server CPU.  Note however that it may take a couple of seconds to start charging items that have been newly added to your inventory, or have been moved in your inventory.
+#### Fixes
+* Fixed server crash in conjunction with Quark when a Drone breaks a tool/weapon (Quark auto item restock wasn't agreeing with the Drone's fakeplayer inventory).
+* Fixed some text information being ommitted from GUI Redstone side tabs.
+* Fixed greater-than/less-than threshold not being toggleable in Pressure Gauge GUI (with Advanced PCB installed).
+* Fixed problem with Aerial Interface sometimes showing the same XP fluid types more than once in the XP GUI side tab.
+
 ### 0.8.2-288 (30 Oct 2018)
 #### New
 * Added a SCUBA Upgrade for the Pneumatic Helmet for underwater breathing and better underwater vision. It's an alternative to using the Aerial Interface, which still works; the Aerial Interface is more efficient in terms of air usage, but doesn't provide the clear vision (best option is of course to use both!)

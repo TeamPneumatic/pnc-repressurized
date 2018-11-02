@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.client.gui.widget;
 import com.google.common.base.Strings;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticContainerBase;
+import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -238,16 +239,20 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
     }
 
     private void calculateColorHighlights(int color) {
-        float fgR = (float) (color >> 16 & 255) / 255.0F;
-        float fgG = (float) (color >> 8 & 255) / 255.0F;
-        float fgB = (float) (color & 255) / 255.0F;
-        float fgA = (float) (color >> 24 & 255) / 255.0F;
-        if (bevel) {
-            bgColorHi = new Color(fgR, fgG, fgB, fgA).brighter();
-            bgColorLo = new Color(fgR, fgG, fgB, fgA).darker();
+        if (ConfigHandler.client.guiBevel) {
+            float fgR = (float) (color >> 16 & 255) / 255.0F;
+            float fgG = (float) (color >> 8 & 255) / 255.0F;
+            float fgB = (float) (color & 255) / 255.0F;
+            float fgA = (float) (color >> 24 & 255) / 255.0F;
+            if (bevel) {
+                bgColorHi = new Color(fgR, fgG, fgB, fgA).brighter();
+                bgColorLo = new Color(fgR, fgG, fgB, fgA).darker();
+            } else {
+                bgColorHi = new Color(fgR, fgG, fgB, fgA).darker().darker();
+                bgColorLo = bgColorHi;
+            }
         } else {
-            bgColorHi = new Color(fgR, fgG, fgB, fgA).darker().darker();
-            bgColorLo = bgColorHi;
+            bgColorLo = bgColorHi = Color.BLACK;
         }
     }
 
