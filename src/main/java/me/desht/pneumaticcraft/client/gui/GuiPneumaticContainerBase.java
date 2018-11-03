@@ -344,7 +344,7 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
             addPressureStatInfo(pressureText);
             pressureStat.setText(pressureText);
         }
-        if (problemTab != null && (te.getWorld().getTotalWorldTime() & 0x7) == 0) {
+        if (problemTab != null && (Minecraft.getMinecraft().world.getTotalWorldTime() & 0x7) == 0) {
             List<String> problemText = new ArrayList<>();
             addProblems(problemText);
             int nProbs = problemText.size();
