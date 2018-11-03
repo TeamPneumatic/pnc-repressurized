@@ -142,9 +142,8 @@ public class IOHelper {
             for (int n = 0; n < handler.getSlots(); n++) {
                 int slot = startSlot + n;
                 if (slot >= handler.getSlots()) slot %= handler.getSlots();
-                ItemStack stack = handler.getStackInSlot(slot);
-                if (stack.getCount() > 0) {
-                    ItemStack ret = handler.extractItem(slot, 1, simulate);
+                ItemStack ret = handler.extractItem(slot, 1, simulate);
+                if (!ret.isEmpty()) {
                     return new LocatedItemStack(ret, slot);
                 }
             }
