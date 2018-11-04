@@ -67,7 +67,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
 
     public TileEntityElevatorBase() {
         super(PneumaticValues.DANGER_PRESSURE_ELEVATOR, PneumaticValues.MAX_PRESSURE_ELEVATOR, PneumaticValues.VOLUME_ELEVATOR, 4);
-        addApplicableUpgrade(EnumUpgrade.SPEED);
+        addApplicableUpgrade(EnumUpgrade.SPEED, EnumUpgrade.CHARGING);
     }
 
     @Override
@@ -135,10 +135,11 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
                 addAir((int) ((oldExtension - extension) * PneumaticValues.USAGE_ELEVATOR * (getSpeedUsageMultiplierFromUpgrades() / speedMultiplier)));// substract the ascended distance from the air reservoir.
             }
             if (extension > targetExtension) {
+                float chargingSlowdown = 1.0f - Math.min(4, getUpgrades(EnumUpgrade.CHARGING)) * 0.1f;
                 if (extension > targetExtension + TileEntityConstants.ELEVATOR_SLOW_EXTENSION) {
-                    extension -= TileEntityConstants.ELEVATOR_SPEED_FAST * speedMultiplier;
+                    extension -= TileEntityConstants.ELEVATOR_SPEED_FAST * speedMultiplier * chargingSlowdown;
                 } else {
-                    extension -= TileEntityConstants.ELEVATOR_SPEED_SLOW * speedMultiplier;
+                    extension -= TileEntityConstants.ELEVATOR_SPEED_SLOW * speedMultiplier * chargingSlowdown;
                 }
                 if (extension < targetExtension) {
                     extension = targetExtension;
@@ -149,6 +150,10 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
                     isStopped = false;
                     NetworkRegistry.TargetPoint tp = new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 32);
                     NetworkHandler.sendToAllAround(new PacketPlayMovingSound(MovingSounds.Sound.ELEVATOR, getCoreElevator()), tp);
+                }
+                if (getUpgrades(EnumUpgrade.CHARGING) > 0) {
+                    float mul = 0.15f * Math.min(4, getUpgrades(EnumUpgrade.CHARGING));
+                    addAir((int) ((oldExtension - extension) * PneumaticValues.USAGE_ELEVATOR * mul * (getSpeedUsageMultiplierFromUpgrades() / speedMultiplier)));
                 }
                 //  movePlayerDown();
             }

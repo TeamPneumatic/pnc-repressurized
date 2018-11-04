@@ -8,6 +8,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ### 0.8.3-??? (unreleased)
 #### Updates
+* Elevator Base now accepts up to 4 Charging Upgrades.  Each Charging Upgrade allows the elevator to reclaim some of the air spent to raise the elevator when the elevator descends again, up to a max of 60% of the air (15% per upgrades). This comes with the penalty of slower elevator descent (10% slower per upgrade).
 * GUI side tabs now have a more visually appealing beveled border instead of a hard black border.  If you prefer the old appearance, set the 'B:guiBevel' clientside option to false in pneumaticcraft.cfg.
 * Aerial Interface has a new informational GUI side tab making it clear whether it's currently interfacing items or food/xp.
 * Aerial Interface RF charging is now significantly more efficient on server CPU.  Note however that it may take a couple of seconds to start charging items that have been newly added to your inventory, or have been moved in your inventory.
@@ -15,12 +16,16 @@ Changes are in reverse chronological order; newest changes at the top.
   * Now works on entity eye position, not feet position.  If you can see it, it can see you...
   * Range display box now accurately shows the range.  It will appear for ~6 seconds when the module's range changes due to a pressure change.
   * The Module now plays occasional air particles towards entities that it's affecting.
+* Added config setting 'B:liquidHopperDispenser' to control whether the Liquid Hopper accepts a Dispenser Upgrade to pull or push fluids from/to the world.  Default is true.
 #### Fixes
+* Fixed client crash when opening Amadron GUI, introduced in 0.8.2.
 * Fixed server crash in conjunction with Quark when a Drone breaks a tool/weapon (Quark auto item restock wasn't agreeing with the Drone's fakeplayer inventory).
 * Fixed some text information being ommitted from GUI Redstone side tabs.
 * Fixed greater-than/less-than threshold not being toggleable in Pressure Gauge GUI (with Advanced PCB installed).
 * Fixed problem with Aerial Interface sometimes showing the same XP fluid types more than once in the XP GUI side tab.
 * Fixed visual artifacts when rendering Forge Energy bars in GUI's (Aerial Interface, Flux Compressor...)
+* Fixed Omnidirection Hopper failing to pull from some machines (e.g Gregtech machines)
+* Fixed player sometimes being left standing on top of an elevator frame and not being "collected" by a descending elevator platform
 
 ### 0.8.2-288 (30 Oct 2018)
 #### New
