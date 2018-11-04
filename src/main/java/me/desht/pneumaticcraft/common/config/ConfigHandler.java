@@ -156,6 +156,9 @@ public class ConfigHandler {
         public double speedUpgradeUsageMultiplier = PneumaticValues.DEF_SPEED_UPGRADE_USAGE_MULTIPLIER;
         @Config.Comment("Base chance (1/x) per tick of a lightning strike on/around the Electrostatic Generator")
         public int electrostaticLightningChance = 100000;
+        @Config.Comment("Can the Liquid Dispenser absorb/dispense fluids into the world with a Dispenser Upgrade?")
+        @Config.RequiresWorldRestart
+        public boolean liquidHopperDispenser = true;
     }
 
     public static class Advanced {

@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.client.gui;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.inventory.ContainerLiquidHopper;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityLiquidHopper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -70,5 +71,12 @@ public class GuiLiquidHopper extends GuiPneumaticContainerBase<TileEntityLiquidH
             textList.add(I18n.format("gui.tab.hopperStatus.liquidTransferPerSecond", transferInterval == 0 ? "2000" : PneumaticCraftUtils.roundNumberTo(2000F / transferInterval, 1)));
         }
         return textList;
+    }
+
+    @Override
+    protected void addExtraUpgradeText(List<String> text) {
+        if (ConfigHandler.machineProperties.liquidHopperDispenser) {
+            text.add("gui.tab.upgrades.tile.liquid_hopper.dispenser");
+        }
     }
 }

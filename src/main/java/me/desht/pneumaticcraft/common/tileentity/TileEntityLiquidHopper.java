@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
@@ -42,7 +43,9 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
 
     public TileEntityLiquidHopper() {
         super(4);
-        addApplicableUpgrade(EnumUpgrade.DISPENSER);
+        if (ConfigHandler.machineProperties.liquidHopperDispenser) {
+            addApplicableUpgrade(EnumUpgrade.DISPENSER);
+        }
         tank = new SmartSyncTank(this, PneumaticValues.NORMAL_TANK_CAPACITY) {
             @Override
             protected void onContentsChanged() {
@@ -104,7 +107,7 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
             }
         }
 
-        if (getUpgrades(EnumUpgrade.DISPENSER) > 0) {
+        if (ConfigHandler.machineProperties.liquidHopperDispenser && getUpgrades(EnumUpgrade.DISPENSER) > 0) {
             if (getWorld().isAirBlock(getPos().offset(dir))) {
                 FluidStack extractedFluid = tank.drain(1000, false);
                 if (extractedFluid != null && extractedFluid.amount == 1000) {
@@ -152,7 +155,7 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
             }
         }
 
-        if (getUpgrades(EnumUpgrade.DISPENSER) > 0) {
+        if (ConfigHandler.machineProperties.liquidHopperDispenser && getUpgrades(EnumUpgrade.DISPENSER) > 0) {
             BlockPos neighborPos = getPos().offset(inputDir);
             FluidStack fluidStack = FluidUtils.getFluidAt(getWorld(), neighborPos, false);
             if (fluidStack != null && fluidStack.amount == Fluid.BUCKET_VOLUME) {
