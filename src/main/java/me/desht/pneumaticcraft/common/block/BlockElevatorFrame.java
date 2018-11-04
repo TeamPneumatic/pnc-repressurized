@@ -188,10 +188,10 @@ public class BlockElevatorFrame extends BlockPneumaticCraftModeled {
     }
 
     private enum Corner {
-        NE(1, -1, BlockElevatorFrame.NE, new AxisAlignedBB(14f / 16f, 0, 0, 1, 1, 2f/16f)),
-        SE(1, 1, BlockElevatorFrame.SE, new AxisAlignedBB(14f / 16f, 0, 14f / 16f, 1, 1, 1)),
-        SW(-1, 1, BlockElevatorFrame.SW, new AxisAlignedBB(0, 0, 14f / 16f, 2f / 16f, 1, 1)),
-        NW(-1,-1, BlockElevatorFrame.NW, new AxisAlignedBB(0, 0, 0, 2f/16f, 1, 2f/16f));
+        NE(1, -1, BlockElevatorFrame.NE, new AxisAlignedBB(14f / 16f, 0, 0, 1, 15f/16f, 2f/16f)),
+        SE(1, 1, BlockElevatorFrame.SE, new AxisAlignedBB(14f / 16f, 0, 14f / 16f, 1, 15f/16f, 1)),
+        SW(-1, 1, BlockElevatorFrame.SW, new AxisAlignedBB(0, 0, 14f / 16f, 2f / 16f, 15f/16f, 1)),
+        NW(-1,-1, BlockElevatorFrame.NW, new AxisAlignedBB(0, 0, 0, 2f/16f, 15f/16f, 2f/16f));
 
         final int x;
         final int z;
