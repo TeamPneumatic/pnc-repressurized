@@ -23,10 +23,10 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class BlockElevatorFrame extends BlockPneumaticCraftModeled {
-    public static final PropertyBool NE = PropertyBool.create("ne");
-    public static final PropertyBool SE = PropertyBool.create("se");
-    public static final PropertyBool SW = PropertyBool.create("sw");
-    public static final PropertyBool NW = PropertyBool.create("nw");
+    private static final PropertyBool NE = PropertyBool.create("ne");
+    private static final PropertyBool SE = PropertyBool.create("se");
+    private static final PropertyBool SW = PropertyBool.create("sw");
+    private static final PropertyBool NW = PropertyBool.create("nw");
 
     public BlockElevatorFrame() {
         super(Material.IRON, "elevator_frame");
@@ -188,10 +188,10 @@ public class BlockElevatorFrame extends BlockPneumaticCraftModeled {
     }
 
     private enum Corner {
-        NE(1, -1, BlockElevatorFrame.NE, new AxisAlignedBB(14f / 16f, 0, 0, 1, 15f/16f, 2f/16f)),
-        SE(1, 1, BlockElevatorFrame.SE, new AxisAlignedBB(14f / 16f, 0, 14f / 16f, 1, 15f/16f, 1)),
-        SW(-1, 1, BlockElevatorFrame.SW, new AxisAlignedBB(0, 0, 14f / 16f, 2f / 16f, 15f/16f, 1)),
-        NW(-1,-1, BlockElevatorFrame.NW, new AxisAlignedBB(0, 0, 0, 2f/16f, 15f/16f, 2f/16f));
+        NE(1, -1, BlockElevatorFrame.NE, new AxisAlignedBB(15f / 16f, 0, 0, 1, 15f/16f, 1f/16f)),
+        SE(1, 1, BlockElevatorFrame.SE, new AxisAlignedBB(15f / 16f, 0, 15f / 16f, 1, 15f/16f, 1)),
+        SW(-1, 1, BlockElevatorFrame.SW, new AxisAlignedBB(0, 0, 15f / 16f, 1f / 16f, 15f/16f, 1)),
+        NW(-1,-1, BlockElevatorFrame.NW, new AxisAlignedBB(0, 0, 0, 1f/16f, 15f/16f, 1f/16f));
 
         final int x;
         final int z;
