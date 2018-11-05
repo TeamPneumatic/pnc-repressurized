@@ -25,7 +25,8 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed problem with Aerial Interface sometimes showing the same XP fluid types more than once in the XP GUI side tab.
 * Fixed visual artifacts when rendering Forge Energy bars in GUI's (Aerial Interface, Flux Compressor...)
 * Fixed Omnidirection Hopper failing to pull from some machines (e.g Gregtech machines)
-* Fixed player sometimes being left standing on top of an elevator frame and not being "collected" by a descending elevator platform
+* Fixed player sometimes being left standing on top of an elevator frame and not being "collected" by a descending elevator platform.
+* Fixed Pressure Chamber Interface allowing items to be piped in/out without checking that the corresponding door was fully open.
 
 ### 0.8.2-288 (30 Oct 2018)
 #### New

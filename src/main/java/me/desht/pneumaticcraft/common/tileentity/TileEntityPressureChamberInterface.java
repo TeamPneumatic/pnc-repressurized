@@ -22,6 +22,7 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -376,12 +377,23 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
             super(TileEntityPressureChamberInterface.this, INVENTORY_SIZE);
         }
 
+        @Nonnull
+        @Override
+        public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
+            return inputProgress == MAX_PROGRESS ? super.insertItem(slot, stack, simulate) : stack;
+        }
+
+        @Nonnull
+        @Override
+        public ItemStack extractItem(int slot, int amount, boolean simulate) {
+            return outputProgress == MAX_PROGRESS ? super.extractItem(slot, amount, simulate) : ItemStack.EMPTY;
+        }
+
         @Override
         protected void onContentsChanged(int slot) {
             if(!getWorld().isRemote && slot == 0) {
                 sendDescriptionPacket();
             }
         }
-
     }
 }
