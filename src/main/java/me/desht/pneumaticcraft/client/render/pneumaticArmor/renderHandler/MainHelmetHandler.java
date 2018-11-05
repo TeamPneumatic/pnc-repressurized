@@ -114,9 +114,8 @@ public class MainHelmetHandler implements IUpgradeRenderHandler {
             powerStat.setLineSpacing(15);
             powerStat.setWidgetOffsets(-18, 0);  // ensure armor icons are rendered in the right place
             for (EntityEquipmentSlot slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
-                int i = 3 - slot.getIndex();
-                GuiButtonSpecial pressureButton = new GuiButtonSpecial(-1, 0, 5 + i * 15, 18, 18, "") ;
-                ItemStack stack = GuiHelmetMainScreen.ARMOR_STACKS[3 - i];
+                GuiButtonSpecial pressureButton = new GuiButtonSpecial(-1, 0, 5 + (3 - slot.getIndex()) * 15, 18, 18, "") ;
+                ItemStack stack = GuiHelmetMainScreen.ARMOR_STACKS[slot.getIndex()];
                 pressureButton.setVisible(false);
                 pressureButton.setRenderStacks(stack);
                 powerStat.addWidget(pressureButton);

@@ -146,7 +146,9 @@ public class HUDHandler implements IKeyListener {
                     gaveNearlyEmptyWarning[slot.getIndex()] = false;
                     if (comHudHandler.isArmorEnabled()) {
                         int yOffset = 10 + (3 - slot.getIndex()) * PROGRESS_BAR_HEIGHT;
-                        RenderProgressBar.render(sr.getScaledWidth() / 2, yOffset, sr.getScaledWidth() - 10, yOffset + PROGRESS_BAR_HEIGHT - 1, -90F, comHudHandler.getTicksSinceEquipped(slot) * 100 / comHudHandler.getStartupTime(slot));
+                        RenderProgressBar.render(sr.getScaledWidth() / 2, yOffset,
+                                sr.getScaledWidth() - 10, yOffset + PROGRESS_BAR_HEIGHT - 1, -90F,
+                                comHudHandler.getTicksSinceEquipped(slot) * 100 / comHudHandler.getStartupTime(slot));
                     }
                 } else {
                     ItemStack armorStack = player.getItemStackFromSlot(slot);

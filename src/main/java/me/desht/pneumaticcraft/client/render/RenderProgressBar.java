@@ -14,8 +14,8 @@ public class RenderProgressBar {
         GlStateManager.enableRescaleNormal();
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-
         GlStateManager.glLineWidth(2.0F);
+        GlStateManager.disableTexture2D();
         GL11.glEnable(GL11.GL_LINE_SMOOTH);
 
         double caseDistance = 0D;

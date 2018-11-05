@@ -96,8 +96,6 @@ public class GuiButtonSpecial extends GuiButton implements IGuiWidget {
 
         if (visible) {
             if (renderedStacks != null) {
-//                int middleX = this.x + width / 2;
-//                int startX = middleX - renderedStacks.length * 9 + 1;
                 int startX = getIconX();
                 GlStateManager.enableRescaleNormal();
                 RenderHelper.enableGUIStandardItemLighting();
