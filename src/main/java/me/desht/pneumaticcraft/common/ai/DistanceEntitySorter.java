@@ -8,11 +8,11 @@ import java.util.Comparator;
 public class DistanceEntitySorter implements Comparator<Entity> {
     private final IDroneBase drone;
 
-    public DistanceEntitySorter(IDroneBase drone) {
+    DistanceEntitySorter(IDroneBase drone) {
         this.drone = drone;
     }
 
-    public int compare_internal(Entity entity1, Entity entity2) {
+    private int compare_internal(Entity entity1, Entity entity2) {
         Vec3d vec = drone.getDronePos();
         double d0 = vec.squareDistanceTo(entity1.getPositionVector());
         double d1 = vec.squareDistanceTo(entity2.getPositionVector());
