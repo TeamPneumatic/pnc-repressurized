@@ -11,6 +11,10 @@ public abstract class FilteredItemStackHandler extends BaseItemStackHandler impl
         super(te, size);
     }
 
+    public FilteredItemStackHandler(int size) {
+        super(null, size);
+    }
+
     @Override
     public void setStackInSlot(int slot, @Nonnull ItemStack stack) {
         if (test(slot, stack))

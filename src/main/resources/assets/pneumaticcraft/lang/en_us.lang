@@ -913,6 +913,7 @@ gui.tooltip.amadronTablet.selectItemLocation=Right click an inventory to allow i
 gui.tooltip.amadronTablet.selectFluidLocation=Right click a tank to allow it to provide fluids to vendors.
 gui.tooltip.gpsTool.variable=Linked variable: "#%s"
 gui.tooltip.aerial_interface.xpDisabled=XP handling disabled
+gui.tooltip.minigun.ammoCount=§fTotal rounds:§e %d (in %d cartridges)
 
 # Item tooltips
 gui.tooltip.item.plastic_bucket=Place in a Plastic Mixer (along with some dyes) to solidify into solid Plastic.
@@ -1025,6 +1026,7 @@ message.seismicSensor.foundOilDetails=§a[Seismic Sensor] Found oil %s§am below
 message.seismicSensor.noOilFound=§c[Seismic Sensor] No oil found.
 message.amadronTable.setItemProvidingLocation=§a[Amadron Tablet]§f Item providing location: %s, %s, %s in dim %s (%s)
 message.amadronTable.setLiquidProvidingLocation=§a[Amadron Tablet]§f Fluid providing location: %s, %s, %s in dim %s (%s)
+message.minigun.outOfAmmo=§6Out of Ammo! Sneak & Right-click to load
 gui.regulatorTube.hudMessage.notInLine=§cA Regulator Tube Module only regulates air in line of the module.
 gui.regulatorTube.hudMessage.inverted=§cA Regulator Tube Module only regulates air in the direction of the arrow.
 gui.search=Search:
