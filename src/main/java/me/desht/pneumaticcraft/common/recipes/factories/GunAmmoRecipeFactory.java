@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.recipes.factories;
 
 import com.google.gson.JsonObject;
-import me.desht.pneumaticcraft.common.item.ItemGunAmmo;
+import me.desht.pneumaticcraft.common.item.ItemGunAmmoStandard;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemPotion;
@@ -58,7 +58,7 @@ public class GunAmmoRecipeFactory implements IRecipeFactory {
                 }
             }
             ammo = ammo.copy();
-            ItemGunAmmo.setPotion(ammo, potion);
+            ItemGunAmmoStandard.setPotion(ammo, potion);
             return ammo;
         }
     }

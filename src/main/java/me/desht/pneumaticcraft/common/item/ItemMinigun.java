@@ -70,8 +70,9 @@ public class ItemMinigun extends ItemPressurizable {
             minigun.setMinigunSpeed(0);
             minigun.setMinigunActivated(false);
             minigun.setMinigunTriggerTimeOut(0);
+        } else {
+            minigun.update(player.posX, player.posY, player.posZ);
         }
-        minigun.update(player.posX, player.posY, player.posZ);
         if (world.isRemote && currentItem && minigun.getMinigunSpeed() > 0) {
             suppressSwitchAnimation();
         }

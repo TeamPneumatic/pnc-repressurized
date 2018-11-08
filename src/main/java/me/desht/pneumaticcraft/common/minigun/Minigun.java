@@ -4,38 +4,27 @@ import me.desht.pneumaticcraft.api.item.IPressurizable;
 import me.desht.pneumaticcraft.client.render.RenderProgressingLine;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
-import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.item.ItemGunAmmo;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Sounds;
-import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.entity.projectile.EntityPotion;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.potion.PotionEffect;
-import net.minecraft.potion.PotionUtils;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nonnull;
-import java.util.List;
 import java.util.Random;
 
 public abstract class Minigun {
@@ -119,7 +108,7 @@ public abstract class Minigun {
      * Get the source for this sound, where the client should play the sound loop at.  Can be an Entity, a
      * TileEntity, or a BlockPos; anything else will cause an exception to be thrown.
      *
-     * @return
+     * @return the sound's source
      */
     public Object getSoundSource() {
         return player;
@@ -177,65 +166,31 @@ public abstract class Minigun {
         return sweeping;
     }
 
-    public boolean tryFireMinigun(EntityLivingBase target) {
+    public boolean tryFireMinigun(Entity target) {
         boolean lastShotOfAmmo = false;
         if (!ammo.isEmpty() && (pressurizable == null || pressurizable.getPressure(stack) > 0)) {
             setMinigunTriggerTimeOut(Math.max(10, getMinigunSoundCounter()));
             if (getMinigunSpeed() == MAX_GUN_SPEED && (!requiresTarget || gunAimedAtTarget)) {
                 RayTraceResult rtr = null;
+                ItemGunAmmo ammoItem = (ItemGunAmmo) ammo.getItem();
                 if (!requiresTarget) {
-                    rtr = raytraceTarget();
-                    target = rtr.entityHit instanceof EntityLivingBase ? (EntityLivingBase) rtr.entityHit : null;
+                    rtr = PneumaticCraftUtils.getMouseOverServer(player, RAYTRACE_RANGE * ammoItem.getRangeMultiplier(ammo));
+                    target = rtr.entityHit;
                 }
-                int ammoCost = 1;
-                if (pressurizable != null) pressurizable.addAir(stack, -airUsage);
+                if (pressurizable != null) {
+                    int usage = (int) Math.ceil(airUsage * ammoItem.getAirUsageMultiplier(ammo));
+                    pressurizable.addAir(stack, -usage);
+                }
                 if (target != null) {
-                    ItemStack potion = ItemGunAmmo.getPotion(ammo);
-                    if (!potion.isEmpty()) {
-                        if (rand.nextInt(ConfigHandler.general.minigunPotionProcChance) == 0) {
-                            if (potion.getItem() == Items.POTIONITEM) {
-                                List<PotionEffect> effects = PotionUtils.getEffectsFromStack(potion);
-                                for (PotionEffect effect : effects) {
-                                    target.addPotionEffect(new PotionEffect(effect));
-                                }
-                            } else if (potion.getItem() == Items.SPLASH_POTION || potion.getItem() == Items.LINGERING_POTION) {
-                                EntityPotion entityPotion = new EntityPotion(world, player, potion);
-                                entityPotion.setPosition(target.posX, target.posY, target.posZ);
-                                world.spawnEntity(entityPotion);
-                            }
-                        }
-                    } else {
-                        target.attackEntityFrom(DamageSource.causePlayerDamage(player), ConfigHandler.general.configMinigunDamage);
-                    }
+                    ammoItem.onTargetHit(ammo, player, target);
                 } else if (rtr != null && rtr.typeOfHit == RayTraceResult.Type.BLOCK) {
-                    ItemStack potion = ItemGunAmmo.getPotion(ammo);
-                    if (potion.getItem() == Items.SPLASH_POTION || potion.getItem() == Items.LINGERING_POTION) {
-                        ammoCost = potion.getItem() == Items.SPLASH_POTION ? 3 : 6;
-                        if (rand.nextInt(ConfigHandler.general.minigunPotionProcChance) == 0) {
-                            EntityPotion entityPotion = new EntityPotion(world, player, potion);
-                            BlockPos pos = rtr.getBlockPos();
-                            entityPotion.setPosition(pos.getX(), pos.getY(), pos.getZ());
-                            world.spawnEntity(entityPotion);
-                        }
-                    }
+                    ammoItem.onBlockHit(ammo, player, rtr.getBlockPos(), rtr.sideHit);
                 }
+                int ammoCost = ammoItem.getAmmoCost(ammo);
                 lastShotOfAmmo = ammo.attemptDamageItem(ammoCost, rand, player instanceof EntityPlayerMP ? (EntityPlayerMP) player : null);
             }
         }
         return lastShotOfAmmo;
-    }
-
-    private RayTraceResult raytraceTarget() {
-        RayTraceResult mop = PneumaticCraftUtils.getMouseOverServer(player, RAYTRACE_RANGE);
-        if (mop != null && mop.typeOfHit == RayTraceResult.Type.BLOCK && this.world instanceof WorldServer) {
-            BlockPos pos = mop.getBlockPos();
-            double x = pos.getX() + mop.sideHit.getXOffset();
-            double y = pos.getY() + mop.sideHit.getYOffset();
-            double z = pos.getZ() + mop.sideHit.getZOffset();
-            IBlockState state = world.getBlockState(pos);
-            ((WorldServer)this.world).spawnParticle(EnumParticleTypes.BLOCK_DUST, x, y, z, 25, 0.0D, 0.5D, 0.0D, 0.15, Block.getStateId(state));
-        }
-        return mop;
     }
 
     public void update(double posX, double posY, double posZ) {

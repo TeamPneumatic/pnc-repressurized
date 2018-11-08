@@ -124,6 +124,8 @@ public class ConfigHandler {
         @Config.Comment("Fluids as hot or hotter than this temperature (Kelvin) will be auto-registered as Liquid Compressor fuels, the quality being dependent on fluid temperature.")
         @Config.RequiresMcRestart
         public int minimumFluidFuelTemperature = 373; // 100C
+        @Config.Comment("Does Minigun Explosive Ammo damage terrain?")
+        public boolean minigunExplosiveAmmoTerrainDamage = false;
     }
 
     public static class MachineProperties {

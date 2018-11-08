@@ -27,12 +27,19 @@ public class ItemColorHandler {
         final IItemColor aphorismTileColor = (stack, tintIndex) -> tintIndex == 0 ? EnumDyeColor.BLUE.getColorValue() : EnumDyeColor.WHITE.getColorValue();
 
         Minecraft.getMinecraft().getItemColors().registerItemColorHandler(ammoColor, Itemss.GUN_AMMO);
+        Minecraft.getMinecraft().getItemColors().registerItemColorHandler(ammoColor, Itemss.GUN_AMMO_INCENDIARY);
+        Minecraft.getMinecraft().getItemColors().registerItemColorHandler(ammoColor, Itemss.GUN_AMMO_WEIGHTED);
+        Minecraft.getMinecraft().getItemColors().registerItemColorHandler(ammoColor, Itemss.GUN_AMMO_ARMOR_PIERCING);
+        Minecraft.getMinecraft().getItemColors().registerItemColorHandler(ammoColor, Itemss.GUN_AMMO_ARMOR_EXPLOSIVE);
         Minecraft.getMinecraft().getItemColors().registerItemColorHandler(plasticColor, Itemss.PLASTIC);
         Minecraft.getMinecraft().getItemColors().registerItemColorHandler(aphorismTileColor, Item.getItemFromBlock(Blockss.APHORISM_TILE));
     }
 
     public static int getAmmoColor(@Nonnull ItemStack stack) {
-        ItemStack potion = ItemGunAmmo.getPotion(stack);
-        return potion.isEmpty() ? 0x00FFFF00 : Minecraft.getMinecraft().getItemColors().colorMultiplier(potion, 0);
+        if (stack.getItem() instanceof ItemGunAmmo) {
+            return ((ItemGunAmmo) stack.getItem()).getAmmoColor(stack);
+        } else {
+            return 0x00FFFF00;
+        }
     }
 }

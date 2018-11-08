@@ -31,7 +31,7 @@ public class ItemPneumatic extends Item {
     }
 
     public static void addTooltip(ItemStack stack, World world, List<String> curInfo) {
-        String info = "gui.tooltip." + stack.getTranslationKey();//getItem().getTranslationKey();
+        String info = "gui.tooltip." + stack.getTranslationKey();
         String translatedInfo = I18n.format(info);
         if (!translatedInfo.equals(info)) {
             if (PneumaticCraftRepressurized.proxy.isSneakingInGui()) {

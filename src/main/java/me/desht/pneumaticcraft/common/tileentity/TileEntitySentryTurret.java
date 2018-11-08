@@ -4,7 +4,7 @@ import com.mojang.authlib.GameProfile;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.common.ai.StringFilterEntitySelector;
 import me.desht.pneumaticcraft.common.block.Blockss;
-import me.desht.pneumaticcraft.common.item.Itemss;
+import me.desht.pneumaticcraft.common.item.ItemGunAmmo;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
@@ -206,7 +206,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
 
         @Override
         public boolean test(Integer integer, ItemStack itemStack) {
-            return itemStack.isEmpty() || itemStack.getItem() == Itemss.GUN_AMMO;
+            return itemStack.isEmpty() || itemStack.getItem() instanceof ItemGunAmmo;
         }
     }
 
