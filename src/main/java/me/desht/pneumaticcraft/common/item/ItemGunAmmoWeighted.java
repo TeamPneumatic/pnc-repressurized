@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.item;
 
+import me.desht.pneumaticcraft.common.minigun.Minigun;
 import net.minecraft.item.ItemStack;
 
 public class ItemGunAmmoWeighted extends ItemGunAmmo {
@@ -23,7 +24,7 @@ public class ItemGunAmmoWeighted extends ItemGunAmmo {
     }
 
     @Override
-    public float getAirUsageMultiplier(ItemStack ammoStack) {
+    public float getAirUsageMultiplier(Minigun minigun, ItemStack ammoStack) {
         return 8.0f;
     }
 

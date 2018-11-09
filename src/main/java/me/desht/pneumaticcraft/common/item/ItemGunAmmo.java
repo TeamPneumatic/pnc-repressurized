@@ -1,6 +1,8 @@
 package me.desht.pneumaticcraft.common.item;
 
+import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
+import me.desht.pneumaticcraft.common.minigun.Minigun;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.resources.I18n;
@@ -50,10 +52,12 @@ public abstract class ItemGunAmmo extends ItemPneumatic {
     /**
      * Get the air usage multiplier.
      *
+     *
+     * @param minigun
      * @param ammoStack this ammo
      * @return the usage multiplier; base minigun air usage is multiplied by this value
      */
-    public float getAirUsageMultiplier(ItemStack ammoStack) {
+    public float getAirUsageMultiplier(Minigun minigun, ItemStack ammoStack) {
         return 1.0f;
     }
 
@@ -102,34 +106,47 @@ public abstract class ItemGunAmmo extends ItemPneumatic {
      * Called when an entity is shot by the minigun's wielder. This method is responsible for applying any damage and
      * other possible effects to the entity.
      *
+     * @param minigun the minigun being used
      * @param ammo the ammo cartridge stack used
-     * @param shooter the entity who is firing the gun (note: may be a fake player)
      * @param target the entity which has been hit
+     * @return the number of rounds fired
      */
-    public void onTargetHit(ItemStack ammo, EntityPlayer shooter, Entity target) {
+    public int onTargetHit(Minigun minigun, ItemStack ammo, Entity target) {
+        int times = 1;
+        int nSpeed = minigun.getUpgrades(IItemRegistry.EnumUpgrade.SPEED);
+        for (int i = 0; i < nSpeed; i++) {
+            if (minigun.getWorld().rand.nextBoolean()) times++;
+        }
+
         if (getDamageMultiplier(ammo) > 0) {
             if (target instanceof EntityLivingBase) {
-                target.attackEntityFrom(getDamageSource(shooter), ConfigHandler.general.configMinigunDamage * getDamageMultiplier(ammo));
+                target.attackEntityFrom(getDamageSource(minigun.getPlayer()), ConfigHandler.general.configMinigunDamage * getDamageMultiplier(ammo) * times);
             } else if (target instanceof EntityShulkerBullet || target instanceof EntityFireball) {
                 target.setDead();
             }
         }
+        return times;
     }
 
     /**
      * Called when a block is hit by the minigun's wielder.
      *
+     * @param minigun the minigun being used
      * @param ammo the ammo cartridge stack used
-     * @param player the entity who is firing the gun (note: may be a fake player)
      * @param pos the block that was hit
      * @param face the side of the block that was hit
+     * @return the number of rounds fired
      */
-    public void onBlockHit(ItemStack ammo, EntityPlayer player, BlockPos pos, EnumFacing face) {
+    public int onBlockHit(Minigun minigun, ItemStack ammo, BlockPos pos, EnumFacing face) {
         double x = pos.getX() + face.getXOffset();
         double y = pos.getY() + face.getYOffset();
         double z = pos.getZ() + face.getZOffset();
-        IBlockState state = player.world.getBlockState(pos);
-        ((WorldServer)player.world).spawnParticle(EnumParticleTypes.BLOCK_DUST, x + 0.5, y + 0.5, z + 0.5, 15,
+        World w = minigun.getPlayer().world;
+        IBlockState state = w.getBlockState(pos);
+        ((WorldServer) w).spawnParticle(EnumParticleTypes.BLOCK_DUST, x + 0.5, y + 0.5, z + 0.5, 15,
                 face.getXOffset() * 0.2, face.getYOffset() * 0.2, face.getZOffset() * 0.2, 0.05, Block.getStateId(state));
+
+        // not taking speed upgrades into account here; being kind to players who miss a lot...
+        return 1;
     }
 }

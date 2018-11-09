@@ -1,12 +1,21 @@
 package me.desht.pneumaticcraft.common.item;
 
+import com.google.common.collect.ImmutableSet;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
-import me.desht.pneumaticcraft.common.GuiHandler;
+import me.desht.pneumaticcraft.api.PneumaticRegistry;
+import me.desht.pneumaticcraft.api.client.IFOVModifierItem;
+import me.desht.pneumaticcraft.api.item.IItemRegistry;
+import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.IPressurizable;
+import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
+import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
+import me.desht.pneumaticcraft.common.inventory.ContainerMinigunMagazine;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.tileentity.FilteredItemStackHandler;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
+import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemRenderer;
@@ -14,6 +23,8 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.*;
@@ -23,13 +34,29 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
-public class ItemMinigun extends ItemPressurizable {
+public class ItemMinigun extends ItemPressurizable implements IChargingStationGUIHolderItem, IUpgradeAcceptor, IFOVModifierItem {
+    private static final int MAGAZINE_SIZE = 4;
 
-    public static final int MAGAZINE_SIZE = 4;
+    private static Set<Item> applicableUpgrades;
     private static final String NBT_MAGAZINE = "Magazine";
-    private final Minigun minigun = new MinigunItem();
+
+    // TODO this should be part of a more general "max upgrades" database - 1.13, probably
+    private static final int[] MAX_UPGRADES = new int[EnumUpgrade.values().length];
+    private static void setMaxUpgrades(EnumUpgrade upgrade, int max) {
+        MAX_UPGRADES[upgrade.ordinal()] = max;
+    }
+    static {
+        setMaxUpgrades(EnumUpgrade.SPEED, 3);
+        setMaxUpgrades(EnumUpgrade.RANGE, 6);
+        setMaxUpgrades(EnumUpgrade.DISPENSER, 3);
+        setMaxUpgrades(EnumUpgrade.ITEM_LIFE, 4);
+        setMaxUpgrades(EnumUpgrade.ENTITY_TRACKER, 4);
+        setMaxUpgrades(EnumUpgrade.SECURITY, 1);
+    }
 
     public ItemMinigun() {
         super("minigun", PneumaticValues.AIR_CANISTER_MAX_AIR, PneumaticValues.AIR_CANISTER_VOLUME);
@@ -56,7 +83,7 @@ public class ItemMinigun extends ItemPressurizable {
             }
             infoList.add(I18n.format("gui.tooltip.minigun.ammoCount", totalRounds, nCartridges));
         }
-
+        UpgradableItemUtils.addUpgradeInformation(stack, worldIn, infoList, par4);
         super.addInformation(stack, worldIn, infoList, par4);
     }
 
@@ -64,7 +91,7 @@ public class ItemMinigun extends ItemPressurizable {
     public void onUpdate(ItemStack stack, World world, Entity entity, int slot, boolean currentItem) {
         super.onUpdate(stack, world, entity, slot, currentItem);
         EntityPlayer player = (EntityPlayer) entity;
-        getMinigun(stack, player);
+        Minigun minigun = getMinigun(stack, player);
         if (!currentItem) {
             minigun.setMinigunSoundCounter(-1);
             minigun.setMinigunSpeed(0);
@@ -73,8 +100,39 @@ public class ItemMinigun extends ItemPressurizable {
         } else {
             minigun.update(player.posX, player.posY, player.posZ);
         }
+
         if (world.isRemote && currentItem && minigun.getMinigunSpeed() > 0) {
             suppressSwitchAnimation();
+        }
+
+        // repair ammo for cost of air with item life upgrades
+        if (!world.isRemote) {
+            handleAmmoRepair(stack, world, minigun);
+        }
+    }
+
+    private void handleAmmoRepair(ItemStack stack, World world, Minigun minigun) {
+        int itemLife = minigun.getUpgrades(EnumUpgrade.ITEM_LIFE);
+        if (itemLife > 0) {
+            IPressurizable p = (IPressurizable) stack.getItem();
+            MagazineHandler handler = getMagazine(stack);
+            boolean repaired = false;
+            for (int i = 0; i < handler.getSlots() && p.getPressure(stack) > 0.1; i++) {
+                ItemStack ammo = handler.getStackInSlot(i);
+                if (ammo.getItem() instanceof ItemGunAmmo && ammo.getItemDamage() > 0) {
+                    if (world.rand.nextInt(200 - itemLife * 30) == 0) {
+                        ammo.setItemDamage(ammo.getItemDamage() - 1);
+                        p.addAir(stack, -(2 << itemLife));
+                        repaired = true;
+                    }
+                }
+            }
+            if (repaired) {
+                handler.save();
+                if (minigun.getPlayer().openContainer instanceof ContainerMinigunMagazine) {
+                    ((ContainerMinigunMagazine) minigun.getPlayer().openContainer).updateMagazine(minigun.getPlayer());
+                }
+            }
         }
     }
 
@@ -88,8 +146,12 @@ public class ItemMinigun extends ItemPressurizable {
     }
 
     private Minigun getMinigun(ItemStack stack, EntityPlayer player, ItemStack ammo) {
-        minigun.setItemStack(stack).setAmmo(ammo).setPlayer(player).setPressurizable(this, 20).setWorld(player.world);
-        return minigun;
+        return new MinigunItem()
+                .setItemStack(stack)
+                .setAmmoStack(ammo)
+                .setPlayer(player)
+                .setPressurizable(this, PneumaticValues.USAGE_ITEM_MINIGUN)
+                .setWorld(player.world);
     }
 
     public Minigun getMinigun(ItemStack stack, EntityPlayer player) {
@@ -101,7 +163,7 @@ public class ItemMinigun extends ItemPressurizable {
         ItemStack stack = player.getHeldItem(handIn);
         if (!world.isRemote) {
             if (player.isSneaking()) {
-                player.openGui(PneumaticCraftRepressurized.instance, GuiHandler.EnumGuiId.MINIGUN_MAGAZINE.ordinal(), world,
+                player.openGui(PneumaticCraftRepressurized.instance, EnumGuiId.MINIGUN_MAGAZINE.ordinal(), world,
                         (int) player.posX, (int) player.posY, (int) player.posZ);
             } else {
                 MagazineHandler magazineHandler = getMagazine(stack);
@@ -124,6 +186,40 @@ public class ItemMinigun extends ItemPressurizable {
     @Override
     public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
         return false;
+    }
+
+    @Override
+    public Set<Item> getApplicableUpgrades() {
+        if (applicableUpgrades == null) {
+            IItemRegistry r = PneumaticRegistry.getInstance().getItemRegistry();
+            applicableUpgrades = ImmutableSet.of(
+                    r.getUpgrade(EnumUpgrade.SPEED),
+                    r.getUpgrade(EnumUpgrade.RANGE),
+                    r.getUpgrade(EnumUpgrade.DISPENSER),
+                    r.getUpgrade(EnumUpgrade.ENTITY_TRACKER),
+                    r.getUpgrade(EnumUpgrade.ITEM_LIFE),
+                    r.getUpgrade(EnumUpgrade.SECURITY)
+            );
+        }
+        return applicableUpgrades;
+    }
+
+    @Override
+    public String getName() {
+        return getTranslationKey() + ".name";
+    }
+
+    @Override
+    public EnumGuiId getGuiID() {
+        return EnumGuiId.MINIGUN_UPGRADES;
+    }
+
+    @Override
+    public float getFOVModifier(ItemStack stack, EntityPlayer player, EntityEquipmentSlot slot) {
+        Minigun minigun = getMinigun(stack, player);
+        if (!minigun.isMinigunActivated()) return 0f;
+        int trackers = minigun.getUpgrades(EnumUpgrade.ENTITY_TRACKER);
+        return (float) -minigun.getMinigunSpeed() * trackers * 0.7f;
     }
 
     public static class MagazineHandler extends FilteredItemStackHandler {
@@ -164,18 +260,26 @@ public class ItemMinigun extends ItemPressurizable {
 
     private class MinigunItem extends Minigun {
 
+        private int[] upgrades = null;
+
         MinigunItem() {
             super(false);
         }
 
         @Override
+        public Minigun setAmmoStack(@Nonnull ItemStack ammoStack) {
+            upgrades = null; // force a rescan of upgrades from the item nbt next time an upgrade is queried
+            return super.setAmmoStack(ammoStack);
+        }
+
+        @Override
         public boolean isMinigunActivated() {
-            return NBTUtil.getBoolean(stack, "activated");
+            return NBTUtil.getBoolean(minigunStack, "activated");
         }
 
         @Override
         public void setMinigunActivated(boolean activated) {
-            NBTUtil.setBoolean(stack, "activated", activated);
+            NBTUtil.setBoolean(minigunStack, "activated", activated);
         }
 
         @Override
@@ -183,17 +287,17 @@ public class ItemMinigun extends ItemPressurizable {
             if (!ammo.isEmpty() ) {
                 NBTTagCompound tag = new NBTTagCompound();
                 ammo.writeToNBT(tag);
-                NBTUtil.setCompoundTag(stack, "ammoColorStack", tag);
+                NBTUtil.setCompoundTag(minigunStack, "ammoColorStack", tag);
             } else {
-                NBTUtil.removeTag(stack, "ammoColorStack");
+                NBTUtil.removeTag(minigunStack, "ammoColorStack");
             }
         }
 
         @Override
         public int getAmmoColor() {
             ItemStack ammo = ItemStack.EMPTY;
-            if (NBTUtil.hasTag(stack, "ammoColorStack")) {
-                NBTTagCompound tag = NBTUtil.getCompoundTag(stack, "ammoColorStack");
+            if (NBTUtil.hasTag(minigunStack, "ammoColorStack")) {
+                NBTTagCompound tag = NBTUtil.getCompoundTag(minigunStack, "ammoColorStack");
                 ammo = new ItemStack(tag);
             }
             return getAmmoColor(ammo);
@@ -206,52 +310,70 @@ public class ItemMinigun extends ItemPressurizable {
 
         @Override
         public double getMinigunSpeed() {
-            return NBTUtil.getDouble(stack, "speed");
+            return NBTUtil.getDouble(minigunStack, "speed");
         }
 
         @Override
         public void setMinigunSpeed(double minigunSpeed) {
-            NBTUtil.setDouble(stack, "speed", minigunSpeed);
+            NBTUtil.setDouble(minigunStack, "speed", minigunSpeed);
         }
 
         @Override
         public int getMinigunTriggerTimeOut() {
-            return NBTUtil.getInteger(stack, "triggerTimeout");
+            return NBTUtil.getInteger(minigunStack, "triggerTimeout");
         }
 
         @Override
         public void setMinigunTriggerTimeOut(int minigunTriggerTimeOut) {
-            NBTUtil.setInteger(stack, "triggerTimeout", minigunTriggerTimeOut);
+            NBTUtil.setInteger(minigunStack, "triggerTimeout", minigunTriggerTimeOut);
         }
 
         @Override
         public int getMinigunSoundCounter() {
-            return NBTUtil.getInteger(stack, "soundCounter");
+            return NBTUtil.getInteger(minigunStack, "soundCounter");
         }
 
         @Override
         public void setMinigunSoundCounter(int minigunSoundCounter) {
-            NBTUtil.setInteger(stack, "soundCounter", minigunSoundCounter);
+            NBTUtil.setInteger(minigunStack, "soundCounter", minigunSoundCounter);
         }
 
         @Override
         public double getMinigunRotation() {
-            return NBTUtil.getDouble(stack, "rotation");
+            return NBTUtil.getDouble(minigunStack, "rotation");
         }
 
         @Override
         public void setMinigunRotation(double minigunRotation) {
-            NBTUtil.setDouble(stack, "rotation", minigunRotation);
+            NBTUtil.setDouble(minigunStack, "rotation", minigunRotation);
         }
 
         @Override
         public double getOldMinigunRotation() {
-            return NBTUtil.getDouble(stack, "oldRotation");
+            return NBTUtil.getDouble(minigunStack, "oldRotation");
         }
 
         @Override
         public void setOldMinigunRotation(double oldMinigunRotation) {
-            NBTUtil.setDouble(stack, "oldRotation", oldMinigunRotation);
+            NBTUtil.setDouble(minigunStack, "oldRotation", oldMinigunRotation);
+        }
+
+        private void loadUpgrades() {
+            upgrades = new int[EnumUpgrade.values().length];
+            Arrays.fill(upgrades, 0);
+            ItemStack[] stacks = UpgradableItemUtils.getUpgradeStacks(minigunStack);
+            for (ItemStack stack : stacks) {
+                if (stack.getItem() instanceof ItemMachineUpgrade) {
+                    int idx = ((ItemMachineUpgrade) stack.getItem()).getUpgradeType().ordinal();
+                    upgrades[idx] += stack.getCount();
+                }
+            }
+        }
+
+        @Override
+        public int getUpgrades(EnumUpgrade upgrade) {
+            if (upgrades == null) loadUpgrades();
+            return Math.min(MAX_UPGRADES[upgrade.ordinal()], upgrades[upgrade.ordinal()]);
         }
     }
 

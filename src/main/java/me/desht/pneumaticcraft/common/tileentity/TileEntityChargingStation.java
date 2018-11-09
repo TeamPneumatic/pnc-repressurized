@@ -22,12 +22,10 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.wrapper.CombinedInvWrapper;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
@@ -45,8 +43,6 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     @DescSynced
     private ChargingStationHandler inventory;
     private ChargeableItemHandler chargeableInventory;
-    private CombinedInvWrapper invWrapper;
-    private boolean droppingItems = false; // https://github.com/TeamPneumatic/pnc-repressurized/issues/80
 
     private static final int INVENTORY_SIZE = 1;
 
@@ -218,14 +214,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
 
     @Override
     public IItemHandlerModifiable getPrimaryInventory() {
-        return invWrapper == null || droppingItems ? inventory : invWrapper;
-    }
-
-    @Override
-    public void getContentsToDrop(NonNullList<ItemStack> drops) {
-        droppingItems = true;
-        super.getContentsToDrop(drops);
-        droppingItems = false;
+        return inventory;
     }
 
     @Override
@@ -242,7 +231,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
 
         ItemStack chargeSlot = getChargingItem();
         if (chargeSlot.getItem() instanceof IChargingStationGUIHolderItem) {
-            setChargeableInventory(new ChargeableItemHandler(this));
+            chargeableInventory = new ChargeableItemHandler(this);
         }
 
         camoStack = ICamouflageableTE.readCamoStackFromNBT(tag);
@@ -265,16 +254,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     public void markDirty() {
         super.markDirty();
         if (chargeableInventory != null) {
-            chargeableInventory.saveInventory();
-        }
-    }
-
-    private void setChargeableInventory(ChargeableItemHandler handler) {
-        this.chargeableInventory = handler;
-        if (chargeableInventory == null) {
-            invWrapper = null;
-        } else {
-            invWrapper = new CombinedInvWrapper(inventory, chargeableInventory);
+            chargeableInventory.writeToNBT();
         }
     }
 
@@ -335,27 +315,18 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
 
         @Override
         protected void onContentsChanged(int slot) {
-            TileEntityChargingStation teCS = (TileEntityChargingStation) te;
+            TileEntityChargingStation teCS = TileEntityChargingStation.this;
+
             if (teCS.getWorld().isRemote || slot != CHARGE_INVENTORY_INDEX) return;
 
-            if (teCS.chargeableInventory != null) {
-                teCS.chargeableInventory.saveInventory();
-                teCS.setChargeableInventory(null);
-            }
+            teCS.chargeableInventory = getStackInSlot(slot).getItem() instanceof IChargingStationGUIHolderItem ?
+                    new ChargeableItemHandler(teCS) :
+                    null;
 
-            ItemStack stack = getStackInSlot(slot);
-            if (stack.getItem() instanceof IChargingStationGUIHolderItem) {
-                teCS.chargeableInventory = new ChargeableItemHandler(teCS);
-                teCS.invWrapper = new CombinedInvWrapper(teCS.inventory, teCS.chargeableInventory);
-            }
-            List<EntityPlayer> players = teCS.getWorld().playerEntities;
-            for(EntityPlayer player : players) {
+            // if any other player has a gui open for the previous item, force a reopen of the charging station gui
+            for (EntityPlayer player : teCS.getWorld().playerEntities) {
                 if (player.openContainer instanceof ContainerChargingStationItemInventory && ((ContainerChargingStationItemInventory) player.openContainer).te == te) {
-                    if (stack.getItem() instanceof IChargingStationGUIHolderItem) {
-                        // player.openGui(PneumaticCraft.instance, CommonProxy.GUI_ID_PNEUMATIC_ARMOR, getWorld(), getPos().getX(), getPos().getY(), getPos().getZ());
-                    } else {
-                        player.openGui(PneumaticCraftRepressurized.instance, EnumGuiId.CHARGING_STATION.ordinal(), teCS.getWorld(), teCS.getPos().getX(), teCS.getPos().getY(), teCS.getPos().getZ());
-                    }
+                    player.openGui(PneumaticCraftRepressurized.instance, EnumGuiId.CHARGING_STATION.ordinal(), teCS.getWorld(), teCS.getPos().getX(), teCS.getPos().getY(), teCS.getPos().getZ());
                 }
             }
         }

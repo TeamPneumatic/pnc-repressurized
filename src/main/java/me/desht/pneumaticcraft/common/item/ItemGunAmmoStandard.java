@@ -1,6 +1,8 @@
 package me.desht.pneumaticcraft.common.item;
 
+import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
+import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
@@ -47,7 +49,7 @@ public class ItemGunAmmoStandard extends ItemGunAmmo {
     }
 
     @Nonnull
-    public static ItemStack getPotion(ItemStack ammo) {
+    private static ItemStack getPotion(ItemStack ammo) {
         if (ammo.getTagCompound() != null && ammo.getTagCompound().hasKey(NBT_POTION)) {
             return new ItemStack(ammo.getTagCompound().getCompoundTag(NBT_POTION));
         } else {
@@ -97,6 +99,15 @@ public class ItemGunAmmoStandard extends ItemGunAmmo {
     }
 
     @Override
+    public float getAirUsageMultiplier(Minigun minigun, ItemStack ammoStack) {
+        if (minigun.getUpgrades(IItemRegistry.EnumUpgrade.DISPENSER) > 0 && !getPotion(ammoStack).isEmpty()) {
+            return minigun.getUpgrades(IItemRegistry.EnumUpgrade.DISPENSER) + 1f;
+        } else {
+            return 1f;
+        }
+    }
+
+    @Override
     public void addInformation(ItemStack stack, World world, List<String> infoList, ITooltipFlag extraInfo) {
         super.addInformation(stack, world, infoList, extraInfo);
         ItemStack potion = getPotion(stack);
@@ -116,15 +127,16 @@ public class ItemGunAmmoStandard extends ItemGunAmmo {
     }
 
     @Override
-    public void onTargetHit(ItemStack ammo, EntityPlayer shooter, Entity target) {
+    public int onTargetHit(Minigun minigun, ItemStack ammo, Entity target) {
         ItemStack potion = getPotion(ammo);
         if (!potion.isEmpty() && target instanceof EntityLivingBase) {
-            EntityLivingBase targetLiving = (EntityLivingBase) target;
-            if (shooter.world.rand.nextInt(ConfigHandler.general.minigunPotionProcChance) == 0) {
+            EntityPlayer shooter = minigun.getPlayer();
+            int chance = Math.min(4, ConfigHandler.general.minigunPotionProcChance - minigun.getUpgrades(IItemRegistry.EnumUpgrade.DISPENSER));
+            if (shooter.world.rand.nextInt(chance) == 0) {
                 if (potion.getItem() == Items.POTIONITEM) {
                     List<PotionEffect> effects = PotionUtils.getEffectsFromStack(potion);
                     for (PotionEffect effect : effects) {
-                        targetLiving.addPotionEffect(new PotionEffect(effect));
+                        ((EntityLivingBase) target).addPotionEffect(new PotionEffect(effect));
                     }
                     NetworkHandler.sendToAllAround(new PacketPlaySound(SoundEvents.ENTITY_SPLASH_POTION_BREAK, SoundCategory.PLAYERS,
                             target.posX, target.posY, target.posZ, 1.0f, 1.0f, true), target.world);
@@ -135,23 +147,27 @@ public class ItemGunAmmoStandard extends ItemGunAmmo {
                 }
             }
         } else {
-            super.onTargetHit(ammo, shooter, target);
+            super.onTargetHit(minigun, ammo, target);
         }
+        return 1;
     }
 
     @Override
-    public void onBlockHit(ItemStack ammo, EntityPlayer player, BlockPos pos, EnumFacing face) {
-        super.onBlockHit(ammo, player, pos, face);
+    public int onBlockHit(Minigun minigun, ItemStack ammo, BlockPos pos, EnumFacing face) {
+        super.onBlockHit(minigun, ammo, pos, face);
 
         ItemStack potion = getPotion(ammo);
         if (potion.getItem() == Items.SPLASH_POTION || potion.getItem() == Items.LINGERING_POTION) {
-            if (player.world.rand.nextInt(ConfigHandler.general.minigunPotionProcChance) == 0) {
-                EntityPotion entityPotion = new EntityPotion(player.world, player, potion);
+            EntityPlayer shooter = minigun.getPlayer();
+            int chance = Math.min(4, ConfigHandler.general.minigunPotionProcChance - minigun.getUpgrades(IItemRegistry.EnumUpgrade.DISPENSER));
+            if (shooter.world.rand.nextInt(chance) == 0) {
+                EntityPotion entityPotion = new EntityPotion(shooter.world, shooter, potion);
                 BlockPos pos2 = pos.offset(face);
                 entityPotion.setPosition(pos2.getX() + 0.5, pos2.getY() + 0.5, pos2.getZ() + 0.5);
-                player.world.spawnEntity(entityPotion);
+                shooter.world.spawnEntity(entityPotion);
             }
         }
+        return 1;
     }
 
     private static int getPotionAmmoCost(Item item) {

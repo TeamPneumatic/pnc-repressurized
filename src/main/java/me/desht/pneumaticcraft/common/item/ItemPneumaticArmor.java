@@ -1,13 +1,16 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
+import me.desht.pneumaticcraft.api.client.IFOVModifierItem;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IPressurizable;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.RenderCoordWireframe;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.UpgradeRenderHandlerList;
+import me.desht.pneumaticcraft.common.CommonHUDHandler;
 import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
+import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.recipes.CraftingRegistrator;
 import me.desht.pneumaticcraft.common.recipes.factories.OneProbeRecipeFactory;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
@@ -51,7 +54,7 @@ import java.util.*;
 })
 public class ItemPneumaticArmor extends ItemArmor
         implements IPressurizable, IChargingStationGUIHolderItem, IUpgradeAcceptor, ISpecialArmor,
-        IVisDiscountGear, IGoggles, IRevealer
+        IVisDiscountGear, IGoggles, IRevealer, IFOVModifierItem
 {
     private static final ArmorMaterial COMPRESSED_IRON_MATERIAL = EnumHelper.addArmorMaterial(
             "compressedIron", "compressedIron",
@@ -325,5 +328,17 @@ public class ItemPneumaticArmor extends ItemArmor
     @Optional.Method(modid = ModIds.THAUMCRAFT)
     public boolean showNodes(ItemStack itemstack, EntityLivingBase player) {
         return armorType == EntityEquipmentSlot.HEAD && hasThaumcraftUpgradeAndPressure(itemstack);
+    }
+
+    @Override
+    public float getFOVModifier(ItemStack stack, EntityPlayer player, EntityEquipmentSlot slot) {
+        if (slot == EntityEquipmentSlot.LEGS && ConfigHandler.client.leggingsFOVfactor > 0) {
+            CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer();
+            double boost = handler.getSpeedBoostFromLegs();
+            if (boost > 0) {
+                return (float) (boost * 2.0 * ConfigHandler.client.leggingsFOVfactor);
+            }
+        }
+        return 0f;
     }
 }

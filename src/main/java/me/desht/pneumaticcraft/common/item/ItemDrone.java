@@ -30,6 +30,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -163,7 +164,7 @@ public class ItemDrone extends ItemPneumatic implements IPressurizable, IChargin
                 set.add(Itemss.upgrades.get(upgrade));
             }
         }
-        return set;
+        return Collections.unmodifiableSet(set);
     }
 
     public boolean upgradeApplies(EnumUpgrade upgrade) {

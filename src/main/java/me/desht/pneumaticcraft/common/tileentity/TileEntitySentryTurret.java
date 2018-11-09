@@ -218,7 +218,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
                 break;
             }
         }
-        getMinigun().setAmmo(ammo);
+        getMinigun().setAmmoStack(ammo);
     }
 
     @Override

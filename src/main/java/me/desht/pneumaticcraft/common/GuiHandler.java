@@ -31,7 +31,7 @@ public class GuiHandler implements IGuiHandler {
         ADVANCED_LIQUID_COMPRESSOR, REMOTE, REMOTE_EDITOR, PROGRAMMABLE_CONTROLLER, GAS_LIFT, REFINERY,
         THERMOPNEUMATIC_PROCESSING_PLANT, LOGISTICS_REQUESTER, LOGISTICS_STORAGE, LOGISTICS_PASSIVE_PROVIDER,
         AMADRON, AMADRON_ADD_PLAYER_TRADE, AMADRON_ADD_PERIODIC_TRADE, AMADRON_ADD_STATIC_TRADE,
-        CREATIVE_COMPRESSOR, KEROSENE_LAMP, SENTRY_TURRET, MINIGUN_MAGAZINE
+        CREATIVE_COMPRESSOR, KEROSENE_LAMP, SENTRY_TURRET, MINIGUN_MAGAZINE, MINIGUN_UPGRADES
     }
 
     @Nullable
@@ -120,6 +120,8 @@ public class GuiHandler implements IGuiHandler {
                 return new ContainerEnergy(player.inventory, (TileEntityPneumaticDynamo) te);
             case MINIGUN_MAGAZINE:
                 return new ContainerMinigunMagazine(player);
+            case MINIGUN_UPGRADES:
+                return new ContainerChargingStationItemInventory(player.inventory, (TileEntityChargingStation) te);
         }
         return ThirdPartyManager.instance().getServerGuiElement(ID, player, world, x, y, z);
     }
@@ -222,6 +224,8 @@ public class GuiHandler implements IGuiHandler {
                 return new GuiPneumaticDynamo(player.inventory, (TileEntityPneumaticDynamo) te);
             case MINIGUN_MAGAZINE:
                 return new GuiMinigunMagazine(player.inventory);
+            case MINIGUN_UPGRADES:
+                return new GuiMinigun(new ContainerChargingStationItemInventory(player.inventory, (TileEntityChargingStation) te), (TileEntityChargingStation) te);
         }
         return ThirdPartyManager.instance().getClientGuiElement(ID, player, world, x, y, z);
     }

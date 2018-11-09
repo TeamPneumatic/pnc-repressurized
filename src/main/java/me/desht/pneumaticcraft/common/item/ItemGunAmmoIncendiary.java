@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.item;
 
+import me.desht.pneumaticcraft.common.minigun.Minigun;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
@@ -27,20 +27,22 @@ public class ItemGunAmmoIncendiary extends ItemGunAmmo {
     }
 
     @Override
-    public void onTargetHit(ItemStack ammo, EntityPlayer shooter, Entity target) {
+    public int onTargetHit(Minigun minigun, ItemStack ammo, Entity target) {
         target.setFire(8);
-        super.onTargetHit(ammo, shooter, target);
+        super.onTargetHit(minigun, ammo, target);
+        return 0;
     }
 
     @Override
-    public void onBlockHit(ItemStack ammo, EntityPlayer player, BlockPos pos, EnumFacing face) {
-        if (player.world.rand.nextInt(5) == 0) {
-            BlockSnapshot snapshot = BlockSnapshot.getBlockSnapshot(player.world, pos.offset(face));
-            BlockEvent.PlaceEvent event = ForgeEventFactory.onPlayerBlockPlace(player, snapshot, face, EnumHand.MAIN_HAND);
+    public int onBlockHit(Minigun minigun, ItemStack ammo, BlockPos pos, EnumFacing face) {
+        if (minigun.getWorld().rand.nextInt(5) == 0) {
+            BlockSnapshot snapshot = BlockSnapshot.getBlockSnapshot(minigun.getWorld(), pos.offset(face));
+            BlockEvent.PlaceEvent event = ForgeEventFactory.onPlayerBlockPlace(minigun.getPlayer(), snapshot, face, EnumHand.MAIN_HAND);
             if (!event.isCanceled()) {
-                player.world.setBlockState(pos.offset(face), Blocks.FIRE.getDefaultState());
+                minigun.getWorld().setBlockState(pos.offset(face), Blocks.FIRE.getDefaultState());
             }
         }
-        super.onBlockHit(ammo, player, pos, face);
+        super.onBlockHit(minigun, ammo, pos, face);
+        return 0;
     }
 }

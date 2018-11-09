@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.minigun;
 
+import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IPressurizable;
 import me.desht.pneumaticcraft.client.render.RenderProgressingLine;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
@@ -13,6 +14,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
@@ -50,7 +52,8 @@ public abstract class Minigun {
 
     private IPressurizable pressurizable;
     private int airUsage;
-    protected ItemStack stack = ItemStack.EMPTY, ammo = ItemStack.EMPTY;
+    protected ItemStack minigunStack = ItemStack.EMPTY;
+    private ItemStack ammoStack = ItemStack.EMPTY;
     protected EntityPlayer player;
     protected World world;
     private EntityLivingBase attackTarget;
@@ -66,13 +69,18 @@ public abstract class Minigun {
     }
 
     public Minigun setItemStack(@Nonnull ItemStack stack) {
-        this.stack = stack;
+        this.minigunStack = stack;
         return this;
     }
 
-    public Minigun setAmmo(@Nonnull ItemStack ammo) {
-        this.ammo = ammo;
+    public Minigun setAmmoStack(@Nonnull ItemStack ammoStack) {
+        this.ammoStack = ammoStack;
         return this;
+    }
+
+    @Nonnull
+    public ItemStack getAmmoStack() {
+        return ammoStack;
     }
 
     public Minigun setPlayer(EntityPlayer player) {
@@ -80,9 +88,17 @@ public abstract class Minigun {
         return this;
     }
 
+    public EntityPlayer getPlayer() {
+        return player;
+    }
+
     public Minigun setWorld(World world) {
         this.world = world;
         return this;
+    }
+
+    public World getWorld() {
+        return world;
     }
 
     public Minigun setAttackTarget(EntityLivingBase entity) {
@@ -168,29 +184,45 @@ public abstract class Minigun {
 
     public boolean tryFireMinigun(Entity target) {
         boolean lastShotOfAmmo = false;
-        if (!ammo.isEmpty() && (pressurizable == null || pressurizable.getPressure(stack) > 0)) {
+        if (!ammoStack.isEmpty() && (pressurizable == null || pressurizable.getPressure(minigunStack) > 0)) {
             setMinigunTriggerTimeOut(Math.max(10, getMinigunSoundCounter()));
             if (getMinigunSpeed() == MAX_GUN_SPEED && (!requiresTarget || gunAimedAtTarget)) {
                 RayTraceResult rtr = null;
-                ItemGunAmmo ammoItem = (ItemGunAmmo) ammo.getItem();
+                ItemGunAmmo ammoItem = (ItemGunAmmo) ammoStack.getItem();
                 if (!requiresTarget) {
-                    rtr = PneumaticCraftUtils.getMouseOverServer(player, RAYTRACE_RANGE * ammoItem.getRangeMultiplier(ammo));
+                    double range = (RAYTRACE_RANGE + 5 * getUpgrades(EnumUpgrade.RANGE) * ammoItem.getRangeMultiplier(ammoStack));
+                    rtr = PneumaticCraftUtils.getMouseOverServer(player, range);
                     target = rtr.entityHit;
                 }
                 if (pressurizable != null) {
-                    int usage = (int) Math.ceil(airUsage * ammoItem.getAirUsageMultiplier(ammo));
-                    pressurizable.addAir(stack, -usage);
+                    int usage = (int) Math.ceil(airUsage * ammoItem.getAirUsageMultiplier(this, ammoStack));
+                    usage += getUpgrades(EnumUpgrade.RANGE);
+                    if (getUpgrades(EnumUpgrade.SPEED) > 0) {
+                        usage *= getUpgrades(EnumUpgrade.SPEED) + 1;
+                    }
+                    pressurizable.addAir(minigunStack, -usage);
                 }
+                int roundsUsed = 1;
                 if (target != null) {
-                    ammoItem.onTargetHit(ammo, player, target);
+                    if (getUpgrades(EnumUpgrade.SECURITY) == 0 || !securityProtectedTarget(target)) {
+                        roundsUsed = ammoItem.onTargetHit(this, ammoStack, target);
+                    }
                 } else if (rtr != null && rtr.typeOfHit == RayTraceResult.Type.BLOCK) {
-                    ammoItem.onBlockHit(ammo, player, rtr.getBlockPos(), rtr.sideHit);
+                    roundsUsed = ammoItem.onBlockHit(this, ammoStack, rtr.getBlockPos(), rtr.sideHit);
                 }
-                int ammoCost = ammoItem.getAmmoCost(ammo);
-                lastShotOfAmmo = ammo.attemptDamageItem(ammoCost, rand, player instanceof EntityPlayerMP ? (EntityPlayerMP) player : null);
+                int ammoCost = roundsUsed * ammoItem.getAmmoCost(ammoStack);
+                lastShotOfAmmo = ammoStack.attemptDamageItem(ammoCost, rand, player instanceof EntityPlayerMP ? (EntityPlayerMP) player : null);
             }
         }
         return lastShotOfAmmo;
+    }
+
+    private boolean securityProtectedTarget(Entity target) {
+        if (target instanceof EntityTameable) {
+            return ((EntityTameable) target).getOwner() != null;
+        } else {
+            return target instanceof EntityPlayer;
+        }
     }
 
     public void update(double posX, double posY, double posZ) {
@@ -201,7 +233,7 @@ public abstract class Minigun {
         if (!world.isRemote) {
             setMinigunActivated(getMinigunTriggerTimeOut() > 0);
 
-            setAmmoColorStack(ammo);
+            setAmmoColorStack(ammoStack);
 
             if (getMinigunTriggerTimeOut() > 0) {
                 setMinigunTriggerTimeOut(getMinigunTriggerTimeOut() - 1);
@@ -215,8 +247,9 @@ public abstract class Minigun {
             }
         }
         if (isMinigunActivated()) {
+            double speedBonus = getUpgrades(EnumUpgrade.SPEED) * 0.0033D;
             double lastSpeed = getMinigunSpeed();
-            setMinigunSpeed(Math.min(getMinigunSpeed() + 0.01D, MAX_GUN_SPEED));
+            setMinigunSpeed(Math.min(getMinigunSpeed() + 0.01D + speedBonus, MAX_GUN_SPEED));
             if (getMinigunSpeed() > lastSpeed && getMinigunSpeed() >= MAX_GUN_SPEED && !world.isRemote) {
                 NetworkHandler.sendToDimension(new PacketPlayMovingSound(MovingSounds.Sound.MINIGUN, getSoundSource()), world.provider.getDimension());
             }
@@ -336,5 +369,9 @@ public abstract class Minigun {
             GlStateManager.enableTexture2D();
             GlStateManager.popMatrix();
         }
+    }
+
+    public int getUpgrades(EnumUpgrade upgrade) {
+        return 0;
     }
 }

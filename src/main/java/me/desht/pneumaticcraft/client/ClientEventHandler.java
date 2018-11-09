@@ -1,7 +1,9 @@
 package me.desht.pneumaticcraft.client;
 
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
+import me.desht.pneumaticcraft.api.client.IFOVModifierItem;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
+import me.desht.pneumaticcraft.client.gui.GuiUtils;
 import me.desht.pneumaticcraft.client.gui.IGuiDrone;
 import me.desht.pneumaticcraft.client.model.pressureglass.PressureGlassBakedModel;
 import me.desht.pneumaticcraft.client.particle.AirParticle;
@@ -29,6 +31,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.model.ModelBiped;
@@ -47,6 +50,7 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBucket;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
@@ -66,7 +70,10 @@ import java.util.*;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
 public class ClientEventHandler {
+    private static final double MINIGUN_RADIUS = 1.1D;
+    private static final double MINIGUN_TEXT_SIZE = 0.55D;
     private static final float MAX_SCREEN_ROLL = 25F;  // max roll in degrees when flying with jetboots
+
     private float currentScreenRoll = 0F;
 
     public static float playerRenderPartialTick;
@@ -197,41 +204,65 @@ public class ClientEventHandler {
         }
     }
 
-    private static final double GUN_RADIUS = 1.1D;
-
     @SubscribeEvent
-    public void renderFirstPersonMinigun(RenderGameOverlayEvent.Post event) {
+    public void renderFirstPersonMinigun(RenderGameOverlayEvent.Pre event) {
         if (event.getType() == RenderGameOverlayEvent.ElementType.CROSSHAIRS && Minecraft.getMinecraft().gameSettings.thirdPersonView == 0) {
             EntityPlayer player = Minecraft.getMinecraft().player;
             ItemStack stack = player.getHeldItemMainhand();
-            if (stack.getItem() != Itemss.MINIGUN) return;
-            Minigun minigun = ((ItemMinigun) stack.getItem()).getMinigun(stack, player);
-            if (minigun.isMinigunActivated() && minigun.getMinigunSpeed() == Minigun.MAX_GUN_SPEED) {
-                GlStateManager.pushMatrix();
-                GlStateManager.disableTexture2D();
-                GlStateManager.enableBlend();
-                GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-                GL11.glEnable(GL11.GL_LINE_STIPPLE);
-                RenderUtils.glColorHex(0x40000000 | minigun.getAmmoColor());
+            if (stack.getItem() instanceof ItemMinigun){
+                Minigun minigun = ((ItemMinigun) stack.getItem()).getMinigun(stack, player);
+                int w = event.getResolution().getScaledWidth();
+                int h = event.getResolution().getScaledHeight();
 
-                int x = event.getResolution().getScaledWidth() / 2;
-				int y = event.getResolution().getScaledHeight() / 2;
-
-				for (int i = 0; i < 5; i++) {
-                    int stipple = 0xFFFF & ~(3 << player.getRNG().nextInt(16));
-                    GL11.glLineStipple(4, (short) stipple);
-                    GlStateManager.glBegin(GL11.GL_LINES);
-                    GL11.glVertex2f(x + player.getRNG().nextInt(12) - 6, y + player.getRNG().nextInt(12) - 6);
-                    GL11.glVertex2f(event.getResolution().getScaledWidth() * 0.665F, event.getResolution().getScaledHeight() * 0.685F);
-                    GlStateManager.glEnd();
+                if (minigun.isMinigunActivated() && minigun.getMinigunSpeed() == Minigun.MAX_GUN_SPEED) {
+                     drawBulletTraces2D(minigun.getAmmoColor() | 0x40000000, w, h);
                 }
-                GlStateManager.color(1, 1, 1, 1);
-                GL11.glDisable(GL11.GL_LINE_STIPPLE);
-                GlStateManager.disableBlend();
-                GlStateManager.enableTexture2D();
-                GlStateManager.popMatrix();
+
+                ItemStack ammo = minigun.getAmmoStack();
+                if (!ammo.isEmpty()) {
+                    GuiUtils.drawItemStack(ammo,w / 2 + 16, h / 2 - 8);
+                    int remaining = ammo.getMaxDamage() - ammo.getItemDamage();
+                    int posX = w / 2 + 34;
+                    int posY = h / 2 - 2;
+                    GlStateManager.pushMatrix();
+                    GlStateManager.scale(MINIGUN_TEXT_SIZE, MINIGUN_TEXT_SIZE, 1.0);
+                    Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(remaining + "/" + ammo.getMaxDamage(), (int)(posX / MINIGUN_TEXT_SIZE), (int) (posY / MINIGUN_TEXT_SIZE), minigun.getAmmoColor());
+                    GlStateManager.popMatrix();
+                }
+                Minecraft.getMinecraft().getTextureManager().bindTexture(Textures.GUI_MINIGUN_CROSSHAIR);
+                GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
+                Gui.drawModalRectWithCustomSizedTexture(w / 2 - 7, h / 2 - 7, 0, 0, 16, 16, 16, 16);
+                event.setCanceled(true);
             }
         }
+    }
+
+    private void drawBulletTraces2D(int color, int w, int h) {
+        GlStateManager.pushMatrix();
+        GlStateManager.disableTexture2D();
+        GlStateManager.enableBlend();
+        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GL11.glEnable(GL11.GL_LINE_STIPPLE);
+        RenderUtils.glColorHex(color);
+
+        int x = w / 2;
+        int y = h / 2;
+
+        Random rand = Minecraft.getMinecraft().world.rand;
+        for (int i = 0; i < 5; i++) {
+            int stipple = 0xFFFF & ~(3 << rand.nextInt(16));
+            GL11.glLineStipple(4, (short) stipple);
+            GlStateManager.glBegin(GL11.GL_LINES);
+            GL11.glVertex2f(x + rand.nextInt(12) - 6, y + rand.nextInt(12) - 6);
+            float f = Minecraft.getMinecraft().gameSettings.mainHand == EnumHandSide.RIGHT ? 0.665F : 0.335F;
+            GL11.glVertex2f(w * f, h * 0.685F);
+            GlStateManager.glEnd();
+        }
+        GlStateManager.color(1, 1, 1, 1);
+        GL11.glDisable(GL11.GL_LINE_STIPPLE);
+        GlStateManager.disableBlend();
+        GlStateManager.enableTexture2D();
+        GlStateManager.popMatrix();
     }
 
     @SubscribeEvent
@@ -262,9 +293,9 @@ public class ClientEventHandler {
                     Vec3d directionVec = player.getLookVec().normalize();
                     Vec3d vec = new Vec3d(directionVec.x, 0, directionVec.z).normalize();
                     vec.rotateYaw((float) Math.toRadians(-15 + (player.rotationYawHead - player.renderYawOffset)));
-                    minigunFire.startX = vec.x * GUN_RADIUS;
-                    minigunFire.startY = vec.y * GUN_RADIUS - player.getYOffset();
-                    minigunFire.startZ = vec.z * GUN_RADIUS;
+                    minigunFire.startX = vec.x * MINIGUN_RADIUS;
+                    minigunFire.startY = vec.y * MINIGUN_RADIUS - player.getYOffset();
+                    minigunFire.startZ = vec.z * MINIGUN_RADIUS;
                     for (int i = 0; i < 5; i++) {
                         minigunFire.endX = directionVec.x * 20 + player.getRNG().nextDouble() - 0.5;
                         minigunFire.endY = directionVec.y * 20 + player.getEyeHeight() + player.getRNG().nextDouble() - 0.5;
@@ -453,10 +484,17 @@ public class ClientEventHandler {
     @SubscribeEvent
     public void adjustFOVEvent(FOVUpdateEvent event) {
         CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer();
-        double boost = handler.getSpeedBoostFromLegs();
-        if (boost > 0 && ConfigHandler.client.leggingsFOVfactor > 0) {
-            event.setNewfov(event.getFov() + (float) (boost * 2.0 * ConfigHandler.client.leggingsFOVfactor));
+
+        float modifier = 0.0f;
+        EntityPlayer player = Minecraft.getMinecraft().player;
+        for (EntityEquipmentSlot slot : EntityEquipmentSlot.values()) {
+            ItemStack stack = player.getItemStackFromSlot(slot);
+            if (stack.getItem() instanceof IFOVModifierItem) {
+                modifier += ((IFOVModifierItem) stack.getItem()).getFOVModifier(stack, player, slot);
+            }
         }
+
+        event.setNewfov(event.getFov() + modifier);
     }
 
     @SubscribeEvent

@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.tileentity.TileEntityItemStackRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumHandSide;
 
 public class RenderItemMinigun extends TileEntityItemStackRenderer {
     private final ModelDroneMinigun model = new ModelDroneMinigun();
@@ -37,7 +38,11 @@ public class RenderItemMinigun extends TileEntityItemStackRenderer {
                     // our own gun in 1st person
                     GlStateManager.scale(1.5, 1.5, 1.5);
                     GlStateManager.rotate(-90, 0, 0, 1);
-                    GlStateManager.translate(0, -0.6, -0.1);
+                    if (Minecraft.getMinecraft().gameSettings.mainHand == EnumHandSide.RIGHT) {
+                        GlStateManager.translate(0, -0.6, -0.1);
+                    } else {
+                        GlStateManager.translate(0, -1.9, -0.05);
+                    }
                 }
                 model.renderMinigun(minigun, 1 / 16F, partialTicks, false);
                 GlStateManager.popMatrix();

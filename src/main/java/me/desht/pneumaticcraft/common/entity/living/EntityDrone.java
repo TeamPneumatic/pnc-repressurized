@@ -1197,7 +1197,7 @@ public class EntityDrone extends EntityDroneBase implements
 
     public void tryFireMinigun(EntityLivingBase target) {
         ItemStack ammo = getAmmo();
-        if (getMinigun().setAmmo(ammo).tryFireMinigun(target)) {
+        if (getMinigun().setAmmoStack(ammo).tryFireMinigun(target)) {
             for (int i = 0; i < inventory.getSlots(); i++) {
                 if (inventory.getStackInSlot(i) == ammo) {
                     inventory.setStackInSlot(i, ItemStack.EMPTY);

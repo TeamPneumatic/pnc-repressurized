@@ -287,6 +287,7 @@ public class Textures {
     public static final ResourceLocation WIDGET_TEMPERATURE = new ResourceLocation(WIDGET_LOCATION + "widget_temperature.png");
     public static final ResourceLocation WIDGET_TANK = new ResourceLocation(WIDGET_LOCATION + "widget_tank.png");
     public static final ResourceLocation WIDGET_AMADRON_OFFER = new ResourceLocation(WIDGET_AMADRON_OFFER_STRING);
+    public static final ResourceLocation GUI_MINIGUN_CROSSHAIR = new ResourceLocation(GUI_LOCATION + "minigun_crosshair.png");
 
     public static final String VANILLA_ITEM_TEXTURE_SHEET = "/gui/items.png";
     public static final String VANILLA_BLOCK_TEXTURE_SHEET = "/terrain.png";
