@@ -8,20 +8,19 @@ import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 import java.util.List;
 
 public class ItemGunAmmoExplosive extends ItemGunAmmo {
-    private static final float EXPLOSION_STRENGTH = 1.5f;
-
     public ItemGunAmmoExplosive() {
         super("gun_ammo_explosive");
     }
 
     @Override
     protected int getCartridgeSize() {
-        return 125;
+        return ConfigHandler.minigun.explosiveAmmoCartridgeSize;
     }
 
     @Override
@@ -30,25 +29,36 @@ public class ItemGunAmmoExplosive extends ItemGunAmmo {
     }
 
     @Override
-    public int onTargetHit(Minigun minigun, ItemStack ammo, Entity target) {
-        minigun.getWorld().createExplosion(null, target.posX, target.posY, target.posZ, EXPLOSION_STRENGTH, ConfigHandler.general.minigunExplosiveAmmoTerrainDamage);
+    public float getDamageMultiplier(Entity target, ItemStack ammoStack) {
+        return ConfigHandler.minigun.explosiveAmmoDamageMultiplier;
+    }
 
+    @Override
+    public int onTargetHit(Minigun minigun, ItemStack ammo, Entity target) {
+        if (minigun.dispenserWeightedPercentage(ConfigHandler.minigun.explosiveAmmoExplosionChance)) {
+            minigun.getWorld().createExplosion(null, target.posX, target.posY, target.posZ,
+                    ConfigHandler.minigun.explosiveAmmoExplosionPower, ConfigHandler.minigun.explosiveAmmoTerrainDamage);
+        }
         return super.onTargetHit(minigun, ammo, target);
     }
 
     @Override
-    public int onBlockHit(Minigun minigun, ItemStack ammo, BlockPos pos, EnumFacing face) {
-        BlockPos pos2 = pos.offset(face);
-        minigun.getWorld().createExplosion(null, pos2.getX() + 0.5, pos2.getY() + 0.5, pos2.getZ() + 0.5, EXPLOSION_STRENGTH, ConfigHandler.general.minigunExplosiveAmmoTerrainDamage);
-
-        return super.onBlockHit(minigun, ammo, pos, face);
+    public int onBlockHit(Minigun minigun, ItemStack ammo, BlockPos pos, EnumFacing face, Vec3d hitVec) {
+        if (minigun.dispenserWeightedPercentage(ConfigHandler.minigun.explosiveAmmoExplosionChance)) {
+            BlockPos pos2 = pos.offset(face);
+            minigun.getWorld().createExplosion(null, hitVec.x, hitVec.y, hitVec.z,
+                    ConfigHandler.minigun.explosiveAmmoExplosionPower, ConfigHandler.minigun.explosiveAmmoTerrainDamage);
+        }
+        return super.onBlockHit(minigun, ammo, pos, face, hitVec);
     }
 
     @Override
     public void addInformation(ItemStack stack, World world, List<String> infoList, ITooltipFlag extraInfo) {
         super.addInformation(stack, world, infoList, extraInfo);
-        if (ConfigHandler.general.minigunExplosiveAmmoTerrainDamage) {
+        if (ConfigHandler.minigun.explosiveAmmoTerrainDamage) {
             infoList.add(I18n.format("gui.tooltip.item.gun_ammo_explosive.terrainWarning"));
+        } else {
+            infoList.add(I18n.format("gui.tooltip.item.gun_ammo_explosive.terrainSafe"));
         }
     }
 }

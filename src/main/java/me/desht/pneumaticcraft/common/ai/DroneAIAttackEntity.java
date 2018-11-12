@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
+import me.desht.pneumaticcraft.common.item.ItemGunAmmo;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityLivingBase;
@@ -23,12 +24,19 @@ public class DroneAIAttackEntity extends EntityAIAttackMelee {
         super(attacker, speed, useLongMemory);
         this.attacker = attacker;
         isRanged = attacker.hasMinigun();
-        rangedAttackRange = 16 + Math.min(16, attacker.getUpgrades(Itemss.upgrades.get(EnumUpgrade.RANGE)));
+        float rangeMult = 1.0f;
+        if (isRanged) {
+            ItemStack stack = attacker.getMinigun().getAmmoStack();
+            if (stack.getItem() instanceof ItemGunAmmo) {
+                rangeMult = ((ItemGunAmmo) stack.getItem()).getRangeMultiplier(stack);
+            }
+        }
+        rangedAttackRange = (16 + Math.min(16, attacker.getUpgrades(Itemss.upgrades.get(EnumUpgrade.RANGE)))) * rangeMult;
     }
 
     @Override
     public boolean shouldExecute() {
-        if (isRanged && attacker.getAmmo() == null) {
+        if (isRanged && attacker.getAmmo().isEmpty()) {
             attacker.addDebugEntry("gui.progWidget.entityAttack.debug.noAmmo");
             return false;
         }
@@ -82,7 +90,7 @@ public class DroneAIAttackEntity extends EntityAIAttackMelee {
             EntityLivingBase entitylivingbase = attacker.getAttackTarget();
             if (entitylivingbase == null) return false;
             double dist = attacker.getDistanceSq(entitylivingbase.posX, entitylivingbase.getEntityBoundingBox().minY, entitylivingbase.posZ);
-            if (attacker.getAmmo() == null) return false;
+            if (attacker.getAmmo().isEmpty()) return false;
             if (dist < Math.pow(rangedAttackRange, 2) && attacker.getEntitySenses().canSee(entitylivingbase))
                 return true;
         }
@@ -106,7 +114,7 @@ public class DroneAIAttackEntity extends EntityAIAttackMelee {
                 attacker.getFakePlayer().posZ = attacker.posZ;
                 attacker.tryFireMinigun(entitylivingbase);
                 needingSuper = false;
-                if (dist < Math.pow(rangedAttackRange - 4, 2)) {
+                if (dist < Math.pow(rangedAttackRange * 0.75, 2)) {
                     attacker.getNavigator().clearPath();
                 }
             }

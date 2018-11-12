@@ -30,7 +30,8 @@ public class ItemColorHandler {
         Minecraft.getMinecraft().getItemColors().registerItemColorHandler(ammoColor, Itemss.GUN_AMMO_INCENDIARY);
         Minecraft.getMinecraft().getItemColors().registerItemColorHandler(ammoColor, Itemss.GUN_AMMO_WEIGHTED);
         Minecraft.getMinecraft().getItemColors().registerItemColorHandler(ammoColor, Itemss.GUN_AMMO_ARMOR_PIERCING);
-        Minecraft.getMinecraft().getItemColors().registerItemColorHandler(ammoColor, Itemss.GUN_AMMO_ARMOR_EXPLOSIVE);
+        Minecraft.getMinecraft().getItemColors().registerItemColorHandler(ammoColor, Itemss.GUN_AMMO_EXPLOSIVE);
+        Minecraft.getMinecraft().getItemColors().registerItemColorHandler(ammoColor, Itemss.GUN_AMMO_FREEZING);
         Minecraft.getMinecraft().getItemColors().registerItemColorHandler(plasticColor, Itemss.PLASTIC);
         Minecraft.getMinecraft().getItemColors().registerItemColorHandler(aphorismTileColor, Item.getItemFromBlock(Blockss.APHORISM_TILE));
     }

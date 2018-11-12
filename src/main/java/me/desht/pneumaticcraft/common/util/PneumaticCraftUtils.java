@@ -11,6 +11,7 @@ import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.*;
 import net.minecraft.entity.item.EntityBoat;
@@ -27,6 +28,7 @@ import net.minecraft.pathfinding.PathFinder;
 import net.minecraft.pathfinding.WalkNodeProcessor;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.*;
 import net.minecraft.world.ChunkCache;
@@ -35,6 +37,9 @@ import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.common.util.BlockSnapshot;
+import net.minecraftforge.event.ForgeEventFactory;
+import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fluids.IFluidBlock;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
@@ -834,6 +839,25 @@ public class PneumaticCraftUtils {
         return new PathFinder(processor);
     }
 
+    /**
+     * Attempt to place a block in the world, respecting BlockEvent.PlaceEvent results.
+     *
+     * @param w the world
+     * @param pos the position in the world
+     * @param player the player who is placing the block
+     * @param face the face against which the block is placed
+     * @param newState the blockstate to change the position to
+     * @return true if the block could be placed, false otherwise
+     */
+    public static boolean tryPlaceBlock(World w, BlockPos pos, EntityPlayer player, EnumFacing face, IBlockState newState) {
+        BlockSnapshot snapshot = BlockSnapshot.getBlockSnapshot(w, pos);
+        BlockEvent.PlaceEvent event = ForgeEventFactory.onPlayerBlockPlace(player, snapshot, face, EnumHand.MAIN_HAND);
+        if (!event.isCanceled()) {
+            w.setBlockState(pos, newState);
+            return true;
+        }
+        return false;
+    }
 
     /**
      * A little hack needed here; in 1.8 players were a subclass of EntityLiving and could be used as entities for

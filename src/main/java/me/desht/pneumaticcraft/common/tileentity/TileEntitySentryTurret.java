@@ -45,7 +45,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
     @GuiSynced
     private int redstoneMode;
     @DescSynced
-    private int range;
+    private double range;
     @DescSynced
     private boolean activated;
     @DescSynced
@@ -56,7 +56,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
     @DescSynced
     private boolean sweeping;
     private final SentryTurretEntitySelector entitySelector = new SentryTurretEntitySelector();
-    private int rangeSq;
+    private double rangeSq;
 
     public TileEntitySentryTurret() {
         super(4);
@@ -219,6 +219,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
             }
         }
         getMinigun().setAmmoStack(ammo);
+        recalculateRange();
     }
 
     @Override
@@ -229,7 +230,15 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
     @Override
     protected void onUpgradesChanged() {
         super.onUpgradesChanged();
-        range = 16 + Math.min(16, getUpgrades(EnumUpgrade.RANGE));
+        recalculateRange();
+    }
+
+    private void recalculateRange() {
+        range = 16.0 + Math.min(16, getUpgrades(EnumUpgrade.RANGE));
+        ItemStack ammoStack = getMinigun().getAmmoStack();
+        if (ammoStack.getItem() instanceof ItemGunAmmo) {
+            range *= ((ItemGunAmmo) ammoStack.getItem()).getRangeMultiplier(ammoStack);
+        }
         rangeSq = range * range;
     }
 
@@ -334,10 +343,5 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
     @Override
     public String getText(int textFieldID) {
         return entityFilter;
-    }
-
-    @Override
-    public AxisAlignedBB getRenderBoundingBox() {
-        return getTargetingBoundingBox();
     }
 }

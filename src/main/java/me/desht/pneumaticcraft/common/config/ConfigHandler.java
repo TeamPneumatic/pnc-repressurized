@@ -54,6 +54,11 @@ public class ConfigHandler {
     @Config.Comment("Pneumatic Helmet HUD settings (note: you can also set this up via helmet GUI)")
     public static final HelmetOptions helmetOptions = new HelmetOptions();
 
+    @Config.Name("minigun")
+    @Config.LangKey("gui.config.category.minigun")
+    @Config.Comment("Minigun")
+    public static final MinigunProperties minigun = new MinigunProperties();
+
     public static void sync() {
         ConfigManager.sync(Names.MOD_ID, Config.Type.INSTANCE);
     }
@@ -103,8 +108,6 @@ public class ConfigHandler {
         public int configCompressedIngotLossRate = 20;
         @Config.Comment("Enables the dungeon loot generation of the Nuke Virus and Stop! Worm (not useful in single-player worlds)")
         public boolean enableDungeonLoot = true;
-        @Config.Comment("Damage of the Miniguns. This applies to the Sentry Gun, Handheld Minigun, and Drone-based minigun")
-        public float configMinigunDamage = 4f;
         @Config.Comment("Enable Drone Suffocation Damage")
         public boolean enableDroneSuffocationDamage = true;
         @Config.Comment("Efficiency of fuel buckets as furnace fuel (default 0.05 means 1 bucket of LPG smelts 450 items in a vanilla furnace")
@@ -119,13 +122,15 @@ public class ConfigHandler {
         @Config.Comment("Thermal resistance of non-vanilla fluids, which is how fast heat moves between them and adjacent heat-handling blocks like the refinery.  Lower values mean faster heat movement.")
         @Config.RequiresWorldRestart
         public double fluidThermalResistance = HeatExchangerManager.DEFAULT_FLUID_RESISTANCE;
-        @Config.Comment("Chance per shot (1 in X) of potion-tipped ammo proc'ing the potion effect")
-        public int minigunPotionProcChance = 15;
         @Config.Comment("Fluids as hot or hotter than this temperature (Kelvin) will be auto-registered as Liquid Compressor fuels, the quality being dependent on fluid temperature.")
         @Config.RequiresMcRestart
         public int minimumFluidFuelTemperature = 373; // 100C
-        @Config.Comment("Does Minigun Explosive Ammo damage terrain?")
-        public boolean minigunExplosiveAmmoTerrainDamage = false;
+
+        // deprecated stuff
+        @Config.Comment("DEPRECATED: use Minigun / baseDamage")
+        public double configMinigunDamage = 4.0;
+        @Config.Comment("DEPRECATED: use Minigun / potionProcChance")
+        public int minigunPotionProcChance = 15;
     }
 
     public static class MachineProperties {
@@ -254,6 +259,69 @@ public class ConfigHandler {
         public boolean xRayEnabled = false;
         @Config.Comment("Pneumatic helmet Path Update Rate")
         public int pathUpdateSetting = 1;
+    }
+
+    public static class MinigunProperties {
+        @Config.Comment("Base bullet damage of the Sentry Gun, Handheld Minigun, and Drone Minigun, before ammo bonuses are considered")
+        public float baseDamage = 4f;
+        @Config.Comment("Base range of Minigun, before Range Upgrades are considered")
+        @Config.RangeInt(min = 5, max = 100)
+        public int baseRange = 50;
+        @Config.Comment("Percentage chance per shot of potion-tipped ammo proc'ing the potion effect, before Dispenser Upgrades are considered")
+        @Config.RangeInt(min = 1, max = 100)
+        public int potionProcChance = 7;
+        @Config.Comment("Incendiary ammo fire duration on target entities (seconds)")
+        public int incendiaryAmmoFireDuration = 8;
+        @Config.Comment("Incendiary ammo base percentage chance to ignite entities")
+        @Config.RangeInt(min = 1, max = 100)
+        public int incendiaryAmmoEntityIgniteChance = 100;
+        @Config.Comment("Incendiary ammo base percentage chance to ignite blocks")
+        @Config.RangeInt(min = 1, max = 100)
+        public int incendiaryAmmoBlockIgniteChance = 20;
+        @Config.Comment("Armor Piercing Ammo percentage chance to ignore target's armor")
+        @Config.RangeInt(min = 1, max = 100)
+        public int apAmmoIgnoreArmorChance = 100;
+        @Config.Comment("Armor Piercing Ammo damage multiplier (relative to standard ammo)")
+        public float apAmmoDamageMultiplier = 1.25f;
+        @Config.Comment("Weighted Ammo damage multiplier (relative to standard ammo)")
+        public float weightedAmmoDamageMultiplier = 2.5f;
+        @Config.Comment("Weighted Ammo range multiplier (relative to standard ammo)")
+        public float weightedAmmoRangeMultiplier = 0.2f;
+        @Config.Comment("Weighted Ammo air usage multiplier (relative to standard ammo)")
+        public float weightedAmmoAirUsageMultiplier = 8.0f;
+        @Config.Comment("Minigun Explosive Ammo explosion power (ref: 2 = creeper, 4 = TNT")
+        public float explosiveAmmoExplosionPower = 1.5f;
+        @Config.Comment("Minigun Explosive Ammo damage multiplier (relative to standard ammo)")
+        public float explosiveAmmoDamageMultiplier = 0.2f;
+        @Config.Comment("Does Minigun Explosive Ammo damage terrain?")
+        public boolean explosiveAmmoTerrainDamage = false;
+        @Config.Comment("Standard Ammo cartridge size")
+        @Config.RangeInt(min = 1, max = 30000)
+        public int standardAmmoCartridgeSize = 1000;
+        @Config.Comment("Armor Piercing Ammo cartridge size")
+        @Config.RangeInt(min = 1, max = 30000)
+        public int armorPiercingAmmoCartridgeSize = 250;
+        @Config.Comment("Weighted Ammo cartridge size")
+        @Config.RangeInt(min = 1, max = 30000)
+        public int weightedAmmoCartridgeSize = 250;
+        @Config.Comment("Incendiary Ammo cartridge size")
+        @Config.RangeInt(min = 1, max = 30000)
+        public int incendiaryAmmoCartridgeSize = 500;
+        @Config.Comment("Explosive Ammo cartridge size")
+        @Config.RangeInt(min = 1, max = 30000)
+        public int explosiveAmmoCartridgeSize = 125;
+        @Config.Comment("Freezing Ammo base percentage chance to form ice on entities which have been hit")
+        @Config.RangeInt(min = 0, max = 100)
+        public int freezingAmmoEntityIceChance = 20;
+        @Config.Comment("Freezing Ammo base percentage chance to form ice or snow on blocks which have been hit")
+        @Config.RangeInt(min = 0, max = 100)
+        public int freezingAmmoBlockIceChance = 20;
+        @Config.Comment("Freezing Ammo cartridge size")
+        public int freezingAmmoCartridgeSize = 500;
+        @Config.Comment("Explosive Ammo base percentage chance to cause an explosion")
+        public int explosiveAmmoExplosionChance = 50;
+        @Config.Comment("Damage done to entities within the fake 'ice' blocks cause by freezing ammo")
+        public float freezingAmmoFakeIceDamage = 1f;
     }
 
     public static void setProgrammerDifficulty(int difficulty) {

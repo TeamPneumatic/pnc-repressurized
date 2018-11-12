@@ -9,7 +9,8 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.MultiPartEntityPart;
+import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.entity.projectile.EntityFireball;
 import net.minecraft.entity.projectile.EntityShulkerBullet;
 import net.minecraft.item.ItemStack;
@@ -17,6 +18,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.relauncher.Side;
@@ -53,7 +55,7 @@ public abstract class ItemGunAmmo extends ItemPneumatic {
      * Get the air usage multiplier.
      *
      *
-     * @param minigun
+     * @param minigun the minigun being used
      * @param ammoStack this ammo
      * @return the usage multiplier; base minigun air usage is multiplied by this value
      */
@@ -64,10 +66,12 @@ public abstract class ItemGunAmmo extends ItemPneumatic {
     /**
      * Get the damage multiplier.
      *
+     *
+     * @param target the current target
      * @param ammoStack this ammo
      * @return the damage multiplier; standard physical minigun bullet damage is multiplied by this value
      */
-    public float getDamageMultiplier(ItemStack ammoStack) {
+    protected float getDamageMultiplier(Entity target, ItemStack ammoStack) {
         return 1.0f;
     }
 
@@ -91,8 +95,8 @@ public abstract class ItemGunAmmo extends ItemPneumatic {
         return 1;
     }
 
-    protected DamageSource getDamageSource(EntityPlayer shooter) {
-        return DamageSource.causePlayerDamage(shooter);
+    protected DamageSource getDamageSource(Minigun minigun) {
+        return DamageSource.causePlayerDamage(minigun.getPlayer());
     }
 
     @Override
@@ -115,12 +119,15 @@ public abstract class ItemGunAmmo extends ItemPneumatic {
         int times = 1;
         int nSpeed = minigun.getUpgrades(IItemRegistry.EnumUpgrade.SPEED);
         for (int i = 0; i < nSpeed; i++) {
-            if (minigun.getWorld().rand.nextBoolean()) times++;
+            if (minigun.getWorld().rand.nextInt(100) < 20) times++;
         }
 
-        if (getDamageMultiplier(ammo) > 0) {
-            if (target instanceof EntityLivingBase) {
-                target.attackEntityFrom(getDamageSource(minigun.getPlayer()), ConfigHandler.general.configMinigunDamage * getDamageMultiplier(ammo) * times);
+        float dmgMult = getDamageMultiplier(target, ammo);
+        if (dmgMult > 0) {
+            if (target instanceof MultiPartEntityPart) {
+                ((MultiPartEntityPart) target).parent.attackEntityFromPart((MultiPartEntityPart) target, getDamageSource(minigun), ConfigHandler.minigun.baseDamage * dmgMult * times);
+            } else if (target instanceof EntityLivingBase || target instanceof EntityEnderCrystal) {
+                target.attackEntityFrom(getDamageSource(minigun), ConfigHandler.minigun.baseDamage * dmgMult * times);
             } else if (target instanceof EntityShulkerBullet || target instanceof EntityFireball) {
                 target.setDead();
             }
@@ -129,21 +136,22 @@ public abstract class ItemGunAmmo extends ItemPneumatic {
     }
 
     /**
-     * Called when a block is hit by the minigun's wielder.
+     * Called when a block is shot by the minigun's wielder.
      *
      * @param minigun the minigun being used
      * @param ammo the ammo cartridge stack used
      * @param pos the block that was hit
      * @param face the side of the block that was hit
+     * @param hitVec the precise position at which the ammo struck
      * @return the number of rounds fired
      */
-    public int onBlockHit(Minigun minigun, ItemStack ammo, BlockPos pos, EnumFacing face) {
+    public int onBlockHit(Minigun minigun, ItemStack ammo, BlockPos pos, EnumFacing face, Vec3d hitVec) {
         double x = pos.getX() + face.getXOffset();
         double y = pos.getY() + face.getYOffset();
         double z = pos.getZ() + face.getZOffset();
         World w = minigun.getPlayer().world;
         IBlockState state = w.getBlockState(pos);
-        ((WorldServer) w).spawnParticle(EnumParticleTypes.BLOCK_DUST, x + 0.5, y + 0.5, z + 0.5, 15,
+        ((WorldServer) w).spawnParticle(EnumParticleTypes.BLOCK_DUST, hitVec.x, hitVec.y, hitVec.z, 10,
                 face.getXOffset() * 0.2, face.getYOffset() * 0.2, face.getZOffset() * 0.2, 0.05, Block.getStateId(state));
 
         // not taking speed upgrades into account here; being kind to players who miss a lot...

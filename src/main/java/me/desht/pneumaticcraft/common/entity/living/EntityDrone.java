@@ -18,10 +18,7 @@ import me.desht.pneumaticcraft.common.ai.DroneAIManager.EntityAITaskEntry;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.inventory.ChargeableItemHandler;
-import me.desht.pneumaticcraft.common.item.ItemColorHandler;
-import me.desht.pneumaticcraft.common.item.ItemGPSTool;
-import me.desht.pneumaticcraft.common.item.ItemProgrammingPuzzle;
-import me.desht.pneumaticcraft.common.item.Itemss;
+import me.desht.pneumaticcraft.common.item.*;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
@@ -1209,11 +1206,11 @@ public class EntityDrone extends EntityDroneBase implements
     public ItemStack getAmmo() {
         for (int i = 0; i < inventory.getSlots(); i++) {
             ItemStack stack = inventory.getStackInSlot(i);
-            if (stack.getItem() == Itemss.GUN_AMMO) {
+            if (stack.getItem() instanceof ItemGunAmmo) {
                 return stack;
             }
         }
-        return null;
+        return ItemStack.EMPTY;
     }
 
     public void setHandlingOffer(AmadronOffer offer, int times, @Nonnull ItemStack usedTablet, String buyingPlayer) {

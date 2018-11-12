@@ -1,15 +1,15 @@
 package me.desht.pneumaticcraft.common.item;
 
+import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.common.util.BlockSnapshot;
-import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.event.world.BlockEvent;
+import net.minecraft.util.math.Vec3d;
 
 public class ItemGunAmmoIncendiary extends ItemGunAmmo {
     public ItemGunAmmoIncendiary() {
@@ -18,7 +18,7 @@ public class ItemGunAmmoIncendiary extends ItemGunAmmo {
 
     @Override
     protected int getCartridgeSize() {
-        return 500;
+        return ConfigHandler.minigun.incendiaryAmmoCartridgeSize;
     }
 
     @Override
@@ -27,22 +27,32 @@ public class ItemGunAmmoIncendiary extends ItemGunAmmo {
     }
 
     @Override
-    public int onTargetHit(Minigun minigun, ItemStack ammo, Entity target) {
-        target.setFire(8);
-        super.onTargetHit(minigun, ammo, target);
-        return 0;
+    protected DamageSource getDamageSource(Minigun minigun) {
+        return super.getDamageSource(minigun).setFireDamage();
     }
 
     @Override
-    public int onBlockHit(Minigun minigun, ItemStack ammo, BlockPos pos, EnumFacing face) {
-        if (minigun.getWorld().rand.nextInt(5) == 0) {
-            BlockSnapshot snapshot = BlockSnapshot.getBlockSnapshot(minigun.getWorld(), pos.offset(face));
-            BlockEvent.PlaceEvent event = ForgeEventFactory.onPlayerBlockPlace(minigun.getPlayer(), snapshot, face, EnumHand.MAIN_HAND);
-            if (!event.isCanceled()) {
-                minigun.getWorld().setBlockState(pos.offset(face), Blocks.FIRE.getDefaultState());
-            }
+    protected float getDamageMultiplier(Entity target, ItemStack ammoStack) {
+        float mult = super.getDamageMultiplier(target, ammoStack);
+        if (target != null && target.isImmuneToFire()) {
+            mult *= 0.1;
         }
-        super.onBlockHit(minigun, ammo, pos, face);
-        return 0;
+        return mult;
+    }
+
+    @Override
+    public int onTargetHit(Minigun minigun, ItemStack ammo, Entity target) {
+        if (minigun.dispenserWeightedPercentage(ConfigHandler.minigun.incendiaryAmmoEntityIgniteChance)) {
+            target.setFire(ConfigHandler.minigun.incendiaryAmmoFireDuration);
+        }
+        return super.onTargetHit(minigun, ammo, target);
+    }
+
+    @Override
+    public int onBlockHit(Minigun minigun, ItemStack ammo, BlockPos pos, EnumFacing face, Vec3d hitVec) {
+        if (minigun.dispenserWeightedPercentage(ConfigHandler.minigun.incendiaryAmmoBlockIgniteChance)) {
+            PneumaticCraftUtils.tryPlaceBlock(minigun.getWorld(), pos.offset(face), minigun.getPlayer(), face, Blocks.FIRE.getDefaultState());
+        }
+        return super.onBlockHit(minigun, ammo, pos, face, hitVec);
     }
 }

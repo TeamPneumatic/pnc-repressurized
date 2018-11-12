@@ -16,6 +16,7 @@ import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.JEIPlugin;
+import mezz.jei.api.ingredients.IIngredientBlacklist;
 import mezz.jei.api.recipe.IRecipeCategoryRegistration;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
@@ -66,6 +67,10 @@ public class JEI implements IModPlugin {
         registry.addRecipeCatalyst(new ItemStack(Itemss.HEAT_FRAME), ModCategoryUid.HEAT_FRAME_COOLING);
 
         registry.addAdvancedGuiHandlers(new GuiTabHandler());
+
+        IIngredientBlacklist blacklist = registry.getJeiHelpers().getIngredientBlacklist();
+        blacklist.addIngredientToBlacklist(new ItemStack(Blockss.FAKE_ICE));
+
     }
 
     @Override

@@ -27,6 +27,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -45,7 +46,7 @@ public class ItemGunAmmoStandard extends ItemGunAmmo {
 
     @Override
     protected int getCartridgeSize() {
-        return 1000;
+        return ConfigHandler.minigun.standardAmmoCartridgeSize;
     }
 
     @Nonnull
@@ -131,8 +132,7 @@ public class ItemGunAmmoStandard extends ItemGunAmmo {
         ItemStack potion = getPotion(ammo);
         if (!potion.isEmpty() && target instanceof EntityLivingBase) {
             EntityPlayer shooter = minigun.getPlayer();
-            int chance = Math.min(4, ConfigHandler.general.minigunPotionProcChance - minigun.getUpgrades(IItemRegistry.EnumUpgrade.DISPENSER));
-            if (shooter.world.rand.nextInt(chance) == 0) {
+            if (minigun.dispenserWeightedPercentage(ConfigHandler.minigun.potionProcChance, 0.25f)) {
                 if (potion.getItem() == Items.POTIONITEM) {
                     List<PotionEffect> effects = PotionUtils.getEffectsFromStack(potion);
                     for (PotionEffect effect : effects) {
@@ -146,28 +146,28 @@ public class ItemGunAmmoStandard extends ItemGunAmmo {
                     shooter.world.spawnEntity(entityPotion);
                 }
             }
+            return getPotionAmmoCost(potion.getItem());
         } else {
-            super.onTargetHit(minigun, ammo, target);
+            return super.onTargetHit(minigun, ammo, target);
         }
-        return 1;
     }
 
     @Override
-    public int onBlockHit(Minigun minigun, ItemStack ammo, BlockPos pos, EnumFacing face) {
-        super.onBlockHit(minigun, ammo, pos, face);
-
+    public int onBlockHit(Minigun minigun, ItemStack ammo, BlockPos pos, EnumFacing face, Vec3d hitVec) {
         ItemStack potion = getPotion(ammo);
         if (potion.getItem() == Items.SPLASH_POTION || potion.getItem() == Items.LINGERING_POTION) {
             EntityPlayer shooter = minigun.getPlayer();
-            int chance = Math.min(4, ConfigHandler.general.minigunPotionProcChance - minigun.getUpgrades(IItemRegistry.EnumUpgrade.DISPENSER));
-            if (shooter.world.rand.nextInt(chance) == 0) {
+            int chance = ConfigHandler.minigun.potionProcChance + minigun.getUpgrades(IItemRegistry.EnumUpgrade.DISPENSER) * 2;
+            if (shooter.world.rand.nextInt(100) < chance) {
                 EntityPotion entityPotion = new EntityPotion(shooter.world, shooter, potion);
                 BlockPos pos2 = pos.offset(face);
                 entityPotion.setPosition(pos2.getX() + 0.5, pos2.getY() + 0.5, pos2.getZ() + 0.5);
                 shooter.world.spawnEntity(entityPotion);
             }
+            return getPotionAmmoCost(potion.getItem());
+        } else {
+            return super.onBlockHit(minigun, ammo, pos, face, hitVec);
         }
-        return 1;
     }
 
     private static int getPotionAmmoCost(Item item) {

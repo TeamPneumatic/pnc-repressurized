@@ -1,6 +1,8 @@
 package me.desht.pneumaticcraft.common.item;
 
+import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
+import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 
 public class ItemGunAmmoWeighted extends ItemGunAmmo {
@@ -10,7 +12,7 @@ public class ItemGunAmmoWeighted extends ItemGunAmmo {
 
     @Override
     protected int getCartridgeSize() {
-        return 250;
+        return ConfigHandler.minigun.weightedAmmoCartridgeSize;
     }
 
     @Override
@@ -20,16 +22,16 @@ public class ItemGunAmmoWeighted extends ItemGunAmmo {
 
     @Override
     public float getRangeMultiplier(ItemStack ammoStack) {
-        return 0.2f;
+        return ConfigHandler.minigun.weightedAmmoRangeMultiplier;
     }
 
     @Override
     public float getAirUsageMultiplier(Minigun minigun, ItemStack ammoStack) {
-        return 8.0f;
+        return ConfigHandler.minigun.weightedAmmoAirUsageMultiplier;
     }
 
     @Override
-    public float getDamageMultiplier(ItemStack ammoStack) {
-        return 3.0f;
+    public float getDamageMultiplier(Entity target, ItemStack ammoStack) {
+        return ConfigHandler.minigun.weightedAmmoDamageMultiplier;
     }
 }

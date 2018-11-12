@@ -19,7 +19,6 @@ import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemRenderer;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -34,7 +33,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -43,6 +41,7 @@ public class ItemMinigun extends ItemPressurizable implements IChargingStationGU
 
     private static Set<Item> applicableUpgrades;
     private static final String NBT_MAGAZINE = "Magazine";
+    public static final String NBT_LOCKED_SLOT = "LockedSlot";
 
     // TODO this should be part of a more general "max upgrades" database - 1.13, probably
     private static final int[] MAX_UPGRADES = new int[EnumUpgrade.values().length];
@@ -71,18 +70,6 @@ public class ItemMinigun extends ItemPressurizable implements IChargingStationGU
 
     @Override
     public void addInformation(ItemStack stack, World worldIn, List<String> infoList, ITooltipFlag par4) {
-        MagazineHandler handler = getMagazine(stack);
-        if (handler != null) {
-            int nCartridges = 0, totalRounds = 0;
-            for (int i = 0; i < handler.getSlots(); i++) {
-                ItemStack ammo = handler.getStackInSlot(i);
-                if (!ammo.isEmpty()) {
-                    nCartridges++;
-                    totalRounds += ammo.getMaxDamage() - ammo.getItemDamage();
-                }
-            }
-            infoList.add(I18n.format("gui.tooltip.minigun.ammoCount", totalRounds, nCartridges));
-        }
         UpgradableItemUtils.addUpgradeInformation(stack, worldIn, infoList, par4);
         super.addInformation(stack, worldIn, infoList, par4);
     }
@@ -106,12 +93,15 @@ public class ItemMinigun extends ItemPressurizable implements IChargingStationGU
         }
 
         // repair ammo for cost of air with item life upgrades
-        if (!world.isRemote) {
+        if (!world.isRemote && currentItem) {
             handleAmmoRepair(stack, world, minigun);
         }
     }
 
     private void handleAmmoRepair(ItemStack stack, World world, Minigun minigun) {
+        if (minigun.getPlayer().openContainer instanceof ContainerMinigunMagazine) {
+            return;  // avoid potential item duping or other shenanigans
+        }
         int itemLife = minigun.getUpgrades(EnumUpgrade.ITEM_LIFE);
         if (itemLife > 0) {
             IPressurizable p = (IPressurizable) stack.getItem();
@@ -120,7 +110,7 @@ public class ItemMinigun extends ItemPressurizable implements IChargingStationGU
             for (int i = 0; i < handler.getSlots() && p.getPressure(stack) > 0.1; i++) {
                 ItemStack ammo = handler.getStackInSlot(i);
                 if (ammo.getItem() instanceof ItemGunAmmo && ammo.getItemDamage() > 0) {
-                    if (world.rand.nextInt(200 - itemLife * 30) == 0) {
+                    if (world.getTotalWorldTime() % (475 - itemLife * 75) == 0) {
                         ammo.setItemDamage(ammo.getItemDamage() - 1);
                         p.addAir(stack, -(2 << itemLife));
                         repaired = true;
@@ -129,9 +119,6 @@ public class ItemMinigun extends ItemPressurizable implements IChargingStationGU
             }
             if (repaired) {
                 handler.save();
-                if (minigun.getPlayer().openContainer instanceof ContainerMinigunMagazine) {
-                    ((ContainerMinigunMagazine) minigun.getPlayer().openContainer).updateMagazine(minigun.getPlayer());
-                }
             }
         }
     }
@@ -140,7 +127,7 @@ public class ItemMinigun extends ItemPressurizable implements IChargingStationGU
     private void suppressSwitchAnimation() {
         Minecraft mc = Minecraft.getMinecraft();
         ItemRenderer renderer = mc.entityRenderer.itemRenderer;
-        renderer.updateEquippedItem();
+//        renderer.updateEquippedItem();
         renderer.equippedProgressMainHand = 1;
         renderer.prevEquippedProgressMainHand = 1;
     }
@@ -245,6 +232,9 @@ public class ItemMinigun extends ItemPressurizable implements IChargingStationGU
         }
 
         public ItemStack getAmmo() {
+            if (NBTUtil.hasTag(gunStack, NBT_LOCKED_SLOT)) {
+                return getStackInSlot(NBTUtil.getInteger(gunStack, NBT_LOCKED_SLOT));
+            }
             for (int i = 0; i < MAGAZINE_SIZE; i++) {
                 if (getStackInSlot(i).getItem() instanceof ItemGunAmmo) {
                     return getStackInSlot(i);
@@ -360,9 +350,7 @@ public class ItemMinigun extends ItemPressurizable implements IChargingStationGU
 
         private void loadUpgrades() {
             upgrades = new int[EnumUpgrade.values().length];
-            Arrays.fill(upgrades, 0);
-            ItemStack[] stacks = UpgradableItemUtils.getUpgradeStacks(minigunStack);
-            for (ItemStack stack : stacks) {
+            for (ItemStack stack : UpgradableItemUtils.getUpgradeStacks(minigunStack)) {
                 if (stack.getItem() instanceof ItemMachineUpgrade) {
                     int idx = ((ItemMachineUpgrade) stack.getItem()).getUpgradeType().ordinal();
                     upgrades[idx] += stack.getCount();

@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.api.item.IPressurizable;
 import me.desht.pneumaticcraft.client.render.RenderProgressingLine;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
+import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.item.ItemGunAmmo;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound;
@@ -31,7 +32,6 @@ import java.util.Random;
 
 public abstract class Minigun {
     public static final double MAX_GUN_SPEED = 0.4;
-    private static final double RAYTRACE_RANGE = 50;
     private static final double MAX_GUN_YAW_CHANGE = 10;
     private static final double MAX_GUN_PITCH_CHANGE = 10;
 
@@ -190,8 +190,7 @@ public abstract class Minigun {
                 RayTraceResult rtr = null;
                 ItemGunAmmo ammoItem = (ItemGunAmmo) ammoStack.getItem();
                 if (!requiresTarget) {
-                    double range = (RAYTRACE_RANGE + 5 * getUpgrades(EnumUpgrade.RANGE) * ammoItem.getRangeMultiplier(ammoStack));
-                    rtr = PneumaticCraftUtils.getMouseOverServer(player, range);
+                    rtr = PneumaticCraftUtils.getMouseOverServer(player, getRange());
                     target = rtr.entityHit;
                 }
                 if (pressurizable != null) {
@@ -208,7 +207,7 @@ public abstract class Minigun {
                         roundsUsed = ammoItem.onTargetHit(this, ammoStack, target);
                     }
                 } else if (rtr != null && rtr.typeOfHit == RayTraceResult.Type.BLOCK) {
-                    roundsUsed = ammoItem.onBlockHit(this, ammoStack, rtr.getBlockPos(), rtr.sideHit);
+                    roundsUsed = ammoItem.onBlockHit(this, ammoStack, rtr.getBlockPos(), rtr.sideHit, rtr.hitVec);
                 }
                 int ammoCost = roundsUsed * ammoItem.getAmmoCost(ammoStack);
                 lastShotOfAmmo = ammoStack.attemptDamageItem(ammoCost, rand, player instanceof EntityPlayerMP ? (EntityPlayerMP) player : null);
@@ -281,64 +280,33 @@ public abstract class Minigun {
             }
             targetPitch = Math.toDegrees(Math.atan((posY - attackTarget.posY - attackTarget.height / 2) / PneumaticCraftUtils.distBetween(posX, posZ, attackTarget.posX, attackTarget.posZ)));
 
-            if (minigunPitch > targetPitch) {
-                if (minigunPitch - MAX_GUN_PITCH_CHANGE > targetPitch) {
-                    minigunPitch -= MAX_GUN_PITCH_CHANGE;
-                } else {
-                    minigunPitch = targetPitch;
-                }
-            } else {
-                if (minigunPitch + MAX_GUN_PITCH_CHANGE < targetPitch) {
-                    minigunPitch += MAX_GUN_PITCH_CHANGE;
-                } else {
-                    minigunPitch = targetPitch;
-                }
-            }
-
-            if (minigunPitch < -80 || minigunPitch > 80) {
-                minigunYaw = targetYaw;
-            } else {
-                if (minigunYaw > targetYaw) {
-                    if (minigunYaw - MAX_GUN_YAW_CHANGE > targetYaw) {
-                        minigunYaw -= MAX_GUN_YAW_CHANGE;
-                    } else {
-                        minigunYaw = targetYaw;
-                    }
-                } else {
-                    if (minigunYaw + MAX_GUN_YAW_CHANGE < targetYaw) {
-                        minigunYaw += MAX_GUN_YAW_CHANGE;
-                    } else {
-                        minigunYaw = targetYaw;
-                    }
-                }
-            }
+            minigunPitch = moveToward(minigunPitch, targetPitch, MAX_GUN_PITCH_CHANGE);
+            minigunYaw = minigunPitch < -80 || minigunPitch > 80 ? targetYaw : moveToward(minigunYaw, targetYaw, MAX_GUN_YAW_CHANGE);
             gunAimedAtTarget = minigunYaw == targetYaw && minigunPitch == targetPitch;
         } else if (isSweeping()) {
             minigunYaw -= Math.cos(sweepingProgress) * 22;
             sweepingProgress += 0.05D;
             minigunYaw += Math.cos(sweepingProgress) * 22;
 
-            if (minigunPitch > targetPitch) {
-                if (minigunPitch - MAX_GUN_PITCH_CHANGE > targetPitch) {
-                    minigunPitch -= MAX_GUN_PITCH_CHANGE;
-                } else {
-                    minigunPitch = targetPitch;
-                }
-            } else {
-                if (minigunPitch + MAX_GUN_PITCH_CHANGE < targetPitch) {
-                    minigunPitch += MAX_GUN_PITCH_CHANGE;
-                } else {
-                    minigunPitch = targetPitch;
-                }
-            }
+            minigunPitch = moveToward(minigunPitch, targetPitch, MAX_GUN_PITCH_CHANGE);
         }
 
-        if (!world.isRemote && isMinigunActivated() && getMinigunSpeed() == MAX_GUN_SPEED && (!requiresTarget || gunAimedAtTarget && attackTarget != null)) {
+        if (!world.isRemote && isMinigunActivated() && getMinigunSpeed() == MAX_GUN_SPEED
+                && (!requiresTarget || gunAimedAtTarget && attackTarget != null)) {
             if (getMinigunSoundCounter() <= 0) {
                 setMinigunSoundCounter(20);
             }
         }
         if (getMinigunSoundCounter() > 0) setMinigunSoundCounter(getMinigunSoundCounter() - 1);
+    }
+
+    private double moveToward(double val, double target, double amount) {
+        if (val > target) {
+            val = Math.max(val - amount, target);
+        } else {
+            val = Math.min(val + amount, target);
+        }
+        return val;
     }
 
     @SideOnly(Side.CLIENT)
@@ -349,7 +317,6 @@ public abstract class Minigun {
             GlStateManager.translate(-x, -y, -z);
             GlStateManager.disableTexture2D();
             GL11.glEnable(GL11.GL_LINE_STIPPLE);
-//            GlStateManager.disableLighting();
             RenderUtils.glColorHex(0xFF000000 | getAmmoColor());
             for (int i = 0; i < 5; i++) {
                 int stipple = 0xFFFF & ~(2 << rand.nextInt(16));
@@ -364,7 +331,6 @@ public abstract class Minigun {
                 minigunFire.render();
             }
             GlStateManager.color(1, 1, 1, 1);
-            // GlStateManager.enabledLighting();
             GL11.glDisable(GL11.GL_LINE_STIPPLE);
             GlStateManager.enableTexture2D();
             GlStateManager.popMatrix();
@@ -373,5 +339,18 @@ public abstract class Minigun {
 
     public int getUpgrades(EnumUpgrade upgrade) {
         return 0;
+    }
+
+    public double getRange() {
+        double mul = getAmmoStack().getItem() instanceof ItemGunAmmo ? ((ItemGunAmmo) ammoStack.getItem()).getRangeMultiplier(ammoStack) : 1;
+        return (ConfigHandler.minigun.baseRange + 5 * getUpgrades(EnumUpgrade.RANGE)) * mul;
+    }
+
+    public boolean dispenserWeightedPercentage(int basePct) {
+        return dispenserWeightedPercentage(basePct, 0.1f);
+    }
+
+    public boolean dispenserWeightedPercentage(int basePct, float dispenserWeight) {
+        return getWorld().rand.nextInt(100) < basePct * (1 + getUpgrades(EnumUpgrade.DISPENSER) * dispenserWeight);
     }
 }

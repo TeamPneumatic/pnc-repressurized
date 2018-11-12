@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " a ",
+    "cbc",
+    "cbc"
+  ],
+  "key": {
+    "a": {
+      "item": "pneumaticcraft:gun_ammo"
+    },
+    "c": {
+      "type": "forge:ore_dict",
+      "ore": "ingotIronCompressed"
+    },
+    "b": {
+      "item": "minecraft:blaze_rod"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:gun_ammo_incendiary"
+  }
+}

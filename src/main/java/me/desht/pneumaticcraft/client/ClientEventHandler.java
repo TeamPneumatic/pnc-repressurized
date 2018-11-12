@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.client.IFOVModifierItem;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.client.gui.GuiUtils;
+import me.desht.pneumaticcraft.client.gui.IExtraGuiHandling;
 import me.desht.pneumaticcraft.client.gui.IGuiDrone;
 import me.desht.pneumaticcraft.client.model.pressureglass.PressureGlassBakedModel;
 import me.desht.pneumaticcraft.client.particle.AirParticle;
@@ -208,6 +209,7 @@ public class ClientEventHandler {
     public void renderFirstPersonMinigun(RenderGameOverlayEvent.Pre event) {
         if (event.getType() == RenderGameOverlayEvent.ElementType.CROSSHAIRS && Minecraft.getMinecraft().gameSettings.thirdPersonView == 0) {
             EntityPlayer player = Minecraft.getMinecraft().player;
+            Minecraft mc = Minecraft.getMinecraft();
             ItemStack stack = player.getHeldItemMainhand();
             if (stack.getItem() instanceof ItemMinigun){
                 Minigun minigun = ((ItemMinigun) stack.getItem()).getMinigun(stack, player);
@@ -220,17 +222,23 @@ public class ClientEventHandler {
 
                 ItemStack ammo = minigun.getAmmoStack();
                 if (!ammo.isEmpty()) {
-                    GuiUtils.drawItemStack(ammo,w / 2 + 16, h / 2 - 8);
+                    GuiUtils.drawItemStack(ammo,w / 2 + 16, h / 2 - 7);
                     int remaining = ammo.getMaxDamage() - ammo.getItemDamage();
-                    int posX = w / 2 + 34;
-                    int posY = h / 2 - 2;
                     GlStateManager.pushMatrix();
+                    GlStateManager.translate(w / 2 + 32, h / 2 - 1, 0);
                     GlStateManager.scale(MINIGUN_TEXT_SIZE, MINIGUN_TEXT_SIZE, 1.0);
-                    Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(remaining + "/" + ammo.getMaxDamage(), (int)(posX / MINIGUN_TEXT_SIZE), (int) (posY / MINIGUN_TEXT_SIZE), minigun.getAmmoColor());
+                    String text = remaining + "/" + ammo.getMaxDamage();
+                    mc.fontRenderer.drawString(text, 1, 0, 0);
+                    mc.fontRenderer.drawString(text, -1, 0, 0);
+                    mc.fontRenderer.drawString(text, 0, 1, 0);
+                    mc.fontRenderer.drawString(text, 0, -1, 0);
+                    mc.fontRenderer.drawString(text, 0, 0, minigun.getAmmoColor());
                     GlStateManager.popMatrix();
                 }
-                Minecraft.getMinecraft().getTextureManager().bindTexture(Textures.GUI_MINIGUN_CROSSHAIR);
-                GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
+                mc.getTextureManager().bindTexture(Textures.GUI_MINIGUN_CROSSHAIR);
+                GlStateManager.enableBlend();
+                GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+                GlStateManager.color(0.2f, 1.0f, 0.2f, 0.6f);
                 Gui.drawModalRectWithCustomSizedTexture(w / 2 - 7, h / 2 - 7, 0, 0, 16, 16, 16, 16);
                 event.setCanceled(true);
             }
@@ -506,6 +514,13 @@ public class ClientEventHandler {
                 event.setDensity(0.02f);
                 event.setCanceled(true);
             }
+        }
+    }
+
+    @SubscribeEvent
+    public void guiContainerForeground(GuiContainerEvent.DrawForeground event) {
+        if (Minecraft.getMinecraft().currentScreen instanceof IExtraGuiHandling) {
+            ((IExtraGuiHandling) Minecraft.getMinecraft().currentScreen).drawExtras(event);
         }
     }
 }

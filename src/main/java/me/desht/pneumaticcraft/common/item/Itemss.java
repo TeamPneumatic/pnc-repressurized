@@ -129,7 +129,9 @@ public class Itemss {
     @ObjectHolder("gun_ammo_ap")
     public static final Item GUN_AMMO_ARMOR_PIERCING = null;
     @ObjectHolder("gun_ammo_explosive")
-    public static final Item GUN_AMMO_ARMOR_EXPLOSIVE = null;
+    public static final Item GUN_AMMO_EXPLOSIVE = null;
+    @ObjectHolder("gun_ammo_freezing")
+    public static final Item GUN_AMMO_FREEZING = null;
     @ObjectHolder("amadron_tablet")
     public static final Item AMADRON_TABLET = null;
     @ObjectHolder("minigun")
@@ -188,6 +190,7 @@ public class Itemss {
         registerItem(registry, new ItemGunAmmoWeighted());
         registerItem(registry, new ItemGunAmmoArmorPiercing());
         registerItem(registry, new ItemGunAmmoExplosive());
+        registerItem(registry, new ItemGunAmmoFreezing());
         registerItem(registry, new ItemAmadronTablet());
         registerItem(registry, new ItemMinigun());
         registerItem(registry, new ItemCamoApplicator());

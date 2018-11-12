@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " a ",
+    "ctc",
+    "ctc"
+  ],
+  "key": {
+    "a": {
+      "item": "pneumaticcraft:gun_ammo"
+    },
+    "c": {
+      "type": "forge:ore_dict",
+      "ore": "ingotIronCompressed"
+    },
+    "t": {
+      "item": "minecraft:tnt"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:gun_ammo_explosive"
+  }
+}
