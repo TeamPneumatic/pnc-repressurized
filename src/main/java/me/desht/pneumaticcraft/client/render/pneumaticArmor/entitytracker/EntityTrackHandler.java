@@ -188,7 +188,9 @@ public class EntityTrackHandler {
         @Override
         public void addInfo(Entity entity, List<String> curInfo) {
             Entity target = ((EntityMob) entity).getAttackTarget();
-            curInfo.add("Target: " + (target != null ? target.getName() : "-"));
+            if (target != null) {
+                curInfo.add("Target: " + target.getName());
+            }
         }
     }
 
@@ -308,15 +310,11 @@ public class EntityTrackHandler {
         public void addInfo(Entity entity, List<String> curInfo) {
             IHackableEntity hackable = HackableHandler.getHackableForEntity(entity, PneumaticCraftRepressurized.proxy.getClientPlayer());
             if (hackable != null) {
-                List<RenderTarget> targets = HUDHandler.instance().getSpecificRenderer(EntityTrackUpgradeHandler.class).getTargets();
-                int hackTime = 0;
-                for (RenderTarget target : targets) {
-                    if (target.entity == entity) {
-                        hackTime = target.getHackTime();
-                        break;
-                    }
-                }
-
+                int hackTime = HUDHandler.instance().getSpecificRenderer(EntityTrackUpgradeHandler.class).getTargetsStream()
+                        .filter(target -> target.entity == entity)
+                        .findFirst()
+                        .map(RenderTarget::getHackTime)
+                        .orElse(0);
                 if (hackTime == 0) {
                     hackable.addInfo(entity, curInfo, PneumaticCraftRepressurized.proxy.getClientPlayer());
                 } else {

@@ -2,7 +2,6 @@ package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.HUDHandler;
-import me.desht.pneumaticcraft.client.render.pneumaticArmor.RenderTarget;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.renderHandler.EntityTrackUpgradeHandler;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import net.minecraft.entity.Entity;
@@ -10,8 +9,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import java.util.List;
 
 public class PacketShowWireframe extends LocationIntPacket<PacketShowWireframe> {
 
@@ -47,12 +44,9 @@ public class PacketShowWireframe extends LocationIntPacket<PacketShowWireframe> 
 
     @SideOnly(Side.CLIENT)
     private void addToHudHandler(EntityDrone drone, BlockPos pos) {
-        List<RenderTarget> targets = HUDHandler.instance().getSpecificRenderer(EntityTrackUpgradeHandler.class).getTargets();
-        for (RenderTarget target : targets) {
-            if (target.entity == drone) {
-                target.getDroneAIRenderer().addBlackListEntry(drone.world, pos);
-            }
-        }
+        HUDHandler.instance().getSpecificRenderer(EntityTrackUpgradeHandler.class).getTargetsStream()
+                .filter(target -> target.entity == drone)
+                .forEach(target -> target.getDroneAIRenderer().addBlackListEntry(drone.world, pos));
     }
 
     @Override

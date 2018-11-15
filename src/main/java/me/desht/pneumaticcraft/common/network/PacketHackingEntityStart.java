@@ -9,8 +9,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 
-import java.util.List;
-
 public class PacketHackingEntityStart extends AbstractPacket<PacketHackingEntityStart> {
     private int entityId;
 
@@ -36,13 +34,10 @@ public class PacketHackingEntityStart extends AbstractPacket<PacketHackingEntity
         Entity entity = player.world.getEntityByID(message.entityId);
         if (entity != null) {
             CommonHUDHandler.getHandlerForPlayer(player).setHackedEntity(entity);
-            List<RenderTarget> targets = HUDHandler.instance().getSpecificRenderer(EntityTrackUpgradeHandler.class).getTargets();
-            for (RenderTarget target : targets) {
-                if (target.entity == entity) {
-                    target.onHackConfirmServer();
-                    break;
-                }
-            }
+            HUDHandler.instance().getSpecificRenderer(EntityTrackUpgradeHandler.class).getTargetsStream()
+                    .filter(target -> target.entity == entity)
+                    .findFirst()
+                    .ifPresent(RenderTarget::onHackConfirmServer);
         }
 
     }

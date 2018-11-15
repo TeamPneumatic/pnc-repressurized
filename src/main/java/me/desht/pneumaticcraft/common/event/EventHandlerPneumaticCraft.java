@@ -7,12 +7,7 @@ import me.desht.pneumaticcraft.api.client.pneumaticHelmet.InventoryTrackEvent;
 import me.desht.pneumaticcraft.api.drone.AmadronRetrievalEvent;
 import me.desht.pneumaticcraft.api.drone.DroneConstructingEvent;
 import me.desht.pneumaticcraft.api.drone.DroneSuicideEvent;
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
-import me.desht.pneumaticcraft.api.item.IPressurizable;
-import me.desht.pneumaticcraft.client.gui.widget.GuiKeybindCheckBox;
-import me.desht.pneumaticcraft.client.render.pneumaticArmor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.hacking.entity.HackableEnderman;
-import me.desht.pneumaticcraft.client.render.pneumaticArmor.renderHandler.EntityTrackUpgradeHandler;
 import me.desht.pneumaticcraft.common.DroneRegistry;
 import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
@@ -30,7 +25,6 @@ import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.network.PacketRotateBlock;
-import me.desht.pneumaticcraft.common.network.PacketSetMobTarget;
 import me.desht.pneumaticcraft.common.recipes.AmadronOffer;
 import me.desht.pneumaticcraft.common.recipes.AmadronOfferCustom;
 import me.desht.pneumaticcraft.common.recipes.AmadronOfferManager;
@@ -42,17 +36,12 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefinery;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.Names;
-import me.desht.pneumaticcraft.lib.TileEntityConstants;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.monster.EntityGolem;
-import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
@@ -83,19 +72,14 @@ import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.EnderTeleportEvent;
 import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
-import net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.furnace.FurnaceFuelBurnTimeEvent;
 import net.minecraftforge.event.world.ExplosionEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fluids.*;
-import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -236,42 +220,6 @@ public class EventHandlerPneumaticCraft {
 //        if (!event.isCanceled() && interactedBlock == Blocks.COBBLESTONE) {
 //            AdvancementUtils.checkFor9x9(event.getEntityPlayer(), event.getPos());
 //        }
-    }
-
-    /**
-     * Used by PneumaticHelmet
-     *
-     * @param event
-     */
-    @SubscribeEvent
-    public void onMobTargetSet(LivingSetAttackTargetEvent event) {
-        if (event.getEntity() instanceof EntityCreature) {
-            if (!event.getEntity().world.isRemote) {
-                NetworkHandler.sendToAllAround(
-                        new PacketSetMobTarget((EntityCreature) event.getEntity(), event.getTarget()),
-                        new NetworkRegistry.TargetPoint(event.getEntity().world.provider.getDimension(),
-                                event.getEntity().posX, event.getEntity().posY, event.getEntity().posZ, TileEntityConstants.PACKET_UPDATE_DISTANCE));
-            } else {
-                warnPlayerIfNecessary(event);
-            }
-        }
-    }
-
-    @SideOnly(Side.CLIENT)
-    private void warnPlayerIfNecessary(LivingSetAttackTargetEvent event) {
-        EntityPlayer player = FMLClientHandler.instance().getClient().player;
-        if (event.getTarget() == player && (event.getEntityLiving() instanceof EntityGolem || event.getEntityLiving() instanceof EntityMob)) {
-            ItemStack helmetStack = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
-            if (helmetStack.getItem() instanceof ItemPneumaticArmor
-                    && ((IPressurizable) helmetStack.getItem()).getPressure(helmetStack) > 0
-                    && UpgradableItemUtils.getUpgrades(EnumUpgrade.ENTITY_TRACKER, helmetStack) > 0
-                    && GuiKeybindCheckBox.getCoreComponents().checked
-                    && GuiKeybindCheckBox.fromKeyBindingName(GuiKeybindCheckBox.UPGRADE_PREFIX + EntityTrackUpgradeHandler.UPGRADE_NAME).checked) {
-                HUDHandler.instance().getSpecificRenderer(EntityTrackUpgradeHandler.class).warnIfNecessary(event.getEntity());
-            }
-        } else {
-            HUDHandler.instance().getSpecificRenderer(EntityTrackUpgradeHandler.class).removeTargetingEntity(event.getEntityLiving());
-        }
     }
 
     @SubscribeEvent

@@ -58,7 +58,7 @@ public class NetworkHandler {
         INSTANCE.registerMessage(PacketSecurityStationAddUser.class, PacketSecurityStationAddUser.class, discriminant++, Side.SERVER);
         INSTANCE.registerMessage(PacketSecurityStationFailedHack.class, PacketSecurityStationFailedHack.class, discriminant++, Side.SERVER);
         INSTANCE.registerMessage(PacketSendNBTPacket.class, PacketSendNBTPacket.class, discriminant++, Side.CLIENT);
-        INSTANCE.registerMessage(PacketSetMobTarget.class, PacketSetMobTarget.class, discriminant++, Side.CLIENT);
+//        INSTANCE.registerMessage(PacketWarnMobTarget.class, PacketWarnMobTarget.class, discriminant++, Side.CLIENT);
         INSTANCE.registerMessage(PacketShowWireframe.class, PacketShowWireframe.class, discriminant++, Side.CLIENT);
         INSTANCE.registerMessage(PacketSpawnParticle.class, PacketSpawnParticle.class, discriminant++, Side.CLIENT);
         INSTANCE.registerMessage(PacketUpdateSearchStack.class, PacketUpdateSearchStack.class, discriminant++, Side.SERVER);
@@ -119,6 +119,7 @@ public class NetworkHandler {
         INSTANCE.registerMessage(PacketMarkPlayerJetbootsActive.class, PacketMarkPlayerJetbootsActive.class, discriminant++, Side.CLIENT);
         INSTANCE.registerMessage(PacketRotateBlock.class, PacketRotateBlock.class, discriminant++, Side.SERVER);
         INSTANCE.registerMessage(PacketUpdateArmorExtraData.class, PacketUpdateArmorExtraData.class, discriminant++, Side.SERVER);
+        INSTANCE.registerMessage(PacketSendArmorHUDMessage.class, PacketSendArmorHUDMessage.class, discriminant++, Side.CLIENT);
     }
 
     /* public static void INSTANCE.registerMessage(Class<? extends AbstractPacket<? extends IMessage>> clazz){

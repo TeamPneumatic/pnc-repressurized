@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
+import me.desht.pneumaticcraft.common.network.PacketSendArmorHUDMessage;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.lib.EnumCustomParticleType;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -16,6 +17,7 @@ import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.monster.EntityGuardian;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
@@ -24,15 +26,49 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.EnumDifficulty;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.event.entity.living.LivingFallEvent;
+import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Events related to Pneumatic Armor.  Note any player-tick events are handled in CommonHUDHandler#tickArmorPiece()
  */
 public class EventHandlerPneumaticArmor {
+    private static final Map<Integer, Integer> targetingTracker = new HashMap<>();
+
+    @SubscribeEvent
+    public void onMobTargetSet(LivingSetAttackTargetEvent event) {
+        // Helmet with entity tracker upgrade warns player if a mob targets them.
+        // LivingSetAttackTargetEvent gets continuously fired even if the mob was already targeting the same target
+        // so we need to track locally what is targeting whom, and only warn the player if the mob is newly
+        // targeting them - otherwise, massive spam.
+        int mobId = event.getEntityLiving().getEntityId();
+        if (event.getTarget() instanceof EntityPlayerMP) {
+            EntityPlayerMP player = (EntityPlayerMP) event.getTarget();
+            if (player.getItemStackFromSlot(EntityEquipmentSlot.HEAD).getItem() instanceof ItemPneumaticArmor) {
+                if (!targetingTracker.containsKey(mobId) || targetingTracker.get(mobId) != event.getTarget().getEntityId()) {
+                    CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer(player);
+                    if (handler.isArmorReady(EntityEquipmentSlot.HEAD) && handler.getArmorPressure(EntityEquipmentSlot.HEAD) > 0 && handler.isEntityTrackerEnabled()) {
+                        NetworkHandler.sendTo(new PacketSendArmorHUDMessage(
+                                "pneumaticHelmet.message.targetWarning", 60, 0x70FF4000, event.getEntityLiving().getName()),
+                                player
+                        );
+                    }
+                }
+            }
+            targetingTracker.put(mobId, event.getTarget().getEntityId());
+        } else {
+            targetingTracker.remove(mobId);
+        }
+    }
+
+    @SubscribeEvent
+    public void onEntityDeath(LivingDeathEvent event) {
+        targetingTracker.remove(event.getEntityLiving().getEntityId());
+    }
+
     @SubscribeEvent
     public void onPlayerFall(LivingFallEvent event) {
         if (event.getEntity() instanceof EntityPlayer && event.getDistance() > 3.0F && !event.getEntity().world.isRemote) {

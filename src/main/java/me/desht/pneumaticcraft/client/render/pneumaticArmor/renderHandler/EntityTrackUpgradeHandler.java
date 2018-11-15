@@ -10,6 +10,7 @@ import me.desht.pneumaticcraft.client.render.pneumaticArmor.ArmorMessage;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.RenderTarget;
 import me.desht.pneumaticcraft.common.CommonHUDHandler;
+import me.desht.pneumaticcraft.common.ai.StringFilterEntitySelector;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.recipes.CraftingRegistrator;
@@ -25,23 +26,24 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import java.util.*;
-import java.util.Map.Entry;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
 
 public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler {
     private static final int ENTITY_TRACK_THRESHOLD = 7;
     private static final float ENTITY_TRACKING_RANGE = 16F;
-    public static final String UPGRADE_NAME = "entityTracker";
+    private static final String UPGRADE_NAME = "entityTracker";
 
-    private final List<RenderTarget> targets = new ArrayList<>();
-    private final Map<Entity, Integer> targetingEntities = new HashMap<>();
+    private final Map<Integer, RenderTarget> targets = new HashMap<>();
     private boolean shouldStopSpamOnEntityTracking = false;
 
     public boolean gaveNotAbleToTrackEntityWarning;
@@ -61,42 +63,35 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler {
     @SideOnly(Side.CLIENT)
     public void update(EntityPlayer player, int rangeUpgrades) {
         ItemStack helmetStack = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
-        String entityFilter = "";
-        if (!helmetStack.isEmpty()) entityFilter = NBTUtil.getString(helmetStack, "entityFilter");
+        String entityFilter = helmetStack.isEmpty() ? "" : NBTUtil.getString(helmetStack, "entityFilter");
+
         double entityTrackRange = ENTITY_TRACKING_RANGE + rangeUpgrades * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE;
         AxisAlignedBB bbBox = getAABBFromRange(player, rangeUpgrades);
-        List<EntityLivingBase> mobs = player.world.getEntitiesWithinAABB(EntityLivingBase.class, bbBox);
-        mobs.remove(player);
+        List<EntityLivingBase> mobs = player.world.getEntitiesWithinAABB(EntityLivingBase.class, bbBox,
+                new EntityTrackerSelector(player, entityFilter, entityTrackRange));
         for (EntityLivingBase mob : mobs) {
-            if (player.getDistance(mob) > entityTrackRange || !PneumaticCraftUtils.isEntityValidForFilter(entityFilter, mob) || MinecraftForge.EVENT_BUS.post(new EntityTrackEvent(mob)))
-                continue;
-            boolean inList = false;
-            for (RenderTarget target : targets) {
-                if (target.entity == mob) {
-                    inList = true;
-                    target.ticksExisted = Math.abs(target.ticksExisted); // cancel lost targets
-                    break;
-                }
-            }
-            if (!inList) {
-                //player.world.playSoundAtEntity(player, Sounds.CANNON_SOUND, 1.0F, 1.0F);
-                targets.add(new RenderTarget(mob));
-//                if (mob instanceof EntityMob && !isEntityWithinPlayerFOV(player, mob)) {
-//                    HUDHandler.instance().addMessage(new ArmorMessage("A mob is sneaking up on you!", new ArrayList<String>(), 60, 0x70FF0000));
-//                }
+            RenderTarget target = targets.get(mob.getEntityId());
+            if (target != null) {
+                target.ticksExisted = Math.abs(target.ticksExisted); // cancel lost targets
+            } else {
+                targets.put(mob.getEntityId(), new RenderTarget(mob));
             }
         }
-        for (int j = 0; j < targets.size(); j++) {
-            RenderTarget target = targets.get(j);
-            if (target.entity.isDead || player.getDistance(target.entity) > entityTrackRange + 5 || !PneumaticCraftUtils.isEntityValidForFilter(entityFilter, target.entity)) {
+
+        List<Integer> toRemove = new ArrayList<>();
+        for (Map.Entry<Integer, RenderTarget> entry : targets.entrySet()) {
+            RenderTarget target = entry.getValue();
+            if (target.entity.isDead || player.getDistance(target.entity) > entityTrackRange + 5
+                    || !PneumaticCraftUtils.isEntityValidForFilter(entityFilter, target.entity)) {
                 if (target.ticksExisted > 0) {
                     target.ticksExisted = -60;
                 } else if (target.ticksExisted == -1) {
-                    targets.remove(target);
-                    j--;
+                    toRemove.add(entry.getKey());
                 }
             }
         }
+        toRemove.forEach(targets::remove);
+
         if (targets.size() > ENTITY_TRACK_THRESHOLD) {
             if (!shouldStopSpamOnEntityTracking) {
                 shouldStopSpamOnEntityTracking = true;
@@ -106,7 +101,7 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler {
             shouldStopSpamOnEntityTracking = false;
         }
         List<String> text = new ArrayList<>();
-        for (RenderTarget target : targets) {
+        for (RenderTarget target : targets.values()) {
             boolean wasNegative = target.ticksExisted < 0;
             target.ticksExisted += CommonHUDHandler.getHandlerForPlayer(player).getSpeedFromUpgrades();
             if (target.ticksExisted >= 0 && wasNegative) target.ticksExisted = -1;
@@ -124,54 +119,18 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler {
             text.add("Filter mode: " + (entityFilter.equals("") ? "None" : entityFilter));
         }
         entityTrackInfo.setText(text);
-
-        // Remove entities that don't need to be tracked anymore.
-        Iterator<Entry<Entity, Integer>> iterator = targetingEntities.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Entry<Entity, Integer> entry = iterator.next();
-            Entity entity = entry.getKey();
-            if (entry.getValue() >= 0) entry.setValue(entry.getValue() + 1);
-            if (entity.isDead || !player.world.getLoadedEntityList().contains(entity) || entry.getValue() > 50)
-                iterator.remove();
-        }
     }
 
-    public void warnIfNecessary(Entity entity) {
-        if (!targetingEntities.containsKey(entity)) {
-            HUDHandler.instance().addMessage(new ArmorMessage("A mob is targeting you!", new ArrayList<>(), 60, 0x70FF0000));
-        }
-        targetingEntities.put(entity, -1);
-    }
-
-    public void removeTargetingEntity(Entity entity) {
-        if (targetingEntities.containsKey(entity)) {
-            targetingEntities.put(entity, 0);
-        }
-    }
-
-    public static AxisAlignedBB getAABBFromRange(EntityPlayer player, int rangeUpgrades) {
+    static AxisAlignedBB getAABBFromRange(EntityPlayer player, int rangeUpgrades) {
         double entityTrackRange = ENTITY_TRACKING_RANGE + Math.min(10, rangeUpgrades) * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE;
 
         return new AxisAlignedBB(player.posX - entityTrackRange, player.posY - entityTrackRange, player.posZ - entityTrackRange, player.posX + entityTrackRange, player.posY + entityTrackRange, player.posZ + entityTrackRange);
     }
 
-    private boolean isEntityWithinPlayerFOV(EntityPlayer player, Entity entity) {
-        // code used from the Enderman player looking code.
-        Vec3d vec3 = player.getLook(1.0F).normalize();
-        Vec3d vec31 = new Vec3d(entity.posX - player.posX, entity.getEntityBoundingBox().minY + entity.height / 2.0F - (player.posY + player.getEyeHeight()), entity.posZ - player.posZ);
-        double d0 = vec31.length();
-        vec31 = vec31.normalize();
-        double d1 = vec3.dotProduct(vec31);
-        return d1 > 1.0D - 2.5D / d0;
-        // return d1 > 1.0D - 0.025D / d0;
-    }
-
     @Override
     @SideOnly(Side.CLIENT)
     public void render3D(float partialTicks) {
-        for (RenderTarget target : targets) {
-            target.render(partialTicks, shouldStopSpamOnEntityTracking);
-        }
+        targets.values().forEach(target -> target.render(partialTicks, shouldStopSpamOnEntityTracking));
     }
 
     @Override
@@ -234,36 +193,43 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler {
 
     }
 
-    public List<RenderTarget> getTargets() {
-        return targets;
+    public Stream<RenderTarget> getTargetsStream() {
+        return targets.values().stream();
     }
 
     public RenderTarget getTargetForEntity(Entity entity) {
-        for (RenderTarget target : targets) {
-            if (target.entity == entity) {
-                return target;
-            }
-        }
-        return null;
+        return getTargetsStream().filter(target -> target.entity == entity).findFirst().orElse(null);
     }
 
     public void hack() {
-        for (RenderTarget target : targets) {
-            target.hack();
-        }
+        getTargetsStream().forEach(RenderTarget::hack);
     }
 
     public void selectAsDebuggingTarget() {
-        for (RenderTarget target : targets) {
-            target.selectAsDebuggingTarget();
-        }
+        getTargetsStream().forEach(RenderTarget::selectAsDebuggingTarget);
     }
 
     public boolean scroll(MouseEvent event) {
-        for (RenderTarget target : targets) {
-            if (target.scroll(event)) return true;
-        }
-        return false;
+        return getTargetsStream().anyMatch(target -> target.scroll(event));
     }
 
+    private class EntityTrackerSelector extends StringFilterEntitySelector {
+        private final EntityPlayer player;
+        private final double threshold;
+
+        private EntityTrackerSelector(EntityPlayer player, String filter, double threshold) {
+            this.player = player;
+            this.threshold = threshold;
+            setFilter(filter);
+        }
+
+        @Override
+        public boolean apply(Entity entity) {
+            return entity != player
+                    && !entity.isDead
+                    && player.getDistance(entity) < threshold
+                    && !MinecraftForge.EVENT_BUS.post(new EntityTrackEvent(entity))
+                    && super.apply(entity);
+        }
+    }
 }
