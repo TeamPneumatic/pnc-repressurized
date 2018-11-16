@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.recipes.programs;
 import me.desht.pneumaticcraft.common.item.ItemAssemblyProgram;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.recipes.AssemblyRecipe;
-import me.desht.pneumaticcraft.common.tileentity.*;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyController;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.GuiConstants;
 import net.minecraft.item.ItemStack;
@@ -13,6 +13,7 @@ import net.minecraft.util.text.TextFormatting;
 import java.util.List;
 
 public abstract class AssemblyProgram {
+
     public enum EnumTubeProblem {
         NO_PROBLEM, NO_INPUT, NO_OUTPUT
     }
@@ -20,7 +21,11 @@ public abstract class AssemblyProgram {
     public EnumTubeProblem curProblem = EnumTubeProblem.NO_PROBLEM;
 
     public enum EnumMachine {
-        PLATFORM, DRILL, LASER, IO_UNIT_EXPORT, IO_UNIT_IMPORT
+        PLATFORM, DRILL, LASER, IO_UNIT_EXPORT, IO_UNIT_IMPORT, CONTROLLER;
+
+        public String getTranslationKey() {
+            return "tile.assembly_" + this.toString().toLowerCase() + ".name";
+        }
     }
 
     /**
@@ -36,7 +41,7 @@ public abstract class AssemblyProgram {
      *
      * @return true if the controller should use air and display 'running'. Return false to display 'standby'.
      */
-    public abstract boolean executeStep(TileEntityAssemblyController controller, TileEntityAssemblyPlatform platform, TileEntityAssemblyIOUnit ioUnitImport, TileEntityAssemblyIOUnit ioUnitExport, TileEntityAssemblyDrill drill, TileEntityAssemblyLaser laser);
+    public abstract boolean executeStep(TileEntityAssemblyController.AssemblySystem system);
 
     public abstract void writeToNBT(NBTTagCompound tag);
 

@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.recipes.programs;
 
 import me.desht.pneumaticcraft.common.item.ItemAssemblyProgram;
 import me.desht.pneumaticcraft.common.recipes.AssemblyRecipe;
-import me.desht.pneumaticcraft.common.tileentity.*;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyController;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -17,25 +17,25 @@ public class ProgramDrillLaser extends AssemblyProgram {
     }
 
     @Override
-    public boolean executeStep(TileEntityAssemblyController controller, TileEntityAssemblyPlatform platform, TileEntityAssemblyIOUnit ioUnitImport, TileEntityAssemblyIOUnit ioUnitExport, TileEntityAssemblyDrill drill, TileEntityAssemblyLaser laser) {
+    public boolean executeStep(TileEntityAssemblyController.AssemblySystem system) {
         boolean useAir = true;
 
-        if (!platform.getHeldStack().isEmpty()) {
-            if (canItemBeDrilled(platform.getHeldStack())) {
-                drill.goDrilling();
-            } else if (drill.isIdle() && canItemBeLasered(platform.getHeldStack())) {
-                laser.startLasering();
-            } else if (drill.isIdle() && laser.isIdle()) {
-                useAir = ioUnitExport.pickupItem(null);
+        if (!system.getPlatform().getHeldStack().isEmpty()) {
+            if (canItemBeDrilled(system.getPlatform().getHeldStack())) {
+                system.getDrill().goDrilling();
+            } else if (system.getDrill().isIdle() && canItemBeLasered(system.getPlatform().getHeldStack())) {
+                system.getLaser().startLasering();
+            } else if (system.getDrill().isIdle() && system.getLaser().isIdle()) {
+                useAir = system.getExportUnit().pickupItem(null);
             }
-        } else if (!ioUnitExport.isIdle()) {
-            useAir = ioUnitExport.pickupItem(null);
+        } else if (!system.getExportUnit().isIdle()) {
+            useAir = system.getExportUnit().pickupItem(null);
         } else {
             List<AssemblyRecipe> recipes = new ArrayList<>();
             recipes.addAll(getRecipeList());
             recipes.addAll(new ProgramDrill().getRecipeList());
             recipes.addAll(new ProgramLaser().getRecipeList());
-            useAir = ioUnitImport.pickupItem(recipes);
+            useAir = system.getImportUnit().pickupItem(recipes);
         }
 
         return useAir;

@@ -45,7 +45,6 @@ public class TileEntityAssemblyLaser extends TileEntityAssemblyRobot {
                     TileEntity te = getTileEntityForCurrentDirection();
                     if (te instanceof TileEntityAssemblyPlatform) {
                         TileEntityAssemblyPlatform platform = (TileEntityAssemblyPlatform) te;
-                        platform.hasLaseredStack = true;
                         ItemStack output = getLaseredOutputForItem(platform.getHeldStack());
                         if (!output.isEmpty()) {
                             platform.setHeldStack(output);
@@ -93,6 +92,11 @@ public class TileEntityAssemblyLaser extends TileEntityAssemblyRobot {
     @Override
     public boolean isIdle() {
         return laserStep == 0 && isDoneInternal();
+    }
+
+    @Override
+    public AssemblyProgram.EnumMachine getAssemblyType() {
+        return AssemblyProgram.EnumMachine.LASER;
     }
 
     @Override

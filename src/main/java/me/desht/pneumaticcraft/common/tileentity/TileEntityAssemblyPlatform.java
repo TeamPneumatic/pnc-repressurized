@@ -2,9 +2,12 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
+import me.desht.pneumaticcraft.common.recipes.programs.AssemblyProgram;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
@@ -19,8 +22,7 @@ public class TileEntityAssemblyPlatform extends TileEntityTickableBase implement
     @DescSynced
     private final ItemStackHandler inventory = new BaseItemStackHandler(this,1);
     private float speed = 1.0F;
-    boolean hasDrilledStack;
-    boolean hasLaseredStack;
+    private BlockPos controllerPos;
 
     @Override
     public void update() {
@@ -48,15 +50,13 @@ public class TileEntityAssemblyPlatform extends TileEntityTickableBase implement
         return isIdle();
     }
 
-    public boolean closeClaw() {
-        hasDrilledStack = false;
-        hasLaseredStack = false;
+    boolean closeClaw() {
         shouldClawClose = true;
         sendDescriptionPacket();
         return isClawDone();
     }
 
-    public boolean openClaw() {
+    boolean openClaw() {
         shouldClawClose = false;
         sendDescriptionPacket();
         return isClawDone();
@@ -68,10 +68,6 @@ public class TileEntityAssemblyPlatform extends TileEntityTickableBase implement
     }
 
     public void setHeldStack(@Nonnull ItemStack stack) {
-        if (stack.isEmpty()) {
-            hasDrilledStack = false;
-            hasLaseredStack = false;
-        }
         inventory.setStackInSlot(0, stack);
     }
 
@@ -81,8 +77,6 @@ public class TileEntityAssemblyPlatform extends TileEntityTickableBase implement
         tag.setBoolean("clawClosing", shouldClawClose);
         tag.setFloat("clawProgress", clawProgress);
         tag.setFloat("speed", speed);
-        tag.setBoolean("drilled", hasDrilledStack);
-        tag.setBoolean("lasered", hasLaseredStack);
         tag.setTag("Items", inventory.serializeNBT());
         return tag;
     }
@@ -93,8 +87,6 @@ public class TileEntityAssemblyPlatform extends TileEntityTickableBase implement
         shouldClawClose = tag.getBoolean("clawClosing");
         clawProgress = tag.getFloat("clawProgress");
         speed = tag.getFloat("speed");
-        hasDrilledStack = tag.getBoolean("drilled");
-        hasLaseredStack = tag.getBoolean("lasered");
         inventory.deserializeNBT(tag.getCompoundTag("Items"));
     }
 
@@ -103,4 +95,28 @@ public class TileEntityAssemblyPlatform extends TileEntityTickableBase implement
         this.speed = speed;
     }
 
+    @Override
+    public AssemblyProgram.EnumMachine getAssemblyType() {
+        return AssemblyProgram.EnumMachine.PLATFORM;
+    }
+
+    @Override
+    public void setControllerPos(BlockPos controllerPos) {
+        this.controllerPos = controllerPos;
+    }
+
+    @Override
+    public void onNeighborBlockUpdate() {
+        super.onNeighborBlockUpdate();
+        invalidateSystem();
+    }
+
+    private void invalidateSystem() {
+        if (controllerPos != null) {
+            TileEntity te = getWorld().getTileEntity(controllerPos);
+            if (te instanceof TileEntityAssemblyController) {
+                ((TileEntityAssemblyController) te).invalidateAssemblySystem();
+            }
+        }
+    }
 }

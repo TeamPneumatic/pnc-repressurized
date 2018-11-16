@@ -52,7 +52,7 @@ public class ItemAssemblyProgram extends ItemPneumaticSubtyped {
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, World worldIn, List<String> infoList, ITooltipFlag par4) {
         infoList.add("Required Machines:");
-        infoList.add("-" + Blockss.ASSEMBLY_CONTROLLER.getLocalizedName());
+        infoList.add("\u2022 " + Blockss.ASSEMBLY_CONTROLLER.getLocalizedName());
 
         if (referencePrograms == null) {
             referencePrograms = new AssemblyProgram[PROGRAMS_AMOUNT];
@@ -65,19 +65,19 @@ public class ItemAssemblyProgram extends ItemPneumaticSubtyped {
         for (AssemblyProgram.EnumMachine machine : requiredMachines) {
             switch (machine) {
                 case PLATFORM:
-                    infoList.add("-" + Blockss.ASSEMBLY_PLATFORM.getLocalizedName());
+                    infoList.add("\u2022 " + Blockss.ASSEMBLY_PLATFORM.getLocalizedName());
                     break;
                 case DRILL:
-                    infoList.add("-" + Blockss.ASSEMBLY_DRILL.getLocalizedName());
+                    infoList.add("\u2022 " + Blockss.ASSEMBLY_DRILL.getLocalizedName());
                     break;
                 case LASER:
-                    infoList.add("-" + Blockss.ASSEMBLY_LASER.getLocalizedName());
+                    infoList.add("\u2022 " + Blockss.ASSEMBLY_LASER.getLocalizedName());
                     break;
                 case IO_UNIT_EXPORT:
-                    infoList.add("-" + Blockss.ASSEMBLY_IO_UNIT.getLocalizedName() + " (export)");//TODO localize
+                    infoList.add("\u2022 " + Blockss.ASSEMBLY_IO_UNIT.getLocalizedName() + " (export)");//TODO localize
                     break;
                 case IO_UNIT_IMPORT:
-                    infoList.add("-" + Blockss.ASSEMBLY_IO_UNIT.getLocalizedName() + " (import)");
+                    infoList.add("\u2022 " + Blockss.ASSEMBLY_IO_UNIT.getLocalizedName() + " (import)");
                     break;
             }
         }

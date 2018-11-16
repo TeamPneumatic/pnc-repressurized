@@ -50,7 +50,7 @@ public class JEI implements IModPlugin {
         registry.handleRecipes(AssemblyRecipe.class,
                 JEIAssemblyControllerCategory.AssemblyRecipeWrapper::new, ModCategoryUid.ASSEMBLY_CONTROLLER);
 
-        registry.addRecipeClickArea(GuiAssemblyController.class, 68, 75, 24, 17, ModCategoryUid.ASSEMBLY_CONTROLLER);
+        registry.addRecipeClickArea(GuiAssemblyController.class, 110, 10, 50, 50, ModCategoryUid.ASSEMBLY_CONTROLLER);
         registry.addRecipeClickArea(GuiPressureChamber.class, 100, 7, 40, 40, ModCategoryUid.PRESSURE_CHAMBER);
         registry.addRecipeClickArea(GuiRefinery.class, 47, 21, 27, 47, ModCategoryUid.REFINERY);
         registry.addRecipeClickArea(GuiThermopneumaticProcessingPlant.class, 30, 31, 48, 20, ModCategoryUid.THERMO_PNEUMATIC);

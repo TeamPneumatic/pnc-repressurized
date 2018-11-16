@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
 import me.desht.pneumaticcraft.common.recipes.AssemblyRecipe;
+import me.desht.pneumaticcraft.common.recipes.programs.AssemblyProgram;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
@@ -129,8 +130,8 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
 
         if (state == STATE_IDLE) state++;
 
-        return state > STATE_IDLE && !isSleeping() // will not use air while waiting for item/inventory to be available
-                && state < STATE_MAX;
+        // don't use air while waiting for item/inventory to be available
+        return state > STATE_IDLE && !isSleeping() && state < STATE_MAX;
     }
 
     private boolean gotoIdlePos() {
@@ -324,7 +325,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
         } else if (shouldClawClose && clawProgress < 1F) {
             clawProgress = Math.min(clawProgress + TileEntityConstants.ASSEMBLY_IO_UNIT_CLAW_SPEED * speed, 1);
         }
-
+        markDirty();
         return isClawDone();
     }
 
@@ -342,13 +343,13 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
             if (!hasSwitchedThisTick) {
                 exporting = !exporting;
                 hasSwitchedThisTick = true;
+                markDirty();
+                invalidateSystem();
             }
             return true;
         } else {
             return false;
         }
-
-        //PacketDispatcher.sendPacketToAllPlayers(getDescriptionPacket());
     }
 
     @Override
@@ -361,6 +362,11 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
     @Override
     public boolean isIdle() {
         return state == STATE_IDLE;
+    }
+
+    @Override
+    public AssemblyProgram.EnumMachine getAssemblyType() {
+        return isImportUnit() ? AssemblyProgram.EnumMachine.IO_UNIT_IMPORT : AssemblyProgram.EnumMachine.IO_UNIT_EXPORT;
     }
 
     private boolean isDoneInternal() {

@@ -1,4 +1,4 @@
-# Blocks
+ # Blocks
 tile.pressure_tube.name=Pressure Tube
 tile.air_compressor.name=Air Compressor
 tile.advanced_air_compressor.name=Advanced Air Compressor
@@ -14,6 +14,8 @@ tile.vacuum_pump.name=Vacuum Pump
 tile.pneumatic_door_base.name=Pneumatic Door Base
 tile.pneumatic_door.name=Pneumatic Door
 tile.assembly_io_unit.name=Assembly IO Unit
+tile.assembly_io_unit_export.name=Assembly IO Unit (export)
+tile.assembly_io_unit_import.name=Assembly IO Unit (import)
 tile.assembly_platform.name=Assembly Platform
 tile.assembly_drill.name=Assembly Drill
 tile.assembly_laser.name=Assembly Laser
@@ -499,6 +501,9 @@ gui.tab.problems.keroseneLamp.noFuel=§7The lamp has no fuel. \n§0Add Kerosene 
 gui.tab.problems.keroseneLamp.badFuel=§7The lamp has an unsuitable fluid in the tank! \n§0Pump out the fluid with a Liquid Hopper or other fluid extraction device.
 gui.tab.problems.sentryTurret.noAmmo=§7The Sentry Turret has no ammo. \n§0Add Gun Ammo to the Ammo slots.
 gui.tab.problems.electrostatic.notEnoughGrounding=§fWhen lightning strikes with a full air tank not all the energy can be redirected! \n§0Connect up more Iron Bars to the underside of the Electrostatic Compressor
+gui.tab.problems.assembly_controller.duplicateMachine=§fDuplicate Machine Detected! \n§0Ensure there is only one %s.
+gui.tab.problems.assembly_controller.missingMachine=§fMissing Machine! \n§0Not all machines for the inserted program are present. Add one %s to your assembly system.
+gui.tab.problems.assembly_controller.no_program=§fNo Program! \n§0Insert an Assembly Program into the Controller.
 
 # Upgrades
 gui.tab.upgrades=Upgrades

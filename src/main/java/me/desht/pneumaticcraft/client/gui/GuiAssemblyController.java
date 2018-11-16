@@ -3,8 +3,11 @@ package me.desht.pneumaticcraft.client.gui;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.inventory.ContainerAssemblyController;
-import me.desht.pneumaticcraft.common.tileentity.*;
+import me.desht.pneumaticcraft.common.recipes.programs.AssemblyProgram.EnumMachine;
+import me.desht.pneumaticcraft.common.tileentity.IAssemblyMachine;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyController;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
@@ -12,6 +15,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 @SideOnly(Side.CLIENT)
@@ -27,7 +31,7 @@ public class GuiAssemblyController extends GuiPneumaticContainerBase<TileEntityA
     @Override
     public void initGui() {
         super.initGui();
-        statusStat = addAnimatedStat("Assembly Controller Status", new ItemStack(Blockss.ASSEMBLY_CONTROLLER), 0xFFFFAA00, false);
+        statusStat = addAnimatedStat("gui.tab.status", new ItemStack(Blockss.ASSEMBLY_CONTROLLER), 0xFFFFAA00, false);
     }
 
     @Override
@@ -35,7 +39,6 @@ public class GuiAssemblyController extends GuiPneumaticContainerBase<TileEntityA
         super.drawGuiContainerForegroundLayer(x, y);
         fontRenderer.drawString("Upgr.", 18, 21, 4210752);
         fontRenderer.drawString("Prog.", 70, 24, 4210752);
-
     }
 
     @Override
@@ -47,43 +50,22 @@ public class GuiAssemblyController extends GuiPneumaticContainerBase<TileEntityA
     private List<String> getStatusText() {
         List<String> text = new ArrayList<>();
 
-        List<IAssemblyMachine> machineList = te.getMachines();
-        boolean platformFound = false;
-        boolean drillFound = false;
-        boolean laserFound = false;
-        boolean IOUnitExportFound = false;
-        boolean IOUnitImportFound = false;
-        text.add("\u00a77Machine Status:");
-        for (IAssemblyMachine machine : machineList) {
-            if (machine instanceof TileEntityAssemblyPlatform) {
-                platformFound = true;
-                text.add(TextFormatting.GREEN + "-Assembly Platform online");
-            } else if (machine instanceof TileEntityAssemblyDrill) {
-                drillFound = true;
-                text.add(TextFormatting.GREEN + "-Assembly Drill online");
-            } else if (machine instanceof TileEntityAssemblyIOUnit) {
-                if (((TileEntityAssemblyIOUnit) machine).isImportUnit()) {
-                    IOUnitImportFound = true;
-                    text.add(TextFormatting.GREEN + "-Assembly IO Unit (import) online");
-                } else {
-                    IOUnitExportFound = true;
-                    text.add(TextFormatting.GREEN + "-Assembly IO Unit (export) online");
-                }
-            } else if (machine instanceof TileEntityAssemblyLaser) {
-                laserFound = true;
-                text.add(TextFormatting.GREEN + "-Assembly Laser online");
-            }
+        EnumSet<EnumMachine> foundMachines = EnumSet.of(EnumMachine.CONTROLLER);
+        for (IAssemblyMachine machine : te.findMachines(EnumMachine.values().length)) {
+            foundMachines.add(machine.getAssemblyType());
         }
-        if (!platformFound) text.add(TextFormatting.DARK_RED + "-Assembly Platform offline");
-        if (!drillFound) text.add(TextFormatting.DARK_RED + "-Assembly Drill offline");
-        if (!laserFound) text.add(TextFormatting.DARK_RED + "-Assembly Laser offline");
-        if (!IOUnitExportFound) text.add(TextFormatting.DARK_RED + "-Assembly IO Unit (export) offline");
-        if (!IOUnitImportFound) text.add(TextFormatting.DARK_RED + "-Assembly IO Unit (import) offline");
+        for (EnumMachine m : EnumMachine.values()) {
+            if (m == EnumMachine.CONTROLLER) continue; // we *are* the controller!
+            String s = foundMachines.contains(m) ? TextFormatting.DARK_GREEN + "\u2714 " : TextFormatting.RED + "\u2717 ";
+            text.add(s + TextFormatting.BLACK + " " + I18n.format(m.getTranslationKey()));
+        }
         return text;
     }
 
     @Override
     protected void addProblems(List<String> textList) {
+        super.addProblems(textList);
+
         te.addProblems(textList);
     }
 }

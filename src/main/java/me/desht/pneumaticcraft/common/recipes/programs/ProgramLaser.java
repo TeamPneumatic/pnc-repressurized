@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.recipes.programs;
 
 import me.desht.pneumaticcraft.common.item.ItemAssemblyProgram;
 import me.desht.pneumaticcraft.common.recipes.AssemblyRecipe;
-import me.desht.pneumaticcraft.common.tileentity.*;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyController;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -16,22 +16,22 @@ public class ProgramLaser extends AssemblyProgram {
     }
 
     @Override
-    public boolean executeStep(TileEntityAssemblyController controller, TileEntityAssemblyPlatform platform, TileEntityAssemblyIOUnit ioUnitImport, TileEntityAssemblyIOUnit ioUnitExport, TileEntityAssemblyDrill drill, TileEntityAssemblyLaser laser) {
+    public boolean executeStep(TileEntityAssemblyController.AssemblySystem system) {
         boolean useAir = true;
 
-        if (!platform.getHeldStack().isEmpty()) {
-            if (canItemBeLasered(platform.getHeldStack())) {
-                laser.startLasering();
+        if (!system.getPlatform().getHeldStack().isEmpty()) {
+            if (canItemBeLasered(system.getPlatform().getHeldStack())) {
+                system.getLaser().startLasering();
             } else {
-                if (laser.isIdle()) {
-                    useAir = ioUnitExport.pickupItem(null);
+                if (system.getLaser().isIdle()) {
+                    useAir = system.getExportUnit().pickupItem(null);
                 }
             }
         } else {
-            if (!ioUnitExport.isIdle()) {
-                useAir = ioUnitExport.pickupItem(null);
+            if (!system.getExportUnit().isIdle()) {
+                useAir = system.getExportUnit().pickupItem(null);
             } else {
-                useAir = ioUnitImport.pickupItem(getRecipeList());
+                useAir = system.getImportUnit().pickupItem(getRecipeList());
             }
         }
 

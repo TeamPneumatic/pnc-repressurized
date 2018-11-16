@@ -13,7 +13,7 @@ import net.minecraft.util.EnumFacing;
 
 public class TileEntityAssemblyDrill extends TileEntityAssemblyRobot {
     @DescSynced
-    public boolean isDrillOn;
+    private boolean isDrillOn;
     @DescSynced
     @LazySynced
     private float drillSpeed;
@@ -59,9 +59,8 @@ public class TileEntityAssemblyDrill extends TileEntityAssemblyRobot {
                     TileEntity te = getTileEntityForCurrentDirection();
                     if (te instanceof TileEntityAssemblyPlatform) {
                         TileEntityAssemblyPlatform platform = (TileEntityAssemblyPlatform) te;
-                        platform.hasDrilledStack = true;
                         ItemStack output = getDrilledOutputForItem(platform.getHeldStack());
-                        if (output != null) {
+                        if (!output.isEmpty()) {
                             platform.setHeldStack(output);
                         }
                     }
@@ -82,6 +81,7 @@ public class TileEntityAssemblyDrill extends TileEntityAssemblyRobot {
     public void goDrilling() {
         if (drillStep == 0) {
             drillStep = 1;
+            markDirty();
         }
     }
 
@@ -107,6 +107,11 @@ public class TileEntityAssemblyDrill extends TileEntityAssemblyRobot {
         return drillStep == 0 && isDoneInternal();
     }
 
+    @Override
+    public AssemblyProgram.EnumMachine getAssemblyType() {
+        return AssemblyProgram.EnumMachine.DRILL;
+    }
+
     private boolean isDoneInternal() {
         if (super.isDoneMoving()) {
             return isDrillOn ? drillSpeed > TileEntityConstants.ASSEMBLY_DRILL_MAX_SPEED - 1F : PneumaticCraftUtils.areFloatsEqual(drillSpeed, 0F);
@@ -120,11 +125,11 @@ public class TileEntityAssemblyDrill extends TileEntityAssemblyRobot {
         return false;
     }
 
-    public static ItemStack getDrilledOutputForItem(ItemStack input) {
+    private static ItemStack getDrilledOutputForItem(ItemStack input) {
         for (AssemblyRecipe recipe : AssemblyRecipe.drillRecipes) {
             if (AssemblyProgram.isValidInput(recipe, input)) return recipe.getOutput().copy();
         }
-        return null;
+        return ItemStack.EMPTY;
     }
 
     @Override
