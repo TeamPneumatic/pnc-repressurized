@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
@@ -234,6 +235,13 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
     public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
         if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
             if (dispenserUpgradeInserted) {
+                if (facing == EnumFacing.UP && ConfigHandler.machineProperties.aerialInterfaceArmorCompat) {
+                    // https://github.com/TeamPneumatic/pnc-repressurized/issues/278
+                    IItemHandler handler = itemHandlerSideConfigurator.getHandler(EnumFacing.UP);
+                    if (handler instanceof PlayerArmorInvHandler) {
+                        return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(handler);
+                    }
+                }
                 return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(playerFoodHandler);
             } else {
                 return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(itemHandlerSideConfigurator.getHandler(facing));

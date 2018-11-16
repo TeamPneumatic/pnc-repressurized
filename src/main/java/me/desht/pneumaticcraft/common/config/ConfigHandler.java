@@ -159,6 +159,8 @@ public class ConfigHandler {
         @Config.Comment("Can the Liquid Dispenser absorb/dispense fluids into the world with a Dispenser Upgrade?")
         @Config.RequiresWorldRestart
         public boolean liquidHopperDispenser = true;
+        @Config.Comment("Aerial Interface backwards compat: allow pre-0.8.0 behaviour of getting player's armor inventory from top face, even with Dispenser Upgrade installed")
+        public boolean aerialInterfaceArmorCompat = true;
     }
 
     public static class Advanced {
