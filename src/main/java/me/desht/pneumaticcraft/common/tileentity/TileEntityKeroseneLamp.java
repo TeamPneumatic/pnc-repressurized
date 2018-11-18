@@ -67,7 +67,7 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements IR
     @LazySynced
     @DescSynced
     @GuiSynced
-    private final SmartSyncTank tank = new SmartSyncTank(this, 1000) {
+    private final SmartSyncTank tank = new SmartSyncTank(this, 2000) {
         private FluidStack prevFluid;
         @Override
         protected void onContentsChanged() {
