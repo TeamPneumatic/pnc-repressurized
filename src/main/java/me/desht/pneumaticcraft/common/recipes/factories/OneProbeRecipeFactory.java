@@ -55,6 +55,7 @@ public class OneProbeRecipeFactory implements IRecipeFactory {
             NBTTagCompound tag = helmet.isEmpty() ? new NBTTagCompound() : helmet.hasTagCompound() ? helmet.getTagCompound().copy() : new NBTTagCompound();
             tag.setInteger(ONE_PROBE_TAG, 1);
             output.setTagCompound(tag);
+            output.setItemDamage(helmet.getItemDamage());
             return output;
         }
 
