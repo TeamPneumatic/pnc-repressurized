@@ -217,7 +217,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
         }
     }
 
-    public void rerenderTileEntity() {
+    void rerenderTileEntity() {
         world.markBlockRangeForRenderUpdate(getPos(), getPos());
     }
 
@@ -265,7 +265,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound tag) {
         super.writeToNBT(tag);
-        if (upgradeHandler != null) {
+        if (upgradeHandler != null && upgradeHandler.getSlots() > 0) {
             tag.setTag("Upgrades", upgradeHandler.serializeNBT());
         }
         writeToPacket(tag);

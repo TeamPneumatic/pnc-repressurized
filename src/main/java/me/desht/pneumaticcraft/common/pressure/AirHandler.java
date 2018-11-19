@@ -110,8 +110,7 @@ public class AirHandler implements IAirHandler {
     }
 
     private void updateVolume() {
-        int upgradeVolume = getVolumeFromUpgrades();
-        setVolume(defaultVolume + upgradeVolume);
+        setVolume(defaultVolume + getVolumeFromUpgrades());
     }
 
     private void doSecurityAirChecks() {
@@ -137,7 +136,9 @@ public class AirHandler implements IAirHandler {
     public void setVolume(int newVolume) {
         Validate.isTrue(newVolume > 0, "Volume can't be lower or equal than 0!");
 
-        if (newVolume < volume) air = (int) (air * (float) newVolume / volume); // lose air when we decrease in volume.
+        if (newVolume < volume) {
+            air = (int) (air * (float) newVolume / volume); // lose air when we decrease in volume.
+        }
         volume = newVolume;
     }
 

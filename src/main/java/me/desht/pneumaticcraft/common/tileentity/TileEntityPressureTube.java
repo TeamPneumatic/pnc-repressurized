@@ -43,8 +43,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
         super(PneumaticValues.DANGER_PRESSURE_PRESSURE_TUBE, PneumaticValues.MAX_PRESSURE_PRESSURE_TUBE, PneumaticValues.VOLUME_PRESSURE_TUBE, 0);
     }
 
-    public TileEntityPressureTube(float dangerPressurePressureTube, float maxPressurePressureTube,
-                                  int volumePressureTube) {
+    public TileEntityPressureTube(float dangerPressurePressureTube, float maxPressurePressureTube, int volumePressureTube) {
         super(dangerPressurePressureTube, maxPressurePressureTube, volumePressureTube, 0);
     }
 
@@ -59,9 +58,21 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     @Override
     public void readFromNBT(NBTTagCompound nbt) {
         super.readFromNBT(nbt);
-        for (int i = 0; i < 6; i++) {
-            sidesConnected[i] = nbt.getBoolean("sideConnected" + i);
-            sidesClosed[i] = nbt.getBoolean("sideClosed" + i);
+
+        if (nbt.hasKey("sidesConnected")) {
+            // new-style: far more compact storage
+            byte connected = nbt.getByte("sidesConnected");
+            byte closed = nbt.getByte("sidesClosed");
+            for (int i = 0; i < 6; i++) {
+                sidesConnected[i] = ((connected & 1 << i) != 0);
+                sidesClosed[i] = ((closed & 1 << i) != 0);
+            }
+        } else {
+            // old-style
+            for (int i = 0; i < 6; i++) {
+                sidesConnected[i] = nbt.getBoolean("sideConnected" + i);
+                sidesClosed[i] = nbt.getBoolean("sideClosed" + i);
+            }
         }
         camoStack = ICamouflageableTE.readCamoStackFromNBT(nbt);
         camoState = ICamouflageableTE.getStateForStack(camoStack);
@@ -70,10 +81,14 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
         super.writeToNBT(nbt);
+
+        byte connected = 0, closed = 0;
         for (int i = 0; i < 6; i++) {
-            nbt.setBoolean("sideConnected" + i, sidesConnected[i]);
-            nbt.setBoolean("sideClosed" + i, sidesClosed[i]);
+            if (sidesConnected[i]) connected |= 1 << i;
+            if (sidesClosed[i]) closed |= 1 << i;
         }
+        nbt.setByte("sidesConnected", connected);
+        nbt.setByte("sidesClosed", closed);
         ICamouflageableTE.writeCamoStackToNBT(camoStack, nbt);
         return nbt;
     }
