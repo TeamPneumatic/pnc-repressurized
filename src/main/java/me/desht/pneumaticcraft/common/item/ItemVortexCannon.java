@@ -21,7 +21,7 @@ public class ItemVortexCannon extends ItemPressurizable {
     @Override
     public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer playerIn, EnumHand handIn) {
         ItemStack iStack = playerIn.getHeldItem(handIn);
-        if (iStack.getItemDamage() < iStack.getMaxDamage()) {
+        if (getPressure(iStack) > 0.1f) {
             double factor = 0.2D * getPressure(iStack);
             world.playSound(playerIn.posX, playerIn.posY, playerIn.posZ, Sounds.CANNON_SOUND, SoundCategory.PLAYERS, 1.0F, 0.7F + (float) factor * 0.2F, false);
             EntityVortex vortex = new EntityVortex(world, playerIn);
@@ -35,12 +35,14 @@ public class ItemVortexCannon extends ItemPressurizable {
             vortex.motionZ *= factor;
             if (!world.isRemote) world.spawnEntity(vortex);
 
-            iStack.setItemDamage(iStack.getItemDamage() + PneumaticValues.USAGE_VORTEX_CANNON);
-            if (iStack.getItemDamage() > iStack.getMaxDamage()) {
-                iStack.setItemDamage(iStack.getMaxDamage());
-            }
+            addAir(iStack, -PneumaticValues.USAGE_VORTEX_CANNON);
         }
 
         return ActionResult.newResult(EnumActionResult.SUCCESS, iStack);
+    }
+
+    @Override
+    public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
+        return false;
     }
 }

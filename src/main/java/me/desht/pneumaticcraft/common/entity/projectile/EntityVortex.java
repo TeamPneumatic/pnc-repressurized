@@ -53,28 +53,6 @@ public class EntityVortex extends EntityThrowable {
         if (motionX * motionX + motionY * motionY + motionZ * motionZ < 0.1D) {
             setDead();
         }
-        if (!world.isRemote) {
-            BlockPos pos = new BlockPos(posX, posY, posZ);
-            BlockPos.MutableBlockPos mPos = new BlockPos.MutableBlockPos(pos);
-            if (tryCutPlants(pos)) {
-                int plantsCut = 1;
-                for (int x = -1; x <= 1; x++) {
-                    for (int y = -1; y <= 1; y++) {
-                        for (int z = -1; z <= 1; z++) {
-                            if (x == 0 && y == 0 && z == 0) continue;
-                            mPos.setPos(pos.getX() + x, pos.getY() + y, pos.getZ() + z);
-                            if (tryCutPlants(mPos)) plantsCut++;
-                        }
-                    }
-                }
-                // slow the vortex down for each plant it broke
-                double mult = Math.pow(0.8D, plantsCut);
-                motionX *= mult;
-                motionY *= mult;
-                motionZ *= mult;
-            }
-        }
-
     }
 
     public boolean hasRenderOffsetX() {
@@ -123,9 +101,27 @@ public class EntityVortex extends EntityThrowable {
         } else {
             Block block = world.getBlockState(objectPosition.getBlockPos()).getBlock();
             if (block instanceof IPlantable || block instanceof BlockLeaves) {
-                motionX = oldMotionX;
-                motionY = oldMotionY;
-                motionZ = oldMotionZ;
+                if (!world.isRemote) {
+                    BlockPos pos = objectPosition.getBlockPos();
+                    BlockPos.MutableBlockPos mPos = new BlockPos.MutableBlockPos(pos);
+                    if (tryCutPlants(pos)) {
+                        int plantsCut = 1;
+                        for (int x = -1; x <= 1; x++) {
+                            for (int y = -1; y <= 1; y++) {
+                                for (int z = -1; z <= 1; z++) {
+                                    if (x == 0 && y == 0 && z == 0) continue;
+                                    mPos.setPos(pos.getX() + x, pos.getY() + y, pos.getZ() + z);
+                                    if (tryCutPlants(mPos)) plantsCut++;
+                                }
+                            }
+                        }
+                        // slow the vortex down for each plant it broke
+                        double mult = Math.pow(0.8D, plantsCut);
+                        motionX *= mult;
+                        motionY *= mult;
+                        motionZ *= mult;
+                    }
+                }
             } else {
                 setDead();
             }
