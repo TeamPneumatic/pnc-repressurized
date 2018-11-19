@@ -7,6 +7,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 public class TileEntityRegistrator {
     public static void init() {
         GameRegistry.registerTileEntity(TileEntityPressureTube.class, RL("PressureTube"));
+        GameRegistry.registerTileEntity(TileEntityAdvancedPressureTube.class, RL("advancedPressureTube"));
         GameRegistry.registerTileEntity(TileEntityAirCompressor.class, RL("AirCompressor"));
         GameRegistry.registerTileEntity(TileEntityAdvancedAirCompressor.class, RL("advancedAirCompressor"));
         GameRegistry.registerTileEntity(TileEntityAirCannon.class, RL("AirCannon"));

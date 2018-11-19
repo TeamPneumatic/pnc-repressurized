@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.thirdparty.ModInteractionUtils;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityAdvancedPressureTube;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.BBConstants;
@@ -107,7 +108,11 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
 
     @Override
     public TileEntity createTileEntity(World world, IBlockState state) {
-        return new TileEntityPressureTube(tier.dangerPressure, tier.criticalPressure, tier.volume);
+        switch (tier) {
+            case ONE: return new TileEntityPressureTube();
+            case TWO: return new TileEntityAdvancedPressureTube();
+        }
+        return null;
     }
 
     @Override

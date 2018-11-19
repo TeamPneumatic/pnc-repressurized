@@ -232,8 +232,6 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     }
 
     private void updateConnections() {
-//        sidesConnected = new boolean[6];
-
         List<Pair<EnumFacing, IAirHandler>> connections = getAirHandler(null).getConnectedPneumatics();
         Arrays.fill(sidesConnected, false);
         for (Pair<EnumFacing, IAirHandler> entry : connections) {
