@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.block.tubes;
 
+import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.client.model.module.ModelLogistics;
 import me.desht.pneumaticcraft.client.model.module.ModelModuleBase;
 import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
@@ -41,8 +42,8 @@ public class ModuleLogistics extends TubeModule {
     private int ticksUntilNextCycle;
     private boolean powered;
     private static final double MIN_PRESSURE = 3;
-    private static final double ITEM_TRANSPORT_COST = 5;
-    private static final double FLUID_TRANSPORT_COST = 0.1;
+    private static final double ITEM_TRANSPORT_COST = 2.5;
+    private static final double FLUID_TRANSPORT_COST = 0.05;
 
     @SideOnly(Side.CLIENT)
     public int getTicksSinceAction() {
@@ -152,6 +153,7 @@ public class ModuleLogistics extends TubeModule {
                         if (logistics.getColorChannel() == getColorChannel()) {
                             // Make sure any connected module doesn't tick, set it to a 5 second timer.
                             // This is also a penalty value when no task is executed this tick.
+                            // The timer will be reduced to 20 ticks later if the module does some work.
                             logistics.ticksUntilNextCycle = 100;
                             if (logistics.hasPower() && logistics.getFrame() != null) {
                                 frameToModuleMap.put(logistics.getFrame(), logistics);
@@ -173,17 +175,24 @@ public class ModuleLogistics extends TubeModule {
                                 if (!extractedStack.isEmpty()) {
                                     ModuleLogistics provider = frameToModuleMap.get(task.provider);
                                     ModuleLogistics requester = frameToModuleMap.get(task.requester);
-                                    int airUsed = (int) (ITEM_TRANSPORT_COST * extractedStack.getCount() * Math.pow(PneumaticCraftUtils.distBetweenSq(provider.getTube().pos(), requester.getTube().pos()), 0.25));
-                                    if (requester.getTube().getAirHandler(null).getAir() > airUsed) {
+                                    int airUsed = (int) (ITEM_TRANSPORT_COST * extractedStack.getCount() * PneumaticCraftUtils.distBetween(provider.getTube().pos(), requester.getTube().pos()));
+                                    IAirHandler receiverAirHandler = requester.getTube().getAirHandler(null);
+                                    if (airUsed > receiverAirHandler.getAir()) {
+                                        // not enough air to move all the items - scale back the number to be moved
+                                        double scale = receiverAirHandler.getAir() / (double)airUsed;
+                                        extractedStack.setCount((int)(extractedStack.getCount() * scale));
+                                        airUsed *= scale;
+                                    }
+                                    if (extractedStack.isEmpty()) {
+                                        sendModuleUpdate(provider, false);
+                                        sendModuleUpdate(requester, false);
+                                    } else {
                                         sendModuleUpdate(provider, true);
                                         sendModuleUpdate(requester, true);
-                                        requester.getTube().getAirHandler(null).addAir(-airUsed);
+                                        receiverAirHandler.addAir(-airUsed);
                                         IOHelper.extract(handler, extractedStack, IOHelper.ExtractCount.EXACT, false, false);
                                         IOHelper.insert(task.requester.getTileEntity(), extractedStack, false);
                                         ticksUntilNextCycle = 20;
-                                    } else {
-                                        sendModuleUpdate(provider, false);
-                                        sendModuleUpdate(requester, false);
                                     }
                                 }
                             }
@@ -201,29 +210,35 @@ public class ModuleLogistics extends TubeModule {
                                     FluidStack extractedFluid = null;
                                     ModuleLogistics p = frameToModuleMap.get(task.provider);
                                     ModuleLogistics r = frameToModuleMap.get(task.requester);
-                                    int airUsed = 0;
+                                    double airUsed = 0;
                                     for (EnumFacing providerFace : EnumFacing.VALUES) {
                                         if (!providingTE.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, providerFace))
                                             continue;
                                         IFluidHandler provider = providingTE.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, providerFace);
                                         extractedFluid = provider.drain(drainingFluid, false);
                                         if (extractedFluid != null) {
-                                            airUsed = (int) (FLUID_TRANSPORT_COST * extractedFluid.amount * PneumaticCraftUtils.distBetweenSq(p.getTube().pos(), r.getTube().pos()));
-                                            if (r.getTube().getAirHandler(null).getAir() > airUsed) {
-                                                extractedFluid = provider.drain(drainingFluid, true);
-                                                break;
-                                            } else {
+                                            IAirHandler receiverAirHandler = r.getTube().getAirHandler(null);
+                                            airUsed = (FLUID_TRANSPORT_COST * extractedFluid.amount * PneumaticCraftUtils.distBetween(p.getTube().pos(), r.getTube().pos()));
+                                            if (airUsed > receiverAirHandler.getAir()) {
+                                                // not enough air to move it all - scale back the amount of fluid to be moved
+                                                double scale = receiverAirHandler.getAir() / airUsed;
+                                                drainingFluid.amount = (int)(extractedFluid.amount * scale);
+                                                airUsed *= scale;
+                                            }
+                                            if (drainingFluid.amount == 0) {
                                                 sendModuleUpdate(p, false);
                                                 sendModuleUpdate(r, false);
                                                 extractedFluid = null;
-                                                break;
+                                            } else {
+                                                extractedFluid = provider.drain(drainingFluid, true);
                                             }
+                                            break;
                                         }
                                     }
                                     if (extractedFluid != null) {
                                         sendModuleUpdate(p, true);
                                         sendModuleUpdate(r, true);
-                                        r.getTube().getAirHandler(null).addAir(-airUsed);
+                                        r.getTube().getAirHandler(null).addAir(-(int)airUsed);
                                         requester.fill(extractedFluid, true);
                                         ticksUntilNextCycle = 20;
                                     }
