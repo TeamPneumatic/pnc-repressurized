@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.semiblock;
 import me.desht.pneumaticcraft.common.inventory.SyncedField;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.tileentity.IGUIButtonSensitive;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -13,7 +14,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 
 import java.util.List;
@@ -181,7 +181,7 @@ public abstract class SemiBlockBasic<TTileEntity extends TileEntity> implements 
     }
 
     public void addWailaTooltip(List<String> curInfo, NBTTagCompound tag, boolean extended) {
-        curInfo.add(TextFormatting.YELLOW + "[" + I18n.translateToLocalFormatted(SemiBlockManager.getItemForSemiBlock(this).getTranslationKey() + ".name") + "]");
+        curInfo.add(TextFormatting.YELLOW + "[" + PneumaticCraftUtils.xlate(SemiBlockManager.getItemForSemiBlock(this).getTranslationKey() + ".name") + "]");
     }
 
     public void addWailaInfoToTag(NBTTagCompound tag) {

@@ -26,7 +26,7 @@ public class WailaEntityHandler implements IWailaEntityProvider {
     private static void addTipToEntity(List<String> currenttip, IWailaEntityAccessor accessor) {
         if (accessor.getEntity() instanceof IPressurizable) {
             float pressure = accessor.getNBTData().getFloat("Pressure");
-            currenttip.add("Pressure: " + TextFormatting.WHITE + PneumaticCraftUtils.roundNumberTo(pressure, 1) + " bar");
+            currenttip.add(WailaCallback.COLOR + "Pressure: " + TextFormatting.WHITE + PneumaticCraftUtils.roundNumberTo(pressure, 1) + " bar");
         }
     }
 

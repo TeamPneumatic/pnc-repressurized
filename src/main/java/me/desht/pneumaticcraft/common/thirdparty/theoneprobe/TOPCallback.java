@@ -10,6 +10,7 @@ import me.desht.pneumaticcraft.api.tileentity.IPneumaticMachine;
 import me.desht.pneumaticcraft.common.block.BlockPressureTube;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerManager;
+import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.item.ItemCamoApplicator;
 import me.desht.pneumaticcraft.common.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockBasic;
@@ -26,7 +27,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -37,6 +37,8 @@ import java.util.List;
 import java.util.function.Function;
 
 public class TOPCallback implements Function<ITheOneProbe, Void> {
+    private static final TextFormatting COLOR = TextFormatting.GRAY;
+
     static int elementPressure;
 
     @Override
@@ -71,7 +73,7 @@ public class TOPCallback implements Function<ITheOneProbe, Void> {
             public void addProbeEntityInfo(ProbeMode mode, IProbeInfo probeInfo, EntityPlayer player, World world, Entity entity, IProbeHitEntityData data) {
                 if (entity instanceof IPressurizable) {
                     String p = PneumaticCraftUtils.roundNumberTo(((IPressurizable) entity).getPressure(ItemStack.EMPTY), 1);
-                    probeInfo.text("Pressure: " + p + " bar");
+                    probeInfo.text(COLOR + "Pressure: " + p + " bar");
                 }
             }
         });
@@ -80,15 +82,16 @@ public class TOPCallback implements Function<ITheOneProbe, Void> {
 
     public static void handlePneumatic(ProbeMode mode, IProbeInfo probeInfo, IPneumaticMachine pneumaticMachine) {
         IAirHandler airHandler = pneumaticMachine.getAirHandler(null);
+        probeInfo.text(COLOR + "Max Pressure: " + TextFormatting.WHITE + PneumaticCraftUtils.roundNumberTo(airHandler.getDangerPressure(), 1) + " bar");
         if (mode == ProbeMode.EXTENDED) {
-            probeInfo.text("Pressure:");
+            probeInfo.text(COLOR + "Pressure:");
             probeInfo.horizontal()
                     .element(new ElementPressure(pneumaticMachine))
                     .vertical()
                     .text("")
                     .text("  \u2b05 " + PneumaticCraftUtils.roundNumberTo(airHandler.getPressure(), 2) + " bar");
         } else {
-            probeInfo.text(TextFormatting.GRAY + "Pressure: " + TextFormatting.WHITE + PneumaticCraftUtils.roundNumberTo(airHandler.getPressure(), 2) + " bar");
+            probeInfo.text(COLOR + "Pressure: " + TextFormatting.WHITE + PneumaticCraftUtils.roundNumberTo(airHandler.getPressure(), 2) + " bar");
         }
     }
 
@@ -97,13 +100,11 @@ public class TOPCallback implements Function<ITheOneProbe, Void> {
         if (tempData.isMultisided()) {
             for (EnumFacing face : EnumFacing.VALUES) {
                 if (tempData.hasData(face)) {
-                    int tempInt = (int) tempData.getTemperature(face) - 273;
-                    probeInfo.text(I18n.translateToLocalFormatted("waila.temperature." + face, tempInt));
+                    probeInfo.text(HeatUtil.formatHeatString(face, (int) tempData.getTemperature(face)));
                 }
             }
         } else if (tempData.hasData(null)) {
-            int tempInt = (int) tempData.getTemperature(null) - 273;
-            probeInfo.text(I18n.translateToLocalFormatted("waila.temperature", tempInt));
+            probeInfo.text(HeatUtil.formatHeatString((int) tempData.getTemperature(null)));
         }
     }
 
@@ -120,12 +121,12 @@ public class TOPCallback implements Function<ITheOneProbe, Void> {
     public static void handleRedstoneMode(ProbeMode mode, IProbeInfo probeInfo, TileEntityBase te) {
         if (te instanceof IRedstoneControl) {
             int redstoneMode = ((IRedstoneControl) te).getRedstoneMode();
-            probeInfo.text(TextFormatting.GRAY + I18n.translateToLocalFormatted(te.getRedstoneTabTitle()) + ": " + TextFormatting.RED + I18n.translateToLocalFormatted(te.getRedstoneButtonText(redstoneMode)));
+            probeInfo.text(COLOR + PneumaticCraftUtils.xlate(te.getRedstoneTabTitle()) + ": " + TextFormatting.RED + PneumaticCraftUtils.xlate(te.getRedstoneButtonText(redstoneMode)));
         }
     }
 
     public static void handlePressureTube(ProbeMode mode, IProbeInfo probeInfo, TileEntityPressureTube te, EnumFacing face, EntityPlayer player) {
-        TubeModule module = BlockPressureTube.getLookedModule(te.getWorld(), te.getPos(), player);//te.modules[face.ordinal()];
+        TubeModule module = BlockPressureTube.getLookedModule(te.getWorld(), te.getPos(), player);
         if (module != null) {
             List<String> currenttip = new ArrayList<>();
             module.addInfo(currenttip);
@@ -135,11 +136,14 @@ public class TOPCallback implements Function<ITheOneProbe, Void> {
     }
 
     public static void handleFluidTanks(ProbeMode mode, IProbeInfo probeInfo, IFluidHandler handler) {
-        int n = 1;
-        for (IFluidTankProperties properties : handler.getTankProperties()) {
-            FluidStack fluidStack = properties.getContents();
-            String fluidDesc = fluidStack == null ? I18n.translateToLocalFormatted("gui.liquid.empty") : fluidStack.amount + "mB " + fluidStack.getLocalizedName();
-            probeInfo.text(I18n.translateToLocalFormatted("waila.fluid", n++, fluidDesc));
+        if (mode == ProbeMode.EXTENDED) {
+            IFluidTankProperties[] tankProperties = handler.getTankProperties();
+            for (int i = 0; i < tankProperties.length; i++) {
+                IFluidTankProperties properties = tankProperties[i];
+                FluidStack fluidStack = properties.getContents();
+                String fluidDesc = fluidStack == null ? PneumaticCraftUtils.xlate("gui.liquid.empty") : fluidStack.amount + "mB " + fluidStack.getLocalizedName();
+                probeInfo.text(COLOR + "Tank " + (i + 1) + ": " + TextFormatting.AQUA + fluidDesc);
+            }
         }
     }
 

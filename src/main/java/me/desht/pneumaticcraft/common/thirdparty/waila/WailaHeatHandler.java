@@ -5,7 +5,7 @@ import mcp.mobius.waila.api.IWailaDataAccessor;
 import mcp.mobius.waila.api.IWailaDataProvider;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
-import net.minecraft.client.resources.I18n;
+import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -43,11 +43,11 @@ public class WailaHeatHandler implements IWailaDataProvider {
             NBTTagList tagList = tag.getTagList("heat", 10);
             for (int i = 0; i < tagList.tagCount(); i++) {
                 NBTTagCompound heatTag = tagList.getCompoundTagAt(i);
-                String dir = EnumFacing.byIndex(heatTag.getByte("side")).toString().toLowerCase();
-                currenttip.add(I18n.format("waila.temperature." + dir, heatTag.getInteger("temp") - 273));
+                EnumFacing face = EnumFacing.byIndex(heatTag.getByte("side"));
+                currenttip.add(HeatUtil.formatHeatString(face, heatTag.getInteger("temp")));
             }
         } else {
-            currenttip.add(I18n.format("waila.temperature", tag.getInteger("temp") - 273));
+            currenttip.add(WailaCallback.COLOR + HeatUtil.formatHeatString(tag.getInteger("temp")));
         }
     }
 

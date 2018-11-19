@@ -1000,19 +1000,18 @@ hud.msg.state=State
 hud.msg.active=Active
 hud.msg.inactive=Inactive
 
-waila.temperature=§7Temperature: §f%s°C
-waila.temperature.north=§7North Temperature: §f%s°C
-waila.temperature.south=§7South Temperature: §f%s°C
-waila.temperature.west=§7West Temperature: §f%s°C
-waila.temperature.east=§7East Temperature: §f%s°C
-waila.temperature.up=§7Top Temperature: §f%s°C
-waila.temperature.down=§7Bottom Temperature: §f%s°C
+waila.temperature=§7Temperature:
+waila.temperature.north=§7North Temperature:
+waila.temperature.south=§7South Temperature:
+waila.temperature.west=§7West Temperature:
+waila.temperature.east=§7East Temperature:
+waila.temperature.up=§7Top Temperature:
+waila.temperature.down=§7Bottom Temperature:
 waila.logisticsModule.transporting=§9Transporting
 waila.logisticsModule.notEnoughAir=§6Not enough pressure to transport the items/fluids over that distance.
 waila.logisticsModule.powered=§2Online
 waila.logisticsModule.noPower=§cOffline (apply at least 3 bar)
 waila.logisticsModule.channel=Channel:
-waila.fluid=§7Tank %d: §b%s
 
 # Misc
 itemGroup.tabPneumaticCraft=PneumaticCraft

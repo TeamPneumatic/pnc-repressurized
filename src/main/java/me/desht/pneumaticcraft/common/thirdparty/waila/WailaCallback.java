@@ -8,8 +8,11 @@ import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
 import me.desht.pneumaticcraft.common.tileentity.IRedstoneControl;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import net.minecraft.block.Block;
+import net.minecraft.util.text.TextFormatting;
 
 public class WailaCallback {
+    static final TextFormatting COLOR = TextFormatting.GRAY;
+
     public static void callback(IWailaRegistrar registrar) {
         registrar.registerBodyProvider(new WailaPneumaticHandler(), IPneumaticMachine.class);
         registrar.registerBodyProvider(new WailaPneumaticHandler(), IInfoForwarder.class);

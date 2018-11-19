@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.util;
 
+import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IInventoryItem;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
@@ -901,5 +902,9 @@ public class PneumaticCraftUtils {
      */
     public static ResourceLocation RL(String path) {
         return new ResourceLocation(Names.MOD_ID, path);
+    }
+
+    public static String xlate(String s) {
+        return PneumaticCraftRepressurized.proxy.xlate(s);
     }
 }

@@ -58,4 +58,9 @@ public class ServerProxy implements IProxy {
     @Override
     public void playCustomParticle(EnumCustomParticleType enumCustomParticleType, World w, double x, double y, double z, double dx, double dy, double dz) {
     }
+
+    @Override
+    public String xlate(String key) {
+        return "{*" + key + "*}";  // for TheOneProbe formatting
+    }
 }

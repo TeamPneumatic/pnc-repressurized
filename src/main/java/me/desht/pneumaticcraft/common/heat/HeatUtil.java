@@ -1,6 +1,9 @@
 package me.desht.pneumaticcraft.common.heat;
 
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.TextFormatting;
 
 public class HeatUtil {
     private static final int MIN_HEAT_LEVEL_TEMPERATURE = -200 + 273;
@@ -45,5 +48,13 @@ public class HeatUtil {
         } else {
             return (temperature - MIN_HEAT_LEVEL_TEMPERATURE) * 16 / (MAX_HEAT_LEVEL_TEMPERATURE - MIN_HEAT_LEVEL_TEMPERATURE);
         }
+    }
+
+    public static String formatHeatString(int tempK) {
+        return PneumaticCraftUtils.xlate("waila.temperature") + " " + TextFormatting.WHITE + (tempK - 273) + "°C";
+    }
+
+    public static String formatHeatString(EnumFacing face, int tempK) {
+        return PneumaticCraftUtils.xlate("waila.temperature." + face.toString().toLowerCase()) + " " + TextFormatting.WHITE + (tempK - 273) + "°C";
     }
 }

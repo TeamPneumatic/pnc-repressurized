@@ -34,6 +34,7 @@ import me.desht.pneumaticcraft.lib.EnumCustomParticleType;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -151,6 +152,11 @@ public class ClientProxy implements IProxy {
     @Override
     public void playCustomParticle(EnumCustomParticleType particleType, World w, double x, double y, double z, double dx, double dy, double dz) {
         Minecraft.getMinecraft().effectRenderer.addEffect(CustomParticleFactory.createParticle(particleType, w, x, y, z, dx, dy, dz));
+    }
+
+    @Override
+    public String xlate(String key) {
+        return I18n.format(key);
     }
 
     @Override
