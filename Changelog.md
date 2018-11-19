@@ -6,6 +6,25 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
+### 0.8.4-??? (unreleased)
+#### Updates
+* The Kerosene Lamp can now hold 2000mB of fuel (up from 1000mb). This makes it practical to fuel buckets to automatically fuel it (because it reduces its lighting and fuel consumption when very low on fuel, it would previously run for ages on low lighting before exhausting its fuel supply).
+* Pneumatic Helmet Entity Tracker mob targeting warnings are now all handled server-side, reducing the network traffic requirements and also resolving a potential crash with certain modded entities (Ice & Fire Gorgons in particular, but potentially others).
+* Restored some pre-0.8.0 functionality: the Aerial Interface once again allows access to the player's armor via the top face even when a Dispener Upgrade is installed (but only when the top face is connect to armor). This was technically an unintended quirk, but some players were using it.
+* Improved server-side performance of the Assembly Controller (smarter about discovering its machines), and made client-side GUI diagnostic messages more informative regarding duplicate and/or missing machines.
+* Logistics Modules are now much cheaper to use in terms of air cost, particularly for moving fluids:
+  * The air costs now increases linearly with distance instead of by distance squared.
+  * The overall multipliers for items and fluids have also been decreased.
+  * Example: moving 1000mB of fluid a distance of 20 blocks now costs 1000mL of air, instead of an excessive 40000mL
+#### Fixes
+* Fixed a long-standing but rather subtle bug where Advanced Pressure Tubes only had a 1000mL air volume following a world reload instead of the 4000mL they should have had.  More details:
+  * Advanced Pressure Tubes are supposed to have a 4000mL volume, and they do when initially placed down. However due to a bug in the mod, upon reloading the world, their volume reverted to 1000mL (same as a basic Pressure Tube)
+  * This changes resolves that problem for new Advanced Pressure Tubes placed from now on.
+  * However, any pre-existing Advanced Pressure Tubes will need to be broken and replaced if you want to take advantage of their correct air volume.
+  * This isn't essential and you can replace tubes at your leisure. You will have improved air storage in your tube network once your tubes have re-pressurized.
+  * If you're using Logistics Modules, you will probably see the greatest benefit, since the newly fixed tubes are much more effective in moving items and fluids around.
+* Logistics Modules: when there isn't enough air available in the tube to move the entire requested amount of items or fluid, the module will now move what it can instead of giving up and doing nothing. Coupled with the above fix, Logistics Modules are now far more capable of moving resources over longer distances.
+
 ### 0.8.3-299 (5 Nov 2018)
 #### Updates
 * Elevator Base now accepts up to 4 Charging Upgrades.  Each Charging Upgrade allows the elevator to reclaim some of the air spent to raise the elevator when the elevator descends again, up to a max of 60% of the air (15% per upgrade). This comes with the penalty of slower elevator descent (10% slower per upgrade).
