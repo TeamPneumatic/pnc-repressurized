@@ -16,6 +16,7 @@ import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -93,17 +94,15 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
     public void getTooltip(List<String> curTooltip) {
         super.getTooltip(curTooltip);
         if (!filter.isEmpty()) {
-            curTooltip.add("Current filter:");
-            curTooltip.add(filter.getDisplayName());
+            curTooltip.add(TextFormatting.AQUA + "Filter: " + TextFormatting.RESET + filter.getDisplayName());
             if (useOreDict) {
-                curTooltip.add("Using Ore Dictionary");
+                curTooltip.add(TextFormatting.DARK_AQUA + "- Using Ore Dictionary");
             } else if (useModSimilarity) {
-                curTooltip.add("Using Mod similarity");
+                curTooltip.add(TextFormatting.DARK_AQUA + "- Using Mod similarity");
             } else {
-                curTooltip.add((useMetadata ? "Using" : "Ignoring") + " metadata / damage values");
-                curTooltip.add((useNBT ? "Using" : "Ignoring") + " NBT tags");
+                curTooltip.add(TextFormatting.DARK_AQUA + "- " + (useMetadata ? "Using" : "Ignoring") + " meta");
+                curTooltip.add(TextFormatting.DARK_AQUA + "- " + (useNBT ? "Using" : "Ignoring") + " NBT");
             }
-
         }
     }
 

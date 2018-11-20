@@ -84,9 +84,9 @@ public class GuiUnitProgrammer extends GuiScreen {
                 tooltip.add(TextFormatting.RED + I18n.format("gui.programmer.errors"));
                 for (String s : errors) {
                     String msg = I18n.hasKey(s) ? I18n.format(s) : s;
-                    String[] lines = WordUtils.wrap("- " + msg, 30).split(System.getProperty("line.separator"));
+                    String[] lines = WordUtils.wrap("- " + msg, 35).split(System.getProperty("line.separator"));
                     for (String line : lines) {
-                        tooltip.add(TextFormatting.RED + "   " + line);
+                        tooltip.add(TextFormatting.RED + /*"   " +*/ line);
                     }
                 }
             }
@@ -97,7 +97,7 @@ public class GuiUnitProgrammer extends GuiScreen {
                 tooltip.add(TextFormatting.YELLOW + I18n.format("gui.programmer.warnings"));
                 for (String s : warnings) {
                     String msg = I18n.hasKey(s) ? I18n.format(s) : s;
-                    String[] lines = WordUtils.wrap("- " + msg, 30).split(System.getProperty("line.separator"));
+                    String[] lines = WordUtils.wrap("- " + msg, 35).split(System.getProperty("line.separator"));
                     for (String line : lines) {
                         tooltip.add(TextFormatting.YELLOW + "   " + line);
                     }

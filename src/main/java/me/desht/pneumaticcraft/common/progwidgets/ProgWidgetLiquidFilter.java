@@ -8,6 +8,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
@@ -66,6 +67,14 @@ public class ProgWidgetLiquidFilter extends ProgWidget {
     public void writeToNBT(NBTTagCompound tag) {
         super.writeToNBT(tag);
         if (fluid != null) tag.setString("fluid", fluid.getName());
+    }
+
+    @Override
+    public void getTooltip(List<String> curTooltip) {
+        super.getTooltip(curTooltip);
+        if (fluid != null) {
+            curTooltip.add(TextFormatting.AQUA + "Fluid: " + TextFormatting.WHITE + getExtraStringInfo());
+        }
     }
 
     public boolean isLiquidValid(Fluid fluid) {
