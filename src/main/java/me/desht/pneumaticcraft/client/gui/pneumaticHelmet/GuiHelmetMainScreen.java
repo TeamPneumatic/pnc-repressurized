@@ -119,10 +119,10 @@ public class GuiHelmetMainScreen extends GuiPneumaticScreenBase implements IGuiS
         drawDefaultBackground();
         IOptionPage optionPage = upgradeOptions.get(pageNumber).page;
         optionPage.drawPreButtons(x, y, partialTicks);
-        super.drawScreen(x, y, partialTicks);
-        optionPage.drawScreen(x, y, partialTicks);
         drawCenteredString(fontRenderer, TITLE_PREFIX + upgradeOptions.get(pageNumber).page.getPageName(), 100, 12, 0xFFFFFFFF);
         if (optionPage.displaySettingsText()) drawCenteredString(fontRenderer, "Settings", 100, optionPage.settingsYposition(), 0xFFFFFFFF);
+        super.drawScreen(x, y, partialTicks);
+        optionPage.drawScreen(x, y, partialTicks);
     }
 
     @Override
