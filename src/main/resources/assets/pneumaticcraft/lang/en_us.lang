@@ -773,6 +773,7 @@ gui.progWidget.inventoryExport.debug.stackdoesntPassFilter=Item inside the drone
 gui.progWidget.inventoryImport.debug.filledToMax=Cannot fit more items into the Drone's inventory.
 gui.progWidget.inventoryImport.debug.stackdoesntPassFilter=Item does not pass item filter.
 gui.progWidget.itemPickup.debug.itemNotValid=Item does not pass the item filter.
+gui.progWidget.itemPickup.debug.noItems=No items in the area to pick up.
 gui.progWidget.chargingStation.debug.claimed=Charging Station is claimed by another Drone already.
 gui.progWidget.chargingStation.debug.protected=Charging Station is protected by a Security Station.
 gui.progWidget.chargingStation.debug.cantNavigate=Cannot navigate to the Charging Station.

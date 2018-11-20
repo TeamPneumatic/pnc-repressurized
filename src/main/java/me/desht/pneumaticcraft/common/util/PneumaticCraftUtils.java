@@ -207,7 +207,7 @@ public class PneumaticCraftUtils {
      * @param fraction When true, 30 ticks will show as '1.5s' instead of '1s'.
      * @return a formatted time
      */
-    public static String convertTicksToMinutesAndSeconds(int ticks, boolean fraction) {
+    public static String convertTicksToMinutesAndSeconds(long ticks, boolean fraction) {
         String part = ticks % 20 * 5 + "";
         if (part.length() < 2) part = "0" + part;
         ticks /= 20;// first convert to seconds.

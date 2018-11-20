@@ -152,7 +152,8 @@ public class EntityDrone extends EntityDroneBase implements
     private int offerTimes;
     private ItemStack usedTablet;//Tablet used to place the order.
     private String buyingPlayer;
-    private final SortedSet<DebugEntry> debugEntries = new TreeSet<DebugEntry>();
+//    private final SortedSet<DebugEntry> debugEntries = new TreeSet<DebugEntry>();
+    private final DroneDebugList debugList = new DroneDebugList();
     private final Set<EntityPlayerMP> syncedPlayers = new HashSet<EntityPlayerMP>();
     private boolean heldItemChanged = true;  // if true, force a check of item attribute modifiers in onUpdate()
 
@@ -1246,8 +1247,12 @@ public class EntityDrone extends EntityDroneBase implements
         return dataManager.get(LABEL);
     }
 
-    public SortedSet<DebugEntry> getDebugEntries() {
-        return debugEntries;
+    public DebugEntry getCurrentDebugEntry() {
+        return debugList.getCurrent();
+    }
+
+    public DebugEntry getDebugEntry(int widgetID) {
+        return debugList.get(widgetID);
     }
 
     @Override
@@ -1257,10 +1262,12 @@ public class EntityDrone extends EntityDroneBase implements
 
     @Override
     public void addDebugEntry(String message, BlockPos pos) {
-
         DebugEntry entry = new DebugEntry(message, getActiveWidgetIndex(), pos);
+
+        // add the entry server-side
         addDebugEntry(entry);
 
+        // add the entry client-side
         PacketSendDroneDebugEntry packet = new PacketSendDroneDebugEntry(entry, this);
         for (EntityPlayerMP player : syncedPlayers) {
             NetworkHandler.sendTo(packet, player);
@@ -1268,20 +1275,13 @@ public class EntityDrone extends EntityDroneBase implements
     }
 
     public void addDebugEntry(DebugEntry entry) {
-        if (!debugEntries.isEmpty()) {
-            DebugEntry previous = debugEntries.last();
-            if (previous.getProgWidgetId() != entry.getProgWidgetId()) {
-                // When we've jumped to another piece, remove the data from the previous cycle
-                debugEntries.removeIf(debugEntry -> debugEntry.getProgWidgetId() == entry.getProgWidgetId());
-            }
-        }
-        debugEntries.add(entry);
+        debugList.addEntry(entry);
     }
 
     public void trackAsDebugged(EntityPlayerMP player) {
         NetworkHandler.sendTo(new PacketSyncDroneEntityProgWidgets(this), player);
 
-        for (DebugEntry entry : debugEntries) {
+        for (DebugEntry entry : debugList.getAll()) {
             NetworkHandler.sendTo(new PacketSendDroneDebugEntry(entry, this), player);
         }
 
@@ -1289,7 +1289,9 @@ public class EntityDrone extends EntityDroneBase implements
     }
 
     private void updateSyncedPlayers() {
-        syncedPlayers.removeIf(player -> player.isDead || player.getItemStackFromSlot(EntityEquipmentSlot.HEAD).isEmpty() || NBTUtil.getInteger(player.getItemStackFromSlot(EntityEquipmentSlot.HEAD), NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE) != getEntityId());
+        syncedPlayers.removeIf(player -> player.isDead
+                || player.getItemStackFromSlot(EntityEquipmentSlot.HEAD).isEmpty()
+                || NBTUtil.getInteger(player.getItemStackFromSlot(EntityEquipmentSlot.HEAD), NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE) != getEntityId());
     }
 
     private class MinigunDrone extends Minigun {
@@ -1342,6 +1344,29 @@ public class EntityDrone extends EntityDroneBase implements
                 dataManager.set(HELD_ITEM, getStackInSlot(0));
 
             super.updateHeldItem();
+        }
+    }
+
+    private class DroneDebugList {
+        private final Map<Integer, DebugEntry> debugEntries = new HashMap<>();
+
+        private DroneDebugList() {
+        }
+
+        void addEntry(DebugEntry entry) {
+            debugEntries.put(EntityDrone.this.getActiveWidgetIndex(), entry);
+        }
+
+        public Collection<DebugEntry> getAll() {
+            return debugEntries.values();
+        }
+
+        public DebugEntry get(int widgetId) {
+            return debugEntries.get(widgetId);
+        }
+
+        public DebugEntry getCurrent() {
+            return debugEntries.get(EntityDrone.this.getActiveWidgetIndex());
         }
     }
 }

@@ -33,6 +33,10 @@ public class DroneEntityAIPickupItems extends EntityAIBase {
     public boolean shouldExecute() {
         List<Entity> pickableItems = itemPickupWidget.getEntitiesInArea(drone.world(), entity -> entity instanceof EntityItem && entity.isEntityAlive());
 
+        if (pickableItems.isEmpty()) {
+            drone.addDebugEntry("gui.progWidget.itemPickup.debug.noItems");
+            return false;
+        }
         pickableItems.sort(theNearestAttackableTargetSorter);
         for (Entity ent : pickableItems) {
             ItemStack stack = ((EntityItem) ent).getItem();
@@ -47,7 +51,7 @@ public class DroneEntityAIPickupItems extends EntityAIBase {
                 drone.addDebugEntry("gui.progWidget.itemPickup.debug.itemNotValid");
             }
         }
-        return false; // 
+        return false;
 
     }
 

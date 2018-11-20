@@ -15,6 +15,7 @@ import me.desht.pneumaticcraft.common.progwidgets.IAreaProvider;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetStart;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.NBTKeys;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -29,7 +30,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.input.Keyboard;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 public class GuiDroneDebuggerOptions extends Gui implements IOptionPage {
     private static final int PROGAMMING_MARGIN = 20;
@@ -140,10 +143,9 @@ public class GuiDroneDebuggerOptions extends Gui implements IOptionPage {
         upgradeHandler.getShowingPositions().clear();
         if (widget != null) {
             int widgetId = selectedDrone.getProgWidgets().indexOf(widget);
-            for (DebugEntry entry : selectedDrone.getDebugEntries()) {
-                if (entry.getProgWidgetId() == widgetId && !entry.getPos().equals(new BlockPos(0, 0, 0))) {
-                    upgradeHandler.getShowingPositions().add(entry.getPos());
-                }
+            DebugEntry entry = selectedDrone.getDebugEntry(widgetId);
+            if (entry != null && entry.hasCoords()) {
+                upgradeHandler.getShowingPositions().add(entry.getPos());
             }
         }
     }
@@ -203,25 +205,17 @@ public class GuiDroneDebuggerOptions extends Gui implements IOptionPage {
         @Override
         protected void addAdditionalInfoToTooltip(IProgWidget widget, List<String> tooltip) {
             int widgetId = selectedDrone.getProgWidgets().indexOf(widget);
-            Map<String, Integer> messageTimesMap = new LinkedHashMap<>();
-            boolean hasCoords = false;
-            for (DebugEntry entry : selectedDrone.getDebugEntries()) {
-                if (entry.getProgWidgetId() == widgetId) {
-                    Integer oldTimes = messageTimesMap.get(entry.getMessage());
-                    if (oldTimes == null) oldTimes = 0;
-                    messageTimesMap.put(entry.getMessage(), oldTimes + 1);
-                    if (!entry.getPos().equals(new BlockPos(0, 0, 0))) {
-                        hasCoords = true;
-                    }
+
+            DebugEntry entry = selectedDrone.getDebugEntry(widgetId);
+            if (entry != null) {
+                long elapsed = (System.currentTimeMillis() - entry.getReceivedTime()) / 50;
+                tooltip.add(TextFormatting.AQUA + "Last message:  " + TextFormatting.YELLOW + PneumaticCraftUtils.convertTicksToMinutesAndSeconds(elapsed, true) + " ago");
+                tooltip.add(TextFormatting.AQUA + TextFormatting.ITALIC.toString() + "  \"" + I18n.format(entry.getMessage()) + "\"  ");
+                if (entry.hasCoords()) {
+                    tooltip.add(TextFormatting.GREEN + I18n.format("gui.progWidget.debug.hasPositions"));
+                    if (widget != areaShowingWidget)
+                        tooltip.add(TextFormatting.GREEN + I18n.format("gui.progWidget.debug.clickToShow"));
                 }
-            }
-            for (Map.Entry<String, Integer> entry : messageTimesMap.entrySet()) {
-                tooltip.add(entry.getValue() + "x " + I18n.format(entry.getKey()));
-            }
-            if (hasCoords) {
-                tooltip.add(TextFormatting.GREEN + I18n.format("gui.progWidget.debug.hasPositions"));
-                if (widget != areaShowingWidget)
-                    tooltip.add(TextFormatting.GREEN + I18n.format("gui.progWidget.debug.clickToShow"));
             }
             if (widget instanceof IAreaProvider) {
                 if (widgetId == areaShowWidgetId) {

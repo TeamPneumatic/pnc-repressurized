@@ -4,26 +4,35 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 
-public class DebugEntry implements Comparable<DebugEntry> {
-    private static int curId;
-
-    private final int id;
+public class DebugEntry /*implements Comparable<DebugEntry>*/ {
     private final int progWidgetId;
     private final String message;
     private final BlockPos pos;
+    private long receivedTime; // timestamp for when packet was received on client
 
-    public DebugEntry(String message, int progWidgetId, BlockPos pos) {
+    /**
+     * Called server side when a debug message is added to a drone.
+     *
+     * @param message the message text
+     * @param progWidgetId a programming widget ID
+     * @param pos block position
+     */
+    DebugEntry(String message, int progWidgetId, BlockPos pos) {
         this.message = message;
         this.pos = pos != null ? pos : new BlockPos(0, 0, 0);
         this.progWidgetId = progWidgetId;
-        id = curId++;
     }
 
+    /**
+     * Called client-side when a message is synced.
+     *
+     * @param buf message buffer
+     */
     public DebugEntry(ByteBuf buf) {
         message = ByteBufUtils.readUTF8String(buf);
         pos = new BlockPos(buf.readInt(), buf.readInt(), buf.readInt());
-        id = buf.readInt();
         progWidgetId = buf.readInt();
+        receivedTime = System.currentTimeMillis();
     }
 
     public void toBytes(ByteBuf buf) {
@@ -31,7 +40,6 @@ public class DebugEntry implements Comparable<DebugEntry> {
         buf.writeInt(pos.getX());
         buf.writeInt(pos.getY());
         buf.writeInt(pos.getZ());
-        buf.writeInt(id);
         buf.writeInt(progWidgetId);
     }
 
@@ -47,18 +55,12 @@ public class DebugEntry implements Comparable<DebugEntry> {
         return progWidgetId;
     }
 
-    public int hashcode() {
-        return id;
+    public long getReceivedTime() {
+        return receivedTime;
     }
 
-    @Override
-    public boolean equals(Object other) {
-        return other instanceof DebugEntry && ((DebugEntry) other).id == id;
-    }
-
-    @Override
-    public int compareTo(DebugEntry o) {
-        return Integer.compare(id, o.id);
+    public boolean hasCoords() {
+        return pos.getX() != 0 || pos.getY() != 0 || pos.getZ() != 0;
     }
 
 }
