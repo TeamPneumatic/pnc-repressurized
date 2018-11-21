@@ -54,6 +54,8 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     private boolean isStopped;  //used for sounds
     private TileEntityElevatorBase coreElevator;
     private List<TileEntityElevatorBase> multiElevators; //initialized when multiple elevators are connected in a multiblock manner.
+    @DescSynced
+    public int multiElevatorCount;
     @GuiSynced
     public int redstoneMode;
     public int[] floorHeights = new int[0]; //list of every floor of Elevator Callers.
@@ -73,7 +75,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     @Override
     public void update() {
         oldExtension = extension;
-        if (getWorld().isRemote && getWorld().getTotalWorldTime() % 60 == 0)
+        if (getWorld().isRemote && (getWorld().getTotalWorldTime() & 0x3f) == 0)
             coreElevator = null;//reset this because the client doesn't get notified of neighbor block updates.
         if (isCoreElevator()) {
             super.update();
@@ -118,8 +120,10 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
                 if (isStopped) {
                     soundName = Sounds.ELEVATOR_START;
                     isStopped = false;
-                    NetworkRegistry.TargetPoint tp = new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 32);
-                    NetworkHandler.sendToAllAround(new PacketPlayMovingSound(MovingSounds.Sound.ELEVATOR, getCoreElevator()), tp);
+                    if (!world.isRemote) {
+                        NetworkRegistry.TargetPoint tp = new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 32);
+                        NetworkHandler.sendToAllAround(new PacketPlayMovingSound(MovingSounds.Sound.ELEVATOR, getCoreElevator()), tp);
+                    }
                 }
                 float startingExtension = extension;
 
@@ -148,8 +152,10 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
                 if (isStopped) {
                     soundName = Sounds.ELEVATOR_START;
                     isStopped = false;
-                    NetworkRegistry.TargetPoint tp = new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 32);
-                    NetworkHandler.sendToAllAround(new PacketPlayMovingSound(MovingSounds.Sound.ELEVATOR, getCoreElevator()), tp);
+                    if (!world.isRemote) {
+                        NetworkRegistry.TargetPoint tp = new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 32);
+                        NetworkHandler.sendToAllAround(new PacketPlayMovingSound(MovingSounds.Sound.ELEVATOR, getCoreElevator()), tp);
+                    }
                 }
                 if (getUpgrades(EnumUpgrade.CHARGING) > 0) {
                     float mul = 0.15f * Math.min(4, getUpgrades(EnumUpgrade.CHARGING));
@@ -311,7 +317,6 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     public void onNeighborTileUpdate() {
         super.onNeighborTileUpdate();
         updateConnections();
-        connectAsMultiblock();
     }
 
     private void connectAsMultiblock() {
@@ -322,17 +327,18 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
             todo.add(this);
             while (!todo.isEmpty()) {
                 TileEntityElevatorBase curElevator = todo.pop();
-                if (curElevator.isCoreElevator()) {
+                if (curElevator.isCoreElevator() && !multiElevators.contains(curElevator)) {
                     multiElevators.add(curElevator);
                     curElevator.multiElevators = multiElevators;
-                    for (int i = 2; i < 6; i++) {
-                        TileEntity te = curElevator.getTileCache()[i].getTileEntity();
-                        if (!multiElevators.contains(te) && te instanceof TileEntityElevatorBase) {
+                    for (EnumFacing face : EnumFacing.HORIZONTALS) {
+                        TileEntity te = curElevator.getCachedNeighbor(face);
+                        if (te instanceof TileEntityElevatorBase && !te.isInvalid()) {
                             todo.push((TileEntityElevatorBase) te);
                         }
                     }
                 }
             }
+            multiElevatorCount = multiElevators.size();
         }
     }
 
@@ -340,6 +346,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     public void onNeighborBlockUpdate() {
         super.onNeighborBlockUpdate();
         getCoreElevator().updateRedstoneInputLevel();
+        connectAsMultiblock();
         updateConnections();
     }
 
@@ -387,23 +394,24 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
         List<BlockPos> callerList = new ArrayList<>();
 
         if (multiElevators != null) {
-            int i = 0;
+            int yOffset = 0;
             boolean shouldBreak = false;
             while (!shouldBreak) {
                 boolean registeredThisFloor = false;
                 for (TileEntityElevatorBase base : multiElevators) {
                     for (EnumFacing dir : EnumFacing.HORIZONTALS) {
-                        if (base.world.getBlockState(base.getPos().offset(dir).up(i + 2)).getBlock() == Blockss.ELEVATOR_CALLER) {
-                            callerList.add(new BlockPos(base.getPos().getX() + dir.getXOffset(), base.getPos().getY() + i + 2, base.getPos().getZ() + dir.getZOffset()));
-                            if (!registeredThisFloor) floorList.add(i);
+                        BlockPos checkPos = base.getPos().offset(dir).up(yOffset + 2);
+                        if (base.world.getBlockState(checkPos).getBlock() == Blockss.ELEVATOR_CALLER) {
+                            callerList.add(checkPos);
+                            if (!registeredThisFloor) floorList.add(yOffset);
                             registeredThisFloor = true;
                         }
                     }
                 }
 
-                i++;
+                yOffset++;
                 for (TileEntityElevatorBase base : multiElevators) {
-                    if (base.world.getBlockState(base.getPos().up(i)).getBlock() != Blockss.ELEVATOR_FRAME) {
+                    if (base.world.getBlockState(base.getPos().up(yOffset)).getBlock() != Blockss.ELEVATOR_FRAME) {
                         shouldBreak = true;
                         break;
                     }
@@ -411,10 +419,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
             }
 
             for (TileEntityElevatorBase base : multiElevators) {
-                base.floorHeights = new int[floorList.size()];
-                for (i = 0; i < base.floorHeights.length; i++) {
-                    base.floorHeights[i] = floorList.get(i);
-                }
+                base.floorHeights = floorList.stream().mapToInt(Integer::intValue).toArray();
             }
         }
 

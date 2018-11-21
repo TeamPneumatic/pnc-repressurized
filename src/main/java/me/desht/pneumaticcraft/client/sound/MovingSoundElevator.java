@@ -16,7 +16,7 @@ public class MovingSoundElevator extends MovingSound {
         zPosF = te.getPos().getZ();
         repeat = true;
         repeatDelay = 0;
-        volume = 0.85F;
+        volume = 0.9F - (0.05F * Math.min(8, te.multiElevatorCount));
     }
 
     @Override

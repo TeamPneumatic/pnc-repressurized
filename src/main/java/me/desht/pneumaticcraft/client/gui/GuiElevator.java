@@ -13,6 +13,7 @@ import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -43,11 +44,11 @@ public class GuiElevator extends GuiPneumaticContainerBase<TileEntityElevatorBas
         floorNameField.setText(te.getFloorName(currentEditedFloor));
         floorNameStat.addWidget(floorNameField);
 
-        Rectangle namePreviousRectangle = floorNameStat.getButtonScaledRectangle(5, 35, 40, 20);
-        floorNameStat.addWidget(getButtonFromRectangle(1, namePreviousRectangle, "<-"));
+        Rectangle namePreviousRectangle = floorNameStat.getButtonScaledRectangle(5, 35, 20, 20);
+        floorNameStat.addWidget(getButtonFromRectangle(1, namePreviousRectangle, "\u27f5"));
 
-        Rectangle nameNextRectangle = floorNameStat.getButtonScaledRectangle(125, 35, 40, 20);
-        floorNameStat.addWidget(getButtonFromRectangle(2, nameNextRectangle, "->"));
+        Rectangle nameNextRectangle = floorNameStat.getButtonScaledRectangle(145, 35, 20, 20);
+        floorNameStat.addWidget(getButtonFromRectangle(2, nameNextRectangle, "\u27f6"));
 
     }
 
@@ -72,7 +73,7 @@ public class GuiElevator extends GuiPneumaticContainerBase<TileEntityElevatorBas
         List<String> textList = new ArrayList<>();
         for (int i = 0; i < 3; i++)
             textList.add("");
-        textList.add("\u00a77         Floor " + (currentEditedFloor + 1) + "                   ");
+        textList.add(TextFormatting.GRAY + "         Floor " + (currentEditedFloor + 1) + "                   ");
         for (int i = 0; i < 3; i++)
             textList.add("");// create some space for the button
         return textList;
@@ -81,20 +82,19 @@ public class GuiElevator extends GuiPneumaticContainerBase<TileEntityElevatorBas
     private List<String> getStatusText() {
         List<String> text = new ArrayList<>();
 
-        text.add("\u00a77Current Extension:");
-        text.add("\u00a70" + PneumaticCraftUtils.roundNumberTo(te.extension, 1) + " meter");
-        text.add("\u00a77Max Extension:");
-        text.add("\u00a70" + PneumaticCraftUtils.roundNumberTo(te.getMaxElevatorHeight(), 1) + " meter");
+        text.add(TextFormatting.GRAY + "Current Extension:");
+        text.add(TextFormatting.BLACK + PneumaticCraftUtils.roundNumberTo(te.extension, 1) + " meter");
+        text.add(TextFormatting.GRAY + "Max Extension:");
+        text.add(TextFormatting.BLACK + PneumaticCraftUtils.roundNumberTo(te.getMaxElevatorHeight(), 1) + " meter");
         return text;
     }
 
     @Override
-    protected void addProblems(List<String> textList) {
-        super.addProblems(textList);
-        float elevatorHeight = te.getMaxElevatorHeight();
-        if (elevatorHeight == te.extension) {
-            textList.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a77The elevator can't extend anymore.", GuiConstants.MAX_CHAR_PER_LINE_LEFT));
-            textList.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a70Add (more) Elevator Frames on top of the elevator", GuiConstants.MAX_CHAR_PER_LINE_LEFT));
+    protected void addWarnings(List<String> textList) {
+        super.addWarnings(textList);
+        if (te.getMaxElevatorHeight() == te.extension) {
+            textList.addAll(PneumaticCraftUtils.convertStringIntoList(TextFormatting.GRAY + "The elevator can't extend anymore.", GuiConstants.MAX_CHAR_PER_LINE_LEFT));
+            textList.addAll(PneumaticCraftUtils.convertStringIntoList(TextFormatting.BLACK + "Add (more) Elevator Frames on top of the elevator", GuiConstants.MAX_CHAR_PER_LINE_LEFT));
         }
     }
 

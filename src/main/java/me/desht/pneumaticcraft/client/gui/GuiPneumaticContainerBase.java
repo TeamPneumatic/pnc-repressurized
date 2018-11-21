@@ -183,8 +183,7 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
     private int getWidestRedstoneLabel() {
         int max = 0;
         for (int i = 0; i < te.getRedstoneModeCount(); i++) {
-            int w = fontRenderer.getStringWidth(I18n.format(te.getRedstoneButtonText(i)));
-            max = Math.max(max, w);
+            max = Math.max(max, fontRenderer.getStringWidth(I18n.format(te.getRedstoneButtonText(i))));
         }
         return max;
     }
@@ -255,18 +254,15 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
 
         GlStateManager.color(1, 1, 1, 1);
         GlStateManager.disableLighting();
-        for (IGuiWidget widget : widgets) {
-            widget.render(i, j, partialTicks);
-        }
-        for (IGuiWidget widget : widgets) {
-            widget.postRender(i, j, partialTicks);
-        }
+        widgets.forEach(widget -> widget.render(i, j, partialTicks));
+        widgets.forEach(widget -> widget.postRender(i, j, partialTicks));
 
         if (pressureStat != null) {
-            TileEntityPneumaticBase pneu = (TileEntityPneumaticBase) te;
             Point gaugeLocation = getGaugeLocation();
-            if (gaugeLocation != null)
+            if (gaugeLocation != null) {
+                TileEntityPneumaticBase pneu = (TileEntityPneumaticBase) te;
                 GuiUtils.drawPressureGauge(fontRenderer, -1, pneu.criticalPressure, pneu.dangerPressure, te instanceof IMinWorkingPressure ? ((IMinWorkingPressure) te).getMinWorkingPressure() : -Float.MAX_VALUE, pneu.getPressure(), gaugeLocation.x, gaugeLocation.y, zLevel);
+            }
         }
     }
 
