@@ -102,9 +102,13 @@ public abstract class GuiPneumaticScreenBase extends GuiScreen implements IWidge
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         super.mouseClicked(mouseX, mouseY, mouseButton);
-        for (IGuiWidget widget : widgets/*.stream().collect(Collectors.toList())*/) {
-            if (widget.getBounds().contains(mouseX, mouseY)) widget.onMouseClicked(mouseX, mouseY, mouseButton);
-            else widget.onMouseClickedOutsideBounds(mouseX, mouseY, mouseButton);
+        // new arraylist creation necessary to avoid a comod exception
+        for (IGuiWidget widget : new ArrayList<>(widgets)) {
+            if (widget.getBounds().contains(mouseX, mouseY)) {
+                widget.onMouseClicked(mouseX, mouseY, mouseButton);
+            } else {
+                widget.onMouseClickedOutsideBounds(mouseX, mouseY, mouseButton);
+            }
         }
     }
 
