@@ -34,7 +34,7 @@ public class DroneAIPlace extends DroneAIBlockInteraction {
 
     @Override
     protected boolean isValidPosition(BlockPos pos) {
-        if (drone.world().isAirBlock(pos)) {
+        if (drone.world().getBlockState(pos).getMaterial().isReplaceable()) {
             boolean failedOnPlacement = false;
             for (int i = 0; i < drone.getInv().getSlots(); i++) {
                 ItemStack droneStack = drone.getInv().getStackInSlot(i);
