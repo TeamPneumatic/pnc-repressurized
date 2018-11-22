@@ -9,6 +9,7 @@ import me.desht.pneumaticcraft.lib.Sounds;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.item.EntityMinecart;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.pathfinding.PathFinder;
@@ -49,9 +50,10 @@ public class EntityPathNavigateDrone extends PathNavigateFlying implements IPath
     public Path getPathToEntityLiving(Entity par1Entity) {
         BlockPos pos = new BlockPos(par1Entity.posX, par1Entity.getEntityBoundingBox().minY, par1Entity.posZ);
 
-        if (par1Entity instanceof EntityItem && !pathfindingEntity.isBlockValidPathfindBlock(pos)) {
+        if ((par1Entity instanceof EntityItem && !pathfindingEntity.isBlockValidPathfindBlock(pos)) || par1Entity instanceof EntityMinecart) {
             // items can end up with a blockpos of the ground they're sitting on,
             // which will prevent the drone pathfinding to them
+            // minecarts apparently prevent the drone moving to the same blockpos
             if (pathfindingEntity.isBlockValidPathfindBlock(pos.up())) {
                 pos = pos.up();
             }

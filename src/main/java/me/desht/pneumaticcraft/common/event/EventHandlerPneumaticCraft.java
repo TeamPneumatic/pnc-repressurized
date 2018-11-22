@@ -42,6 +42,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.item.EntityMinecart;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
@@ -70,6 +71,7 @@ import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.EntityMountEvent;
 import net.minecraftforge.event.entity.living.EnderTeleportEvent;
 import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
@@ -386,6 +388,18 @@ public class EventHandlerPneumaticCraft {
                     }
                 }
                 AdvancementTriggers.PNEUMATIC_ARMOR.trigger(player);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void entityMounting(EntityMountEvent event) {
+        if (event.isMounting()) {
+            // prevent minecarts which have just been dropped by drones from immediately picking up the drone
+            if (event.getEntityMounting() instanceof EntityDrone && event.getEntityBeingMounted() instanceof EntityMinecart) {
+                if (!event.getEntityBeingMounted().onGround) {
+                    event.setCanceled(true);
+                }
             }
         }
     }
