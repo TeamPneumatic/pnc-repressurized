@@ -31,9 +31,9 @@ public class RenderNavigator {
         EntityPlayer player = FMLClientHandler.instance().getClient().player;
         path = PneumaticCraftUtils.getPathFinder().findPath(player.world, PneumaticCraftUtils.createDummyEntity(player), targetPos, CoordTrackUpgradeHandler.SEARCH_RANGE);
         // TODO: this just doesn't work anymore
-//        if (!tracedToDestination()) {
-//            path = CoordTrackUpgradeHandler.getDronePath(player, targetPos);
-//        }
+        if (!tracedToDestination()) {
+            path = CoordTrackUpgradeHandler.getDronePath(player, targetPos);
+        }
     }
 
     public void render(boolean wirePath, boolean xRayEnabled, float partialTicks) {

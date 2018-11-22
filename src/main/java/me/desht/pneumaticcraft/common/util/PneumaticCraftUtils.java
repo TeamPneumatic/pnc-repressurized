@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.util;
 
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IInventoryItem;
+import me.desht.pneumaticcraft.client.render.pneumaticArmor.renderHandler.CoordTrackUpgradeHandler;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
@@ -11,14 +12,11 @@ import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityAgeable;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.*;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityMinecart;
-import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -842,9 +840,15 @@ public class PneumaticCraftUtils {
      * @return a dummy player-sized living entity
      */
     public static EntityLiving createDummyEntity(EntityPlayer player) {
-        EntityCreeper creeper = new EntityCreeper(player.world);
-        creeper.setPosition(player.posX, player.posY, player.posZ);
-        return creeper;
+        EntityZombie dummy = new EntityZombie(player.world) {
+            @Override
+            protected void applyEntityAttributes() {
+                super.applyEntityAttributes();
+                this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(CoordTrackUpgradeHandler.SEARCH_RANGE);
+            }
+        };
+        dummy.setPosition(player.posX, player.posY, player.posZ);
+        return dummy;
     }
 
     /**

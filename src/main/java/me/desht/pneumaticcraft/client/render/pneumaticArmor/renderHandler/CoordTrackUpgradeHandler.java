@@ -184,7 +184,7 @@ public class CoordTrackUpgradeHandler implements IUpgradeRenderHandler {
     public static Path getDronePath(EntityPlayer player, BlockPos pos) {
         World world = player.world;
         EntityDrone drone = new EntityDrone(world);
-        drone.setPosition(player.posX, player.posY - 2, player.posZ);
+        drone.setPosition(player.posX, player.posY, player.posZ);
         return new EntityPathNavigateDrone(drone, world).getPathToPos(pos);
     }
 
