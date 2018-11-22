@@ -88,14 +88,16 @@ public class GuiInventorySearcher extends GuiContainer {
         fontRenderer.drawString("Target", 71, 8, 4210752);
         ItemStack stack = inventory.getStackInSlot(0);
         if (stack.getItem() instanceof IPositionProvider) {
-            float scale = 0.75F;
             List<BlockPos> posList = ((IPositionProvider) stack.getItem()).getStoredPositions(stack);
             BlockPos pos = posList.get(0);
-            GlStateManager.pushMatrix();
-            GlStateManager.scale(scale, scale, scale);
-            GlStateManager.translate(140 * (1 - scale), 28 * (1 - scale), 0);
-            fontRenderer.drawString(String.format("%d, %d, %d", pos.getX(), pos.getY(), pos.getZ()), 105, 28, 0x404080);
-            GlStateManager.popMatrix();
+            if (pos != null) {
+                float scale = 0.75F;
+                GlStateManager.pushMatrix();
+                GlStateManager.scale(scale, scale, scale);
+                GlStateManager.translate(140 * (1 - scale), 28 * (1 - scale), 0);
+                fontRenderer.drawString(String.format("%d, %d, %d", pos.getX(), pos.getY(), pos.getZ()), 105, 28, 0x404080);
+                GlStateManager.popMatrix();
+            }
         }
     }
 
