@@ -744,6 +744,7 @@ gui.progWidget.conditionCoordinate.error.noAxisSelected=No checking axis selecte
 gui.progWidget.conditionItem.error.noCheckingItem=No checking item. Add at least one Item Filter to the topmost slot.
 gui.progWidget.conditionItem.error.noFilter=No item filter. Add at least one Item Filter to the second slot from the top.
 gui.progWidget.itemFilter.error.noFilter=No item in the filter. Either select one, or select a valid variable.
+gui.progWidget.itemFilter.error.notBlock=The filtered item is not a block!
 gui.progWidget.label.error.noLabel=No label. Attach a Text puzzle piece.
 gui.progWidget.label.error.noJumpLocation=No place to jump to. Attach a Text puzzle piece.
 gui.progWidget.liquidFilter.error.noLiquid=No liquid selected in the filter.

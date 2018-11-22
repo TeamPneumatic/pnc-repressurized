@@ -13,6 +13,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.RenderItem;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
@@ -26,7 +27,7 @@ import java.util.Set;
 
 public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget {
     private ItemStack filter = ItemStack.EMPTY;
-    public boolean useMetadata = true, useNBT, useOreDict, useModSimilarity;
+    public boolean useMetadata = true, useNBT, useOreDict, useModSimilarity, matchBlock;
     public int specificMeta;
     private DroneAIManager aiManager;
     private String variable = "";
@@ -45,6 +46,9 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
         super.addErrors(curInfo, widgets);
         if (variable.equals("") && filter == null) {
             curInfo.add("gui.progWidget.itemFilter.error.noFilter");
+        }
+        if (matchBlock && !(filter.getItem() instanceof ItemBlock)) {
+            curInfo.add("gui.progWidget.itemFilter.error.notBlock");
         }
     }
 
@@ -101,7 +105,11 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
                 curTooltip.add(TextFormatting.DARK_AQUA + "- Using Mod similarity");
             } else {
                 curTooltip.add(TextFormatting.DARK_AQUA + "- " + (useMetadata ? "Using" : "Ignoring") + " meta");
-                curTooltip.add(TextFormatting.DARK_AQUA + "- " + (useNBT ? "Using" : "Ignoring") + " NBT");
+                if (matchBlock) {
+                    curTooltip.add(TextFormatting.DARK_AQUA + "- Matching by block");
+                } else {
+                    curTooltip.add(TextFormatting.DARK_AQUA + "- " + (useNBT ? "Using" : "Ignoring") + " NBT");
+                }
             }
         }
     }
@@ -141,6 +149,7 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
         tag.setBoolean("useNBT", useNBT);
         tag.setBoolean("useOreDict", useOreDict);
         tag.setBoolean("useModSimilarity", useModSimilarity);
+        tag.setBoolean("matchBlock", matchBlock);
         tag.setInteger("specificMeta", specificMeta);
         tag.setString("variable", variable);
     }
@@ -153,6 +162,7 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
         useNBT = tag.getBoolean("useNBT");
         useOreDict = tag.getBoolean("useOreDict");
         useModSimilarity = tag.getBoolean("useModSimilarity");
+        matchBlock = tag.getBoolean("matchBlock");
         specificMeta = tag.getInteger("specificMeta");
         variable = tag.getString("variable");
     }
@@ -166,25 +176,31 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
     public static boolean isItemValidForFilters(ItemStack item, List<ProgWidgetItemFilter> whitelist, List<ProgWidgetItemFilter> blacklist, IBlockState blockState) {
         if (blacklist != null) {
             for (ProgWidgetItemFilter black : blacklist) {
-                if (PneumaticCraftUtils.areStacksEqual(black.getFilter(), item, black.useMetadata && blockState == null, black.useNBT, black.useOreDict, black.useModSimilarity)) {
-                    if (blockState == null || !black.useMetadata || black.specificMeta == blockState.getBlock().getMetaFromState(blockState)) {
-                        return false;
-                    }
-                }
+                if (matchFilter(item, blockState, black)) return false;
             }
         }
         if (whitelist == null || whitelist.size() == 0) {
             return true;
         } else {
             for (ProgWidgetItemFilter white : whitelist) {
-                if (PneumaticCraftUtils.areStacksEqual(white.getFilter(), item, white.useMetadata && blockState == null, white.useNBT, white.useOreDict, white.useModSimilarity)) {
-                    if (blockState == null || !white.useMetadata || white.specificMeta == blockState.getBlock().getMetaFromState(blockState)) {
-                        return true;
-                    }
-                }
+                if (matchFilter(item, blockState, white)) return true;
             }
             return false;
         }
+    }
+
+    private static boolean matchFilter(ItemStack stack, IBlockState blockState, ProgWidgetItemFilter filter) {
+        if (filter.matchBlock && stack.isEmpty() && blockState != null && filter.getFilter().getItem() instanceof ItemBlock) {
+            // match by block
+            return blockState.getBlock() == ((ItemBlock) filter.getFilter().getItem()).getBlock()
+                    && (!filter.useMetadata || filter.specificMeta == blockState.getBlock().getMetaFromState(blockState));
+        } else {
+            // match by item
+            if (PneumaticCraftUtils.areStacksEqual(filter.getFilter(), stack, filter.useMetadata && blockState == null, filter.useNBT, filter.useOreDict, filter.useModSimilarity)) {
+                return blockState == null || !filter.useMetadata || filter.specificMeta == blockState.getBlock().getMetaFromState(blockState);
+            }
+        }
+        return false;
     }
 
     @Override

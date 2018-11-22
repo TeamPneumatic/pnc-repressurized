@@ -42,6 +42,10 @@ public class DroneAIDig extends DroneAIBlockInteraction<ProgWidgetAreaItemBase> 
                     return swapBestItemToFirstSlot(pos) || !((IToolUser)widget).requiresTool();
                 }
             }
+            if (widget.isItemValidForFilters(ItemStack.EMPTY, blockState)) {
+                // try a by-block check
+                return swapBestItemToFirstSlot(pos) || !((IToolUser)widget).requiresTool();
+            }
         }
         return false;
     }
@@ -130,6 +134,7 @@ public class DroneAIDig extends DroneAIBlockInteraction<ProgWidgetAreaItemBase> 
                     return true;
                 }
             }
+            return widget.isItemValidForFilters(ItemStack.EMPTY, blockState);  // try a by-block check
         }
         return false;
     }
