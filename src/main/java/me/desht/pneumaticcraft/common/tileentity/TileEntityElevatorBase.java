@@ -51,7 +51,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     public float extension;
     @DescSynced
     private float targetExtension;
-    private boolean isStopped;  //used for sounds
+    private boolean isStopped = true;  //used for sounds
     private TileEntityElevatorBase coreElevator;
     private List<TileEntityElevatorBase> multiElevators; //initialized when multiple elevators are connected in a multiblock manner.
     @DescSynced

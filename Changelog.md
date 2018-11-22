@@ -12,13 +12,16 @@ Changes are in reverse chronological order; newest changes at the top.
 * Pneumatic Helmet Entity Tracker mob targeting warnings are now all handled server-side, reducing network traffic requirements and also resolving a client-side crash with certain modded entities (Ice & Fire Gorgons in particular, but potentially others).
 * Restored some pre-0.8.0 functionality: the Aerial Interface once again allows access to the player's armor via the top face even when a Dispenser Upgrade is installed (but only when the top face is connected to armor). This was technically an unintended quirk, but some players were using it.
 * Improved server-side performance of the Assembly Controller (smarter about discovering its machines), and made client-side GUI diagnostic messages more informative regarding duplicate and/or missing machines.
-* Logistics Modules are now much cheaper to use in terms of air cost, particularly for moving fluids:
+* Logistics Modules are now much cheaper to use in terms of air cost, especially for moving fluids:
   * The air cost now increases linearly with distance instead of quadratically.
   * The overall multiplier cost for items and fluids has also been halved.
   * Example: moving 8000mB of fluid a distance of 20 blocks now costs 8000mL of air, instead of an impossible 320000mL.
+  * When there isn't enough air available in the tube to move the entire requested amount of items or fluid, the module will now move what it can instead of giving up and doing nothing. This makes Logistics Modules far more capable of moving resources over longer distances.
 * Drone debug messages (accessed with Pneumatic Helmet + Entity Tracker & Dispenser Upgrades) now show elapsed time since last message of that type rather than the number of messages of that type, which wasn't too useful (and could also use a lot more memory than necessary in some situations).
 * Drone Place Block program piece will now overwrite replaceable blocks such as tall grass & snow layers.
 * Reduced Elevator sound volume depending on the number of individual elevators in a multiblock collection (each elevator plays the sound, so multiple elevators together can be quite loud).
+* Drones can now pick up & drop Minecarts and Boats (including any passengers and/or contents) using Entity Import/Export programming pieces.
+* Added a new "Match by Block" checkbox to the Item Filter GUI in the Programmer, which is only used by the "Dig" programming piece. This allows Drones to match blocks which never drop an item, such as Abyssalcraft's Shoggoth Ooze. So you can get your Drones to clean up that nasty stuff now.
 #### Fixes
 * Fixed a long-standing but rather subtle bug where Advanced Pressure Tubes only had 1000mL air volume following a world reload instead of the 4000mL they should have had.  More details:
   * Advanced Pressure Tubes are supposed to have a 4000mL volume, and they do when initially placed down. However due to a bug, upon reloading the world, their volume reverts to 1000mL (same as a basic Pressure Tube).
@@ -26,11 +29,11 @@ Changes are in reverse chronological order; newest changes at the top.
   * However, any pre-existing Advanced Pressure Tubes will need to be broken and replaced if you want to take advantage of their correct air volume.
   * This isn't essential and you can replace tubes at your leisure. You will have improved air storage in your tube network once your tubes have re-pressurized.
   * If you're using Logistics Modules, you will probably see the greatest benefit, since the newly fixed tubes are much more effective in moving items and fluids around due to their greater air storage.
-* Logistics Modules: when there isn't enough air available in the tube to move the entire requested amount of items or fluid, the module will now move what it can instead of giving up and doing nothing. Coupled with the above pressure tube volume fix, Logistics Modules are now far more capable of moving resources over longer distances.
-* Fixed Vortex Cannon not always breaking plants/leaves/etc. even though the fired vortex appeared to make contact.
+* Fixed Vortex Cannon not always breaking plants/leaves/etc. even though the fired vortex appears to make contact.
 * Fixed Vortex Cannon re-equip animation constantly being played if the held cannon is being charged from Pneumatic Chestplate or Aerial Interface.
-* Fixed client crash when selecting area type in Area GPS Tool
-
+* Fixed client crash when selecting area type in Area GPS Tool.
+* Fixed client crash when selecting uninitialized GPS Tools in the GUI Inventory Search window.
+* Fixed Elevators playing a spurious "elevator stop" sound to any players who log in nearby, even when the Elevator is idle.
 ### 0.8.3-299 (5 Nov 2018)
 #### Updates
 * Elevator Base now accepts up to 4 Charging Upgrades.  Each Charging Upgrade allows the elevator to reclaim some of the air spent to raise the elevator when the elevator descends again, up to a max of 60% of the air (15% per upgrade). This comes with the penalty of slower elevator descent (10% slower per upgrade).
