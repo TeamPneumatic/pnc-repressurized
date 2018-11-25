@@ -6,7 +6,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
-### 0.8.4-??? (unreleased)
+### 0.8.4-303 (25 Nov 2018)
 #### Updates
 * The Kerosene Lamp can now hold 2000mB of fuel (up from 1000mb). This makes it practical to use fuel buckets to automatically fuel it (because the lamp reduces its lighting and fuel consumption when very low on fuel, it would previously run for ages on low lighting before exhausting its fuel supply and accepting a new bucket).
 * Pneumatic Helmet Entity Tracker mob targeting warnings are now all handled server-side, reducing network traffic requirements and also resolving a client-side crash with certain modded entities (Ice & Fire Gorgons in particular, but potentially others).
