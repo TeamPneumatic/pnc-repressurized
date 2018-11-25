@@ -2,7 +2,7 @@
 
 This is a port to Minecraft 1.12.2 of MineMaarten's awesome PneumaticCraft mod: https://github.com/MineMaarten/PneumaticCraft.  It is fully functional at this point, and stability is steadily improving.
 
-* Beta-level builds are available from https://minecraft.curseforge.com/projects/pneumaticcraft-repressurized
+* Releases are available from https://minecraft.curseforge.com/projects/pneumaticcraft-repressurized
 * Development builds are available from http://jenkins.k-4u.nl/job/PneumaticCraft-Repressurized/
 * Maven artifacts are available from https://modmaven.k-4u.nl/me/desht/pneumaticcraft/pneumaticcraft-repressurized/
 
