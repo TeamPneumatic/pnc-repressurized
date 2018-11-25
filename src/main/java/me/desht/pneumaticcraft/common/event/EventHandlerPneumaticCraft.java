@@ -41,6 +41,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.item.EntityBoat;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityMinecart;
 import net.minecraft.entity.player.EntityPlayer;
@@ -396,7 +397,8 @@ public class EventHandlerPneumaticCraft {
     public void entityMounting(EntityMountEvent event) {
         if (event.isMounting()) {
             // prevent minecarts which have just been dropped by drones from immediately picking up the drone
-            if (event.getEntityMounting() instanceof EntityDrone && event.getEntityBeingMounted() instanceof EntityMinecart) {
+            if (event.getEntityMounting() instanceof EntityDrone
+                    && (event.getEntityBeingMounted() instanceof EntityMinecart || event.getEntityBeingMounted() instanceof EntityBoat)) {
                 if (!event.getEntityBeingMounted().onGround) {
                     event.setCanceled(true);
                 }

@@ -21,6 +21,8 @@ Changes are in reverse chronological order; newest changes at the top.
 * Drone Place Block program piece will now overwrite replaceable blocks such as tall grass & snow layers.
 * Reduced Elevator sound volume depending on the number of individual elevators in a multiblock collection (each elevator plays the sound, so multiple elevators together can be quite loud).
 * Drones can now pick up & drop Minecarts and Boats (including any passengers and/or contents) using Entity Import/Export programming pieces.
+* In entity filters, "@boat" now matches boat entities.
+* In entity filters, "@mob" now matches any hostile entity, including Slimes and Shulkers (which were previously not included).
 * Added a new "Match by Block" checkbox to the Item Filter GUI in the Programmer, which is only used by the "Dig" programming piece. This allows Drones to match blocks which never drop an item, such as Abyssalcraft's Shoggoth Ooze. So you can get your Drones to clean up that nasty stuff now.
 #### Fixes
 * Fixed a long-standing but rather subtle bug where Advanced Pressure Tubes only had 1000mL air volume following a world reload instead of the 4000mL they should have had.  More details:

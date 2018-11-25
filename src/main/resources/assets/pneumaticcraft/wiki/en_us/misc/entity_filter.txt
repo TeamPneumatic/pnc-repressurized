@@ -2,20 +2,21 @@ Entity Filters are used at a few locations in PneumaticCraft. They all work the 
 
 To specify certain Entities, whether they are of the same type ('Creepers') or have the same name (a player called 'MineMaarten'), just put it in by plain name. When you want to specify a certain entity type (animals, aggresive mobs, players in general), you put a '@' in front. Here are all the '@' types, and usage examples:
 
-@player --> allows all players only
-@mob --> allows all aggressive creatures only
-@animal --> allows all passive creatures only
-@animal(age = adult) --> allows all passive creatures that are adult only
-@animal(age = baby) --> allows all passive creatures that are baby only
-@animal(breedable = yes) --> allows all passive creatures that can breed at this very moment (they'll consume wheat/carrots/...)
-@minecart --> allows minecarts only
-@living --> allows all living entities only
-@item --> allows item entities only
-@drone --> allows drone entities only
-Creeper --> allows Creepers only
-MineMaarten --> allows MineMaarten only
-c* --> allows any entity starting with the letter 'c' only (like Creepers, or Cows).
-*pig* --> allows any entity that includes 'pig' in the name only (like a Pig or Zombie Pigman).
+[prefix{l}]@player: [prefix{}] matches all players
+[prefix{l}]@mob: [prefix{}] matches all aggressive creatures
+[prefix{l}]@animal: [prefix{}] matches all passive creatures
+[prefix{l}]@animal(age = adult): [prefix{}] matches all passive creatures that are adult
+[prefix{l}]@animal(age = baby): [prefix{}] matches all passive creatures that are baby
+[prefix{l}]@animal(breedable = yes): [prefix{}] matches all passive creatures that can breed at this very moment (they'll consume wheat/carrots/...)
+[prefix{l}]@minecart: [prefix{}] matches minecarts
+[prefix{l}]@boat: [prefix{}] matches minecarts
+[prefix{l}]@living: [prefix{}] matches all living entities
+[prefix{l}]@item: [prefix{}] matches item entities
+[prefix{l}]@drone: [prefix{}] matches drone entities
+[prefix{l}]Creeper: [prefix{}] matches Creepers
+[prefix{l}]MineMaarten: [prefix{}] matches an entity named 'MineMaarten'
+[prefix{l}]c*: [prefix{}] matches any entity starting with the letter 'c' (like Creepers, or Cows).
+[prefix{l}]*pig*: [prefix{}] matches any entity that includes 'pig' in the name (like a Pig or Zombie Pigman).
 
 All matches are case-insensitive, e.g. both "zombie" and "Zombie" will match zombies.
 

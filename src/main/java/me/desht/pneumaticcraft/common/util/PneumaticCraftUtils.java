@@ -13,10 +13,11 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.*;
+import net.minecraft.entity.item.EntityBoat;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityMinecart;
-import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntityZombie;
+import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -554,10 +555,10 @@ public class PneumaticCraftUtils {
             return true;
         } else if (filter.startsWith("@")) {//entity type selection
             filter = filter.substring(1); //cut off the '@'.
-            Class<? extends Entity> typeClass = null;
+            Class<?> typeClass = null;
             switch (filter) {
                 case "mob":
-                    typeClass = EntityMob.class;
+                    typeClass = IMob.class;  // IMob matches some hostile creatures that EntityMob doesn't
                     break;
                 case "animal":
                     typeClass = EntityAnimal.class;
@@ -576,6 +577,9 @@ public class PneumaticCraftUtils {
                     break;
                 case "drone":
                     typeClass = EntityDrone.class;
+                    break;
+                case "boat":
+                    typeClass = EntityBoat.class;
                     break;
             }
             if (typeClass != null) {

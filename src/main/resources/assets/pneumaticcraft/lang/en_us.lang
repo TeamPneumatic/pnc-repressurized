@@ -626,7 +626,7 @@ gui.holdF1forHelp=Hold §eF1§r for help
 gui.aphorismTileEditor=Aphorism Tile Editor
 gui.aphorismTile.helpText=§a§nAphorism Tile Editor \n \n§eCursor Left/Up:§r move up a line \n§eCursor Down:§r move down a line \n§eReturn:§r new line \n§eBackspace:§r delete character \n§eDelete:§r delete line \n§e Shift-Delete:§r delete all lines §eEscape:§r finish editing \n§eAlt + §ochr§r: insert control code \n §7- codes: 0-9, a-f, l, m, n, o, r
 gui.entityFilter=Entity filter (Hold §lF1§r for help)
-gui.entityFilter.helpText=§a§nEntity Filtering \n \n§e@player§f: allows all players only \n§e@mob§f: allows all aggressive creatures only \n§e@animal§f: allows all passive creatures only \n§e@animal(age = adult)§f: allows all adult passive creatures \n§e@animal(age = baby)§f: allows all baby passive creatures \n§e@animal(breedable = yes)§f: allows all passive creatures that \n  can breed at this very moment (they'll consume wheat/carrots/...) \n§e@minecart§f: allows minecarts only \n§e@living§f: allows all living entities only \n§e@item§f: allows item entities only \n§e@drone§f: allows drone entities only \n§eCreeper§f: allows Creepers only \n§eMineMaarten§f: allows MineMaarten only \n§ec*§f: allows any entity starting with the letter 'c' only (like Creepers, or Cows). \n§e*pig*§f: allows any entity that includes 'pig' in the name only (like a Pig or Zombie Pigman) \n \nYou can specify a sequence of filters with the ";" (semicolon) separator - this is a "match any" function. \ne.g. "creeper;zombie" will match both Creepers and Zombies.
+gui.entityFilter.helpText=§a§nEntity Filtering \n \n§e@player§f: matches players \n§e@mob§f: matches aggressive creatures \n§e@animal§f: matches passive creatures \n§e@animal(age = adult)§f: matches all adult animals \n§e@animal(age = baby)§f: matches all baby animals \n§e@animal(breedable = yes)§f: matches all passive creatures that \n  can breed at this very moment (they'll consume wheat/carrots/...) \n§e@minecart§f: matches minecarts \n§e@boat§f: matches boats\n§e@living§f: matches all living entities \n§e@item§f: matches item entities \n§e@drone§f: matches drone entities \n§eCreeper§f: matches Creepers \n§eMineMaarten§f: matches an entity named 'MineMaarten' \n§ec*§f: matches any entity starting with the letter 'c' (like Creepers, or Cows). \n§e*pig*§f: allows any entity that includes 'pig' in the name (like a Pig or Zombie Pigman) \n \nYou can specify a sequence of filters with the ";" (semicolon) separator - this is a "match any" function. \ne.g. "creeper;zombie" will match both Creepers and Zombies.
 gui.redstone=Redstone
 gui.threshold=Threshold(bar)
 gui.tubeModule.advancedConfig=Advanced config
@@ -674,7 +674,7 @@ gui.progWidget.blockOrder.lowToHigh=Low to high
 gui.progWidget.blockOrder.highToLow=High to low
 gui.progWidget.blockOrder.closest=Closest
 gui.progWidget.itemFilter.useItemCount=Use count
-gui.progWidget.itemFilter.useItemCount.tooltip=When checked, this will only allow the specified amount of items/fluid/... to be transfered.
+gui.progWidget.itemFilter.useItemCount.tooltip=When checked, this will` allow the specified amount of items/fluid/... to be transfered.
 gui.progWidget.coordinate.selectFromGPS=Select from GPS
 gui.progWidget.area.selectGPS1=Select GPS 1
 gui.progWidget.area.selectGPS2=Select GPS 2

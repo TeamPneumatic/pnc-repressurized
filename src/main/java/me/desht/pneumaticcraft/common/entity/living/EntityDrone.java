@@ -50,6 +50,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.EntityAITasks;
+import net.minecraft.entity.item.EntityBoat;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityMinecart;
 import net.minecraft.entity.passive.EntityFlying;
@@ -1159,12 +1160,14 @@ public class EntityDrone extends EntityDroneBase implements
         if (entity == null) {
             for (Entity e : getCarryingEntities()) {
                 e.dismountRidingEntity();
-                if (e instanceof EntityMinecart) {
-                    e.posY -= 2; // little hack to avoid the dropped minecart immediately picking up the drone
+                if (e instanceof EntityMinecart || e instanceof EntityBoat) {
+                    // little kludge to prevent the dropped minecart/boat immediately picking up the drone
+                    e.posY -= 2;
                     if (world.getBlockState(e.getPosition()).isBlockNormalCube()) {
                         e.posY++;
                     }
-                    e.rideCooldown = 0;  // minecarts have their own onUpdate() which doesn't decrement rideCooldown
+                    // minecarts have their own onUpdate() which doesn't decrement rideCooldown
+                    if (e instanceof EntityMinecart) e.rideCooldown = 0;
                 }
             }
         } else {
