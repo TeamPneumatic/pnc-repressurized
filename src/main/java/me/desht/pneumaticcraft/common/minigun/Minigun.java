@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.client.render.RenderProgressingLine;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
+import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.item.ItemGunAmmo;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound;
@@ -219,6 +220,8 @@ public abstract class Minigun {
     private boolean securityProtectedTarget(Entity target) {
         if (target instanceof EntityTameable) {
             return ((EntityTameable) target).getOwner() != null;
+        } else if (target instanceof EntityDrone) {
+            return ((EntityDrone) target).getOwner().getUniqueID().equals(getPlayer().getUniqueID());
         } else {
             return target instanceof EntityPlayer;
         }
