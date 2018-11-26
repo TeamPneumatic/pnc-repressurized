@@ -165,7 +165,11 @@ public class EventHandlerPneumaticCraft {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onEnderTeleport(EnderTeleportEvent event) {
-        if (!HackableEnderman.onEndermanTeleport(event.getEntity())) {
+        Entity e = event.getEntity();
+        if (!HackableEnderman.onEndermanTeleport(e)) {
+            event.setCanceled(true);
+        }
+        if (e.getEntityWorld().getBlockState(e.getPosition()).getBlock() == Blockss.FAKE_ICE) {
             event.setCanceled(true);
         }
     }

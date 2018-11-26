@@ -5,7 +5,7 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 
 /**
- * Intended to implemented on equippable items.  When equipped, the item can modify the player's
+ * To be implemented on equippable items.  When equipped, the item can modify the player's
  * field of view.
  */
 public interface IFOVModifierItem {
