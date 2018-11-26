@@ -22,6 +22,8 @@ import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -163,6 +165,7 @@ public class ItemMinigun extends ItemPressurizable implements IChargingStationGU
                         magazineHandler.save();
                     }
                 } else {
+                    NetworkHandler.sendTo(new PacketPlaySound(SoundEvents.BLOCK_COMPARATOR_CLICK, SoundCategory.PLAYERS, player.posX, player.posY, player.posZ, 1.0f, 1.0f, false), (EntityPlayerMP) player);
                     player.sendStatusMessage(new TextComponentTranslation("message.minigun.outOfAmmo"), true);
                 }
             }
