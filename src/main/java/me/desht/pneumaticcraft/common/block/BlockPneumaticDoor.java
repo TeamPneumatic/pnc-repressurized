@@ -261,6 +261,10 @@ public class BlockPneumaticDoor extends BlockPneumaticCraftModeled {
             return getDoorBase(world, pos.offset(EnumFacing.UP));
         } else {
             EnumFacing dir = getRotation(world, pos);
+            if (dir.getAxis() == EnumFacing.Axis.Y) {
+                // should never happen, but see https://github.com/TeamPneumatic/pnc-repressurized/issues/284
+                return null;
+            }
             TileEntity te1 = world.getTileEntity(pos.offset(dir.rotateY()));
             if (te1 instanceof TileEntityPneumaticDoorBase) {
                 TileEntityPneumaticDoorBase door = (TileEntityPneumaticDoorBase) te1;
