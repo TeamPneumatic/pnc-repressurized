@@ -77,6 +77,14 @@ public class ItemCamoApplicator extends ItemPressurizable {
                     return EnumActionResult.FAIL;
                 }
 
+                // return any existing camouflage on the block/TE
+                IBlockState existingCamo = ((ICamouflageableTE) te).getCamouflage();
+
+                if (existingCamo == camoState) {
+                    NetworkHandler.sendToAllAround(new PacketPlaySound(SoundEvents.BLOCK_COMPARATOR_CLICK, SoundCategory.PLAYERS, pos, 1.0F, 2.0F, false), world);
+                    return EnumActionResult.SUCCESS;
+                }
+
                 // make sure player has enough of the camo item
                 if (camoState != null && !player.capabilities.isCreativeMode) {
                     ItemStack camoStack = ICamouflageableTE.getStackForState(camoState);
@@ -88,14 +96,7 @@ public class ItemCamoApplicator extends ItemPressurizable {
                     }
                 }
 
-                // return any existing camouflage on the block/TE
-                IBlockState existingCamo = ((ICamouflageableTE) te).getCamouflage();
-
-                if (existingCamo == camoState) {
-                    NetworkHandler.sendToAllAround(new PacketPlaySound(SoundEvents.BLOCK_COMPARATOR_CLICK, SoundCategory.PLAYERS, pos, 1.0F, 2.0F, false), world);
-                    return EnumActionResult.SUCCESS;
-                }
-
+                // return existing camo block, if any
                 if (existingCamo != null && !player.capabilities.isCreativeMode) {
                     ItemStack camoStack = ICamouflageableTE.getStackForState(existingCamo);
                     EntityItem entity = new EntityItem(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, camoStack);
@@ -106,6 +107,10 @@ public class ItemCamoApplicator extends ItemPressurizable {
                 // and apply the new camouflage
                 addAir(stack, -PneumaticValues.USAGE_CAMO_APPLICATOR);
                 ((ICamouflageableTE) te).setCamouflage(camoState);
+                IBlockState particleState = camoState == null ? existingCamo : camoState;
+                if (particleState != null) {
+                    player.getEntityWorld().playEvent(2001, pos, Block.getStateId(particleState));
+                }
                 NetworkHandler.sendToAllAround(new PacketPlaySound(Sounds.SHORT_HISS, SoundCategory.PLAYERS, pos, 1.0F, 1.0F, false), world);
                 return EnumActionResult.SUCCESS;
             }
