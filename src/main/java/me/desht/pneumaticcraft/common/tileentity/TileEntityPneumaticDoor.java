@@ -63,4 +63,9 @@ public class TileEntityPneumaticDoor extends TileEntityTickableBase {
     public AxisAlignedBB getRenderBoundingBox() {
         return new AxisAlignedBB(getPos().getX(), getPos().getY(), getPos().getZ(), getPos().getX() + 1, getPos().getY() + 2, getPos().getZ() + 1);
     }
+
+    @Override
+    public boolean canRenderBreaking() {
+        return true;
+    }
 }

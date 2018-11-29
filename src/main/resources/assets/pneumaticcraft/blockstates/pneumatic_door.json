@@ -43,12 +43,12 @@
       "moving": { "model": "pneumaticcraft:blank" }
     },
     "top_door": {
-      "false": {},
-      "true": {
+      "false": {
         "textures": {
           "particle": "pneumaticcraft:blocks/compressed_iron_block"
         }
-      }
+      },
+      "true": { }
     },
     "inventory": [{
       "transform": {

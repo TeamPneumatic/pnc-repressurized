@@ -12,6 +12,8 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
@@ -34,6 +36,7 @@ public class BlockPneumaticDoor extends BlockPneumaticCraftModeled {
     // true when the Pneumatic Door Base is determining if it should open the door dependent
     // on the player watched block.
     public boolean isTrackingPlayerEye;
+    private int thickness = 13;  // 13/16 for bounding box, 15/16 for collision box
 
     BlockPneumaticDoor() {
         super(Material.IRON, "pneumatic_door");
@@ -93,8 +96,8 @@ public class BlockPneumaticDoor extends BlockPneumaticCraftModeled {
             EnumFacing rotation = state.getValue(ROTATION);
             if (te instanceof TileEntityPneumaticDoor) {
                 TileEntityPneumaticDoor door = (TileEntityPneumaticDoor) te;
-                float cosinus = 13 / 16F - MathHelper.sin((float)Math.toRadians(door.rotationAngle)) * 13 / 16F;
-                float sinus = 13 / 16F - MathHelper.cos((float) Math.toRadians(door.rotationAngle)) * 13 / 16F;
+                float cosinus = thickness / 16F - MathHelper.sin((float)Math.toRadians(door.rotationAngle)) * thickness / 16F;
+                float sinus = thickness / 16F - MathHelper.cos((float) Math.toRadians(door.rotationAngle)) * thickness / 16F;
                 if (door.rightGoing) {
                     switch (rotation) {
                         case NORTH:
@@ -135,7 +138,10 @@ public class BlockPneumaticDoor extends BlockPneumaticCraftModeled {
     @Nullable
     @Override
     public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos) {
-        return getBoundingBox(blockState, worldIn, pos);
+        thickness = 15;
+        AxisAlignedBB aabb = getBoundingBox(blockState, worldIn, pos);
+        thickness = 13;
+        return aabb;
     }
 
     @Override
@@ -157,6 +163,25 @@ public class BlockPneumaticDoor extends BlockPneumaticCraftModeled {
     public void onBlockPlacedBy(World par1World, BlockPos pos, IBlockState state, EntityLivingBase par5EntityLiving, ItemStack par6ItemStack) {
         super.onBlockPlacedBy(par1World, pos, state, par5EntityLiving, par6ItemStack);
         par1World.setBlockState(pos.offset(EnumFacing.UP), par1World.getBlockState(pos).withProperty(TOP_DOOR, true), 3);
+    }
+
+    public Item getItemDropped(IBlockState state, Random rand, int fortune) {
+        return isTopDoor(state) ? Items.AIR : super.getItemDropped(state, rand, fortune);
+    }
+
+    @Override
+    public void onBlockHarvested(World worldIn, BlockPos pos, IBlockState state, EntityPlayer player) {
+        BlockPos posDown = pos.down();
+        BlockPos posUp = pos.up();
+        if (player.capabilities.isCreativeMode && isTopDoor(state) && worldIn.getBlockState(posDown).getBlock() == this) {
+            worldIn.setBlockToAir(posDown);
+        }
+        if (!isTopDoor(state) && worldIn.getBlockState(posUp).getBlock() == this) {
+            if (player.capabilities.isCreativeMode) {
+                worldIn.setBlockToAir(pos);
+            }
+            worldIn.setBlockToAir(posUp);
+        }
     }
 
     @Override
