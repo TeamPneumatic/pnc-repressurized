@@ -31,12 +31,15 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Events related to Pneumatic Armor.  Note any player-tick events are handled in CommonHUDHandler#tickArmorPiece()
  */
 public class EventHandlerPneumaticArmor {
     private static final Map<Integer, Integer> targetingTracker = new HashMap<>();
+
+    private static final Map<UUID,Long> armorJumping = new HashMap<>();
 
     @SubscribeEvent
     public void onMobTargetSet(LivingSetAttackTargetEvent event) {
@@ -71,8 +74,20 @@ public class EventHandlerPneumaticArmor {
 
     @SubscribeEvent
     public void onPlayerFall(LivingFallEvent event) {
-        if (event.getEntity() instanceof EntityPlayer && event.getDistance() > 3.0F && !event.getEntity().world.isRemote) {
-            EntityPlayer player = (EntityPlayer) event.getEntity();
+        if (!(event.getEntity() instanceof EntityPlayer) || event.getEntity().world.isRemote) return;
+
+        EntityPlayer player = (EntityPlayer) event.getEntity();
+
+        // this is a kludge, but setting player.fallDistance to a negative amount doesn't seem to work as it should
+        // cancel fall damage if the player jumped with pneumatic legs in the last 40 ticks
+        long when = armorJumping.getOrDefault(player.getUniqueID(), 0L);
+        if (player.world.getTotalWorldTime() - when < 40) {
+            event.setCanceled(true);
+            return;
+        }
+        armorJumping.remove(player.getUniqueID());
+
+        if (event.getDistance() > 3.0F) {
             ItemStack stack = player.getItemStackFromSlot(EntityEquipmentSlot.FEET);
             if (!(stack.getItem() instanceof ItemPneumaticArmor)) {
                 return;
@@ -184,7 +199,7 @@ public class EventHandlerPneumaticArmor {
                 float scale = player.isSprinting() ? 0.25f * actualBoost : 0.15f * actualBoost;
                 if (player.motionX != 0) player.motionX -= (double)(MathHelper.sin(rotRad) * scale);
                 if (player.motionZ != 0) player.motionZ += (double)(MathHelper.cos(rotRad) * scale);
-                player.fallDistance -= actualBoost * 1.5;
+                armorJumping.put(player.getUniqueID(), player.world.getTotalWorldTime());
                 int airUsed = (int) Math.ceil(PneumaticValues.PNEUMATIC_ARMOR_JUMP_USAGE * actualBoost * (player.isSprinting() ? 2 : 1));
                 handler.addAir(stack, EntityEquipmentSlot.LEGS, -airUsed);
             }
