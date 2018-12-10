@@ -125,6 +125,7 @@ item.crop_support.name=Crop Support
 item.transfer_gadget.name=Transfer Gadget
 item.minigun.name=Minigun
 item.camo_applicator.name=Camouflage Applicator
+item.micromissiles.name=Micromissiles
 
 item.programming_puzzle.black.name=Black Programming Puzzle
 item.programming_puzzle.red.name=Red Programming Puzzle
@@ -301,6 +302,7 @@ entity.Drone.name=Drone
 entity.logisticDrone.name=Logistic Drone
 entity.harvestingDrone.name=Harvesting Drone
 entity.Villager.pneumaticcraft.mechanic=Mechanic
+entity.micromissile.name=Micromissile
 
 # Helmet hacking
 pneumaticHelmet.hacking.hacking=Hacking...
@@ -638,7 +640,7 @@ gui.holdF1forHelp=Hold §eF1§r for help
 gui.aphorismTileEditor=Aphorism Tile Editor
 gui.aphorismTile.helpText=§a§nAphorism Tile Editor \n \n§eCursor Left/Up:§r move up a line \n§eCursor Down:§r move down a line \n§eReturn:§r new line \n§eBackspace:§r delete character \n§eDelete:§r delete line \n§e Shift-Delete:§r delete all lines §eEscape:§r finish editing \n§eAlt + §ochr§r: insert control code \n §7- codes: 0-9, a-f, l, m, n, o, r
 gui.entityFilter=Entity filter (Hold §lF1§r for help)
-gui.entityFilter.helpText=§a§nEntity Filtering \n \n§e@player§f: matches players \n§e@mob§f: matches aggressive creatures \n§e@animal§f: matches passive creatures \n§e@animal(age = adult)§f: matches all adult animals \n§e@animal(age = baby)§f: matches all baby animals \n§e@animal(breedable = yes)§f: matches all passive creatures that \n  can breed at this very moment (they'll consume wheat/carrots/...) \n§e@minecart§f: matches minecarts \n§e@boat§f: matches boats\n§e@living§f: matches all living entities \n§e@item§f: matches item entities \n§e@drone§f: matches drone entities \n§eCreeper§f: matches Creepers \n§eMineMaarten§f: matches an entity named 'MineMaarten' \n§ec*§f: matches any entity starting with the letter 'c' (like Creepers, or Cows). \n§e*pig*§f: allows any entity that includes 'pig' in the name (like a Pig or Zombie Pigman) \n \nYou can specify a sequence of filters with the ";" (semicolon) separator - this is a "match any" function. \ne.g. "creeper;zombie" will match both Creepers and Zombies.
+gui.entityFilter.helpText=§a§nEntity Filtering \n \n§e@player§f: matches players \n§e@mob§f: matches aggressive creatures \n§e@animal§f: matches passive creatures \n§e@animal(age = adult)§f: matches all adult animals \n§e@animal(age = baby)§f: matches all baby animals \n§e@animal(breedable = yes)§f: matches all passive creatures that can breed at this very moment (they'll consume wheat/carrots/...) \n§e@minecart§f: matches minecarts \n§e@boat§f: matches boats \n§e@living§f: matches all living entities \n§e@item§f: matches item entities \n§e@drone§f: matches drone entities \n§eCreeper§f: matches Creepers \n§eMineMaarten§f: matches an entity named 'MineMaarten' \n§ec*§f: matches any entity starting with the letter 'c' (like Creepers, or Cows). \n§e*pig*§f: allows any entity that includes 'pig' in the name (like a Pig or Zombie Pigman) \n \nYou can specify a sequence of filters with the ";" (semicolon) separator - this is a "match any" function. \ne.g. "creeper;zombie" will match both Creepers and Zombies.
 gui.redstone=Redstone
 gui.threshold=Threshold(bar)
 gui.tubeModule.advancedConfig=Advanced config
@@ -849,8 +851,16 @@ gui.keroseneLamp.currentRange=Current Range: %s Blocks
 gui.keroseneLamp.timeLeft=Time left: %s
 gui.sentryTurret.ammo=Ammo
 gui.sentryTurret.targetFilter=Target Filter
-
 gui.liquid.empty=Empty
+gui.micromissile.topSpeed=Top Speed
+gui.micromissile.turnSpeed=Turn Speed
+gui.micromissile.damage=Damage
+gui.micromissile.saveDefault=Save as Default
+gui.micromissile.remaining=Missiles Remaining
+gui.micromissile.firingMode=Firing Mode
+gui.micromissile.mode.SMART=Smart
+gui.micromissile.mode.DUMB=Dumb
+gui.micromissile.modeTooltip=§eSmart Mode: §fmissiles actively seek out and lock to the nearest target which matches the entity filter (if any). You can balance between Top Speed, Turn Speed and Damage. \n§eDumb Mode: §fmissiles fly in a straight line only and accelerate fairly slowly, but deal high damage.
 
 key.pneumaticcraft.category=PneumaticCraft
 # gui.enableModule.coreComponents=Enable Helmet
@@ -968,8 +978,6 @@ gui.tooltip.item.gun_ammo_freezing=This specialized Minigun ammo freezes the tar
 gui.tooltip.item.gun_ammo_weighted=This specialized Minigun ammo does much more damage than normal, but due to its large mass has a very short range and uses air from the Minigun at a faster rate.
 gui.tooltip.item.gun_ammo_ap=This specialized Minigun ammo can penetrate armor and does slightly more damage overall than normal ammo. But it's not cheap.
 gui.tooltip.item.gun_ammo_explosive=This specialized Minigun ammo causes explosions on impact. Don't use at short range!
-gui.tooltip.item.gun_ammo_explosive.terrainWarning=§6WARNING: this ammo can damage terrain.
-gui.tooltip.item.gun_ammo_explosive.terrainSafe=§eThis ammo will not damage terrain.
 gui.tooltip.item.amadron_tablet=Item used to order items/fluids, similar to Villager trading, except Items/fluids are picked up and delivered via Drones, which is way more awesome than villagers. A pick-up/drop-off location must be specified by right-clicking an inventory and/or tank with the tablet.
 gui.tooltip.item.logistics_module=This tube module when fitted on a tube will communicate with other Logistics Tube Modules on connected tubes. It will perform logistics tasks on inventories/tanks it is pointing towards, and are fitted with a Logistic Frame. It uses pressure to do so.
 gui.tooltip.item.heat_frame=Can be placed on any inventory. When heated by an adjacent heat source it will try to smelt any item in the inventory as well as freeze it when cooled. It will only succeed when there is room in the inventory for the resulting item. The more heat applied, the faster the smelting process will be, up to a maximum of 1 item smelted per second. Similarly the more it's cooled, the faster it will freeze objects.
@@ -989,6 +997,9 @@ gui.tooltip.item.network_component2=This component can store drone programs. It 
 gui.tooltip.item.network_component3=Required component in a Security Station. \n \nThis is the entry point for hack attempts on your Security Station.
 gui.tooltip.item.network_component4=Required component in a Security Station. \n \nThis is the target for hackers; if all Registries are hacked, the Security Station has been compromised.
 gui.tooltip.item.network_component5=This is a generic Security Station component which allows a path to be created between the required Security Station components.
+gui.tooltip.item.micromissile=Micromissiles are small, hand-launched projectiles with smart guidance systems and an explosive payload. \nSneak + Right-click to open the setup GUI.
+gui.tooltip.terrainWarning=§6WARNING: terrain damage enabled.
+gui.tooltip.terrainSafe=§eTerrain damage disabled.
 
 gui.tooltip.upgrades.empty=Insert in a Charging Station to install upgrades
 gui.tooltip.upgrades.not_empty=Upgrades Installed:
@@ -1007,6 +1018,7 @@ gui.config.category.recipes=Recipes
 gui.config.category.client=Clientside Options
 gui.config.category.helmet=Pneumatic Helmet (Clientside)
 gui.config.category.minigun=Minigun & Ammo
+gui.config.category.micromissile=Micromissiles
 
 # Side Configurator tabs
 gui.sideConfigurator.unconnected=§oUnconnected

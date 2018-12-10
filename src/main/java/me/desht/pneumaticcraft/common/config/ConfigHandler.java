@@ -21,7 +21,8 @@ public class ConfigHandler {
             AmadronOfferPeriodicConfig.INSTANCE,
             new ProgWidgetConfig(),
             HelmetWidgetDefaults.INSTANCE,
-            ThirdPartyConfig.INSTANCE
+            ThirdPartyConfig.INSTANCE,
+            MicromissileDefaults.INSTANCE
     };
 
     @Config.Name("general")
@@ -58,6 +59,11 @@ public class ConfigHandler {
     @Config.LangKey("gui.config.category.minigun")
     @Config.Comment("Minigun")
     public static final MinigunProperties minigun = new MinigunProperties();
+
+    @Config.Name("micromissile")
+    @Config.LangKey("gui.config.category.micromissile")
+    @Config.Comment("Micromissiles")
+    public static final MicromissileProperties microMissile = new MicromissileProperties();
 
     public static void sync() {
         ConfigManager.sync(Names.MOD_ID, Config.Type.INSTANCE);
@@ -322,6 +328,18 @@ public class ConfigHandler {
         public int explosiveAmmoExplosionChance = 50;
         @Config.Comment("Damage done to entities within the fake 'ice' blocks cause by freezing ammo")
         public float freezingAmmoFakeIceDamage = 1f;
+
+    }
+
+    public static class MicromissileProperties {
+        @Config.Comment("Number of micromissiles per pod")
+        public int missilePodSize = 100;
+        @Config.Comment("Do micromissile explosions cause terrain damage?")
+        public boolean damageTerrain = false;
+        @Config.Comment("Base explosion damage (modified by missile setup)")
+        public float baseExplosionDamage = 1f;
+        @Config.Comment("Base missile lifetime in ticks (modified by missile setup)")
+        public int lifetime = 300;
     }
 
     public static void setProgrammerDifficulty(int difficulty) {
@@ -332,7 +350,6 @@ public class ConfigHandler {
     public static int getProgrammerDifficulty() {
         return client.programmerDifficulty;
     }
-
     @Mod.EventBusSubscriber
     public static class ConfigSyncHandler
     {
@@ -344,5 +361,6 @@ public class ConfigHandler {
                 PneumaticCraftRepressurized.logger.info("Configuration has been saved.");
             }
         }
+
     }
 }

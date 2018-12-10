@@ -523,5 +523,44 @@ public class ClientEventHandler {
             ((IExtraGuiHandling) Minecraft.getMinecraft().currentScreen).drawExtras(event);
         }
     }
+
+    @SubscribeEvent
+    public void renderTooltipEvent(RenderTooltipEvent.PostText event) {
+        ItemStack stack = event.getStack();
+        if (stack.getItem() instanceof ItemMicromissiles && stack.hasTagCompound()) {
+            int width = 0;
+            FontRenderer fr = event.getFontRenderer();
+            int y = event.getY() + fr.FONT_HEIGHT * 2 + 5;
+            width = Math.max(width, renderString(fr, (I18n.format("gui.micromissile.topSpeed")), event.getX(), y));
+            width = Math.max(width, renderString(fr, (I18n.format("gui.micromissile.turnSpeed")), event.getX(), y + fr.FONT_HEIGHT));
+            width = Math.max(width, renderString(fr, (I18n.format("gui.micromissile.damage")), event.getX(), y + fr.FONT_HEIGHT * 2));
+            int barX = event.getX() + width + 2;
+            int barW = event.getWidth() - width - 10;
+            GlStateManager.disableTexture2D();
+            GlStateManager.glLineWidth(10);
+            GL11.glEnable(GL11.GL_LINE_STIPPLE);
+            GL11.glLineStipple(1, (short)0xFEFE);
+            RenderUtils.glColorHex(0x00C000, 255);
+            GlStateManager.glBegin(GL11.GL_LINES);
+            GL11.glVertex2i(barX, y + 4);
+            GL11.glVertex2i(barX + (int) (barW * stack.getTagCompound().getFloat(ItemMicromissiles.NBT_TOP_SPEED)), y + 4);
+            GlStateManager.glEnd();
+            GlStateManager.glBegin(GL11.GL_LINES);
+            GL11.glVertex2i(barX, y + 4 + fr.FONT_HEIGHT);
+            GL11.glVertex2i(barX + (int) (barW * stack.getTagCompound().getFloat(ItemMicromissiles.NBT_TURN_SPEED)), y + 4 + fr.FONT_HEIGHT);
+            GlStateManager.glEnd();
+            GlStateManager.glBegin(GL11.GL_LINES);
+            GL11.glVertex2i(barX, y + 4 + fr.FONT_HEIGHT * 2);
+            GL11.glVertex2i(barX + (int) (barW * stack.getTagCompound().getFloat(ItemMicromissiles.NBT_DAMAGE)), y + 4 + fr.FONT_HEIGHT * 2);
+            GlStateManager.glEnd();
+            GlStateManager.glLineWidth(1);
+            GL11.glDisable(GL11.GL_LINE_STIPPLE);
+        }
+    }
+
+    private int renderString(FontRenderer fr, String s, int x, int y) {
+        fr.drawStringWithShadow(s, x, y, 0xFFAAAAAA);
+        return fr.getStringWidth(s);
+    }
 }
 

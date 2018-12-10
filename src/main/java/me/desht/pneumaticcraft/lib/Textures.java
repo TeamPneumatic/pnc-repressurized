@@ -288,6 +288,7 @@ public class Textures {
     public static final ResourceLocation WIDGET_TANK = new ResourceLocation(WIDGET_LOCATION + "widget_tank.png");
     public static final ResourceLocation WIDGET_AMADRON_OFFER = new ResourceLocation(WIDGET_AMADRON_OFFER_STRING);
     public static final ResourceLocation GUI_MINIGUN_CROSSHAIR = new ResourceLocation(GUI_LOCATION + "minigun_crosshair.png");
+    public static final ResourceLocation GUI_MICROMISSILE = new ResourceLocation(GUI_LOCATION + "gui_micromissile.png");
 
     public static final String VANILLA_ITEM_TEXTURE_SHEET = "/gui/items.png";
     public static final String VANILLA_BLOCK_TEXTURE_SHEET = "/terrain.png";
@@ -305,4 +306,5 @@ public class Textures {
 
     public static final ResourceLocation JEI_EXPLOSION = new ResourceLocation(GUI_LOCATION + "jei/explosion.png");
 
+    public static final ResourceLocation MICROMISSILE_TEXTURE = new ResourceLocation(ENTITY_LOCATION + "micromissile.png");
 }

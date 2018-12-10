@@ -138,6 +138,8 @@ public class Itemss {
     public static final Item MINIGUN = null;
     @ObjectHolder("camo_applicator")
     public static final Item CAMO_APPLICATOR = null;
+    @ObjectHolder("micromissiles")
+    public static final Item MICROMISSILES = null;
 
     public static List<Item> items = new ArrayList<>();
     private static List<ItemBlock> all_itemblocks = new ArrayList<>();
@@ -194,6 +196,7 @@ public class Itemss {
         registerItem(registry, new ItemAmadronTablet());
         registerItem(registry, new ItemMinigun());
         registerItem(registry, new ItemCamoApplicator());
+        registerItem(registry, new ItemMicromissiles());
 
         registerUpgrades(registry);
 

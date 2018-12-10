@@ -45,7 +45,6 @@ public class ItemGunAmmoExplosive extends ItemGunAmmo {
     @Override
     public int onBlockHit(Minigun minigun, ItemStack ammo, BlockPos pos, EnumFacing face, Vec3d hitVec) {
         if (minigun.dispenserWeightedPercentage(ConfigHandler.minigun.explosiveAmmoExplosionChance)) {
-            BlockPos pos2 = pos.offset(face);
             minigun.getWorld().createExplosion(null, hitVec.x, hitVec.y, hitVec.z,
                     ConfigHandler.minigun.explosiveAmmoExplosionPower, ConfigHandler.minigun.explosiveAmmoTerrainDamage);
         }
@@ -56,9 +55,9 @@ public class ItemGunAmmoExplosive extends ItemGunAmmo {
     public void addInformation(ItemStack stack, World world, List<String> infoList, ITooltipFlag extraInfo) {
         super.addInformation(stack, world, infoList, extraInfo);
         if (ConfigHandler.minigun.explosiveAmmoTerrainDamage) {
-            infoList.add(I18n.format("gui.tooltip.item.gun_ammo_explosive.terrainWarning"));
+            infoList.add(I18n.format("gui.tooltip.terrainWarning"));
         } else {
-            infoList.add(I18n.format("gui.tooltip.item.gun_ammo_explosive.terrainSafe"));
+            infoList.add(I18n.format("gui.tooltip.terrainSafe"));
         }
     }
 }

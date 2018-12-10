@@ -119,6 +119,7 @@ public class NetworkHandler {
         INSTANCE.registerMessage(PacketMarkPlayerJetbootsActive.class, PacketMarkPlayerJetbootsActive.class, discriminant++, Side.CLIENT);
         INSTANCE.registerMessage(PacketRotateBlock.class, PacketRotateBlock.class, discriminant++, Side.SERVER);
         INSTANCE.registerMessage(PacketUpdateArmorExtraData.class, PacketUpdateArmorExtraData.class, discriminant++, Side.SERVER);
+        INSTANCE.registerMessage(PacketUpdateMicromissileSettings.class, PacketUpdateMicromissileSettings.class, discriminant++, Side.SERVER);
         INSTANCE.registerMessage(PacketSendArmorHUDMessage.class, PacketSendArmorHUDMessage.class, discriminant++, Side.CLIENT);
     }
 

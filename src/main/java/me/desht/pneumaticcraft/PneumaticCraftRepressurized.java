@@ -15,7 +15,6 @@ import me.desht.pneumaticcraft.common.capabilities.hacking.HackingImpl;
 import me.desht.pneumaticcraft.common.commands.PCCommandManager;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.dispenser.BehaviorDispenseDrone;
-import me.desht.pneumaticcraft.common.entity.EntityRegistrator;
 import me.desht.pneumaticcraft.common.event.*;
 import me.desht.pneumaticcraft.common.fluid.FluidFuelManager;
 import me.desht.pneumaticcraft.common.fluid.Fluids;
@@ -115,7 +114,7 @@ public class PneumaticCraftRepressurized {
 
         WidgetRegistrator.init();
         TileEntityRegistrator.init();
-        EntityRegistrator.init();
+//        EntityRegistrator.init();
         SemiBlockInitializer.preInit();
         if (ConfigHandler.general.oilGenerationChance > 0) {
             GameRegistry.registerWorldGenerator(new WorldGeneratorPneumaticCraft(), 0);

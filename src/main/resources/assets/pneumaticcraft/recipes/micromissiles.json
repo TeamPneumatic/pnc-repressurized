@@ -1,0 +1,30 @@
+{
+  "type": "forge:ore_shaped",
+  "pattern": [
+    "wpw",
+    "rtr",
+    "wfw"
+  ],
+  "key": {
+    "r": {
+      "type": "forge:ore_dict",
+      "ore": "plasticRed"
+    },
+    "w": {
+      "type": "forge:ore_dict",
+      "ore": "plasticWhite"
+    },
+    "t": {
+      "item": "minecraft:tnt"
+    },
+    "p": {
+      "item": "pneumaticcraft:printed_circuit_board"
+    },
+    "f": {
+      "item": "minecraft:fire_charge"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:micromissiles"
+  }
+}
