@@ -65,6 +65,9 @@ public class ItemMicromissiles extends ItemPneumatic {
         missile.posY += directionVec.y + 0.1;
         missile.posZ += directionVec.z;
         missile.shoot(playerIn, playerIn.rotationPitch, playerIn.rotationYaw, 0.0F, getInitialVelocity(iStack), 0.0F);
+
+        playerIn.getCooldownTracker().setCooldown(this, ConfigHandler.microMissile.launchCooldown);
+
         if (!worldIn.isRemote) {
             RayTraceResult res = PneumaticCraftUtils.getMouseOverServer(playerIn, 100);
             if (res.typeOfHit == RayTraceResult.Type.ENTITY && missile.isValidTarget(res.entityHit)) {

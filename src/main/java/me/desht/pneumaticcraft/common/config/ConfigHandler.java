@@ -340,6 +340,8 @@ public class ConfigHandler {
         public float baseExplosionDamage = 1f;
         @Config.Comment("Base missile lifetime in ticks (modified by missile setup)")
         public int lifetime = 300;
+        @Config.Comment("Cooldown for missile firing in ticks")
+        public int launchCooldown = 20;
     }
 
     public static void setProgrammerDifficulty(int difficulty) {
