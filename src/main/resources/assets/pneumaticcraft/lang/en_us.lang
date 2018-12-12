@@ -640,7 +640,7 @@ gui.holdF1forHelp=Hold §eF1§r for help
 gui.aphorismTileEditor=Aphorism Tile Editor
 gui.aphorismTile.helpText=§a§nAphorism Tile Editor \n \n§eCursor Left/Up:§r move up a line \n§eCursor Down:§r move down a line \n§eReturn:§r new line \n§eBackspace:§r delete character \n§eDelete:§r delete line \n§e Shift-Delete:§r delete all lines §eEscape:§r finish editing \n§eAlt + §ochr§r: insert control code \n §7- codes: 0-9, a-f, l, m, n, o, r
 gui.entityFilter=Entity filter (Hold §lF1§r for help)
-gui.entityFilter.helpText=§a§nEntity Filtering \n \n§e@player§f: matches players \n§e@mob§f: matches aggressive creatures \n§e@animal§f: matches passive creatures \n§e@animal(age = adult)§f: matches all adult animals \n§e@animal(age = baby)§f: matches all baby animals \n§e@animal(breedable = yes)§f: matches all passive creatures that can breed at this very moment (they'll consume wheat/carrots/...) \n§e@minecart§f: matches minecarts \n§e@boat§f: matches boats \n§e@living§f: matches all living entities \n§e@item§f: matches item entities \n§e@drone§f: matches drone entities \n§eCreeper§f: matches Creepers \n§eMineMaarten§f: matches an entity named 'MineMaarten' \n§ec*§f: matches any entity starting with the letter 'c' (like Creepers, or Cows). \n§e*pig*§f: allows any entity that includes 'pig' in the name (like a Pig or Zombie Pigman) \n \nYou can specify a sequence of filters with the ";" (semicolon) separator - this is a "match any" function. \ne.g. "creeper;zombie" will match both Creepers and Zombies.
+gui.entityFilter.helpText=§a§nEntity Filtering \n \n§e@player§f: match players \n§e@mob§f: match aggressive creatures \n§e@animal§f: match passive creatures \n§e@animal(age = adult)§f: match all adult animals \n§e@animal(age = baby)§f: match all baby animals \n§e@animal(breedable = yes)§f: match all passive creatures that are ready to breed \n§e@minecart§f: match minecarts \n§e@boat§f: match boats \n§e@living§f: match all living entities \n§e@item§f: match item entities \n§e@drone§f: match drone entities \n§eCreeper§f: match Creepers \n§eMineMaarten§f: match an entity named 'MineMaarten' \n§ec*§f: match any entity starting with the letter 'c' (like Creepers, or Cows). \n§e*pig*§f: allows any entity that includes 'pig' in the name (like a Pig or Zombie Pigman) \n§ecreeper;zombie§f: match both Creepers and Zombies \n§e!@player§f: match all EXCEPT players \n§e!creeper;zombie§f match all EXCEPT Creepers and Zombies \n \n• Matches are case-insensitive \n• Prefix with "!" at start of filter to invert the test \n• Use ";" (semicolon) for multiple matches in one filter (this is an OR match)
 gui.redstone=Redstone
 gui.threshold=Threshold(bar)
 gui.tubeModule.advancedConfig=Advanced config
@@ -665,7 +665,7 @@ gui.programmer.button.showStart=Show Start
 gui.programmer.button.showLatest=Show Latest
 gui.programmer.checkbox.showInfo=Show Info
 gui.programmer.checkbox.showFlow=Show Flow
-gui.programmer.pressIForInfo=§2Press 'I' for info
+gui.programmer.pressIForInfo=§2Press 'I' or middle-click for info
 gui.programmer.errors=Errors:
 gui.programmer.warnings=Warnings:
 gui.programmer.errorCount=Cannot export program: %s error(s) found.

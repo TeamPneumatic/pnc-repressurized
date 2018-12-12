@@ -44,8 +44,8 @@ import org.lwjgl.input.Mouse;
 
 import java.awt.*;
 import java.io.IOException;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 @SideOnly(Side.CLIENT)
 public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgrammer> {
@@ -506,6 +506,8 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
                 dragWidgetStartY = widget.getY() - (y - guiTop);
                 if (PneumaticCraftRepressurized.proxy.isSneakingInGui()) copyAndConnectConnectingWidgets(widget, draggingWidget);
             }
+        } else if (isMiddleClicking && showingAllWidgets && Loader.isModLoaded(ModIds.IGWMOD)) {
+            onIGWAction();
         }
 
         if (!isLeftClicking && !isMiddleClicking && draggingWidget != null) {
