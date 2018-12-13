@@ -48,7 +48,9 @@ public class EntityFilter implements Predicate<Entity>, com.google.common.base.P
 
         rawFilter = filter;
 
-        Arrays.stream(ELEMENT_DIVIDER.split(filter)).map(EntityMatcher::new).forEach(matchers::add);
+        if (!filter.isEmpty()) {
+            Arrays.stream(ELEMENT_DIVIDER.split(filter)).map(EntityMatcher::new).forEach(matchers::add);
+        }
     }
 
     public static EntityFilter fromProgWidget(IProgWidget widget, boolean whitelist) {
@@ -95,6 +97,8 @@ public class EntityFilter implements Predicate<Entity>, com.google.common.base.P
 
     @Override
     public boolean test(Entity entity) {
+        if (matchers.isEmpty()) return true;
+
         for (EntityMatcher m : matchers) {
             if (m.test(entity)) return sense;
         }
