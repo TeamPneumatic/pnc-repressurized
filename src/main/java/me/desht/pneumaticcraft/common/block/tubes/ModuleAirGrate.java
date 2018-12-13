@@ -5,8 +5,8 @@ import me.desht.pneumaticcraft.client.model.module.ModelAirGrate;
 import me.desht.pneumaticcraft.client.model.module.ModelModuleBase;
 import me.desht.pneumaticcraft.client.render.RenderRangeLines;
 import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
-import me.desht.pneumaticcraft.common.ai.StringFilterEntitySelector;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityHeatSink;
+import me.desht.pneumaticcraft.common.util.EntityFilter;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.EnumCustomParticleType;
 import me.desht.pneumaticcraft.lib.Names;
@@ -33,10 +33,10 @@ import java.util.Set;
 public class ModuleAirGrate extends TubeModule {
     private int grateRange;
     private boolean vacuum;
-    public String entityFilter = "";
     private final Set<TileEntityHeatSink> heatSinks = new HashSet<>();
     private final RenderRangeLines rangeLineRenderer = new RenderRangeLines(0x5500FF00);
     private boolean resetRendering = true;
+    private EntityFilter entityFilter = null;
 
     public ModuleAirGrate() {
     }
@@ -84,7 +84,7 @@ public class ModuleAirGrate extends TubeModule {
 
     private void pushEntities(World world, BlockPos pos, Vec3d tileVec) {
         AxisAlignedBB bbBox = getAffectedAABB();
-        List<Entity> entities = world.getEntitiesWithinAABB(Entity.class, bbBox, new StringFilterEntitySelector().setFilter(entityFilter));
+        List<Entity> entities = world.getEntitiesWithinAABB(Entity.class, bbBox, entityFilter);
         double d0 = grateRange + 0.5D;
         for (Entity entity : entities) {
             if (!entity.world.isRemote && entity instanceof EntityItem && entity.getDistanceSq(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D) < 0.6D && !entity.isDead) {
@@ -153,7 +153,8 @@ public class ModuleAirGrate extends TubeModule {
         super.readFromNBT(tag);
         vacuum = tag.getBoolean("vacuum");
         grateRange = tag.getInteger("grateRange");
-        entityFilter = tag.getString("entityFilter");
+        String f = tag.getString("entityFilter");
+        entityFilter = f.isEmpty() ? null : EntityFilter.fromString(f);
     }
 
     @Override
@@ -161,7 +162,7 @@ public class ModuleAirGrate extends TubeModule {
         super.writeToNBT(tag);
         tag.setBoolean("vacuum", vacuum);
         tag.setInteger("grateRange", grateRange);
-        tag.setString("entityFilter", entityFilter);
+        tag.setString("entityFilter", entityFilter == null ? "" : entityFilter.toString());
     }
 
     @Override
@@ -173,8 +174,8 @@ public class ModuleAirGrate extends TubeModule {
     public void addInfo(List<String> curInfo) {
         curInfo.add("Status: " + TextFormatting.WHITE + (grateRange == 0 ? "Idle" : vacuum ? "Attracting" : "Repelling"));
         curInfo.add("Range: " + TextFormatting.WHITE + grateRange + " blocks");
-        if (!entityFilter.equals(""))
-            curInfo.add("Entity Filter: " + TextFormatting.WHITE + "\"" + entityFilter + "\"");
+        if (entityFilter != null)
+            curInfo.add("Entity Filter: " + TextFormatting.WHITE + "\"" + entityFilter.toString() + "\"");
     }
 
     @Override
@@ -205,4 +206,13 @@ public class ModuleAirGrate extends TubeModule {
     public AxisAlignedBB getRenderBoundingBox() {
         return getAffectedAABB();
     }
+
+    public String getEntityFilterString() {
+        return entityFilter == null ? "" : entityFilter.toString();
+    }
+
+    public void setEntityFilter(String filter) {
+        entityFilter = EntityFilter.fromString(filter);
+    }
+
 }

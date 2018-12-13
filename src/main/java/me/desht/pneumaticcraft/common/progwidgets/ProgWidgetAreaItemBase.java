@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.common.progwidgets;
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
 import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetAreaShow;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
-import me.desht.pneumaticcraft.common.ai.StringFilterEntitySelector;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.GuiScreen;
@@ -27,6 +26,7 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
     private Map<String, BlockPos> areaVariableStates;
     protected DroneAIManager aiManager;
     private boolean canCache = true;
+    private EntityFilterPair entityFilters;
 
     @Override
     public boolean hasStepInput() {
@@ -53,6 +53,7 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
         if (posSet.size() > ConfigHandler.general.maxProgrammingArea) {
             curInfo.add(I18n.format("gui.progWidget.area.error.areaTooBig", ConfigHandler.general.maxProgrammingArea));
         }
+        EntityFilterPair.addErrors(this, curInfo);
     }
 
     public static IBlockAccess getCache(Collection<BlockPos> area, World world) {
@@ -177,39 +178,20 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
         return getEntitiesInArea((ProgWidgetArea) getConnectedParameters()[0], (ProgWidgetArea) getConnectedParameters()[getParameters().length], world, filter, null);
     }
 
-    public static List<Entity> getValidEntities(World world, IProgWidget widget) {
-        StringFilterEntitySelector whitelistFilter = getEntityFilter((ProgWidgetString) widget.getConnectedParameters()[1], true);
-        StringFilterEntitySelector blacklistFilter = getEntityFilter((ProgWidgetString) widget.getConnectedParameters()[widget.getParameters().length + 1], false);
-        return getEntitiesInArea((ProgWidgetArea) widget.getConnectedParameters()[0], (ProgWidgetArea) widget.getConnectedParameters()[widget.getParameters().length], world, whitelistFilter, blacklistFilter);
-    }
-
     @Override
     public List<Entity> getValidEntities(World world) {
-        return getValidEntities(world, this);
-    }
-
-    public static boolean isEntityValid(Entity entity, IProgWidget widget) {
-        StringFilterEntitySelector whitelistFilter = getEntityFilter((ProgWidgetString) widget.getConnectedParameters()[1], true);
-        StringFilterEntitySelector blacklistFilter = getEntityFilter((ProgWidgetString) widget.getConnectedParameters()[widget.getParameters().length + 1], false);
-        return whitelistFilter.apply(entity) && !blacklistFilter.apply(entity);
+        if (entityFilters == null) {
+            entityFilters = new EntityFilterPair(this);
+        }
+        return entityFilters.getValidEntities(world);
     }
 
     @Override
     public boolean isEntityValid(Entity entity) {
-        return isEntityValid(entity, this);
-    }
-
-    public static StringFilterEntitySelector getEntityFilter(ProgWidgetString widget, boolean allowEntityIfNoFilter) {
-        StringFilterEntitySelector filter = new StringFilterEntitySelector();
-        if (widget != null) {
-            while (widget != null) {
-                filter.addEntry(widget.string);
-                widget = (ProgWidgetString) widget.getConnectedParameters()[0];
-            }
-        } else if (allowEntityIfNoFilter) {
-            filter.setFilter("");
+        if (entityFilters == null) {
+            entityFilters = new EntityFilterPair(this);
         }
-        return filter;
+        return entityFilters.isEntityValid(entity);
     }
 
     public static List<Entity> getEntitiesInArea(ProgWidgetArea whitelistWidget, ProgWidgetArea blacklistWidget, World world,
@@ -227,7 +209,7 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
             widget = (ProgWidgetArea) widget.getConnectedParameters()[0];
         }
         if (blacklistPredicate != null) {
-            entities.removeIf(blacklistPredicate::test);
+            entities.removeIf(blacklistPredicate);
         }
         return new ArrayList<>(entities);
     }

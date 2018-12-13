@@ -10,6 +10,7 @@ import me.desht.pneumaticcraft.common.item.ItemMicromissiles.FireMode;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateMicromissileSettings;
+import me.desht.pneumaticcraft.common.util.EntityFilter;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -22,6 +23,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
@@ -49,6 +51,7 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
     private WidgetTextField textField;
     private WidgetLabel filterLabel;
     private GuiButtonSpecial modeButton;
+    private GuiButtonSpecial warningButton;
 
     public GuiMicromissile() {
         xSize = 183;
@@ -79,11 +82,11 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
         FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
 
         String labelStr = I18n.format("gui.sentryTurret.targetFilter");
-        filterLabel = new WidgetLabel(guiLeft + 12, guiTop + 135, labelStr);
+        filterLabel = new WidgetLabel(guiLeft + 12, guiTop + 130, labelStr);
         addWidget(filterLabel);
         int textBoxX = guiLeft + 12 + fr.getStringWidth(labelStr) + 5;
-        int textBoxWidth = xSize - (textBoxX - guiLeft) - 10;
-        textField = new WidgetTextField(Minecraft.getMinecraft().fontRenderer, textBoxX, guiTop + 133, textBoxWidth, 10);
+        int textBoxWidth = xSize - (textBoxX - guiLeft) - 20;
+        textField = new WidgetTextField(Minecraft.getMinecraft().fontRenderer, textBoxX, guiTop + 128, textBoxWidth, 10);
         textField.setText(entityFilter);
         addWidget(textField);
         textField.setFocused(true);
@@ -100,6 +103,13 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
         modeButton = new GuiButtonSpecial(2, guiLeft + 123, guiTop + 20, 52, 20, "");
         modeButton.setTooltipText("gui.micromissile.modeTooltip");
         buttonList.add(modeButton);
+
+        warningButton = new GuiButtonSpecial(3, guiLeft + 162, guiTop + 123, 20, 20, "");
+        warningButton.setVisible(false);
+        warningButton.setRenderedIcon(new ResourceLocation(Textures.GUI_PROBLEMS_TEXTURE));
+        buttonList.add(warningButton);
+
+        validateEntityFilter(entityFilter);
 
         setupWidgets();
     }
@@ -203,10 +213,8 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
     public void updateScreen() {
         super.updateScreen();
 
-        if (sendTimer > 0) {
-            if (--sendTimer == 0) {
-                sendSettingsToServer(false);
-            }
+        if (sendTimer > 0 && --sendTimer == 0) {
+            sendSettingsToServer(false);
         }
     }
 
@@ -254,7 +262,22 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
         if (widget instanceof WidgetTextField) {
             // entity filter updated
             entityFilter = ((WidgetTextField) widget).getText();
-            sendTimer = 5;  // delayed send to reduce packet spam while typing
+            if (validateEntityFilter(entityFilter)) {
+                sendTimer = 5;  // delayed send to reduce packet spam while typing
+            }
+        }
+    }
+
+    private boolean validateEntityFilter(String filter) {
+        try {
+            warningButton.visible = false;
+            warningButton.setTooltipText("");
+            EntityFilter f = new EntityFilter(filter);  // syntax check
+            return true;
+        } catch (Exception e) {
+            warningButton.visible = true;
+            warningButton.setTooltipText(TextFormatting.GOLD + e.getMessage());
+            return false;
         }
     }
 

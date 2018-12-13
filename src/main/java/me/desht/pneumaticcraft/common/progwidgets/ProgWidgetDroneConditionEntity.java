@@ -2,7 +2,6 @@ package me.desht.pneumaticcraft.common.progwidgets;
 
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
-import me.desht.pneumaticcraft.common.ai.StringFilterEntitySelector;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.gui.GuiScreen;
@@ -17,9 +16,17 @@ import java.util.List;
 
 public class ProgWidgetDroneConditionEntity extends ProgWidgetDroneEvaluation implements IEntityProvider {
 
+    private EntityFilterPair entityFilters;
+
     @Override
     public Class<? extends IProgWidget>[] getParameters() {
         return new Class[]{ProgWidgetString.class, ProgWidgetString.class};
+    }
+
+    @Override
+    public void addErrors(List<String> curInfo, List<IProgWidget> widgets) {
+        super.addErrors(curInfo, widgets);
+        EntityFilterPair.addErrors(this, curInfo);
     }
 
     @Override
@@ -35,7 +42,6 @@ public class ProgWidgetDroneConditionEntity extends ProgWidgetDroneEvaluation im
             if (((IEntityProvider) widget).isEntityValid(e)) count++;
         }
         return count;
-//        return drone.getPassengers().isEmpty() || !((IEntityProvider) widget).isEntityValid(drone.riddenByEntity) ? 0 : 1;
     }
 
     @Override
@@ -56,9 +62,10 @@ public class ProgWidgetDroneConditionEntity extends ProgWidgetDroneEvaluation im
 
     @Override
     public boolean isEntityValid(Entity entity) {
-        StringFilterEntitySelector whitelistFilter = ProgWidgetAreaItemBase.getEntityFilter((ProgWidgetString) getConnectedParameters()[0], true);
-        StringFilterEntitySelector blacklistFilter = ProgWidgetAreaItemBase.getEntityFilter((ProgWidgetString) getConnectedParameters()[getParameters().length], false);
-        return whitelistFilter.apply(entity) && !blacklistFilter.apply(entity);
+        if (entityFilters == null) {
+            entityFilters = new EntityFilterPair(this);
+        }
+        return entityFilters.isEntityValid(entity);
     }
 
 }

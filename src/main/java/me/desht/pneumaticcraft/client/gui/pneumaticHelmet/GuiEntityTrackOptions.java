@@ -3,12 +3,15 @@ package me.desht.pneumaticcraft.client.gui.pneumaticHelmet;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IOptionPage;
+import me.desht.pneumaticcraft.client.gui.GuiButtonSpecial;
 import me.desht.pneumaticcraft.client.gui.GuiUtils;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.renderHandler.EntityTrackUpgradeHandler;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateArmorExtraData;
+import me.desht.pneumaticcraft.common.util.EntityFilter;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
@@ -16,6 +19,8 @@ import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import org.lwjgl.input.Keyboard;
@@ -24,6 +29,8 @@ public class GuiEntityTrackOptions implements IOptionPage {
 
     private final EntityTrackUpgradeHandler renderHandler;
     private GuiTextField textField;
+    private GuiButtonSpecial warningButton;
+    private int sendTimer = 0;
 
     public GuiEntityTrackOptions(EntityTrackUpgradeHandler renderHandler) {
         this.renderHandler = renderHandler;
@@ -37,10 +44,20 @@ public class GuiEntityTrackOptions implements IOptionPage {
     @Override
     public void initGui(IGuiScreen gui) {
         gui.getButtonList().add(new GuiButton(10, 30, 128, 150, 20, "Move Stat Screen..."));
+
         textField = new GuiTextField(-1, gui.getFontRenderer(), 35, 60, 140, 10);
         textField.setFocused(true);
-        if (PneumaticCraftRepressurized.proxy.getClientPlayer() != null)
+        if (PneumaticCraftRepressurized.proxy.getClientPlayer() != null) {
             textField.setText(ItemPneumaticArmor.getEntityFilter(PneumaticCraftRepressurized.proxy.getClientPlayer().getItemStackFromSlot(EntityEquipmentSlot.HEAD)));
+        }
+
+        warningButton = new GuiButtonSpecial(1, 175, 57, 20, 20, "");
+        warningButton.setVisible(false);
+        warningButton.visible = false;
+        warningButton.setRenderedIcon(new ResourceLocation(Textures.GUI_PROBLEMS_TEXTURE));
+        gui.getButtonList().add(warningButton);
+
+        validateEntityFilter(textField.getText());
     }
 
     @Override
@@ -70,10 +87,31 @@ public class GuiEntityTrackOptions implements IOptionPage {
     public void keyTyped(char ch, int key) {
         if (textField != null && textField.isFocused() && key != 1) {
             textField.textboxKeyTyped(ch, key);
+            if (validateEntityFilter(textField.getText())) {
+                sendTimer = 5;
+            }
+        }
+    }
+
+    private boolean validateEntityFilter(String filter) {
+        try {
+            warningButton.visible = false;
+            warningButton.setTooltipText("");
+            EntityFilter f = new EntityFilter(filter);  // syntax check
+            return true;
+        } catch (Exception e) {
+            warningButton.visible = true;
+            warningButton.setTooltipText(TextFormatting.GOLD + e.getMessage());
+            return false;
+        }
+    }
+
+    @Override
+    public void updateScreen() {
+        if (sendTimer > 0 && --sendTimer == 0) {
             NBTTagCompound tag = new NBTTagCompound();
             tag.setString("entityFilter", textField.getText());
             NetworkHandler.sendToServer(new PacketUpdateArmorExtraData(EntityEquipmentSlot.HEAD, tag));
-//            NetworkHandler.sendToServer(new PacketUpdateEntityFilter(textField.getText()));
         }
     }
 

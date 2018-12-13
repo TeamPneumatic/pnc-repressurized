@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Set;
 
 public class ProgWidgetEntityImport extends ProgWidget implements IProgWidget, IAreaProvider, IEntityProvider {
+    private EntityFilterPair entityFilters;
 
     @Override
     public void addErrors(List<String> curInfo, List<IProgWidget> widgets) {
@@ -26,6 +27,7 @@ public class ProgWidgetEntityImport extends ProgWidget implements IProgWidget, I
         if (getConnectedParameters()[0] == null) {
             curInfo.add("gui.progWidget.area.error.noArea");
         }
+        EntityFilterPair.addErrors(this, curInfo);
     }
 
     @Override
@@ -81,11 +83,19 @@ public class ProgWidgetEntityImport extends ProgWidget implements IProgWidget, I
 
     @Override
     public List<Entity> getValidEntities(World world) {
-        return ProgWidgetAreaItemBase.getValidEntities(world, this);
+        if (entityFilters == null) {
+            entityFilters = new EntityFilterPair(this);
+        }
+        return entityFilters.getValidEntities(world);
+//        return ProgWidgetAreaItemBase.getValidEntities(world, this);
     }
 
     @Override
     public boolean isEntityValid(Entity entity) {
-        return ProgWidgetAreaItemBase.isEntityValid(entity, this);
+        if (entityFilters == null) {
+            entityFilters = new EntityFilterPair(this);
+        }
+        return entityFilters.isEntityValid(entity);
+//        return ProgWidgetAreaItemBase.isEntityValid(entity, this);
     }
 }

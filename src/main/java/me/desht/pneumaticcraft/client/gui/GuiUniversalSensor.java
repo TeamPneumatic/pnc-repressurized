@@ -1,14 +1,15 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.api.universalSensor.ISensorSetting;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.inventory.ContainerUniversalSensor;
-import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateTextfield;
 import me.desht.pneumaticcraft.common.sensor.SensorHandler;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUniversalSensor;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.gui.GuiButton;
@@ -17,10 +18,11 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.input.Keyboard;
 
 import java.awt.*;
 import java.io.IOException;
@@ -41,7 +43,6 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<TileEntityUniv
     public GuiUniversalSensor(InventoryPlayer player, TileEntityUniversalSensor te) {
         super(new ContainerUniversalSensor(player, te), te, Textures.GUI_UNIVERSAL_SENSOR);
         ySize = 239;
-
     }
 
     @Override
@@ -84,6 +85,10 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<TileEntityUniv
             fontRenderer.drawString(folders[folders.length - 1], 102, 24, 4210752);
         }
 
+        if (Keyboard.isKeyDown(Keyboard.KEY_F1)) {
+            GuiUtils.showPopupHelpScreen(this, fontRenderer,
+                    PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.entityFilter.helpText"), 60));
+        }
     }
 
     @Override
@@ -207,7 +212,7 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<TileEntityUniv
         ISensorSetting sensor = SensorHandler.getInstance().getSensorFromPath(te.getSensorSetting());
         if (sensor != null) {
             String[] folders = te.getSensorSetting().split("/");
-            text.add(TextFormatting.GRAY + folders[folders.length - 1]);
+            text.add(TextFormatting.WHITE + folders[folders.length - 1]);
             text.addAll(sensor.getDescription());
         } else {
             text.add(TextFormatting.BLACK + "No sensor selected.");
@@ -231,30 +236,24 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<TileEntityUniv
             textList.add(TextFormatting.GRAY + "No sensor selected!");
             textList.add(TextFormatting.BLACK + "Insert upgrades and select the desired sensor.");
         }
+        if (!te.lastSensorError.isEmpty()) {
+            textList.add(TextFormatting.GRAY + "Sensor error reported!");
+            textList.add(TextFormatting.BLACK + te.lastSensorError);
+        }
         for (int i = 0; i < te.getUpgradesInventory().getSlots(); i++) {
-//        for (int i = TileEntityUniversalSensor.UPGRADE_SLOT_1; i <= TileEntityUniversalSensor.UPGRADE_SLOT_4; i++) {
             ItemStack stack = te.getUpgradesInventory().getStackInSlot(i);
-            if (stack.getItem() == Itemss.GPS_TOOL) {
-                if (stack.hasTagCompound()) {
-                    NBTTagCompound gpsTag = stack.getTagCompound();
-                    int toolX = gpsTag.getInteger("x");
-                    int toolY = gpsTag.getInteger("y");
-                    int toolZ = gpsTag.getInteger("z");
-                    if (toolX == 0 && toolY == 0 && toolZ == 0) {
-                        textList.add(TextFormatting.GRAY + "The inserted GPS Tool doesn't have a coordinate selected!");
-                        textList.add(TextFormatting.BLACK + "Insert a GPS Tool with stored coordinate.");
-                        break;
-                    }
-                    int sensorRange = te.getRange();
-                    if (Math.abs(toolX - te.getPos().getX()) > sensorRange || Math.abs(toolY - te.getPos().getY()) > sensorRange || Math.abs(toolZ - te.getPos().getZ()) > sensorRange) {
-                        textList.add(TextFormatting.GRAY + "The stored coordinate in the GPS Tool is out of the Sensor's range!");
-                        textList.add(TextFormatting.BLACK + "Move the sensor closer, select a closer coordinate or insert Range Upgrades.");
-                    }
-                } else {
+            if (stack.getItem() instanceof IPositionProvider) {
+                BlockPos pos = ((IPositionProvider) stack.getItem()).getStoredPositions(stack).get(0);
+                if (pos == null) {
                     textList.add(TextFormatting.GRAY + "The inserted GPS Tool doesn't have a coordinate selected!");
-                    textList.add(TextFormatting.BLACK + "Insert a GPS Tool with stored coordinate.");
+                    textList.add(TextFormatting.BLACK + "Insert a GPS Tool with a stored coordinate.");
+                    break;
                 }
-                break;
+                int sensorRange = te.getRange();
+                if (Math.abs(pos.getX() - te.getPos().getX()) > sensorRange || Math.abs(pos.getY() - te.getPos().getY()) > sensorRange || Math.abs(pos.getZ() - te.getPos().getZ()) > sensorRange) {
+                    textList.add(TextFormatting.GRAY + "The stored coordinate in the GPS Tool is out of the Sensor's range!");
+                    textList.add(TextFormatting.BLACK + "Move the sensor closer, select a closer coordinate or insert Range Upgrades.");
+                }
             }
         }
     }

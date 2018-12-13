@@ -32,7 +32,7 @@ public class PacketUpdateAirGrateModule extends PacketUpdateTubeModule<PacketUpd
     @Override
     protected void onModuleUpdate(TubeModule module, PacketUpdateAirGrateModule message, EntityPlayer player) {
         if (module instanceof ModuleAirGrate) {
-            ((ModuleAirGrate) module).entityFilter = message.entityFilter;
+            ((ModuleAirGrate) module).setEntityFilter(message.entityFilter);
         }
     }
 }

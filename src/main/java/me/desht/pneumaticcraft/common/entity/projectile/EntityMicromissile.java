@@ -5,7 +5,7 @@ import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.item.ItemMicromissiles;
 import me.desht.pneumaticcraft.common.item.ItemMicromissiles.FireMode;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.EntityFilter;
 import me.desht.pneumaticcraft.lib.EnumCustomParticleType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -45,7 +45,7 @@ public class EntityMicromissile extends EntityThrowable {
     private float accel = 1.05f; // straight line acceleration
     private float turnSpeed = 0.1f;
     private float explosionPower = 2f;
-    private String entityFilter = "";
+    private EntityFilter entityFilter;
     private boolean outOfFuel = false;
     private FireMode fireMode = FireMode.SMART;
 
@@ -58,7 +58,7 @@ public class EntityMicromissile extends EntityThrowable {
 
         if (iStack.hasTagCompound()) {
             NBTTagCompound tag = iStack.getTagCompound();
-            entityFilter = tag.getString(ItemMicromissiles.NBT_FILTER);
+            entityFilter = EntityFilter.fromString(tag.getString(ItemMicromissiles.NBT_FILTER));
             fireMode = FireMode.fromString(tag.getString(ItemMicromissiles.NBT_FIRE_MODE));
             switch (fireMode) {
                 case SMART:
@@ -193,7 +193,7 @@ public class EntityMicromissile extends EntityThrowable {
             }
         }
 
-        if (!entityFilter.isEmpty() && !PneumaticCraftUtils.isEntityValidForFilter(entityFilter, e)) {
+        if (entityFilter != null && !entityFilter.test(e)) {
             return false;
         }
 
@@ -255,7 +255,7 @@ public class EntityMicromissile extends EntityThrowable {
         compound.setFloat("turnSpeed", turnSpeed);
         compound.setFloat("explosionScaling", explosionPower);
         compound.setFloat("topSpeedSq", maxVelocitySq);
-        compound.setString("filter", entityFilter);
+        compound.setString("filter", entityFilter.toString());
     }
 
     @Override
@@ -264,7 +264,7 @@ public class EntityMicromissile extends EntityThrowable {
         turnSpeed = compound.getFloat("turnSpeed");
         explosionPower = compound.getFloat("explosionScaling");
         maxVelocitySq = compound.getFloat("topSpeedSq");
-        entityFilter = compound.getString("filter");
+        entityFilter = EntityFilter.fromString(compound.getString("filter"));
     }
 
     public void setTarget(Entity target) {

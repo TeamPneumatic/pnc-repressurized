@@ -6,6 +6,44 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
+### 0.9.0-??? (unreleased)
+#### New
+* Major Minigun enhancements!
+  * Minigun now has a 4-slot inventory for ammo, saving valuable player inventory slots.  The Minigun will only draw ammo from these slots.
+  * Sneak & Right-Click the Minigun to open the inventory and load ammo
+  * Ammo slots can be "locked" by middle-clicking a slot; when a slot is locked, the Minigun will *only* pull ammo from that slot.  Useful when multiple ammo types are loaded.
+  * Added several new ammo types:
+    * Armor-Piercing: higher base damage, ignores armor, 250 shots per cartridge
+    * Incendiary: sets fire to targets, 500 shots per cartridge
+    * Freezing: slows targets, has chance to encase in damaging "ice", 500 shots per cartridge
+    * Weighted: very short range, high damage, 250 shots per cartridge
+    * Explosive: shots have chance to cause explosions (terrain damage off by default), 125 shots per cartridge
+    * Plain ammo remains as before, and is the only ammo type which can be potion-tipped
+  * Minigun can now take upgrades (use a Charging Station to install):
+    * Speed Upgrades: reduces spin-up time, chance to fire multiple rounds per shot, increased air usage
+    * Range Upgrades: increase range from 50 blocks to up to 80 blocks (5 blocks per upgrade), increased air usage
+    * Entity Tracker Upgrades: zooms in while firing
+    * Dispenser Upgrades: increase chance of all ammo types (including regular ammo with potions) proc'ing their effect, greatly increased air usage
+    * Item Life Upgrades: slowly replenish ammo when gun is in inventory for significant air usage
+    * Security Upgrade: prevent damage to pets and players
+* Added Micromissiles: hand-held missile pods which can fire guided missiles with an explosive payload
+  * 100 missiles per pod (by default; configurable)
+  * Can configure missiles to balance between top speed, turn speed and damage
+  * Missiles will lock onto to nearest valid target; can filter targets with entity filters as used in other PneumaticCraft blocks & items
+  * Dumb-fire mode where missiles just fly in a straight line; slower but higher damage
+  * Missiles have a configurable launch cooldown (20 ticks by default)
+#### Updates
+* Camo Applicator now shows particle effects when applying/removing camo from a block
+* Entity Filter strings can now be prefixed with a "!" to negate the check (e.g. "!zombie" means "anything except zombies")
+* Entity Filter handling is now a bit more efficient in general (pre-parsing the filter string wherever possible, so less string processing)
+* In Programmer GUI, when the widget tray is open, middle-click can now also be used to open IGW docs for puzzle pieces (pressing 'I' still works, but the filter field has focus when the tray is open so mouse is more convenient)
+#### Fixes
+* Fixed Minigun Drone sync issue: minigun not orienting toward targets and not display bullet traces when firing
+* Fixed problem where players sometimes take damage from jumping with Pneumatic Leggings + Range Upgrade (any fall damage from such a jump is supposed to be cancelled)
+* Fixed Pneumatic Door dropping an item when breaking top half in creative mode
+* Fixed messy block break particles when breaking a Pneumatic Door in survival mode
+* Fixed crash when Pneumatic Door rotation is messed up (by other mods' rotation code)
+
 ### 0.8.4-303 (25 Nov 2018)
 #### Updates
 * The Kerosene Lamp can now hold 2000mB of fuel (up from 1000mb). This makes it practical to use fuel buckets to automatically fuel it (because the lamp reduces its lighting and fuel consumption when very low on fuel, it would previously run for ages on low lighting before exhausting its fuel supply and accepting a new bucket).

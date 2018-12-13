@@ -1,0 +1,4 @@
+Programming Puzzles are used in [link{block/programmer}]programmers [link{}].
+
+[prefix{l}]The 'Comment' piece [prefix{}]
+The comment piece is used for documentation purposes only, and has no effect on the execution of a drone program.  Comment pieces are free to use; no puzzle pieces required.

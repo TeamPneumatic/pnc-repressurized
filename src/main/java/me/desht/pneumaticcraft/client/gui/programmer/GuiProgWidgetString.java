@@ -4,6 +4,9 @@ import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetString;
+import org.lwjgl.input.Keyboard;
+
+import java.io.IOException;
 
 public class GuiProgWidgetString extends GuiProgWidgetOptionBase {
     private WidgetTextField textfield;
@@ -20,6 +23,16 @@ public class GuiProgWidgetString extends GuiProgWidgetOptionBase {
         textfield.setText(((ProgWidgetString) widget).string);
         textfield.setFocused(true);
         addWidget(textfield);
+    }
+
+    @Override
+    public void keyTyped(char key, int keyCode) throws IOException {
+        if (keyCode == Keyboard.KEY_RETURN && textfield.isFocused()) {
+            // pressing return also closes this gui
+            super.keyTyped('\u001B', Keyboard.KEY_ESCAPE);
+        } else {
+            super.keyTyped(key, keyCode);
+        }
     }
 
     @Override

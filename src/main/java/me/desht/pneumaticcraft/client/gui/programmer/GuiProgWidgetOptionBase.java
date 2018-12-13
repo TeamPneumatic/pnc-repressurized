@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.input.Keyboard;
 
 import java.io.IOException;
 
@@ -25,7 +26,7 @@ public class GuiProgWidgetOptionBase<Widget extends IProgWidget> extends GuiPneu
     @Override
     public void keyTyped(char key, int keyCode) throws IOException {
         super.keyTyped(key, keyCode);
-        if (keyCode == 1) {
+        if (keyCode == Keyboard.KEY_ESCAPE) {
             onGuiClosed();
             if (guiProgrammer != null) {
                 NetworkHandler.sendToServer(new PacketProgrammerUpdate(guiProgrammer.te));

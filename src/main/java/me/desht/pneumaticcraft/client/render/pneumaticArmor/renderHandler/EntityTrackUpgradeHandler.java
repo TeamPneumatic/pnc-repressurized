@@ -14,8 +14,8 @@ import me.desht.pneumaticcraft.common.ai.StringFilterEntitySelector;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.recipes.CraftingRegistrator;
+import me.desht.pneumaticcraft.common.util.EntityFilter;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
@@ -32,10 +32,8 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.annotation.Nonnull;
+import java.util.*;
 import java.util.stream.Stream;
 
 public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler {
@@ -52,6 +50,8 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler {
     private int statX;
     private int statY;
     private boolean statLeftSided;
+    @Nonnull
+    private EntityFilter entityFilter = new EntityFilter("");
 
     @Override
     @SideOnly(Side.CLIENT)
@@ -63,7 +63,13 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler {
     @SideOnly(Side.CLIENT)
     public void update(EntityPlayer player, int rangeUpgrades) {
         ItemStack helmetStack = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
-        String entityFilter = helmetStack.isEmpty() ? "" : NBTUtil.getString(helmetStack, "entityFilter");
+        String filterStr = helmetStack.isEmpty() ? "" : NBTUtil.getString(helmetStack, "entityFilter");
+        if (!entityFilter.toString().equals(filterStr)) {
+            EntityFilter newFilter = EntityFilter.fromString(filterStr);
+            if (newFilter != null) {
+                entityFilter = newFilter;
+            }
+        }
 
         double entityTrackRange = ENTITY_TRACKING_RANGE + rangeUpgrades * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE;
         AxisAlignedBB bbBox = getAABBFromRange(player, rangeUpgrades);
@@ -81,8 +87,7 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler {
         List<Integer> toRemove = new ArrayList<>();
         for (Map.Entry<Integer, RenderTarget> entry : targets.entrySet()) {
             RenderTarget target = entry.getValue();
-            if (target.entity.isDead || player.getDistance(target.entity) > entityTrackRange + 5
-                    || !PneumaticCraftUtils.isEntityValidForFilter(entityFilter, target.entity)) {
+            if (target.entity.isDead || player.getDistance(target.entity) > entityTrackRange + 5 || !entityFilter.test(target.entity)) {
                 if (target.ticksExisted > 0) {
                     target.ticksExisted = -60;
                 } else if (target.ticksExisted == -1) {
@@ -116,7 +121,7 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler {
             }
         }
         if (text.size() == 0) {
-            text.add("Filter mode: " + (entityFilter.equals("") ? "None" : entityFilter));
+            text.add("Filter mode: " + (entityFilter.toString().isEmpty() ? "None" : entityFilter.toString()));
         }
         entityTrackInfo.setText(text);
     }
@@ -217,10 +222,10 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler {
         private final EntityPlayer player;
         private final double threshold;
 
-        private EntityTrackerSelector(EntityPlayer player, String filter, double threshold) {
+        private EntityTrackerSelector(EntityPlayer player, EntityFilter filter, double threshold) {
             this.player = player;
             this.threshold = threshold;
-            setFilter(filter);
+            setFilter(Collections.singletonList(filter));
         }
 
         @Override

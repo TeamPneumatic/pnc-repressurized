@@ -151,7 +151,6 @@ public class EntityDrone extends EntityDroneBase implements
     private int offerTimes;
     private ItemStack usedTablet;//Tablet used to place the order.
     private String buyingPlayer;
-//    private final SortedSet<DebugEntry> debugEntries = new TreeSet<DebugEntry>();
     private final DroneDebugList debugList = new DroneDebugList();
     private final Set<EntityPlayerMP> syncedPlayers = new HashSet<EntityPlayerMP>();
     private boolean heldItemChanged = true;  // if true, force a check of item attribute modifiers in onUpdate()
@@ -209,6 +208,7 @@ public class EntityDrone extends EntityDroneBase implements
     private static final DataParameter<Integer> ACTIVE_WIDGET = EntityDataManager.createKey(EntityDrone.class, DataSerializers.VARINT);
     private static final DataParameter<BlockPos> TARGET_POS = EntityDataManager.createKey(EntityDrone.class, DataSerializers.BLOCK_POS);
     private static final DataParameter<ItemStack> HELD_ITEM = EntityDataManager.createKey(EntityDrone.class, DataSerializers.ITEM_STACK);
+    private static final DataParameter<Integer> TARGET_ID = EntityDataManager.createKey(EntityDrone.class, DataSerializers.VARINT);
 
     @Override
     protected void entityInit() {
@@ -227,6 +227,7 @@ public class EntityDrone extends EntityDroneBase implements
         dataManager.register(ACTIVE_WIDGET, 0);
         dataManager.register(TARGET_POS, BlockPos.ORIGIN);
         dataManager.register(HELD_ITEM, ItemStack.EMPTY);
+        dataManager.register(TARGET_ID, 0);
     }
 
     @Override
@@ -572,6 +573,10 @@ public class EntityDrone extends EntityDroneBase implements
     public void travel(float par1, float par2, float par3) {
         if (world.isRemote) {
             EntityLivingBase targetEntity = getAttackTarget();
+            if (targetEntity != null && targetEntity.isDead) {
+                setAttackTarget(null);
+                targetEntity = null;
+            }
             if (targetEntity != null) {
                 if (targetLine == null) targetLine = new RenderProgressingLine(0, -height / 2, 0, 0, 0, 0);
                 if (oldTargetLine == null) oldTargetLine = new RenderProgressingLine(0, -height / 2, 0, 0, 0, 0);
@@ -587,6 +592,7 @@ public class EntityDrone extends EntityDroneBase implements
                 targetLine.incProgressByDistance(0.3D);
                 ignoreFrustumCheck = true; //don't stop rendering the drone when it goes out of the camera frustrum, as we need to render the target lines as well.
             } else {
+                targetLine = oldTargetLine = null;
                 ignoreFrustumCheck = false; //don't stop rendering the drone when it goes out of the camera frustrum, as we need to render the target lines as well.
             }
         }
@@ -627,7 +633,7 @@ public class EntityDrone extends EntityDroneBase implements
         getMinigun().render(x, y, z, 0.6);
 
         ItemStack held = getDroneHeldItem();
-        if (!held.isEmpty()) {
+        if (!held.isEmpty() && !(held.getItem() instanceof ItemGunAmmo && hasMinigun())) {
             if (renderDroneHeldItem == null) {
                 renderDroneHeldItem = new RenderDroneHeldItem(world);
             }
@@ -747,11 +753,29 @@ public class EntityDrone extends EntityDroneBase implements
     }
 
     @Override
+    public void notifyDataManagerChange(DataParameter<?> key) {
+        if (world.isRemote && TARGET_ID.equals(key)) {
+            int id = dataManager.get(TARGET_ID);
+            if (id > 0) {
+                Entity e = getEntityWorld().getEntityByID(id);
+                if (e instanceof EntityLivingBase) {
+                    setAttackTarget((EntityLivingBase) e);
+                }
+            }
+            if (targetLine != null && oldTargetLine != null) {
+                targetLine.setProgress(0);
+                oldTargetLine.setProgress(0);
+            }
+        } else {
+            super.notifyDataManagerChange(key);
+        }
+    }
+
+    @Override
     public void setAttackTarget(EntityLivingBase entity) {
         super.setAttackTarget(entity);
-        if (world.isRemote && targetLine != null && oldTargetLine != null) {
-            targetLine.setProgress(0);
-            oldTargetLine.setProgress(0);
+        if (!world.isRemote) {
+            dataManager.set(TARGET_ID, entity == null ? 0 : entity.getEntityId());
         }
     }
 

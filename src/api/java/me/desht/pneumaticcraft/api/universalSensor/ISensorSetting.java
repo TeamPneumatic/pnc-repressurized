@@ -64,4 +64,10 @@ public interface ISensorSetting {
     default int getAirUsage(World world, BlockPos pos) {
         return 1;
     }
+
+    /**
+     * Notify the sensor that the textbox has changed, so it can carry out any necessary recalculation.
+     */
+    default void notifyTextChange(String newText) {
+    }
 }

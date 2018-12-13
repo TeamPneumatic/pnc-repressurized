@@ -5,7 +5,6 @@ import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetAreaShow;
 import me.desht.pneumaticcraft.common.ai.DroneAIAttackEntity;
 import me.desht.pneumaticcraft.common.ai.DroneAINearestAttackableTarget;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
-import me.desht.pneumaticcraft.common.ai.StringFilterEntitySelector;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.item.ItemPlastic;
 import me.desht.pneumaticcraft.common.progwidgets.area.AreaTypeBox;
@@ -24,6 +23,7 @@ import java.util.List;
 import java.util.Set;
 
 public class ProgWidgetEntityAttack extends ProgWidget implements IAreaProvider, IEntityProvider {
+    private EntityFilterPair entityFilters;
 
     @Override
     public void addErrors(List<String> curInfo, List<IProgWidget> widgets) {
@@ -31,6 +31,7 @@ public class ProgWidgetEntityAttack extends ProgWidget implements IAreaProvider,
         if (getConnectedParameters()[0] == null) {
             curInfo.add("gui.progWidget.area.error.noArea");
         }
+        EntityFilterPair.addErrors(this, curInfo);
     }
 
     @Override
@@ -70,16 +71,25 @@ public class ProgWidgetEntityAttack extends ProgWidget implements IAreaProvider,
 
     @Override
     public List<Entity> getValidEntities(World world) {
-        StringFilterEntitySelector whitelistFilter = ProgWidgetAreaItemBase.getEntityFilter((ProgWidgetString) getConnectedParameters()[1], true);
-        StringFilterEntitySelector blacklistFilter = ProgWidgetAreaItemBase.getEntityFilter((ProgWidgetString) getConnectedParameters()[3], false);
-        return ProgWidgetAreaItemBase.getEntitiesInArea((ProgWidgetArea) getConnectedParameters()[0], (ProgWidgetArea) getConnectedParameters()[2], world, whitelistFilter, blacklistFilter);
+        if (entityFilters == null) {
+            entityFilters = new EntityFilterPair(this);
+        }
+        return entityFilters.getValidEntities(world);
+
+//        StringFilterEntitySelector whitelistFilter = ProgWidgetAreaItemBase.getEntityFilter((ProgWidgetString) getConnectedParameters()[1], true);
+//        StringFilterEntitySelector blacklistFilter = ProgWidgetAreaItemBase.getEntityFilter((ProgWidgetString) getConnectedParameters()[3], false);
+//        return ProgWidgetAreaItemBase.getEntitiesInArea((ProgWidgetArea) getConnectedParameters()[0], (ProgWidgetArea) getConnectedParameters()[2], world, whitelistFilter, blacklistFilter);
     }
 
     @Override
     public boolean isEntityValid(Entity entity) {
-        StringFilterEntitySelector whitelistFilter = ProgWidgetAreaItemBase.getEntityFilter((ProgWidgetString) getConnectedParameters()[1], true);
-        StringFilterEntitySelector blacklistFilter = ProgWidgetAreaItemBase.getEntityFilter((ProgWidgetString) getConnectedParameters()[3], false);
-        return whitelistFilter.apply(entity) && !blacklistFilter.apply(entity);
+        if (entityFilters == null) {
+            entityFilters = new EntityFilterPair(this);
+        }
+        return entityFilters.isEntityValid(entity);
+//        StringFilterEntitySelector whitelistFilter = ProgWidgetAreaItemBase.getEntityFilter((ProgWidgetString) getConnectedParameters()[1], true);
+//        StringFilterEntitySelector blacklistFilter = ProgWidgetAreaItemBase.getEntityFilter((ProgWidgetString) getConnectedParameters()[3], false);
+//        return whitelistFilter.apply(entity) && !blacklistFilter.apply(entity);
     }
 
     @Override

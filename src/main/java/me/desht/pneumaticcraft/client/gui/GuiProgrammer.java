@@ -288,7 +288,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
                     && (!showingAllWidgets || filteredSpawnWidgets == null || filteredSpawnWidgets.get(i))) {
                 List<String> tooltip = new ArrayList<>();
                 widget.getTooltip(tooltip);
-                if (igwLoaded) tooltip.add(I18n.format("gui.programmer.pressIForInfo"));
+                if (igwLoaded) tooltip.add(I18n.format(showingAllWidgets ? "gui.programmer.pressIForInfoTrayOpen" :"gui.programmer.pressIForInfo"));
                 if (tooltip.size() > 0) drawHoveringString(tooltip, x - guiLeft, y - guiTop, fontRenderer);
             }
         }

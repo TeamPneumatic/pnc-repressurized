@@ -47,8 +47,8 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
         IGUITextFieldSensitive, IMinWorkingPressure, IRedstoneControl {
 
     private static final List<String> REDSTONE_LABELS = ImmutableList.of(
-            "gui.tab.redstoneBehaviour.universalSensor.button.inverted",
-            "gui.tab.redstoneBehaviour.universalSensor.button.normal"
+            "gui.tab.redstoneBehaviour.universalSensor.button.normal",
+            "gui.tab.redstoneBehaviour.universalSensor.button.inverted"
     );
 
     public static final int INVENTORY_SIZE = 4;
@@ -77,6 +77,8 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
     private final RenderRangeLines rangeLineRenderer = new RenderRangeLines(0x330000FF);
 
     private final List<IComputerAccess> attachedComputers = new ArrayList<>(); // keep track of the computers so we can raise a os.pullevent.
+    @DescSynced
+    public String lastSensorError = "";
 
     public TileEntityUniversalSensor() {
         super(PneumaticValues.DANGER_PRESSURE_UNIVERSAL_SENSOR, PneumaticValues.MAX_PRESSURE_UNIVERSAL_SENSOR, PneumaticValues.VOLUME_UNIVERSAL_SENSOR, 0);
@@ -115,16 +117,20 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
                 addAir(-sensor.getAirUsage(getWorld(), getPos()));
                 if (sensor instanceof IPollSensorSetting) {
                     if (tickTimer >= ((IPollSensorSetting) sensor).getPollFrequency(this)) {
-                        int newRedstoneStrength = ((IPollSensorSetting) sensor).getRedstoneValue(getWorld(), getPos(), getRange(), sensorGuiText);
-                        if (invertedRedstone) newRedstoneStrength = 15 - newRedstoneStrength;
-                        if (newRedstoneStrength != redstoneStrength) {
-                            redstoneStrength = newRedstoneStrength;
-                            if (requestPollPullEvent) {
-                                notifyComputers(redstoneStrength);
+                        try {
+                            int newRedstoneStrength = ((IPollSensorSetting) sensor).getRedstoneValue(getWorld(), getPos(), getRange(), sensorGuiText);
+                            if (invertedRedstone) newRedstoneStrength = 15 - newRedstoneStrength;
+                            if (newRedstoneStrength != redstoneStrength) {
+                                redstoneStrength = newRedstoneStrength;
+                                if (requestPollPullEvent) {
+                                    notifyComputers(redstoneStrength);
+                                }
+                                updateNeighbours();
                             }
-                            updateNeighbours();
+                            tickTimer = 0;
+                        } catch (Exception e) {
+                            lastSensorError = e.getMessage();
                         }
-                        tickTimer = 0;
                     }
                     eventTimer = 0;
                 } else {
@@ -353,6 +359,15 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
     @Override
     public void setText(int textFieldID, String text) {
         sensorGuiText = text;
+        ISensorSetting sensor = SensorHandler.getInstance().getSensorFromPath(sensorSetting);
+        if (sensor != null) {
+            try {
+                lastSensorError = "";
+                sensor.notifyTextChange(sensorGuiText);
+            } catch (Exception e) {
+                lastSensorError = e.getMessage();
+            }
+        }
         if (!getWorld().isRemote) scheduleDescriptionPacket();
     }
 

@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.common.util;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IInventoryItem;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.renderHandler.CoordTrackUpgradeHandler;
-import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
 import me.desht.pneumaticcraft.lib.GuiConstants;
@@ -13,13 +12,12 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.entity.*;
-import net.minecraft.entity.item.EntityBoat;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.item.EntityMinecart;
 import net.minecraft.entity.monster.EntityZombie;
-import net.minecraft.entity.monster.IMob;
-import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.Item;
@@ -48,7 +46,6 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.oredict.OreDictionary;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -58,12 +55,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.*;
-import java.util.regex.PatternSyntaxException;
 import java.util.stream.Stream;
 
 public class PneumaticCraftUtils {
     private static final List<Item> inventoryItemBlacklist = new ArrayList<>();
-    private static String lastEntityFilterError = "";
 
     /**
      * Returns the ForgeDirection of the facing of the entity given.
@@ -482,124 +477,6 @@ public class PneumaticCraftUtils {
             return null;
         }
         return hit.getBlockPos();
-    }
-
-    public static boolean isEntityValidForFilter(String filter, Entity entity) {
-        try {
-            lastEntityFilterError = "";
-            return isEntityValidForFilterUnsafe(filter, entity);
-        } catch (IllegalArgumentException e) {
-            lastEntityFilterError = e.getMessage();
-        }
-        return false;
-    }
-
-    private static boolean isEntityValidForFilterUnsafe(String filter, Entity entity) throws IllegalArgumentException {
-        if (filter == null || filter.isEmpty()) {
-            return true;
-        }
-        return Arrays.stream(filter.split(";")).anyMatch(element -> isElementValidForFilter(element.trim(), entity));
-    }
-
-    private static boolean isElementValidForFilter(String element, Entity entity) throws  IllegalArgumentException {
-        if (StringUtils.countMatches(element, "(") != StringUtils.countMatches(element, ")")) {
-            throw new IllegalArgumentException("Not an equal amount of opening and closing braces");
-        }
-
-        String[] splits = element.split("[(),]");
-        for (int i = 0; i < splits.length; i++) {
-            splits[i] = splits[i].trim();
-        }
-
-        if (!isEntityValidForName(splits[0], entity)) {
-            return false;
-        }
-
-        for (int i = 1; i < splits.length; i++) {
-            String[] modifier = splits[i].split("=");
-            if (modifier.length == 2) {
-                if (!isEntityValidForModifier(modifier[0].trim(), modifier[1].trim(), entity)) return false;
-            } else {
-                throw new IllegalArgumentException("No '=' sign in the modifier.");
-            }
-        }
-        return true;
-    }
-
-    private static boolean isEntityValidForModifier(String modifier, String value, Entity entity) throws IllegalArgumentException {
-        if (modifier.equalsIgnoreCase("age")) {
-            if (entity instanceof EntityAgeable) {
-                if (value.equalsIgnoreCase("adult")) {
-                    return ((EntityAgeable) entity).getGrowingAge() >= 0;
-                } else if (value.equalsIgnoreCase("baby")) {
-                    return ((EntityAgeable) entity).getGrowingAge() < 0;
-                } else {
-                    throw new IllegalArgumentException(value + " doesn't match 'adult'/'baby'.");
-                }
-            } else {
-                throw new IllegalArgumentException("This modifier can't be applied to this entity.");
-            }
-        } else if (modifier.equalsIgnoreCase("breedable")) {
-            if (entity instanceof EntityAgeable) {
-                if (value.equalsIgnoreCase("yes")) {
-                    return ((EntityAgeable) entity).getGrowingAge() == 0;
-                } else if (value.equalsIgnoreCase("no")) {
-                    return ((EntityAgeable) entity).getGrowingAge() != 0;
-                } else {
-                    throw new IllegalArgumentException(value + " doesn't match 'yes'/'no'.");
-                }
-            } else {
-                throw new IllegalArgumentException("This modifier can't be applied to this entity.");
-            }
-        }
-        throw new IllegalArgumentException(modifier + " is not a valid modifier");
-    }
-
-    private static boolean isEntityValidForName(String filter, Entity entity) throws IllegalArgumentException {
-        if (filter.equals("")) {
-            return true;
-        } else if (filter.startsWith("@")) {//entity type selection
-            filter = filter.substring(1); //cut off the '@'.
-            Class<?> typeClass = null;
-            switch (filter) {
-                case "mob":
-                    typeClass = IMob.class;  // IMob matches some hostile creatures that EntityMob doesn't
-                    break;
-                case "animal":
-                    typeClass = EntityAnimal.class;
-                    break;
-                case "living":
-                    typeClass = EntityLivingBase.class;
-                    break;
-                case "player":
-                    typeClass = EntityPlayer.class;
-                    break;
-                case "item":
-                    typeClass = EntityItem.class;
-                    break;
-                case "minecart":
-                    typeClass = EntityMinecart.class;
-                    break;
-                case "drone":
-                    typeClass = EntityDrone.class;
-                    break;
-                case "boat":
-                    typeClass = EntityBoat.class;
-                    break;
-            }
-            if (typeClass != null) {
-                return typeClass.isAssignableFrom(entity.getClass());
-            } else {
-                throw new IllegalArgumentException(filter + " is not a valid entity type.");
-            }
-        } else {
-            try {
-                String regex = filter.toLowerCase().replaceAll(".", "[$0]").replace("[*]", ".*");//Wildcard regex
-                return entity.getName().toLowerCase().matches(regex);//TODO when player, check if entity is tamed by the player (see EntityAIAvoidEntity for example)
-            } catch (PatternSyntaxException e) {
-                return entity.getName().toLowerCase().equals(filter.toLowerCase());
-            }
-        }
     }
 
     @Nonnull

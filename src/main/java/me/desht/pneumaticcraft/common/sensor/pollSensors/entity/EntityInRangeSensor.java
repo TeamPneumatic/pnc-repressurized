@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.sensor.pollSensors.entity;
 
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.EntityFilter;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.text.TextFormatting;
@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EntityInRangeSensor extends EntityPollSensor {
+
+    private EntityFilter filter;
 
     @Override
     public String getSensorPath() {
@@ -25,12 +27,16 @@ public class EntityInRangeSensor extends EntityPollSensor {
 
     @Override
     public int getRedstoneValue(List<Entity> entities, String textboxText) {
+        if (filter == null) {
+            filter = new EntityFilter(textboxText);
+        }
+
         int entitiesFound = 0;
         if (textboxText.equals("")) {
             return Math.min(15, entities.size());
         } else {
             for (Entity entity : entities) {
-                if (PneumaticCraftUtils.isEntityValidForFilter(textboxText, entity)) entitiesFound++;
+                if (filter.test(entity)) entitiesFound++;
             }
         }
         return Math.min(15, entitiesFound);
@@ -39,7 +45,7 @@ public class EntityInRangeSensor extends EntityPollSensor {
     @Override
     public List<String> getDescription() {
         List<String> text = new ArrayList<>();
-        text.add(TextFormatting.BLACK + "Emits a redstone level for every entity within range. You can select a specific entity by filling in its name in the textbox. For instance for Creepers type 'Creeper', or for Player1 type 'Player1'. You can also select an entity type. If you want to detect mobs, you can type '@mob'. All selectable entity types are @mob, @animal, @living, @player, @item, @minecart.");
+        text.add(TextFormatting.BLACK + "Emits a redstone level for every entity within range. You can select a specific entity by filling in its name in the textbox. Hold F1 to get detailed help on entity filter syntax.");
         return text;
     }
 
@@ -57,5 +63,10 @@ public class EntityInRangeSensor extends EntityPollSensor {
     @Override
     public Rectangle needsSlot() {
         return null;
+    }
+
+    @Override
+    public void notifyTextChange(String newText) {
+        filter = new EntityFilter(newText);
     }
 }
