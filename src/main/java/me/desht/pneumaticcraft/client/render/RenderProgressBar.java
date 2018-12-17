@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.render;
 
+import me.desht.pneumaticcraft.client.util.RenderUtils;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -9,6 +10,10 @@ import org.lwjgl.opengl.GL11;
 public class RenderProgressBar {
 
     public static void render(double minX, double minY, double maxX, double maxY, double zLevel, int progress) {
+        render(minX, minY, maxX, maxY, zLevel, progress, 0xAA00FF00);
+    }
+
+    public static void render(double minX, double minY, double maxX, double maxY, double zLevel, int progress, int color) {
         BufferBuilder wr = Tessellator.getInstance().getBuffer();
         GlStateManager.pushMatrix();
         GlStateManager.enableRescaleNormal();
@@ -20,7 +25,8 @@ public class RenderProgressBar {
 
         double caseDistance = 0D;
         // draw the bar
-        GlStateManager.color(0, 1, 0, 0.7F);
+        RenderUtils.glColorHex(color);
+//        GlStateManager.color(0, 1, 0, 0.7F);
         wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
         wr.pos(minX + (maxX - minX) * caseDistance, minY + (maxY - minY) * caseDistance, zLevel).endVertex();
         wr.pos(minX + (maxX - minX) * caseDistance, minY + (maxY - minY) * (1D - caseDistance), zLevel).endVertex();

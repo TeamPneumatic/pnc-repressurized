@@ -1,15 +1,18 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.authlib.GameProfile;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.entity.projectile.EntityTumblingBlock;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaConstant;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethod;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.fakeplayer.FakeNetHandlerPlayerServer;
 import me.desht.pneumaticcraft.lib.EnumCustomParticleType;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Sounds;
@@ -22,9 +25,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.projectile.*;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemMonsterPlacer;
-import net.minecraft.item.ItemStack;
+import net.minecraft.item.*;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
@@ -33,7 +34,13 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.common.util.FakePlayer;
+import net.minecraftforge.common.util.FakePlayerFactory;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
@@ -88,6 +95,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     @GuiSynced
     public boolean insertingInventoryHasSpace = true;
     private boolean gpsSlotChanged = true;
+    private FakePlayer fakePlayer = null;
 
     private static final int INVENTORY_SIZE = 2;
     private static final int CANNON_SLOT = 0;
@@ -526,125 +534,151 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     }
 
     private synchronized boolean fire() {
-        Entity itemShot = getCloseEntityIfUpgraded();
-        if (getPressure() >= PneumaticValues.MIN_PRESSURE_AIR_CANNON && (itemShot != null || !inventory.getStackInSlot(CANNON_SLOT).isEmpty())) {
+        Entity launchedEntity = getCloseEntityIfUpgraded();
+        if (getPressure() >= PneumaticValues.MIN_PRESSURE_AIR_CANNON && (launchedEntity != null || !inventory.getStackInSlot(CANNON_SLOT).isEmpty())) {
             float force = getForce();
             double[] velocity = getVelocityVector(heightAngle, rotationAngle, force);
             addAir((int) (-500 * force));
             boolean shootingInventory = false;
-            if (itemShot == null) {
+            if (launchedEntity == null) {
                 shootingInventory = true;
-                itemShot = getPayloadEntity();
-                if (itemShot instanceof EntityItem) {
+                launchedEntity = getPayloadEntity();
+                if (launchedEntity instanceof EntityItem) {
                     inventory.setStackInSlot(CANNON_SLOT, ItemStack.EMPTY);
                     if (getUpgrades(EnumUpgrade.BLOCK_TRACKER) > 0) {
-                        trackedItems.add((EntityItem) itemShot);
+                        trackedItems.add((EntityItem) launchedEntity);
                     }
-                    ((EntityItem) itemShot).setPickupDelay(20);
+                    ((EntityItem) launchedEntity).setPickupDelay(20);
                 } else {
                     inventory.extractItem(CANNON_SLOT, 1, false);
                 }
-            } else if (itemShot instanceof EntityPlayer) {
-                EntityPlayerMP entityplayermp = (EntityPlayerMP) itemShot;
+            } else if (launchedEntity instanceof EntityPlayer) {
+                EntityPlayerMP entityplayermp = (EntityPlayerMP) launchedEntity;
                 if (entityplayermp.connection.getNetworkManager().isChannelOpen()) {
-                    
-                    //This is a nasty hack to get around "player moved wrongly!" messages, which can be caused if player movement
+                    // This is a nasty hack to get around "player moved wrongly!" messages, which can be caused if player movement
                     // triggers a player teleport (e.g. player moves onto pressure plate, triggers air cannon with an entity tracker).
                     entityplayermp.invulnerableDimensionChange = true;
-                    
                     entityplayermp.setPositionAndUpdate(getPos().getX() + 0.5D, getPos().getY() + 1.8D, getPos().getZ() + 0.5D);
                 }
             }
 
-            if (itemShot.isRiding()) {
-                itemShot.dismountRidingEntity();
-            }
-
-            itemShot.setPosition(getPos().getX() + 0.5D, getPos().getY() + 1.8D, getPos().getZ() + 0.5D);
-            NetworkHandler.sendToAllAround(new PacketSetEntityMotion(itemShot, velocity[0], velocity[1], velocity[2]),
-                    new TargetPoint(getWorld().provider.getDimension(), getPos().getX(), getPos().getY(), getPos().getZ(), 64));
-            if (itemShot instanceof EntityFireball) {
-                // fireballs behave a little differently...
-                EntityFireball fireball = (EntityFireball) itemShot;
-                fireball.accelerationX = velocity[0] * 0.05;
-                fireball.accelerationY = velocity[1] * 0.05;
-                fireball.accelerationZ = velocity[2] * 0.05;
-            } else {
-                itemShot.motionX = velocity[0];
-                itemShot.motionY = velocity[1];
-                itemShot.motionZ = velocity[2];
-            }
-            itemShot.onGround = false;
-            itemShot.collided = false;
-            itemShot.collidedHorizontally = false;
-            itemShot.collidedVertically = false;
-//            if (itemShot instanceof EntityLivingBase) ((EntityLivingBase) itemShot).setJumping(true);
-
-            if (shootingInventory && !getWorld().isRemote) getWorld().spawnEntity(itemShot);
-
-            for (int i = 0; i < 10; i++) {
-                double velX = velocity[0] * 0.4D + (rand.nextGaussian() - 0.5D) * 0.05D;
-                double velY = velocity[1] * 0.4D + (rand.nextGaussian() - 0.5D) * 0.05D;
-                double velZ = velocity[2] * 0.4D + (rand.nextGaussian() - 0.5D) * 0.05D;
-                NetworkHandler.sendToAllAround(new PacketSpawnParticle(EnumCustomParticleType.AIR_PARTICLE_DENSE, getPos().getX() + 0.5D, getPos().getY() + 0.7D, getPos().getZ() + 0.5D, velX, velY, velZ), getWorld());
-            }
-            NetworkHandler.sendToAllAround(new PacketPlaySound(Sounds.CANNON_SOUND, SoundCategory.BLOCKS, getPos().getX(), getPos().getY(), getPos().getZ(), 1.0F, rand.nextFloat() / 4F + 0.75F, true), getWorld());
+            launchEntity(launchedEntity,
+                    new Vec3d(getPos().getX() + 0.5D, getPos().getY() + 1.8D, getPos().getZ() + 0.5D),
+                    new Vec3d(velocity[0], velocity[1], velocity[2]),
+                    shootingInventory);
             return true;
         } else {
             return false;
         }
     }
 
-    // warning: no null-check for inventory slot 0
     private Entity getPayloadEntity() {
-        if (getUpgrades(EnumUpgrade.DISPENSER) > 0) {
-            ItemStack stack = inventory.getStackInSlot(CANNON_SLOT);
-            Item item = stack.getItem();
+        Entity e = getEntityToLaunch(getWorld(), inventory.getStackInSlot(CANNON_SLOT), getFakePlayer(),
+                getUpgrades(EnumUpgrade.DISPENSER) > 0, false);
+        if (e instanceof EntityItem) {
+            // 1200 ticks left to live = 60s
+            ((EntityItem) e).setAgeToCreativeDespawnTime();
+            // + 30s per item life upgrade, to a max of 5 mins
+            ((EntityItem) e).lifespan += Math.min(getUpgrades(EnumUpgrade.ITEM_LIFE) * 600, 4800);
+        }
+        return e;
+    }
+
+    private EntityPlayer getFakePlayer() {
+        if (fakePlayer == null) {
+            fakePlayer = FakePlayerFactory.get((WorldServer) getWorld(), new GameProfile(null, "[Air Cannon]"));
+            fakePlayer.connection = new FakeNetHandlerPlayerServer(FMLCommonHandler.instance().getMinecraftServerInstance(), fakePlayer);
+            fakePlayer.posX = getPos().getX() + 0.5;
+            fakePlayer.posY = getPos().getY() + 0.5;
+            fakePlayer.posZ = getPos().getZ() + 0.5;
+        }
+        return fakePlayer;
+    }
+
+    public static void launchEntity(Entity launchedEntity, Vec3d initialPos, Vec3d velocity, boolean doSpawn) {
+        World world = launchedEntity.getEntityWorld();
+
+        if (launchedEntity.isRiding()) {
+            launchedEntity.dismountRidingEntity();
+        }
+
+        launchedEntity.setPosition(initialPos.x, initialPos.y, initialPos.z);
+        NetworkHandler.sendToAllAround(new PacketSetEntityMotion(launchedEntity, velocity.x, velocity.y, velocity.z),
+                new TargetPoint(world.provider.getDimension(), initialPos.x, initialPos.y, initialPos.z, 64));
+        if (launchedEntity instanceof EntityFireball) {
+            // fireball velocity is handled a little differently...
+            EntityFireball fireball = (EntityFireball) launchedEntity;
+            fireball.accelerationX = velocity.x * 0.05;
+            fireball.accelerationY = velocity.y * 0.05;
+            fireball.accelerationZ = velocity.z * 0.05;
+        } else {
+            launchedEntity.motionX = velocity.x;
+            launchedEntity.motionY = velocity.y;
+            launchedEntity.motionZ = velocity.z;
+        }
+        launchedEntity.onGround = false;
+        launchedEntity.collided = false;
+        launchedEntity.collidedHorizontally = false;
+        launchedEntity.collidedVertically = false;
+
+        if (doSpawn && !world.isRemote) world.spawnEntity(launchedEntity);
+
+        for (int i = 0; i < 5; i++) {
+            double velX = velocity.x * 0.4D + (world.rand.nextGaussian() - 0.5D) * 0.05D;
+            double velY = velocity.y * 0.4D + (world.rand.nextGaussian() - 0.5D) * 0.05D;
+            double velZ = velocity.z * 0.4D + (world.rand.nextGaussian() - 0.5D) * 0.05D;
+            NetworkHandler.sendToAllAround(new PacketSpawnParticle(EnumCustomParticleType.AIR_PARTICLE_DENSE, initialPos.x, initialPos.y, initialPos.z, velX, velY, velZ), world);
+        }
+        NetworkHandler.sendToAllAround(new PacketPlaySound(Sounds.CANNON_SOUND, SoundCategory.BLOCKS, initialPos.x, initialPos.y, initialPos.z, 1.0F, world.rand.nextFloat() / 4F + 0.75F, true), world);
+    }
+
+    /**
+     * Get the entity to launch for a given item.
+     *
+     * @param world the world
+     * @param stack the item stack to be fired
+     * @param hasDispenser true if dispenser-like behaviour should be used
+     * @param fallingBlocks true if block items should be spawned as falling block entities rather than item entities
+     * @return the entity to launch
+     */
+    public static Entity getEntityToLaunch(World world, ItemStack stack, EntityPlayer player, boolean hasDispenser, boolean fallingBlocks) {
+        Item item = stack.getItem();
+        if (hasDispenser) {
             if (item == Item.getItemFromBlock(Blocks.TNT)) {
-                EntityTNTPrimed tnt = new EntityTNTPrimed(getWorld());
+                EntityTNTPrimed tnt = new EntityTNTPrimed(world, 0, 0, 0, player);
                 tnt.setFuse(80);
                 return tnt;
             } else if (item == Items.EXPERIENCE_BOTTLE) {
-                return new EntityExpBottle(getWorld());
-            } else if (item == Items.POTIONITEM) {
-                EntityPotion potion = new EntityPotion(getWorld());
-                potion.setItem(stack);
-                return potion;
-            } else if (item == Items.ARROW) {
-                return new EntityTippedArrow(getWorld());
+                return new EntityExpBottle(world, player);
+            } else if (item instanceof ItemPotion) {
+                return new EntityPotion(world, player, stack);
+            } else if (item instanceof ItemArrow) {
+                return ((ItemArrow) item).createArrow(world, stack, player);
             } else if (item == Items.EGG) {
-                return new EntityEgg(getWorld());
-            } else if(item == Items.FIRE_CHARGE)
-                return new EntitySmallFireball(getWorld());
-            else if (item == Items.SNOWBALL)
-                return new EntitySnowball(getWorld());
-            else if (item == Items.SPAWN_EGG) {
-                Entity e = ItemMonsterPlacer.spawnCreature(getWorld(), ItemMonsterPlacer.getNamedIdFrom(stack), 0, 0, 0);
+                return new EntityEgg(world, player);
+            } else if (item == Items.FIRE_CHARGE) {
+                return new EntitySmallFireball(world, player, 0, 0, 0);
+            } else if (item == Items.SNOWBALL) {
+                return new EntitySnowball(world, player);
+            } else if (item == Items.SPAWN_EGG) {
+                Entity e = ItemMonsterPlacer.spawnCreature(world, ItemMonsterPlacer.getNamedIdFrom(stack), 0, 0, 0);
                 if (e instanceof EntityLivingBase && stack.hasDisplayName()) {
                     e.setCustomNameTag(stack.getDisplayName());
                 }
                 return e;
-            } else if (item == Items.MINECART)
-                return new EntityMinecartEmpty(getWorld());
-            else if (item == Items.CHEST_MINECART)
-                return new EntityMinecartChest(getWorld());
-            else if (item == Items.FURNACE_MINECART)
-                return new EntityMinecartFurnace(getWorld());
-            else if (item == Items.HOPPER_MINECART)
-                return new EntityMinecartHopper(getWorld());
-            else if (item == Items.TNT_MINECART)
-                return new EntityMinecartTNT(getWorld());
-            else if (item == Items.BOAT)
-                return new EntityBoat(getWorld());
-
+            } else if (item instanceof ItemMinecart) {
+                return EntityMinecart.create(world, 0, 0, 0, ((ItemMinecart) item).minecartType);
+            }  else if (item instanceof ItemBoat) {
+                return new EntityBoat(world);
+            } else if (item == Items.FIREWORKS) {
+                return new EntityFireworkRocket(world, 0, 0, 0, stack);
+            }
         }
-        EntityItem item = new EntityItem(getWorld());
-        item.setItem(inventory.getStackInSlot(CANNON_SLOT).copy());
-        item.setAgeToCreativeDespawnTime(); // 1200 ticks left to live = 60s.
-        // add 30s per life upgrade, to a max of 5 mins
-        item.lifespan += Math.min(getUpgrades(EnumUpgrade.ITEM_LIFE) * 600, 4800);
-        return item;
-
+        if (fallingBlocks && item instanceof ItemBlock) {
+            return new EntityTumblingBlock(world, 0, 0, 0, stack);
+        } else {
+            return new EntityItem(world, 0, 0, 0, stack);
+        }
     }
 
     private Entity getCloseEntityIfUpgraded() {
@@ -663,10 +697,9 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
         return null;
     }
 
-    /*
-     *  COMPUTERCRAFT API
+    /********************************
+     *  ComputerCraft API
      */
-
     @Override
     public String getType() {
         return "airCannon";

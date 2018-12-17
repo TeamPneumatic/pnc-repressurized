@@ -56,6 +56,7 @@ public class UpgradeRenderHandlerList {
         addUpgradeRenderer(new JetBootsUpgradeHandler());
         addUpgradeRenderer(new NightVisionUpgradeHandler());
         addUpgradeRenderer(new ScubaUpgradeHandler());
+        addUpgradeRenderer(new ChestplateLauncherHandler());
     }
 
     public void addUpgradeRenderer(IUpgradeRenderHandler handler) {

@@ -178,6 +178,7 @@ public class ItemPneumaticArmor extends ItemArmor
         addApplicableUpgrade(EntityEquipmentSlot.CHEST, EnumUpgrade.CHARGING);
         addApplicableUpgrade(EntityEquipmentSlot.CHEST, EnumUpgrade.SECURITY);
         addApplicableUpgrade(EntityEquipmentSlot.CHEST, EnumUpgrade.MAGNET);
+        addApplicableUpgrade(EntityEquipmentSlot.CHEST, EnumUpgrade.DISPENSER);
         addApplicableUpgrade(EntityEquipmentSlot.LEGS, EnumUpgrade.RANGE);
         addApplicableUpgrade(EntityEquipmentSlot.FEET, EnumUpgrade.JET_BOOTS);
     }

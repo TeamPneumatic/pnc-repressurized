@@ -18,6 +18,7 @@ public class KeyHandler {
     private static final String DESCRIPTION_HELMET_HACK = "pneumaticcraft.helmet.hack";
     private static final String DESCRIPTION_HELMET_DEBUGGING_DRONE = "pneumaticcraft.helmet.debugging.drone";
     private static final String DESCRIPTION_BOOTS_KICK = "pneumaticcraft.boots.kick";
+    private static final String DESCRIPTION_LAUNCHER = "pneumaticcraft.chestplate.launcher";
 
     private static final KeyHandler INSTANCE = new KeyHandler();
 
@@ -25,6 +26,7 @@ public class KeyHandler {
     public final KeyBinding keybindHack;
     public final KeyBinding keybindDebuggingDrone;
     public final KeyBinding keybindKick;
+    public final KeyBinding keybindLauncher;
     private final List<IKeyListener> keyListeners = new ArrayList<>();
     private final List<KeyBinding> keys = new ArrayList<>();
 
@@ -39,6 +41,7 @@ public class KeyHandler {
         keybindHack = registerKeyBinding(new KeyBinding(KeyHandler.DESCRIPTION_HELMET_HACK, KeyConflictContext.IN_GAME, KeyModifier.NONE, Keyboard.KEY_H, Names.PNEUMATIC_KEYBINDING_CATEGORY));
         keybindDebuggingDrone = registerKeyBinding(new KeyBinding(KeyHandler.DESCRIPTION_HELMET_DEBUGGING_DRONE, KeyConflictContext.IN_GAME, KeyModifier.NONE, Keyboard.KEY_Y, Names.PNEUMATIC_KEYBINDING_CATEGORY));
         keybindKick = registerKeyBinding(new KeyBinding(KeyHandler.DESCRIPTION_BOOTS_KICK, KeyConflictContext.IN_GAME, KeyModifier.CONTROL, Keyboard.KEY_X, Names.PNEUMATIC_KEYBINDING_CATEGORY));
+        keybindLauncher = registerKeyBinding(new KeyBinding(KeyHandler.DESCRIPTION_LAUNCHER, KeyConflictContext.IN_GAME, KeyModifier.CONTROL, Keyboard.KEY_C, Names.PNEUMATIC_KEYBINDING_CATEGORY));
     }
 
     private KeyBinding registerKeyBinding(KeyBinding keyBinding) {

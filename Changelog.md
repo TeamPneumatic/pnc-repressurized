@@ -32,6 +32,12 @@ Changes are in reverse chronological order; newest changes at the top.
   * Missiles will lock onto to nearest valid target; can filter targets with entity filters as used in other PneumaticCraft blocks & items
   * Dumb-fire mode where missiles just fly in a straight line; slower but higher damage
   * Missiles have a configurable launch cooldown (20 ticks by default)
+* Pneumatic Chestplate now takes up to 4 Dispenser upgrades to enable an item launcher:
+  * Press & release the launch hotkey (default: Control + C) to charge the launcher and fire items/blocks
+  * Full charge takes 15 ticks
+  * Some items (arrows, eggs, TNT...) have special behaviour, similar to how a dispenser would operate
+  * Other items will be simply fired as item entities
+  * Other blocks will be fired as "tumbling block" entities, which try to reform as a block on contact with any other block. This allows torch launching functionality and other remote block placing, for example.
 #### Updates
 * Camo Applicator now shows particle effects when applying/removing camo from a block
 * Entity Filter strings can now be prefixed with a "!" to negate the check (e.g. "!zombie" means "anything except zombies")

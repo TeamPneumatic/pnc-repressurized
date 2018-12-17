@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.client.IKeyListener;
 import me.desht.pneumaticcraft.client.KeyHandler;
+import me.desht.pneumaticcraft.client.LauncherTracker;
 import me.desht.pneumaticcraft.client.gui.pneumaticHelmet.GuiHelmetMainScreen;
 import me.desht.pneumaticcraft.client.gui.widget.GuiKeybindCheckBox;
 import me.desht.pneumaticcraft.client.render.RenderProgressBar;
@@ -120,6 +121,13 @@ public class HUDHandler implements IKeyListener {
                 } else {
                     messageList.clear();
                 }
+                if (LauncherTracker.INSTANCE.getLauncherProgress() > 0) {
+                    if (!KeyHandler.getInstance().keybindLauncher.isKeyDown()) {
+                        LauncherTracker.INSTANCE.trigger();
+                    } else {
+                        LauncherTracker.INSTANCE.chargeLauncher();
+                    }
+                }
             }
         }
     }
@@ -146,7 +154,7 @@ public class HUDHandler implements IKeyListener {
                     gaveNearlyEmptyWarning[slot.getIndex()] = false;
                     if (comHudHandler.isArmorEnabled()) {
                         int yOffset = 10 + (3 - slot.getIndex()) * PROGRESS_BAR_HEIGHT;
-                        RenderProgressBar.render(sr.getScaledWidth() / 2, yOffset,
+                        RenderProgressBar.render(sr.getScaledWidth_double() / 2, yOffset,
                                 sr.getScaledWidth() - 10, yOffset + PROGRESS_BAR_HEIGHT - 1, -90F,
                                 comHudHandler.getTicksSinceEquipped(slot) * 100 / comHudHandler.getStartupTime(slot));
                     }
@@ -178,6 +186,11 @@ public class HUDHandler implements IKeyListener {
                         }
                     }
                 }
+            }
+
+            // chestplate launcher upgrade (if installed)
+            if (LauncherTracker.INSTANCE.getLauncherProgress() > 0) {
+                LauncherTracker.INSTANCE.render(sr, partialTicks);
             }
 
             // render every pending message
@@ -279,11 +292,17 @@ public class HUDHandler implements IKeyListener {
             } else if (key == KeyHandler.getInstance().keybindHack && HackUpgradeRenderHandler.enabledForPlayer(mc.player)) {
                 getSpecificRenderer(BlockTrackUpgradeHandler.class).hack();
                 getSpecificRenderer(EntityTrackUpgradeHandler.class).hack();
-            } else if (key == KeyHandler.getInstance().keybindDebuggingDrone && DroneDebugUpgradeHandler.enabledForPlayer(PneumaticCraftRepressurized.proxy.getClientPlayer())) {
+            } else if (key == KeyHandler.getInstance().keybindDebuggingDrone
+                    && DroneDebugUpgradeHandler.enabledForPlayer(PneumaticCraftRepressurized.proxy.getClientPlayer())) {
                 getSpecificRenderer(EntityTrackUpgradeHandler.class).selectAsDebuggingTarget();
             } else if (key == KeyHandler.getInstance().keybindKick
-                    && CommonHUDHandler.getHandlerForPlayer(mc.player).getUpgradeCount(EntityEquipmentSlot.FEET, IItemRegistry.EnumUpgrade.DISPENSER) > 0) {
+                    && CommonHUDHandler.getHandlerForPlayer().getUpgradeCount(EntityEquipmentSlot.FEET, IItemRegistry.EnumUpgrade.DISPENSER) > 0) {
                 NetworkHandler.sendToServer(new PacketPneumaticKick());
+            } else if (key == KeyHandler.getInstance().keybindLauncher
+                    && LauncherTracker.INSTANCE.getLauncherProgress() == 0
+                    && !mc.player.getHeldItemOffhand().isEmpty()
+                    && CommonHUDHandler.getHandlerForPlayer().getUpgradeCount(EntityEquipmentSlot.CHEST, IItemRegistry.EnumUpgrade.DISPENSER) > 0) {
+                LauncherTracker.INSTANCE.startCharging();
             }
         }
     }

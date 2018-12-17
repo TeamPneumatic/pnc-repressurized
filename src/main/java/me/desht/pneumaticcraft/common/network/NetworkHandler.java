@@ -121,6 +121,7 @@ public class NetworkHandler {
         INSTANCE.registerMessage(PacketUpdateArmorExtraData.class, PacketUpdateArmorExtraData.class, discriminant++, Side.SERVER);
         INSTANCE.registerMessage(PacketUpdateMicromissileSettings.class, PacketUpdateMicromissileSettings.class, discriminant++, Side.SERVER);
         INSTANCE.registerMessage(PacketSendArmorHUDMessage.class, PacketSendArmorHUDMessage.class, discriminant++, Side.CLIENT);
+        INSTANCE.registerMessage(PacketChestplateLauncher.class, PacketChestplateLauncher.class, discriminant++, Side.SERVER);
     }
 
     /* public static void INSTANCE.registerMessage(Class<? extends AbstractPacket<? extends IMessage>> clazz){

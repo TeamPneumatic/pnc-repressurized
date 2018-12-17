@@ -7,10 +7,7 @@ import me.desht.pneumaticcraft.client.model.item.ModelProgrammingPuzzle.LoaderPr
 import me.desht.pneumaticcraft.client.model.pressureglass.PressureGlassModelLoader;
 import me.desht.pneumaticcraft.client.particle.CustomParticleFactory;
 import me.desht.pneumaticcraft.client.render.RenderItemMinigun;
-import me.desht.pneumaticcraft.client.render.entity.RenderDrone;
-import me.desht.pneumaticcraft.client.render.entity.RenderEntityRing;
-import me.desht.pneumaticcraft.client.render.entity.RenderEntityVortex;
-import me.desht.pneumaticcraft.client.render.entity.RenderMicromissile;
+import me.desht.pneumaticcraft.client.render.entity.*;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.UpgradeRenderHandlerList;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.entitytracker.EntityTrackHandler;
@@ -24,6 +21,7 @@ import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.entity.living.EntityHarvestingDrone;
 import me.desht.pneumaticcraft.common.entity.living.EntityLogisticsDrone;
 import me.desht.pneumaticcraft.common.entity.projectile.EntityMicromissile;
+import me.desht.pneumaticcraft.common.entity.projectile.EntityTumblingBlock;
 import me.desht.pneumaticcraft.common.entity.projectile.EntityVortex;
 import me.desht.pneumaticcraft.common.event.HackTickHandler;
 import me.desht.pneumaticcraft.common.fluid.Fluids;
@@ -115,6 +113,7 @@ public class ClientProxy implements IProxy {
         RenderingRegistry.registerEntityRenderingHandler(EntityProgrammableController.class, RenderDrone.REGULAR_FACTORY);
         RenderingRegistry.registerEntityRenderingHandler(EntityRing.class, RenderEntityRing.FACTORY);
         RenderingRegistry.registerEntityRenderingHandler(EntityMicromissile.class, RenderMicromissile.FACTORY);
+        RenderingRegistry.registerEntityRenderingHandler(EntityTumblingBlock.class, RenderTumblingBlock.FACTORY);
     }
 
     @Override

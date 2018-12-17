@@ -76,7 +76,9 @@ public class ItemMicromissiles extends ItemPneumatic {
             worldIn.spawnEntity(missile);
         }
 
-        iStack.damageItem(1, playerIn);
+        if (!playerIn.capabilities.isCreativeMode) {
+            iStack.damageItem(1, playerIn);
+        }
         return ActionResult.newResult(EnumActionResult.SUCCESS, iStack);
     }
 
