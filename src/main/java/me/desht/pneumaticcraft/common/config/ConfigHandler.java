@@ -131,6 +131,10 @@ public class ConfigHandler {
         @Config.Comment("Fluids as hot or hotter than this temperature (Kelvin) will be auto-registered as Liquid Compressor fuels, the quality being dependent on fluid temperature.")
         @Config.RequiresMcRestart
         public int minimumFluidFuelTemperature = 373; // 100C
+        @Config.Comment("Thermal resistance multiplier for non-fluid blocks.  Higher values mean slower heat transfer; you can set this to a very high value to make blocks not worth using as heat sources.  See also I:fluidThermalResistance for fluid blocks.")
+        @Config.RequiresWorldRestart
+        @Config.RangeDouble(min = 0.01)
+        public double blockThermalResistanceMultiplier = 1.0;
 
         // deprecated stuff
         @Config.Comment("DEPRECATED: use Minigun / baseDamage")

@@ -33,12 +33,12 @@ public class HeatExchangerManager implements IHeatRegistry {
     }
 
     public void init() {
-        registerBlockExchanger(Blocks.ICE, 263, 500);
-        registerBlockExchanger(Blocks.PACKED_ICE, 263, 500);
-        registerBlockExchanger(Blocks.SNOW, 268, 1000);
-        registerBlockExchanger(Blocks.TORCH, 1700, 100000);
-        registerBlockExchanger(Blocks.FIRE, 1700, 1000);
-        registerBlockExchanger(Blocks.MAGMA, 1700, 500);
+        registerBlockExchanger(Blocks.ICE, 263, 500 * ConfigHandler.general.blockThermalResistanceMultiplier);
+        registerBlockExchanger(Blocks.PACKED_ICE, 263, 500 * ConfigHandler.general.blockThermalResistanceMultiplier);
+        registerBlockExchanger(Blocks.SNOW, 268, 1000 * ConfigHandler.general.blockThermalResistanceMultiplier);
+        registerBlockExchanger(Blocks.TORCH, 1700, 100000 * ConfigHandler.general.blockThermalResistanceMultiplier);
+        registerBlockExchanger(Blocks.FIRE, 1700, 1000 * ConfigHandler.general.blockThermalResistanceMultiplier);
+        registerBlockExchanger(Blocks.MAGMA, 1700, 500 * ConfigHandler.general.blockThermalResistanceMultiplier);
 
         Map<String, Fluid> fluids = FluidRegistry.getRegisteredFluids();
         for (Fluid fluid : fluids.values()) {
@@ -46,8 +46,8 @@ public class HeatExchangerManager implements IHeatRegistry {
                 registerBlockExchanger(fluid.getBlock(), fluid.getTemperature(), ConfigHandler.general.fluidThermalResistance);
             }
         }
-        registerBlockExchanger(Blocks.FLOWING_WATER, FluidRegistry.WATER.getTemperature(), 500);
-        registerBlockExchanger(Blocks.FLOWING_LAVA, FluidRegistry.LAVA.getTemperature(), 500);
+        registerBlockExchanger(Blocks.FLOWING_WATER, FluidRegistry.WATER.getTemperature(), ConfigHandler.general.fluidThermalResistance);
+        registerBlockExchanger(Blocks.FLOWING_LAVA, FluidRegistry.LAVA.getTemperature(), ConfigHandler.general.fluidThermalResistance);
     }
 
     public IHeatExchangerLogic getLogic(World world, BlockPos pos, EnumFacing side) {
