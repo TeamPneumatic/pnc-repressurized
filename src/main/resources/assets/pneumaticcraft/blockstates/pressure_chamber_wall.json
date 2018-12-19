@@ -1,7 +1,10 @@
 {
 	"forge_marker": 1,
 	"defaults":{
-	   "model": "cube"
+	   "model": "cube",
+       "textures":{
+         "particle": "pneumaticcraft:blocks/pressure_chamber/pressure_chamber_wall"
+       }
 	},
 	"variants":{
 		"wall_state":{
