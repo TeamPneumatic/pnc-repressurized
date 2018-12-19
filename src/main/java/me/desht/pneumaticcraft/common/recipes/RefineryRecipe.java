@@ -14,15 +14,21 @@ public class RefineryRecipe {
 	
 	public final FluidStack input;
 	public final FluidStack[] outputs;
-	
-	public RefineryRecipe(FluidStack input, FluidStack[] outputs) {
+	private final int minimumTemp;
+
+	public RefineryRecipe(int minimumTemp, FluidStack input, FluidStack[] outputs) {
+		this.minimumTemp = minimumTemp;
 		if (outputs.length < 2 || outputs.length > MAX_OUTPUTS) {
 			throw new IllegalArgumentException("Recipe must have between 2 and " + MAX_OUTPUTS + " (inclusive) outputs");
 		}
 		this.input = input;
 		this.outputs = outputs;
 	}
-	
+
+	public int getMinimumTemp() {
+		return minimumTemp;
+	}
+
 	public static Optional<RefineryRecipe> getRecipe(Fluid input, int size) {
 		if (input == null || size <= 0) return Optional.empty();
 		

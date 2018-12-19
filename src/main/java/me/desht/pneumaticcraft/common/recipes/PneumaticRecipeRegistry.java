@@ -104,7 +104,11 @@ public class PneumaticRecipeRegistry implements IPneumaticRecipeRegistry {
 
     @Override
 	public void registerRefineryRecipe(FluidStack input, FluidStack... outputs) {
-		RefineryRecipe.recipes.add(new RefineryRecipe(input, outputs));
+        registerRefineryRecipe(373, input, outputs);
 	}
 
+    @Override
+    public void registerRefineryRecipe(int minimumTemperature, FluidStack input, FluidStack... outputs) {
+        RefineryRecipe.recipes.add(new RefineryRecipe(minimumTemperature, input, outputs));
+    }
 }

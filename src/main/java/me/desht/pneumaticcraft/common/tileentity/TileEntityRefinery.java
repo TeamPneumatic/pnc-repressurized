@@ -53,7 +53,10 @@ public class TileEntityRefinery extends TileEntityTickableBase
 
     @GuiSynced
     private boolean blocked;
-    
+
+    @GuiSynced
+    public int minTemp;
+
     private RefineryRecipe currentRecipe;
     private int workTimer = 0;
     private int comparatorValue;
@@ -85,6 +88,7 @@ public class TileEntityRefinery extends TileEntityTickableBase
                 Optional<RefineryRecipe> recipe = RefineryRecipe.getRecipe(inputTank.getFluid() != null ?
                         inputTank.getFluid().getFluid() : null, refineries.size());
                 currentRecipe = recipe.orElse(null);
+                minTemp = currentRecipe == null ? 0 : currentRecipe.getMinimumTemp();
                 searchForRecipe = false;
             }
             boolean didWork = false;
@@ -94,9 +98,9 @@ public class TileEntityRefinery extends TileEntityTickableBase
                     prevRefineryCount = refineries.size();
                 }
 
-                if (heatExchanger.getTemperature() >= 373 && redstoneAllows() && inputTank.getFluidAmount() >= currentRecipe.input.amount) {
+                if (heatExchanger.getTemperature() >= currentRecipe.getMinimumTemp() && redstoneAllows() && inputTank.getFluidAmount() >= currentRecipe.input.amount) {
                     if (refineries.size() > 1 && refine(refineries, true)) {
-                        int progress = Math.max(0, ((int) heatExchanger.getTemperature() - 343) / 30);
+                        int progress = Math.max(0, ((int) heatExchanger.getTemperature() - (currentRecipe.getMinimumTemp() - 30)) / 30);
                         progress = Math.min(5, progress);
                         heatExchanger.addHeat(-progress);
                         workTimer += progress;

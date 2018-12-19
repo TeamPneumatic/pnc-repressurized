@@ -109,10 +109,21 @@ public interface IPneumaticRecipeRegistry {
     void registerHeatFrameCoolRecipe(ItemIngredient input, ItemStack output);
     
     /**
-     * Adds a recipe to the Refinery. Multiple recipes for the same input can be defined, the most suitable recipe depending on the size of the Refinery is used.
+     * Adds a recipe to the Refinery. Multiple recipes for the same input can be defined, the most suitable recipe
+     * depending on the size of the Refinery is used.
      *  
      * @param input fluid and amount drained per work (default: 10)
      * @param outputs the output fluids and amount produced per work
      */
 	void registerRefineryRecipe(FluidStack input, FluidStack... outputs);
+
+    /**
+     * Adds a recipe to the Refinery. Multiple recipes for the same input can be defined, the most suitable recipe
+     * depending on the size of the Refinery is used.
+     *
+     * @param minimumTemperature the minimum temperature (in Kelvin) for refining to start
+     * @param input fluid and amount drained per work (default: 10)
+     * @param outputs the output fluids and amount produced per work
+     */
+    void registerRefineryRecipe(int minimumTemperature, FluidStack input, FluidStack... outputs);
 }

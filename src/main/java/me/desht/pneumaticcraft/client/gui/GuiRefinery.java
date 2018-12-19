@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -16,6 +17,7 @@ import java.util.List;
 
 public class GuiRefinery extends GuiPneumaticContainerBase<TileEntityRefinery> {
     private List<TileEntityRefinery> refineries;
+    private WidgetTemperature widgetTemperature;
 
     public GuiRefinery(InventoryPlayer player, TileEntityRefinery te) {
         super(new ContainerRefinery(player, te), te, Textures.GUI_REFINERY);
@@ -25,7 +27,17 @@ public class GuiRefinery extends GuiPneumaticContainerBase<TileEntityRefinery> {
     public void initGui() {
         super.initGui();
 
-        addWidget(new WidgetTemperature(-1, guiLeft + 32, guiTop + 20, 273, 673, te.getHeatExchangerLogic(null), 373));
+        widgetTemperature = new WidgetTemperature(-1, guiLeft + 32, guiTop + 20, 273, 673, te.getHeatExchangerLogic(null)) {
+            @Override
+            public void addTooltip(int mouseX, int mouseY, List<String> curTip, boolean shift) {
+                super.addTooltip(mouseX, mouseY, curTip, shift);
+                if (te.minTemp > 0) {
+                    TextFormatting tf = te.minTemp < te.getHeatExchangerLogic(null).getTemperature() ? TextFormatting.GREEN : TextFormatting.GOLD;
+                    curTip.add(tf + "Minimum Temperature: " + (te.minTemp - 273) + "\u00b0C");
+                }
+            }
+        };
+        addWidget(widgetTemperature);
 
         addWidget(new WidgetTank(-1, guiLeft + 8, guiTop + 13, te.getInputTank()));
 
@@ -47,6 +59,16 @@ public class GuiRefinery extends GuiPneumaticContainerBase<TileEntityRefinery> {
         if (refineries.size() < 2 || refineries.size() > 4) {
             problemTab.openWindow();
         }
+    }
+
+    @Override
+    public void updateScreen() {
+        super.updateScreen();
+
+        if (te.minTemp > 0)
+            widgetTemperature.setScales(te.minTemp);
+        else
+            widgetTemperature.setScales();
     }
 
     @Override

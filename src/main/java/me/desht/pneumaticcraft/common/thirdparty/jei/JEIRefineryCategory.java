@@ -44,7 +44,7 @@ public class JEIRefineryCategory extends PneumaticCraftCategory<RefineryRecipeWr
                 y -= 4;
                 addOutputLiquid(recipe.outputs[i], x, y);
             }
-            setUsedTemperature(26, 18, 373);
+            setUsedTemperature(26, 18, recipe.getMinimumTemp());
         }
 
     }

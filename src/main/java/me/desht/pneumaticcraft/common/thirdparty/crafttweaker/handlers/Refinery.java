@@ -18,10 +18,15 @@ import java.util.stream.Stream;
 @ZenRegister
 public class Refinery {
 public static final String name = "PneumaticCraft Refinery";
-	
+
+	@ZenMethod
+	public static void addRecipe(int minTemp, ILiquidStack input, ILiquidStack[] outputs) {
+		CraftTweaker.ADDITIONS.add(new Add(new RefineryRecipe(minTemp, Helper.toFluid(input), Helper.toFluids(outputs))));
+	}
+
 	@ZenMethod
 	public static void addRecipe(ILiquidStack input, ILiquidStack[] outputs) {
-		CraftTweaker.ADDITIONS.add(new Add(new RefineryRecipe(Helper.toFluid(input), Helper.toFluids(outputs))));
+		CraftTweaker.ADDITIONS.add(new Add(new RefineryRecipe(373, Helper.toFluid(input), Helper.toFluids(outputs))));
 	}
 	
 	@ZenMethod
