@@ -15,6 +15,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
 
 public class BlockRefinery extends BlockPneumaticCraftModeled {
 
@@ -31,30 +32,28 @@ public class BlockRefinery extends BlockPneumaticCraftModeled {
     public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float par7, float par8, float par9) {
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof TileEntityRefinery) {
-            // normally, activating the block should open the master TE's gui, but if we
-            // activate with a fluid tank in hand (which can transfer the fluid either way),
-            // then try to insert/extract on the actual refinery block that was activated
+            // normally, activating any refinery block would open the master TE's gui, but if we
+            // activate with a fluid tank in hand (which can actually transfer fluid either way),
+            // then we should activate the actual refinery block that was clicked
             TileEntityRefinery master = ((TileEntityRefinery) te).getMasterRefinery();
             BlockPos actualPos = master.getPos();
-            IFluidHandler handler = FluidUtil.getFluidHandler(player.getHeldItem(hand));
-            if (handler != null) {
-                IFluidHandler srcHandler = FluidUtil.getFluidHandler(world, pos, side);
-                if (srcHandler != null) {
-                    FluidStack f = FluidUtil.tryFluidTransfer(handler, srcHandler, srcHandler.getTankProperties()[0].getCapacity(), false);
-                    if (f == null || f.amount == 0) {
-                        f = FluidUtil.tryFluidTransfer(srcHandler, handler, handler.getTankProperties()[0].getCapacity(), false);
-                        if (f == null || f.amount == 0) {
-                            return false;
-                        }
-                    } else {
-                        actualPos = pos;
-                    }
+            IFluidHandler heldHandler = FluidUtil.getFluidHandler(ItemHandlerHelper.copyStackWithSize(player.getHeldItem(hand), 1));
+            if (heldHandler != null ) {
+                IFluidHandler refineryHandler = FluidUtil.getFluidHandler(world, pos, side);
+                if (refineryHandler != null && couldTransferFluidEitherWay(heldHandler, refineryHandler)) {
+                    actualPos = pos;
                 }
             }
-
             return super.onBlockActivated(world, actualPos, state, player, hand, side, par7, par8, par9);
         }
         return false;
+    }
+
+    private boolean couldTransferFluidEitherWay(IFluidHandler h1, IFluidHandler h2) {
+        FluidStack f = FluidUtil.tryFluidTransfer(h1, h2, 1000, false);
+        if (f != null && f.amount > 0) return true;
+        f = FluidUtil.tryFluidTransfer(h2, h1, 1000, false);
+        return f != null && f.amount > 0;
     }
 
     @Override
