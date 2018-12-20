@@ -45,6 +45,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * In Programmer GUI, when the widget tray is open, middle-click can now also be used to open IGW docs for puzzle pieces (pressing 'I' still works, but the filter field has focus when the tray is open so mouse is more convenient)
 * It is now possible to raise or lower the thermal resistance of blocks (e.g. magma, fire, etc) in config - see D:blockThermalResistanceMultiplier. Note that the thermal resistance of fluids is already configurable, via I:fluidThermalResistance.
 * CraftTweaker: it is now possible to add Refinery recipes specifying a minimum temperature at which refining starts, with a new CT method "addRecipe(int minTemp, ILiquidStack input, ILiquidStack[] outputs)" . The existing addRecipe() method still works with a default minimum temp. of 373K.
+* The Pneumatic Chestplate Magnet upgrade now also works on XP orbs.
 #### Fixes
 * Fixed Minigun Drone sync issue: minigun not orienting toward targets and not display bullet traces when firing
 * Fixed problem where players sometimes take damage from jumping with Pneumatic Leggings + Range Upgrade (any fall damage from such a jump is supposed to be cancelled)

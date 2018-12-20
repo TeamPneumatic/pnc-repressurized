@@ -26,6 +26,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.SoundEvents;
@@ -37,7 +38,6 @@ import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.EntitySelectors;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -431,17 +431,19 @@ public class CommonHUDHandler {
             return;
 
         AxisAlignedBB box = new AxisAlignedBB(player.getPosition()).grow(magnetRadius);
-        List<EntityItem> itemList = player.getEntityWorld().getEntitiesWithinAABB(EntityItem.class, box, EntitySelectors.IS_ALIVE);
+        List<Entity> itemList = player.getEntityWorld().getEntitiesWithinAABB(Entity.class, box,
+                e -> (e instanceof EntityXPOrb || e instanceof EntityItem) && e.isEntityAlive());
 
         Vec3d playerVec = player.getPositionVector();
-        for (EntityItem item : itemList) {
-            if (!item.cannotPickup()
-                    && item.getPositionVector().squareDistanceTo(playerVec) <= magnetRadiusSq
+        for (Entity item : itemList) {
+            if (item instanceof EntityItem && ((EntityItem) item).cannotPickup()) continue;
+
+            if (item.getPositionVector().squareDistanceTo(playerVec) <= magnetRadiusSq
                     && !ItemRegistry.getInstance().shouldSuppressMagnet(item)
                     && !item.getEntityData().getBoolean(Names.PREVENT_REMOTE_MOVEMENT)) {
                 if (armorPressure[EntityEquipmentSlot.CHEST.getIndex()] < 0.1F) break;
                 item.setPosition(player.posX, player.posY, player.posZ);
-                item.setPickupDelay(0);
+                if (item instanceof EntityItem) ((EntityItem) item).setPickupDelay(0);
                 addAir(chestplateStack, EntityEquipmentSlot.CHEST, -PneumaticValues.MAGNET_AIR_USAGE);
             }
         }
