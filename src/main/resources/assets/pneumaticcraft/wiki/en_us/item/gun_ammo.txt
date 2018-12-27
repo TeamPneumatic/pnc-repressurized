@@ -1,13 +1,10 @@
 Gun Ammo is used by the [link{item/minigun}]Minigun [link{}].
 
-One ammo cartridge holds 1000 minigun rounds.  Ammo is steadily consumed while the minigun is firing, and ammo levels can be seen in the ammo item's tooltip, as well as its durability bar.
+One ammo cartridge holds up to 1000 minigun rounds, depending on the ammo type.  Ammo is steadily consumed while the minigun is firing, and ammo levels can be seen in the ammo item's tooltip, its durability bar, and (when the minigun is held) on the HUD, next to the minigun sight in the centre of the screen.
 
-If you have multiple ammo cartridges in your inventory, the cartridge used is chosen as follows:
-
-• Your hotbar is scanned from left to right
-• The rest of your inventory is scanned from left to right, starting at the top row
+Ammo must be inserted into the minigun's magazine to be used; it will not be consumed from the player's inventory.  Sneak + right-click the minigun to load ammo into it.  Ammo will be consumed from the numbered slots 1-4 in order, but you can middle-click a slot to lock it, forcing the minigun to consume ammo from that slot only (useful if you have multiple ammo types loaded in the minigun).  Middle-click a locked slot to unlock it again.
 
 [prefix{l}]Potions [prefix{}]
-You can craft ammo with any potion, and that ammo no longer does physical damage, but has a chance to apply the potion effect to your target.  The default chance is 1 in 15 (but remember the minigun fires pretty quickly), and this can be adjusted in the mod config - see I:minigunPotionProcChance
+You can craft standard minigun ammo with any potion, and that ammo no longer does physical damage, but has a chance to apply the potion effect to your target.  The default chance is 1 in 15 (but remember the minigun fires pretty quickly), and this can be adjusted in the mod config - see [prefix{o}]I:minigunPotionProcChance [prefix{}].  Adding Dispenser Upgrades to the minigun also raises the proc chance (but the minigun will use air significantly faster).
 
 Splash and lingering potions can also be used; they have the expected area effect, but be aware that ammo is consumed 3 times as quickly when tipped with splash potions, and 6 times as quickly with lingering potions.
