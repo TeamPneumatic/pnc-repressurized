@@ -53,7 +53,7 @@ public class GuiUnitProgrammer extends GuiScreen {
         this.translatedY = translatedY;
         this.lastZoom = lastZoom;
 
-        scaleScroll = new WidgetVerticalScrollbar(guiLeft + 302, guiTop + 40, 129).setStates(9).setCurrentState(lastZoom).setListening(true);
+        scaleScroll = new WidgetVerticalScrollbar(guiLeft + areaWidth + 8, guiTop + 40, areaHeight - 25).setStates(9).setCurrentState(lastZoom).setListening(true);
     }
 
     public WidgetVerticalScrollbar getScrollBar() {

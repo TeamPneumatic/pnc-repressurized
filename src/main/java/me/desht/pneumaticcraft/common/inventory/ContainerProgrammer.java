@@ -16,27 +16,37 @@ import javax.annotation.Nonnull;
 
 public class ContainerProgrammer extends ContainerPneumaticBase<TileEntityProgrammer> {
 
-    public ContainerProgrammer(InventoryPlayer inventoryPlayer, TileEntityProgrammer te) {
-        super(te);
+    private final boolean hiRes;
 
-        addSlotToContainer(new SlotItemHandler(te.getPrimaryInventory(), 0, 326, 15) {
+    public ContainerProgrammer(InventoryPlayer inventoryPlayer, TileEntityProgrammer te, boolean hiRes) {
+        super(te);
+        this.hiRes = hiRes;
+
+        addSlotToContainer(new SlotItemHandler(te.getPrimaryInventory(), 0, hiRes ? 676 : 326, 15) {
             @Override
             public boolean isItemValid(@Nonnull ItemStack stack) {
                 return isProgrammableItem(stack);
             }
         });
 
+        int xBase = hiRes ? 270 : 95;
+        int yBase = hiRes ? 430 : 174;
+
         // Add the player's inventory slots to the container
         for (int inventoryRowIndex = 0; inventoryRowIndex < 3; ++inventoryRowIndex) {
             for (int inventoryColumnIndex = 0; inventoryColumnIndex < 9; ++inventoryColumnIndex) {
-                addSlotToContainer(new Slot(inventoryPlayer, inventoryColumnIndex + inventoryRowIndex * 9 + 9, 95 + inventoryColumnIndex * 18, 174 + inventoryRowIndex * 18));
+                addSlotToContainer(new Slot(inventoryPlayer, inventoryColumnIndex + inventoryRowIndex * 9 + 9, xBase + inventoryColumnIndex * 18, yBase + inventoryRowIndex * 18));
             }
         }
 
         // Add the player's action bar slots to the container
         for (int actionBarSlotIndex = 0; actionBarSlotIndex < 9; ++actionBarSlotIndex) {
-            addSlotToContainer(new Slot(inventoryPlayer, actionBarSlotIndex, 95 + actionBarSlotIndex * 18, 232));
+            addSlotToContainer(new Slot(inventoryPlayer, actionBarSlotIndex, xBase + actionBarSlotIndex * 18, yBase + 58));
         }
+    }
+
+    public boolean isHiRes() {
+        return hiRes;
     }
 
     private static boolean isProgrammableItem(@Nonnull ItemStack stack) {

@@ -79,7 +79,7 @@ public class GuiHandler implements IGuiHandler {
             case OMNIDIRECTIONAL_HOPPER:
                 return new ContainerOmnidirectionalHopper(player.inventory, (TileEntityOmnidirectionalHopper) te);
             case PROGRAMMER:
-                return new ContainerProgrammer(player.inventory, (TileEntityProgrammer) te);
+                return new ContainerProgrammer(player.inventory, (TileEntityProgrammer) te, false);
             case PLASTIC_MIXER:
                 return new ContainerPlasticMixer(player.inventory, (TileEntityPlasticMixer) te);
             case LIQUID_COMPRESSOR:

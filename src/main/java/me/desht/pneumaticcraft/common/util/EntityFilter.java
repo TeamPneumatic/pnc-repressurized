@@ -54,19 +54,21 @@ public class EntityFilter implements Predicate<Entity>, com.google.common.base.P
     }
 
     public static EntityFilter fromProgWidget(IProgWidget widget, boolean whitelist) {
-        IProgWidget w = widget.getConnectedParameters()[whitelist ? 1 : widget.getParameters().length + 1];
-        List<String> l = new ArrayList<>();
-        if (w instanceof ProgWidgetString) {
-            while (w instanceof ProgWidgetString) {
-                String str = ((ProgWidgetString) w).string;
-                Validate.isTrue(!str.startsWith("!"), "'!' negation can't be used here (put blacklist filters on left of widget)");
-                l.add(str);
-                w = w.getConnectedParameters()[0];
+        if (widget.getParameters().length > 1) {
+            // NOTE: assumption here that the entity filter string is always parameter #2 of prog widgets
+            IProgWidget w = widget.getConnectedParameters()[whitelist ? 1 : widget.getParameters().length + 1];
+            List<String> l = new ArrayList<>();
+            if (w instanceof ProgWidgetString) {
+                while (w instanceof ProgWidgetString) {
+                    String str = ((ProgWidgetString) w).string;
+                    Validate.isTrue(!str.startsWith("!"), "'!' negation can't be used here (put blacklist filters on left of widget)");
+                    l.add(str);
+                    w = w.getConnectedParameters()[0];
+                }
+                return new EntityFilter(Strings.join(l, ";"));
             }
-            return new EntityFilter(Strings.join(l, ";"));
-        } else {
-            return whitelist ? ALLOW_FILTER : DENY_FILTER;
         }
+        return whitelist ? ALLOW_FILTER : DENY_FILTER;
     }
 
     public static EntityFilter fromString(String s) {

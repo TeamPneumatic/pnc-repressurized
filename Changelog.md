@@ -39,6 +39,8 @@ Changes are in reverse chronological order; newest changes at the top.
   * Other items will be simply fired as item entities
   * Other blocks will be fired as "tumbling block" entities, which try to reform as a block on contact with any other block. This allows torch launching functionality and other remote block placing, for example.
 #### Updates
+* Added a hi-res version of the Programmer GUI, used when the (scaled) resolution is 700x512 or higher.  This hi-res GUI gives a much larger area for programming widgets.
+* The Programmer GUI will now auto-recentre on the Start widget when a program is loaded from an item (drone, network storage) or from Pastebin, or if all widgets are off-screen when the GUI is re-opened.
 * Camo Applicator now shows particle effects when applying/removing camo from a block
 * Entity Filter strings can now be prefixed with a "!" to negate the check (e.g. "!zombie" means "anything except zombies")
 * Entity Filter handling is now a bit more efficient in general (pre-parsing the filter string wherever possible, so less string processing)
@@ -46,6 +48,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * It is now possible to raise or lower the thermal resistance of blocks (e.g. magma, fire, etc) in config - see D:blockThermalResistanceMultiplier. Note that the thermal resistance of fluids is already configurable, via I:fluidThermalResistance.
 * CraftTweaker: it is now possible to add Refinery recipes specifying a minimum temperature at which refining starts, with a new CT method "addRecipe(int minTemp, ILiquidStack input, ILiquidStack[] outputs)" . The existing addRecipe() method still works with a default minimum temp. of 373K.
 * The Pneumatic Chestplate Magnet upgrade now also works on XP orbs.
+* Recipes requiring vanilla chests now accepts any oredicted "chestWood" chests.
 #### Fixes
 * Fixed Minigun Drone sync issue: minigun not orienting toward targets and not display bullet traces when firing
 * Fixed problem where players sometimes take damage from jumping with Pneumatic Leggings + Range Upgrade (any fall damage from such a jump is supposed to be cancelled)

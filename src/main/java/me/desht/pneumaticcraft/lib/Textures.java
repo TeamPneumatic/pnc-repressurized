@@ -258,7 +258,8 @@ public class Textures {
     public static final String GUI_PNEUMATIC_DOOR = GUI_LOCATION + "gui_pneumatic_door_base.png";
     public static final String GUI_BUILDCRAFT_ENERGY = GUI_LOCATION + "gui_buildcraft_energy.png";
     public static final String GUI_OMNIDIRECTIONAL_HOPPER = GUI_LOCATION + "gui_omnidirectional_hopper.png";
-    public static final String GUI_PROGRAMMER = GUI_LOCATION + "gui_programmer.png";
+    public static final String GUI_PROGRAMMER_STD = GUI_LOCATION + "gui_programmer.png";
+    public static final String GUI_PROGRAMMER_LARGE = GUI_LOCATION + "gui_programmer_large.png";
     public static final String GUI_PLASTIC_MIXER = GUI_LOCATION + "gui_plastic_mixer.png";
     public static final String GUI_LIQUID_COMPRESSOR = GUI_LOCATION + "gui_liquid_compressor.png";
     public static final String GUI_ADVANCED_LIQUID_COMPRESSOR = GUI_LOCATION + "gui_advanced_liquid_compressor.png";
@@ -307,4 +308,5 @@ public class Textures {
     public static final ResourceLocation JEI_EXPLOSION = new ResourceLocation(GUI_LOCATION + "jei/explosion.png");
 
     public static final ResourceLocation MICROMISSILE_TEXTURE = new ResourceLocation(ENTITY_LOCATION + "micromissile.png");
+
 }

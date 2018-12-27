@@ -25,6 +25,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.GameSettings;
@@ -32,6 +33,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.FMLClientHandler;
@@ -79,26 +81,47 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
     private boolean showingAllWidgets;
     private int showingWidgetProgress;
     private int oldShowingWidgetProgress;
-    private static final int PROGRAMMING_START_Y = 17;
-    private static final int PROGRAMMING_START_X = 5;
-    private static final int PROGRAMMING_WIDTH = 294;
-    private static final int PROGRAMMING_HEIGHT = 154;
 
-    private static final int WIDGET_TRAY_RIGHT = 322; // distance from gui left to right hand side of expanded widget tray
+    private static final Rectangle PROGRAMMER_STD_RES = new Rectangle(5, 17, 294, 154);
+    private static final Rectangle PROGRAMMER_HI_RES = new Rectangle(5, 17, 644, 410);
+
     private static final int WIDGET_X_SPACING = 22; // x size of widgets in the widget tray
 
-    public GuiProgrammer(InventoryPlayer player, TileEntityProgrammer te) {
+    private boolean hiRes;
 
-        super(new ContainerProgrammer(player, te), te, Textures.GUI_PROGRAMMER);
-        ySize = 256;
-        xSize = 350;
+    public GuiProgrammer(InventoryPlayer player, TileEntityProgrammer te) {
+        super(new ContainerProgrammer(player, te, isScreenHiRes()), te, null);
+
+        hiRes = ((ContainerProgrammer) inventorySlots).isHiRes();
+        xSize = hiRes ? 700 : 350;
+        ySize = hiRes ? 512 : 256;
 
         this.player = FMLClientHandler.instance().getClient().player;
     }
 
+    private static boolean isScreenHiRes() {
+        ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
+        return sr.getScaledWidth() > 700 && sr.getScaledHeight() > 512;
+    }
+
+    private Rectangle getProgrammerBounds() {
+        return hiRes ? PROGRAMMER_HI_RES : PROGRAMMER_STD_RES;
+    }
+
+    private int getWidgetTrayRight() {
+        return hiRes ? 672 : 322;
+    }
+
+    @Override
+    protected void bindGuiTexture() {
+        ResourceLocation res = new ResourceLocation(hiRes ? Textures.GUI_PROGRAMMER_LARGE : Textures.GUI_PROGRAMMER_STD);
+        mc.getTextureManager().bindTexture(res);
+        GlStateManager.enableTexture2D();
+    }
+
     private void updateVisibleProgWidgets() {
         int y = 0, page = 0;
-        int x = WIDGET_TRAY_RIGHT - maxPage * WIDGET_X_SPACING;
+        int x = getWidgetTrayRight() - maxPage * WIDGET_X_SPACING;
         boolean showAllWidgets = showingWidgetProgress == WIDGET_X_SPACING * maxPage && showingAllWidgets;
         filterField.setVisible(showAllWidgets);
 
@@ -111,27 +134,29 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
                 break;
             }
         }
-        for (IProgWidget widget : WidgetRegistrator.registeredWidgets) {
+        List<IProgWidget> registeredWidgets = WidgetRegistrator.registeredWidgets;
+        for (int i = 0; i < registeredWidgets.size(); i++) {
+            IProgWidget widget = registeredWidgets.get(i);
             if (difficulty >= widget.getDifficulty().ordinal()) {
                 widget.setY(y + 40);
-                widget.setX(showAllWidgets ? x : WIDGET_TRAY_RIGHT);
+                widget.setX(showAllWidgets ? x : getWidgetTrayRight());
                 int widgetHeight = widget.getHeight() / 2 + (widget.hasStepOutput() ? 5 : 0) + 1;
                 y += widgetHeight;
 
                 if (showAllWidgets || page == widgetPage) {
                     visibleSpawnWidgets.add(widget);
                 }
-                if (y > ySize - 160) {
+                if (y > ySize - (hiRes ? 260 : 160)) {
                     y = 0;
                     x += WIDGET_X_SPACING;
                     page++;
-                    maxPage++;
+                    if (i < registeredWidgets.size() - 1) maxPage++;
                 }
-
             }
         }
+        maxPage++;
 
-        filterField.x = guiLeft + WIDGET_TRAY_RIGHT - (maxPage * WIDGET_X_SPACING) - 2;
+        filterField.x = Math.min(guiLeft + getWidgetTrayRight() - 25 - filterField.width, guiLeft + getWidgetTrayRight() - (maxPage * WIDGET_X_SPACING) - 2);
         filterSpawnWidgets();
 
         if (widgetPage > maxPage) {
@@ -161,10 +186,13 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
 
     @Override
     public void initGui() {
+        boolean pastebinLoaded = false;
+
         if (pastebinGui != null && pastebinGui.outputTag != null) {
             te.readProgWidgetsFromNBT(pastebinGui.outputTag);
             pastebinGui = null;
             NetworkHandler.sendToServer(new PacketProgrammerUpdate(te));
+            pastebinLoaded = true;
         }
 
         super.initGui();
@@ -173,33 +201,39 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
             te.translatedX = programmerUnit.getTranslatedX();
             te.translatedY = programmerUnit.getTranslatedY();
             te.zoomState = programmerUnit.getLastZoom();
+            if (pastebinLoaded) {
+                programmerUnit.gotoPiece(findWidget(te.progWidgets, ProgWidgetStart.class));
+            }
         }
 
-        programmerUnit = new GuiUnitProgrammer(te.progWidgets, fontRenderer, guiLeft, guiTop, xSize, width, height, PROGRAMMING_START_X, PROGRAMMING_START_Y, PROGRAMMING_WIDTH, PROGRAMMING_HEIGHT, te.translatedX, te.translatedY, te.zoomState);
+        Rectangle bounds = getProgrammerBounds();
+        programmerUnit = new GuiUnitProgrammer(te.progWidgets, fontRenderer, guiLeft, guiTop, xSize, width, height, bounds.x, bounds.y, bounds.width, bounds.height, te.translatedX, te.translatedY, te.zoomState);
         addWidget(programmerUnit.getScrollBar());
 
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
 
-        //    addProgWidgetTabs(xStart, yStart);
+        // right and bottom edges of the programming area
+        int xRight = getProgrammerBounds().x + getProgrammerBounds().width; // 299 or 649
+        int yBottom = getProgrammerBounds().y + getProgrammerBounds().height + 3; // 171 or 427
 
-        importButton = new GuiButtonSpecial(1, xStart + 301, yStart + 3, 20, 15, "<--");
+        importButton = new GuiButtonSpecial(1, xStart + xRight + 2, yStart + 3, 20, 15, "\u27f5");
         importButton.setTooltipText("Import program");
         buttonList.add(importButton);
 
-        exportButton = new GuiButtonSpecial(2, xStart + 301, yStart + 20, 20, 15, "-->");
+        exportButton = new GuiButtonSpecial(2, xStart + xRight + 2, yStart + 20, 20, 15, "\u27f6");
         buttonList.add(exportButton);
 
-        buttonList.add(new GuiButton(3, xStart + 294, yStart + 174, 10, 10, "-"));
-        buttonList.add(new GuiButton(4, xStart + 335, yStart + 174, 10, 10, "+"));
+        buttonList.add(new GuiButton(3, xStart + xRight - 3, yStart + yBottom, 10, 10, "\u25c0"));
+        buttonList.add(new GuiButton(4, xStart + xRight + 38, yStart + yBottom, 10, 10, "\u25b6"));
 
-        allWidgetsButton = new GuiButtonSpecial(8, xStart + 321, yStart + 159, 10, 10, "<");
+        allWidgetsButton = new GuiButtonSpecial(8, xStart + xRight + 22, yStart + yBottom - 16, 10, 10, "\u25e4");
         allWidgetsButton.setTooltipText(I18n.format("gui.programmer.button.openPanel.tooltip"));
         addWidget(allWidgetsButton);
 
         difficultyButtons = new ArrayList<>();
         for (int i = 0; i < IProgWidget.WidgetDifficulty.values().length; i++) {
-            GuiRadioButton radioButton = new GuiRadioButton(i, xStart + 263, yStart + 200 + i * 12, 0xFF000000, IProgWidget.WidgetDifficulty.values()[i].getLocalizedName());
+            GuiRadioButton radioButton = new GuiRadioButton(i, xStart + xRight - 36, yStart + yBottom + 29 + i * 12, 0xFF404040, IProgWidget.WidgetDifficulty.values()[i].getLocalizedName());
             radioButton.checked = ConfigHandler.getProgrammerDifficulty() == i;
             addWidget(radioButton);
             difficultyButtons.add(radioButton);
@@ -208,10 +242,10 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
             if (i == 2) radioButton.setTooltip(I18n.format("gui.programmer.difficulty.advanced.tooltip"));
         }
 
-        buttonList.add(new GuiButton(5, xStart + 5, yStart + 175, 87, 20, I18n.format("gui.programmer.button.showStart")));
-        buttonList.add(new GuiButton(6, xStart + 5, yStart + 197, 87, 20, I18n.format("gui.programmer.button.showLatest")));
-        addWidget(showInfo = new GuiCheckBox(-1, xStart + 5, yStart + 220, 0xFF000000, "gui.programmer.checkbox.showInfo").setChecked(te.showInfo));
-        addWidget(showFlow = new GuiCheckBox(-1, xStart + 5, yStart + 232, 0xFF000000, "gui.programmer.checkbox.showFlow").setChecked(te.showFlow));
+        buttonList.add(new GuiButton(5, xStart + 5, yStart + yBottom + 4, 87, 20, I18n.format("gui.programmer.button.showStart")));
+        buttonList.add(new GuiButton(6, xStart + 5, yStart + yBottom + 26, 87, 20, I18n.format("gui.programmer.button.showLatest")));
+        addWidget(showInfo = new GuiCheckBox(-1, xStart + 5, yStart + yBottom + 49, 0xFF404040, "gui.programmer.checkbox.showInfo").setChecked(te.showInfo));
+        addWidget(showFlow = new GuiCheckBox(-1, xStart + 5, yStart + yBottom + 61, 0xFF404040, "gui.programmer.checkbox.showFlow").setChecked(te.showFlow));
 
         GuiButtonSpecial pastebinButton = new GuiButtonSpecial(7, guiLeft - 24, guiTop + 44, 20, 20, "");
         pastebinButton.setTooltipText(I18n.format("gui.remote.button.pastebinButton"));
@@ -239,7 +273,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         String containerName = I18n.format(te.getName() + ".name");
         addLabel(containerName, guiLeft + 7, guiTop + 5, 0xFF404040);
 
-        nameField = new WidgetTextField(fontRenderer, guiLeft + 200, guiTop + 5, 98, fontRenderer.FONT_HEIGHT);
+        nameField = new WidgetTextField(fontRenderer, guiLeft + xRight - 99, guiTop + 5, 98, fontRenderer.FONT_HEIGHT);
         addWidget(nameField);
 
         filterField = new FilterTextField(fontRenderer, guiLeft + 78, guiTop + 26, 100, fontRenderer.FONT_HEIGHT);
@@ -248,9 +282,16 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         addWidget(filterField);
 
         String name = I18n.format("gui.programmer.name");
-        addLabel(name, guiLeft + 197 - fontRenderer.getStringWidth(name), guiTop + 5, 0xFF404040);
+        addLabel(name, guiLeft + xRight - 102 - fontRenderer.getStringWidth(name), guiTop + 5, 0xFF404040);
 
         updateVisibleProgWidgets();
+
+        for (IProgWidget widget : te.progWidgets) {
+            if (!programmerUnit.isOutsideProgrammingArea(widget)) {
+                return;
+            }
+        }
+        programmerUnit.gotoPiece(findWidget(te.progWidgets, ProgWidgetStart.class));
     }
 
     @Override
@@ -272,9 +313,13 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
     protected void drawGuiContainerForegroundLayer(int x, int y) {
         super.drawGuiContainerForegroundLayer(x, y);
 
+        int xRight = getProgrammerBounds().x + getProgrammerBounds().width; // 299 or 649
+        int yBottom = getProgrammerBounds().y + getProgrammerBounds().height; // 171 or 427
+
         boolean igwLoaded = Loader.isModLoaded(ModIds.IGWMOD);
-        fontRenderer.drawString(widgetPage + 1 + "/" + (maxPage + 1), 305, 175, 0xFF000000);
-        fontRenderer.drawString(I18n.format("gui.programmer.difficulty"), 263, 191, 0xFF000000);
+        String str = widgetPage + 1 + "/" + maxPage;
+        fontRenderer.drawString(str, xRight + (22 - fontRenderer.getStringWidth(str) / 2), yBottom + 4, 0xFF404040);
+        fontRenderer.drawString(I18n.format("gui.programmer.difficulty"), xRight - 36, yBottom + 20, 0xFF404040);
 
         if (showingWidgetProgress == 0) {
             programmerUnit.renderForeground(x, y, draggingWidget);
@@ -375,13 +420,16 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         y = (int) (y / scale);
 
         if (showingWidgetProgress > 0) {
+            int xRight = getProgrammerBounds().x + getProgrammerBounds().width; // 299 or 649
+            int yBottom = getProgrammerBounds().y + getProgrammerBounds().height; // 171 or 427
+
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             bindGuiTexture();
             int width = oldShowingWidgetProgress + (int) ((showingWidgetProgress - oldShowingWidgetProgress) * partialTicks);
             for (int i = 0; i < width; i++) {
-                drawModalRectWithCustomSizedTexture(xStart + 320 - i, yStart + 36, 323, 36, 1, 136, xSize, ySize);
+                drawModalRectWithCustomSizedTexture(xStart + xRight + 21 - i, yStart + 36, xRight + 24, 36, 1, yBottom - 35, xSize, ySize);
             }
-            drawModalRectWithCustomSizedTexture(xStart + 319 - width, yStart + 36, 319, 36, 2, 136, xSize, ySize);
+            drawModalRectWithCustomSizedTexture(xStart + xRight + 20 - width, yStart + 36, xRight + 20, 36, 2, yBottom - 35, xSize, ySize);
 
             if (showingAllWidgets && draggingWidget != null) toggleShowWidgets();
         }
@@ -692,17 +740,11 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
                 updateVisibleProgWidgets();
                 return;
             case 4:
-                if (++widgetPage > maxPage) widgetPage = 0;
+                if (++widgetPage >= maxPage) widgetPage = 0;
                 updateVisibleProgWidgets();
                 return;
             case 5:
                 programmerUnit.gotoPiece(findWidget(te.progWidgets, ProgWidgetStart.class));
-//                for (IProgWidget widget : te.progWidgets) {
-//                    if (widget instanceof ProgWidgetStart) {
-//                        programmerUnit.gotoPiece(widget);
-//                        break;
-//                    }
-//                }
                 return;
             case 6:
                 if (te.progWidgets.size() > 0) {
@@ -733,7 +775,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
 
     private void toggleShowWidgets() {
         showingAllWidgets = !showingAllWidgets;
-        allWidgetsButton.displayString = showingAllWidgets ? ">" : "<";
+        allWidgetsButton.displayString = showingAllWidgets ? "\u25e2" : "\u25e4";
         updateVisibleProgWidgets();
         filterField.setFocused(showingAllWidgets);
     }
@@ -759,6 +801,11 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
     @Override
     public void updateScreen() {
         super.updateScreen();
+
+        if (te.recentreStartPiece) {
+            programmerUnit.gotoPiece(findWidget(te.progWidgets, ProgWidgetStart.class));
+            te.recentreStartPiece = false;
+        }
 
         undoButton.enabled = te.canUndo;
         redoButton.enabled = te.canRedo;
@@ -823,7 +870,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
                 }
             }
         } else {
-            exportButtonTooltip.add("No programmable item inserted.");
+            exportButtonTooltip.add(TextFormatting.GOLD + "No programmable item inserted.");
         }
 
         if (errors.size() > 0)

@@ -4,10 +4,9 @@ import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.client.AreaShowManager;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.config.ProgWidgetConfig;
 import me.desht.pneumaticcraft.common.item.ItemProgrammingPuzzle;
-import me.desht.pneumaticcraft.common.network.GuiSynced;
-import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketPlaySound;
+import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.progwidgets.IAreaProvider;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.IVariableWidget;
@@ -26,6 +25,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.common.util.Constants.NBT;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
@@ -43,13 +43,16 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
 
     private final ProgrammerItemHandler inventory = new ProgrammerItemHandler();
 
-    //Client side variables that are used to prevent resetting.
+    // Client side variables that are used to prevent resetting.
     public int translatedX, translatedY, zoomState;
     public boolean showInfo = true, showFlow = true;
     @GuiSynced
     public boolean canUndo, canRedo;
     private NBTTagList history = new NBTTagList();//Used to undo/redo.
     private int historyIndex;
+    @DescSynced
+    @LazySynced
+    public boolean recentreStartPiece = false;
 
     public TileEntityProgrammer() {
         saveToHistory();
@@ -68,6 +71,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     public void readFromPacket(NBTTagCompound tag) {
         super.readFromPacket(tag);
         readProgWidgetsFromNBT(tag);
+        recentreStartPiece = tag.getBoolean("recentreStartPiece");
     }
 
     @Override
@@ -88,6 +92,8 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     public void writeToPacket(NBTTagCompound tag) {
         super.writeToPacket(tag);
         writeProgWidgetsToNBT(tag);
+        tag.setBoolean("recentreStartPiece", recentreStartPiece);
+        recentreStartPiece = false;
     }
 
     public void readProgWidgetsFromNBT(NBTTagCompound tag) {
@@ -116,16 +122,16 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     }
 
     private static void getWidgetsFromNBT(NBTTagCompound tag, List<IProgWidget> progWidgets) {
-        NBTTagList widgetTags = tag.getTagList("widgets", 10);
+        NBTTagList widgetTags = tag.getTagList("widgets", NBT.TAG_COMPOUND);
         for (int i = 0; i < widgetTags.tagCount(); i++) {
             NBTTagCompound widgetTag = widgetTags.getCompoundTagAt(i);
             String widgetName = widgetTag.getString("name");
-            for (IProgWidget widget : WidgetRegistrator.registeredWidgets) {
-                if (widgetName.equals(widget.getWidgetString())) { //create the right progWidget for the given id tag.
+            if (!ProgWidgetConfig.blacklistedPieces.contains(widgetName)) {
+                IProgWidget widget = WidgetRegistrator.getWidgetFromName(widgetName);
+                if (widget != null) {
                     IProgWidget addedWidget = widget.copy();
                     addedWidget.readFromNBT(widgetTag);
                     progWidgets.add(addedWidget);
-                    break;
                 }
             }
         }
@@ -213,10 +219,12 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
             case 1:
                 ItemStack stack = inventory.getStackInSlot(PROGRAM_SLOT);
                 NBTTagCompound tag = stack.isEmpty() ? null : stack.getTagCompound();
-                if (tag != null)
+                if (tag != null) {
                     readProgWidgetsFromNBT(tag);
-                else
+                    recentreStartPiece = true;
+                } else {
                     progWidgets.clear();
+                }
                 break;
             case 2:
                 tryProgramDrone(player);
