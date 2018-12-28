@@ -11,7 +11,7 @@ import net.minecraft.util.EnumHandSide;
 public enum LauncherTracker {
     INSTANCE;
 
-    public static final int MAX_PROGRESS = 20; // ticks
+    public static final int MAX_PROGRESS = 15; // ticks
 
     private int launcherProgress = 0;
 
