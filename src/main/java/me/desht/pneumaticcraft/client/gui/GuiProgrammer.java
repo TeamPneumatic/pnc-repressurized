@@ -159,8 +159,8 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         filterField.x = Math.min(guiLeft + getWidgetTrayRight() - 25 - filterField.width, guiLeft + getWidgetTrayRight() - (maxPage * WIDGET_X_SPACING) - 2);
         filterSpawnWidgets();
 
-        if (widgetPage > maxPage) {
-            widgetPage = maxPage;
+        if (widgetPage >= maxPage) {
+            widgetPage = maxPage - 1;
             updateVisibleProgWidgets();
         }
     }
@@ -736,7 +736,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
                 //          redstoneBehaviourStat.closeWindow();
                 break;
             case 3:
-                if (--widgetPage < 0) widgetPage = maxPage;
+                if (--widgetPage < 0) widgetPage = maxPage - 1;
                 updateVisibleProgWidgets();
                 return;
             case 4:
