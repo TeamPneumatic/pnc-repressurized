@@ -1,10 +1,8 @@
 Micromissiles are small hand-launched missiles with an explosive payload and smart mob targeting.
 
-TODO: screenshot
-
 To fire a Micromissile, simply right-click the missile pod.  Each pod has 100 missiles by default, but this can be adjusted in mod config - see I:missilePodSize.
 
-• Micromissiles will seek targets in a 64-block cubic area, centered on the missile.  Once a suitable target (see entity filtering below) is found, the missile will try to turn toward that target.
+• Micromissiles will seek targets within a 24-block spherical radius, centered on the missile.  Once a suitable target (see entity filtering below) is found, the missile will try to turn toward that target.
 • Micromissiles will never target the player who fired the missile or any entity (pets, drones...) belonging to that player. But beware of collateral damage from nearby explosions: micromissiles are not recommended for close quarters combat!
 • Micromissiles can target living entities, minecarts & boats, but will not target item entities (dropped items) or other non-living entities such as paintings.
 • If a Micromissile hits any entity or block, it will immediately explode.
@@ -14,9 +12,29 @@ To fire a Micromissile, simply right-click the missile pod.  Each pod has 100 mi
 
 If you sneak and right-click the pod, a GUI will open allowing configuration of several missile properties:
 
-TODO: gui screenshot
+[image{240, 380, 0.5, pneumaticcraft:textures/wiki/micromissile_gui.png}]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 • The selection triangle allows you to balance between top speed, turn rate and explosion power.
 • Note that a very high top speed coupled with a low turn rate can make it very difficult for missiles to hit moving targets.
+• You can select between 'Smart' and 'Dumb' mode: in Smart mode, missiles will lock on to targets as described above, while in 'Dumb' mode, missiles will simply fly in a straight line until they hit something, but with good speed and damage capability.
 • You can filter which entities to attack by entering an [link{pneumaticcraft:misc/entity_filter}]entity filter[link{}] in the 'Entity Filter' field.
 • The 'Save as Default' button causes the current settings to be saved as default; those settings will then be used for all new missile pods. Note: the settings are saved server-side.
