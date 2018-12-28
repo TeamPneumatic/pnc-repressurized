@@ -6,7 +6,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
-### 0.9.0-??? (unreleased)
+### 0.9.0-310 (28 Dec 2018)
 #### New
 * Major Minigun enhancements!
   * Minigun now has a 4-slot inventory for ammo, saving valuable player inventory slots.  The Minigun will only draw ammo from these slots.
@@ -39,23 +39,25 @@ Changes are in reverse chronological order; newest changes at the top.
   * Other items will be simply fired as item entities
   * Other blocks will be fired as "tumbling block" entities, which try to reform as a block on contact with any other block. This allows torch launching functionality and other remote block placing, for example.
 #### Updates
-* Added a hi-res version of the Programmer GUI, used when the (scaled) resolution is 700x512 or higher.  This hi-res GUI gives a much larger area for programming widgets.
-* The Programmer GUI will now auto-recentre on the Start widget when a program is loaded from an item (drone, network storage) or from Pastebin, or if all widgets are off-screen when the GUI is re-opened.
-* Camo Applicator now shows particle effects when applying/removing camo from a block
+* Programmer GUI improvements:
+  * Added a hi-res version of the GUI, used when the (scaled) resolution is 700x512 or higher.  This hi-res GUI gives a much larger area for programming widgets.
+  * The GUI will now auto-recentre on the Start widget when a program is loaded from an item (drone, network storage) or from Pastebin, or if all widgets are off-screen when the GUI is re-opened.
+  * When the widget tray is open, middle-click can now also be used to open IGW docs for puzzle pieces (pressing 'I' still works, but the filter field has focus when the tray is open so the mouse is more convenient)
 * Entity Filter strings can now be prefixed with a "!" to negate the check (e.g. "!zombie" means "anything except zombies")
 * Entity Filter handling is now a bit more efficient in general (pre-parsing the filter string wherever possible, so less string processing)
-* In Programmer GUI, when the widget tray is open, middle-click can now also be used to open IGW docs for puzzle pieces (pressing 'I' still works, but the filter field has focus when the tray is open so mouse is more convenient)
 * It is now possible to raise or lower the thermal resistance of blocks (e.g. magma, fire, etc) in config - see D:blockThermalResistanceMultiplier. Note that the thermal resistance of fluids is already configurable, via I:fluidThermalResistance.
 * CraftTweaker: it is now possible to add Refinery recipes specifying a minimum temperature at which refining starts, with a new CT method "addRecipe(int minTemp, ILiquidStack input, ILiquidStack[] outputs)" . The existing addRecipe() method still works with a default minimum temp. of 373K.
 * The Pneumatic Chestplate Magnet upgrade now also works on XP orbs.
+* Camo Applicator now shows particle effects when applying/removing camo from a block.
 * Recipes requiring vanilla chests now accepts any oredicted "chestWood" chests.
 #### Fixes
 * Fixed Minigun Drone sync issue: minigun not orienting toward targets and not display bullet traces when firing
-* Fixed problem where players sometimes take damage from jumping with Pneumatic Leggings + Range Upgrade (any fall damage from such a jump is supposed to be cancelled)
+* Fixed bug where players sometimes take damage from jumping with Pneumatic Leggings + Range Upgrade (any fall damage from such a jump is supposed to be cancelled)
 * Fixed Pneumatic Door dropping an item when breaking top half in creative mode
 * Fixed messy block break particles when breaking a Pneumatic Door in survival mode
 * Fixed crash when Pneumatic Door rotation is messed up (by other mods' rotation code)
 * Fixed client crash when opening Refinery GUI while holding certain specific fluid containers.
+* Fixed some missing (black/purple) particle textures for some Assembly machines and the Pressure Chamber wall.
 
 ### 0.8.4-303 (25 Nov 2018)
 #### Updates
