@@ -135,6 +135,8 @@ public class ConfigHandler {
         @Config.RequiresWorldRestart
         @Config.RangeDouble(min = 0.01)
         public double blockThermalResistanceMultiplier = 1.0;
+        @Config.Comment("Jetboots air usage in mL/tick")
+        public int jetbootsAirUsage = PneumaticValues.PNEUMATIC_JET_BOOTS_USAGE;
 
         // deprecated stuff
         @Config.Comment("DEPRECATED: use Minigun / baseDamage")

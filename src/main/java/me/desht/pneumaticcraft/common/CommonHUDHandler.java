@@ -11,6 +11,7 @@ import me.desht.pneumaticcraft.client.render.pneumaticArmor.hacking.HackableHand
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.renderHandler.*;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
+import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.item.ItemMachineUpgrade;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
@@ -334,7 +335,7 @@ public class CommonHUDHandler {
                 player.motionX = lookVec.x;
                 player.motionY = player.onGround ? 0 : lookVec.y;
                 player.motionZ = lookVec.z;
-                jetbootsAirUsage = PneumaticValues.PNEUMATIC_JET_BOOTS_USAGE * jetbootsCount;
+                jetbootsAirUsage = ConfigHandler.general.jetbootsAirUsage * jetbootsCount;
                 jetBootsActiveTicks++;
             } else if (isJetBootsEnabled() && !player.onGround) {
                 // jetboots not firing, but enabled - slowly descend (or hover)
