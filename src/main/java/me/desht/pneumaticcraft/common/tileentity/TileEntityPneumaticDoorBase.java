@@ -23,7 +23,6 @@ import java.util.List;
 
 public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase
         implements IRedstoneControl, IMinWorkingPressure, ICamouflageableTE {
-
     private static final List<String> REDSTONE_LABELS = ImmutableList.of(
             "gui.tab.redstoneBehaviour.pneumaticDoor.button.playerNearby",
             "gui.tab.redstoneBehaviour.pneumaticDoor.button.playerNearbyAndLooking",
@@ -35,7 +34,8 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase
     private TileEntityPneumaticDoor door;
     private TileEntityPneumaticDoorBase doubleDoor;
     @DescSynced
-    private boolean rightGoing;
+    public boolean rightGoing;
+    public float oldProgress;
     @DescSynced
     @LazySynced
     public float progress;
@@ -56,7 +56,7 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase
     @Override
     public void update() {
         super.update();
-        float oldProgress = progress;
+        oldProgress = progress;
         if (!getWorld().isRemote) {
             if (getPressure() >= PneumaticValues.MIN_PRESSURE_PNEUMATIC_DOOR) {
                 if ((getWorld().getTotalWorldTime() & 0x3f) == 0) {
