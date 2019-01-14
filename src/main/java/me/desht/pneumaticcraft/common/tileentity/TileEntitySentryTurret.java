@@ -230,7 +230,11 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
     @Override
     protected void onUpgradesChanged() {
         super.onUpgradesChanged();
-        recalculateRange();
+        if (getWorld() != null) {
+            // this can get called when reading nbt on load when world = null
+            // in that case, range is recalculated in onFirstServerUpdate()
+            recalculateRange();
+        }
     }
 
     private void recalculateRange() {
@@ -338,6 +342,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
         entityFilter = text;
         entitySelector.setFilter(text);
         if (minigun != null) minigun.setAttackTarget(null);
+        markDirty();
     }
 
     @Override

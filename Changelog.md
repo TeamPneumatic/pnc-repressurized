@@ -6,6 +6,13 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
+### 0.9.1-??? (unreleased)
+#### Updates
+* Pneumatic Boots: Jet Boots air usage is now configurable (see 'I:jetBootsAirUsage')
+#### Fixes
+* Fixed Sentry Turrets losing their contents & filters on reload due to crash when reading NBT
+* Pneumatic Door now renders the pneumatic cylinder connecting the door and door base.
+
 ### 0.9.0-310 (28 Dec 2018)
 #### New
 * Major Minigun enhancements!
