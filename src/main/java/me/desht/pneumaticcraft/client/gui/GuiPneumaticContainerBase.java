@@ -125,7 +125,7 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
             pressureStat = this.addAnimatedStat("gui.tab.pressure", new ItemStack(Blockss.PRESSURE_TUBE), 0xFF00AA00, false);
         }
         if (shouldAddProblemTab()) {
-            problemTab = addAnimatedStat("gui.tab.problems", Textures.GUI_PROBLEMS_TEXTURE, 0xFFFF0000, false);
+            problemTab = addAnimatedStat("gui.tab.problems", "", 0xFFA0A0A0, false);
         }
         if (te != null) {
             if (shouldAddInfoTab()) {
@@ -346,33 +346,37 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
             pressureStat.setText(pressureText);
         }
         if (problemTab != null && (Minecraft.getMinecraft().world.getTotalWorldTime() & 0x7) == 0) {
-            List<String> problemText = new ArrayList<>();
-            addProblems(problemText);
-            int nProbs = problemText.size();
-            addWarnings(problemText);
-            int nWarnings = problemText.size() - nProbs;
-            addInformation(problemText);
-            int nInfo = problemText.size() - nWarnings;
-
-            if (nProbs > 0) {
-                problemTab.setTexture(Textures.GUI_PROBLEMS_TEXTURE);
-                problemTab.setTitle("gui.tab.problems");
-                problemTab.setBackGroundColor(0xFFFF0000);
-            } else if (nWarnings > 0) {
-                problemTab.setTexture(Textures.GUI_WARNING_TEXTURE);
-                problemTab.setTitle("gui.tab.problems.warning");
-                problemTab.setBackGroundColor(0xFFC0C000);
-            } else {
-                problemTab.setTexture(Textures.GUI_NO_PROBLEMS_TEXTURE);
-                problemTab.setTitle("gui.tab.problems.noProblems");
-                problemTab.setBackGroundColor(0xFFA0FFA0);
-            }
-            if (problemText.isEmpty()) problemText.add("");
-            problemTab.setText(problemText);
+            handleProblemsTab();
         }
         if (redstoneTab != null) {
             redstoneButton.displayString = I18n.format(te.getRedstoneButtonText(((IRedstoneControl) te).getRedstoneMode()));
         }
+    }
+
+    private void handleProblemsTab() {
+        List<String> problemText = new ArrayList<>();
+        addProblems(problemText);
+        int nProbs = problemText.size();
+        addWarnings(problemText);
+        int nWarnings = problemText.size() - nProbs;
+        addInformation(problemText);
+        int nInfo = problemText.size() - nWarnings;
+
+        if (nProbs > 0) {
+            problemTab.setTexture(Textures.GUI_PROBLEMS_TEXTURE);
+            problemTab.setTitle("gui.tab.problems");
+            problemTab.setBackGroundColor(0xFFFF0000);
+        } else if (nWarnings > 0) {
+            problemTab.setTexture(Textures.GUI_WARNING_TEXTURE);
+            problemTab.setTitle("gui.tab.problems.warning");
+            problemTab.setBackGroundColor(0xFFC0C000);
+        } else {
+            problemTab.setTexture(Textures.GUI_NO_PROBLEMS_TEXTURE);
+            problemTab.setTitle("gui.tab.problems.noProblems");
+            problemTab.setBackGroundColor(0xFFA0FFA0);
+        }
+        if (problemText.isEmpty()) problemText.add("");
+        problemTab.setText(problemText);
     }
 
     @Override
