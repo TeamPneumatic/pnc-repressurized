@@ -267,7 +267,7 @@ public class CommonHUDHandler {
     private void handleScuba(EntityPlayer player, ItemStack armorStack) {
         // checking every 16 ticks
         if (!player.world.isRemote
-                && scubaEnabled
+                && scubaEnabled && getUpgradeCount(EntityEquipmentSlot.HEAD, EnumUpgrade.SCUBA) > 0
                 && getArmorPressure(EntityEquipmentSlot.HEAD) > 0.1f
                 && player.getAir() < 200) {
 

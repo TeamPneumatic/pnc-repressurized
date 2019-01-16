@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.client;
 
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.client.IFOVModifierItem;
+import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.client.gui.GuiUtils;
 import me.desht.pneumaticcraft.client.gui.IExtraGuiHandling;
@@ -510,7 +511,7 @@ public class ClientEventHandler {
         if (event.getState().getMaterial() == Material.WATER && event.getEntity() instanceof EntityPlayer) {
             EntityPlayer player = (EntityPlayer) event.getEntity();
             CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer();
-            if (handler.isArmorReady(EntityEquipmentSlot.HEAD) && handler.isScubaEnabled()) {
+            if (handler.isArmorReady(EntityEquipmentSlot.HEAD) && handler.isScubaEnabled() && handler.getUpgradeCount(EntityEquipmentSlot.HEAD, IItemRegistry.EnumUpgrade.SCUBA) > 0) {
                 event.setDensity(0.02f);
                 event.setCanceled(true);
             }
