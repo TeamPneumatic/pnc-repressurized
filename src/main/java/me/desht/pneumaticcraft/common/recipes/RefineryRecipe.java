@@ -32,6 +32,8 @@ public class RefineryRecipe {
 	public static Optional<RefineryRecipe> getRecipe(Fluid input, int size) {
 		if (input == null || size <= 0) return Optional.empty();
 		
-		return recipes.stream().filter(r -> r.outputs.length <= size && r.input.getFluid().equals(input)).sorted((r1, r2) -> Integer.compare(r2.outputs.length, r1.outputs.length)).findFirst();
+		return recipes.stream()
+				.filter(r -> r.outputs.length <= size && r.input.getFluid().equals(input))
+				.min((r1, r2) -> Integer.compare(r2.outputs.length, r1.outputs.length));
 	}
 }

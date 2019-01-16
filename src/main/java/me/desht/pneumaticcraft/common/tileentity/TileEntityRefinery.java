@@ -84,6 +84,7 @@ public class TileEntityRefinery extends TileEntityTickableBase
 
         if (!getWorld().isRemote && isMaster()) {
             List<TileEntityRefinery> refineries = getRefineries();
+            if (prevRefineryCount != refineries.size()) searchForRecipe = true;
             if (searchForRecipe) {
                 Optional<RefineryRecipe> recipe = RefineryRecipe.getRecipe(inputTank.getFluid() != null ?
                         inputTank.getFluid().getFluid() : null, refineries.size());
