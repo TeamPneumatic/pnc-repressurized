@@ -1,0 +1,16 @@
+{
+  "name": "Advanced PCB",
+  "icon": "pneumaticcraft:advanced_pcb",
+  "category": "tubes",
+  "pages": [
+    {
+      "type": "text",
+      "text": "The $(item)Advanced PCB/$ is a powerful circuit board which you can attach to $(l:tubes/tube_modules)Tube Modules/$ to enhance their functionality in some way. See the pages for individual tube modules for more information on exactly how each module is enhanced."
+    },
+    {
+      "type": "crafting",
+      "text": "Creating an Advanced PCB",
+      "recipe": "pneumaticcraft:advanced_pcb"
+    }
+  ]
+}

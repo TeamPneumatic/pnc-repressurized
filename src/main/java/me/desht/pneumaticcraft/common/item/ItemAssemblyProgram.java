@@ -95,6 +95,10 @@ public class ItemAssemblyProgram extends ItemPneumaticSubtyped {
         return null;
     }
 
+    public static ItemStack getStackForProgramType(int type, int amount) {
+        return new ItemStack(Itemss.ASSEMBLY_PROGRAM, 1, type);
+    }
+
     @Override
     public String getSubtypeModelName(int meta) {
         return "assembly_program" + meta;

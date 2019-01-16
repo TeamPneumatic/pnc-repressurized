@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.google.common.base.CaseFormat;
-import igwmod.api.WikiRegistry;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.client.gui.widget.GuiCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.GuiRadioButton;
@@ -17,9 +16,9 @@ import me.desht.pneumaticcraft.common.network.PacketGuiButton;
 import me.desht.pneumaticcraft.common.network.PacketProgrammerUpdate;
 import me.desht.pneumaticcraft.common.network.PacketUpdateTextfield;
 import me.desht.pneumaticcraft.common.progwidgets.*;
+import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.lib.ModIds;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -37,8 +36,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
@@ -316,7 +313,6 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         int xRight = getProgrammerBounds().x + getProgrammerBounds().width; // 299 or 649
         int yBottom = getProgrammerBounds().y + getProgrammerBounds().height; // 171 or 427
 
-        boolean igwLoaded = Loader.isModLoaded(ModIds.IGWMOD);
         String str = widgetPage + 1 + "/" + maxPage;
         fontRenderer.drawString(str, xRight + (22 - fontRenderer.getStringWidth(str) / 2), yBottom + 4, 0xFF404040);
         fontRenderer.drawString(I18n.format("gui.programmer.difficulty"), xRight - 36, yBottom + 20, 0xFF404040);
@@ -333,8 +329,10 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
                     && (!showingAllWidgets || filteredSpawnWidgets == null || filteredSpawnWidgets.get(i))) {
                 List<String> tooltip = new ArrayList<>();
                 widget.getTooltip(tooltip);
-                if (igwLoaded) tooltip.add(I18n.format(showingAllWidgets ? "gui.programmer.pressIForInfoTrayOpen" :"gui.programmer.pressIForInfo"));
-                if (tooltip.size() > 0) drawHoveringString(tooltip, x - guiLeft, y - guiTop, fontRenderer);
+                ThirdPartyManager.instance().docsProvider.addTooltip(tooltip, showingAllWidgets);
+                if (!tooltip.isEmpty()) {
+                    drawHoveringString(tooltip, x - guiLeft, y - guiTop, fontRenderer);
+                }
             }
         }
 
@@ -348,8 +346,8 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
             return;
         }
 
-        if (Keyboard.KEY_I == keyCode && Loader.isModLoaded(ModIds.IGWMOD)) {
-            onIGWAction();
+        if (Keyboard.KEY_I == keyCode) {
+            showWidgetDocs();
         }
         if (Keyboard.KEY_R == keyCode) {
             if (exportButton.getBounds().contains(lastMouseX, lastMouseY)) {
@@ -374,21 +372,22 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         }
     }
 
-    @Optional.Method(modid = ModIds.IGWMOD)
-    private void onIGWAction() {
+    private void showWidgetDocs() {
         int x = lastMouseX;
         int y = lastMouseY;
 
         IProgWidget hoveredWidget = programmerUnit.getHoveredWidget(x, y);
-        if(hoveredWidget != null) {
-            WikiRegistry.getWikiHooks().showWikiGui("pneumaticcraft:progwidget/" + CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, hoveredWidget.getWidgetString()));
-        }
-
-        for(IProgWidget widget : visibleSpawnWidgets) {
-            if(widget != draggingWidget && x - guiLeft >= widget.getX() && y - guiTop >= widget.getY() && x - guiLeft <= widget.getX() + widget.getWidth() / 2 && y - guiTop <= widget.getY() + widget.getHeight() / 2) {
-                WikiRegistry.getWikiHooks().showWikiGui("pneumaticcraft:progwidget/" + CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, widget.getWidgetString()));
+        ThirdPartyManager.instance().docsProvider.showWidgetDocs(getWidgetId(programmerUnit.getHoveredWidget(x, y)));
+        for (IProgWidget widget : visibleSpawnWidgets) {
+            if (widget != draggingWidget && x - guiLeft >= widget.getX() && y - guiTop >= widget.getY() && x - guiLeft <= widget.getX() + widget.getWidth() / 2 && y - guiTop <= widget.getY() + widget.getHeight() / 2) {
+                ThirdPartyManager.instance().docsProvider.showWidgetDocs(getWidgetId(widget));
             }
         }
+    }
+
+    private String getWidgetId(IProgWidget w) {
+        if (w == null) return null;
+        return CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, w.getWidgetString());
     }
 
     @Override
@@ -554,8 +553,8 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
                 dragWidgetStartY = widget.getY() - (y - guiTop);
                 if (PneumaticCraftRepressurized.proxy.isSneakingInGui()) copyAndConnectConnectingWidgets(widget, draggingWidget);
             }
-        } else if (isMiddleClicking && showingAllWidgets && Loader.isModLoaded(ModIds.IGWMOD)) {
-            onIGWAction();
+        } else if (isMiddleClicking && showingAllWidgets) {
+            showWidgetDocs();
         }
 
         if (!isLeftClicking && !isMiddleClicking && draggingWidget != null) {
@@ -963,7 +962,8 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
                 if (!coordinate.isUsingVariable()) {
                     BlockPos c = coordinate.getCoordinate();
                     String chunkString = "(" + c.getX() + ", " + c.getY() + ", " + c.getZ() + ")";
-                    if (PneumaticCraftUtils.distBetween(c, 0, 0, 0) < 64) { //When the coordinate value is close to 0, there's a low chance it means a position, and rather an offset.
+                    if (PneumaticCraftUtils.distBetween(c, 0, 0, 0) < 64) {
+                        // When the coordinate value is close to 0, there's a low chance it means a position, and rather an offset.
                         if (tooltip != null)
                             tooltip.add(I18n.format("gui.programmer.button.convertToRelative.coordIsNotChangedWarning", chunkString));
                     } else {

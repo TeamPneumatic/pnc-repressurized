@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.api.recipe.IPneumaticRecipeRegistry;
 import me.desht.pneumaticcraft.api.recipe.IPressureChamberRecipe;
 import me.desht.pneumaticcraft.api.recipe.IThermopneumaticProcessingPlantRecipe;
 import me.desht.pneumaticcraft.api.recipe.ItemIngredient;
+import me.desht.pneumaticcraft.common.item.ItemAssemblyProgram;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -36,14 +37,18 @@ public class PneumaticRecipeRegistry implements IPneumaticRecipeRegistry {
     public void addAssemblyDrillRecipe(Object input, Object output) {
         Validate.notNull(input);
         Validate.notNull(output);
-        AssemblyRecipe.drillRecipes.add(new AssemblyRecipe(getStackFromObject(input), getStackFromObject(output)));
+        AssemblyRecipe.drillRecipes.add(new AssemblyRecipe(getStackFromObject(input), getStackFromObject(output),
+                ItemAssemblyProgram.getStackForProgramType(ItemAssemblyProgram.DRILL_DAMAGE, 1))
+        );
     }
 
     @Override
     public void addAssemblyLaserRecipe(Object input, Object output) {
         Validate.notNull(input);
         Validate.notNull(output);
-        AssemblyRecipe.laserRecipes.add(new AssemblyRecipe(getStackFromObject(input), getStackFromObject(output)));
+        AssemblyRecipe.laserRecipes.add(new AssemblyRecipe(getStackFromObject(input), getStackFromObject(output),
+                ItemAssemblyProgram.getStackForProgramType(ItemAssemblyProgram.LASER_DAMAGE, 1))
+        );
     }
 
     @Override

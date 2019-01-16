@@ -1,0 +1,18 @@
+{
+  "name": "Edit Sign Widget",
+  "icon": "pneumaticcraft:textures/items/progwidgets/edit_sign_piece.png",
+  "category": "widget_interact",
+  "pages": [
+    {
+      "type": "text",
+      "text": "This will edit all $(item)Signs/$ and/or $(l:machines/aphorism_tile)Aphorism Tiles/$ in the connected $(l:programming/area)Area/$ to the text specified by the connected $(l:programming/text)Text/$ widget(s).$(p)Each connected $(thing)Text/$ widget represents one line; by connecting multiple $(thing)Text/$ widgets, you can set a multi-line message."
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/items/progwidgets/edit_sign_piece.png"
+      ],
+      "text": "$(italic)Edit Sign Widget/$"
+    }
+  ]
+}

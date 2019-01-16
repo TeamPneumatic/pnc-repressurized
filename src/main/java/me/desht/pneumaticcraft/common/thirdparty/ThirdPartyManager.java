@@ -16,6 +16,7 @@ import me.desht.pneumaticcraft.common.thirdparty.ic2.IC2;
 import me.desht.pneumaticcraft.common.thirdparty.igwmod.IGWMod;
 import me.desht.pneumaticcraft.common.thirdparty.immersiveengineering.ImmersiveEngineering;
 import me.desht.pneumaticcraft.common.thirdparty.immersivepetroleum.ImmersivePetroleum;
+import me.desht.pneumaticcraft.common.thirdparty.patchouli.Patchouli;
 import me.desht.pneumaticcraft.common.thirdparty.thaumcraft.Thaumcraft;
 import me.desht.pneumaticcraft.common.thirdparty.theoneprobe.TheOneProbe;
 import me.desht.pneumaticcraft.common.thirdparty.waila.Waila;
@@ -36,6 +37,7 @@ public class ThirdPartyManager implements IGuiHandler {
     private static final ThirdPartyManager INSTANCE = new ThirdPartyManager();
     private final List<IThirdParty> thirdPartyMods = new ArrayList<>();
     public static boolean computerCraftLoaded;
+    public IDocsProvider docsProvider = new IDocsProvider.NoDocsProvider();
 
     public static ThirdPartyManager instance() {
         return INSTANCE;
@@ -66,6 +68,7 @@ public class ThirdPartyManager implements IGuiHandler {
             thirdPartyClasses.put(ModIds.THAUMCRAFT, Thaumcraft.class);
             thirdPartyClasses.put(ModIds.BOTANIA, Botania.class);
             thirdPartyClasses.put(ModIds.IMMERSIVE_PETROLEUM, ImmersivePetroleum.class);
+            thirdPartyClasses.put(ModIds.PATCHOULI, Patchouli.class);
         } catch (Throwable e) {
             Log.error("A class loader loaded a class where we didn't expect it to do so! Please report, as third party content is broken.");
             e.printStackTrace();

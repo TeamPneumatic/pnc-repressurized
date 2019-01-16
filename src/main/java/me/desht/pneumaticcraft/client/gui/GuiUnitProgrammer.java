@@ -4,7 +4,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetVerticalScrollbar;
 import me.desht.pneumaticcraft.common.progwidgets.IJump;
 import me.desht.pneumaticcraft.common.progwidgets.ILabel;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
-import me.desht.pneumaticcraft.lib.ModIds;
+import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
@@ -13,7 +13,6 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.common.Loader;
 import org.apache.commons.lang3.text.WordUtils;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -126,7 +125,7 @@ public class GuiUnitProgrammer extends GuiScreen {
         if (widget.getOptionWindow(null) != null) {
             tooltip.add(TextFormatting.GOLD + "Right click for options");
         }
-        if (Loader.isModLoaded(ModIds.IGWMOD)) tooltip.add(I18n.format("gui.programmer.pressIForInfo"));
+        ThirdPartyManager.instance().docsProvider.addTooltip(tooltip, false);
     }
 
     public void render(int x, int y, boolean showFlow, boolean showInfo, boolean translate) {

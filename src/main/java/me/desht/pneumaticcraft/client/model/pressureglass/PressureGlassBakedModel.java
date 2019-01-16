@@ -15,11 +15,13 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.model.pipeline.UnpackedBakedQuad;
 import net.minecraftforge.common.model.IModelState;
 import net.minecraftforge.common.property.IExtendedBlockState;
+import net.minecraftforge.common.property.IUnlistedProperty;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 public class PressureGlassBakedModel implements IBakedModel {
@@ -58,8 +60,8 @@ public class PressureGlassBakedModel implements IBakedModel {
         }
     }
 
-    private BakedQuad createQuad(Vec3d v1, Vec3d v2, Vec3d v3, Vec3d v4, TextureAtlasSprite sprite) {
-        Vec3d normal = v3.subtract(v2).crossProduct(v1.subtract(v2)).normalize();
+    private BakedQuad createQuad(Vec3d v1, Vec3d v2, Vec3d v3, Vec3d v4, TextureAtlasSprite sprite, EnumFacing face) {
+        Vec3d normal = new Vec3d(face.getDirectionVec());//v3.subtract(v2).crossProduct(v1.subtract(v2)).normalize();
 
         UnpackedBakedQuad.Builder builder = new UnpackedBakedQuad.Builder(format);
         builder.setTexture(sprite);
@@ -67,6 +69,7 @@ public class PressureGlassBakedModel implements IBakedModel {
         putVertex(builder, normal, v2.x, v2.y, v2.z, sprite, 0, 16);
         putVertex(builder, normal, v3.x, v3.y, v3.z, sprite, 16, 16);
         putVertex(builder, normal, v4.x, v4.y, v4.z, sprite, 16, 0);
+        builder.setQuadOrientation(face);
         return builder.build();
     }
 
@@ -77,46 +80,52 @@ public class PressureGlassBakedModel implements IBakedModel {
         }
 
         IExtendedBlockState extendedBlockState = (IExtendedBlockState) state;
+
         List<BakedQuad> quads = new ArrayList<>();
         switch (side) {
             case DOWN:
-                int down = extendedBlockState.getValue(BlockPressureChamberGlass.DOWN);
+                int down = getSprite(extendedBlockState, BlockPressureChamberGlass.DOWN);
                 quads.add(createQuad(
                         new Vec3d(1, 0, 0), new Vec3d(1, 0, 1),
-                        new Vec3d(0, 0, 1), new Vec3d(0, 0, 0), SPRITES[down]));
+                        new Vec3d(0, 0, 1), new Vec3d(0, 0, 0), SPRITES[down], side));
                 break;
             case UP:
-                int up = extendedBlockState.getValue(BlockPressureChamberGlass.UP);
+                int up = getSprite(extendedBlockState, BlockPressureChamberGlass.UP);
                 quads.add(createQuad(
                         new Vec3d(0, 1, 0), new Vec3d(0, 1, 1),
-                        new Vec3d(1, 1, 1), new Vec3d(1, 1, 0), SPRITES[up]));
+                        new Vec3d(1, 1, 1), new Vec3d(1, 1, 0), SPRITES[up], side));
                 break;
             case NORTH:
-                int north = extendedBlockState.getValue(BlockPressureChamberGlass.NORTH);
+                int north = getSprite(extendedBlockState, BlockPressureChamberGlass.NORTH);
                 quads.add(createQuad(
                         new Vec3d(1, 1, 0), new Vec3d(1, 0, 0),
-                        new Vec3d(0, 0, 0), new Vec3d(0, 1, 0), SPRITES[north]));
+                        new Vec3d(0, 0, 0), new Vec3d(0, 1, 0), SPRITES[north], side));
                 break;
             case SOUTH:
-                int south = extendedBlockState.getValue(BlockPressureChamberGlass.SOUTH);
+                int south = getSprite(extendedBlockState, BlockPressureChamberGlass.SOUTH);
                 quads.add(createQuad(
                         new Vec3d(0, 1, 1), new Vec3d(0, 0, 1),
-                        new Vec3d(1, 0, 1), new Vec3d(1, 1, 1), SPRITES[south]));
+                        new Vec3d(1, 0, 1), new Vec3d(1, 1, 1), SPRITES[south], side));
                 break;
             case WEST:
-                int west = extendedBlockState.getValue(BlockPressureChamberGlass.WEST);
+                int west = getSprite(extendedBlockState, BlockPressureChamberGlass.WEST);
                 quads.add(createQuad(
                         new Vec3d(0, 1, 0), new Vec3d(0, 0, 0),
-                        new Vec3d(0, 0, 1), new Vec3d(0, 1, 1), SPRITES[west]));
+                        new Vec3d(0, 0, 1), new Vec3d(0, 1, 1), SPRITES[west], side));
                 break;
             case EAST:
-                int east = extendedBlockState.getValue(BlockPressureChamberGlass.EAST);
+                int east = getSprite(extendedBlockState, BlockPressureChamberGlass.EAST);
                 quads.add(createQuad(
                         new Vec3d(1, 1, 1), new Vec3d(1, 0, 1),
-                        new Vec3d(1, 0, 0), new Vec3d(1, 1, 0), SPRITES[east]));
+                        new Vec3d(1, 0, 0), new Vec3d(1, 1, 0), SPRITES[east], side));
                 break;
         }
         return quads;
+    }
+
+    private int getSprite(IExtendedBlockState state, IUnlistedProperty<Integer> prop) {
+        Optional<?> op = state.getUnlistedProperties().get(prop);
+        return op != null && op.isPresent() ? prop.getType().cast(op.get()) : 0;
     }
 
     @Override

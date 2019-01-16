@@ -73,9 +73,7 @@ public abstract class AssemblyProgram {
     }
 
     public static AssemblyProgram fromRecipe(AssemblyRecipe recipe) {
-        int meta = AssemblyRecipe.drillRecipes.contains(recipe) ? ItemAssemblyProgram.DRILL_DAMAGE :
-                AssemblyRecipe.laserRecipes.contains(recipe) ? ItemAssemblyProgram.LASER_DAMAGE :
-                        ItemAssemblyProgram.DRILL_LASER_DAMAGE;
+        int meta = recipe.getProgramStack().getMetadata();
         return ItemAssemblyProgram.getProgramFromItem(meta);
     }
 

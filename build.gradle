@@ -39,7 +39,7 @@ repositories {
         url = "http://maven.tterrag.com/"
     }
     maven {
-        name = 'BlameJared - Crafttweaker'
+        name = 'BlameJared - Crafttweaker/Patchouli'
         url = 'http://maven.blamejared.com/'
     }
     maven {
@@ -171,6 +171,7 @@ dependencies {
     compileOnly "vazkii.botania:Botania:${botania_version}"
     compileOnly("appeng:appliedenergistics2:${ae2_version}:api")
     compileOnly "elucent:albedo:${albedo_version}"
+    compileOnly "vazkii.patchouli:Patchouli:${patchouli_version}"
 }
 
 processResources {

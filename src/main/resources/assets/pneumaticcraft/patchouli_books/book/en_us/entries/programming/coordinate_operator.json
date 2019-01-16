@@ -1,0 +1,52 @@
+{
+  "name": "Coordinate Operator Widget",
+  "icon": "pneumaticcraft:textures/items/progwidgets/coordinate_operation_plus_minus.png",
+  "category": "widget_other",
+  "pages": [
+    {
+      "type": "text",
+      "text": "The $(thing)Coordinate Operator/$ widget comes into play when dealing with $(l:programming/coordinate)Coordinates/$ as $(thing)variables/$. $(l:https://youtube.com/watch?v=FIjEdD_Yj9Y)Click here/$ to see a video where these $(thing)variables/$ are explained graphically.$(p)The widget takes all connected $(l:programming/coordinate)Coordinate/$ widgets and performs a certain operation on them, depending on the selected operator. Operations are carried out separately per axis."
+    },
+    {
+      "type": "text",
+      "text": "Available operations are:$(li)$(bold)+ -/$: adds up the widgets connected to the right. Subtracts the widgets on the left.$(li)$(bold)* //$: multiplies the widgets connected to the right. Divides the result by the widgets on the left.$(li)$(bold)Max Min/$: takes the maximum X/Y/Z from the connected widgets on the right, then takes the minimum of the widgets on the left and the maximum that was determined earlier."
+    },
+    {
+      "type": "text",
+      "text": "The end result is stored in a $(thing)variable/$, defined by the name entered in the Coordinate Operator GUI. Using this $(thing)variable/$, you can retrieve this coordinate later. In the $(l:programming/area)Area/$ widget you can, instead of using a GPS coordinate, use a $(thing)variable/$ name.$(p)These $(thing)variables/$ persist across world reloads, so could be used to create an endless mining program, for example, where the Drone's dig position is tracked by a $(thing)variable/$."
+    },
+    {
+      "type": "text",
+      "text": "$(thing)Variables/$ only store coordinates (an X/Y/Z triple). However, if you think about it, you will notice you can work with $(thing)integers/$ and $(thing)booleans/$ too. Just use only one axis for integers, and for booleans, define something like '0' = false, and everything else = true. Have fun!$(p)You can debug a program by showing the value of $(thing)variables/$ using the $(l:programming/rename)Rename/$ widget, writing text with the $(l:programming/edit_sign)Edit Sign/$ widget, or by using a label in a $(l:tools/remote)Remote/$."
+    },
+    {
+      "type": "text",
+      "anchor": "special",
+      "title": "Special Variables",
+      "text": "Apart from user-defined variables, there are a few predefined $(thing)special variables/$. These all are prefixed with '$':$(li)$(thing)$owner/$: the coordinate of the player who owns the $(l:tools/drone)Drone/$. This is 0,0,0 if the owner is not online.$(li)$(thing)$drone/$: gets the coordinate of the drone itself."
+    },
+    {
+      "type": "text",
+      "title": "Special Variables (cont.)",
+      "text": "$(li)$(thing)$player=<playername>/$: Gets the coordinate of the player '<playername>' (case insensitive). E.g. $(thing)$player=MineMaarten/$ will get the coordinate of MineMaarten. This is 0,0,0 if the player does not exist or is not online."
+    },
+    {
+      "type": "text",
+      "anchor": "global",
+      "title": "Global Variables",
+      "text": "$(thing)Global variables/$ are prefixed with '#'. Normal variables are unique per $(l:tools/drone)Drone/$; they can't be shared. Global variables are variables that $(italic)are/$ shared. $(p)This allows Drones to communicate with each other. Additionally, the $(l:machines/universal_sensor)Universal Sensor/$ can look for global variables, and emit a $(#f00)redstone signal/$ based on them."
+    },
+    {
+      "type": "text",
+      "title": "Global Variables (cont.)",
+      "text": "For convenience, $(thing)global variables/$ can be set by using the command $(#800)/setGlobalVariable <varName> <x> <y> <z>/$. This is useful in custom maps or for debugging. Execution of this command is not limited to just Server Ops.$(p)To get the variable state (useful for debugging), use $(#800)/getGlobalVariable <varName>/$. This will get both the coordinate and item value."
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/items/progwidgets/coordinate_operation_plus_minus.png"
+      ],
+      "text": "$(italic)Coordinate Operator Widget/$"
+    }
+  ]
+}

@@ -25,6 +25,7 @@ import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.progwidgets.WidgetRegistrator;
 import me.desht.pneumaticcraft.common.recipes.AmadronOfferManager;
+import me.desht.pneumaticcraft.common.recipes.AssemblyRecipe;
 import me.desht.pneumaticcraft.common.recipes.CraftingHandler;
 import me.desht.pneumaticcraft.common.recipes.CraftingRegistrator;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockInitializer;
@@ -184,7 +185,7 @@ public class PneumaticCraftRepressurized {
     public void postInit(FMLPostInitializationEvent event) {
         // Add these later so we include other mods' storage recipes.
 //         CraftingRegistrator.addPressureChamberStorageBlockRecipes();
-        CraftingRegistrator.addAssemblyCombinedRecipes();
+        AssemblyRecipe.calculateAssemblyChain();
         HeatExchangerManager.getInstance().init();
         FluidFuelManager.registerFuels();
 

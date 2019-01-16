@@ -1,0 +1,27 @@
+{
+  "name": "Heat",
+  "icon": "minecraft:blaze_powder",
+  "category": "base_concepts",
+  "pages": [
+    {
+      "type": "text",
+      "text": "$(pncr) adds a $(thing)heat/$ system. It spreads from block to block similarly to how heat spreads in real-life. It has some similarities with how $(base_concepts/pressure)pressure disperses/$ too:$(li)Heat disperses from hotter objects to colder objects.$(li)Blocks will only spread heat to adjacent blocks that support the concept of heat (see $(l:base_concepts/heat_sources)Heat Sources/$)."
+    },
+    {
+      "type": "text",
+      "text": "$(li)The bigger the temperature difference, the faster the heat dispersal.$(li)Different objects have a different $(thing)thermal resistance/$. $(item)Torches/$ and $(item)Air/$ have a high resistance, while $(l:base_concepts/basic_materials#compressed_iron_block)Compressed Iron Blocks/$ have a very low resistance. $(thing)Thermal resistance/$ determines how fast heat can spread from one object to another."
+    },
+    {
+      "type": "text",
+      "text": "$(li)Different objects have a different $(thing)thermal capacity/$. The higher the capacity, the slower the temperature will rise for the given heat gain. Similarly, the slower the temperature will drop for the given heat loss. In other words, it takes more $(thing)heat/$ to raise the $(thing)temperature/$ of a higher-capacity block, but its temperature will also drop more slowly when it loses heat."
+    },
+    {
+      "type": "text",
+      "text": "Static (i.e. non-machine) blocks can be used to provide or remove heat from machines, and they are $(l:base_concepts/heat_sources)listed here/$. However, due to limitations in the game, and for performance reasons, such blocks and fluids can not track a temperature themselves. Instead, the amount of heat removed or added is tracked by machines adjacent to them. If too much heat is transferred, they will be converted into non-heat-source blocks (commonly $(item)Obsidian/$, $(item)Stone/$, or $(item)Ice/$)."
+    },
+    {
+      "type": "text",
+      "text": "Some machines in $(pncr) produce Heat that needs to be dissipated, and some require Heat to run.$(p)Therefore, you will need to $(l:base_concepts/heat_sources)find ways/$ to manipulate the temperature of these machines..."
+    }
+  ]
+}

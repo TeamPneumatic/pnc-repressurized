@@ -26,8 +26,6 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.items.ItemHandlerHelper;
 
-import java.util.List;
-
 public class CraftingRegistrator {
     @GameRegistry.ObjectHolder("theoneprobe:probe")
     public static final Item ONE_PROBE = null;
@@ -140,22 +138,6 @@ public class CraftingRegistrator {
 
         AssemblyRecipe.addDrillRecipe(new ItemStack(Blockss.COMPRESSED_IRON, 1, 0), new ItemStack(Blockss.PRESSURE_CHAMBER_VALVE, 20, 0));
         AssemblyRecipe.addDrillRecipe(new ItemStack(Items.REDSTONE, 1, 0), new ItemStack(Items.DYE, 5, 1));
-    }
-
-    public static void addAssemblyCombinedRecipes() {
-        calculateAssemblyChain(AssemblyRecipe.drillRecipes, AssemblyRecipe.laserRecipes, AssemblyRecipe.drillLaserRecipes);
-    }
-
-    private static void calculateAssemblyChain(List<AssemblyRecipe> firstRecipeList, List<AssemblyRecipe> secondRecipeList, List<AssemblyRecipe> totalRecipeList) {
-        for (AssemblyRecipe firstRecipe : firstRecipeList) {
-            for (AssemblyRecipe secondRecipe : secondRecipeList) {
-                if (firstRecipe.getOutput().isItemEqual(secondRecipe.getInput()) && firstRecipe.getOutput().getCount() % secondRecipe.getInput().getCount() == 0 && secondRecipe.getOutput().getMaxStackSize() >= secondRecipe.getOutput().getCount() * (firstRecipe.getOutput().getCount() / secondRecipe.getInput().getCount())) {
-                    ItemStack output = secondRecipe.getOutput().copy();
-                    output.setCount(output.getCount() * (firstRecipe.getOutput().getCount() / secondRecipe.getInput().getCount()));
-                    totalRecipeList.add(new AssemblyRecipe(firstRecipe.getInput(), output));
-                }
-            }
-        }
     }
 
     /**

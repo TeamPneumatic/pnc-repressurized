@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.lib;
 
-public class ModIds {
+public class
+ModIds {
     public static final String BUILDCRAFT = "buildcraftcore";
     public static final String COMPUTERCRAFT = "computercraft";
     public static final String INDUSTRIALCRAFT = "ic2";
@@ -21,4 +22,5 @@ public class ModIds {
     public static final String IMMERSIVEENGINEERING = "immersiveengineering";
     public static final String BOTANIA = "botania";
     public static final String IMMERSIVE_PETROLEUM = "immersivepetroleum";
+    public static final String PATCHOULI = "patchouli";
 }
