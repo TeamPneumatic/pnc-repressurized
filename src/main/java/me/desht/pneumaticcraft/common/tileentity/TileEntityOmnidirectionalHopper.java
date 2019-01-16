@@ -6,7 +6,6 @@ import me.desht.pneumaticcraft.common.inventory.ComparatorItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.IOHelper;
-import me.desht.pneumaticcraft.common.util.IOHelper.LocatedItemStack;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -33,15 +32,11 @@ public class TileEntityOmnidirectionalHopper extends TileEntityTickableBase impl
     public int redstoneMode;
     private int cooldown;
     @GuiSynced
-    boolean leaveMaterial;//leave items/liquids (used as filter)
+    int leaveMaterialCount; // leave items/liquids (used as filter)
     private int importSlot = 0;
 
     public TileEntityOmnidirectionalHopper() {
-        this(4);
-    }
-
-    public TileEntityOmnidirectionalHopper(int upgradeSlots) {
-        super(upgradeSlots);
+        super(4);
         addApplicableUpgrade(EnumUpgrade.SPEED);
     }
 
@@ -83,22 +78,19 @@ public class TileEntityOmnidirectionalHopper extends TileEntityTickableBase impl
     }
 
     protected boolean doExport(int maxItems) {
-        EnumFacing dir = getRotation();
-        TileEntity neighbor = getCachedNeighbor(dir);
+        IItemHandler handler = IOHelper.getInventoryForTE(getCachedNeighbor(outputDir), outputDir.getOpposite());
+        if (handler == null) return false;
+
         for (int i = 0; i < inventory.getSlots(); i++) {
             ItemStack stack = inventory.getStackInSlot(i);
-            if (!stack.isEmpty() && (!leaveMaterial || stack.getCount() > 1)) {
-                ItemStack exportedStack = stack.copy();
-                if (leaveMaterial) exportedStack.shrink(1);
-                if (exportedStack.getCount() > maxItems) exportedStack.setCount(maxItems);
-                int count = exportedStack.getCount();
-
-                ItemStack remainder = IOHelper.insert(neighbor, exportedStack, dir.getOpposite(), false);
-                int exportedItems = count - remainder.getCount();
-
-                stack.shrink(exportedItems);
-                if (exportedItems > 0) inventory.invalidateComparatorValue();
-                maxItems -= exportedItems;
+            if (stack.getCount() > leaveMaterialCount) {
+                ItemStack exportedStack = ItemHandlerHelper.copyStackWithSize(stack, Math.min(maxItems, stack.getCount() - leaveMaterialCount));
+                int toExport = exportedStack.getCount();
+                ItemStack excess = ItemHandlerHelper.insertItem(handler, exportedStack, false);
+                int exportedCount = toExport - excess.getCount();
+                stack.shrink(exportedCount);
+                if (exportedCount > 0) inventory.invalidateComparatorValue();
+                maxItems -= exportedCount;
                 if (maxItems <= 0) return true;
             }
         }
@@ -108,29 +100,28 @@ public class TileEntityOmnidirectionalHopper extends TileEntityTickableBase impl
     protected boolean doImport(int maxItems) {
         boolean success = false;
 
+        if (isInventoryFull()) {
+            return false;
+        }
+
         // Suck from input inventory
         IItemHandler handler = IOHelper.getInventoryForTE(getCachedNeighbor(inputDir), inputDir.getOpposite());
         if (handler != null) {
-            if (importSlot >= handler.getSlots()) importSlot = 0;  // in case the inv size changed on us
-            for (int i = 0; i < maxItems; i++) {
-                LocatedItemStack extracted = IOHelper.extractOneItem(handler, importSlot, true);
-                if (!extracted.stack.isEmpty()) {
-                    ItemStack excess = ItemHandlerHelper.insertItem(inventory, extracted.stack, false);
-                    if (excess.isEmpty()) {
-                        // successful import & insertion; look in this slot again next time
-                        handler.extractItem(extracted.slot, 1, false);
-                        importSlot = extracted.slot;
-                        success = true;
-                    } else {
-                        // couldn't insert this item; try the next slot in the input inv next time
-                        if (++importSlot >= handler.getSlots()) importSlot = 0;
-                        break;
+            int remaining = maxItems;
+            for (int i = 0; i < handler.getSlots(); i++) {
+                if (handler.getStackInSlot(i).isEmpty()) continue;
+                ItemStack toExtract = handler.extractItem(i, remaining, true);
+                ItemStack excess = ItemHandlerHelper.insertItemStacked(inventory, toExtract, false);
+                int transferred = toExtract.getCount() - excess.getCount();
+                if (transferred > 0) {
+                    handler.extractItem(i, transferred, false);
+                    remaining -= transferred;
+                    if (remaining <= 0) {
+                        return true;
                     }
-                } else {
-                    // nothing to import; input inv is empty
-                    break;
                 }
             }
+            return remaining < maxItems;
         }
 
         // Suck in item entities
@@ -147,6 +138,16 @@ public class TileEntityOmnidirectionalHopper extends TileEntityTickableBase impl
         }
 
         return success;
+    }
+
+    private boolean isInventoryFull() {
+        for (int i = 0; i < inventory.getSlots(); i++) {
+            ItemStack stack = inventory.getStackInSlot(i);
+            if (stack.isEmpty() || stack.getCount() < stack.getMaxStackSize()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     static List<EntityItem> getNeighborItems(TileEntity te, EnumFacing dir) {
@@ -190,7 +191,7 @@ public class TileEntityOmnidirectionalHopper extends TileEntityTickableBase impl
         tag.setInteger("inputDir", inputDir.ordinal());
         tag.setInteger("outputDir", outputDir.ordinal());
         tag.setInteger("redstoneMode", redstoneMode);
-        tag.setBoolean("leaveMaterial", leaveMaterial);
+        tag.setInteger("leaveMaterialCount", leaveMaterialCount);
         tag.setTag("Items", inventory.serializeNBT());
         return tag;
     }
@@ -201,7 +202,11 @@ public class TileEntityOmnidirectionalHopper extends TileEntityTickableBase impl
         inputDir = EnumFacing.byIndex(tag.getInteger("inputDir"));
         outputDir = EnumFacing.byIndex(tag.getInteger("outputDir"));
         redstoneMode = tag.getInteger("redstoneMode");
-        leaveMaterial = tag.getBoolean("leaveMaterial");
+        if (tag.hasKey("leaveMaterial")) {
+            leaveMaterialCount = (byte)(tag.getBoolean("leaveMaterial") ? 1 : 0);
+        } else {
+            leaveMaterialCount = tag.getInteger("leaveMaterialCount");
+        }
         inventory.deserializeNBT(tag.getCompoundTag("Items"));
     }
 
@@ -219,9 +224,9 @@ public class TileEntityOmnidirectionalHopper extends TileEntityTickableBase impl
             redstoneMode++;
             if (redstoneMode > 2) redstoneMode = 0;
         } else if (buttonID == 1) {
-            leaveMaterial = false;
+            leaveMaterialCount = 0;
         } else if (buttonID == 2) {
-            leaveMaterial = true;
+            leaveMaterialCount = 1;
         }
     }
 
@@ -231,7 +236,7 @@ public class TileEntityOmnidirectionalHopper extends TileEntityTickableBase impl
     }
 
     public boolean doesLeaveMaterial() {
-        return leaveMaterial;
+        return leaveMaterialCount > 0;
     }
 
     @Override

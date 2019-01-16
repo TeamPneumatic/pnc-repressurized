@@ -42,7 +42,8 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
     private final WrappedFluidTank inputWrapper, outputWrapper;
 
     public TileEntityLiquidHopper() {
-        super(4);
+        super();
+
         if (ConfigHandler.machineProperties.liquidHopperDispenser) {
             addApplicableUpgrade(EnumUpgrade.DISPENSER);
         }
@@ -84,7 +85,7 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
             TileEntity neighbor = getCachedNeighbor(dir);
             if (neighbor != null && neighbor.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dir.getOpposite())) {
                 IFluidHandler fluidHandler = neighbor.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dir.getOpposite());
-                int amount = Math.min(maxItems * 100, tank.getFluid().amount - (leaveMaterial ? 1000 : 0));
+                int amount = Math.min(maxItems * 100, tank.getFluid().amount - leaveMaterialCount * 1000);
                 FluidStack transferred = FluidUtil.tryFluidTransfer(fluidHandler, tank, amount, true);
                 return transferred != null && transferred.amount > 0;
             }
