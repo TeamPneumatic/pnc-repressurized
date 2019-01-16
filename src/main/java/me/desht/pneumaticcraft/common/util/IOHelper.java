@@ -32,6 +32,7 @@ import java.util.List;
 /**
  * @author MineMaarten
  * @author Dynious
+ * @author desht
  */
 public class IOHelper {
     public enum ExtractCount {
@@ -49,23 +50,6 @@ public class IOHelper {
         UP_TO
     }
 
-    public static class LocatedItemStack {
-        public final ItemStack stack;
-        public final int slot;
-
-        static final LocatedItemStack NONE = new LocatedItemStack(ItemStack.EMPTY, -1);
-
-        LocatedItemStack(ItemStack stack, int slot) {
-            this.slot = slot;
-            this.stack = stack;
-        }
-
-        @Override
-        public String toString() {
-            return "[ " + stack.toString() + " @ slot " + slot + " ]";
-        }
-    }
-
     public static IItemHandler getInventoryForTE(TileEntity te, EnumFacing facing) {
         if (te != null && te.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing)) {
             return te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing);
@@ -75,10 +59,6 @@ public class IOHelper {
     }
     public static IItemHandler getInventoryForTE(TileEntity te) {
         return getInventoryForTE(te, null);
-    }
-
-    public static TileEntity getNeighbor(TileEntity te, EnumFacing dir) {
-        return te.getWorld().getTileEntity(te.getPos().offset(dir));
     }
 
     /**
@@ -137,21 +117,6 @@ public class IOHelper {
     }
 
     @Nonnull
-    public static LocatedItemStack extractOneItem(IItemHandler handler, int startSlot, boolean simulate) {
-        if (handler != null) {
-            for (int n = 0; n < handler.getSlots(); n++) {
-                int slot = startSlot + n;
-                if (slot >= handler.getSlots()) slot %= handler.getSlots();
-                ItemStack ret = handler.extractItem(slot, 1, simulate);
-                if (!ret.isEmpty()) {
-                    return new LocatedItemStack(ret, slot);
-                }
-            }
-        }
-        return LocatedItemStack.NONE;
-    }
-
-    @Nonnull
     public static ItemStack insert(TileEntity tile, ItemStack itemStack, boolean simulate) {
         ItemStack insertingStack = itemStack.copy();
         for (EnumFacing side : EnumFacing.VALUES) {
@@ -179,24 +144,25 @@ public class IOHelper {
     }
     
     /**
-     * Returns true if succeeded
-     * @param input
-     * @param output
-     * @return
+     * Try to transfer a single item between two item handlers
+     *
+     * @param input the input handler
+     * @param output the output handler
+     * @return true if an item was transferred
      */
-    public static boolean transferOneItem(IItemHandler input, IItemHandler output){
-        if(input == null || output == null) return false;
-        
-        for(int i = 0; i < input.getSlots(); i++){
+    public static boolean transferOneItem(IItemHandler input, IItemHandler output) {
+        if (input == null || output == null) return false;
+
+        for (int i = 0; i < input.getSlots(); i++) {
             ItemStack extracted = input.extractItem(i, 1, true);
-            if(!extracted.isEmpty()){
-                if(ItemHandlerHelper.insertItemStacked(output, extracted, false).isEmpty()){
+            if (!extracted.isEmpty()) {
+                if (ItemHandlerHelper.insertItemStacked(output, extracted, false).isEmpty()) {
                     input.extractItem(i, 1, false);
                     return true;
                 }
             }
         }
-        
+
         return false;
     }
 }
