@@ -2,10 +2,12 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.inventory.ComparatorItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.IOHelper;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -14,6 +16,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EntitySelectors;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -38,6 +41,7 @@ public class TileEntityOmnidirectionalHopper extends TileEntityTickableBase impl
     public TileEntityOmnidirectionalHopper() {
         super(4);
         addApplicableUpgrade(EnumUpgrade.SPEED);
+        if (ConfigHandler.machineProperties.omniHopperDispenser) addApplicableUpgrade(EnumUpgrade.DISPENSER);
     }
 
     protected int getInvSize() {
@@ -79,21 +83,36 @@ public class TileEntityOmnidirectionalHopper extends TileEntityTickableBase impl
 
     protected boolean doExport(int maxItems) {
         IItemHandler handler = IOHelper.getInventoryForTE(getCachedNeighbor(outputDir), outputDir.getOpposite());
-        if (handler == null) return false;
-
-        for (int i = 0; i < inventory.getSlots(); i++) {
-            ItemStack stack = inventory.getStackInSlot(i);
-            if (stack.getCount() > leaveMaterialCount) {
-                ItemStack exportedStack = ItemHandlerHelper.copyStackWithSize(stack, Math.min(maxItems, stack.getCount() - leaveMaterialCount));
-                int toExport = exportedStack.getCount();
-                ItemStack excess = ItemHandlerHelper.insertItem(handler, exportedStack, false);
-                int exportedCount = toExport - excess.getCount();
-                stack.shrink(exportedCount);
-                if (exportedCount > 0) inventory.invalidateComparatorValue();
-                maxItems -= exportedCount;
-                if (maxItems <= 0) return true;
+        if (handler != null) {
+            for (int i = 0; i < inventory.getSlots(); i++) {
+                ItemStack stack = inventory.getStackInSlot(i);
+                if (stack.getCount() > leaveMaterialCount) {
+                    ItemStack exportedStack = ItemHandlerHelper.copyStackWithSize(stack, Math.min(maxItems, stack.getCount() - leaveMaterialCount));
+                    int toExport = exportedStack.getCount();
+                    ItemStack excess = ItemHandlerHelper.insertItem(handler, exportedStack, false);
+                    int exportedCount = toExport - excess.getCount();
+                    stack.shrink(exportedCount);
+                    if (exportedCount > 0) inventory.invalidateComparatorValue();
+                    maxItems -= exportedCount;
+                    if (maxItems <= 0) return true;
+                }
             }
+        } else if (ConfigHandler.machineProperties.omniHopperDispenser && getUpgrades(EnumUpgrade.DISPENSER) > 0) {
+            BlockPos pos = getPos().offset(outputDir);
+            int remaining = maxItems;
+            if (!world.isBlockFullCube(pos)) {
+                for (int i = 0; i < inventory.getSlots(); i++) {
+                    ItemStack stack = inventory.extractItem(i, remaining, false);
+                    if (!stack.isEmpty()) {
+                        remaining -= stack.getCount();
+                        PneumaticCraftUtils.dropItemOnGroundPrecisely(stack, getWorld(), pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
+                        if (remaining <= 0) return true;
+                    }
+                }
+            }
+            return remaining < maxItems;
         }
+
         return false;
     }
 

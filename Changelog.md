@@ -7,11 +7,16 @@ Changes are in reverse chronological order; newest changes at the top.
 ## Minecraft 1.12.2
 
 ### 0.9.1-??? (unreleased)
+#### New
+* A Patchouli (https://minecraft.curseforge.com/projects/patchouli) manual has been added. IGWmod remains supported for now (a decision on future docs directions has yet to made).
 #### Updates
-* Pneumatic Boots: Jet Boots air usage is now configurable (see 'I:jetBootsAirUsage')
-#### Fixes
-* Fixed Sentry Turrets losing their contents & filters on reload due to crash when reading NBT
+* Omnidirectional Hopper can now take a Dispenser Upgrade to auto-eject items into the world at its output side (when there isn't an inventory there); this makes for an excellent replacement for the vanilla Dropper. Can be disabled in config (see 'B:omniHopperDispenser').
+* Omnidirectional Hopper should be more efficient on server CPU usage now when many speed upgrades are installed.
+* Pneumatic Boots: Jet Boots air usage is now configurable (see 'I:jetBootsAirUsage').
 * Pneumatic Door now renders the pneumatic cylinder connecting the door and door base.
+#### Fixes
+* Fixed Sentry Turrets losing their contents & filters on reload due to an exception thrown when reading NBT.
+* Fixed Refinery not running in some situations (failing to search for a recipe), e.g. when placing down a Refinery block which already holds some Oil.
 
 ### 0.9.0-310 (28 Dec 2018)
 #### New

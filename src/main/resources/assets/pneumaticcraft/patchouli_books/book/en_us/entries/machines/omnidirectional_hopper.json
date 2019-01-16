@@ -13,6 +13,12 @@
       "text": "When you place the Hopper, its $(9)input/$ will face toward you, and its $(6)output/$ will face toward the block it was placed against.$(p)$(thing)Right-click/$ the Hopper with a $(l:tools/pneumatic_wrench)Pneumatic Wrench/$ (other wrenches may also work) to re-orient its input. $(thing)Sneak+right-click/$ the Hopper to re-orient its output."
     },
     {
+      "type": "text",
+      "title": "Dispenser Upgrade",
+      "flag": "pneumaticcraft:omniHopperDispenser",
+      "text": "If a $(l:base_concepts/upgrades#dispenser)Dispenser Upgrade/$ is inserted into the $(item)Omnidirectional Hopper/$, it will automatically eject items into the world at the $(6)output/$ side (if there's no inventory there).$(p)This can be used as a greatly improved $(item)Dropper/$: faster, more accurate, and better $(#f00)redstone control/$."
+    },
+    {
       "type": "crafting",
       "text": "Creating an Omnidirectional Hopper",
       "recipe": "pneumaticcraft:omnidirectional_hopper"

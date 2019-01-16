@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.client.gui;
 
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
 import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.inventory.ContainerOmnidirectionalHopper;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityOmnidirectionalHopper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -74,4 +75,10 @@ public class GuiOmnidirectionalHopper extends GuiPneumaticContainerBase<TileEnti
         return textList;
     }
 
+    @Override
+    protected void addExtraUpgradeText(List<String> text) {
+        if (ConfigHandler.machineProperties.omniHopperDispenser) {
+            text.add("gui.tab.upgrades.tile.omnidirectional_hopper.dispenser");
+        }
+    }
 }

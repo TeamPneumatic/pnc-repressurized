@@ -175,9 +175,12 @@ public class ConfigHandler {
         public double speedUpgradeUsageMultiplier = PneumaticValues.DEF_SPEED_UPGRADE_USAGE_MULTIPLIER;
         @Config.Comment("Base chance (1/x) per tick of a lightning strike on/around the Electrostatic Generator")
         public int electrostaticLightningChance = 100000;
-        @Config.Comment("Can the Liquid Dispenser absorb/dispense fluids into the world with a Dispenser Upgrade?")
+        @Config.Comment("Can the Liquid Hopper absorb/dispense fluids into the world with a Dispenser Upgrade?")
         @Config.RequiresWorldRestart
         public boolean liquidHopperDispenser = true;
+        @Config.Comment("Can the Omnidirectional Hopper dispense items into the world with a Dispenser Upgrade?")
+        @Config.RequiresWorldRestart
+        public boolean omniHopperDispenser = true;
         @Config.Comment("Aerial Interface backwards compat: allow pre-0.8.0 behaviour of getting player's armor inventory from top face, even with Dispenser Upgrade installed")
         public boolean aerialInterfaceArmorCompat = true;
     }

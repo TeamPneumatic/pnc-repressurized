@@ -623,7 +623,9 @@ public class PneumaticCraftUtils {
         if (stack.hasTagCompound()) {
             entityItem.getItem().setTagCompound(stack.getTagCompound().copy());
         }
-
+        entityItem.motionX = 0;
+        entityItem.motionY = 0;
+        entityItem.motionZ = 0;
         world.spawnEntity(entityItem);
         stack.setCount(0);
     }

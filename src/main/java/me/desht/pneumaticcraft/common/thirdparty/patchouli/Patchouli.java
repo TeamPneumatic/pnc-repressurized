@@ -96,6 +96,7 @@ public class Patchouli implements IThirdParty, IDocsProvider {
 
     private void setConfigFlags() {
         PatchouliAPI.instance.setConfigFlag(Names.MOD_ID + ":" + "liquidHopperDispenser", ConfigHandler.machineProperties.liquidHopperDispenser);
+        PatchouliAPI.instance.setConfigFlag(Names.MOD_ID + ":" + "omniHopperDispenser", ConfigHandler.machineProperties.omniHopperDispenser);
         PatchouliAPI.instance.setConfigFlag(Names.MOD_ID + ":" + "electricCompressorEnabled", ConfigHandler.recipes.enableElectricCompressorRecipe && Loader.isModLoaded(ModIds.INDUSTRIALCRAFT));
         PatchouliAPI.instance.setConfigFlag(Names.MOD_ID + ":" + "pneumaticGeneratorEnabled", ConfigHandler.recipes.enablePneumaticGeneratorRecipe && Loader.isModLoaded(ModIds.INDUSTRIALCRAFT));
     }
