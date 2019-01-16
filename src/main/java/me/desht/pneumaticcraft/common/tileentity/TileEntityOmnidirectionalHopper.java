@@ -102,7 +102,8 @@ public class TileEntityOmnidirectionalHopper extends TileEntityTickableBase impl
             int remaining = maxItems;
             if (!world.isBlockFullCube(pos)) {
                 for (int i = 0; i < inventory.getSlots(); i++) {
-                    ItemStack stack = inventory.extractItem(i, remaining, false);
+                    ItemStack inSlot = inventory.getStackInSlot(i);
+                    ItemStack stack = inventory.extractItem(i, Math.min(inSlot.getCount() - leaveMaterialCount, remaining), false);
                     if (!stack.isEmpty()) {
                         remaining -= stack.getCount();
                         PneumaticCraftUtils.dropItemOnGroundPrecisely(stack, getWorld(), pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
