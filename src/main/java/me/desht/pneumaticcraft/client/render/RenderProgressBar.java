@@ -9,11 +9,11 @@ import org.lwjgl.opengl.GL11;
 
 public class RenderProgressBar {
 
-    public static void render(double minX, double minY, double maxX, double maxY, double zLevel, int progress) {
-        render(minX, minY, maxX, maxY, zLevel, progress, 0xAA00FF00);
+    public static void render(double minX, double minY, double maxX, double maxY, double zLevel, float progress) {
+        render(minX, minY, maxX, maxY, zLevel, progress, 0xAA37FD12);
     }
 
-    public static void render(double minX, double minY, double maxX, double maxY, double zLevel, int progress, int color) {
+    public static void render(double minX, double minY, double maxX, double maxY, double zLevel, float progress, int color) {
         BufferBuilder wr = Tessellator.getInstance().getBuffer();
         GlStateManager.pushMatrix();
         GlStateManager.enableRescaleNormal();
@@ -26,7 +26,6 @@ public class RenderProgressBar {
         double caseDistance = 0D;
         // draw the bar
         RenderUtils.glColorHex(color);
-//        GlStateManager.color(0, 1, 0, 0.7F);
         wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
         wr.pos(minX + (maxX - minX) * caseDistance, minY + (maxY - minY) * caseDistance, zLevel).endVertex();
         wr.pos(minX + (maxX - minX) * caseDistance, minY + (maxY - minY) * (1D - caseDistance), zLevel).endVertex();

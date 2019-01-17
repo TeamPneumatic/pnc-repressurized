@@ -30,6 +30,11 @@ public class ConfigHandler {
     @Config.Comment("General stuff that doesn't fit anywhere else")
     public static final General general = new General();
 
+    @Config.Name("general")
+    @Config.LangKey("gui.config.category.pneumaticArmor")
+    @Config.Comment("Settings affecting Pneumatic Armor operation (other than helmet HUD settings)")
+    public static final PneumaticArmor pneumaticArmor = new PneumaticArmor();
+
     @Config.Name("machine_properties")
     @Config.LangKey("gui.config.category.machine")
     @Config.Comment("Settings affecting the operation of machines")
@@ -135,14 +140,19 @@ public class ConfigHandler {
         @Config.RequiresWorldRestart
         @Config.RangeDouble(min = 0.01)
         public double blockThermalResistanceMultiplier = 1.0;
-        @Config.Comment("Jetboots air usage in mL/tick")
-        public int jetbootsAirUsage = PneumaticValues.PNEUMATIC_JET_BOOTS_USAGE;
 
         // deprecated stuff
         @Config.Comment("DEPRECATED: use Minigun / baseDamage")
         public double configMinigunDamage = 4.0;
         @Config.Comment("DEPRECATED: use Minigun / potionProcChance")
         public int minigunPotionProcChance = 15;
+    }
+
+    public static class PneumaticArmor {
+        @Config.Comment("Jetboots air usage in mL/tick (per Jet Boots Upgrade)")
+        public int jetbootsAirUsage = PneumaticValues.PNEUMATIC_JET_BOOTS_USAGE;
+        @Config.Comment("Armor base startup time in ticks (before Speed Upgrades)")
+        public int armorStartupTime = 200;
     }
 
     public static class MachineProperties {

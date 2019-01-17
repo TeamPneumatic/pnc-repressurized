@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.client.IKeyListener;
 import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.LauncherTracker;
+import me.desht.pneumaticcraft.client.gui.GuiUtils;
 import me.desht.pneumaticcraft.client.gui.pneumaticHelmet.GuiHelmetMainScreen;
 import me.desht.pneumaticcraft.client.gui.widget.GuiKeybindCheckBox;
 import me.desht.pneumaticcraft.client.render.RenderProgressBar;
@@ -29,6 +30,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.client.FMLClientHandler;
@@ -46,6 +48,8 @@ import java.util.List;
 @SideOnly(Side.CLIENT)
 public class HUDHandler implements IKeyListener {
     private static final int PROGRESS_BAR_HEIGHT = 17;
+
+    private long lastArmorInitSound; // avoid too much sound spam when equipping armor
 
     private final List<ArmorMessage> messageList = new ArrayList<>();
     private final boolean[] gaveEmptyWarning = new boolean[4];  // per-slot
@@ -133,10 +137,10 @@ public class HUDHandler implements IKeyListener {
     }
 
     private void render2D(float partialTicks) {
-        Minecraft minecraft = FMLClientHandler.instance().getClient();
-        EntityPlayer player = minecraft.player;
-        if (minecraft.inGameHasFocus && ItemPneumaticArmor.isPlayerWearingAnyPneumaticArmor(player)) {
-            ScaledResolution sr = new ScaledResolution(minecraft);
+        Minecraft mc = FMLClientHandler.instance().getClient();
+        EntityPlayer player = mc.player;
+        if (mc.inGameHasFocus && ItemPneumaticArmor.isPlayerWearingAnyPneumaticArmor(player)) {
+            ScaledResolution sr = new ScaledResolution(mc);
             GlStateManager.depthMask(false);
             GlStateManager.disableCull();
             GlStateManager.disableTexture2D();
@@ -145,21 +149,36 @@ public class HUDHandler implements IKeyListener {
             GlStateManager.color(0, 1, 0, 0.8F);
             CommonHUDHandler comHudHandler = CommonHUDHandler.getHandlerForPlayer(player);
 
+            boolean anyArmorInInit = false;
             for (EntityEquipmentSlot slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
-                if (!(player.getItemStackFromSlot(slot).getItem() instanceof ItemPneumaticArmor)) continue;
-                if (comHudHandler.getArmorPressure(slot) < 0.0001F) continue;
-                if (!comHudHandler.isArmorReady(slot)) {
+                ItemStack armorStack = player.getItemStackFromSlot(slot);
+                if (armorStack.getItem() instanceof ItemPneumaticArmor && !comHudHandler.isArmorReady(slot)) {
+                    anyArmorInInit = true;
+                    break;
+                }
+            }
+            for (EntityEquipmentSlot slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
+                ItemStack armorStack = player.getItemStackFromSlot(slot);
+                if (!(armorStack.getItem() instanceof ItemPneumaticArmor) || comHudHandler.getArmorPressure(slot) < 0.0001F) {
+                    continue;
+                }
+                if (anyArmorInInit) {
                     // initialization progress bar(s)
                     gaveEmptyWarning[slot.getIndex()] = false;
                     gaveNearlyEmptyWarning[slot.getIndex()] = false;
                     if (comHudHandler.isArmorEnabled()) {
+                        int xLeft = sr.getScaledWidth() / 2;
                         int yOffset = 10 + (3 - slot.getIndex()) * PROGRESS_BAR_HEIGHT;
+                        float progress = comHudHandler.getTicksSinceEquipped(slot) * 100f / comHudHandler.getStartupTime(slot);
+                        progress = Math.min(100, progress + partialTicks);
                         RenderProgressBar.render(sr.getScaledWidth_double() / 2, yOffset,
                                 sr.getScaledWidth() - 10, yOffset + PROGRESS_BAR_HEIGHT - 1, -90F,
-                                comHudHandler.getTicksSinceEquipped(slot) * 100 / comHudHandler.getStartupTime(slot));
+                                progress);
+                        GlStateManager.enableTexture2D();
+                        GuiUtils.drawItemStack(armorStack,xLeft + 2, yOffset);
                     }
-                } else {
-                    ItemStack armorStack = player.getItemStackFromSlot(slot);
+                }
+                if (comHudHandler.isArmorReady(slot)) {
                     String itemName = armorStack.getDisplayName();
                     float pressure = comHudHandler.armorPressure[slot.getIndex()];
                     // low/no pressure warnings
@@ -168,7 +187,7 @@ public class HUDHandler implements IKeyListener {
                         gaveEmptyWarning[slot.getIndex()] = true;
                     }
                     if (pressure > 0.2F && pressure < 0.5F && !gaveNearlyEmptyWarning[slot.getIndex()]) {
-                        addMessage(new ArmorMessage("Your " + itemName + " is almost out of air!", new ArrayList<>(), 60, 0x70FF0000));
+                        addMessage(new ArmorMessage("Your " + itemName + " is almost out of air!", new ArrayList<>(), 60, 0x70FF8000));
                         gaveNearlyEmptyWarning[slot.getIndex()] = true;
                     }
                     // all enabled upgrades do their 2D rendering here
@@ -195,7 +214,7 @@ public class HUDHandler implements IKeyListener {
 
             // render every pending message
             for (ArmorMessage message : messageList) {
-                message.renderMessage(minecraft.fontRenderer, partialTicks);
+                message.renderMessage(mc.fontRenderer, partialTicks);
             }
 
             GlStateManager.popMatrix();
@@ -204,10 +223,11 @@ public class HUDHandler implements IKeyListener {
             GlStateManager.enableTexture2D();
 
             // show armor initialisation percentages
-            if (comHudHandler.isArmorEnabled()) {
+            if (comHudHandler.isArmorEnabled() && anyArmorInInit) {
                 for (EntityEquipmentSlot slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
-                    if (player.getItemStackFromSlot(slot).getItem() instanceof ItemPneumaticArmor && !comHudHandler.isArmorReady(slot) && comHudHandler.getArmorPressure(slot) > 0F) {
-                        minecraft.fontRenderer.drawString(comHudHandler.getTicksSinceEquipped(slot) * 100 / comHudHandler.getStartupTime(slot) + "%", sr.getScaledWidth() * 3 / 4 - 8, 14 + PROGRESS_BAR_HEIGHT * (3 - slot.getIndex()), 0x000000);
+                    if (player.getItemStackFromSlot(slot).getItem() instanceof ItemPneumaticArmor && comHudHandler.getArmorPressure(slot) > 0F) {
+                        String text = Math.min(100, comHudHandler.getTicksSinceEquipped(slot) * 100 / comHudHandler.getStartupTime(slot)) + "%";
+                        mc.fontRenderer.drawStringWithShadow(text, sr.getScaledWidth() * 0.75f - 8, 14 + PROGRESS_BAR_HEIGHT * (3 - slot.getIndex()), 0xFFFF40);
                     }
                 }
             }
@@ -252,22 +272,31 @@ public class HUDHandler implements IKeyListener {
         // Display found/not found message for each possible upgrade
         for (int i = 0; i < renderHandlers.size(); i++) {
             if (comHudHandler.getTicksSinceEquipped(slot) == comHudHandler.getStartupTime(slot) / (renderHandlers.size() + 2) * (i + 1)) {
-                player.world.playSound(player.posX, player.posY, player.posZ, Sounds.HUD_INIT, SoundCategory.PLAYERS, 0.1F, 0.5F + (float) (i + 1) / (renderHandlers.size() + 2) * 0.5F, true);
+                playArmorInitSound(player, Sounds.HUD_INIT, 0.5F + (float) (i + 1) / (renderHandlers.size() + 2) * 0.5F);
                 boolean upgradeEnabled = comHudHandler.isUpgradeRendererInserted(slot, i);
-                addMessage(new ArmorMessage(I18n.format(GuiKeybindCheckBox.UPGRADE_PREFIX + renderHandlers.get(i).getUpgradeName()) + (upgradeEnabled ? " found" : " not installed"), new ArrayList<>(), 80, upgradeEnabled ? 0x7000AA00 : 0x70FF0000));
+                addMessage(new ArmorMessage(I18n.format(GuiKeybindCheckBox.UPGRADE_PREFIX + renderHandlers.get(i).getUpgradeName()) + (upgradeEnabled ? " installed" : " not installed"), new ArrayList<>(), 80, upgradeEnabled ? 0x7000AA00 : 0x70FF8000));
             }
         }
 
-        if (slot == EntityEquipmentSlot.HEAD && comHudHandler.getTicksSinceEquipped(slot) == 1) {
-            player.world.playSound(player.posX, player.posY, player.posZ, Sounds.HUD_INIT, SoundCategory.PLAYERS, 0.1F, 0.5F, true);
-            addMessage(new ArmorMessage("Initializing head-up display...", Collections.emptyList(), 50, 0x7000AA00));
+        ItemStack stack = player.getItemStackFromSlot(slot);
+
+        if (comHudHandler.getTicksSinceEquipped(slot) == 1) {
+            playArmorInitSound(player, Sounds.HUD_INIT, 0.5F);
+            addMessage(new ArmorMessage("Initializing " + stack.getDisplayName() + "...", Collections.emptyList(), 50, 0x7000AA00));
         }
 
         if (comHudHandler.getTicksSinceEquipped(slot) == comHudHandler.getStartupTime(slot)) {
-            player.world.playSound(player.posX, player.posY, player.posZ, Sounds.HUD_INIT_COMPLETE, SoundCategory.PLAYERS, 0.1F, 1.0F, true);
-            ItemStack stack = player.getItemStackFromSlot(slot);
+            playArmorInitSound(player, Sounds.HUD_INIT_COMPLETE, 1.0F);
             addMessage(new ArmorMessage(stack.getDisplayName() + " initialization complete!", Collections.emptyList(), 50, 0x7000AA00));
         }
+    }
+
+    private void playArmorInitSound(EntityPlayer player, SoundEvent sound, float pitch) {
+        long when = player.world.getTotalWorldTime();
+        if (when - lastArmorInitSound >= 30) {
+            player.world.playSound(player.posX, player.posY, player.posZ, sound, SoundCategory.PLAYERS, 0.2F, pitch, true);
+        }
+        lastArmorInitSound = when;
     }
 
     public void addMessage(String title, List<String> message, int duration, int backColor) {

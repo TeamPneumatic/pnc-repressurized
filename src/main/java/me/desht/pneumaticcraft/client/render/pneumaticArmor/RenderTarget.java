@@ -167,7 +167,7 @@ public class RenderTarget {
         float renderSize = oldSize + (size - oldSize) * partialTicks;
         circle1.render(renderSize, partialTicks);
         circle2.render(renderSize + 0.2D, partialTicks);
-        int targetAcquireProgress = (int) ((ticksExisted - 50) / 0.7F);
+        float targetAcquireProgress = ((ticksExisted + partialTicks - 50) / 0.7F);
         if (ticksExisted <= 120 && ticksExisted > 50) {
             GlStateManager.color(0, 1, 0, 0.8F);
             RenderProgressBar.render(0D, 0.4D, 1.8D, 0.9D, 0, targetAcquireProgress);
@@ -192,7 +192,7 @@ public class RenderTarget {
             stat.render(-1, -1, partialTicks);
         } else if (ticksExisted > 50) {
             fontRenderer.drawString("Acquiring Target...", 0, 0, 0x7F7F7F);
-            fontRenderer.drawString(targetAcquireProgress + "%", 37, 28, 0x002F00);
+            fontRenderer.drawString((int)targetAcquireProgress + "%", 37, 28, 0x002F00);
         } else if (ticksExisted < -30) {
             stat.closeWindow();
 

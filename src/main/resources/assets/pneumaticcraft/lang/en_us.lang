@@ -1017,6 +1017,7 @@ pneumaticcraft.chestplate.launcher=Pneumatic Chestplate Launcher
 
 # Config Screen
 gui.config.category.general=General
+gui.config.category.pneumaticArmor=Pneumatic Armor
 gui.config.category.machine=Machine
 gui.config.category.advanced=Advanced
 gui.config.category.recipes=Recipes

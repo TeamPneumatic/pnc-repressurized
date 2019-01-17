@@ -59,7 +59,7 @@ import java.util.*;
 public class CommonHUDHandler {
     private static final CommonHUDHandler clientHandler = new CommonHUDHandler();
     private static final CommonHUDHandler serverHandler = new CommonHUDHandler();
-    private static final UUID OLD_SPEED_IDS[] = {
+    private static final UUID[] OLD_SPEED_IDS = {
             UUID.fromString("6ecaf25b-9619-4fd1-ae4c-c2f1521047d7"),
             UUID.fromString("091a3128-1fa9-4f03-8e30-8848d370caa2"),
             UUID.fromString("8dd25db8-102e-4960-aeb0-36417d200957")
@@ -75,6 +75,7 @@ public class CommonHUDHandler {
     private final int[] ticksSinceEquip = new int[4];
     public final float[] armorPressure = new float[4];
     private final int[][] upgradeMatrix = new int [4][];
+    private final int[] startupTimes = new int[4];
 
     private boolean isValid; // true if the handler is valid; gets invalidated if player disconnects
 
@@ -106,6 +107,7 @@ public class CommonHUDHandler {
             upgradeRenderersEnabled[slot.getIndex()] = new boolean[renderHandlers.size()];
             upgradeMatrix[slot.getIndex()] = new int[EnumUpgrade.values().length];
         }
+        Arrays.fill(startupTimes, 200);
         isValid = true;
     }
 
@@ -335,7 +337,7 @@ public class CommonHUDHandler {
                 player.motionX = lookVec.x;
                 player.motionY = player.onGround ? 0 : lookVec.y;
                 player.motionZ = lookVec.z;
-                jetbootsAirUsage = ConfigHandler.general.jetbootsAirUsage * jetbootsCount;
+                jetbootsAirUsage = ConfigHandler.pneumaticArmor.jetbootsAirUsage * jetbootsCount;
                 jetBootsActiveTicks++;
             } else if (isJetBootsEnabled() && !player.onGround) {
                 // jetboots not firing, but enabled - slowly descend (or hover)
@@ -507,6 +509,7 @@ public class CommonHUDHandler {
                 upgradeMatrix[slot.getIndex()][((ItemMachineUpgrade) stack.getItem()).getUpgradeType().ordinal()] += stack.getCount();
             }
         }
+        startupTimes[slot.getIndex()] = (int) (ConfigHandler.pneumaticArmor.armorStartupTime * Math.pow(0.8, getSpeedFromUpgrades(slot) - 1));
 
         // some slot-specific setup
         switch (slot) {
@@ -590,13 +593,12 @@ public class CommonHUDHandler {
         return true;
     }
 
-    public int getSpeedFromUpgrades() {
-        return 1 + getUpgradeCount(EntityEquipmentSlot.HEAD, EnumUpgrade.SPEED);
+    public int getSpeedFromUpgrades(EntityEquipmentSlot slot) {
+        return 1 + getUpgradeCount(slot, EnumUpgrade.SPEED);
     }
 
     public int getStartupTime(EntityEquipmentSlot slot) {
-        int baseTime = slot == EntityEquipmentSlot.HEAD ? 200 : 100;
-        return baseTime / getSpeedFromUpgrades();
+        return startupTimes[slot.getIndex()];
     }
 
     public void setHackedBlock(WorldAndCoord blockPos) {

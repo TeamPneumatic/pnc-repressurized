@@ -141,7 +141,7 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
             RenderBlockTarget blockTarget = blockTargets.get(i);
 
             boolean wasNegative = blockTarget.ticksExisted < 0;
-            blockTarget.ticksExisted += CommonHUDHandler.getHandlerForPlayer(player).getSpeedFromUpgrades();
+            blockTarget.ticksExisted += CommonHUDHandler.getHandlerForPlayer(player).getSpeedFromUpgrades(EntityEquipmentSlot.HEAD);
             if (blockTarget.ticksExisted >= 0 && wasNegative) blockTarget.ticksExisted = -1;
 
             blockTarget.update();
@@ -236,7 +236,7 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
 
     @Override
     public float getEnergyUsage(int rangeUpgrades, EntityPlayer player) {
-        return PneumaticValues.USAGE_BLOCK_TRACKER * (1 + (float) Math.min(5, rangeUpgrades) * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE / BLOCK_TRACKING_RANGE) * CommonHUDHandler.getHandlerForPlayer(player).getSpeedFromUpgrades();
+        return PneumaticValues.USAGE_BLOCK_TRACKER * (1 + (float) Math.min(5, rangeUpgrades) * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE / BLOCK_TRACKING_RANGE) * CommonHUDHandler.getHandlerForPlayer(player).getSpeedFromUpgrades(EntityEquipmentSlot.HEAD);
     }
 
     @Override

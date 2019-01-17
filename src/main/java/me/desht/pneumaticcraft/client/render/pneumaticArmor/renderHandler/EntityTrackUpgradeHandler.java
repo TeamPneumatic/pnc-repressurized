@@ -108,7 +108,7 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler {
         List<String> text = new ArrayList<>();
         for (RenderTarget target : targets.values()) {
             boolean wasNegative = target.ticksExisted < 0;
-            target.ticksExisted += CommonHUDHandler.getHandlerForPlayer(player).getSpeedFromUpgrades();
+            target.ticksExisted += CommonHUDHandler.getHandlerForPlayer(player).getSpeedFromUpgrades(EntityEquipmentSlot.HEAD);
             if (target.ticksExisted >= 0 && wasNegative) target.ticksExisted = -1;
             target.update();
             if (target.isLookingAtTarget) {
@@ -156,7 +156,7 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler {
 
     @Override
     public float getEnergyUsage(int rangeUpgrades, EntityPlayer player) {
-        return PneumaticValues.USAGE_ENTITY_TRACKER * (1 + (float) Math.min(10, rangeUpgrades) * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE / ENTITY_TRACKING_RANGE) * CommonHUDHandler.getHandlerForPlayer(player).getSpeedFromUpgrades();
+        return PneumaticValues.USAGE_ENTITY_TRACKER * (1 + (float) Math.min(10, rangeUpgrades) * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE / ENTITY_TRACKING_RANGE) * CommonHUDHandler.getHandlerForPlayer(player).getSpeedFromUpgrades(EntityEquipmentSlot.HEAD);
     }
 
     @Override

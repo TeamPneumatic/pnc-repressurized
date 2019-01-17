@@ -168,7 +168,7 @@ public class RenderBlockTarget {
         IBlockState state = world.getBlockState(pos);
         if (!getBlock().isAir(state, world, pos)) arrowRenderer.render(world, pos, partialTicks);
 
-        int targetAcquireProgress = (int) ((ticksExisted - 50) / 0.7F);
+        float targetAcquireProgress = ((ticksExisted + partialTicks - 50) / 0.7F);
         GlStateManager.rotate(180.0F - Minecraft.getMinecraft().getRenderManager().playerViewY, 0.0F, 1.0F, 0.0F);
         GlStateManager.rotate(180.0F - Minecraft.getMinecraft().getRenderManager().playerViewX, 1.0F, 0.0F, 0.0F);
         if (ticksExisted <= 120 && ticksExisted > 50) {

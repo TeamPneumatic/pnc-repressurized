@@ -37,16 +37,17 @@ public enum LauncherTracker {
     }
 
     public void render(ScaledResolution sr, float partialTicks) {
-        int progress = LauncherTracker.INSTANCE.getLauncherProgress() * 100 / LauncherTracker.MAX_PROGRESS;
-        int progress1 = (LauncherTracker.INSTANCE.getLauncherProgress() + 1) * 100 / LauncherTracker.MAX_PROGRESS;
-        int p = Math.min(progress, progress + (int)((progress1 - progress) * partialTicks));
+        float p = Math.min(100f, (launcherProgress + partialTicks) * 100f / LauncherTracker.MAX_PROGRESS);
         GlStateManager.pushMatrix();
         boolean left = Minecraft.getMinecraft().player.getPrimaryHand() == EnumHandSide.LEFT;
         GlStateManager.translate(left ? sr.getScaledWidth() - 30 : 30, sr.getScaledHeight() - 30, -90);
         if (left) GlStateManager.scale(-1, 1, 1);
         GlStateManager.rotate(-60, 0, 0, 1);
-        RenderProgressBar.render(0, 0, sr.getScaledWidth_double() / 6 - 30,
-                12, 0, p, 0xAA00AAAA);
+        int red = 255 - (int) (p * 2.55);
+        int green = (int) (p * 2.55);
+        int blue = p >= 100 ? (int)(partialTicks * 255) : 0;
+        RenderProgressBar.render(0, 0, sr.getScaledWidth_double() / 6 - 30, 12,
+                0, p, 0xAA000000 + (red << 16) + (green << 8) + blue);
         GlStateManager.popMatrix();
     }
 }
