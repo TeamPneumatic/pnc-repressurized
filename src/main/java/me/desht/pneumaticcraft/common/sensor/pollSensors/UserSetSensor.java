@@ -58,6 +58,7 @@ public class UserSetSensor implements IPollSensorSetting {
     @Override
     @SideOnly(Side.CLIENT)
     public void drawAdditionalInfo(FontRenderer fontRenderer) {
+        fontRenderer.drawString("Signal Level", 70, 48, 0x404040);
     }
 
     @Override

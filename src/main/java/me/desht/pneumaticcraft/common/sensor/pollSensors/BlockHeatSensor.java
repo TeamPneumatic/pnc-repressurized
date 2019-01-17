@@ -74,6 +74,7 @@ public class BlockHeatSensor implements IBlockAndCoordinatePollSensor {
     @Override
     @SideOnly(Side.CLIENT)
     public void drawAdditionalInfo(FontRenderer fontRenderer) {
+        fontRenderer.drawString("Temperature", 70, 48, 0x404040);
     }
 
     @Override

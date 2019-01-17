@@ -14,6 +14,7 @@ import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.Item;
@@ -68,21 +69,31 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<TileEntityUniv
 
     @Override
     protected void drawGuiContainerForegroundLayer(int x, int y) {
-
         super.drawGuiContainerForegroundLayer(x, y);
-        if (maxPage > 1) fontRenderer.drawString(page + "/" + maxPage, 110, 46 + 22 * MAX_SENSORS_PER_PAGE, 4210752);
-        fontRenderer.drawString("Upgr.", 23, 98, 4210752);
+
+        if (maxPage > 1) {
+            fontRenderer.drawString(page + "/" + maxPage, 110, 46 + 22 * MAX_SENSORS_PER_PAGE, 0x404040);
+        }
+        fontRenderer.drawString("Upgr.", 23, 98, 0x404040);
 
         String[] folders = te.getSensorSetting().split("/");
-        if (folders.length == 1 && !folders[0].equals("")) {
+        if (folders.length == 1 && !folders[0].isEmpty()) {
             Set<Item> requiredItems = SensorHandler.getInstance().getRequiredStacksFromText(folders[0]);
-            int curX = 102;
+            int curX = 92;
             for (Item requiredItem : requiredItems) {
                 GuiUtils.drawItemStack(new ItemStack(requiredItem), curX, 20);
                 curX += 18;
             }
         } else {
-            fontRenderer.drawString(folders[folders.length - 1], 102, 24, 4210752);
+            int xSpace = xSize - 96;
+            int size = fontRenderer.getStringWidth(folders[folders.length - 1]);
+            GlStateManager.pushMatrix();
+            GlStateManager.translate(92, 24, 0);
+            if (size > xSpace) {
+                GlStateManager.scale((float)xSpace / (float)size, 1, 1);
+            }
+            fontRenderer.drawString(folders[folders.length - 1], 0, 0, 0x4040A0);
+            GlStateManager.popMatrix();
         }
 
         if (Keyboard.isKeyDown(Keyboard.KEY_F1)) {
@@ -104,7 +115,9 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<TileEntityUniv
 
         ISensorSetting sensor = SensorHandler.getInstance().getSensorFromPath(te.getSensorSetting());
         if (sensor != null) {
+            GlStateManager.translate(guiLeft, guiTop, 0);
             sensor.drawAdditionalInfo(fontRenderer);
+            GlStateManager.translate(-guiLeft, -guiTop, 0);
         }
     }
 
@@ -137,7 +150,7 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<TileEntityUniv
         buttonList.clear();
         buttonList.add(redstoneButton);
         if (!te.getSensorSetting().equals("")) {
-            buttonList.add(new GuiButton(1, guiLeft + 70, guiTop + 18, 30, 20, "back"));
+            buttonList.add(new GuiButton(1, guiLeft + 70, guiTop + 18, 20, 20, "\u2b05"));
         } else {
             buttonList.add(new GuiButton(-1, guiLeft + 70, guiTop + 125, 98, 20, I18n.format("gui.universalSensor.button.showRange")));
         }
@@ -146,8 +159,8 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<TileEntityUniv
         if (page > maxPage) page = maxPage;
         if (page < 1) page = 1;
         if (maxPage > 1) {
-            buttonList.add(new GuiButton(2, guiLeft + 70, guiTop + 40 + 22 * MAX_SENSORS_PER_PAGE, 30, 20, "<--"));
-            buttonList.add(new GuiButton(3, guiLeft + 138, guiTop + 40 + 22 * MAX_SENSORS_PER_PAGE, 30, 20, "-->"));
+            buttonList.add(new GuiButton(2, guiLeft + 70, guiTop + 40 + 22 * MAX_SENSORS_PER_PAGE, 30, 20, "\u27f5"));
+            buttonList.add(new GuiButton(3, guiLeft + 138, guiTop + 40 + 22 * MAX_SENSORS_PER_PAGE, 30, 20, "\u27f6"));
         }
 
         int buttonsOnPage = MAX_SENSORS_PER_PAGE;

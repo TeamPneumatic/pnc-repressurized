@@ -285,14 +285,15 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
                     setSensorSetting(getSensorSetting() + "/" + directories[buttonID / 10 - 1]);
                 }
             }
-        } else if (buttonID == 1) {//the 'back' button
-
+        } else if (buttonID == 1) {
+            // the 'back' button
             String[] folders = getSensorSetting().split("/");
             String newPath = getSensorSetting().replace(folders[folders.length - 1], "");
             if (newPath.endsWith("/")) {
                 newPath = newPath.substring(0, newPath.length() - 1);
             }
             setSensorSetting(newPath);
+            setText(0, "");
         } else if (buttonID == 0) {
             invertedRedstone = !invertedRedstone;
             redstoneStrength = 15 - redstoneStrength;

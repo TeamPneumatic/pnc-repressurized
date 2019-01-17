@@ -35,7 +35,7 @@ public class TwitchStreamerSensor implements IPollSensorSetting {
 
     @Override
     public void drawAdditionalInfo(FontRenderer fontRenderer) {
-
+        fontRenderer.drawString("Player Name", 70, 48, 0x404040);
     }
 
     @Override

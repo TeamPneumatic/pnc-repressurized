@@ -57,7 +57,7 @@ public class EntityInRangeSensor extends EntityPollSensor {
     @Override
     @SideOnly(Side.CLIENT)
     public void drawAdditionalInfo(FontRenderer fontRenderer) {
-        fontRenderer.drawString("Entity filter", 195, 48, 4210752);
+        fontRenderer.drawString("Entity filter", 70, 48, 0x404040);
     }
 
     @Override

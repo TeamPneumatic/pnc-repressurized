@@ -73,6 +73,7 @@ public class WorldTicktimeSensor implements IPollSensorSetting {
     @Override
     @SideOnly(Side.CLIENT)
     public void drawAdditionalInfo(FontRenderer fontRenderer) {
+        fontRenderer.drawString("Tick Resolution", 70, 48, 0x404040);
     }
 
     @Override
