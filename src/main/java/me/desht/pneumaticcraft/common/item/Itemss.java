@@ -12,14 +12,21 @@ import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.registries.IForgeRegistry;
 
+import javax.annotation.Nonnull;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -236,6 +243,35 @@ public class Itemss {
     public static class UpgradeList extends ArrayList<Item> {
         public Item get(EnumUpgrade upgrade) {
             return get(upgrade.ordinal());
+        }
+    }
+
+    @SideOnly(Side.CLIENT)
+    @SubscribeEvent
+    public static void registerItemColorHandlers(ColorHandlerEvent.Item event) {
+        event.getItemColors().registerItemColorHandler((stack, tintIndex) -> {
+            if (tintIndex == 1) {
+                return getAmmoColor(stack);
+            }
+            return Color.WHITE.getRGB();
+        }, Itemss.GUN_AMMO, Itemss.GUN_AMMO_INCENDIARY, Itemss.GUN_AMMO_ARMOR_PIERCING, Itemss.GUN_AMMO_EXPLOSIVE, Itemss.GUN_AMMO_WEIGHTED, Itemss.GUN_AMMO_FREEZING);
+
+        event.getItemColors().registerItemColorHandler((stack, tintIndex) -> {
+            int plasticColour = ItemPlastic.getColour(stack);
+            return plasticColour >= 0 ? plasticColour : 0xffffff;
+        }, Itemss.PLASTIC);
+
+        event.getItemColors().registerItemColorHandler((stack, tintIndex) ->
+                tintIndex == 0 ? EnumDyeColor.BLUE.getColorValue() : EnumDyeColor.WHITE.getColorValue(),
+                Item.getItemFromBlock(Blockss.APHORISM_TILE));
+    }
+
+
+    public static int getAmmoColor(@Nonnull ItemStack stack) {
+        if (stack.getItem() instanceof ItemGunAmmo) {
+            return ((ItemGunAmmo) stack.getItem()).getAmmoColor(stack);
+        } else {
+            return 0x00FFFF00;
         }
     }
 }

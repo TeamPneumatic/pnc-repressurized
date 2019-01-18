@@ -18,7 +18,10 @@ import me.desht.pneumaticcraft.common.ai.DroneAIManager.EntityAITaskEntry;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.inventory.ChargeableItemHandler;
-import me.desht.pneumaticcraft.common.item.*;
+import me.desht.pneumaticcraft.common.item.ItemGPSTool;
+import me.desht.pneumaticcraft.common.item.ItemGunAmmo;
+import me.desht.pneumaticcraft.common.item.ItemProgrammingPuzzle;
+import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
@@ -551,7 +554,10 @@ public class EntityDrone extends EntityDroneBase implements
 
     public int getAmmoColor() {
         ItemStack ammo = dataManager.get(AMMO);
-        return ItemColorHandler.getAmmoColor(ammo);
+        if (ammo.getItem() instanceof ItemGunAmmo) {
+            return ((ItemGunAmmo) ammo.getItem()).getAmmoColor(ammo);
+        }
+        return 0x808080;  // shouldn't happen
     }
 
     public void setAmmoColor(ItemStack color) {

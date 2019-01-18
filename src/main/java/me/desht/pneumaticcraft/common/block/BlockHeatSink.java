@@ -81,9 +81,9 @@ public class BlockHeatSink extends BlockPneumaticCraftModeled {
                     entity.setFire(3);
                 }
             } else if (temp < 243) { // -30C
-                int durationSec = (243 - (int)heat.getTemperature()) / 10;
-                int amplifier = (243 - (int) heat.getTemperature()) / 80;
-                ((EntityLivingBase) entity).addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, durationSec * 20, amplifier));
+                int durationTicks = (243 - (int)heat.getTemperature()) * 2;
+                int amplifier = (243 - (int) heat.getTemperature()) / 20;
+                ((EntityLivingBase) entity).addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, durationTicks, amplifier));
                 if (temp < 213) { // -60C
                     entity.attackEntityFrom(DamageSourcePneumaticCraft.FREEZING, 2);
                 }

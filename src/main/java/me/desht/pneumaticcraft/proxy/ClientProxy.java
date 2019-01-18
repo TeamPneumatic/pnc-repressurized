@@ -14,7 +14,6 @@ import me.desht.pneumaticcraft.client.render.pneumaticArmor.entitytracker.Entity
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.renderHandler.CoordTrackUpgradeHandler;
 import me.desht.pneumaticcraft.client.render.tileentity.*;
 import me.desht.pneumaticcraft.client.semiblock.ClientSemiBlockManager;
-import me.desht.pneumaticcraft.common.block.BlockColorHandler;
 import me.desht.pneumaticcraft.common.entity.EntityProgrammableController;
 import me.desht.pneumaticcraft.common.entity.EntityRing;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
@@ -25,7 +24,6 @@ import me.desht.pneumaticcraft.common.entity.projectile.EntityTumblingBlock;
 import me.desht.pneumaticcraft.common.entity.projectile.EntityVortex;
 import me.desht.pneumaticcraft.common.event.HackTickHandler;
 import me.desht.pneumaticcraft.common.fluid.Fluids;
-import me.desht.pneumaticcraft.common.item.ItemColorHandler;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.tileentity.*;
@@ -124,9 +122,6 @@ public class ClientProxy implements IProxy {
         }
 
         ThirdPartyManager.instance().clientInit();
-
-        BlockColorHandler.registerColorHandlers();
-        ItemColorHandler.registerColorHandlers();
 
         Itemss.MINIGUN.setTileEntityItemStackRenderer(new RenderItemMinigun());
     }
