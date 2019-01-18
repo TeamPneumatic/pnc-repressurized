@@ -35,7 +35,6 @@ public class EntityTumblingBlock extends EntityThrowable {
     private static final DataParameter<BlockPos> ORIGIN = EntityDataManager.createKey(EntityTumblingBlock.class, DataSerializers.BLOCK_POS);
     private static final DataParameter<ItemStack> STATE_STACK = EntityDataManager.createKey(EntityTumblingBlock.class, DataSerializers.ITEM_STACK);
     private static FakePlayer fakePlayer;
-    private ItemStack stack = ItemStack.EMPTY;
 
     public EntityTumblingBlock(World worldIn) {
         super(worldIn);
@@ -43,10 +42,8 @@ public class EntityTumblingBlock extends EntityThrowable {
 
     public EntityTumblingBlock(World worldIn, double x, double y, double z, @Nonnull ItemStack stack) {
         super(worldIn);
-
         Validate.isTrue(!stack.isEmpty() && stack.getItem() instanceof ItemBlock);
 
-        this.stack = stack;
         this.preventEntitySpawning = true;
         this.setSize(0.98F, 0.98F);
         this.setPosition(x, y + (double)((1.0F - this.height) / 2.0F), z);
@@ -57,6 +54,7 @@ public class EntityTumblingBlock extends EntityThrowable {
         this.prevPosY = y;
         this.prevPosZ = z;
         this.setOrigin(new BlockPos(this));
+        dataManager.set(STATE_STACK, stack);
     }
 
     @Override
@@ -75,7 +73,7 @@ public class EntityTumblingBlock extends EntityThrowable {
     }
 
     public ItemStack getStack() {
-        return stack;
+        return dataManager.get(STATE_STACK);
     }
 
     @SideOnly(Side.CLIENT)
@@ -89,20 +87,7 @@ public class EntityTumblingBlock extends EntityThrowable {
     }
 
     @Override
-    public void notifyDataManagerChange(DataParameter<?> key) {
-        if (world.isRemote) {
-            if (key == STATE_STACK) {
-                stack = dataManager.get(STATE_STACK);
-            }
-        }
-    }
-
-    @Override
     public void onUpdate() {
-        if (ticksExisted == 1) {
-            dataManager.set(STATE_STACK, stack);
-        }
-
         this.prevPosX = this.posX;
         this.prevPosY = this.posY;
         this.prevPosZ = this.posZ;
@@ -134,6 +119,7 @@ public class EntityTumblingBlock extends EntityThrowable {
         Block b = world.getBlockState(pos0).getBlock();
         BlockPos pos = b.isReplaceable(world, pos0) ? pos0 : pos0.offset(side);
         if (world.getBlockState(pos).getBlock().isReplaceable(world, pos)) {
+            ItemStack stack = dataManager.get(STATE_STACK);
             Block block = ((ItemBlock)stack.getItem()).getBlock();
             EntityPlayer placer = thrower instanceof EntityPlayer ? (EntityPlayer) thrower : getFakePlayer();
             IBlockState newState = block.getStateForPlacement(world, pos, side, 0f, 0f, 0f, stack.getMetadata(), placer, EnumHand.MAIN_HAND);
@@ -144,7 +130,7 @@ public class EntityTumblingBlock extends EntityThrowable {
 
     private void dropAsItem() {
         if (this.world.getGameRules().getBoolean("doEntityDrops")) {
-            entityDropItem(stack.copy(), 0.0F);
+            entityDropItem(dataManager.get(STATE_STACK).copy(), 0.0F);
         }
     }
 
