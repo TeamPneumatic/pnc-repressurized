@@ -1,11 +1,14 @@
 package me.desht.pneumaticcraft.client;
 
+import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.client.render.RenderProgressBar;
+import me.desht.pneumaticcraft.common.CommonHUDHandler;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketChestplateLauncher;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.util.EnumHandSide;
 
 public enum LauncherTracker {
@@ -17,6 +20,14 @@ public enum LauncherTracker {
 
     public int getLauncherProgress() {
         return launcherProgress;
+    }
+
+    public boolean isPlayerOKToLaunch() {
+        if (launcherProgress > 0) return false;
+        CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer();
+        return handler.isArmorReady(EntityEquipmentSlot.CHEST)
+                && handler.getUpgradeCount(EntityEquipmentSlot.CHEST, IItemRegistry.EnumUpgrade.DISPENSER) > 0
+                && handler.getArmorPressure(EntityEquipmentSlot.CHEST) > 0.1f;
     }
 
     public void startCharging() {

@@ -328,9 +328,8 @@ public class HUDHandler implements IKeyListener {
                     && CommonHUDHandler.getHandlerForPlayer().getUpgradeCount(EntityEquipmentSlot.FEET, IItemRegistry.EnumUpgrade.DISPENSER) > 0) {
                 NetworkHandler.sendToServer(new PacketPneumaticKick());
             } else if (key == KeyHandler.getInstance().keybindLauncher
-                    && LauncherTracker.INSTANCE.getLauncherProgress() == 0
                     && !mc.player.getHeldItemOffhand().isEmpty()
-                    && CommonHUDHandler.getHandlerForPlayer().getUpgradeCount(EntityEquipmentSlot.CHEST, IItemRegistry.EnumUpgrade.DISPENSER) > 0) {
+                    && LauncherTracker.INSTANCE.isPlayerOKToLaunch()) {
                 LauncherTracker.INSTANCE.startCharging();
             }
         }
