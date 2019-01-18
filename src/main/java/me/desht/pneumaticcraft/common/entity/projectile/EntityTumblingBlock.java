@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.entity.projectile;
 
 import com.mojang.authlib.GameProfile;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.fakeplayer.FakeNetHandlerPlayerServer;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -122,8 +123,9 @@ public class EntityTumblingBlock extends EntityThrowable {
             ItemStack stack = dataManager.get(STATE_STACK);
             Block block = ((ItemBlock)stack.getItem()).getBlock();
             EntityPlayer placer = thrower instanceof EntityPlayer ? (EntityPlayer) thrower : getFakePlayer();
+
             IBlockState newState = block.getStateForPlacement(world, pos, side, 0f, 0f, 0f, stack.getMetadata(), placer, EnumHand.MAIN_HAND);
-            return world.setBlockState(pos, newState);
+            return PneumaticCraftUtils.tryPlaceBlock(world, pos, placer, side, newState);
         }
         return false;
     }
