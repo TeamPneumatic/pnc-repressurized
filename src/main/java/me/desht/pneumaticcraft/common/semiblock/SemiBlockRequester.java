@@ -372,7 +372,6 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
     public void onRequestChange(ICraftingGrid grid, IAEItemStack aeStack) {
         craftingGrid = grid;
         int freeSlot = -1;
-        System.out.println("onRequestChange(): req=" + grid.requesting(aeStack) + ", aeStack=" + aeStack);
         for (int i = 0; i < getFilters().getSlots(); i++) {
             ItemStack filterStack = getFilters().getStackInSlot(i);
             if (!filterStack.isEmpty()) {
