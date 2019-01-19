@@ -8,15 +8,22 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ### 0.9.1-??? (unreleased)
 #### New
+* NOTICE: If you use Applied Energistics 2, then rv6 is now required.  AE2-rv5 is no longer supported.
 * A Patchouli (https://minecraft.curseforge.com/projects/patchouli) manual has been added. IGWmod remains supported for now (a decision on future docs directions has yet to made).
 #### Updates
 * Omnidirectional Hopper can now take a Dispenser Upgrade to auto-eject items into the world at its output side (when there isn't an inventory there); this makes for an excellent replacement for the vanilla Dropper. Can be disabled in config (see 'B:omniHopperDispenser').
 * Omnidirectional Hopper should be more efficient on server CPU usage now when many speed upgrades are installed.
 * Pneumatic Boots: Jet Boots air usage is now configurable (see 'I:jetBootsAirUsage').
 * Pneumatic Door now renders the pneumatic cylinder connecting the door and door base.
+* Blocks launcher via Chestplate Launcher now respect claim protection (no placing blocks in protected claims by firing them in there - blocks will drop in item form if you try).
+* Pneumatic Armor: Speed Upgrades have a slightly less marked effect on armor start-up time now (start-up time is 200 * 0.8^n ticks, where n is number of installed Speed Upgrades; it used to be 200 / (n+1) ticks).  Also, base start-up time is now configurable (see 'I:armorStartupTime').
+* Universal Sensor GUI has had a minor polish.
 #### Fixes
+* AE2 Integration should be much more reliable now (fixed problems with Logistics Drones sometimes overfetching requests from AE2)
 * Fixed Sentry Turrets losing their contents & filters on reload due to an exception thrown when reading NBT.
 * Fixed Refinery not running in some situations (failing to search for a recipe), e.g. when placing down a Refinery block which already holds some Oil.
+* Fixed blocks launched via Chestplate Launcher not rendering clientside when connected to dedicated server.
+* Fixed bug in Pneumatic Helmet where SCUBA could be usable without a SCUBA upgrade installed.
 
 ### 0.9.0-310 (28 Dec 2018)
 #### New

@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.semiblock;
 
 import com.google.common.collect.HashBiMap;
-import com.google.common.collect.Streams;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -477,7 +476,7 @@ public class SemiBlockManager {
         if (stream == null) {
             return addingStream;
         }else{
-            return Streams.concat(stream, addingStream);
+            return Stream.concat(stream, addingStream);
         }
     }
     
@@ -505,7 +504,7 @@ public class SemiBlockManager {
         
         Stream<List<ISemiBlock>> semiBlocksPerPos = chunkMaps.flatMap(map -> map.values().stream());
         Stream<ISemiBlock> existingSemiBlocksInArea = semiBlocksPerPos.flatMap(Collection::stream);
-        Stream<ISemiBlock> allSemiBlocksInArea = Streams.concat(existingSemiBlocksInArea, addingBlocks.stream());
+        Stream<ISemiBlock> allSemiBlocksInArea = Stream.concat(existingSemiBlocksInArea, addingBlocks.stream());
         return allSemiBlocksInArea.filter(s -> !s.isInvalid() &&
                                                minX <= s.getPos().getX() && s.getPos().getX() <= maxX &&
                                                minY <= s.getPos().getY() && s.getPos().getY() <= maxY &&
