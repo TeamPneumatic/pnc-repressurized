@@ -6,7 +6,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
-### 0.9.1-??? (unreleased)
+### 0.9.1-317 (20 Jan 2019)
 #### New
 * NOTICE: If you use Applied Energistics 2, then rv6 is now required.  AE2-rv5 is no longer supported.
 * A Patchouli (https://minecraft.curseforge.com/projects/patchouli) manual has been added. IGWmod remains supported for now (a decision on future docs directions has yet to made).
