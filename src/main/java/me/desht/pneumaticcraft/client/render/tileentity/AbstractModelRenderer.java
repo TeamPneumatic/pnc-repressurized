@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.render.tileentity;
 
-import me.desht.pneumaticcraft.common.tileentity.TileEntityTickableBase;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
@@ -10,7 +10,7 @@ import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.FMLClientHandler;
 
-public abstract class AbstractModelRenderer<T extends TileEntityTickableBase> extends TileEntitySpecialRenderer<T> {
+public abstract class AbstractModelRenderer<T extends TileEntityBase> extends TileEntitySpecialRenderer<T> {
     abstract ResourceLocation getTexture(T te);
 
     abstract void renderModel(T te, float partialTicks);

@@ -37,9 +37,11 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
     @DescSynced
     @LazySynced
     public int inputProgress;
+    public int oldInputProgress;
     @DescSynced
     @LazySynced
     public int outputProgress;
+    public int oldOutputProgress;
     @GuiSynced
     public EnumInterfaceMode interfaceMode = EnumInterfaceMode.NONE;
     @GuiSynced
@@ -80,6 +82,8 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
 
         boolean wasOpeningI = isOpeningI;
         boolean wasOpeningO = isOpeningO;
+        oldInputProgress = inputProgress;
+        oldOutputProgress = outputProgress;
         TileEntityPressureChamberValve core = getCore();
 
         if (!getWorld().isRemote) {
@@ -142,6 +146,10 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
             getWorld().playSound(getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5, Sounds.INTERFACE_DOOR, SoundCategory.BLOCKS, 0.5F, 1.0F, true);
             soundTimer = 0;
         }
+    }
+
+    public ItemStack getStackInInterface() {
+        return inventory.getStackInSlot(0);
     }
 
     private void exportToInventory() {
