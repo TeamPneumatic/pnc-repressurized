@@ -172,8 +172,7 @@ public class RenderBlockTarget {
         GlStateManager.rotate(180.0F - Minecraft.getMinecraft().getRenderManager().playerViewY, 0.0F, 1.0F, 0.0F);
         GlStateManager.rotate(180.0F - Minecraft.getMinecraft().getRenderManager().playerViewX, 1.0F, 0.0F, 0.0F);
         if (ticksExisted <= 120 && ticksExisted > 50) {
-            GlStateManager.color(0, 1, 0, 0.8F);
-            RenderProgressBar.render(0D, 0.4D, 1.8D, 0.9D, 0, targetAcquireProgress);
+            RenderProgressBar.render(0D, 0.4D, 1.8D, 0.9D, 0, targetAcquireProgress, 0xD0FFFF00, 0xD000FF00);
         }
 
         GlStateManager.enableTexture2D();

@@ -169,8 +169,7 @@ public class RenderTarget {
         circle2.render(renderSize + 0.2D, partialTicks);
         float targetAcquireProgress = ((ticksExisted + partialTicks - 50) / 0.7F);
         if (ticksExisted <= 120 && ticksExisted > 50) {
-            GlStateManager.color(0, 1, 0, 0.8F);
-            RenderProgressBar.render(0D, 0.4D, 1.8D, 0.9D, 0, targetAcquireProgress);
+            RenderProgressBar.render(0D, 0.4D, 1.8D, 0.9D, 0, targetAcquireProgress,  0xD0FFFF00, 0xD000FF00);
         }
 
         GlStateManager.enableTexture2D();
