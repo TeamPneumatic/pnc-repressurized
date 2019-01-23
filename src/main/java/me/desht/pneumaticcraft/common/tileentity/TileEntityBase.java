@@ -700,7 +700,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     }
 
     public class UpgradeCache {
-        private final int upgradeCount[] = new int[IItemRegistry.EnumUpgrade.values().length];
+        private final int[] upgradeCount = new int[IItemRegistry.EnumUpgrade.values().length];
         private Map<String,Integer> customUpgradeCount;
         private final TileEntityBase te;
         private boolean isValid = false;

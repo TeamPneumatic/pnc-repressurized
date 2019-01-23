@@ -338,7 +338,7 @@ public class PneumaticCraftUtils {
                         int oldSize = textList.size();
                         sortCombineItemStacksAndToString(textList, oldInventoryItems.toArray(new ItemStack[0]));
                         for (int i = oldSize; i < textList.size(); i++) {
-                            textList.set(i, ">> " + textList.get(i));
+                            textList.set(i, textList.get(i).replace('\u2022', '\u21b3'));
                         }
                     }
                     oldItemStack = stack;
@@ -355,7 +355,7 @@ public class PneumaticCraftUtils {
                 int oldSize = textList.size();
                 sortCombineItemStacksAndToString(textList, oldInventoryItems.toArray(new ItemStack[0]));
                 for (int i = oldSize; i < textList.size(); i++) {
-                    textList.set(i, ">> " + textList.get(i));
+                    textList.set(i, textList.get(i).replace('\u2022', '\u21b3'));
                 }
             }
         }
