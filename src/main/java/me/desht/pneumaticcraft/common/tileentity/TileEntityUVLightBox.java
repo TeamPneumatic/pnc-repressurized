@@ -1,8 +1,6 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableList;
-import elucent.albedo.lighting.ILightProvider;
-import elucent.albedo.lighting.Light;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.common.block.Blockss;
@@ -26,8 +24,11 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
+//import elucent.albedo.lighting.ILightProvider;
+//import elucent.albedo.lighting.Light;
+
 @Optional.Interface(iface = "elucent.albedo.lighting.ILightProvider", modid = "albedo")
-public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMinWorkingPressure, IRedstoneControl, ILightProvider {
+public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMinWorkingPressure, IRedstoneControl /*,ILightProvider */ {
 
     private static final List<String> REDSTONE_LABELS = ImmutableList.of(
             "gui.tab.redstoneBehaviour.button.never",
@@ -231,6 +232,7 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
         return inventory.getStackInSlot(PCB_SLOT);
     }
 
+    /*
     @Optional.Method(modid = "albedo")
     @Override
     public Light provideLight() {
@@ -242,6 +244,7 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
         }
         return (Light) light;
     }
+    */
 
     private class LightBoxItemHandlerInternal extends FilteredItemStackHandler {
         LightBoxItemHandlerInternal() {
