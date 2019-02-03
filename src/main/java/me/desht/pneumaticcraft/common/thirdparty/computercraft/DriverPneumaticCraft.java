@@ -14,8 +14,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import java.util.List;
-
 /**
  * @author Vexatos
  */
@@ -59,13 +57,14 @@ public class DriverPneumaticCraft extends DriverSidedTileEntity {
             if ("greet".equals(method)) {
                 return new Object[]{String.format("Hello, %s!", args.checkString(0))};
             }
-            List<ILuaMethod> luaMethods = tile.getLuaMethods();
-            for (ILuaMethod m : luaMethods) {
-                if (m.getMethodName().equals(method)) {
-                    return m.call(args.toArray());
-                }
-            }
-            throw new IllegalArgumentException("Can't invoke method with name \"" + method + "\". not registered");
+            return tile.callLuaMethod(method, args.toArray());
+//            List<ILuaMethod> luaMethods = tile.getLuaMethods();
+//            for (ILuaMethod m : luaMethods) {
+//                if (m.getMethodName().equals(method)) {
+//                    return m.call(args.toArray());
+//                }
+//            }
+//            throw new IllegalArgumentException("Can't invoke method with name \"" + method + "\". not registered");
         }
     }
 

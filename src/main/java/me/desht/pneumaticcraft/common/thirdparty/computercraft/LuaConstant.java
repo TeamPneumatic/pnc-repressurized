@@ -8,7 +8,7 @@ public class LuaConstant extends LuaMethod {
 
     private final Object constant;
 
-    public LuaConstant(String methodName, Object constant) {
+    private LuaConstant(String methodName, Object constant) {
         super(methodName);
         this.constant = constant;
     }

@@ -1,7 +1,5 @@
 package me.desht.pneumaticcraft.common.block;
 
-import dan200.computercraft.api.peripheral.IPeripheral;
-import dan200.computercraft.api.peripheral.IPeripheralProvider;
 import mcjty.theoneprobe.api.IProbeHitData;
 import mcjty.theoneprobe.api.IProbeInfo;
 import mcjty.theoneprobe.api.ProbeMode;
@@ -61,8 +59,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-@Optional.Interface(iface = "dan200.computercraft.api.peripheral.IPeripheralProvider", modid = ModIds.COMPUTERCRAFT)
-public abstract class BlockPneumaticCraft extends Block implements IPneumaticWrenchable, IUpgradeAcceptor, IPeripheralProvider, ITOPInfoProvider {
+public abstract class BlockPneumaticCraft extends Block implements IPneumaticWrenchable, IUpgradeAcceptor, ITOPInfoProvider {
     public static final PropertyEnum<EnumFacing> ROTATION = PropertyEnum.create("facing", EnumFacing.class);
     public static final PropertyBool UP = PropertyBool.create("up");
     public static final PropertyBool DOWN = PropertyBool.create("down");
@@ -308,19 +305,6 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
                 ((TileEntityBase) te).onNeighborBlockUpdate();
             }
         }
-    }
-
-    /**
-     * Produce an peripheral implementation from a block location.
-     *
-     * @return a peripheral, or null if there is not a peripheral here you'd like to handle.
-     * @see dan200.computercraft.api.ComputerCraftAPI#registerPeripheralProvider(IPeripheralProvider)
-     */
-    @Override
-    @Optional.Method(modid = ModIds.COMPUTERCRAFT)
-    public IPeripheral getPeripheral(World world, BlockPos pos, EnumFacing side) {
-        TileEntity te = world.getTileEntity(pos);
-        return te instanceof IPeripheral ? (IPeripheral) te : null;
     }
 
     @SideOnly(Side.CLIENT)

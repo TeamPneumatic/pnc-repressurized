@@ -399,7 +399,7 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
                 return;
             }
         }
-        throw new IllegalArgumentException("Invalid operator: \"" + operator + "\". Valid operators are: \">=\" and \"=\"");
+        throw new IllegalArgumentException("Invalid operator: '" + operator + "'. Valid operators are: '<=', '=', '>='");
     }
 
     @Override

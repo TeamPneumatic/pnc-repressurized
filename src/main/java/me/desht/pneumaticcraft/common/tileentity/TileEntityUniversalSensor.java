@@ -18,8 +18,8 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketRenderRangeLines;
 import me.desht.pneumaticcraft.common.sensor.SensorHandler;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
-import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaConstant;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethod;
+import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethodRegistry;
 import me.desht.pneumaticcraft.common.util.GlobalTileEntityCacheManager;
 import me.desht.pneumaticcraft.lib.ModIds;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -42,16 +42,17 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-public class TileEntityUniversalSensor extends TileEntityPneumaticBase implements IRangeLineShower,
-        IGUITextFieldSensitive, IMinWorkingPressure, IRedstoneControl {
+public class TileEntityUniversalSensor extends TileEntityPneumaticBase
+        implements IRangeLineShower, IGUITextFieldSensitive, IMinWorkingPressure, IRedstoneControl {
 
     private static final List<String> REDSTONE_LABELS = ImmutableList.of(
             "gui.tab.redstoneBehaviour.universalSensor.button.normal",
             "gui.tab.redstoneBehaviour.universalSensor.button.inverted"
     );
 
-    public static final int INVENTORY_SIZE = 4;
+    private static final int INVENTORY_SIZE = 4;
 
     @DescSynced
     public final boolean[] sidesConnected = new boolean[6];
@@ -76,7 +77,9 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
     private int oldSensorRange; // range used by the range line renderer, to figure out if the range has been changed.
     private final RenderRangeLines rangeLineRenderer = new RenderRangeLines(0x330000FF);
 
-    private final List<IComputerAccess> attachedComputers = new ArrayList<>(); // keep track of the computers so we can raise a os.pullevent.
+    // keep track of the computers so we can raise a os.pullevent.
+    private final CopyOnWriteArrayList<IComputerAccess> attachedComputers = new CopyOnWriteArrayList<>();
+
     @DescSynced
     public String lastSensorError = "";
 
@@ -158,7 +161,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
         updateConnections();
     }
 
-    public void updateConnections() {
+    private void updateConnections() {
         List<Pair<EnumFacing, IAirHandler>> connections = getAirHandler(null).getConnectedPneumatics();
         Arrays.fill(sidesConnected, false);
         for (Pair<EnumFacing, IAirHandler> entry : connections) {
@@ -386,23 +389,21 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
     }
 
     @Override
-    public void addLuaMethods() {
-        super.addLuaMethods();
+    public void addLuaMethods(LuaMethodRegistry registry) {
+        super.addLuaMethods(registry);
 
-        luaMethods.add(new LuaMethod("getSensorNames") {
+        registry.registerLuaMethod(new LuaMethod("getSensorNames") {
             @Override
-            public Object[] call(Object[] args) throws Exception {
-                if (args.length == 0) {
-                    return SensorHandler.getInstance().getSensorNames();
-                } else {
-                    throw new IllegalArgumentException("getSensorNames doesn't accept any arguments!");
-                }
+            public Object[] call(Object[] args) {
+                requireNoArgs(args);
+                return SensorHandler.getInstance().getSensorNames();
             }
         });
 
-        luaMethods.add(new LuaMethod("setSensor") {
+        registry.registerLuaMethod(new LuaMethod("setSensor") {
             @Override
-            public Object[] call(Object[] args) throws Exception {
+            public Object[] call(Object[] args) {
+                requireArgs(args, 0, 1, "sensor_name?");
                 if (args.length == 1) {
                     ISensorSetting sensor;
                     if (args[0] instanceof String) {
@@ -412,116 +413,92 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
                     }
                     if (sensor != null) return new Object[]{setSensorSetting(sensor)};
                     throw new IllegalArgumentException("Invalid sensor name/index: " + args[0]);
-                } else if (args.length == 0) {
+                } else {
                     setSensorSetting("");
                     return new Object[]{true};
-                } else {
-                    throw new IllegalArgumentException("setSensor needs one argument(a number as index, or a sensor name).");
                 }
             }
         });
 
-        luaMethods.add(new LuaMethod("getSensor") {
+        registry.registerLuaMethod(new LuaMethod("getSensor") {
             @Override
-            public Object[] call(Object[] args) throws Exception {
-                if (args.length == 0) {
-                    ISensorSetting curSensor = SensorHandler.getInstance().getSensorFromPath(getSensorSetting());
-                    return curSensor == null ? null : new Object[]{getSensorSetting().substring(getSensorSetting().lastIndexOf('/') + 1)};
+            public Object[] call(Object[] args) {
+                requireNoArgs(args);
+                ISensorSetting curSensor = SensorHandler.getInstance().getSensorFromPath(getSensorSetting());
+                return curSensor == null ? null : new Object[]{getSensorSetting().substring(getSensorSetting().lastIndexOf('/') + 1)};
+            }
+        });
+
+        registry.registerLuaMethod(new LuaMethod("setTextfield") {
+            @Override
+            public Object[] call(Object[] args) {
+                requireArgs(args, 1, "textfield_value");
+                setText(0, (String) args[0]);
+                return null;
+            }
+        });
+
+        registry.registerLuaMethod(new LuaMethod("getTextfield") {
+            @Override
+            public Object[] call(Object[] args) {
+                requireNoArgs(args);
+                return new Object[]{getText(0)};
+            }
+        });
+
+        registry.registerLuaMethod(new LuaMethod("isSensorEventBased") {
+            @Override
+            public Object[] call(Object[] args) {
+                requireNoArgs(args);
+                return new Object[]{SensorHandler.getInstance().getSensorFromPath(getSensorSetting()) instanceof IEventSensorSetting};
+            }
+        });
+
+        registry.registerLuaMethod(new LuaMethod("getSensorValue") {
+            @Override
+            public Object[] call(Object[] args) {
+                requireNoArgs(args);
+                ISensorSetting s = SensorHandler.getInstance().getSensorFromPath(getSensorSetting());
+                if (s instanceof IPollSensorSetting) {
+                    requestPollPullEvent = true;
+                    return new Object[]{redstoneStrength};
+                } else if (s != null) {
+                    throw new IllegalArgumentException("The selected sensor is pull event based. You can't poll the value.");
                 } else {
-                    throw new IllegalArgumentException("getSensor doesn't take any arguments!");
+                    throw new IllegalArgumentException("There's no sensor selected!");
                 }
             }
         });
 
-        luaMethods.add(new LuaMethod("setTextfield") {
+        registry.registerLuaMethod(new LuaMethod("setGPSToolCoordinate") {
             @Override
-            public Object[] call(Object[] args) throws Exception {
-                if (args.length == 1) {
-                    setText(0, (String) args[0]);
+            public Object[] call(Object[] args) {
+                requireArgs(args, 4, "slot, x, y, z");
+                ItemStack stack = upgradeHandler.getStackInSlot(((Double) args[0]).intValue() - 1); //minus one, as lua is 1-oriented.
+                if (stack.getItem() == Itemss.GPS_TOOL) {
+                    ItemGPSTool.setGPSLocation(stack, new BlockPos((Double) args[1], (Double) args[2], (Double) args[3]));
+                    return new Object[]{true};
+                } else {
+                    return new Object[]{false};
+                }
+            }
+
+        });
+
+        registry.registerLuaMethod(new LuaMethod("getGPSToolCoordinate") {
+            @Override
+            public Object[] call(Object[] args) {
+                requireArgs(args, 1, "upgrade_slot");
+                ItemStack stack = upgradeHandler.getStackInSlot(((Double) args[0]).intValue() - 1); //minus one, as lua is 1-oriented.
+                if (stack.getItem() == Itemss.GPS_TOOL) {
+                    BlockPos pos = ItemGPSTool.getGPSLocation(stack);
+                    if (pos != null) {
+                        return new Object[]{pos.getX(), pos.getY(), pos.getZ()};
+                    } else {
+                        return new Object[]{0, 0, 0};
+                    }
+                } else {
                     return null;
-                } else {
-                    throw new IllegalArgumentException("setTextfield takes one argument (string)");
-                }
-            }
-        });
-
-        luaMethods.add(new LuaMethod("getTextfield") {
-            @Override
-            public Object[] call(Object[] args) throws Exception {
-                if (args.length == 0) {
-                    return new Object[]{getText(0)};
-                } else {
-                    throw new IllegalArgumentException("getTextfield takes no arguments");
-                }
-            }
-        });
-
-        luaMethods.add(new LuaMethod("isSensorEventBased") {
-            @Override
-            public Object[] call(Object[] args) throws Exception {
-                if (args.length == 0) {
-                    return new Object[]{SensorHandler.getInstance().getSensorFromPath(getSensorSetting()) instanceof IEventSensorSetting};
-                } else {
-                    throw new IllegalArgumentException("isSensorEventBased takes no arguments");
-                }
-            }
-        });
-
-        luaMethods.add(new LuaMethod("getSensorValue") {
-            @Override
-            public Object[] call(Object[] args) throws Exception {
-                if (args.length == 0) {
-                    ISensorSetting s = SensorHandler.getInstance().getSensorFromPath(getSensorSetting());
-                    if (s instanceof IPollSensorSetting) {
-                        requestPollPullEvent = true;
-                        return new Object[]{redstoneStrength};
-                    } else if (s != null) {
-                        throw new IllegalArgumentException("The selected sensor is pull event based. You can't poll the value.");
-                    } else {
-                        throw new IllegalArgumentException("There's no sensor selected!");
-                    }
-                } else {
-                    throw new IllegalArgumentException("getSensorValue takes no arguments");
-                }
-            }
-        });
-        luaMethods.add(new LuaConstant("getMinWorkingPressure", PneumaticValues.MIN_PRESSURE_UNIVERSAL_SENSOR));
-
-        luaMethods.add(new LuaMethod("setGPSToolCoordinate") {
-            @Override
-            public Object[] call(Object[] args) throws Exception {
-                if (args.length == 4) {
-                    ItemStack stack = upgradeHandler.getStackInSlot(((Double) args[0]).intValue() - 1); //minus one, as lua is 1-oriented.
-                    if (stack.getItem() == Itemss.GPS_TOOL) {
-                        ItemGPSTool.setGPSLocation(stack, new BlockPos((Double) args[1], (Double) args[2], (Double) args[3]));
-                        return new Object[]{true};
-                    } else {
-                        return new Object[]{false};
-                    }
-                } else {
-                    throw new IllegalArgumentException("setGPSToolCoordinate needs 4 arguments: slot, x, y, z");
-                }
-            }
-
-        });
-
-        luaMethods.add(new LuaMethod("getGPSToolCoordinate") {
-            @Override
-            public Object[] call(Object[] args) throws Exception {
-                if (args.length == 1) {
-                    ItemStack stack = upgradeHandler.getStackInSlot(((Double) args[0]).intValue() - 1); //minus one, as lua is 1-oriented.
-                    if (stack.getItem() == Itemss.GPS_TOOL) {
-                        BlockPos pos = ItemGPSTool.getGPSLocation(stack);
-                        if (pos != null) {
-                            return new Object[]{pos.getX(), pos.getY(), pos.getZ()};
-                        } else {
-                            return new Object[]{0, 0, 0};
-                        }
-                    } else {
-                        return null;
-                    }
-                } else {
-                    throw new IllegalArgumentException("setGPSToolCoordinate needs 1 argument: slot");
                 }
             }
         });
@@ -546,7 +523,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
      */
     @Optional.Method(modid = ModIds.COMPUTERCRAFT)
     private void notifyComputers(Object... arguments) {
-        for(IComputerAccess computer : attachedComputers) {
+        for (IComputerAccess computer : attachedComputers) {
             computer.queueEvent(getType(), arguments);
         }
     }

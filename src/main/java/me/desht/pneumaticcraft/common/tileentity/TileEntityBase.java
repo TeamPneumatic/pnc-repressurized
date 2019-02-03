@@ -17,8 +17,8 @@ import me.desht.pneumaticcraft.common.inventory.SyncedField;
 import me.desht.pneumaticcraft.common.item.ItemMachineUpgrade;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.*;
-import me.desht.pneumaticcraft.common.thirdparty.computercraft.ILuaMethod;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethod;
+import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethodRegistry;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.TileEntityCache;
 import me.desht.pneumaticcraft.lib.ModIds;
@@ -51,7 +51,9 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 import javax.annotation.Nullable;
 import java.util.*;
 
-@Optional.InterfaceList({@Optional.Interface(iface = "dan200.computercraft.api.peripheral.IPeripheral", modid = ModIds.COMPUTERCRAFT)})
+@Optional.InterfaceList({
+        @Optional.Interface(iface = "dan200.computercraft.api.peripheral.IPeripheral", modid = ModIds.COMPUTERCRAFT)
+})
 public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, IDescSynced, IUpgradeAcceptor, IPeripheral {
     private static final List<String> REDSTONE_LABELS = ImmutableList.of(
             "gui.tab.redstoneBehaviour.button.anySignal",
@@ -62,11 +64,11 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     private final Set<Item> applicableUpgrades = new HashSet<>();
     private final Set<String> applicableCustomUpgrades = new HashSet<>();
     private final UpgradeCache upgradeCache = new UpgradeCache(this);
+
     @DescSynced
     UpgradeHandler upgradeHandler;
     boolean firstRun = true;  // True only the first time updateEntity invokes in a session
     int poweredRedstone; // The redstone strength currently applied to the block.
-    final List<ILuaMethod> luaMethods = new ArrayList<>();
     private boolean descriptionPacketScheduled;
     private List<SyncedField> descriptionFields;
     private TileEntityCache[] tileCache;
@@ -74,25 +76,14 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     public boolean preserveUpgradesOnBreak = false; // set to true if shift-wrenched to keep upgrades in the block
     private float actualSpeedMult = PneumaticValues.DEF_SPEED_UPGRADE_MULTIPLIER;
     private float actualUsageMult = PneumaticValues.DEF_SPEED_UPGRADE_USAGE_MULTIPLIER;
+    private LuaMethodRegistry luaMethodRegistry = null;
 
     public TileEntityBase() {
         this(0);
     }
 
     public TileEntityBase(int upgradeSize) {
-        addLuaMethods();
         this.upgradeHandler = new UpgradeHandler(upgradeSize);
-    }
-
-    public static int getUpgrades(IItemHandler inv, IItemRegistry.EnumUpgrade upgrade) {
-        int upgrades = 0;
-        Item upgradeItem = Itemss.upgrades.get(upgrade);
-        for (int i = 0; i < inv.getSlots(); i++) {
-            if (inv.getStackInSlot(i).getItem() == upgradeItem) {
-                upgrades += inv.getStackInSlot(i).getCount();
-            }
-        }
-        return upgrades;
     }
 
     private static String makeUpgradeKey(ItemStack stack) {
@@ -509,23 +500,30 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
         return oldState.getBlock() != newSate.getBlock();
     }
 
-    protected void addLuaMethods() {
+    protected void addLuaMethods(LuaMethodRegistry registry) {
         if (this instanceof IHeatExchanger) {
             final IHeatExchanger exchanger = (IHeatExchanger) this;
-            luaMethods.add(new LuaMethod("getTemperature") {
+            registry.registerLuaMethod(new LuaMethod("getTemperature") {
                 @Override
-                public Object[] call(Object[] args) throws Exception {
+                public Object[] call(Object[] args) {
+                    requireArgs(args, 0, 1, "face? (down/up/north/south/west/east)");
                     if (args.length == 0) {
                         return new Object[]{exchanger.getHeatExchangerLogic(null).getTemperature()};
-                    } else if (args.length == 1) {
+                    } else  {
                         IHeatExchangerLogic logic = exchanger.getHeatExchangerLogic(getDirForString((String) args[0]));
                         return new Object[]{logic != null ? logic.getTemperature() : 0};
-                    } else {
-                        throw new IllegalArgumentException("getTemperature method requires 0 or 1 argument (direction: up, down, east, west, north, south!");
                     }
                 }
             });
         }
+    }
+
+    private LuaMethodRegistry getLuaMethodRegistry() {
+        if (luaMethodRegistry == null) {
+            luaMethodRegistry = new LuaMethodRegistry();
+            addLuaMethods(luaMethodRegistry);
+        }
+        return luaMethodRegistry;
     }
 
     @Override
@@ -535,22 +533,18 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
 
     @Override
     public String[] getMethodNames() {
-        String[] methodNames = new String[luaMethods.size()];
-        for (int i = 0; i < methodNames.length; i++) {
-            methodNames[i] = luaMethods.get(i).getMethodName();
-        }
-        return methodNames;
+        return getLuaMethodRegistry().getMethodNames();
     }
 
-    public List<ILuaMethod> getLuaMethods() {
-        return luaMethods;
+    public Object[] callLuaMethod(String methodName, Object... args) throws Exception {
+        return getLuaMethodRegistry().getMethod(methodName).call(args);
     }
 
     @Override
     @Optional.Method(modid = ModIds.COMPUTERCRAFT)
-    public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) throws LuaException, InterruptedException {
+    public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) throws LuaException {
         try {
-            return luaMethods.get(method).call(arguments);
+            return getLuaMethodRegistry().getMethod(method).call(arguments);
         } catch (Exception e) {
             throw new LuaException(e.getMessage());
         }

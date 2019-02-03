@@ -16,7 +16,7 @@ class DroneAICC extends EntityAIBase {
     private final TileEntityDroneInterface droneInterface;
     private boolean newAction;
 
-    public DroneAICC(EntityDrone drone, ProgWidgetCC widget, boolean targetAI) {
+    DroneAICC(EntityDrone drone, ProgWidgetCC widget, boolean targetAI) {
         this.drone = drone;
         this.widget = widget;
         Set<BlockPos> area = widget.getInterfaceArea();
@@ -58,9 +58,9 @@ class DroneAICC extends EntityAIBase {
     @Override
     public synchronized boolean shouldContinueExecuting() {
         if (!newAction && curActionActive && curAction != null) {
-            boolean contin = curAction.shouldContinueExecuting();
-            if (!contin) curAction.resetTask();
-            return contin;
+            boolean shouldContinue = curAction.shouldContinueExecuting();
+            if (!shouldContinue) curAction.resetTask();
+            return shouldContinue;
         } else {
             return false;
         }
@@ -71,17 +71,17 @@ class DroneAICC extends EntityAIBase {
         if (curActionActive && curAction != null) curAction.updateTask();
     }
 
-    public synchronized void setAction(IProgWidget widget, EntityAIBase ai) throws IllegalArgumentException {
+    synchronized void setAction(IProgWidget widget, EntityAIBase ai) throws IllegalArgumentException {
         curAction = ai;
         newAction = true;
         curActionActive = true;
     }
 
-    public synchronized void abortAction() {
+    synchronized void abortAction() {
         curAction = null;
     }
 
-    public synchronized boolean isActionDone() throws Exception {
+    synchronized boolean isActionDone() {
         if (curAction == null) throw new IllegalStateException("There's no action active!");
         return !curActionActive;
     }

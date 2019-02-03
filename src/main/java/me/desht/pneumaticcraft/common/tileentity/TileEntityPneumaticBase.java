@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.common.block.tubes.IPneumaticPosProvider;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaConstant;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethod;
+import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethodRegistry;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -28,7 +29,7 @@ public class TileEntityPneumaticBase extends TileEntityTickableBase implements I
         this.dangerPressure = dangerPressure;
         this.criticalPressure = criticalPressure;
         defaultVolume = volume;
-        addLuaMethods();
+//        addLuaMethods(luaMethodRegistry);
     }
 
     @Override
@@ -81,25 +82,35 @@ public class TileEntityPneumaticBase extends TileEntityTickableBase implements I
     }
 
     @Override
-    protected void addLuaMethods() {
-        super.addLuaMethods();
-        luaMethods.add(new LuaMethod("getPressure") {
+    protected void addLuaMethods(LuaMethodRegistry registry) {
+        super.addLuaMethods(registry);
+        registry.registerLuaMethod(new LuaMethod("getPressure") {
             @Override
-            public Object[] call(Object[] args) throws Exception {
+            public Object[] call(Object[] args) {
+                requireArgs(args, 0, 1, "face (down/up/north/south/west/east)");
                 if (args.length == 0) {
                     return new Object[]{airHandler.getPressure()};
-                } else if (args.length == 1) {
+                } else {
                     IAirHandler handler = getAirHandler(getDirForString((String) args[0]));
                     return new Object[]{handler != null ? handler.getPressure() : 0};
-                } else {
-                    throw new IllegalArgumentException("getPressure method requires 0 or 1 argument (direction: up, down, east, west, north, south)!");
                 }
             }
         });
 
-        luaMethods.add(new LuaConstant("getDangerPressure", dangerPressure));
-        luaMethods.add(new LuaConstant("getCriticalPressure", criticalPressure));
-        luaMethods.add(new LuaConstant("getDefaultVolume", defaultVolume));
+        if (this instanceof IMinWorkingPressure) {
+            final IMinWorkingPressure mwp = (IMinWorkingPressure) this;
+            registry.registerLuaMethod(new LuaMethod("getMinWorkingPressure") {
+                @Override
+                public Object[] call(Object[] args) {
+                    requireNoArgs(args);
+                    return new Object[] { mwp.getMinWorkingPressure() };
+                }
+            });
+        }
+
+        registry.registerLuaMethod(new LuaConstant("getDangerPressure", dangerPressure));
+        registry.registerLuaMethod(new LuaConstant("getCriticalPressure", criticalPressure));
+        registry.registerLuaMethod(new LuaConstant("getDefaultVolume", defaultVolume));
     }
 
     /*

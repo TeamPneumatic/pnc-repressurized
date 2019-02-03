@@ -12,6 +12,7 @@ import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethod;
+import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethodRegistry;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemDye;
@@ -29,6 +30,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.oredict.OreDictionary;
+import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -334,22 +336,16 @@ public class TileEntityPlasticMixer extends TileEntityTickableBase implements IH
     }
 
     @Override
-    protected void addLuaMethods() {
-        super.addLuaMethods();
-        luaMethods.add(new LuaMethod("selectColor") {
+    protected void addLuaMethods(LuaMethodRegistry registry) {
+        super.addLuaMethods(registry);
+        registry.registerLuaMethod(new LuaMethod("selectColor") {
             @Override
-            public Object[] call(Object[] args) throws Exception {
-                if (args.length == 1) {
-                    int selection = ((Double) args[0]).intValue();
-                    if (selection >= 0 && selection <= 16) {
-                        selectedPlastic = selection - 1;
-                        return null;
-                    } else {
-                        throw new IllegalArgumentException("selectColor method only accepts a value ranging from 0-16. The value passed was: " + selection);
-                    }
-                } else {
-                    throw new IllegalArgumentException("selectColor method requires 1 argument (int color index, with 0 being no color");
-                }
+            public Object[] call(Object[] args) {
+                requireArgs(args, 1, "color_index (0-16)");
+                int selection = ((Double) args[0]).intValue();
+                Validate.isTrue(selection >= 0 && selection <= 16, "color index " + selection + " out of range 0-16!");
+                selectedPlastic = selection - 1;
+                return null;
             }
         });
     }

@@ -8,8 +8,8 @@ import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.entity.projectile.EntityTumblingBlock;
 import me.desht.pneumaticcraft.common.network.*;
-import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaConstant;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethod;
+import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethodRegistry;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.fakeplayer.FakeNetHandlerPlayerServer;
@@ -84,7 +84,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     @GuiSynced
     public boolean coordWithinReach;
     @GuiSynced
-    public int redstoneMode;
+    private int redstoneMode;
     private int oldRangeUpgrades;
     private boolean externalControl;//used in the CC API, to disallow the Cannon to update its angles when things like range upgrades / GPS Tool have changed.
     private boolean entityUpgradeInserted, dispenserUpgradeInserted;
@@ -708,79 +708,62 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     }
 
     @Override
-    protected void addLuaMethods() {
-        super.addLuaMethods();
-        luaMethods.add(new LuaConstant("getMinWorkingPressure", PneumaticValues.MIN_PRESSURE_AIR_CANNON));
+    protected void addLuaMethods(LuaMethodRegistry registry) {
+        super.addLuaMethods(registry);
 
-        luaMethods.add(new LuaMethod("setTargetLocation") {
+        registry.registerLuaMethod(new LuaMethod("setTargetLocation") {
             @Override
-            public Object[] call(Object[] args) throws Exception {
-                if (args.length == 3) {
-                    gpsX = ((Double) args[0]).intValue();
-                    gpsY = ((Double) args[1]).intValue();
-                    gpsZ = ((Double) args[2]).intValue();
-                    updateDestination();
-                    return new Object[]{coordWithinReach};
-                } else {
-                    throw new IllegalArgumentException("setTargetLocation requires 3 parameters (x,y,z)");
-                }
+            public Object[] call(Object[] args) {
+                requireArgs(args, 3, "x, y, z");
+                gpsX = ((Double) args[0]).intValue();
+                gpsY = ((Double) args[1]).intValue();
+                gpsZ = ((Double) args[2]).intValue();
+                updateDestination();
+                return new Object[]{coordWithinReach};
             }
         });
 
-        luaMethods.add(new LuaMethod("fire") {
+        registry.registerLuaMethod(new LuaMethod("fire") {
             @Override
-            public Object[] call(Object[] args) throws Exception {
-                if (args.length == 0) {
-                    return new Object[]{fire()};//returns true if the fire succeeded.
-                } else {
-                    throw new IllegalArgumentException("fire takes 0 parameters!");
-                }
-            }
-        });
-        luaMethods.add(new LuaMethod("isDoneTurning") {
-            @Override
-            public Object[] call(Object[] args) throws Exception {
-                if (args.length == 0) {
-                    return new Object[]{doneTurning};
-                } else {
-                    throw new IllegalArgumentException("isDoneTurning takes 0 parameters!");
-                }
+            public Object[] call(Object[] args) {
+                requireNoArgs(args);
+                // returns true if the fire succeeded.
+                return new Object[]{fire()};
             }
         });
 
-        luaMethods.add(new LuaMethod("setRotationAngle") {
+        registry.registerLuaMethod(new LuaMethod("isDoneTurning") {
             @Override
-            public Object[] call(Object[] args) throws Exception {
-                if (args.length == 1) {
-                    setTargetAngles(((Double) args[0]).floatValue(), targetHeightAngle);
-                    return null;
-                } else {
-                    throw new IllegalArgumentException("setRotationAngle takes 1 parameter! (angle in degrees, 0 = north)");
-                }
+            public Object[] call(Object[] args) {
+                requireNoArgs(args);
+                return new Object[]{doneTurning};
             }
         });
 
-        luaMethods.add(new LuaMethod("setHeightAngle") {
+        registry.registerLuaMethod(new LuaMethod("setRotationAngle") {
             @Override
-            public Object[] call(Object[] args) throws Exception {
-                if (args.length == 1) {
-                    setTargetAngles(targetRotationAngle, 90 - ((Double) args[0]).floatValue());
-                    return null;
-                } else {
-                    throw new IllegalArgumentException("setHeightAngle takes 1 parameter! (angle in degrees, 90 = straight up)");
-                }
+            public Object[] call(Object[] args) {
+                requireArgs(args, 1, "angle (in degrees, 0 = north)");
+                setTargetAngles(((Double) args[0]).floatValue(), targetHeightAngle);
+                return null;
             }
         });
 
-        luaMethods.add(new LuaMethod("setExternalControl") {
+        registry.registerLuaMethod(new LuaMethod("setHeightAngle") {
             @Override
-            public Object[] call(Object[] args) throws Exception {
-                if (args.length == 1) {
-                    externalControl = (Boolean) args[0];
-                    return null;
-                } else {
-                    throw new IllegalArgumentException("setExternalControl takes 1 parameter! (boolean)");
-                }
+            public Object[] call(Object[] args) {
+                requireArgs(args, 1, "angle (in degrees, 0 = horizontal)");
+                setTargetAngles(targetRotationAngle, 90 - ((Double) args[0]).floatValue());
+                return null;
+            }
+        });
+
+        registry.registerLuaMethod(new LuaMethod("setExternalControl") {
+            @Override
+            public Object[] call(Object[] args) {
+                requireArgs(args, 1, "true/false");
+                externalControl = (Boolean) args[0];
+                return null;
             }
         });
     }
@@ -799,6 +782,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     public int getRedstoneMode() {
         return redstoneMode;
     }
+
     @Override
     protected List<String> getRedstoneButtonLabels() {
         return REDSTONE_LABELS;

@@ -9,8 +9,8 @@ import me.desht.pneumaticcraft.common.block.BlockElevatorBase;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.network.*;
-import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaConstant;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethod;
+import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethodRegistry;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -57,7 +57,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     @DescSynced
     public int multiElevatorCount;
     @GuiSynced
-    public int redstoneMode;
+    private int redstoneMode;
     public int[] floorHeights = new int[0]; //list of every floor of Elevator Callers.
     private HashMap<Integer, String> floorNames = new HashMap<>();
     @GuiSynced
@@ -590,55 +590,46 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     }
 
     @Override
-    protected void addLuaMethods() {
-        super.addLuaMethods();
-        luaMethods.add(new LuaConstant("getMinWorkingPressure", PneumaticValues.MIN_PRESSURE_ELEVATOR));
-        luaMethods.add(new LuaMethod("setHeight") {
+    protected void addLuaMethods(LuaMethodRegistry registry) {
+        super.addLuaMethods(registry);
+
+        registry.registerLuaMethod(new LuaMethod("setHeight") {
             @Override
-            public Object[] call(Object[] args) throws Exception {
-                if (args.length == 1) {
-                    setTargetHeight(((Double) args[0]).floatValue());
-                    if (getCoreElevator().isControlledByRedstone()) getCoreElevator().handleGUIButtonPress(0, null);
-                    getCoreElevator().sendDescPacketFromAllElevators();
-                    return null;
-                } else {
-                    throw new IllegalArgumentException("setHeight does take one argument (height)");
+            public Object[] call(Object[] args) {
+                requireArgs(args, 1, "height (in blocks)");
+                setTargetHeight(((Double) args[0]).floatValue());
+                if (getCoreElevator().isControlledByRedstone()) {
+                    getCoreElevator().handleGUIButtonPress(0, null);
                 }
+                getCoreElevator().sendDescPacketFromAllElevators();
+                return null;
             }
         });
 
-        luaMethods.add(new LuaMethod("getCurrentHeight") {
+        registry.registerLuaMethod(new LuaMethod("getCurrentHeight") {
             @Override
-            public Object[] call(Object[] args) throws Exception {
-                if (args.length == 0) {
-                    return new Object[] { getCoreElevator().extension };
-                } else {
-                    throw new IllegalArgumentException("getCurrentHeight method takes no arguments!");
-                }
+            public Object[] call(Object[] args) {
+                requireNoArgs(args);
+                return new Object[] { getCoreElevator().extension };
             }
         });
-        luaMethods.add(new LuaMethod("getTargetHeight") {
+        registry.registerLuaMethod(new LuaMethod("getTargetHeight") {
             @Override
-            public Object[] call(Object[] args) throws Exception {
-                if (args.length == 0) {
-                    return new Object[] { getCoreElevator().targetExtension };
-                } else {
-                    throw new IllegalArgumentException("getTargetHeight method takes no arguments!");
-                }
+            public Object[] call(Object[] args) {
+                requireNoArgs(args);
+                return new Object[] { getCoreElevator().targetExtension };
             }
         });
 
-        luaMethods.add(new LuaMethod("setExternalControl") {
+        registry.registerLuaMethod(new LuaMethod("setExternalControl") {
             @Override
-            public Object[] call(Object[] args) throws Exception {
-                if (args.length == 1) {
-                    if ((Boolean) args[0] && getCoreElevator().isControlledByRedstone() || !(Boolean) args[0] && !getCoreElevator().isControlledByRedstone()) {
-                        getCoreElevator().handleGUIButtonPress(0, null);
-                    }
-                    return null;
-                } else {
-                    throw new IllegalArgumentException("setExternalControl does take one argument! (bool)");
+            public Object[] call(Object[] args) {
+                requireArgs(args, 1, "true/false");
+                if ((Boolean) args[0] && getCoreElevator().isControlledByRedstone()
+                        || !(Boolean) args[0] && !getCoreElevator().isControlledByRedstone()) {
+                    getCoreElevator().handleGUIButtonPress(0, null);
                 }
+                return null;
             }
         });
     }

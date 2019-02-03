@@ -1,10 +1,24 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "pneumaticcraft:drone_interface"
+    "model": "pneumaticcraft:drone_interface",
+    "textures": {
+      "top": "pneumaticcraft:blocks/generic/plain_base",
+      "bottom": "pneumaticcraft:blocks/generic/plain_base",
+      "side": "pneumaticcraft:blocks/drone_interface_side"
+    }
   },
   "variants": {
     "normal": [{}],
-    "inventory": [{}]
+    "inventory": [{}],
+    "connected": {
+      "true": {
+        "textures": {
+          "side": "pneumaticcraft:blocks/drone_interface_side_on"
+        }
+      },
+      "false": {
+      }
+    }
   }
 }
