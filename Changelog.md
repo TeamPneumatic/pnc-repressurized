@@ -6,6 +6,17 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
+### 0.9.2-??? (unreleased)
+#### Updates
+* Pressure Chamber: interface doors now animate open and closing (like they did in 1.7.10)
+* ComputerCraft/OpenComputers improvements
+  * Performance should be significantly better
+  * Some thread-safety fixes
+  * Drone Interface now lights up green when a drone is connected
+* Albedo support for the UV Lightbox has been dropped (could no longer reach the Maven repo)
+#### Fixes
+* *Maybe* fix a problem with the Gas Lift being impossible to break (I can't reproduce this problem locally; some defensive coding has been added to block drops calculation method)
+
 ### 0.9.1-317 (20 Jan 2019)
 #### New
 * NOTICE: If you use Applied Energistics 2, then rv6 is now required.  AE2-rv5 is no longer supported.
