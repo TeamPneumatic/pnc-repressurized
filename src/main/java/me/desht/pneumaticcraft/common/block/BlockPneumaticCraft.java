@@ -19,6 +19,7 @@ import me.desht.pneumaticcraft.common.thirdparty.waila.IInfoForwarder;
 import me.desht.pneumaticcraft.common.tileentity.*;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.ModIds;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -443,6 +444,13 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
         TileEntity te = world.getTileEntity(pos);
         if (te != null && drops.size() > 0) {
             ItemStack teStack = drops.get(0);
+            if (teStack == null || teStack.isEmpty()) {
+                // should never happen, but paranoid coding to maybe deal with
+                // https://github.com/TeamPneumatic/pnc-repressurized/issues/292
+                // some other mod could be messing with the dropped itemstack?
+                Log.warning("unexpected value for itemstack dropped from " + this + ": " + teStack);
+                teStack = new ItemStack(Item.getItemFromBlock(this));
+            }
             teStack.setTagCompound(new NBTTagCompound());
             if (te instanceof ISerializableTanks) {
                 ((ISerializableTanks) te).serializeTanks(teStack);
