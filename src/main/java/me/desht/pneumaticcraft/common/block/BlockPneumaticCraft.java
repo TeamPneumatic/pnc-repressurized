@@ -465,7 +465,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
             if (te instanceof ISideConfigurable) {
                 NBTTagCompound tag = SideConfigurator.writeToNBT((ISideConfigurable) te);
                 if (!tag.isEmpty()) {
-                    teStack.getTagCompound().setTag(NBT_SIDECONFIG, SideConfigurator.writeToNBT((ISideConfigurable) te));
+                    teStack.getTagCompound().setTag(NBT_SIDECONFIG, tag);
                 }
             }
             if (teStack.hasTagCompound() && teStack.getTagCompound().isEmpty()) {

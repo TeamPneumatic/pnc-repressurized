@@ -36,7 +36,7 @@ import java.util.stream.IntStream;
  */
 
 public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetListener {
-    private static final int ANIMATED_STAT_SPEED = 20;
+    private static final int ANIMATED_STAT_SPEED = 30;
     private static final int WIDGET_SCROLLBAR_ID = -1000;
 
     private IGuiAnimatedStat affectingStat;
@@ -302,31 +302,22 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
         if (isClicked) {
             // calculate the width and height needed for the box to fit the strings.
             int maxWidth = fontRenderer.getStringWidth(title);
+            for (String line : textList) {
+                if (fontRenderer.getStringWidth(line) > maxWidth) maxWidth = fontRenderer.getStringWidth(line);
+            }
+            maxWidth = (int) (maxWidth * textSize) + 20;
+
             int maxHeight = title.isEmpty() ? 2 : 12;
-            if (textList.size() > 0) {
+            if (!textList.isEmpty()) {
                 maxHeight += 4 + Math.min(MAX_LINES, textList.size()) * lineSpacing;
             }
             maxHeight -= (lineSpacing - fontRenderer.FONT_HEIGHT);
             maxHeight = (int) (maxHeight * textSize);
-            for (String line : textList) {
-                if (fontRenderer.getStringWidth(line) > maxWidth) maxWidth = fontRenderer.getStringWidth(line);
-            }
-            maxWidth = (int) (maxWidth * textSize);
-            maxWidth += 20;
 
             // expand the box
-            for (int i = 0; i < ANIMATED_STAT_SPEED; i++) {
-                if (width < maxWidth) {
-                    width++;
-                    doneExpanding = false;
-                }
-                if (height < maxHeight) {
-                    height++;
-                    doneExpanding = false;
-                }
-                if (width > maxWidth) width--;
-                if (height > maxHeight) height--;
-            }
+            width = Math.min(maxWidth, width + ANIMATED_STAT_SPEED);
+            height = Math.min(maxHeight, height + ANIMATED_STAT_SPEED);
+            doneExpanding = width == maxWidth && height == maxHeight;
 
             if (doneExpanding) {
                 for (IGuiWidget widget : widgets) {
@@ -336,12 +327,10 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
                     }
                 }
             }
-
         } else {
-            for (int i = 0; i < ANIMATED_STAT_SPEED; i++) {
-                if (width > minWidth) width--;
-                if (height > minHeight) height--;
-            }
+            // contract the box
+            width = Math.max(minWidth, width - ANIMATED_STAT_SPEED);
+            height = Math.max(minHeight, height - ANIMATED_STAT_SPEED);
             doneExpanding = false;
         }
 
