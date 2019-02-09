@@ -92,15 +92,17 @@ public class TileEntityRefinery extends TileEntityTickableBase
                 minTemp = currentRecipe == null ? 0 : currentRecipe.getMinimumTemp();
                 searchForRecipe = false;
             }
-            boolean didWork = false;
+            boolean hasWork = false;
             if (currentRecipe != null) {
                 if (prevRefineryCount != refineries.size() && refineries.size() > 1) {
                     redistributeFluids(refineries, currentRecipe);
                     prevRefineryCount = refineries.size();
                 }
 
-                if (heatExchanger.getTemperature() >= currentRecipe.getMinimumTemp() && redstoneAllows() && inputTank.getFluidAmount() >= currentRecipe.input.amount) {
-                    if (refineries.size() > 1 && refine(refineries, true)) {
+                if (refineries.size() > 1 && redstoneAllows() && refine(refineries, true)) {
+                    hasWork = true;
+                    if (heatExchanger.getTemperature() >= currentRecipe.getMinimumTemp()
+                            && inputTank.getFluidAmount() >= currentRecipe.input.amount) {
                         int progress = Math.max(0, ((int) heatExchanger.getTemperature() - (currentRecipe.getMinimumTemp() - 30)) / 30);
                         progress = Math.min(5, progress);
                         heatExchanger.addHeat(-progress);
@@ -109,18 +111,17 @@ public class TileEntityRefinery extends TileEntityTickableBase
                             workTimer -= 20;
                             refine(refineries, false);
                             inputTank.drain(currentRecipe.input.amount, true);
-                            NetworkHandler.sendToAllAround(new PacketSpawnParticle(EnumParticleTypes.SMOKE_LARGE,
-                                            getPos().getX(), getPos().getY() + refineries.size(), getPos().getZ(),
-                                            0, 0, 0, Math.max(2, progress), 1d, 1d, 1d),
-                                    getWorld());
                         }
-                        didWork = true;
-                    } else {
-                        workTimer = 0;
+                        NetworkHandler.sendToAllAround(new PacketSpawnParticle(EnumParticleTypes.SMOKE_LARGE,
+                                        getPos().getX(), getPos().getY() + refineries.size(), getPos().getZ(),
+                                        0, 0, 0, Math.max(2, progress), 1d, 1d, 1d),
+                                getWorld());
                     }
+                } else {
+                    workTimer = 0;
                 }
             }
-            updateComparatorValue(refineries, didWork);
+            updateComparatorValue(refineries, hasWork);
         }
     }
 
