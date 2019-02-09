@@ -8,13 +8,13 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
@@ -24,10 +24,13 @@ import java.util.List;
 
 @SideOnly(Side.CLIENT)
 public class GuiChargingStation extends GuiPneumaticContainerBase<TileEntityChargingStation> {
-    private GuiButton guiSelectButton;
+    private GuiButtonSpecial guiSelectButton;
+    private float renderAirProgress;
 
     public GuiChargingStation(InventoryPlayer player, TileEntityChargingStation te) {
         super(new ContainerChargingStation(player, te), te, Textures.GUI_CHARGING_STATION_LOCATION);
+
+        ySize = 176;
     }
 
     @Override
@@ -36,7 +39,8 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<TileEntityChar
 
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
-        guiSelectButton = new GuiButton(1, xStart + 87, yStart + 15, 25, 20, "inv.");
+        guiSelectButton = new GuiButtonSpecial(1, xStart + 89, yStart + 15, 21, 20, "");
+        guiSelectButton.setRenderedIcon(new ResourceLocation(Textures.GUI_UPGRADES_LOCATION));
         buttonList.add(guiSelectButton);
     }
 
@@ -48,7 +52,7 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<TileEntityChar
 
     @Override
     protected Point getInvTextOffset() {
-        return new Point(20, 0);
+        return new Point(0, 3);
     }
 
     @Override
@@ -62,7 +66,21 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<TileEntityChar
     @Override
     public void updateScreen() {
         super.updateScreen();
-        guiSelectButton.enabled = te.getPrimaryInventory().getStackInSlot(TileEntityChargingStation.CHARGE_INVENTORY_INDEX).getItem() instanceof IChargingStationGUIHolderItem;
+        ItemStack stack = te.getPrimaryInventory().getStackInSlot(TileEntityChargingStation.CHARGE_INVENTORY_INDEX);
+        guiSelectButton.visible = stack.getItem() instanceof IChargingStationGUIHolderItem;
+        if (guiSelectButton.visible) {
+            guiSelectButton.setTooltipText("Manage upgrades for the " + stack.getDisplayName());
+        }
+
+        // multiplier of 25 is about the max that looks good (higher values can make the animation look like
+        // it's going the wrong way)
+        if (te.charging) {
+            renderAirProgress += 0.001F * Math.min(25f, te.getSpeedMultiplierFromUpgrades());
+            if (renderAirProgress > 1f) renderAirProgress = 0f;
+        } else if (te.discharging) {
+            renderAirProgress -= 0.001F * Math.min(25f, te.getSpeedMultiplierFromUpgrades());
+            if (renderAirProgress < 0f) renderAirProgress = 1f;
+        }
     }
 
     @Override
@@ -75,7 +93,7 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<TileEntityChar
     @Override
     protected void addPressureStatInfo(List<String> pressureStatText) {
         super.addPressureStatInfo(pressureStatText);
-        if (te.charging || te.disCharging) {
+        if (te.charging || te.discharging) {
             pressureStatText.add("\u00a77" + (te.charging ? "C" : "Disc") + "harging at");
             pressureStatText.add("\u00a70" + (double) Math.round(PneumaticValues.CHARGING_STATION_CHARGE_RATE * te.getSpeedMultiplierFromUpgrades()) + "mL/tick");
         }
@@ -107,7 +125,7 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<TileEntityChar
             } else if (chargeItem.getPressure(chargeStack) < te.getPressure() - 0.01F && chargeItem.getPressure(chargeStack) >= chargeItem.maxPressure(chargeStack)) {
                 curInfo.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a7fThe " + name + " can't be charged", GuiConstants.MAX_CHAR_PER_LINE_LEFT));
                 curInfo.add("\u00a70The item is full.");
-            } else if (!te.charging && !te.disCharging) {
+            } else if (!te.charging && !te.discharging) {
                 curInfo.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a7fThe " + name + " can't be (dis)charged", GuiConstants.MAX_CHAR_PER_LINE_LEFT));
                 curInfo.add("\u00a70The pressures have equalized.");
             }
@@ -120,7 +138,7 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<TileEntityChar
         GlStateManager.glLineWidth(2.0F);
         int particles = 10;
         for (int i = 0; i < particles; i++) {
-            renderAirParticle(te.renderAirProgress % (1F / particles) + (float) i / particles);
+            renderAirParticle(renderAirProgress % (1F / particles) + (float) i / particles);
         }
 
         GlStateManager.enableTexture2D();

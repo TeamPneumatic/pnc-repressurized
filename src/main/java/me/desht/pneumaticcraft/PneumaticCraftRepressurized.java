@@ -38,7 +38,6 @@ import me.desht.pneumaticcraft.common.util.OreDictionaryHelper;
 import me.desht.pneumaticcraft.common.util.Reflections;
 import me.desht.pneumaticcraft.common.worldgen.WorldGeneratorPneumaticCraft;
 import me.desht.pneumaticcraft.lib.Log;
-import me.desht.pneumaticcraft.lib.ModIds;
 import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.Versions;
 import me.desht.pneumaticcraft.proxy.IProxy;
@@ -51,7 +50,6 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -84,8 +82,6 @@ public class PneumaticCraftRepressurized {
     public static CreativeTabPneumaticCraft tabPneumaticCraft;
     public static GuiHandler guiHandler;
 
-    public static boolean isJEIInstalled;
-
     static {
         FluidRegistry.enableUniversalBucket();
     }
@@ -95,7 +91,6 @@ public class PneumaticCraftRepressurized {
         logger = event.getModLog();
 
         event.getModMetadata().version = Versions.fullVersionString();
-        isJEIInstalled = Loader.isModLoaded(ModIds.JEI);
 
         Reflections.init();
         PneumaticRegistry.init(PneumaticCraftAPIHandler.getInstance());
@@ -115,7 +110,6 @@ public class PneumaticCraftRepressurized {
 
         WidgetRegistrator.init();
         TileEntityRegistrator.init();
-//        EntityRegistrator.init();
         SemiBlockInitializer.preInit();
         if (ConfigHandler.general.oilGenerationChance > 0) {
             GameRegistry.registerWorldGenerator(new WorldGeneratorPneumaticCraft(), 0);

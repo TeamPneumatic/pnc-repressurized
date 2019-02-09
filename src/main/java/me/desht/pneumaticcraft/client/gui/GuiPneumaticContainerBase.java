@@ -9,10 +9,10 @@ import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
+import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.tileentity.*;
 import me.desht.pneumaticcraft.common.tileentity.SideConfigurator.RelativeFace;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.lib.ModIds;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -28,7 +28,6 @@ import net.minecraft.init.Items;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
@@ -57,6 +56,7 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
     GuiAnimatedStat problemTab;
     GuiButtonSpecial redstoneButton;
     private boolean hasInit; //Fix for some weird race condition occuring in 1.8 where drawing is called before initGui().
+    private boolean firstUpdate = true;
 
     public GuiPneumaticContainerBase(Container par1Container, Tile te, String guiTexture) {
         super(par1Container);
@@ -212,7 +212,7 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
     protected void addInfoTab(String info) {
         IGuiAnimatedStat stat = addAnimatedStat("gui.tab.info", Textures.GUI_INFO_LOCATION, 0xFF8888FF, true);
         stat.setText(info);
-        if (!Loader.isModLoaded(ModIds.IGWMOD)) {
+        if (!ThirdPartyManager.instance().docsProvider.docsProviderInstalled()) {
             stat.appendText(Arrays.asList("", "gui.tab.info.assistIGW"));
         }
     }
@@ -312,7 +312,7 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
         for (Object obj : buttonList) {
             if (obj instanceof GuiButtonSpecial) {
                 GuiButtonSpecial button = (GuiButtonSpecial) obj;
-                if (button.x < x && button.x + button.getWidth() > x && button.y < y && button.y + button.getHeight() > y) {
+                if (button.visible && button.x < x && button.x + button.getWidth() > x && button.y < y && button.y + button.getHeight() > y) {
                     button.getTooltip(tooltip);
                 }
             }
@@ -345,12 +345,13 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
             addPressureStatInfo(pressureText);
             pressureStat.setText(pressureText);
         }
-        if (problemTab != null && (Minecraft.getMinecraft().world.getTotalWorldTime() & 0x7) == 0) {
+        if (problemTab != null && ((Minecraft.getMinecraft().world.getTotalWorldTime() & 0x7) == 0 || firstUpdate)) {
             handleProblemsTab();
         }
         if (redstoneTab != null) {
             redstoneButton.displayString = I18n.format(te.getRedstoneButtonText(((IRedstoneControl) te).getRedstoneMode()));
         }
+        firstUpdate = false;
     }
 
     private void handleProblemsTab() {

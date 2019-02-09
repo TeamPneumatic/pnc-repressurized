@@ -27,7 +27,7 @@ public class ContainerChargingStation extends ContainerPneumaticBase<TileEntityC
 
         addArmorSlots(inventoryPlayer, 9, 8);
 
-        addPlayerSlots(inventoryPlayer, 84);
+        addPlayerSlots(inventoryPlayer, 94);
     }
 
     @Override

@@ -21,12 +21,6 @@ public class BlockTrackEntryPeripheral implements IBlockTrackEntry {
             return peripheral.getMethodNames().length > 0;
         }
         return false;
-//        if (state.getBlock() instanceof IPeripheralProvider) {
-//            IPeripheral peripheral = ((IPeripheralProvider) state.getBlock()).getPeripheral(te.getWorld(), pos, EnumFacing.DOWN);
-//            return peripheral != null && peripheral.getMethodNames().length != 0;
-//        } else {
-//            return false;
-//        }
     }
 
     @Override
@@ -44,10 +38,9 @@ public class BlockTrackEntryPeripheral implements IBlockTrackEntry {
         infoList.add("blockTracker.info.peripheral.title");
         infoList.add("blockTracker.info.peripheral.availableMethods");
         IPeripheral peripheral = (IPeripheral) te;
-//        IPeripheral peripheral = ((IPeripheralProvider) world.getBlockState(pos).getBlock()).getPeripheral(world, pos, EnumFacing.DOWN);
         if (peripheral != null) {
             for (String method : peripheral.getMethodNames()) {
-                infoList.add("-" + method);
+                infoList.add("\u2022 " + method);
             }
         }
     }

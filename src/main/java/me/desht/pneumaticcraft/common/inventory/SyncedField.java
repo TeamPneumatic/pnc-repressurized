@@ -35,6 +35,11 @@ public abstract class SyncedField<T> {
         return this;
     }
 
+    @Override
+    public String toString() {
+        return "[" + te + "/" + field.getName() + "=" + getValue() + "]";
+    }
+
     public boolean update() {
         try {
             T value = arrayIndex >= 0 ? getValueForArray(field.get(te), arrayIndex) : retrieveValue(field, te);

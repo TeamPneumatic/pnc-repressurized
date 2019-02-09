@@ -1,15 +1,14 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
+import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.lib.ModIds;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -36,8 +35,9 @@ public class ItemPneumatic extends Item {
         if (!translatedInfo.equals(info)) {
             if (PneumaticCraftRepressurized.proxy.isSneakingInGui()) {
                 translatedInfo = TextFormatting.AQUA + translatedInfo;
-                if (!Loader.isModLoaded(ModIds.IGWMOD))
+                if (!ThirdPartyManager.instance().docsProvider.docsProviderInstalled()) {
                     translatedInfo += " \\n \\n" + I18n.format("gui.tab.info.assistIGW");
+                }
                 curInfo.addAll(PneumaticCraftUtils.convertStringIntoList(translatedInfo, 40));
             } else {
                 curInfo.add(TextFormatting.AQUA + I18n.format("gui.tooltip.sneakForInfo"));

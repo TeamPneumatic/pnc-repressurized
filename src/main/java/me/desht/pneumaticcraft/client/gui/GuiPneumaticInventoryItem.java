@@ -36,7 +36,7 @@ public abstract class GuiPneumaticInventoryItem extends GuiPneumaticContainerBas
         super.initGui();
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
-        guiBackButton = new GuiButton(2, xStart + 90, yStart + 15, 25, 20, "\u27f5");
+        guiBackButton = new GuiButton(2, xStart + 90, yStart + 15, 25, 20, "\u2b05");
         buttonList.add(guiBackButton);
     }
 
@@ -44,7 +44,7 @@ public abstract class GuiPneumaticInventoryItem extends GuiPneumaticContainerBas
     protected void addPressureStatInfo(List<String> pressureStatText) {
         pressureStatText.add("\u00a77Current Pressure:");
         ItemStack stack = te.getPrimaryInventory().getStackInSlot(TileEntityChargingStation.CHARGE_INVENTORY_INDEX);
-        float curPressure = ((IPressurizable) itemStack.getItem()).getPressure(stack);
+        float curPressure = te.chargingItemPressure;
         int volume = UpgradableItemUtils.getUpgrades(EnumUpgrade.VOLUME, stack) * PneumaticValues.VOLUME_VOLUME_UPGRADE + getDefaultVolume();
         pressureStatText.add("\u00a70" + (double) Math.round(curPressure * 10) / 10 + " bar.");
         pressureStatText.add("\u00a77Current Air:");
@@ -102,9 +102,9 @@ public abstract class GuiPneumaticInventoryItem extends GuiPneumaticContainerBas
 
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
-        GuiUtils.drawPressureGauge(fontRenderer, 0, 10, 10, 0,
-                ((IPressurizable) itemStack.getItem()).getPressure(te.getPrimaryInventory().getStackInSlot(TileEntityChargingStation.CHARGE_INVENTORY_INDEX)),
-                xStart + xSize * 3 / 4 + 8, yStart + ySize / 4 + 4, zLevel);
+        IPressurizable p = (IPressurizable) itemStack.getItem();
+        GuiUtils.drawPressureGauge(fontRenderer, 0, p.maxPressure(itemStack), p.maxPressure(itemStack), 0,
+                te.chargingItemPressure, xStart + xSize * 3 / 4 + 8, yStart + ySize / 4 + 4, zLevel);
     }
 
     @Override

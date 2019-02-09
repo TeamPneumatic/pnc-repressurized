@@ -28,12 +28,12 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
     private static final int INVENTORY_SIZE = 1;
     private AirCompressorHandler inventory = new AirCompressorHandler();
 
-    public static final int FUEL_SLOT = 0;
+    private static final int FUEL_SLOT = 0;
 
     @GuiSynced
     public int burnTime;
     @GuiSynced
-    public int maxBurnTime; // in here the total burn time of the current burning item is stored.
+    private int maxBurnTime; // in here the total burn time of the current burning item is stored.
     @GuiSynced
     public int redstoneMode = 0; // determines how the compressor responds to redstone.
     @DescSynced

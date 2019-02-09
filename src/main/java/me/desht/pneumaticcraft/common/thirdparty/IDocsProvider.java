@@ -11,6 +11,10 @@ public interface IDocsProvider {
         tooltip.add(I18n.format(showingAll ? "gui.programmer.pressIForInfoTrayOpen" : "gui.programmer.pressIForInfo"));
     }
 
+    default boolean docsProviderInstalled() {
+        return false;
+    }
+
     class NoDocsProvider implements IDocsProvider {
         @Override
         public void showWidgetDocs(String path) {

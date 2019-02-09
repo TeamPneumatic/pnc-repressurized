@@ -139,4 +139,9 @@ public class Patchouli implements IThirdParty, IDocsProvider {
     public void showWidgetDocs(String path) {
         openBookGui(RL("book"), "programming/" + path);
     }
+
+    @Override
+    public boolean docsProviderInstalled() {
+        return true;
+    }
 }

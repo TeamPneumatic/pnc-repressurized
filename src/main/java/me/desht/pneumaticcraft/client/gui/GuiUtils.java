@@ -28,11 +28,9 @@ import java.util.List;
 @SideOnly(Side.CLIENT)
 public class GuiUtils {
     private static final HashMap<String, ResourceLocation> resourceMap = new HashMap<>();
-    // This method is used to draw a pressure gauge in various GUI's.
     private static final int CIRCLE_POINTS = 500;
     public static final double PRESSURE_GAUGE_RADIUS = 20D;
-    private static final double START_ANGLE = 240D / 180D * Math.PI; // 150
-    // degrees
+    private static final double START_ANGLE = 240D / 180D * Math.PI;
     private static final double STOP_ANGLE = -60D / 180D * Math.PI;
     private static final int GAUGE_POINTS = (int) ((START_ANGLE - STOP_ANGLE) / (2D * Math.PI) * CIRCLE_POINTS);
     private static final RenderItem itemRenderer = Minecraft.getMinecraft().getRenderItem();
@@ -106,7 +104,7 @@ public class GuiUtils {
         for (int i = 0; i <= GAUGE_POINTS; i++) {
             double angle = (double) -i / (double) CIRCLE_POINTS * 2D * Math.PI - STOP_ANGLE;
             if (i == GAUGE_POINTS - (int) ((currentScale - minPressure) / (maxPressure - minPressure) * GAUGE_POINTS)) {
-                textScalers.add(new int[]{currentScale, (int) (Math.cos(angle) * PRESSURE_GAUGE_RADIUS * 1.4D), (int) (Math.sin(angle) * PRESSURE_GAUGE_RADIUS * 1.4D)});
+                textScalers.add(new int[]{currentScale, (int) (Math.cos(angle) * PRESSURE_GAUGE_RADIUS * 1.3D), (int) (Math.sin(angle) * PRESSURE_GAUGE_RADIUS * 1.3D)});
                 currentScale--;
                 // System.out.println("curr: "+ currentScale);
                 wr.pos(Math.cos(angle) * PRESSURE_GAUGE_RADIUS * 0.9D + xPos, Math.sin(angle) * PRESSURE_GAUGE_RADIUS * 0.9D + yPos, zLevel).endVertex();
@@ -136,7 +134,11 @@ public class GuiUtils {
             }
         }
         for (int[] scaler : textScalers) {
-            fontRenderer.drawString("" + scaler[0], xPos + scaler[1] - 3, yPos + scaler[2] - 3, fgColor);
+            GlStateManager.pushMatrix();
+            GlStateManager.translate(xPos + scaler[1] - 1.5, yPos + scaler[2] - 1.5, 0);
+            GlStateManager.scale(0.5, 0.5, 1);
+            fontRenderer.drawString("" + scaler[0], 0, 0, fgColor);
+            GlStateManager.popMatrix();
         }
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
     }

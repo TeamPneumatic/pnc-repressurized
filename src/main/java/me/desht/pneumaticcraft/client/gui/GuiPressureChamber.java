@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
-import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
+import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.inventory.ContainerPressureChamber;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberValve;
@@ -13,13 +12,11 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @SideOnly(Side.CLIENT)
 public class GuiPressureChamber extends GuiPneumaticContainerBase<TileEntityPressureChamberValve> {
-
-    private GuiAnimatedStat statusStat;
+    private List<String> statusText;
 
     public GuiPressureChamber(InventoryPlayer player, TileEntityPressureChamberValve te) {
 
@@ -29,7 +26,13 @@ public class GuiPressureChamber extends GuiPneumaticContainerBase<TileEntityPres
     @Override
     public void initGui() {
         super.initGui();
-        statusStat = addAnimatedStat("Pressure Chamber Status", new ItemStack(Blockss.PRESSURE_CHAMBER_WALL), 0xFFFFAA00, false);
+
+        addAnimatedStat("Pressure Chamber Status", new ItemStack(Blockss.PRESSURE_CHAMBER_WALL), 0xFFFFAA00, false)
+                .setText(ImmutableList.of(
+                        "\u00a7fChamber Size:",
+                        "\u00a70" + te.multiBlockSize + "x" + te.multiBlockSize + "x" + te.multiBlockSize + " (outside)",
+                        "\u00a70" + (te.multiBlockSize - 2) + "x" + (te.multiBlockSize - 2) + "x" + (te.multiBlockSize - 2) + " (inside)"
+                ));
     }
 
     @Override
@@ -46,41 +49,26 @@ public class GuiPressureChamber extends GuiPneumaticContainerBase<TileEntityPres
     }
 
     @Override
-    public void updateScreen() {
-        super.updateScreen();
-        statusStat.setText(getStatusText());
-    }
-
-    private List<String> getStatusText() {
-        List<String> text = new ArrayList<>();
-
-        text.add("\u00a77Chamber Size:");
-        text.add("\u00a70" + te.multiBlockSize + "x" + te.multiBlockSize + "x" + te.multiBlockSize + " (outside)");
-        text.add("\u00a70" + (te.multiBlockSize - 2) + "x" + (te.multiBlockSize - 2) + "x" + (te.multiBlockSize - 2) + " (inside)");
-        text.add("\u00a77Recipe list:");
-        if (PneumaticCraftRepressurized.isJEIInstalled) {
-            text.add("\u00a70Click on the pressure gauge to view this machine's recipe with JEI.");
-        } else {
-            text.add("\u00a70Install JEI to view this machine's recipes.");
+    protected void addWarnings(List<String> curInfo) {
+        super.addWarnings(curInfo);
+        if (!te.isValidRecipeInChamber) {
+            curInfo.add("\u00a7fNo (valid) items in the chamber");
+            curInfo.add("\u00a70Insert valid items in");
+            curInfo.add("\u00a70the chamber to be compressed.");
         }
-        return text;
     }
 
     @Override
-    protected void addProblems(List<String> textList) {
-        if (!te.isValidRecipeInChamber) {
-            textList.add("\u00a77No (valid) items in the chamber");
-            textList.add("\u00a70Insert (valid) items");
-            textList.add("\u00a70in the chamber");
-        } else if (!te.isSufficientPressureInChamber) {
+    protected void addProblems(List<String> curInfo) {
+        if (te.isValidRecipeInChamber && !te.isSufficientPressureInChamber) {
             if (te.recipePressure > 0F) {
-                textList.add("\u00a77Not enough pressure");
-                textList.add("\u00a70Add air to the input");
+                curInfo.add("\u00a7fNot enough pressure");
+                curInfo.add("\u00a70Add air to the input");
             } else {
-                textList.add("\u00a77Too much pressure");
-                textList.add("\u00a70Remove air from the input");
+                curInfo.add("\u00a7fToo much pressure");
+                curInfo.add("\u00a70Remove air from the input");
             }
-            textList.add("\u00a70Pressure required: " + te.recipePressure + " bar");
+            curInfo.add("\u00a70Pressure required: " + te.recipePressure + " bar");
         }
     }
 }

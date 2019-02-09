@@ -13,6 +13,7 @@ import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.thirdparty.ModInteractionUtils;
+import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.thirdparty.theoneprobe.ITOPInfoProvider;
 import me.desht.pneumaticcraft.common.thirdparty.theoneprobe.TOPCallback;
 import me.desht.pneumaticcraft.common.thirdparty.waila.IInfoForwarder;
@@ -20,7 +21,6 @@ import me.desht.pneumaticcraft.common.tileentity.*;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
-import me.desht.pneumaticcraft.lib.ModIds;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
@@ -50,7 +50,6 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -345,8 +344,9 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
         if (!translatedInfo.equals(info)) {
             if (PneumaticCraftRepressurized.proxy.isSneakingInGui()) {
                 translatedInfo = TextFormatting.AQUA + translatedInfo.substring(2);
-                if (!Loader.isModLoaded(ModIds.IGWMOD))
+                if (!ThirdPartyManager.instance().docsProvider.docsProviderInstalled()) {
                     translatedInfo += " \\n \\n" + I18n.format("gui.tab.info.assistIGW");
+                }
                 curInfo.addAll(PneumaticCraftUtils.convertStringIntoList(translatedInfo, 40));
             } else {
                 curInfo.add(TextFormatting.AQUA + I18n.format("gui.tooltip.sneakForInfo"));

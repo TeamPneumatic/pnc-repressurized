@@ -15,7 +15,7 @@ import java.util.Collections;
 import java.util.Set;
 
 public class BlockDroneInterface extends BlockPneumaticCraftModeled {
-    public static final PropertyBool CONNECTED = PropertyBool.create("connected");
+    private static final PropertyBool CONNECTED = PropertyBool.create("connected");
 
     protected BlockDroneInterface() {
         super(Material.IRON, "drone_interface");
@@ -46,6 +46,6 @@ public class BlockDroneInterface extends BlockPneumaticCraftModeled {
 
     @Override
     public Set<Item> getApplicableUpgrades() {
-        return Collections.EMPTY_SET;
+        return Collections.emptySet();
     }
 }

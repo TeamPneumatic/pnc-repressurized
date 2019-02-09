@@ -18,4 +18,9 @@ public class IGWMod implements IThirdParty, IDocsProvider {
     public void showWidgetDocs(String path) {
         WikiRegistry.getWikiHooks().showWikiGui("pneumaticcraft:progwidget/" + path);
     }
+
+    @Override
+    public boolean docsProviderInstalled() {
+        return true;
+    }
 }

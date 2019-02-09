@@ -22,6 +22,7 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -29,7 +30,6 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
 import java.util.List;
 
 public class TileEntityChargingStation extends TileEntityPneumaticBase implements IRedstoneControl, ICamouflageableTE {
@@ -50,13 +50,14 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     private static final float ANIMATION_AIR_SPEED = 0.001F;
 
     @GuiSynced
+    public float chargingItemPressure;
+    @GuiSynced
     public boolean charging;
     @GuiSynced
-    public boolean disCharging;
+    public boolean discharging;
     @GuiSynced
     public int redstoneMode;
     private boolean oldRedstoneStatus;
-    public float renderAirProgress;
     @DescSynced
     private ItemStack camoStack = ItemStack.EMPTY;
     private IBlockState camoState;
@@ -80,25 +81,72 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
 
     @Override
     public void update() {
-        disCharging = false;
-        charging = false;
-        List<IPressurizable> chargingItems = new ArrayList<>();
-        List<ItemStack> chargedStacks = new ArrayList<>();
-        if (getChargingItem().getItem() instanceof IPressurizable) {
-            chargingItems.add((IPressurizable) getChargingItem().getItem());
-            chargedStacks.add(getChargingItem());
+        super.update();
+
+        if (!world.isRemote) {
+            discharging = false;
+            charging = false;
+
+            NonNullList<ItemStack> chargeableStacks = findChargeableItems();
+
+            int airToTransfer = (int) (PneumaticValues.CHARGING_STATION_CHARGE_RATE * getSpeedMultiplierFromUpgrades());
+
+            for (int i = 0; i < chargeableStacks.size() && airHandler.getAir() > 0; i++) {
+                ItemStack chargingStack = chargeableStacks.get(i);
+                IPressurizable p = (IPressurizable) chargingStack.getItem();
+
+                float itemPressure = p.getPressure(chargingStack);
+                float itemVolume = p.getVolume(chargingStack);
+                float delta = Math.abs(getPressure() - itemPressure) / 2.0F;
+                int airInItem = (int) (itemPressure * itemVolume);
+
+                if (itemPressure > getPressure() + 0.01F && itemPressure > 0F) {
+                    // move air from item to charger
+                    int airToMove = Math.min(Math.min(airToTransfer, airInItem), (int) (delta * airHandler.getVolume()));
+                    p.addAir(chargingStack, -airToMove);
+                    this.addAir(airToMove);
+                    discharging = true;
+                } else if (itemPressure < getPressure() - 0.01F && itemPressure < p.maxPressure(chargingStack)) {
+                    // move air from charger to item
+                    int maxAirInItem = (int) (p.maxPressure(chargingStack) * itemVolume);
+                    int airToMove = Math.min(Math.min(airToTransfer, airHandler.getAir()), maxAirInItem - airInItem);
+                    airToMove = Math.min((int) (delta * itemVolume), airToMove);
+                    p.addAir(chargingStack, airToMove);
+                    this.addAir(-airToMove);
+                    charging = true;
+                }
+            }
+
+            if (oldRedstoneStatus != shouldEmitRedstone()) {
+                oldRedstoneStatus = shouldEmitRedstone();
+                updateNeighbours();
+            }
+
+            List<Pair<EnumFacing, IAirHandler>> teList = getAirHandler(null).getConnectedPneumatics();
+            if (teList.size() == 0) {
+                getAirHandler(null).airLeak(getRotation());
+            }
         }
-        if (this.getUpgrades(EnumUpgrade.DISPENSER) > 0) {
-            // creating a new word, 'entities padding'.
-            List<Entity> entitiesPadding = getWorld().getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(getPos().getX(), getPos().getY(), getPos().getZ(), getPos().getX() + 1, getPos().getY() + 2, getPos().getZ() + 1));
+    }
+
+    private NonNullList<ItemStack> findChargeableItems() {
+        NonNullList<ItemStack> chargedStacks = NonNullList.create();
+
+        if (getChargingItem().getItem() instanceof IPressurizable) {
+            IPressurizable p = (IPressurizable) getChargingItem().getItem();
+            chargedStacks.add(getChargingItem());
+            chargingItemPressure = p.getPressure(getChargingItem());
+        }
+
+        if (getUpgrades(EnumUpgrade.DISPENSER) > 0) {
+            // creating a new word, 'entities padding'!
+            List<Entity> entitiesPadding = getWorld().getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(getPos().up()));
             for (Entity entity : entitiesPadding) {
                 if (entity instanceof IPressurizable) {
-                    chargingItems.add((IPressurizable) entity);
                     chargedStacks.add(ItemStack.EMPTY);
                 } else if (entity instanceof EntityItem) {
                     ItemStack entityStack = ((EntityItem) entity).getItem();
                     if (entityStack.getItem() instanceof IPressurizable) {
-                        chargingItems.add((IPressurizable) entityStack.getItem());
                         chargedStacks.add(entityStack);
                     }
                 } else if (entity instanceof EntityPlayer) {
@@ -106,7 +154,6 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
                     for (int i = 0; i < inv.getSizeInventory(); i++) {
                         ItemStack stack = inv.getStackInSlot(i);
                         if (stack.getItem() instanceof IPressurizable) {
-                            chargingItems.add((IPressurizable) stack.getItem());
                             chargedStacks.add(stack);
                         }
                     }
@@ -114,57 +161,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
             }
         }
 
-        int airToTransfer = (int) (PneumaticValues.CHARGING_STATION_CHARGE_RATE * getSpeedMultiplierFromUpgrades());
-
-        for (int i = 0; i < chargingItems.size() && airHandler.getAir() > 0; i++) {
-            IPressurizable chargingItem = chargingItems.get(i);
-            ItemStack chargingStack = chargedStacks.get(i);
-            float itemPressure = chargingItem.getPressure(chargingStack);
-            float itemVolume = chargingItem.getVolume(chargingStack);
-            float delta = Math.abs(getPressure() - itemPressure) / 2.0F;
-
-            int airInItem = (int) (itemPressure * itemVolume);
-
-            if (itemPressure > getPressure() + 0.01F && itemPressure > 0F) {
-                // move air from item to charger
-                int airToMove = Math.min(Math.min(airToTransfer, airInItem), (int) (delta * airHandler.getVolume()));
-                if (!getWorld().isRemote) {
-                    chargingItem.addAir(chargingStack, -airToMove);
-                    addAir(airToMove);
-                }
-                disCharging = true;
-                renderAirProgress -= ANIMATION_AIR_SPEED;
-                if (renderAirProgress < 0.0F) {
-                    renderAirProgress += 1F;
-                }
-            } else if (itemPressure < getPressure() - 0.01F && itemPressure < chargingItem.maxPressure(chargingStack)) {
-                // move air from charger to item
-                int maxAirInItem = (int) (chargingItem.maxPressure(chargingStack) * itemVolume);
-                int airToMove = Math.min(Math.min(airToTransfer, airHandler.getAir()), maxAirInItem - airInItem);
-                airToMove = Math.min((int) (delta * itemVolume), airToMove);
-                if (!getWorld().isRemote) {
-                    chargingItem.addAir(chargingStack, airToMove);
-                    addAir(-airToMove);
-                }
-                charging = true;
-                renderAirProgress += ANIMATION_AIR_SPEED;
-                if (renderAirProgress > 1.0F) {
-                    renderAirProgress -= 1F;
-                }
-            }
-        }
-
-        if (!getWorld().isRemote && oldRedstoneStatus != shouldEmitRedstone()) {
-            oldRedstoneStatus = shouldEmitRedstone();
-            updateNeighbours();
-        }
-
-        super.update();
-
-        if (!getWorld().isRemote) {
-            List<Pair<EnumFacing, IAirHandler>> teList = getAirHandler(null).getConnectedPneumatics();
-            if (teList.size() == 0) getAirHandler(null).airLeak(getRotation());
-        }
+        return chargedStacks;
     }
 
     @Override
@@ -192,11 +189,11 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
             case 0:
                 return false;
             case 1:
-                return !charging && !disCharging && getChargingItem().getItem() instanceof IPressurizable;
+                return !charging && !discharging && getChargingItem().getItem() instanceof IPressurizable;
             case 2:
                 return charging;
             case 3:
-                return disCharging;
+                return discharging;
 
         }
         return false;

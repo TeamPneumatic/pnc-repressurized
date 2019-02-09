@@ -58,13 +58,6 @@ public class DriverPneumaticCraft extends DriverSidedTileEntity {
                 return new Object[]{String.format("Hello, %s!", args.checkString(0))};
             }
             return tile.callLuaMethod(method, args.toArray());
-//            List<ILuaMethod> luaMethods = tile.getLuaMethods();
-//            for (ILuaMethod m : luaMethods) {
-//                if (m.getMethodName().equals(method)) {
-//                    return m.call(args.toArray());
-//                }
-//            }
-//            throw new IllegalArgumentException("Can't invoke method with name \"" + method + "\". not registered");
         }
     }
 
