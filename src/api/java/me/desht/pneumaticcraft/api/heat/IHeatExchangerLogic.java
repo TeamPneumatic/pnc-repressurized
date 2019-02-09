@@ -55,7 +55,20 @@ public interface IHeatExchangerLogic {
      */
     void setTemperature(double temperature);
 
+    /**
+     * Get the heat exchanger's current (precise) temperature.
+     *
+     * @return the temperature
+     */
     double getTemperature();
+
+    /**
+     * Get the heat exchanger's current temperature to the nearest integer.  Useful when sync'ing to clients to avoid
+     * excessive network chatter.
+     *
+     * @return the temperature to the nearest integer
+     */
+    int getTemperatureAsInt();
 
     /**
      * The higher the thermal resistance, the slower the heat disperses. The effective resistance is the sum of this

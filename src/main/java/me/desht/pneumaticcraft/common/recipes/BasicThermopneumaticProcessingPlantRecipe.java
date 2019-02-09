@@ -5,6 +5,8 @@ import me.desht.pneumaticcraft.common.fluid.Fluids;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -62,6 +64,12 @@ public class BasicThermopneumaticProcessingPlantRecipe implements IThermopneumat
     public void useRecipeItems(FluidStack inputTank, @Nonnull ItemStack inputItem) {
         if (inputLiquid != null) inputTank.amount -= inputLiquid.amount;
         if (!this.inputItem.isEmpty()) inputItem.shrink(this.inputItem.getCount());
+    }
+
+    @Override
+    public void useResources(IFluidHandler fluidHandler, IItemHandler itemHandler) {
+        fluidHandler.drain(inputLiquid.amount, true);
+        itemHandler.extractItem(0, inputItem.getCount(), false);
     }
 
     @Override

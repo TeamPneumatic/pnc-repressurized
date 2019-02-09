@@ -38,7 +38,7 @@ public class WidgetTemperature extends WidgetBase {
         GlStateManager.color(1, 1, 1, 1);
         Gui.drawModalRectWithCustomSizedTexture(x + 6, y, 6, 0, 7, 50, 18, 50);
 
-        int barLength = ((int) logic.getTemperature() - minTemp) * 48 / maxTemp;
+        int barLength = (logic.getTemperatureAsInt() - minTemp) * 48 / maxTemp;
         barLength = MathHelper.clamp(barLength, 0, 48);
         Gui.drawModalRectWithCustomSizedTexture(x + 7, y + 1 + 48 - barLength, 13, 48 - barLength, 5, barLength, 18, 50);
 
@@ -50,6 +50,6 @@ public class WidgetTemperature extends WidgetBase {
 
     @Override
     public void addTooltip(int mouseX, int mouseY, List<String> curTip, boolean shift) {
-        curTip.add("Temperature: " + ((int) logic.getTemperature() - 273) + "\u00b0C");
+        curTip.add("Temperature: " + (logic.getTemperatureAsInt() - 273) + "\u00b0C");
     }
 }

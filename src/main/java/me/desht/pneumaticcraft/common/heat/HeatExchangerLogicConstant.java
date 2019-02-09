@@ -48,6 +48,11 @@ public class HeatExchangerLogicConstant implements IHeatExchangerLogic {
     }
 
     @Override
+    public int getTemperatureAsInt() {
+        return (int) temperature;
+    }
+
+    @Override
     public void setThermalResistance(double thermalResistance) {
     }
 

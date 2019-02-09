@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.tileentity.TileEntityThermopneumaticProcessingPlant;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraftforge.items.SlotItemHandler;
 
@@ -19,18 +18,5 @@ public class ContainerThermopneumaticProcessingPlant extends
         addSlotToContainer(new SlotItemHandler(te.getPrimaryInventory(), 0, 46, 14));
 
         addPlayerSlots(inventoryPlayer, 115);
-
-    }
-
-//    @Override
-//    public boolean canInteractWith(EntityPlayer player) {
-//        return te.isUseableByPlayer(player);
-//        //return te.isGuiUseableByPlayer(player);
-//    }
-
-    @Override
-    public void onContainerClosed(EntityPlayer par1EntityPlayer) {
-        super.onContainerClosed(par1EntityPlayer);
-        //  te.closeGUI();
     }
 }

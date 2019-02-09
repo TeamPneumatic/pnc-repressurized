@@ -45,7 +45,6 @@ public class GuiThermopneumaticProcessingPlant extends
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int x, int y) {
         super.drawGuiContainerBackgroundLayer(partialTicks, x, y);
-        //48 22
         double progress = te.getCraftingPercentage();
         int progressWidth = (int) (progress * 48);
         bindGuiTexture();

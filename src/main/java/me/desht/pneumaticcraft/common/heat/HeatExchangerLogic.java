@@ -18,7 +18,8 @@ public class HeatExchangerLogic implements IHeatExchangerLogic {
     private List<HeatBehaviour> behaviours = new ArrayList<>();
     private List<HeatBehaviour> newBehaviours; //Required to prevent a CME
     @GuiSynced
-    private double temperature = 295; //degrees Kelvin, 20 degrees by default.
+    private int temperatureInt = 295;
+    private double temperature = 295.0; //degrees Kelvin, 20 degrees by default.
     private double thermalResistance = 1;
     private double thermalCapacity = 1;
     private static boolean isAddingOrRemovingLogic;
@@ -90,6 +91,9 @@ public class HeatExchangerLogic implements IHeatExchangerLogic {
     }
 
     @Override
+    public int getTemperatureAsInt() { return temperatureInt; }
+
+    @Override
     public void setTemperature(double temperature) {
         this.temperature = temperature;
     }
@@ -144,6 +148,8 @@ public class HeatExchangerLogic implements IHeatExchangerLogic {
 
     @Override
     public void update() {
+        temperatureInt = (int) temperature;
+
         if (getThermalCapacity() < 0.1D) {
             temperature = 295;
             return;

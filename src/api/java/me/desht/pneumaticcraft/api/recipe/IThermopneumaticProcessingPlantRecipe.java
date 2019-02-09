@@ -2,6 +2,8 @@ package me.desht.pneumaticcraft.api.recipe;
 
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 
@@ -49,12 +51,25 @@ public interface IThermopneumaticProcessingPlantRecipe {
     FluidStack getRecipeOutput(FluidStack inputFluid, ItemStack inputItem);
 
     /**
-     * Decrease the input items used in the recipe here. When the stacksize is decreased to 0 it will automatically be set to null, so you don't have to worry about that.
+     * Don't use this method anymore; it doesn't notify the tile entity of resource changes, so recipes will
+     * not be refreshed properly.  Use {@link IThermopneumaticProcessingPlantRecipe#useResources(IFluidHandler, IItemHandler)}.
      *
      * @param inputFluid
      * @param inputItem
+     * @deprecated use {@link IThermopneumaticProcessingPlantRecipe#useResources(IFluidHandler, IItemHandler)}
      */
+    // TODO remove in 1.13
+    @Deprecated
     void useRecipeItems(FluidStack inputFluid, ItemStack inputItem);
+
+    /**
+     * Take input resources (fluid and/or items) from the given fluid & item handlers; take enough for one pass
+     * of the recipe.
+     *
+     * @param fluidHandler fluid handler
+     * @param itemHandler item handler
+     */
+    void useResources(IFluidHandler fluidHandler, IItemHandler itemHandler);
 
     /**
      * @param inputFluid
