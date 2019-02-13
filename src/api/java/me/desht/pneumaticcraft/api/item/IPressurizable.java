@@ -45,4 +45,14 @@ public interface IPressurizable {
      * @return the item's air volume
      */
     int getVolume(ItemStack iStack);
+
+    /**
+     * Get the pressurizable object represented by the given itemstack, if any.
+     *
+     * @param stack the stack to check
+     * @return the pressurizable object, or null if the itemstack isn't pressurizable
+     */
+    static IPressurizable of(ItemStack stack) {
+        return stack.getItem() instanceof IPressurizable ? (IPressurizable) stack.getItem() : null;
+    }
 }
