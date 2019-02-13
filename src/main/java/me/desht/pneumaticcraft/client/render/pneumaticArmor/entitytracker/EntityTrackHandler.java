@@ -326,6 +326,9 @@ public class EntityTrackHandler {
                         hackable.addPostHackInfo(entity, curInfo, PneumaticCraftRepressurized.proxy.getClientPlayer());
                     } else {
                         hackable.addInfo(entity, curInfo, PneumaticCraftRepressurized.proxy.getClientPlayer());
+                        if (KeyHandler.getInstance().keybindHack.getKeyCode() != 0) {
+                            curInfo.add(TextFormatting.GOLD + "Press [" + Keyboard.getKeyName(KeyHandler.getInstance().keybindHack.getKeyCode()) + "] to hack");
+                        }
                     }
                 }
             }

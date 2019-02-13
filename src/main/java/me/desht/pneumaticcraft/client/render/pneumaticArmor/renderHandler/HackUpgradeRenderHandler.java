@@ -4,12 +4,12 @@ import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IOptionPage;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
+import me.desht.pneumaticcraft.common.CommonHUDHandler;
+import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.item.Itemss;
-import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 
 public class HackUpgradeRenderHandler implements IUpgradeRenderHandler {
 
@@ -53,16 +53,12 @@ public class HackUpgradeRenderHandler implements IUpgradeRenderHandler {
         return new Item[]{Itemss.upgrades.get(EnumUpgrade.SECURITY)};
     }
 
-    private static boolean enabledForStacks(ItemStack[] upgradeStacks) {
-        for (ItemStack stack : upgradeStacks) {
-            if (stack != null && stack.getItem() == Itemss.upgrades.get(EnumUpgrade.SECURITY)) return true;
+    public static boolean enabledForPlayer(EntityPlayer player) {
+        if (player.getItemStackFromSlot(EntityEquipmentSlot.HEAD).getItem() instanceof ItemPneumaticArmor) {
+            CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer(player);
+            return handler.getUpgradeCount(EntityEquipmentSlot.HEAD, EnumUpgrade.SECURITY) > 0;
         }
         return false;
-    }
-
-    public static boolean enabledForPlayer(EntityPlayer player) {
-        ItemStack helmet = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
-        return !helmet.isEmpty() && enabledForStacks(UpgradableItemUtils.getUpgradeStacks(helmet));
     }
 
     @Override

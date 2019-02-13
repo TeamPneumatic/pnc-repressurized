@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.client.IFOVModifierItem;
+import me.desht.pneumaticcraft.api.item.IInventoryItem;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IPressurizable;
@@ -19,7 +20,6 @@ import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemRenderer;
-import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -30,6 +30,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.*;
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -38,7 +39,7 @@ import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Set;
 
-public class ItemMinigun extends ItemPressurizable implements IChargingStationGUIHolderItem, IUpgradeAcceptor, IFOVModifierItem {
+public class ItemMinigun extends ItemPressurizable implements IChargingStationGUIHolderItem, IUpgradeAcceptor, IFOVModifierItem, IInventoryItem {
     private static final int MAGAZINE_SIZE = 4;
 
     private static Set<Item> applicableUpgrades;
@@ -70,11 +71,11 @@ public class ItemMinigun extends ItemPressurizable implements IChargingStationGU
         return null;
     }
 
-    @Override
-    public void addInformation(ItemStack stack, World worldIn, List<String> infoList, ITooltipFlag par4) {
-        UpgradableItemUtils.addUpgradeInformation(stack, worldIn, infoList, par4);
-        super.addInformation(stack, worldIn, infoList, par4);
-    }
+//    @Override
+//    public void addInformation(ItemStack stack, World worldIn, List<String> infoList, ITooltipFlag par4) {
+//        super.addInformation(stack, worldIn, infoList, par4);
+//        UpgradableItemUtils.addUpgradeInformation(stack, worldIn, infoList, par4);
+//    }
 
     @Override
     public void onUpdate(ItemStack stack, World world, Entity entity, int slot, boolean currentItem) {
@@ -210,6 +211,21 @@ public class ItemMinigun extends ItemPressurizable implements IChargingStationGU
         if (!minigun.isMinigunActivated()) return 0f;
         int trackers = minigun.getUpgrades(EnumUpgrade.ENTITY_TRACKER);
         return (float) -minigun.getMinigunSpeed() * trackers * 0.7f;
+    }
+
+    @Override
+    public void getStacksInItem(ItemStack stack, List<ItemStack> curStacks) {
+        MagazineHandler handler = getMagazine(stack);
+        for (int i = 0; i < handler.getSlots(); i++) {
+            if (!handler.getStackInSlot(i).isEmpty()) {
+                curStacks.add(handler.getStackInSlot(i));
+            }
+        }
+    }
+
+    @Override
+    public String getInventoryHeader() {
+        return TextFormatting.GREEN + "Loaded Ammo:";
     }
 
     public static class MagazineHandler extends FilteredItemStackHandler {

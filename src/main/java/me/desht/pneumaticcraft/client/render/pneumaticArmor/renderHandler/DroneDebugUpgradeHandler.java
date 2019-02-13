@@ -5,12 +5,12 @@ import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IOptionPage;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.client.gui.pneumaticHelmet.GuiDroneDebuggerOptions;
+import me.desht.pneumaticcraft.common.CommonHUDHandler;
+import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.item.Itemss;
-import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.HashSet;
@@ -63,31 +63,15 @@ public class DroneDebugUpgradeHandler implements IUpgradeRenderHandler {
         return null;
     }
 
-    /* @Override
-     public boolean isEnabled(ItemStack[] upgradeStacks){
-         if(enabledForStacks(upgradeStacks)) {
-             return true;
-         } else {
-             shownPositions.clear(); //TODO 1.8 test
-             return false;
-         }
-     }*/
     @Override
     public Item[] getRequiredUpgrades() {
         return new Item[]{Itemss.upgrades.get(EnumUpgrade.DISPENSER)};
     }
 
-    private static boolean enabledForStacks(ItemStack[] upgradeStacks) {
-        for (ItemStack stack : upgradeStacks) {
-            if (stack.getItem() == Itemss.upgrades.get(EnumUpgrade.DISPENSER)) return true;
-        }
-        return false;
-    }
-
     public static boolean enabledForPlayer(EntityPlayer player) {
-        ItemStack helmet = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
-        if (!helmet.isEmpty()) {
-            return enabledForStacks(UpgradableItemUtils.getUpgradeStacks(helmet));
+        if (player.getItemStackFromSlot(EntityEquipmentSlot.HEAD).getItem() instanceof ItemPneumaticArmor) {
+            CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer(player);
+            return handler.getUpgradeCount(EntityEquipmentSlot.HEAD, EnumUpgrade.DISPENSER) > 0;
         } else {
             return false;
         }

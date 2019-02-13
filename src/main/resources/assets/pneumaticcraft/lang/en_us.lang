@@ -933,6 +933,7 @@ gui.tooltip.gunAmmo.splash=§aSplash
 gui.tooltip.gunAmmo.lingering=§aLingering
 gui.tooltip.sneakForInfo=Sneak for info
 gui.tooltip.maxPressure=Max pressure: %s bar
+gui.tooltip.pressure=Pressure: %s bar
 gui.tooltip.amadronTablet.itemLocation=Item Providing Location: %s, %s, %s in dimension %s
 gui.tooltip.amadronTablet.fluidLocation=Fluid Providing Location: %s, %s, %s in dimension %s
 gui.tooltip.amadronTablet.selectItemLocation=Right click an inventory to allow it to provide items to vendors.

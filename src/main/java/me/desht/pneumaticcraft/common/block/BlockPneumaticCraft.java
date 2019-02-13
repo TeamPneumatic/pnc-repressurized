@@ -11,6 +11,7 @@ import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.api.tileentity.IPneumaticMachine;
 import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
+import me.desht.pneumaticcraft.common.inventory.ChargeableItemHandler;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.thirdparty.ModInteractionUtils;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
@@ -312,7 +313,15 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
     @Override
     public void addInformation(ItemStack stack, World world, List<String> curInfo, ITooltipFlag flag) {
         if (stack.hasTagCompound()) {
-            UpgradableItemUtils.addUpgradeInformation(stack, world, curInfo, flag);
+            if (NBTUtil.hasTag(stack, NBT_AIR_AMOUNT)) {
+                TileEntity te = createTileEntity(world, getDefaultState());
+                if (te instanceof IPneumaticMachine) {
+                    curInfo.add(TextFormatting.DARK_GREEN + "Stored Air: " + NBTUtil.getInteger(stack, NBT_AIR_AMOUNT) + "mL");
+                }
+            }
+            if (NBTUtil.hasTag(stack, ChargeableItemHandler.NBT_UPGRADE_TAG)) {
+                UpgradableItemUtils.addUpgradeInformation(stack, world, curInfo, flag);
+            }
             if (stack.getTagCompound().hasKey(ISerializableTanks.NBT_SAVED_TANKS, Constants.NBT.TAG_COMPOUND)) {
                 NBTTagCompound tag = stack.getTagCompound().getCompoundTag(ISerializableTanks.NBT_SAVED_TANKS);
                 for (String s : tag.getKeySet()) {
@@ -325,12 +334,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
                     }
                 }
             }
-            if (NBTUtil.hasTag(stack, NBT_AIR_AMOUNT)) {
-                TileEntity te = createTileEntity(world, getDefaultState());
-                if (te instanceof IPneumaticMachine) {
-                    curInfo.add(TextFormatting.GREEN + "Stored Air: " + NBTUtil.getInteger(stack, NBT_AIR_AMOUNT) + "mL");
-                }
-            }
+            addExtraInformation(stack, world, curInfo, flag);
         }
         if (PneumaticCraftRepressurized.proxy.isSneakingInGui()) {
             TileEntity te = createTileEntity(world, getDefaultState());
@@ -341,18 +345,21 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
         }
 
         String info = "gui.tab.info." + stack.getTranslationKey();
-        String translatedInfo = I18n.format(info);
-        if (!translatedInfo.equals(info)) {
+        if (I18n.hasKey(info)) {
             if (PneumaticCraftRepressurized.proxy.isSneakingInGui()) {
-                translatedInfo = TextFormatting.AQUA + translatedInfo.substring(2);
+                String translatedInfo = TextFormatting.AQUA + I18n.format(info).substring(2);  // strip out the leading text formatting
+                curInfo.addAll(PneumaticCraftUtils.convertStringIntoList(translatedInfo, 50));
                 if (!ThirdPartyManager.instance().docsProvider.docsProviderInstalled()) {
-                    translatedInfo += " \\n \\n" + I18n.format("gui.tab.info.assistIGW");
+                    curInfo.add(I18n.format("gui.tab.info.assistIGW"));
                 }
-                curInfo.addAll(PneumaticCraftUtils.convertStringIntoList(translatedInfo, 40));
             } else {
                 curInfo.add(TextFormatting.AQUA + I18n.format("gui.tooltip.sneakForInfo"));
             }
         }
+    }
+
+    protected void addExtraInformation(ItemStack stack, World world, List<String> curInfo, ITooltipFlag flag) {
+        // override in subclasses
     }
 
     /**

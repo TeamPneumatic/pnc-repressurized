@@ -11,10 +11,8 @@ import me.desht.pneumaticcraft.common.inventory.ChargeableItemHandler;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -98,14 +96,6 @@ public class ItemDrone extends ItemPneumatic implements IPressurizable, IChargin
             addAir(chargedStack, (int) (PneumaticValues.DRONE_VOLUME * PneumaticValues.DRONE_MAX_PRESSURE));
             subItems.add(chargedStack);
         }
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public void addInformation(ItemStack stack, World world, List<String> list, ITooltipFlag flag) {
-        list.add("Pressure: " + PneumaticCraftUtils.roundNumberTo(getPressure(stack), 1) + " bar");
-        UpgradableItemUtils.addUpgradeInformation(stack, world, list, flag);
-        super.addInformation(stack, world, list, flag);
     }
 
     @Override

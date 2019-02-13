@@ -173,7 +173,7 @@ public class HUDHandler implements IKeyListener {
                         progress = Math.min(100, progress + partialTicks);
                         RenderProgressBar.render(sr.getScaledWidth_double() / 2, yOffset,
                                 sr.getScaledWidth() - 10, yOffset + PROGRESS_BAR_HEIGHT - 1, -90F,
-                                progress,0xAA80FF00, 0xAA00FF00);
+                                progress,0xAAFFC000, 0xAA00FF00);
                         GlStateManager.enableTexture2D();
                         GuiUtils.drawItemStack(armorStack,xLeft + 2, yOffset);
                     }

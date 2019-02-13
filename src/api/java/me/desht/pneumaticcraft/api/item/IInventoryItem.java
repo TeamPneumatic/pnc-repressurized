@@ -16,4 +16,10 @@ public interface IInventoryItem {
      * @param curStacks List of all currently added stacks for this item. Add more stacks in here in your implementation when found the right item.
      */
     void getStacksInItem(ItemStack stack, List<ItemStack> curStacks);
+
+    /**
+     * Get a header for the inventory list, for tooltip purposes.  Default return of null will not add any header.
+     * @return a header string (can be a translation string), or null for no header
+     */
+    default String getInventoryHeader() { return null; }
 }

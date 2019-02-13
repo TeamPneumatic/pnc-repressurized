@@ -1,11 +1,12 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.item.IPressurizable;
-import net.minecraft.client.util.ITooltipFlag;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
-import net.minecraft.world.World;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -41,12 +42,6 @@ public class ItemPressurizable extends ItemPneumatic implements IPressurizable {
     }
 
     @Override
-    public void addInformation(ItemStack stack, World worldIn, List<String> infoList, ITooltipFlag par4) {
-        infoList.add("Pressure: " + Math.round(getPressure(stack) * 10D) / 10D + " bar");
-        super.addInformation(stack, worldIn, infoList, par4);
-    }
-
-    @Override
     public void addAir(ItemStack iStack, int amount) {
         iStack.setItemDamage(iStack.getItemDamage() - amount);
     }
@@ -62,4 +57,19 @@ public class ItemPressurizable extends ItemPneumatic implements IPressurizable {
         return volume;
     }
 
+    static void addPressureTooltip(ItemStack stack, List<String> textList) {
+        IPressurizable p = IPressurizable.of(stack);
+        if (p != null) {
+            float f = p.getPressure(stack) / p.maxPressure(stack);
+            TextFormatting color;
+            if (f < 0.1f) {
+                color = TextFormatting.RED;
+            } else if (f < 0.5f) {
+                color = TextFormatting.GOLD;
+            } else {
+                color = TextFormatting.DARK_GREEN;
+            }
+            textList.add(color + I18n.format("gui.tooltip.pressure", PneumaticCraftUtils.roundNumberTo(p.getPressure(stack), 1)));
+        }
+    }
 }

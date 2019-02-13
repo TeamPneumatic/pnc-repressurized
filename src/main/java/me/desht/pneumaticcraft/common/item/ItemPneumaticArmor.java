@@ -110,15 +110,11 @@ public class ItemPneumaticArmor extends ItemArmor
 
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
-        float pressure = getPressure(stack);
-        tooltip.add((pressure < 0.5F ? TextFormatting.RED : TextFormatting.DARK_GREEN) + "Pressure: " + Math.round(pressure * 10D) / 10D + " bar");
-        UpgradableItemUtils.addUpgradeInformation(stack, worldIn, tooltip, flagIn);
+        ItemPneumatic.addStandardTooltip(stack, worldIn, tooltip, flagIn);
 
-        switch (armorType) {
-            case HEAD: addHelmetInformation(stack, worldIn, tooltip, flagIn); break;
+        if (armorType == EntityEquipmentSlot.HEAD) {
+            addHelmetInformation(stack, worldIn, tooltip, flagIn);
         }
-
-        ItemPneumatic.addTooltip(stack, worldIn, tooltip);
     }
 
     private void addHelmetInformation(ItemStack stack, World worldIn, List<String> tooltip, ITooltipFlag flagIn) {

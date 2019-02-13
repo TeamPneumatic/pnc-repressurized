@@ -9,6 +9,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
 import java.util.Arrays;
@@ -37,9 +38,9 @@ public class UpgradableItemUtils {
             }
         }
         if (isItemEmpty) {
-            textList.add(I18n.format("gui.tooltip.upgrades.empty"));
+            textList.add(TextFormatting.DARK_GREEN + I18n.format("gui.tooltip.upgrades.empty"));
         } else {
-            textList.add(I18n.format("gui.tooltip.upgrades.not_empty"));
+            textList.add(TextFormatting.GREEN + I18n.format("gui.tooltip.upgrades.not_empty"));
             PneumaticCraftUtils.sortCombineItemStacksAndToString(textList, inventoryStacks);
         }
         return inventoryStacks.length;
