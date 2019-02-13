@@ -90,13 +90,14 @@ public class TileEntityDroneInterface extends TileEntity
 
     @Override
     public NBTTagCompound getUpdateTag() {
-        NBTTagCompound tag = new NBTTagCompound();
+        NBTTagCompound tag = super.getUpdateTag();
         tag.setInteger("drone", drone != null ? drone.getEntityId() : -1);
         return tag;
     }
 
     @Override
     public void handleUpdateTag(NBTTagCompound tag) {
+        super.handleUpdateTag(tag);
         Entity entity = getWorld().getEntityByID(tag.getInteger("drone"));
         drone = entity instanceof EntityDrone ? (EntityDrone) entity : null;
         world.markBlockRangeForRenderUpdate(pos, pos);
