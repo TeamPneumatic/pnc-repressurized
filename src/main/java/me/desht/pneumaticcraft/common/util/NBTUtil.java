@@ -28,10 +28,7 @@ public class NBTUtil {
      * @return True if the {@link NBTTagCompound} has the tag otherwise false.
      */
     public static boolean hasTag(ItemStack itemStack, String tagName) {
-        if (itemStack.getTagCompound() != null) {
-            return itemStack.getTagCompound().hasKey(tagName);
-        }
-        return false;
+        return itemStack.getTagCompound() != null && itemStack.getTagCompound().hasKey(tagName);
     }
 
     /**

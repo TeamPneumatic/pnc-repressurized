@@ -29,7 +29,6 @@ public class TileEntityPneumaticBase extends TileEntityTickableBase implements I
         this.dangerPressure = dangerPressure;
         this.criticalPressure = criticalPressure;
         defaultVolume = volume;
-//        addLuaMethods(luaMethodRegistry);
     }
 
     @Override

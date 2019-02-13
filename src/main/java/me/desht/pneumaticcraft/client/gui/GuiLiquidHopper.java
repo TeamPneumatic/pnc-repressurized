@@ -61,6 +61,12 @@ public class GuiLiquidHopper extends GuiPneumaticContainerBase<TileEntityLiquidH
         modeButtons[1].enabled = !te.doesLeaveMaterial();
     }
 
+    @Override
+    protected void drawGuiContainerForegroundLayer(int x, int y) {
+        super.drawGuiContainerForegroundLayer(x, y);
+        fontRenderer.drawString("Upgr.", 53, 19, 4210752);
+    }
+
     private List<String> getStatus() {
         List<String> textList = new ArrayList<>();
         int itemsPer = te.getMaxItems();

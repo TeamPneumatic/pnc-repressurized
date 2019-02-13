@@ -317,10 +317,7 @@ public class PneumaticCraftUtils {
      */
     public static void sortCombineItemStacksAndToString(List<String> textList, ItemStack[] originalStacks) {
         ItemStack[] stacks = new ItemStack[originalStacks.length];
-        Arrays.fill(stacks, ItemStack.EMPTY);
-        for (int i = 0; i < originalStacks.length; i++) {
-            if (!originalStacks[i].isEmpty()) stacks[i] = originalStacks[i].copy();
-        }
+        Arrays.setAll(stacks, value -> originalStacks[value].copy());
 
         int maxItemNameLength = getMaxItemNameLength(stacks);
         for (int i = maxItemNameLength - 1; i >= 0; i--) {
@@ -332,8 +329,9 @@ public class PneumaticCraftUtils {
         for (ItemStack stack : stacks) {
             if (!stack.isEmpty()) {
                 if (oldItemStack.isEmpty() || !stack.isItemEqual(oldItemStack) || oldInventoryItems != null && oldInventoryItems.size() > 0) {
-                    if (!oldItemStack.isEmpty())
+                    if (!oldItemStack.isEmpty()) {
                         textList.add("\u2022 " + PneumaticCraftUtils.convertAmountToString(itemCount) + " x " + oldItemStack.getDisplayName());
+                    }
                     if (oldInventoryItems != null) {
                         int oldSize = textList.size();
                         sortCombineItemStacksAndToString(textList, oldInventoryItems.toArray(new ItemStack[0]));
