@@ -253,8 +253,11 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<TileEntityUniv
             textList.add(TextFormatting.GRAY + "Sensor error reported!");
             textList.add(TextFormatting.BLACK + te.lastSensorError);
         }
+
+        // upgrades are in slots 0..3
+        // get upgrades from the container, not the tile entity (te upgrade handler isn't sync'd)
         for (int i = 0; i < te.getUpgradesInventory().getSlots(); i++) {
-            ItemStack stack = te.getUpgradesInventory().getStackInSlot(i);
+            ItemStack stack = inventorySlots.inventorySlots.get(i).getStack();
             if (stack.getItem() instanceof IPositionProvider) {
                 BlockPos pos = ((IPositionProvider) stack.getItem()).getStoredPositions(stack).get(0);
                 if (pos == null) {

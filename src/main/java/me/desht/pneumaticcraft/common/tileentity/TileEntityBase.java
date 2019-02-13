@@ -65,7 +65,6 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     private final Set<String> applicableCustomUpgrades = new HashSet<>();
     private final UpgradeCache upgradeCache = new UpgradeCache(this);
 
-    @DescSynced
     UpgradeHandler upgradeHandler;
     boolean firstRun = true;  // True only the first time updateEntity invokes in a session
     int poweredRedstone; // The redstone strength currently applied to the block.

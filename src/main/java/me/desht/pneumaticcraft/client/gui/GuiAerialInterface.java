@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.google.common.collect.ImmutableList;
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.IGuiWidget;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetEnergy;
@@ -53,7 +52,7 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<TileEntityAeri
             addWidget(new WidgetEnergy(guiLeft + 20, guiTop + 20, storage));
         }
 
-        if (te.getUpgrades(EnumUpgrade.DISPENSER) > 0) {
+        if (te.dispenserUpgradeInserted) {
             // Experience Tab
             if (PneumaticCraftAPIHandler.getInstance().liquidXPs.size() > 0) {
                 GuiAnimatedStat xpStat = addAnimatedStat("gui.tab.info.aerialInterface.liquidXp.info.title",
@@ -101,13 +100,13 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<TileEntityAeri
 
     @Override
     protected boolean shouldAddSideConfigTabs() {
-        return te.getUpgrades(EnumUpgrade.DISPENSER) == 0;
+        return !te.dispenserUpgradeInserted;
     }
 
     @Override
     public void updateScreen() {
         super.updateScreen();
-        if (te.getUpgrades(EnumUpgrade.DISPENSER) > 0) {
+        if (te.dispenserUpgradeInserted) {
             if (modeButtons[0] != null) {
                 for (int i = 0; i < modeButtons.length; i++) {
                     modeButtons[i].enabled = te.feedMode != i;

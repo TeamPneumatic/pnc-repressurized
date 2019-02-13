@@ -69,7 +69,8 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
     private boolean updateNeighbours;
     @GuiSynced
     public boolean isConnectedToPlayer = false;
-    private boolean dispenserUpgradeInserted;
+    @GuiSynced
+    public boolean dispenserUpgradeInserted;
 
     private final SideConfigurator<IItemHandler> itemHandlerSideConfigurator;
 

@@ -61,6 +61,8 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     @DescSynced
     private ItemStack camoStack = ItemStack.EMPTY;
     private IBlockState camoState;
+    @DescSynced
+    public boolean dispenserUpgradeInserted;
 
     public TileEntityChargingStation() {
         super(PneumaticValues.DANGER_PRESSURE_CHARGING_STATION, PneumaticValues.MAX_PRESSURE_CHARGING_STATION, PneumaticValues.VOLUME_CHARGING_STATION, 4);
@@ -86,7 +88,6 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
         if (!world.isRemote) {
             discharging = false;
             charging = false;
-
 
             int airToTransfer = (int) (PneumaticValues.CHARGING_STATION_CHARGE_RATE * getSpeedMultiplierFromUpgrades());
 
@@ -127,6 +128,15 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
                 getAirHandler(null).airLeak(getRotation());
             }
         }
+    }
+
+    @Override
+    protected void onFirstServerUpdate() {
+        super.onFirstServerUpdate();
+
+//        if (dispenserUpgradeInserted) {
+//            sendDescriptionPacket();
+//        }
     }
 
     private List<Pair<IPressurizable, ItemStack>> findChargeableItems() {
@@ -233,6 +243,8 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
 
         camoStack = ICamouflageableTE.readCamoStackFromNBT(tag);
         camoState = ICamouflageableTE.getStateForStack(camoStack);
+
+        dispenserUpgradeInserted = getUpgrades(EnumUpgrade.DISPENSER) > 0;
     }
 
     @Override
@@ -252,6 +264,15 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
         super.markDirty();
         if (chargeableInventory != null) {
             chargeableInventory.writeToNBT();
+        }
+    }
+
+    @Override
+    protected void onUpgradesChanged() {
+        super.onUpgradesChanged();
+
+        if (world != null && !world.isRemote) {
+            dispenserUpgradeInserted = getUpgrades(EnumUpgrade.DISPENSER) > 0;
         }
     }
 

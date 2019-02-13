@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.client.render.tileentity;
 
-import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.client.model.block.ModelChargingStation;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -28,7 +27,7 @@ public class RenderChargingStation extends AbstractModelRenderer<TileEntityCharg
                 ghostEntityItem.hoverStart = 0.0F;
                 ghostEntityItem.setItem(te.getChargingItem());
             }
-            model.renderModel(0.0625f, te.getUpgrades(IItemRegistry.EnumUpgrade.DISPENSER) > 0, ghostEntityItem);
+            model.renderModel(0.0625f, te.dispenserUpgradeInserted, ghostEntityItem);
         }
     }
 }
