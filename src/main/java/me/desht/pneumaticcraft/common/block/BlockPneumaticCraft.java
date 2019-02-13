@@ -19,8 +19,9 @@ import me.desht.pneumaticcraft.common.thirdparty.theoneprobe.TOPCallback;
 import me.desht.pneumaticcraft.common.thirdparty.waila.IInfoForwarder;
 import me.desht.pneumaticcraft.common.tileentity.*;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
+import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.lib.Log;
+import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
@@ -67,7 +68,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
     public static final PropertyBool EAST = PropertyBool.create("east");
     public static final PropertyBool SOUTH = PropertyBool.create("south");
     public static final PropertyBool WEST = PropertyBool.create("west");
-    public static final PropertyBool[] CONNECTION_PROPERTIES = new PropertyBool[]{DOWN, UP, NORTH, SOUTH, WEST, EAST};
+    static final PropertyBool[] CONNECTION_PROPERTIES = new PropertyBool[]{DOWN, UP, NORTH, SOUTH, WEST, EAST};
 
     private static final String NBT_UPGRADE_INVENTORY = "UpgradeInventory";
     private static final String NBT_SIDECONFIG = "SideConfiguration";
@@ -158,8 +159,8 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
     @Override
     public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase entity, ItemStack stack) {
         TileEntity te = world.getTileEntity(pos);
-        if (te instanceof ISerializableTanks && stack.hasTagCompound() && stack.getTagCompound().hasKey(ISerializableTanks.SAVED_TANKS, Constants.NBT.TAG_COMPOUND)) {
-            ((ISerializableTanks) te).deserializeTanks(stack.getTagCompound().getCompoundTag(ISerializableTanks.SAVED_TANKS));
+        if (te instanceof ISerializableTanks && stack.hasTagCompound() && stack.getTagCompound().hasKey(ISerializableTanks.NBT_SAVED_TANKS, Constants.NBT.TAG_COMPOUND)) {
+            ((ISerializableTanks) te).deserializeTanks(stack.getTagCompound().getCompoundTag(ISerializableTanks.NBT_SAVED_TANKS));
         }
         if (te instanceof TileEntityBase && stack.hasTagCompound() && stack.getTagCompound().hasKey(NBT_UPGRADE_INVENTORY)) {
             ((TileEntityBase) te).getUpgradesInventory().deserializeNBT(stack.getTagCompound().getCompoundTag(NBT_UPGRADE_INVENTORY));
@@ -311,8 +312,9 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
     @Override
     public void addInformation(ItemStack stack, World world, List<String> curInfo, ITooltipFlag flag) {
         if (stack.hasTagCompound()) {
-            if (stack.getTagCompound().hasKey(ISerializableTanks.SAVED_TANKS, Constants.NBT.TAG_COMPOUND)) {
-                NBTTagCompound tag = stack.getTagCompound().getCompoundTag(ISerializableTanks.SAVED_TANKS);
+            UpgradableItemUtils.addUpgradeInformation(stack, world, curInfo, flag);
+            if (stack.getTagCompound().hasKey(ISerializableTanks.NBT_SAVED_TANKS, Constants.NBT.TAG_COMPOUND)) {
+                NBTTagCompound tag = stack.getTagCompound().getCompoundTag(ISerializableTanks.NBT_SAVED_TANKS);
                 for (String s : tag.getKeySet()) {
                     NBTTagCompound tankTag = tag.getCompoundTag(s);
                     FluidTank tank = new FluidTank(tankTag.getInteger("Amount"));
@@ -323,11 +325,10 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
                     }
                 }
             }
-            if (stack.getTagCompound().hasKey(NBT_AIR_AMOUNT, Constants.NBT.TAG_INT)) {
-                int air = stack.getTagCompound().getInteger(NBT_AIR_AMOUNT);
+            if (NBTUtil.hasTag(stack, NBT_AIR_AMOUNT)) {
                 TileEntity te = createTileEntity(world, getDefaultState());
                 if (te instanceof IPneumaticMachine) {
-                    curInfo.add("Stored air: " + (air + ((IPneumaticMachine) te).getAirHandler(null).getVolume()) + "mL");
+                    curInfo.add(TextFormatting.GREEN + "Stored Air: " + NBTUtil.getInteger(stack, NBT_AIR_AMOUNT) + "mL");
                 }
             }
         }
@@ -444,28 +445,21 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
         TileEntity te = world.getTileEntity(pos);
         if (te != null && drops.size() > 0) {
             ItemStack teStack = drops.get(0);
-            if (teStack == null || teStack.isEmpty()) {
-                // should never happen, but paranoid coding to maybe deal with
-                // https://github.com/TeamPneumatic/pnc-repressurized/issues/292
-                // some other mod could be messing with the dropped itemstack?
-                Log.warning("unexpected value for itemstack dropped from " + this + ": " + teStack);
-                teStack = new ItemStack(Item.getItemFromBlock(this));
-            }
             teStack.setTagCompound(new NBTTagCompound());
             if (te instanceof ISerializableTanks) {
                 ((ISerializableTanks) te).serializeTanks(teStack);
             }
             if (te instanceof TileEntityBase && ((TileEntityBase) te).preserveUpgradesOnBreak) {
-                TileEntityBase.UpgradeHandler handler = ((TileEntityBase) te).getUpgradesInventory();
-                for (int i = 0; i < handler.getSlots(); i++) {
-                    if (!handler.getStackInSlot(i).isEmpty()) {
-                        teStack.getTagCompound().setTag(NBT_UPGRADE_INVENTORY, ((TileEntityBase) te).getUpgradesInventory().serializeNBT());
+                TileEntityBase.UpgradeHandler upgradeHandler = ((TileEntityBase) te).getUpgradesInventory();
+                for (int i = 0; i < upgradeHandler.getSlots(); i++) {
+                    if (!upgradeHandler.getStackInSlot(i).isEmpty()) {
+                        teStack.getTagCompound().setTag(NBT_UPGRADE_INVENTORY, upgradeHandler.serializeNBT());
                         break;
                     }
                 }
                 if (te instanceof IPneumaticMachine) {
                     IAirHandler airHandler = ((IPneumaticMachine) te).getAirHandler(null);
-                    if (airHandler != null) {
+                    if (airHandler != null && airHandler.getPressure() != 0f) {
                         teStack.getTagCompound().setInteger(NBT_AIR_AMOUNT, airHandler.getAir());
                     }
                 }
