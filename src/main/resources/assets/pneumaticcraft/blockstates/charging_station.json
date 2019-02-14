@@ -31,6 +31,14 @@
 		},
 		"inventory": [{
 			"transform": "forge:default-block"
-		}]
+		}],
+		"charge_pad": {
+			"true": {
+				"submodel": {
+					"charge_pad": { "model" : "pneumaticcraft:charge_pad" }
+				}
+			},
+			"false": {}
+		}
 	}
 }

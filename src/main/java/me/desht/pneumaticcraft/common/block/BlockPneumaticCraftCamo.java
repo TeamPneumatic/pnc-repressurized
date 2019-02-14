@@ -42,7 +42,7 @@ public abstract class BlockPneumaticCraftCamo extends BlockPneumaticCraftModeled
     public static final PropertyObject<IBlockState> CAMO_STATE = new PropertyObject<>("camo_state", IBlockState.class);
     public static final PropertyObject<IBlockAccess> BLOCK_ACCESS = new PropertyObject<>("block_access", IBlockAccess.class);
     public static final PropertyObject<BlockPos> BLOCK_POS = new PropertyObject<>("pos", BlockPos.class);
-    static final IUnlistedProperty[] EXTENDED_PROPS = new IUnlistedProperty[] { CAMO_STATE, BLOCK_ACCESS, BLOCK_POS };
+    static final IUnlistedProperty[] UNLISTED_CAMO_PROPERTIES = new IUnlistedProperty[] { CAMO_STATE, BLOCK_ACCESS, BLOCK_POS };
 
     protected BlockPneumaticCraftCamo(Material par2Material, String registryName) {
         super(par2Material, registryName);
@@ -61,7 +61,7 @@ public abstract class BlockPneumaticCraftCamo extends BlockPneumaticCraftModeled
     @Override
     protected BlockStateContainer createBlockState() {
         IProperty[] props = isRotatable() ? new IProperty[] { ROTATION } : new IProperty[] { };
-        return new ExtendedBlockState(this, props, EXTENDED_PROPS);
+        return new ExtendedBlockState(this, props, UNLISTED_CAMO_PROPERTIES);
     }
 
     @Override

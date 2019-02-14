@@ -134,9 +134,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     protected void onFirstServerUpdate() {
         super.onFirstServerUpdate();
 
-//        if (dispenserUpgradeInserted) {
-//            sendDescriptionPacket();
-//        }
+        dispenserUpgradeInserted = getUpgrades(EnumUpgrade.DISPENSER) > 0;
     }
 
     private List<Pair<IPressurizable, ItemStack>> findChargeableItems() {
@@ -243,8 +241,6 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
 
         camoStack = ICamouflageableTE.readCamoStackFromNBT(tag);
         camoState = ICamouflageableTE.getStateForStack(camoStack);
-
-        dispenserUpgradeInserted = getUpgrades(EnumUpgrade.DISPENSER) > 0;
     }
 
     @Override

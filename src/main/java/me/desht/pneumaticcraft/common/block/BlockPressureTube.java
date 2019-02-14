@@ -119,7 +119,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
     protected BlockStateContainer createBlockState() {
         return new ExtendedBlockState(this,
                 Arrays.copyOf(BlockPressureTube.CONNECTION_PROPERTIES_3, BlockPressureTube.CONNECTION_PROPERTIES_3.length),
-                EXTENDED_PROPS);
+                UNLISTED_CAMO_PROPERTIES);
     }
 
     @Override

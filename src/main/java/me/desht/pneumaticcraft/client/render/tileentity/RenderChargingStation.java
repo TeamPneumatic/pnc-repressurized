@@ -1,16 +1,18 @@
 package me.desht.pneumaticcraft.client.render.tileentity;
 
-import me.desht.pneumaticcraft.client.model.block.ModelChargingStation;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.entity.RenderEntityItem;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.util.ResourceLocation;
 
 public class RenderChargingStation extends AbstractModelRenderer<TileEntityChargingStation> {
-    private final ModelChargingStation model;
+    private RenderEntityItem customRenderItem = null;
 
     public RenderChargingStation() {
-        model = new ModelChargingStation();
     }
 
     @Override
@@ -20,14 +22,22 @@ public class RenderChargingStation extends AbstractModelRenderer<TileEntityCharg
 
     @Override
     void renderModel(TileEntityChargingStation te, float partialTicks) {
-        if (te != null) {
-            EntityItem ghostEntityItem = null;
-            if (!te.getChargingItem().isEmpty()) {
-                ghostEntityItem = new EntityItem(te.getWorld());
-                ghostEntityItem.hoverStart = 0.0F;
-                ghostEntityItem.setItem(te.getChargingItem());
+        if (te != null && !te.getChargingItem().isEmpty()) {
+            EntityItem ghostEntityItem = new EntityItem(te.getWorld());
+            ghostEntityItem.hoverStart = 0.0F;
+            ghostEntityItem.setItem(te.getChargingItem());
+            if (customRenderItem == null) {
+                customRenderItem = new NoBobItemRenderer();
             }
-            model.renderModel(0.0625f, te.dispenserUpgradeInserted, ghostEntityItem);
+            GlStateManager.translate(0, 1.25f, 0);
+            GlStateManager.scale(1.0F, -1F, -1F);
+            GlStateManager.rotate(90, 0F, 1F, 0F);
+
+            RenderManager renderManager = Minecraft.getMinecraft().getRenderManager();
+            boolean fancySetting = renderManager.options.fancyGraphics;
+            renderManager.options.fancyGraphics = true;
+            customRenderItem.doRender(ghostEntityItem, 0, 0, 0, 0, 0);
+            renderManager.options.fancyGraphics = fancySetting;
         }
     }
 }

@@ -1,21 +1,23 @@
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.BBConstants;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.properties.PropertyBool;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
+import net.minecraftforge.common.property.ExtendedBlockState;
 
 public class BlockChargingStation extends BlockPneumaticCraftCamo {
+    private static final PropertyBool CHARGE_PAD = PropertyBool.create("charge_pad");
 
     private static final AxisAlignedBB BOUNDS = new AxisAlignedBB(
             BBConstants.CHARGING_STATION_MIN_POS, 0F, BBConstants.CHARGING_STATION_MIN_POS,
@@ -26,9 +28,23 @@ public class BlockChargingStation extends BlockPneumaticCraftCamo {
     }
 
     @Override
+    protected BlockStateContainer createBlockState() {
+        return new ExtendedBlockState(this, new IProperty[] { ROTATION, CHARGE_PAD }, UNLISTED_CAMO_PROPERTIES);
+    }
+
+    @Override
+    public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
+        TileEntity te = PneumaticCraftUtils.getTileEntitySafely(worldIn, pos);
+        if (te instanceof TileEntityChargingStation) {
+            return state.withProperty(CHARGE_PAD, ((TileEntityChargingStation) te).dispenserUpgradeInserted);
+        }
+        return state;
+    }
+
+    @Override
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
         TileEntity te = source.getTileEntity(pos);
-        if (te instanceof TileEntityChargingStation && ((TileEntityChargingStation) te).getUpgrades(EnumUpgrade.DISPENSER) > 0) {
+        if (te instanceof TileEntityChargingStation && ((TileEntityChargingStation) te).dispenserUpgradeInserted) {
             return FULL_BLOCK_AABB;
         } else {
             return BOUNDS;
@@ -48,19 +64,6 @@ public class BlockChargingStation extends BlockPneumaticCraftCamo {
     @Override
     public boolean isRotatable() {
         return true;
-    }
-
-    @Override
-    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float par7, float par8, float par9) {
-//        if (!world.isRemote && player.isSneaking()) {
-//            TileEntity te = world.getTileEntity(pos);
-//            if (te instanceof TileEntityChargingStation) {
-//                TileEntityChargingStation teCS = (TileEntityChargingStation) te;
-//                teCS.setCamoStack(player.getHeldItemMainhand());
-//                return true;
-//            }
-//        }
-        return super.onBlockActivated(world, pos, state, player, hand, side, par7, par8, par9);
     }
 
     @Override
