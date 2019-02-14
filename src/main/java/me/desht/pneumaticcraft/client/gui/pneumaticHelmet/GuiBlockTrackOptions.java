@@ -55,7 +55,9 @@ public class GuiBlockTrackOptions extends IOptionPage.SimpleToggleableOptions im
     public void actionPerformed(IGuiWidget widget) {
         if (widget instanceof GuiKeybindCheckBox) {
             GuiKeybindCheckBox checkBox = (GuiKeybindCheckBox) widget;
-            HUDHandler.instance().addFeatureToggleMessage(getRenderHandler(), checkBox.text, checkBox.checked);
+            if (checkBox == GuiKeybindCheckBox.fromKeyBindingName(checkBox.text)) {
+                HUDHandler.instance().addFeatureToggleMessage(getRenderHandler(), checkBox.text, checkBox.checked);
+            }
         }
     }
 

@@ -40,7 +40,7 @@ public class GuiJetBootsOptions extends IOptionPage.SimpleToggleableOptions impl
 
     @Override
     public void actionPerformed(IGuiWidget widget) {
-        if (widget.getID() == 0) {
+        if (widget == GuiKeybindCheckBox.fromKeyBindingName("jetboots.module.builderMode")) {
             CommonHUDHandler commonHUDHandler = CommonHUDHandler.getHandlerForPlayer();
             if (commonHUDHandler.getUpgradeCount(EntityEquipmentSlot.FEET, IItemRegistry.EnumUpgrade.JET_BOOTS) >= 8) {
                 boolean checked = ((GuiKeybindCheckBox) widget).checked;
