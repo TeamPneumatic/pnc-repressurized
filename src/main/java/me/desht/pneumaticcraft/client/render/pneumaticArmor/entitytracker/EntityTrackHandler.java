@@ -317,6 +317,7 @@ public class EntityTrackHandler {
                         .orElse(0);
                 if (hackTime == 0) {
                     hackable.addInfo(entity, curInfo, PneumaticCraftRepressurized.proxy.getClientPlayer());
+                    HackUpgradeRenderHandler.addKeybindTooltip(curInfo);
                 } else {
                     int requiredHackTime = hackable.getHackTime(entity, PneumaticCraftRepressurized.proxy.getClientPlayer());
                     int percentageComplete = hackTime * 100 / requiredHackTime;
@@ -326,9 +327,7 @@ public class EntityTrackHandler {
                         hackable.addPostHackInfo(entity, curInfo, PneumaticCraftRepressurized.proxy.getClientPlayer());
                     } else {
                         hackable.addInfo(entity, curInfo, PneumaticCraftRepressurized.proxy.getClientPlayer());
-                        if (KeyHandler.getInstance().keybindHack.getKeyCode() != 0) {
-                            curInfo.add(TextFormatting.GOLD + "Press [" + Keyboard.getKeyName(KeyHandler.getInstance().keybindHack.getKeyCode()) + "] to hack");
-                        }
+                        HackUpgradeRenderHandler.addKeybindTooltip(curInfo);
                     }
                 }
             }

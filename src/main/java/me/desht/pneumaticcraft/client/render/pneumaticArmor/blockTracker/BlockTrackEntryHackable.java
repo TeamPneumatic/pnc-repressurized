@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.client.render.pneumaticArmor.blockTracker;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IBlockTrackEntry;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IHackableBlock;
-import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.hacking.HackableHandler;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.renderHandler.BlockTrackUpgradeHandler;
@@ -12,10 +11,8 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import org.lwjgl.input.Keyboard;
 
 import java.util.List;
 
@@ -42,6 +39,7 @@ public class BlockTrackEntryHackable implements IBlockTrackEntry {
         int hackTime = HUDHandler.instance().getSpecificRenderer(BlockTrackUpgradeHandler.class).getTargetForCoord(pos).getHackTime();
         if (hackTime == 0) {
             hackableBlock.addInfo(world, pos, infoList, PneumaticCraftRepressurized.proxy.getClientPlayer());
+            HackUpgradeRenderHandler.addKeybindTooltip(infoList);
         } else {
             int requiredHackTime = hackableBlock.getHackTime(world, pos, PneumaticCraftRepressurized.proxy.getClientPlayer());
             int percentageComplete = hackTime * 100 / requiredHackTime;
@@ -51,9 +49,7 @@ public class BlockTrackEntryHackable implements IBlockTrackEntry {
                 hackableBlock.addPostHackInfo(world, pos, infoList, PneumaticCraftRepressurized.proxy.getClientPlayer());
             } else {
                 hackableBlock.addInfo(world, pos, infoList, PneumaticCraftRepressurized.proxy.getClientPlayer());
-                if (KeyHandler.getInstance().keybindHack.getKeyCode() != 0) {
-                    infoList.add(TextFormatting.GOLD + "Press [" + Keyboard.getKeyName(KeyHandler.getInstance().keybindHack.getKeyCode()) + "] to hack");
-                }
+                HackUpgradeRenderHandler.addKeybindTooltip(infoList);
             }
         }
     }

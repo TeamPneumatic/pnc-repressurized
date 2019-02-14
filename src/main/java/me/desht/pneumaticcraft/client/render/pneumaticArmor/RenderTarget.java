@@ -20,8 +20,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.entity.monster.EntitySlime;
+import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
@@ -142,7 +141,7 @@ public class RenderTarget {
             red = 1;
             green = 1;
             blue = 0;
-        } else if (entity instanceof EntityMob || entity instanceof EntitySlime) {
+        } else if (entity instanceof IMob) {
             red = 1;
             green = 0;
             blue = 0;

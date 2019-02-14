@@ -4,12 +4,17 @@ import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IOptionPage;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
+import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.common.CommonHUDHandler;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
+import net.minecraft.util.text.TextFormatting;
+import org.lwjgl.input.Keyboard;
+
+import java.util.List;
 
 public class HackUpgradeRenderHandler implements IUpgradeRenderHandler {
 
@@ -79,5 +84,11 @@ public class HackUpgradeRenderHandler implements IUpgradeRenderHandler {
     @Override
     public EntityEquipmentSlot getEquipmentSlot() {
         return EntityEquipmentSlot.HEAD;
+    }
+
+    public static void addKeybindTooltip(List<String> curInfo) {
+        if (KeyHandler.getInstance().keybindHack.getKeyCode() != 0) {
+            curInfo.add(TextFormatting.GOLD + "Press [" + Keyboard.getKeyName(KeyHandler.getInstance().keybindHack.getKeyCode()) + "] to hack");
+        }
     }
 }
