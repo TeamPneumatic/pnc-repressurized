@@ -89,7 +89,7 @@ public class GuiKeybindCheckBox extends GuiCheckBox {
                         if ((UPGRADE_PREFIX + upgradeRenderHandler.getUpgradeName()).equals(keyBindingName) && hudHandler.isUpgradeRendererInserted(slot, i)) {
                             NetworkHandler.sendToServer(new PacketToggleArmorFeature((byte) i, coreComponents.checked && checked, slot));
                             hudHandler.setUpgradeRenderEnabled(slot, (byte)i, coreComponents.checked && checked);
-                            HUDHandler.instance().addMessage(I18n.format("pneumaticHelmet.message." + (checked ? "enable" : "disable") + "Setting", I18n.format(keyBindingName)), new ArrayList<>(), 60, 0x7000AA00);
+                            HUDHandler.instance().addFeatureToggleMessage(keyBindingName, checked);
                             break;
                         }
                     }

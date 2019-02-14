@@ -27,6 +27,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraftforge.event.entity.living.*;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.HashMap;
@@ -202,6 +203,23 @@ public class EventHandlerPneumaticArmor {
                 armorJumping.put(player.getUniqueID(), player.world.getTotalWorldTime());
                 int airUsed = (int) Math.ceil(PneumaticValues.PNEUMATIC_ARMOR_JUMP_USAGE * actualBoost * (player.isSprinting() ? 2 : 1));
                 handler.addAir(stack, EntityEquipmentSlot.LEGS, -airUsed);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void breakSpeedCheck(PlayerEvent.BreakSpeed event) {
+        // allow the player to dig at improved speed if flying with builder mode active
+        // (need 10 upgrades for normal dig speed)
+        EntityPlayer player = event.getEntityPlayer();
+        if (player.getItemStackFromSlot(EntityEquipmentSlot.FEET).getItem() instanceof ItemPneumaticArmor) {
+            CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer(event.getEntityPlayer());
+            if (handler.isJetBootsEnabled() && !player.onGround && handler.isJetBootsBuilderMode()) {
+                int n = 11 - handler.getUpgradeCount(EntityEquipmentSlot.FEET, IItemRegistry.EnumUpgrade.JET_BOOTS, 10);
+                // default dig speed when not on ground is 1/5 of normal
+                if (n < 4) {
+                    event.setNewSpeed(event.getOriginalSpeed() * (5f / n));
+                }
             }
         }
     }

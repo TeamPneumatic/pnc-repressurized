@@ -299,6 +299,15 @@ public class HUDHandler implements IKeyListener {
         lastArmorInitSound = when;
     }
 
+    public void addFeatureToggleMessage(String key, boolean enabled) {
+        HUDHandler.instance().addMessage(I18n.format("pneumaticHelmet.message." + (enabled ? "enable" : "disable") + "Setting", I18n.format(key)), new ArrayList<>(), 60, 0x7000AA00);
+    }
+
+    public void addFeatureToggleMessage(IUpgradeRenderHandler handler, String key, boolean enabled) {
+        String msg = I18n.format(GuiKeybindCheckBox.UPGRADE_PREFIX + handler.getUpgradeName()) + ": " + I18n.format(key);
+        HUDHandler.instance().addMessage(I18n.format("pneumaticHelmet.message." + (enabled ? "enable" : "disable") + "Setting", msg), new ArrayList<>(), 60, 0x7000AA00);
+    }
+
     public void addMessage(String title, List<String> message, int duration, int backColor) {
         addMessage(new ArmorMessage(title, message, duration, backColor));
     }

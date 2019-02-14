@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IHackableEntity;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IPressurizable;
+import me.desht.pneumaticcraft.client.gui.pneumaticHelmet.GuiJetBootsOptions;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.UpgradeRenderHandlerList;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.hacking.HackableHandler;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.renderHandler.*;
@@ -35,6 +36,7 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTTagByte;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
@@ -99,6 +101,7 @@ public class CommonHUDHandler {
     private int jetBootsActiveTicks;
     private boolean wasNightVisionEnabled;
     private float speedBoostMult;
+    private boolean jetBootsBuilderMode;
 
     public CommonHUDHandler() {
         for (EntityEquipmentSlot slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
@@ -295,8 +298,13 @@ public class CommonHUDHandler {
         double speedBoost = getSpeedBoostFromLegs();
         if (player.world.isRemote) {
             // doing this client-side only appears to be effective
-            if (player.onGround && player.moveForward > 0 && !player.isInsideOfMaterial(Material.WATER)) {
-                player.moveRelative(0, 0, 1, (float) speedBoost);
+            if (player.moveForward > 0) {
+                if (!player.onGround && isJetBootsEnabled() && jetBootsBuilderMode) {
+                    player.moveRelative(0, 0, 1, getUpgradeCount(EntityEquipmentSlot.FEET, EnumUpgrade.JET_BOOTS) / 400f);
+                }
+                if (player.onGround && !player.isInsideOfMaterial(Material.WATER)) {
+                    player.moveRelative(0, 0, 1, (float) speedBoost);
+                }
             }
         }
         if (!player.world.isRemote && speedBoost > 0) {
@@ -328,23 +336,28 @@ public class CommonHUDHandler {
         Vec3d lookVec = new Vec3d(0, 0.5, 0);
         if (getArmorPressure(EntityEquipmentSlot.FEET) > 0.0F) {
             if (isJetBootsActive()) {
-                // jetboots firing - move in direction of looking
-                lookVec = player.getLookVec().normalize().scale(0.15 * jetbootsCount);
-                flightAccel += lookVec.y / -20.0;
-                flightAccel = MathHelper.clamp(flightAccel, 0.8F, 4.0F);
-                lookVec = lookVec.scale(flightAccel);
-                if (jetBootsActiveTicks < 10) lookVec = lookVec.scale(jetBootsActiveTicks * 0.1);
-                player.motionX = lookVec.x;
-                player.motionY = player.onGround ? 0 : lookVec.y;
-                player.motionZ = lookVec.z;
-                jetbootsAirUsage = ConfigHandler.pneumaticArmor.jetbootsAirUsage * jetbootsCount;
+                if (jetBootsBuilderMode && jetbootsCount >= 8) {
+                    player.motionY = 0.15 + 0.15 * (jetbootsCount - 8);
+                    jetbootsAirUsage = (int) (ConfigHandler.pneumaticArmor.jetbootsAirUsage * jetbootsCount / 5F);
+                } else {
+                    // jetboots firing - move in direction of looking
+                    lookVec = player.getLookVec().normalize().scale(0.15 * jetbootsCount);
+                    flightAccel += lookVec.y / -20.0;
+                    flightAccel = MathHelper.clamp(flightAccel, 0.8F, 4.0F);
+                    lookVec = lookVec.scale(flightAccel);
+                    if (jetBootsActiveTicks < 10) lookVec = lookVec.scale(jetBootsActiveTicks * 0.1);
+                    player.motionX = lookVec.x;
+                    player.motionY = player.onGround ? 0 : lookVec.y;
+                    player.motionZ = lookVec.z;
+                    jetbootsAirUsage = ConfigHandler.pneumaticArmor.jetbootsAirUsage * jetbootsCount;
+                }
                 jetBootsActiveTicks++;
             } else if (isJetBootsEnabled() && !player.onGround) {
                 // jetboots not firing, but enabled - slowly descend (or hover)
                 if (jetbootsCount > 6 && !player.isSneaking()) player.motionY = 0;
                 else player.motionY = player.isSneaking() ? -0.45 : -0.15 + 0.015 * jetbootsCount;
                 player.fallDistance = 0;
-                jetbootsAirUsage = (int) (PneumaticValues.PNEUMATIC_JET_BOOTS_USAGE * (player.isSneaking() ? 0.25F : 0.5F));
+                jetbootsAirUsage = (int) (ConfigHandler.pneumaticArmor.jetbootsAirUsage * (player.isSneaking() ? 0.25F : 0.5F));
                 flightAccel = 1.0F;
             } else {
                 flightAccel = 1.0F;
@@ -529,6 +542,9 @@ public class CommonHUDHandler {
                     }
                 }
                 break;
+            case FEET:
+                jetBootsBuilderMode = ItemPneumaticArmor.getBooleanData(armorStack, GuiJetBootsOptions.NBT_BUILDER_MODE, false);
+                break;
         }
     }
 
@@ -635,7 +651,7 @@ public class CommonHUDHandler {
 
     public void setJetBootsActive(boolean jetBootsActive, EntityPlayer player) {
         if (!player.world.isRemote && jetBootsActive != this.jetBootsActive) {
-            NetworkHandler.sendToDimension(new PacketMarkPlayerJetbootsActive(player, jetBootsActive), player.world.provider.getDimension());
+            NetworkHandler.sendToDimension(new PacketMarkPlayerJetbootsActive(player, jetBootsActive && !jetBootsBuilderMode), player.world.provider.getDimension());
         }
         if (!jetBootsActive) jetBootsActiveTicks = 0;
 
@@ -670,6 +686,10 @@ public class CommonHUDHandler {
         isValid = false;
     }
 
+    public boolean isJetBootsBuilderMode() {
+        return jetBootsBuilderMode;
+    }
+
     public float getSpeedBoostMult() {
         return speedBoostMult;
     }
@@ -686,6 +706,9 @@ public class CommonHUDHandler {
         switch (key) {
             case "speedBoost":
                 speedBoostMult = MathHelper.clamp(((NBTTagInt) dataTag).getInt() / 100f, 0.0f, 1.0f);
+                break;
+            case GuiJetBootsOptions.NBT_BUILDER_MODE:
+                jetBootsBuilderMode = ((NBTTagByte) dataTag).getByte() == 1;
                 break;
         }
     }

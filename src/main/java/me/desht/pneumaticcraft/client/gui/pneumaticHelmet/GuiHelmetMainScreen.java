@@ -47,19 +47,21 @@ public class GuiHelmetMainScreen extends GuiPneumaticScreenBase implements IGuiS
     }
 
     public static void init() {
-        instance = new GuiHelmetMainScreen();
-        Minecraft minecraft = FMLClientHandler.instance().getClient();
-        ScaledResolution scaledresolution = new ScaledResolution(minecraft);
-        int width = scaledresolution.getScaledWidth();
-        int height = scaledresolution.getScaledHeight();
-        instance.setWorldAndResolution(minecraft, width, height);
+        if (instance == null) {
+            instance = new GuiHelmetMainScreen();
+            Minecraft minecraft = FMLClientHandler.instance().getClient();
+            ScaledResolution scaledresolution = new ScaledResolution(minecraft);
+            int width = scaledresolution.getScaledWidth();
+            int height = scaledresolution.getScaledHeight();
+            instance.setWorldAndResolution(minecraft, width, height);  // causes initGui() to be called
 
-        for (int i = 1; i < instance.upgradeOptions.size(); i++) {
-            pageNumber = i;
-            instance.initGui();
+            for (int i = 1; i < instance.upgradeOptions.size(); i++) {
+                pageNumber = i;
+                instance.initGui();
+            }
+            pageNumber = 0;
+            instance.inInitPhase = false;
         }
-        pageNumber = 0;
-        instance.inInitPhase = false;
     }
 
     @Override

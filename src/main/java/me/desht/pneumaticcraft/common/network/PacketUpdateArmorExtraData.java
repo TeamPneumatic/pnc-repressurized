@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.ByteBuf;
+import me.desht.pneumaticcraft.client.gui.pneumaticHelmet.GuiJetBootsOptions;
 import me.desht.pneumaticcraft.common.CommonHUDHandler;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
@@ -27,6 +28,7 @@ public class PacketUpdateArmorExtraData extends AbstractPacket<PacketUpdateArmor
         addKey(EntityEquipmentSlot.HEAD, "entityFilter", NBT.TAG_STRING);
         addKey(EntityEquipmentSlot.LEGS, "speedBoost", NBT.TAG_INT);
         addKey(EntityEquipmentSlot.LEGS, "jumpBoost", NBT.TAG_INT);
+        addKey(EntityEquipmentSlot.FEET, GuiJetBootsOptions.NBT_BUILDER_MODE, NBT.TAG_BYTE);
 
     }
 

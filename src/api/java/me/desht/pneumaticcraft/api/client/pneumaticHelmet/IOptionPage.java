@@ -101,9 +101,15 @@ public interface IOptionPage {
 
     class SimpleToggleableOptions implements IOptionPage {
         private final String name;
+        private final IUpgradeRenderHandler renderHandler;
 
-        public SimpleToggleableOptions(IUpgradeRenderHandler handler) {
-            this.name = I18n.format("pneumaticHelmet.upgrade." + handler.getUpgradeName());
+        public SimpleToggleableOptions(IUpgradeRenderHandler renderHandler) {
+            this.name = I18n.format("pneumaticHelmet.upgrade." + renderHandler.getUpgradeName());
+            this.renderHandler = renderHandler;
+        }
+
+        protected IUpgradeRenderHandler getRenderHandler() {
+            return renderHandler;
         }
 
         @Override

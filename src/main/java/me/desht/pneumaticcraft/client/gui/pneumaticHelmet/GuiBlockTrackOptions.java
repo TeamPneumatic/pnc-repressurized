@@ -3,18 +3,18 @@ package me.desht.pneumaticcraft.client.gui.pneumaticHelmet;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IOptionPage;
 import me.desht.pneumaticcraft.client.gui.widget.GuiKeybindCheckBox;
+import me.desht.pneumaticcraft.client.gui.widget.IGuiWidget;
+import me.desht.pneumaticcraft.client.gui.widget.IWidgetListener;
+import me.desht.pneumaticcraft.client.render.pneumaticArmor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.blockTracker.BlockTrackEntryList;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.renderHandler.BlockTrackUpgradeHandler;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
-public class GuiBlockTrackOptions implements IOptionPage {
-
-    private final BlockTrackUpgradeHandler renderHandler;
-
+public class GuiBlockTrackOptions extends IOptionPage.SimpleToggleableOptions implements IWidgetListener {
     public GuiBlockTrackOptions(BlockTrackUpgradeHandler renderHandler) {
-        this.renderHandler = renderHandler;
+        super(renderHandler);
     }
 
     @Override
@@ -27,7 +27,9 @@ public class GuiBlockTrackOptions implements IOptionPage {
         int nWidgets = BlockTrackEntryList.instance.trackList.size();
         gui.getButtonList().add(new GuiButton(10, 30, settingsYposition() + 12, 150, 20, "Move Stat Screen..."));
         for (int i = 0; i < nWidgets; i++) {
-            ((GuiHelmetMainScreen) gui).addWidget(new GuiKeybindCheckBox(i, 5, 38 + i * 12, 0xFFFFFFFF, BlockTrackEntryList.instance.trackList.get(i).getEntryName()));
+            GuiKeybindCheckBox checkBox = new GuiKeybindCheckBox(i, 5, 38 + i * 12, 0xFFFFFFFF, BlockTrackEntryList.instance.trackList.get(i).getEntryName());
+            ((GuiHelmetMainScreen) gui).addWidget(checkBox);
+            checkBox.setListener(this);
         }
     }
 
@@ -35,33 +37,8 @@ public class GuiBlockTrackOptions implements IOptionPage {
     public void actionPerformed(GuiButton button) {
         if (button.id == 10) {
             FMLClientHandler.instance().getClient().player.closeScreen();
-            FMLCommonHandler.instance().showGuiScreen(new GuiMoveStat(renderHandler));
+            FMLCommonHandler.instance().showGuiScreen(new GuiMoveStat(getRenderHandler()));
         }
-    }
-
-    @Override
-    public void drawPreButtons(int x, int y, float partialTicks) {
-    }
-
-    @Override
-    public void drawScreen(int x, int y, float partialTicks) {
-    }
-
-    @Override
-    public void keyTyped(char ch, int key) {
-    }
-
-    @Override
-    public void mouseClicked(int x, int y, int button) {
-    }
-
-    @Override
-    public void handleMouseInput() {
-    }
-
-    @Override
-    public boolean canBeTurnedOff() {
-        return true;
     }
 
     @Override
@@ -72,5 +49,17 @@ public class GuiBlockTrackOptions implements IOptionPage {
     @Override
     public int settingsYposition() {
         return 44 + 12 * BlockTrackEntryList.instance.trackList.size();
+    }
+
+    @Override
+    public void actionPerformed(IGuiWidget widget) {
+        if (widget instanceof GuiKeybindCheckBox) {
+            GuiKeybindCheckBox checkBox = (GuiKeybindCheckBox) widget;
+            HUDHandler.instance().addFeatureToggleMessage(getRenderHandler(), checkBox.text, checkBox.checked);
+        }
+    }
+
+    @Override
+    public void onKeyTyped(IGuiWidget widget) {
     }
 }

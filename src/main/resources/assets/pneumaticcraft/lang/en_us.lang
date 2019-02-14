@@ -898,6 +898,8 @@ pneumaticHelmet.message.coordinateTracker.harderRouteFound=Found a non-ideal rou
 pneumaticHelmet.message.coordinateTracker.noRouteFound=Unable to find a route to the surface!
 pneumaticHelmet.message.targetWarning=%s is targeting you!
 
+jetboots.module.builderMode=Builder Mode
+
 blockTracker.module.hackables=Hackables
 blockTracker.module.inventories=Inventories
 blockTracker.module.misc=Miscellaneous Blocks

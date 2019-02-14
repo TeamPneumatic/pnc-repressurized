@@ -280,6 +280,14 @@ public class ItemPneumaticArmor extends ItemArmor
         }
     }
 
+    public static boolean getBooleanData(ItemStack stack, String key, boolean def) {
+        if (stack.getItem() instanceof ItemPneumaticArmor && stack.hasTagCompound() && stack.getTagCompound().hasKey(key, Constants.NBT.TAG_BYTE)) {
+            return stack.getTagCompound().getByte(key) == 1;
+        } else {
+            return def;
+        }
+    }
+
     @Nonnull
     public static ItemStack getSearchedStack(ItemStack helmetStack) {
         if (helmetStack.isEmpty() || !NBTUtil.hasTag(helmetStack, "SearchStack")) return ItemStack.EMPTY;

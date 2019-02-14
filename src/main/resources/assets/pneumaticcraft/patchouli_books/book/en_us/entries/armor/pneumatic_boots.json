@@ -21,7 +21,7 @@
     {
       "type": "text",
       "title": "Jet Boots (cont.)",
-      "text": "Use of an $(l:machines/aerial_interface)Aerial Interface/$ is also advised when possible, along with a good charging infrastructure at your base."
+      "text": "Use of an $(l:machines/aerial_interface)Aerial Interface/$ is also advised when possible, along with a good charging infrastructure at your base.$(p)With 8 or more $(l:base_concepts/upgrades#jet_boots)Jet Boots Upgrades/$ installed, you will also have access to $(thing)Builder Mode/$, which allows for more creative-style (but slower) flight control and improved airborne digging speed. This can be toggled on & off via the armor GUI (and bound to a toggle key)."
     },
     {
       "type": "text",
