@@ -7,15 +7,30 @@ Changes are in reverse chronological order; newest changes at the top.
 ## Minecraft 1.12.2
 
 ### 0.9.2-??? (unreleased)
+#### New
+* If you have 8 or more Jet Boots Upgrades installed, it is now possible to switch to Jet Boots "Builder Mode"
+  * This allows more creative-like flight (where holding Space rises), but much slower movement
+  * Dig speed is improved while in the air and in Builder Mode (need 10 Jet Boots upgrades for full normal dig speed)
+  * Ideal when building and fine adjustment is needed.  Normal mode is still much better for fast travel.
 #### Updates
 * Pressure Chamber: interface doors now animate open and closing (like they did in 1.7.10)
-* ComputerCraft/OpenComputers improvements
-  * Performance should be significantly better
+* ComputerCraft/OpenComputers improvements:
+  * Significant performance improvement work
   * Some thread-safety fixes
   * Drone Interface now lights up green when a drone is connected
 * Albedo support for the UV Lightbox has been dropped (could no longer reach the Maven repo)
+* Chestplate Magnet now checks for items every 4 ticks instead of 8.
+* Some performance improvements:
+  * Thermopneumatic Processing Plant will use less server CPU when idle (smarter recipe checking)
+  * Charging Station will use less client CPU to render (static model instead of TESR to render charge pad upgrade) and process (was running some code that's only necessary server-side)
+  * Less network traffic for tile entity sync (machines no longer sync all their upgrades to clients, only those of specific interest)
+* Item & Block tooltips are now a little more consistent & informative in a few places
+* Minor GUI improvements for the Charging Station (primarily less cramped-looking)
+* GUI pressure gauges use a smaller text size for the numbers around the edge of the gauge
+* Entity/Block tracker & hacking: the popup "can hack" window now also notes which hotkey is used for hacking
 #### Fixes
-* *Maybe* fix a problem with the Gas Lift being impossible to break (I can't reproduce this problem locally; some defensive coding has been added to block drops calculation method)
+* Fixed problem where machines could become unbreakable under some circumstances (related to trying to sneak-wrench a machine which had upgrades installed or other data that needs to be saved to the dropped item stack).
+* Refinery comparator support: "has work" now correctly emits a signal when Refinery isn't up to temperature (the check is "has work", not "did work"). This makes it more useful for enabling/disabling a heat source for the Refinery, depending on if it has work to do.
 
 ### 0.9.1-317 (20 Jan 2019)
 #### New
