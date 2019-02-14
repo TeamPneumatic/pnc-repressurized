@@ -429,7 +429,7 @@ public class CommonHUDHandler {
     }
 
     private void handleChestplateMagnet(EntityPlayer player, ItemStack chestplateStack) {
-        if (player.world.isRemote || !magnetEnabled || (getTicksSinceEquipped(EntityEquipmentSlot.CHEST) & 0x7) != 0
+        if (player.world.isRemote || !magnetEnabled || (getTicksSinceEquipped(EntityEquipmentSlot.CHEST) & 0x3) != 0
                 || getUpgradeCount(EntityEquipmentSlot.CHEST, EnumUpgrade.MAGNET) == 0)
             return;
 
