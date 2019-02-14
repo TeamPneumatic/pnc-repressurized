@@ -49,7 +49,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class TileEntityDroneInterface extends TileEntity
         implements ITickable, IPeripheral, ManagedPeripheral, SimpleComponent {
 
-    private static LuaMethodRegistry luaMethodRegistry = null;
+    private LuaMethodRegistry luaMethodRegistry;
 
     private final CopyOnWriteArrayList<IComputerAccess> attachedComputers = new CopyOnWriteArrayList<>();
     private EntityDrone drone;
@@ -58,6 +58,11 @@ public class TileEntityDroneInterface extends TileEntity
     private final ConcurrentLinkedQueue<Integer> ringSendQueue = new ConcurrentLinkedQueue<>();
     private int ringSendCooldown;
     private IProgWidget curAction;
+    private int droneId; // track drone ID client-side
+
+    public TileEntityDroneInterface() {
+        setupLuaMethods();
+    }
 
     @Override
     public void update() {
@@ -80,6 +85,18 @@ public class TileEntityDroneInterface extends TileEntity
                 }
             }
         }
+        if (getWorld().isRemote) {
+            EntityDrone prevDrone = drone;
+            Entity e = getWorld().getEntityByID(droneId);
+            if (e instanceof EntityDrone) {
+                drone = (EntityDrone) e;
+            } else {
+                drone = null;
+            }
+            if (prevDrone != drone) {
+                world.markBlockRangeForRenderUpdate(pos, pos);
+            }
+        }
     }
 
     @Nullable
@@ -98,20 +115,12 @@ public class TileEntityDroneInterface extends TileEntity
     @Override
     public void handleUpdateTag(NBTTagCompound tag) {
         super.handleUpdateTag(tag);
-        Entity entity = getWorld().getEntityByID(tag.getInteger("drone"));
-        drone = entity instanceof EntityDrone ? (EntityDrone) entity : null;
-        world.markBlockRangeForRenderUpdate(pos, pos);
+        droneId = tag.getInteger("drone");
     }
 
     @Override
     public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
         handleUpdateTag(pkt.getNbtCompound());
-    }
-
-    public TileEntityDroneInterface() {
-        if (luaMethodRegistry == null) {
-            setupLuaMethods();
-        }
     }
 
     boolean isDroneConnected() {
