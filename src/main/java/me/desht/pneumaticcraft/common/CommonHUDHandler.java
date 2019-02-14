@@ -337,7 +337,7 @@ public class CommonHUDHandler {
         if (getArmorPressure(EntityEquipmentSlot.FEET) > 0.0F) {
             if (isJetBootsActive()) {
                 if (jetBootsBuilderMode && jetbootsCount >= 8) {
-                    player.motionY = 0.15 + 0.15 * (jetbootsCount - 8);
+                    player.motionY = player.isSneaking() ? 0 : 0.15 + 0.15 * (jetbootsCount - 8);
                     jetbootsAirUsage = (int) (ConfigHandler.pneumaticArmor.jetbootsAirUsage * jetbootsCount / 5F);
                 } else {
                     // jetboots firing - move in direction of looking
