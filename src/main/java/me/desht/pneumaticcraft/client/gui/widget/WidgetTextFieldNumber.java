@@ -19,12 +19,7 @@ public class WidgetTextFieldNumber extends WidgetTextField {
             if (input == null || input.isEmpty() || input.equals("-")) {
                 return true;  // treat as numeric zero
             }
-            try {
-                double d = Double.parseDouble(input);
-                return d >= this.minValue && d <= this.maxValue;
-            } catch (NumberFormatException e) {
-                return false;
-            }
+            return NumberUtils.isCreatable(input);
         });
     }
 
