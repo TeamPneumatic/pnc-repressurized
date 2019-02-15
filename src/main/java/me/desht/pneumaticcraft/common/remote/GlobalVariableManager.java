@@ -83,7 +83,7 @@ public class GlobalVariableManager extends WorldSavedData {
     }
 
     public ItemStack getItem(String varName) {
-        return globalItemVars.get(varName);
+        return globalItemVars.getOrDefault(varName, ItemStack.EMPTY);
     }
 
     public GlobalVariableManager(String dataKey) {
