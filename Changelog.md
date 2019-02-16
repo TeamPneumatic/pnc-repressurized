@@ -6,7 +6,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
-### 0.9.2-??? (unreleased)
+### 0.9.2-321 (16 Feb 2019)
 #### New
 * If you have 8 or more Jet Boots Upgrades installed, it is now possible to switch to Jet Boots "Builder Mode"
   * This allows more creative-like flight (where holding Space rises), but much slower movement
