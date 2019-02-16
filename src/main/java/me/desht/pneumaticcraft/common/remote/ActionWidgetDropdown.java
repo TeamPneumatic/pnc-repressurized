@@ -19,6 +19,7 @@ public class ActionWidgetDropdown extends ActionWidgetVariable<WidgetComboBox> {
     private int x, y, width, height;
     private String dropDownElements = "";
     private String selectedElement = "";
+    private boolean sorted;
 
     public ActionWidgetDropdown() {
         super();
@@ -40,6 +41,7 @@ public class ActionWidgetDropdown extends ActionWidgetVariable<WidgetComboBox> {
         width = tag.getInteger("width");
         height = tag.getInteger("height");
         dropDownElements = tag.getString("dropDownElements");
+        sorted = tag.getBoolean("sorted");
         updateWidget();
     }
 
@@ -51,6 +53,7 @@ public class ActionWidgetDropdown extends ActionWidgetVariable<WidgetComboBox> {
         tag.setInteger("width", width);
         tag.setInteger("height", height);
         tag.setString("dropDownElements", dropDownElements);
+        tag.setBoolean("sorted", sorted);
 
         return tag;
     }
@@ -90,6 +93,7 @@ public class ActionWidgetDropdown extends ActionWidgetVariable<WidgetComboBox> {
             widget = new WidgetComboBox(Minecraft.getMinecraft().fontRenderer, x, y, width, height);
             widget.setElements(getDropdownElements());
             widget.setFixedOptions();
+            widget.setShouldSort(sorted);
             updateWidget();
         }
         return widget;
@@ -110,6 +114,7 @@ public class ActionWidgetDropdown extends ActionWidgetVariable<WidgetComboBox> {
             widget.height = height;
             widget.setElements(getDropdownElements());
             widget.setText(selectedElement);
+            widget.setShouldSort(sorted);
         }
     }
 
@@ -124,6 +129,14 @@ public class ActionWidgetDropdown extends ActionWidgetVariable<WidgetComboBox> {
 
     public String getDropDownElements() {
         return dropDownElements;
+    }
+
+    public boolean getSorted() {
+        return sorted;
+    }
+
+    public void setSorted(boolean sorted) {
+        this.sorted = sorted;
     }
 
     public void setWidth(int width) {

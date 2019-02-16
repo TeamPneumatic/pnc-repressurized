@@ -23,7 +23,7 @@ public class WorldGlobalVariableSensor implements IPollSensorSetting {
 
     @Override
     public String getSensorPath() {
-        return "World/Global Variable";
+        return "World/Global variable";
     }
 
     @Override
@@ -38,7 +38,7 @@ public class WorldGlobalVariableSensor implements IPollSensorSetting {
 
     @Override
     public List<String> getDescription() {
-        return Collections.singletonList(TextFormatting.BLACK + "Emits a full-strength redstone signal when the linked global variable has a non-zero X value");
+        return Collections.singletonList(TextFormatting.BLACK + "Emits a full-strength redstone signal when the linked global variable has any non-zero X value");
     }
 
     @Override

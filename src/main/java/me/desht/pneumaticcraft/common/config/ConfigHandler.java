@@ -243,6 +243,8 @@ public class ConfigHandler {
         public double leggingsFOVfactor = 0.0;
         @Config.Comment("Should GUI side tabs be shown with a beveled edge?  Setting to false uses a plain black edge, as in earlier versions of the mod")
         public boolean guiBevel = true;
+        @Config.Comment("Remote Editor GUI: should GUI controls be snapped to 4x4 grid?")
+        public boolean guiRemoteGridSnap;
     }
 
     public static class HelmetOptions {

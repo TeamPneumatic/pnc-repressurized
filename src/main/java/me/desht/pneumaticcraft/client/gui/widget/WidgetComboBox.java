@@ -4,8 +4,8 @@ import net.minecraft.client.gui.FontRenderer;
 import org.lwjgl.input.Keyboard;
 
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 public class WidgetComboBox extends WidgetTextField {
 
@@ -13,6 +13,7 @@ public class WidgetComboBox extends WidgetTextField {
     private final FontRenderer fontRenderer;
     private boolean enabled = true;
     private boolean fixedOptions;
+    private boolean shouldSort = true;
 
     public WidgetComboBox(FontRenderer fontRenderer, int x, int y, int width, int height) {
         super(fontRenderer, x, y, width, height);
@@ -22,7 +23,7 @@ public class WidgetComboBox extends WidgetTextField {
     public WidgetComboBox setElements(Collection<String> elements) {
         this.elements.clear();
         this.elements.addAll(elements);
-        Collections.sort(this.elements);
+        if (shouldSort) Collections.sort(this.elements);
         return this;
     }
 
@@ -30,8 +31,12 @@ public class WidgetComboBox extends WidgetTextField {
         this.elements.clear();
         this.elements.ensureCapacity(elements.length);
         this.elements.addAll(Arrays.asList(elements));
-        Collections.sort(this.elements);
+        if (shouldSort) Collections.sort(this.elements);
         return this;
+    }
+
+    public void setShouldSort(boolean shouldSort) {
+        this.shouldSort = shouldSort;
     }
 
     private List<String> getApplicableElements() {
