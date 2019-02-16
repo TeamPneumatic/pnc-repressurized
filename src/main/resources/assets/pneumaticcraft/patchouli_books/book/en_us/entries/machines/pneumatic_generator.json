@@ -3,6 +3,7 @@
   "icon": "pneumaticcraft:pneumatic_generator",
   "category": "machines",
   "flag": "pneumaticcraft:pneumaticGeneratorEnabled",
+  "advancement": "pneumaticcraft:advanced_pressure_tube",
   "pages": [
     {
       "type": "text",

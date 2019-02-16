@@ -2,6 +2,7 @@
   "name": "Pneumatic Wrench",
   "icon": "pneumaticcraft:pneumatic_wrench",
   "category": "tools",
+  "advancement": "pneumaticcraft:pressure_tube",
   "pages": [
     {
       "type": "text",

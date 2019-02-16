@@ -18,7 +18,7 @@
             "type": "spotlight",
             "anchor": "compressed_iron_ingot",
             "item": "pneumaticcraft:ingot_iron_compressed",
-            "text": "Warning: as a side effect of the explosion you will lose around 20% of your ingots. To avoid this, you can also craft $(item)Compressed Iron Ingots/$ in a $(l:manufacturing/pressure_chamber)Pressure Chamber/$. However, to be able to craft the $(thing)Pressure Chamber/$ itself you'll need some initial $(item)Compressed Iron Ingots/$, so a little loss is unavoidable."
+            "text": "Warning: as a side effect of the explosion you will lose around 20% of your ingots. To avoid this, you can also craft $(item)Compressed Iron Ingots/$ in a $(l:manufacturing/pressure_chamber)Pressure Chamber/$. However, to be able to craft the $(thing)Pressure Chamber/$ itself you'll need some $(item)Compressed Iron Ingots/$, so a little initial loss is unavoidable."
         },
         {
             "type": "pneumaticcraft:pressure_chamber",

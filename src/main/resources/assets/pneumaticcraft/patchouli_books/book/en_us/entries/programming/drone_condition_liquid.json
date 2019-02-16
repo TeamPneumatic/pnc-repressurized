@@ -2,6 +2,7 @@
   "name": "Drone Condition: Fluid Widget",
   "icon": "pneumaticcraft:textures/items/progwidgets/condition_drone_liquid_piece.png",
   "category": "widget_cond",
+  "advancement": "pneumaticcraft:programmer",
   "pages": [
     {
       "type": "text",

@@ -1,7 +1,8 @@
 {
   "name": "Conditions",
-  "icon": "minecraft:redstone",
+  "icon": "minecraft:comparator",
   "category": "programming",
+  "advancement": "pneumaticcraft:programmer",
   "pages": [
     {
       "type": "text",

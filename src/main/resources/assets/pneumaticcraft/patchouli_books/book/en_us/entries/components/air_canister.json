@@ -2,6 +2,7 @@
   "name": "Air Canister",
   "icon": "pneumaticcraft:air_canister",
   "category": "components",
+  "advancement": "pneumaticcraft:pressure_tube",
   "pages": [
     {
       "type": "text",

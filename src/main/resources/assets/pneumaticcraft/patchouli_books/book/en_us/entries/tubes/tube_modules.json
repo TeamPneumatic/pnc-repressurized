@@ -2,6 +2,7 @@
   "name": "Tube Modules",
   "icon": "minecraft:book",
   "category": "tubes",
+  "advancement": "pneumaticcraft:pressure_tube",
   "priority": "true",
   "pages": [
     {

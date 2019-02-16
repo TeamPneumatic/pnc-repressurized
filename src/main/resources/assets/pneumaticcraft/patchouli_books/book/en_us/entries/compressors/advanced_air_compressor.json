@@ -2,6 +2,7 @@
   "name": "Advanced Air Compressor",
   "icon": "pneumaticcraft:advanced_air_compressor",
   "category": "compressors",
+  "advancement": "pneumaticcraft:advanced_pressure_tube",
   "pages": [
     {
       "type": "text",

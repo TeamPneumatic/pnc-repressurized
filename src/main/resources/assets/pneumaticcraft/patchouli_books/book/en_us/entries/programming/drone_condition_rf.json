@@ -2,6 +2,7 @@
   "name": "Drone Condition: RF Widget",
   "icon": "pneumaticcraft:textures/items/progwidgets/condition_drone_rf_piece.png",
   "category": "widget_cond",
+  "advancement": "pneumaticcraft:programmer",
   "pages": [
     {
       "type": "text",

@@ -2,6 +2,7 @@
   "name": "Crop Support",
   "icon": "pneumaticcraft:crop_support",
   "category": "semiblocks",
+  "advancement": "pneumaticcraft:root",
   "pages": [
     {
       "type": "text",

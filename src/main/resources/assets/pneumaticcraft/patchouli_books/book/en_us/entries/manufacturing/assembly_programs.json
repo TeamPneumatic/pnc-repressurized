@@ -2,6 +2,7 @@
   "name": "Assembly Programs",
   "icon": "pneumaticcraft:assembly_program:1",
   "category": "manufacturing",
+  "advancement": "pneumaticcraft:printed_circuit_board",
   "pages": [
     {
       "type": "text",

@@ -2,6 +2,7 @@
   "name": "Electrostatic Compressor",
   "icon": "pneumaticcraft:electrostatic_compressor",
   "category": "compressors",
+  "advancement": "pneumaticcraft:advanced_pressure_tube",
   "pages": [
     {
       "type": "text",

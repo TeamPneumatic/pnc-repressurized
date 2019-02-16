@@ -2,6 +2,7 @@
   "name": "Item Assignment Widget",
   "icon": "pneumaticcraft:textures/items/progwidgets/item_assign_piece.png",
   "category": "widget_other",
+  "advancement": "pneumaticcraft:programmer",
   "pages": [
     {
       "type": "text",

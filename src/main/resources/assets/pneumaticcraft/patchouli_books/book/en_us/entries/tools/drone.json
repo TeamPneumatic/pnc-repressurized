@@ -2,6 +2,7 @@
   "name": "Drone",
   "icon": "pneumaticcraft:drone",
   "category": "tools",
+  "advancement": "pneumaticcraft:printed_circuit_board",
   "pages": [
     {
       "type": "text",

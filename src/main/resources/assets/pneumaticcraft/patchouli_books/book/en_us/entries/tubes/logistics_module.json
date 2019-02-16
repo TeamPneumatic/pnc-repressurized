@@ -2,6 +2,7 @@
   "name": "Logistics Module",
   "icon": "pneumaticcraft:logistics_module",
   "category": "tubes",
+  "advancement": "pneumaticcraft:plastic",
   "pages": [
     {
       "type": "text",

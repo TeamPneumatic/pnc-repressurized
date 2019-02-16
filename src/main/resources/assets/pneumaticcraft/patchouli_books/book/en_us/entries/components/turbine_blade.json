@@ -2,6 +2,7 @@
   "name": "Turbine Blade",
   "icon": "pneumaticcraft:turbine_blade",
   "category": "components",
+  "advancement": "pneumaticcraft:pressure_chamber",
   "pages": [
     {
       "type": "text",

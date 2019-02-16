@@ -2,6 +2,7 @@
   "name": "STOP! Worm",
   "icon": "pneumaticcraft:stop_worm",
   "category": "components",
+  "advancement": "pneumaticcraft:root",
   "pages": [
     {
       "type": "text",

@@ -2,6 +2,7 @@
   "name": "For Each Coordinate Widget",
   "icon": "pneumaticcraft:textures/items/progwidgets/for_each_coordinate.png",
   "category": "widget_flow",
+  "advancement": "pneumaticcraft:programmer",
   "pages": [
     {
       "type": "text",

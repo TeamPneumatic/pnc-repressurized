@@ -2,6 +2,7 @@
   "name": "Air Compressor",
   "icon": "pneumaticcraft:air_compressor",
   "category": "compressors",
+  "advancement": "pneumaticcraft:pressure_tube",
   "pages": [
     {
       "type": "text",

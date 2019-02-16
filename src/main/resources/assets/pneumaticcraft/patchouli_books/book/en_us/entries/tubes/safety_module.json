@@ -2,6 +2,7 @@
   "name": "Safety Module",
   "icon": "pneumaticcraft:safety_tube_module",
   "category": "tubes",
+  "advancement": "pneumaticcraft:pressure_tube",
   "pages": [
     {
       "type": "text",

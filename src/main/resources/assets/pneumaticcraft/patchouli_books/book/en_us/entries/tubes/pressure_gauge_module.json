@@ -2,6 +2,7 @@
   "name": "Pressure Gauge Module",
   "icon": "pneumaticcraft:pressure_gauge_module",
   "category": "tubes",
+  "advancement": "pneumaticcraft:pressure_tube",
   "pages": [
     {
       "type": "text",

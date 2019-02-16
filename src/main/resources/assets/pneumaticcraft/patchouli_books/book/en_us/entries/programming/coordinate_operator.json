@@ -2,6 +2,7 @@
   "name": "Coordinate Operator Widget",
   "icon": "pneumaticcraft:textures/items/progwidgets/coordinate_operation_plus_minus.png",
   "category": "widget_other",
+  "advancement": "pneumaticcraft:programmer",
   "pages": [
     {
       "type": "text",
@@ -17,7 +18,7 @@
     },
     {
       "type": "text",
-      "text": "$(thing)Variables/$ only store coordinates (an X/Y/Z triple). However, if you think about it, you will notice you can work with $(thing)integers/$ and $(thing)booleans/$ too. Just use only one axis for integers, and for booleans, define something like '0' = false, and everything else = true. Have fun!$(p)You can debug a program by showing the value of $(thing)variables/$ using the $(l:programming/rename)Rename/$ widget, writing text with the $(l:programming/edit_sign)Edit Sign/$ widget, or by using a label in a $(l:tools/remote)Remote/$."
+      "text": "$(thing)Variables/$ only store coordinates (an X/Y/Z triple). However, if you think about it, you will notice you can work with $(thing)integers/$ and $(thing)booleans/$ too. Just use only one axis for integers, and for booleans, define something like '0' = false, and everything else = true. Have fun!$(p)You can debug a program by showing the value of $(thing)variables/$ using the $(l:programming/rename)Rename/$ widget, writing text with the $(l:programming/edit_sign)Edit Sign/$ widget, or by using a $(l:tools/remote#label)label/$ in a $(l:tools/remote)Remote/$."
     },
     {
       "type": "text",
@@ -34,7 +35,7 @@
       "type": "text",
       "anchor": "global",
       "title": "Global Variables",
-      "text": "$(thing)Global variables/$ are prefixed with '#'. Normal variables are unique per $(l:tools/drone)Drone/$; they can't be shared. Global variables are variables that $(italic)are/$ shared. $(p)This allows Drones to communicate with each other. Additionally, the $(l:machines/universal_sensor)Universal Sensor/$ can look for global variables, and emit a $(#f00)redstone signal/$ based on them."
+      "text": "$(thing)Global variables/$ are prefixed with '#'. Normal variables are unique per $(l:tools/drone)Drone/$; they can't be shared. Global variables are variables that $(italic)are/$ shared. $(p)This allows Drones to communicate with each other. Additionally, the $(l:machines/universal_sensor)Universal Sensor/$ can look for global variables, and emit a $(#f00)redstone signal/$ based on them, and the $(l:tools/remote)Remote/$ can modify them."
     },
     {
       "type": "text",

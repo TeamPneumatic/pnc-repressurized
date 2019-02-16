@@ -2,6 +2,7 @@
   "name": "Minigun Ammo",
   "icon": "pneumaticcraft:gun_ammo",
   "category": "tools",
+  "advancement": "pneumaticcraft:minigun",
   "pages": [
     {
       "type": "text",

@@ -2,6 +2,7 @@
   "name": "Condition: Block Widget",
   "icon": "pneumaticcraft:textures/items/progwidgets/condition_block_piece.png",
   "category": "widget_cond",
+  "advancement": "pneumaticcraft:programmer",
   "pages": [
     {
       "type": "text",

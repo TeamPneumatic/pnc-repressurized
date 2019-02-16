@@ -2,6 +2,7 @@
   "name": "Plastic Mixer",
   "icon": "pneumaticcraft:plastic_mixer",
   "category": "manufacturing",
+  "advancement": "pneumaticcraft:tp_plant",
   "pages": [
     {
       "type": "text",

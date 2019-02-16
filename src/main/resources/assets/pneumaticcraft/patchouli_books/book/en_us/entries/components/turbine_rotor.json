@@ -2,6 +2,7 @@
   "name": "Turbine Rotor",
   "icon": "pneumaticcraft:turbine_rotor",
   "category": "components",
+  "advancement": "pneumaticcraft:pressure_chamber",
   "pages": [
     {
       "type": "text",

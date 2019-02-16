@@ -2,6 +2,7 @@
   "name": "PCB Blueprint",
   "icon": "pneumaticcraft:pcb_blueprint",
   "category": "components",
+  "advancement": "pneumaticcraft:root",
   "pages": [
     {
       "type": "text",

@@ -2,6 +2,7 @@
   "name": "Spawner Agitator",
   "icon": "pneumaticcraft:spawner_agitator",
   "category": "semiblocks",
+  "advancement": "pneumaticcraft:root",
   "pages": [
     {
       "type": "text",

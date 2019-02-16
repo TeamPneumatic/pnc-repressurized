@@ -2,6 +2,7 @@
   "name": "Creative Compressor",
   "icon": "pneumaticcraft:creative_compressor",
   "category": "compressors",
+  "advancement": "pneumaticcraft:pressure_tube",
   "pages": [
     {
       "type": "text",

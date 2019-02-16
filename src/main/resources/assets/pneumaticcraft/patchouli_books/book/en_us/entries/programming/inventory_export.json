@@ -2,6 +2,7 @@
   "name": "Inventory Export Widget",
   "icon": "pneumaticcraft:textures/items/progwidgets/inventory_export_piece.png",
   "category": "widget_interact",
+  "advancement": "pneumaticcraft:programmer",
   "pages": [
     {
       "type": "text",

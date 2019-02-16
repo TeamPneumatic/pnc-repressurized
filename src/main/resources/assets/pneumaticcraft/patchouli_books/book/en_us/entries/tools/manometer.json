@@ -2,6 +2,7 @@
   "name": "Manometer",
   "icon": "pneumaticcraft:manometer",
   "category": "tools",
+  "advancement": "pneumaticcraft:pressure_tube",
   "pages": [
     {
       "type": "text",

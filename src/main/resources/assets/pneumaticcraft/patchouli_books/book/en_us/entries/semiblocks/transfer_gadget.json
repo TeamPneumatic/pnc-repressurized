@@ -2,6 +2,7 @@
   "name": "Transfer Gadget",
   "icon": "pneumaticcraft:transfer_gadget",
   "category": "semiblocks",
+  "advancement": "pneumaticcraft:root",
   "pages": [
     {
       "type": "text",

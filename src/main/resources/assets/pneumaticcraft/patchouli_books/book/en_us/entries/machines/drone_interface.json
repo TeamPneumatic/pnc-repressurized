@@ -3,6 +3,7 @@
   "icon": "pneumaticcraft:drone_interface",
   "category": "machines",
   "flag": "|mod:computercraft,mod:opencomputers",
+  "advancement": "pneumaticcraft:printed_circuit_board",
   "pages": [
     {
       "type": "text",

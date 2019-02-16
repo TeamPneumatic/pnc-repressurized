@@ -3,6 +3,7 @@
   "icon": "pneumaticcraft:textures/items/progwidgets/computer_craft_piece.png",
   "category": "widget_other",
   "flag": "|mod:computercraft,mod:opencomputers",
+  "advancement": "pneumaticcraft:programmer",
   "pages": [
     {
       "type": "text",

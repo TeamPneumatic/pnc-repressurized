@@ -2,6 +2,7 @@
   "name": "Gas Lift",
   "icon": "pneumaticcraft:gas_lift",
   "category": "machines",
+  "advancement": "pneumaticcraft:pressure_tube",
   "pages": [
     {
       "type": "text",

@@ -2,6 +2,7 @@
   "name": "Pneumatic Chestplate",
   "icon": "pneumaticcraft:pneumatic_chestplate",
   "category": "armor",
+  "advancement": "pneumaticcraft:printed_circuit_board",
   "pages": [
 
     {
@@ -14,24 +15,34 @@
       "text": "Creating a Pneumatic Chestplate"
     },
     {
-      "type": "text",
-      "title": "Security",
+      "type": "spotlight",
+      "item": "pneumaticcraft:security_upgrade",
       "text": "With a $(l:base_concepts/upgrades#security)Security Upgrade/$ installed, the chestplate grants you protection from fire and lava, at a significant air cost: air is rapidly dumped from the chestplate to extinguish nearby flames and keep you cool.  It will even slowly solidify nearby lava."
     },
     {
-      "type": "text",
-      "title": "Magnet",
-      "text": "With one or more $(l:base_concepts/upgrades#magnet)Magnet Upgrades/$ installed, nearby items and XP orbs will be attracted to you for a very small air cost.  The base range is 5 blocks, but this can be increased up to 10 blocks by adding extra upgrades.$(p)The Magnet Upgrade respects Botania's $(item)Solegnolia/$ flower, and will also not attempt to pull items from Immersive Engineering $(item)conveyor belts/$."
+      "type": "spotlight",
+      "item": "pneumaticcraft:magnet_upgrade",
+      "text": "With one or more $(l:base_concepts/upgrades#magnet)Magnet Upgrades/$ installed, nearby items and XP orbs will be attracted to you for a very small air cost.  The base range is 5 blocks, but this can be increased up to 10 blocks by adding extra upgrades."
     },
     {
       "type": "text",
-      "title": "Charging",
-      "text": "With one or more $(l:base_concepts/upgrades#charging)Charging Upgrades/$ installed, the chestplate gains the ability to pressurize any other pneumatic item in your inventory, both worn and carried.  The chestplate will only charge items up to its own pressure level.  Adding extra Charging Upgrades (up to 6) increases the charging rate.$(p)This is recommended in conjunction with $(l:base_concepts/upgrades#volume)Volume Upgrades/$."
+      "title": "Magnet Upgrade (cont.)",
+      "text": "The Magnet Upgrade respects Botania's $(item)Solegnolia/$ flower, and will also not attempt to pull items from Immersive Engineering $(item)conveyor belts/$."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:charging_upgrade",
+      "text": "With one or more $(l:base_concepts/upgrades#charging)Charging Upgrades/$ installed, the chestplate gains the ability to pressurize any other pneumatic item in your inventory, both worn and carried.  The chestplate will only charge items up to its own pressure level.  Adding extra Charging Upgrades (up to 6) increases the charging rate."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:dispenser_upgrade",
+      "text": "A $(l:base_concepts/upgrades#dispenser)Dispenser Upgrade/$ allows items/blocks to be launched from your offhand slot by pressing & releasing $(thing)$(k:pneumaticcraft.chestplate.launcher)/$, similar to an $(l:machines/air_cannon)Air Cannon/$. It takes 15 ticks (0.75 seconds) to fully charge the launcher; releasing the key sooner will launch at reduced velocity."
     },
     {
       "type": "text",
-      "title": "Dispenser",
-      "text": "A $(l:base_concepts/upgrades#dispenser)Dispenser Upgrade/$ allows items/blocks to be launched from your offhand slot by pressing $(thing)$(k:pneumaticcraft.chestplate.launcher)/$, similar to an $(l:machines/air_cannon)Air Cannon/$.$(li)Some blocks have special $(item)Dispenser/$-like behaviour, such as $(item)TNT/$, or $(item)Arrows/$...$(li)Other blocks (like $(item)Torches/$) will be fired as 'tumbling' blocks which reform as blocks when they hit something.$(li)Other items will simply be fired as item entities."
+      "title": "Dispenser Upgrade (cont.)",
+      "text": "$(li)Some blocks have special $(item)Dispenser/$-like behaviour, such as $(item)TNT/$, or $(item)Arrows/$...$(li)Other blocks (like $(item)Torches/$) will be fired as 'tumbling' blocks which reform as blocks when they hit something.$(li)Other items will simply be fired as item entities."
     }
   ]
 }

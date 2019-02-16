@@ -2,6 +2,7 @@
   "name": "Flow Control",
   "icon": "pneumaticcraft:textures/items/progwidgets/jump_piece.png",
   "category": "programming",
+  "advancement": "pneumaticcraft:programmer",
   "pages": [
     {
       "type": "text",
@@ -14,7 +15,7 @@
     {
       "type": "text",
       "title": "Flow Control Widgets",
-      "text": "$(li)The $(l:programming/label)Label/$ widget acts a point in the program to be jumped to.$(li)The $(l:programming/jump)Jump/$ widget triggers an immediate, unconditional, jump to a matching $(thing)Label/$ widget$(li)$(l:programming/conditions)Condition/$ widgets can trigger a jump, based on the condition they're testing$(li)The advanced $(l:programming/for_each_item)For Each Item/$ and $(l:programming/for_each_coordinate)For Each Coordinate/$ widgets repeatedly jump to a $(thing)Label/$, for their list of inputs."
+      "text": "$(li)The $(l:programming/label)Label/$ widget acts a point in the program to be jumped to.$(li)The $(l:programming/jump)Jump/$ widget triggers an immediate, unconditional, jump to a matching $(thing)Label/$ widget.$(li)$(l:programming/conditions)Condition/$ widgets can trigger a jump, based on the condition they're testing.$(li)The advanced $(l:programming/for_each_item)For Each Item/$ and $(l:programming/for_each_coordinate)For Each Coordinate/$ widgets repeatedly jump to a $(thing)Label/$, for their list of inputs."
     },
     {
       "type": "text",

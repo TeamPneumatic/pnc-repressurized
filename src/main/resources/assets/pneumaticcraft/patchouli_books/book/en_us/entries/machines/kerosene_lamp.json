@@ -2,6 +2,7 @@
   "name": "Kerosene Lamp",
   "icon": "pneumaticcraft:kerosene_lamp",
   "category": "machines",
+  "advancement": "pneumaticcraft:refinery",
   "pages": [
     {
       "type": "text",

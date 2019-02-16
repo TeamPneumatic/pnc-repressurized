@@ -2,6 +2,7 @@
   "name": "Air Grate Module",
   "icon": "pneumaticcraft:air_grate_module",
   "category": "tubes",
+  "advancement": "pneumaticcraft:pressure_tube",
   "pages": [
     {
       "type": "text",

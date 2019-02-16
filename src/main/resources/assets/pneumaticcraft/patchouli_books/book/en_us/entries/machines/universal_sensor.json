@@ -2,6 +2,7 @@
   "name": "Universal Sensor",
   "icon": "pneumaticcraft:universal_sensor",
   "category": "machines",
+  "advancement": "pneumaticcraft:plastic",
   "pages": [
     {
       "type": "text",

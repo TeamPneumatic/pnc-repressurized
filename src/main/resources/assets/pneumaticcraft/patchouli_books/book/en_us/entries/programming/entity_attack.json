@@ -2,6 +2,7 @@
   "name": "Entity Attack Widget",
   "icon": "pneumaticcraft:textures/items/progwidgets/attack_piece.png",
   "category": "widget_interact",
+  "advancement": "pneumaticcraft:programmer",
   "pages": [
     {
       "type": "text",

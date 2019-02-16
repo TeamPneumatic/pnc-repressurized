@@ -2,6 +2,7 @@
   "name": "Pressure Tubes",
   "icon": "pneumaticcraft:pressure_tube",
   "category": "tubes",
+  "advancement": "pneumaticcraft:root",
   "priority": "true",
   "pages": [
     {

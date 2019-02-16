@@ -1,6 +1,6 @@
 {
   "name": "Computer Integration",
-  "icon": "minecraft:redstone_block",
+  "icon": "pneumaticcraft:textures/patchouli/computer.png",
   "category": "base_concepts",
   "flag": "|mod:computercraft,mod:opencomputers",
   "pages": [
@@ -11,7 +11,14 @@
     {
       "type": "text",
       "title": "ComputerCraft",
-      "text": "In Lua, you can run $(thing)m = peripheral.wrap(<side>)/$, where $(thing)<side>/$ is the side of the computer the peripheral is connected to (top, bottom, left, right, back, front). Then you can use any of the following functions with $(thing)m.<functionName>/$.$(p)Anywhere in the following functions where a '<side>' appears as one of the arguments, 'up', 'down', 'north', 'south', 'east', 'west' are valid."
+      "text": "In Lua, you can run $(thing)m = peripheral.wrap(<side>)/$, where $(thing)<side>/$ is the side of the computer the peripheral is connected to (top, bottom, left, right, back, front). Then you can use any of the following functions with $(thing)m.<functionName>/$.$(p)Anywhere in the following functions where a '<side>' appears as one of the arguments, 'up', 'down', 'north', 'south', 'east', 'west' are valid.",
+      "flag": "mod:computercraft"
+    },
+    {
+      "type": "text",
+      "title": "Open Computers",
+      "text": "You will need to use an $(item)Adapter/$ to connect your computer to $(pnc) machines; they will then appear as OC components, which show up if you run $(thing)=components.list()/$ in an OC Lua environment. Then any of the following functions can be used, e.g. $(thing)p = components.air_compressor.getPressure()/$ will retrieve the current pressure of an attached $(item)Air Compressor/$.",
+      "flag": "mod:opencomputers"
     },
     {
       "type": "text",

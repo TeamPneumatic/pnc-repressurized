@@ -2,6 +2,7 @@
   "name": "Charging Station",
   "icon": "pneumaticcraft:charging_station",
   "category": "machines",
+  "advancement": "pneumaticcraft:pressure_tube",
   "pages": [
     {
       "type": "text",

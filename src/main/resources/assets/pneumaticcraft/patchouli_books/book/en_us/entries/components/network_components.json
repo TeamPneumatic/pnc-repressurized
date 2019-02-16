@@ -2,6 +2,7 @@
   "name": "Network Components",
   "icon": "pneumaticcraft:network_component:0",
   "category": "components",
+  "advancement": "pneumaticcraft:plastic",
   "pages": [
     {
       "type": "text",

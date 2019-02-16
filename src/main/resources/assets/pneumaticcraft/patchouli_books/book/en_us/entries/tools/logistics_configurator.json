@@ -2,6 +2,7 @@
   "name": "Logistics Configurator",
   "icon": "pneumaticcraft:logistics_configurator",
   "category": "tools",
+  "advancement": "pneumaticcraft:pressure_tube",
   "pages": [
     {
       "type": "text",

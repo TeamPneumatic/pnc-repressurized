@@ -2,6 +2,7 @@
   "name": "Item Filter Widget",
   "icon": "pneumaticcraft:textures/items/progwidgets/item_filter_piece.png",
   "category": "widget_other",
+  "advancement": "pneumaticcraft:programmer",
   "pages": [
     {
       "type": "text",

@@ -2,6 +2,7 @@
   "name": "Seismic Sensor",
   "icon": "pneumaticcraft:seismic_sensor",
   "category": "tools",
+  "advancement": "pneumaticcraft:root",
   "pages": [
     {
       "type": "text",

@@ -2,6 +2,7 @@
   "name": "Liquid Hopper",
   "icon": "pneumaticcraft:liquid_hopper",
   "category": "machines",
+  "advancement": "pneumaticcraft:root",
   "pages": [
     {
       "type": "text",

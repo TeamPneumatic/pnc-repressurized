@@ -3,6 +3,7 @@
   "icon": "minecraft:knowledge_book",
   "category": "programming",
   "priority": "true",
+  "advancement": "pneumaticcraft:programmer",
   "pages": [
     {
       "type": "text",

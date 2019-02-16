@@ -2,6 +2,7 @@
   "name": "Logistics Frames",
   "icon": "pneumaticcraft:logistic_frame_passive_provider",
   "category": "logistics",
+  "advancement": "pneumaticcraft:plastic",
   "pages": [
     {
       "type": "text",

@@ -2,6 +2,7 @@
   "name": "UV Light Box",
   "icon": "pneumaticcraft:uv_light_box",
   "category": "manufacturing",
+  "advancement": "pneumaticcraft:pcb_blueprint",
   "pages": [
     {
       "type": "text",

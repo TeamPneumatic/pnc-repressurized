@@ -2,6 +2,7 @@
   "name": "Aerial Interface",
   "icon": "pneumaticcraft:aerial_interface",
   "category": "machines",
+  "advancement": "pneumaticcraft:advanced_pressure_tube",
   "pages": [
     {
       "type": "text",

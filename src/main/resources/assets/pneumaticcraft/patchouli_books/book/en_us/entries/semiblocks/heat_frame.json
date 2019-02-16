@@ -2,6 +2,7 @@
   "name": "Heat Frame",
   "icon": "pneumaticcraft:heat_frame",
   "category": "semiblocks",
+  "advancement": "pneumaticcraft:root",
   "pages": [
     {
       "type": "text",

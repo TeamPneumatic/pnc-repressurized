@@ -2,6 +2,7 @@
   "name": "Plastic",
   "icon": "forge:bucketfilled{FluidName:'plastic',Amount:1000}",
   "category": "components",
+  "advancement": "pneumaticcraft:tp_plant",
   "pages": [
     {
       "type": "text",

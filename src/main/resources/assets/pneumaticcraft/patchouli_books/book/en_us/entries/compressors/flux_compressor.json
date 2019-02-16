@@ -2,6 +2,7 @@
   "name": "Flux Compressor",
   "icon": "pneumaticcraft:flux_compressor",
   "category": "compressors",
+  "advancement": "pneumaticcraft:advanced_pressure_tube",
   "pages": [
     {
       "type": "text",
