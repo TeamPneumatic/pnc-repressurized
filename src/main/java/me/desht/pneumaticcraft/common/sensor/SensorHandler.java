@@ -41,6 +41,7 @@ public class SensorHandler implements ISensorRegistry {
         registerSensor(new WorldPlayersInServerSensor());
         registerSensor(new WorldTicktimeSensor());
         registerSensor(new WorldGlobalVariableSensor());
+        registerSensor(new WorldGlobalVariableAnalogSensor());
         registerSensor(new BlockPresenceSensor());
         registerSensor(new BlockMetadataSensor());
         registerSensor(new BlockComparatorSensor());

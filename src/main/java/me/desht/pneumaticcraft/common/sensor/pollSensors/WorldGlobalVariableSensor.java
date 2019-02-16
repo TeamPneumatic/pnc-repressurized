@@ -15,7 +15,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.util.Rectangle;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -23,7 +23,7 @@ public class WorldGlobalVariableSensor implements IPollSensorSetting {
 
     @Override
     public String getSensorPath() {
-        return "World/Global variable";
+        return "World/Global Variable";
     }
 
     @Override
@@ -38,9 +38,7 @@ public class WorldGlobalVariableSensor implements IPollSensorSetting {
 
     @Override
     public List<String> getDescription() {
-        List<String> text = new ArrayList<>();
-        text.add(TextFormatting.BLACK + "Emits a redstone signal when the global variable specified its X position is not equal to 0");
-        return text;
+        return Collections.singletonList(TextFormatting.BLACK + "Emits a full-strength redstone signal when the linked global variable has a non-zero X value");
     }
 
     @Override
