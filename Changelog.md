@@ -28,9 +28,14 @@ Changes are in reverse chronological order; newest changes at the top.
 * Minor GUI improvements for the Charging Station (primarily less cramped-looking)
 * GUI pressure gauges use a smaller text size for the numbers around the edge of the gauge
 * Entity/Block tracker & hacking: the popup "can hack" window now also notes which hotkey is used for hacking
+* Patchouli guidebook is now advancement-gated, so only relevant sections of the book are displayed depending on how far you've progressed through the mod.
+* Remote Editor: Spruced up the GUI a little. Added a snap-to-grid option to make it easier to line up widgets on the GUI.
+* Universal Sensor: Added a "Global Analog Variable" sensor, which emits an analog (0..15) redstone signal based on the X value of the linked global variable. This is in addition to the existing "Global Variable" sensor which emits 15 if the linked variable is non-zero, and 0 otherwise.
 #### Fixes
 * Fixed problem where machines could become unbreakable under some circumstances (related to trying to sneak-wrench a machine which had upgrades installed or other data that needs to be saved to the dropped item stack).
 * Refinery comparator support: "has work" now correctly emits a signal when Refinery isn't up to temperature (the check is "has work", not "did work"). This makes it more useful for enabling/disabling a heat source for the Refinery, depending on if it has work to do.
+* Fixed Remote Editor GUI not being able to modify the dimensions of button widgets.
+* Added missing Patchouli docs page for the Remote.
 
 ### 0.9.1-317 (20 Jan 2019)
 #### New
