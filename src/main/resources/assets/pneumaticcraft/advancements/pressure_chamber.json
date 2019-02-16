@@ -8,7 +8,8 @@
     },
     "description": {
       "translate": "achievement.pressureChamber.desc"
-    }
+    },
+    "frame": "goal"
   },
   "parent": "pneumaticcraft:root",
   "criteria": {

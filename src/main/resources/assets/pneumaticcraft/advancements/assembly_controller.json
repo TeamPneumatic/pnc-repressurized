@@ -8,7 +8,8 @@
     },
     "description": {
       "translate": "achievement.assemblyController.desc"
-    }
+    },
+    "frame": "goal"
   },
   "parent": "pneumaticcraft:printed_circuit_board",
   "criteria": {

@@ -1,24 +1,23 @@
 {
   "display": {
     "icon": {
-      "item": "pneumaticcraft:plastic"
+      "item": "pneumaticcraft:minigun"
     },
     "title": {
-      "translate": "achievement.plastic"
+      "translate": "achievement.minigun"
     },
     "description": {
-      "translate": "achievement.plastic.desc"
-    },
-    "frame": "goal"
+      "translate": "achievement.minigun.desc"
+    }
   },
-  "parent": "pneumaticcraft:tp_plant",
+  "parent": "pneumaticcraft:pressure_tube",
   "criteria": {
-    "plastic": {
+    "taken": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "item": "pneumaticcraft:plastic"
+            "item": "pneumaticcraft:minigun"
           }
         ]
       }

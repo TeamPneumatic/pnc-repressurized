@@ -8,7 +8,8 @@
     },
     "description": {
       "translate": "achievement.printedCircuitBoard.desc"
-    }
+    },
+    "frame": "goal"
   },
   "parent": "pneumaticcraft:unassembled_pcb",
   "criteria": {
