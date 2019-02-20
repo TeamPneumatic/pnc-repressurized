@@ -96,6 +96,7 @@ public class HeatExchangerLogic implements IHeatExchangerLogic {
     @Override
     public void setTemperature(double temperature) {
         this.temperature = temperature;
+        this.temperatureInt = (int) temperature;
     }
 
     @Override
