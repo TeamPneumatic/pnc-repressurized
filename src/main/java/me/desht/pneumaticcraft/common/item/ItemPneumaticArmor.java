@@ -341,9 +341,9 @@ public class ItemPneumaticArmor extends ItemArmor
             CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer();
             double boost = handler.getSpeedBoostFromLegs();
             if (boost > 0) {
-                return (float) (boost * 2.0 * ConfigHandler.client.leggingsFOVfactor);
+                return 1.0f + (float) (boost * 2.0 * ConfigHandler.client.leggingsFOVfactor);
             }
         }
-        return 0f;
+        return 1.0f;
     }
 }

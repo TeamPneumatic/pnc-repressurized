@@ -494,16 +494,16 @@ public class ClientEventHandler {
     public void adjustFOVEvent(FOVUpdateEvent event) {
         CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer();
 
-        float modifier = 0.0f;
+        float modifier = 1.0f;
         EntityPlayer player = Minecraft.getMinecraft().player;
         for (EntityEquipmentSlot slot : EntityEquipmentSlot.values()) {
             ItemStack stack = player.getItemStackFromSlot(slot);
             if (stack.getItem() instanceof IFOVModifierItem) {
-                modifier += ((IFOVModifierItem) stack.getItem()).getFOVModifier(stack, player, slot);
+                modifier *= ((IFOVModifierItem) stack.getItem()).getFOVModifier(stack, player, slot);
             }
         }
 
-        event.setNewfov(event.getFov() + modifier);
+        event.setNewfov(event.getFov() * modifier);
     }
 
     @SubscribeEvent

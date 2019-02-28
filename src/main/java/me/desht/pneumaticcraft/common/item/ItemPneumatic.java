@@ -45,7 +45,7 @@ public class ItemPneumatic extends Item {
             List<ItemStack> stacks = new ArrayList<>();
             ((IInventoryItem) stack.getItem()).getStacksInItem(stack, stacks);
             String header = ((IInventoryItem) stack.getItem()).getInventoryHeader();
-            if (header != null) {
+            if (header != null && !stacks.isEmpty()) {
                 curInfo.add(header);
             }
             PneumaticCraftUtils.sortCombineItemStacksAndToString(curInfo, stacks.toArray(new ItemStack[0]));

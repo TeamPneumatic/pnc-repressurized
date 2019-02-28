@@ -208,9 +208,9 @@ public class ItemMinigun extends ItemPressurizable implements IChargingStationGU
     @Override
     public float getFOVModifier(ItemStack stack, EntityPlayer player, EntityEquipmentSlot slot) {
         Minigun minigun = getMinigun(stack, player);
-        if (!minigun.isMinigunActivated()) return 0f;
         int trackers = minigun.getUpgrades(EnumUpgrade.ENTITY_TRACKER);
-        return (float) -minigun.getMinigunSpeed() * trackers * 0.7f;
+        if (!minigun.isMinigunActivated() || trackers == 0) return 1.0f;
+        return (float) (1 - (trackers * minigun.getMinigunSpeed() / 2));
     }
 
     @Override
