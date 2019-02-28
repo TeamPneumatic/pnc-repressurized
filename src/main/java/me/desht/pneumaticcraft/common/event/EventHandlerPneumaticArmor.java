@@ -218,7 +218,12 @@ public class EventHandlerPneumaticArmor {
                 int n = 11 - handler.getUpgradeCount(EntityEquipmentSlot.FEET, IItemRegistry.EnumUpgrade.JET_BOOTS, 10);
                 // default dig speed when not on ground is 1/5 of normal
                 if (n < 4) {
-                    event.setNewSpeed(event.getOriginalSpeed() * (5f / n));
+                    float mult = 5.0f / n;
+                    float oldSpeed = event.getOriginalSpeed();
+                    float newSpeed = event.getNewSpeed();
+                    if (oldSpeed < newSpeed * mult) {
+                        event.setNewSpeed(newSpeed * mult);
+                    }
                 }
             }
         }
