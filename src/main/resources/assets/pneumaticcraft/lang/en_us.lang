@@ -772,6 +772,7 @@ gui.progWidget.label.error.noJumpLocation=No place to jump to. Attach a Text puz
 gui.progWidget.liquidFilter.error.noLiquid=No liquid selected in the filter.
 gui.progWidget.crafting.error.noCraftingRecipe=No valid crafting recipe set.
 gui.progWidget.coordinateOperator.noParameter=No parameters!
+gui.progWidget.coordinateOperator.divideByZero=Attempt to divide by zero!
 
 gui.progWidget.general.debug.cantNavigate=Can't navigate to one or more blocks.
 gui.progWidget.blockInteraction.debug.noBlocksValid=No blocks can be interacted with.

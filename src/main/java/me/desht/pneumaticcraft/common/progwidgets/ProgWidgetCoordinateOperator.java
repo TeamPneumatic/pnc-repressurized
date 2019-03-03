@@ -77,6 +77,16 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
             if (getConnectedParameters()[0] == null && getConnectedParameters()[getParameters().length] == null) {
                 curInfo.add("gui.progWidget.coordinateOperator.noParameter");
             }
+        } else if (operator == EnumOperator.MULIPLY_DIVIDE) {
+            IProgWidget w = getConnectedParameters()[1];
+            while (w instanceof ProgWidgetCoordinate) {
+                BlockPos pos = ((ProgWidgetCoordinate) w).getCoordinate();
+                if (pos.getX() == 0 || pos.getY() == 0 || pos.getZ() == 0) {
+                    curInfo.add("gui.progWidget.coordinateOperator.divideByZero");
+                    break;
+                }
+                w = w.getConnectedParameters()[0];
+            }
         }
     }
 
