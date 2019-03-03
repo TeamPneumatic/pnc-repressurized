@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.input.Keyboard;
 
 import java.io.IOException;
@@ -38,14 +39,13 @@ public class GuiProgWidgetOptionBase<Widget extends IProgWidget> extends GuiPneu
     @Override
     public void initGui() {
         super.initGui();
-        String title = I18n.format("programmingPuzzle." + widget.getWidgetString() + ".name");
+        String title = TextFormatting.UNDERLINE + I18n.format("programmingPuzzle." + widget.getWidgetString() + ".name");
         addLabel(title, width / 2 - fontRenderer.getStringWidth(title) / 2, guiTop + 5);
     }
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         drawDefaultBackground();
-        super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
     @Override
