@@ -503,7 +503,7 @@ public class ClientEventHandler {
             }
         }
 
-        event.setNewfov(event.getFov() * modifier);
+        event.setNewfov(event.getNewfov() * modifier);
     }
 
     @SubscribeEvent
