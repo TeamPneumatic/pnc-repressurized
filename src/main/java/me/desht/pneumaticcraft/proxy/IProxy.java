@@ -29,4 +29,6 @@ public interface IProxy {
     void playCustomParticle(EnumCustomParticleType enumCustomParticleType, World w, double x, double y, double z, double dx, double dy, double dz);
 
     String xlate(String key);
+
+    void suppressItemEquipAnimation();
 }

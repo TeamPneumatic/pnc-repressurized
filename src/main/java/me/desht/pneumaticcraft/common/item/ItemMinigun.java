@@ -18,8 +18,7 @@ import me.desht.pneumaticcraft.common.tileentity.FilteredItemStackHandler;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ItemRenderer;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -32,8 +31,6 @@ import net.minecraft.util.*;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -71,12 +68,6 @@ public class ItemMinigun extends ItemPressurizable implements IChargingStationGU
         return null;
     }
 
-//    @Override
-//    public void addInformation(ItemStack stack, World worldIn, List<String> infoList, ITooltipFlag par4) {
-//        super.addInformation(stack, worldIn, infoList, par4);
-//        UpgradableItemUtils.addUpgradeInformation(stack, worldIn, infoList, par4);
-//    }
-
     @Override
     public void onUpdate(ItemStack stack, World world, Entity entity, int slot, boolean currentItem) {
         super.onUpdate(stack, world, entity, slot, currentItem);
@@ -92,11 +83,11 @@ public class ItemMinigun extends ItemPressurizable implements IChargingStationGU
         }
 
         if (world.isRemote && currentItem && minigun.getMinigunSpeed() > 0) {
-            suppressSwitchAnimation();
+            PneumaticCraftRepressurized.proxy.suppressItemEquipAnimation();
         }
 
-        // repair ammo for cost of air with item life upgrades
-        if (!world.isRemote && currentItem) {
+        if (!world.isRemote && slot >= 0 && slot <= 8) {
+            // if on hotbar, possibility of ammo replenishment via item life upgrades
             handleAmmoRepair(stack, world, minigun);
         }
     }
@@ -124,15 +115,6 @@ public class ItemMinigun extends ItemPressurizable implements IChargingStationGU
                 handler.save();
             }
         }
-    }
-
-    @SideOnly(Side.CLIENT)
-    private void suppressSwitchAnimation() {
-        Minecraft mc = Minecraft.getMinecraft();
-        ItemRenderer renderer = mc.entityRenderer.itemRenderer;
-//        renderer.updateEquippedItem();
-        renderer.equippedProgressMainHand = 1;
-        renderer.prevEquippedProgressMainHand = 1;
     }
 
     private Minigun getMinigun(ItemStack stack, EntityPlayer player, ItemStack ammo) {
@@ -225,7 +207,7 @@ public class ItemMinigun extends ItemPressurizable implements IChargingStationGU
 
     @Override
     public String getInventoryHeader() {
-        return TextFormatting.GREEN + "Loaded Ammo:";
+        return TextFormatting.GREEN + I18n.format("gui.tooltip.gunAmmo.loaded");
     }
 
     public static class MagazineHandler extends FilteredItemStackHandler {

@@ -63,4 +63,9 @@ public class ServerProxy implements IProxy {
     public String xlate(String key) {
         return "{*" + key + "*}";  // for TheOneProbe formatting
     }
+
+    @Override
+    public void suppressItemEquipAnimation() {
+
+    }
 }

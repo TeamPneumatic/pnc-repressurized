@@ -32,6 +32,7 @@ import me.desht.pneumaticcraft.lib.EnumCustomParticleType;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.player.EntityPlayer;
@@ -160,6 +161,13 @@ public class ClientProxy implements IProxy {
     @Override
     public String xlate(String key) {
         return I18n.format(key);
+    }
+
+    @Override
+    public void suppressItemEquipAnimation() {
+        ItemRenderer renderer = Minecraft.getMinecraft().entityRenderer.itemRenderer;
+        renderer.equippedProgressMainHand = 1;
+        renderer.prevEquippedProgressMainHand = 1;
     }
 
     @Override
