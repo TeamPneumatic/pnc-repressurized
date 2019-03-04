@@ -18,11 +18,11 @@
     },
     {
       "type": "text",
-      "text": "A network of Logistics Modules is defined by all the modules connected to each other by $(l:tubes/pressure_tubes)Pressure Tubes/$; note that pneumatic machines do $(italic)not/$ form part of the network.$(p)You can right-click a Logistics Module with any $(item)dye/$ to color it; only Logistics Modules of the same color will communicate with each other."
+      "text": "A network of Logistics Modules is defined by all the modules connected to each other by $(l:tubes/pressure_tubes)Pressure Tubes/$; note that pneumatic machines do $(italic)not/$ form part of the network.$(p)You can right-click a Logistics Module with any $(item)dye/$ to color it; only Logistics Modules of the same color will communicate with each other, effectively giving you 16 $(thing)channels/$ on each network."
     },
     {
       "type": "text",
-      "text": "Logistics Modules need $(l:base_concepts/pressure)pressure/$: 3 bar is required to let the modules do their work. The air used is a multiplication of distance, amount transported and a constant. This means that it requires more air to transport a full stack of items, and also more to transport it a long way. The air is used at the $(italic)receiving/$ Logistics Module, since the air is flowing towards that module."
+      "text": "Logistics Modules need $(l:base_concepts/pressure)pressure/$; 3 bar is required to let the modules operate. The air used is a multiplication of distance, amount transported and a constant. This means that it requires more air to transport a full stack of items, and also more to transport it a long way. The air is used at the $(italic)receiving/$ Logistics Module, since the air is flowing towards that module."
     },
     {
       "type": "text",

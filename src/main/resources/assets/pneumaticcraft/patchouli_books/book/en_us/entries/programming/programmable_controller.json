@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "A Programmable Controller can do very similar things to what $(l:tools/drone)Drones/$ can do. A program can be written in a $(l:programming/programmer)Programmer/$, and saved to either a $(item)Drone/$ or $(l:components/network_api)Network API/$. Either of these items can then be placed in the $(item)Programmable Controller/$. Provided that there is enough $(l:base_concepts/pressure)pressure/$, the $(item)Programmable Controller/$ will execute the program just as it would when programmed onto a $(item)Drone/$. "
+      "text": "A Programmable Controller can do very similar things to what $(l:tools/drone)Drones/$ can do. A program can be written in a $(l:programming/programmer)Programmer/$, and saved to either a $(item)Drone/$ or $(l:components/network_components#network_api)Network API/$. Either of these items can then be placed in the $(item)Programmable Controller/$. Provided that there is enough $(l:base_concepts/pressure)pressure/$, the $(item)Programmable Controller/$ will execute the program just as it would when programmed onto a $(item)Drone/$. "
     },
     {
       "type": "text",

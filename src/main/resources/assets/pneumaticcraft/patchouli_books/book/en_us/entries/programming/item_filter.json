@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "The $(thing)Item Filter/$ is a widget solely used as $(thing)parameter/$ for other widgets. You can use it to specify which blocks & items may be picked up / placed / mined / etc.$(p)Start by $(thing)right-clicking/$ the widget. Then you can either search for an item in the game by clicking $(thing)Search Item.../$ or you can select an item from your inventory by clicking $(thing)Search Inventory.../$"
+      "text": "The $(thing)Item Filter/$ is a widget solely used as a $(thing)parameter/$ for other widgets. You can use it to specify which blocks & items may be picked up / placed / mined / etc.$(p)Start by $(thing)right-clicking/$ the widget. Then you can either search for an item in the game by clicking $(thing)Search Item.../$ or you can select an item from your inventory by clicking $(thing)Search Inventory.../$"
     },
     {
       "type": "text",

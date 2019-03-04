@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "The $(thing)Area/$ widget is solely used as parameter for other widget, to tell them what area (which could be a single block) they should apply to. To use this widget, you will need a $(l:tools/gps_tool)GPS Tool/$ and/or $(l:tools/gps_area_tool)GPS Area Tool/$.$(p)There are three common ways to set up an Area widget:"
+      "text": "The $(thing)Area/$ widget is solely used as a parameter for other widgets, to tell them what area (which could be a single block) they should apply to. To use this widget, you will need a $(l:tools/gps_tool)GPS Tool/$ and/or $(l:tools/gps_area_tool)GPS Area Tool/$.$(p)There are three common ways to set up an Area widget:"
     },
     {
       "type": "text",

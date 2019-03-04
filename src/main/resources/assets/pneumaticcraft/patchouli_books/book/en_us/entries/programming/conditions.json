@@ -18,11 +18,11 @@
         "pneumaticcraft:textures/patchouli/condition_widget.png"
       ],
       "border": "true",
-      "text": "$(italic)A Redstone Condition widget which kills the drone if the signal > 10/$"
+      "text": "$(italic)A Redstone Condition widget which kills the drone if the signal >= 10/$"
     },
     {
       "type": "text",
-      "text": "Most $(thing)Condition/$ widgets can be $(thing)right-clicked/$ to open a configuration GUI. The GUI will usually contain '='/'>=' options, and a textfield where you can enter a number.$(p) With this you can set up conditions (like item counts in a chest) to be e.g. exactly 10 ('=' mode and textfield 10), more than 20 ('>=' mode and textfield '21'), or less than 12 ('>=' mode and textfield '12', but checking for the condition to be $(thing)false/$)."
+      "text": "Most $(thing)Condition/$ widgets can be $(thing)right-clicked/$ to open a configuration GUI. The GUI will usually contain '='/'>=' options, and a textfield where you can enter a number.$(p)With this you can set up conditions (like item counts in a chest) to be e.g. exactly 10 ('=' mode and textfield 10), more than 20 ('>=' mode and textfield '21'), or less than 12 ('>=' mode and textfield '12', but checking for the condition to be $(thing)false/$)."
     },
     {
       "type": "text",
