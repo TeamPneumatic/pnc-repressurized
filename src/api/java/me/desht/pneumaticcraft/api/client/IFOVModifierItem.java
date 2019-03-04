@@ -14,6 +14,7 @@ public interface IFOVModifierItem {
      *
      * @param stack the equipped item
      * @param player the player who has the item equipped
+     * @param slot the equipment slot
      * @return the FOV modifier
      */
     float getFOVModifier(ItemStack stack, EntityPlayer player, EntityEquipmentSlot slot);

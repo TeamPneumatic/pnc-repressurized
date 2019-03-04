@@ -495,11 +495,10 @@ public class ClientEventHandler {
         CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer();
 
         float modifier = 1.0f;
-        EntityPlayer player = Minecraft.getMinecraft().player;
         for (EntityEquipmentSlot slot : EntityEquipmentSlot.values()) {
-            ItemStack stack = player.getItemStackFromSlot(slot);
+            ItemStack stack = event.getEntity().getItemStackFromSlot(slot);
             if (stack.getItem() instanceof IFOVModifierItem) {
-                modifier *= ((IFOVModifierItem) stack.getItem()).getFOVModifier(stack, player, slot);
+                modifier *= ((IFOVModifierItem) stack.getItem()).getFOVModifier(stack, event.getEntity(), slot);
             }
         }
 
