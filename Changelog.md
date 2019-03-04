@@ -6,6 +6,12 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
+### 0.9.3-324 (4 Mar 2019)
+#### Fixes
+* FOV modifications (as done by Pneumatic Leggings with Speed Upgrades and Minigun with Entity Tracker Upgrades) should now cooperate much better with other mods, assuming those mods do their FOV calculations correctly too (see https://github.com/TeamPneumatic/pnc-repressurized/issues/304).
+* Programmer GUI: Coordinate Operators will now report divide-by-zero attempts as an error instead of silently ignoring them.
+* Fixed Thermopneumatic Processing Plant recipes not showing their temperature in JEI.
+* Jet Boots Builder Mode speed modification should work better now in conjunction with other mods that modify dig speed (e.g. Aerial Affinity enchant).
 ### 0.9.2-321 (16 Feb 2019)
 #### New
 * If you have 8 or more Jet Boots Upgrades installed, it is now possible to switch to Jet Boots "Builder Mode"
