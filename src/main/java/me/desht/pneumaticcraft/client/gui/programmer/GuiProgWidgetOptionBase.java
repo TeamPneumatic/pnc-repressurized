@@ -46,6 +46,7 @@ public class GuiProgWidgetOptionBase<Widget extends IProgWidget> extends GuiPneu
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         drawDefaultBackground();
+        super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
     @Override
