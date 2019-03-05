@@ -10,7 +10,7 @@
     },
     {
       "type": "text",
-      "text": "Available operations are:$(li)$(bold)+ -/$: adds up the widgets connected to the right. Subtracts the widgets on the left.$(li)$(bold)* //$: multiplies the widgets connected to the right. Divides the result by the widgets on the left.$(li)$(bold)Max Min/$: takes the maximum X/Y/Z from the connected widgets on the right, then takes the minimum of the widgets on the left and the maximum that was determined earlier."
+      "text": "Available operations are:$(li)$(bold)Add/Subtract/$: adds up the widgets connected to the right. Subtracts the widgets on the left.$(li)$(bold)Multiply/Divide/$: multiplies the widgets connected to the right. Divides the result by the widgets on the left.$(li)$(bold)Min/Max/$: takes the maximum X/Y/Z from the connected widgets on the right, then takes the minimum of the widgets on the left and the maximum that was determined earlier."
     },
     {
       "type": "text",
